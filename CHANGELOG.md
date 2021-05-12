@@ -1,120 +1,59 @@
-<a name="12.0.0-rc.3"></a>
-# 12.0.0-rc.3 (2021-05-10)
-### compiler
-| Commit | Description |
-| -- | -- |
-| 3e365ba81e | fix(compiler): preserve @page rules in encapsulated styles (#41915) |
-### compiler-cli
-| Commit | Description |
-| -- | -- |
-| 7a4d9805ea | fix(compiler-cli): use '' for the source map URL of indirect templates (#41973) |
-### core
-| Commit | Description |
-| -- | -- |
-| 1449c5c8ff | fix(core): do not retain dynamically compiled components and modules (#42003) |
-| e9ddc57f94 | fix(core): invoke profiler around ngOnDestroy lifecycle hooks (#41969) |
-### platform-browser
-| Commit | Description |
-| -- | -- |
-| d5555558d0 | fix(platform-browser): prevent memory leak of style nodes if shadow DOM encapsulation is used (#42005) |
-## Special Thanks:
-Ajit Singh, Alan Agius, Alex Rickabaugh, Andrew J Asche, George Kalpakas, Georgii Dolzhykov, Igor Minar, Joey Perrott, JoostK, Julien Marcou, Kapunahele Wong, Kristiyan Kostadinov, Paul Gschwendtner, Pete Bacon Darwin, Renovate Bot, Richard Sithole, Teri Glover, iRealNirmal, mgechev, profanis and va-stefanek
-
-
-# 12.0.0-rc.2 (2021-05-05)
+<a name="12.0.0"></a>
+# 12.0.0 (2021-05-12)
 
 
 ### Bug Fixes
 
 * **animations:** ensure consistent transition namespace ordering ([#19854](https://github.com/angular/angular/issues/19854)) ([01cc995](https://github.com/angular/angular/commit/01cc99589bc449eaf3b1de2c94636de878843fba))
-* **common:** add  right ContentType for boolean values with HttpClient request body([#38924](https://github.com/angular/angular/issues/38924)) ([#41885](https://github.com/angular/angular/issues/41885)) ([922a602](https://github.com/angular/angular/commit/922a60283183c47a268fd084302b2bc87267a73e))
-* **compiler-cli:** expose the linker as a Babel plugin ([#41918](https://github.com/angular/angular/issues/41918)) ([8fdac8f](https://github.com/angular/angular/commit/8fdac8f4361fd4ac0f20c21c98289c19e8864347))
-* **compiler-cli:** prefer non-aliased exports in reference emitters ([#41866](https://github.com/angular/angular/issues/41866)) ([75bb931](https://github.com/angular/angular/commit/75bb931889b946c243161a6ce0503bc7d08a6565)), closes [#41443](https://github.com/angular/angular/issues/41443) [#41277](https://github.com/angular/angular/issues/41277)
-* **core:** AsyncPipe now compatible with RxJS 7 ([#41590](https://github.com/angular/angular/issues/41590)) ([9759bca](https://github.com/angular/angular/commit/9759bca339b44ed78ec6aafab0336d531d285f90))
-* **core:** handle multiple i18n attributes with expression bindings ([#41882](https://github.com/angular/angular/issues/41882)) ([73c6c64](https://github.com/angular/angular/commit/73c6c64f82d45c34203d4d18d759ad0c33a6b221)), closes [#41869](https://github.com/angular/angular/issues/41869)
-* **localize:** relax error to warning for missing target ([#41944](https://github.com/angular/angular/issues/41944)) ([35ceed2](https://github.com/angular/angular/commit/35ceed2061a890a70576dc7afa0b779f3779ae7b)), closes [#21690](https://github.com/angular/angular/issues/21690)
-
-
-### Performance Improvements
-
-* **core:** minor improvements to listener instructions ([#41807](https://github.com/angular/angular/issues/41807)) ([9346d61](https://github.com/angular/angular/commit/9346d61d92c722175ca7673efe475e838546fef7))
-
-
-
-# 12.0.0-rc.1 (2021-04-28)
-
-
-### Bug Fixes
-
 * **animations:** update supported range of node versions to only include LTS versions ([#41822](https://github.com/angular/angular/issues/41822)) ([e918250](https://github.com/angular/angular/commit/e918250a0624cff9bbbbdb016a069303a99fb8cc))
+* **animations:** allow animations on elements in the shadow DOM ([#40134](https://github.com/angular/angular/issues/40134)) ([dad42c8](https://github.com/angular/angular/commit/dad42c8cd669357f9c862023abc5f4695863040d)), closes [#25672](https://github.com/angular/angular/issues/25672)
 * **bazel:** update supported range of node versions to only include LTS versions ([#41822](https://github.com/angular/angular/issues/41822)) ([8503246](https://github.com/angular/angular/commit/85032460f133162cc712ab3b9f04d42ff3b6d6d9))
+* **common:** add  right ContentType for boolean values with HttpClient request body([#38924](https://github.com/angular/angular/issues/38924)) ([#41885](https://github.com/angular/angular/issues/41885)) ([922a602](https://github.com/angular/angular/commit/922a60283183c47a268fd084302b2bc87267a73e))
 * **common:** update supported range of node versions to only include LTS versions ([#41822](https://github.com/angular/angular/issues/41822)) ([f2b6fd8](https://github.com/angular/angular/commit/f2b6fd87056cf3159e8ecc275ce654e47fdfa6f0))
+* **common:** viewport scroller not finding elements inside the shadow DOM ([#41644](https://github.com/angular/angular/issues/41644)) ([c0f5ba3](https://github.com/angular/angular/commit/c0f5ba3d36b2509a71d09c436d247211a58ee80d)), closes [#41470](https://github.com/angular/angular/issues/41470)
+* **compiler:** preserve @page rules in encapsulated styles ([#41915](https://github.com/angular/angular/issues/41915)) ([3e365ba](https://github.com/angular/angular/commit/3e365ba81e313ee31af7a8e9042e33fc046067e0)), closes [#26269](https://github.com/angular/angular/issues/26269)
 * **compiler:** strip scoped selectors from `[@font-face](https://github.com/font-face)` rules ([#41815](https://github.com/angular/angular/issues/41815)) ([2a11cda](https://github.com/angular/angular/commit/2a11cdab51a2d8d7f644ceca744568a1617f5242)), closes [#41751](https://github.com/angular/angular/issues/41751)
 * **compiler:** update supported range of node versions to only include LTS versions ([#41822](https://github.com/angular/angular/issues/41822)) ([bae8126](https://github.com/angular/angular/commit/bae81269c7461063821be7beb66b516e5a8995ce))
+* **compiler:** non-literal inline templates incorrectly processed in partial compilation ([#41583](https://github.com/angular/angular/issues/41583)) ([ab257b3](https://github.com/angular/angular/commit/ab257b370127dce70bd3ee7ad6d64d3a9ad5ae95))
+* **compiler:** not generating update instructions for ng-template inside alternate namespaces ([#41669](https://github.com/angular/angular/issues/41669)) ([2bcbbda](https://github.com/angular/angular/commit/2bcbbda78913be014534fde72318ab09795350f9)), closes [#41308](https://github.com/angular/angular/issues/41308)
+* **compiler:** avoid parsing EmptyExpr with a backwards span ([#41581](https://github.com/angular/angular/issues/41581)) ([e1a2930](https://github.com/angular/angular/commit/e1a29308933e99ee3e0d92aae42b33834f20f50a))
+* **compiler-cli:** use '' for the source map URL of indirect templates ([#41973](https://github.com/angular/angular/issues/41973)) ([7a4d980](https://github.com/angular/angular/commit/7a4d9805ea73d1b6a7659987da77d266d5e01b88)), closes [#40854](https://github.com/angular/angular/issues/40854)
+* **compiler-cli:** expose the linker as a Babel plugin ([#41918](https://github.com/angular/angular/issues/41918)) ([8fdac8f](https://github.com/angular/angular/commit/8fdac8f4361fd4ac0f20c21c98289c19e8864347))
+* **compiler-cli:** prefer non-aliased exports in reference emitters ([#41866](https://github.com/angular/angular/issues/41866)) ([75bb931](https://github.com/angular/angular/commit/75bb931889b946c243161a6ce0503bc7d08a6565)), closes [#41443](https://github.com/angular/angular/issues/41443) [#41277](https://github.com/angular/angular/issues/41277)
 * **compiler-cli:** allow linker to process minified booleans ([#41747](https://github.com/angular/angular/issues/41747)) ([1fb6724](https://github.com/angular/angular/commit/1fb6724b1f66c4681ddb201bc9b5441d20f5b920)), closes [#41655](https://github.com/angular/angular/issues/41655)
 * **compiler-cli:** match string indexed partial declarations ([#41747](https://github.com/angular/angular/issues/41747)) ([f885750](https://github.com/angular/angular/commit/f8857507642f5d12eebf4ef1ca68b63cc51f4f81)), closes [#41655](https://github.com/angular/angular/issues/41655)
 * **compiler-cli:** update supported range of node versions to only include LTS versions ([#41822](https://github.com/angular/angular/issues/41822)) ([5b463f4](https://github.com/angular/angular/commit/5b463f4541946c795835c9d9cfd7a21e7b0caffc))
+* **compiler-cli:** autocomplete literal types in templates. ([#41456](https://github.com/angular/angular/issues/41456)) ([#41645](https://github.com/angular/angular/issues/41645)) ([8b2b5ef](https://github.com/angular/angular/commit/8b2b5ef903a21b599dfc4bfe8b0c64f7c136c3a9))
+* **compiler-cli:** do not error with prepocessing if component has no inline styles ([#41602](https://github.com/angular/angular/issues/41602)) ([a5fe8b9](https://github.com/angular/angular/commit/a5fe8b95893798467c4eea2b3d38d49f6d0ce1b3))
+* **compiler-cli:** ensure the compiler tracks `ts.Program`s correctly ([#41291](https://github.com/angular/angular/issues/41291)) ([deacc74](https://github.com/angular/angular/commit/deacc741e0ee41666292d2e2c07812a78daf5d6f))
+* **compiler-cli:** prevent eliding default imports in incremental recompilations ([#41557](https://github.com/angular/angular/issues/41557)) ([7f16515](https://github.com/angular/angular/commit/7f1651574ee95eaaa5f636fc37be7b07d1a808e5)), closes [#41377](https://github.com/angular/angular/issues/41377)
+* **compiler-cli:** resolve `rootDirs` to absolute ([#41359](https://github.com/angular/angular/issues/41359)) ([3e0fda9](https://github.com/angular/angular/commit/3e0fda96b827e577cc300f46e8497cb6c810ad61)), closes [#36290](https://github.com/angular/angular/issues/36290)
+* **core:** do not retain dynamically compiled components and modules ([#42003](https://github.com/angular/angular/issues/42003)) ([1449c5c](https://github.com/angular/angular/commit/1449c5c8ff3bf706c501130fe261627effe5d212)), closes [#19997](https://github.com/angular/angular/issues/19997)
+* **core:** invoke profiler around ngOnDestroy lifecycle hooks ([#41969](https://github.com/angular/angular/issues/41969)) ([e9ddc57](https://github.com/angular/angular/commit/e9ddc57f948f0cb18e3e334aeb3084d1b49689b1))
+* **core:** AsyncPipe now compatible with RxJS 7 ([#41590](https://github.com/angular/angular/issues/41590)) ([9759bca](https://github.com/angular/angular/commit/9759bca339b44ed78ec6aafab0336d531d285f90))
+* **core:** handle multiple i18n attributes with expression bindings ([#41882](https://github.com/angular/angular/issues/41882)) ([73c6c64](https://github.com/angular/angular/commit/73c6c64f82d45c34203d4d18d759ad0c33a6b221)), closes [#41869](https://github.com/angular/angular/issues/41869)
 * **core:** update supported range of node versions to only include LTS versions ([#41822](https://github.com/angular/angular/issues/41822)) ([f9c1f08](https://github.com/angular/angular/commit/f9c1f089573e0158eb5e4443658cfd25aeeeb091))
 * **elements:** update supported range of node versions to only include LTS versions ([#41822](https://github.com/angular/angular/issues/41822)) ([4f5d094](https://github.com/angular/angular/commit/4f5d094f3a385cdc6d93c7676457484e3d8b6b09))
 * **forms:** update supported range of node versions to only include LTS versions ([#41822](https://github.com/angular/angular/issues/41822)) ([dc975ba](https://github.com/angular/angular/commit/dc975bac93a8087d1f31a31db60ef313147e589f))
 * **language-service:** update supported range of node versions to only include LTS versions ([#41822](https://github.com/angular/angular/issues/41822)) ([9b6198c](https://github.com/angular/angular/commit/9b6198c16f122dd934ac6a66d2ada21df26839b5))
+* **language-service:** use script versions for incremental compilations ([#41475](https://github.com/angular/angular/issues/41475)) ([78236bf](https://github.com/angular/angular/commit/78236bfdcaeb66c5846eb0435d727942bb88f7c5))
+* **localize:** relax error to warning for missing target ([#41944](https://github.com/angular/angular/issues/41944)) ([35ceed2](https://github.com/angular/angular/commit/35ceed2061a890a70576dc7afa0b779f3779ae7b)), closes [#21690](https://github.com/angular/angular/issues/21690)
 * **localize:** update supported range of node versions to only include LTS versions ([#41822](https://github.com/angular/angular/issues/41822)) ([658ed1f](https://github.com/angular/angular/commit/658ed1f904ef0013c3b08e2b2182cf246ef55b2b))
+* **platform-browser:** prevent memory leak of style nodes if shadow DOM encapsulation is used ([#42005](https://github.com/angular/angular/issues/42005)) ([d555555](https://github.com/angular/angular/commit/d5555558d00774520dbda40d48721bda2cb9dd1a)), closes [#36655](https://github.com/angular/angular/issues/36655)
 * **platform-browser:** update supported range of node versions to only include LTS versions ([#41822](https://github.com/angular/angular/issues/41822)) ([ea05cfd](https://github.com/angular/angular/commit/ea05cfd0c5a99840f4522b604c33a5b2f7f25f7d))
 * **platform-browser-dynamic:** update supported range of node versions to only include LTS versions ([#41822](https://github.com/angular/angular/issues/41822)) ([bc45029](https://github.com/angular/angular/commit/bc45029a5437bcea45fa00549241685a1a3f32d0))
 * **platform-server:** update supported range of node versions to only include LTS versions ([#41822](https://github.com/angular/angular/issues/41822)) ([4b9d4fa](https://github.com/angular/angular/commit/4b9d4fa3e729a3af13fb5b50de3e5c73c1d6923f))
 * **router:** update supported range of node versions to only include LTS versions ([#41822](https://github.com/angular/angular/issues/41822)) ([0067edd](https://github.com/angular/angular/commit/0067edd1469a428c11bbe6358fd5650e79abf774))
+* **router:** Only retrieve stored route when reuse strategy indicates it should reattach ([#30263](https://github.com/angular/angular/issues/30263)) ([a4ff071](https://github.com/angular/angular/commit/a4ff071e3f08e3de6d4d3f97c747c2f42b827c49)), closes [#23162](https://github.com/angular/angular/issues/23162)
+* **router:** recursively merge empty path matches ([#41584](https://github.com/angular/angular/issues/41584)) ([1179dc8](https://github.com/angular/angular/commit/1179dc8cb32c9fc451d2af9215c4740af9d2e291)), closes [#41481](https://github.com/angular/angular/issues/41481)
 * **service-worker:** update supported range of node versions to only include LTS versions ([#41822](https://github.com/angular/angular/issues/41822)) ([6b823d7](https://github.com/angular/angular/commit/6b823d7071d59234ab52bdf7eaa248df6b7d9faa))
 * **upgrade:** preserve $interval.flush when ngMocks is being used ([#30229](https://github.com/angular/angular/issues/30229)) ([87dc851](https://github.com/angular/angular/commit/87dc8511ccb9c75d78866ebd2c250ea96fc91bd0))
 * **upgrade:** update supported range of node versions to only include LTS versions ([#41822](https://github.com/angular/angular/issues/41822)) ([10c4523](https://github.com/angular/angular/commit/10c45239a68e82ea52c1601fae09953aa7843351))
 
 
-### Performance Improvements
-
-* **core:** avoid storing LView in __ngContext__ ([#41358](https://github.com/angular/angular/issues/41358)) ([990067a](https://github.com/angular/angular/commit/990067a0c6df8e97c5bbffec00a76f13c4d4c903)), closes [#41047](https://github.com/angular/angular/issues/41047)
-
-
-
-# 12.0.0-rc.0 (2021-04-21)
-
-
-### Bug Fixes
-
-* **animations:** allow animations on elements in the shadow DOM ([#40134](https://github.com/angular/angular/issues/40134)) ([dad42c8](https://github.com/angular/angular/commit/dad42c8cd669357f9c862023abc5f4695863040d)), closes [#25672](https://github.com/angular/angular/issues/25672)
-* **common:** viewport scroller not finding elements inside the shadow DOM ([#41644](https://github.com/angular/angular/issues/41644)) ([c0f5ba3](https://github.com/angular/angular/commit/c0f5ba3d36b2509a71d09c436d247211a58ee80d)), closes [#41470](https://github.com/angular/angular/issues/41470)
-* **compiler:** non-literal inline templates incorrectly processed in partial compilation ([#41583](https://github.com/angular/angular/issues/41583)) ([ab257b3](https://github.com/angular/angular/commit/ab257b370127dce70bd3ee7ad6d64d3a9ad5ae95))
-* **compiler:** not generating update instructions for ng-template inside alternate namespaces ([#41669](https://github.com/angular/angular/issues/41669)) ([2bcbbda](https://github.com/angular/angular/commit/2bcbbda78913be014534fde72318ab09795350f9)), closes [#41308](https://github.com/angular/angular/issues/41308)
-* **compiler-cli:** autocomplete literal types in templates. ([#41456](https://github.com/angular/angular/issues/41456)) ([#41645](https://github.com/angular/angular/issues/41645)) ([8b2b5ef](https://github.com/angular/angular/commit/8b2b5ef903a21b599dfc4bfe8b0c64f7c136c3a9))
-* **compiler-cli:** do not error with prepocessing if component has no inline styles ([#41602](https://github.com/angular/angular/issues/41602)) ([a5fe8b9](https://github.com/angular/angular/commit/a5fe8b95893798467c4eea2b3d38d49f6d0ce1b3))
-* **router:** Only retrieve stored route when reuse strategy indicates it should reattach ([#30263](https://github.com/angular/angular/issues/30263)) ([a4ff071](https://github.com/angular/angular/commit/a4ff071e3f08e3de6d4d3f97c747c2f42b827c49)), closes [#23162](https://github.com/angular/angular/issues/23162)
-* **router:** recursively merge empty path matches ([#41584](https://github.com/angular/angular/issues/41584)) ([1179dc8](https://github.com/angular/angular/commit/1179dc8cb32c9fc451d2af9215c4740af9d2e291)), closes [#41481](https://github.com/angular/angular/issues/41481)
-
-
-### Performance Improvements
-
-* **compiler:** reduce amount of generated code for safe accesses and nullish coalescing ([#41563](https://github.com/angular/angular/issues/41563)) ([9a3b82f](https://github.com/angular/angular/commit/9a3b82f19d26819c95c340d702c1c32787f2931e)), closes [#41437](https://github.com/angular/angular/issues/41437) [#41491](https://github.com/angular/angular/issues/41491)
-
-
-
-# 12.0.0-next.9 (2021-04-14)
-
-
-### Bug Fixes
-
-* **compiler:** avoid parsing EmptyExpr with a backwards span ([#41581](https://github.com/angular/angular/issues/41581)) ([e1a2930](https://github.com/angular/angular/commit/e1a29308933e99ee3e0d92aae42b33834f20f50a))
-* **compiler-cli:** ensure the compiler tracks `ts.Program`s correctly ([#41291](https://github.com/angular/angular/issues/41291)) ([deacc74](https://github.com/angular/angular/commit/deacc741e0ee41666292d2e2c07812a78daf5d6f))
-* **compiler-cli:** prevent eliding default imports in incremental recompilations ([#41557](https://github.com/angular/angular/issues/41557)) ([7f16515](https://github.com/angular/angular/commit/7f1651574ee95eaaa5f636fc37be7b07d1a808e5)), closes [#41377](https://github.com/angular/angular/issues/41377)
-* **compiler-cli:** resolve `rootDirs` to absolute ([#41359](https://github.com/angular/angular/issues/41359)) ([3e0fda9](https://github.com/angular/angular/commit/3e0fda96b827e577cc300f46e8497cb6c810ad61)), closes [#36290](https://github.com/angular/angular/issues/36290)
-* **language-service:** use script versions for incremental compilations ([#41475](https://github.com/angular/angular/issues/41475)) ([78236bf](https://github.com/angular/angular/commit/78236bfdcaeb66c5846eb0435d727942bb88f7c5))
-
-
 ### Build System
 
 * `ng_package` no longer generate minified UMDs ([#41425](https://github.com/angular/angular/issues/41425)) ([5a8bc1b](https://github.com/angular/angular/commit/5a8bc1bfe1c809705dfaa7e4723dd055308cd468))
-
-
-### Code Refactoring
-
-* **compiler-cli:** remove i18n options from `LinkerOptions` ([#41554](https://github.com/angular/angular/issues/41554)) ([ba84fa6](https://github.com/angular/angular/commit/ba84fa6f42cc217655f18cc9631127aa49bb20a9)), closes [#40673](https://github.com/angular/angular/issues/40673)
 
 
 ### Features
@@ -143,8 +82,11 @@ Ajit Singh, Alan Agius, Alex Rickabaugh, Andrew J Asche, George Kalpakas, Georgi
 
 ### Performance Improvements
 
+* **compiler:** reduce amount of generated code for safe accesses and nullish coalescing ([#41563](https://github.com/angular/angular/issues/41563)) ([9a3b82f](https://github.com/angular/angular/commit/9a3b82f19d26819c95c340d702c1c32787f2931e)), closes [#41437](https://github.com/angular/angular/issues/41437) [#41491](https://github.com/angular/angular/issues/41491)
 * **compiler-cli:** allow incremental compilation in the presence of redirected source files ([#41448](https://github.com/angular/angular/issues/41448)) ([ffea31f](https://github.com/angular/angular/commit/ffea31f433c1f71b78a2245d52d2969503db1784))
 * **compiler-cli:** cache results of `absoluteFromSourceFile` ([#41475](https://github.com/angular/angular/issues/41475)) ([fab1a64](https://github.com/angular/angular/commit/fab1a6468e53ab6c59e2c3aebb3ed1ecd1a6e5e8))
+* **core:** minor improvements to listener instructions ([#41807](https://github.com/angular/angular/issues/41807)) ([9346d61](https://github.com/angular/angular/commit/9346d61d92c722175ca7673efe475e838546fef7))
+* **core:** avoid storing LView in __ngContext__ ([#41358](https://github.com/angular/angular/issues/41358)) ([990067a](https://github.com/angular/angular/commit/990067a0c6df8e97c5bbffec00a76f13c4d4c903)), closes [#41047](https://github.com/angular/angular/issues/41047)
 * **core:** optimize getDirectives ([#41525](https://github.com/angular/angular/issues/41525)) ([f7e391a](https://github.com/angular/angular/commit/f7e391a912153d1ce43f9d0cf06d23121d1d49cd))
 
 
