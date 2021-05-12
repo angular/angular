@@ -37,6 +37,13 @@ details {
         @include rotate(180deg);
       }
     }
+
+    > h2 {
+      margin: 0;
+      padding: 0;
+      border: none;
+      display: inline;
+    }
   }
 
   .detail-contents {

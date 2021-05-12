@@ -77,7 +77,7 @@ To simplify the Angular mental model and learning journey, we’ll be working on
 A common problem with web applications is their slow initial load time. A way to improve it is to apply more granular code-splitting on a component level. To encourage this practice, we’ll be working on more ergonomic code-splitting APIs.
 
 <details class="roadmap-done-details">
-<summary class="roadmap-done-summary">Done</summary>
+<summary class="roadmap-done-summary"><h2>Done</h2></summary>
 
 ### Streamline releases with consolidated Angular versioning & branching
 
@@ -157,7 +157,7 @@ _Completed Q4 2020_
 
 With the deprecation of TSLint we will be moving to ESLint. As part of the process, we will work on ensuring backward compatibility with our current recommended TSLint configuration, implement a migration strategy for existing Angular applications and introduce new tooling to the Angular CLI toolchain.
 
-### Operation Bye Bye Backlog (aka Operation Byelog) 
+### Operation Bye Bye Backlog (aka Operation Byelog)
 
 _Completed Q4 2020_
 
