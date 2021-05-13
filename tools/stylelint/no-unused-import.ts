@@ -49,34 +49,34 @@ const factory = (isEnabled: boolean, _options: never, context: {fix: boolean}) =
 
 /** Extracts the namespace of an `@use` rule from its parameters.  */
 function extractNamespaceFromUseStatement(params: string): string|null {
-  const closeQuoteIndex = Math.max(params.lastIndexOf(`"`), params.lastIndexOf(`'`));
+  const openQuoteIndex = Math.max(params.indexOf(`"`), params.indexOf(`'`));
+  const closeQuoteIndex =
+      Math.max(params.indexOf(`"`, openQuoteIndex + 1), params.indexOf(`'`, openQuoteIndex + 1));
 
   if (closeQuoteIndex > -1) {
     const asExpression = 'as ';
     const asIndex = params.indexOf(asExpression, closeQuoteIndex);
+    const withIndex = params.indexOf(' with', asIndex);
 
     // If we found an ` as ` expression, we consider the rest of the text as the namespace.
     if (asIndex > -1) {
-      return params.slice(asIndex + asExpression.length).trim();
+      return withIndex == -1 ?
+          params.slice(asIndex + asExpression.length).trim() :
+          params.slice(asIndex + asExpression.length, withIndex).trim();
     }
 
-    const openQuoteIndex = Math.max(params.lastIndexOf(`"`, closeQuoteIndex - 1),
-                                    params.lastIndexOf(`'`, closeQuoteIndex - 1));
+    const importPath = params.slice(openQuoteIndex + 1, closeQuoteIndex)
+      // Sass allows for leading underscores to be omitted and it technically supports .scss.
+      .replace(/^_|(\.import)?\.scss$|\.import$/g, '');
 
-    if (openQuoteIndex > -1) {
-      const importPath = params.slice(openQuoteIndex + 1, closeQuoteIndex)
-        // Sass allows for leading underscores to be omitted and it technically supports .scss.
-        .replace(/^_|(\.import)?\.scss$|\.import$/g, '');
-
-      // Built-in Sass imports look like `sass:map`.
-      if (importPath.startsWith('sass:')) {
-        return importPath.split('sass:')[1];
-      }
-
-      // Sass ignores `/index` and infers the namespace as the next segment in the path.
-      const fileName = basename(importPath);
-      return fileName === 'index' ? basename(join(fileName, '..')) : fileName;
+    // Built-in Sass imports look like `sass:map`.
+    if (importPath.startsWith('sass:')) {
+      return importPath.split('sass:')[1];
     }
+
+    // Sass ignores `/index` and infers the namespace as the next segment in the path.
+    const fileName = basename(importPath);
+    return fileName === 'index' ? basename(join(fileName, '..')) : fileName;
   }
 
   return null;
