@@ -250,6 +250,19 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
           ]);
         });
 
+        it('should decode HTML entities in interpolated attributes', () => {
+          // Note that the detail of decoding corner-cases is tested in the
+          // "should decode HTML entities in interpolations" spec.
+          expect(humanizeDomSourceSpans(parser.parse('<div foo="{{&amp;}}"></div>', 'TestComp')))
+              .toEqual([
+                [
+                  html.Element, 'div', 0, '<div foo="{{&amp;}}"></div>', '<div foo="{{&amp;}}">',
+                  '</div>'
+                ],
+                [html.Attribute, 'foo', '{{&}}', 'foo="{{&amp;}}"']
+              ]);
+        });
+
         it('should normalize line endings within attribute values', () => {
           const result =
               parser.parse('<div key="  \r\n line 1 \r\n   line 2  "></div>', 'TestComp');
