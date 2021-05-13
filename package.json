@@ -82,7 +82,7 @@
     "karma-coverage": "~2.0.3",
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "^1.4.2",
-    "ng-packagr": "^11.0.0",
+    "ng-packagr": "^12.0.0",
     "ngx-build-plus": "^11.0.0",
     "prettier": "^2.0.0",
     "pretty-quick": "^3.0.0",
