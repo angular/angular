@@ -11,6 +11,11 @@
   // Prevents the spinning of the inner element from affecting layout outside of the spinner.
   overflow: hidden;
 
+  // Spinners with a diameter less than half the existing line-height will become distorted.
+  // Explicitly set the line-height to 0px to avoid this issue.
+  // https://github.com/material-components/material-components-web/issues/7118
+  line-height: 0;
+
   &._mat-animation-noopable {
     &, .mdc-circular-progress__determinate-circle {
       // The spinner itself has a transition on `opacity`.
