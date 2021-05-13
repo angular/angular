@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MatPaginator} from '@angular/material-experimental/mdc-paginator';
-import {_MatTableDataSource} from '@angular/material/table';
+import {_MatTableDataSource, MatTableDataSourcePaginator} from '@angular/material/table';
 
 /**
  * Data source that accepts a client-side data array and includes native support of filtering,
@@ -22,4 +21,6 @@ import {_MatTableDataSource} from '@angular/material/table';
  * interactions. If your app needs to support more advanced use cases, consider implementing your
  * own `DataSource`.
  */
-export class MatTableDataSource<T> extends _MatTableDataSource<T, MatPaginator> {}
+export class MatTableDataSource<T, P extends MatTableDataSourcePaginator =
+    MatTableDataSourcePaginator> extends _MatTableDataSource<T, P> {}
+

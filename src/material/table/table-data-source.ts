@@ -8,7 +8,7 @@
 
 import {_isNumberValue} from '@angular/cdk/coercion';
 import {DataSource} from '@angular/cdk/table';
-import {MatPaginator, PageEvent} from '@angular/material/paginator';
+import {MatPaginator} from '@angular/material/paginator';
 import {MatSort, Sort} from '@angular/material/sort';
 import {
   BehaviorSubject,
@@ -27,8 +27,22 @@ import {map} from 'rxjs/operators';
  */
 const MAX_SAFE_INTEGER = 9007199254740991;
 
-interface Paginator {
-  page: Subject<PageEvent>;
+/**
+ * Interface that matches the required API parts for the MatPaginator's PageEvent.
+ * Decoupled so that users can depend on either the legacy or MDC-based paginator.
+ */
+export interface MatTableDataSourcePageEvent {
+  pageIndex: number;
+  pageSize: number;
+  length: number;
+}
+
+/**
+ * Interface that matches the required API parts of the MatPaginator.
+ * Decoupled so that users can depend on either the legacy or MDC-based paginator.
+ */
+export interface MatTableDataSourcePaginator {
+  page: Subject<MatTableDataSourcePageEvent>;
   pageIndex: number;
   initialized: Observable<void>;
   pageSize: number;
@@ -36,7 +50,9 @@ interface Paginator {
 }
 
 /** Shared base class with MDC-based implementation. */
-export class _MatTableDataSource<T, P extends Paginator> extends DataSource<T> {
+export class _MatTableDataSource<T,
+    P extends MatTableDataSourcePaginator = MatTableDataSourcePaginator>
+    extends DataSource<T> {
   /** Stream that emits when a new data array is set on the data source. */
   private readonly _data: BehaviorSubject<T[]>;
 
@@ -240,12 +256,12 @@ export class _MatTableDataSource<T, P extends Paginator> extends DataSource<T> {
     const sortChange: Observable<Sort|null|void> = this._sort ?
         merge(this._sort.sortChange, this._sort.initialized) as Observable<Sort|void> :
         observableOf(null);
-    const pageChange: Observable<PageEvent|null|void> = this._paginator ?
+    const pageChange: Observable<MatTableDataSourcePageEvent|null|void> = this._paginator ?
         merge(
           this._paginator.page,
           this._internalPageChanges,
           this._paginator.initialized
-        ) as Observable<PageEvent|void> :
+        ) as Observable<MatTableDataSourcePageEvent|void> :
         observableOf(null);
     const dataStream = this._data;
     // Watch for base data or filter changes to provide a filtered set of data.

@@ -1,4 +1,4 @@
-export declare class _MatTableDataSource<T, P extends Paginator> extends DataSource<T> {
+export declare class _MatTableDataSource<T, P extends MatTableDataSourcePaginator = MatTableDataSourcePaginator> extends DataSource<T> {
     _renderChangesSubscription: Subscription | null;
     get data(): T[];
     set data(data: T[]);
@@ -111,6 +111,20 @@ export declare class MatTable<T> extends CdkTable<T> {
 }
 
 export declare class MatTableDataSource<T> extends _MatTableDataSource<T, MatPaginator> {
+}
+
+export interface MatTableDataSourcePageEvent {
+    length: number;
+    pageIndex: number;
+    pageSize: number;
+}
+
+export interface MatTableDataSourcePaginator {
+    initialized: Observable<void>;
+    length: number;
+    page: Subject<MatTableDataSourcePageEvent>;
+    pageIndex: number;
+    pageSize: number;
 }
 
 export declare class MatTableModule {
