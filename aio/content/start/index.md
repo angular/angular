@@ -228,6 +228,8 @@ The `ProductAlertsComponent` needs to emit an event when the user clicks **Notif
 
   <code-example path="getting-started/src/app/product-alerts/product-alerts.component.ts" header="src/app/product-alerts/product-alerts.component.ts" region="input-output"></code-example>
 
+  You use the `void` type to specify that `notify.emit()` doesn't accept an argument.
+
   <div class="alert is-helpful">
 
   In new components, the Angular Generator includes an empty `constructor()`, the `OnInit` interface, and the `ngOnInit()` method.

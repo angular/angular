@@ -160,7 +160,7 @@ onlyInIvy('Ivy-specific functionality').describe('profiler', () => {
     it('should invoke the profiler on output handler execution', async () => {
       @Component({selector: 'child', template: ''})
       class Child {
-        @Output() childEvent = new EventEmitter();
+        @Output() childEvent = new EventEmitter<void>();
       }
 
       @Component({selector: 'my-comp', template: '<child (childEvent)="onEvent()"></child>'})
