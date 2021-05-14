@@ -87,7 +87,7 @@ function buildTargetPackages(destDir, enableIvy, description, isRelease = false)
   // rebuilt if only the workspace status variables change. This could result in accidental
   // re-use of previously built package output with a different `version` in the `package.json`.
   if (isRelease) {
-    console.info('Building in release mode. Resetting the Bazel execroot and action cache..')
+    console.info('Building in release mode. Resetting the Bazel execroot and action cache..');
     exec(`${bazelCmd} clean`);
   }
 
