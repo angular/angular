@@ -97,7 +97,6 @@ export function setupReleaseActionForTesting<T extends ReleaseAction>(
   spyOn(npm, 'runNpmPublish').and.resolveTo();
   spyOn(externalCommands, 'invokeSetNpmDistCommand').and.resolveTo();
   spyOn(externalCommands, 'invokeYarnInstallCommand').and.resolveTo();
-  spyOn(externalCommands, 'invokeBazelCleanCommand').and.resolveTo();
   spyOn(externalCommands, 'invokeReleaseBuildCommand').and.resolveTo([
     {name: '@angular/pkg1', outputPath: `${testTmpDir}/dist/pkg1`},
     {name: '@angular/pkg2', outputPath: `${testTmpDir}/dist/pkg2`}
