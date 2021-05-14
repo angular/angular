@@ -8,7 +8,6 @@
 
 import * as semver from 'semver';
 
-import {VirtualGitClient} from '../../../../utils/testing';
 import {DevInfraReleaseConfig, ReleaseConfig} from '../../../config';
 import {ReleaseNotes} from '../../release-notes/release-notes';
 
@@ -17,7 +16,7 @@ import {ReleaseNotes} from '../../release-notes/release-notes';
  * returning versioned entry strings.
  */
 class MockReleaseNotes extends ReleaseNotes {
-  static async buildGenerator(version: semver.SemVer, startingRef: string, endingRef: string) {
+  static async fromRange(version: semver.SemVer, startingRef: string, endingRef: string) {
     return new MockReleaseNotes(version, startingRef, endingRef);
   }
 
@@ -40,5 +39,5 @@ class MockReleaseNotes extends ReleaseNotes {
 
 /** Replace the ReleaseNotes static builder function with the MockReleaseNotes builder function. */
 export function installMockReleaseNotes() {
-  spyOn(ReleaseNotes, 'buildGenerator').and.callFake(MockReleaseNotes.buildGenerator);
+  spyOn(ReleaseNotes, 'fromRange').and.callFake(MockReleaseNotes.fromRange);
 }

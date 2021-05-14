@@ -24,7 +24,7 @@ export function getLocalChangelogFilePath(projectDir: string): string {
 
 /** Release note generation. */
 export class ReleaseNotes {
-  static async buildGenerator(version: semver.SemVer, startingRef: string, endingRef: string) {
+  static async fromRange(version: semver.SemVer, startingRef: string, endingRef: string) {
     return new ReleaseNotes(version, startingRef, endingRef);
   }
 

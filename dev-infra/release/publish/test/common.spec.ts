@@ -152,12 +152,12 @@ class TestAction extends ReleaseAction {
   }
 
   async testBuildAndPublish(version: semver.SemVer, publishBranch: string, distTag: string) {
-    const releaseNotes = await ReleaseNotes.buildGenerator(version, '', '');
+    const releaseNotes = await ReleaseNotes.fromRange(version, '', '');
     await this.buildAndPublish(releaseNotes, publishBranch, distTag);
   }
 
   async testCherryPickWithPullRequest(version: semver.SemVer, branch: string) {
-    const releaseNotes = await ReleaseNotes.buildGenerator(version, '', '');
+    const releaseNotes = await ReleaseNotes.fromRange(version, '', '');
     await this.cherryPickChangelogIntoNextBranch(releaseNotes, branch);
   }
 }
