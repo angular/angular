@@ -316,6 +316,32 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         ]);
       });
 
+      it('should end interpolation on an unescaped matching quote', () => {
+        expect(tokenizeAndHumanizeParts('<t a="{{ a \\" \' b ">')).toEqual([
+          [lex.TokenType.TAG_OPEN_START, '', 't'],
+          [lex.TokenType.ATTR_NAME, '', 'a'],
+          [lex.TokenType.ATTR_QUOTE, '"'],
+          [lex.TokenType.ATTR_VALUE_TEXT, ''],
+          [lex.TokenType.ATTR_VALUE_INTERPOLATION, '{{', ' a \\" \' b '],
+          [lex.TokenType.ATTR_VALUE_TEXT, ''],
+          [lex.TokenType.ATTR_QUOTE, '"'],
+          [lex.TokenType.TAG_OPEN_END],
+          [lex.TokenType.EOF],
+        ]);
+
+        expect(tokenizeAndHumanizeParts('<t a=\'{{ a " \\\' b \'>')).toEqual([
+          [lex.TokenType.TAG_OPEN_START, '', 't'],
+          [lex.TokenType.ATTR_NAME, '', 'a'],
+          [lex.TokenType.ATTR_QUOTE, '\''],
+          [lex.TokenType.ATTR_VALUE_TEXT, ''],
+          [lex.TokenType.ATTR_VALUE_INTERPOLATION, '{{', ' a " \\\' b '],
+          [lex.TokenType.ATTR_VALUE_TEXT, ''],
+          [lex.TokenType.ATTR_QUOTE, '\''],
+          [lex.TokenType.TAG_OPEN_END],
+          [lex.TokenType.EOF],
+        ]);
+      });
+
       it('should parse attributes with prefix', () => {
         expect(tokenizeAndHumanizeParts('<t ns1:a>')).toEqual([
           [lex.TokenType.TAG_OPEN_START, '', 't'],
@@ -428,7 +454,11 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
           [lex.TokenType.TAG_OPEN_START, '', 't'],
           [lex.TokenType.ATTR_NAME, '', 'a'],
           [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 'AA'],
+          [lex.TokenType.ATTR_VALUE_TEXT, ''],
+          [lex.TokenType.ENCODED_ENTITY, 'A', '&#65;'],
+          [lex.TokenType.ATTR_VALUE_TEXT, ''],
+          [lex.TokenType.ENCODED_ENTITY, 'A', '&#x41;'],
+          [lex.TokenType.ATTR_VALUE_TEXT, ''],
           [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.TAG_OPEN_END],
           [lex.TokenType.EOF],
@@ -543,50 +573,60 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
     describe('entities', () => {
       it('should parse named entities', () => {
         expect(tokenizeAndHumanizeParts('a&amp;b')).toEqual([
-          [lex.TokenType.TEXT, 'a&b'],
+          [lex.TokenType.TEXT, 'a'],
+          [lex.TokenType.ENCODED_ENTITY, '&', '&amp;'],
+          [lex.TokenType.TEXT, 'b'],
           [lex.TokenType.EOF],
         ]);
       });
 
       it('should parse hexadecimal entities', () => {
         expect(tokenizeAndHumanizeParts('&#x41;&#X41;')).toEqual([
-          [lex.TokenType.TEXT, 'AA'],
+          [lex.TokenType.TEXT, ''],
+          [lex.TokenType.ENCODED_ENTITY, 'A', '&#x41;'],
+          [lex.TokenType.TEXT, ''],
+          [lex.TokenType.ENCODED_ENTITY, 'A', '&#X41;'],
+          [lex.TokenType.TEXT, ''],
           [lex.TokenType.EOF],
         ]);
       });
 
       it('should parse decimal entities', () => {
         expect(tokenizeAndHumanizeParts('&#65;')).toEqual([
-          [lex.TokenType.TEXT, 'A'],
+          [lex.TokenType.TEXT, ''],
+          [lex.TokenType.ENCODED_ENTITY, 'A', '&#65;'],
+          [lex.TokenType.TEXT, ''],
           [lex.TokenType.EOF],
         ]);
       });
 
       it('should store the locations', () => {
         expect(tokenizeAndHumanizeSourceSpans('a&amp;b')).toEqual([
-          [lex.TokenType.TEXT, 'a&amp;b'],
+          [lex.TokenType.TEXT, 'a'],
+          [lex.TokenType.ENCODED_ENTITY, '&amp;'],
+          [lex.TokenType.TEXT, 'b'],
           [lex.TokenType.EOF, ''],
         ]);
       });
 
       it('should report malformed/unknown entities', () => {
         expect(tokenizeAndHumanizeErrors('&tbo;')).toEqual([[
-          lex.TokenType.TEXT,
+          lex.TokenType.ENCODED_ENTITY,
           'Unknown entity "tbo" - use the "&#<decimal>;" or  "&#x<hex>;" syntax', '0:0'
         ]]);
         expect(tokenizeAndHumanizeErrors('&#3sdf;')).toEqual([[
-          lex.TokenType.TEXT,
+          lex.TokenType.ENCODED_ENTITY,
           'Unable to parse entity "&#3s" - decimal character reference entities must end with ";"',
           '0:4'
         ]]);
         expect(tokenizeAndHumanizeErrors('&#xasdf;')).toEqual([[
-          lex.TokenType.TEXT,
+          lex.TokenType.ENCODED_ENTITY,
           'Unable to parse entity "&#xas" - hexadecimal character reference entities must end with ";"',
           '0:5'
         ]]);
 
         expect(tokenizeAndHumanizeErrors('&#xABC')).toEqual([
-          [lex.TokenType.TEXT, 'Unexpected character "EOF"', '0:6']
+          [lex.TokenType.ENCODED_ENTITY, 'Unexpected character "EOF"', '0:6']
         ]);
       });
     });
@@ -600,14 +640,15 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
       });
 
       it('should parse interpolation', () => {
-        expect(tokenizeAndHumanizeParts('{{ a }}b{{ c // comment }}d{{ e "}}" f }}g{{ h // " i }}'))
+        expect(tokenizeAndHumanizeParts(
+                   '{{ a }}b{{ c // comment }}d{{ e "}} \' " f }}g{{ h // " i }}'))
             .toEqual([
               [lex.TokenType.TEXT, ''],
               [lex.TokenType.INTERPOLATION, '{{', ' a ', '}}'],
               [lex.TokenType.TEXT, 'b'],
               [lex.TokenType.INTERPOLATION, '{{', ' c // comment ', '}}'],
               [lex.TokenType.TEXT, 'd'],
-              [lex.TokenType.INTERPOLATION, '{{', ' e "}}" f ', '}}'],
+              [lex.TokenType.INTERPOLATION, '{{', ' e "}} \' " f ', '}}'],
               [lex.TokenType.TEXT, 'g'],
               [lex.TokenType.INTERPOLATION, '{{', ' h // " i ', '}}'],
               [lex.TokenType.TEXT, ''],
@@ -664,12 +705,16 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
 
       it('should parse entities', () => {
         expect(tokenizeAndHumanizeParts('a&amp;b')).toEqual([
-          [lex.TokenType.TEXT, 'a&b'],
+          [lex.TokenType.TEXT, 'a'],
+          [lex.TokenType.ENCODED_ENTITY, '&', '&amp;'],
+          [lex.TokenType.TEXT, 'b'],
           [lex.TokenType.EOF],
         ]);
 
         expect(tokenizeAndHumanizeSourceSpans('a&amp;b')).toEqual([
-          [lex.TokenType.TEXT, 'a&amp;b'],
+          [lex.TokenType.TEXT, 'a'],
+          [lex.TokenType.ENCODED_ENTITY, '&amp;'],
+          [lex.TokenType.TEXT, 'b'],
           [lex.TokenType.EOF, ''],
         ]);
       });
@@ -734,6 +779,18 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
           [lex.TokenType.RAW_TEXT, ''],
           [lex.TokenType.COMMENT_END],
           [lex.TokenType.TEXT, '}'],
+          [lex.TokenType.EOF],
+        ]);
+      });
+
+      it('should end interpolation on a valid closing tag', () => {
+        expect(tokenizeAndHumanizeParts('<p>{{ a </p>')).toEqual([
+          [lex.TokenType.TAG_OPEN_START, '', 'p'],
+          [lex.TokenType.TAG_OPEN_END],
+          [lex.TokenType.TEXT, ''],
+          [lex.TokenType.INTERPOLATION, '{{', ' a '],
+          [lex.TokenType.TEXT, ''],
+          [lex.TokenType.TAG_CLOSE, '', 'p'],
           [lex.TokenType.EOF],
         ]);
       });
@@ -915,7 +972,9 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeParts(`<title>&amp;</title>`)).toEqual([
           [lex.TokenType.TAG_OPEN_START, '', 'title'],
           [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.ESCAPABLE_RAW_TEXT, '&'],
+          [lex.TokenType.ESCAPABLE_RAW_TEXT, ''],
+          [lex.TokenType.ENCODED_ENTITY, '&', '&amp;'],
+          [lex.TokenType.ESCAPABLE_RAW_TEXT, ''],
           [lex.TokenType.TAG_CLOSE, '', 'title'],
           [lex.TokenType.EOF],
         ]);
