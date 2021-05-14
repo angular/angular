@@ -1653,6 +1653,78 @@ export declare class TestCmp {
 }
 
 /****************************************************************************************************
+ * PARTIAL FILE: i18n_message_placeholder_entities.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class TestCmp {
+    constructor() {
+        this.one = 1;
+        this.two = 2;
+    }
+}
+TestCmp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: '<div i18n>Interpolation: {{ one }}&nbsp;Interpolation: {{ two }}</div>', isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'test-cmp',
+                    template: '<div i18n>Interpolation: {{ one }}&nbsp;Interpolation: {{ two }}</div>',
+                }]
+        }] });
+//# sourceMappingURL=i18n_message_placeholder_entities.js.map
+/****************************************************************************************************
+ * PARTIAL FILE: i18n_message_placeholder_entities.js.map
+ ****************************************************************************************************/
+{"version":3,"file":"i18n_message_placeholder_entities.js","sourceRoot":"","sources":["../i18n_message_placeholder_entities.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAC,MAAM,eAAe,CAAC;;AAMxC,MAAM,OAAO,OAAO;IAJpB;QAKE,QAAG,GAAG,CAAC,CAAC;QACR,QAAG,GAAG,CAAC,CAAC;KACT;;+GAHY,OAAO;mGAAP,OAAO,gDAFR,wEAAwE;sGAEvE,OAAO;kBAJnB,SAAS;mBAAC;oBACT,QAAQ,EAAE,UAAU;oBACpB,QAAQ,EAAE,wEAAwE;iBACnF"}
+/****************************************************************************************************
+ * PARTIAL FILE: i18n_message_placeholder_entities.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class TestCmp {
+    one: number;
+    two: number;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: i18n_message_placeholder_entities.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class TestCmp {
+    constructor() {
+        this.one = 1;
+        this.two = 2;
+    }
+}
+TestCmp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: '<div i18n>Interpolation: {{ one }}&nbsp;Interpolation: {{ two }}</div>', isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'test-cmp',
+                    template: '<div i18n>Interpolation: {{ one }}&nbsp;Interpolation: {{ two }}</div>',
+                }]
+        }] });
+//# sourceMappingURL=i18n_message_placeholder_entities.js.map
+/****************************************************************************************************
+ * PARTIAL FILE: i18n_message_placeholder_entities.js.map
+ ****************************************************************************************************/
+{"version":3,"file":"i18n_message_placeholder_entities.js","sourceRoot":"","sources":["../i18n_message_placeholder_entities.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAC,MAAM,eAAe,CAAC;;AAMxC,MAAM,OAAO,OAAO;IAJpB;QAKE,QAAG,GAAG,CAAC,CAAC;QACR,QAAG,GAAG,CAAC,CAAC;KACT;;+GAHY,OAAO;mGAAP,OAAO,gDAFR,wEAAwE;sGAEvE,OAAO;kBAJnB,SAAS;mBAAC;oBACT,QAAQ,EAAE,UAAU;oBACpB,QAAQ,EAAE,wEAAwE;iBACnF"}
+/****************************************************************************************************
+ * PARTIAL FILE: i18n_message_placeholder_entities.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class TestCmp {
+    one: number;
+    two: number;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+}
+
+/****************************************************************************************************
  * PARTIAL FILE: i18n_message_interpolation_whitespace.js
  ****************************************************************************************************/
 import { Component } from '@angular/core';
