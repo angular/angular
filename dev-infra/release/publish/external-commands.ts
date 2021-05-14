@@ -90,20 +90,3 @@ export async function invokeYarnInstallCommand(projectDir: string): Promise<void
     throw new FatalReleaseActionError();
   }
 }
-
-/**
- * Invokes the `yarn bazel clean` command in order to clean the output tree and ensure new artifacts
- * are created for builds.
- */
-export async function invokeBazelCleanCommand(projectDir: string): Promise<void> {
-  try {
-    // Note: No progress indicator needed as that is the responsibility of the command.
-    // TODO: Consider using an Ora spinner instead to ensure minimal console output.
-    await spawnWithDebugOutput('yarn', ['bazel', 'clean'], {cwd: projectDir});
-    info(green('  ✓   Cleaned bazel output tree.'));
-  } catch (e) {
-    error(e);
-    error(red('  ✘   An error occurred while cleaning the bazel output tree.'));
-    throw new FatalReleaseActionError();
-  }
-}
