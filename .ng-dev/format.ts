@@ -4,6 +4,11 @@ import {FormatConfig} from '../dev-infra/format/config';
  * Configuration for the `ng-dev format` command.
  */
 export const format: FormatConfig = {
+  'prettier': {
+    'matchers': [
+      '**/*.{yaml,yml}',
+    ]
+  },
   'clang-format': {
     'matchers': [
       '**/*.{js,ts}',
