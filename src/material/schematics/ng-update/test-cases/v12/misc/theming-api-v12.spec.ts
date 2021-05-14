@@ -716,4 +716,22 @@ describe('v12 theming API migration', () => {
       `@include mat.mdc-button-theme();`,
     ].join('\n'));
   });
+
+  it('should not drop imports of prebuilt styles', async () => {
+    writeLines(THEME_PATH, [
+      `@import '~@angular/material/prebuilt-themes/indigo-pink.css';`,
+      `@import '~@angular/material/theming';`,
+      `@import '~@angular/cdk/overlay-prebuilt.css';`,
+      `@include mat-core();`,
+    ]);
+
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
+      `@use '~@angular/material' as mat;`,
+      `@import '~@angular/material/prebuilt-themes/indigo-pink.css';`,
+      `@import '~@angular/cdk/overlay-prebuilt.css';`,
+      `@include mat.core();`,
+    ]);
+  });
 });

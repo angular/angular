@@ -41,15 +41,17 @@ interface ExtraSymbols {
  *   matched, the prefix would be `~@angular/cdk/`.
  * @param newMaterialImportPath New import to the Material theming API (e.g. `~@angular/material`).
  * @param newCdkImportPath New import to the CDK Sass APIs (e.g. `~@angular/cdk`).
+ * @param excludedImports Pattern that can be used to exclude imports from being processed.
  */
 export function migrateFileContent(content: string,
                                    oldMaterialPrefix: string,
                                    oldCdkPrefix: string,
                                    newMaterialImportPath: string,
                                    newCdkImportPath: string,
-                                   extraMaterialSymbols: ExtraSymbols = {}): string {
-  const materialResults = detectImports(content, oldMaterialPrefix);
-  const cdkResults = detectImports(content, oldCdkPrefix);
+                                   extraMaterialSymbols: ExtraSymbols = {},
+                                   excludedImports?: RegExp): string {
+  const materialResults = detectImports(content, oldMaterialPrefix, excludedImports);
+  const cdkResults = detectImports(content, oldCdkPrefix, excludedImports);
 
   // Try to migrate the symbols even if there are no imports. This is used
   // to cover the case where the Components symbols were used transitively.
@@ -77,8 +79,10 @@ export function migrateFileContent(content: string,
  * Counts the number of imports with a specific prefix and extracts their namespaces.
  * @param content File content in which to look for imports.
  * @param prefix Prefix that the imports should start with.
+ * @param excludedImports Pattern that can be used to exclude imports from being processed.
  */
-function detectImports(content: string, prefix: string): DetectImportResult {
+function detectImports(content: string, prefix: string,
+                       excludedImports?: RegExp): DetectImportResult {
   if (prefix[prefix.length - 1] !== '/') {
     // Some of the logic further down makes assumptions about the import depth.
     throw Error(`Prefix "${prefix}" has to end in a slash.`);
@@ -94,6 +98,10 @@ function detectImports(content: string, prefix: string): DetectImportResult {
 
   while (match = pattern.exec(content)) {
     const [fullImport, type] = match;
+
+    if (excludedImports?.test(fullImport)) {
+      continue;
+    }
 
     if (type === 'use') {
       const namespace = extractNamespaceFromUseStatement(fullImport);
