@@ -249,9 +249,9 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
               '<div>', '</div>'
             ],
             [html.Element, 'span', 1, '<span>x {{ expr }<!---->} y</span>', '<span>', '</span>'],
-            [html.Text, 'x {{ expr }', 2, 'x {{ expr }'],
+            [html.Text, 'x {{ expr }', 2, ['x '], ['{{', ' expr }'], [''], 'x {{ expr }'],
             [html.Comment, '', 2, '<!--'],
-            [html.Text, '} y', 2, '} y'],
+            [html.Text, '} y', 2, ['} y'], '} y'],
             [html.Element, 'div', 1, '<div></div>', '<div>', '</div>'],
           ]);
           expect(errors).toEqual([]);
@@ -269,7 +269,8 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
 
         it('should parse attributes containing unquoted interpolation', () => {
           expect(humanizeDom(parser.parse('<div foo={{message}}></div>', 'TestComp'))).toEqual([
-            [html.Element, 'div', 0], [html.Attribute, 'foo', '{{message}}']
+            [html.Element, 'div', 0],
+            [html.Attribute, 'foo', '{{message}}', [''], ['{{', 'message', '}}'], ['']]
           ]);
         });
 
@@ -285,7 +286,10 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
                 [
                   html.Attribute, '[attr]', `[
                         {text: 'some text',url:'//www.google.com'},
-                        {text:'other text',url:'//www.google.com'}]`
+                        {text:'other text',url:'//www.google.com'}]`,
+                  [`[
+                        {text: 'some text',url:'//www.google.com'},
+                        {text:'other text',url:'//www.google.com'}]`]
                 ],
               ]);
         });
@@ -346,7 +350,7 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
           const {errors, rootNodes} = parser.parse('<div p="{{ abc"><span></span>', 'TestComp');
           expect(humanizeNodes(rootNodes, true)).toEqual([
             [html.Element, 'div', 0, '<div p="{{ abc">', '<div p="{{ abc">', null],
-            [html.Attribute, 'p', '{{ abc', 'p="{{ abc"'],
+            [html.Attribute, 'p', '{{ abc', [''], ['{{', ' abc'], [''], 'p="{{ abc"'],
             [html.Element, 'span', 1, '<span></span>', '<span>', '</span>'],
           ]);
           expect(humanizeErrors(errors)).toEqual([]);
