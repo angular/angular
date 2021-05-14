@@ -194,6 +194,7 @@
     "mutation-observer": "^1.0.3",
     "nock": "^13.0.3",
     "ora": "^5.0.0",
+    "prettier": "^2.3.0",
     "rollup-plugin-hashbang": "^2.2.2",
     "sauce-connect": "https://saucelabs.com/downloads/sc-4.6.2-linux.tar.gz",
     "semver": "^7.3.5",
