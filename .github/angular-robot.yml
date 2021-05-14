@@ -4,7 +4,7 @@
 size:
   disabled: false
   maxSizeIncrease: 2000
-  circleCiStatusName: "ci/circleci: test_ivy_aot"
+  circleCiStatusName: 'ci/circleci: test_ivy_aot'
 
 # options for the merge plugin
 merge:
@@ -13,85 +13,84 @@ merge:
     # set to true to disable
     disabled: false
     # the name of the status
-    context: "ci/angular: merge status"
+    context: 'ci/angular: merge status'
     # text to show when all checks pass
-    successText: "All checks passed!"
+    successText: 'All checks passed!'
     # text to show when some checks are failing
-    failureText: "The following checks are failing:"
+    failureText: 'The following checks are failing:'
 
   # the g3 status will be added to your pull requests if they include files that match the patterns
   g3Status:
     # set to true to disable
     disabled: false
     # the name of the status
-    context: "google3"
+    context: 'google3'
     # text to show when the status is pending, {{PRNumber}} will be replaced by the PR number
-    pendingDesc: "Googler: run g3sync presubmit {{PRNumber}}"
+    pendingDesc: 'Googler: run g3sync presubmit {{PRNumber}}'
     # text to show when the status is success
-    successDesc: "Does not affect google3"
+    successDesc: 'Does not affect google3'
     # link to use for the details
-    url: "http://go/angular/g3sync"
+    url: 'http://go/angular/g3sync'
     # list of patterns to check for the files changed by the PR
     # this list must be manually kept in sync with google3/third_party/javascript/angular2/copy.bara.sky
     include:
-      - "LICENSE"
-      - "modules/benchmarks/**"
-      - "modules/system.d.ts"
-      - "packages/**"
-      - "dev-infra/benchmark/driver-utilities/**"
+      - 'LICENSE'
+      - 'modules/benchmarks/**'
+      - 'modules/system.d.ts'
+      - 'packages/**'
+      - 'dev-infra/benchmark/driver-utilities/**'
     # list of patterns to ignore for the files changed by the PR
     exclude:
-      - "packages/*"
-      - "packages/bazel/*"
-      - "packages/bazel/src/api-extractor/**"
-      - "packages/bazel/src/builders/**"
-      - "packages/bazel/src/ng_package/**"
-      - "packages/bazel/src/protractor/**"
-      - "packages/bazel/src/schematics/**"
-      - "packages/compiler-cli/src/ngcc/**"
-      - "packages/compiler-cli/linker/**"
-      - "packages/compiler-cli/ngcc/**"
-      - "packages/compiler-cli/src/ngtsc/sourcemaps/**"
-      - "packages/docs/**"
-      - "packages/elements/schematics/**"
-      - "packages/examples/**"
-      - "packages/language-service/**"
-      - "packages/localize/**"
-      - "packages/private/**"
-      - "packages/service-worker/**"
-      - "packages/common/locales/**"
-      - "packages/http/**"
-      - "**/.gitignore"
-      - "**/.gitkeep"
-      - "**/yarn.lock"
-      - "**/package.json"
-      - "**/third_party/**"
-      - "**/tsconfig-build.json"
-      - "**/tsconfig.json"
-      - "**/rollup.config.js"
-      - "**/BUILD.bazel"
-      - "**/*.md"
-      - "packages/**/integrationtest/**"
-      - "packages/**/test/**"
-      - "packages/zone.js/*"
-      - "packages/zone.js/dist/**"
-      - "packages/zone.js/doc/**"
-      - "packages/zone.js/example/**"
-      - "packages/zone.js/scripts/**"
+      - 'packages/*'
+      - 'packages/bazel/*'
+      - 'packages/bazel/src/api-extractor/**'
+      - 'packages/bazel/src/builders/**'
+      - 'packages/bazel/src/ng_package/**'
+      - 'packages/bazel/src/protractor/**'
+      - 'packages/bazel/src/schematics/**'
+      - 'packages/compiler-cli/src/ngcc/**'
+      - 'packages/compiler-cli/linker/**'
+      - 'packages/compiler-cli/ngcc/**'
+      - 'packages/compiler-cli/src/ngtsc/sourcemaps/**'
+      - 'packages/docs/**'
+      - 'packages/elements/schematics/**'
+      - 'packages/examples/**'
+      - 'packages/language-service/**'
+      - 'packages/localize/**'
+      - 'packages/private/**'
+      - 'packages/service-worker/**'
+      - 'packages/common/locales/**'
+      - 'packages/http/**'
+      - '**/.gitignore'
+      - '**/.gitkeep'
+      - '**/yarn.lock'
+      - '**/package.json'
+      - '**/third_party/**'
+      - '**/tsconfig-build.json'
+      - '**/tsconfig.json'
+      - '**/rollup.config.js'
+      - '**/BUILD.bazel'
+      - '**/*.md'
+      - 'packages/**/integrationtest/**'
+      - 'packages/**/test/**'
+      - 'packages/zone.js/*'
+      - 'packages/zone.js/dist/**'
+      - 'packages/zone.js/doc/**'
+      - 'packages/zone.js/example/**'
+      - 'packages/zone.js/scripts/**'
 
   # comment that will be added to a PR when there is a conflict, leave empty or set to false to disable
   mergeConflictComment: "Hi @{{PRAuthor}}! This PR has merge conflicts due to recent upstream merges.\nPlease help to unblock it by resolving these conflicts. Thanks!"
 
   # label to monitor
-  mergeLabel: "action: merge"
+  mergeLabel: 'action: merge'
 
   # adding any of these labels will also add the merge label
   mergeLinkedLabels:
-    - "action: merge-assistance"
+    - 'action: merge-assistance'
 
   # list of checks that will determine if the merge label can be added
   checks:
-
     # require that the PR has reviews from all requested reviewers
     #
     # This enables us to request reviews from both eng and tech writers, or multiple eng folks, and prevents accidental merges.
@@ -102,26 +101,25 @@ merge:
     noConflict: true
     # list of labels that a PR needs to have, checked with a regexp (e.g. "target:" will work for the label "target: master")
     requiredLabels:
-      - "target: *"
-      - "cla: yes"
+      - 'target: *'
+      - 'cla: yes'
 
     # list of labels that a PR shouldn't have, checked after the required labels with a regexp
     forbiddenLabels:
-      - "target: TBD"
-      - "action: cleanup"
-      - "action: review"
-      - "state: blocked"
-      - "cla: no"
+      - 'target: TBD'
+      - 'action: cleanup'
+      - 'action: review'
+      - 'state: blocked'
+      - 'cla: no'
 
     # list of PR statuses that need to be successful
     requiredStatuses:
-      - "ci/circleci: build"
-      - "ci/circleci: lint"
-      - "ci/angular: size"
-      - "cla/google"
-      - "google3"
-      - "pullapprove"
-
+      - 'ci/circleci: build'
+      - 'ci/circleci: lint'
+      - 'ci/angular: size'
+      - 'cla/google'
+      - 'google3'
+      - 'pullapprove'
 
   # the comment that will be added when the merge label is added despite failing checks, leave empty or set to false to disable
   # {{MERGE_LABEL}} will be replaced by the value of the mergeLabel option
@@ -136,40 +134,29 @@ triage:
   defaultMilestone: 82,
   # arrays of labels that determine if an issue has been triaged by the caretaker
   l1TriageLabels:
-    -
-      - "comp: *"
+    - - 'comp: *'
   # arrays of labels that determine if an issue has been fully triaged
   l2TriageLabels:
-    -
-      - "P0"
-      - "comp: *"
-    -
-      - "P1"
-      - "comp: *"
-    -
-      - "P2"
-      - "comp: *"
-    -
-      - "P3"
-      - "comp: *"
-    -
-      - "P4"
-      - "comp: *"
-    -
-      - "P5"
-      - "comp: *"
-    -
-      - "feature"
-      - "comp: *"
-    -
-      - "discussion"
-      - "comp: *"
-    -
-      - "needs clarification"
-      - "comp: *"
-    -
-      - "needs reproduction"
-      - "comp: *"
+    - - 'P0'
+      - 'comp: *'
+    - - 'P1'
+      - 'comp: *'
+    - - 'P2'
+      - 'comp: *'
+    - - 'P3'
+      - 'comp: *'
+    - - 'P4'
+      - 'comp: *'
+    - - 'P5'
+      - 'comp: *'
+    - - 'feature'
+      - 'comp: *'
+    - - 'discussion'
+      - 'comp: *'
+    - - 'needs clarification'
+      - 'comp: *'
+    - - 'needs reproduction'
+      - 'comp: *'
 
 # options for the triage PR plugin
 triagePR:
@@ -181,16 +168,14 @@ triagePR:
   defaultMilestone: 82,
   # arrays of labels that determine if a PR has been triaged by the caretaker
   l1TriageLabels:
-    -
-      - "comp: *"
+    - - 'comp: *'
   # arrays of labels that determine if a PR has been fully triaged
   l2TriageLabels:
-    -
-      - "comp: *"
+    - - 'comp: *'
 
 # options for rerunning CI
 rerunCircleCI:
   # set to true to disable
   disabled: false
   # the label which when added triggers a rerun of the default CircleCI workflow
-  triggerRerunLabel: "action: rerun CI at HEAD"
+  triggerRerunLabel: 'action: rerun CI at HEAD'
