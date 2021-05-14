@@ -36,8 +36,5 @@
     "./__ivy_ngcc__/bundles/platform-server-init.umd.js",
     "./__ivy_ngcc__/esm2015/init/src/init.js",
     "./__ivy_ngcc__/fesm2015/init.js"
-  ],
-  "publishConfig":{
-    "registry":"https://wombat-dressing-room.appspot.com"
-  }
+  ]
 }
