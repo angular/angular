@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as semver from 'semver';
-
 import {assertNoErrors, getConfig, NgDevConfig} from '../../utils/config';
 
 /** Interface describing a built package. */

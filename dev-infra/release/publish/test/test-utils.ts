@@ -21,9 +21,9 @@ import {_npmPackageInfoCache, NpmPackageInfo} from '../../versioning/npm-registr
 import {ReleaseAction, ReleaseActionConstructor} from '../actions';
 import * as constants from '../constants';
 import * as externalCommands from '../external-commands';
-import {ReleaseNotes} from '../release-notes/release-notes';
 
 import {GithubTestingRepo} from './github-api-testing';
+import {installMockReleaseNotes} from './release-notes/release-notes-utils';
 
 /**
  * Temporary directory which will be used as project directory in tests. Note that
@@ -243,30 +243,4 @@ export async function expectStagingAndPublishWithCherryPick(
 export function fakeNpmPackageQueryRequest(pkgName: string, data: Partial<NpmPackageInfo>) {
   _npmPackageInfoCache[pkgName] =
       Promise.resolve({'dist-tags': {}, versions: {}, time: {}, ...data});
-}
-
-/**
- * Mock version of the ReleaseNotes for testing, preventing actual calls to git for commits and
- * returning versioned entry strings.
- */
-class MockReleaseNotes extends ReleaseNotes {
-  static async fromLatestTagToHead(version: semver.SemVer, config: ReleaseConfig) {
-    return new MockReleaseNotes(version, config);
-  }
-
-  async getChangelogEntry() {
-    return `Changelog Entry for ${this.version}`;
-  }
-
-  async getGithubReleaseEntry() {
-    return `Github Release Entry for ${this.version}`;
-  }
-}
-
-/** Replace the ReleaseNotes static builder function with the MockReleaseNotes builder function. */
-export function installMockReleaseNotes() {
-  spyOn(ReleaseNotes, 'fromLatestTagToHead')
-      .and.callFake((version: semver.SemVer, config: ReleaseConfig) => {
-        return MockReleaseNotes.fromLatestTagToHead(version, config);
-      });
 }

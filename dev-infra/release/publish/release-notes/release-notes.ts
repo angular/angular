@@ -13,7 +13,7 @@ import {CommitFromGitLog} from '../../../commit-message/parse';
 import {getCommitsInRange} from '../../../commit-message/utils';
 import {promptInput} from '../../../utils/console';
 import {GitClient} from '../../../utils/git/index';
-import {ReleaseConfig} from '../../config/index';
+import {DevInfraReleaseConfig, getReleaseConfig, ReleaseNotesConfig} from '../../config/index';
 import {changelogPath} from '../constants';
 import {RenderContext} from './context';
 
@@ -22,27 +22,26 @@ export function getLocalChangelogFilePath(projectDir: string): string {
   return join(projectDir, changelogPath);
 }
 
-
 /** Release note generation. */
 export class ReleaseNotes {
-  /** Construct a release note generation instance. */
-  static async fromLatestTagToHead(version: semver.SemVer, config: ReleaseConfig):
-      Promise<ReleaseNotes> {
-    const instance = new ReleaseNotes(version, config);
-    instance.commits = await getCommitsInRange(instance.git.getLatestSemverTag().format(), 'HEAD');
-    return instance;
+  static async buildGenerator(version: semver.SemVer, startingRef: string, endingRef: string) {
+    return new ReleaseNotes(version, startingRef, endingRef);
   }
 
   /** An instance of GitClient. */
-  protected git = GitClient.getInstance();
+  private git = GitClient.getInstance();
   /** The RenderContext to be used during rendering. */
-  protected renderContext: RenderContext|undefined;
+  private renderContext: RenderContext|undefined;
   /** The title to use for the release. */
-  protected title: string|false|undefined;
+  private title: string|false|undefined;
   /** A promise resolving to a list of Commits since the latest semver tag on the branch. */
-  protected commits: CommitFromGitLog[] = [];
+  private commits: Promise<CommitFromGitLog[]> =
+      this.getCommitsInRange(this.startingRef, this.endingRef);
+  /** The configuration for release notes. */
+  private config: ReleaseNotesConfig = this.getReleaseConfig().releaseNotes;
 
-  protected constructor(public readonly version: semver.SemVer, protected config: ReleaseConfig) {}
+  protected constructor(
+      public version: semver.SemVer, private startingRef: string, private endingRef: string) {}
 
   /** Retrieve the release note generated for a Github Release. */
   async getGithubReleaseEntry(): Promise<string> {
@@ -64,7 +63,7 @@ export class ReleaseNotes {
    */
   async promptForReleaseTitle() {
     if (this.title === undefined) {
-      if (this.config.releaseNotes.useReleaseTitle) {
+      if (this.config.useReleaseTitle) {
         this.title = await promptInput('Please provide a title for the release:');
       } else {
         this.title = false;
@@ -74,17 +73,28 @@ export class ReleaseNotes {
   }
 
   /** Build the render context data object for constructing the RenderContext instance. */
-  protected async generateRenderContext(): Promise<RenderContext> {
+  private async generateRenderContext(): Promise<RenderContext> {
     if (!this.renderContext) {
       this.renderContext = new RenderContext({
-        commits: this.commits,
+        commits: await this.commits,
         github: this.git.remoteConfig,
         version: this.version.format(),
-        groupOrder: this.config.releaseNotes.groupOrder,
-        hiddenScopes: this.config.releaseNotes.hiddenScopes,
+        groupOrder: this.config.groupOrder,
+        hiddenScopes: this.config.hiddenScopes,
         title: await this.promptForReleaseTitle(),
       });
     }
     return this.renderContext;
+  }
+
+
+  // These methods are used for access to the utility functions while allowing them to be
+  // overwritten in subclasses during testing.
+  protected async getCommitsInRange(from: string, to?: string) {
+    return getCommitsInRange(from, to);
+  }
+
+  protected getReleaseConfig(config?: Partial<DevInfraReleaseConfig>) {
+    return getReleaseConfig(config);
   }
 }
