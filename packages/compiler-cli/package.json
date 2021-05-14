@@ -49,8 +49,5 @@
   "homepage": "https://github.com/angular/angular/tree/master/packages/compiler-cli",
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
-  },
-  "publishConfig": {
-    "registry": "https://wombat-dressing-room.appspot.com"
   }
 }

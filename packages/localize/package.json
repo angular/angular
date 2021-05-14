@@ -36,8 +36,5 @@
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",
     "@angular/compiler-cli": "0.0.0-PLACEHOLDER"
-  },
-  "publishConfig": {
-    "registry": "https://wombat-dressing-room.appspot.com"
   }
 }
