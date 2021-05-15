@@ -47,7 +47,7 @@
 @forward '../core' as mat-core-* hide mat-core-core;
 @forward '../core-theme' as mat-core-*;
 @forward '../theming/all-theme';
-@forward 'all-color';
+@forward './color-legacy-index';
 
 @import '../theming/all-theme';
 @import '../theming/theming';

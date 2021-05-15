@@ -11,7 +11,6 @@ $mat-light-focused, $mat-light-primary-text, $mat-light-secondary-text, $mat-whi
 $mat-white-6-opacity, $mat-white-87-opacity;
 @forward '../../density/private/compatibility' as mat-*;
 @forward '../../theming/theming' as mat-*;
-@forward 'pseudo-checkbox-theme' hide color, theme, typography;
-@forward 'pseudo-checkbox-theme' as mat-pseudo-checkbox-* hide mat-pseudo-checkbox-density;
+@forward './pseudo-checkbox-legacy-index';
 
 @import '../../theming/theming';

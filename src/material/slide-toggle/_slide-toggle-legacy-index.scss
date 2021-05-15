@@ -1,0 +1,3 @@
+@forward 'slide-toggle-theme' hide color, theme, typography;
+@forward 'slide-toggle-theme' as mat-slide-toggle-* hide mat-slide-toggle-checked,
+mat-slide-toggle-density;

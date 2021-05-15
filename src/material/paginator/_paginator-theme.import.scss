@@ -1,8 +1,7 @@
 @forward '../core/theming/theming.import';
 @forward '../core/density/private/compatibility.import';
-@forward 'paginator-variables' as mat-paginator-*;
 @forward '../core/typography/typography-utils.import';
-@forward 'paginator-theme' as mat-paginator-*;
+@forward './paginator-legacy-index';
 
 @import '../core/theming/palette';
 @import '../core/theming/theming';

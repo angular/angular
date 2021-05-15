@@ -1,0 +1,24 @@
+@forward 'button-common' as mat-button-*;
+@forward 'checkbox-common' as mat-checkbox-*;
+@forward 'elevation' hide $color, $opacity, $prefix, $transition-duration,
+$transition-timing-function, elevation, overridable-elevation, elevation-transition,
+private-transition-property-value;
+@forward 'elevation' as mat-* hide $mat-color, $mat-opacity, $mat-prefix, $mat-transition-duration,
+$mat-transition-timing-function, mat-get-ambient-map, mat-get-penumbra-map, mat-get-umbra-map;
+@forward 'elevation' as mat-elevation-* hide mat-elevation-elevation, mat-elevation-get-ambient-map,
+mat-elevation-get-penumbra-map, mat-elevation-get-umbra-map, mat-elevation-overridable-elevation;
+@forward 'form-common' as mat-*;
+@forward 'layout-common' as mat-*;
+@forward 'list-common' as mat-* hide mat-base, mat-wrapper-base;
+@forward 'list-common' as mat-line-* hide mat-line-normalize-text, mat-line-truncate-line;
+@forward 'menu-common' as mat-menu-*;
+@forward 'private' as mat-*;
+@forward 'variables' hide $fast-out-linear-in-timing-function, $fast-out-slow-in-timing-function,
+$linear-out-slow-in-timing-function, $small, $toggle-padding, $toggle-size, $xsmall;
+@forward 'variables' as mat-* hide $mat-ease-in-out-curve-function, $mat-pi, $mat-swift-ease-in,
+$mat-swift-ease-in-duration, $mat-swift-ease-in-out, $mat-swift-ease-in-out-duration,
+$mat-swift-ease-in-out-timing-function, $mat-swift-ease-in-timing-function, $mat-swift-ease-out,
+$mat-swift-ease-out-duration, $mat-swift-ease-out-timing-function, $mat-swift-linear,
+$mat-swift-linear-duration, $mat-swift-linear-timing-function, $mat-z-index-drawer,
+$mat-z-index-fab;
+@forward 'vendor-prefixes';

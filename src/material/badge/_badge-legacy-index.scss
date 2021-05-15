@@ -1,0 +1,3 @@
+@forward 'badge-theme' hide $default-size, $font-size, $font-weight, $large-size, $small-size,
+color, theme, typography;
+@forward 'badge-theme' as mat-badge-* hide mat-badge-density, mat-badge-size;

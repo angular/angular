@@ -1,9 +1,7 @@
 @forward '../core/theming/theming.import';
 @forward '../core/style/private.import';
-@forward 'expansion-variables' as mat-expansion-panel-*;
 @forward '../core/typography/typography-utils.import';
-@forward 'expansion-mixins' as mat-*;
-@forward 'expansion-theme' as mat-expansion-panel-*;
+@forward './expansion-legacy-index';
 
 @import '../core/density/private/compatibility';
 @import '../core/theming/palette';

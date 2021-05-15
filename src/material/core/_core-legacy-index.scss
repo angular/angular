@@ -1,0 +1,18 @@
+@forward 'core' hide core;
+@forward 'core-theme' hide color, theme;
+@forward 'core' as mat-* hide mat-mdc-core, mat-mdc-strong-focus-indicators-positioning;
+@forward 'core-theme' as mat-* hide mat-color, mat-theme;
+@forward 'core' as mat-core-* hide mat-core-mdc-core,
+mat-core-mdc-strong-focus-indicators-positioning;
+@forward 'core-theme' as mat-core-*;
+
+@forward './theming/all-theme';
+@forward './color/color-legacy-index';
+@forward './density/private/density-legacy-index';
+@forward './focus-indicators/focus-indicators-legacy-index';
+@forward './option/option-legacy-index';
+@forward './ripple/ripple-legacy-index';
+@forward './selection/pseudo-checkbox/pseudo-checkbox-legacy-index';
+@forward './style/style-legacy-index';
+@forward './theming/theming-legacy-index';
+@forward './typography/typography-legacy-index';

@@ -1,8 +1,7 @@
 @forward '../core/style/private.import';
 @forward '../core/theming/theming.import';
 @forward '../core/typography/typography-utils.import';
-@forward 'bottom-sheet-theme' hide color, theme, typography;
-@forward 'bottom-sheet-theme' as mat-bottom-sheet-* hide mat-bottom-sheet-density;
+@forward './bottom-sheet-legacy-index';
 
 @import '../core/style/private';
 @import '../core/typography/typography-utils';

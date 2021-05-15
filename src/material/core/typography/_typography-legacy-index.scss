@@ -1,0 +1,18 @@
+@forward 'all-typography';
+@forward 'typography-utils' hide font-family, font-shorthand, font-size, font-weight, line-height,
+letter-spacing, typography-level;
+@forward 'typography-utils' as mat-* hide mat-font-shorthand, mat-get-type-value,
+mat-typography-level;
+@forward 'typography-utils' as mat-typography-* hide mat-typography-font-family,
+mat-typography-font-size, mat-typography-font-weight, mat-typography-get-type-value,
+mat-typography-line-height, mat-typography-letter-spacing;
+@forward 'typography-utils' as mat-line-* hide mat-line-font-family, mat-line-font-shorthand,
+mat-line-font-size, mat-line-font-weight, mat-line-letter-spacing, mat-line-typography-level;
+@forward 'typography' as mat-* hide mat-define-typography-config, mat-define-typography-level;
+@forward 'typography' as mat-typography-* hide mat-typography-typography-hierarchy,
+mat-typography-private-typography-is-2014-config, mat-typography-private-typography-is-2018-config,
+mat-typography-private-typography-to-2014-config, mat-typography-private-typography-to-2018-config;
+@forward 'typography-utils-deprecated' as mat-typography-*;
+@forward 'typography-deprecated' as mat-typography-*;
+@forward 'typography-deprecated' as mat-typography-* hide mat-typography-base-typography;
+@forward 'typography-deprecated' as mat-* show mat-base-typography;

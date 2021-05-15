@@ -1,2 +1,1 @@
-@forward 'list-common' as mat-* hide mat-base, mat-wrapper-base;
-@forward 'list-common' as mat-line-* hide mat-line-normalize-text, mat-line-truncate-line;
+@forward './style-legacy-index';

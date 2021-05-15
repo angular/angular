@@ -2,7 +2,42 @@
 // Note that we have to forward the `.import` files for backwards-compatibility with
 // projects that don't use Sass modules and include the `mat-`-prefixed mixins.
 
-@forward './core/color/all-color.import';
-@forward './core/density/private/all-density.import';
-@forward './core/theming/all-theme.import';
-@forward './core/typography/all-typography.import';
+@forward '../cdk/a11y/index.import';
+@forward '../cdk/overlay/index.import';
+@forward '../cdk/text-field/index.import';
+
+@forward './core/core-legacy-index';
+@forward './autocomplete/autocomplete-legacy-index';
+@forward './badge/badge-legacy-index';
+@forward './bottom-sheet/bottom-sheet-legacy-index';
+@forward './button-toggle/button-toggle-legacy-index';
+@forward './button/button-legacy-index';
+@forward './card/card-legacy-index';
+@forward './checkbox/checkbox-legacy-index';
+@forward './chips/chips-legacy-index';
+@forward './datepicker/datepicker-legacy-index';
+@forward './dialog/dialog-legacy-index';
+@forward './divider/divider-legacy-index';
+@forward './expansion/expansion-legacy-index';
+@forward './form-field/form-field-legacy-index';
+@forward './grid-list/grid-list-legacy-index';
+@forward './icon/icon-legacy-index';
+@forward './input/input-legacy-index';
+@forward './list/list-legacy-index';
+@forward './menu/menu-legacy-index';
+@forward './paginator/paginator-legacy-index';
+@forward './progress-bar/progress-bar-legacy-index';
+@forward './progress-spinner/progress-spinner-legacy-index';
+@forward './radio/radio-legacy-index';
+@forward './select/select-legacy-index';
+@forward './sidenav/sidenav-legacy-index';
+@forward './slide-toggle/slide-toggle-legacy-index';
+@forward './slider/slider-legacy-index';
+@forward './snack-bar/snack-bar-legacy-index';
+@forward './sort/sort-legacy-index';
+@forward './stepper/stepper-legacy-index';
+@forward './table/table-legacy-index';
+@forward './tabs/tabs-legacy-index';
+@forward './toolbar/toolbar-legacy-index';
+@forward './tooltip/tooltip-legacy-index';
+@forward './tree/tree-legacy-index';

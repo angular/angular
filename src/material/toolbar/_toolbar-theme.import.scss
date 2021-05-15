@@ -1,10 +1,7 @@
 @forward '../core/theming/theming.import';
 @forward '../core/style/variables.import';
-@forward 'toolbar-variables' as mat-toolbar-*;
 @forward '../core/typography/typography-utils.import';
-@forward 'toolbar-theme' hide color, density, theme, typography;
-@forward 'toolbar-theme' as mat-toolbar-* hide mat-toolbar-color, mat-toolbar-form-field-overrides,
-mat-toolbar-height;
+@forward './toolbar-legacy-index';
 
 @import '../core/density/private/compatibility';
 @import '../core/style/variables';

@@ -1,0 +1,3 @@
+@forward 'divider-theme' hide color, theme, typography;
+@forward 'divider-theme' as mat-divider-* hide mat-divider-density;
+@forward 'divider-offset' as mat-*;

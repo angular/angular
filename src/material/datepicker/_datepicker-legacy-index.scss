@@ -1,0 +1,9 @@
+@forward 'datepicker-theme' hide $calendar-body-font-size, $calendar-weekday-table-font-size,
+$range-fade-amount, $selected-fade-amount, $selected-today-box-shadow-width, $today-fade-amount,
+color, date-range-colors, theme, typography;
+@forward 'datepicker-theme' as mat-* hide $mat-range-fade-amount, $mat-selected-fade-amount,
+$mat-selected-today-box-shadow-width, $mat-today-fade-amount, mat-color, mat-density, mat-theme,
+mat-typography, mat-unselected-cell;
+@forward 'datepicker-theme' as mat-datepicker-* hide $mat-datepicker-calendar-body-font-size,
+$mat-datepicker-calendar-weekday-table-font-size, mat-datepicker-color,
+mat-datepicker-date-range-colors, mat-datepicker-density, mat-datepicker-unselected-cell;

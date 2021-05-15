@@ -1,12 +1,1 @@
-@forward 'palette' hide $amber-palette, $blue-palette, $blue-gray-palette, $blue-grey-palette,
-$brown-palette, $cyan-palette, $dark-theme-background-palette, $dark-theme-foreground-palette,
-$deep-orange-palette, $deep-purple-palette, $gray-palette, $green-palette, $grey-palette,
-$indigo-palette, $light-blue-palette, $light-green-palette, $light-theme-background-palette,
-$light-theme-foreground-palette, $lime-palette, $orange-palette, $pink-palette, $purple-palette,
-$red-palette, $teal-palette, $yellow-palette;
-@forward 'palette' as mat-* hide $mat-black-12-opacity, $mat-black-6-opacity, $mat-black-87-opacity,
-$mat-dark-disabled-text, $mat-dark-dividers, $mat-dark-focused, $mat-dark-primary-text,
-$mat-dark-secondary-text, $mat-light-disabled-text, $mat-light-dividers, $mat-light-focused,
-$mat-light-primary-text, $mat-light-secondary-text, $mat-white-12-opacity, $mat-white-6-opacity,
-$mat-white-87-opacity;
-@forward 'palette-deprecated' as mat-*;
+@forward './theming-legacy-index';

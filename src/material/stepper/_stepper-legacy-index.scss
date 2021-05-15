@@ -1,0 +1,7 @@
+@forward 'stepper-variables' as mat-* hide $mat-density-config, $mat-header-height,
+$mat-header-maximum-height, $mat-header-minimum-height, $mat-label-header-height,
+$mat-label-min-width, $mat-label-position-bottom-top-gap, $mat-line-gap, $mat-line-width,
+$mat-side-gap;
+@forward 'stepper-variables' as mat-stepper-* hide $mat-stepper-step-header-icon-size,
+$mat-stepper-step-sub-label-font-size, $mat-stepper-vertical-stepper-content-margin;
+@forward 'stepper-theme' as mat-stepper-*;

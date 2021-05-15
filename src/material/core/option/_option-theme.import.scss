@@ -19,8 +19,7 @@ mat-line-typography-level;
 @forward '../typography/typography-utils' as mat-typography-* hide mat-typography-font-family,
 mat-typography-font-size, mat-typography-font-weight, mat-typography-height,
 mat-typography-letter-spacing;
-@forward 'option-theme' hide color, theme, typography;
-@forward 'option-theme' as mat-option-* hide mat-option-density;
+@forward './option-legacy-index';
 
 @import '../theming/palette';
 @import '../theming/theming';

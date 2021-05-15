@@ -11,6 +11,6 @@ $mat-light-focused, $mat-light-primary-text, $mat-light-secondary-text, $mat-whi
 $mat-white-6-opacity, $mat-white-87-opacity;
 @forward '../density/private/compatibility' as mat-*;
 @forward '../theming/theming' as mat-*;
-@forward 'form-common' as mat-*;
+@forward './style-legacy-index';
 
 @import '../theming/theming';

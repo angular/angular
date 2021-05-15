@@ -1,6 +1,5 @@
 @forward '../core/theming/theming.import';
-@forward 'divider-theme' hide color, theme, typography;
-@forward 'divider-theme' as mat-divider-* hide mat-divider-density;
+@forward './divider-legacy-index';
 
 @import '../core/theming/palette';
 @import '../core/theming/theming';

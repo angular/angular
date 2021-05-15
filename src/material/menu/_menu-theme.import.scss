@@ -1,8 +1,7 @@
 @forward '../core/style/private.import';
 @forward '../core/theming/theming.import';
 @forward '../core/typography/typography-utils.import';
-@forward 'menu-theme' hide color, theme, typography;
-@forward 'menu-theme' as mat-menu-* hide mat-menu-density;
+@forward './menu-legacy-index';
 
 @import '../core/style/private';
 @import '../core/theming/palette';

@@ -1,9 +1,7 @@
 @forward '../core/style/private.import';
 @forward '../core/theming/theming.import';
 @forward '../core/typography/typography-utils.import';
-@forward 'slide-toggle-theme' hide color, theme, typography;
-@forward 'slide-toggle-theme' as mat-slide-toggle-* hide mat-slide-toggle-checked,
-mat-slide-toggle-density;
+@forward './slide-toggle-legacy-index';
 
 @import '../core/style/private';
 @import '../core/theming/palette';

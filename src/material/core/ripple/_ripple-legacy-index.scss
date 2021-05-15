@@ -1,0 +1,3 @@
+@forward 'ripple' as mat-* hide $mat-color-opacity;
+@forward 'ripple' as mat-ripple-* hide mat-ripple-ripple;
+@forward 'ripple-theme' as mat-ripple-*;

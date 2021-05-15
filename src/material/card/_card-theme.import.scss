@@ -1,8 +1,7 @@
 @forward '../core/theming/theming.import';
 @forward '../core/style/private.import';
 @forward '../core/typography/typography-utils.import';
-@forward 'card-theme' hide color, theme, typography;
-@forward 'card-theme' as mat-card-* hide mat-card-density;
+@forward './card-legacy-index';
 
 @import '../core/theming/palette';
 @import '../core/theming/theming';
