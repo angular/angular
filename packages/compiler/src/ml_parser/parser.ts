@@ -216,6 +216,7 @@ class _TreeBuilder {
   }
 
   private _consumeText(token: lex.Token) {
+    const tokens = [token];
     const startSpan = token.sourceSpan;
     let text = token.parts[0];
     if (text.length > 0 && text[0] == '\n') {
@@ -223,14 +224,15 @@ class _TreeBuilder {
       if (parent != null && parent.children.length == 0 &&
           this.getTagDefinition(parent.name).ignoreFirstLf) {
         text = text.substring(1);
+        tokens[0] = {type: token.type, sourceSpan: token.sourceSpan, parts: [text]};
       }
     }
 
-    // For now recombine text, interpolation and entity tokens
     while (this._peek.type === lex.TokenType.INTERPOLATION ||
            this._peek.type === lex.TokenType.TEXT ||
            this._peek.type === lex.TokenType.ENCODED_ENTITY) {
       token = this._advance();
+      tokens.push(token);
       if (token.type === lex.TokenType.INTERPOLATION) {
         // For backward compatibility we decode HTML entities that appear in interpolation
         // expressions. This is arguably a bug, but it could be a considerable breaking change to
@@ -248,8 +250,8 @@ class _TreeBuilder {
       const endSpan = token.sourceSpan;
       this._addToParent(new html.Text(
           text,
-          new ParseSourceSpan(
-              startSpan.start, endSpan.end, startSpan.fullStart, startSpan.details)));
+          new ParseSourceSpan(startSpan.start, endSpan.end, startSpan.fullStart, startSpan.details),
+          tokens));
     }
   }
 
@@ -372,16 +374,17 @@ class _TreeBuilder {
 
     // Consume the attribute value
     let value = '';
+    const valueTokens: lex.Token[] = [];
     let valueStartSpan: ParseSourceSpan|undefined = undefined;
     let valueEnd: ParseLocation|undefined = undefined;
     if (this._peek.type === lex.TokenType.ATTR_VALUE_TEXT) {
       valueStartSpan = this._peek.sourceSpan;
       valueEnd = this._peek.sourceSpan.end;
-      // For now recombine text, interpolation and entity tokens
       while (this._peek.type === lex.TokenType.ATTR_VALUE_TEXT ||
              this._peek.type === lex.TokenType.ATTR_VALUE_INTERPOLATION ||
              this._peek.type === lex.TokenType.ENCODED_ENTITY) {
-        let valueToken = this._advance();
+        const valueToken = this._advance();
+        valueTokens.push(valueToken);
         if (valueToken.type === lex.TokenType.ATTR_VALUE_INTERPOLATION) {
           // For backward compatibility we decode HTML entities that appear in interpolation
           // expressions. This is arguably a bug, but it could be a considerable breaking change to
@@ -408,7 +411,8 @@ class _TreeBuilder {
     return new html.Attribute(
         fullName, value,
         new ParseSourceSpan(attrName.sourceSpan.start, attrEnd, attrName.sourceSpan.fullStart),
-        attrName.sourceSpan, valueSpan);
+        attrName.sourceSpan, valueSpan, valueTokens.length > 0 ? valueTokens : undefined,
+        undefined);
   }
 
   private _getParentElement(): html.Element|null {
