@@ -3,6 +3,7 @@
 
 [Blog post "Angular v12 is now available"](https://blog.angular.io/angular-v12-is-now-available-32ed51fbfd49).
 
+
 ### Bug Fixes
 
 * **animations:** ensure consistent transition namespace ordering ([#19854](https://github.com/angular/angular/issues/19854)) ([01cc995](https://github.com/angular/angular/commit/01cc99589bc449eaf3b1de2c94636de878843fba))
@@ -902,6 +903,9 @@ This release contains the same set the of changes as 11.2.0-next.1.
 <a name="11.0.0"></a>
 # 11.0.0 (2020-11-11)
 
+[Blog post "Version 11 of Angular Now Available"](https://blog.angular.io/version-11-of-angular-now-available-74721b7952f7).
+
+
 ### Bug Fixes
 
 * **bazel:** only providing stamping information if the `--stamp` flag is used ([#39392](https://github.com/angular/angular/issues/39392)) ([84e09a0](https://github.com/angular/angular/commit/84e09a0))
@@ -1573,7 +1577,10 @@ discover but could be affecting production environments.
 
 
 <a name="10.0.0"></a>
-# [10.0.0](https://github.com/angular/angular/compare/10.0.0-rc.6...10.0.0) (2020-06-24)
+# [10.0.0](https://github.com/angular/angular/compare/10.0.0-rc.6...10.0.0) (2020-06-24
+
+[Blog post "Version 10 of Angular Now Available"](https://blog.angular.io/version-10-of-angular-now-available-78960babd41).
+
 
 ### Release Highlights & Update instructions
 To learn about the release highlights and our CLI-powered automated update workflow for your projects please check out the [v10 release announcement](https://blog.angular.io/version-10-of-angular-now-available-78960babd41).
@@ -2081,6 +2088,9 @@ This release contains various API docs improvements.
 <a name="9.1.0"></a>
 # [9.1.0](https://github.com/angular/angular/compare/9.0.0...9.1.0) (2020-03-25)
 
+[Blog post "Version 9.1 of Angular Now Available — TypeScript 3.8, faster builds, and more"](https://blog.angular.io/version-9-1-of-angular-now-available-typescript-3-8-faster-builds-and-more-eb292f989428).
+
+
 ### Release Highlights
 
 To learn about the release highlights and our CLI-powered automated update workflow for your projects please check out the [v9.1 release announcement](https://blog.angular.io/version-9-1-of-angular-now-available-typescript-3-8-faster-builds-and-more-eb292f989428).
@@ -2416,6 +2426,8 @@ To learn about the release highlights and our CLI-powered automated update workf
 
 <a name="9.0.0"></a>
 # [9.0.0](https://github.com/angular/angular/compare/8.2.14...9.0.0) (2020-02-06)
+
+[Blog post "Version 9 of Angular Now Available — Project Ivy has arrived!"](https://blog.angular.io/version-9-of-angular-now-available-project-ivy-has-arrived-23c97b63cfa3).
 
 
 ### Release Highlights & Update instructions
@@ -3500,6 +3512,8 @@ This release contains various API docs improvements.
 <a name="8.0.0"></a>
 # [8.0.0](https://github.com/angular/angular/compare/7.2.0...8.0.0) (2019-05-28)
 
+[Blog post "Version 8 of Angular — Smaller bundles, CLI APIs, and alignment with the ecosystem"](https://blog.angular.io/version-8-of-angular-smaller-bundles-cli-apis-and-alignment-with-the-ecosystem-af0261112a27).
+
 ### Release Highlights & Update instructions
 To learn about the release highlights and our CLI-powered automated update workflow for your projects please check out the [v8 release announcement](https://blog.angular.io/version-8-of-angular-smaller-bundles-cli-apis-and-alignment-with-the-ecosystem-af0261112a27).
 
@@ -4228,6 +4242,8 @@ This release contains various API docs improvements.
 <a name="7.0.0"></a>
 # [7.0.0](https://github.com/angular/angular/compare/7.0.0-rc.1...7.0.0) (2018-10-18)
 
+[Blog post "Version 7 of Angular — CLI Prompts, Virtual Scroll, Drag and Drop and more"](https://blog.angular.io/version-7-of-angular-cli-prompts-virtual-scroll-drag-and-drop-and-more-c594e22e7b8c).
+
 
 ### Release Highlights & Update instructions
 
@@ -4378,6 +4394,9 @@ Note: the 6.1.5 release on npm accidentally glitched-out midway, so we cut 6.1.6
 
 <a name="6.1.0"></a>
 # [6.1.0](https://github.com/angular/angular/compare/6.0.0-rc.5...6.1.0) (2018-07-25)
+
+[Blog post "Angular v6.1 Now Available — TypeScript 2.9, Scroll Positioning, and more"](https://blog.angular.io/angular-v6-1-now-available-typescript-2-9-scroll-positioning-and-more-9f1c03007bb6).
+
 
 ### Bug Fixes
 
@@ -4580,6 +4599,9 @@ For example:
 
 <a name="6.0.0"></a>
 # [6.0.0](https://github.com/angular/angular/compare/6.0.0-beta.0...6.0.0) (2018-05-03)
+
+[Blog post "Version 6 of Angular Now Available"](https://blog.angular.io/version-6-of-angular-now-available-cc56b0efa7a4).
+
 
 ### Release Highlights & Update instructions
 
@@ -4971,6 +4993,8 @@ To learn about the release highlights and our new CLI-powered update workflow fo
 <a name="5.2.0"></a>
 # [5.2.0](https://github.com/angular/angular/compare/5.2.0-rc.0...5.2.0) (2018-01-10)
 
+[Blog post "Angular 5.2 Now Available"](https://blog.angular.io/angular-5-2-now-available-312d1099bd81).
+
 
 ### Bug Fixes
 
@@ -5076,6 +5100,8 @@ Note: Due to an animation fix back in 5.1.1 ([c2b3792](https://github.com/angula
 
 <a name="5.1.0"></a>
 # [5.1.0](https://github.com/angular/angular/compare/5.1.0-rc.1...5.1.0) (2017-12-06)
+
+[Blog post "Angular 5.1 & More Now Available"](https://blog.angular.io/angular-5-1-more-now-available-27d372f5eb4e).
 
 
 ### Bug Fixes
@@ -5262,6 +5288,9 @@ Note: Due to an animation fix back in 5.1.1 ([c2b3792](https://github.com/angula
 
 <a name="5.0.0"></a>
 # [5.0.0](https://github.com/angular/angular/compare/5.0.0-rc.9...5.0.0) pentagonal-donut (2017-11-01)
+
+[Blog post "Version 5.0.0 of Angular Now Available"](https://blog.angular.io/version-5-0-0-of-angular-now-available-37e414935ced).
+
 
 ### Features
 
@@ -5630,6 +5659,8 @@ Note: the 4.4.0 release on npm accidentally glitched-out midway, so we cut 4.4.1
 
 <a name="4.3.0"></a>
 # [4.3.0](https://github.com/angular/angular/compare/4.3.0-rc.0...4.3.0) (2017-07-14)
+
+[Blog post "Angular 4.3 Now Available"](https://blog.angular.io/angular-4-3-now-available-8d57b57eb5a8).
 
 
 ### Bug Fixes
