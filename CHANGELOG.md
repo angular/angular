@@ -1577,7 +1577,7 @@ discover but could be affecting production environments.
 
 
 <a name="10.0.0"></a>
-# [10.0.0](https://github.com/angular/angular/compare/10.0.0-rc.6...10.0.0) (2020-06-24
+# [10.0.0](https://github.com/angular/angular/compare/10.0.0-rc.6...10.0.0) (2020-06-24)
 
 [Blog post "Version 10 of Angular Now Available"](https://blog.angular.io/version-10-of-angular-now-available-78960babd41).
 
@@ -3513,6 +3513,7 @@ This release contains various API docs improvements.
 # [8.0.0](https://github.com/angular/angular/compare/7.2.0...8.0.0) (2019-05-28)
 
 [Blog post "Version 8 of Angular — Smaller bundles, CLI APIs, and alignment with the ecosystem"](https://blog.angular.io/version-8-of-angular-smaller-bundles-cli-apis-and-alignment-with-the-ecosystem-af0261112a27).
+
 
 ### Release Highlights & Update instructions
 To learn about the release highlights and our CLI-powered automated update workflow for your projects please check out the [v8 release announcement](https://blog.angular.io/version-8-of-angular-smaller-bundles-cli-apis-and-alignment-with-the-ecosystem-af0261112a27).
