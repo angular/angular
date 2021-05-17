@@ -1,0 +1,10 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+
+package(default_visibility = ["//visibility:public"])
+
+# JavaScript library that exposes a script for retrieving all NPM packages
+# available in the runfiles of an action.
+js_library(
+    name = "npm-packages-from-runfiles",
+    srcs = ["npm-packages-from-runfiles.js"],
+)

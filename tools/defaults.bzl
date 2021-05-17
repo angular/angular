@@ -90,6 +90,10 @@ def ng_module(
         srcs = srcs,
         module_name = module_name,
         flat_module_out_file = flat_module_out_file,
+        compilation_mode = select({
+            "//tools:partial_compilation_enabled": "partial",
+            "//conditions:default": "",
+        }),
         deps = local_deps,
         tsconfig = tsconfig,
         testonly = testonly,

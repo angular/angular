@@ -25,6 +25,7 @@ typescript_version_packages = [
             "helpers.js",
             "test.js",
             ":import-all-entry-points-file",
+            "//integration:npm-packages-from-runfiles",
             "//src/cdk:npm_package",
             "//src/cdk-experimental:npm_package",
             "//src/google-maps:npm_package",

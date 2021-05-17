@@ -1,0 +1,23 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_test")
+
+# Test which ensures that specified NPM packages can be transformed from their partial
+# declarations to definitions using the `@angular/compiler-cli` linker babel plugin.
+nodejs_test(
+    name = "linker",
+    data = [
+        "//integration:npm-packages-from-runfiles",
+        "//src/cdk:npm_package",
+        "//src/cdk-experimental:npm_package",
+        "//src/google-maps:npm_package",
+        "//src/material:npm_package",
+        "//src/material-experimental:npm_package",
+        "//src/youtube-player:npm_package",
+        "@npm//@angular/compiler-cli",
+        "@npm//@babel/core",
+        "@npm//@babel/traverse",
+        "@npm//chalk",
+        "@npm//glob",
+    ],
+    entry_point = "link-packages-test.js",
+    tags = ["partial-compilation-integration"],
+)
