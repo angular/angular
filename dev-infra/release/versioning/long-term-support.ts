@@ -12,6 +12,9 @@ import {ReleaseConfig} from '../config/index';
 
 import {fetchProjectNpmPackageInfo} from './npm-registry';
 
+/** Type describing a NPM dist tag indicating long-term support. */
+export type LtsNpmDistTag = `v${number}-lts`;
+
 /** Interface describing determined LTS branches. */
 export interface LtsBranches {
   /** List of active LTS version branches. */
@@ -27,7 +30,7 @@ export interface LtsBranch {
   /** Most recent version for the given LTS branch. */
   version: semver.SemVer;
   /** NPM dist tag for the LTS version. */
-  npmDistTag: string;
+  npmDistTag: LtsNpmDistTag;
 }
 
 /**
@@ -57,7 +60,7 @@ export async function fetchLongTermSupportBranchesFromNpm(config: ReleaseConfig)
   // their corresponding branches. We assume that an LTS tagged version in NPM belongs to the
   // last-minor branch of a given major (i.e. we assume there are no outdated LTS NPM dist tags).
   for (const npmDistTag in distTags) {
-    if (ltsNpmDistTagRegex.test(npmDistTag)) {
+    if (isLtsDistTag(npmDistTag)) {
       const version = semver.parse(distTags[npmDistTag])!;
       const branchName = `${version.major}.${version.minor}.x`;
       const majorReleaseDate = new Date(time[`${version.major}.0.0`]);
@@ -80,6 +83,11 @@ export async function fetchLongTermSupportBranchesFromNpm(config: ReleaseConfig)
   return {active, inactive};
 }
 
+/** Gets whether the specified tag corresponds to a LTS dist tag. */
+export function isLtsDistTag(tagName: string): tagName is LtsNpmDistTag {
+  return ltsNpmDistTagRegex.test(tagName);
+}
+
 /**
  * Computes the date when long-term support ends for a major released at the
  * specified date.
@@ -93,7 +101,7 @@ export function computeLtsEndDateOfMajor(majorReleaseDate: Date): Date {
 }
 
 /** Gets the long-term support NPM dist tag for a given major version. */
-export function getLtsNpmDistTagOfMajor(major: number): string {
+export function getLtsNpmDistTagOfMajor(major: number): LtsNpmDistTag {
   // LTS versions should be tagged in NPM in the following format: `v{major}-lts`.
-  return `v${major}-lts`;
+  return `v${major}-lts` as const;
 }
