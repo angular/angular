@@ -77,7 +77,9 @@ describe('cut stable action', () => {
       return Promise.resolve();
     });
 
-    await expectStagingAndPublishWithCherryPick(action, '11.0.x', '11.0.0', 'latest');
+    // Major is released to the `next` NPM dist tag initially. Can be re-tagged with
+    // a separate release action. See `CutStableAction` for more details.
+    await expectStagingAndPublishWithCherryPick(action, '11.0.x', '11.0.0', 'next');
     expect(externalCommands.invokeSetNpmDistCommand).toHaveBeenCalledTimes(1);
     expect(externalCommands.invokeSetNpmDistCommand)
         .toHaveBeenCalledWith('v10-lts', matchesVersion('10.0.3'));

@@ -30,12 +30,22 @@ export class CutStableAction extends ReleaseAction {
     const newVersion = this._newVersion;
     const isNewMajor = this.active.releaseCandidate?.isMajor;
 
-
     const {pullRequest: {id}, releaseNotes} =
         await this.checkoutBranchAndStageVersion(newVersion, branchName);
 
     await this.waitForPullRequestToBeMerged(id);
-    await this.buildAndPublish(releaseNotes, branchName, 'latest');
+
+    // If a new major version is published, we publish to the `next` NPM dist tag temporarily.
+    // We do this because for major versions, we want all main Angular projects to have their
+    // new major become available at the same time. Publishing immediately to the `latest` NPM
+    // dist tag could cause inconsistent versions when users install packages with `@latest`.
+    // For example: Consider Angular Framework releases v12. CLI and Components would need to
+    // wait for that release to complete. Once done, they can update their dependencies to point
+    // to v12. Afterwards they could start the release process. In the meanwhile though, the FW
+    // dependencies were already available as `@latest`, so users could end up installing v12 while
+    // still having the older (but currently still latest) CLI version that is incompatible.
+    // The major release can be re-tagged to `latest` through a separate release action.
+    await this.buildAndPublish(releaseNotes, branchName, isNewMajor ? 'next' : 'latest');
 
     // If a new major version is published and becomes the "latest" release-train, we need
     // to set the LTS npm dist tag for the previous latest release-train (the current patch).
