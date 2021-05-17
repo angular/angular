@@ -98,7 +98,7 @@ export class ReleaseTool {
 
     // Find and instantiate all release actions which are currently valid.
     for (let actionType of actions) {
-      if (await actionType.isActive(activeTrains)) {
+      if (await actionType.isActive(activeTrains, this._config)) {
         const action: ReleaseAction =
             new actionType(activeTrains, this._git, this._config, this._projectRoot);
         choices.push({name: await action.getDescription(), value: action});
