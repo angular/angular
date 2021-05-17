@@ -4,9 +4,9 @@
     "!**/*.d.ts",
     "!**/*.js",
     "!**/*.[0-9].*",
-    "!doc-files/**/*",
-    "**/*.xlf"
+    "!doc-files/**/*"
   ],
   "file": "src/app/app.component.ts",
-  "tags": ["Angular", "i18n", "internationalization", "runtime"]
+  "tags": ["Angular", "i18n", "internationalization", "runtime"],
+  "devDependencies": ["@angular/compiler-cli", "typescript"]
 }
