@@ -50,7 +50,7 @@ If you are a library author, you should keep using the View Engine compiler as o
 By having all libraries continue to use View Engine, you will maintain compatibility with default v9 applications that use Ivy, as well as with applications that have opted to continue using View Engine.
 
 See the [Creating Libraries](guide/creating-libraries) guide for more on how to compile or bundle your Angular library.
-When you use the tools integrated into the Angular CLI or `ng-packagr`, your library will always be built the right way automatically.
+When you use the tools integrated into the Angular CLI or `ng-package`, your library will always be built the right way automatically.
 
 {@a ivy-and-universal-app-shell}
 ## Ivy and Universal/App shell
