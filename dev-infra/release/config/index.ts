@@ -43,6 +43,10 @@ export interface ReleaseNotesConfig {
    * groups will appear after these groups, sorted by `Array.sort`'s default sorting order.
    */
   groupOrder?: string[];
+  /** Whether release notes should be created for changelog files, defaults to true. */
+  updateChangelog?: boolean;
+  /** Whether release notes should be created for Github release entries, defaults to true. */
+  updateGithubRelease?: boolean;
 }
 
 /** Configuration for releases in the dev-infra configuration. */

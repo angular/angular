@@ -319,6 +319,9 @@ export abstract class ReleaseAction {
    * @returns A boolean indicating whether the release notes have been prepended.
    */
   protected async prependReleaseNotesToChangelog(releaseNotes: ReleaseNotes): Promise<void> {
+    if (this.config.releaseNotes.updateChangelog === false) {
+      debug('  ⚠  Skipping changelog update based on the provided configuration.');
+    }
     const localChangelogPath = getLocalChangelogFilePath(this.projectDir);
     const localChangelog = await fs.readFile(localChangelogPath, 'utf8');
     const releaseNotesEntry = await releaseNotes.getChangelogEntry();
@@ -385,6 +388,9 @@ export abstract class ReleaseAction {
    */
   protected async cherryPickChangelogIntoNextBranch(
       releaseNotes: ReleaseNotes, stagingBranch: string): Promise<boolean> {
+    if (this.config.releaseNotes.updateChangelog === false) {
+      debug('  ⚠  Skipping changelog cherry-pick based on provided configuration.');
+    }
     const nextBranch = this.active.next.branchName;
     const commitMessage = getReleaseNoteCherryPickCommitMessage(releaseNotes.version);
 
@@ -428,12 +434,16 @@ export abstract class ReleaseAction {
     });
     info(green(`  ✓   Tagged v${releaseNotes.version} release upstream.`));
 
+    let body = this.config.releaseNotes.updateGithubRelease === false ?
+        '' :
+        await releaseNotes.getGithubReleaseEntry();
+
     await this.git.github.repos.createRelease({
       ...this.git.remoteParams,
       name: `v${releaseNotes.version}`,
       tag_name: tagName,
       prerelease,
-      body: await releaseNotes.getGithubReleaseEntry(),
+      body,
     });
     info(green(`  ✓   Created v${releaseNotes.version} release in Github.`));
   }

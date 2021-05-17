@@ -6175,6 +6175,9 @@ class ReleaseAction {
      */
     prependReleaseNotesToChangelog(releaseNotes) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
+            if (this.config.releaseNotes.updateChangelog === false) {
+                debug('  ⚠  Skipping changelog update based on the provided configuration.');
+            }
             const localChangelogPath = getLocalChangelogFilePath(this.projectDir);
             const localChangelog = yield fs.promises.readFile(localChangelogPath, 'utf8');
             const releaseNotesEntry = yield releaseNotes.getChangelogEntry();
@@ -6235,6 +6238,9 @@ class ReleaseAction {
      */
     cherryPickChangelogIntoNextBranch(releaseNotes, stagingBranch) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
+            if (this.config.releaseNotes.updateChangelog === false) {
+                debug('  ⚠  Skipping changelog cherry-pick based on provided configuration.');
+            }
             const nextBranch = this.active.next.branchName;
             const commitMessage = getReleaseNoteCherryPickCommitMessage(releaseNotes.version);
             // Checkout the next branch.
@@ -6263,7 +6269,11 @@ class ReleaseAction {
             const tagName = releaseNotes.version.format();
             yield this.git.github.git.createRef(Object.assign(Object.assign({}, this.git.remoteParams), { ref: `refs/tags/${tagName}`, sha: versionBumpCommitSha }));
             info(green(`  ✓   Tagged v${releaseNotes.version} release upstream.`));
-            yield this.git.github.repos.createRelease(Object.assign(Object.assign({}, this.git.remoteParams), { name: `v${releaseNotes.version}`, tag_name: tagName, prerelease, body: yield releaseNotes.getGithubReleaseEntry() }));
+            let body = this.config.releaseNotes.updateGithubRelease === false ?
+                '' :
+                yield releaseNotes.getGithubReleaseEntry();
+            yield this.git.github.repos.createRelease(Object.assign(Object.assign({}, this.git.remoteParams), { name: `v${releaseNotes.version}`, tag_name: tagName, prerelease,
+                body }));
             info(green(`  ✓   Created v${releaseNotes.version} release in Github.`));
         });
     }
