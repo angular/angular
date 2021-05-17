@@ -17,7 +17,7 @@ import {getBranchPushMatcher, installVirtualGitClientSpies, VirtualGitClient} fr
 import {ReleaseConfig} from '../../config/index';
 import {ActiveReleaseTrains} from '../../versioning/active-release-trains';
 import * as npm from '../../versioning/npm-publish';
-import {_npmPackageInfoCache, NpmPackageInfo} from '../../versioning/npm-registry';
+import {_npmPackageInfoCache, NpmDistTag, NpmPackageInfo} from '../../versioning/npm-registry';
 import {ReleaseAction, ReleaseActionConstructor} from '../actions';
 import * as constants from '../constants';
 import * as externalCommands from '../external-commands';
@@ -124,8 +124,8 @@ export function parse(version: string): semver.SemVer {
 
 export async function expectStagingAndPublishWithoutCherryPick(
     action: TestReleaseAction, expectedBranch: string, expectedVersion: string,
-    expectedNpmDistTag: string) {
-  const {repo, fork, gitClient, releaseConfig} = action;
+    expectedNpmDistTag: NpmDistTag) {
+  const {repo, fork, gitClient} = action;
   const expectedStagingForkBranch = `release-stage-${expectedVersion}`;
   const expectedTagName = expectedVersion;
 
@@ -173,7 +173,7 @@ export async function expectStagingAndPublishWithoutCherryPick(
 
 export async function expectStagingAndPublishWithCherryPick(
     action: TestReleaseAction, expectedBranch: string, expectedVersion: string,
-    expectedNpmDistTag: string) {
+    expectedNpmDistTag: NpmDistTag) {
   const {repo, fork, gitClient, releaseConfig} = action;
   const expectedStagingForkBranch = `release-stage-${expectedVersion}`;
   const expectedCherryPickForkBranch = `changelog-cherry-pick-${expectedVersion}`;

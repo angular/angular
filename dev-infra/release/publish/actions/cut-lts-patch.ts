@@ -7,22 +7,11 @@
  */
 
 import {ListChoiceOptions, prompt} from 'inquirer';
-import * as semver from 'semver';
 
 import {ActiveReleaseTrains} from '../../versioning/active-release-trains';
 import {semverInc} from '../../versioning/inc-semver';
-import {fetchLongTermSupportBranchesFromNpm} from '../../versioning/long-term-support';
+import {fetchLongTermSupportBranchesFromNpm, LtsBranch} from '../../versioning/long-term-support';
 import {ReleaseAction} from '../actions';
-
-/** Interface describing an LTS version branch. */
-interface LtsBranch {
-  /** Name of the branch. */
-  name: string;
-  /** Most recent version for the given LTS branch. */
-  version: semver.SemVer;
-  /** NPM dist tag for the LTS version. */
-  npmDistTag: string;
-}
 
 /**
  * Release action that cuts a new patch release for an active release-train in the long-term

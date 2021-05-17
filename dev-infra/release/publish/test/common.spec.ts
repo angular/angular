@@ -11,7 +11,7 @@ import {join} from 'path';
 import * as semver from 'semver';
 
 import {getBranchPushMatcher} from '../../../utils/testing';
-import {_npmPackageInfoCache} from '../../versioning';
+import {NpmDistTag} from '../../versioning';
 import {ActiveReleaseTrains} from '../../versioning/active-release-trains';
 import * as npm from '../../versioning/npm-publish';
 import {ReleaseTrain} from '../../versioning/release-trains';
@@ -44,7 +44,7 @@ describe('common release action logic', () => {
       fakeNpmPackageQueryRequest(releaseConfig.npmPackages[0], {'dist-tags': {}});
 
       for (const actionCtor of actions) {
-        if (await actionCtor.isActive(testReleaseTrain)) {
+        if (await actionCtor.isActive(testReleaseTrain, releaseConfig)) {
           const action = new actionCtor(testReleaseTrain, gitClient, releaseConfig, testTmpDir);
           descriptions.push(await action.getDescription());
         }
@@ -151,7 +151,7 @@ class TestAction extends ReleaseAction {
     throw Error('Not implemented.');
   }
 
-  async testBuildAndPublish(version: semver.SemVer, publishBranch: string, distTag: string) {
+  async testBuildAndPublish(version: semver.SemVer, publishBranch: string, distTag: NpmDistTag) {
     const releaseNotes = await ReleaseNotes.fromRange(version, '', '');
     await this.buildAndPublish(releaseNotes, publishBranch, distTag);
   }
