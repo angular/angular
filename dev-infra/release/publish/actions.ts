@@ -15,6 +15,7 @@ import {debug, error, green, info, promptConfirm, red, warn, yellow} from '../..
 import {getListCommitsInBranchUrl, getRepositoryGitUrl} from '../../utils/git/github-urls';
 import {GitClient} from '../../utils/git/index';
 import {BuiltPackage, ReleaseConfig} from '../config/index';
+import {NpmDistTag} from '../versioning';
 import {ActiveReleaseTrains} from '../versioning/active-release-trains';
 import {runNpmPublish} from '../versioning/npm-publish';
 
@@ -440,12 +441,12 @@ export abstract class ReleaseAction {
 
   /**
    * Builds and publishes the given version in the specified branch.
-   * @param newVersion The new version to be published.
+   * @param releaseNotes The release notes for the version being published.
    * @param publishBranch Name of the branch that contains the new version.
    * @param npmDistTag NPM dist tag where the version should be published to.
    */
   protected async buildAndPublish(
-      releaseNotes: ReleaseNotes, publishBranch: string, npmDistTag: string) {
+      releaseNotes: ReleaseNotes, publishBranch: string, npmDistTag: NpmDistTag) {
     const versionBumpCommitSha = await this._getCommitOfBranch(publishBranch);
 
     if (!await this._isCommitForVersionStaging(releaseNotes.version, versionBumpCommitSha)) {
@@ -482,7 +483,7 @@ export abstract class ReleaseAction {
   }
 
   /** Publishes the given built package to NPM with the specified NPM dist tag. */
-  private async _publishBuiltPackageToNpm(pkg: BuiltPackage, npmDistTag: string) {
+  private async _publishBuiltPackageToNpm(pkg: BuiltPackage, npmDistTag: NpmDistTag) {
     debug(`Starting publish of "${pkg.name}".`);
     const spinner = ora.call(undefined).start(`Publishing "${pkg.name}"`);
 

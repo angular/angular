@@ -12,6 +12,7 @@ import * as semver from 'semver';
 import {spawnWithDebugOutput} from '../../utils/child-process';
 import {error, green, info, red} from '../../utils/console';
 import {BuiltPackage} from '../config/index';
+import {NpmDistTag} from '../versioning';
 
 import {FatalReleaseActionError} from './actions-error';
 
@@ -36,7 +37,7 @@ import {FatalReleaseActionError} from './actions-error';
  * Invokes the `ng-dev release set-dist-tag` command in order to set the specified
  * NPM dist tag for all packages in the checked out branch to the given version.
  */
-export async function invokeSetNpmDistCommand(npmDistTag: string, version: semver.SemVer) {
+export async function invokeSetNpmDistCommand(npmDistTag: NpmDistTag, version: semver.SemVer) {
   try {
     // Note: No progress indicator needed as that is the responsibility of the command.
     await spawnWithDebugOutput(

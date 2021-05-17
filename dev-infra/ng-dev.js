@@ -1120,7 +1120,7 @@ function fetchLongTermSupportBranchesFromNpm(config) {
         // their corresponding branches. We assume that an LTS tagged version in NPM belongs to the
         // last-minor branch of a given major (i.e. we assume there are no outdated LTS NPM dist tags).
         for (const npmDistTag in distTags) {
-            if (ltsNpmDistTagRegex.test(npmDistTag)) {
+            if (isLtsDistTag(npmDistTag)) {
                 const version = semver.parse(distTags[npmDistTag]);
                 const branchName = `${version.major}.${version.minor}.x`;
                 const majorReleaseDate = new Date(time[`${version.major}.0.0`]);
@@ -1141,6 +1141,10 @@ function fetchLongTermSupportBranchesFromNpm(config) {
         inactive.sort((a, b) => semver.rcompare(a.version, b.version));
         return { active, inactive };
     });
+}
+/** Gets whether the specified tag corresponds to a LTS dist tag. */
+function isLtsDistTag(tagName) {
+    return ltsNpmDistTagRegex.test(tagName);
 }
 /**
  * Computes the date when long-term support ends for a major released at the
@@ -6269,7 +6273,7 @@ class ReleaseAction {
     }
     /**
      * Builds and publishes the given version in the specified branch.
-     * @param newVersion The new version to be published.
+     * @param releaseNotes The release notes for the version being published.
      * @param publishBranch Name of the branch that contains the new version.
      * @param npmDistTag NPM dist tag where the version should be published to.
      */

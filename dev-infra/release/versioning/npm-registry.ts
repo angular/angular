@@ -10,6 +10,10 @@ import fetch from 'node-fetch';
 import * as semver from 'semver';
 
 import {ReleaseConfig} from '../config/index';
+import {LtsNpmDistTag} from './long-term-support';
+
+/** Type describing the possible NPM dist tags used by Angular packages. */
+export type NpmDistTag = 'latest'|'next'|LtsNpmDistTag;
 
 /** Type describing an NPM package fetched from the registry. */
 export interface NpmPackageInfo {

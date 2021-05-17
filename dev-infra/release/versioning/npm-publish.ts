@@ -8,13 +8,14 @@
 
 import * as semver from 'semver';
 import {spawnInteractiveCommand, spawnWithDebugOutput} from '../../utils/child-process';
+import {NpmDistTag} from './npm-registry';
 
 /**
  * Runs NPM publish within a specified package directory.
  * @throws With the process log output if the publish failed.
  */
 export async function runNpmPublish(
-    packagePath: string, distTag: string, registryUrl: string|undefined) {
+    packagePath: string, distTag: NpmDistTag, registryUrl: string|undefined) {
   const args = ['publish', '--access', 'public', '--tag', distTag];
   // If a custom registry URL has been specified, add the `--registry` flag.
   if (registryUrl !== undefined) {
