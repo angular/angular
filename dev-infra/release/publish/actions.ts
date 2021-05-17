@@ -48,7 +48,7 @@ export interface PullRequest {
 /** Constructor type for instantiating a release action */
 export interface ReleaseActionConstructor<T extends ReleaseAction = ReleaseAction> {
   /** Whether the release action is currently active. */
-  isActive(active: ActiveReleaseTrains): Promise<boolean>;
+  isActive(active: ActiveReleaseTrains, config: ReleaseConfig): Promise<boolean>;
   /** Constructs a release action. */
   new(...args: [ActiveReleaseTrains, GitClient<true>, ReleaseConfig, string]): T;
 }
@@ -60,7 +60,7 @@ export interface ReleaseActionConstructor<T extends ReleaseAction = ReleaseActio
  */
 export abstract class ReleaseAction {
   /** Whether the release action is currently active. */
-  static isActive(_trains: ActiveReleaseTrains): Promise<boolean> {
+  static isActive(_trains: ActiveReleaseTrains, _config: ReleaseConfig): Promise<boolean> {
     throw Error('Not implemented.');
   }
 
