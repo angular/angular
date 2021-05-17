@@ -1,6 +1,7 @@
 @forward '../core/style/private.import';
 @forward '../core/theming/theming.import';
-@forward './autocomplete-legacy-index';
+@forward 'autocomplete-theme' hide color, theme, typography;
+@forward 'autocomplete-theme' as mat-autocomplete-* hide mat-autocomplete-density;
 
 @import '../core/style/private';
 @import '../core/theming/theming';

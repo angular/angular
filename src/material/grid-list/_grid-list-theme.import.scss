@@ -1,7 +1,8 @@
 @forward '../core/theming/theming.import';
 @forward '../core/typography/typography-utils.import';
 @forward '../core/style/list-common.import';
-@forward './grid-list-legacy-index';
+@forward 'grid-list-theme' hide color, theme, typography;
+@forward 'grid-list-theme' as mat-grid-list-* hide mat-grid-list-density;
 
 @import '../core/theming/palette';
 @import '../core/theming/theming';

@@ -19,3 +19,4 @@ private-is-theme-object, private-legacy-get-theme;
 $mat-theme-emitted-density, $mat-theme-emitted-typography, $mat-theme-generate-default-density,
 mat-create-dark-color-config, mat-create-light-color-config, mat-validate-theme;
 @forward 'theming-deprecated' as mat-*;
+@forward 'all-theme';

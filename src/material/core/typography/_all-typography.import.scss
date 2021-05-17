@@ -35,7 +35,7 @@
 @forward '../../tabs/tabs-theme.import';
 @forward '../option/option-theme.import';
 @forward '../option/optgroup-theme.import';
-@forward './typography-legacy-index';
+@forward 'all-typography';
 
 @import './typography';
 @import '../../autocomplete/autocomplete-theme';

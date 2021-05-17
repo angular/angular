@@ -46,7 +46,7 @@
 @forward '../core-theme' as mat-* hide mat-color, mat-theme;
 @forward '../core' as mat-core-* hide mat-core-core;
 @forward '../core-theme' as mat-core-*;
-@forward './theming-legacy-index';
+@forward 'all-theme';
 
 @import '../core';
 @import '../../autocomplete/autocomplete-theme';

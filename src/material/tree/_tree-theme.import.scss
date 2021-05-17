@@ -1,6 +1,7 @@
 @forward '../core/theming/theming.import';
+@forward 'tree-variables' as mat-tree-*;
 @forward '../core/typography/typography-utils.import';
-@forward './tree-legacy-index';
+@forward 'tree-theme' as mat-tree-*;
 
 @import '../core/density/private/compatibility';
 @import '../core/theming/palette';

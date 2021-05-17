@@ -1,1 +1,9 @@
-@forward './typography-legacy-index';
+@forward 'typography-utils' hide font-family, font-shorthand, font-size, font-weight, line-height,
+letter-spacing, typography-level;
+@forward 'typography-utils' as mat-* hide mat-font-shorthand, mat-get-type-value,
+mat-typography-level;
+@forward 'typography-utils' as mat-typography-* hide mat-typography-font-family,
+mat-typography-font-size, mat-typography-font-weight, mat-typography-get-type-value,
+mat-typography-line-height, mat-typography-letter-spacing;
+@forward 'typography-deprecated' as mat-typography-*;
+@forward 'typography-utils-deprecated' as mat-typography-*;

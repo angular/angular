@@ -1,6 +1,7 @@
 @forward '../core/style/private.import';
 @forward '../core/theming/theming.import';
-@forward './sidenav-legacy-index';
+@forward 'sidenav-theme' hide color, theme, typography;
+@forward 'sidenav-theme' as mat-sidenav-* hide mat-sidenav-density;
 
 @import '../core/style/private';
 @import '../core/theming/palette';

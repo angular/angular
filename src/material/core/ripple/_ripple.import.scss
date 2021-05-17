@@ -12,7 +12,9 @@ $mat-white-6-opacity, $mat-white-87-opacity;
 @forward '../density/private/compatibility' as mat-*;
 @forward '../theming/theming' as mat-*;
 @forward '../../../cdk/a11y/index.import';
-@forward './ripple-legacy-index';
+@forward 'ripple' as mat-* hide $mat-color-opacity;
+@forward 'ripple' as mat-ripple-* hide mat-ripple-ripple;
+@forward 'ripple-theme' as mat-ripple-*;
 
 @import '../theming/theming';
 @import '../../../cdk/a11y';

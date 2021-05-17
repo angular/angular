@@ -1,5 +1,24 @@
+@forward 'palette' hide $amber-palette, $blue-palette, $blue-gray-palette,
+$blue-grey-palette, $brown-palette, $cyan-palette, $dark-theme-background-palette,
+$dark-theme-foreground-palette, $deep-orange-palette, $deep-purple-palette, $gray-palette,
+$green-palette, $grey-palette, $indigo-palette, $light-blue-palette, $light-green-palette,
+$light-theme-background-palette, $light-theme-foreground-palette, $lime-palette, $orange-palette,
+$pink-palette, $purple-palette, $red-palette, $teal-palette, $yellow-palette;
+@forward 'palette' as mat-* hide $mat-black-12-opacity, $mat-black-6-opacity, $mat-black-87-opacity,
+$mat-dark-disabled-text, $mat-dark-dividers, $mat-dark-focused, $mat-dark-primary-text,
+$mat-dark-secondary-text, $mat-light-disabled-text, $mat-light-dividers, $mat-light-focused,
+$mat-light-primary-text, $mat-light-secondary-text, $mat-white-12-opacity, $mat-white-6-opacity,
+$mat-white-87-opacity;
 @forward '../density/private/compatibility' as mat-*;
-@forward './theming-legacy-index';
+@forward 'theming' hide $theme-ignore-duplication-warnings, get-color-from-palette,
+get-color-config, get-density-config, get-typography-config, define-palette, define-light-theme,
+define-dark-theme, private-check-duplicate-theme-styles,
+private-create-backwards-compatibility-theme, private-is-legacy-constructed-theme,
+private-is-theme-object, private-legacy-get-theme;
+@forward 'theming' as mat-* hide $mat-theme-duplicate-warning, $mat-theme-emitted-color,
+$mat-theme-emitted-density, $mat-theme-emitted-typography, $mat-theme-generate-default-density,
+mat-create-dark-color-config, mat-create-light-color-config, mat-validate-theme;
+@forward 'theming-deprecated' as mat-*;
 
 @import 'palette';
 @import '../density/private/compatibility';

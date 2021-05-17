@@ -1,9 +1,10 @@
 @forward '../core/style/private.import';
 @forward '../core/theming/theming.import';
 @forward '../core/density/private/compatibility.import';
+@forward 'button-toggle-variables' as mat-button-toggle-*;
 @forward '../../cdk/a11y/index.import';
 @forward '../core/typography/typography-utils.import';
-@forward './button-toggle-legacy-index';
+@forward 'button-toggle-theme' as mat-button-toggle-*;
 
 @import '../../cdk/a11y';
 @import '../core/style/private';
