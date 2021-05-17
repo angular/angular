@@ -584,7 +584,9 @@ groups:
           'aio/content/guide/router-reference.md',
           'aio/content/examples/router-tutorial/**',
           'aio/content/examples/router/**',
-          'aio/content/images/guide/router/**'
+          'aio/content/images/guide/router/**',
+          'aio/content/guide/routing-with-urlmatcher.md',
+          'aio/content/examples/routing-with-urlmatcher/**'
           ])
     reviewers:
       users:
