@@ -277,6 +277,11 @@
               "tooltip": "A tutorial that covers many patterns associated with Angular routing."
             },
             {
+              "url": "guide/routing-with-urlmatcher",
+              "title": "Tutorial: Creating custom route matches",
+              "tooltip": "Learn how to create a custom URL matcher with the Angular router."
+            },
+            {
               "url": "guide/router-tutorial-toh",
               "title": "Tutorial: Adding routing to Tour of Heroes",
               "tooltip": "Explore how to use Angular's router. Based on the Tour of Heroes example."
