@@ -2,8 +2,8 @@
   "name": "protocol",
   "version": "0.0.1",
   "peerDependencies": {
-    "@angular/common": "^11.0.0",
-    "@angular/core": "^11.0.0",
+    "@angular/common": "^12.0.0",
+    "@angular/core": "^12.0.0",
     "tslib": "^2.0.0"
   }
 }
