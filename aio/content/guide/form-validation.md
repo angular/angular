@@ -195,6 +195,7 @@ The following classes are currently supported.
 * `.ng-dirty`
 * `.ng-untouched`
 * `.ng-touched`
+* `.ng-submitted` (enclosing form element only)
 
 In the following example, the hero form uses the `.ng-valid` and `.ng-invalid` classes to
 set the color of each form control's border.

@@ -314,6 +314,8 @@ Angular sets special CSS classes on the control element to reflect the state, as
 
 </table>
 
+Additionally, Angular applies the `ng-submitted` class to `<form>` elements upon submission. This class does *not* apply to inner controls.
+
 You use these CSS classes to define the styles for your control based on its status.
 
 ### Observe control states
