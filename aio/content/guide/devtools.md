@@ -2,6 +2,14 @@
 
 Angular DevTools is a Chrome extension that provides debugging and profiling capabilities for Angular applications. Angular DevTools supports Angular v9 and above, with Ivy enabled.
 
+<div class="video-container">
+  <iframe
+  src="https://www.youtube.com/embed/bavWOHZM6zE"
+  frameborder="0"
+  allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"
+  allowfullscreen></iframe>
+</div>
+
 You can find Angular DevTools in the [Chrome Web Store](https://chrome.google.com/webstore/detail/angular-developer-tools/ienfalfjdbdpebioblfackkekamfmbnh).
 
 After installing Angular DevTools, you can find the extension under the Angular tab in Chrome DevTools.
