@@ -19,7 +19,7 @@
 
 Angular DevTools is a Chrome DevTools extension for debugging and profiling Angular applications.
 
-You can install the extension from: [Chrome Web Store](#)
+You can install the extension from: [Chrome Web Store](https://chrome.google.com/webstore/detail/angular-developer-tools/ienfalfjdbdpebioblfackkekamfmbnh)
 
 ## Inspecting Code
 
@@ -38,13 +38,13 @@ To setup your local development environment for Angular DevTools, perform the fo
 ```bash
 git clone git://github.com/rangle/angular-devtools
 cd angular-devtools
-npm install
-npm run start
+yarn
+yarn start
 ```
 
 ### Build and Install on Chrome locally
 
-1. After installation, genrate chrome build by running `npm run build:chrome`
+1. After installation, genrate chrome build by running `yarn build:chrome`
 2. Navigate to `chrome://extensions` and enable Developer mode.
 3. Choose "Load unpacked extension".
 4. In the dialog, select the directory `dist/shell-chrome`.
