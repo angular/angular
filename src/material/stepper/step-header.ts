@@ -43,7 +43,7 @@ const _MatStepHeaderMixinBase: CanColorCtor & typeof MatStepHeaderBase =
   styleUrls: ['step-header.css'],
   inputs: ['color'],
   host: {
-    'class': 'mat-step-header mat-focus-indicator',
+    'class': 'mat-step-header',
     'role': 'tab',
   },
   encapsulation: ViewEncapsulation.None,

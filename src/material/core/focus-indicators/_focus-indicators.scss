@@ -71,6 +71,10 @@
   // focused.
   .mat-calendar-body-cell:focus .mat-focus-indicator::before,
 
+  // Stepper headers have the focus indicator as a descendant,
+  // because `::before` is used for other styling.
+  .mat-step-header:focus .mat-focus-indicator::before,
+
   // For all other components, render the focus indicator on focus.
   .mat-focus-indicator:focus::before {
     content: '';

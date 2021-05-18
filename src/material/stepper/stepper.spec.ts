@@ -392,7 +392,7 @@ describe('MatStepper', () => {
           [...fixture.debugElement.nativeElement.querySelectorAll('.mat-vertical-stepper-header')];
 
       expect(stepHeaderNativeElements
-          .every(element => element.classList.contains('mat-focus-indicator'))).toBe(true);
+          .every(element => element.querySelector('.mat-focus-indicator'))).toBe(true);
     });
 
   });
