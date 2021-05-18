@@ -196,3 +196,4 @@
 /start/routing --> /start/start-routing
 /testing --> /guide/testing
 /testing/first-app-tests.html --> /guide/testing
+/devtools --> /guide/devtools
