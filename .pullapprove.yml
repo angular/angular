@@ -48,7 +48,6 @@
 # IgorMinar
 # jelbourn
 # josephperrott
-# mhevery
 #
 # =========================================================
 # @angular/framework-global-approvers-for-docs-only-changes
@@ -192,7 +191,6 @@ groups:
         - kyliau # Keen Yee Liau
         - manughub # Manu Murthy
         - mgechev # Minko Gechev
-        - mhevery # Miško Hevery
         - mmalerba # Miles Malerba
         - petebacondarwin # Pete Bacon Darwin
         - pkozlowski-opensource # Pawel Kozlowski
@@ -416,7 +414,6 @@ groups:
         - alxhub
         - AndrewKushnir
         - atscott
-        - mhevery
         - jessicajaniuk
         # OOO as of 2020-09-28 - pkozlowski-opensource
 
@@ -438,7 +435,6 @@ groups:
         - alxhub
         - AndrewKushnir
         - atscott
-        - mhevery
         - jessicajaniuk
         # OOO as of 2020-09-28 - pkozlowski-opensource
 
@@ -546,7 +542,6 @@ groups:
     reviewers:
       users:
         - AndrewKushnir
-        - mhevery
         - petebacondarwin
 
   # =========================================================
@@ -733,7 +728,6 @@ groups:
     reviewers:
       users:
         - IgorMinar
-        - mhevery
         - jelbourn
         # OOO as of 2020-09-28 - pkozlowski-opensource
     reviews:
@@ -795,7 +789,6 @@ groups:
     reviewers:
       users:
         - JiaLiPassion
-        - mhevery
 
   # =========================================================
   #  in-memory-web-api
@@ -845,7 +838,6 @@ groups:
       users:
         - IgorMinar
         - josephperrott
-        - mhevery
 
   # =========================================================
   #  Docs: Contributors
@@ -1303,7 +1295,6 @@ groups:
         - atscott
         - jelbourn
         - josephperrott
-        - mhevery
 
   # ====================================================
   #  Catch all for if no groups match the code change
