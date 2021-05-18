@@ -21,7 +21,8 @@
       animation: none;
     }
 
-    .mdc-linear-progress__primary-bar {
+    .mdc-linear-progress__primary-bar,
+    .mdc-linear-progress__buffer-bar {
       // There's a `transitionend` event that depends on this element. Add a very short
       // transition when animations are disabled so that the event can still fire.
       transition: transform 1ms;
