@@ -11,7 +11,7 @@ To integrate reusable library code into an application, you need to install the 
 The `ng add` command uses a package manager such as [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/) to install the library package, and invokes schematics that are included in the package to other scaffolding within the project code, such as adding import statements, fonts, and themes.
 
 A published library typically provides a README or other documentation on how to add that lib to your application.
-For an example, see the [Angular Material](https://material.angular.io/) documents.
+For an example, see the [Angular Material](https://material.angular.io/) documentation.
 
 ### Library typings
 
