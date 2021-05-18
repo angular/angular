@@ -69,12 +69,15 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements AfterVie
 
   constructor(public _elementRef: ElementRef<HTMLElement>,
               private _ngZone: NgZone,
-              @Optional() private _dir?: Directionality,
+              @Optional() dir?: Directionality,
               @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
     super(_elementRef);
     this._isNoopAnimation = _animationMode === 'NoopAnimations';
-    if (_dir) {
-      this._dirChangeSubscription = _dir.change.subscribe(() => this._syncFoundation());
+    if (dir) {
+      this._dirChangeSubscription = dir.change.subscribe(() => {
+        this._syncFoundation();
+        this._foundation?.restartAnimation();
+      });
     }
   }
 
@@ -218,17 +221,7 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements AfterVie
     const foundation = this._foundation;
 
     if (foundation) {
-      const direction = this._dir ? this._dir.value : 'ltr';
       const mode = this.mode;
-
-      const reverse = direction === 'rtl' ? mode !== 'query' : mode === 'query';
-      const progressDirection = reverse ? 'rtl' : 'ltr';
-      const currentDirection = this._elementRef.nativeElement.getAttribute('dir');
-      if (currentDirection !== progressDirection) {
-        this._elementRef.nativeElement.setAttribute('dir', progressDirection);
-        foundation.restartAnimation();
-      }
-
       foundation.setDeterminate(mode !== 'indeterminate' && mode !== 'query');
 
       // Divide by 100 because MDC deals with values between 0 and 1.

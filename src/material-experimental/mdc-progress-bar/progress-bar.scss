@@ -7,6 +7,11 @@
   // Explicitly set to `block` since the browser defaults custom elements to `inline`.
   display: block;
 
+  // Inverts the progress bar horizontally in `query` mode.
+  &[mode='query'] {
+    transform: scaleX(-1);
+  }
+
   &._mat-animation-noopable {
     .mdc-linear-progress__buffer-dots,
     .mdc-linear-progress__primary-bar,
