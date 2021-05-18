@@ -51,7 +51,7 @@ import {
   RippleRef,
   RippleState,
 } from '@angular/material/core';
-import {SpecificEventListener, EventType} from '@material/base';
+import {SpecificEventListener, EventType} from '@material/base/types';
 import {MDCSliderAdapter, MDCSliderFoundation, Thumb, TickMark} from '@material/slider';
 import {Subscription} from 'rxjs';
 import {GlobalChangeAndInputListener} from './global-change-and-input-listener';
@@ -977,7 +977,34 @@ class SliderAdapter implements MDCSliderAdapter {
     return this._delegate._getInputElement(thumbPosition).getAttribute(attribute);
   }
   setInputAttribute = (attribute: string, value: string, thumbPosition: Thumb): void => {
-    this._delegate._getInputElement(thumbPosition).setAttribute(attribute, value);
+    const input = this._delegate._getInputElement(thumbPosition);
+
+    // TODO(wagnermaciel): remove this check once this component is
+    // added to the internal allowlist for calling setAttribute.
+
+    // Explicitly check the attribute we are setting to prevent xss.
+    switch (attribute) {
+      case 'aria-valuetext':
+        input.setAttribute('aria-valuetext', value);
+        break;
+      case 'disabled':
+        input.setAttribute('disabled', value);
+        break;
+      case 'min':
+        input.setAttribute('min', value);
+        break;
+      case 'max':
+        input.setAttribute('max', value);
+        break;
+      case 'value':
+        input.setAttribute('value', value);
+        break;
+      case 'step':
+        input.setAttribute('step', value);
+        break;
+      default:
+        throw Error(`Tried to set invalid attribute ${attribute} on the mdc-slider.`);
+    }
   }
   removeInputAttribute = (attribute: string, thumbPosition: Thumb): void => {
     this._delegate._getInputElement(thumbPosition).removeAttribute(attribute);

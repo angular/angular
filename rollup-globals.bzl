@@ -40,6 +40,9 @@ ROLLUP_GLOBALS = {
     "@material/animation": "mdc.animation",
     "@material/auto-init": "mdc.autoInit",
     "@material/base": "mdc.base",
+    # This UMD module name would not match with anything that MDC provides, but we just
+    # add this to make the linter happy. This module resolves to a type-only file anyways.
+    "@material/base/types": "mdc.base.types",
     "@material/checkbox": "mdc.checkbox",
     "@material/circular-progress": "mdc.circularProgress",
     "@material/chips": "mdc.chips",
