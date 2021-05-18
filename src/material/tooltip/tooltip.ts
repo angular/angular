@@ -158,12 +158,8 @@ export abstract class _MatTooltipBase<T extends _TooltipComponentBase> implement
       this._position = value;
 
       if (this._overlayRef) {
-        this._updatePosition();
-
-        if (this._tooltipInstance) {
-          this._tooltipInstance!.show(0);
-        }
-
+        this._updatePosition(this._overlayRef);
+        this._tooltipInstance?.show(0);
         this._overlayRef.updatePosition();
       }
     }
@@ -283,6 +279,12 @@ export abstract class _MatTooltipBase<T extends _TooltipComponentBase> implement
         this.touchGestures = _defaultOptions.touchGestures;
       }
     }
+
+    _dir.change.pipe(takeUntil(this._destroyed)).subscribe(() => {
+      if (this._overlayRef) {
+        this._updatePosition(this._overlayRef);
+      }
+    });
 
     _ngZone.runOutsideAngular(() => {
       _elementRef.nativeElement.addEventListener('keydown', this._handleKeydown);
@@ -418,7 +420,7 @@ export abstract class _MatTooltipBase<T extends _TooltipComponentBase> implement
       scrollStrategy: this._scrollStrategy()
     });
 
-    this._updatePosition();
+    this._updatePosition(this._overlayRef);
 
     this._overlayRef.detachments()
       .pipe(takeUntil(this._destroyed))
@@ -437,9 +439,8 @@ export abstract class _MatTooltipBase<T extends _TooltipComponentBase> implement
   }
 
   /** Updates the position of the current tooltip. */
-  private _updatePosition() {
-    const position =
-        this._overlayRef!.getConfig().positionStrategy as FlexibleConnectedPositionStrategy;
+  private _updatePosition(overlayRef: OverlayRef) {
+    const position = overlayRef.getConfig().positionStrategy as FlexibleConnectedPositionStrategy;
     const origin = this._getOrigin();
     const overlay = this._getOverlayPosition();
 

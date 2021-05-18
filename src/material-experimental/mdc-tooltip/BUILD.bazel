@@ -67,6 +67,7 @@ ng_test_library(
         "//src/cdk/testing/private",
         "@npm//@angular/animations",
         "@npm//@angular/platform-browser",
+        "@npm//rxjs",
     ],
 )
 

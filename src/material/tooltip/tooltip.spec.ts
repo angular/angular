@@ -33,6 +33,7 @@ import {
 } from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {Subject} from 'rxjs';
 import {
   MAT_TOOLTIP_DEFAULT_OPTIONS,
   MatTooltip,
@@ -48,7 +49,7 @@ const initialTooltipMessage = 'initial tooltip message';
 describe('MatTooltip', () => {
   let overlayContainer: OverlayContainer;
   let overlayContainerElement: HTMLElement;
-  let dir: {value: Direction};
+  let dir: {value: Direction, change: Subject<Direction>};
   let platform: Platform;
   let focusMonitor: FocusMonitor;
 
@@ -66,7 +67,7 @@ describe('MatTooltip', () => {
       ],
       providers: [
         {provide: Directionality, useFactory: () => {
-          return dir = {value: 'ltr'};
+          return dir = {value: 'ltr', change: new Subject()};
         }}
       ]
     });
@@ -360,6 +361,19 @@ describe('MatTooltip', () => {
 
       assertTooltipInstance(tooltipDirective, true);
       expect(tooltipDirective._overlayRef!.updatePosition).toHaveBeenCalled();
+    }));
+
+    it('should update the tooltip position when the directionality changes', fakeAsync(() => {
+      tooltipDirective.position = 'right';
+      tooltipDirective.show();
+      tick();
+
+      assertTooltipInstance(tooltipDirective, true);
+      const spy = spyOn(tooltipDirective as any, '_updatePosition').and.callThrough();
+      dir.change.next('rtl');
+
+      assertTooltipInstance(tooltipDirective, true);
+      expect(spy).toHaveBeenCalled();
     }));
 
     it('should not throw when updating the position for a closed tooltip', fakeAsync(() => {
