@@ -765,24 +765,6 @@ groups:
       reviewed_for: required
 
   # =========================================================
-  #  DevTools
-  # =========================================================
-  devtools:
-    <<: *defaults
-    conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
-      - >
-        contains_any_globs(files, [
-          'aio/content/guide/devtools.md',
-          'aio/content/images/guide/devtools/**'
-          ])
-    reviewers:
-      users:
-        - mgechev
-        - twerske
-
-  # =========================================================
   #  Bazel
   # =========================================================
   bazel:
@@ -1029,6 +1011,23 @@ groups:
         - IgorMinar
         - jelbourn
 
+  # =========================================================
+  #  Docs: Angular DevTools
+  # =========================================================
+  docs-devtools:
+    <<: *defaults
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - >
+        contains_any_globs(files, [
+          'aio/content/guide/devtools.md',
+          'aio/content/images/guide/devtools/**'
+          ])
+    reviewers:
+      users:
+        - mgechev
+        - twerske
 
   # =========================================================
   #  Tooling: Compiler API shared with Angular CLI
