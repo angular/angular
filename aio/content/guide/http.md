@@ -856,7 +856,7 @@ The `CachingInterceptor` in the following example demonstrates this approach.
 </code-example>
 
 * The `isCacheable()` function determines if the request is cacheable.
-In this sample, only GET requests to the npm package search api are cacheable.
+In this sample, only GET requests to the npm package search API are cacheable.
 
 * If the request is not cacheable, the interceptor forwards the request
 to the next handler in the chain.
