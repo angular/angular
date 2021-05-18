@@ -159,6 +159,8 @@
     "!/testing",
     "!/testing/**",
     "!/config/**",
-    "!/strict"
+    "!/strict",
+    "!/devtools",
+    "!/devtools/**"
   ]
 }
