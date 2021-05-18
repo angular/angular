@@ -125,7 +125,7 @@
     "dgeni": "^0.4.14",
     "dgeni-packages": "^0.29.1",
     "entities": "^2.2.0",
-    "esbuild": "^0.11.4",
+    "esbuild": "^0.12.0",
     "eslint": "^7.23.0",
     "eslint-plugin-jasmine": "^4.1.2",
     "find-free-port": "^2.0.0",
