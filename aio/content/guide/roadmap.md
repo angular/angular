@@ -6,10 +6,6 @@ The projects below are not associated with a particular Angular version. We'll r
 
 ## In Progress
 
-### Accelerated debugging and performance profiling with Angular DevTools
-
-We are working on development tooling for Angular that will provide utilities for debugging and performance profiling. This project aims to help developers understand the component structure and the change detection in an Angular application.
-
 ### Improve test times and debugging with automatic test environment tear down
 
 To improve test time and create better isolation across tests, we want to change <code>[TestBed](https://angular.io/api/core/testing/TestBed)</code> to automatically clean up and tear down the test environment after each test run.
@@ -54,6 +50,10 @@ Earlier in 2020, we shared an [RFC](https://github.com/angular/angular/issues/38
 
 We want to ensure Angular developers are taking advantage of the latest capabilities of RxJS and have a smooth transition to the next major releases of the framework. For this purpose, we will explore and document the scope of the changes in v7 and beyond RxJS and plan an update strategy.
 
+### Simplified Angular mental model with optional NgModules
+
+To simplify the Angular mental model and learning journey, we’ll be working on making NgModules optional. This work will allow developers to develop standalone components and implement an alternative API for declaring the component’s compilation scope.
+
 ## Future
 
 ### Investigate micro frontend architecture for scalable development processes
@@ -76,16 +76,18 @@ Distributing the Angular compiler as a plugin of the TypeScript compiler will su
 
 A long-standing feature request is to add the ability to add directives to host elements. The feature will allow developers to augment their own components with additional behaviors without using inheritance. The project will require substantial effort in terms of the definition of APIs, semantics, and implementation.
 
-### Simplified Angular mental model with optional NgModules
-
-To simplify the Angular mental model and learning journey, we’ll be working on making NgModules optional. This work will allow developers to develop standalone components and implement an alternative API for declaring the component’s compilation scope.
-
 ### Ergonomic component level code-splitting APIs
 
 A common problem with web applications is their slow initial load time. A way to improve it is to apply more granular code-splitting on a component level. To encourage this practice, we’ll be working on more ergonomic code-splitting APIs.
 
 <details class="roadmap-done-details">
 <summary class="roadmap-done-summary">Done</summary>
+
+### Accelerated debugging and performance profiling with Angular DevTools
+
+_Completed Q2 2021_
+
+We are working on development tooling for Angular that will provide utilities for debugging and performance profiling. This project aims to help developers understand the component structure and the change detection in an Angular application.
 
 ### Streamline releases with consolidated Angular versioning & branching
 
