@@ -102,7 +102,8 @@ abstract class MatDateRangeInputPartBase<D>
     // itself. Usually we can work around it for the CVA, but there's no API to do it for the
     // validator. We work around it here by injecting the `NgControl` in `ngOnInit`, after
     // everything has been resolved.
-    const ngControl = this._injector.get(NgControl, null, InjectFlags.Self);
+    // tslint:disable-next-line:no-bitwise
+    const ngControl = this._injector.get(NgControl, null, InjectFlags.Self | InjectFlags.Optional);
 
     if (ngControl) {
       this.ngControl = ngControl;
