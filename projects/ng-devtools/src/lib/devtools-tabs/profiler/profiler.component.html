@@ -30,7 +30,7 @@
       <mat-icon> not_interested </mat-icon>
     </button>
     <p class="instructions" [class.hidden]="state !== 'idle'">
-      <span> Click the play button to start a new recording, or upload a json file containing profiler data. </span>
+      <span> Click the record button to start a new recording, or upload a json file containing profiler data. </span>
       <br />
       <span>
         <input type="file" (change)="importProfilerResults($event)" placeholder="Upload file" accept=".json" />
