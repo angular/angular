@@ -5,7 +5,7 @@
 @use '../../cdk/a11y';
 @use '../../material/core/style/layout-common';
 
-@include mdc-radio.without-ripple($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-radio.without-ripple($query: mdc-helpers.$mat-base-styles-without-animation-query);
 @include mdc-form-field.core-styles($query: mdc-helpers.$mat-base-styles-query);
 
 // This is necessary because we do not depend on MDC's ripple, but have our own that should be
@@ -19,6 +19,10 @@
   .mat-ripple-element:not(.mat-radio-persistent-ripple) {
     opacity: mdc-radio-theme.$ripple-opacity;
   }
+}
+
+.mat-mdc-radio-button:not(._mat-animation-noopable) {
+  @include mdc-radio.without-ripple($query: animation);
 }
 
 // Note that this creates a square box around the circle, however it's consistent with
