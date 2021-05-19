@@ -114,7 +114,7 @@ And in the same file, add it to the `@NgModule` `declarations` array:
 
 Now you could use your `ItemDirective` in a component. This example uses `AppModule`, but you'd do it the same way for a feature module. For more about directives, see [Attribute Directives](guide/attribute-directives) and [Structural Directives](guide/structural-directives). You'd also use the same technique for [pipes](guide/pipes) and components.
 
-Remember, components, directives, and pipes belong to one module only. You only need to declare them once in your app because you share them by importing the necessary modules. This saves you time and helps keep your app lean.
+Remember, components, directives, and pipes belong to one module only. You only need to declare them once in your application because you share them by importing the necessary modules. This saves you time and helps keep your application lean.
 
 {@a imports}
 
@@ -143,7 +143,7 @@ the class was imported from another module.
 
 ## The `providers` array
 
-The providers array is where you list the services the app needs. When
+The providers array is where you list the services the application needs. When
 you list services here, they are available app-wide. You can scope
 them when using feature modules and lazy loading. For more information, see
 [Providers](guide/providers).
@@ -169,5 +169,5 @@ root module's `bootstrap` array.
 
 ## More about Angular Modules
 
-For more on NgModules you're likely to see frequently in apps,
+For more on NgModules you're likely to see frequently in applications,
 see [Frequently Used Modules](guide/frequent-ngmodules).
