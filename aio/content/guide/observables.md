@@ -11,7 +11,7 @@ The subscribed consumer then receives notifications until the function completes
 
 An observable can deliver multiple values of any type&mdash;literals, messages, or events, depending on the context. The API for receiving values is the same whether the values are delivered synchronously or asynchronously. Because setup and teardown logic are both handled by the observable, your application code only needs to worry about subscribing to consume values, and when done, unsubscribing. Whether the stream was keystrokes, an HTTP response, or an interval timer, the interface for listening to values and stopping listening is the same.
 
-Because of these advantages, observables are used extensively within Angular, and for app development as well.
+Because of these advantages, observables are used extensively within Angular, and for application development as well.
 
 ## Basic usage and terms
 
