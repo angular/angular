@@ -6,7 +6,7 @@
 
 .example-table-container {
   position: relative;
-  height: 400px;
+  max-height: 400px;
   overflow: auto;
 }
 

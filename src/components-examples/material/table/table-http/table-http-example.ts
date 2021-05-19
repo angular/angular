@@ -16,7 +16,7 @@ import {catchError, map, startWith, switchMap} from 'rxjs/operators';
 export class TableHttpExample implements AfterViewInit {
   displayedColumns: string[] = ['created', 'state', 'number', 'title'];
   exampleDatabase: ExampleHttpDatabase | null;
-  filteredAndPagedIssues: Observable<GithubIssue[]>;
+  data: GithubIssue[] = [];
 
   resultsLength = 0;
   isLoadingResults = true;
@@ -30,7 +30,10 @@ export class TableHttpExample implements AfterViewInit {
   ngAfterViewInit() {
     this.exampleDatabase = new ExampleHttpDatabase(this._httpClient);
 
-    this.filteredAndPagedIssues = merge(this.sort.sortChange, this.paginator.page)
+    // If the user changes the sort order, reset back to the first page.
+    this.sort.sortChange.subscribe(() => this.paginator.pageIndex = 0);
+
+    merge(this.sort.sortChange, this.paginator.page)
       .pipe(
         startWith({}),
         switchMap(() => {
@@ -52,11 +55,7 @@ export class TableHttpExample implements AfterViewInit {
           this.isRateLimitReached = true;
           return observableOf([]);
         })
-      );
-  }
-
-  resetPaging(): void {
-    this.paginator.pageIndex = 0;
+      ).subscribe(data => this.data = data);
   }
 }
 
