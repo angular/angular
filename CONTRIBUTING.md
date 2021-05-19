@@ -65,7 +65,8 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 
 - Search [GitHub](https://github.com/rangle/angular-devtools/pulls) for an open or closed PR
   that relates to your submission. You don't want to duplicate effort.
-- Make your changes in a new git branch:
+- [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the rangle/angular-devtools repo.
+- In your forked repository, make your changes in a new git branch:
 
   ```shell
   git checkout -b my-fix-branch main
