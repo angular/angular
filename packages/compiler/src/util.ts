@@ -6,11 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool} from './constant_pool';
-
-import * as o from './output/output_ast';
-import {ParseError} from './parse_util';
-
 const DASH_CASE_REGEXP = /-+([a-z0-9])/g;
 
 export function dashCaseToCamelCase(input: string): string {
@@ -104,24 +99,6 @@ export function error(msg: string): never {
   throw new Error(`Internal Error: ${msg}`);
 }
 
-export function syntaxError(msg: string, parseErrors?: ParseError[]): Error {
-  const error = Error(msg);
-  (error as any)[ERROR_SYNTAX_ERROR] = true;
-  if (parseErrors) (error as any)[ERROR_PARSE_ERRORS] = parseErrors;
-  return error;
-}
-
-const ERROR_SYNTAX_ERROR = 'ngSyntaxError';
-const ERROR_PARSE_ERRORS = 'ngParseErrors';
-
-export function isSyntaxError(error: Error): boolean {
-  return (error as any)[ERROR_SYNTAX_ERROR];
-}
-
-export function getParseErrors(error: Error): ParseError[] {
-  return (error as any)[ERROR_PARSE_ERRORS] || [];
-}
-
 // Escape characters that have a special meaning in Regular Expressions
 export function escapeRegExp(s: string): string {
   return s.replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
@@ -164,13 +141,6 @@ export function utf8Encode(str: string): Byte[] {
   }
 
   return encoded;
-}
-
-export interface OutputContext {
-  genFilePath: string;
-  statements: o.Statement[];
-  constantPool: ConstantPool;
-  importExpr(reference: any, typeParams?: o.Type[]|null, useSummaries?: boolean): o.Expression;
 }
 
 export function stringify(token: any): string {

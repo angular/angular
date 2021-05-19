@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotSummaryResolver, AotSummaryResolverHost, CompileSummaryKind, CompileTypeSummary, ResolvedStaticSymbol, StaticSymbol, StaticSymbolCache, StaticSymbolResolver} from '@angular/compiler';
-import {deserializeSummaries, serializeSummaries} from '@angular/compiler/src/aot/summary_serializer';
-import {ConstantPool} from '@angular/compiler/src/constant_pool';
+import {AotSummaryResolver, AotSummaryResolverHost, ResolvedStaticSymbol, StaticSymbolCache, StaticSymbolResolver} from '@angular/compiler';
+import {serializeSummaries} from '@angular/compiler/src/aot/summary_serializer';
+import {ConstantPool, OutputContext} from '@angular/compiler/src/constant_pool';
 import * as o from '@angular/compiler/src/output/output_ast';
-import {OutputContext} from '@angular/compiler/src/util';
 import * as path from 'path';
 
 import {MockStaticSymbolResolverHost, MockSummaryResolver} from './static_symbol_resolver_spec';
