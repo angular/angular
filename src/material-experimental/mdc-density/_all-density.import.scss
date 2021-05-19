@@ -2,16 +2,13 @@
 @forward '../mdc-helpers/mdc-helpers.import';
 @forward '../mdc-helpers/mdc-helpers';
 @forward '../../material/core/core.import';
-@forward '../mdc-button/button-theme' hide color, density, fab-color, fab-density, fab-theme,
-fab-typography, icon-button-color, icon-button-density, icon-button-theme, icon-button-typography,
-theme, typography;
+@forward '../mdc-button/button-theme' hide color, density, theme, typography;
 @forward '../mdc-button/button-theme' as mat-mdc-* hide $mat-mdc-mat-button-state-target,
 mat-mdc-color, mat-mdc-density, mat-mdc-theme, mat-mdc-typography;
 @forward '../mdc-button/button-theme' as mat-mdc-button-* hide
-$mat-mdc-button-mat-button-state-target, mat-mdc-button-fab-color, mat-mdc-button-fab-density,
-mat-mdc-button-fab-theme, mat-mdc-button-fab-typography, mat-mdc-button-icon-button-color,
-mat-mdc-button-icon-button-density, mat-mdc-button-icon-button-theme,
-mat-mdc-button-icon-button-typography;
+$mat-mdc-button-mat-button-state-target;
+@forward '../mdc-button/fab-theme' as mat-mdc-fab-*;
+@forward '../mdc-button/icon-button-theme' as mat-mdc-icon-button-*;
 @forward '../mdc-card/card-theme' hide color, density, theme, typography;
 @forward '../mdc-card/card-theme' as mat-mdc-card-* hide $mat-mdc-card-mdc-card-action-icon-color,
 $mat-mdc-card-mdc-card-outline-color;

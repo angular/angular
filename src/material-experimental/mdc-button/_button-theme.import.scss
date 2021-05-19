@@ -1,19 +1,16 @@
 @forward '../mdc-helpers/mdc-helpers.import';
 @forward '../../material/core/ripple/ripple.import';
 @forward '../mdc-helpers/mdc-helpers';
-@forward 'button-theme' hide color, density, fab-color, fab-density, fab-theme, fab-typography,
-icon-button-color, icon-button-density, icon-button-theme, icon-button-typography, theme,
-typography;
+@forward 'button-theme' hide color, density, theme, typography;
 @forward 'button-theme' as mat-mdc-* hide $mat-mdc-mat-button-state-target, mat-mdc-color,
 mat-mdc-density, mat-mdc-mat-button-apply-disabled-style, mat-mdc-mat-button-disabled-background,
 mat-mdc-mat-button-disabled-color, mat-mdc-mat-button-ripple-ink-color, mat-mdc-theme,
 mat-mdc-typography;
 @forward 'button-theme' as mat-mdc-button-* hide $mat-mdc-button-mat-button-state-target,
-mat-mdc-button-fab-color, mat-mdc-button-fab-density, mat-mdc-button-fab-theme,
-mat-mdc-button-fab-typography, mat-mdc-button-icon-button-color, mat-mdc-button-icon-button-density,
-mat-mdc-button-icon-button-theme, mat-mdc-button-icon-button-typography,
 mat-mdc-button-mat-button-apply-disabled-style, mat-mdc-button-mat-button-disabled-background,
 mat-mdc-button-mat-button-disabled-color, mat-mdc-button-mat-button-ripple-ink-color;
+@forward 'fab-theme' as mat-mdc-fab-*;
+@forward 'icon-button-theme' as mat-mdc-icon-button-*;
 
 @import '../../material/core/ripple/ripple';
 @import '../mdc-helpers/mdc-helpers';

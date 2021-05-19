@@ -1,6 +1,8 @@
 @use '../mdc-core/core-theme';
 @use '../mdc-autocomplete/autocomplete-theme';
 @use '../mdc-button/button-theme';
+@use '../mdc-button/fab-theme';
+@use '../mdc-button/icon-button-theme';
 @use '../mdc-card/card-theme';
 @use '../mdc-checkbox/checkbox-theme';
 @use '../mdc-chips/chips-theme';
@@ -29,8 +31,8 @@
     @include autocomplete-theme.theme($theme-or-color-config);
     @include button-theme.theme($theme-or-color-config);
     @include dialog-theme.theme($theme-or-color-config);
-    @include button-theme.fab-theme($theme-or-color-config);
-    @include button-theme.icon-button-theme($theme-or-color-config);
+    @include fab-theme.theme($theme-or-color-config);
+    @include icon-button-theme.theme($theme-or-color-config);
     @include card-theme.theme($theme-or-color-config);
     @include checkbox-theme.theme($theme-or-color-config);
     @include chips-theme.theme($theme-or-color-config);
