@@ -7,7 +7,6 @@
  */
 
 import * as o from './output/output_ast';
-import {error, OutputContext} from './util';
 
 const CONSTANT_PREFIX = '_c';
 
@@ -274,6 +273,13 @@ export class ConstantPool {
   private keyOf(expression: o.Expression) {
     return expression.visitExpression(new KeyVisitor(), KEY_CONTEXT);
   }
+}
+
+export interface OutputContext {
+  genFilePath: string;
+  statements: o.Statement[];
+  constantPool: ConstantPool;
+  importExpr(reference: any, typeParams?: o.Type[]|null, useSummaries?: boolean): o.Expression;
 }
 
 /**

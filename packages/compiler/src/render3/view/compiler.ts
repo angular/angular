@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveSummary, sanitizeIdentifier} from '../../compile_metadata';
+import {CompileDirectiveSummary} from '../../compile_metadata';
 import {BindingForm, convertPropertyBinding} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
 import {AST, ParsedEvent, ParsedEventType, ParsedProperty} from '../../expression_parser/ast';
 import * as o from '../../output/output_ast';
-import {ParseError, ParseSourceSpan} from '../../parse_util';
+import {ParseError, ParseSourceSpan, sanitizeIdentifier} from '../../parse_util';
 import {CssSelector, SelectorMatcher} from '../../selector';
 import {ShadowCss} from '../../shadow_css';
 import {CONTENT_ATTR, HOST_ATTR} from '../../style_compiler';
