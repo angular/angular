@@ -6,22 +6,11 @@ labels: bug
 assignees: ''
 ---
 
-_Description:_
-
-...
-
-**Angular Devtools version (required)**:
+**Angular DevTools version (required)**:
 
 **Angular version (required):**
 
-**Date:**
-
-**OS:**
-
-_Demo test application:_
-
-- Git repository for demo app showing the issue (optional but very helpful for difficult issues).
-- If a code snippet will completely show the issue, please include it.
+**Link to a minimal stackblitz reproduction (strongly encouraged):**
 
 _Description of issue:_
 
@@ -36,5 +25,3 @@ _Steps to reproduce:_
 3.
 
 _Additional details:_
-
-....
