@@ -1,3 +1,25 @@
+<a name="12.0.1"></a>
+# 12.0.1 (2021-05-19)
+### benchpress
+| Commit | Description |
+| -- | -- |
+| 28ee9864a4 | fix(benchpress): update the check for start and end events (#42085) |
+### compiler
+| Commit | Description |
+| -- | -- |
+| 52c07e403e | fix(compiler): unclear lexer error when using private identifier in expressions (#42027) |
+### core
+| Commit | Description |
+| -- | -- |
+| 3a46ad96ea | fix(core): global listeners not being bound on non-node host elements (#42014) |
+### forms
+| Commit | Description |
+| -- | -- |
+| 9b90c03a9f | fix(forms): registerOnValidatorChange should be called for ngModelGroup. (#41971) |
+## Special Thanks:
+Alex Rickabaugh, Daniel Díaz, David Shevitz, Dylan Hunn, Front-end developer, George Kalpakas, Joey Perrott, Kristiyan Kostadinov, Lars Gyrup Brink Nielsen, MrJithil, Paul Gschwendtner, Renovate Bot, Sam Severance, Sumit Arora, iRealNirmal, iron, mgechev, rachid Oussanaa and wagnermaciel
+
+
 <a name="12.0.0"></a>
 # 12.0.0 (2021-05-12)
 
