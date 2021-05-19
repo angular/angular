@@ -10,12 +10,12 @@ var fs = require('fs');
 var inquirer = require('inquirer');
 var path = require('path');
 var child_process = require('child_process');
-var semver = require('semver');
 var graphql = require('@octokit/graphql');
 var Octokit = require('@octokit/rest');
 var typedGraphqlify = require('typed-graphqlify');
 var url = require('url');
 var fetch = _interopDefault(require('node-fetch'));
+var semver = require('semver');
 var multimatch = require('multimatch');
 var yaml = require('yaml');
 var conventionalCommitsParser = require('conventional-commits-parser');
@@ -520,16 +520,6 @@ var GitClient = /** @class */ (function () {
             this.runGraceful(['reset', '--hard'], { stdio: 'ignore' });
         }
         return this.runGraceful(['checkout', branchOrRevision], { stdio: 'ignore' }).status === 0;
-    };
-    /** Gets the latest git tag on the current branch that matches SemVer. */
-    GitClient.prototype.getLatestSemverTag = function () {
-        var semVerOptions = { loose: true };
-        var tags = this.runGraceful(['tag', '--sort=-committerdate', '--merged']).stdout.split('\n');
-        var latestTag = tags.find(function (tag) { return semver.parse(tag, semVerOptions); });
-        if (latestTag === undefined) {
-            throw new Error("Unable to find a SemVer matching tag on \"" + this.getCurrentBranchOrRevision() + "\"");
-        }
-        return new semver.SemVer(latestTag, semVerOptions);
     };
     /** Retrieve a list of all files in the repostitory changed since the provided shaOrRef. */
     GitClient.prototype.allChangesFilesSince = function (shaOrRef) {
@@ -5510,6 +5500,52 @@ function semverInc(version, release, identifier) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+/** Regular expression that matches version tags. */
+const versionTagRegex = /^v?(\d+)\.(\d+)\.(\d+)(\-(alpha|beta|next|rc)\.\d+)?$/;
+/** Whether the provided tag is a version tag. */
+function isVersionTag(tag) {
+    return versionTagRegex.test(tag);
+}
+/**
+ * Get the filter and sorted list of tags from the provided list of tags foor the provided major
+ * versions.
+ */
+function filterAndSortVersionTags(tags) {
+    const versionTags = [];
+    for (const tag of tags) {
+        if (!isVersionTag(tag)) {
+            continue;
+        }
+        const parsed = semver.parse(tag);
+        if (parsed === null) {
+            continue;
+        }
+        versionTags.push({ tag, parsed });
+    }
+    return versionTags.sort((a, b) => semver.rcompare(a.parsed, b.parsed));
+}
+/** Retrieve the all semver matching tags from the current branch on git. */
+function getSemverTagsFromGit(git = GitClient.getInstance()) {
+    const tagsFromGit = git.runGraceful(['tag', '--merged']).stdout.split('\n');
+    return filterAndSortVersionTags(tagsFromGit);
+}
+/** Retrieve the latest semver matching tag from the current branch on git. */
+function getLatestSemverTagFromGit() {
+    const git = GitClient.getInstance();
+    const latestTag = getSemverTagsFromGit()[0];
+    if (latestTag === undefined) {
+        throw new Error(`Unable to find a SemVer matching tag on "${git.getCurrentBranchOrRevision()}"`);
+    }
+    return latestTag;
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 /** Gets the commit message for a new release point in the project. */
 function getCommitMessageForRelease(newVersion) {
     return `release: cut the v${newVersion} release`;
@@ -6210,7 +6246,7 @@ class ReleaseAction {
      */
     stageVersionForBranchAndCreatePullRequest(newVersion, pullRequestBaseBranch) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
-            const releaseNotes = yield ReleaseNotes.fromRange(newVersion, this.git.getLatestSemverTag().format(), 'HEAD');
+            const releaseNotes = yield ReleaseNotes.fromRange(newVersion, getLatestSemverTagFromGit().tag, 'HEAD');
             yield this.updateProjectVersion(newVersion);
             yield this.prependReleaseNotesToChangelog(releaseNotes);
             yield this.waitForEditsAndCreateReleaseCommit(newVersion);

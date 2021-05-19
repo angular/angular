@@ -83,15 +83,6 @@ export class VirtualGitClient<Authenticated extends boolean> extends GitClient<A
   /** List of pushed heads to a given remote ref. */
   pushed: {remote: RemoteRef, head: GitHead}[] = [];
 
-
-  /**
-   * Override the actual GitClient getLatestSemverTag, as an actual tag cannot be retrieved in
-   * testing.
-   */
-  getLatestSemverTag() {
-    return new SemVer('0.0.0');
-  }
-
   /** Override for the actual Git client command execution. */
   runGraceful(args: string[], options: SpawnSyncOptions = {}): SpawnSyncReturns<string> {
     const [command, ...rawArgs] = args;

@@ -6,7 +6,6 @@ var path = require('path');
 var chalk = require('chalk');
 require('inquirer');
 var child_process = require('child_process');
-var semver = require('semver');
 var graphql = require('@octokit/graphql');
 var Octokit = require('@octokit/rest');
 var typedGraphqlify = require('typed-graphqlify');
@@ -352,16 +351,6 @@ var GitClient = /** @class */ (function () {
             this.runGraceful(['reset', '--hard'], { stdio: 'ignore' });
         }
         return this.runGraceful(['checkout', branchOrRevision], { stdio: 'ignore' }).status === 0;
-    };
-    /** Gets the latest git tag on the current branch that matches SemVer. */
-    GitClient.prototype.getLatestSemverTag = function () {
-        var semVerOptions = { loose: true };
-        var tags = this.runGraceful(['tag', '--sort=-committerdate', '--merged']).stdout.split('\n');
-        var latestTag = tags.find(function (tag) { return semver.parse(tag, semVerOptions); });
-        if (latestTag === undefined) {
-            throw new Error("Unable to find a SemVer matching tag on \"" + this.getCurrentBranchOrRevision() + "\"");
-        }
-        return new semver.SemVer(latestTag, semVerOptions);
     };
     /** Retrieve a list of all files in the repostitory changed since the provided shaOrRef. */
     GitClient.prototype.allChangesFilesSince = function (shaOrRef) {

@@ -248,19 +248,6 @@ export class GitClient<Authenticated extends boolean> {
     return this.runGraceful(['checkout', branchOrRevision], {stdio: 'ignore'}).status === 0;
   }
 
-  /** Gets the latest git tag on the current branch that matches SemVer. */
-  getLatestSemverTag(): SemVer {
-    const semVerOptions: SemVerOptions = {loose: true};
-    const tags = this.runGraceful(['tag', '--sort=-committerdate', '--merged']).stdout.split('\n');
-    const latestTag = tags.find((tag: string) => parse(tag, semVerOptions));
-
-    if (latestTag === undefined) {
-      throw new Error(
-          `Unable to find a SemVer matching tag on "${this.getCurrentBranchOrRevision()}"`);
-    }
-    return new SemVer(latestTag, semVerOptions);
-  }
-
   /** Retrieve a list of all files in the repostitory changed since the provided shaOrRef. */
   allChangesFilesSince(shaOrRef = 'HEAD'): string[] {
     return Array.from(new Set([

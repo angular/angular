@@ -18,6 +18,7 @@ import {BuiltPackage, ReleaseConfig} from '../config/index';
 import {NpmDistTag} from '../versioning';
 import {ActiveReleaseTrains} from '../versioning/active-release-trains';
 import {runNpmPublish} from '../versioning/npm-publish';
+import {getLatestSemverTagFromGit} from '../versioning/version-tags';
 
 import {FatalReleaseActionError, UserAbortedReleaseActionError} from './actions-error';
 import {getCommitMessageForRelease, getReleaseNoteCherryPickCommitMessage} from './commit-message';
@@ -352,7 +353,7 @@ export abstract class ReleaseAction {
       newVersion: semver.SemVer, pullRequestBaseBranch: string):
       Promise<{releaseNotes: ReleaseNotes, pullRequest: PullRequest}> {
     const releaseNotes =
-        await ReleaseNotes.fromRange(newVersion, this.git.getLatestSemverTag().format(), 'HEAD');
+        await ReleaseNotes.fromRange(newVersion, getLatestSemverTagFromGit().tag, 'HEAD');
     await this.updateProjectVersion(newVersion);
     await this.prependReleaseNotesToChangelog(releaseNotes);
     await this.waitForEditsAndCreateReleaseCommit(newVersion);
