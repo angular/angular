@@ -1,3 +1,4 @@
+@use 'sass:map';
 @use '@material/theme/theme-color' as mdc-theme-color;
 @use '@material/data-table/data-table' as mdc-data-table;
 @use '@material/data-table/data-table-theme' as mdc-data-table-theme;
@@ -41,6 +42,11 @@
   mdc-data-table-theme.$sort-icon-color: $orig-sort-icon-color;
   mdc-data-table-theme.$sort-icon-active-color: $orig-sort-icon-active-color;
   mdc-data-table-theme.$stroke-color: $orig-stroke-color;
+
+  .mat-mdc-table {
+    $background: map.get($config, background);
+    background: theming.get-color-from-palette($background, 'card');
+  }
 }
 
 @mixin typography($config-or-theme) {

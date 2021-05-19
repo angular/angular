@@ -17,7 +17,7 @@
 // change since the table did not previously apply it.
 // TODO: Add a mixin to MDC to set the layout instead of including this override,
 // see this issue: https://github.com/material-components/material-components-web/issues/6412
-.mdc-data-table__table {
+.mat-mdc-table {
   table-layout: auto;
 }
 
@@ -26,4 +26,19 @@
 // border.
 mat-row.mat-mdc-row, mat-header-row.mat-mdc-header-row, mat-footer-row.mat-mdc-footer-row {
   border-bottom: none;
+}
+
+// Cells need to inherit their background in order to overlap each other when sticky.
+// The background needs to be inherited from the table, tbody/tfoot, row
+// (already set in MDC), and cell.
+.mat-mdc-table tbody, .mat-mdc-table tfoot,
+.mat-mdc-cell, .mat-mdc-footer-cell {
+  background: inherit;
+}
+
+// Disable hover styling while MDC uses an opacity for its color.
+// When the hover style is used with sticky cells, the opacity shows the cells overlapping.
+.mat-mdc-table .mat-mdc-row:hover,
+.mat-mdc-table .mat-mdc-footer-row:hover {
+  background-color: inherit;
 }
