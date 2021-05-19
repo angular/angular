@@ -23,5 +23,8 @@ export const format: FormatConfig = {
       '!packages/compiler-cli/test/compliance/test_cases/**/*.js',
     ]
   },
+  'prettier': {
+    'matchers': ['**/*.{json,yml,yaml,md}'],
+  },
   'buildifier': true
 };
