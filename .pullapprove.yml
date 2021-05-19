@@ -37,7 +37,6 @@
 # See reviewer list under `required-minimum-review` group.  Team member names and
 # usernames are managed there.
 
-
 ####################################################################################
 #  Approval Groups
 ####################################################################################
@@ -61,7 +60,6 @@
 # kapunahelewong
 # petebacondarwin
 
-
 version: 3
 
 # Meta field that goes unused by PullApprove to allow for defining aliases to be
@@ -79,15 +77,12 @@ meta:
   #
   # Also note that the ordering of groups matters in this file. The only groups visible to the current
   # one are those that appear above it.
-  no-groups-above-this-pending: &no-groups-above-this-pending
-    len(groups.active.pending.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
-  no-groups-above-this-rejected: &no-groups-above-this-rejected
-    len(groups.active.rejected.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
-  no-groups-above-this-active: &no-groups-above-this-active
-    len(groups.active.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
+  no-groups-above-this-pending: &no-groups-above-this-pending len(groups.active.pending.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
+  no-groups-above-this-rejected: &no-groups-above-this-rejected len(groups.active.rejected.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
+  no-groups-above-this-active: &no-groups-above-this-active len(groups.active.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
 
-  can-be-global-approved: &can-be-global-approved "\"global-approvers\" not in groups.approved"
-  can-be-global-docs-approved: &can-be-global-docs-approved "\"global-docs-approvers\" not in groups.approved"
+  can-be-global-approved: &can-be-global-approved '"global-approvers" not in groups.approved'
+  can-be-global-docs-approved: &can-be-global-docs-approved '"global-docs-approvers" not in groups.approved'
   defaults: &defaults
     reviews:
       # Authors provide their approval implicitly, this approval allows for a reviewer
@@ -100,25 +95,24 @@ meta:
 # turn on 'draft' support
 # https://docs.pullapprove.com/config/github-api-version/
 # https://developer.github.com/v3/previews/#draft-pull-requests
-github_api_version: "shadow-cat-preview"
+github_api_version: 'shadow-cat-preview'
 
 pullapprove_conditions:
   # For PRs which are still being worked on, either still in draft mode or indicated through WIP in
   # title or label, PullApprove stays in a pending state until its ready for review.
   - condition: "'WIP' not in title"
     unmet_status: pending
-    explanation: "Waiting to send reviews as PR is WIP"
+    explanation: 'Waiting to send reviews as PR is WIP'
   - condition: "'PR state: WIP' not in labels"
     unmet_status: pending
-    explanation: "Waiting to send reviews as PR is WIP"
-  - condition: "not draft"
+    explanation: 'Waiting to send reviews as PR is WIP'
+  - condition: 'not draft'
     unmet_status: pending
-    explanation: "Waiting to send reviews as PR is in draft"
+    explanation: 'Waiting to send reviews as PR is in draft'
   # Disable PullApprove on specific PRs by adding the `PullApprove: disable` label
   - condition: "'PullApprove: disable' not in labels"
     unmet_status: success
     explanation: "PullApprove skipped because of 'PullApprove: disable' label"
-
 
 groups:
   # =========================================================
@@ -175,41 +169,41 @@ groups:
       reviewed_for: ignored # All reviews apply to this group whether noted via Reviewed-for or not
     reviewers:
       users:
-         - aikidave                # Dave Shevitz
-         - alan-agius4             # Alan Agius
-         - alxhub                  # Alex Rickabaugh
-         - AndrewKushnir           # Andrew Kushnir
-         - andrewseguin            # Andrew Seguin
-         - atscott                 # Andrew Scott
-         - ayazhafiz               # Ayaz Hafiz
-         - clydin                  # Charles Lyding
-         - crisbeto                # Kristiyan Kostadinov
-         - dennispbrown            # Denny Brown
-         - devversion              # Paul Gschwendtner
-         - dgp1130                 # Doug Parker
-         - filipesilva             # Filipe Silva
-         - gkalpak                 # Georgios Kalpakas
-         - gregmagolan             # Greg Magolan
-         - IgorMinar               # Igor Minar
-         - jbogarthyde             # Judy Bogart
-         - jelbourn                # Jeremy Elbourn
-         - jessicajaniuk           # Jessica Janiuk
-         - JiaLiPassion            # Jia Li
-         - JoostK                  # Joost Koehoorn
-         - josephperrott           # Joey Perrott
-         - juleskremer             # Jules Kremer
-         - kapunahelewong          # Kapunahele Wong
-         - kara                    # Kara Erickson
-         - kyliau                  # Keen Yee Liau
-         - manughub                # Manu Murthy
-         - mgechev                 # Minko Gechev
-         - mhevery                 # Miško Hevery
-         - mmalerba                # Miles Malerba
-         - petebacondarwin         # Pete Bacon Darwin
-         - pkozlowski-opensource   # Pawel Kozlowski
-         - Splaktar                # Michael Prentice
-         - twerske                 # Emma Twersky
-         - zarend                  # Zach Arend
+        - aikidave # Dave Shevitz
+        - alan-agius4 # Alan Agius
+        - alxhub # Alex Rickabaugh
+        - AndrewKushnir # Andrew Kushnir
+        - andrewseguin # Andrew Seguin
+        - atscott # Andrew Scott
+        - ayazhafiz # Ayaz Hafiz
+        - clydin # Charles Lyding
+        - crisbeto # Kristiyan Kostadinov
+        - dennispbrown # Denny Brown
+        - devversion # Paul Gschwendtner
+        - dgp1130 # Doug Parker
+        - filipesilva # Filipe Silva
+        - gkalpak # Georgios Kalpakas
+        - gregmagolan # Greg Magolan
+        - IgorMinar # Igor Minar
+        - jbogarthyde # Judy Bogart
+        - jelbourn # Jeremy Elbourn
+        - jessicajaniuk # Jessica Janiuk
+        - JiaLiPassion # Jia Li
+        - JoostK # Joost Koehoorn
+        - josephperrott # Joey Perrott
+        - juleskremer # Jules Kremer
+        - kapunahelewong # Kapunahele Wong
+        - kara # Kara Erickson
+        - kyliau # Keen Yee Liau
+        - manughub # Manu Murthy
+        - mgechev # Minko Gechev
+        - mhevery # Miško Hevery
+        - mmalerba # Miles Malerba
+        - petebacondarwin # Pete Bacon Darwin
+        - pkozlowski-opensource # Pawel Kozlowski
+        - Splaktar # Michael Prentice
+        - twerske # Emma Twersky
+        - zarend # Zach Arend
 
   # =========================================================
   #  Framework: Animations
@@ -237,7 +231,6 @@ groups:
         - IgorMinar
         - jelbourn
 
-
   # =========================================================
   #  Framework: Compiler
   # =========================================================
@@ -262,7 +255,6 @@ groups:
         - AndrewKushnir
         - JoostK
 
-
   # =========================================================
   #  Framework: Compiler / ngcc
   # =========================================================
@@ -279,7 +271,6 @@ groups:
         - JoostK
         - petebacondarwin
 
-
   # =========================================================
   #  Framework: Migrations
   # =========================================================
@@ -294,7 +285,6 @@ groups:
         - alxhub
         - crisbeto
         - devversion
-
 
   # =========================================================
   #  Framework: Core
@@ -431,11 +421,10 @@ groups:
         - alxhub
         - AndrewKushnir
         - atscott
-        - ~kara  # do not request reviews from Kara, but allow her to approve PRs
+        - ~kara # do not request reviews from Kara, but allow her to approve PRs
         - mhevery
         - jessicajaniuk
         # OOO as of 2020-09-28 - pkozlowski-opensource
-
 
   # =========================================================
   #  Framework: Common
@@ -460,7 +449,6 @@ groups:
         - jessicajaniuk
         # OOO as of 2020-09-28 - pkozlowski-opensource
 
-
   # =========================================================
   #  Framework: Http
   # =========================================================
@@ -483,7 +471,6 @@ groups:
         - IgorMinar
         - petebacondarwin
 
-
   # =========================================================
   #  Framework: Elements
   # =========================================================
@@ -503,7 +490,6 @@ groups:
       users:
         - andrewseguin
         - gkalpak
-
 
   # =========================================================
   #  Framework: Forms
@@ -536,7 +522,6 @@ groups:
     reviewers:
       users:
         - AndrewKushnir
-
 
   # =========================================================
   #  Framework: i18n
@@ -571,7 +556,6 @@ groups:
         - mhevery
         - petebacondarwin
 
-
   # =========================================================
   #  Framework: Platform Server
   # =========================================================
@@ -590,7 +574,6 @@ groups:
       users:
         - alxhub
         - kyliau
-
 
   # =========================================================
   #  Framework: Router
@@ -616,7 +599,6 @@ groups:
     reviewers:
       users:
         - atscott
-
 
   # =========================================================
   #  Framework: Service Worker
@@ -644,7 +626,6 @@ groups:
         - alxhub
         - gkalpak
         - IgorMinar
-
 
   # =========================================================
   #  Framework: Upgrade
@@ -676,7 +657,6 @@ groups:
         - gkalpak
         - petebacondarwin
 
-
   # =========================================================
   #  Framework: Testing
   # =========================================================
@@ -706,7 +686,6 @@ groups:
         - IgorMinar
         # OOO as of 2020-09-28 - pkozlowski-opensource
 
-
   # =========================================================
   #  Framework: Benchmarks
   # =========================================================
@@ -722,7 +701,6 @@ groups:
       users:
         - IgorMinar
         # OOO as of 2020-09-28 - pkozlowski-opensource
-
 
   # =========================================================
   #  Framework: Playground
@@ -740,7 +718,6 @@ groups:
         - IgorMinar
         - jelbourn
         # OOO as of 2020-09-28 - pkozlowski-opensource
-
 
   # =========================================================
   #  Framework: Security
@@ -767,8 +744,8 @@ groups:
         - jelbourn
         # OOO as of 2020-09-28 - pkozlowski-opensource
     reviews:
-      request: -1   # request reviews from everyone
-      required: 2   # require at least 2 approvals
+      request: -1 # request reviews from everyone
+      required: 2 # require at least 2 approvals
       reviewed_for: required
 
   # =========================================================
@@ -789,7 +766,6 @@ groups:
         - josephperrott
         - kyliau
 
-
   # =========================================================
   #  Language Service
   # =========================================================
@@ -809,7 +785,6 @@ groups:
         - kyliau
         - atscott
         - zarend
-
 
   # =========================================================
   #  zone.js
@@ -862,7 +837,6 @@ groups:
         - alxhub
         - josephperrott
 
-
   # =========================================================
   #  Integration Tests
   # =========================================================
@@ -879,7 +853,6 @@ groups:
         - IgorMinar
         - josephperrott
         - mhevery
-
 
   # =========================================================
   #  Docs: Contributors
@@ -898,7 +871,6 @@ groups:
       users:
         - mgechev
         - twerske
-
 
   # =========================================================
   #  Docs: Gettings Started & Tutorial
@@ -933,7 +905,6 @@ groups:
         - aikidave
         - IgorMinar
         - jelbourn
-
 
   # =========================================================
   #  Docs: Marketing
@@ -982,7 +953,6 @@ groups:
     reviewers:
       users:
         - alxhub
-
 
   # =========================================================
   #  Docs: Packaging, Tooling, Releasing
@@ -1057,10 +1027,9 @@ groups:
         - kyliau
         - IgorMinar
     reviews:
-      request: -1   # request reviews from everyone
-      required: 2   # require at least 2 approvals
+      request: -1 # request reviews from everyone
+      required: 2 # require at least 2 approvals
       reviewed_for: required
-
 
   # =========================================================
   #  Docs: CLI
@@ -1097,7 +1066,6 @@ groups:
         - IgorMinar
         - mgechev
 
-
   # =========================================================
   #  Docs: CLI Libraries
   # =========================================================
@@ -1117,7 +1085,6 @@ groups:
         - alan-agius4
         - IgorMinar
         - mgechev
-
 
   # =========================================================
   #  Docs: Schematics
@@ -1140,7 +1107,6 @@ groups:
         - alan-agius4
         - IgorMinar
         - mgechev
-
 
   # =========================================================
   #  Docs-infra
@@ -1175,7 +1141,6 @@ groups:
         - gkalpak
         - IgorMinar
         - petebacondarwin
-
 
   # =========================================================
   #  Dev-infra
@@ -1232,7 +1197,6 @@ groups:
         - IgorMinar
         - josephperrott
 
-
   # =========================================================
   #  Public API
   # =========================================================
@@ -1269,7 +1233,6 @@ groups:
       required: 3 # Require that three people approve
       reviewed_for: required
 
-
   # ================================================
   #  Size tracking
   # ================================================
@@ -1299,7 +1262,6 @@ groups:
       required: 2 # Require that two people approve
       reviewed_for: required
 
-
   # ================================================
   #  Circular dependencies
   # ================================================
@@ -1325,10 +1287,9 @@ groups:
         - zarend
         # OOO as of 2020-09-28 - pkozlowski-opensource
 
-
-####################################################################################
-#  Special Cases
-####################################################################################
+  ####################################################################################
+  #  Special Cases
+  ####################################################################################
 
   # =========================================================
   #  Code Ownership
@@ -1350,7 +1311,6 @@ groups:
         - jelbourn
         - josephperrott
         - mhevery
-
 
   # ====================================================
   #  Catch all for if no groups match the code change

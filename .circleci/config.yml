@@ -474,7 +474,7 @@ jobs:
   aio_preview:
     executor: default-executor
     environment:
-      AIO_SNAPSHOT_ARTIFACT_PATH: &aio_preview_artifact_path "aio/tmp/snapshot.tgz"
+      AIO_SNAPSHOT_ARTIFACT_PATH: &aio_preview_artifact_path 'aio/tmp/snapshot.tgz'
     steps:
       - custom_attach_workspace
       - init_environment
@@ -557,12 +557,12 @@ jobs:
   publish_packages_as_artifacts:
     executor: default-executor
     environment:
-      AIMWA_PACKAGES_DIR: &aimwa_packages_dir "dist/angular-in-memory-web-api-dist"
-      AIMWA_PACKAGES_ARCHIVES_DIR: &aimwa_packages_archives_dir "dist/angular-in-memory-web-api-dist-archives"
-      NG_PACKAGES_DIR: &ng_packages_dir "dist/packages-dist"
-      NG_PACKAGES_ARCHIVES_DIR: &ng_packages_archives_dir "dist/packages-dist-archives"
-      ZONEJS_PACKAGES_DIR: &zonejs_packages_dir "dist/zone.js-dist"
-      ZONEJS_PACKAGES_ARCHIVES_DIR: &zonejs_packages_archives_dir "dist/zone.js-dist-archives"
+      AIMWA_PACKAGES_DIR: &aimwa_packages_dir 'dist/angular-in-memory-web-api-dist'
+      AIMWA_PACKAGES_ARCHIVES_DIR: &aimwa_packages_archives_dir 'dist/angular-in-memory-web-api-dist-archives'
+      NG_PACKAGES_DIR: &ng_packages_dir 'dist/packages-dist'
+      NG_PACKAGES_ARCHIVES_DIR: &ng_packages_archives_dir 'dist/packages-dist-archives'
+      ZONEJS_PACKAGES_DIR: &zonejs_packages_dir 'dist/zone.js-dist'
+      ZONEJS_PACKAGES_ARCHIVES_DIR: &zonejs_packages_archives_dir 'dist/zone.js-dist-archives'
     steps:
       - custom_attach_workspace
       - init_environment
@@ -713,7 +713,7 @@ jobs:
             # repository to be able to support arbitrary SHAs.
             - *components_repo_unit_tests_cache_key_fallback
       - run:
-          name: "Fetching angular/components repository"
+          name: 'Fetching angular/components repository'
           command: ./scripts/ci/clone_angular_components_repo.sh
       - run:
           # Run yarn install to fetch the Bazel binaries as used in the components repo.
@@ -725,7 +725,7 @@ jobs:
             # Temporary directory must be kept in sync with the `$COMPONENTS_REPO_TMP_DIR` env
             # variable. It needs to be hardcoded here, because env variables interpolation is
             # not supported.
-            - "/tmp/angular-components-repo"
+            - '/tmp/angular-components-repo'
       - run:
           # Updates the `angular/components` `package.json` file to refer to the release output
           # inside the `packages-dist` directory.
@@ -737,7 +737,7 @@ jobs:
           name: Installing local Angular packages.
           command: yarn --cwd ${COMPONENTS_REPO_TMP_DIR} install --non-interactive --cache-folder ~/.cache/yarn
       - run:
-          name: "Running `angular/components` unit tests"
+          name: 'Running `angular/components` unit tests'
           command: ./scripts/ci/run_angular_components_unit_tests.sh
 
   test_zonejs:
@@ -907,4 +907,4 @@ workflows:
       - schedule:
           <<: *only_on_master
           # Runs monitoring jobs at 10:00AM every day.
-          cron: "0 10 * * *"
+          cron: '0 10 * * *'
