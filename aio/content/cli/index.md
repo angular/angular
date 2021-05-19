@@ -33,8 +33,8 @@ cd my-first-project
 ng serve
 </code-example>
 
-In your browser, open http://localhost:4200/ to see the new app run.
-When you use the [ng serve](cli/serve) command to build an app and serve it locally, the server automatically rebuilds the app and reloads the page when you change any of the source files.
+In your browser, open http://localhost:4200/ to see the new application run.
+When you use the [ng serve](cli/serve) command to build an application and serve it locally, the server automatically rebuilds the application and reloads the page when you change any of the source files.
 
 <div class="alert is-helpful">
 
@@ -46,17 +46,17 @@ When you use the [ng serve](cli/serve) command to build an app and serve it loca
 
 ## Workspaces and project files
 
-The [ng new](cli/new) command creates an *Angular workspace* folder and generates a new app skeleton.
-A workspace can contain multiple apps and libraries.
-The initial app created by the [ng new](cli/new) command is at the top level of the workspace.
-When you generate an additional app or library in a workspace, it goes into a `projects/` subfolder.
+The [ng new](cli/new) command creates an *Angular workspace* folder and generates a new application skeleton.
+A workspace can contain multiple applications and libraries.
+The initial application created by the [ng new](cli/new) command is at the top level of the workspace.
+When you generate an additional application or library in a workspace, it goes into a `projects/` subfolder.
 
-A newly generated app contains the source files for a root module, with a root component and template.
-Each app has a `src` folder that contains the logic, data, and assets.
+A newly generated application contains the source files for a root module, with a root component and template.
+Each application has a `src` folder that contains the logic, data, and assets.
 
 You can edit the generated files directly, or add to and modify them using CLI commands.
 Use the [ng generate](cli/generate) command to add new files for additional components and services, and code for new pipes, directives, and so on.
-Commands such as [add](cli/add) and [generate](cli/generate), which create or operate on apps and libraries, must be executed from within a workspace or project folder.
+Commands such as [add](cli/add) and [generate](cli/generate), which create or operate on applications and libraries, must be executed from within a workspace or project folder.
 
 * See more about the [Workspace file structure](guide/file-structure).
 
