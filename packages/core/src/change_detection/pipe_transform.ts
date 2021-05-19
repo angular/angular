@@ -30,5 +30,5 @@
  * @publicApi
  */
 export interface PipeTransform {
-  transform(value: any, ...args: any[]): any;
+  transform(value: unknown, ...args: unknown[]): unknown;
 }
