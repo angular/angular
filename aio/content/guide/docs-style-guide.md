@@ -207,11 +207,11 @@ Do not create a node that is both a header and an item node by specifying the `u
 
 ## Code snippets
 
-[Angular.io](https://angular.io/docs) has a custom framework that enables authors to include code snippets directly from working example apps that are automatically tested as part of documentation builds.
+[Angular.io](https://angular.io/docs) has a custom framework that enables authors to include code snippets directly from working example applications that are automatically tested as part of documentation builds.
 
 In addition to working code snippets, example code can include terminal commands, a fragment of TypeScript or HTML, or an entire code file.
 
-Whatever the source, the doc viewer renders them as code snippets, either individually with the [code-example](#code-example "code-example") component or as a tabbed collection with the [code-tabs](#code-tabs "code-tabs") component.
+Whatever the source, the document viewer renders them as code snippets, either individually with the [code-example](#code-example "code-example") component or as a tabbed collection with the [code-tabs](#code-tabs "code-tabs") component.
 
 {@a code-example}
 
@@ -278,9 +278,9 @@ For hypothetical examples such as illustrations of configuration options in a JS
 
 One of the Angular documentation design goals is that guide page code snippets be examples of working code.
 
-Authors meet this goal by displaying code snippets directly from working sample apps, written specifically for these guide pages.
+Authors meet this goal by displaying code snippets directly from working sample applications, written specifically for these guide pages.
 
-Find sample apps in sub-folders of the `content/examples` directory of the `angular/angular` repository.
+Find sample applications in sub-folders of the `content/examples` directory of the `angular/angular` repository.
 An example folder name is often the same as the guide page it supports.
 
 <div class="alert is-helpful">
@@ -312,11 +312,11 @@ The following markup produces that snippet:
 </code-example>
 ```
 
-The `path` attribute identifies the snippet's source file at the example app folder's location within `content/examples`.
+The `path` attribute identifies the snippet's source file at the example application folder's location within `content/examples`.
 In this example, that path is  `docs-style-guide/src/app/app.module.ts`.
 
 The header tells the reader where to find the file.
-Following convention, set the `header` attribute to the file's location within the example app's root folder.
+Following convention, set the `header` attribute to the file's location within the example application's root folder.
 
 Unless otherwise noted, all code snippets in this page are from sample source code located in the `content/examples/docs-style-guide` directory.
 
@@ -385,7 +385,7 @@ export class AppModule { }
 The opening and ending `#docregion` lines designate any lines of code between them as being included in the code snippet.
 This is why the import statements outside of the `class` `#docregion` are not in the code snippet.
 
-For more information on how to prepare example app files for use in guides, see
+For more information on how to prepare example application files for use in guides, see
  [Source code markup](#source-code-markup).
 
 ### Code snippet options
@@ -903,7 +903,7 @@ The browser renders the following:
 This is a [link to that custom anchor name](#section-anchors).
 
 When editing a file, don't remove any anchors.
-If you change the document structure, you can move an existing anchor within that same doc without breaking a link.
+If you change the document structure, you can move an existing anchor within that same document without breaking a link.
 You can also add more anchors with more appropriate text.
 
 <div class="alert is-helpful">
