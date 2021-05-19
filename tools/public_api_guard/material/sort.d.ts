@@ -2,7 +2,7 @@ export declare type ArrowViewState = SortDirection | 'hint' | 'active';
 
 export interface ArrowViewStateTransition {
     fromState?: ArrowViewState;
-    toState: ArrowViewState;
+    toState?: ArrowViewState;
 }
 
 export declare const MAT_SORT_DEFAULT_OPTIONS: InjectionToken<MatSortDefaultOptions>;

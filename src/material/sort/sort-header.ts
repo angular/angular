@@ -54,7 +54,7 @@ export type ArrowViewState = SortDirection | 'hint' | 'active';
  */
 export interface ArrowViewStateTransition {
   fromState?: ArrowViewState;
-  toState: ArrowViewState;
+  toState?: ArrowViewState;
 }
 
 /** Column definition associated with a `MatSortHeader`. */
@@ -112,7 +112,7 @@ export class MatSortHeader extends _MatSortHeaderMixinBase
    * position through the animation. If animations are currently disabled, the fromState is removed
    * so that there is no animation displayed.
    */
-  _viewState: ArrowViewStateTransition;
+  _viewState: ArrowViewStateTransition = { };
 
   /** The direction the arrow should be facing according to the current state. */
   _arrowDirection: SortDirection = '';
@@ -224,7 +224,7 @@ export class MatSortHeader extends _MatSortHeaderMixinBase
    * no animation appears.
    */
   _setAnimationTransitionState(viewState: ArrowViewStateTransition) {
-    this._viewState = viewState;
+    this._viewState = viewState || { };
 
     // If the animation for arrow position state (opacity/translation) should be disabled,
     // remove the fromState so that it jumps right to the toState.
