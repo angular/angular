@@ -13,11 +13,12 @@ import * as html from './ml_parser/ast';
 import {HtmlParser} from './ml_parser/html_parser';
 import {InterpolationConfig} from './ml_parser/interpolation_config';
 import {ParseTreeResult as HtmlParseTreeResult} from './ml_parser/parser';
+import {syntaxError} from './parse_util';
 import {ResourceLoader} from './resource_loader';
 import {extractStyleUrls, isStyleUrlResolvable} from './style_url_resolver';
 import {PreparsedElementType, preparseElement} from './template_parser/template_preparser';
 import {UrlResolver} from './url_resolver';
-import {isDefined, stringify, SyncAsync, syntaxError} from './util';
+import {isDefined, stringify, SyncAsync} from './util';
 
 export interface PrenormalizedTemplateMetadata {
   ngModuleType: any;
