@@ -252,7 +252,7 @@ For more information, see [Component interaction](guide/component-interaction).
 
 <live-example name="component-styles"></live-example>
 
-Demonstrates styling in Angular apps.
+Demonstrates styling in Angular applications.
 For more information, see [Component styles](guide/component-styles).
 
 ### Dynamic component loader
@@ -461,7 +461,7 @@ For more information, see [Security](guide/security).
 
 ### Testing
 
-For the sample app that the testing guides describe, see the <live-example noDownload name="testing">sample app</live-example>.
+For the sample application that the testing guides describe, see the <live-example noDownload name="testing">sample app</live-example>.
 
 For the tests featured in the testing guides, see <live-example name="testing" stackblitz="specs" noDownload>tests</live-example>.
 
