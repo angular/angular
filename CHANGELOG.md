@@ -1,3 +1,23 @@
+## 12.0.1 "acrylic-apple" (2021-05-19)
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **core:** reduce the number of module resolutions required for the legacy theming bundle ([7f17d610602f9de128d8cce3825d5658bd577f8d](https://github.com/angular/components/commit/7f17d610602f9de128d8cce3825d5658bd577f8d)), closes [#22676](https://github.com/angular/components/issues/22676) |
+| bug fix |  **datepicker:** pass correct inject flags to injector ([#22665](https://github.com/angular/components/issues/22665)) ([f1e109c06a066efecdb3568aaa4e63456cd287c3](https://github.com/angular/components/commit/f1e109c06a066efecdb3568aaa4e63456cd287c3)) |
+| bug fix |  **stepper:** strong focus indicator not working for below label position ([#22696](https://github.com/angular/components/issues/22696)) ([ae24d90c30087e8630e58f39248c3da9740a8d61](https://github.com/angular/components/commit/ae24d90c30087e8630e58f39248c3da9740a8d61)), closes [#22677](https://github.com/angular/components/issues/22677) |
+| bug fix |  **table:** Make table data source interface generic ([#22673](https://github.com/angular/components/issues/22673)) ([06c8e7903ffe14f247544f887b5be682670e6f95](https://github.com/angular/components/commit/06c8e7903ffe14f247544f887b5be682670e6f95)) |
+| bug fix |  **tooltip:** not updating position after direction changes ([#22641](https://github.com/angular/components/issues/22641)) ([0e54ec70ca2312d64847491b5882b73c0ecedf2e](https://github.com/angular/components/commit/0e54ec70ca2312d64847491b5882b73c0ecedf2e)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-progress-spinner:** set line-height ([#22668](https://github.com/angular/components/issues/22668)) ([e89422add78d8e87ae2d18e94273a14f2001c728](https://github.com/angular/components/commit/e89422add78d8e87ae2d18e94273a14f2001c728)) |
+| bug fix |  **mdc-radio:** not removing animations when noop animations are enabled ([#22651](https://github.com/angular/components/issues/22651)) ([90ecea89afa2b067e9074947059bfc2c0b2e5305](https://github.com/angular/components/commit/90ecea89afa2b067e9074947059bfc2c0b2e5305)) |
+| bug fix |  **mdc-table:** add background color; disable hover styles; fix sticky columns ([#22723](https://github.com/angular/components/issues/22723)) ([c20e93998110468fefd7d4aa91e9431a6a2b2e8b](https://github.com/angular/components/commit/c20e93998110468fefd7d4aa91e9431a6a2b2e8b)) |
+
 # 12.0.0 "azurite-insight" (2021-05-12)
 
 ## Highlights
@@ -162,6 +182,66 @@ _Breaking changes:_
 | feature |  **mdc-tooltip:** add test harness ([#21855](https://github.com/angular/components/issues/21855)) ([5e4d5e0bf65a755896fa2e0f784f84f1e8bfa71d](https://github.com/angular/components/commit/5e4d5e0bf65a755896fa2e0f784f84f1e8bfa71d)) |
 | feature |  **mdc-tooltip:** implement MDC-based tooltip ([#21735](https://github.com/angular/components/issues/21735)) ([6eff9386b8145e4b3d50c59d353787d103d2fa8d](https://github.com/angular/components/commit/6eff9386b8145e4b3d50c59d353787d103d2fa8d)) |
 
+## 11.2.13 "denim-doily" (2021-05-19)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **a11y:** not restoring focus to elements inside the shadow DOM ([#22622](https://github.com/angular/components/issues/22622)) ([bad81f0818ac7b957643fd3aa17bd6fa27963d24](https://github.com/angular/components/commit/bad81f0818ac7b957643fd3aa17bd6fa27963d24)) |
+| bug fix |  **overlay:** not emitting for auxiliar button clicks ([#22616](https://github.com/angular/components/issues/22616)) ([97c449a44b1075c1ba65c6196b0753e815bf1a3d](https://github.com/angular/components/commit/97c449a44b1075c1ba65c6196b0753e815bf1a3d)) |
+| bug fix |  **testing:** incorrectly handling ancestor of compound selector ([#22476](https://github.com/angular/components/issues/22476)) ([ea84e7d6901885cedf290f88134048338f7c5be9](https://github.com/angular/components/commit/ea84e7d6901885cedf290f88134048338f7c5be9)), closes [#22475](https://github.com/angular/components/issues/22475) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **sort:** fix undefined object access ([d48e6dae300c3fb4125fb64e44b97c006f0e54fa](https://github.com/angular/components/commit/d48e6dae300c3fb4125fb64e44b97c006f0e54fa)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-core:** update the required MDC version ([#22608](https://github.com/angular/components/issues/22608)) ([b5224ea4a99b55678faed5d6b8546007b820d39b](https://github.com/angular/components/commit/b5224ea4a99b55678faed5d6b8546007b820d39b)), closes [#22409](https://github.com/angular/components/issues/22409) [#21968](https://github.com/angular/components/issues/21968) |
+
+
+## 11.2.12 "glass-grass" (2021-05-05)
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **core:** `mat-ripple-element` is not fired on disable ([#22537](https://github.com/angular/components/issues/22537)) ([62e9c319ebe8122ffcd777dc1b2819e247a099b0](https://github.com/angular/components/commit/62e9c319ebe8122ffcd777dc1b2819e247a099b0)), closes [#22520](https://github.com/angular/components/issues/22520) [#22520](https://github.com/angular/components/issues/22520) [#22520](https://github.com/angular/components/issues/22520) [#22520](https://github.com/angular/components/issues/22520) |
+| bug fix |  **datepicker:** Only update selection when value changed ([#21846](https://github.com/angular/components/issues/21846)) ([#22369](https://github.com/angular/components/issues/22369)) ([35c04832023ecffc476c89874a2a4b4b562450c2](https://github.com/angular/components/commit/35c04832023ecffc476c89874a2a4b4b562450c2)) |
+| bug fix |  **paginator:** add `role="group"` to host ([#22512](https://github.com/angular/components/issues/22512)) ([a80f890a0dd7cb50e483047c053505d74321bd33](https://github.com/angular/components/commit/a80f890a0dd7cb50e483047c053505d74321bd33)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-progress-spinner:** set to display block ([#22618](https://github.com/angular/components/issues/22618)) ([638ed6179c11ce033143470802399d9ca60f45e9](https://github.com/angular/components/commit/638ed6179c11ce033143470802399d9ca60f45e9)) |
+
+
+## 11.2.11 "metal-mountain" (2021-04-28)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **a11y:** prevent crashing Chrome tabs with hidden text ([#22536](https://github.com/angular/components/issues/22536)) ([9bb7b0c5ea406ad1462a702f28f7dbcb911f408d](https://github.com/angular/components/commit/9bb7b0c5ea406ad1462a702f28f7dbcb911f408d)) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **datepicker:** support for date range input in MDC-based form field ([#22565](https://github.com/angular/components/issues/22565)) ([6349434d101b7fa60d1cb70cb00b4c2e69c83420](https://github.com/angular/components/commit/6349434d101b7fa60d1cb70cb00b4c2e69c83420)) |
+| bug fix |  **tabs:** stop scrolling on tab change ([#22265](https://github.com/angular/components/issues/22265)) ([7f556b574e86e8834d5f052bca7410ee9f4bc1ad](https://github.com/angular/components/commit/7f556b574e86e8834d5f052bca7410ee9f4bc1ad)), closes [#9592](https://github.com/angular/components/issues/9592) [angular#9592](https://github.com/angular/issues/9592) [#9592](https://github.com/angular/components/issues/9592) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-card:** reset native header margin ([#22550](https://github.com/angular/components/issues/22550)) ([90877709d53a5eeb664614d89e8d47d2db23e7d5](https://github.com/angular/components/commit/90877709d53a5eeb664614d89e8d47d2db23e7d5)) |
 
 ## 11.2.10 "walnut-tabletop" (2021-04-21)
 
