@@ -8,7 +8,7 @@ It identifies the module's own components, directives, and pipes,
 making some of them public, through the `exports` property, so that external components can use them.
 `@NgModule` can also add service providers to the application dependency injectors.
 
-For an example app showcasing all the techniques that NgModules related pages
+For an example application showcasing all the techniques that NgModules related pages
 cover, see the <live-example></live-example>. For explanations on the individual techniques, visit the relevant NgModule pages under the NgModules
 section.
 
@@ -38,17 +38,17 @@ NgModule metadata does the following:
 * Imports other modules with the components, directives, and pipes that components in the current module need.
 * Provides services that other application components can use.
 
-Every Angular app has at least one module, the root module.
+Every Angular application has at least one module, the root module.
 You [bootstrap](guide/bootstrapping) that module to launch the application.
 
-The root module is all you need in a simple application with a few components.
-As the app grows, you refactor the root module into [feature modules](guide/feature-modules)
+The root module is all you need in an application with few components.
+As the application grows, you refactor the root module into [feature modules](guide/feature-modules)
 that represent collections of related functionality.
 You then import these modules into the root module.
 
 ## The basic NgModule
 
-The [Angular CLI](cli) generates the following basic `AppModule` when creating a new app.
+The [Angular CLI](cli) generates the following basic `AppModule` when creating a new application.
 
 
 <code-example path="ngmodules/src/app/app.module.1.ts" header="src/app/app.module.ts (default AppModule)">
