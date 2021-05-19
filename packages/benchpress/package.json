@@ -6,7 +6,7 @@
   "typings": "./index.d.ts",
   "strictNullChecks": true,
   "dependencies": {
-    "@angular/core": "^10.0.0-0 || ^11.0.0",
+    "@angular/core": "^12.0.0",
     "reflect-metadata": "^0.1.13"
   },
   "repository": {
