@@ -10,8 +10,9 @@ import {LIFECYCLE_HOOKS_VALUES, LifecycleHooks} from '@angular/compiler/src/life
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, Directive, DoCheck, Injectable, NgModule, OnChanges, OnDestroy, OnInit, Pipe, SimpleChanges, ViewEncapsulation, ɵstringify as stringify} from '@angular/core';
 import {inject, TestBed, waitForAsync} from '@angular/core/testing';
 
-import {CompileDiDependencyMetadata, identifierName} from '../src/compile_metadata';
+import {CompileDiDependencyMetadata} from '../src/compile_metadata';
 import {CompileMetadataResolver} from '../src/metadata_resolver';
+import {identifierName} from '../src/parse_util';
 import {ResourceLoader} from '../src/resource_loader';
 import {MockResourceLoader} from '../testing/src/resource_loader_mock';
 
