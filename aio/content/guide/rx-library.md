@@ -12,7 +12,7 @@ RxJS provides an implementation of the `Observable` type, which is needed until 
 
 ## Observable creation functions
 
-RxJS offers a number of functions that can be used to create new observables. These functions can simplify the process of creating observables from things such as events, timers, promises, and so on. For example:
+RxJS offers a number of functions that can be used to create new observables. These functions can simplify the process of creating observables from things such as events, timers, and promises. For example:
 
 
 <code-example path="rx-library/src/simple-creation.1.ts" region="promise" header="Create an observable from a promise"></code-example>
@@ -48,7 +48,7 @@ The `pipe()` function is also a method on the RxJS `Observable`, so you use this
 RxJS provides many operators, but only a handful are used frequently. For a list of operators and usage samples, visit the [RxJS API Documentation](https://rxjs.dev/api).
 
 <div class="alert is-helpful">
-  Note that, for Angular apps, we prefer combining operators with pipes, rather than chaining. Chaining is used in many RxJS examples.
+  Note that, for Angular applications, we prefer combining operators with pipes, rather than chaining. Chaining is used in many RxJS examples.
 </div>
 
 | Area | Operators |
@@ -90,7 +90,7 @@ The following converts the previous example to retry the request before catching
 
 Because Angular applications are mostly written in TypeScript, you will typically know when a variable is an observable. Although the Angular framework does not enforce a naming convention for observables, you will often see observables named with a trailing “$” sign.
 
-This can be useful when scanning through code and looking for observable values. Also, if you want a property to store the most recent value from an observable, it can be convenient to simply use the same name with or without the “$”.
+This can be useful when scanning through code and looking for observable values. Also, if you want a property to store the most recent value from an observable, it can be convenient to use the same name with or without the “$”.
 
 For example:
 
