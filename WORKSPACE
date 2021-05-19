@@ -8,8 +8,8 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Add NodeJS rules
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "f533eeefc8fe1ddfe93652ec50f82373d0c431f7faabd5e6323f6903195ef227",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/3.3.0/rules_nodejs-3.3.0.tar.gz"],
+    sha256 = "10f534e1c80f795cffe1f2822becd4897754d18564612510c59b3c73544ae7c6",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/3.5.0/rules_nodejs-3.5.0.tar.gz"],
 )
 
 # Add sass rules
