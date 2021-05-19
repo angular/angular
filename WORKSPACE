@@ -42,7 +42,6 @@ bazel_skylib_workspace()
 
 load("@build_bazel_rules_nodejs//:index.bzl", "check_bazel_version", "node_repositories", "yarn_install")
 
-# The minimum bazel version to use with this repo is v3.1.0.
 check_bazel_version("4.0.0")
 
 node_repositories(
