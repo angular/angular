@@ -26,6 +26,7 @@ interface DetectImportResult {
 interface ExtraSymbols {
   mixins?: Record<string, string>;
   functions?: Record<string, string>;
+  variables?: Record<string, string>;
 }
 
 /**
@@ -123,19 +124,20 @@ function migrateMaterialSymbols(content: string, importPath: string,
                                 extraMaterialSymbols: ExtraSymbols = {}): string {
   const initialContent = content;
   const namespace = 'mat';
-  const mixinsToUpdate = {...materialMixins, ...extraMaterialSymbols.mixins};
-  const functionsToUpdate = {...materialFunctions, ...extraMaterialSymbols.functions};
 
   // Migrate the mixins.
+  const mixinsToUpdate = {...materialMixins, ...extraMaterialSymbols.mixins};
   content = renameSymbols(content, mixinsToUpdate, detectedImports.namespaces, mixinKeyFormatter,
     getMixinValueFormatter(namespace));
 
   // Migrate the functions.
+  const functionsToUpdate = {...materialFunctions, ...extraMaterialSymbols.functions};
   content = renameSymbols(content, functionsToUpdate, detectedImports.namespaces,
     functionKeyFormatter, getFunctionValueFormatter(namespace));
 
   // Migrate the variables.
-  content = renameSymbols(content, materialVariables, detectedImports.namespaces,
+  const variablesToUpdate = {...materialVariables, ...extraMaterialSymbols.variables};
+  content = renameSymbols(content, variablesToUpdate, detectedImports.namespaces,
     variableKeyFormatter, getVariableValueFormatter(namespace));
 
   if (content !== initialContent) {

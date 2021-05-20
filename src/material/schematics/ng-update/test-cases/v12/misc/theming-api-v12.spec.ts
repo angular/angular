@@ -698,6 +698,7 @@ describe('v12 theming API migration', () => {
       `@import '~@angular/material/theming';`,
       `$something: mat-mdc-typography-config();`,
       `@include mat-mdc-button-theme();`,
+      `$another: $mat-vermillion`
     ].join('\n');
 
     const migratedContent = migrateFileContent(
@@ -708,12 +709,14 @@ describe('v12 theming API migration', () => {
         '~@angular/cdk', {
           mixins: {'mat-mdc-button-theme': 'mdc-button-theme'},
           functions: {'mat-mdc-typography-config': 'mdc-typography-config'},
+          variables: {'mat-vermillion': 'vermillion-palette'},
         });
 
     expect(migratedContent).toBe([
       `@use '~@angular/material' as mat;`,
       `$something: mat.mdc-typography-config();`,
       `@include mat.mdc-button-theme();`,
+      `$another: mat.$vermillion-palette`,
     ].join('\n'));
   });
 
