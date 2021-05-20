@@ -2591,7 +2591,7 @@ function runFormatterInParallel(allFiles, action) {
                 // Run the provided callback function.
                 const failed = formatter.callbackFor(action)(file, code, stdout, stderr);
                 if (failed) {
-                    failures.push(file);
+                    failures.push({ filePath: file, message: stderr });
                 }
                 // Note in the progress bar another file being completed.
                 progressBar.increment(1);
@@ -2639,7 +2639,11 @@ function formatFiles(files) {
         }
         // The process should exit as a failure if any of the files failed to format.
         if (failures.length !== 0) {
-            error(`Formatting failed, see errors above for more information.`);
+            error(red(`The following files could not be formatted:`));
+            failures.forEach(({ filePath, message }) => {
+                info(`  • ${filePath}: ${message}`);
+            });
+            error(red(`Formatting failed, see errors above for more information.`));
             process.exit(1);
         }
         info(`√  Formatting complete.`);
@@ -2660,8 +2664,8 @@ function checkFiles(files) {
         if (failures.length) {
             // Provide output expressing which files are failing formatting.
             info.group('\nThe following files are out of format:');
-            for (const file of failures) {
-                info(`  - ${file}`);
+            for (const { filePath } of failures) {
+                info(`  • ${filePath}`);
             }
             info.groupEnd();
             info();
@@ -2672,7 +2676,7 @@ function checkFiles(files) {
             }
             if (runFormatter) {
                 // Format the failing files as requested.
-                yield formatFiles(failures);
+                yield formatFiles(failures.map(f => f.filePath));
                 process.exit(0);
             }
             else {
