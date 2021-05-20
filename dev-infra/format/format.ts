@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {error, info, promptConfirm} from '../utils/console';
+import {error, info, promptConfirm, red} from '../utils/console';
 
 import {runFormatterInParallel} from './run-commands-parallel';
 
@@ -24,7 +24,11 @@ export async function formatFiles(files: string[]) {
 
   // The process should exit as a failure if any of the files failed to format.
   if (failures.length !== 0) {
-    error(`Formatting failed, see errors above for more information.`);
+    error(red(`The following files could not be formatted:`));
+    failures.forEach(({filePath, message}) => {
+      info(`  • ${filePath}: ${message}`);
+    });
+    error(red(`Formatting failed, see errors above for more information.`));
     process.exit(1);
   }
   info(`√  Formatting complete.`);
@@ -46,8 +50,8 @@ export async function checkFiles(files: string[]) {
   if (failures.length) {
     // Provide output expressing which files are failing formatting.
     info.group('\nThe following files are out of format:');
-    for (const file of failures) {
-      info(`  - ${file}`);
+    for (const {filePath} of failures) {
+      info(`  • ${filePath}`);
     }
     info.groupEnd();
     info();
@@ -60,7 +64,7 @@ export async function checkFiles(files: string[]) {
 
     if (runFormatter) {
       // Format the failing files as requested.
-      await formatFiles(failures);
+      await formatFiles(failures.map(f => f.filePath));
       process.exit(0);
     } else {
       // Inform user how to format files in the future.

@@ -17,6 +17,14 @@ import {Formatter, FormatterAction, getActiveFormatters} from './formatters/inde
 
 const AVAILABLE_THREADS = Math.max(cpus().length - 1, 1);
 
+/** Interface describing a failure occurred during formatting of a file. */
+export interface FormatFailure {
+  /** Path to the file that failed. */
+  filePath: string;
+  /** Error message reported by the formatter. */
+  message: string;
+}
+
 /**
  * Run the provided commands in parallel for each provided file.
  *
@@ -30,9 +38,9 @@ const AVAILABLE_THREADS = Math.max(cpus().length - 1, 1);
  * The promise resolves with a list of failures, or `false` if no formatters have matched.
  */
 export function runFormatterInParallel(allFiles: string[], action: FormatterAction) {
-  return new Promise<false|string[]>((resolve) => {
+  return new Promise<false|FormatFailure[]>((resolve) => {
     const formatters = getActiveFormatters();
-    const failures: string[] = [];
+    const failures: FormatFailure[] = [];
     const pendingCommands: {formatter: Formatter, file: string}[] = [];
 
     for (const formatter of formatters) {
@@ -85,7 +93,7 @@ export function runFormatterInParallel(allFiles: string[], action: FormatterActi
             // Run the provided callback function.
             const failed = formatter.callbackFor(action)(file, code, stdout, stderr);
             if (failed) {
-              failures.push(file);
+              failures.push({filePath: file, message: stderr});
             }
             // Note in the progress bar another file being completed.
             progressBar.increment(1);
