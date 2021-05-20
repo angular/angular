@@ -8,6 +8,7 @@
 
 import * as semver from 'semver';
 import {GitClient} from '../../utils/git/index';
+import {GithubRepoWithApi} from './version-branches';
 
 /** Type describing a version tag. */
 export interface VersionTag {
@@ -18,7 +19,13 @@ export interface VersionTag {
 }
 
 
-/** Regular expression that matches version tags. */
+/**
+ * Regular expression that matches version tags.
+ *
+ * NOTE: While the relese tooling does not create version tags prefixed with `v`, historically some
+ * angular repositories used this prefix for version tags. `v?` is included to properly match these
+ * historic versions, however new tags with a `v` prefix should no longer be created.
+ */
 const versionTagRegex = /^v?(\d+)\.(\d+)\.(\d+)(\-(alpha|beta|next|rc)\.\d+)?$/;
 
 /** Whether the provided tag is a version tag. */
@@ -50,15 +57,16 @@ function filterAndSortVersionTags(tags: string[]): VersionTag[] {
 }
 
 /** Retrieve the all semver matching tags from the current branch on git. */
-function getSemverTagsFromGit(git = GitClient.getInstance()): VersionTag[] {
-  const tagsFromGit = git.runGraceful(['tag', '--merged']).stdout.split('\n');
-  return filterAndSortVersionTags(tagsFromGit);
+async function getSemverTagsForRepo(repo: GithubRepoWithApi): Promise<VersionTag[]> {
+  const {data: tags} = await repo.api.repos.listTags({owner: repo.owner, repo: repo.name});
+
+  return filterAndSortVersionTags(tags.map(tag => tag.name));
 }
 
 /** Retrieve the latest semver matching tag from the current branch on git. */
-export function getLatestSemverTagFromGit(): VersionTag {
+export async function getLatestSemverTagForRepo(repo: GithubRepoWithApi): Promise<VersionTag> {
   const git = GitClient.getInstance();
-  const latestTag = getSemverTagsFromGit()[0];
+  const latestTag = (await getSemverTagsForRepo(repo))[0];
   if (latestTag === undefined) {
     throw new Error(
         `Unable to find a SemVer matching tag on "${git.getCurrentBranchOrRevision()}"`);

@@ -71,8 +71,8 @@ export function setupReleaseActionForTesting<T extends ReleaseAction>(
     isNextPublishedToNpm = true): TestReleaseAction<T> {
   installVirtualGitClientSpies();
   installMockReleaseNotes();
-  spyOn(versionTags, 'getLatestSemverTagFromGit')
-      .and.returnValue({tag: '0.0.0', parsed: new semver.SemVer('0.0.0')});
+  spyOn(versionTags, 'getLatestSemverTagForRepo')
+      .and.resolveTo({tag: '0.0.0', parsed: new semver.SemVer('0.0.0')});
 
   // Reset existing HTTP interceptors.
   nock.cleanAll();

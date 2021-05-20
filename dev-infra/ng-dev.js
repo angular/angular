@@ -5500,7 +5500,13 @@ function semverInc(version, release, identifier) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-/** Regular expression that matches version tags. */
+/**
+ * Regular expression that matches version tags.
+ *
+ * NOTE: While the relese tooling does not create version tags prefixed with `v`, historically some
+ * angular repositories used this prefix for version tags. `v?` is included to properly match these
+ * historic versions, however new tags with a `v` prefix should no longer be created.
+ */
 const versionTagRegex = /^v?(\d+)\.(\d+)\.(\d+)(\-(alpha|beta|next|rc)\.\d+)?$/;
 /** Whether the provided tag is a version tag. */
 function isVersionTag(tag) {
@@ -5525,18 +5531,22 @@ function filterAndSortVersionTags(tags) {
     return versionTags.sort((a, b) => semver.rcompare(a.parsed, b.parsed));
 }
 /** Retrieve the all semver matching tags from the current branch on git. */
-function getSemverTagsFromGit(git = GitClient.getInstance()) {
-    const tagsFromGit = git.runGraceful(['tag', '--merged']).stdout.split('\n');
-    return filterAndSortVersionTags(tagsFromGit);
+function getSemverTagsForRepo(repo) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        const { data: tags } = yield repo.api.repos.listTags({ owner: repo.owner, repo: repo.name });
+        return filterAndSortVersionTags(tags.map(tag => tag.name));
+    });
 }
 /** Retrieve the latest semver matching tag from the current branch on git. */
-function getLatestSemverTagFromGit() {
-    const git = GitClient.getInstance();
-    const latestTag = getSemverTagsFromGit()[0];
-    if (latestTag === undefined) {
-        throw new Error(`Unable to find a SemVer matching tag on "${git.getCurrentBranchOrRevision()}"`);
-    }
-    return latestTag;
+function getLatestSemverTagForRepo(repo) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        const git = GitClient.getInstance();
+        const latestTag = (yield getSemverTagsForRepo(repo))[0];
+        if (latestTag === undefined) {
+            throw new Error(`Unable to find a SemVer matching tag on "${git.getCurrentBranchOrRevision()}"`);
+        }
+        return latestTag;
+    });
 }
 
 /**
@@ -6246,7 +6256,8 @@ class ReleaseAction {
      */
     stageVersionForBranchAndCreatePullRequest(newVersion, pullRequestBaseBranch) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
-            const releaseNotes = yield ReleaseNotes.fromRange(newVersion, getLatestSemverTagFromGit().tag, 'HEAD');
+            const latestTag = (yield getLatestSemverTagForRepo(Object.assign({ api: this.git.github }, this.git.remoteConfig))).tag;
+            const releaseNotes = yield ReleaseNotes.fromRange(newVersion, latestTag, 'HEAD');
             yield this.updateProjectVersion(newVersion);
             yield this.prependReleaseNotesToChangelog(releaseNotes);
             yield this.waitForEditsAndCreateReleaseCommit(newVersion);
