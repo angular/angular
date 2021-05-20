@@ -43,7 +43,7 @@ def is_ivy_enabled(ctx):
     """Determine if the ivy compiler should be used to by the ng_module.
 
     Args:
-      ctx: skylark rule execution context
+      ctx: starlark rule execution context
 
     Returns:
       Boolean, Whether the ivy compiler should be used.
@@ -78,7 +78,7 @@ def _compiler_name(ctx):
     """Selects a user-visible name depending on the current compilation strategy.
 
     Args:
-      ctx: skylark rule execution context
+      ctx: starlark rule execution context
 
     Returns:
       The name of the current compiler to be displayed in build output
@@ -90,7 +90,7 @@ def _is_view_engine_enabled(ctx):
     """Determines whether Angular outputs will be produced by the current compilation strategy.
 
     Args:
-      ctx: skylark rule execution context
+      ctx: starlark rule execution context
 
     Returns:
       true iff the current compilation strategy will produce View Engine compilation outputs (such as
@@ -119,7 +119,7 @@ def _flat_module_out_file(ctx):
     from other attributes (name)
 
     Args:
-      ctx: skylark rule execution context
+      ctx: starlark rule execution context
 
     Returns:
       a basename used for the flat module out (no extension)
@@ -135,7 +135,7 @@ def _should_produce_dts_bundle(ctx):
     based on the value of the bundle_dts attribute.
 
     Args:
-      ctx: skylark rule execution context
+      ctx: starlark rule execution context
 
     Returns:
       true when we should produce bundled dts.
@@ -153,7 +153,7 @@ def _should_produce_r3_symbols_bundle(ctx):
     And should only be included when bundling core in legacy mode.
 
     Args:
-      ctx: skylark rule execution context
+      ctx: starlark rule execution context
 
     Returns:
       true when we should produce r3_symbols dts.
@@ -172,7 +172,7 @@ def _should_produce_flat_module_outs(ctx):
     based on the presence of the module_name attribute.
 
     Args:
-      ctx: skylark rule execution context
+      ctx: starlark rule execution context
 
     Returns:
       true iff we should run the bundle_index_host to produce flat module metadata and bundle index
@@ -223,7 +223,7 @@ def _expected_outs(ctx):
             else:
                 devmode_js = [".js"]
                 if not _is_bazel():
-                    devmode_js += [".ngfactory.js"]
+                    devmode_js.append(".ngfactory.js")
                 summaries = []
                 metadata = []
         elif is_legacy_ngc and short_path.endswith(".css"):
@@ -284,7 +284,7 @@ def _expected_outs(ctx):
         i18n_messages_files = [ctx.actions.declare_file(ctx.label.name + "_ngc_messages.xmb")]
     elif is_legacy_ngc:
         # write the xmb file to blaze-genfiles since that path appears in the translation console keys
-        i18n_messages_files = [ctx.new_file(ctx.genfiles_dir, ctx.label.name + "_ngc_messages.xmb")]
+        i18n_messages_files = [ctx.actions.declare_file(ctx.label.name + "_ngc_messages.xmb", sibling = ctx.genfiles_dir)]
     else:
         i18n_messages_files = []
 
@@ -428,7 +428,7 @@ def ngc_compile_action(
     as part of the public API.
 
     Args:
-      ctx: skylark context
+      ctx: starlark context
       label: the label of the ng_module being compiled
       inputs: passed to the ngc action's inputs
       outputs: passed to the ngc action's outputs
@@ -463,7 +463,7 @@ def ngc_compile_action(
     # Two at-signs escapes the argument so it's passed through to ngc
     # rather than the contents getting expanded.
     if supports_workers == "1":
-        arguments += ["@@" + tsconfig_file.path]
+        arguments.append("@@" + tsconfig_file.path)
     else:
         arguments += ["-p", tsconfig_file.path]
 
@@ -615,7 +615,7 @@ def ng_module_impl(ctx, ts_compile_actions):
     and is not meant as a public API.
 
     Args:
-      ctx: the skylark rule context
+      ctx: the starlark rule context
       ts_compile_actions: generates all the actions to run an ngc compilation
 
     Returns:

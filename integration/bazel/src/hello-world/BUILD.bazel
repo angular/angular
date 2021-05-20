@@ -1,9 +1,9 @@
-package(default_visibility = ["//visibility:public"])
-
 load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 load("@npm//@angular/bazel:index.bzl", "ng_package")
 load("//tools:ng_ts_library.bzl", "ng_ts_library")
+
+package(default_visibility = ["//visibility:public"])
 
 sass_binary(
     name = "hello-world-styles",

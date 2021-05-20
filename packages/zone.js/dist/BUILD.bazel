@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//packages/zone.js/dist:tools.bzl", "copy_es2015_to_dist", "copy_es5_to_dist")
+
+package(default_visibility = ["//visibility:public"])
 
 copy_es2015_to_dist()
 

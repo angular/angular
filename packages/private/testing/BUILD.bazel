@@ -1,11 +1,11 @@
+load("//tools:defaults.bzl", "ng_module")
+
 package(default_visibility = [
     "//modules/playground:__subpackages__",
     "//packages:__subpackages__",
 ])
 
 exports_files(["package.json"])
-
-load("//tools:defaults.bzl", "ng_module")
 
 ng_module(
     name = "testing",

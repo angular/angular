@@ -6,7 +6,7 @@ set -u -e -o pipefail
 # with the upstream remote, and resetting to the commit specified in the `COMPONENTS_REPO_COMMIT`
 # environment variable.
 
-if [[ ! -d "${COMPONENTS_REPO_TMP_DIR}" ]]; then
+if [[ ! -d ${COMPONENTS_REPO_TMP_DIR} ]]; then
   # Clone the repository if not present through restored cache.
   git clone --branch ${COMPONENTS_REPO_BRANCH} ${COMPONENTS_REPO_URL} ${COMPONENTS_REPO_TMP_DIR}
 

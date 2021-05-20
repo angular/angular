@@ -2,7 +2,10 @@
 
 set -eu -o pipefail
 
-readonly thisDir=$(cd $(dirname $0); pwd)
+readonly thisDir=$(
+  cd $(dirname $0)
+  pwd
+)
 readonly parentDir=$(dirname $thisDir)
 readonly target=${1:-aio}
 

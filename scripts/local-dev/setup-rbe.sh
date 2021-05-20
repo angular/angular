@@ -11,9 +11,9 @@ normal=$(tput sgr0)
 # The full path location of the script
 full_script_path="$(pwd)/$(dirname ${BASH_SOURCE[0]})"
 # Determine the root directory of the Angular github repo.
-project_directory=$(git rev-parse --show-toplevel 2> /dev/null)
+project_directory=$(git rev-parse --show-toplevel 2>/dev/null)
 if [[ $? -ne 0 ]]; then
-  echo "This command must be run from within the cloned \"angular/angular\" repository"
+  echo 'This command must be run from within the cloned "angular/angular" repository'
   exit 1
 fi
 
@@ -44,7 +44,7 @@ function gcloud_login() {
 # is from the correct domain.
 function confirm_gcloud_login() {
   echo "Checking gcloud login state"
-  gcloud auth application-default print-access-token &> /dev/null
+  gcloud auth application-default print-access-token &>/dev/null
   if [[ $? -ne 0 ]]; then
     echo "Not currently logged into gcloud. Starting gcloud login now"
     gcloud_login
@@ -53,7 +53,7 @@ function confirm_gcloud_login() {
   current_account=$(curl -s https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=$access_token | node $full_script_path/get-email)
   if [[ ! $current_account =~ (angular\.io$)|(google\.com$) ]]; then
     echo
-    echo "Logged in as $current_account";
+    echo "Logged in as $current_account"
     echo "The account used for remote build execution must be a member of everyone@angular.io"
     echo "or everyone@google.com."
     echo
@@ -77,7 +77,7 @@ function confirm_gcloud_login() {
       exit 3
     fi
   fi
-  echo "Logged in as $current_account";
+  echo "Logged in as $current_account"
 }
 
 # Prompts to add a flag to the .bazelrc.user file if its not already in place
@@ -86,7 +86,7 @@ function add_flag() {
   read -p "  Add $flag flag? [Y/y]"
   if [[ $REPLY =~ ^[Yy]$ ]]; then
     if [[ ! $(grep "^$flag$" $bazelrc_user_filepath) ]]; then
-      echo "$flag" >> $bazelrc_user_filepath
+      echo "$flag" >>$bazelrc_user_filepath
       echo "Added $flag to .bazelrc.user"
     else
       echo "$flag already in .bazelrc.user"

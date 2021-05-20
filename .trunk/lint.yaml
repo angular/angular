@@ -1,0 +1,5 @@
+enabled:
+  - buildifier-workspace
+  - buildifier-bzl
+  - buildifier-build
+  - shfmt

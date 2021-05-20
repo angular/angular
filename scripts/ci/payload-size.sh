@@ -3,20 +3,20 @@
 set -eu -o pipefail
 
 # statc makes `stat -c` work on both Linux & OSX
-function statc () {
+function statc() {
   case $(uname) in
-    Darwin*) format='-f%z' ;;
-    *) format='-c%s' ;;
+  Darwin*) format='-f%z' ;;
+  *) format='-c%s' ;;
   esac
 
   stat ${format} $@
 }
 
 # sedr makes `sed -r` work on both Linux & OSX
-function sedr () {
+function sedr() {
   case $(uname) in
-    Darwin*) flag='-E' ;;
-    *) flag='-r' ;;
+  Darwin*) flag='-E' ;;
+  *) flag='-r' ;;
   esac
 
   sed ${flag} "$@"
@@ -34,7 +34,7 @@ getGzipSize() {
   local compPath=$1$2.gz
   local size=-1
 
-  gzip -c -$compLevel "$filePath" >> "$compPath"
+  gzip -c -$compLevel "$filePath" >>"$compPath"
   size=$(statc "$compPath")
   rm "$compPath"
 
@@ -103,7 +103,7 @@ addMessage() {
 # Convert the current `payloadData` value to a JSON string.
 # (Basically remove trailing `,` and wrap in `{...}`.)
 payloadToJson() {
-  echo "{$(sedr 's|, *$||' <<< $payloadData)}"
+  echo "{$(sedr 's|, *$||' <<<$payloadData)}"
 }
 
 # Upload data to firebase database if it's commit, print out data for pull requests.
@@ -140,10 +140,10 @@ trackPayloadSize() {
   done
 
   # Save the file sizes to be retrieved from `payload-size.js`.
-  echo "$(payloadToJson)" > /tmp/current.log
+  echo "$(payloadToJson)" >/tmp/current.log
 
   # If this is a non-PR build, upload the data to firebase.
-  if [[ "${CI_PULL_REQUEST:-}" == "false" ]]; then
+  if [[ ${CI_PULL_REQUEST:-} == "false" ]]; then
     echo "Uploading data for '$name'..."
     addTimestamp
     addBuildUrl $CI_BUILD_URL
@@ -154,7 +154,7 @@ trackPayloadSize() {
   fi
 
   # Check the file sizes against the specified limits.
-  if [[ $checkSize = true ]]; then
+  if [[ $checkSize == true ]]; then
     echo "Verifying sizes against '$limitFile'..."
     checkSize $name $limitFile
   else

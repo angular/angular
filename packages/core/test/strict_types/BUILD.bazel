@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:private"])
-
 load("//tools:defaults.bzl", "jasmine_node_test", "ts_config", "ts_library")
+
+package(default_visibility = ["//visibility:private"])
 
 ts_config(
     name = "tsconfig",

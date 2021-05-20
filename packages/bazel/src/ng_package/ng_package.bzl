@@ -133,7 +133,7 @@ def _compute_node_modules_root(ctx):
     """Computes the node_modules root from the node_modules and deps attributes.
 
     Args:
-      ctx: the skylark execution context
+      ctx: the starlark execution context
 
     Returns:
       The node_modules root as a string

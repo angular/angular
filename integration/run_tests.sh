@@ -33,7 +33,7 @@ mkdir $cache
 trap rm_cache EXIT
 
 for testDir in ${RUN_TESTS}; do
-  [[ -d "$testDir" ]] || continue
+  [[ -d $testDir ]] || continue
 
   echo ""
   echo "######################################################################"

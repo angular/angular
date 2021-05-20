@@ -1,11 +1,11 @@
+load("//tools:defaults.bzl", "ts_config", "ts_library")
+
 package(default_visibility = ["//visibility:public"])
 
 exports_files([
     "tsconfig-build.json",
     "tsconfig.json",
 ])
-
-load("//tools:defaults.bzl", "ts_config", "ts_library")
 
 ts_library(
     name = "types",

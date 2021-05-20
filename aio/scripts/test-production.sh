@@ -2,7 +2,10 @@
 set +x -eu -o pipefail
 
 (
-  readonly thisDir="$(cd $(dirname ${BASH_SOURCE[0]}); pwd)"
+  readonly thisDir="$(
+    cd $(dirname ${BASH_SOURCE[0]})
+    pwd
+  )"
   readonly aioDir="$(realpath $thisDir/..)"
 
   readonly protractorConf="$aioDir/tests/deployment/e2e/protractor.conf.js"

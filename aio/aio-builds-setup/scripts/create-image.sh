@@ -2,7 +2,7 @@
 set -eux -o pipefail
 
 # Set up env
-source "`dirname $0`/_env.sh"
+source "$(dirname $0)/_env.sh"
 readonly defaultImageNameAndTag="aio-builds:latest"
 
 # Build `scripts-js/`

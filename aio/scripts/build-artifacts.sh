@@ -19,6 +19,6 @@ readonly deployedUrl=https://pr${prNumber}-${prLastSha:0:7}.ngbuilds.io/
   # deployedUrl must end with /
   yarn set-opensearch-url $deployedUrl
 
-  mkdir -p "`dirname $outputFile`"
+  mkdir -p "$(dirname $outputFile)"
   tar --create --gzip --directory "$inputDir" --file "$outputFile" .
 )

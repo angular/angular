@@ -9,4 +9,3 @@ chmod a+x $AIO_SCRIPTS_SH_DIR/*
 
 mv $AIO_SCRIPTS_JS_DIR ${AIO_SCRIPTS_JS_DIR}_prod
 ln -s /dockerbuild/scripts-js $AIO_SCRIPTS_JS_DIR
-
