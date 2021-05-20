@@ -1,9 +1,9 @@
 …
-.ɵɵelementStart(0, "button", 0) // SOURCE: "/output_binding_longhand.ts" <button 
+.ɵɵelementStart(0, "button", 0) // SOURCE: "/output_binding_longhand.ts" "<button "
 …
-ctx.doSomething() // SOURCE: "/output_binding_longhand.ts" doSomething()">
+ctx.doSomething() // SOURCE: "/output_binding_longhand.ts" "doSomething()\">"
 …
-.ɵɵtext(1, "Do it") // SOURCE: "/output_binding_longhand.ts" Do it
+.ɵɵtext(1, "Do it") // SOURCE: "/output_binding_longhand.ts" "Do it"
 …
 // TODO: Work out how to fix the broken segment for the last item in a template
-.ɵɵelement // SOURCE: "/output_binding_longhand.ts" </button>'
+.ɵɵelement // SOURCE: "/output_binding_longhand.ts" "</button>'"
