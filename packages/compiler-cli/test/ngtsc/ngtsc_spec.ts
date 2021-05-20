@@ -7405,6 +7405,24 @@ export const Foo = Foo__PRE_R3__;
         expect(jsContents).not.toContain('defineNgModule(');
         expect(jsContents).toContain('NgModule({');
       });
+
+      it('should still compile a class that is indirectly exported', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: 'Test Cmp',
+          })
+          class TestCmp {}
+
+          export {TestCmp};
+        `);
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('defineComponent');
+      });
     });
 
     describe('undecorated providers', () => {

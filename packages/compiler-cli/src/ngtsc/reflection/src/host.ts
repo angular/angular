@@ -856,4 +856,14 @@ export interface ReflectionHost {
    * have a different name than it does externally.
    */
   getAdjacentNameOfClass(clazz: ClassDeclaration): ts.Identifier;
+
+  /**
+   * Returns `true` if a class is exported from the module in which it's defined.
+   *
+   * Not all mechanisms by which a class is exported can be statically detected, especially when
+   * processing already compiled JavaScript. A `false` result does not indicate that the class is
+   * never visible outside its module, only that it was not exported via one of the export
+   * mechanisms that the `ReflectionHost` is capable of statically checking.
+   */
+  isStaticallyExported(clazz: ClassDeclaration): boolean;
 }
