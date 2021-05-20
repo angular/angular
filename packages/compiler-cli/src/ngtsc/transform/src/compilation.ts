@@ -211,7 +211,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
 
   private scanClassForTraits(clazz: ClassDeclaration):
       PendingTrait<unknown, unknown, SemanticSymbol|null, unknown>[]|null {
-    if (!this.compileNonExportedClasses && !isExported(clazz)) {
+    if (!this.compileNonExportedClasses && !this.reflector.isStaticallyExported(clazz)) {
       return null;
     }
 
