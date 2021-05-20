@@ -2664,8 +2664,8 @@ function checkFiles(files) {
         if (failures.length) {
             // Provide output expressing which files are failing formatting.
             info.group('\nThe following files are out of format:');
-            for (const file of failures) {
-                info(`  • ${file}`);
+            for (const { filePath } of failures) {
+                info(`  • ${filePath}`);
             }
             info.groupEnd();
             info();

@@ -27,7 +27,7 @@ export async function formatFiles(files: string[]) {
     error(red(`The following files could not be formatted:`));
     failures.forEach(({filePath, message}) => {
       info(`  • ${filePath}: ${message}`);
-    })
+    });
     error(red(`Formatting failed, see errors above for more information.`));
     process.exit(1);
   }
@@ -50,8 +50,8 @@ export async function checkFiles(files: string[]) {
   if (failures.length) {
     // Provide output expressing which files are failing formatting.
     info.group('\nThe following files are out of format:');
-    for (const file of failures) {
-      info(`  • ${file}`);
+    for (const {filePath} of failures) {
+      info(`  • ${filePath}`);
     }
     info.groupEnd();
     info();
