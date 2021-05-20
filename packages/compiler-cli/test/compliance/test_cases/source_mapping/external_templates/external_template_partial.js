@@ -1,14 +1,14 @@
-.ɵɵelementStart(0, "div") // SOURCE: "/dir/test.html" <div>
+.ɵɵelementStart(0, "div") // SOURCE: "/dir/test.html" "<div>"
 …
-.ɵɵtext(1, "this is a test") // SOURCE: "/dir/test.html" this is a test
+.ɵɵtext(1, "this is a test") // SOURCE: "/dir/test.html" "this is a test"
 …
-.ɵɵelementEnd() // SOURCE: "/dir/test.html" </div>\n
+.ɵɵelementEnd() // SOURCE: "/dir/test.html" "</div>\n"
 …
-.ɵɵelementStart(2, "div") // SOURCE: "/dir/test.html" <div>
+.ɵɵelementStart(2, "div") // SOURCE: "/dir/test.html" "<div>"
 …
-.ɵɵtext(3) // SOURCE: "/dir/test.html" {{ 1 + 2 }}
+.ɵɵtext(3) // SOURCE: "/dir/test.html" "{{ 1 + 2 }}"
 …
 // TODO: Work out how to fix the broken segment for the last item in a template
-.ɵɵelementEnd() // SOURCE: "/dir/test.html" </div>
+.ɵɵelementEnd() // SOURCE: "/dir/test.html" "</div>"
 …
-.ɵɵtextInterpolate(1 + 2) // SOURCE: "/dir/test.html" {{ 1 + 2 }}
+.ɵɵtextInterpolate(1 + 2) // SOURCE: "/dir/test.html" "{{ 1 + 2 }}"
