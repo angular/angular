@@ -161,4 +161,8 @@ export class DelegatingReflectionHost implements NgccReflectionHost {
   detectKnownDeclaration<T extends Declaration>(decl: T): T {
     return this.ngccHost.detectKnownDeclaration(decl);
   }
+
+  isStaticallyExported(clazz: ClassDeclaration): boolean {
+    return this.ngccHost.isStaticallyExported(clazz);
+  }
 }
