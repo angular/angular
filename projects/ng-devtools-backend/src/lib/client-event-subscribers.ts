@@ -151,9 +151,11 @@ const checkForAngular = (messageBus: MessageBus<Events>): void => {
     setTimeout(() => checkForAngular(messageBus), 500);
     return;
   }
-  if (appIsIvy) {
+
+  if (appIsIvy && appIsAngularInDevMode() && appIsSupportedAngularVersion()) {
     initializeOrGetDirectiveForestHooks();
   }
+
   messageBus.emit('ngAvailability', [
     { version: ngVersion.toString(), devMode: appIsAngularInDevMode(), ivy: appIsIvy },
   ]);
