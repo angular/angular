@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, Renderer2, ViewChild } from '@angular/core';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { Logger } from 'app/shared/logger.service';
 import { PrettyPrinter } from './pretty-printer.service';
@@ -97,6 +97,7 @@ export class CodeComponent implements OnChanges {
   constructor(
     private snackbar: MatSnackBar,
     private pretty: PrettyPrinter,
+    private renderer: Renderer2,
     private clipboard: Clipboard,
     private logger: Logger) {}
 
@@ -138,7 +139,7 @@ export class CodeComponent implements OnChanges {
   private setCodeHtml(formattedCode: string) {
     // **Security:** Code example content is provided by docs authors and as such its considered to
     // be safe for innerHTML purposes.
-    this.codeContainer.nativeElement.innerHTML = formattedCode;
+    this.renderer.setProperty(this.codeContainer.nativeElement, 'innerHTML', formattedCode);
   }
 
   /** Gets the textContent of the displayed code element. */
