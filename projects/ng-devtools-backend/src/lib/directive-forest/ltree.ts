@@ -108,13 +108,14 @@ export class LTreeStrategy {
     const lView = lViewOrLContainer;
     const tView = lView[LVIEW_TVIEW];
     for (let i = HEADER_OFFSET; i < lView.length; i++) {
-      if (lView[i] && tView.data && lView[i][ELEMENT] instanceof Node) {
+      const lViewItem = lView[i];
+      if (tView.data && Array.isArray(lViewItem) && lViewItem[ELEMENT] instanceof Node) {
         const node = this._getNode(lView, tView.data, i);
 
         // TODO(mgechev): verify if this won't make us skip projected content.
         if (node.component || node.directives.length) {
           nodes.push(node);
-          this._extract(lView[i], node.children);
+          this._extract(lViewItem, node.children);
         }
       }
     }
