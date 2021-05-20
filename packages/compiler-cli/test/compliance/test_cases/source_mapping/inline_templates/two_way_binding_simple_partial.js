@@ -1,7 +1,7 @@
 …
-.ɵɵelementStart(1, "input", 0) // SOURCE: "/two_way_binding_simple.ts" <input 
+.ɵɵelementStart(1, "input", 0) // SOURCE: "/two_way_binding_simple.ts" "<input "
 …
 // TODO: improve mappings here
-.ɵɵlistener("ngModelChange", function TestCmp_Template_input_ngModelChange_1_listener($event) {\n // SOURCE: "/two_way_binding_simple.ts" [(ngModel)]="name">'
+.ɵɵlistener("ngModelChange", function TestCmp_Template_input_ngModelChange_1_listener($event) {\n // SOURCE: "/two_way_binding_simple.ts" "[(ngModel)]=\"name\">'"
 …
-.ɵɵelementEnd() // SOURCE: "/two_way_binding_simple.ts" <input 
+.ɵɵelementEnd() // SOURCE: "/two_way_binding_simple.ts" "<input "
