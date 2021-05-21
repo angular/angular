@@ -31,6 +31,13 @@ The most common attribute directives are as follows:
 * [`NgStyle`](guide/built-in-directives#ngstyle)&mdash;adds and removes a set of HTML styles.
 * [`NgModel`](guide/built-in-directives#ngModel)&mdash;adds two-way data binding to an HTML form element.
 
+<div class="alert is-helpful">
+
+Built-in directives use only public APIs.
+They do not have special access to any private APIs that other directives can't access.
+
+</div>
+
 {@a ngClass}
 ## Adding and removing classes with `NgClass`
 
@@ -267,13 +274,6 @@ In the following illustration of the `trackBy` effect, **Reset items** creates n
 
 <div class="lightbox">
   <img src="generated/images/guide/built-in-directives/ngfor-trackby.gif" alt="Animation of trackBy">
-</div>
-
-<div class="alert is-helpful">
-
-Built-in directives use only public APIs.
-They do not have special access to any private APIs that other directives can't access.
-
 </div>
 
 {@a ngcontainer}
