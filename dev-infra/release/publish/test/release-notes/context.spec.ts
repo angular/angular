@@ -8,7 +8,7 @@
 
 import {CommitFromGitLog, parseCommitFromGitLog} from '../../../../commit-message/parse';
 import {commitMessageBuilder} from '../../../../commit-message/test-util';
-import {RenderContext, RenderContextData,} from '../../release-notes/context';
+import {RenderContext, RenderContextData,} from '../../../notes/context';
 
 const defaultContextData: RenderContextData = {
   commits: [],
