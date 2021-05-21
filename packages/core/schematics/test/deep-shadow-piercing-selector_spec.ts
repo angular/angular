@@ -39,13 +39,20 @@ describe('`/deep/` to `::ng-deep` migration', () => {
   });
 
   for (const styleExtension of ['scss', 'sass', 'css', 'styl', 'less']) {
-    it(`should replace '/deep/' with '::ng-deep' in ${styleExtension} file.`, async () => {
+    it(`should replace '/deep/' with '::ng-deep' in ${styleExtension} file`, async () => {
       const fileName = `/index.${styleExtension}`;
       tree.create(fileName, ':host /deep/ * { cursor: pointer; }');
       await runMigration();
       expect(tree.readContent(fileName)).toBe(':host ::ng-deep * { cursor: pointer; }');
     });
   }
+
+  it(`should replace '/deep/' with '::ng-deep' when used as root selector`, async () => {
+    const fileName = '/index.css';
+    tree.create(fileName, '/deep/ * { cursor: pointer; }');
+    await runMigration();
+    expect(tree.readContent(fileName)).toBe('::ng-deep * { cursor: pointer; }');
+  });
 
   it(`should not replace '/deep/' with '::ng-deep' in unknown file extension`, async () => {
     const fileName = '/index.foo';

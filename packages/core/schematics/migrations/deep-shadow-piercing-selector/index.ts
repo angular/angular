@@ -33,8 +33,8 @@ export default function(): Rule {
     // Visit all files in an Angular workspace monorepo.
     for (const file of visitFiles(tree.root)) {
       const content = tree.read(file)?.toString();
-      if (content?.includes(' /deep/ ')) {
-        tree.overwrite(file, content.replace(/ (\/deep\/) /g, ' ::ng-deep '));
+      if (content?.includes('/deep/ ')) {
+        tree.overwrite(file, content.replace(/\/deep\/ /g, '::ng-deep '));
       }
     }
   };
