@@ -727,6 +727,13 @@ Remember to exclude these files from StackBlitz by listing them in the `stackbli
 
 <code-example path="docs-style-guide/stackblitz.json" header="stackblitz.json"></code-example>
 
+### Source code styling
+
+Source code should follow [Angular's style guide](guide/styleguide) where possible.
+
+#### Hexadecimals
+
+Hexadecimal should use the shorthand where possible, and use only lowercase letters.
 
 {@a live-examples}
 
