@@ -156,13 +156,13 @@
           },
           "ab2": {
             "desc": "Use Angular and Meteor to build full-stack JavaScript apps  for Mobile and Desktop.",
-            "logo": "http://www.angular-meteor.com/images/logo.png",
+            "logo": "https://angular-meteor.com/assets/images/logo-large.png",
             "title": "Meteor",
             "url": "https://github.com/urigo/angular-meteor"
           },
           "ab3": {
             "desc": "Apollo is a data stack for modern apps, built with GraphQL.",
-            "logo": "http://docs.apollostack.com/logo/large.png",
+            "logo": "",
             "title": "Apollo",
             "url": "https://www.apollographql.com/docs/angular/"
           },
@@ -341,7 +341,7 @@
           },
           "a2b": {
             "desc": "PrimeNG is a collection of rich UI components for Angular",
-            "logo": "http://www.primefaces.org/primeng/showcase/resources/images/primeng.svg",
+            "logo": "https://www.primefaces.org/primeng/resources/images/logo-primeng.svg",
             "title": "Prime Faces",
             "url": "https://www.primefaces.org/primeng/"
           },
@@ -353,7 +353,7 @@
           },
           "a5b": {
             "desc": "High-performance UI controls with the most complete Angular support available. Wijmo’s controls are all written in TypeScript and have zero dependencies. FlexGrid control includes full declarative markup, including cell templates.",
-            "logo": "http://wijmocdn.azureedge.net/wijmositeblob/wijmo-theme/logos/wijmo-55.png",
+            "logo": "",
             "title": "Wijmo",
             "url": "https://www.grapecity.com/wijmo"
           },
@@ -438,7 +438,7 @@
             "desc": "Amexio is a rich set of Angular components powered by HTML5 & CSS3 for Responsive Web Design and 80+ built-in Material Design Themes. Amexio has 3 Editions, Standard, Enterprise and Creative. Std Edition consists of basic UI Components which include Grid, Tabs, Form Inputs and so on. While Enterprise Edition consists of components like Calendar, Tree Tabs, Social Media Logins (Facebook, GitHub, Twitter and so on) and Creative Edition is focused building elegant and beautiful websites. With more than 200+ components/features. All the editions are open-sourced and free, based on Apache 2 License.",
             "title": "Amexio - Angular Extensions",
             "url": "https://amexio.tech/",
-            "logo": "http://www.amexio.org/amexio-logo.png"
+            "logo": ""
           },
           "bm": {
             "desc": "A lightweight Material Design library for Angular, based upon Google's Material Components for the Web",
@@ -765,7 +765,7 @@
           "500tech": {
             "desc": "Learn from 500Tech, an Angular consultancy in Israel.  This course was built by an expert developer, who lives and breathes Angular, and has practical experience  with real world large scale Angular apps.",
             "title": "Angular Hands-on Course (Israel)",
-            "url": "http://angular2.courses.500tech.com/"
+            "url": "https://500tech.com/courses/angular/"
           },
           "9ab": {
             "desc": "OnSite Training From the Authors of  \"Become A Ninja with Angular\"",

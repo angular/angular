@@ -609,6 +609,14 @@ jobs:
           command: 'openssl aes-256-cbc -d -in .circleci/github_token -md md5 -k "${KEY}" -out ~/.git_credentials'
       - run: ./scripts/ci/publish-build-artifacts.sh
 
+  aio_misc:
+    executor: default-executor
+    steps:
+      - custom_attach_workspace
+      - run:
+          name: Check website provided in contributors.json file
+          command: yarn node aio/scripts/test-external-urls.js
+
   aio_monitoring_stable:
     executor: default-executor
     steps:
@@ -879,6 +887,9 @@ workflows:
   monitoring:
     jobs:
       - setup
+      - aio_misc:
+          requires:
+            - setup
       - aio_monitoring_stable:
           requires:
             - setup
