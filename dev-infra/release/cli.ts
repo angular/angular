@@ -8,6 +8,7 @@
 import * as yargs from 'yargs';
 
 import {ReleaseBuildCommandModule} from './build/cli';
+import {ReleaseNotesCommandModule} from './notes/cli';
 import {ReleasePublishCommandModule} from './publish/cli';
 import {ReleaseSetDistTagCommand} from './set-dist-tag/cli';
 import {BuildEnvStampCommand} from './stamping/cli';
@@ -20,5 +21,6 @@ export function buildReleaseParser(localYargs: yargs.Argv) {
       .command(ReleasePublishCommandModule)
       .command(ReleaseBuildCommandModule)
       .command(ReleaseSetDistTagCommand)
-      .command(BuildEnvStampCommand);
+      .command(BuildEnvStampCommand)
+      .command(ReleaseNotesCommandModule);
 }
