@@ -94,6 +94,11 @@
       "version": "12.0.0-next.6",
       "description": "`XhrFactory` has been moved from `@angular/common/http` to `@angular/common`.",
       "factory": "./migrations/xhr-factory/index"
+    },
+    "migration-v12-deep-shadow-piercing-selector": {
+      "version": "12.0.2",
+      "description": "Automatically migrates shadow-piercing selector from `/deep/` to the recommanded alternative `::ng-deep`.",
+      "factory": "./migrations/deep-shadow-piercing-selector/index"
     }
   }
 }

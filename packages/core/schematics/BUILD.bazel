@@ -13,6 +13,7 @@ pkg_npm(
         "//packages/core/schematics/migrations/abstract-control-parent",
         "//packages/core/schematics/migrations/activated-route-snapshot-fragment",
         "//packages/core/schematics/migrations/can-activate-with-redirect-to",
+        "//packages/core/schematics/migrations/deep-shadow-piercing-selector",
         "//packages/core/schematics/migrations/dynamic-queries",
         "//packages/core/schematics/migrations/initial-navigation",
         "//packages/core/schematics/migrations/missing-injectable",
