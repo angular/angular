@@ -9,7 +9,7 @@
 import * as semver from 'semver';
 
 import {DevInfraReleaseConfig, ReleaseConfig} from '../../../config';
-import {ReleaseNotes} from '../../release-notes/release-notes';
+import {ReleaseNotes} from '../../../notes/release-notes';
 
 /**
  * Mock version of the ReleaseNotes for testing, preventing actual calls to git for commits and

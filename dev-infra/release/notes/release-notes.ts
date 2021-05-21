@@ -6,24 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {render} from 'ejs';
-import {join} from 'path';
 import * as semver from 'semver';
-import {CommitFromGitLog} from '../../../commit-message/parse';
+import {CommitFromGitLog} from '../../commit-message/parse';
 
-import {getCommitsInRange} from '../../../commit-message/utils';
-import {promptInput} from '../../../utils/console';
-import {GitClient} from '../../../utils/git/index';
-import {DevInfraReleaseConfig, getReleaseConfig, ReleaseNotesConfig} from '../../config/index';
-import {changelogPath} from '../constants';
+import {getCommitsInRange} from '../../commit-message/utils';
+import {promptInput} from '../../utils/console';
+import {GitClient} from '../../utils/git/index';
+import {DevInfraReleaseConfig, getReleaseConfig, ReleaseNotesConfig} from '../config/index';
 import {RenderContext} from './context';
 
 import changelogTemplate from './templates/changelog';
 import githubReleaseTemplate from './templates/github-release';
-
-/** Gets the path for the changelog file in a given project. */
-export function getLocalChangelogFilePath(projectDir: string): string {
-  return join(projectDir, changelogPath);
-}
 
 /** Release note generation. */
 export class ReleaseNotes {
