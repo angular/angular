@@ -56,7 +56,7 @@ describe('`/deep/` to `::ng-deep` migration', () => {
 
   it(`should not replace '/deep/' with '::ng-deep' in unknown file extension`, async () => {
     const fileName = '/index.foo';
-    const content = 'this is a /deep/ selector';
+    const content = 'this is a not /deep/ selector';
     tree.create(fileName, content);
     await runMigration();
     expect(tree.readContent(fileName)).toBe(content);
