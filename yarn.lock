@@ -3441,10 +3441,10 @@ cldr-data-downloader@^0.3.5:
     request "~2.87.0"
     request-progress "0.3.1"
 
-cldr@6.1.0:
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/cldr/-/cldr-6.1.0.tgz#9a385e708ede18762d245b8459565fa55eab5565"
-  integrity sha512-VOTKD20z054xBw1p6Ax1XqM1PEJ96JAVlTHhPH4AgX8E5uaONzuxhoaI2LYcqD1a2pBrX69NGlW6hB0SfaCGlA==
+cldr@7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/cldr/-/cldr-7.0.0.tgz#8e0f42acc21b5762842cf23a747120be898447fe"
+  integrity sha512-BmD93+RhHGkdVRO9LYL6kd7IA9ANxnpH1A+OM6FdhKVYXqRgBaDmt9P83VaQB6gMBaFvOl4IozW/g3ViLn9LeQ==
   dependencies:
     escodegen "^2.0.0"
     esprima "^4.0.1"
