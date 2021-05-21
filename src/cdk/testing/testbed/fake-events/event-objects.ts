@@ -8,6 +8,9 @@
 
 import {ModifierKeys} from '@angular/cdk/testing';
 
+/** Used to generate unique IDs for events. */
+let uniqueIds = 0;
+
 /**
  * Creates a browser MouseEvent with the specified options.
  * @docs-private
@@ -83,7 +86,7 @@ export function createTouchEvent(type: string, pageX = 0, pageY = 0, clientX = 0
   // In favor of creating events that work for most of the browsers, the event is created
   // as a basic UI Event. The necessary details for the event will be set manually.
   const event = document.createEvent('UIEvent');
-  const touchDetails = {pageX, pageY, clientX, clientY};
+  const touchDetails = {pageX, pageY, clientX, clientY, id: uniqueIds++};
 
   // TS3.6 removes the initUIEvent method and suggests porting to "new UIEvent()".
   (event as any).initUIEvent(type, true, true, window, 0);

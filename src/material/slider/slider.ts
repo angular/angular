@@ -503,6 +503,15 @@ export class MatSlider extends _MatSliderMixinBase
   /** Used to subscribe to global move and end events */
   protected _document: Document;
 
+  /**
+   * Identifier used to attribute a touch event to a particular slider.
+   * Will be undefined if one of the following conditions is true:
+   * - The user isn't dragging using a touch device.
+   * - The browser doesn't support `Touch.identifier`.
+   * - Dragging hasn't started yet.
+   */
+  private _touchId: number | undefined;
+
   constructor(elementRef: ElementRef,
               private _focusMonitor: FocusMonitor,
               private _changeDetectorRef: ChangeDetectorRef,
@@ -636,21 +645,26 @@ export class MatSlider extends _MatSliderMixinBase
     }
 
     this._ngZone.run(() => {
-      const oldValue = this.value;
-      const pointerPosition = getPointerPositionOnPage(event);
-      this._isSliding = true;
-      this._lastPointerEvent = event;
-      event.preventDefault();
-      this._focusHostElement();
-      this._onMouseenter(); // Simulate mouseenter in case this is a mobile device.
-      this._bindGlobalEvents(event);
-      this._focusHostElement();
-      this._updateValueFromPosition(pointerPosition);
-      this._valueOnSlideStart = oldValue;
+      this._touchId = isTouchEvent(event) ?
+          getTouchIdForSlider(event, this._elementRef.nativeElement) : undefined;
+      const pointerPosition = getPointerPositionOnPage(event, this._touchId);
 
-      // Emit a change and input event if the value changed.
-      if (oldValue != this.value) {
-        this._emitInputEvent();
+      if (pointerPosition) {
+        const oldValue = this.value;
+        this._isSliding = true;
+        this._lastPointerEvent = event;
+        event.preventDefault();
+        this._focusHostElement();
+        this._onMouseenter(); // Simulate mouseenter in case this is a mobile device.
+        this._bindGlobalEvents(event);
+        this._focusHostElement();
+        this._updateValueFromPosition(pointerPosition);
+        this._valueOnSlideStart = oldValue;
+
+        // Emit a change and input event if the value changed.
+        if (oldValue != this.value) {
+          this._emitInputEvent();
+        }
       }
     });
   }
@@ -661,15 +675,19 @@ export class MatSlider extends _MatSliderMixinBase
    */
   private _pointerMove = (event: TouchEvent | MouseEvent) => {
     if (this._isSliding) {
-      // Prevent the slide from selecting anything else.
-      event.preventDefault();
-      const oldValue = this.value;
-      this._lastPointerEvent = event;
-      this._updateValueFromPosition(getPointerPositionOnPage(event));
+      const pointerPosition = getPointerPositionOnPage(event, this._touchId);
 
-      // Native range elements always emit `input` events when the value changed while sliding.
-      if (oldValue != this.value) {
-        this._emitInputEvent();
+      if (pointerPosition) {
+        // Prevent the slide from selecting anything else.
+        event.preventDefault();
+        const oldValue = this.value;
+        this._lastPointerEvent = event;
+        this._updateValueFromPosition(pointerPosition);
+
+        // Native range elements always emit `input` events when the value changed while sliding.
+        if (oldValue != this.value) {
+          this._emitInputEvent();
+        }
       }
     }
   }
@@ -677,15 +695,21 @@ export class MatSlider extends _MatSliderMixinBase
   /** Called when the user has lifted their pointer. Bound on the document level. */
   private _pointerUp = (event: TouchEvent | MouseEvent) => {
     if (this._isSliding) {
-      event.preventDefault();
-      this._removeGlobalEvents();
-      this._isSliding = false;
+      if (!isTouchEvent(event) || typeof this._touchId !== 'number' ||
+          // Note that we use `changedTouches`, rather than `touches` because it
+          // seems like in most cases `touches` is empty for `touchend` events.
+          findMatchingTouch(event.changedTouches, this._touchId)) {
+        event.preventDefault();
+        this._removeGlobalEvents();
+        this._isSliding = false;
+        this._touchId = undefined;
 
-      if (this._valueOnSlideStart != this.value && !this.disabled) {
-        this._emitChangeEvent();
+        if (this._valueOnSlideStart != this.value && !this.disabled) {
+          this._emitChangeEvent();
+        }
+
+        this._valueOnSlideStart = this._lastPointerEvent = null;
       }
-
-      this._valueOnSlideStart = this._lastPointerEvent = null;
     }
   }
 
@@ -919,8 +943,47 @@ function isTouchEvent(event: MouseEvent | TouchEvent): event is TouchEvent {
 }
 
 /** Gets the coordinates of a touch or mouse event relative to the viewport. */
-function getPointerPositionOnPage(event: MouseEvent | TouchEvent) {
-  // `touches` will be empty for start/end events so we have to fall back to `changedTouches`.
-  const point = isTouchEvent(event) ? (event.touches[0] || event.changedTouches[0]) : event;
-  return {x: point.clientX, y: point.clientY};
+function getPointerPositionOnPage(event: MouseEvent | TouchEvent, id: number|undefined) {
+  let point: {clientX: number, clientY: number}|undefined;
+
+  if (isTouchEvent(event)) {
+    // The `identifier` could be undefined if the browser doesn't support `TouchEvent.identifier`.
+    // If that's the case, attribute the first touch to all active sliders. This should still cover
+    // the most common case while only breaking multi-touch.
+    if (typeof id === 'number') {
+      point = findMatchingTouch(event.touches, id) || findMatchingTouch(event.changedTouches, id);
+    } else {
+      // `touches` will be empty for start/end events so we have to fall back to `changedTouches`.
+      point = event.touches[0] || event.changedTouches[0];
+    }
+  } else {
+    point = event;
+  }
+
+  return point ? {x: point.clientX, y: point.clientY} : undefined;
+}
+
+/** Finds a `Touch` with a specific ID in a `TouchList`. */
+function findMatchingTouch(touches: TouchList, id: number): Touch | undefined {
+  for (let i = 0; i < touches.length; i++) {
+    if (touches[i].identifier === id) {
+      return touches[i];
+    }
+  }
+
+  return undefined;
+}
+
+
+/** Gets the unique ID of a touch that matches a specific slider. */
+function getTouchIdForSlider(event: TouchEvent, sliderHost: HTMLElement): number | undefined {
+  for (let i = 0; i < event.touches.length; i++) {
+    const target = event.touches[i].target as HTMLElement;
+
+    if (sliderHost === target || sliderHost.contains(target)) {
+      return event.touches[i].identifier;
+    }
+  }
+
+  return undefined;
 }
