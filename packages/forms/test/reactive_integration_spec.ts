@@ -2563,6 +2563,40 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             expect(form.controls.pin.errors).toEqual({max: {max: 1, actual: 2}});
           });
 
+          it('should validate max for float number', () => {
+            const fixture = initTest(getComponent(dir));
+            const control = new FormControl(10.25);
+            fixture.componentInstance.control = control;
+            fixture.componentInstance.form = new FormGroup({'pin': control});
+            fixture.componentInstance.max = 10.35;
+            fixture.detectChanges();
+
+            const input = fixture.debugElement.query(By.css('input')).nativeElement;
+            const form = fixture.componentInstance.form;
+
+            expect(input.value).toEqual('10.25');
+            expect(form.valid).toBeTruthy();
+            expect(form.controls.pin.errors).toBeNull();
+
+            input.value = 10.15;
+            dispatchEvent(input, 'input');
+            expect(form.value).toEqual({pin: 10.15});
+            expect(form.valid).toBeTruthy();
+            expect(form.controls.pin.errors).toBeNull();
+
+            fixture.componentInstance.max = 10.05;
+            fixture.detectChanges();
+
+            expect(form.valid).toBeFalse();
+            expect(form.controls.pin.errors).toEqual({max: {max: 10.05, actual: 10.15}});
+
+            input.value = 10.01;
+            dispatchEvent(input, 'input');
+            expect(form.value).toEqual({pin: 10.01});
+            expect(form.valid).toBeTruthy();
+            expect(form.controls.pin.errors).toBeNull();
+          });
+
           it('should apply max validation when control value is defined as a string', () => {
             const fixture = initTest(getComponent(dir));
             const control = new FormControl('5');
@@ -2613,6 +2647,40 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             fixture.detectChanges();
             expect(form.valid).toBeFalse();
             expect(form.controls.pin.errors).toEqual({min: {min: 5, actual: 2}});
+          });
+
+          it('should validate min for float number', () => {
+            const fixture = initTest(getComponent(dir));
+            const control = new FormControl(10.25);
+            fixture.componentInstance.control = control;
+            fixture.componentInstance.form = new FormGroup({'pin': control});
+            fixture.componentInstance.max = 10.50;
+            fixture.componentInstance.min = 10.25;
+            fixture.detectChanges();
+
+            const input = fixture.debugElement.query(By.css('input')).nativeElement;
+            const form = fixture.componentInstance.form;
+
+            expect(input.value).toEqual('10.25');
+            expect(form.valid).toBeTruthy();
+            expect(form.controls.pin.errors).toBeNull();
+
+            input.value = 10.35;
+            dispatchEvent(input, 'input');
+            expect(form.value).toEqual({pin: 10.35});
+            expect(form.valid).toBeTruthy();
+            expect(form.controls.pin.errors).toBeNull();
+
+            fixture.componentInstance.min = 10.40;
+            fixture.detectChanges();
+            expect(form.valid).toBeFalse();
+            expect(form.controls.pin.errors).toEqual({min: {min: 10.40, actual: 10.35}});
+
+            input.value = 10.45;
+            dispatchEvent(input, 'input');
+            expect(form.value).toEqual({pin: 10.45});
+            expect(form.valid).toBeTruthy();
+            expect(form.controls.pin.errors).toBeNull();
           });
 
           it('should apply min validation when control value is defined as a string', () => {
