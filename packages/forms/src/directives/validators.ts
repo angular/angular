@@ -178,7 +178,7 @@ export class MaxValidator extends AbstractValidatorDirective implements OnChange
   /** @internal */
   inputName = 'max';
   /** @internal */
-  normalizeInput = (input: string): number => parseInt(input, 10);
+  normalizeInput = (input: string): number => parseFloat(input);
   /** @internal */
   createValidator = (max: number): ValidatorFn => maxValidator(max);
   /**
@@ -238,7 +238,7 @@ export class MinValidator extends AbstractValidatorDirective implements OnChange
   /** @internal */
   inputName = 'min';
   /** @internal */
-  normalizeInput = (input: string): number => parseInt(input, 10);
+  normalizeInput = (input: string): number => parseFloat(input);
   /** @internal */
   createValidator = (min: number): ValidatorFn => minValidator(min);
   /**
