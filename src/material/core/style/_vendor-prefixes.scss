@@ -43,4 +43,14 @@
   position: -webkit-sticky #{if($important, '!important', '')};
   position: sticky #{if($important, '!important', '')};
 }
+
+@mixin private-color-adjust($value) {
+  -webkit-print-color-adjust: $value;
+  color-adjust: $value;
+}
+
+@mixin private-background-clip($value) {
+  -webkit-background-clip: $value;
+  background-clip: $value;
+}
 // stylelint-enable

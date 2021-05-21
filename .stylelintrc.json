@@ -15,7 +15,7 @@
   ],
   "rules": {
     "material/no-prefixes": [true, {
-      "browsers": ["last 2 versions", "not ie <= 10", "not ie_mob <= 10"],
+      "browsers": ["last 2 versions", "not dead", "not and_qq > 0", "not OperaMini all"],
       "filePattern": "**/!(*-example.css)"
     }],
     "material/theme-mixin-api": true,

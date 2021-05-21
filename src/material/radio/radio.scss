@@ -81,8 +81,7 @@ $ripple-radius: 20px;
   transform: scale(0.001);
 
   // force browser to show background-color when using the print function
-  -webkit-print-color-adjust: exact;
-  color-adjust: exact;
+  @include vendor-prefixes.private-color-adjust(exact);
 
   ._mat-animation-noopable & {
     transition: none;

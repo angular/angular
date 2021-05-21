@@ -139,6 +139,7 @@ $default-infix-width: 180px !default;
 
 // Server-side rendered matInput with focus or a placeholder attribute but placeholder not shown
 // (used as a pure CSS stand-in for mat-form-field-should-float).
+// stylelint-disable material/no-prefixes
 .mat-input-server:focus + .mat-form-field-label-wrapper .mat-form-field-label,
 .mat-input-server[placeholder]:not(:placeholder-shown) + .mat-form-field-label-wrapper
     .mat-form-field-label {
@@ -148,6 +149,7 @@ $default-infix-width: 180px !default;
     display: block;
   }
 }
+// stylelint-enable material/no-prefixes
 
 // Disable the label animation when the control is not empty (this prevents label
 // animating up when the value is set programmatically).

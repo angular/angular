@@ -43,11 +43,9 @@ $focus-ring-size: 30px !default;
 }
 
 .mat-slider-wrapper {
-  position: absolute;
-
   // force browser to show background-color when using the print function
-  -webkit-print-color-adjust: exact;
-  color-adjust: exact;
+  @include vendor-prefixes.private-color-adjust(exact);
+  position: absolute;
 }
 
 .mat-slider-track-wrapper {
@@ -81,8 +79,8 @@ $focus-ring-size: 30px !default;
 }
 
 .mat-slider-ticks {
+  @include vendor-prefixes.private-background-clip(content-box);
   background-repeat: repeat;
-  background-clip: content-box;
   box-sizing: border-box;
   opacity: 0;
   transition: opacity variables.$swift-ease-out-duration
