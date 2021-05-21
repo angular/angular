@@ -5857,6 +5857,180 @@ function buildDateStamp(date = new Date()) {
     return [year, month, day].join('-');
 }
 
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+var changelogTemplate = `
+<a name="<%- version %>"></a>
+# <%- version %><% if (title) { %> "<%- title %>"<% } %> (<%- dateStamp %>)
+
+<%_
+const commitsInChangelog = commits.filter(includeInReleaseNotes());
+for (const group of asCommitGroups(commitsInChangelog)) {
+_%>
+
+### <%- group.title %>
+| Commit | Description |
+| -- | -- |
+<%_
+  for (const commit of group.commits) {
+_%>
+| <%- commit.shortHash %> | <%- commit.header %> |
+<%_
+  }
+}
+_%>
+
+<%_
+const breakingChanges = commits.filter(contains('breakingChanges'));
+if (breakingChanges.length) {
+_%>
+## Breaking Changes
+
+<%_
+  for (const group of asCommitGroups(breakingChanges)) {
+_%>
+### <%- group.title %>
+
+<%_
+    for (const commit of group.commits) {
+_%>
+<%- commit.breakingChanges[0].text %>
+
+<%_
+    }
+  }
+}
+_%>
+
+<%_
+const deprecations = commits.filter(contains('deprecations'));
+if (deprecations.length) {
+_%>
+## Deprecations
+<%_
+  for (const group of asCommitGroups(deprecations)) {
+_%>
+### <%- group.title %>
+
+<%_
+    for (const commit of group.commits) {
+_%>
+<%- commit.deprecations[0].text %>
+<%_
+    }
+  }
+}
+_%>
+
+<%_
+const authors = commits.filter(unique('author')).map(c => c.author).sort();
+if (authors.length === 1) {
+_%>
+## Special Thanks:
+<%- authors[0]%>
+<%_
+}
+if (authors.length > 1) {
+_%>
+## Special Thanks:
+<%- authors.slice(0, -1).join(', ') %> and <%- authors.slice(-1)[0] %>
+<%_
+}
+_%>
+`;
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+var githubReleaseTemplate = `
+<a name="<%- version %>"></a>
+# <%- version %><% if (title) { %> "<%- title %>"<% } %> (<%- dateStamp %>)
+
+<%_
+const commitsInChangelog = commits.filter(includeInReleaseNotes());
+for (const group of asCommitGroups(commitsInChangelog)) {
+_%>
+
+### <%- group.title %>
+| Commit | Description |
+| -- | -- |
+<%_
+  for (const commit of group.commits) {
+_%>
+| <%- commit.shortHash %> | <%- commit.header %> |
+<%_
+  }
+}
+_%>
+
+<%_
+const breakingChanges = commits.filter(contains('breakingChanges'));
+if (breakingChanges.length) {
+_%>
+## Breaking Changes
+
+<%_
+  for (const group of asCommitGroups(breakingChanges)) {
+_%>
+### <%- group.title %>
+
+<%_
+    for (const commit of group.commits) {
+_%>
+<%- commit.breakingChanges[0].text %>
+
+<%_
+    }
+  }
+}
+_%>
+
+<%_
+const deprecations = commits.filter(contains('deprecations'));
+if (deprecations.length) {
+_%>
+## Deprecations
+<%_
+  for (const group of asCommitGroups(deprecations)) {
+_%>
+### <%- group.title %>
+
+<%_
+    for (const commit of group.commits) {
+_%>
+<%- commit.deprecations[0].text %>
+<%_
+    }
+  }
+}
+_%>
+
+<%_
+const authors = commits.filter(unique('author')).map(c => c.author).sort();
+if (authors.length === 1) {
+_%>
+## Special Thanks:
+<%- authors[0]%>
+<%_
+}
+if (authors.length > 1) {
+_%>
+## Special Thanks:
+<%- authors.slice(0, -1).join(', ') %> and <%- authors.slice(-1)[0] %>
+<%_
+}
+_%>
+`;
+
 /** Gets the path for the changelog file in a given project. */
 function getLocalChangelogFilePath(projectDir) {
     return path.join(projectDir, changelogPath);
@@ -5882,13 +6056,13 @@ class ReleaseNotes {
     /** Retrieve the release note generated for a Github Release. */
     getGithubReleaseEntry() {
         return tslib.__awaiter(this, void 0, void 0, function* () {
-            return ejs.renderFile(path.join(__dirname, 'templates/github-release.ejs'), yield this.generateRenderContext(), { rmWhitespace: true });
+            return ejs.render(githubReleaseTemplate, yield this.generateRenderContext(), { rmWhitespace: true });
         });
     }
     /** Retrieve the release note generated for a CHANGELOG entry. */
     getChangelogEntry() {
         return tslib.__awaiter(this, void 0, void 0, function* () {
-            return ejs.renderFile(path.join(__dirname, 'templates/changelog.ejs'), yield this.generateRenderContext(), { rmWhitespace: true });
+            return ejs.render(changelogTemplate, yield this.generateRenderContext(), { rmWhitespace: true });
         });
     }
     /**
