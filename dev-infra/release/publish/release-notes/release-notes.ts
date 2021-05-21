@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {renderFile} from 'ejs';
+import {render} from 'ejs';
 import {join} from 'path';
 import * as semver from 'semver';
 import {CommitFromGitLog} from '../../../commit-message/parse';
@@ -16,6 +16,9 @@ import {GitClient} from '../../../utils/git/index';
 import {DevInfraReleaseConfig, getReleaseConfig, ReleaseNotesConfig} from '../../config/index';
 import {changelogPath} from '../constants';
 import {RenderContext} from './context';
+
+import changelogTemplate from './templates/changelog';
+import githubReleaseTemplate from './templates/github-release';
 
 /** Gets the path for the changelog file in a given project. */
 export function getLocalChangelogFilePath(projectDir: string): string {
@@ -45,16 +48,12 @@ export class ReleaseNotes {
 
   /** Retrieve the release note generated for a Github Release. */
   async getGithubReleaseEntry(): Promise<string> {
-    return renderFile(
-        join(__dirname, 'templates/github-release.ejs'), await this.generateRenderContext(),
-        {rmWhitespace: true});
+    return render(githubReleaseTemplate, await this.generateRenderContext(), {rmWhitespace: true});
   }
 
   /** Retrieve the release note generated for a CHANGELOG entry. */
   async getChangelogEntry() {
-    return renderFile(
-        join(__dirname, 'templates/changelog.ejs'), await this.generateRenderContext(),
-        {rmWhitespace: true});
+    return render(changelogTemplate, await this.generateRenderContext(), {rmWhitespace: true});
   }
 
   /**
