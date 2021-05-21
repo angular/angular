@@ -5514,234 +5514,6 @@ function semverInc(version, release, identifier) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-/** Gets the commit message for a new release point in the project. */
-function getCommitMessageForRelease(newVersion) {
-    return `release: cut the v${newVersion} release`;
-}
-/**
- * Gets the commit message for an exceptional version bump in the next branch. The next
- * branch version will be bumped without the release being published in some situations.
- * More details can be found in the `MoveNextIntoFeatureFreeze` release action and in:
- * https://hackmd.io/2Le8leq0S6G_R5VEVTNK9A.
- */
-function getCommitMessageForExceptionalNextVersionBump(newVersion) {
-    return `release: bump the next branch to v${newVersion}`;
-}
-/** Gets the commit message for a release notes cherry-pick commit */
-function getReleaseNoteCherryPickCommitMessage(newVersion) {
-    return `docs: release notes for the v${newVersion} release`;
-}
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-/** Project-relative path for the changelog file. */
-const changelogPath = 'CHANGELOG.md';
-/** Project-relative path for the "package.json" file. */
-const packageJsonPath = 'package.json';
-/** Default interval in milliseconds to check whether a pull request has been merged. */
-const waitForPullRequestInterval = 10000;
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-/*
- * ###############################################################
- *
- * This file contains helpers for invoking external `ng-dev` commands. A subset of actions,
- * like building release output or setting aν NPM dist tag for release packages, cannot be
- * performed directly as part of the release tool and need to be delegated to external `ng-dev`
- * commands that exist across arbitrary version branches.
- *
- * In a concrete example: Consider a new patch version is released and that a new release
- * package has been added to the `next` branch. The patch branch will not contain the new
- * release package, so we could not build the release output for it. To work around this, we
- * call the ng-dev build command for the patch version branch and expect it to return a list
- * of built packages that need to be released as part of this release train.
- *
- * ###############################################################
- */
-/**
- * Invokes the `ng-dev release set-dist-tag` command in order to set the specified
- * NPM dist tag for all packages in the checked out branch to the given version.
- */
-function invokeSetNpmDistCommand(npmDistTag, version) {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        try {
-            // Note: No progress indicator needed as that is the responsibility of the command.
-            yield spawnWithDebugOutput('yarn', ['--silent', 'ng-dev', 'release', 'set-dist-tag', npmDistTag, version.format()]);
-            info(green(`  ✓   Set "${npmDistTag}" NPM dist tag for all packages to v${version}.`));
-        }
-        catch (e) {
-            error(e);
-            error(red(`  ✘   An error occurred while setting the NPM dist tag for "${npmDistTag}".`));
-            throw new FatalReleaseActionError();
-        }
-    });
-}
-/**
- * Invokes the `ng-dev release build` command in order to build the release
- * packages for the currently checked out branch.
- */
-function invokeReleaseBuildCommand() {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        const spinner = ora.call(undefined).start('Building release output.');
-        try {
-            // Since we expect JSON to be printed from the `ng-dev release build` command,
-            // we spawn the process in silent mode. We have set up an Ora progress spinner.
-            const { stdout } = yield spawnWithDebugOutput('yarn', ['--silent', 'ng-dev', 'release', 'build', '--json'], { mode: 'silent' });
-            spinner.stop();
-            info(green('  ✓   Built release output for all packages.'));
-            // The `ng-dev release build` command prints a JSON array to stdout
-            // that represents the built release packages and their output paths.
-            return JSON.parse(stdout.trim());
-        }
-        catch (e) {
-            spinner.stop();
-            error(e);
-            error(red('  ✘   An error occurred while building the release packages.'));
-            throw new FatalReleaseActionError();
-        }
-    });
-}
-/**
- * Invokes the `yarn install` command in order to install dependencies for
- * the configured project with the currently checked out revision.
- */
-function invokeYarnInstallCommand(projectDir) {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        try {
-            // Note: No progress indicator needed as that is the responsibility of the command.
-            // TODO: Consider using an Ora spinner instead to ensure minimal console output.
-            yield spawnWithDebugOutput('yarn', ['install', '--frozen-lockfile', '--non-interactive'], { cwd: projectDir });
-            info(green('  ✓   Installed project dependencies.'));
-        }
-        catch (e) {
-            error(e);
-            error(red('  ✘   An error occurred while installing dependencies.'));
-            throw new FatalReleaseActionError();
-        }
-    });
-}
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-/**
- * Graphql Github API query that can be used to find forks of a given repository
- * that are owned by the current viewer authenticated with the Github API.
- */
-const findOwnedForksOfRepoQuery = typedGraphqlify.params({
-    $owner: 'String!',
-    $name: 'String!',
-}, {
-    repository: typedGraphqlify.params({ owner: '$owner', name: '$name' }, {
-        forks: typedGraphqlify.params({ affiliations: 'OWNER', first: 1 }, {
-            nodes: [{
-                    owner: {
-                        login: typedGraphqlify.types.string,
-                    },
-                    name: typedGraphqlify.types.string,
-                }],
-        }),
-    }),
-});
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-/** Thirty seconds in milliseconds. */
-const THIRTY_SECONDS_IN_MS = 30000;
-/** Gets whether a given pull request has been merged. */
-function getPullRequestState(api, id) {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        const { data } = yield api.github.pulls.get(Object.assign(Object.assign({}, api.remoteParams), { pull_number: id }));
-        if (data.merged) {
-            return 'merged';
-        }
-        // Check if the PR was closed more than 30 seconds ago, this extra time gives Github time to
-        // update the closed pull request to be associated with the closing commit.
-        // Note: a Date constructed with `null` creates an object at 0 time, which will never be greater
-        // than the current date time.
-        if (data.closed_at !== null &&
-            (new Date(data.closed_at).getTime() < Date.now() - THIRTY_SECONDS_IN_MS)) {
-            return (yield isPullRequestClosedWithAssociatedCommit(api, id)) ? 'merged' : 'closed';
-        }
-        return 'open';
-    });
-}
-/**
- * Whether the pull request has been closed with an associated commit. This is usually
- * the case if a PR has been merged using the autosquash merge script strategy. Since
- * the merge is not fast-forward, Github does not consider the PR as merged and instead
- * shows the PR as closed. See for example: https://github.com/angular/angular/pull/37918.
- */
-function isPullRequestClosedWithAssociatedCommit(api, id) {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        const request = api.github.issues.listEvents.endpoint.merge(Object.assign(Object.assign({}, api.remoteParams), { issue_number: id }));
-        const events = yield api.github.paginate(request);
-        // Iterate through the events of the pull request in reverse. We want to find the most
-        // recent events and check if the PR has been closed with a commit associated with it.
-        // If the PR has been closed through a commit, we assume that the PR has been merged
-        // using the autosquash merge strategy. For more details. See the `AutosquashMergeStrategy`.
-        for (let i = events.length - 1; i >= 0; i--) {
-            const { event, commit_id } = events[i];
-            // If we come across a "reopened" event, we abort looking for referenced commits. Any
-            // commits that closed the PR before, are no longer relevant and did not close the PR.
-            if (event === 'reopened') {
-                return false;
-            }
-            // If a `closed` event is captured with a commit assigned, then we assume that
-            // this PR has been merged properly.
-            if (event === 'closed' && commit_id) {
-                return true;
-            }
-            // If the PR has been referenced by a commit, check if the commit closes this pull
-            // request. Note that this is needed besides checking `closed` as PRs could be merged
-            // into any non-default branch where the `Closes <..>` keyword does not work and the PR
-            // is simply closed without an associated `commit_id`. For more details see:
-            // https://docs.github.com/en/enterprise/2.16/user/github/managing-your-work-on-github/closing-issues-using-keywords#:~:text=non-default.
-            if (event === 'referenced' && commit_id &&
-                (yield isCommitClosingPullRequest(api, commit_id, id))) {
-                return true;
-            }
-        }
-        return false;
-    });
-}
-/** Checks whether the specified commit is closing the given pull request. */
-function isCommitClosingPullRequest(api, sha, id) {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        const { data } = yield api.github.repos.getCommit(Object.assign(Object.assign({}, api.remoteParams), { ref: sha }));
-        // Matches the closing keyword supported in commit messages. See:
-        // https://docs.github.com/en/enterprise/2.16/user/github/managing-your-work-on-github/closing-issues-using-keywords.
-        return data.commit.message.match(new RegExp(`(?:close[sd]?|fix(?:e[sd]?)|resolve[sd]?):? #${id}(?!\\d)`, 'i'));
-    });
-}
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
 /** List of types to be included in the release notes. */
 const typesToIncludeInReleaseNotes = Object.values(COMMIT_TYPES)
     .filter(type => type.releaseNotesLevel === ReleaseNotesLevel.Visible)
@@ -6031,6 +5803,8 @@ _%>
 _%>
 `;
 
+/** Project-relative path for the changelog file. */
+const changelogPath = 'CHANGELOG.md';
 /** Gets the path for the changelog file in a given project. */
 function getLocalChangelogFilePath(projectDir) {
     return path.join(projectDir, changelogPath);
@@ -6108,6 +5882,232 @@ class ReleaseNotes {
     getReleaseConfig(config) {
         return getReleaseConfig(config);
     }
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/** Gets the commit message for a new release point in the project. */
+function getCommitMessageForRelease(newVersion) {
+    return `release: cut the v${newVersion} release`;
+}
+/**
+ * Gets the commit message for an exceptional version bump in the next branch. The next
+ * branch version will be bumped without the release being published in some situations.
+ * More details can be found in the `MoveNextIntoFeatureFreeze` release action and in:
+ * https://hackmd.io/2Le8leq0S6G_R5VEVTNK9A.
+ */
+function getCommitMessageForExceptionalNextVersionBump(newVersion) {
+    return `release: bump the next branch to v${newVersion}`;
+}
+/** Gets the commit message for a release notes cherry-pick commit */
+function getReleaseNoteCherryPickCommitMessage(newVersion) {
+    return `docs: release notes for the v${newVersion} release`;
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/** Project-relative path for the "package.json" file. */
+const packageJsonPath = 'package.json';
+/** Default interval in milliseconds to check whether a pull request has been merged. */
+const waitForPullRequestInterval = 10000;
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/*
+ * ###############################################################
+ *
+ * This file contains helpers for invoking external `ng-dev` commands. A subset of actions,
+ * like building release output or setting aν NPM dist tag for release packages, cannot be
+ * performed directly as part of the release tool and need to be delegated to external `ng-dev`
+ * commands that exist across arbitrary version branches.
+ *
+ * In a concrete example: Consider a new patch version is released and that a new release
+ * package has been added to the `next` branch. The patch branch will not contain the new
+ * release package, so we could not build the release output for it. To work around this, we
+ * call the ng-dev build command for the patch version branch and expect it to return a list
+ * of built packages that need to be released as part of this release train.
+ *
+ * ###############################################################
+ */
+/**
+ * Invokes the `ng-dev release set-dist-tag` command in order to set the specified
+ * NPM dist tag for all packages in the checked out branch to the given version.
+ */
+function invokeSetNpmDistCommand(npmDistTag, version) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        try {
+            // Note: No progress indicator needed as that is the responsibility of the command.
+            yield spawnWithDebugOutput('yarn', ['--silent', 'ng-dev', 'release', 'set-dist-tag', npmDistTag, version.format()]);
+            info(green(`  ✓   Set "${npmDistTag}" NPM dist tag for all packages to v${version}.`));
+        }
+        catch (e) {
+            error(e);
+            error(red(`  ✘   An error occurred while setting the NPM dist tag for "${npmDistTag}".`));
+            throw new FatalReleaseActionError();
+        }
+    });
+}
+/**
+ * Invokes the `ng-dev release build` command in order to build the release
+ * packages for the currently checked out branch.
+ */
+function invokeReleaseBuildCommand() {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        const spinner = ora.call(undefined).start('Building release output.');
+        try {
+            // Since we expect JSON to be printed from the `ng-dev release build` command,
+            // we spawn the process in silent mode. We have set up an Ora progress spinner.
+            const { stdout } = yield spawnWithDebugOutput('yarn', ['--silent', 'ng-dev', 'release', 'build', '--json'], { mode: 'silent' });
+            spinner.stop();
+            info(green('  ✓   Built release output for all packages.'));
+            // The `ng-dev release build` command prints a JSON array to stdout
+            // that represents the built release packages and their output paths.
+            return JSON.parse(stdout.trim());
+        }
+        catch (e) {
+            spinner.stop();
+            error(e);
+            error(red('  ✘   An error occurred while building the release packages.'));
+            throw new FatalReleaseActionError();
+        }
+    });
+}
+/**
+ * Invokes the `yarn install` command in order to install dependencies for
+ * the configured project with the currently checked out revision.
+ */
+function invokeYarnInstallCommand(projectDir) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        try {
+            // Note: No progress indicator needed as that is the responsibility of the command.
+            // TODO: Consider using an Ora spinner instead to ensure minimal console output.
+            yield spawnWithDebugOutput('yarn', ['install', '--frozen-lockfile', '--non-interactive'], { cwd: projectDir });
+            info(green('  ✓   Installed project dependencies.'));
+        }
+        catch (e) {
+            error(e);
+            error(red('  ✘   An error occurred while installing dependencies.'));
+            throw new FatalReleaseActionError();
+        }
+    });
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/**
+ * Graphql Github API query that can be used to find forks of a given repository
+ * that are owned by the current viewer authenticated with the Github API.
+ */
+const findOwnedForksOfRepoQuery = typedGraphqlify.params({
+    $owner: 'String!',
+    $name: 'String!',
+}, {
+    repository: typedGraphqlify.params({ owner: '$owner', name: '$name' }, {
+        forks: typedGraphqlify.params({ affiliations: 'OWNER', first: 1 }, {
+            nodes: [{
+                    owner: {
+                        login: typedGraphqlify.types.string,
+                    },
+                    name: typedGraphqlify.types.string,
+                }],
+        }),
+    }),
+});
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/** Thirty seconds in milliseconds. */
+const THIRTY_SECONDS_IN_MS = 30000;
+/** Gets whether a given pull request has been merged. */
+function getPullRequestState(api, id) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        const { data } = yield api.github.pulls.get(Object.assign(Object.assign({}, api.remoteParams), { pull_number: id }));
+        if (data.merged) {
+            return 'merged';
+        }
+        // Check if the PR was closed more than 30 seconds ago, this extra time gives Github time to
+        // update the closed pull request to be associated with the closing commit.
+        // Note: a Date constructed with `null` creates an object at 0 time, which will never be greater
+        // than the current date time.
+        if (data.closed_at !== null &&
+            (new Date(data.closed_at).getTime() < Date.now() - THIRTY_SECONDS_IN_MS)) {
+            return (yield isPullRequestClosedWithAssociatedCommit(api, id)) ? 'merged' : 'closed';
+        }
+        return 'open';
+    });
+}
+/**
+ * Whether the pull request has been closed with an associated commit. This is usually
+ * the case if a PR has been merged using the autosquash merge script strategy. Since
+ * the merge is not fast-forward, Github does not consider the PR as merged and instead
+ * shows the PR as closed. See for example: https://github.com/angular/angular/pull/37918.
+ */
+function isPullRequestClosedWithAssociatedCommit(api, id) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        const request = api.github.issues.listEvents.endpoint.merge(Object.assign(Object.assign({}, api.remoteParams), { issue_number: id }));
+        const events = yield api.github.paginate(request);
+        // Iterate through the events of the pull request in reverse. We want to find the most
+        // recent events and check if the PR has been closed with a commit associated with it.
+        // If the PR has been closed through a commit, we assume that the PR has been merged
+        // using the autosquash merge strategy. For more details. See the `AutosquashMergeStrategy`.
+        for (let i = events.length - 1; i >= 0; i--) {
+            const { event, commit_id } = events[i];
+            // If we come across a "reopened" event, we abort looking for referenced commits. Any
+            // commits that closed the PR before, are no longer relevant and did not close the PR.
+            if (event === 'reopened') {
+                return false;
+            }
+            // If a `closed` event is captured with a commit assigned, then we assume that
+            // this PR has been merged properly.
+            if (event === 'closed' && commit_id) {
+                return true;
+            }
+            // If the PR has been referenced by a commit, check if the commit closes this pull
+            // request. Note that this is needed besides checking `closed` as PRs could be merged
+            // into any non-default branch where the `Closes <..>` keyword does not work and the PR
+            // is simply closed without an associated `commit_id`. For more details see:
+            // https://docs.github.com/en/enterprise/2.16/user/github/managing-your-work-on-github/closing-issues-using-keywords#:~:text=non-default.
+            if (event === 'referenced' && commit_id &&
+                (yield isCommitClosingPullRequest(api, commit_id, id))) {
+                return true;
+            }
+        }
+        return false;
+    });
+}
+/** Checks whether the specified commit is closing the given pull request. */
+function isCommitClosingPullRequest(api, sha, id) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        const { data } = yield api.github.repos.getCommit(Object.assign(Object.assign({}, api.remoteParams), { ref: sha }));
+        // Matches the closing keyword supported in commit messages. See:
+        // https://docs.github.com/en/enterprise/2.16/user/github/managing-your-work-on-github/closing-issues-using-keywords.
+        return data.commit.message.match(new RegExp(`(?:close[sd]?|fix(?:e[sd]?)|resolve[sd]?):? #${id}(?!\\d)`, 'i'));
+    });
 }
 
 /**
