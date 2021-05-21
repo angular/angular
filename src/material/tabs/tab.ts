@@ -23,6 +23,7 @@ import {
   ViewEncapsulation,
   InjectionToken,
   Inject,
+  Optional,
 } from '@angular/core';
 import {CanDisable, CanDisableCtor, mixinDisabled} from '@angular/material/core';
 import {Subject} from 'rxjs';
@@ -109,7 +110,7 @@ export class MatTab extends _MatTabMixinBase implements OnInit, CanDisable, OnCh
 
   constructor(
     private _viewContainerRef: ViewContainerRef,
-    @Inject(MAT_TAB_GROUP) public _closestTabGroup: any) {
+    @Inject(MAT_TAB_GROUP) @Optional() public _closestTabGroup: any) {
     super();
   }
 

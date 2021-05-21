@@ -155,7 +155,7 @@ export declare class MatTab extends _MatTabMixinBase implements OnInit, CanDisab
     ngOnInit(): void;
     static ngAcceptInputType_disabled: BooleanInput;
     static ɵcmp: i0.ɵɵComponentDeclaration<MatTab, "mat-tab", ["matTab"], { "disabled": "disabled"; "textLabel": "label"; "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; }, {}, ["templateLabel", "_explicitContent"], ["*"]>;
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatTab, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatTab, [null, { optional: true; }]>;
 }
 
 export declare class MatTabBody extends _MatTabBodyBase {

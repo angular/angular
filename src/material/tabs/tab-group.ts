@@ -290,7 +290,9 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
     this._allTabs.changes
       .pipe(startWith(this._allTabs))
       .subscribe((tabs: QueryList<MatTab>) => {
-        this._tabs.reset(tabs.filter(tab => tab._closestTabGroup === this));
+        this._tabs.reset(tabs.filter(tab => {
+          return tab._closestTabGroup === this || !tab._closestTabGroup;
+        }));
         this._tabs.notifyOnChanges();
       });
   }
