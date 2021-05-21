@@ -49,6 +49,12 @@ const RIPPLE_ANIMATION_CONFIG: RippleAnimationConfig = {
   exitDuration: numbers.FG_DEACTIVATION_MS,
 };
 
+/** Configuration for ripples when animations are disabled. */
+const NOOP_RIPPLE_ANIMATION_CONFIG: RippleAnimationConfig = {
+  enterDuration: 0,
+  exitDuration: 0
+};
+
 /** @docs-private */
 export const MAT_SLIDE_TOGGLE_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
@@ -81,7 +87,7 @@ export class MatSlideToggleChange {
     '[class.mat-warn]': 'color === "warn"',
     '[class.mat-mdc-slide-toggle-focused]': '_focused',
     '[class.mat-mdc-slide-toggle-checked]': 'checked',
-    '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
+    '[class._mat-animation-noopable]': '_noopAnimations',
   },
   exportAs: 'matSlideToggle',
   encapsulation: ViewEncapsulation.None,
@@ -111,7 +117,10 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
   _focused: boolean;
 
   /** Configuration for the underlying ripple. */
-  _rippleAnimation: RippleAnimationConfig = RIPPLE_ANIMATION_CONFIG;
+  _rippleAnimation: RippleAnimationConfig;
+
+  /** Whether noop animations are enabled. */
+  _noopAnimations: boolean;
 
   /** The color palette  for this slide toggle. */
   @Input() color: ThemePalette;
@@ -201,9 +210,12 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
               @Attribute('tabindex') tabIndex: string,
               @Inject(MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS)
                   public defaults: MatSlideToggleDefaultOptions,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
     this.tabIndex = parseInt(tabIndex) || 0;
     this.color = defaults.color || 'accent';
+    this._noopAnimations = animationMode === 'NoopAnimations';
+    this._rippleAnimation = this._noopAnimations ?
+      NOOP_RIPPLE_ANIMATION_CONFIG : RIPPLE_ANIMATION_CONFIG;
   }
 
   ngAfterViewInit() {

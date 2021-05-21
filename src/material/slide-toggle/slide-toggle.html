@@ -23,7 +23,7 @@
            [matRippleDisabled]="disableRipple || disabled"
            [matRippleCentered]="true"
            [matRippleRadius]="20"
-           [matRippleAnimation]="{enterDuration: 150}">
+           [matRippleAnimation]="{enterDuration: _noopAnimations ? 0 : 150}">
 
         <div class="mat-ripple-element mat-slide-toggle-persistent-ripple"></div>
       </div>

@@ -11,8 +11,8 @@ export declare const MAT_SLIDE_TOGGLE_REQUIRED_VALIDATOR: Provider;
 export declare const MAT_SLIDE_TOGGLE_VALUE_ACCESSOR: any;
 
 export declare class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestroy, AfterContentInit, ControlValueAccessor, CanDisable, CanColor, HasTabIndex, CanDisableRipple {
-    _animationMode?: string | undefined;
     _inputElement: ElementRef<HTMLInputElement>;
+    _noopAnimations: boolean;
     _thumbBarEl: ElementRef;
     _thumbEl: ElementRef;
     ariaLabel: string | null;
@@ -28,7 +28,7 @@ export declare class MatSlideToggle extends _MatSlideToggleMixinBase implements 
     get required(): boolean;
     set required(value: boolean);
     readonly toggleChange: EventEmitter<void>;
-    constructor(elementRef: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, tabIndex: string, defaults: MatSlideToggleDefaultOptions, _animationMode?: string | undefined);
+    constructor(elementRef: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, tabIndex: string, defaults: MatSlideToggleDefaultOptions, animationMode?: string);
     _onChangeEvent(event: Event): void;
     _onInputClick(event: Event): void;
     _onLabelTextChange(): void;

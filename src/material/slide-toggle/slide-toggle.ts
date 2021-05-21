@@ -88,7 +88,7 @@ const _MatSlideToggleMixinBase:
     '[class.mat-checked]': 'checked',
     '[class.mat-disabled]': 'disabled',
     '[class.mat-slide-toggle-label-before]': 'labelPosition == "before"',
-    '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
+    '[class._mat-animation-noopable]': '_noopAnimations',
   },
   templateUrl: 'slide-toggle.html',
   styleUrls: ['slide-toggle.css'],
@@ -108,6 +108,9 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
   private _uniqueId: string = `mat-slide-toggle-${++nextUniqueId}`;
   private _required: boolean = false;
   private _checked: boolean = false;
+
+  /** Whether noop animations are enabled. */
+  _noopAnimations: boolean;
 
   /** Reference to the thumb HTMLElement. */
   @ViewChild('thumbContainer') _thumbEl: ElementRef;
@@ -165,10 +168,11 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
               @Attribute('tabindex') tabIndex: string,
               @Inject(MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS)
                   public defaults: MatSlideToggleDefaultOptions,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
     super(elementRef);
     this.tabIndex = parseInt(tabIndex) || 0;
     this.color = this.defaultColor = defaults.color || 'accent';
+    this._noopAnimations = animationMode === 'NoopAnimations';
   }
 
   ngAfterContentInit() {
