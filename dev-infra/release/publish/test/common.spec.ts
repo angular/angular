@@ -11,13 +11,14 @@ import {join} from 'path';
 import * as semver from 'semver';
 
 import {getBranchPushMatcher} from '../../../utils/testing';
-import {changelogPath, ReleaseNotes} from '../../notes/release-notes';
+import {ReleaseNotes} from '../../notes/release-notes';
 import {NpmDistTag} from '../../versioning';
 import {ActiveReleaseTrains} from '../../versioning/active-release-trains';
 import * as npm from '../../versioning/npm-publish';
 import {ReleaseTrain} from '../../versioning/release-trains';
 import {ReleaseAction} from '../actions';
 import {actions} from '../actions/index';
+import {changelogPath} from '../constants';
 
 import {fakeNpmPackageQueryRequest, getTestingMocksForReleaseAction, parse, setupReleaseActionForTesting, testTmpDir} from './test-utils';
 

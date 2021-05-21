@@ -24,8 +24,8 @@ var cliProgress = require('cli-progress');
 var os = require('os');
 var shelljs = require('shelljs');
 var minimatch = require('minimatch');
-var ora = require('ora');
 var ejs = require('ejs');
+var ora = require('ora');
 var glob = require('glob');
 var ts = require('typescript');
 
@@ -5235,285 +5235,6 @@ const ReleaseBuildCommandModule = {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-/**
- * Spawns a given command with the specified arguments inside an interactive shell. All process
- * stdin, stdout and stderr output is printed to the current console.
- *
- * @returns a Promise resolving on success, and rejecting on command failure with the status code.
- */
-function spawnInteractiveCommand(command, args, options) {
-    if (options === void 0) { options = {}; }
-    return new Promise(function (resolve, reject) {
-        var commandText = command + " " + args.join(' ');
-        debug("Executing command: " + commandText);
-        var childProcess = child_process.spawn(command, args, tslib.__assign(tslib.__assign({}, options), { shell: true, stdio: 'inherit' }));
-        childProcess.on('exit', function (status) { return status === 0 ? resolve() : reject(status); });
-    });
-}
-/**
- * Spawns a given command with the specified arguments inside a shell. All process stdout
- * output is captured and returned as resolution on completion. Depending on the chosen
- * output mode, stdout/stderr output is also printed to the console, or only on error.
- *
- * @returns a Promise resolving with captured stdout and stderr on success. The promise
- *   rejects on command failure.
- */
-function spawnWithDebugOutput(command, args, options) {
-    if (options === void 0) { options = {}; }
-    return new Promise(function (resolve, reject) {
-        var commandText = command + " " + args.join(' ');
-        var outputMode = options.mode;
-        debug("Executing command: " + commandText);
-        var childProcess = child_process.spawn(command, args, tslib.__assign(tslib.__assign({}, options), { shell: true, stdio: 'pipe' }));
-        var logOutput = '';
-        var stdout = '';
-        var stderr = '';
-        // Capture the stdout separately so that it can be passed as resolve value.
-        // This is useful if commands return parsable stdout.
-        childProcess.stderr.on('data', function (message) {
-            stderr += message;
-            logOutput += message;
-            // If console output is enabled, print the message directly to the stderr. Note that
-            // we intentionally print all output to stderr as stdout should not be polluted.
-            if (outputMode === undefined || outputMode === 'enabled') {
-                process.stderr.write(message);
-            }
-        });
-        childProcess.stdout.on('data', function (message) {
-            stdout += message;
-            logOutput += message;
-            // If console output is enabled, print the message directly to the stderr. Note that
-            // we intentionally print all output to stderr as stdout should not be polluted.
-            if (outputMode === undefined || outputMode === 'enabled') {
-                process.stderr.write(message);
-            }
-        });
-        childProcess.on('exit', function (status, signal) {
-            var exitDescription = status !== null ? "exit code \"" + status + "\"" : "signal \"" + signal + "\"";
-            var printFn = outputMode === 'on-error' ? error : debug;
-            printFn("Command \"" + commandText + "\" completed with " + exitDescription + ".");
-            printFn("Process output: \n" + logOutput);
-            // On success, resolve the promise. Otherwise reject with the captured stderr
-            // and stdout log output if the output mode was set to `silent`.
-            if (status === 0) {
-                resolve({ stdout: stdout, stderr: stderr });
-            }
-            else {
-                reject(outputMode === 'silent' ? logOutput : undefined);
-            }
-        });
-    });
-}
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-/**
- * Runs NPM publish within a specified package directory.
- * @throws With the process log output if the publish failed.
- */
-function runNpmPublish(packagePath, distTag, registryUrl) {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        const args = ['publish', '--access', 'public', '--tag', distTag];
-        // If a custom registry URL has been specified, add the `--registry` flag.
-        if (registryUrl !== undefined) {
-            args.push('--registry', registryUrl);
-        }
-        yield spawnWithDebugOutput('npm', args, { cwd: packagePath, mode: 'silent' });
-    });
-}
-/**
- * Sets the NPM tag to the specified version for the given package.
- * @throws With the process log output if the tagging failed.
- */
-function setNpmTagForPackage(packageName, distTag, version, registryUrl) {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        const args = ['dist-tag', 'add', `${packageName}@${version}`, distTag];
-        // If a custom registry URL has been specified, add the `--registry` flag.
-        if (registryUrl !== undefined) {
-            args.push('--registry', registryUrl);
-        }
-        yield spawnWithDebugOutput('npm', args, { mode: 'silent' });
-    });
-}
-/**
- * Checks whether the user is currently logged into NPM.
- * @returns Whether the user is currently logged into NPM.
- */
-function npmIsLoggedIn(registryUrl) {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        const args = ['whoami'];
-        // If a custom registry URL has been specified, add the `--registry` flag.
-        if (registryUrl !== undefined) {
-            args.push('--registry', registryUrl);
-        }
-        try {
-            yield spawnWithDebugOutput('npm', args, { mode: 'silent' });
-        }
-        catch (e) {
-            return false;
-        }
-        return true;
-    });
-}
-/**
- * Log into NPM at a provided registry.
- * @throws With the `npm login` status code if the login failed.
- */
-function npmLogin(registryUrl) {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        const args = ['login', '--no-browser'];
-        // If a custom registry URL has been specified, add the `--registry` flag. The `--registry` flag
-        // must be spliced into the correct place in the command as npm expects it to be the flag
-        // immediately following the login subcommand.
-        if (registryUrl !== undefined) {
-            args.splice(1, 0, '--registry', registryUrl);
-        }
-        // The login command prompts for username, password and other profile information. Hence
-        // the process needs to be interactive (i.e. respecting current TTYs stdin).
-        yield spawnInteractiveCommand('npm', args);
-    });
-}
-/**
- * Log out of NPM at a provided registry.
- * @returns Whether the user was logged out of NPM.
- */
-function npmLogout(registryUrl) {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        const args = ['logout'];
-        // If a custom registry URL has been specified, add the `--registry` flag. The `--registry` flag
-        // must be spliced into the correct place in the command as npm expects it to be the flag
-        // immediately following the logout subcommand.
-        if (registryUrl !== undefined) {
-            args.splice(1, 0, '--registry', registryUrl);
-        }
-        try {
-            yield spawnWithDebugOutput('npm', args, { mode: 'silent' });
-        }
-        finally {
-            return npmIsLoggedIn(registryUrl);
-        }
-    });
-}
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-/**
- * Prints the active release trains to the console.
- * @params active Active release trains that should be printed.
- * @params config Release configuration used for querying NPM on published versions.
- */
-function printActiveReleaseTrains(active, config) {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        const { releaseCandidate, next, latest } = active;
-        const isNextPublishedToNpm = yield isVersionPublishedToNpm(next.version, config);
-        const nextTrainType = next.isMajor ? 'major' : 'minor';
-        const ltsBranches = yield fetchLongTermSupportBranchesFromNpm(config);
-        info();
-        info(blue('Current version branches in the project:'));
-        // Print information for release trains in the feature-freeze/release-candidate phase.
-        if (releaseCandidate !== null) {
-            const rcVersion = releaseCandidate.version;
-            const rcTrainType = releaseCandidate.isMajor ? 'major' : 'minor';
-            const rcTrainPhase = rcVersion.prerelease[0] === 'next' ? 'feature-freeze' : 'release-candidate';
-            info(` • ${bold(releaseCandidate.branchName)} contains changes for an upcoming ` +
-                `${rcTrainType} that is currently in ${bold(rcTrainPhase)} phase.`);
-            info(`   Most recent pre-release for this branch is "${bold(`v${rcVersion}`)}".`);
-        }
-        // Print information about the release-train in the latest phase. i.e. the patch branch.
-        info(` • ${bold(latest.branchName)} contains changes for the most recent patch.`);
-        info(`   Most recent patch version for this branch is "${bold(`v${latest.version}`)}".`);
-        // Print information about the release-train in the next phase.
-        info(` • ${bold(next.branchName)} contains changes for a ${nextTrainType} ` +
-            `currently in active development.`);
-        // Note that there is a special case for versions in the next release-train. The version in
-        // the next branch is not always published to NPM. This can happen when we recently branched
-        // off for a feature-freeze release-train. More details are in the next pre-release action.
-        if (isNextPublishedToNpm) {
-            info(`   Most recent pre-release version for this branch is "${bold(`v${next.version}`)}".`);
-        }
-        else {
-            info(`   Version is currently set to "${bold(`v${next.version}`)}", but has not been ` +
-                `published yet.`);
-        }
-        // If no release-train in release-candidate or feature-freeze phase is active,
-        // we print a message as last bullet point to make this clear.
-        if (releaseCandidate === null) {
-            info(' • No release-candidate or feature-freeze branch currently active.');
-        }
-        info();
-        info(blue('Current active LTS version branches:'));
-        // Print all active LTS branches (each branch as own bullet point).
-        if (ltsBranches.active.length !== 0) {
-            for (const ltsBranch of ltsBranches.active) {
-                info(` • ${bold(ltsBranch.name)} is currently in active long-term support phase.`);
-                info(`   Most recent patch version for this branch is "${bold(`v${ltsBranch.version}`)}".`);
-            }
-        }
-        info();
-    });
-}
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-/** Error that will be thrown if the user manually aborted a release action. */
-class UserAbortedReleaseActionError extends Error {
-    constructor() {
-        super();
-        // Set the prototype explicitly because in ES5, the prototype is accidentally lost due to
-        // a limitation in down-leveling.
-        // https://github.com/Microsoft/TypeScript/wiki/FAQ#why-doesnt-extending-built-ins-like-error-array-and-map-work.
-        Object.setPrototypeOf(this, UserAbortedReleaseActionError.prototype);
-    }
-}
-/** Error that will be thrown if the action has been aborted due to a fatal error. */
-class FatalReleaseActionError extends Error {
-    constructor() {
-        super();
-        // Set the prototype explicitly because in ES5, the prototype is accidentally lost due to
-        // a limitation in down-leveling.
-        // https://github.com/Microsoft/TypeScript/wiki/FAQ#why-doesnt-extending-built-ins-like-error-array-and-map-work.
-        Object.setPrototypeOf(this, FatalReleaseActionError.prototype);
-    }
-}
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-/**
- * Increments a specified SemVer version. Compared to the original increment in SemVer,
- * the version is cloned to not modify the original version instance.
- */
-function semverInc(version, release, identifier) {
-    const clone = new semver.SemVer(version.version);
-    return clone.inc(release, identifier);
-}
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
 /** List of types to be included in the release notes. */
 const typesToIncludeInReleaseNotes = Object.values(COMMIT_TYPES)
     .filter(type => type.releaseNotesLevel === ReleaseNotesLevel.Visible)
@@ -5803,12 +5524,6 @@ _%>
 _%>
 `;
 
-/** Project-relative path for the changelog file. */
-const changelogPath = 'CHANGELOG.md';
-/** Gets the path for the changelog file in a given project. */
-function getLocalChangelogFilePath(projectDir) {
-    return path.join(projectDir, changelogPath);
-}
 /** Release note generation. */
 class ReleaseNotes {
     constructor(version, startingRef, endingRef) {
@@ -5891,6 +5606,346 @@ class ReleaseNotes {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+/** Yargs command builder for configuring the `ng-dev release build` command. */
+function builder$8(argv) {
+    return argv
+        .option('releaseVersion', { type: 'string', default: '0.0.0', coerce: (version) => new semver.SemVer(version) })
+        .option('from', {
+        type: 'string',
+        description: 'The git tag or ref to start the changelog entry from',
+        defaultDescription: 'The latest semver tag',
+    })
+        .option('to', {
+        type: 'string',
+        description: 'The git tag or ref to end the changelog entry with',
+        default: 'HEAD',
+    })
+        .option('type', {
+        type: 'string',
+        description: 'The type of release notes to create',
+        choices: ['github-release', 'changelog'],
+        default: 'changelog',
+    })
+        .option('outFile', {
+        type: 'string',
+        description: 'File location to write the generated release notes to',
+        coerce: (filePath) => filePath ? path.join(process.cwd(), filePath) : undefined
+    });
+}
+/** Yargs command handler for generating release notes. */
+function handler$8({ releaseVersion, from, to, outFile, type }) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        // Since `yargs` evaluates defaults even if a value as been provided, if no value is provided to
+        // the handler, the latest semver tag on the branch is used.
+        from = from || GitClient.getInstance().getLatestSemverTag().format();
+        /** The ReleaseNotes instance to generate release notes. */
+        const releaseNotes = yield ReleaseNotes.fromRange(releaseVersion, from, to);
+        /** The requested release notes entry. */
+        const releaseNotesEntry = yield (type === 'changelog' ? releaseNotes.getChangelogEntry() :
+            releaseNotes.getGithubReleaseEntry());
+        if (outFile) {
+            fs.writeFileSync(outFile, releaseNotesEntry);
+            info(`Generated release notes for "${releaseVersion}" written to ${outFile}`);
+        }
+        else {
+            process.stdout.write(releaseNotesEntry);
+        }
+    });
+}
+/** CLI command module for generating release notes. */
+const ReleaseNotesCommandModule = {
+    builder: builder$8,
+    handler: handler$8,
+    command: 'notes',
+    describe: 'Generate release notes',
+};
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/**
+ * Spawns a given command with the specified arguments inside an interactive shell. All process
+ * stdin, stdout and stderr output is printed to the current console.
+ *
+ * @returns a Promise resolving on success, and rejecting on command failure with the status code.
+ */
+function spawnInteractiveCommand(command, args, options) {
+    if (options === void 0) { options = {}; }
+    return new Promise(function (resolve, reject) {
+        var commandText = command + " " + args.join(' ');
+        debug("Executing command: " + commandText);
+        var childProcess = child_process.spawn(command, args, tslib.__assign(tslib.__assign({}, options), { shell: true, stdio: 'inherit' }));
+        childProcess.on('exit', function (status) { return status === 0 ? resolve() : reject(status); });
+    });
+}
+/**
+ * Spawns a given command with the specified arguments inside a shell. All process stdout
+ * output is captured and returned as resolution on completion. Depending on the chosen
+ * output mode, stdout/stderr output is also printed to the console, or only on error.
+ *
+ * @returns a Promise resolving with captured stdout and stderr on success. The promise
+ *   rejects on command failure.
+ */
+function spawnWithDebugOutput(command, args, options) {
+    if (options === void 0) { options = {}; }
+    return new Promise(function (resolve, reject) {
+        var commandText = command + " " + args.join(' ');
+        var outputMode = options.mode;
+        debug("Executing command: " + commandText);
+        var childProcess = child_process.spawn(command, args, tslib.__assign(tslib.__assign({}, options), { shell: true, stdio: 'pipe' }));
+        var logOutput = '';
+        var stdout = '';
+        var stderr = '';
+        // Capture the stdout separately so that it can be passed as resolve value.
+        // This is useful if commands return parsable stdout.
+        childProcess.stderr.on('data', function (message) {
+            stderr += message;
+            logOutput += message;
+            // If console output is enabled, print the message directly to the stderr. Note that
+            // we intentionally print all output to stderr as stdout should not be polluted.
+            if (outputMode === undefined || outputMode === 'enabled') {
+                process.stderr.write(message);
+            }
+        });
+        childProcess.stdout.on('data', function (message) {
+            stdout += message;
+            logOutput += message;
+            // If console output is enabled, print the message directly to the stderr. Note that
+            // we intentionally print all output to stderr as stdout should not be polluted.
+            if (outputMode === undefined || outputMode === 'enabled') {
+                process.stderr.write(message);
+            }
+        });
+        childProcess.on('exit', function (status, signal) {
+            var exitDescription = status !== null ? "exit code \"" + status + "\"" : "signal \"" + signal + "\"";
+            var printFn = outputMode === 'on-error' ? error : debug;
+            printFn("Command \"" + commandText + "\" completed with " + exitDescription + ".");
+            printFn("Process output: \n" + logOutput);
+            // On success, resolve the promise. Otherwise reject with the captured stderr
+            // and stdout log output if the output mode was set to `silent`.
+            if (status === 0) {
+                resolve({ stdout: stdout, stderr: stderr });
+            }
+            else {
+                reject(outputMode === 'silent' ? logOutput : undefined);
+            }
+        });
+    });
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/**
+ * Runs NPM publish within a specified package directory.
+ * @throws With the process log output if the publish failed.
+ */
+function runNpmPublish(packagePath, distTag, registryUrl) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        const args = ['publish', '--access', 'public', '--tag', distTag];
+        // If a custom registry URL has been specified, add the `--registry` flag.
+        if (registryUrl !== undefined) {
+            args.push('--registry', registryUrl);
+        }
+        yield spawnWithDebugOutput('npm', args, { cwd: packagePath, mode: 'silent' });
+    });
+}
+/**
+ * Sets the NPM tag to the specified version for the given package.
+ * @throws With the process log output if the tagging failed.
+ */
+function setNpmTagForPackage(packageName, distTag, version, registryUrl) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        const args = ['dist-tag', 'add', `${packageName}@${version}`, distTag];
+        // If a custom registry URL has been specified, add the `--registry` flag.
+        if (registryUrl !== undefined) {
+            args.push('--registry', registryUrl);
+        }
+        yield spawnWithDebugOutput('npm', args, { mode: 'silent' });
+    });
+}
+/**
+ * Checks whether the user is currently logged into NPM.
+ * @returns Whether the user is currently logged into NPM.
+ */
+function npmIsLoggedIn(registryUrl) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        const args = ['whoami'];
+        // If a custom registry URL has been specified, add the `--registry` flag.
+        if (registryUrl !== undefined) {
+            args.push('--registry', registryUrl);
+        }
+        try {
+            yield spawnWithDebugOutput('npm', args, { mode: 'silent' });
+        }
+        catch (e) {
+            return false;
+        }
+        return true;
+    });
+}
+/**
+ * Log into NPM at a provided registry.
+ * @throws With the `npm login` status code if the login failed.
+ */
+function npmLogin(registryUrl) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        const args = ['login', '--no-browser'];
+        // If a custom registry URL has been specified, add the `--registry` flag. The `--registry` flag
+        // must be spliced into the correct place in the command as npm expects it to be the flag
+        // immediately following the login subcommand.
+        if (registryUrl !== undefined) {
+            args.splice(1, 0, '--registry', registryUrl);
+        }
+        // The login command prompts for username, password and other profile information. Hence
+        // the process needs to be interactive (i.e. respecting current TTYs stdin).
+        yield spawnInteractiveCommand('npm', args);
+    });
+}
+/**
+ * Log out of NPM at a provided registry.
+ * @returns Whether the user was logged out of NPM.
+ */
+function npmLogout(registryUrl) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        const args = ['logout'];
+        // If a custom registry URL has been specified, add the `--registry` flag. The `--registry` flag
+        // must be spliced into the correct place in the command as npm expects it to be the flag
+        // immediately following the logout subcommand.
+        if (registryUrl !== undefined) {
+            args.splice(1, 0, '--registry', registryUrl);
+        }
+        try {
+            yield spawnWithDebugOutput('npm', args, { mode: 'silent' });
+        }
+        finally {
+            return npmIsLoggedIn(registryUrl);
+        }
+    });
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/**
+ * Prints the active release trains to the console.
+ * @params active Active release trains that should be printed.
+ * @params config Release configuration used for querying NPM on published versions.
+ */
+function printActiveReleaseTrains(active, config) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        const { releaseCandidate, next, latest } = active;
+        const isNextPublishedToNpm = yield isVersionPublishedToNpm(next.version, config);
+        const nextTrainType = next.isMajor ? 'major' : 'minor';
+        const ltsBranches = yield fetchLongTermSupportBranchesFromNpm(config);
+        info();
+        info(blue('Current version branches in the project:'));
+        // Print information for release trains in the feature-freeze/release-candidate phase.
+        if (releaseCandidate !== null) {
+            const rcVersion = releaseCandidate.version;
+            const rcTrainType = releaseCandidate.isMajor ? 'major' : 'minor';
+            const rcTrainPhase = rcVersion.prerelease[0] === 'next' ? 'feature-freeze' : 'release-candidate';
+            info(` • ${bold(releaseCandidate.branchName)} contains changes for an upcoming ` +
+                `${rcTrainType} that is currently in ${bold(rcTrainPhase)} phase.`);
+            info(`   Most recent pre-release for this branch is "${bold(`v${rcVersion}`)}".`);
+        }
+        // Print information about the release-train in the latest phase. i.e. the patch branch.
+        info(` • ${bold(latest.branchName)} contains changes for the most recent patch.`);
+        info(`   Most recent patch version for this branch is "${bold(`v${latest.version}`)}".`);
+        // Print information about the release-train in the next phase.
+        info(` • ${bold(next.branchName)} contains changes for a ${nextTrainType} ` +
+            `currently in active development.`);
+        // Note that there is a special case for versions in the next release-train. The version in
+        // the next branch is not always published to NPM. This can happen when we recently branched
+        // off for a feature-freeze release-train. More details are in the next pre-release action.
+        if (isNextPublishedToNpm) {
+            info(`   Most recent pre-release version for this branch is "${bold(`v${next.version}`)}".`);
+        }
+        else {
+            info(`   Version is currently set to "${bold(`v${next.version}`)}", but has not been ` +
+                `published yet.`);
+        }
+        // If no release-train in release-candidate or feature-freeze phase is active,
+        // we print a message as last bullet point to make this clear.
+        if (releaseCandidate === null) {
+            info(' • No release-candidate or feature-freeze branch currently active.');
+        }
+        info();
+        info(blue('Current active LTS version branches:'));
+        // Print all active LTS branches (each branch as own bullet point).
+        if (ltsBranches.active.length !== 0) {
+            for (const ltsBranch of ltsBranches.active) {
+                info(` • ${bold(ltsBranch.name)} is currently in active long-term support phase.`);
+                info(`   Most recent patch version for this branch is "${bold(`v${ltsBranch.version}`)}".`);
+            }
+        }
+        info();
+    });
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/** Error that will be thrown if the user manually aborted a release action. */
+class UserAbortedReleaseActionError extends Error {
+    constructor() {
+        super();
+        // Set the prototype explicitly because in ES5, the prototype is accidentally lost due to
+        // a limitation in down-leveling.
+        // https://github.com/Microsoft/TypeScript/wiki/FAQ#why-doesnt-extending-built-ins-like-error-array-and-map-work.
+        Object.setPrototypeOf(this, UserAbortedReleaseActionError.prototype);
+    }
+}
+/** Error that will be thrown if the action has been aborted due to a fatal error. */
+class FatalReleaseActionError extends Error {
+    constructor() {
+        super();
+        // Set the prototype explicitly because in ES5, the prototype is accidentally lost due to
+        // a limitation in down-leveling.
+        // https://github.com/Microsoft/TypeScript/wiki/FAQ#why-doesnt-extending-built-ins-like-error-array-and-map-work.
+        Object.setPrototypeOf(this, FatalReleaseActionError.prototype);
+    }
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/**
+ * Increments a specified SemVer version. Compared to the original increment in SemVer,
+ * the version is cloned to not modify the original version instance.
+ */
+function semverInc(version, release, identifier) {
+    const clone = new semver.SemVer(version.version);
+    return clone.inc(release, identifier);
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 /** Gets the commit message for a new release point in the project. */
 function getCommitMessageForRelease(newVersion) {
     return `release: cut the v${newVersion} release`;
@@ -5918,6 +5973,8 @@ function getReleaseNoteCherryPickCommitMessage(newVersion) {
  */
 /** Project-relative path for the "package.json" file. */
 const packageJsonPath = 'package.json';
+/** Project-relative path for the changelog file. */
+const changelogPath = 'CHANGELOG.md';
 /** Default interval in milliseconds to check whether a pull request has been merged. */
 const waitForPullRequestInterval = 10000;
 
@@ -6357,7 +6414,7 @@ class ReleaseAction {
      */
     prependReleaseNotesToChangelog(releaseNotes) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
-            const localChangelogPath = getLocalChangelogFilePath(this.projectDir);
+            const localChangelogPath = path.join(this.projectDir, changelogPath);
             const localChangelog = yield fs.promises.readFile(localChangelogPath, 'utf8');
             const releaseNotesEntry = yield releaseNotes.getChangelogEntry();
             yield fs.promises.writeFile(localChangelogPath, `${releaseNotesEntry}\n\n${localChangelog}`);
@@ -7223,11 +7280,11 @@ class ReleaseTool {
  * found in the LICENSE file at https://angular.io/license
  */
 /** Yargs command builder for configuring the `ng-dev release publish` command. */
-function builder$8(argv) {
+function builder$9(argv) {
     return addGithubTokenOption(argv);
 }
 /** Yargs command handler for staging a release. */
-function handler$8() {
+function handler$9() {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const git = GitClient.getInstance();
         const config = getConfig();
@@ -7252,8 +7309,8 @@ function handler$8() {
 }
 /** CLI command module for publishing a release. */
 const ReleasePublishCommandModule = {
-    builder: builder$8,
-    handler: handler$8,
+    builder: builder$9,
+    handler: handler$9,
     command: 'publish',
     describe: 'Publish new releases and configure version branches.',
 };
@@ -7265,7 +7322,7 @@ const ReleasePublishCommandModule = {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-function builder$9(args) {
+function builder$a(args) {
     return args
         .positional('tagName', {
         type: 'string',
@@ -7279,7 +7336,7 @@ function builder$9(args) {
     });
 }
 /** Yargs command handler for building a release. */
-function handler$9(args) {
+function handler$a(args) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const { targetVersion: rawVersion, tagName } = args;
         const { npmPackages, publishRegistry } = getReleaseConfig();
@@ -7311,8 +7368,8 @@ function handler$9(args) {
 }
 /** CLI command module for setting an NPM dist tag. */
 const ReleaseSetDistTagCommand = {
-    builder: builder$9,
-    handler: handler$9,
+    builder: builder$a,
+    handler: handler$a,
     command: 'set-dist-tag <tag-name> <target-version>',
     describe: 'Sets a given NPM dist tag for all release packages.',
 };
@@ -7392,22 +7449,22 @@ function getCurrentGitUser() {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-function builder$a(args) {
+function builder$b(args) {
     return args.option('mode', {
         demandOption: true,
         description: 'Whether the env-stamp should be built for a snapshot or release',
         choices: ['snapshot', 'release']
     });
 }
-function handler$a({ mode }) {
+function handler$b({ mode }) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         buildEnvStamp(mode);
     });
 }
 /** CLI command module for building the environment stamp. */
 const BuildEnvStampCommand = {
-    builder: builder$a,
-    handler: handler$a,
+    builder: builder$b,
+    handler: handler$b,
     command: 'build-env-stamp',
     describe: 'Build the environment stamping information',
 };
@@ -7420,7 +7477,8 @@ function buildReleaseParser(localYargs) {
         .command(ReleasePublishCommandModule)
         .command(ReleaseBuildCommandModule)
         .command(ReleaseSetDistTagCommand)
-        .command(BuildEnvStampCommand);
+        .command(BuildEnvStampCommand)
+        .command(ReleaseNotesCommandModule);
 }
 
 /**
