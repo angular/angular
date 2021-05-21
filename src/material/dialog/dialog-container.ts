@@ -8,6 +8,7 @@
 
 import {AnimationEvent} from '@angular/animations';
 import {FocusMonitor, FocusOrigin, FocusTrap, FocusTrapFactory} from '@angular/cdk/a11y';
+import {_getFocusedElementPierceShadowDom} from '@angular/cdk/platform';
 import {
   BasePortalOutlet,
   CdkPortalOutlet,
@@ -182,7 +183,7 @@ export abstract class _MatDialogContainerBase extends BasePortalOutlet {
     // We need the extra check, because IE can set the `activeElement` to null in some cases.
     if (this._config.restoreFocus && previousElement &&
         typeof previousElement.focus === 'function') {
-      const activeElement = this._getActiveElement();
+      const activeElement = _getFocusedElementPierceShadowDom();
       const element = this._elementRef.nativeElement;
 
       // Make sure that focus is still inside the dialog or is on the body (usually because a
@@ -213,7 +214,7 @@ export abstract class _MatDialogContainerBase extends BasePortalOutlet {
   /** Captures the element that was focused before the dialog was opened. */
   private _capturePreviouslyFocusedElement() {
     if (this._document) {
-      this._elementFocusedBeforeDialogWasOpened = this._getActiveElement() as HTMLElement;
+      this._elementFocusedBeforeDialogWasOpened = _getFocusedElementPierceShadowDom();
     }
   }
 
@@ -228,16 +229,8 @@ export abstract class _MatDialogContainerBase extends BasePortalOutlet {
   /** Returns whether focus is inside the dialog. */
   private _containsFocus() {
     const element = this._elementRef.nativeElement;
-    const activeElement = this._getActiveElement();
+    const activeElement = _getFocusedElementPierceShadowDom();
     return element === activeElement || element.contains(activeElement);
-  }
-
-  /** Gets the currently-focused element on the page. */
-  private _getActiveElement(): Element | null {
-    // If the `activeElement` is inside a shadow root, `document.activeElement` will
-    // point to the shadow root so we have to descend into it ourselves.
-    const activeElement = this._document.activeElement;
-    return activeElement?.shadowRoot?.activeElement as HTMLElement || activeElement;
   }
 }
 

@@ -7,6 +7,7 @@
  */
 
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
+import {_getFocusedElementPierceShadowDom} from '@angular/cdk/platform';
 import {DOCUMENT} from '@angular/common';
 import {
   AfterContentInit,
@@ -388,8 +389,6 @@ export class FocusTrapFactory {
   exportAs: 'cdkTrapFocus',
 })
 export class CdkTrapFocus implements OnDestroy, AfterContentInit, OnChanges, DoCheck {
-  private _document: Document;
-
   /** Underlying FocusTrap instance. */
   focusTrap: FocusTrap;
 
@@ -413,9 +412,11 @@ export class CdkTrapFocus implements OnDestroy, AfterContentInit, OnChanges, DoC
   constructor(
       private _elementRef: ElementRef<HTMLElement>,
       private _focusTrapFactory: FocusTrapFactory,
+      /**
+       * @deprecated No longer being used. To be removed.
+       * @breaking-change 13.0.0
+       */
       @Inject(DOCUMENT) _document: any) {
-
-    this._document = _document;
     this.focusTrap = this._focusTrapFactory.create(this._elementRef.nativeElement, true);
   }
 
@@ -454,11 +455,7 @@ export class CdkTrapFocus implements OnDestroy, AfterContentInit, OnChanges, DoC
   }
 
   private _captureFocus() {
-    // If the `activeElement` is inside a shadow root, `document.activeElement` will
-    // point to the shadow root so we have to descend into it ourselves.
-    const activeElement = this._document?.activeElement as HTMLElement|null;
-    this._previouslyFocusedElement =
-      activeElement?.shadowRoot?.activeElement as HTMLElement || activeElement;
+    this._previouslyFocusedElement = _getFocusedElementPierceShadowDom();
     this.focusTrap.focusInitialElementWhenReady();
   }
 

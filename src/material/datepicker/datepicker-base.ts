@@ -50,6 +50,7 @@ import {
 } from '@angular/material/core';
 import {merge, Subject, Observable, Subscription} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
+import {_getFocusedElementPierceShadowDom} from '@angular/cdk/platform';
 import {MatCalendar, MatCalendarView} from './calendar';
 import {matDatepickerAnimations} from './datepicker-animations';
 import {createMissingDateImplError} from './datepicker-errors';
@@ -452,7 +453,11 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
     @Inject(MAT_DATEPICKER_SCROLL_STRATEGY) scrollStrategy: any,
     @Optional() private _dateAdapter: DateAdapter<D>,
     @Optional() private _dir: Directionality,
-    @Optional() @Inject(DOCUMENT) private _document: any,
+    /**
+     * @deprecated No longer being used. To be removed.
+     * @breaking-change 13.0.0
+     */
+    @Optional() @Inject(DOCUMENT) _document: any,
     private _model: MatDateSelectionModel<S, D>) {
     if (!this._dateAdapter && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw createMissingDateImplError('DateAdapter');
@@ -553,11 +558,7 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
       throw Error('Attempted to open an MatDatepicker with no associated input.');
     }
 
-    // If the `activeElement` is inside a shadow root, `document.activeElement` will
-    // point to the shadow root so we have to descend into it ourselves.
-    const activeElement: HTMLElement|null = this._document?.activeElement;
-    this._focusedElementBeforeOpen =
-      activeElement?.shadowRoot?.activeElement as HTMLElement || activeElement;
+    this._focusedElementBeforeOpen = _getFocusedElementPierceShadowDom();
     this._openOverlay();
     this._opened = true;
     this.openedStream.emit();

@@ -51,7 +51,8 @@ export declare class CdkTrapFocus implements OnDestroy, AfterContentInit, OnChan
     get enabled(): boolean;
     set enabled(value: boolean);
     focusTrap: FocusTrap;
-    constructor(_elementRef: ElementRef<HTMLElement>, _focusTrapFactory: FocusTrapFactory, _document: any);
+    constructor(_elementRef: ElementRef<HTMLElement>, _focusTrapFactory: FocusTrapFactory,
+    _document: any);
     ngAfterContentInit(): void;
     ngDoCheck(): void;
     ngOnChanges(changes: SimpleChanges): void;

@@ -32,6 +32,7 @@ ng_module(
         "//src/cdk/coercion",
         "//src/cdk/keycodes",
         "//src/cdk/overlay",
+        "//src/cdk/platform",
         "//src/cdk/portal",
         "//src/material/button",
         "//src/material/core",

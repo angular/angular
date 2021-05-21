@@ -34,6 +34,7 @@ import {matBottomSheetAnimations} from './bottom-sheet-animations';
 import {Subscription} from 'rxjs';
 import {DOCUMENT} from '@angular/common';
 import {FocusTrap, FocusTrapFactory} from '@angular/cdk/a11y';
+import {_getFocusedElementPierceShadowDom} from '@angular/cdk/platform';
 
 // TODO(crisbeto): consolidate some logic between this, MatDialog and MatSnackBar
 
@@ -207,7 +208,7 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
     if (this.bottomSheetConfig.autoFocus) {
       this._focusTrap.focusInitialElementWhenReady();
     } else {
-      const activeElement = this._getActiveElement();
+      const activeElement = _getFocusedElementPierceShadowDom();
 
       // Otherwise ensure that focus is on the container. It's possible that a different
       // component tried to move focus while the open animation was running. See:
@@ -226,7 +227,7 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
 
     // We need the extra check, because IE can set the `activeElement` to null in some cases.
     if (this.bottomSheetConfig.restoreFocus && toFocus && typeof toFocus.focus === 'function') {
-      const activeElement = this._getActiveElement();
+      const activeElement = _getFocusedElementPierceShadowDom();
       const element = this._elementRef.nativeElement;
 
       // Make sure that focus is still inside the bottom sheet or is on the body (usually because a
@@ -246,19 +247,11 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
 
   /** Saves a reference to the element that was focused before the bottom sheet was opened. */
   private _savePreviouslyFocusedElement() {
-    this._elementFocusedBeforeOpened = this._getActiveElement();
+    this._elementFocusedBeforeOpened = _getFocusedElementPierceShadowDom();
 
     // The `focus` method isn't available during server-side rendering.
     if (this._elementRef.nativeElement.focus) {
       Promise.resolve().then(() => this._elementRef.nativeElement.focus());
     }
-  }
-
-  /** Gets the currently-focused element on the page. */
-  private _getActiveElement(): HTMLElement | null {
-    // If the `activeElement` is inside a shadow root, `document.activeElement` will
-    // point to the shadow root so we have to descend into it ourselves.
-    const activeElement = this._document.activeElement;
-    return activeElement?.shadowRoot?.activeElement as HTMLElement || activeElement;
   }
 }
