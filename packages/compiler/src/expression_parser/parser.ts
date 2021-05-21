@@ -1082,10 +1082,8 @@ export class _ParseAST {
     return new TemplateBindingParseResult(bindings, [] /* warnings */, this.errors);
   }
 
-  parseKeyedReadOrWrite(receiver: AST, start: number, isSafe: boolean) {
-    let result: AST|undefined;
-
-    this.withContext(ParseContextFlags.Writable, () => {
+  parseKeyedReadOrWrite(receiver: AST, start: number, isSafe: boolean): AST {
+    return this.withContext(ParseContextFlags.Writable, () => {
       this.rbracketsExpected++;
       const key = this.parsePipe();
       if (key instanceof EmptyExpr) {
@@ -1098,16 +1096,15 @@ export class _ParseAST {
           this.error('The \'?.\' operator cannot be used in the assignment');
         } else {
           const value = this.parseConditional();
-          result = new KeyedWrite(this.span(start), this.sourceSpan(start), receiver, key, value);
+          return new KeyedWrite(this.span(start), this.sourceSpan(start), receiver, key, value);
         }
       } else {
-        result = isSafe ?
-            new SafeKeyedRead(this.span(start), this.sourceSpan(start), receiver, key) :
-            new KeyedRead(this.span(start), this.sourceSpan(start), receiver, key);
+        return isSafe ? new SafeKeyedRead(this.span(start), this.sourceSpan(start), receiver, key) :
+                        new KeyedRead(this.span(start), this.sourceSpan(start), receiver, key);
       }
-    });
 
-    return result || new EmptyExpr(this.span(start), this.sourceSpan(start));
+      return new EmptyExpr(this.span(start), this.sourceSpan(start));
+    });
   }
 
   /**
