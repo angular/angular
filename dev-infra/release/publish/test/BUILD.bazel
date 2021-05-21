@@ -10,6 +10,7 @@ ts_library(
     deps = [
         "//dev-infra/commit-message",
         "//dev-infra/release/config",
+        "//dev-infra/release/notes",
         "//dev-infra/release/publish",
         "//dev-infra/release/versioning",
         "//dev-infra/utils",

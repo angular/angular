@@ -9,12 +9,12 @@
 import * as semver from 'semver';
 
 import {green, info, yellow} from '../../../utils/console';
+import {ReleaseNotes} from '../../notes/release-notes';
 import {ActiveReleaseTrains} from '../../versioning/active-release-trains';
 import {computeNewPrereleaseVersionForNext} from '../../versioning/next-prerelease-version';
 import {ReleaseAction} from '../actions';
 import {getCommitMessageForExceptionalNextVersionBump, getReleaseNoteCherryPickCommitMessage} from '../commit-message';
 import {changelogPath, packageJsonPath} from '../constants';
-import {ReleaseNotes} from '../release-notes/release-notes';
 
 /**
  * Release action that moves the next release-train into the feature-freeze phase. This means

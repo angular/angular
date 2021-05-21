@@ -15,6 +15,7 @@ import {debug, error, green, info, promptConfirm, red, warn, yellow} from '../..
 import {getListCommitsInBranchUrl, getRepositoryGitUrl} from '../../utils/git/github-urls';
 import {GitClient} from '../../utils/git/index';
 import {BuiltPackage, ReleaseConfig} from '../config/index';
+import {ReleaseNotes} from '../notes/release-notes';
 import {NpmDistTag} from '../versioning';
 import {ActiveReleaseTrains} from '../versioning/active-release-trains';
 import {runNpmPublish} from '../versioning/npm-publish';
@@ -25,7 +26,6 @@ import {changelogPath, packageJsonPath, waitForPullRequestInterval} from './cons
 import {invokeReleaseBuildCommand, invokeYarnInstallCommand} from './external-commands';
 import {findOwnedForksOfRepoQuery} from './graphql-queries';
 import {getPullRequestState} from './pull-request-state';
-import {getLocalChangelogFilePath, ReleaseNotes} from './release-notes/release-notes';
 
 /** Interface describing a Github repository. */
 export interface GithubRepo {
@@ -320,7 +320,7 @@ export abstract class ReleaseAction {
    * @returns A boolean indicating whether the release notes have been prepended.
    */
   protected async prependReleaseNotesToChangelog(releaseNotes: ReleaseNotes): Promise<void> {
-    const localChangelogPath = getLocalChangelogFilePath(this.projectDir);
+    const localChangelogPath = join(this.projectDir, changelogPath);
     const localChangelog = await fs.readFile(localChangelogPath, 'utf8');
     const releaseNotesEntry = await releaseNotes.getChangelogEntry();
     await fs.writeFile(localChangelogPath, `${releaseNotesEntry}\n\n${localChangelog}`);
