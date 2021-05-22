@@ -89,7 +89,7 @@
     "@types/shelljs": "^0.8.6",
     "@types/systemjs": "0.19.32",
     "@types/yaml": "^1.9.7",
-    "@types/yargs": "^16.0.1",
+    "@types/yargs": "^17.0.0",
     "@webcomponents/custom-elements": "^1.1.0",
     "angular": "npm:angular@1.8",
     "angular-1.5": "npm:angular@1.5",
