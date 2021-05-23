@@ -7,10 +7,11 @@
  */
 
 import {compileClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, FactoryTarget, InterpolationConfig, LexerRange, makeBindingParser, ParsedTemplate, ParseSourceFile, parseTemplate, R3ClassMetadata, R3ComponentMetadata, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr} from '@angular/compiler';
+import {ViewEncapsulation} from '@angular/compiler/src/core';
 import * as ts from 'typescript';
 
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../cycles';
-import {ErrorCode, FatalDiagnosticError, makeRelatedInformation} from '../../diagnostics';
+import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
 import {absoluteFrom, relative} from '../../file_system';
 import {ImportedFile, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {DependencyTracker} from '../../incremental/api';
@@ -338,6 +339,15 @@ export class ComponentDecoratorHandler implements
 
     // Next, read the `@Component`-specific fields.
     const {decorator: component, metadata, inputs, outputs} = directiveResult;
+    const encapsulation: number =
+        this._resolveEnumValue(component, 'encapsulation', 'ViewEncapsulation') || 0;
+    const changeDetection: number|null =
+        this._resolveEnumValue(component, 'changeDetection', 'ChangeDetectionStrategy');
+
+    let animations: Expression|null = null;
+    if (component.has('animations')) {
+      animations = new WrappedNodeExpr(component.get('animations')!);
+    }
 
     // Go through the root directories for this project, and select the one with the smallest
     // relative path representation.
@@ -426,6 +436,18 @@ export class ComponentDecoratorHandler implements
       }
     }
 
+    if (encapsulation === ViewEncapsulation.ShadowDom && metadata.selector !== null) {
+      const selectorError = validateCustomElementSelector(metadata.selector);
+      if (selectorError !== null) {
+        if (diagnostics === undefined) {
+          diagnostics = [];
+        }
+        diagnostics.push(makeDiagnostic(
+            ErrorCode.COMPONENT_INVALID_SHADOW_DOM_SELECTOR, component.get('selector')!,
+            selectorError));
+      }
+    }
+
     // If inline styles were preprocessed use those
     let inlineStyles: string[]|null = null;
     if (this.preanalyzeStylesCache.has(node)) {
@@ -453,17 +475,6 @@ export class ComponentDecoratorHandler implements
     }
     if (template.styles.length > 0) {
       styles.push(...template.styles);
-    }
-
-    const encapsulation: number =
-        this._resolveEnumValue(component, 'encapsulation', 'ViewEncapsulation') || 0;
-
-    const changeDetection: number|null =
-        this._resolveEnumValue(component, 'changeDetection', 'ChangeDetectionStrategy');
-
-    let animations: Expression|null = null;
-    if (component.has('animations')) {
-      animations = new WrappedNodeExpr(component.get('animations')!);
     }
 
     const output: AnalysisOutput<ComponentAnalysisData> = {
@@ -1430,4 +1441,36 @@ function makeCyclicImportInfo(
   const message =
       `The ${type} '${name}' is used in the template but importing it would create a cycle: `;
   return makeRelatedInformation(ref.node, message + path);
+}
+
+
+/**
+ * Checks whether a selector is a valid custom element tag name.
+ * Based loosely on https://mothereff.in/custom-element-name.
+ */
+function validateCustomElementSelector(selector: string): string|null {
+  // Avoid flagging components with an attribute selector. This isn't bulletproof since it won't
+  // catch cases like `foo[]bar`, but we don't need it to be. This is mainly to avoid flagging
+  // something like `foo-bar[baz]` incorrectly.
+  if (selector.includes('[') && selector.includes(']')) {
+    return null;
+  }
+
+  if (!selector.includes('-')) {
+    return 'Selector of a ShadowDom-encapsulated component must contain a hyphen.';
+  }
+
+  if (selector.startsWith('-')) {
+    return 'Selector of a ShadowDom-encapsulated component must not start with a hyphen.';
+  }
+
+  if (/[A-Z]/.test(selector)) {
+    return 'Selector of a ShadowDom-encapsulated component must be in lower case.';
+  }
+
+  if (/^\d/i.test(selector)) {
+    return 'Selector of a ShadowDom-encapsulated component must not start with a digit.';
+  }
+
+  return null;
 }
