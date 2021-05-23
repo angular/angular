@@ -201,7 +201,8 @@ export interface NgModule {
    * @see [Entry Components](guide/entry-components)
    * @deprecated
    * Since 9.0.0. With Ivy, this property is no longer necessary.
-   * (You may need to keep these if building a library in View Engine mode.)
+   * (You may need to keep these if building a library that will be consumed by a View Engine
+   * application.)
    */
   entryComponents?: Array<Type<any>|any[]>;
 
