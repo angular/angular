@@ -1124,7 +1124,6 @@ groups:
           'aio/content/guide/reviewing-content.md',
           'aio/content/guide/updating-content-github-ui.md',
           'aio/content/guide/updating-search-keywords.md',
-          'aio/content/guide/visual-studio-2015.md'
           ])
     reviewers:
       users:
