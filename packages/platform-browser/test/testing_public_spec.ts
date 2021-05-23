@@ -335,9 +335,9 @@ const bTok = new InjectionToken<string>('b');
       });
 
       describe('components with template url', () => {
-        beforeEach(waitForAsync(() => {
+        beforeEach(waitForAsync(async () => {
           TestBed.configureTestingModule({declarations: [CompWithUrlTemplate]});
-          TestBed.compileComponents();
+          await TestBed.compileComponents();
         }));
 
         isBrowser &&

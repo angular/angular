@@ -14,7 +14,6 @@ import localeEn from '@angular/common/locales/en';
 import localeEsUS from '@angular/common/locales/es-US';
 import localeFr from '@angular/common/locales/fr';
 import {ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
-import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
 {
   describe('Number pipes', () => {
