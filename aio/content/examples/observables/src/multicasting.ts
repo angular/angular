@@ -92,7 +92,7 @@ export function docRegionMulticastSequence(console: Console) {
       observers.push(observer);
       // When this is the first subscription, start the sequence
       if (observers.length === 1) {
-        timeoutId = doSequence({
+        const multicastObserver: Observer<number> = {
           next(val) {
             // Iterate through observers and notify all subscriptions
             observers.forEach(obs => obs.next(val));
@@ -102,7 +102,8 @@ export function docRegionMulticastSequence(console: Console) {
             // Notify all complete callbacks
             observers.slice(0).forEach(obs => obs.complete());
           }
-        }, seq, 0);
+        };
+        doSequence(multicastObserver, seq, 0);
       }
 
       return {
@@ -115,20 +116,20 @@ export function docRegionMulticastSequence(console: Console) {
           }
         }
       };
-    };
-  }
 
-  // Run through an array of numbers, emitting one value
-  // per second until it gets to the end of the array.
-  function doSequence(observer: Observer<number>, arr: number[], idx: number) {
-    return setTimeout(() => {
-      observer.next(arr[idx]);
-      if (idx === arr.length - 1) {
-        observer.complete();
-      } else {
-        doSequence(observer, arr, ++idx);
+      // Run through an array of numbers, emitting one value
+      // per second until it gets to the end of the array.
+      function doSequence(sequenceObserver: Observer<number>, arr: number[], idx: number) {
+        timeoutId = setTimeout(() => {
+          sequenceObserver.next(arr[idx]);
+          if (idx === arr.length - 1) {
+            sequenceObserver.complete();
+          } else {
+            doSequence(sequenceObserver, arr, ++idx);
+          }
+        }, 1000);
       }
-    }, 1000);
+    };
   }
 
   // Create a new Observable that will deliver the above sequence
