@@ -156,7 +156,7 @@ The `AppComponent` template uses this component as follows:
 
 ```ts
 @Component({
-  selector: 'my-app',
+  selector: 'app-root',
   template: '<user-detail [user]="selectedUser" />',
 })
 export class AppComponent {

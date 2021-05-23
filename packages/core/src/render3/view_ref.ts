@@ -109,7 +109,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    *
    * ```typescript
    * @Component({
-   *   selector: 'my-app',
+   *   selector: 'app-root',
    *   template: `Number of ticks: {{numberOfTicks}}`
    *   changeDetection: ChangeDetectionStrategy.OnPush,
    * })
@@ -231,7 +231,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    * }
    *
    * @Component({
-   *   selector: 'my-app',
+   *   selector: 'app-root',
    *   providers: [DataProvider],
    *   template: `
    *     Live Update: <input type="checkbox" [(ngModel)]="live">

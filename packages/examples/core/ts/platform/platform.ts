@@ -10,7 +10,7 @@ import {Component, createPlatformFactory} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 // #docregion longform
-@Component({selector: 'my-app', template: 'Hello World'})
+@Component({selector: 'app-root', template: 'Hello World'})
 class MyApp {
 }
 
