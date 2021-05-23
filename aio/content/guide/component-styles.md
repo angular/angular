@@ -107,38 +107,42 @@ if some ancestor element has the CSS class `theme-light`.
 
 <code-example path="component-styles/src/app/hero-details.component.css" region="hostcontext" header="src/app/hero-details.component.css"></code-example>
 
-### (deprecated) `/deep/`, `>>>`, and `::ng-deep`
+{@a deprecated-deep--and-ng-deep}
+
+### (deprecated) `::ng-deep`
 
 Component styles normally apply only to the HTML in the component's own template.
+Applying the `::ng-deep` pseudo-class to any style rule in a component completely disables view-encapsulation for that rule.
+**This approach is deprecated and not recommended.**
 
-Applying the `::ng-deep` pseudo-class to any CSS rule completely disables view-encapsulation for
-that rule. Any style with `::ng-deep` applied becomes a global style. In order to scope the specified style
-to the current component and all its descendants, be sure to include the `:host` selector before
-`::ng-deep`. If the `::ng-deep` combinator is used without the `:host` pseudo-class selector, the style
-can bleed into other components.
+The recommended alternative to `::ng-deep` is to use global styles.
+See the [External and global style files](#external-and-global-style-files) section for how to set up global styles.
+These global styles can use CSS selectors to target specific components and their descendant.
+All components using `Emulated` encapsulation will inherit these styles.
 
-The following example targets all `<h3>` elements, from the host element down
-through this component to all of its child elements in the DOM.
+The following example targets all `<h3>` elements, within the `HeroDetailsComponent` down through to all of its child elements in the DOM.
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="deep" header="src/app/hero-details.component.css"></code-example>
-
-The `/deep/` combinator also has the aliases `>>>`, and `::ng-deep`.
-
-<div class="alert is-important">
-
-Use `/deep/`, `>>>` and `::ng-deep` only with *emulated* view encapsulation.
-Emulated is the default and most commonly used view encapsulation. For more information, see the
-[View Encapsulation](guide/view-encapsulation) section.
-
-</div>
+<code-example lang="css" header="src/styles.css">
+app-hero-details h3 {
+  font-style: italic;
+}
+</code-example>
 
 <div class="alert is-important">
 
-The shadow-piercing descendant combinator is deprecated and [support is being removed from major browsers](https://www.chromestatus.com/feature/6750456638341120) and tools.
-As such we plan to drop support in Angular (for all 3 of `/deep/`, `>>>` and `::ng-deep`).
-Until then `::ng-deep` should be preferred for a broader compatibility with the tools.
+Any style with `::ng-deep` applied becomes a global style.
+In order to scope the specified style to the current component and all its descendants, be sure to include the `:host` selector before `::ng-deep`.
+
+```
+:host ::ng-deep h3 { font-style: italic; }
+```
+
+If the `::ng-deep` combinator is used without the `:host` pseudo-class selector, the style can bleed into other components.
 
 </div>
+
+
+
 
 {@a loading-styles}
 
