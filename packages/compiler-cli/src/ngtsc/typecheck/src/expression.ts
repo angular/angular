@@ -156,7 +156,7 @@ class AstTranslator implements AstVisitor {
   }
 
   visitKeyedRead(ast: KeyedRead): ts.Expression {
-    const receiver = wrapForDiagnostics(this.translate(ast.obj));
+    const receiver = wrapForDiagnostics(this.translate(ast.receiver));
     const key = this.translate(ast.key);
     const node = ts.createElementAccess(receiver, key);
     addParseSpanInfo(node, ast.sourceSpan);
@@ -164,7 +164,7 @@ class AstTranslator implements AstVisitor {
   }
 
   visitKeyedWrite(ast: KeyedWrite): ts.Expression {
-    const receiver = wrapForDiagnostics(this.translate(ast.obj));
+    const receiver = wrapForDiagnostics(this.translate(ast.receiver));
     const left = ts.createElementAccess(receiver, this.translate(ast.key));
     // TODO(joost): annotate `left` with the span of the element access, which is not currently
     //  available on `ast`.
@@ -332,7 +332,7 @@ class AstTranslator implements AstVisitor {
   }
 
   visitSafeKeyedRead(ast: SafeKeyedRead): ts.Expression {
-    const receiver = wrapForDiagnostics(this.translate(ast.obj));
+    const receiver = wrapForDiagnostics(this.translate(ast.receiver));
     const key = this.translate(ast.key);
     let node: ts.Expression;
 
@@ -374,7 +374,7 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
 
   static veWillInferAnyFor(ast: SafeMethodCall|SafePropertyRead|SafeKeyedRead) {
     const visitor = VeSafeLhsInferenceBugDetector.SINGLETON;
-    return ast instanceof SafeKeyedRead ? ast.obj.visit(visitor) : ast.receiver.visit(visitor);
+    return ast instanceof SafeKeyedRead ? ast.receiver.visit(visitor) : ast.receiver.visit(visitor);
   }
 
   visitUnary(ast: Unary): boolean {

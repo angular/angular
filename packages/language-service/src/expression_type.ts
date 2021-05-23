@@ -271,7 +271,7 @@ export class AstType implements AstVisitor {
   }
 
   visitKeyedRead(ast: KeyedRead): Symbol {
-    const targetType = this.getType(ast.obj);
+    const targetType = this.getType(ast.receiver);
     const keyType = this.getType(ast.key);
     const result = targetType.indexed(
         keyType, ast.key instanceof LiteralPrimitive ? ast.key.value : undefined);
@@ -380,7 +380,7 @@ export class AstType implements AstVisitor {
   }
 
   visitSafeKeyedRead(ast: SafeKeyedRead): Symbol {
-    const targetType = this.query.getNonNullableType(this.getType(ast.obj));
+    const targetType = this.query.getNonNullableType(this.getType(ast.receiver));
     const keyType = this.getType(ast.key);
     const result = targetType.indexed(
         keyType, ast.key instanceof LiteralPrimitive ? ast.key.value : undefined);

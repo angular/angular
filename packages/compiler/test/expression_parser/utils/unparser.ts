@@ -101,14 +101,14 @@ class Unparser implements AstVisitor {
   }
 
   visitKeyedRead(ast: KeyedRead, context: any) {
-    this._visit(ast.obj);
+    this._visit(ast.receiver);
     this._expression += '[';
     this._visit(ast.key);
     this._expression += ']';
   }
 
   visitKeyedWrite(ast: KeyedWrite, context: any) {
-    this._visit(ast.obj);
+    this._visit(ast.receiver);
     this._expression += '[';
     this._visit(ast.key);
     this._expression += '] = ';
@@ -194,7 +194,7 @@ class Unparser implements AstVisitor {
   }
 
   visitSafeKeyedRead(ast: SafeKeyedRead, context: any) {
-    this._visit(ast.obj);
+    this._visit(ast.receiver);
     this._expression += '?.[';
     this._visit(ast.key);
     this._expression += ']';

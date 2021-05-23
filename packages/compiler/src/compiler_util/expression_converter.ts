@@ -478,12 +478,13 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       return this.convertSafeAccess(ast, leftMostSafe, mode);
     } else {
       return convertToStatementIfNeeded(
-          mode, this._visit(ast.obj, _Mode.Expression).key(this._visit(ast.key, _Mode.Expression)));
+          mode,
+          this._visit(ast.receiver, _Mode.Expression).key(this._visit(ast.key, _Mode.Expression)));
     }
   }
 
   visitKeyedWrite(ast: cdAst.KeyedWrite, mode: _Mode): any {
-    const obj: o.Expression = this._visit(ast.obj, _Mode.Expression);
+    const obj: o.Expression = this._visit(ast.receiver, _Mode.Expression);
     const key: o.Expression = this._visit(ast.key, _Mode.Expression);
     const value: o.Expression = this._visit(ast.value, _Mode.Expression);
     return convertToStatementIfNeeded(mode, obj.key(key).set(value));
@@ -688,11 +689,9 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     // Notice that the first guard condition is the left hand of the left most safe access node
     // which comes in as leftMostSafe to this routine.
 
-    const receiver =
-        leftMostSafe instanceof cdAst.SafeKeyedRead ? leftMostSafe.obj : leftMostSafe.receiver;
-    let guardedExpression = this._visit(receiver, _Mode.Expression);
+    let guardedExpression = this._visit(leftMostSafe.receiver, _Mode.Expression);
     let temporary: o.ReadVarExpr = undefined!;
-    if (this.needsTemporaryInSafeAccess(receiver)) {
+    if (this.needsTemporaryInSafeAccess(leftMostSafe.receiver)) {
       // If the expression has method calls or pipes then we need to save the result into a
       // temporary variable to avoid calling stateful or impure code more than once.
       temporary = this.allocateTemporary();
@@ -701,7 +700,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       guardedExpression = temporary.set(guardedExpression);
 
       // Ensure all further references to the guarded expression refer to the temporary instead.
-      this._resultMap.set(receiver, temporary);
+      this._resultMap.set(leftMostSafe.receiver, temporary);
     }
     const condition = guardedExpression.isBlank();
 
@@ -718,13 +717,13 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       this._nodeMap.set(
           leftMostSafe,
           new cdAst.KeyedRead(
-              leftMostSafe.span, leftMostSafe.sourceSpan, receiver, leftMostSafe.key));
+              leftMostSafe.span, leftMostSafe.sourceSpan, leftMostSafe.receiver, leftMostSafe.key));
     } else {
       this._nodeMap.set(
           leftMostSafe,
           new cdAst.PropertyRead(
-              leftMostSafe.span, leftMostSafe.sourceSpan, leftMostSafe.nameSpan, receiver,
-              leftMostSafe.name));
+              leftMostSafe.span, leftMostSafe.sourceSpan, leftMostSafe.nameSpan,
+              leftMostSafe.receiver, leftMostSafe.name));
     }
 
     // Recursively convert the node now without the guarded member access.
@@ -799,7 +798,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         return null;
       },
       visitKeyedRead(ast: cdAst.KeyedRead) {
-        return visit(this, ast.obj);
+        return visit(this, ast.receiver);
       },
       visitKeyedWrite(ast: cdAst.KeyedWrite) {
         return null;
@@ -841,7 +840,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         return visit(this, ast.receiver) || ast;
       },
       visitSafeKeyedRead(ast: cdAst.SafeKeyedRead) {
-        return visit(this, ast.obj) || ast;
+        return visit(this, ast.receiver) || ast;
       }
     });
   }

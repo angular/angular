@@ -215,16 +215,16 @@ describe('parser', () => {
 
     describe('keyed read', () => {
       it('should parse keyed reads', () => {
-        checkAction('a["a"]');
-        checkAction('this.a["a"]', 'a["a"]');
-        checkAction('a.a["a"]');
+        checkBinding('a["a"]');
+        checkBinding('this.a["a"]', 'a["a"]');
+        checkBinding('a.a["a"]');
       });
 
       it('should parse safe keyed reads', () => {
-        checkAction('a?.["a"]');
-        checkAction('this.a?.["a"]', 'a?.["a"]');
-        checkAction('a.a?.["a"]');
-        checkAction('this.a?.[this.b?.["a"] ?? "a"]', 'a?.[b?.["a"] ?? "a"]');
+        checkBinding('a?.["a"]');
+        checkBinding('this.a?.["a"]', 'a?.["a"]');
+        checkBinding('a.a?.["a"]');
+        checkBinding('a.a?.["a" | foo]', 'a.a?.[("a" | foo)]');
       });
 
       describe('malformed keyed reads', () => {
