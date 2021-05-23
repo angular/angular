@@ -2683,7 +2683,7 @@ function checkFiles(files) {
                 // Inform user how to format files in the future.
                 info();
                 info(`To format the failing file run the following command:`);
-                info(`  yarn ng-dev format files ${failures.join(' ')}`);
+                info(`  yarn ng-dev format files ${failures.map(f => f.filePath).join(' ')}`);
                 process.exit(1);
             }
         }
