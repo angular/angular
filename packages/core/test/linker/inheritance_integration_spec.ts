@@ -8,7 +8,6 @@
 
 import {Component, Directive, HostBinding} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
 @Directive({selector: '[directiveA]'})

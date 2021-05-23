@@ -8,7 +8,6 @@
 
 import {I18nPluralPipe, NgLocalization} from '@angular/common';
 import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
-import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
 
 {

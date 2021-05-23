@@ -7,15 +7,16 @@
  */
 
 import {AsyncPipe, ɵgetDOM as getDOM} from '@angular/common';
-import {EventEmitter} from '@angular/core';
-import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
+import {ChangeDetectorRef, EventEmitter} from '@angular/core';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {Subscribable, Unsubscribable} from 'rxjs';
 
-import {SpyChangeDetectorRef} from '../spies';
-
 {
   describe('AsyncPipe', () => {
+    function getChangeDetectorRefSpy() {
+      return jasmine.createSpyObj('ChangeDetectorRef', ['markForCheck', 'detectChanges']);
+    }
+
     describe('Observable', () => {
       // only expose methods from the Subscribable interface, to ensure that
       // the implementation does not rely on other methods:
@@ -33,13 +34,13 @@ import {SpyChangeDetectorRef} from '../spies';
       let emitter: EventEmitter<any>;
       let subscribable: Subscribable<any>;
       let pipe: AsyncPipe;
-      let ref: any;
+      let ref: ChangeDetectorRef&jasmine.SpyObj<ChangeDetectorRef>;
       const message = {};
 
       beforeEach(() => {
         emitter = new EventEmitter();
         subscribable = wrapSubscribable(emitter);
-        ref = new SpyChangeDetectorRef();
+        ref = getChangeDetectorRefSpy();
         pipe = new AsyncPipe(ref);
       });
 
@@ -48,32 +49,30 @@ import {SpyChangeDetectorRef} from '../spies';
           expect(pipe.transform(subscribable)).toBe(null);
         });
 
-        it('should return the latest available value',
-           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             pipe.transform(subscribable);
-             emitter.emit(message);
+        it('should return the latest available value', done => {
+          pipe.transform(subscribable);
+          emitter.emit(message);
 
-             setTimeout(() => {
-               expect(pipe.transform(subscribable)).toEqual(message);
-               async.done();
-             }, 0);
-           }));
+          setTimeout(() => {
+            expect(pipe.transform(subscribable)).toEqual(message);
+            done();
+          }, 0);
+        });
 
 
-        it('should return same value when nothing has changed since the last call',
-           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             pipe.transform(subscribable);
-             emitter.emit(message);
+        it('should return same value when nothing has changed since the last call', done => {
+          pipe.transform(subscribable);
+          emitter.emit(message);
 
-             setTimeout(() => {
-               pipe.transform(subscribable);
-               expect(pipe.transform(subscribable)).toBe(message);
-               async.done();
-             }, 0);
-           }));
+          setTimeout(() => {
+            pipe.transform(subscribable);
+            expect(pipe.transform(subscribable)).toBe(message);
+            done();
+          }, 0);
+        });
 
         it('should dispose of the existing subscription when subscribing to a new observable',
-           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           done => {
              pipe.transform(subscribable);
 
              const newEmitter = new EventEmitter();
@@ -84,20 +83,19 @@ import {SpyChangeDetectorRef} from '../spies';
              // this should not affect the pipe
              setTimeout(() => {
                expect(pipe.transform(newSubscribable)).toBe(null);
-               async.done();
+               done();
              }, 0);
-           }));
+           });
 
-        it('should request a change detection check upon receiving a new value',
-           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             pipe.transform(subscribable);
-             emitter.emit(message);
+        it('should request a change detection check upon receiving a new value', done => {
+          pipe.transform(subscribable);
+          emitter.emit(message);
 
-             setTimeout(() => {
-               expect(ref.spy('markForCheck')).toHaveBeenCalled();
-               async.done();
-             }, 10);
-           }));
+          setTimeout(() => {
+            expect(ref.markForCheck).toHaveBeenCalled();
+            done();
+          }, 10);
+        });
 
         it('should return value for unchanged NaN', () => {
           emitter.emit(null);
@@ -115,23 +113,22 @@ import {SpyChangeDetectorRef} from '../spies';
           expect(() => pipe.ngOnDestroy()).not.toThrow();
         });
 
-        it('should dispose of the existing subscription',
-           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             pipe.transform(subscribable);
-             pipe.ngOnDestroy();
-             emitter.emit(message);
+        it('should dispose of the existing subscription', done => {
+          pipe.transform(subscribable);
+          pipe.ngOnDestroy();
+          emitter.emit(message);
 
-             setTimeout(() => {
-               expect(pipe.transform(subscribable)).toBe(null);
-               async.done();
-             }, 0);
-           }));
+          setTimeout(() => {
+            expect(pipe.transform(subscribable)).toBe(null);
+            done();
+          }, 0);
+        });
       });
     });
 
     describe('Subscribable', () => {
       it('should infer the type from the subscribable', () => {
-        const ref = new SpyChangeDetectorRef() as any;
+        const ref = getChangeDetectorRefSpy();
         const pipe = new AsyncPipe(ref);
         const emitter = new EventEmitter<{name: 'T'}>();
         // The following line will fail to compile if the type cannot be inferred.
@@ -145,7 +142,7 @@ import {SpyChangeDetectorRef} from '../spies';
       let resolve: (result: any) => void;
       let reject: (error: any) => void;
       let promise: Promise<any>;
-      let ref: SpyChangeDetectorRef;
+      let ref: any;
       // adds longer timers for passing tests in IE
       const timer = (getDOM() && browserDetection.isIE) ? 50 : 10;
 
@@ -154,8 +151,8 @@ import {SpyChangeDetectorRef} from '../spies';
           resolve = res;
           reject = rej;
         });
-        ref = new SpyChangeDetectorRef();
-        pipe = new AsyncPipe(ref as any);
+        ref = getChangeDetectorRefSpy();
+        pipe = new AsyncPipe(ref);
       });
 
       describe('transform', () => {
@@ -163,32 +160,30 @@ import {SpyChangeDetectorRef} from '../spies';
           expect(pipe.transform(promise)).toBe(null);
         });
 
-        it('should return the latest available value',
-           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             pipe.transform(promise);
+        it('should return the latest available value', done => {
+          pipe.transform(promise);
 
-             resolve(message);
+          resolve(message);
 
-             setTimeout(() => {
-               expect(pipe.transform(promise)).toEqual(message);
-               async.done();
-             }, timer);
-           }));
+          setTimeout(() => {
+            expect(pipe.transform(promise)).toEqual(message);
+            done();
+          }, timer);
+        });
 
-        it('should return value when nothing has changed since the last call',
-           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             pipe.transform(promise);
-             resolve(message);
+        it('should return value when nothing has changed since the last call', done => {
+          pipe.transform(promise);
+          resolve(message);
 
-             setTimeout(() => {
-               pipe.transform(promise);
-               expect(pipe.transform(promise)).toBe(message);
-               async.done();
-             }, timer);
-           }));
+          setTimeout(() => {
+            pipe.transform(promise);
+            expect(pipe.transform(promise)).toBe(message);
+            done();
+          }, timer);
+        });
 
         it('should dispose of the existing subscription when subscribing to a new promise',
-           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           done => {
              pipe.transform(promise);
 
              promise = new Promise<any>(() => {});
@@ -198,41 +193,38 @@ import {SpyChangeDetectorRef} from '../spies';
 
              setTimeout(() => {
                expect(pipe.transform(promise)).toBe(null);
-               async.done();
+               done();
              }, timer);
-           }));
+           });
 
-        it('should request a change detection check upon receiving a new value',
-           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             const markForCheck = ref.spy('markForCheck');
-             pipe.transform(promise);
-             resolve(message);
+        it('should request a change detection check upon receiving a new value', done => {
+          pipe.transform(promise);
+          resolve(message);
 
-             setTimeout(() => {
-               expect(markForCheck).toHaveBeenCalled();
-               async.done();
-             }, timer);
-           }));
+          setTimeout(() => {
+            expect(ref.markForCheck).toHaveBeenCalled();
+            done();
+          }, timer);
+        });
 
         describe('ngOnDestroy', () => {
           it('should do nothing when no source', () => {
             expect(() => pipe.ngOnDestroy()).not.toThrow();
           });
 
-          it('should dispose of the existing source',
-             inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-               pipe.transform(promise);
-               expect(pipe.transform(promise)).toBe(null);
-               resolve(message);
+          it('should dispose of the existing source', done => {
+            pipe.transform(promise);
+            expect(pipe.transform(promise)).toBe(null);
+            resolve(message);
 
 
-               setTimeout(() => {
-                 expect(pipe.transform(promise)).toEqual(message);
-                 pipe.ngOnDestroy();
-                 expect(pipe.transform(promise)).toBe(null);
-                 async.done();
-               }, timer);
-             }));
+            setTimeout(() => {
+              expect(pipe.transform(promise)).toEqual(message);
+              pipe.ngOnDestroy();
+              expect(pipe.transform(promise)).toBe(null);
+              done();
+            }, timer);
+          });
         });
       });
     });
