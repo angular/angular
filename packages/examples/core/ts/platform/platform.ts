@@ -6,14 +6,36 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, createPlatformFactory} from '@angular/core';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+// #docregion componentSelector
+@NgModule({imports: [BrowserModule], declarations: [ComponentOne, ComponentTwo]})
+export class AppModule implements DoBootstrap {
+  readonly componentMap = {'ComponentOne': ComponentOne, 'ComponentTwo': ComponentTwo};
 
-// #docregion longform
-@Component({selector: 'my-app', template: 'Hello World'})
-class MyApp {
+  ngDoBootstrap(app: ApplicationRef) {
+    this.fetchDataFromApi().then((componentName) => {
+      app.bootstrap(this.componentMap[componentName]);
+    });
+  }
+
+  fetchDataFromApi(): Promise<string> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve('ComponentTwo');
+      }, 2000);
+    });
+  }
 }
+// #enddocregion
 
-const myPlatformFactory = createPlatformFactory(platformBrowserDynamic, 'myPlatform');
-myPlatformFactory().bootstrapModule(MyApp);
+// #docregion domElement
+ngDoBootstrap(app: ApplicationRef) {
+  // it can be a CSS selector
+  ...app.bootstrap(this.componentMap[componentName], '#root-element');
+  ...
+
+      // or it can be a reference to a DOM node
+      ...const element = document.querySelector('#root-element');
+  app.bootstrap(this.componentMap[componentName], element);
+  ...
+}
 // #enddocregion

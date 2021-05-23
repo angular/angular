@@ -19,12 +19,17 @@ import {ApplicationRef} from '../application_ref';
  * See ["Bootstrapping"](guide/bootstrapping) and ["Entry components"](guide/entry-components).
  *
  * @usageNotes
+ * An example below uses [ApplicationRef.bootstrap](api/core/ApplicationRef#bootstrap) to render the
+ * `AppComponent` on the page. More information on the `ApplicationRef.bootstrap` usage can be found
+ * on the [ApplicationRef.bootstrap](api/core/ApplicationRef#bootstrap) page.
+ *
  * ```typescript
  * class AppModule implements DoBootstrap {
  *   ngDoBootstrap(appRef: ApplicationRef) {
  *     appRef.bootstrap(AppComponent); // Or some other component
  *   }
  * }
+ *
  * ```
  *
  * @publicApi
