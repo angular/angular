@@ -199,7 +199,9 @@ export interface NgModule {
    * using one of the imperative techniques, such as `ViewContainerRef.createComponent()`.
    *
    * @see [Entry Components](guide/entry-components)
-   * @deprecated Since 9.0.0. With Ivy, this property is no longer necessary.
+   * @deprecated
+   * Since 9.0.0. With Ivy, this property is no longer necessary.
+   * (You may need to keep these if building a library in View Engine mode.)
    */
   entryComponents?: Array<Type<any>|any[]>;
 
