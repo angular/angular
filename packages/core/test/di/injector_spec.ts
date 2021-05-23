@@ -8,7 +8,6 @@
 
 
 import {Injector} from '@angular/core';
-import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
 {
   describe('Injector.NULL', () => {

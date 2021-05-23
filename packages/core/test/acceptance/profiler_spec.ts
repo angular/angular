@@ -8,7 +8,6 @@
 
 import {ProfilerEvent, setProfiler} from '@angular/core/src/render3/profiler';
 import {TestBed} from '@angular/core/testing';
-import {expect} from '@angular/core/testing/src/testing_internal';
 import {onlyInIvy} from '@angular/private/testing';
 
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, DoCheck, ErrorHandler, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, ViewChild} from '../../src/core';

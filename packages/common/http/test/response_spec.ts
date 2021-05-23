@@ -8,7 +8,6 @@
 
 import {HttpHeaders} from '@angular/common/http/src/headers';
 import {HttpResponse, HttpStatusCode} from '@angular/common/http/src/response';
-import {describe, it} from '@angular/core/testing/src/testing_internal';
 
 {
   describe('HttpResponse', () => {

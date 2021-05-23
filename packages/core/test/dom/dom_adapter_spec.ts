@@ -7,7 +7,6 @@
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
 
 {

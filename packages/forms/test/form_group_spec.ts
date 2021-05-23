@@ -7,7 +7,6 @@
  */
 
 import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
-import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
 import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {of} from 'rxjs';
 
@@ -822,20 +821,19 @@ describe('FormGroup', () => {
 
 
     // TODO(kara): update these tests to use fake Async
-    it('should fire a statusChange if child has async validation change',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         const loggedValues: string[] = [];
-         group.statusChanges.subscribe({
-           next: (status: string) => {
-             loggedValues.push(status);
-             if (loggedValues.length === 2) {
-               expect(loggedValues).toEqual(['PENDING', 'INVALID']);
-             }
-             async.done();
-           }
-         });
-         control.setValue('');
-       }));
+    it('should fire a statusChange if child has async validation change', done => {
+      const loggedValues: string[] = [];
+      group.statusChanges.subscribe({
+        next: (status: string) => {
+          loggedValues.push(status);
+          if (loggedValues.length === 2) {
+            expect(loggedValues).toEqual(['PENDING', 'INVALID']);
+          }
+          done();
+        }
+      });
+      control.setValue('');
+    });
   });
 
   describe('getError', () => {

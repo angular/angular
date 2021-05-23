@@ -11,7 +11,6 @@ import {Injectable} from '@angular/core/src/di';
 import {PendingMacrotask, Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {fakeAsync, flush, tick, waitForAsync} from '@angular/core/testing';
-import {beforeEach, describe, expect, it, SpyObject} from '@angular/core/testing/src/testing_internal';
 
 import {scheduleMicroTask} from '../../src/util/microtask';
 
@@ -58,9 +57,9 @@ class MockNgZone extends NgZone {
     beforeEach(waitForAsync(() => {
       ngZone = new MockNgZone();
       testability = new Testability(ngZone);
-      execute = new SpyObject().spy('execute');
-      execute2 = new SpyObject().spy('execute');
-      updateCallback = new SpyObject().spy('execute');
+      execute = jasmine.createSpy('execute');
+      execute2 = jasmine.createSpy('execute');
+      updateCallback = jasmine.createSpy('execute');
     }));
 
     describe('Pending count logic', () => {
