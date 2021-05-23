@@ -1,59 +1,91 @@
-# JavaScript Node CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
-#
-version: 2
-jobs:
-  build:
+version: 2.1
+orbs:
+  cypress: cypress-io/cypress@1.28.0
+executors:
+  node-and-browsers:
     docker:
-      # specify the version you desire here
-      - image: circleci/node:14.15.1-browsers
-
-    working_directory: ~/repo
-
+      - image: cypress/browsers:node14.16.0-chrome89-ff86
     environment:
       - CHROME_BIN: /usr/bin/google-chrome
-      - CYPRESS_CACHE_FOLDER: /home/circleci/.cache/Cypress
+workflows:
+  test-and-build:
+    jobs:
+      - cypress/install:
+          name: Setup
+          yarn: true
+          executor: node-and-browsers
+          post-steps:
+            - run:
+                name: Run Linting
+                command: yarn lint
+            - run:
+                name: Run Unit Tests
+                command: yarn test:ci
+      - cypress/run:
+          name: 'E2E Tests - Chrome'
+          browser: chrome
+          executor: node-and-browsers
+          yarn: true
+          start: yarn start
+          wait-on: 'http://localhost:4200'
+          requires:
+            - Setup
+          post-steps:
+            - run:
+                name: Test Chrome Build
+                command: yarn build:chrome
+# version: 2
+# jobs:
+#   build:
+#     docker:
+#       # specify the version you desire here
+#       - image: circleci/node:14.15.1-browsers
 
-    steps:
-      - checkout
+#     working_directory: ~/repo
 
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v2-dependencies-{{ checksum "package.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - v2-dependencies-
+#     environment:
+#       - CHROME_BIN: /usr/bin/google-chrome
+#       - CYPRESS_CACHE_FOLDER: /home/circleci/.cache/Cypress
 
-      - run: yarn install
-      - run: yarn cy:verify
+#     steps:
+#       - checkout
 
-      - save_cache:
-          paths:
-            - node_modules
-            - /home/circleci/.cache/Cypress
-          key: v2-dependencies-{{ checksum "package.json" }}
+#       # Download and cache dependencies
+#       - restore_cache:
+#           keys:
+#             - v2-dependencies-{{ checksum "package.json" }}
+#             # fallback to using the latest cache if no exact match is found
+#             - v2-dependencies-
 
-      - run:
-          name: 'Run linting'
-          command: yarn lint
-      # run tests!
-      - run:
-          name: 'Run Unit tests'
-          command: yarn test:ci
+#       - run: yarn install
+#       - run: yarn cy:verify
 
-      - run:
-          name: 'Run Cypress tests'
-          command: yarn cy:ci
-          no_output_timeout: '10m'
+#       - save_cache:
+#           paths:
+#             - node_modules
+#             - /home/circleci/.cache/Cypress
+#           key: v2-dependencies-{{ checksum "package.json" }}
 
-      - run:
-          name: 'Test Chrome Build'
-          command: yarn build:chrome
+#       - run:
+#           name: 'Run linting'
+#           command: yarn lint
+#       # run tests!
+#       - run:
+#           name: 'Run Unit tests'
+#           command: yarn test:ci
 
-    artifacts:
-      when: always
-      paths:
-        - cypress/videos/**/*.mp4
-        - cypress/screenshots/**/*.png
-      expire_in: 1 day
+#       - run:
+#           name: 'Run Cypress tests'
+#           command: yarn cy:ci
+#           no_output_timeout: '10m'
+
+#       - run:
+#           name: 'Test Chrome Build'
+#           command: yarn build:chrome
+
+#     artifacts:
+#       when: always
+#       paths:
+#         - cypress/videos/**/*.mp4
+#         - cypress/screenshots/**/*.png
+#       expire_in: 1 day
