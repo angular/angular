@@ -10,7 +10,6 @@ import {ɵgetDOM as getDOM} from '@angular/common';
 import {iterateListLike} from '@angular/core/src/change_detection/change_detection_util';
 import {QueryList} from '@angular/core/src/linker/query_list';
 import {fakeAsync, tick} from '@angular/core/testing';
-import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
 {
   describe('QueryList', () => {

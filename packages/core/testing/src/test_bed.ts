@@ -8,7 +8,6 @@
 
 import {ApplicationInitStatus, CompilerOptions, Component, Directive, InjectFlags, InjectionToken, Injector, NgModule, NgModuleFactory, NgModuleRef, NgZone, Optional, Pipe, PlatformRef, Provider, ProviderToken, SchemaMetadata, SkipSelf, StaticProvider, Type, ɵclearOverrides as clearOverrides, ɵDepFlags as DepFlags, ɵgetInjectableDef as getInjectableDef, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵivyEnabled as ivyEnabled, ɵNodeFlags as NodeFlags, ɵoverrideComponentView as overrideComponentView, ɵoverrideProvider as overrideProvider, ɵstringify as stringify, ɵɵInjectableDeclaration} from '@angular/core';
 
-import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
 import {_getTestBedRender3, TestBedRender3} from './r3_test_bed';
@@ -660,32 +659,14 @@ function _getTestBedViewEngine(): TestBedViewEngine {
  * })
  * ```
  *
- * Notes:
- * - inject is currently a function because of some Traceur limitation the syntax should
- * eventually
- *   becomes `it('...', @Inject (object: AClass, async: AsyncTestCompleter) => { ... });`
- *
  * @publicApi
  */
 export function inject(tokens: any[], fn: Function): () => any {
   const testBed = getTestBed();
-  if (tokens.indexOf(AsyncTestCompleter) >= 0) {
-    // Not using an arrow function to preserve context passed from call site
-    return function(this: unknown) {
-      // Return an async test method that returns a Promise if AsyncTestCompleter is one of
-      // the injected tokens.
-      return testBed.compileComponents().then(() => {
-        const completer = testBed.inject(AsyncTestCompleter);
-        testBed.execute(tokens, fn, this);
-        return completer.promise;
-      });
-    };
-  } else {
-    // Not using an arrow function to preserve context passed from call site
-    return function(this: unknown) {
-      return testBed.execute(tokens, fn, this);
-    };
-  }
+  // Not using an arrow function to preserve context passed from call site
+  return function(this: unknown) {
+    return testBed.execute(tokens, fn, this);
+  };
 }
 
 /**

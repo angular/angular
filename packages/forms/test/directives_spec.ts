@@ -8,11 +8,9 @@
 
 import {SimpleChange} from '@angular/core';
 import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
-import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {AbstractControl, CheckboxControlValueAccessor, ControlValueAccessor, DefaultValueAccessor, FormArray, FormArrayName, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormGroupName, NgControl, NgForm, NgModel, NgModelGroup, SelectControlValueAccessor, SelectMultipleControlValueAccessor, ValidationErrors, Validator, Validators} from '@angular/forms';
 import {selectValueAccessor} from '@angular/forms/src/directives/shared';
 import {composeValidators} from '@angular/forms/src/validators';
-import {SpyNgControl, SpyValueAccessor} from './spies';
 import {asyncValidator} from './util';
 
 class DummyControlValueAccessor implements ControlValueAccessor {
@@ -45,7 +43,7 @@ class CustomValidatorDirective implements Validator {
         let dir: NgControl;
 
         beforeEach(() => {
-          dir = <any>new SpyNgControl();
+          dir = {path: []} as any;
         });
 
         it('should throw when given an empty array', () => {
@@ -90,7 +88,7 @@ class CustomValidatorDirective implements Validator {
         });
 
         it('should return custom accessor when provided', () => {
-          const customAccessor: ControlValueAccessor = new SpyValueAccessor() as any;
+          const customAccessor: ControlValueAccessor = {} as any;
           const checkboxAccessor = new CheckboxControlValueAccessor(null!, null!);
           expect(selectValueAccessor(dir, <any>[
             defaultAccessor, customAccessor, checkboxAccessor
@@ -98,7 +96,7 @@ class CustomValidatorDirective implements Validator {
         });
 
         it('should return custom accessor when provided with select multiple', () => {
-          const customAccessor: ControlValueAccessor = new SpyValueAccessor() as any;
+          const customAccessor: ControlValueAccessor = {} as any;
           const selectMultipleAccessor = new SelectMultipleControlValueAccessor(null!, null!);
           expect(selectValueAccessor(dir, <any>[
             defaultAccessor, customAccessor, selectMultipleAccessor
@@ -106,7 +104,7 @@ class CustomValidatorDirective implements Validator {
         });
 
         it('should throw when more than one custom accessor is provided', () => {
-          const customAccessor: ControlValueAccessor = <any>new SpyValueAccessor();
+          const customAccessor: ControlValueAccessor = {} as any;
           expect(() => selectValueAccessor(dir, [customAccessor, customAccessor])).toThrowError();
         });
       });

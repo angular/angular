@@ -12,7 +12,6 @@ import localeEn from '@angular/common/locales/en';
 import localeEsUS from '@angular/common/locales/es-US';
 import localeFr from '@angular/common/locales/fr';
 import {ɵDEFAULT_LOCALE_ID, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
-import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
 describe('Format number', () => {
   beforeAll(() => {

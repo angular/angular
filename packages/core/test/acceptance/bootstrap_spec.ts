@@ -7,7 +7,6 @@
  */
 
 import {ApplicationRef, COMPILER_OPTIONS, Component, destroyPlatform, NgModule, NgZone, TestabilityRegistry, ViewEncapsulation} from '@angular/core';
-import {expect} from '@angular/core/testing/src/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {onlyInIvy, withBody} from '@angular/private/testing';
