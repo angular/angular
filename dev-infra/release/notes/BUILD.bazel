@@ -13,12 +13,10 @@ ts_library(
         "//dev-infra/release/versioning",
         "//dev-infra/utils",
         "@npm//@types/ejs",
-        "@npm//@types/inquirer",
         "@npm//@types/node",
         "@npm//@types/semver",
         "@npm//@types/yargs",
         "@npm//ejs",
-        "@npm//inquirer",
         "@npm//semver",
     ],
 )
