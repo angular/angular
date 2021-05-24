@@ -1,4 +1,4 @@
-load("//dev-infra/browsers:platform_http_file.bzl", "platform_http_file")
+load("//dev-infra/bazel/browsers:platform_http_file.bzl", "platform_http_file")
 
 """
   Defines repositories for Firefox that can be used inside Karma unit tests

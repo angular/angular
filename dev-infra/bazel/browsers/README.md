@@ -7,8 +7,8 @@ We manually keep the configuration of these two tools in sync to create a consis
 
 ## Bazel
 
-Bazel `karma_web_test_suite` and `protractor_web_test_suite` targets will use Chromium or Firefox provisioned by `//dev-infra/browsers`.
-The version of Chrome and Firefox are specified in the `chromium.bzl` and `firefox.bzl` files in `/dev-infra/browsers`.
+Bazel `karma_web_test_suite` and `protractor_web_test_suite` targets will use Chromium or Firefox provisioned by `//dev-infra/bazel/browsers`.
+The version of Chrome and Firefox are specified in the `chromium.bzl` and `firefox.bzl` files in `/dev-infra/bazel/browsers`.
 
 The process of updating the Chrome or Firefox version is not straightforward, but below are dedicated sections for each browser.
 
@@ -34,7 +34,7 @@ The process of updating the Chrome or Firefox version is not straightforward, bu
     Chromium 83.0.4103.0
     ```
 
-3. Update the chrome & chrome driver build numbers in `dev-infra/browsers/chromium/chromium.bzl` and either run `bazel query @org_chromium_chromium_amd64//...` to prompt Bazel to calculate the new `sha256` for each platform binary or determine the new `sha256` values manually.
+3. Update the chrome & chrome driver build numbers in `dev-infra/bazel/browsers/chromium/chromium.bzl` and either run `bazel query @org_chromium_chromium_amd64//...` to prompt Bazel to calculate the new `sha256` for each platform binary or determine the new `sha256` values manually.
 
     Here is an example with `curl` & `shasum`:
     ``` bash
@@ -63,7 +63,7 @@ The process of updating the Chrome or Firefox version is not straightforward, bu
 
 ## Firefox
 
-In order to update Firefox, open the `dev-infra/browsers/firefox/firefox.bzl` file and update the repository URLs to the desired version.
+In order to update Firefox, open the `dev-infra/bazel/browsers/firefox/firefox.bzl` file and update the repository URLs to the desired version.
 For example:
 
 ```bzl
