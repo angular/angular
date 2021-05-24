@@ -18,10 +18,10 @@
       </th>
     </tr>
   </thead>
-  {%- if method.content -%}
+  {%- if method.description -%}
   <tr class="docs-api-method-description-row">
     <td colspan="2" class="docs-api-method-description-cell">
-      {$ method.content | marked | safe $}
+      {$ method.description | marked | safe $}
     </td>
   </tr>
   {%- endif -%}

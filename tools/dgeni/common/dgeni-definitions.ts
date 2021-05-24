@@ -40,6 +40,7 @@ export interface CategorizedClassDoc extends ClassExportDoc, CategorizedClassLik
 
 /** Extended Dgeni property-member document that includes extracted Angular metadata. */
 export interface CategorizedPropertyMemberDoc extends PropertyMemberDoc, DeprecationInfo {
+  description: string;
   isDirectiveInput: boolean;
   isDirectiveOutput: boolean;
   directiveInputAlias: string;
