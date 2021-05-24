@@ -567,6 +567,7 @@ groups:
           ])
     reviewers:
       users:
+        - alan-agius4
         - alxhub
         - kyliau
 
