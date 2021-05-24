@@ -154,9 +154,12 @@ export function docRegionMulticastSequence(console: Console, runSequence: boolea
   }, 1500);
 
   // Logs:
+  // (at 1 second): Emitting 1
   // (at 1 second): 1st subscribe: 1
+  // (at 2 seconds): Emitting 2
   // (at 2 seconds): 1st subscribe: 2
   // (at 2 seconds): 2nd subscribe: 2
+  // (at 3 seconds): Emitting 3
   // (at 3 seconds): 1st subscribe: 3
   // (at 3 seconds): 1st sequence finished
   // (at 3 seconds): 2nd subscribe: 3
