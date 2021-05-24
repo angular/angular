@@ -30,13 +30,9 @@ import {
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
   CanColor,
-  CanColorCtor,
   CanDisable,
-  CanDisableCtor,
   CanDisableRipple,
-  CanDisableRippleCtor,
   HasTabIndex,
-  HasTabIndexCtor,
   MatRipple,
   mixinColor,
   mixinDisabled,
@@ -93,16 +89,9 @@ export class MatCheckboxChange {
 
 // Boilerplate for applying mixins to MatCheckbox.
 /** @docs-private */
-class MatCheckboxBase {
+const _MatCheckboxBase = mixinTabIndex(mixinColor(mixinDisableRipple(mixinDisabled(class {
   constructor(public _elementRef: ElementRef) {}
-}
-const _MatCheckboxMixinBase:
-    HasTabIndexCtor &
-    CanColorCtor &
-    CanDisableRippleCtor &
-    CanDisableCtor &
-    typeof MatCheckboxBase =
-        mixinTabIndex(mixinColor(mixinDisableRipple(mixinDisabled(MatCheckboxBase))));
+}))));
 
 
 /**
@@ -133,7 +122,7 @@ const _MatCheckboxMixinBase:
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAccessor,
+export class MatCheckbox extends _MatCheckboxBase implements ControlValueAccessor,
     AfterViewInit, AfterViewChecked, OnDestroy, CanColor, CanDisable, HasTabIndex, CanDisableRipple,
     FocusableOption {
 

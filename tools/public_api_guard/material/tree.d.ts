@@ -56,7 +56,7 @@ export declare class MatTreeNestedDataSource<T> extends DataSource<T> {
     disconnect(): void;
 }
 
-export declare class MatTreeNode<T, K = T> extends _MatTreeNodeMixinBase<T, K> implements CanDisable, DoCheck, HasTabIndex, OnInit, OnDestroy {
+export declare class MatTreeNode<T, K = T> extends _MatTreeNodeBase<T, K> implements CanDisable, DoCheck, HasTabIndex, OnInit, OnDestroy {
     protected _elementRef: ElementRef<HTMLElement>;
     protected _tree: CdkTree<T, K>;
     constructor(_elementRef: ElementRef<HTMLElement>, _tree: CdkTree<T, K>, tabIndex: string);

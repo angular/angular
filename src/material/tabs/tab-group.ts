@@ -34,9 +34,7 @@ import {
 import {FocusOrigin} from '@angular/cdk/a11y';
 import {
   CanColor,
-  CanColorCtor,
   CanDisableRipple,
-  CanDisableRippleCtor,
   mixinColor,
   mixinDisableRipple,
   ThemePalette,
@@ -64,11 +62,9 @@ export type MatTabHeaderPosition = 'above' | 'below';
 
 // Boilerplate for applying mixins to MatTabGroup.
 /** @docs-private */
-class MatTabGroupMixinBase {
+const _MatTabGroupMixinBase = mixinColor(mixinDisableRipple(class {
   constructor(public _elementRef: ElementRef) {}
-}
-const _MatTabGroupMixinBase: CanColorCtor & CanDisableRippleCtor & typeof MatTabGroupMixinBase =
-    mixinColor(mixinDisableRipple(MatTabGroupMixinBase), 'primary');
+}), 'primary');
 
 interface MatTabGroupBaseHeader {
   _alignInkBarToSelectedTab: () => void;

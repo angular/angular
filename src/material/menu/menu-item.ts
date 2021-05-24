@@ -21,8 +21,8 @@ import {
   AfterViewInit,
 } from '@angular/core';
 import {
-  CanDisable, CanDisableCtor,
-  CanDisableRipple, CanDisableRippleCtor,
+  CanDisable,
+  CanDisableRipple,
   mixinDisabled,
   mixinDisableRipple,
 } from '@angular/material/core';
@@ -32,9 +32,7 @@ import {MAT_MENU_PANEL, MatMenuPanel} from './menu-panel';
 
 // Boilerplate for applying mixins to MatMenuItem.
 /** @docs-private */
-class MatMenuItemBase {}
-const _MatMenuItemMixinBase: CanDisableRippleCtor & CanDisableCtor & typeof MatMenuItemBase =
-    mixinDisableRipple(mixinDisabled(MatMenuItemBase));
+const _MatMenuItemBase = mixinDisableRipple(mixinDisabled(class {}));
 
 /**
  * Single item inside of a `mat-menu`. Provides the menu item styling and accessibility treatment.
@@ -57,7 +55,7 @@ const _MatMenuItemMixinBase: CanDisableRippleCtor & CanDisableCtor & typeof MatM
   encapsulation: ViewEncapsulation.None,
   templateUrl: 'menu-item.html',
 })
-export class MatMenuItem extends _MatMenuItemMixinBase
+export class MatMenuItem extends _MatMenuItemBase
     implements FocusableOption, CanDisable, CanDisableRipple, AfterViewInit, OnDestroy {
 
   /** ARIA role for the menu item. */

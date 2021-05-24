@@ -2,7 +2,7 @@ export declare const MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS: InjectionToken<MatPro
 
 export declare function MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY(): MatProgressSpinnerDefaultOptions;
 
-export declare class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements OnInit, CanColor {
+export declare class MatProgressSpinner extends _MatProgressSpinnerBase implements OnInit, CanColor {
     _elementRef: ElementRef<HTMLElement>;
     _noopAnimations: boolean;
     _spinnerAnimationLabel: string;

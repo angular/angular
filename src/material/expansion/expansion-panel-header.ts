@@ -24,7 +24,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
-import {HasTabIndex, HasTabIndexCtor, mixinTabIndex} from '@angular/material/core';
+import {HasTabIndex, mixinTabIndex} from '@angular/material/core';
 import {NumberInput} from '@angular/cdk/coercion';
 import {EMPTY, merge, Subscription} from 'rxjs';
 import {filter} from 'rxjs/operators';
@@ -42,9 +42,7 @@ import {
 abstract class MatExpansionPanelHeaderBase {
   abstract readonly disabled: boolean;
 }
-const _MatExpansionPanelHeaderMixinBase:
-    HasTabIndexCtor &
-    typeof MatExpansionPanelHeaderBase = mixinTabIndex(MatExpansionPanelHeaderBase);
+const _MatExpansionPanelHeaderMixinBase = mixinTabIndex(MatExpansionPanelHeaderBase);
 
 /**
  * Header element of a `<mat-expansion-panel>`.

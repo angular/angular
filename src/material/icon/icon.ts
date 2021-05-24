@@ -23,7 +23,7 @@ import {
   OnInit,
   ViewEncapsulation,
 } from '@angular/core';
-import {CanColor, CanColorCtor, mixinColor} from '@angular/material/core';
+import {CanColor, mixinColor} from '@angular/material/core';
 import {Subscription} from 'rxjs';
 import {take} from 'rxjs/operators';
 
@@ -32,10 +32,9 @@ import {MatIconRegistry} from './icon-registry';
 
 // Boilerplate for applying mixins to MatIcon.
 /** @docs-private */
-class MatIconBase {
+const _MatIconBase = mixinColor(class {
   constructor(public _elementRef: ElementRef) {}
-}
-const _MatIconMixinBase: CanColorCtor & typeof MatIconBase = mixinColor(MatIconBase);
+});
 
 /**
  * Injection token used to provide the current location to `MatIcon`.
@@ -135,9 +134,7 @@ const funcIriPattern = /^url\(['"]?#(.*?)['"]?\)$/;
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatIcon extends _MatIconMixinBase implements OnInit, AfterViewChecked, CanColor,
-  OnDestroy {
-
+export class MatIcon extends _MatIconBase implements OnInit, AfterViewChecked, CanColor, OnDestroy {
   /**
    * Whether the icon should be inlined, automatically sizing the icon to match the font size of
    * the element the icon is contained in.

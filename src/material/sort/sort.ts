@@ -21,9 +21,7 @@ import {
 } from '@angular/core';
 import {
   CanDisable,
-  CanDisableCtor,
   HasInitialized,
-  HasInitializedCtor,
   mixinDisabled,
   mixinInitialized,
 } from '@angular/material/core';
@@ -69,9 +67,7 @@ export const MAT_SORT_DEFAULT_OPTIONS =
 
 // Boilerplate for applying mixins to MatSort.
 /** @docs-private */
-class MatSortBase {}
-const _MatSortMixinBase: HasInitializedCtor & CanDisableCtor & typeof MatSortBase =
-    mixinInitialized(mixinDisabled(MatSortBase));
+const _MatSortBase = mixinInitialized(mixinDisabled(class {}));
 
 /** Container for MatSortables to manage the sort state and provide default sort parameters. */
 @Directive({
@@ -80,7 +76,7 @@ const _MatSortMixinBase: HasInitializedCtor & CanDisableCtor & typeof MatSortBas
   host: {'class': 'mat-sort'},
   inputs: ['disabled: matSortDisabled']
 })
-export class MatSort extends _MatSortMixinBase
+export class MatSort extends _MatSortBase
     implements CanDisable, HasInitialized, OnChanges, OnDestroy, OnInit {
   /** Collection of all registered sortables that this directive manages. */
   sortables = new Map<string, MatSortable>();

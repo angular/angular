@@ -32,8 +32,6 @@ import {
 import {
   ThemePalette,
   RippleAnimationConfig,
-  CanColorCtor,
-  CanDisableCtor,
   mixinColor,
   mixinDisabled,
   CanColor,
@@ -65,14 +63,9 @@ export class MatCheckboxChange {
 
 // Boilerplate for applying mixins to MatCheckbox.
 /** @docs-private */
-class MatCheckboxBase {
+const _MatCheckboxBase = mixinColor(mixinDisabled(class {
   constructor(public _elementRef: ElementRef) {}
-}
-const _MatCheckboxMixinBase:
-    CanColorCtor &
-    CanDisableCtor &
-    typeof MatCheckboxBase =
-        mixinColor(mixinDisabled(MatCheckboxBase));
+}));
 
 
 /** Configuration for the ripple animation. */
@@ -98,7 +91,7 @@ const RIPPLE_ANIMATION_CONFIG: RippleAnimationConfig = {
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatCheckbox extends _MatCheckboxMixinBase implements AfterViewInit, OnDestroy,
+export class MatCheckbox extends _MatCheckboxBase implements AfterViewInit, OnDestroy,
   ControlValueAccessor, CanColor, CanDisable {
   /**
    * The `aria-label` attribute to use for the input element. In most cases, `aria-labelledby` will

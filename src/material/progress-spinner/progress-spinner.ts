@@ -20,7 +20,7 @@ import {
   ViewEncapsulation,
   OnInit,
 } from '@angular/core';
-import {CanColor, CanColorCtor, mixinColor} from '@angular/material/core';
+import {CanColor, mixinColor} from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
 
@@ -41,11 +41,9 @@ const BASE_STROKE_WIDTH = 10;
 
 // Boilerplate for applying mixins to MatProgressSpinner.
 /** @docs-private */
-class MatProgressSpinnerBase {
+const _MatProgressSpinnerBase = mixinColor(class {
   constructor(public _elementRef: ElementRef) {}
-}
-const _MatProgressSpinnerMixinBase: CanColorCtor & typeof MatProgressSpinnerBase =
-    mixinColor(MatProgressSpinnerBase, 'primary');
+}, 'primary');
 
 /** Default `mat-progress-spinner` options that can be overridden. */
 export interface MatProgressSpinnerDefaultOptions {
@@ -126,7 +124,7 @@ const INDETERMINATE_ANIMATION_TEMPLATE = `
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements OnInit, CanColor {
+export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnInit, CanColor {
   private _diameter = BASE_SIZE;
   private _value = 0;
   private _strokeWidth: number;

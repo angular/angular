@@ -27,9 +27,7 @@ import {
 } from '@angular/core';
 import {
   CanDisable,
-  CanDisableCtor,
   CanDisableRipple,
-  CanDisableRippleCtor,
   MatLine,
   setLines,
   mixinDisableRipple,
@@ -40,15 +38,11 @@ import {takeUntil} from 'rxjs/operators';
 
 // Boilerplate for applying mixins to MatList.
 /** @docs-private */
-class MatListBase {}
-const _MatListMixinBase: CanDisableRippleCtor & CanDisableCtor & typeof MatListBase =
-    mixinDisabled(mixinDisableRipple(MatListBase));
+const _MatListBase = mixinDisabled(mixinDisableRipple(class {}));
 
 // Boilerplate for applying mixins to MatListItem.
 /** @docs-private */
-class MatListItemBase {}
-const _MatListItemMixinBase: CanDisableRippleCtor & typeof MatListItemBase =
-    mixinDisableRipple(MatListItemBase);
+const _MatListItemMixinBase = mixinDisableRipple(class {});
 
 /**
  * Injection token that can be used to inject instances of `MatList`. It serves as
@@ -78,7 +72,7 @@ export const MAT_NAV_LIST = new InjectionToken<MatNavList>('MatNavList');
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{provide: MAT_NAV_LIST, useExisting: MatNavList}],
 })
-export class MatNavList extends _MatListMixinBase implements CanDisable, CanDisableRipple,
+export class MatNavList extends _MatListBase implements CanDisable, CanDisableRipple,
   OnChanges, OnDestroy {
   /** Emits when the state of the list changes. */
   readonly _stateChanges = new Subject<void>();
@@ -108,7 +102,7 @@ export class MatNavList extends _MatListMixinBase implements CanDisable, CanDisa
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{provide: MAT_LIST, useExisting: MatList}],
 })
-export class MatList extends _MatListMixinBase implements CanDisable, CanDisableRipple, OnChanges,
+export class MatList extends _MatListBase implements CanDisable, CanDisableRipple, OnChanges,
   OnDestroy {
   /** Emits when the state of the list changes. */
   readonly _stateChanges = new Subject<void>();

@@ -1,4 +1,4 @@
-export declare class MatToolbar extends _MatToolbarMixinBase implements CanColor, AfterViewInit {
+export declare class MatToolbar extends _MatToolbarBase implements CanColor, AfterViewInit {
     _toolbarRows: QueryList<MatToolbarRow>;
     constructor(elementRef: ElementRef, _platform: Platform, document?: any);
     ngAfterViewInit(): void;

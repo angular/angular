@@ -25,7 +25,7 @@ export declare class MatError {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatError, [{ attribute: "aria-live"; }, null]>;
 }
 
-export declare class MatFormField extends _MatFormFieldMixinBase implements AfterContentInit, AfterContentChecked, AfterViewInit, OnDestroy, CanColor {
+export declare class MatFormField extends _MatFormFieldnBase implements AfterContentInit, AfterContentChecked, AfterViewInit, OnDestroy, CanColor {
     _animationsEnabled: boolean;
     _appearance: MatFormFieldAppearance;
     _connectionContainerRef: ElementRef;

@@ -24,9 +24,6 @@ import {
   CanColor,
   CanDisable,
   CanDisableRipple,
-  CanColorCtor,
-  CanDisableCtor,
-  CanDisableRippleCtor,
   MatRipple,
   mixinColor,
   mixinDisabled,
@@ -52,13 +49,9 @@ const BUTTON_HOST_ATTRIBUTES = [
 ];
 
 // Boilerplate for applying mixins to MatButton.
-/** @docs-private */
-class MatButtonBase {
+const _MatButtonBase = mixinColor(mixinDisabled(mixinDisableRipple(class {
   constructor(public _elementRef: ElementRef) {}
-}
-
-const _MatButtonMixinBase: CanDisableRippleCtor & CanDisableCtor & CanColorCtor &
-    typeof MatButtonBase = mixinColor(mixinDisabled(mixinDisableRipple(MatButtonBase)));
+})));
 
 /**
  * Material design button.
@@ -83,7 +76,7 @@ const _MatButtonMixinBase: CanDisableRippleCtor & CanDisableCtor & CanColorCtor 
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatButton extends _MatButtonMixinBase
+export class MatButton extends _MatButtonBase
     implements AfterViewInit, OnDestroy, CanDisable, CanColor, CanDisableRipple, FocusableOption {
 
   /** Whether the button is round. */

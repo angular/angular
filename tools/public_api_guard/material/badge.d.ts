@@ -1,4 +1,4 @@
-export declare class MatBadge extends _MatBadgeMixinBase implements OnDestroy, OnChanges, CanDisable {
+export declare class MatBadge extends _MatBadgeBase implements OnDestroy, OnChanges, CanDisable {
     _hasContent: boolean;
     _id: number;
     get color(): ThemePalette;

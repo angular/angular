@@ -27,10 +27,10 @@ import {
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
-  CanColor, CanColorCtor,
-  CanDisable, CanDisableCtor,
-  CanDisableRipple, CanDisableRippleCtor,
-  HasTabIndex, HasTabIndexCtor,
+  CanColor,
+  CanDisable,
+  CanDisableRipple,
+  HasTabIndex,
   mixinColor,
   mixinDisabled,
   mixinDisableRipple,
@@ -63,16 +63,10 @@ export class MatSlideToggleChange {
 
 // Boilerplate for applying mixins to MatSlideToggle.
 /** @docs-private */
-class MatSlideToggleBase {
-  constructor(public _elementRef: ElementRef) {}
-}
-const _MatSlideToggleMixinBase:
-    HasTabIndexCtor &
-    CanColorCtor &
-    CanDisableRippleCtor &
-    CanDisableCtor &
-    typeof MatSlideToggleBase =
-        mixinTabIndex(mixinColor(mixinDisableRipple(mixinDisabled(MatSlideToggleBase))));
+const _MatSlideToggleBase =
+  mixinTabIndex(mixinColor(mixinDisableRipple(mixinDisabled(class {
+    constructor(public _elementRef: ElementRef) {}
+  }))));
 
 /** Represents a slidable "switch" toggle that can be moved between on and off. */
 @Component({
@@ -97,11 +91,11 @@ const _MatSlideToggleMixinBase:
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestroy, AfterContentInit,
-                                                                        ControlValueAccessor,
-                                                                        CanDisable, CanColor,
-                                                                        HasTabIndex,
-                                                                        CanDisableRipple {
+export class MatSlideToggle extends _MatSlideToggleBase implements OnDestroy, AfterContentInit,
+                                                                   ControlValueAccessor,
+                                                                   CanDisable, CanColor,
+                                                                   HasTabIndex,
+                                                                   CanDisableRipple {
   private _onChange = (_: any) => {};
   private _onTouched = () => {};
 

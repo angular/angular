@@ -31,7 +31,7 @@ export declare class MatStepContent {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatStepContent, never>;
 }
 
-export declare class MatStepHeader extends _MatStepHeaderMixinBase implements AfterViewInit, OnDestroy, CanColor {
+export declare class MatStepHeader extends _MatStepHeaderBase implements AfterViewInit, OnDestroy, CanColor {
     _intl: MatStepperIntl;
     active: boolean;
     disableRipple: boolean;

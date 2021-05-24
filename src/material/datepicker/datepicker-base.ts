@@ -43,7 +43,6 @@ import {
 } from '@angular/core';
 import {
   CanColor,
-  CanColorCtor,
   DateAdapter,
   mixinColor,
   ThemePalette,
@@ -94,11 +93,9 @@ export const MAT_DATEPICKER_SCROLL_STRATEGY_FACTORY_PROVIDER = {
 
 // Boilerplate for applying mixins to MatDatepickerContent.
 /** @docs-private */
-class MatDatepickerContentBase {
-  constructor(public _elementRef: ElementRef) { }
-}
-const _MatDatepickerContentMixinBase: CanColorCtor & typeof MatDatepickerContentBase =
-    mixinColor(MatDatepickerContentBase);
+const _MatDatepickerContentBase = mixinColor(class {
+  constructor(public _elementRef: ElementRef) {}
+});
 
 /**
  * Component used as the content for the datepicker overlay. We use this instead of using
@@ -127,7 +124,7 @@ const _MatDatepickerContentMixinBase: CanColorCtor & typeof MatDatepickerContent
   inputs: ['color'],
 })
 export class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>>
-  extends _MatDatepickerContentMixinBase implements OnInit, AfterViewInit, OnDestroy, CanColor {
+  extends _MatDatepickerContentBase implements OnInit, AfterViewInit, OnDestroy, CanColor {
   private _subscriptions = new Subscription();
   private _model: MatDateSelectionModel<S, D>;
 

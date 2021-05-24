@@ -26,7 +26,6 @@ import {
 import {FormGroupDirective, NgControl, NgForm} from '@angular/forms';
 import {
   CanUpdateErrorState,
-  CanUpdateErrorStateCtor,
   ErrorStateMatcher,
   mixinErrorState,
 } from '@angular/material/core';
@@ -53,15 +52,13 @@ let nextUniqueId = 0;
 
 // Boilerplate for applying mixins to MatInput.
 /** @docs-private */
-class MatInputBase {
+const _MatInputBase = mixinErrorState(class {
   constructor(public _defaultErrorStateMatcher: ErrorStateMatcher,
               public _parentForm: NgForm,
               public _parentFormGroup: FormGroupDirective,
               /** @docs-private */
               public ngControl: NgControl) {}
-}
-const _MatInputMixinBase: CanUpdateErrorStateCtor & typeof MatInputBase =
-    mixinErrorState(MatInputBase);
+});
 
 /** Directive that allows a native input to work inside a `MatFormField`. */
 @Directive({
@@ -91,7 +88,7 @@ const _MatInputMixinBase: CanUpdateErrorStateCtor & typeof MatInputBase =
   },
   providers: [{provide: MatFormFieldControl, useExisting: MatInput}],
 })
-export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<any>, OnChanges,
+export class MatInput extends _MatInputBase implements MatFormFieldControl<any>, OnChanges,
     OnDestroy, AfterViewInit, DoCheck, CanUpdateErrorState {
   protected _uid = `mat-input-${nextUniqueId++}`;
   protected _previousNativeValue: any;

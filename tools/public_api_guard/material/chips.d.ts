@@ -110,7 +110,7 @@ export interface MatChipInputEvent {
     value: string;
 }
 
-export declare class MatChipList extends _MatChipListMixinBase implements MatFormFieldControl<any>, ControlValueAccessor, AfterContentInit, DoCheck, OnInit, OnDestroy, CanUpdateErrorState {
+export declare class MatChipList extends _MatChipListBase implements MatFormFieldControl<any>, ControlValueAccessor, AfterContentInit, DoCheck, OnInit, OnDestroy, CanUpdateErrorState {
     _ariaDescribedby: string;
     protected _chipInput: MatChipTextControl;
     protected _disabled: boolean;

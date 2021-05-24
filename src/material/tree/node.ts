@@ -25,16 +25,13 @@ import {
 } from '@angular/core';
 import {
   CanDisable,
-  CanDisableCtor,
   HasTabIndex,
-  HasTabIndexCtor,
   mixinDisabled,
   mixinTabIndex,
 } from '@angular/material/core';
 import {BooleanInput, coerceBooleanProperty, NumberInput} from '@angular/cdk/coercion';
 
-const _MatTreeNodeMixinBase: HasTabIndexCtor & CanDisableCtor & typeof CdkTreeNode =
-    mixinTabIndex(mixinDisabled(CdkTreeNode));
+const _MatTreeNodeBase = mixinTabIndex(mixinDisabled(CdkTreeNode));
 
 /**
  * Wrapper for the CdkTree node with Material design styles.
@@ -45,7 +42,7 @@ const _MatTreeNodeMixinBase: HasTabIndexCtor & CanDisableCtor & typeof CdkTreeNo
   inputs: ['role', 'disabled', 'tabIndex'],
   providers: [{provide: CdkTreeNode, useExisting: MatTreeNode}]
 })
-export class MatTreeNode<T, K = T> extends _MatTreeNodeMixinBase<T, K>
+export class MatTreeNode<T, K = T> extends _MatTreeNodeBase<T, K>
     implements CanDisable, DoCheck, HasTabIndex, OnInit, OnDestroy {
 
 

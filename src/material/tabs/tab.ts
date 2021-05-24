@@ -25,7 +25,7 @@ import {
   Inject,
   Optional,
 } from '@angular/core';
-import {CanDisable, CanDisableCtor, mixinDisabled} from '@angular/material/core';
+import {CanDisable, mixinDisabled} from '@angular/material/core';
 import {Subject} from 'rxjs';
 import {MAT_TAB_CONTENT} from './tab-content';
 import {MAT_TAB_LABEL, MatTabLabel} from './tab-label';
@@ -33,9 +33,7 @@ import {MAT_TAB_LABEL, MatTabLabel} from './tab-label';
 
 // Boilerplate for applying mixins to MatTab.
 /** @docs-private */
-class MatTabBase {}
-const _MatTabMixinBase: CanDisableCtor & typeof MatTabBase =
-    mixinDisabled(MatTabBase);
+const _MatTabBase = mixinDisabled(class {});
 
 /**
  * Used to provide a tab group to a tab without causing a circular dependency.
@@ -52,7 +50,7 @@ export const MAT_TAB_GROUP = new InjectionToken<any>('MAT_TAB_GROUP');
   encapsulation: ViewEncapsulation.None,
   exportAs: 'matTab',
 })
-export class MatTab extends _MatTabMixinBase implements OnInit, CanDisable, OnChanges, OnDestroy {
+export class MatTab extends _MatTabBase implements OnInit, CanDisable, OnChanges, OnDestroy {
   /** Content for the tab label given by `<ng-template mat-tab-label>`. */
   @ContentChild(MAT_TAB_LABEL)
   get templateLabel(): MatTabLabel { return this._templateLabel; }

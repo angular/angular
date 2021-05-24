@@ -133,7 +133,7 @@ export declare class MatInkBar {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatInkBar, [null, null, null, { optional: true; }]>;
 }
 
-export declare class MatTab extends _MatTabMixinBase implements OnInit, CanDisable, OnChanges, OnDestroy {
+export declare class MatTab extends _MatTabBase implements OnInit, CanDisable, OnChanges, OnDestroy {
     _closestTabGroup: any;
     _explicitContent: TemplateRef<any>;
     _implicitContent: TemplateRef<any>;
@@ -217,7 +217,7 @@ export declare class MatTabLabel extends CdkPortal {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatTabLabel, never>;
 }
 
-export declare class MatTabLabelWrapper extends _MatTabLabelWrapperMixinBase implements CanDisable {
+export declare class MatTabLabelWrapper extends _MatTabLabelWrapperBase implements CanDisable {
     elementRef: ElementRef;
     constructor(elementRef: ElementRef);
     focus(): void;

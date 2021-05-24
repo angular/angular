@@ -6,7 +6,7 @@ export declare class MatAnchor extends MatButton {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatAnchor, [null, null, { optional: true; }]>;
 }
 
-export declare class MatButton extends _MatButtonMixinBase implements AfterViewInit, OnDestroy, CanDisable, CanColor, CanDisableRipple, FocusableOption {
+export declare class MatButton extends _MatButtonBase implements AfterViewInit, OnDestroy, CanDisable, CanColor, CanDisableRipple, FocusableOption {
     _animationMode: string;
     readonly isIconButton: boolean;
     readonly isRoundButton: boolean;

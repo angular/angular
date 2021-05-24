@@ -24,7 +24,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {CanColor, CanColorCtor, mixinColor} from '@angular/material/core';
+import {CanColor, mixinColor} from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {fromEvent, Observable, Subscription} from 'rxjs';
 import {filter} from 'rxjs/operators';
@@ -40,12 +40,9 @@ export interface ProgressAnimationEnd {
 
 // Boilerplate for applying mixins to MatProgressBar.
 /** @docs-private */
-class MatProgressBarBase {
-  constructor(public _elementRef: ElementRef) { }
-}
-
-const _MatProgressBarMixinBase: CanColorCtor & typeof MatProgressBarBase =
-    mixinColor(MatProgressBarBase, 'primary');
+const _MatProgressBarBase = mixinColor(class {
+  constructor(public _elementRef: ElementRef) {}
+}, 'primary');
 
 /**
  * Injection token used to provide the current location to `MatProgressBar`.
@@ -106,7 +103,7 @@ let progressbarId = 0;
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class MatProgressBar extends _MatProgressBarMixinBase implements CanColor,
+export class MatProgressBar extends _MatProgressBarBase implements CanColor,
                                                       AfterViewInit, OnDestroy {
   constructor(public _elementRef: ElementRef, private _ngZone: NgZone,
               @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,

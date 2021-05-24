@@ -31,12 +31,9 @@ import {
 } from '@angular/core';
 import {
   CanColor,
-  CanColorCtor,
   CanDisable,
   CanDisableRipple,
-  CanDisableRippleCtor,
   HasTabIndex,
-  HasTabIndexCtor,
   MatRipple,
   MAT_RIPPLE_GLOBAL_OPTIONS,
   mixinColor,
@@ -93,12 +90,7 @@ abstract class MatChipBase {
   constructor(public _elementRef: ElementRef) {}
 }
 
-const _MatChipMixinBase:
-  CanColorCtor &
-  CanDisableRippleCtor &
-  HasTabIndexCtor &
-  typeof MatChipBase =
-    mixinTabIndex(mixinColor(mixinDisableRipple(MatChipBase), 'primary'), -1);
+const _MatChipMixinBase = mixinTabIndex(mixinColor(mixinDisableRipple(MatChipBase), 'primary'), -1);
 
 /**
  * Material design styled Chip base component. Used inside the MatChipSet component.

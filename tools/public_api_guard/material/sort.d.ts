@@ -15,7 +15,7 @@ export declare const MAT_SORT_HEADER_INTL_PROVIDER: {
 
 export declare function MAT_SORT_HEADER_INTL_PROVIDER_FACTORY(parentIntl: MatSortHeaderIntl): MatSortHeaderIntl;
 
-export declare class MatSort extends _MatSortMixinBase implements CanDisable, HasInitialized, OnChanges, OnDestroy, OnInit {
+export declare class MatSort extends _MatSortBase implements CanDisable, HasInitialized, OnChanges, OnDestroy, OnInit {
     readonly _stateChanges: Subject<void>;
     active: string;
     get direction(): SortDirection;
@@ -58,7 +58,7 @@ export interface MatSortDefaultOptions {
     disableClear?: boolean;
 }
 
-export declare class MatSortHeader extends _MatSortHeaderMixinBase implements CanDisable, MatSortable, OnDestroy, OnInit, AfterViewInit {
+export declare class MatSortHeader extends _MatSortHeaderBase implements CanDisable, MatSortable, OnDestroy, OnInit, AfterViewInit {
     _arrowDirection: SortDirection;
     _columnDef: MatSortHeaderColumnDef;
     _disableViewStateAnimation: boolean;

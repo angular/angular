@@ -4,7 +4,7 @@ export declare const MAT_NAV_LIST: InjectionToken<MatNavList>;
 
 export declare const MAT_SELECTION_LIST_VALUE_ACCESSOR: any;
 
-export declare class MatList extends _MatListMixinBase implements CanDisable, CanDisableRipple, OnChanges, OnDestroy {
+export declare class MatList extends _MatListBase implements CanDisable, CanDisableRipple, OnChanges, OnDestroy {
     readonly _stateChanges: Subject<void>;
     constructor(_elementRef: ElementRef<HTMLElement>);
     _getListType(): 'list' | 'action-list' | null;
@@ -49,7 +49,7 @@ export declare class MatListModule {
     static ɵmod: i0.ɵɵNgModuleDeclaration<MatListModule, [typeof i1.MatList, typeof i1.MatNavList, typeof i1.MatListItem, typeof i1.MatListAvatarCssMatStyler, typeof i1.MatListIconCssMatStyler, typeof i1.MatListSubheaderCssMatStyler, typeof i2.MatSelectionList, typeof i2.MatListOption], [typeof i3.MatLineModule, typeof i3.MatRippleModule, typeof i3.MatCommonModule, typeof i3.MatPseudoCheckboxModule, typeof i4.CommonModule], [typeof i1.MatList, typeof i1.MatNavList, typeof i1.MatListItem, typeof i1.MatListAvatarCssMatStyler, typeof i3.MatLineModule, typeof i3.MatCommonModule, typeof i1.MatListIconCssMatStyler, typeof i1.MatListSubheaderCssMatStyler, typeof i3.MatPseudoCheckboxModule, typeof i2.MatSelectionList, typeof i2.MatListOption, typeof i5.MatDividerModule]>;
 }
 
-export declare class MatListOption extends _MatListOptionMixinBase implements AfterContentInit, OnDestroy, OnInit, FocusableOption, CanDisableRipple {
+export declare class MatListOption extends _MatListOptionBase implements AfterContentInit, OnDestroy, OnInit, FocusableOption, CanDisableRipple {
     _avatar: MatListAvatarCssMatStyler;
     _icon: MatListIconCssMatStyler;
     _lines: QueryList<MatLine>;
@@ -93,7 +93,7 @@ export declare class MatListSubheaderCssMatStyler {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatListSubheaderCssMatStyler, never>;
 }
 
-export declare class MatNavList extends _MatListMixinBase implements CanDisable, CanDisableRipple, OnChanges, OnDestroy {
+export declare class MatNavList extends _MatListBase implements CanDisable, CanDisableRipple, OnChanges, OnDestroy {
     readonly _stateChanges: Subject<void>;
     ngOnChanges(): void;
     ngOnDestroy(): void;
@@ -103,7 +103,7 @@ export declare class MatNavList extends _MatListMixinBase implements CanDisable,
     static ɵfac: i0.ɵɵFactoryDeclaration<MatNavList, never>;
 }
 
-export declare class MatSelectionList extends _MatSelectionListMixinBase implements CanDisableRipple, AfterContentInit, ControlValueAccessor, OnDestroy, OnChanges {
+export declare class MatSelectionList extends _MatSelectionListBase implements CanDisableRipple, AfterContentInit, ControlValueAccessor, OnDestroy, OnChanges {
     _keyManager: FocusKeyManager<MatListOption>;
     _onTouched: () => void;
     _tabIndex: number;

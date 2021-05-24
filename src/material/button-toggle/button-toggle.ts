@@ -36,7 +36,6 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
   CanDisableRipple,
   mixinDisableRipple,
-  CanDisableRippleCtor,
 } from '@angular/material/core';
 
 
@@ -381,9 +380,7 @@ export class MatButtonToggleGroup implements ControlValueAccessor, OnInit, After
 
 // Boilerplate for applying mixins to the MatButtonToggle class.
 /** @docs-private */
-class MatButtonToggleBase {}
-const _MatButtonToggleMixinBase: CanDisableRippleCtor & typeof MatButtonToggleBase =
-    mixinDisableRipple(MatButtonToggleBase);
+const _MatButtonToggleBase = mixinDisableRipple(class {});
 
 /** Single button inside of a toggle group. */
 @Component({
@@ -408,7 +405,7 @@ const _MatButtonToggleMixinBase: CanDisableRippleCtor & typeof MatButtonToggleBa
     'role': 'presentation',
   }
 })
-export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit, AfterViewInit,
+export class MatButtonToggle extends _MatButtonToggleBase implements OnInit, AfterViewInit,
   CanDisableRipple, OnDestroy {
 
   private _isSingleSelector = false;

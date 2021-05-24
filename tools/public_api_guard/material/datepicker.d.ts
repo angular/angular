@@ -213,7 +213,7 @@ export declare class MatDatepickerCancel {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatDatepickerCancel, never>;
 }
 
-export declare class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>> extends _MatDatepickerContentMixinBase implements OnInit, AfterViewInit, OnDestroy, CanColor {
+export declare class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>> extends _MatDatepickerContentBase implements OnInit, AfterViewInit, OnDestroy, CanColor {
     _actionsPortal: TemplatePortal | null;
     readonly _animationDone: Subject<void>;
     _animationState: 'enter-dropdown' | 'enter-dialog' | 'void';

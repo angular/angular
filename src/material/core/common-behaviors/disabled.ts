@@ -15,7 +15,11 @@ export interface CanDisable {
   disabled: boolean;
 }
 
-/** @docs-private */
+/**
+ * @docs-private
+ * @deprecated No longer necessary to apply to mixin classes. To be made private.
+ * @breaking-change 13.0.0
+ */
 export type CanDisableCtor = Constructor<CanDisable> & AbstractConstructor<CanDisable>;
 
 /** Mixin to augment a directive with a `disabled` property. */

@@ -20,7 +20,7 @@ import {
   Renderer2,
   SimpleChanges,
 } from '@angular/core';
-import {CanDisable, CanDisableCtor, mixinDisabled, ThemePalette} from '@angular/material/core';
+import {CanDisable, mixinDisabled, ThemePalette} from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
 
@@ -28,10 +28,7 @@ let nextId = 0;
 
 // Boilerplate for applying mixins to MatBadge.
 /** @docs-private */
-class MatBadgeBase {}
-
-const _MatBadgeMixinBase:
-    CanDisableCtor & typeof MatBadgeBase = mixinDisabled(MatBadgeBase);
+const _MatBadgeBase = mixinDisabled(class {});
 
 /** Allowed position options for matBadgePosition */
 export type MatBadgePosition =
@@ -59,7 +56,7 @@ export type MatBadgeSize = 'small' | 'medium' | 'large';
     '[class.mat-badge-disabled]': 'disabled',
   },
 })
-export class MatBadge extends _MatBadgeMixinBase implements OnDestroy, OnChanges, CanDisable {
+export class MatBadge extends _MatBadgeBase implements OnDestroy, OnChanges, CanDisable {
   /** Whether the badge has any content. */
   _hasContent = false;
 

@@ -30,7 +30,6 @@ import {
 } from '@angular/core';
 import {
   CanDisableRipple,
-  CanDisableRippleCtor,
   MAT_OPTGROUP,
   MAT_OPTION_PARENT_COMPONENT,
   _MatOptgroupBase,
@@ -68,9 +67,7 @@ export interface MatAutocompleteActivatedEvent {
 
 // Boilerplate for applying mixins to MatAutocomplete.
 /** @docs-private */
-class MatAutocompleteBase {}
-const _MatAutocompleteMixinBase: CanDisableRippleCtor & typeof MatAutocompleteBase =
-    mixinDisableRipple(MatAutocompleteBase);
+const _MatAutocompleteMixinBase = mixinDisableRipple(class {});
 
 /** Default `mat-autocomplete` options that can be overridden. */
 export interface MatAutocompleteDefaultOptions {

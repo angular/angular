@@ -31,11 +31,9 @@ import {Subscription} from 'rxjs';
 import {MatPaginatorIntl} from './paginator-intl';
 import {
   HasInitialized,
-  HasInitializedCtor,
   mixinInitialized,
   ThemePalette,
   mixinDisabled,
-  CanDisableCtor,
   CanDisable,
 } from '@angular/material/core';
 import {MatFormFieldAppearance} from '@angular/material/form-field';
@@ -89,9 +87,7 @@ export const MAT_PAGINATOR_DEFAULT_OPTIONS =
 
 // Boilerplate for applying mixins to _MatPaginatorBase.
 /** @docs-private */
-class MatPaginatorMixinBase {}
-const _MatPaginatorMixinBase: CanDisableCtor & HasInitializedCtor & typeof MatPaginatorMixinBase =
-    mixinDisabled(mixinInitialized(MatPaginatorMixinBase));
+const _MatPaginatorMixinBase = mixinDisabled(mixinInitialized(class {}));
 
 /**
  * Base class with all of the `MatPaginator` functionality.

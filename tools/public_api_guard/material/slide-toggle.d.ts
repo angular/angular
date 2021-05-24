@@ -10,7 +10,7 @@ export declare const MAT_SLIDE_TOGGLE_REQUIRED_VALIDATOR: Provider;
 
 export declare const MAT_SLIDE_TOGGLE_VALUE_ACCESSOR: any;
 
-export declare class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestroy, AfterContentInit, ControlValueAccessor, CanDisable, CanColor, HasTabIndex, CanDisableRipple {
+export declare class MatSlideToggle extends _MatSlideToggleBase implements OnDestroy, AfterContentInit, ControlValueAccessor, CanDisable, CanColor, HasTabIndex, CanDisableRipple {
     _inputElement: ElementRef<HTMLInputElement>;
     _noopAnimations: boolean;
     _thumbBarEl: ElementRef;

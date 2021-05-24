@@ -12,7 +12,7 @@ export declare function MAT_CHECKBOX_DEFAULT_OPTIONS_FACTORY(): MatCheckboxDefau
 
 export declare const MAT_CHECKBOX_REQUIRED_VALIDATOR: Provider;
 
-export declare class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAccessor, AfterViewInit, AfterViewChecked, OnDestroy, CanColor, CanDisable, HasTabIndex, CanDisableRipple, FocusableOption {
+export declare class MatCheckbox extends _MatCheckboxBase implements ControlValueAccessor, AfterViewInit, AfterViewChecked, OnDestroy, CanColor, CanDisable, HasTabIndex, CanDisableRipple, FocusableOption {
     _animationMode?: string | undefined;
     _inputElement: ElementRef<HTMLInputElement>;
     _onTouched: () => any;

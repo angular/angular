@@ -29,7 +29,7 @@ import {
   OnDestroy,
 } from '@angular/core';
 import {
-  CanColor, CanColorCtor,
+  CanColor,
   mixinColor,
 } from '@angular/material/core';
 import {fromEvent, merge, Subject} from 'rxjs';
@@ -61,16 +61,9 @@ const outlineGapPadding = 5;
  * Boilerplate for applying mixins to MatFormField.
  * @docs-private
  */
-class MatFormFieldBase {
-  constructor(public _elementRef: ElementRef) { }
-}
-
-/**
- * Base class to which we're applying the form field mixins.
- * @docs-private
- */
-const _MatFormFieldMixinBase: CanColorCtor & typeof MatFormFieldBase =
-    mixinColor(MatFormFieldBase, 'primary');
+const _MatFormFieldnBase = mixinColor(class {
+  constructor(public _elementRef: ElementRef) {}
+}, 'primary');
 
 /** Possible appearance styles for the form field. */
 export type MatFormFieldAppearance = 'legacy' | 'standard' | 'fill' | 'outline';
@@ -154,7 +147,7 @@ export const MAT_FORM_FIELD = new InjectionToken<MatFormField>('MatFormField');
   ]
 })
 
-export class MatFormField extends _MatFormFieldMixinBase
+export class MatFormField extends _MatFormFieldnBase
     implements AfterContentInit, AfterContentChecked, AfterViewInit, OnDestroy, CanColor {
 
   /**

@@ -1,6 +1,6 @@
 export declare const MAT_SLIDER_VALUE_ACCESSOR: any;
 
-export declare class MatSlider extends _MatSliderMixinBase implements ControlValueAccessor, OnDestroy, CanDisable, CanColor, AfterViewInit, HasTabIndex {
+export declare class MatSlider extends _MatSliderBase implements ControlValueAccessor, OnDestroy, CanDisable, CanColor, AfterViewInit, HasTabIndex {
     _animationMode?: string | undefined;
     protected _document: Document;
     _isActive: boolean;

@@ -32,9 +32,9 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {
-  CanDisable, CanDisableCtor,
-  CanDisableRipple, CanDisableRippleCtor,
-  HasTabIndex, HasTabIndexCtor,
+  CanDisable,
+  CanDisableRipple,
+  HasTabIndex,
   MAT_RIPPLE_GLOBAL_OPTIONS,
   mixinDisabled,
   mixinDisableRipple,
@@ -175,10 +175,7 @@ export class MatTabNav extends _MatTabNavBase {
 }
 
 // Boilerplate for applying mixins to MatTabLink.
-class MatTabLinkMixinBase {}
-const _MatTabLinkMixinBase:
-    HasTabIndexCtor & CanDisableRippleCtor & CanDisableCtor & typeof MatTabLinkMixinBase =
-        mixinTabIndex(mixinDisableRipple(mixinDisabled(MatTabLinkMixinBase)));
+const _MatTabLinkMixinBase = mixinTabIndex(mixinDisableRipple(mixinDisabled(class {})));
 
 /** Base class with all of the `MatTabLink` functionality. */
 @Directive()

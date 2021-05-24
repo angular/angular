@@ -46,11 +46,8 @@ import {
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
   CanColor,
-  CanColorCtor,
   CanDisable,
-  CanDisableCtor,
   HasTabIndex,
-  HasTabIndexCtor,
   mixinColor,
   mixinDisabled,
   mixinTabIndex,
@@ -99,15 +96,9 @@ export class MatSliderChange {
 
 // Boilerplate for applying mixins to MatSlider.
 /** @docs-private */
-class MatSliderBase {
+const _MatSliderBase = mixinTabIndex(mixinColor(mixinDisabled(class {
   constructor(public _elementRef: ElementRef) {}
-}
-const _MatSliderMixinBase:
-    HasTabIndexCtor &
-    CanColorCtor &
-    CanDisableCtor &
-    typeof MatSliderBase =
-        mixinTabIndex(mixinColor(mixinDisabled(MatSliderBase), 'accent'));
+}), 'accent'));
 
 /**
  * Allows users to select from a range of values by moving the slider thumb. It is similar in
@@ -163,7 +154,7 @@ const _MatSliderMixinBase:
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatSlider extends _MatSliderMixinBase
+export class MatSlider extends _MatSliderBase
     implements ControlValueAccessor, OnDestroy, CanDisable, CanColor, AfterViewInit, HasTabIndex {
   /** Whether the slider is inverted. */
   @Input()

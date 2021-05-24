@@ -40,9 +40,7 @@ import {
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
   CanDisableRipple,
-  CanDisableRippleCtor,
   HasTabIndex,
-  HasTabIndexCtor,
   mixinDisableRipple,
   mixinTabIndex,
   ThemePalette,
@@ -347,11 +345,8 @@ abstract class MatRadioButtonBase {
   abstract disabled: boolean;
   constructor(public _elementRef: ElementRef) {}
 }
-// As per Material design specifications the selection control radio should use the accent color
-// palette by default. https://material.io/guidelines/components/selection-controls.html
-const _MatRadioButtonMixinBase:
-    CanDisableRippleCtor & HasTabIndexCtor & typeof MatRadioButtonBase =
-        mixinDisableRipple(mixinTabIndex(MatRadioButtonBase));
+
+const _MatRadioButtonMixinBase = mixinDisableRipple(mixinTabIndex(MatRadioButtonBase));
 
 /**
  * Base class with all of the `MatRadioButton` functionality.
@@ -451,6 +446,8 @@ export abstract class _MatRadioButtonBase extends _MatRadioButtonMixinBase imple
   /** Theme color of the radio button. */
   @Input()
   get color(): ThemePalette {
+    // As per Material design specifications the selection control radio should use the accent color
+    // palette by default. https://material.io/guidelines/components/selection-controls.html
     return this._color ||
       (this.radioGroup && this.radioGroup.color) ||
       this._providerOverride && this._providerOverride.color || 'accent';

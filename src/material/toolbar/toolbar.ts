@@ -19,15 +19,14 @@ import {
   QueryList,
   ViewEncapsulation,
 } from '@angular/core';
-import {CanColor, CanColorCtor, mixinColor} from '@angular/material/core';
+import {CanColor, mixinColor} from '@angular/material/core';
 
 
 // Boilerplate for applying mixins to MatToolbar.
 /** @docs-private */
-class MatToolbarBase {
+const _MatToolbarBase = mixinColor(class {
   constructor(public _elementRef: ElementRef) {}
-}
-const _MatToolbarMixinBase: CanColorCtor & typeof MatToolbarBase = mixinColor(MatToolbarBase);
+});
 
 @Directive({
   selector: 'mat-toolbar-row',
@@ -50,7 +49,7 @@ export class MatToolbarRow {}
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class MatToolbar extends _MatToolbarMixinBase implements CanColor, AfterViewInit {
+export class MatToolbar extends _MatToolbarBase implements CanColor, AfterViewInit {
   private _document: Document;
 
   /** Reference to all toolbar row elements that have been projected. */

@@ -64,14 +64,10 @@ import {
   _countGroupLabelsBeforeOption,
   _getOptionScrollPosition,
   CanDisable,
-  CanDisableCtor,
   CanDisableRipple,
-  CanDisableRippleCtor,
   CanUpdateErrorState,
-  CanUpdateErrorStateCtor,
   ErrorStateMatcher,
   HasTabIndex,
-  HasTabIndexCtor,
   MAT_OPTGROUP,
   MAT_OPTION_PARENT_COMPONENT,
   MatOptgroup,
@@ -183,20 +179,14 @@ export class MatSelectChange {
 
 // Boilerplate for applying mixins to MatSelect.
 /** @docs-private */
-class MatSelectBase {
-  constructor(public _elementRef: ElementRef,
-              public _defaultErrorStateMatcher: ErrorStateMatcher,
-              public _parentForm: NgForm,
-              public _parentFormGroup: FormGroupDirective,
-              public ngControl: NgControl) {}
-}
-const _MatSelectMixinBase:
-    CanDisableCtor &
-    HasTabIndexCtor &
-    CanDisableRippleCtor &
-    CanUpdateErrorStateCtor &
-    typeof MatSelectBase =
-        mixinDisableRipple(mixinTabIndex(mixinDisabled(mixinErrorState(MatSelectBase))));
+const _MatSelectMixinBase =
+  mixinDisableRipple(mixinTabIndex(mixinDisabled(mixinErrorState(class {
+    constructor(public _elementRef: ElementRef,
+                public _defaultErrorStateMatcher: ErrorStateMatcher,
+                public _parentForm: NgForm,
+                public _parentFormGroup: FormGroupDirective,
+                public ngControl: NgControl) {}
+  }))));
 
 
 

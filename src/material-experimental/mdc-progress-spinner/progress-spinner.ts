@@ -22,7 +22,7 @@ import {
   MDCCircularProgressAdapter,
   MDCCircularProgressFoundation
 } from '@material/circular-progress';
-import {CanColor, CanColorCtor, mixinColor} from '@angular/material-experimental/mdc-core';
+import {CanColor, mixinColor} from '@angular/material-experimental/mdc-core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {
   MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS,
@@ -31,13 +31,10 @@ import {
 import {coerceNumberProperty, NumberInput} from '@angular/cdk/coercion';
 
 // Boilerplate for applying mixins to MatProgressBar.
-class MatProgressSpinnerBase {
+const _MatProgressSpinnerBase = mixinColor(class {
   constructor(public _elementRef: ElementRef) {
   }
-}
-
-const _MatProgressSpinnerMixinBase: CanColorCtor & typeof MatProgressSpinnerBase =
-  mixinColor(MatProgressSpinnerBase, 'primary');
+}, 'primary');
 
 /** Possible mode for a progress spinner. */
 export type ProgressSpinnerMode = 'determinate' | 'indeterminate';
@@ -75,7 +72,7 @@ const BASE_STROKE_WIDTH = 10;
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements AfterViewInit,
+export class MatProgressSpinner extends _MatProgressSpinnerBase implements AfterViewInit,
   OnDestroy, CanColor {
 
   /** Whether the _mat-animation-noopable class should be applied, disabling animations.  */

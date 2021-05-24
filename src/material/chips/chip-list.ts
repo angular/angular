@@ -31,7 +31,6 @@ import {
 import {ControlValueAccessor, FormGroupDirective, NgControl, NgForm} from '@angular/forms';
 import {
   CanUpdateErrorState,
-  CanUpdateErrorStateCtor,
   ErrorStateMatcher,
   mixinErrorState,
 } from '@angular/material/core';
@@ -43,15 +42,13 @@ import {MatChipTextControl} from './chip-text-control';
 
 // Boilerplate for applying mixins to MatChipList.
 /** @docs-private */
-class MatChipListBase {
+const _MatChipListBase = mixinErrorState(class {
   constructor(public _defaultErrorStateMatcher: ErrorStateMatcher,
               public _parentForm: NgForm,
               public _parentFormGroup: FormGroupDirective,
               /** @docs-private */
               public ngControl: NgControl) {}
-}
-const _MatChipListMixinBase: CanUpdateErrorStateCtor & typeof MatChipListBase =
-    mixinErrorState(MatChipListBase);
+});
 
 
 // Increasing integer for generating unique ids for chip-list components.
@@ -96,7 +93,7 @@ export class MatChipListChange {
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MatChipList extends _MatChipListMixinBase implements MatFormFieldControl<any>,
+export class MatChipList extends _MatChipListBase implements MatFormFieldControl<any>,
   ControlValueAccessor, AfterContentInit, DoCheck, OnInit, OnDestroy, CanUpdateErrorState {
   /**
    * Implemented as part of MatFormFieldControl.

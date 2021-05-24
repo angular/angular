@@ -4,7 +4,7 @@ export declare const MAT_BUTTON_TOGGLE_GROUP: InjectionToken<MatButtonToggleGrou
 
 export declare const MAT_BUTTON_TOGGLE_GROUP_VALUE_ACCESSOR: any;
 
-export declare class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit, AfterViewInit, CanDisableRipple, OnDestroy {
+export declare class MatButtonToggle extends _MatButtonToggleBase implements OnInit, AfterViewInit, CanDisableRipple, OnDestroy {
     _buttonElement: ElementRef<HTMLButtonElement>;
     get appearance(): MatButtonToggleAppearance;
     set appearance(value: MatButtonToggleAppearance);

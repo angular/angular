@@ -2,7 +2,7 @@ export declare const MAT_PROGRESS_BAR_LOCATION: InjectionToken<MatProgressBarLoc
 
 export declare function MAT_PROGRESS_BAR_LOCATION_FACTORY(): MatProgressBarLocation;
 
-export declare class MatProgressBar extends _MatProgressBarMixinBase implements CanColor, AfterViewInit, OnDestroy {
+export declare class MatProgressBar extends _MatProgressBarBase implements CanColor, AfterViewInit, OnDestroy {
     _animationMode?: string | undefined;
     _elementRef: ElementRef;
     _isNoopAnimation: boolean;

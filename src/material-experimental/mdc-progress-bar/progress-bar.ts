@@ -20,7 +20,7 @@ import {
   AfterViewInit,
   OnDestroy,
 } from '@angular/core';
-import {CanColor, CanColorCtor, mixinColor} from '@angular/material-experimental/mdc-core';
+import {CanColor, mixinColor} from '@angular/material-experimental/mdc-core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {ProgressAnimationEnd} from '@angular/material/progress-bar';
 import {
@@ -34,12 +34,9 @@ import {Directionality} from '@angular/cdk/bidi';
 
 // Boilerplate for applying mixins to MatProgressBar.
 /** @docs-private */
-class MatProgressBarBase {
-  constructor(public _elementRef: ElementRef) { }
-}
-
-const _MatProgressBarMixinBase: CanColorCtor & typeof MatProgressBarBase =
-    mixinColor(MatProgressBarBase, 'primary');
+const _MatProgressBarBase = mixinColor(class {
+  constructor(public _elementRef: ElementRef) {}
+}, 'primary');
 
 export type ProgressBarMode = 'determinate' | 'indeterminate' | 'buffer' | 'query';
 
@@ -64,7 +61,7 @@ export type ProgressBarMode = 'determinate' | 'indeterminate' | 'buffer' | 'quer
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class MatProgressBar extends _MatProgressBarMixinBase implements AfterViewInit, OnDestroy,
+export class MatProgressBar extends _MatProgressBarBase implements AfterViewInit, OnDestroy,
   CanColor {
 
   constructor(public _elementRef: ElementRef<HTMLElement>,

@@ -20,7 +20,7 @@ import {
   ElementRef,
   AfterViewInit,
 } from '@angular/core';
-import {CanDisable, CanDisableCtor, mixinDisabled} from '@angular/material/core';
+import {CanDisable, mixinDisabled} from '@angular/material/core';
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {ENTER, SPACE} from '@angular/cdk/keycodes';
 import {merge, Subscription} from 'rxjs';
@@ -33,9 +33,7 @@ import {MatSortHeaderIntl} from './sort-header-intl';
 
 // Boilerplate for applying mixins to the sort header.
 /** @docs-private */
-class MatSortHeaderBase {}
-const _MatSortHeaderMixinBase: CanDisableCtor & typeof MatSortHeaderBase =
-    mixinDisabled(MatSortHeaderBase);
+const _MatSortHeaderBase = mixinDisabled(class {});
 
 /**
  * Valid positions for the arrow to be in for its opacity and translation. If the state is a
@@ -97,7 +95,7 @@ interface MatSortHeaderColumnDef {
     matSortAnimations.allowChildren,
   ]
 })
-export class MatSortHeader extends _MatSortHeaderMixinBase
+export class MatSortHeader extends _MatSortHeaderBase
     implements CanDisable, MatSortable, OnDestroy, OnInit, AfterViewInit {
   private _rerenderSubscription: Subscription;
 

@@ -11,11 +11,8 @@ import {Platform} from '@angular/cdk/platform';
 import {Directive, ElementRef, HostListener, NgZone, ViewChild} from '@angular/core';
 import {
   CanColor,
-  CanColorCtor,
   CanDisable,
-  CanDisableCtor,
   CanDisableRipple,
-  CanDisableRippleCtor,
   MatRipple,
   mixinColor,
   mixinDisabled,
@@ -81,17 +78,14 @@ const HOST_SELECTOR_MDC_CLASS_PAIR: {selector: string, mdcClasses: string[]}[] =
 
 // Boilerplate for applying mixins to MatButton.
 /** @docs-private */
-export class MatButtonMixinCore {
+export const _MatButtonMixin = mixinColor(mixinDisabled(mixinDisableRipple(class {
   constructor(public _elementRef: ElementRef) {}
-}
-
-export const _MatButtonBaseMixin: CanDisableRippleCtor&CanDisableCtor&CanColorCtor&
-    typeof MatButtonMixinCore = mixinColor(mixinDisabled(mixinDisableRipple(MatButtonMixinCore)));
+})));
 
 /** Base class for all buttons.  */
 @Directive()
-export class MatButtonBase extends _MatButtonBaseMixin implements CanDisable, CanColor,
-                                                                  CanDisableRipple {
+export class MatButtonBase extends _MatButtonMixin implements CanDisable, CanColor,
+                                                              CanDisableRipple {
   /** The ripple animation configuration to use for the buttons. */
   _rippleAnimation: RippleAnimationConfig =
       this._animationMode === 'NoopAnimations' ?

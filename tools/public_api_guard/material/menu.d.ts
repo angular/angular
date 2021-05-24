@@ -102,7 +102,7 @@ export interface MatMenuDefaultOptions {
     yPosition: MenuPositionY;
 }
 
-export declare class MatMenuItem extends _MatMenuItemMixinBase implements FocusableOption, CanDisable, CanDisableRipple, AfterViewInit, OnDestroy {
+export declare class MatMenuItem extends _MatMenuItemBase implements FocusableOption, CanDisable, CanDisableRipple, AfterViewInit, OnDestroy {
     readonly _focused: Subject<MatMenuItem>;
     _highlighted: boolean;
     readonly _hovered: Subject<MatMenuItem>;

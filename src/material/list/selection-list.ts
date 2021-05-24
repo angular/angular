@@ -42,7 +42,6 @@ import {
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
   CanDisableRipple,
-  CanDisableRippleCtor,
   MatLine,
   mixinDisableRipple,
   setLines,
@@ -52,13 +51,8 @@ import {Subject} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';
 import {MatListAvatarCssMatStyler, MatListIconCssMatStyler} from './list';
 
-class MatSelectionListBase {}
-const _MatSelectionListMixinBase: CanDisableRippleCtor & typeof MatSelectionListBase =
-    mixinDisableRipple(MatSelectionListBase);
-
-class MatListOptionBase {}
-const _MatListOptionMixinBase: CanDisableRippleCtor & typeof MatListOptionBase =
-    mixinDisableRipple(MatListOptionBase);
+const _MatSelectionListBase = mixinDisableRipple(class {});
+const _MatListOptionBase = mixinDisableRipple(class {});
 
 /** @docs-private */
 export const MAT_SELECTION_LIST_VALUE_ACCESSOR: any = {
@@ -122,7 +116,7 @@ export type MatListOptionCheckboxPosition = 'before'|'after';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatListOption extends _MatListOptionMixinBase implements AfterContentInit, OnDestroy,
+export class MatListOption extends _MatListOptionBase implements AfterContentInit, OnDestroy,
                                                                       OnInit, FocusableOption,
                                                                       CanDisableRipple {
   private _selected = false;
@@ -346,7 +340,7 @@ export class MatListOption extends _MatListOptionMixinBase implements AfterConte
   providers: [MAT_SELECTION_LIST_VALUE_ACCESSOR],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MatSelectionList extends _MatSelectionListMixinBase implements CanDisableRipple,
+export class MatSelectionList extends _MatSelectionListBase implements CanDisableRipple,
   AfterContentInit, ControlValueAccessor, OnDestroy, OnChanges {
   private _multiple = true;
   private _contentInitialized = false;

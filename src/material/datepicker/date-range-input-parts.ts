@@ -30,7 +30,6 @@ import {
 } from '@angular/forms';
 import {
   CanUpdateErrorState,
-  CanUpdateErrorStateCtor,
   mixinErrorState,
   MAT_DATE_FORMATS,
   DateAdapter,
@@ -176,10 +175,7 @@ abstract class MatDateRangeInputPartBase<D>
   }
 }
 
-const _MatDateRangeInputBase:
-    CanUpdateErrorStateCtor & typeof MatDateRangeInputPartBase =
-    // Needs to be `as any`, because the base class is abstract.
-    mixinErrorState(MatDateRangeInputPartBase as any);
+const _MatDateRangeInputBase = mixinErrorState(MatDateRangeInputPartBase);
 
 /** Input for entering the start date in a `mat-date-range-input`. */
 @Directive({
