@@ -8,7 +8,7 @@ For the example application that this page describes, see the <live-example></li
 
 </div>
 
-For more information on Angular's built-in structural directives, such as `NgIf`, `NgFor`, and `NgSwitch`, see [Built-in directives](guide/built-in-directives).
+For more information on Angular's built-in structural directives, such as `NgIf`, `NgForOf`, and `NgSwitch`, see [Built-in directives](guide/built-in-directives).
 
 {@a unless}
 
