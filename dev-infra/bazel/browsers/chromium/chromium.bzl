@@ -1,4 +1,4 @@
-load("//dev-infra/browsers:platform_http_file.bzl", "platform_http_file")
+load("//dev-infra/bazel/browsers:platform_http_file.bzl", "platform_http_file")
 
 """
   Defines repositories for Chromium that can be used inside Karma unit tests
@@ -7,7 +7,7 @@ load("//dev-infra/browsers:platform_http_file.bzl", "platform_http_file")
 
 def define_chromium_repositories():
     # To update to a newer version of Chromium see instructions in
-    # https://github.com/angular/angular/blob/master/dev-infra/browsers/README.md.
+    # https://github.com/angular/angular/blob/master/dev-infra/bazel/browsers/README.md.
 
     platform_http_file(
         name = "org_chromium_chromium_amd64",
