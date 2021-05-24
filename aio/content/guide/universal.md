@@ -10,7 +10,7 @@ layout before it becomes fully interactive.
 For a more detailed look at different techniques and concepts surrounding SSR, please check out this
 [article](https://developers.google.com/web/updates/2019/02/rendering-on-the-web).
 
-You can easily prepare an app for server-side rendering using the [Angular CLI](guide/glossary#cli).
+You can easily prepare an application for server-side rendering using the [Angular CLI](guide/glossary#cli).
 The CLI schematic `@nguniversal/express-engine` performs the required steps, as described below.
 
 <div class="alert is-helpful">
@@ -29,7 +29,7 @@ In this example, the Angular CLI compiles and bundles the Universal version of t
 [Ahead-of-Time (AOT) compiler](guide/aot-compiler).
 A Node.js Express web server compiles HTML pages with Universal based on client requests.
 
-To create the server-side app module, `app.server.module.ts`, run the following CLI command.
+To create the server-side application module, `app.server.module.ts`, run the following CLI command.
 
 <code-example language="bash">
 
@@ -73,7 +73,6 @@ You can click a hero on the Dashboard page to display its Details page.
 
 If you throttle your network speed so that the client-side scripts take longer to download (instructions below),
 you'll notice:
-* Clicking a hero on the Heroes page does nothing.
 * You can't add or delete a hero.
 * The search box on the Dashboard page is ignored.
 * The *Back* and *Save* buttons on the Details page don't work.
@@ -92,7 +91,7 @@ You can simulate a slower network to see the transition more clearly as follows:
 dropdown on the far right of the menu bar.
 1. Try one of the "3G" speeds.
 
-The server-rendered app still launches quickly but the full client app may take seconds to load.
+The server-rendered application still launches quickly but the full client app may take seconds to load.
 
 {@a why-do-it}
 ## Why use server-side rendering?
