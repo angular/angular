@@ -4,7 +4,7 @@ package(default_visibility = ["//visibility:public"])
 filegroup(
     name = "files",
     srcs = glob(["*"]) + [
-        "//dev-infra/browsers/chromium:files",
-        "//dev-infra/browsers/firefox:files",
+        "//dev-infra/bazel/browsers/chromium:files",
+        "//dev-infra/bazel/browsers/firefox:files",
     ],
 )
