@@ -136,7 +136,11 @@
       {"type": 301, "source": "/strict", "destination": "/guide/strict-mode"},
 
       // Use discoverable link for Angular DevTools and redirect to the guide page
-      {"type": 301, "source": "/devtools", "destination": "/guide/devtools"}
+      {"type": 301, "source": "/devtools", "destination": "/guide/devtools"},
+
+      // Temporarily serve the guide at `/devtools` as well as `/guide/devtools` until users have
+      // their SW updated to a version that knows about the `/devtools` redirect.
+      {"type": 302, "source": "/generated/docs/devtools.json", "destination": "/generated/docs/guide/devtools.json"}
     ],
     "rewrites": [
       {
