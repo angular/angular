@@ -31,9 +31,9 @@ export interface RippleGlobalOptions {
   disabled?: boolean;
 
   /**
-   * Configuration for the animation duration of the ripples. There are two phases with different
-   * durations for the ripples. The animation durations will be overwritten if the
-   * `NoopAnimationsModule` is being used.
+   * Default configuration for the animation duration of the ripples. There are two phases with
+   * different durations for the ripples: `enter` and `leave`. The durations will be overwritten
+   * by the value of `matRippleAnimation` or if the `NoopAnimationsModule` is included.
    */
   animation?: RippleAnimationConfig;
 
