@@ -98,6 +98,10 @@ export function createEmptyStateSnapshot(
  * The following example shows how to construct a component using information from a
  * currently activated route.
  *
+ * Note: the observables in this class only emit when the current and previous values differ based
+ * on shallow equality. For example, changing deeply nested properties in resolved `data` will not
+ * cause the `ActivatedRoute.data` `Observable` to emit a new value.
+ *
  * {@example router/activated-route/module.ts region="activated-route"
  *     header="activated-route.component.ts"}
  *
