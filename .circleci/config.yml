@@ -737,8 +737,8 @@ jobs:
       - run:
           # Updates the `angular/components` `package.json` file to refer to the release output
           # inside the `packages-dist` directory.
-          name: Setting up release packages.
-          command: node scripts/ci/update-deps-to-dist-packages.js ${COMPONENTS_REPO_TMP_DIR}/package.json dist/packages-dist/
+          name: Setting up framework release packages.
+          command: node scripts/ci/update-framework-deps-to-dist-packages.js ${COMPONENTS_REPO_TMP_DIR}/package.json dist/packages-dist/
       - run:
           # Run `yarn install` again to install the Angular packages from `packages-dist/` and update the lockfile.
           # NOTE: We cannot rely on Bazel to run `yarn install`, because it uses the `--frozen-lockfile` flag and fails.
