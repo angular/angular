@@ -27,10 +27,16 @@ import {Type} from './interface/type';
 import {ivyEnabled} from './ivy_switch';
 import {COMPILER_OPTIONS, CompilerFactory, CompilerOptions} from './linker/compiler';
 import {ComponentFactory, ComponentRef} from './linker/component_factory';
-import {ComponentFactoryBoundToModule, ComponentFactoryResolver} from './linker/component_factory_resolver';
+import {
+  ComponentFactoryBoundToModule,
+  ComponentFactoryResolver,
+} from './linker/component_factory_resolver';
 import {InternalNgModuleRef, NgModuleFactory, NgModuleRef} from './linker/ng_module_factory';
 import {InternalViewRef, ViewRef} from './linker/view_ref';
-import {isComponentResourceResolutionQueueEmpty, resolveComponentResources} from './metadata/resource_loading';
+import {
+  isComponentResourceResolutionQueueEmpty,
+  resolveComponentResources,
+} from './metadata/resource_loading';
 import {assertNgModuleType} from './render3/assert';
 import {ComponentFactory as R3ComponentFactory} from './render3/component_ref';
 import {setLocaleId} from './render3/i18n/i18n_locale_id';
@@ -46,21 +52,27 @@ import {NgZone, NoopNgZone} from './zone/ng_zone';
 
 let _platform: PlatformRef;
 
-let compileNgModuleFactory:
-    <M>(injector: Injector, options: CompilerOptions, moduleType: Type<M>) =>
-        Promise<NgModuleFactory<M>> = compileNgModuleFactory__PRE_R3__;
+let compileNgModuleFactory: <M>(
+  injector: Injector,
+  options: CompilerOptions,
+  moduleType: Type<M>
+) => Promise<NgModuleFactory<M>> = compileNgModuleFactory__PRE_R3__;
 
 function compileNgModuleFactory__PRE_R3__<M>(
-    injector: Injector, options: CompilerOptions,
-    moduleType: Type<M>): Promise<NgModuleFactory<M>> {
+  injector: Injector,
+  options: CompilerOptions,
+  moduleType: Type<M>
+): Promise<NgModuleFactory<M>> {
   const compilerFactory: CompilerFactory = injector.get(CompilerFactory);
   const compiler = compilerFactory.createCompiler([options]);
   return compiler.compileModuleAsync(moduleType);
 }
 
 export function compileNgModuleFactory__POST_R3__<M>(
-    injector: Injector, options: CompilerOptions,
-    moduleType: Type<M>): Promise<NgModuleFactory<M>> {
+  injector: Injector,
+  options: CompilerOptions,
+  moduleType: Type<M>
+): Promise<NgModuleFactory<M>> {
   ngDevMode && assertNgModuleType(moduleType);
 
   const moduleFactory = new R3NgModuleFactory(moduleType);
@@ -76,15 +88,15 @@ export function compileNgModuleFactory__POST_R3__<M>(
   // are bootstrapped with incompatible options, as a component can only be compiled according to
   // a single set of options.
   setJitOptions({
-    defaultEncapsulation: _lastDefined(compilerOptions.map(opts => opts.defaultEncapsulation)),
-    preserveWhitespaces: _lastDefined(compilerOptions.map(opts => opts.preserveWhitespaces)),
+    defaultEncapsulation: _lastDefined(compilerOptions.map((opts) => opts.defaultEncapsulation)),
+    preserveWhitespaces: _lastDefined(compilerOptions.map((opts) => opts.preserveWhitespaces)),
   });
 
   if (isComponentResourceResolutionQueueEmpty()) {
     return Promise.resolve(moduleFactory);
   }
 
-  const compilerProviders = _mergeArrays(compilerOptions.map(o => o.providers!));
+  const compilerProviders = _mergeArrays(compilerOptions.map((o) => o.providers!));
 
   // In case there are no compiler providers, we just return the module factory as
   // there won't be any resource loader. This can happen with Ivy, because AOT compiled
@@ -99,8 +111,9 @@ export function compileNgModuleFactory__POST_R3__<M>(
   const resourceLoader = compilerInjector.get(compiler.ResourceLoader);
   // The resource loader can also return a string while the "resolveComponentResources"
   // always expects a promise. Therefore we need to wrap the returned value in a promise.
-  return resolveComponentResources(url => Promise.resolve(resourceLoader.get(url)))
-      .then(() => moduleFactory);
+  return resolveComponentResources((url) => Promise.resolve(resourceLoader.get(url))).then(
+    () => moduleFactory
+  );
 }
 
 // the `window.ng` global utilities are only available in non-VE versions of
@@ -125,8 +138,6 @@ export function isBoundToModule__POST_R3__<C>(cf: ComponentFactory<C>): boolean 
 
 export const ALLOW_MULTIPLE_PLATFORMS = new InjectionToken<boolean>('AllowMultipleToken');
 
-
-
 /**
  * A token for third-party components that can register themselves with NgProbe.
  *
@@ -143,10 +154,14 @@ export class NgProbeToken {
  * @publicApi
  */
 export function createPlatform(injector: Injector): PlatformRef {
-  if (_platform && !_platform.destroyed &&
-      !_platform.injector.get(ALLOW_MULTIPLE_PLATFORMS, false)) {
+  if (
+    _platform &&
+    !_platform.destroyed &&
+    !_platform.injector.get(ALLOW_MULTIPLE_PLATFORMS, false)
+  ) {
     throw new Error(
-        'There can be only one platform. Destroy the previous one to create a new one.');
+      'There can be only one platform. Destroy the previous one to create a new one.'
+    );
   }
   publishDefaultGlobalUtils();
   _platform = injector.get(PlatformRef);
@@ -167,8 +182,10 @@ export function createPlatform(injector: Injector): PlatformRef {
  * @publicApi
  */
 export function createPlatformFactory(
-    parentPlatformFactory: ((extraProviders?: StaticProvider[]) => PlatformRef)|null, name: string,
-    providers: StaticProvider[] = []): (extraProviders?: StaticProvider[]) => PlatformRef {
+  parentPlatformFactory: ((extraProviders?: StaticProvider[]) => PlatformRef) | null,
+  name: string,
+  providers: StaticProvider[] = []
+): (extraProviders?: StaticProvider[]) => PlatformRef {
   const desc = `Platform: ${name}`;
   const marker = new InjectionToken(desc);
   return (extraProviders: StaticProvider[] = []) => {
@@ -176,13 +193,16 @@ export function createPlatformFactory(
     if (!platform || platform.injector.get(ALLOW_MULTIPLE_PLATFORMS, false)) {
       if (parentPlatformFactory) {
         parentPlatformFactory(
-            providers.concat(extraProviders).concat({provide: marker, useValue: true}));
+          providers.concat(extraProviders).concat({provide: marker, useValue: true})
+        );
       } else {
-        const injectedProviders: StaticProvider[] =
-            providers.concat(extraProviders).concat({provide: marker, useValue: true}, {
-              provide: INJECTOR_SCOPE,
-              useValue: 'platform'
-            });
+        const injectedProviders: StaticProvider[] = providers.concat(extraProviders).concat(
+          {provide: marker, useValue: true},
+          {
+            provide: INJECTOR_SCOPE,
+            useValue: 'platform',
+          }
+        );
         createPlatform(Injector.create({providers: injectedProviders, name: desc}));
       }
     }
@@ -204,7 +224,8 @@ export function assertPlatform(requiredToken: any): PlatformRef {
 
   if (!platform.injector.get(requiredToken, null)) {
     throw new Error(
-        'A platform with a different configuration has been created. Please destroy it first.');
+      'A platform with a different configuration has been created. Please destroy it first.'
+    );
   }
 
   return platform;
@@ -227,7 +248,7 @@ export function destroyPlatform(): void {
  *
  * @publicApi
  */
-export function getPlatform(): PlatformRef|null {
+export function getPlatform(): PlatformRef | null {
   return _platform && !_platform.destroyed ? _platform : null;
 }
 
@@ -244,7 +265,7 @@ export interface BootstrapOptions {
    * - `zone.js` - Use default `NgZone` which requires `Zone.js`.
    * - `noop` - Use `NoopNgZone` which does nothing.
    */
-  ngZone?: NgZone|'zone.js'|'noop';
+  ngZone?: NgZone | 'zone.js' | 'noop';
 
   /**
    * Optionally specify coalescing event change detections or not.
@@ -327,8 +348,10 @@ export class PlatformRef {
    * let moduleRef = platformBrowser().bootstrapModuleFactory(MyModuleNgFactory);
    * ```
    */
-  bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>, options?: BootstrapOptions):
-      Promise<NgModuleRef<M>> {
+  bootstrapModuleFactory<M>(
+    moduleFactory: NgModuleFactory<M>,
+    options?: BootstrapOptions
+  ): Promise<NgModuleRef<M>> {
     // Note: We need to create the NgZone _before_ we instantiate the module,
     // as instantiating the module creates some providers eagerly.
     // So we create a mini parent injector that just contains the new NgZone and
@@ -343,10 +366,13 @@ export class PlatformRef {
     // Do not try to replace ngZone.run with ApplicationRef#run because ApplicationRef would then be
     // created outside of the Angular zone.
     return ngZone.run(() => {
-      const ngZoneInjector = Injector.create(
-          {providers: providers, parent: this.injector, name: moduleFactory.moduleType.name});
+      const ngZoneInjector = Injector.create({
+        providers: providers,
+        parent: this.injector,
+        name: moduleFactory.moduleType.name,
+      });
       const moduleRef = <InternalNgModuleRef<M>>moduleFactory.create(ngZoneInjector);
-      const exceptionHandler: ErrorHandler|null = moduleRef.injector.get(ErrorHandler, null);
+      const exceptionHandler: ErrorHandler | null = moduleRef.injector.get(ErrorHandler, null);
       if (!exceptionHandler) {
         throw new Error('No ErrorHandler. Is platform module (BrowserModule) included?');
       }
@@ -354,7 +380,7 @@ export class PlatformRef {
         const subscription = ngZone!.onError.subscribe({
           next: (error: any) => {
             exceptionHandler.handleError(error);
-          }
+          },
         });
         moduleRef.onDestroy(() => {
           remove(this._modules, moduleRef);
@@ -394,27 +420,30 @@ export class PlatformRef {
    *
    */
   bootstrapModule<M>(
-      moduleType: Type<M>,
-      compilerOptions: (CompilerOptions&BootstrapOptions)|
-      Array<CompilerOptions&BootstrapOptions> = []): Promise<NgModuleRef<M>> {
+    moduleType: Type<M>,
+    compilerOptions:
+      | (CompilerOptions & BootstrapOptions)
+      | Array<CompilerOptions & BootstrapOptions> = []
+  ): Promise<NgModuleRef<M>> {
     const options = optionsReducer({}, compilerOptions);
-    return compileNgModuleFactory(this.injector, options, moduleType)
-        .then(moduleFactory => this.bootstrapModuleFactory(moduleFactory, options));
+    return compileNgModuleFactory(this.injector, options, moduleType).then((moduleFactory) =>
+      this.bootstrapModuleFactory(moduleFactory, options)
+    );
   }
 
   private _moduleDoBootstrap(moduleRef: InternalNgModuleRef<any>): void {
     const appRef = moduleRef.injector.get(ApplicationRef) as ApplicationRef;
     if (moduleRef._bootstrapComponents.length > 0) {
-      moduleRef._bootstrapComponents.forEach(f => appRef.bootstrap(f));
+      moduleRef._bootstrapComponents.forEach((f) => appRef.bootstrap(f));
     } else if (moduleRef.instance.ngDoBootstrap) {
       moduleRef.instance.ngDoBootstrap(appRef);
     } else {
       throw new Error(
-          `The module ${
-              stringify(
-                  moduleRef.instance
-                      .constructor)} was bootstrapped, but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. ` +
-          `Please define one of these.`);
+        `The module ${stringify(
+          moduleRef.instance.constructor
+        )} was bootstrapped, but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. ` +
+          `Please define one of these.`
+      );
     }
     this._modules.push(moduleRef);
   }
@@ -442,8 +471,8 @@ export class PlatformRef {
     if (this._destroyed) {
       throw new Error('The platform has already been destroyed!');
     }
-    this._modules.slice().forEach(module => module.destroy());
-    this._destroyListeners.forEach(listener => listener());
+    this._modules.slice().forEach((module) => module.destroy());
+    this._destroyListeners.forEach((listener) => listener());
     this._destroyed = true;
   }
 
@@ -453,24 +482,30 @@ export class PlatformRef {
 }
 
 function getNgZone(
-    ngZoneOption: NgZone|'zone.js'|'noop'|undefined,
-    extra?: {ngZoneEventCoalescing: boolean, ngZoneRunCoalescing: boolean}): NgZone {
+  ngZoneOption: NgZone | 'zone.js' | 'noop' | undefined,
+  extra?: {ngZoneEventCoalescing: boolean; ngZoneRunCoalescing: boolean}
+): NgZone {
   let ngZone: NgZone;
 
   if (ngZoneOption === 'noop') {
     ngZone = new NoopNgZone();
   } else {
-    ngZone = (ngZoneOption === 'zone.js' ? undefined : ngZoneOption) || new NgZone({
-               enableLongStackTrace: isDevMode(),
-               shouldCoalesceEventChangeDetection: !!extra?.ngZoneEventCoalescing,
-               shouldCoalesceRunChangeDetection: !!extra?.ngZoneRunCoalescing
-             });
+    ngZone =
+      (ngZoneOption === 'zone.js' ? undefined : ngZoneOption) ||
+      new NgZone({
+        enableLongStackTrace: isDevMode(),
+        shouldCoalesceEventChangeDetection: !!extra?.ngZoneEventCoalescing,
+        shouldCoalesceRunChangeDetection: !!extra?.ngZoneRunCoalescing,
+      });
   }
   return ngZone;
 }
 
 function _callAndReportToErrorHandler(
-    errorHandler: ErrorHandler, ngZone: NgZone, callback: () => any): any {
+  errorHandler: ErrorHandler,
+  ngZone: NgZone,
+  callback: () => any
+): any {
   try {
     const result = callback();
     if (isPromise(result)) {
@@ -489,7 +524,7 @@ function _callAndReportToErrorHandler(
   }
 }
 
-function optionsReducer<T extends Object>(dst: any, objs: T|T[]): T {
+function optionsReducer<T extends Object>(dst: any, objs: T | T[]): T {
   if (Array.isArray(objs)) {
     dst = objs.reduce(optionsReducer, dst);
   } else {
@@ -621,20 +656,23 @@ export class ApplicationRef {
 
   /** @internal */
   constructor(
-      private _zone: NgZone, private _injector: Injector, private _exceptionHandler: ErrorHandler,
-      private _componentFactoryResolver: ComponentFactoryResolver,
-      private _initStatus: ApplicationInitStatus) {
+    private _zone: NgZone,
+    private _injector: Injector,
+    private _exceptionHandler: ErrorHandler,
+    private _componentFactoryResolver: ComponentFactoryResolver,
+    private _initStatus: ApplicationInitStatus
+  ) {
     this._onMicrotaskEmptySubscription = this._zone.onMicrotaskEmpty.subscribe({
       next: () => {
         this._zone.run(() => {
           this.tick();
         });
-      }
+      },
     });
 
     const isCurrentlyStable = new Observable<boolean>((observer: Observer<boolean>) => {
-      this._stable = this._zone.isStable && !this._zone.hasPendingMacrotasks &&
-          !this._zone.hasPendingMicrotasks;
+      this._stable =
+        this._zone.isStable && !this._zone.hasPendingMacrotasks && !this._zone.hasPendingMicrotasks;
       this._zone.runOutsideAngular(() => {
         observer.next(this._stable);
         observer.complete();
@@ -652,8 +690,11 @@ export class ApplicationRef {
           // Check whether there are no pending macro/micro tasks in the next tick
           // to allow for NgZone to update the state.
           scheduleMicroTask(() => {
-            if (!this._stable && !this._zone.hasPendingMacrotasks &&
-                !this._zone.hasPendingMicrotasks) {
+            if (
+              !this._stable &&
+              !this._zone.hasPendingMacrotasks &&
+              !this._zone.hasPendingMicrotasks
+            ) {
               this._stable = true;
               observer.next(true);
             }
@@ -677,8 +718,10 @@ export class ApplicationRef {
       };
     });
 
-    (this as {isStable: Observable<boolean>}).isStable =
-        merge(isCurrentlyStable, isStable.pipe(share()));
+    (this as {isStable: Observable<boolean>}).isStable = merge(
+      isCurrentlyStable,
+      isStable.pipe(share())
+    );
   }
 
   /**
@@ -709,26 +752,43 @@ export class ApplicationRef {
    * Optionally, a component can be mounted onto a DOM element that does not match the
    * componentType's selector.
    *
-   *  {@example core/ts/platform/platform.ts region='domElement'}
+   * ```
+   * ngDoBootstrap(app: ApplicationRef) {
+       // it can be a CSS selector
+       ...
+       app.bootstrap(this.componentMap[componentName], '#root-element');
+       ...
+
+       // or it can be a reference to a DOM node
+       ...
+       const element = document.querySelector('#root-element');
+       app.bootstrap(this.componentMap[componentName], element);
+       ...
+    }
+   * ```
    */
-  bootstrap<C>(componentOrFactory: ComponentFactory<C>|Type<C>, rootSelectorOrNode?: string|any):
-      ComponentRef<C> {
+  bootstrap<C>(
+    componentOrFactory: ComponentFactory<C> | Type<C>,
+    rootSelectorOrNode?: string | any
+  ): ComponentRef<C> {
     if (!this._initStatus.done) {
       throw new Error(
-          'Cannot bootstrap as there are still asynchronous initializers running. Bootstrap components in the `ngDoBootstrap` method of the root module.');
+        'Cannot bootstrap as there are still asynchronous initializers running. Bootstrap components in the `ngDoBootstrap` method of the root module.'
+      );
     }
     let componentFactory: ComponentFactory<C>;
     if (componentOrFactory instanceof ComponentFactory) {
       componentFactory = componentOrFactory;
     } else {
       componentFactory =
-          this._componentFactoryResolver.resolveComponentFactory(componentOrFactory)!;
+        this._componentFactoryResolver.resolveComponentFactory(componentOrFactory)!;
     }
     this.componentTypes.push(componentFactory.componentType);
 
     // Create a factory associated with the current module if it's not bound to some other
-    const ngModule =
-        isBoundToModule(componentFactory) ? undefined : this._injector.get(NgModuleRef);
+    const ngModule = isBoundToModule(componentFactory)
+      ? undefined
+      : this._injector.get(NgModuleRef);
     const selectorOrNode = rootSelectorOrNode || componentFactory.selector;
     const compRef = componentFactory.create(Injector.NULL, [], selectorOrNode, ngModule);
     const nativeElement = compRef.location.nativeElement;
@@ -752,7 +812,8 @@ export class ApplicationRef {
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && isDevMode()) {
       const _console = this._injector.get(Console);
       _console.log(
-          `Angular is running in development mode. Call enableProdMode() to enable production mode.`);
+        `Angular is running in development mode. Call enableProdMode() to enable production mode.`
+      );
     }
     return compRef;
   }
@@ -798,7 +859,7 @@ export class ApplicationRef {
    * This will throw if the view is already attached to a ViewContainer.
    */
   attachView(viewRef: ViewRef): void {
-    const view = (viewRef as InternalViewRef);
+    const view = viewRef as InternalViewRef;
     this._views.push(view);
     view.attachToAppRef(this);
   }
@@ -807,7 +868,7 @@ export class ApplicationRef {
    * Detaches a view from dirty checking again.
    */
   detachView(viewRef: ViewRef): void {
-    const view = (viewRef as InternalViewRef);
+    const view = viewRef as InternalViewRef;
     remove(this._views, view);
     view.detachFromAppRef();
   }
@@ -817,8 +878,9 @@ export class ApplicationRef {
     this.tick();
     this.components.push(componentRef);
     // Get the listeners lazily to prevent DI cycles.
-    const listeners =
-        this._injector.get(APP_BOOTSTRAP_LISTENER, []).concat(this._bootstrapListeners);
+    const listeners = this._injector
+      .get(APP_BOOTSTRAP_LISTENER, [])
+      .concat(this._bootstrapListeners);
     listeners.forEach((listener) => listener(componentRef));
   }
 
@@ -843,7 +905,7 @@ function remove<T>(list: T[], el: T): void {
   }
 }
 
-function _lastDefined<T>(args: T[]): T|undefined {
+function _lastDefined<T>(args: T[]): T | undefined {
   for (let i = args.length - 1; i >= 0; i--) {
     if (args[i] !== undefined) {
       return args[i];
