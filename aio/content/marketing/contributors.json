@@ -578,6 +578,13 @@
     "bio": "Luis is an enthusiast of Open Source software and communities, as well as being a public speaker, a technology trainer and an author of courses and technical articles. He is the organizer of the Angular Bolivia community and NG Bolivia conference. When he's not coding, Luis is reading about Astronomy or nerding about outer space, photography or even doing Astrophotography.",
     "groups": ["GDE"]
   },
+  "madleinas": {
+    "name": "Madleina Scheidegger",
+    "picture": "madleinas.jpg",
+    "bio": "Manager of the Angular Framework team @Google.",
+    "groups": ["Angular"],
+    "mentor": "jelbourn"
+  },
   "manekinekko": {
     "name": "Wassim Chegham",
     "picture": "wassim.jpg",
@@ -981,4 +988,3 @@
     "lead": "jelbourn"
   }
 }
-
