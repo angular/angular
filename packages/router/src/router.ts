@@ -260,7 +260,7 @@ export type RestoredState = {
  *
  * @publicApi
  */
-export type Navigation = {
+export interface Navigation {
   /**
    * The unique identifier of the current navigation.
    */
@@ -269,7 +269,7 @@ export type Navigation = {
    * The target URL passed into the `Router#navigateByUrl()` call before navigation. This is
    * the value before the router has parsed or applied redirects to it.
    */
-  initialUrl: string | UrlTree;
+  initialUrl: string|UrlTree;
   /**
    * The initial target URL after being parsed with `UrlSerializer.extract()`.
    */
@@ -287,7 +287,7 @@ export type Navigation = {
    * * 'popstate'--Triggered by a popstate event.
    * * 'hashchange'--Triggered by a hashchange event.
    */
-  trigger: 'imperative' | 'popstate' | 'hashchange';
+  trigger: 'imperative'|'popstate'|'hashchange';
   /**
    * Options that controlled the strategy used for this navigation.
    * See `NavigationExtras`.
@@ -298,8 +298,8 @@ export type Navigation = {
    * is available, therefore this previous `Navigation` object has a `null` value
    * for its own `previousNavigation`.
    */
-  previousNavigation: Navigation | null;
-};
+  previousNavigation: Navigation|null;
+}
 
 export type NavigationTransition = {
   id: number,

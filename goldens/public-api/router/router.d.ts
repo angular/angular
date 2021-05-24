@@ -169,15 +169,15 @@ export declare type LoadChildren = LoadChildrenCallback | DeprecatedLoadChildren
 
 export declare type LoadChildrenCallback = () => Type<any> | NgModuleFactory<any> | Observable<Type<any>> | Promise<NgModuleFactory<any> | Type<any> | any>;
 
-export declare type Navigation = {
+export declare interface Navigation {
+    extractedUrl: UrlTree;
+    extras: NavigationExtras;
+    finalUrl?: UrlTree;
     id: number;
     initialUrl: string | UrlTree;
-    extractedUrl: UrlTree;
-    finalUrl?: UrlTree;
-    trigger: 'imperative' | 'popstate' | 'hashchange';
-    extras: NavigationExtras;
     previousNavigation: Navigation | null;
-};
+    trigger: 'imperative' | 'popstate' | 'hashchange';
+}
 
 export declare interface NavigationBehaviorOptions {
     replaceUrl?: boolean;
