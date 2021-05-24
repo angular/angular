@@ -133,9 +133,9 @@ app-hero-details h3 {
 Any style with `::ng-deep` applied becomes a global style.
 In order to scope the specified style to the current component and all its descendants, be sure to include the `:host` selector before `::ng-deep`.
 
-```
+<code-example lang="css" header="hero-details.component.css">
 :host ::ng-deep h3 { font-style: italic; }
-```
+</code-example>
 
 If the `::ng-deep` combinator is used without the `:host` pseudo-class selector, the style can bleed into other components.
 
