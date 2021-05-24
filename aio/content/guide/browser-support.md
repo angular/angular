@@ -91,7 +91,7 @@ If you are not using the CLI to create your projects, see [Polyfill instructions
 When you create a project with the `ng new` command, a `src/polyfills.ts` configuration file is created as part of your project folder.
 This file incorporates the mandatory and many of the optional polyfills as JavaScript `import` statements.
 
-* The npm packages for the [_mandatory_ polyfills](#polyfill-libs) (such as `zone.js`) are installed automatically for you when you create your project with `ng new`, and their corresponding `import` statements are already enabled in the `src/polyfills.ts` configuration file.
+* The npm packages for the mandatory polyfills (such as `zone.js`) are installed automatically for you when you create your project with `ng new`, and their corresponding `import` statements are already enabled in the `src/polyfills.ts` configuration file.
 
 * If you need an _optional_ polyfill, you must install its npm package, then uncomment or create the corresponding import statement in the `src/polyfills.ts` configuration file.
 
@@ -117,25 +117,6 @@ If the polyfill you want is not already in `polyfills.ts` file, add the `import`
 
 
 {@a polyfill-libs}
-
-### Mandatory polyfills
-These are the polyfills required to run an Angular application on each supported browser:
-
-<table>
-  <tr style="vertical-align: top">
-    <th>Browsers (Desktop & Mobile)</th>
-    <th>Polyfills Required</th>
-  </tr>
-  <tr style="vertical-align: top">
-    <td>
-      Chrome, Firefox, Edge, <br>
-      Safari, Android, IE 11
-    </td>
-    <td>
-      <a href="guide/browser-support#core-es6">ES2015</a>
-    </td>
-  </tr>
-</table>
 
 ### Optional browser features to polyfill
 
@@ -173,24 +154,11 @@ Some features of Angular may require additional polyfills.
       IE 11
     </td>
   </tr>
-
-  <tr style="vertical-align: top">
-    <td>
-      <a href="guide/router">Router</a> when using <a href="guide/router#location-strategy">hash-based routing</a>
-    </td>
-    <td>
-      <a href="guide/browser-support#core-es7-array">ES7/array</a>
-    </td>
-    <td>
-      IE 11
-    </td>
-  </tr>
 </table>
 
 ### Suggested polyfills
 
 The following polyfills are used to test the framework itself. They are a good starting point for an application.
-
 
 <table>
   <tr>
@@ -204,29 +172,6 @@ The following polyfills are used to test the framework itself. They are a good s
       Size*
     </th>
   </tr>
-  <tr>
-    <td>
-      <a id='core-es7-array' href="https://github.com/zloirock/core-js/tree/v2/fn/array">ES7/array</a>
-    </td>
-    <td>
-      MIT
-    </td>
-    <td>
-      0.1KB
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <a id='core-es6' href="https://github.com/zloirock/core-js">ES2015</a>
-    </td>
-    <td>
-      MIT
-    </td>
-    <td>
-      27.4KB
-    </td>
-  </tr>
-
   <tr>
     <td>
       <a id='classlist' href="https://github.com/eligrey/classList.js">classList</a>
