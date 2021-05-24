@@ -76,7 +76,10 @@ export function docRegionDelaySequence(console: Console) {
   // #enddocregion subscribe_twice
 }
 
-export function docRegionMulticastSequence(console: Console) {
+export function docRegionMulticastSequence(console: Console, runSequence: boolean) {
+  if (!runSequence) {
+    return multicastSequenceSubscriber;
+  }
   // #docregion multicast_sequence
   function multicastSequenceSubscriber() {
     const seq = [1, 2, 3];
@@ -121,6 +124,7 @@ export function docRegionMulticastSequence(console: Console) {
       // per second until it gets to the end of the array.
       function doSequence(sequenceObserver: Observer<number>, arr: number[], idx: number) {
         timeoutId = setTimeout(() => {
+          console.log('Emitting ' + arr[idx]);
           sequenceObserver.next(arr[idx]);
           if (idx === arr.length - 1) {
             sequenceObserver.complete();
@@ -159,4 +163,6 @@ export function docRegionMulticastSequence(console: Console) {
   // (at 3 seconds): 2nd sequence finished
 
   // #enddocregion multicast_sequence
+
+  return multicastSequenceSubscriber;
 }
