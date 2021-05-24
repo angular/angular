@@ -135,19 +135,6 @@ commands:
             # circleci/node:x.x.x-browsers image.
             sudo apt-get -y install libgtk-3-0 libasound2 libnss3 libxss1
 
-  # Install java runtime which is required by some integration tests such as
-  # //integration:hello_world__closure_test, //integration:i18n_test and
-  # //integration:ng_elements_test to run the closure compiler
-  install_java:
-    description: Install java
-    steps:
-      - run:
-          name: Install java
-          command: |
-            sudo apt-get update
-            # Install java runtime
-            sudo apt-get install default-jre
-
   # Initializes the CI environment by setting up common environment variables.
   init_environment:
     description: Initializing environment (setting up variables)
@@ -304,7 +291,6 @@ jobs:
       - custom_attach_workspace
       - init_environment
       - install_chrome_libs
-      - install_java
       - run:
           command: yarn bazel test //... --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only
           no_output_timeout: 20m
@@ -747,7 +733,6 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-      - install_java
         # Install
       - run: yarn --cwd packages/zone.js install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
         # Run zone.js tools tests
