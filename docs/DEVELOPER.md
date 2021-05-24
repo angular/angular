@@ -29,8 +29,7 @@ following products on your development machine:
 
 * [Yarn](https://yarnpkg.com) (version specified in the engines field of [`package.json`](../package.json)) which is used to install dependencies.
 
-* [Java Development Kit](https://www.oracle.com/technetwork/java/javase/downloads/index.html) which is used
-  to execute the selenium standalone server for e2e testing.
+* Optional: [Java](https://openjdk.java.net/) version 7 or higher as required by [Closure Compiler](https://developers.google.com/closure/compiler). Most developers will not need this. Java is required for running some of the integration tests.
 
 ## Getting the Sources
 
