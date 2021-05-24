@@ -133,6 +133,9 @@ The route path to `HeroesComponent` is `/heroes`.
 Append `/heroes` to the URL in the browser address bar.
 You should see the familiar heroes master/detail view.
 
+Remove `/heroes` from the URL in the browser address bar.
+The browser should refresh and display the application title but not the list of heroes.
+
 {@a routerlink}
 
 ## Add a navigation link (`routerLink`)
