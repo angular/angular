@@ -215,10 +215,10 @@ Each budget entry is a JSON object with the following properties:
     The type of budget. One of:
 
 * `bundle` - The size of a specific bundle.
-* `initial` - The initial size of the app.
+* `initial` - The size of JavaScript needed for bootstrapping the application. Defaults to warning @ 500kb and erroring at 1mb.
 * `allScript` - The size of all scripts.
 * `all` - The size of the entire app.
-* `anyComponentStyle` - This size of any one component stylesheet.
+* `anyComponentStyle` - This size of any one component stylesheet. Defaults to warning at 2kb and erroring at 4kb.
 * `anyScript` - The size of any one script.
 * `any` - The size of any file.
 
