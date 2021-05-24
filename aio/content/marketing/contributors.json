@@ -490,14 +490,6 @@
     "bio": "Kamil Mysliwiec is a software engineer truly passionate about Web Technologies. Creator of NestJS, Co-Founder of Trilon.io, speaker, and trainer.",
     "groups": ["GDE"]
   },
-  "kapunahelewong": {
-    "name": "Kapunahele Wong",
-    "picture": "kapunahele.jpg",
-    "twitter": "kapunahele",
-    "bio": "Kapunahele is a developer and Angular fan who works on the Angular docs writing guides and developing example apps. She also enjoys Native Hawaiian practices, textile arts, and marveling at little, inconspicuous plants growing in forgotten places outdoors.",
-    "groups": ["Angular"],
-    "lead": "aikidave"
-  },
   "katerina": {
     "name": "Katerina Skroumpelou",
     "picture": "katerina.jpg",
