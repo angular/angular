@@ -1947,8 +1947,8 @@ The router supports multiple guard interfaces:
 
 
 You can have multiple guards at every level of a routing hierarchy.
-The router checks the `CanDeactivate` and `CanActivateChild` guards first, from the deepest child route to the top.
-Then it checks the `CanActivate` guards from the top down to the deepest child route.
+The router checks the `CanDeactivate` guards first, from the deepest child route to the top.
+Then it checks the `CanActivate` and `CanActivateChild` guards from the top down to the deepest child route.
 If the feature module is loaded asynchronously, the `CanLoad` guard is checked before the module is loaded.
 If _any_ guard returns false, pending guards that have not completed will be canceled, and the entire navigation is canceled.
 
