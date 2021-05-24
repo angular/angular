@@ -13,7 +13,7 @@ the `angular/angular` repo.
 command in the `angular/angular` repo:
 
 ```bash
-node ./scripts/ci/update-deps-to-dist-packages.js {COMPONENTS_REPO}/package.json ./dist/packages-dist
+node ./scripts/ci/update-framework-deps-to-dist-packages.js {COMPONENTS_REPO}/package.json ./dist/packages-dist
 ```
 
 4\) Switch into the `angular/components` repository and run the tests by using the
