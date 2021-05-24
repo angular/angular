@@ -447,7 +447,6 @@ The link parameters array affords the flexibility to represent any routing depth
 ## `LocationStrategy` and browser URL styles
 
 When the router navigates to a new component view, it updates the browser's location and history with a URL for that view.
-As this is a strictly local URL the browser won't send this URL to the server and will not reload the page.
 
 Modern HTML5 browsers support <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="HTML5 browser history push-state">history.pushState</a>, a technique that changes a browser's location and history without triggering a server page request.
 The router can compose a "natural" URL that is indistinguishable from one that would otherwise require a page load.
