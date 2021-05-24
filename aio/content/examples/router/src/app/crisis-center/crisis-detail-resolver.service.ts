@@ -7,7 +7,7 @@ import {
   ActivatedRouteSnapshot
 } from '@angular/router';
 import { Observable, of, EMPTY } from 'rxjs';
-import { mergeMap, take } from 'rxjs/operators';
+import { mergeMap } from 'rxjs/operators';
 
 import { CrisisService } from './crisis.service';
 import { Crisis } from './crisis';
@@ -22,7 +22,6 @@ export class CrisisDetailResolverService implements Resolve<Crisis> {
     const id = route.paramMap.get('id')!;
 
     return this.cs.getCrisis(id).pipe(
-      take(1),
       mergeMap(crisis => {
         if (crisis) {
           return of(crisis);

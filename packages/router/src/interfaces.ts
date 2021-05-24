@@ -382,6 +382,8 @@ export type CanDeactivateFn<T> =
  * ```
  * The order of execution is: BaseGuard, ChildGuard, BaseDataResolver, ChildDataResolver.
  *
+ * @see [Pre-fetching component data](guide/router-tutorial-toh#resolve-pre-fetching-component-data)
+ *
  * @publicApi
  */
 export interface Resolve<T> {
