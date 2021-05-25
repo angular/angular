@@ -9,7 +9,8 @@
   $amber-palette, $orange-palette, $deep-orange-palette, $brown-palette, $grey-palette,
   $gray-palette, $blue-grey-palette, $blue-gray-palette, $light-theme-background-palette,
   $dark-theme-background-palette, $light-theme-foreground-palette, $dark-theme-foreground-palette;
-@forward './core/typography/typography' show define-typography-level, define-typography-config;
+@forward './core/typography/typography' show define-typography-level, define-typography-config,
+  typography-hierarchy;
 @forward './core/typography/typography-utils' show typography-level,
   font-size, line-height, font-weight, letter-spacing, font-family, font-shorthand;
 
