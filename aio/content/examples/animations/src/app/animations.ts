@@ -1,4 +1,3 @@
-// #docregion reusable
 import {
   animation, trigger, animateChild, group,
   transition, animate, style, query
@@ -12,7 +11,6 @@ export const transAnimation = animation([
   }),
   animate('{{ time }}')
 ]);
-// #enddocregion reusable
 
 // Routable animations
 // #docregion route-animations
