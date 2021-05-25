@@ -30,6 +30,7 @@ const filesToCheckGlob = [
   '!src/+(e2e-app|universal-app|dev-app)/**/*.ts',
   '!src/**/schematics/**/*.ts',
   '!src/**/tests/**/*.ts',
+  '!src/components-examples/private/localize-types.d.ts',
 ];
 
 const failures = new Map<string, string[]>();

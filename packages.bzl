@@ -25,6 +25,7 @@ VERSION_PLACEHOLDER_REPLACEMENTS = {
 # List of default Angular library UMD bundles which are not processed by ngcc.
 ANGULAR_NO_NGCC_BUNDLES = [
     ("@angular/compiler", ["compiler.umd.js"]),
+    ("@angular/localize", ["localize.umd.js", "localize-init.umd.js"]),
 ]
 
 # List of Angular library UMD bundles which will are processed by ngcc.

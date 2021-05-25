@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/**
- * This is the main entry-point for the AOT compilation. File will be used to test AOT support.
- */
+// Load `$localize` for examples using it.
+import '@angular/localize/init';
 
 import {platformBrowser} from '@angular/platform-browser';
 import {MainModuleNgFactory} from './main-module.ngfactory';

@@ -11,3 +11,8 @@ ts_library(
         "@npm//@angular/core",
     ],
 )
+
+ts_library(
+    name = "localize_types",
+    srcs = ["localize-types.d.ts"],
+)

@@ -8,16 +8,22 @@ import {
 } from './paginator-configurable/paginator-configurable-example';
 import {PaginatorOverviewExample} from './paginator-overview/paginator-overview-example';
 import {PaginatorHarnessExample} from './paginator-harness/paginator-harness-example';
+import {
+  PaginatorIntlExample,
+  PaginatorIntlExampleModule,
+} from './paginator-intl/paginator-intl-example';
 
 export {
   PaginatorConfigurableExample,
   PaginatorHarnessExample,
+  PaginatorIntlExample,
   PaginatorOverviewExample,
 };
 
 const EXAMPLES = [
   PaginatorConfigurableExample,
   PaginatorHarnessExample,
+  // PaginatorIntlExample is imported through it's own example module.
   PaginatorOverviewExample,
 ];
 
@@ -26,6 +32,7 @@ const EXAMPLES = [
     CommonModule,
     MatInputModule,
     MatPaginatorModule,
+    PaginatorIntlExampleModule,
     FormsModule,
   ],
   declarations: EXAMPLES,
