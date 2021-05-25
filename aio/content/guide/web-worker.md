@@ -42,7 +42,7 @@ The command performs the following actions.
   <code-example language="typescript" header="src/app/app.component.ts">
   if (typeof Worker !== 'undefined') {
     // Create a new
-    const worker = new Worker('./app.worker', { type: 'module' });
+    const worker = new Worker(new URL('./app.worker', import.meta.url));
     worker.onmessage = ({ data }) => {
       console.log(`page got message: ${data}`);
     };
