@@ -27,7 +27,7 @@
     {%- endif -%}
 
     <p class="docs-api-property-name">
-      <code>{$ property.name $}: {$ property.type $}</code>
+      <code>{%- if property.isStatic -%}static {%- endif -%}{$ property.name $}: {$ property.type $}</code>
     </p>
   </td>
   <td class="docs-api-property-description">{$ property.description | marked | safe $}</td>

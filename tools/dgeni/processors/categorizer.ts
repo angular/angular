@@ -108,6 +108,14 @@ export class Categorizer implements Processor {
     classDoc.directiveMetadata = getDirectiveMetadata(classDoc);
     classDoc.inheritedDocs = getInheritedDocsOfClass(classDoc, this._exportSymbolsToDocsMap);
 
+    classDoc.methods.push(...classDoc.statics
+      .filter(isMethod)
+      .filter(filterDuplicateMembers) as CategorizedMethodMemberDoc[]);
+
+    classDoc.properties.push(...classDoc.statics
+      .filter(isProperty)
+      .filter(filterDuplicateMembers) as CategorizedPropertyMemberDoc[]);
+
     // In case the extended document is not public, we don't want to print it in the
     // rendered class API doc. This causes confusion and also is not helpful as the
     // extended document is not part of the docs and cannot be viewed.

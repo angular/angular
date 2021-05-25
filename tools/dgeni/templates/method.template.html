@@ -9,8 +9,13 @@
             Deprecated
           </div>
         {%- endif -%}
+        {%- if method.isStatic -%}
+        <div class="docs-api-modifier-method-marker">
+          static
+        </div>
+        {%- endif -%}
         {%- if method.isAsync -%}
-        <div class="docs-api-async-method-marker">
+        <div class="docs-api-modifier-method-marker">
           async
         </div>
         {%- endif -%}
