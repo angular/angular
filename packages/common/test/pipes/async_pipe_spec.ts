@@ -7,7 +7,7 @@
  */
 
 import {AsyncPipe, ɵgetDOM as getDOM} from '@angular/common';
-import {EventEmitter} from '@angular/core';
+import {ChangeDetectorRef, EventEmitter} from '@angular/core';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {Subscribable, Unsubscribable} from 'rxjs';
 
@@ -34,7 +34,7 @@ import {Subscribable, Unsubscribable} from 'rxjs';
       let emitter: EventEmitter<any>;
       let subscribable: Subscribable<any>;
       let pipe: AsyncPipe;
-      let ref: any;
+      let ref: ChangeDetectorRef&jasmine.SpyObj<ChangeDetectorRef>;
       const message = {};
 
       beforeEach(() => {
