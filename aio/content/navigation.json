@@ -291,7 +291,6 @@
               "title": "Router reference",
               "tooltip": "Describes highlight some core router API concepts."
             }
-
           ]
         },
         {
@@ -673,6 +672,11 @@
           "tooltip": "Roadmap of the Angular team."
         },
         {
+          "url": "guide/browser-support",
+          "title": "Browser Support",
+          "tooltip": "Browser support and polyfills guide."
+        },
+        {
           "title": "Updating to Version 12",
           "tooltip": "Support for updating your application from version 11 to 12.",
           "children": [
@@ -808,11 +812,6 @@
                   "url": "guide/typescript-configuration",
                   "title": "TypeScript Configuration",
                   "tooltip": "TypeScript configuration for Angular developers."
-                },
-                {
-                  "url": "guide/browser-support",
-                  "title": "Browser Support",
-                  "tooltip": "Browser support and polyfills guide."
                 },
                 {
                   "url": "guide/strict-mode",
