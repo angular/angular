@@ -41,10 +41,10 @@ export class MatDatepickerIntl {
   nextYearLabel: string = 'Next year';
 
   /** A label for the previous multi-year button (used by screen readers). */
-  prevMultiYearLabel: string = 'Previous 20 years';
+  prevMultiYearLabel: string = 'Previous 24 years';
 
   /** A label for the next multi-year button (used by screen readers). */
-  nextMultiYearLabel: string = 'Next 20 years';
+  nextMultiYearLabel: string = 'Next 24 years';
 
   /** A label for the 'switch to month view' button (used by screen readers). */
   switchToMonthViewLabel: string = 'Choose date';
