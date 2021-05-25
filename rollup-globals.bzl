@@ -76,6 +76,8 @@ ROLLUP_GLOBALS = {
     # Third-party libraries.
     "kagekiri": "kagekiri",
     "moment": "moment",
+    "moment/locale/fr": "moment.locale.fr",
+    "moment/locale/ja": "moment.locale.ja",
     "protractor": "protractor",
     "rxjs": "rxjs",
     "rxjs/operators": "rxjs.operators",
