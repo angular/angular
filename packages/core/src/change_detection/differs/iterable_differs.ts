@@ -113,22 +113,22 @@ export interface IterableChangeRecord<V> {
 }
 
 /**
- * A function optionally passed into the `NgForOf` directive in order to customize how `NgForOf`
- * uniquely identifies items in an iterable.
+ * A function optionally passed into the `NgForOf` directive to customize how `NgForOf` uniquely
+ * identifies items in an iterable.
  *
- * `NgForOf` needs to uniquely identify items in the iterable, in order to correctly perform DOM
- * updates when items in the iterable are reordered, new items are added, or existing items are
- * removed.
+ * `NgForOf` needs to uniquely identify items in the iterable to correctly perform DOM updates
+ * when items in the iterable are reordered, new items are added, or existing items are removed.
+ *
  *
  * In all of these scenarios it is usually desirable to only update the DOM elements associated
- * with the items affected by the change. This behavior is important in order to:
+ * with the items affected by the change. This behavior is important to:
  *
- * - preserve any DOM-specific UI state (like
- * cursor position, focus, text selection) when the iterable modified
+ * - preserve any DOM-specific UI state (like cursor position, focus, text selection) when the
+ *   iterable is modified
  * - enable animation of item addition, removal, and iterable reordering
  *
- * An common use for custom `trackBy` functions is when the model that `NgForOf` iterates over
- * contains a property with unique identifier. For example, given a model:
+ * A common use for custom `trackBy` functions is when the model that `NgForOf` iterates over
+ * contains a property with a unique identifier. For example, given a model:
  *
  * ```ts
  * class User {

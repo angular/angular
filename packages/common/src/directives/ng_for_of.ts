@@ -141,7 +141,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
     this._ngForOfDirty = true;
   }
   /**
-   * Specifies a custom `TrackByFunction` to compute identity of items in an iterable.
+   * Specifies a custom `TrackByFunction` to compute the identity of items in an iterable.
    *
    * If a custom `TrackByFunction` is not provided, `NgForOf` will use the item's [object
    * identity](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is)
@@ -151,10 +151,10 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
    * it produces for these items.
    *
    * A custom `TrackByFunction` is useful to provide good user experience in cases when items in an
-   * iterable rendered via `NgForOf` have a natural identifier (e.g. custom id or a primary key),
-   * and this iterable could be updated with new object instances that still represent the
-   * same underlying entity (e.g. when data is re-fetched from the server, and the iterable is
-   * recreated, and re-rendered, but most of the data is still the same).
+   * iterable rendered using `NgForOf` have a natural identifier (for example, custom ID or a
+   * primary key), and this iterable could be updated with new object instances that still
+   * represent the same underlying entity (for example, when data is re-fetched from the server,
+   * and the iterable is recreated and re-rendered, but most of the data is still the same).
    *
    * @see `TrackByFunction`
    */
