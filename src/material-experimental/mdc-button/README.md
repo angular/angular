@@ -3,7 +3,7 @@ This is a prototype of an alternate version of `MatButton` built on top of
 experimental and should not be used in production.
 
 ## How to use
-Assuming your application is already up and running using Angular Material, you can add this 
+Assuming your application is already up and running using Angular Material, you can add this
 component by following these steps:
 
 1. Install `@angular/material-experimental` and MDC Web:
@@ -41,41 +41,40 @@ component by following these steps:
    ```
 
 4. Use the buttons in your component's template:
-   
-   ```html   
+
+   ```html
    <button mat-button> Basic </button>
    <button mat-raised-button> Raised </button>
    <button mat-stroked-button> Stroked </button>
-   <button mat-flat-button> Flat </button>   
+   <button mat-flat-button> Flat </button>
    <button mat-icon-button>
      <mat-icon>save</mat-icon>
    </button>
    <button mat-fab>
      <mat-icon>add</mat-icon>
    </button>
-   ``` 
-   
-5. Add the theme and typography mixins to your Sass. Note that there are three separate mixins for 
-the button variants: standard buttons, icon buttons, and floating action buttons. Include only the mixins of the 
+   ```
+
+5. Add the theme and typography mixins to your Sass. Note that there are three separate mixins for
+the button variants: standard buttons, icon buttons, and floating action buttons. Include only the mixins of the
 button variants you are using:
 
    ```scss
-   @import '~@angular/material/theming';
-   @import '~@angular/material-experimental/mdc-button/button-theme';
+   @use '~@angular/material' as mat;
+   @use '~@angular/material-experimental' as mat-experimental;
 
-   $candy-app-primary: mat-palette($mat-indigo);
-   $candy-app-accent:  mat-palette($mat-pink, A200, A100, A400);
-   $candy-app-theme:   mat-light-theme((
+   $candy-app-primary: mat.define-palette(mat.$indigo-palette);
+   $candy-app-accent:  mat.define-palette(mat.$pink-palette, A200, A100, A400);
+   $candy-app-theme:   mat.define-light-theme((
      color: (
        primary: $candy-app-primary,
        accent: $candy-app-accent,
      )
    ));
 
-
-   @include mat-mdc-button-theme($candy-app-theme);   
-   @include mat-mdc-fab-theme($candy-app-theme);   
-   @include mat-mdc-icon-button-theme($candy-app-theme);
+   @include mat-experimental.mdc-button-theme($candy-app-theme);
+   @include mat-experimental.mdc-fab-theme($candy-app-theme);
+   @include mat-experimental.mdc-icon-button-theme($candy-app-theme);
    ```
 
 ## API differences
