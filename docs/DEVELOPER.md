@@ -93,6 +93,17 @@ merged if the code is formatted properly and all tests are passing.
 <a name="formatting-your-source-code">
 <a name="clang-format"></a>
 
+### Testing changes against a local library/project
+
+Often for developers the best way to ensure the changes they have made work as expected is to run
+use changes in another library or project. To do this developers can build Angular locally, and
+using `yarn link` build a local project with the created artifacts.
+
+This can be done by running:
+```sh
+yarn ng-dev build-and-link <path-to-local-project-root>
+```
+
 ## Formatting your source code
 
 Angular uses [clang-format](https://clang.llvm.org/docs/ClangFormat.html) to format the source code.
