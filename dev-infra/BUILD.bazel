@@ -12,6 +12,7 @@ ts_library(
         "//dev-infra/caretaker",
         "//dev-infra/commit-message",
         "//dev-infra/format",
+        "//dev-infra/misc",
         "//dev-infra/ngbot",
         "//dev-infra/pr",
         "//dev-infra/pullapprove",

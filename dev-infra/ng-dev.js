@@ -5152,10 +5152,10 @@ function getReleaseConfig(config = getConfig()) {
  * pollute the stdout in such cases, we launch a child process for building the release packages
  * and redirect all stdout output to the stderr channel (which can be read in the terminal).
  */
-function buildReleaseOutput() {
+function buildReleaseOutput(stampForRelease = false) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         return new Promise(resolve => {
-            const buildProcess = child_process.fork(require.resolve('./build-worker'), [], {
+            const buildProcess = child_process.fork(require.resolve('./build-worker'), [`${stampForRelease}`], {
                 // The stdio option is set to redirect any "stdout" output directly to the "stderr" file
                 // descriptor. An additional "ipc" file descriptor is created to support communication with
                 // the build process. https://nodejs.org/api/child_process.html#child_process_options_stdio.
@@ -5180,9 +5180,15 @@ function buildReleaseOutput() {
  */
 /** Yargs command builder for configuring the `ng-dev release build` command. */
 function builder$7(argv) {
-    return argv.option('json', {
+    return argv
+        .option('json', {
         type: 'boolean',
         description: 'Whether the built packages should be printed to stdout as JSON.',
+        default: false,
+    })
+        .option('stampForRelease', {
+        type: 'boolean',
+        description: 'Whether the built packages should be stamped for release.',
         default: false,
     });
 }
@@ -5190,7 +5196,7 @@ function builder$7(argv) {
 function handler$7(args) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const { npmPackages } = getReleaseConfig();
-        let builtPackages = yield buildReleaseOutput();
+        let builtPackages = yield buildReleaseOutput(args.stampForRelease);
         // If package building failed, print an error and exit with an error code.
         if (builtPackages === null) {
             error(red(`  ✘   Could not build release output. Please check output above.`));
@@ -7888,6 +7894,61 @@ function convertReferenceChainToString(chain) {
     return chain.join(' → ');
 }
 
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/** Yargs command builder for the command. */
+function builder$c(argv) {
+    return argv.positional('projectRoot', {
+        type: 'string',
+        normalize: true,
+        coerce: (path$1) => path.resolve(path$1),
+        demandOption: true,
+    });
+}
+/** Yargs command handler for the command. */
+function handler$c({ projectRoot }) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        try {
+            if (!fs.lstatSync(projectRoot).isDirectory()) {
+                error(red(`  ✘   The 'projectRoot' must be a directory: ${projectRoot}`));
+                process.exit(1);
+            }
+        }
+        catch (_a) {
+            error(red(`  ✘   Could not find the 'projectRoot' provided: ${projectRoot}`));
+            process.exit(1);
+        }
+        const releaseOutputs = yield buildReleaseOutput(false);
+        if (releaseOutputs === null) {
+            error(red(`  ✘   Could not build release output. Please check output above.`));
+            process.exit(1);
+        }
+        info(chalk.green(` ✓  Built release output.`));
+        for (const { outputPath, name } of releaseOutputs) {
+            exec(`yarn link --cwd ${outputPath}`);
+            exec(`yarn link --cwd ${projectRoot} ${name}`);
+        }
+        info(chalk.green(` ✓  Linked release packages in provided project.`));
+    });
+}
+/** CLI command module. */
+const BuildAndLinkCommandModule = {
+    builder: builder$c,
+    handler: handler$c,
+    command: 'build-and-link <projectRoot>',
+    describe: 'Builds the release output, registers the outputs as linked, and links via yarn to the provided project',
+};
+
+/** Build the parser for the misc commands. */
+function buildMiscParser(localYargs) {
+    return localYargs.help().strict().command(BuildAndLinkCommandModule);
+}
+
 yargs.scriptName('ng-dev')
     .middleware(captureLogOutputForCommand)
     .demandCommand()
@@ -7899,6 +7960,7 @@ yargs.scriptName('ng-dev')
     .command('release <command>', '', buildReleaseParser)
     .command('ts-circular-deps <command>', '', tsCircularDependenciesBuilder)
     .command('caretaker <command>', '', buildCaretakerParser)
+    .command('misc <command>', '', buildMiscParser)
     .command('ngbot <command>', false, buildNgbotParser)
     .wrap(120)
     .strict()
