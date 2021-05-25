@@ -652,7 +652,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
       An object that provides parent context for this element.
       Often an ancestor component instance that governs this element.
 
-      When an element is repeated within `*ngFor`, the context is an `NgForRow` whose `$implicit`
+      When an element is repeated within `*ngFor`, the context is an `NgForOf` whose `$implicit`
       property is the value of the row instance value.
       For example, the `hero` in `*ngFor="let hero of heroes"`.
 
