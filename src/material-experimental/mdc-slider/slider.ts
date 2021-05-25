@@ -51,6 +51,7 @@ import {
   RippleRef,
   RippleState,
 } from '@angular/material/core';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {SpecificEventListener, EventType} from '@material/base/types';
 import {MDCSliderAdapter, MDCSliderFoundation, Thumb, TickMark} from '@material/slider';
 import {Subscription} from 'rxjs';
@@ -206,7 +207,7 @@ export class MatSliderVisualThumb implements AfterViewInit, OnDestroy {
 
   /** Handles displaying the hover ripple. */
   private _showHoverRipple(): void {
-    if (!this._isShowingRipple(this._hoverRippleRef)) {
+    if (!this._slider._noopAnimations && !this._isShowingRipple(this._hoverRippleRef)) {
       this._hoverRippleRef = this._showRipple({ enterDuration: 0, exitDuration: 0 });
       this._hoverRippleRef?.element.classList.add('mat-mdc-slider-hover-ripple');
     }
@@ -214,6 +215,7 @@ export class MatSliderVisualThumb implements AfterViewInit, OnDestroy {
 
   /** Handles displaying the focus ripple. */
   private _showFocusRipple(): void {
+    // Show the focus ripple event if noop animations are enabled.
     if (!this._isShowingRipple(this._focusRippleRef)) {
       this._focusRippleRef = this._showRipple({ enterDuration: 0, exitDuration: 0 });
       this._focusRippleRef?.element.classList.add('mat-mdc-slider-focus-ripple');
@@ -222,7 +224,7 @@ export class MatSliderVisualThumb implements AfterViewInit, OnDestroy {
 
   /** Handles displaying the active ripple. */
   private _showActiveRipple(): void {
-    if (!this._isShowingRipple(this._activeRippleRef)) {
+    if (!this._slider._noopAnimations && !this._isShowingRipple(this._activeRippleRef)) {
       this._activeRippleRef = this._showRipple({ enterDuration: 225, exitDuration: 400 });
       this._activeRippleRef?.element.classList.add('mat-mdc-slider-active-ripple');
     }
@@ -529,6 +531,7 @@ const _MatSliderMixinBase:
     '[class.mdc-slider--disabled]': 'disabled',
     '[class.mdc-slider--discrete]': 'discrete',
     '[class.mdc-slider--tick-marks]': 'showTickMarks',
+    '[class._mat-animation-noopable]': '_noopAnimations',
   },
   exportAs: 'matSlider',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -626,6 +629,9 @@ export class MatSlider extends _MatSliderMixinBase
   /** The display value of the end thumb. */
   _endValueIndicatorText: string;
 
+  /** Whether animations have been disabled. */
+  _noopAnimations: boolean;
+
   /**
    * Whether the browser supports pointer events.
    *
@@ -648,10 +654,12 @@ export class MatSlider extends _MatSliderMixinBase
     @Inject(DOCUMENT) document: any,
     @Optional() private _dir: Directionality,
     @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS)
-    readonly _globalRippleOptions?: RippleGlobalOptions) {
+      readonly _globalRippleOptions?: RippleGlobalOptions,
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
       super(_elementRef);
       this._document = document;
       this._window = this._document.defaultView || window;
+      this._noopAnimations = animationMode === 'NoopAnimations';
       this._dirChangeSubscription = this._dir.change.subscribe(() => this._onDirChange());
       this._attachUISyncEventListener();
     }

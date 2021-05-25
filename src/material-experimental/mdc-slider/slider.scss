@@ -1,14 +1,10 @@
 @use '@material/slider/slider' as mdc-slider;
-@use '../../cdk/a11y';
 @use '../mdc-helpers/mdc-helpers';
 
 @include mdc-slider.without-ripple($query: mdc-helpers.$mat-base-styles-query);
 
 $mat-slider-min-size: 128px !default;
 $mat-slider-horizontal-margin: 8px !default;
-
-// TODO: disabled until we implement the new MDC slider.
-// @include mdc-slider-core-styles($query: $mat-base-styles-without-animation-query);
 
 // Overwrites the mdc-slider default styles to match the visual appearance of the
 // Angular Material standard slider. This involves making the slider an inline-block
@@ -29,32 +25,11 @@ $mat-slider-horizontal-margin: 8px !default;
   width: auto;
   min-width: $mat-slider-min-size - (2 * $mat-slider-horizontal-margin);
 
-  @include a11y.high-contrast(active, off) {
-    // The slider track isn't visible in high contrast mode so we work
-    // around it by setting an outline and removing the height to make it look solid.
-    .mdc-slider__track-container {
-      height: 0;
-      outline: solid 2px;
-      margin-top: 1px;
-    }
-
-    // Adds an outline around the thumb label so it doesn't just float on top of the slider.
-    .mdc-slider__pin-value-marker {
-      outline: solid 1px;
+  &._mat-animation-noopable {
+    &.mdc-slider--discrete .mdc-slider__thumb,
+    &.mdc-slider--discrete .mdc-slider__track--active_fill,
+    .mdc-slider__value-indicator {
+      transition: none;
     }
   }
-}
-
-// In order to make it possible for developers to disable animations for a  slider,
-// we only activate the MDC slider animation styles if animations are enabled.
-.mat-mdc-slider:not(._mat-animation-noopable) {
-  // TODO: disabled until we implement the new MDC slider.
-  // @include mdc-slider-core-styles($query: animation);
-}
-
-// Sliders without a thumb label (aka non-discrete) currently cannot have ticks
-// enabled. This breaks backwards compatibility with the standard Angular Material
-// slider, so we manually ensure that ticks can be rendered.
-.mat-slider-has-ticks:not(.mat-slider-disabled) .mdc-slider__track-marker-container {
-  visibility: visible;
 }
