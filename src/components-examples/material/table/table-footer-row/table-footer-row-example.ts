@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 
-export interface Transaction {
+interface Transaction {
   item: string;
   cost: number;
 }

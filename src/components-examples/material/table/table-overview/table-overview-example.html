@@ -24,10 +24,10 @@
       <td mat-cell *matCellDef="let row"> {{row.name}} </td>
     </ng-container>
 
-    <!-- Color Column -->
-    <ng-container matColumnDef="color">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Color </th>
-      <td mat-cell *matCellDef="let row" [style.color]="row.color"> {{row.color}} </td>
+    <!-- Fruit Column -->
+    <ng-container matColumnDef="fruit">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Fruit </th>
+      <td mat-cell *matCellDef="let row"> {{row.fruit}} </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -41,3 +41,4 @@
 
   <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
 </div>
+

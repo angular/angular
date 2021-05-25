@@ -1,5 +1,10 @@
 import {Component} from '@angular/core';
-import {Transaction} from '../table-footer-row/table-footer-row-example';
+
+interface Transaction {
+  item: string;
+  cost: number;
+}
+
 
 /**
  * @title Table with multiple header and footer rows
