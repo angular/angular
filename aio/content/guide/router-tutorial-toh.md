@@ -1002,7 +1002,12 @@ Since `ngOnInit()` is only called once per component instantiation, you can dete
 When subscribing to an observable in a component, you almost always unsubscribe when the component is destroyed.
 
 However, `ActivatedRoute` observables are among the exceptions because `ActivatedRoute` and its observables are insulated from the `Router` itself.
-The `Router` destroys a routed component when it is no longer needed along with the injected `ActivatedRoute`.
+The `Router` destroys a routed component when it is no longer needed. This means all the component's members will also be destroyed, 
+including the injected `ActivatedRoute` and the subscriptions to its `Observable` properties. 
+
+The `Router` does not `complete` any `Observable` of the `ActivatedRoute` so any `finalize` or `complete` blocks will not run.
+If you need to handle something in a `finalize`, you will still need to unsubscribe in `ngOnDestroy`. You will also have to
+unsubscribe if your observable pipe has a delay with code you do not want to run after the component is destroyed.
 
 </div>
 
