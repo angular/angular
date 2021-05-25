@@ -63,6 +63,7 @@ Please note that these constants are not meant to be used by 3rd party library o
 * Forward references to directive inputs accessed through local refs are no longer supported by default. [details](guide/ivy-compatibility-examples#forward-refs-directive-inputs)
 
 * If there is both an unbound class attribute and a `[class]` binding, the classes in the unbound attribute will also be added (previously, the class binding would overwrite classes in the unbound attribute).
+For more information about the updated style precedence in Ivy, refer to the [style precedence guide](guide/style-precedence).
 
 * It is now an error to assign values to template-only variables like `item` in `ngFor="let item of items"` (previously, the compiler would ignore these assignments).
 
