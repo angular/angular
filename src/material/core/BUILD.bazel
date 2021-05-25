@@ -144,7 +144,10 @@ ng_web_test_suite(
 
 markdown_to_html(
     name = "overview",
-    srcs = ["ripple/ripple.md"],
+    srcs = [
+        "core.md",
+        "ripple/ripple.md",
+    ],
 )
 
 filegroup(
