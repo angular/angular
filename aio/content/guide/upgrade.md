@@ -1348,7 +1348,7 @@ Once these are done, run:
   npm install
 </code-example>
 
-Soon you can load Angular dependencies into the application using `index.html`,
+Soon you can load Angular dependencies into the application inside `index.html`,
 but first you need to do some directory path adjustments.
 You'll need to load files from `node_modules` and the project root instead of
 from the `/app` directory as you've been doing to this point.
