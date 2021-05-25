@@ -227,23 +227,30 @@ For additional information about `ControlValueAccessor` see the [API docs](https
 This property indicates whether the form field control should be considered to be in a
 focused state. When it is in a focused state, the form field is displayed with a solid color
 underline. For the purposes of our component, we want to consider it focused if any of the part
-inputs are focused. We can use the `FocusMonitor` from `@angular/cdk` to easily check this. We also
-need to remember to emit on the `stateChanges` stream so change detection can happen.
+inputs are focused. We can use the `focusin` and `focusout` events to easily check this. We also
+need to remember to emit on the `stateChanges` when the focused stated changes stream so change
+detection can happen.
+
+In addition to updating the focused state, we use the `focusin` and `focusout` methods to update the
+internal touched state of our component, which we'll use to determine the error state.
 
 ```ts
 focused = false;
 
-constructor(fb: FormBuilder, private fm: FocusMonitor, private elRef: ElementRef<HTMLElement>) {
-  ...
-  fm.monitor(elRef, true).subscribe(origin => {
-    this.focused = !!origin;
+onFocusIn(event: FocusEvent) {
+  if (!this.focused) {
+    this.focused = true;
     this.stateChanges.next();
-  });
+  }
 }
 
-ngOnDestroy() {
-  ...
-  this.fm.stopMonitoring(this.elRef);
+onFocusOut(event: FocusEvent) {
+  if (!this._elementRef.nativeElement.contains(event.relatedTarget as Element)) {
+    this.touched = true;
+    this.focused = false;
+    this.onTouched();
+    this.stateChanges.next();
+  }
 }
 ```
 
@@ -319,11 +326,13 @@ private _disabled = false;
 
 #### `errorState`
 
-This property indicates whether the associated `NgControl` is in an error state. Since we're not
-using an `NgControl` in this example, we don't need to do anything other than just set it to `false`.
+This property indicates whether the associated `NgControl` is in an error state. In this example,
+we show an error if the input is invalid and our component has been touched.
 
 ```ts
-errorState = false;
+get errorState(): boolean {
+  return this.parts.invalid && this.touched;
+}
 ```
 
 #### `controlType`

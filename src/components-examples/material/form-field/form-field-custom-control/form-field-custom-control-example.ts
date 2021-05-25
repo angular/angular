@@ -63,6 +63,7 @@ export class MyTelInput
   parts: FormGroup;
   stateChanges = new Subject<void>();
   focused = false;
+  touched = false;
   controlType = 'example-tel-input';
   id = `example-tel-input-${MyTelInput.nextId++}`;
   onChange = (_: any) => {};
@@ -130,7 +131,7 @@ export class MyTelInput
   }
 
   get errorState(): boolean {
-    return this.parts.invalid && this.parts.dirty;
+    return this.parts.invalid && this.touched;
   }
 
   constructor(
@@ -155,16 +156,29 @@ export class MyTelInput
       ]
     });
 
-    _focusMonitor.monitor(_elementRef, true).subscribe(origin => {
-      if (this.focused && !origin) {
-        this.onTouched();
-      }
-      this.focused = !!origin;
-      this.stateChanges.next();
-    });
-
     if (this.ngControl != null) {
       this.ngControl.valueAccessor = this;
+    }
+  }
+
+  ngOnDestroy() {
+    this.stateChanges.complete();
+    this._focusMonitor.stopMonitoring(this._elementRef);
+  }
+
+  onFocusIn(event: FocusEvent) {
+    if (!this.focused) {
+      this.focused = true;
+      this.stateChanges.next();
+    }
+  }
+
+  onFocusOut(event: FocusEvent) {
+    if (!this._elementRef.nativeElement.contains(event.relatedTarget as Element)) {
+      this.touched = true;
+      this.focused = false;
+      this.onTouched();
+      this.stateChanges.next();
     }
   }
 
@@ -178,11 +192,6 @@ export class MyTelInput
     if (control.value.length < 1) {
       this._focusMonitor.focusVia(prevElement, 'program');
     }
-  }
-
-  ngOnDestroy() {
-    this.stateChanges.complete();
-    this._focusMonitor.stopMonitoring(this._elementRef);
   }
 
   setDescribedByIds(ids: string[]) {
