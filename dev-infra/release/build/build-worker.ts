@@ -16,16 +16,16 @@
 import {getReleaseConfig} from '../config/index';
 
 // Start the release package building.
-main();
+main(process.argv[2] === 'true');
 
 /** Main function for building the release packages. */
-async function main() {
+async function main(stampForRelease: boolean) {
   if (process.send === undefined) {
     throw Error('This script needs to be invoked as a NodeJS worker.');
   }
 
   const config = getReleaseConfig();
-  const builtPackages = await config.buildPackages();
+  const builtPackages = await config.buildPackages(stampForRelease);
 
   // Transfer the built packages back to the parent process.
   process.send(builtPackages);
