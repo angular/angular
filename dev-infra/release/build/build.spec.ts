@@ -33,7 +33,7 @@ describe('ng-dev release build', () => {
   async function invokeBuild({json}: {json?: boolean} = {}) {
     spyOn(releaseConfig, 'getReleaseConfig')
         .and.returnValue({npmPackages, buildPackages, releaseNotes: {}});
-    await ReleaseBuildCommandModule.handler({json: !!json, $0: '', _: []});
+    await ReleaseBuildCommandModule.handler({json: !!json, stampForRelease: true, $0: '', _: []});
   }
 
   it('should invoke configured build packages function', async () => {
