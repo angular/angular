@@ -220,5 +220,5 @@ $my-theme: mat.define-light-theme((
 ));
 
 @include mat.all-component-themes($my-theme);
-@include carousel.theme($theme);
+@include carousel.theme($my-theme);
 ```
