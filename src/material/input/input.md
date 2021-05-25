@@ -88,12 +88,19 @@ for detecting when an input becomes autofilled and changing the appearance of th
 
 The `matInput` directive works with native `<input>` to provide an accessible experience.
 
+#### Aria attributes
+
 If the containing `<mat-form-field>` has a label it will automatically be used as the `aria-label`
 for the `<input>`. However, if there's no label specified in the form field, `aria-label`,
 `aria-labelledby` or `<label for=...>` should be added.
 
+#### Errors and hints
+
 Any `mat-error` and `mat-hint` are automatically added to the input's `aria-describedby` list, and
 `aria-invalid` is automatically updated based on the input's validity state.
+
+When conveying an error, be sure to not rely soley on color. In the message itself, you can use an
+icon or text such as "Error:" to indicate the message is an error message.
 
 ### Troubleshooting
 
