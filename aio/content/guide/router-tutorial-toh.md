@@ -1661,6 +1661,12 @@ _before_ the `AppRoutingModule`:
 
 </code-tabs>
 
+<div class="alert is-helpful">
+The import order of the modules is important because the order of the routes defined in the modules affects route matching.
+If the `AppModule` were imported first, its wildcard route (`path: '**'`) would take precedence over the routes defined in `CrisisCenterModule`.
+For more information, see the section on [route order](guide/router#route-order).
+</div>
+
 Remove the initial crisis center route from the `app-routing.module.ts` because now the `HeroesModule` and the `CrisisCenter` modules provide the feature routes.
 
 The `app-routing.module.ts` file retains the top-level application routes such as the default and wildcard routes.
