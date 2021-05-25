@@ -15,6 +15,16 @@ Use the Angular CLI to generate a new library skeleton in a new workspace with t
  ng generate library my-lib
 </code-example>
 
+<div class="callout is-important">
+
+<header>Naming your library</header>
+
+  You should be very careful when choosing the name of your library if you want to publish it later in a public package registry such as npm. See [Publishing your library](guide/creating-libraries#publishing-your-library).
+  
+  Avoid using a name that is prefixed with `ng-`, such as `ng-library`. The `ng-` prefix is a reserved keyword used from the Angular framework and its libraries. The `ngx-` prefix is preferred as a convention used to denote that the library is suitable for use with Angular. It is also an excellent indication to consumers of the registry to differentiate between libraries of different JavaScript frameworks.
+
+</div>
+
 The `ng generate` command creates the `projects/my-lib` folder in your workspace, which contains a component and a service inside an NgModule.
 
 <div class="alert is-helpful">
