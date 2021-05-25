@@ -42,6 +42,8 @@ import {TableWrappedExample, WrapperTable} from './table-wrapped/table-wrapped-e
 import {TableReorderableExample} from './table-reorderable/table-reorderable-example';
 import {TableRecycleRowsExample} from './table-recycle-rows/table-recycle-rows-example';
 import {TableHarnessExample} from './table-harness/table-harness-example';
+import {TableColumnStylingExample} from './table-column-styling/table-column-styling-example';
+import {TableRowBindingExample} from './table-row-binding/table-row-binding-example';
 
 export {
   TableBasicExample,          TableFlexBasicExample,
@@ -56,7 +58,8 @@ export {
   TableTextColumnExample,     TableTextColumnAdvancedExample,
   TableWrappedExample,        WrapperTable,
   TableReorderableExample,    TableRecycleRowsExample,
-  TableHarnessExample,
+  TableHarnessExample,        TableColumnStylingExample,
+  TableRowBindingExample
 };
 
 const EXAMPLES = [
@@ -72,7 +75,8 @@ const EXAMPLES = [
   TableTextColumnExample,     TableTextColumnAdvancedExample,
   TableWrappedExample,        WrapperTable,
   TableReorderableExample,    TableRecycleRowsExample,
-  TableHarnessExample,
+  TableHarnessExample,        TableColumnStylingExample,
+  TableRowBindingExample
 ];
 
 @NgModule({

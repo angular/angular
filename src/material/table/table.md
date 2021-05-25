@@ -124,6 +124,21 @@ functionality by extending a different base class, the `DataSource` base class c
 implemented instead (`MyCustomDataSource extends SomeOtherBaseClass implements DataSource`) to
 respect Typescript's restriction to only implement one base class.
 
+### Styling Columns
+
+Each table cell has an automatically generated class based on which column it appears in. The format for this
+generated class is `mat-column-NAME`. For example, cells in a column named "symbol" can be targeted with the
+selector `.mat-column-symbol`.
+
+<!-- example(table-column-styling) -->
+
+### Row Templates
+
+Event handlers and property binding on the row templates will be applied to each row rendered by the table. For example,
+adding a `(click)` handler to the row template will cause each individual row to call the handler when clicked.
+
+<!-- example(table-row-binding) -->
+
 ### Features
 
 The `MatTable` is focused on a single responsibility: efficiently render rows of data in a
