@@ -30,7 +30,7 @@ This section walks you through adding a **Buy** button and setting up a cart ser
 
     <code-example header="src/app/cart.service.ts" path="getting-started/src/app/cart.service.1.ts"></code-example>
 
-1. In the `CartService` class, define an `items` property to store the array of the current products in the cart.
+1. In the `CartService` class, define an `items` property to store the array of the current products in the cart. Don't forget to import the object `Product`
 
     <code-example path="getting-started/src/app/cart.service.ts" header="src/app/cart.service.ts" region="props"></code-example>
 
