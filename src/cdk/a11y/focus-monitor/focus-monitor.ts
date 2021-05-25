@@ -24,7 +24,11 @@ import {Observable, of as observableOf, Subject, Subscription} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {coerceElement} from '@angular/cdk/coercion';
 import {DOCUMENT} from '@angular/common';
-import {InputModalityDetector, TOUCH_BUFFER_MS} from '../input-modality/input-modality-detector';
+import {
+  getTarget,
+  InputModalityDetector,
+  TOUCH_BUFFER_MS,
+} from '../input-modality/input-modality-detector';
 
 
 export type FocusOrigin = 'touch' | 'mouse' | 'keyboard' | 'program' | null;
@@ -95,6 +99,12 @@ export class FocusMonitor implements OnDestroy {
 
   /** The timeout id of the origin clearing timeout. */
   private _originTimeoutId: number;
+
+  /**
+   * Whether the origin was determined via a touch interaction. Necessary as properly attributing
+   * focus events to touch interactions requires special logic.
+   */
+  private _originFromTouchInteraction = false;
 
   /** Map of elements being monitored to their info. */
   private _elementInfo = new Map<HTMLElement, MonitoredElementInfo>();
@@ -302,9 +312,15 @@ export class FocusMonitor implements OnDestroy {
     }
   }
 
-  private _getFocusOrigin(): FocusOrigin {
+  private _getFocusOrigin(focusEventTarget: HTMLElement | null): FocusOrigin {
     if (this._origin) {
-      return this._origin;
+      // If the origin was realized via a touch interaction, we need to perform additional checks
+      // to determine whether the focus origin should be attributed to touch or program.
+      if (this._originFromTouchInteraction) {
+        return this._shouldBeAttributedToTouch(focusEventTarget) ? 'touch' : 'program';
+      } else {
+        return this._origin;
+      }
     }
 
     // If the window has just regained focus, we can restore the most recent origin from before the
@@ -317,6 +333,29 @@ export class FocusMonitor implements OnDestroy {
     //
     // Because we can't distinguish between these two cases, we default to setting `program`.
     return (this._windowFocused && this._lastFocusOrigin) ? this._lastFocusOrigin : 'program';
+  }
+
+  /**
+   * Returns whether the focus event should be attributed to touch. Recall that in IMMEDIATE mode, a
+   * touch origin isn't immediately reset at the next tick (see _setOrigin). This means that when we
+   * handle a focus event following a touch interaction, we need to determine whether (1) the focus
+   * event was directly caused by the touch interaction or (2) the focus event was caused by a
+   * subsequent programmatic focus call triggered by the touch interaction.
+   * @param focusEventTarget The target of the focus event under examination.
+   */
+  private _shouldBeAttributedToTouch(focusEventTarget: HTMLElement | null): boolean {
+    // Please note that this check is not perfect. Consider the following edge case:
+    //
+    // <div #parent tabindex="0">
+    //   <div #child tabindex="0" (click)="#parent.focus()"></div>
+    // </div>
+    //
+    // Suppose there is a FocusMonitor in IMMEDIATE mode attached to #parent. When the user touches
+    // #child, #parent is programmatically focused. This code will attribute the focus to touch
+    // instead of program. This is a relatively minor edge-case that can be worked around by using
+    // focusVia(parent, 'program') to focus #parent.
+    return (this._detectionMode === FocusMonitorDetectionMode.EVENTUAL) ||
+        !!focusEventTarget?.contains(this._inputModalityDetector._mostRecentTarget);
   }
 
   /**
@@ -337,11 +376,12 @@ export class FocusMonitor implements OnDestroy {
    * function to clear the origin at the end of a timeout. The duration of the timeout depends on
    * the origin being set.
    * @param origin The origin to set.
-   * @param isFromInteractionEvent Whether we are setting the origin from an interaction event.
+   * @param isFromInteraction Whether we are setting the origin from an interaction event.
    */
-  private _setOrigin(origin: FocusOrigin, isFromInteractionEvent = false): void {
+  private _setOrigin(origin: FocusOrigin, isFromInteraction = false): void {
     this._ngZone.runOutsideAngular(() => {
       this._origin = origin;
+      this._originFromTouchInteraction = (origin === 'touch') && isFromInteraction;
 
       // If we're in IMMEDIATE mode, reset the origin at the next tick (or in `TOUCH_BUFFER_MS` ms
       // for a touch event). We reset the origin at the next tick because Firefox focuses one tick
@@ -350,7 +390,7 @@ export class FocusMonitor implements OnDestroy {
       // the event queue. Before doing so, clear any pending timeouts.
       if (this._detectionMode === FocusMonitorDetectionMode.IMMEDIATE) {
         clearTimeout(this._originTimeoutId);
-        const ms = ((origin === 'touch') && isFromInteractionEvent) ? TOUCH_BUFFER_MS : 1;
+        const ms = this._originFromTouchInteraction ? TOUCH_BUFFER_MS : 1;
         this._originTimeoutId = setTimeout(() => this._origin = null, ms);
       }
     });
@@ -370,11 +410,12 @@ export class FocusMonitor implements OnDestroy {
     // If we are not counting child-element-focus as focused, make sure that the event target is the
     // monitored element itself.
     const elementInfo = this._elementInfo.get(element);
-    if (!elementInfo || (!elementInfo.checkChildren && element !== getTarget(event))) {
+    const focusEventTarget = getTarget(event);
+    if (!elementInfo || (!elementInfo.checkChildren && element !== focusEventTarget)) {
       return;
     }
 
-    this._originChanged(element, this._getFocusOrigin(), elementInfo);
+    this._originChanged(element, this._getFocusOrigin(focusEventTarget), elementInfo);
   }
 
   /**
@@ -431,7 +472,7 @@ export class FocusMonitor implements OnDestroy {
       // The InputModalityDetector is also just a collection of global listeners.
       this._inputModalityDetector.modalityDetected
         .pipe(takeUntil(this._stopInputModalityDetector))
-        .subscribe(modality => { this._setOrigin(modality, true /* isFromInteractionEvent */); });
+        .subscribe(modality => { this._setOrigin(modality, true /* isFromInteraction */); });
     }
   }
 
@@ -491,14 +532,6 @@ export class FocusMonitor implements OnDestroy {
     return results;
   }
 }
-
-/** Gets the target of an event, accounting for Shadow DOM. */
-function getTarget(event: Event): HTMLElement|null {
-  // If an event is bound outside the Shadow DOM, the `event.target` will
-  // point to the shadow root so we have to use `composedPath` instead.
-  return (event.composedPath ? event.composedPath()[0] : event.target) as HTMLElement | null;
-}
-
 
 /**
  * Directive that determines how a particular element was focused (via keyboard, mouse, touch, or

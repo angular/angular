@@ -194,6 +194,7 @@ export declare const INPUT_MODALITY_DETECTOR_OPTIONS: InjectionToken<InputModali
 export declare type InputModality = 'keyboard' | 'mouse' | 'touch' | null;
 
 export declare class InputModalityDetector implements OnDestroy {
+    _mostRecentTarget: HTMLElement | null;
     readonly modalityChanged: Observable<InputModality>;
     readonly modalityDetected: Observable<InputModality>;
     get mostRecentModality(): InputModality;

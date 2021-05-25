@@ -100,6 +100,12 @@ export class InputModalityDetector implements OnDestroy {
     return this._modality.value;
   }
 
+  /**
+   * The most recently detected input modality event target. Is null if no input modality has been
+   * detected or if the associated event target is null for some unknown reason.
+   */
+  _mostRecentTarget: HTMLElement | null = null;
+
   /** The underlying BehaviorSubject that emits whenever an input modality is detected. */
   private readonly _modality = new BehaviorSubject<InputModality>(null);
 
@@ -122,6 +128,7 @@ export class InputModalityDetector implements OnDestroy {
     if (this._options?.ignoreKeys?.some(keyCode => keyCode === event.keyCode)) { return; }
 
     this._modality.next('keyboard');
+    this._mostRecentTarget = getTarget(event);
   }
 
   /**
@@ -137,6 +144,7 @@ export class InputModalityDetector implements OnDestroy {
     // Fake mousedown events are fired by some screen readers when controls are activated by the
     // screen reader. Attribute them to keyboard input modality.
     this._modality.next(isFakeMousedownFromScreenReader(event) ? 'keyboard' : 'mouse');
+    this._mostRecentTarget = getTarget(event);
   }
 
   /**
@@ -156,6 +164,7 @@ export class InputModalityDetector implements OnDestroy {
     this._lastTouchMs = Date.now();
 
     this._modality.next('touch');
+    this._mostRecentTarget = getTarget(event);
   }
 
   constructor(
@@ -193,4 +202,11 @@ export class InputModalityDetector implements OnDestroy {
     document.removeEventListener('mousedown', this._onMousedown, modalityEventListenerOptions);
     document.removeEventListener('touchstart', this._onTouchstart, modalityEventListenerOptions);
   }
+}
+
+/** Gets the target of an event, accounting for Shadow DOM. */
+export function getTarget(event: Event): HTMLElement|null {
+  // If an event is bound outside the Shadow DOM, the `event.target` will
+  // point to the shadow root so we have to use `composedPath` instead.
+  return (event.composedPath ? event.composedPath()[0] : event.target) as HTMLElement | null;
 }
