@@ -6,14 +6,45 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, createPlatformFactory} from '@angular/core';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {ApplicationRef, Component, DoBootstrap, NgModule, Type} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
 
-// #docregion longform
-@Component({selector: 'my-app', template: 'Hello World'})
-class MyApp {
+@Component({
+  selector: 'app-root',
+  template: ` <h1>Component One</h1> `,
+})
+export class ComponentOne {
 }
 
-const myPlatformFactory = createPlatformFactory(platformBrowserDynamic, 'myPlatform');
-myPlatformFactory().bootstrapModule(MyApp);
+@Component({
+  selector: 'app-root',
+  template: ` <h1>Component Two</h1> `,
+})
+export class ComponentTwo {
+}
+
+// #docregion componentSelector
+@NgModule({imports: [BrowserModule], declarations: [ComponentOne, ComponentTwo]})
+export class AppModule implements DoBootstrap {
+  readonly componentMap: {[key: string]: Type<unknown>} = {
+    'ComponentOne': ComponentOne,
+    'ComponentTwo': ComponentTwo,
+  };
+
+  ngDoBootstrap(appRef: ApplicationRef) {
+    this.fetchDataFromApi().then((componentName: string) => {
+      appRef.bootstrap(this.componentMap[componentName]);
+    });
+  }
+  // #enddocregion
+
+  fetchDataFromApi(): Promise<string> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve('ComponentTwo');
+      }, 2000);
+    });
+  }
+  // #docregion componentSelector
+}
 // #enddocregion
