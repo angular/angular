@@ -704,15 +704,15 @@ function getReleaseConfig(config = getConfig()) {
  * found in the LICENSE file at https://angular.io/license
  */
 // Start the release package building.
-main();
+main(process.argv[2] === 'true');
 /** Main function for building the release packages. */
-function main() {
+function main(stampForRelease) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         if (process.send === undefined) {
             throw Error('This script needs to be invoked as a NodeJS worker.');
         }
         const config = getReleaseConfig();
-        const builtPackages = yield config.buildPackages();
+        const builtPackages = yield config.buildPackages(stampForRelease);
         // Transfer the built packages back to the parent process.
         process.send(builtPackages);
     });
