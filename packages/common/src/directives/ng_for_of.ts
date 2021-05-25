@@ -141,21 +141,22 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
     this._ngForOfDirty = true;
   }
   /**
-   * A function that defines how to track changes for items in the iterable.
+   * Specifies a custom `TrackByFunction` to compute the identity of items in an iterable.
    *
-   * When items are added, moved, or removed in the iterable,
-   * the directive must re-render the appropriate DOM nodes.
-   * To minimize churn in the DOM, only nodes that have changed
-   * are re-rendered.
+   * If a custom `TrackByFunction` is not provided, `NgForOf` will use the item's [object
+   * identity](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is)
+   * as the key.
    *
-   * By default, the change detector assumes that
-   * the object instance identifies the node in the iterable.
-   * When this function is supplied, the directive uses
-   * the result of calling this function to identify the item node,
-   * rather than the identity of the object itself.
+   * `NgForOf` uses the computed key to associate items in an iterable with DOM elements
+   * it produces for these items.
    *
-   * The function receives two inputs,
-   * the iteration index and the associated node data.
+   * A custom `TrackByFunction` is useful to provide good user experience in cases when items in an
+   * iterable rendered using `NgForOf` have a natural identifier (for example, custom ID or a
+   * primary key), and this iterable could be updated with new object instances that still
+   * represent the same underlying entity (for example, when data is re-fetched from the server,
+   * and the iterable is recreated and re-rendered, but most of the data is still the same).
+   *
+   * @see `TrackByFunction`
    */
   @Input()
   set ngForTrackBy(fn: TrackByFunction<T>) {
