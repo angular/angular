@@ -1,0 +1,59 @@
+<label for="demo-optional-label-group">Pick the text for the optional label</label>
+<mat-radio-group
+  id="demo-optional-label-group"
+  class="demo-radio-group"
+  [(ngModel)]="optionalLabelText"
+  (ngModelChange)="updateOptionalLabel()">
+  <mat-radio-button
+    class="demo-radio-button"
+    *ngFor="let optionalLabelTextChoice of optionalLabelTextChoices"
+    [value]="optionalLabelTextChoice">
+    {{optionalLabelTextChoice}}
+  </mat-radio-button>
+</mat-radio-group>
+<mat-horizontal-stepper class="demo-stepper" #stepper>
+  <mat-step [stepControl]="firstFormGroup">
+    <form [formGroup]="firstFormGroup">
+      <ng-template matStepLabel>Fill out your name</ng-template>
+      <mat-form-field class="demo-form-field">
+        <mat-label>Name</mat-label>
+        <input
+          matInput
+          placeholder="Last name, First name"
+          formControlName="firstCtrl"
+          required
+        />
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step
+    [stepControl]="secondFormGroup"
+    label="Fill out your address"
+    optional>
+    <form [formGroup]="secondFormGroup">
+      <mat-form-field>
+        <mat-label>Address</mat-label>
+        <input
+          matInput
+          formControlName="secondCtrl"
+          placeholder="Ex. 1 Main St, New York, NY"
+        />
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step>
+    <ng-template matStepLabel>Done</ng-template>
+    <p>You are now done.</p>
+    <div>
+      <button mat-button matStepperPrevious>Back</button>
+      <button mat-button (click)="stepper.reset()">Reset</button>
+    </div>
+  </mat-step>
+</mat-horizontal-stepper>

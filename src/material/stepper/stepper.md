@@ -217,6 +217,8 @@ can be done by providing a subclass with translated values in your application r
 export class MyApp {}
 ```
 
+<!-- example(stepper-intl) -->
+
 ### Accessibility
 The stepper is treated as a tabbed view for accessibility purposes, so it is given
 `role="tablist"` by default. The header of step that can be clicked to select the step
