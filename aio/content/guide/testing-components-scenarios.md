@@ -1469,9 +1469,9 @@ the following version of the `BannerComponent` does.
 The test fails when the `TestBed` tries to create the component.
 
 <code-example
-  path="testing/src/app/banner/banner.component.spec.ts"
-  region="configure-and-create"
-  header="app/banner/banner.component.spec.ts (setup that fails)"
+  path="testing/src/app/banner/banner-external.component.spec.ts"
+  region="setup-may-fail"
+  header="app/banner/banner-external.component.spec.ts (setup that fails)"
   avoid></code-example>
 
 Recall that the application hasn't been compiled.
