@@ -10,12 +10,27 @@ describe('BannerComponent (external files)', () => {
   let fixture: ComponentFixture<BannerComponent>;
   let h1: HTMLElement;
 
+  describe('setup that may fail', () => {
+    // #docregion setup-may-fail
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
+        declarations: [ BannerComponent ],
+      }); // missing call to compileComponents()
+      fixture = TestBed.createComponent(BannerComponent);
+    });
+    // #enddocregion setup-may-fail
+
+    it('should create', () => {
+      expect(fixture.componentInstance).toBeDefined();
+    });
+  });
+
   describe('Two beforeEach', () => {
     // #docregion async-before-each
     beforeEach(async () => {
       TestBed
           .configureTestingModule({
-            declarations: [BannerComponent],
+            declarations: [ BannerComponent ],
           })
           .compileComponents();  // compile template and css
     });
@@ -37,7 +52,7 @@ describe('BannerComponent (external files)', () => {
     // #docregion one-before-each
     beforeEach(async () => {
       await TestBed.configureTestingModule({
-        declarations: [BannerComponent],
+        declarations: [ BannerComponent ],
       }).compileComponents();
       fixture = TestBed.createComponent(BannerComponent);
       component = fixture.componentInstance;
