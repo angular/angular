@@ -157,7 +157,7 @@ For example, `main` should point at a JavaScript file, not a TypeScript file.
 
 ### Use TypeScript path mapping for peer dependencies
 
-Angular libraries should list all `@angular/*` dependencies as peer dependencies.
+Angular libraries should list any `@angular/*` dependencies the library depends on as peer dependencies.
 This ensures that when modules ask for Angular, they all get the exact same module.
 If a library lists `@angular/core` in `dependencies` instead of `peerDependencies`, it might get a different Angular module instead, which would cause your application to break.
 
