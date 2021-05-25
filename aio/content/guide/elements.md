@@ -147,9 +147,9 @@ Using an Angular custom element makes the process much simpler and more transpar
 The Popup Service example application (shown below) defines a component that you can either load dynamically or convert to a custom element.
 
 - `popup.component.ts` defines a simple pop-up element that displays an input message, with some animation and styling.
-- `popup.service.ts` creates an injectable service that provides two different ways to invoke the PopupComponent; as a dynamic component, or as a custom element. Notice how much more setup is required for the dynamic-loading method.
-- `app.module.ts` adds the PopupComponent in the module's `entryComponents` list, to exclude it from compilation and avoid startup warnings or errors.
-- `app.component.ts` defines the application's root component, which uses the PopupService to add the pop-up to the DOM at run time. When the application runs, the root component's constructor converts PopupComponent to a custom element.
+- `popup.service.ts` creates an injectable service that provides two different ways to invoke the `PopupComponent`; as a dynamic component, or as a custom element. Notice how much more setup is required for the dynamic-loading method.
+- `app.module.ts` adds the `PopupComponent` in the module's `declarations` list.
+- `app.component.ts` defines the application's root component, which uses the `PopupService` to add the pop-up to the DOM at run time. When the application runs, the root component's constructor converts `PopupComponent` to a custom element.
 
 For comparison, the demo shows both methods. One button adds the popup using the dynamic-loading method, and the other uses the custom element. You can see that the result is the same; only the preparation is different.
 
