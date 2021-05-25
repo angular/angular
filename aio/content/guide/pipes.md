@@ -400,7 +400,7 @@ The asynchronous method sends an HTTP request, and returns an observable that em
 As shown in the previous section, you can use the impure `AsyncPipe` to accept an observable as input and subscribe to the input automatically.
 You can also create an impure pipe to make and cache an HTTP request.
 
-Impure pipes are called whenever change detection runs for a component, which could be every few milliseconds for `CheckAlways`.
+Impure pipes are called whenever change detection runs for a component, which could be as often as every few milliseconds.
 To avoid performance problems, call the server only when the requested URL changes, as shown in the following example, and use the pipe to cache the server response.
 The tabs show the following:
 
