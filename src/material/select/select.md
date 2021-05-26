@@ -13,8 +13,8 @@ Angular Material also supports use of the native `<select>` element inside of
 and usability advantages. See [the documentation for
 form-field](https://material.angular.io/components/form-field) for more information.
 
-To use a native select inside `<mat-form-field>`, add  the `matNativeControl` attribute
-to the `<select>` element. 
+To use a native select inside `<mat-form-field>`, import `MatInputModule` and add the
+`matNativeControl` attribute to the `<select>` element. 
 
 <!-- example(select-overview) -->
 
