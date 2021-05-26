@@ -85,7 +85,12 @@ For more information about the updated style precedence in Ivy, refer to the [st
 * If selecting the native `<option>` element in a `<select>` where the `<option>`s are created using `*ngFor`, use the `[selected]` property of an `<option>` instead of binding to the `[value]` property of the `<select>` element (previously, you could bind to either.) [details](guide/ivy-compatibility-examples#select-value-binding)
 
 * Embedded views (such as ones created by `*ngFor`) are now inserted in front of anchor DOM comment node (for example, `<!--ng-for-of-->`) rather than behind it as was the case previously.
-In most cases this does not have any impact on rendered DOM.
-In some cases (such as animations delaying the removal of an embedded view) any new embedded views will be inserted after the embedded view being animated away.
-This difference only last while the animation is active, and might alter the visual appearance of the animation.
-Once the animation is finished the resulting rendered DOM is identical to that rendered with View Engine.
+  In most cases this has no impact on rendered DOM.
+
+  When animations delay the removal of an embedded view, any new embedded views will be inserted after the embedded view that will be removed once the animation completes.
+  This difference only lasts while the animation is active, and might alter the visual appearance of the animation.
+  When the animation is finished, the resulting rendered DOM is identical to that rendered with View Engine.
+
+  One additional exception is the `<select>` element with `<option>` elements dynamically rendered using `NgForOf`. If a [`trackBy`](api/common/NgForOf#ngForTrackBy) function is not provided, the selected `<option>` will not be preserved when the iterable used by the `NgForOf` changes.
+  With View Engine, this programming error was obscured, and often not visible.
+  To avoid this problem, provide the `trackBy` function to correctly associate the model with the rendered DOM elements.
