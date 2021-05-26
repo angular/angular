@@ -1,3 +1,17 @@
+## 12.0.2 "cardboard-box" (2021-05-26)
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **checkbox:** disable ripple animation under noop animations module ([#22706](https://github.com/angular/components/issues/22706)) ([5928896b86c6c99e17e5f0907a05974b027d4edb](https://github.com/angular/components/commit/5928896b86c6c99e17e5f0907a05974b027d4edb)) |
+| bug fix |  **core:** typography-hierarchy mixin not exposed ([#22752](https://github.com/angular/components/issues/22752)) ([9e6086778bad7a0ec6b0ddb5a08d314e614b6407](https://github.com/angular/components/commit/9e6086778bad7a0ec6b0ddb5a08d314e614b6407)), closes [#22737](https://github.com/angular/components/issues/22737) |
+| bug fix |  **datepicker:** incorrect year count in aria label ([#22763](https://github.com/angular/components/issues/22763)) ([f5649615ef624feb837aa4f140f012bd9d2fde4a](https://github.com/angular/components/commit/f5649615ef624feb837aa4f140f012bd9d2fde4a)), closes [#22758](https://github.com/angular/components/issues/22758) |
+| bug fix |  **input:** error for some input types on iOS ([#22749](https://github.com/angular/components/issues/22749)) ([a71d5a27302c9a082d722d656c7be8ad35ef6a8e](https://github.com/angular/components/commit/a71d5a27302c9a082d722d656c7be8ad35ef6a8e)), closes [#22726](https://github.com/angular/components/issues/22726) |
+| bug fix |  **slide-toggle:** disable ripples when animations are disabled ([#22713](https://github.com/angular/components/issues/22713)) ([4bfdeb3a141b4f78b7dd5d1c9a2596fb32abc367](https://github.com/angular/components/commit/4bfdeb3a141b4f78b7dd5d1c9a2596fb32abc367)) |
+| bug fix |  **tabs:** projected tabs not being picked up ([#21794](https://github.com/angular/components/issues/21794)) ([e7fea69314605afaf005a3d0733b2c63ea9ba350](https://github.com/angular/components/commit/e7fea69314605afaf005a3d0733b2c63ea9ba350)), closes [#21770](https://github.com/angular/components/issues/21770) |
+
+
 ## 12.0.1 "acrylic-apple" (2021-05-19)
 
 ### material
