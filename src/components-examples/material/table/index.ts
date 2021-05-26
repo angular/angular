@@ -1,5 +1,6 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
+import {MatRippleModule} from '@angular/material/core';
 import {MatButtonModule} from '@angular/material/button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatCheckboxModule} from '@angular/material/checkbox';
@@ -42,6 +43,7 @@ import {TableWrappedExample, WrapperTable} from './table-wrapped/table-wrapped-e
 import {TableReorderableExample} from './table-reorderable/table-reorderable-example';
 import {TableRecycleRowsExample} from './table-recycle-rows/table-recycle-rows-example';
 import {TableHarnessExample} from './table-harness/table-harness-example';
+import {TableWithRipplesExample} from './table-with-ripples/table-with-ripples-example';
 import {TableColumnStylingExample} from './table-column-styling/table-column-styling-example';
 import {TableRowBindingExample} from './table-row-binding/table-row-binding-example';
 
@@ -59,7 +61,7 @@ export {
   TableWrappedExample,        WrapperTable,
   TableReorderableExample,    TableRecycleRowsExample,
   TableHarnessExample,        TableColumnStylingExample,
-  TableRowBindingExample
+  TableRowBindingExample,     TableWithRipplesExample,
 };
 
 const EXAMPLES = [
@@ -76,7 +78,7 @@ const EXAMPLES = [
   TableWrappedExample,        WrapperTable,
   TableReorderableExample,    TableRecycleRowsExample,
   TableHarnessExample,        TableColumnStylingExample,
-  TableRowBindingExample
+  TableRowBindingExample,     TableWithRipplesExample,
 ];
 
 @NgModule({
@@ -89,6 +91,7 @@ const EXAMPLES = [
     MatInputModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
+    MatRippleModule,
     MatSortModule,
     MatTableModule,
     CdkTableModule,

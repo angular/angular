@@ -421,3 +421,15 @@ selectors. For example, `<table mat-table>` becomes `<mat-table>`; `<tr mat-row>
 
 Note that this approach means you cannot include certain native-table features such colspan/rowspan
 or have columns that resize themselves based on their content.
+
+### Tables with `MatRipple`
+
+By default, `MatTable` does not set up Material Design ripples for rows. A ripple effect can be
+added to table rows by using the `MatRipple` directive from `@angular/material/core`. Due to
+limitations in browsers, ripples cannot be applied native `th` or `tr` elements. The recommended
+approach for setting up ripples is using the non-native `display: flex` variant of `MatTable`.
+
+<!--- example(table-with-ripples) -->
+
+More details about ripples on native table rows and their limitations can be found [in this issue](https://github.com/angular/components/issues/11883#issuecomment-634942981).
+
