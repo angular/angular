@@ -2759,6 +2759,30 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 <a href="#toc">Back to top</a>
 
+### Do not add filtering and sorting logic to pipes
+
+#### Style 04-13
+
+<div class="s-rule avoid">
+
+**Avoid** adding filtering or sorting logic into custom pipes.
+
+</div>
+
+<div class="s-rule do">
+
+**Do** pre-compute the filtering and sorting logic in components or services before binding the model in templates.
+
+</div>
+
+<div class="s-why-last">
+
+**Why?** Filtering and especially sorting are expensive operations. As Angular can call pipe methods many times per second, sorting and filtering operations can degrade the user experience severely for even moderately-sized lists.
+
+</div>
+
+<a href="#toc">Back to top</a>
+
 ## Components
 
 {@a 05-03}
