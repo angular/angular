@@ -17,28 +17,21 @@ import {buildReleaseOutput} from './index';
 /** Command line options for building a release. */
 export interface ReleaseBuildOptions {
   json: boolean;
-  stampForRelease: boolean;
 }
 
 /** Yargs command builder for configuring the `ng-dev release build` command. */
 function builder(argv: Argv): Argv<ReleaseBuildOptions> {
-  return argv
-      .option('json', {
-        type: 'boolean',
-        description: 'Whether the built packages should be printed to stdout as JSON.',
-        default: false,
-      })
-      .option('stampForRelease', {
-        type: 'boolean',
-        description: 'Whether the built packages should be stamped for release.',
-        default: false,
-      });
+  return argv.option('json', {
+    type: 'boolean',
+    description: 'Whether the built packages should be printed to stdout as JSON.',
+    default: false,
+  });
 }
 
 /** Yargs command handler for building a release. */
 async function handler(args: Arguments<ReleaseBuildOptions>) {
   const {npmPackages} = getReleaseConfig();
-  let builtPackages = await buildReleaseOutput(args.stampForRelease);
+  let builtPackages = await buildReleaseOutput(true);
 
   // If package building failed, print an error and exit with an error code.
   if (builtPackages === null) {
