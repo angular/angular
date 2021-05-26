@@ -96,3 +96,5 @@ You can subscribe to `SwUpdate#unrecoverable` to be notified and handle these er
 
 You may also be interested in the following:
 * [Service Worker in Production](guide/service-worker-devops).
+* TSLint
+* ApplicationRef
