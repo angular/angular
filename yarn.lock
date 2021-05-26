@@ -2734,10 +2734,10 @@
   resolved "https://registry.yarnpkg.com/@tsconfig/node16/-/node16-1.0.1.tgz#a6ca6a9a0ff366af433f42f5f0e124794ff6b8f1"
   integrity sha512-FTgBI767POY/lKNDNbIzgAX6miIDBs6NTCbdlDb8TrWovHsSvaVIZDlTqym29C6UqhzwcJx4CYr+AlrMywA0cA==
 
-"@types/chrome@^0.0.141":
-  version "0.0.141"
-  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.141.tgz#337648651a2b75a74bf3038680dc0e47ddd75d07"
-  integrity sha512-0bYsCxGKo9xdrNHiqWRjPVygDRfKA2EczhXJmKjkfBF+KQc0BFKejtdFV28ygcVH3RTjGZ+ccoJ3bb8wKFacbw==
+"@types/chrome@^0.0.142":
+  version "0.0.142"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.142.tgz#63acab9b0f037324ff2f40efe12636cd63dc906d"
+  integrity sha512-fUbewXxe6vKVHij/fRXrwbbVMjetEcbiEJFAuuOd/OkLW9BCqB+M1SvV7U5sufZNLIA+dNmbXMUKJLGgVbtH3A==
   dependencies:
     "@types/filesystem" "*"
     "@types/har-format" "*"
