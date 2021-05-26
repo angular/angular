@@ -46,6 +46,9 @@ import {TableHarnessExample} from './table-harness/table-harness-example';
 import {TableWithRipplesExample} from './table-with-ripples/table-with-ripples-example';
 import {TableColumnStylingExample} from './table-column-styling/table-column-styling-example';
 import {TableRowBindingExample} from './table-row-binding/table-row-binding-example';
+import {
+  TableGeneratedColumnsExample
+} from './table-generated-columns/table-generated-columns-example';
 
 export {
   TableBasicExample,          TableFlexBasicExample,
@@ -62,6 +65,7 @@ export {
   TableReorderableExample,    TableRecycleRowsExample,
   TableHarnessExample,        TableColumnStylingExample,
   TableRowBindingExample,     TableWithRipplesExample,
+  TableGeneratedColumnsExample,
 };
 
 const EXAMPLES = [
@@ -79,6 +83,7 @@ const EXAMPLES = [
   TableReorderableExample,    TableRecycleRowsExample,
   TableHarnessExample,        TableColumnStylingExample,
   TableRowBindingExample,     TableWithRipplesExample,
+  TableGeneratedColumnsExample,
 ];
 
 @NgModule({
