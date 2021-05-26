@@ -16,36 +16,49 @@ The following Angular Material components are designed to work inside a `<mat-fo
 
 ### Form field appearance variants
 The `mat-form-field` supports 4 different appearance variants which can be set via the `appearance`
-input. The `legacy` appearance is the default style that the `mat-form-field` has traditionally had.
-It shows the input box with an underline underneath it. The `standard` appearance is a slightly
-updated version of the `legacy` appearance that has spacing that is more consistent with the `fill`
-and `outline` appearances. The `fill` appearance displays the form field with a filled background
-box in addition to the underline. Finally the `outline` appearance shows the form field with a
-border all the way around, not just an underline.
+input. The `fill` an `outline` appearances implement the current version of the spec. The `fill`
+appearance displays the form field with a filled background box and an underline, while the
+`outline` appearance shows the form field with a border all the way around.
 
-There are a couple differences to be aware of between the `legacy` appearance and the newer
-`standard`, `fill`, and `outline` appearances. The `matPrefix` and `matSuffix` elements are center
-aligned by default for the newer appearances. The Material Design spec shows this as being the
-standard way to align prefix and suffix icons in the newer appearance variants. We do not recommend
-using text prefix and suffixes in the `fill` and `outline` variants because the label and input do not have the same
-alignment. It is therefore impossible to align the prefix or suffix in a way that looks good when
-compared with both the label and input text.
+The `legacy` and `standard` appearances implement an older version of the spec where
+`mat-form-field` was shown with an underline beneath it. We recommend not using these appearances as
+they do not  match the current spec.
+
+There are a couple differences in behavior to be aware of between the different appearances.
+
+We recommend that text prefix and suffixes in the `fill` and `outline` appearances only be used in
+conjunction with the `floatLabel="always"` option. This is because the resting label and the input
+value do not have  the same alignment, and it is therefore impossible to align the prefix or suffix
+in a way that looks good when compared with both. In the `standard` and `legacy` appearances, the 
+resting label and input value align, so this isn't an issue. We plan to improve support for text
+prefix and suffixes in the future so they can be used without `floatLabel="always"`.
 
 The second important difference is that the `standard`, `fill`, and `outline` appearances do not
 promote placeholders to labels. For the `legacy` appearance specifying
 `<input placeholder="placeholder">` will result in a floating label being added to the
 `mat-form-field`. For the newer variants it will just add a normal placeholder to the input. If you
-want a floating label, add a `<mat-label>` to the `mat-form-field`.
+want a floating label, add a `<mat-label>` to the `mat-form-field` instead.
+
+Out of the box, if you do not specify an `appearance` for the `<mat-form-field>` it will default to
+`legacy`. However, this can be configured using a global provider to choose a different default
+appearance for your app.
+
+```ts
+@NgModule({
+  providers: [
+    {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}}
+  ]
+})
+```
 
 <!-- example(form-field-appearance) -->
 
 ### Floating label
 
 The floating label is a text label displayed on top of the form field control when
-the control does not contain any text or when `<select matNativeControl>` does not show any option text. 
-By default, when text is present the floating label
-floats above the form field control. The label for a form field can be specified by adding a
-`mat-label` element.
+the control does not contain any text or when `<select matNativeControl>` does not show any option
+text. By default, when text is present the floating label floats above the form field control. The
+label for a form field can be specified by adding a `mat-label` element.
 
 In the legacy version of the `<mat-form-field>` (one that has no `appearance` attribute or has
 `appearance="legacy"`) if a label is not specified, the `placeholder` attribute on the form control
