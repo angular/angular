@@ -1,11 +1,25 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {ReactiveFormsModule, FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
 import {MatNativeDateModule} from '@angular/material/core';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
+import {
+  DateRangePickerComparisonExample
+} from './date-range-picker-comparison/date-range-picker-comparison-example';
+import {
+  DateRangePickerFormsExample
+} from './date-range-picker-forms/date-range-picker-forms-example';
+import {
+  DateRangePickerOverviewExample
+} from './date-range-picker-overview/date-range-picker-overview-example';
+import {
+  DateRangePickerSelectionStrategyExample
+} from './date-range-picker-selection-strategy/date-range-picker-selection-strategy-example';
+import {DatepickerActionsExample} from './datepicker-actions/datepicker-actions-example';
 
 import {DatepickerApiExample} from './datepicker-api/datepicker-api-example';
 import {DatepickerColorExample} from './datepicker-color/datepicker-color-example';
@@ -19,6 +33,10 @@ import {DatepickerDisabledExample} from './datepicker-disabled/datepicker-disabl
 import {DatepickerEventsExample} from './datepicker-events/datepicker-events-example';
 import {DatepickerFilterExample} from './datepicker-filter/datepicker-filter-example';
 import {DatepickerFormatsExample} from './datepicker-formats/datepicker-formats-example';
+import {DatepickerHarnessExample} from './datepicker-harness/datepicker-harness-example';
+import {
+  DatepickerInlineCalendarExample
+} from './datepicker-inline-calendar/datepicker-inline-calendar-example';
 import {DatepickerLocaleExample} from './datepicker-locale/datepicker-locale-example';
 import {DatepickerMinMaxExample} from './datepicker-min-max/datepicker-min-max-example';
 import {DatepickerMomentExample} from './datepicker-moment/datepicker-moment-example';
@@ -29,20 +47,6 @@ import {DatepickerValueExample} from './datepicker-value/datepicker-value-exampl
 import {
   DatepickerViewsSelectionExample
 } from './datepicker-views-selection/datepicker-views-selection-example';
-import {
-  DateRangePickerOverviewExample
-} from './date-range-picker-overview/date-range-picker-overview-example';
-import {
-  DateRangePickerFormsExample
-} from './date-range-picker-forms/date-range-picker-forms-example';
-import {
-  DateRangePickerComparisonExample
-} from './date-range-picker-comparison/date-range-picker-comparison-example';
-import {
-  DateRangePickerSelectionStrategyExample
-} from './date-range-picker-selection-strategy/date-range-picker-selection-strategy-example';
-import {DatepickerHarnessExample} from './datepicker-harness/datepicker-harness-example';
-import {DatepickerActionsExample} from './datepicker-actions/datepicker-actions-example';
 
 export {
   DatepickerApiExample,
@@ -55,6 +59,7 @@ export {
   DatepickerFilterExample,
   DatepickerFormatsExample,
   DatepickerHarnessExample,
+  DatepickerInlineCalendarExample,
   DatepickerLocaleExample,
   DatepickerMinMaxExample,
   DatepickerMomentExample,
@@ -82,6 +87,7 @@ const EXAMPLES = [
   DatepickerFilterExample,
   DatepickerFormatsExample,
   DatepickerHarnessExample,
+  DatepickerInlineCalendarExample,
   DatepickerLocaleExample,
   DatepickerMinMaxExample,
   DatepickerMomentExample,
@@ -102,6 +108,7 @@ const EXAMPLES = [
   imports: [
     CommonModule,
     MatButtonModule,
+    MatCardModule,
     MatDatepickerModule,
     MatInputModule,
     MatIconModule,

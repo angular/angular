@@ -175,10 +175,7 @@ export class MatCalendarHeader<D> {
   }
 }
 
-/**
- * A calendar that is used as part of the datepicker.
- * @docs-private
- */
+/** A calendar that is used as part of the datepicker. */
 @Component({
   selector: 'mat-calendar',
   templateUrl: 'calendar.html',
@@ -381,6 +378,7 @@ export class MatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
     this.stateChanges.next();
   }
 
+  /** Focuses the active date. */
   focusActiveCell() {
     this._getCurrentViewComponent()._focusActiveCell(false);
   }

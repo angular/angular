@@ -258,6 +258,15 @@ The calendar popup can be programmatically controlled using the `open` and `clos
 
 <!-- example(datepicker-api) -->
 
+### Using `mat-calendar` inline
+
+If you want to allow the user to select a date from a calendar that is inlined on the page rather
+than contained in a popup, you can use `<mat-calendar>` directly. The calendar's height is
+determined automatically based on the width and the number of dates that need to be shown for a
+month. If you want to make the calendar larger or smaller, adjust the width rather than the height.
+
+<!-- example(datepicker-inline-calendar) -->
+
 ### Internationalization
 
 Internationalization of the datepicker is configured via four aspects:
