@@ -220,7 +220,7 @@ Any unique value will do, but using a descriptive name is helpful.
 
 2. You can now remove the diagnostic messages that show interpolated values.
 
-3. To confirm that two-way data binding works for the entire hero model, add a new binding at the top to the component's `diagnostic` property.
+3. To confirm that two-way data binding works for the entire hero model, add a new text binding with the [`json` pipe](api/common/JsonPipe) (which would serialize the data to a string) at the top to the component's template.
 
 After these revisions, the form template should look like the following:
 
@@ -238,7 +238,7 @@ If you run the app now and change every hero model property, the form might disp
 
 The diagnostic near the top of the form confirms that all of your changes are reflected in the model.
 
-4. When you have observed the effects, you can delete the `{{diagnostic}}` binding.
+4. When you have observed the effects, you can delete the `{{ model | json }}` text binding.
 
 ## Track control states
 
