@@ -60,7 +60,7 @@ Angular executes hook methods in the following sequence. You can use them to per
     </td>
     <td>
 
-      Called before `ngOnInit()` and whenever one or more data-bound input properties change.
+      Called before `ngOnInit()` (if the component has bound inputs) and whenever one or more data-bound input properties change.
 
       Note that if your component has no inputs or you use it without providing any inputs, the framework will not call `ngOnChanges()`.
 
@@ -79,7 +79,7 @@ Angular executes hook methods in the following sequence. You can use them to per
     </td>
     <td>
 
-      Called once, after the first `ngOnChanges()`.
+      Called once, after the first `ngOnChanges()`. `ngOnInit()` is still called even when `ngOnChanges()` is not (which is the case when there are no template-bound inputs).
 
     </td>
   </tr>
