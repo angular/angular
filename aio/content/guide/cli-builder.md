@@ -22,13 +22,13 @@ The separation of concerns here is the same as with [schematics](guide/glossary#
 
 * The `options` object is provided by the CLI user, while the `context` object is provided by the CLI Builder API.
 
-* In addition to the contextual information, the `context` object, which is an instance of the `BuilderContext`, also provides access to a scheduling method, `BuilderContext.scheduleTarget()`. The scheduler executes the builder handler function with a given [target configuration](guide/glossary#target).
+* In addition to the contextual information, the `context` object, which is an instance of the `BuilderContext`, also provides access to a scheduling method, `context.scheduleTarget()`. The scheduler executes the builder handler function with a given [target configuration](guide/glossary#target).
 
 The builder handler function can be synchronous (return a value) or asynchronous (return a Promise), or it can watch and return multiple values (return an Observable).
 The return value or values must always be of type `BuilderOutput`.
 This object contains a Boolean `success` field and an optional `error` field that can contain an error message.
 
-Angular provides some builders that are used by the CLI for commands such as `ng build`, `ng test`, and `ng lint`.
+Angular provides some builders that are used by the CLI for commands such as `ng build` and `ng test`.
 Default target configurations for these and other built-in CLI builders can be found (and customized) in the "architect" section of the [workspace configuration file](guide/workspace-config), `angular.json`.
 You can also extend and customize Angular by creating your own builders, which you can run using the [`ng run` CLI command](cli/run).
 
@@ -59,9 +59,9 @@ npm install @example/my-builder
 As an example, let's create a builder that executes a shell command.
 To create a builder, use the `createBuilder()` CLI Builder function, and return a `Promise<BuilderOutput>` object.
 
-<code-example 
-  path="cli-builder/src/my-builder.ts" 
-  header="src/my-builder.ts (builder skeleton)" 
+<code-example
+  path="cli-builder/src/my-builder.ts"
+  header="src/my-builder.ts (builder skeleton)"
   region="builder-skeleton">
 </code-example>
 
@@ -69,9 +69,9 @@ Now let’s add some logic to it.
 The following code retrieves the command and arguments from the user options, spawns the new process, and waits for the process to finish.
 If the process is successful (returns a code of 0), it resolves the return value.
 
-<code-example 
-  path="cli-builder/src/my-builder.ts" 
-  header="src/my-builder.ts (builder)" 
+<code-example
+  path="cli-builder/src/my-builder.ts"
+  header="src/my-builder.ts (builder)"
   region="builder">
 </code-example>
 
@@ -83,9 +83,9 @@ This also allows the builder itself to be executed in a separate process, even i
 
 We can retrieve a Logger instance from the context.
 
-<code-example 
-  path="cli-builder/src/my-builder.ts" 
-  header="src/my-builder.ts (handling output)" 
+<code-example
+  path="cli-builder/src/my-builder.ts"
+  header="src/my-builder.ts (handling output)"
   region="handling-output">
 </code-example>
 
@@ -93,20 +93,20 @@ We can retrieve a Logger instance from the context.
 
 The CLI Builder API includes progress and status reporting tools, which can provide hints for certain functions and interfaces.
 
-To report progress, use the `BuilderContext.reportProgress()` method, which takes a current value, (optional) total, and status string as arguments.
+To report progress, use the `context.reportProgress()` method, which takes a current value, (optional) total, and status string as arguments.
 The total can be any number; for example, if you know how many files you have to process, the total could be the number of files, and current should be the number processed so far.
 The status string is unmodified unless you pass in a new string value.
 
 You can see an [example](https://github.com/angular/angular-cli/blob/ba21c855c0c8b778005df01d4851b5a2176edc6f/packages/angular_devkit/build_angular/src/tslint/index.ts#L107) of how the `tslint` builder reports progress.
 
 In our example, the shell command either finishes or is still executing, so there’s no need for a progress report, but we can report status so that a parent builder that called our builder would know what’s going on.
-Use the `BuilderContext.reportStatus()` method to generate a status string of any length.
+Use the `context.reportStatus()` method to generate a status string of any length.
 (Note that there’s no guarantee that a long string will be shown entirely; it could be cut to fit the UI that displays it.)
 Pass an empty string to remove the status.
 
-<code-example 
-  path="cli-builder/src/my-builder.ts" 
-  header="src/my-builder.ts (progress reporting)" 
+<code-example
+  path="cli-builder/src/my-builder.ts"
+  header="src/my-builder.ts (progress reporting)"
   region="progress-reporting">
 </code-example>
 
@@ -190,9 +190,9 @@ The first part of this is the package name (resolved using node resolution), and
 
 Using one of our `options` is very straightforward, we did this in the previous section when we accessed `options.command`.
 
-<code-example 
-  path="cli-builder/src/my-builder.ts" 
-  header="src/my-builder.ts (report status)" 
+<code-example
+  path="cli-builder/src/my-builder.ts"
+  header="src/my-builder.ts (report status)"
   region="report-status">
 </code-example>
 
@@ -261,9 +261,9 @@ Architect runs builders asynchronously.
 To invoke a builder, you schedule a task to be run when all configuration resolution is complete.
 
 The builder function is not executed until the scheduler returns a `BuilderRun` control object.
-The CLI typically schedules tasks by calling the `BuilderContext.scheduleTarget()` function, and then resolves input options using the target definition in the `angular.json` file.
+The CLI typically schedules tasks by calling the `context.scheduleTarget()` function, and then resolves input options using the target definition in the `angular.json` file.
 
-Architect resolves input options for a given target by taking the default options object, then overwriting values from the configuration used (if any), then further overwriting values from the overrides object passed to `BuilderContext.scheduleTarget()`.
+Architect resolves input options for a given target by taking the default options object, then overwriting values from the configuration used (if any), then further overwriting values from the overrides object passed to `context.scheduleTarget()`.
 For the Angular CLI, the overrides object is built from command line arguments.
 
 Architect validates the resulting options values against the schema of the builder.
@@ -273,10 +273,10 @@ For more information see [Workspace Configuration](guide/workspace-config).
 
 <div class="alert is-helpful">
 
-   You can also invoke a builder directly from another builder or test by calling `BuilderContext.scheduleBuilder()`.
+   You can also invoke a builder directly from another builder or test by calling `context.scheduleBuilder()`.
    You pass an `options` object directly to the method, and those option values are validated against the schema of the builder without further adjustment.
 
-   Only the `BuilderContext.scheduleTarget()` method resolves the configuration and overrides through the `angular.json` file.
+   Only the  `context.scheduleTarget()` method resolves the configuration and overrides through the `angular.json` file.
 
 </div>
 
@@ -426,8 +426,8 @@ Use integration testing for your builder, so that you can use the Architect sche
 Here’s an example of a test that runs the command builder.
 The test uses the builder to run the `node --print 'foo'` command, then validates that the `logger` contains an entry for `foo`.
 
-<code-example 
-  path="cli-builder/src/my-builder.spec.ts" 
+<code-example
+  path="cli-builder/src/my-builder.spec.ts"
   header="src/my-builder.spec.ts">
 </code-example>
 
@@ -445,7 +445,7 @@ Architect can support watch mode, but there are some things to look out for.
 
 * To be used with watch mode, a builder handler function should return an Observable. Architect subscribes to the Observable until it completes and might reuse it if the builder is scheduled again with the same arguments.
 
-* The builder should always emit a `BuilderOutput` object after each execution. Once it’s been executed, it can enter a watch mode, to be triggered by an external event. If an event triggers it to restart, the builder should execute the `BuilderContext.reportRunning()` function to tell Architect that it is running again. This prevents Architect from stopping the builder if another run is scheduled.
+* The builder should always emit a `BuilderOutput` object after each execution. Once it’s been executed, it can enter a watch mode, to be triggered by an external event. If an event triggers it to restart, the builder should execute the `context.reportRunning()` function to tell Architect that it is running again. This prevents Architect from stopping the builder if another run is scheduled.
 
 When your builder calls `BuilderRun.stop()` to exit watch mode, Architect unsubscribes from the builder’s Observable and calls the builder’s teardown logic to clean up.
 (This behavior also allows for long running builds to be stopped and cleaned up.)
@@ -456,7 +456,7 @@ In general, if your builder is watching an external event, you should separate y
    For example, webpack compiles. This ends when webpack finishes and your builder emits a `BuilderOutput` object.
 
 1. **Watching**
-   Between two runs, watch an external event stream. For example, webpack watches the file system for any changes. This ends when webpack restarts building, and `BuilderContext.reportRunning()` is called. This goes back to step 1.
+   Between two runs, watch an external event stream. For example, webpack watches the file system for any changes. This ends when webpack restarts building, and `context.reportRunning()` is called. This goes back to step 1.
 
 1. **Completion**
    Either the task is fully completed (for example, webpack was supposed to run a number of times), or the builder run was stopped (using `BuilderRun.stop()`). Your teardown logic is executed, and Architect unsubscribes from your builder’s Observable.
