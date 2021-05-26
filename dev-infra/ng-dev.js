@@ -5180,15 +5180,9 @@ function buildReleaseOutput(stampForRelease = false) {
  */
 /** Yargs command builder for configuring the `ng-dev release build` command. */
 function builder$7(argv) {
-    return argv
-        .option('json', {
+    return argv.option('json', {
         type: 'boolean',
         description: 'Whether the built packages should be printed to stdout as JSON.',
-        default: false,
-    })
-        .option('stampForRelease', {
-        type: 'boolean',
-        description: 'Whether the built packages should be stamped for release.',
         default: false,
     });
 }
@@ -5196,7 +5190,7 @@ function builder$7(argv) {
 function handler$7(args) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const { npmPackages } = getReleaseConfig();
-        let builtPackages = yield buildReleaseOutput(args.stampForRelease);
+        let builtPackages = yield buildReleaseOutput(true);
         // If package building failed, print an error and exit with an error code.
         if (builtPackages === null) {
             error(red(`  ✘   Could not build release output. Please check output above.`));
