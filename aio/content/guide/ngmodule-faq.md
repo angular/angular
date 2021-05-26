@@ -180,6 +180,12 @@ Only call and import a `forRoot()` result in the root application module, `AppMo
 Avoid importing it in any other module, particularly in a lazy-loaded module. For more
 information on `forRoot()` see [the `forRoot()` pattern](guide/singleton-services#the-forroot-pattern) section of the [Singleton Services](guide/singleton-services) guide.
 
+<div class="alert is-helpful">
+Note: the `forRoot()` import can be used in a module other than `AppModule`. Importantly,
+`forRoot()` should only be called once, and the module that imports the `forRoot()` needs to be available to
+the root `ModuleInjector`. For more information, refer to the guide on [Hierarchical injectors](guide/hierarchical-dependency-injection#moduleinjector).
+</div>
+
 For a service, instead of using `forRoot()`,  specify `providedIn: 'root'` on the service's `@Injectable()` decorator, which
 makes the service automatically available to the whole application and thus singleton by default.
 
