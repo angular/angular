@@ -193,9 +193,9 @@ function heroModuleSetup() {
     // #docregion title-case-pipe
     it('should convert hero name to Title Case', () => {
       // get the name's input and display elements from the DOM
-      const hostElement = fixture.nativeElement;
-      const nameInput: HTMLInputElement = hostElement.querySelector('input');
-      const nameDisplay: HTMLElement = hostElement.querySelector('span');
+      const hostElement: HTMLElement = fixture.nativeElement;
+      const nameInput: HTMLInputElement = hostElement.querySelector('input')!;
+      const nameDisplay: HTMLElement = hostElement.querySelector('span')!;
 
       // simulate user entering a new name into the input box
       nameInput.value = 'quick BROWN  fOx';
