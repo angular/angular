@@ -56,7 +56,7 @@ npm install @example/my-builder
 
 ## Creating a builder
 
-As an example, let's create a builder that executes a shell command.
+As an example, let's create a builder that copies a file.
 To create a builder, use the `createBuilder()` CLI Builder function, and return a `Promise<BuilderOutput>` object.
 
 <code-example
@@ -65,9 +65,10 @@ To create a builder, use the `createBuilder()` CLI Builder function, and return 
   region="builder-skeleton">
 </code-example>
 
-Now let’s add some logic to it.
-The following code retrieves the command and arguments from the user options, spawns the new process, and waits for the process to finish.
-If the process is successful (returns a code of 0), it resolves the return value.
+Now let’s add some logic to it. The following code retrieves the source and destination file paths
+from user options and copies the file from the source to the destination (leveraging the
+[Promise version of the built-in NodeJS `copyFile()` function](https://nodejs.org/api/fs.html#fs_fspromises_copyfile_src_dest_mode)).
+If the copy operation fails, it returns an error with a message about the underlying problem.
 
 <code-example
   path="cli-builder/src/my-builder.ts"
@@ -77,11 +78,13 @@ If the process is successful (returns a code of 0), it resolves the return value
 
 ### Handling output
 
-By default, the `spawn()` method outputs everything to the process standard output and error.
-To make it easier to test and debug, we can forward the output to the CLI Builder logger instead.
-This also allows the builder itself to be executed in a separate process, even if the standard output and error are deactivated (as in an [Electron app](https://electronjs.org/)).
+By default, `copyFile()` does not print anything to the process standard output or error. If an
+error occurs, it may be difficult to understand exactly what the builder was trying to do when the
+problem occurred. We can add some additional context by logging additional information using the
+`Logger` API. This also allows the builder itself to be executed in a separate process, even if the
+standard output and error are deactivated (as in an [Electron app](https://electronjs.org/)).
 
-We can retrieve a Logger instance from the context.
+We can retrieve a `Logger` instance from the context.
 
 <code-example
   path="cli-builder/src/my-builder.ts"
@@ -99,7 +102,7 @@ The status string is unmodified unless you pass in a new string value.
 
 You can see an [example](https://github.com/angular/angular-cli/blob/ba21c855c0c8b778005df01d4851b5a2176edc6f/packages/angular_devkit/build_angular/src/tslint/index.ts#L107) of how the `tslint` builder reports progress.
 
-In our example, the shell command either finishes or is still executing, so there’s no need for a progress report, but we can report status so that a parent builder that called our builder would know what’s going on.
+In our example, the copy operation either finishes or is still executing, so there’s no need for a progress report, but we can report status so that a parent builder that called our builder would know what’s going on.
 Use the `context.reportStatus()` method to generate a status string of any length.
 (Note that there’s no guarantee that a long string will be shown entirely; it could be cut to fit the UI that displays it.)
 Pass an empty string to remove the status.
@@ -121,23 +124,21 @@ You define builder inputs in a JSON schema associated with that builder.
 The Architect tool collects the resolved input values into an `options` object, and validates their types against the schema before passing them to the builder function.
 (The Schematics library does the same kind of validation of user input.)
 
-For our example builder, we expect the `options` value to be a `JsonObject` with two keys: a `command` that is a string, and an `args` array of string values.
+For our example builder, we expect the `options` value to be a `JsonObject` with two keys: a
+`source` and a `destination`, each of which are a string.
 
 We can provide the following schema for type validation of these values.
 
-<code-example language="json" header="command/schema.json">
+<code-example language="json" header="src/schema.json">
 {
   "$schema": "http://json-schema.org/schema",
   "type": "object",
   "properties": {
-    "command": {
+    "source": {
       "type": "string"
     },
-    "args": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
+    "destination": {
+      "type": "string"
     }
   }
 }
@@ -159,10 +160,10 @@ Create a file named `builders.json` that looks like this:
 
 {
   "builders": {
-    "command": {
-      "implementation": "./command",
-      "schema": "./command/schema.json",
-      "description": "Runs any command line in the operating system."
+    "copy": {
+      "implementation": "./dist/my-builder.js",
+      "schema": "./src/schema.json",
+      "description": "Copies a file."
     }
   }
 }
@@ -174,21 +175,22 @@ In the `package.json` file, add a `builders` key that tells the Architect tool w
 <code-example language="json" header="package.json">
 
 {
-  "name": "@example/command-runner",
+  "name": "@example/copy-file",
   "version": "1.0.0",
-  "description": "Builder for Command Runner",
+  "description": "Builder for copying files",
   "builders": "builders.json",
-  "devDependencies": {
-    "@angular-devkit/architect": "^1.0.0"
+  "dependencies": {
+    "@angular-devkit/architect": "~0.1200.0",
+    "@angular-devkit/core": "^12.0.0"
   }
 }
 
 </code-example>
 
-The official name of our builder is now ` @example/command-runner:command`.
+The official name of our builder is now ` @example/copy-file:copy`.
 The first part of this is the package name (resolved using node resolution), and the second part is the builder name (resolved using the `builders.json` file).
 
-Using one of our `options` is very straightforward, we did this in the previous section when we accessed `options.command`.
+Using one of our `options` is very straightforward, we did this in the previous section when we accessed `options.source` and `options.destination`.
 
 <code-example
   path="cli-builder/src/my-builder.ts"
@@ -288,7 +290,7 @@ We can publish the builder to npm (see [Publishing your Library](guide/creating-
 
 <code-example language="sh">
 
-npm install @example/command-runner
+npm install @example/copy-file
 
 </code-example>
 
@@ -333,18 +335,18 @@ If we create a new project with `ng new builder-test`, the generated `angular.js
 
 ### Adding a target
 
-Let's add a new target that will run our builder to execute a particular command.
-This target will tell the builder to run `touch` on a file, in order to update its modified date.
+Let's add a new target that will run our builder to copy a file.
+This target will tell the builder to copy the `package.json` file.
 
 We need to update the `angular.json` file to add a target for this builder to the "architect" section of our new project.
 
 * We'll add a new target section to the "architect" object for our project.
 
-* The target named "touch" uses our builder, which we published to `@example/command-runner`. (See [Publishing your Library](guide/creating-libraries#publishing-your-library).)
+* The target named "copy-package" uses our builder, which we published to `@example/copy-file`. (See [Publishing your Library](guide/creating-libraries#publishing-your-library))
 
-* The options object provides default values for the two inputs that we defined; `command`, which is the Unix command to execute, and `args`, an array that contains the file to operate on.
+* The options object provides default values for the two inputs that we defined; `source`, which is the existing file we are copying, and `destination`, the path we want to copy to.
 
-* The configurations key is optional, we'll leave it out for now.
+* The `configurations` key is optional, we'll leave it out for now.
 
 <code-example language="json" header="angular.json">
 
@@ -352,13 +354,11 @@ We need to update the `angular.json` file to add a target for this builder to th
   "projects": {
     "builder-test": {
       "architect": {
-        "touch": {
-          "builder": "@example/command-runner:command",
+        "copy-package": {
+          "builder": "@example/copy-file:copy",
           "options": {
-            "command": "touch",
-            "args": [
-              "src/main.ts"
-            ]
+            "source": "package.json",
+            "destination": "package-copy.json"
           }
         },
         "build": {
@@ -393,27 +393,27 @@ We need to update the `angular.json` file to add a target for this builder to th
 
 ### Running the builder
 
-To run our builder with the new target's default configuration, use the following CLI command in a Linux shell.
+To run our builder with the new target's default configuration, use the following CLI command.
 
 <code-example language="sh">
 
-   ng run builder-test:touch
+ng run builder-test:copy-package
 
 </code-example>
 
-This will run the `touch` command on the `src/main.ts` file.
+This will copy the `package.json` file to `package-copy.json`.
 
 You can use command-line arguments to override the configured defaults.
-For example, to run with a different `command` value, use the following CLI command.
+For example, to run with a different `destination` value, use the following CLI command.
 
 <code-example language="sh">
 
-ng run builder-test:touch --command=ls
+ng run builder-test:copy-package --destination=package-other.json
 
 </code-example>
 
-This will call the `ls` command instead of the `touch` command.
-Because we did not override the *args* option, it will list information about the `src/main.ts` file (the default value provided for the target).
+This will copy the file to `package-other.json` instead of `package-copy.json`.
+Because we did not override the *source* option, it will copy from the `package.json` file (the default value provided for the target).
 
 ## Testing a builder
 
@@ -421,10 +421,10 @@ Use integration testing for your builder, so that you can use the Architect sche
 
 * In the builder source directory, we have created a new test file `my-builder.spec.ts`. The code creates new instances of `JsonSchemaRegistry` (for schema validation), `TestingArchitectHost` (an in-memory implementation of `ArchitectHost`), and `Architect`.
 
-* We've added a `builders.json` file next to the builder's [`package.json` file](https://github.com/mgechev/cli-builders-demo/blob/master/command-builder/builders.json), and modified the package file to point to it.
+* We've added a `builders.json` file next to the builder's `package.json` file, and modified the package file to point to it.
 
-Here’s an example of a test that runs the command builder.
-The test uses the builder to run the `node --print 'foo'` command, then validates that the `logger` contains an entry for `foo`.
+Here’s an example of a test that runs the copy file builder.
+The test uses the builder to copy the `package.json` file and validates that the copied file's contents are the same as the source.
 
 <code-example
   path="cli-builder/src/my-builder.spec.ts"
