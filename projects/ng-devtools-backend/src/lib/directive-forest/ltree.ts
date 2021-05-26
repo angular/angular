@@ -71,6 +71,15 @@ export class LTreeStrategy {
     const tNode = data[idx];
     const node = lView[idx][ELEMENT];
     const element = (node.tagName || node.nodeName).toLowerCase();
+    if (!tNode) {
+      return {
+        nativeElement: node,
+        children: [],
+        element,
+        directives: [],
+        component: null,
+      };
+    }
     for (let i = tNode.directiveStart; i < tNode.directiveEnd; i++) {
       const instance = lView[i];
       const dirMeta = data[i];
@@ -88,7 +97,7 @@ export class LTreeStrategy {
       }
     }
     return {
-      nativeElement: lView[idx][ELEMENT],
+      nativeElement: node,
       children: [],
       element,
       directives,
