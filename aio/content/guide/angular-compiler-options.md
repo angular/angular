@@ -221,3 +221,14 @@ When you use the CLI command `ng new --strict`, it is set to `true` in the gener
 ### `trace`
 
 When `true`, prints extra information while compiling templates. Default is `false`.
+
+
+{@a cli-options}
+## Command Line Options
+
+While most of the time you interact with the Angular Compiler indirectly using Angular CLI, when debugging certain issues, you might find it useful to invoke the Angular Compiler directly.
+You can use the `ngc` command provided by the `@angular/compiler-cli` npm package to call the compiler from the command line.
+
+The `ngc` command is just a wrapper around TypeScript's `tsc` compiler command and is primarily configured via the `tsconfig.json` configuration options documented in [the previous sections](#angular-compiler-options).
+
+In addition to the configuration file, you can also use [`tsc` command line options](https://www.typescriptlang.org/docs/handbook/compiler-options.html) to configure `ngc`.
