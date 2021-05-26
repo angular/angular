@@ -56,14 +56,15 @@ function _extractId(valueString: string): string {
  *
  * To customize the default option comparison algorithm, `<select>` supports `compareWith` input.
  * `compareWith` takes a **function** which has two arguments: `option1` and `option2`.
- * If `compareWith` is given, Angular selects option by the return value of the function.
+ * If `compareWith` function is provided, Angular selects an option based on the return value of the
+ * function.
  *
  * ```ts
  * const selectedCountriesControl = new FormControl();
  * ```
  *
  * ```
- * <select [compareWith]="compareFn"  [formControl]="selectedCountriesControl">
+ * <select [compareWith]="compareFn" [formControl]="selectedCountriesControl">
  *     <option *ngFor="let country of countries" [ngValue]="country">
  *         {{country.name}}
  *     </option>
@@ -73,10 +74,29 @@ function _extractId(valueString: string): string {
  *     return c1 && c2 ? c1.id === c2.id : c1 === c2;
  * }
  * ```
+ * **Note:** a function provided using the `compareWith` input is invoked in a context of the
+ * corresponding `SelectControlValueAccessor` class instance. If you want to use component's
+ * instance as a context instead, you can bind it to the `compareWith` function or use an arrow
+ * function and declare it as a class property.
  *
- * **Note:** We listen to the 'change' event because 'input' events aren't fired
- * for selects in IE, see:
- * https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event#browser_compatibility
+ * ```ts
+ * class MyComponent {
+ *   compareFnA = (c1: Country, c2: Country): boolean => {
+ *     // `this` will refer to the `MyComponent` instance
+ *     // ...
+ *   }
+ *
+ *   compareFnB = (function(c1: Country, c2: Country): boolean => {
+ *     // `this` will refer to the `MyComponent` instance
+ *     // ...
+ *   }).bind(this);
+ *
+ *   compareFnC(c1: Country, c2: Country): boolean {
+ *     // `this` will refer to the `SelectControlValueAccessor` instance
+ *     // ...
+ *   }
+ * }
+ * ```
  *
  * @ngModule ReactiveFormsModule
  * @ngModule FormsModule
@@ -85,7 +105,12 @@ function _extractId(valueString: string): string {
 @Directive({
   selector:
       'select:not([multiple])[formControlName],select:not([multiple])[formControl],select:not([multiple])[ngModel]',
-  host: {'(change)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
+  host: {
+    // Note: use the 'change' event because the 'input' ones aren't fired for selects in IE, see:
+    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event#browser_compatibility
+    '(change)': 'onChange($event.target.value)',
+    '(blur)': 'onTouched()',
+  },
   providers: [SELECT_VALUE_ACCESSOR]
 })
 export class SelectControlValueAccessor extends BuiltInControlValueAccessor implements
@@ -101,8 +126,11 @@ export class SelectControlValueAccessor extends BuiltInControlValueAccessor impl
 
   /**
    * @description
-   * Tracks the option comparison algorithm for tracking identities when
-   * checking for changes.
+   * Allows to override the default comparison algorithm that is used to find currently selected
+   * `<option>` element when its data is provided using the `[ngValue]` binding (which supports
+   * binding to objects). See [Customizing option
+   * selection](api/forms/SelectControlValueAccessor#customizing-option-selection) section for
+   * additional information and examples.
    */
   @Input()
   set compareWith(fn: (o1: any, o2: any) => boolean) {

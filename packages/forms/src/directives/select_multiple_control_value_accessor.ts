@@ -78,7 +78,12 @@ abstract class HTMLCollection {
 @Directive({
   selector:
       'select[multiple][formControlName],select[multiple][formControl],select[multiple][ngModel]',
-  host: {'(change)': 'onChange($event.target)', '(blur)': 'onTouched()'},
+  host: {
+    // Note: use the 'change' event because the 'input' ones aren't fired for selects in IE, see:
+    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event#browser_compatibility
+    '(change)': 'onChange($event.target)',
+    '(blur)': 'onTouched()',
+  },
   providers: [SELECT_MULTIPLE_VALUE_ACCESSOR]
 })
 export class SelectMultipleControlValueAccessor extends BuiltInControlValueAccessor implements
@@ -97,8 +102,11 @@ export class SelectMultipleControlValueAccessor extends BuiltInControlValueAcces
 
   /**
    * @description
-   * Tracks the option comparison algorithm for tracking identities when
-   * checking for changes.
+   * Allows to override the default comparison algorithm that is used to find currently selected
+   * `<option>` element when its data is provided using the `[ngValue]` binding (which supports
+   * binding to objects). See [Customizing option
+   * selection](api/forms/SelectControlValueAccessor#customizing-option-selection) section for
+   * additional information and examples.
    */
   @Input()
   set compareWith(fn: (o1: any, o2: any) => boolean) {
