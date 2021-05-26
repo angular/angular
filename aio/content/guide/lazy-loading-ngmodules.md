@@ -271,7 +271,7 @@ With the CLI, the command to generate a service is as follows:
   ng generate service <service-name>
 </code-example>
 
-In your service, import the following router members, implement `Resolve`, and inject the `Router` service:
+In the newly-created service, implement the `Resolve` interface provided by the `@angular/router` package:
 
 <code-example header="Resolver service (excerpt)">
 
@@ -279,8 +279,14 @@ import { Resolve } from '@angular/router';
 
 ...
 
-export class CrisisDetailResolverService implements Resolve<> {
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<> {
+/* An interface that represents your data model */
+export interface Crisis {
+  id: number;
+  name: string;
+}
+
+export class CrisisDetailResolverService implements Resolve<Crisis> {
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Crisis> {
     // your logic goes here
   }
 }
@@ -291,7 +297,7 @@ Import this resolver into your module's routing module.
 
 <code-example header="Feature module's routing module (excerpt)">
 
-import { YourResolverService }    from './your-resolver.service';
+import { CrisisDetailResolverService } from './crisis-detail-resolver.service';
 
 </code-example>
 
@@ -302,22 +308,44 @@ Add a `resolve` object to the component's `route` configuration.
   path: '/your-path',
   component: YourComponent,
   resolve: {
-    crisis: YourResolverService
+    crisis: CrisisDetailResolverService
   }
 }
 </code-example>
 
 
-In the component, use an `Observable` to get the data from the `ActivatedRoute`.
+In the component's constructor, inject an instance of the `ActivatedRoute` class that represents the current route.
 
+<code-example header="Component's constructor (excerpt)">
 
-<code-example header="Component (excerpt)">
-ngOnInit() {
-  this.route.data
-    .subscribe((your-parameters) => {
-      // your data-specific code goes here
-    });
+import { ActivatedRoute } from '@angular/router';
+
+@Component({ ... })
+class YourComponent {
+  constructor(private route: ActivatedRoute) {}
 }
+
+</code-example>
+
+Use the injected instance of the `ActivatedRoute` class to access `data` associated with a given route.
+
+<code-example header="Component's ngOnInit lifecycle hook (excerpt)">
+
+import { ActivatedRoute } from '@angular/router';
+
+@Component({ ... })
+class YourComponent {
+  constructor(private route: ActivatedRoute) {}
+
+  ngOnInit() {
+    this.route.data
+      .subscribe(data => {
+        const crisis: Crisis = data.crisis;
+        // ...
+      });
+  }
+}
+
 </code-example>
 
 For more information with a working example, see the [routing tutorial section on preloading](guide/router-tutorial-toh#preloading-background-loading-of-feature-areas).
