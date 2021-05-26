@@ -300,7 +300,7 @@ The *local variable* approach is easy. But it is limited because
 the parent-child wiring must be done entirely within the parent template.
 The parent component *itself* has no access to the child.
 
-You can't use the *local variable* technique if an the parent component's *class* relies on the
+You can't use the *local variable* technique if the parent component's *class* relies on the
 child component's *class*.  The parent-child relationship of the components is not established
 within each components respective *class* with the *local variable* technique.  Since the *class*
 instances are not connected to one another, the parent *class* cannot access the child *class*
