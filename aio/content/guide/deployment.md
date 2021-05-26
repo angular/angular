@@ -281,6 +281,23 @@ and to
     } ]
   </code-example>
 
+{@a mime}
+
+### Configuring correct MIME-type for JavaScript assets
+
+All of your application JavaScript files must be served by the server with the [`Content-Type` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type) set to `text/javascript` or another [JavaScript-compatible MIME-type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types#textjavascript).
+
+Most servers and hosting services already do this by default.
+
+Server with misconfigured mime-type for JavaScript files will cause an application to fail to start with the following error:
+
+```
+Failed to load module script: The server responded with a non-JavaScript MIME type of "text/plain". Strict MIME type checking is enforced for module scripts per HTML spec.
+```
+
+If this is the case, you will need to check your server configuration and reconfigure it to serve `.js` files with `Content-Type: text/javascript`. See your server's manual for instructions on how to do this.
+
+
 {@a cors}
 
 ### Requesting services from a different server (CORS)
