@@ -28,11 +28,9 @@ describe('BannerComponent (external files)', () => {
   describe('Two beforeEach', () => {
     // #docregion async-before-each
     beforeEach(async () => {
-      TestBed
-          .configureTestingModule({
-            declarations: [ BannerComponent ],
-          })
-          .compileComponents();  // compile template and css
+      await TestBed.configureTestingModule({
+        declarations: [ BannerComponent ],
+      }).compileComponents();  // compile template and css
     });
     // #enddocregion async-before-each
 
