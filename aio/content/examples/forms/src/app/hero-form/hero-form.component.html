@@ -147,7 +147,7 @@
       <form #heroForm="ngForm">
       <!-- #enddocregion template-variable-->
     <!-- #docregion ngModel-2-->
-        {{diagnostic}}
+        {{ model | json }}
         <div class="form-group">
           <label for="name">Name</label>
           <input type="text" class="form-control" id="name"
