@@ -15,6 +15,13 @@ The CLI schematic `@nguniversal/express-engine` performs the required steps, as 
 
 <div class="alert is-helpful">
 
+  Angular Universal requires an [active LTS or maintenance LTS](https://nodejs.org/about/releases) version of Node.js.
+  See the `engines` property in the [package.json](https://unpkg.com/browse/@angular/platform-server/package.json) file to learn about the currently supported versions.
+
+</div>
+
+<div class="alert is-helpful">
+
   **Note:** <live-example downloadOnly>Download the finished sample code</live-example>,
   which runs in a [Node.js® Express](https://expressjs.com/) server.
 
