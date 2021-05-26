@@ -18,6 +18,7 @@ ng_module(
         "//src/cdk/testing",
         "//src/cdk/testing/testbed",
         "//src/material/autocomplete",
+        "//src/material/button",
         "//src/material/chips",
         "//src/material/chips/testing",
         "//src/material/form-field",

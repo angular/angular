@@ -1,0 +1,23 @@
+<div class="example-button-container">
+  <button mat-raised-button (click)="formControl.disable()">Disable form control</button>
+  <button mat-raised-button (click)="formControl.enable()">Enable form control</button>
+</div>
+
+<p>
+  Selected keywords: {{formControl.value}}
+</p>
+
+<mat-form-field class="example-chip-list">
+  <mat-label>Video keywords</mat-label>
+  <mat-chip-list #chipList aria-label="Video keywords" multiple [formControl]="formControl">
+    <mat-chip
+      *ngFor="let keyword of keywords"
+      (removed)="removeKeyword(keyword)">
+      {{keyword}}
+    </mat-chip>
+    <input
+      placeholder="New keyword..."
+      [matChipInputFor]="chipList"
+      (matChipInputTokenEnd)="addKeywordFromInput($event)">
+  </mat-chip-list>
+</mat-form-field>

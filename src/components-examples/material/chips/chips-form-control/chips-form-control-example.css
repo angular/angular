@@ -1,0 +1,7 @@
+.example-chip-list {
+  width: 100%;
+}
+
+.example-button-container > button {
+  margin: 0 12px;
+}
