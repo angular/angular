@@ -40,6 +40,8 @@ INTEGRATION_TESTS = {
             # everything down. Ask Bazel to allocate multiple CPUs for these tests with "cpu:n" tag.
             "cpu:3",
             "no-ivy-aot",
+            # Tagged test as manual as it is broken due to chrome driver, but is deprecated.
+            "manual",
         ],
     },
     "cli-hello-world": {"commands": "payload_size_tracking"},
