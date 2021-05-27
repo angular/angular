@@ -8,7 +8,7 @@ require('inquirer');
 var child_process = require('child_process');
 var semver = require('semver');
 var graphql = require('@octokit/graphql');
-var Octokit = require('@octokit/rest');
+var rest = require('@octokit/rest');
 var typedGraphqlify = require('typed-graphqlify');
 var url = require('url');
 
@@ -68,32 +68,27 @@ var GithubGraphqlClientError = /** @class */ (function (_super) {
  * Additionally, provides convenience methods for actions which require multiple requests, or
  * would provide value from memoized style responses.
  **/
-var GithubClient = /** @class */ (function (_super) {
-    tslib.__extends(GithubClient, _super);
+var GithubClient = /** @class */ (function () {
     /**
      * @param token The github authentication token for Github Rest and Graphql API requests.
      */
     function GithubClient(token) {
-        var _this = 
-        // Pass in authentication token to base Octokit class.
-        _super.call(this, { auth: token }) || this;
-        _this.token = token;
-        /** The current user based on checking against the Github API. */
-        _this._currentUser = null;
+        this.token = token;
         /** The graphql instance with authentication set during construction. */
-        _this._graphql = graphql.graphql.defaults({ headers: { authorization: "token " + _this.token } });
-        _this.hook.error('request', function (error) {
+        this._graphql = graphql.graphql.defaults({ headers: { authorization: "token " + this.token } });
+        /** The Octokit instance actually performing API requests. */
+        this._octokit = new rest.Octokit({ token: this.token });
+        this.pulls = this._octokit.pulls;
+        this.repos = this._octokit.repos;
+        this.issues = this._octokit.issues;
+        this.git = this._octokit.git;
+        this.paginate = this._octokit.paginate;
+        this.rateLimit = this._octokit.rateLimit;
+        this._octokit.hook.error('request', function (error) {
             // Wrap API errors in a known error class. This allows us to
             // expect Github API errors better and in a non-ambiguous way.
             throw new GithubApiRequestError(error.status, error.message);
         });
-        // Note: The prototype must be set explictly as Github's Octokit class is a non-standard class
-        // definition which adjusts the prototype chain.
-        // See:
-        //    https://github.com/Microsoft/TypeScript/wiki/FAQ#why-doesnt-extending-built-ins-like-error-array-and-map-work
-        //    https://github.com/octokit/rest.js/blob/7b51cee4a22b6e52adcdca011f93efdffa5df998/lib/constructor.js
-        Object.setPrototypeOf(_this, GithubClient.prototype);
-        return _this;
     }
     /** Perform a query using Github's Graphql API. */
     GithubClient.prototype.graphql = function (queryObject, params) {
@@ -112,31 +107,8 @@ var GithubClient = /** @class */ (function (_super) {
             });
         });
     };
-    /** Retrieve the login of the current user from Github. */
-    GithubClient.prototype.getCurrentUser = function () {
-        return tslib.__awaiter(this, void 0, void 0, function () {
-            var result;
-            return tslib.__generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        // If the current user has already been retrieved return the current user value again.
-                        if (this._currentUser !== null) {
-                            return [2 /*return*/, this._currentUser];
-                        }
-                        return [4 /*yield*/, this.graphql({
-                                viewer: {
-                                    login: typedGraphqlify.types.string,
-                                }
-                            })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, this._currentUser = result.viewer.login];
-                }
-            });
-        });
-    };
     return GithubClient;
-}(Octokit));
+}());
 
 /**
  * @license

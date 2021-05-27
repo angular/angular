@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as Octokit from '@octokit/rest';
+import {Octokit} from '@octokit/rest';
 import {spawnSync, SpawnSyncOptions, SpawnSyncReturns} from 'child_process';
 import {Options as SemVerOptions, parse, SemVer} from 'semver';
 
