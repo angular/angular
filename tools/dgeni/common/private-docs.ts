@@ -30,7 +30,8 @@ export function isPublicDoc(doc: ApiDoc) {
   if (_isEnforcedPublicDoc(doc)) {
     return true;
   }
-  if (_hasDocsPrivateTag(doc) || doc.name.startsWith('_')) {
+  if (_hasDocsPrivateTag(doc) || doc.name.startsWith('_') ||
+      doc.name.startsWith('ngAcceptInputType_')) {
     return false;
   } else if (doc instanceof MemberDoc) {
     return !_isInternalMember(doc);

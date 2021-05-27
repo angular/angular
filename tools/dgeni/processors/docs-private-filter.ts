@@ -27,7 +27,8 @@ export class DocsPrivateFilter implements Processor {
       // Filter out private class members which could be annotated
       // with the "@docs-private" tag.
       if (isPublic && doc instanceof ClassExportDoc) {
-        doc.members = doc.members.filter(memberDoc => isPublicDoc(memberDoc));
+        doc.members = doc.members.filter(isPublicDoc);
+        doc.statics = doc.statics.filter(isPublicDoc);
       }
 
       return isPublic;
