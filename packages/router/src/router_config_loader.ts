@@ -16,7 +16,12 @@ import {standardizeConfig} from './utils/config';
 
 /**
  * The [DI token](guide/glossary/#di-token) for a router configuration.
- * @see `ROUTES`
+ *
+ * `ROUTES` is a low level API for router configuration via dependency injection.
+ *
+ * We recommend that in almost all cases to use higher level APIs such as `RouterModule.forRoot()`,
+ * `RouterModule.forChild()`, `provideRoutes`, or `Router.resetConfig()`.
+ *
  * @publicApi
  */
 export const ROUTES = new InjectionToken<Route[][]>('ROUTES');
