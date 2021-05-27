@@ -112,18 +112,56 @@ In case of a false positive like these, there are a few options:
 * You can disable certain type-checking operations individually, while maintaining strictness in other aspects, by setting a _strictness flag_ to `false`.
 * If you want to use `strictTemplates` and `strictNullChecks` together, you can opt out of strict null type checking specifically for input bindings via `strictNullInputTypes`.
 
-|Strictness flag|Effect|
-|-|-|
-|`strictInputTypes`|Whether the assignability of a binding expression to the `@Input()` field is checked. Also affects the inference of directive generic types. |
-|`strictInputAccessModifiers`|Whether access modifiers such as `private`/`protected`/`readonly` are honored when assigning a binding expression to an `@Input()`. If disabled, the access modifiers of the `@Input` are ignored; only the type is checked.|
-|`strictNullInputTypes`|Whether `strictNullChecks` is honored when checking `@Input()` bindings (per `strictInputTypes`). Turning this off can be useful when using a library that was not built with `strictNullChecks` in mind.|
-|`strictAttributeTypes`|Whether to check `@Input()` bindings that are made using text attributes (for example, `<mat-tab label="Step 1">` vs `<mat-tab [label]="'Step 1'">`).
-|`strictSafeNavigationTypes`|Whether the return type of safe navigation operations (for example, `user?.name`) will be correctly inferred based on the type of `user`). If disabled, `user?.name` will be of type `any`.
-|`strictDomLocalRefTypes`|Whether local references to DOM elements will have the correct type. If disabled `ref` will be of type `any` for `<input #ref>`.|
-|`strictOutputEventTypes`|Whether `$event` will have the correct type for event bindings to component/directive an `@Output()`, or to animation events. If disabled, it will be `any`.|
-|`strictDomEventTypes`|Whether `$event` will have the correct type for event bindings to DOM events. If disabled, it will be `any`.|
-|`strictContextGenerics`|Whether the type parameters of generic components will be inferred correctly (including any generic bounds). If disabled, any type parameters will be `any`.|
-|`strictLiteralTypes`|Whether object and array literals declared in the template will have their type inferred. If disabled, the type of such literals will be `any`.|
+<table>
+    <thead>
+        <tr>
+            <td>Strictness flag</td>
+            <td>Effect</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>`strictInputTypes`</td>
+            <td>Whether the assignability of a binding expression to the `@Input()` field is checked. Also affects the inference of directive generic types.</td>
+        </tr>
+        <tr>
+            <td>`strictInputAccessModifiers`</td>
+            <td>Whether access modifiers such as `private`/`protected`/`readonly` are honored when assigning a binding expression to an `@Input()`. If disabled, the access modifiers of the `@Input` are ignored; only the type is checked.</td>
+        </tr>
+        <tr>
+            <td>`strictNullInputTypes`</td>
+            <td>Whether `strictNullChecks` is honored when checking `@Input()` bindings (per `strictInputTypes`). Turning this off can be useful when using a library that was not built with `strictNullChecks` in mind.</td>
+        </tr>
+        <tr>
+            <td>`strictAttributeTypes`</td>
+            <td>Whether to check `@Input()` bindings that are made using text attributes (for example, `&lt;mat-tab label="Step 1"&gt;` vs `&lt;mat-tab [label]="'Step 1'"&gt;`).</td>
+        </tr>
+        <tr>
+            <td>`strictSafeNavigationTypes`</td>
+            <td>Whether the return type of safe navigation operations (for example, `user?.name`) will be correctly inferred based on the type of `user`). If disabled, `user?.name` will be of type `any`.</td>
+        </tr>
+        <tr>
+            <td>`strictDomLocalRefTypes`</td>
+            <td>Whether local references to DOM elements will have the correct type. If disabled `ref` will be of type `any` for `&lt;input #ref&gt;`.</td>
+        </tr>
+        <tr>
+            <td>`strictOutputEventTypes`</td>
+            <td>Whether `$event` will have the correct type for event bindings to component/directive an `@Output()`, or to animation events. If disabled, it will be `any`.</td>
+        </tr>
+        <tr>
+            <td>`strictDomEventTypes`</td>
+            <td>Whether `$event` will have the correct type for event bindings to DOM events. If disabled, it will be `any`.</td>
+        </tr>
+        <tr>
+            <td>`strictContextGenerics`</td>
+            <td>Whether the type parameters of generic components will be inferred correctly (including any generic bounds). If disabled, any type parameters will be `any`.</td>
+        </tr>
+        <tr>
+            <td>`strictLiteralTypes`</td>
+            <td>Whether object and array literals declared in the template will have their type inferred. If disabled, the type of such literals will be `any`.</td>
+        </tr>
+    </tbody>
+</table>
 
 If you still have issues after troubleshooting with these flags, you can fall back to full mode by disabling `strictTemplates`.
 
