@@ -1,6 +1,7 @@
 import {DocCollection, Processor} from 'dgeni';
 import {BaseApiDoc} from 'dgeni-packages/typescript/api-doc-types/ApiDoc';
 import {ClassExportDoc} from 'dgeni-packages/typescript/api-doc-types/ClassExportDoc';
+import {InterfaceExportDoc} from 'dgeni-packages/typescript/api-doc-types/InterfaceExportDoc';
 import {getDocsPublicTag, isPublicDoc} from '../common/private-docs';
 
 /**
@@ -12,26 +13,30 @@ export class DocsPrivateFilter implements Processor {
   $runAfter = ['mergeInheritedProperties'];
 
   $process(docs: DocCollection) {
-    return docs.filter(doc => {
-      const isPublic = isPublicDoc(doc);
+    const publicDocs = docs.filter(isPublicDoc);
 
+    publicDocs.forEach(doc => {
       // Update the API document name in case the "@docs-public" tag is used
       // with an alias name.
-      if (isPublic && doc instanceof BaseApiDoc) {
+      if (doc instanceof BaseApiDoc) {
         const docsPublicTag = getDocsPublicTag(doc);
         if (docsPublicTag !== undefined && docsPublicTag.description) {
           doc.name = docsPublicTag.description;
         }
       }
 
+      if (doc instanceof InterfaceExportDoc) {
+        doc.members = doc.members.filter(isPublicDoc);
+      }
+
       // Filter out private class members which could be annotated
       // with the "@docs-private" tag.
-      if (isPublic && doc instanceof ClassExportDoc) {
+      if (doc instanceof ClassExportDoc) {
         doc.members = doc.members.filter(isPublicDoc);
         doc.statics = doc.statics.filter(isPublicDoc);
       }
-
-      return isPublic;
     });
+
+    return publicDocs;
   }
 }
