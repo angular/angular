@@ -1,6 +1,6 @@
 /* tslint:disable:no-unused-variable */
 // #docplaster
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component } from '@angular/core';
 
 // #docregion
 @Component({
@@ -12,7 +12,7 @@ export class QuestSummaryComponent { }
 // #enddocregion
 /*
   // #docregion encapsulation.shadow
-  // warning: few browsers support shadow DOM encapsulation at this time
+  // warning: not all browsers support shadow DOM encapsulation at this time
   encapsulation: ViewEncapsulation.ShadowDom
   // #enddocregion encapsulation.shadow
 */
