@@ -10,10 +10,8 @@ ts_library(
         "//packages/benchpress",
         "@npm//@types/node",
         "@npm//@types/selenium-webdriver",
-        "@npm//@types/shelljs",
         "@npm//node-uuid",
         "@npm//protractor",
         "@npm//selenium-webdriver",
-        "@npm//shelljs",
     ],
 )

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {mkdir} from 'shelljs';
+import {mkdirSync} from 'fs';
 
 export {verifyNoBrowserErrors} from './e2e_util';
 
@@ -61,7 +61,9 @@ function createBenchpressRunner(): Runner {
     runId = process.env.GIT_SHA + ' ' + runId;
   }
   const resultsFolder = './dist/benchmark_results';
-  mkdir('-p', resultsFolder);
+  mkdirSync(resultsFolder, {
+    recursive: true,
+  });
   const providers: StaticProvider[] = [
     SeleniumWebDriverAdapter.PROTRACTOR_PROVIDERS,
     {provide: Options.FORCE_GC, useValue: globalOptions.forceGc},
