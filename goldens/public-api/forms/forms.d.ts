@@ -336,26 +336,26 @@ export declare class FormsModule {
 }
 
 export declare class MaxLengthValidator implements Validator, OnChanges {
-    maxlength: string | number;
+    maxlength: string | number | null;
     ngOnChanges(changes: SimpleChanges): void;
     registerOnValidatorChange(fn: () => void): void;
     validate(control: AbstractControl): ValidationErrors | null;
 }
 
 export declare class MaxValidator extends AbstractValidatorDirective implements OnChanges {
-    max: string | number;
+    max: string | number | null;
     ngOnChanges(changes: SimpleChanges): void;
 }
 
 export declare class MinLengthValidator implements Validator, OnChanges {
-    minlength: string | number;
+    minlength: string | number | null;
     ngOnChanges(changes: SimpleChanges): void;
     registerOnValidatorChange(fn: () => void): void;
     validate(control: AbstractControl): ValidationErrors | null;
 }
 
 export declare class MinValidator extends AbstractValidatorDirective implements OnChanges {
-    min: string | number;
+    min: string | number | null;
     ngOnChanges(changes: SimpleChanges): void;
 }
 
@@ -449,7 +449,7 @@ export declare class NumberValueAccessor extends ɵangular_packages_forms_forms_
 }
 
 export declare class PatternValidator implements Validator, OnChanges {
-    pattern: string | RegExp;
+    pattern: string | RegExp | null;
     ngOnChanges(changes: SimpleChanges): void;
     registerOnValidatorChange(fn: () => void): void;
     validate(control: AbstractControl): ValidationErrors | null;

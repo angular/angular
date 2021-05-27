@@ -9,10 +9,11 @@
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {Component, Directive, forwardRef, Input, Type, ViewChild} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
-import {AbstractControl, AsyncValidator, COMPOSITION_BUFFER_MODE, ControlValueAccessor, FormControl, FormsModule, MaxValidator, MinValidator, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgForm, NgModel, Validator} from '@angular/forms';
+import {AbstractControl, AsyncValidator, COMPOSITION_BUFFER_MODE, ControlValueAccessor, FormControl, FormsModule, MaxLengthValidator, MaxValidator, MinLengthValidator, MinValidator, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgForm, NgModel, Validator} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent, sortedClassList} from '@angular/platform-browser/testing/src/browser_util';
 import {merge} from 'rxjs';
+import {PatternValidator} from '../src/forms';
 
 import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integration_spec';
 
@@ -1858,6 +1859,73 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            expect(maxValidateFnSpy).not.toHaveBeenCalled();
            expect(minValidateFnSpy).not.toHaveBeenCalled();
          }));
+
+      describe('null validation', () => {
+        it('should not include the min and max validators for null', fakeAsync(() => {
+             @Component({template: '<input type="input" [min]="null" [max]="null">'})
+             class AppComponent {
+             }
+
+             const fixture = initTest(AppComponent);
+             const maxValidateFnSpy = spyOn(MaxValidator.prototype, 'validate');
+             const minValidateFnSpy = spyOn(MinValidator.prototype, 'validate');
+
+             fixture.detectChanges();
+             tick();
+
+             const maxValidator = fixture.debugElement.query(By.directive(MaxValidator));
+             expect(maxValidator).toBeNull();
+
+             const minValidator = fixture.debugElement.query(By.directive(MinValidator));
+             expect(minValidator).toBeNull();
+
+             expect(maxValidateFnSpy).not.toHaveBeenCalled();
+             expect(minValidateFnSpy).not.toHaveBeenCalled();
+                
+           }));
+
+        it('should not include the pattern validators for null', fakeAsync(() => {
+             @Component({template: '<input type="input" [pattern]="null">'})
+             class AppComponent {
+             }
+
+             const fixture = initTest(AppComponent);
+             const patternValidateFnSpy = spyOn(PatternValidator.prototype, 'validate');
+
+             fixture.detectChanges();
+             tick();
+
+             const patternValidator = fixture.debugElement.query(By.directive(PatternValidator));
+             expect(patternValidator).toBeNull();
+
+             expect(patternValidateFnSpy).not.toHaveBeenCalled();
+           }));
+
+        it('should not include the minLength and maxLength validators for null', fakeAsync(() => {
+             @Component({template: '<input type="input" [minLength]="null" [maxLength]="null">'})
+             class AppComponent {
+             }
+
+             const fixture = initTest(AppComponent);
+             const maxLengthValidateFnSpy = spyOn(MaxLengthValidator.prototype, 'validate');
+             const minLenghtValidateFnSpy = spyOn(MinLengthValidator.prototype, 'validate');
+
+             fixture.detectChanges();
+             tick();
+
+             const maxLengthValidator =
+                 fixture.debugElement.query(By.directive(MinLengthValidator));
+             expect(maxLengthValidator).toBeNull();
+
+             const minLengthValidator =
+                 fixture.debugElement.query(By.directive(MaxLengthValidator));
+             expect(minLengthValidator).toBeNull();
+
+             expect(maxLengthValidateFnSpy).not.toHaveBeenCalled();
+             expect(minLenghtValidateFnSpy).not.toHaveBeenCalled();
+                    
+           }));
+      });
 
       ['number', 'string'].forEach((inputType: string) => {
         it(`should validate min and max when constraints are represented using a ${inputType}`,

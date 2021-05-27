@@ -167,14 +167,19 @@ export const MAX_VALIDATOR: StaticProvider = {
   selector:
       'input[type=number][max][formControlName],input[type=number][max][formControl],input[type=number][max][ngModel]',
   providers: [MAX_VALIDATOR],
-  host: {'[attr.max]': 'max ?? null'}
+  host: {
+    '[attr.max]': 'max ?? null'
+  }  // if `this.max` is falsy (including "", 0 and null) this attribute is not added to the DOM
+     // element
 })
 export class MaxValidator extends AbstractValidatorDirective implements OnChanges {
   /**
    * @description
    * Tracks changes to the max bound to this directive.
    */
-  @Input() max!: string|number;
+  @Input()
+  max!: string|number|
+      null;  // This input is always defined (but may be `null`), since the name matches selector.
   /** @internal */
   inputName = 'max';
   /** @internal */
@@ -227,14 +232,19 @@ export const MIN_VALIDATOR: StaticProvider = {
   selector:
       'input[type=number][min][formControlName],input[type=number][min][formControl],input[type=number][min][ngModel]',
   providers: [MIN_VALIDATOR],
-  host: {'[attr.min]': 'min ?? null'}
+  host: {
+    '[attr.min]': 'min ?? null'
+  }  // if `this.min` is falsy (including "", 0 and null) this attribute is not added to the DOM
+     // element
 })
 export class MinValidator extends AbstractValidatorDirective implements OnChanges {
   /**
    * @description
    * Tracks changes to the min bound to this directive.
    */
-  @Input() min!: string|number;
+  @Input()
+  min!: string|number|
+      null;  // This input is always defined (but may be `null`), since the name matches selector.
   /** @internal */
   inputName = 'min';
   /** @internal */
@@ -338,7 +348,10 @@ export const CHECKBOX_REQUIRED_VALIDATOR: StaticProvider = {
   selector:
       ':not([type=checkbox])[required][formControlName],:not([type=checkbox])[required][formControl],:not([type=checkbox])[required][ngModel]',
   providers: [REQUIRED_VALIDATOR],
-  host: {'[attr.required]': 'required ? "" : null'}
+  host: {
+    '[attr.required]': 'required ? "" : null'
+  }  // if `this.required` is falsy (including "", 0 and null) this attribute is not added to the
+     // DOM element
 })
 export class RequiredValidator implements Validator {
   private _required = false;
@@ -402,7 +415,10 @@ export class RequiredValidator implements Validator {
   selector:
       'input[type=checkbox][required][formControlName],input[type=checkbox][required][formControl],input[type=checkbox][required][ngModel]',
   providers: [CHECKBOX_REQUIRED_VALIDATOR],
-  host: {'[attr.required]': 'required ? "" : null'}
+  host: {
+    '[attr.required]': 'required ? "" : null'
+  }  // if `this.required` is falsy (including "", 0 and null) this attribute is not added to the
+     // DOM element
 })
 export class CheckboxRequiredValidator extends RequiredValidator {
   /**
@@ -540,7 +556,10 @@ export const MIN_LENGTH_VALIDATOR: any = {
 @Directive({
   selector: '[minlength][formControlName],[minlength][formControl],[minlength][ngModel]',
   providers: [MIN_LENGTH_VALIDATOR],
-  host: {'[attr.minlength]': 'minlength ? minlength : null'}
+  host: {
+    '[attr.minlength]': 'minlength ? minlength : null'
+  }  // if `this.minlength` is falsy (including "", 0 and null) this attribute is not added to the
+     // DOM element
 })
 export class MinLengthValidator implements Validator, OnChanges {
   private _validator: ValidatorFn = nullValidator;
@@ -551,7 +570,8 @@ export class MinLengthValidator implements Validator, OnChanges {
    * Tracks changes to the minimum length bound to this directive.
    */
   @Input()
-  minlength!: string|number;  // This input is always defined, since the name matches selector.
+  minlength!: string|number|
+      null;  // This input is always defined (but may be `null`), since the name matches selector.
 
   /** @nodoc */
   ngOnChanges(changes: SimpleChanges): void {
@@ -579,8 +599,14 @@ export class MinLengthValidator implements Validator, OnChanges {
   }
 
   private _createValidator(): void {
-    this._validator = minLengthValidator(
-        typeof this.minlength === 'number' ? this.minlength : parseInt(this.minlength, 10));
+    // Enable validation only for truthy values.
+    // Note that `0` will result in no validation.
+    if (this.minlength) {
+      this._validator = minLengthValidator(
+          typeof this.minlength === 'number' ? this.minlength : parseInt(this.minlength, 10));
+    } else {
+      this._validator = nullValidator;
+    }
   }
 }
 
@@ -618,7 +644,10 @@ export const MAX_LENGTH_VALIDATOR: any = {
 @Directive({
   selector: '[maxlength][formControlName],[maxlength][formControl],[maxlength][ngModel]',
   providers: [MAX_LENGTH_VALIDATOR],
-  host: {'[attr.maxlength]': 'maxlength ? maxlength : null'}
+  host: {
+    '[attr.maxlength]': 'maxlength ? maxlength : null'
+  }  // if `this.maxlength` is falsy (including "", 0 and null) this attribute is not added to the
+     // DOM element
 })
 export class MaxLengthValidator implements Validator, OnChanges {
   private _validator: ValidatorFn = nullValidator;
@@ -629,7 +658,8 @@ export class MaxLengthValidator implements Validator, OnChanges {
    * Tracks changes to the maximum length bound to this directive.
    */
   @Input()
-  maxlength!: string|number;  // This input is always defined, since the name matches selector.
+  maxlength!: string|number|
+      null;  // This input is always defined (but may be `null`), since the name matches selector.
 
   /** @nodoc */
   ngOnChanges(changes: SimpleChanges): void {
@@ -656,8 +686,14 @@ export class MaxLengthValidator implements Validator, OnChanges {
   }
 
   private _createValidator(): void {
-    this._validator = maxLengthValidator(
-        typeof this.maxlength === 'number' ? this.maxlength : parseInt(this.maxlength, 10));
+    // Enable validation only for truthy values.
+    // Note that `0` will result in no validation.
+    if (this.maxlength) {
+      this._validator = maxLengthValidator(
+          typeof this.maxlength === 'number' ? this.maxlength : parseInt(this.maxlength, 10));
+    } else {
+      this._validator = nullValidator;
+    }
   }
 }
 
@@ -698,7 +734,10 @@ export const PATTERN_VALIDATOR: any = {
 @Directive({
   selector: '[pattern][formControlName],[pattern][formControl],[pattern][ngModel]',
   providers: [PATTERN_VALIDATOR],
-  host: {'[attr.pattern]': 'pattern ? pattern : null'}
+  host: {
+    '[attr.pattern]': 'pattern ? pattern : null'
+  }  // if `this.pattern` is falsy (including "", 0 and null) this attribute is not added to the DOM
+     // element
 })
 export class PatternValidator implements Validator, OnChanges {
   private _validator: ValidatorFn = nullValidator;
@@ -709,7 +748,8 @@ export class PatternValidator implements Validator, OnChanges {
    * Tracks changes to the pattern bound to this directive.
    */
   @Input()
-  pattern!: string|RegExp;  // This input is always defined, since the name matches selector.
+  pattern!: string|RegExp|
+      null;  // This input is always defined (but may be `null`), since the name matches selector.
 
   /** @nodoc */
   ngOnChanges(changes: SimpleChanges): void {
@@ -736,6 +776,12 @@ export class PatternValidator implements Validator, OnChanges {
   }
 
   private _createValidator(): void {
-    this._validator = patternValidator(this.pattern);
+    // Enable validation only for truthy values.
+    // Note that `0` will result in no validation.
+    if (this.pattern) {
+      this._validator = patternValidator(this.pattern);
+    } else {
+      this._validator = nullValidator;
+    }
   }
 }
