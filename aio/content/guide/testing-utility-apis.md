@@ -25,7 +25,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
     <td>
 
       Runs the body of a test (`it`) or setup (`beforeEach`) function within a special _async test zone_.
-      See [discussion above](guide/testing-components-scenarios#waitForAsync).
+      See [waitForAsync](guide/testing-components-scenarios#waitForAsync).
 
     </td>
   </tr>
@@ -38,7 +38,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
     <td>
 
       Runs the body of a test (`it`) within a special _fakeAsync test zone_, enabling
-      a linear control flow coding style. See [discussion above](guide/testing-components-scenarios#fake-async).
+      a linear control flow coding style. See [fakeAsync](guide/testing-components-scenarios#fake-async).
 
     </td>
   </tr>
@@ -63,7 +63,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
       Accepts an optional argument that moves the virtual clock forward
       by the specified number of milliseconds,
       clearing asynchronous activities scheduled within that timeframe.
-      See [discussion above](guide/testing-components-scenarios#tick).
+      See [tick](guide/testing-components-scenarios#tick).
 
     </td>
   </tr>
@@ -227,7 +227,7 @@ Here are the most important static methods, in order of likely utility.
       Compile the testing module asynchronously after you've finished configuring it.
       You **must** call this method if _any_ of the testing module components have a `templateUrl`
       or `styleUrls` because fetching component template and style files is necessarily asynchronous.
-      See [above](guide/testing-components-scenarios#compile-components).
+      See [compileComponents](guide/testing-components-scenarios#compile-components).
 
       After calling `compileComponents`, the `TestBed` configuration is frozen for the duration of the current spec.
 
@@ -540,7 +540,7 @@ Here are the most useful methods for testers.
 
       To resume testing after completion of asynchronous activity or
       asynchronous change detection, hook that promise.
-      See [above](guide/testing-components-scenarios#when-stable).
+      See [whenStable](guide/testing-components-scenarios#when-stable).
 
     </td>
   </tr>
@@ -710,7 +710,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
       Triggers the event by its name if there is a corresponding listener
       in the element's `listeners` collection.
       The second parameter is the _event object_ expected by the handler.
-      See [above](guide/testing-components-scenarios#trigger-event-handler).
+      See [triggerEventHandler](guide/testing-components-scenarios#trigger-event-handler).
 
       If the event lacks a listener or there's some other problem,
       consider calling `nativeElement.dispatchEvent(eventObject)`.
