@@ -9,7 +9,7 @@ export type Json = null | boolean | number | string | Json[] | { [key: string]: 
 /**
  * The shape of a PWA manifest.
  * For simplicity, we only define types for the properties we care about in tests.
- * @see https://developer.mozilla.org/en-US/docs/Web/Manifest
+ * See https://developer.mozilla.org/en-US/docs/Web/Manifest.
  */
 export type PwaManifest = Json & {
   shortcuts?: PwaShortcutItem[],
@@ -17,7 +17,7 @@ export type PwaManifest = Json & {
 
 /**
  * The shape of an item in a PWA manifest's `shortcuts` list.
- * @see https://developer.mozilla.org/en-US/docs/Web/Manifest/shortcuts
+ * See https://developer.mozilla.org/en-US/docs/Web/Manifest/shortcuts.
  */
 export type PwaShortcutItem = Json & {
   url: string,
@@ -30,7 +30,7 @@ export type PwaShortcutItem = Json & {
 /**
  * The shape of an item in a PWA manifest's icons list (such as the value of the top-level `icons` property or that of
  * the `icons` property of a shortcut item).
- * @see https://w3c.github.io/manifest/#manifestimageresource-and-its-members
+ * See https://w3c.github.io/manifest/#manifestimageresource-and-its-members.
  */
 export type PwaImageResource = Json & {
   src: string,

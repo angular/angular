@@ -1120,8 +1120,9 @@ describe('AppComponent', () => {
         const host = fixture.debugElement;
         const classes: string = host.properties.className;
         const classArray = classes.split(' ').filter(c => c.indexOf(`${type}-`) === 0);
-        expect(classArray.length).toBeLessThanOrEqual(1, `"${classes}" should have only one class matching ${type}-*`);
-        expect(classArray).toEqual([`${type}-${value}`], `"${classes}" should contain ${type}-${value}`);
+        expect(classArray.length).withContext(`"${classes}" should have only one class matching ${type}-*`)
+            .toBeLessThanOrEqual(1);
+        expect(classArray).withContext(`"${classes}" should contain ${type}-${value}`).toEqual([`${type}-${value}`]);
       }
     });
 
