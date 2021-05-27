@@ -9,9 +9,7 @@ import { diff } from '../../diffing';
 import { FlatNode, Property } from './element-property-resolver';
 import { arrayifyProps } from './arrayify-props';
 
-const trackBy = (_: number, item: FlatNode) => {
-  return `#${item.prop.name}#${item.level}`;
-};
+const trackBy = (_: number, item: FlatNode) => `#${item.prop.name}#${item.prop.descriptor.preview}#${item.level}`;
 
 export class PropertyDataSource extends DataSource<FlatNode> {
   private _data = new BehaviorSubject<FlatNode[]>([]);

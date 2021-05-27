@@ -1,27 +1,15 @@
-import { Descriptor, PropType, MessageBus, Events, Properties, DirectivePosition, NestedProp } from 'protocol';
-import { MatTreeFlattener } from '@angular/material/tree';
+import { Descriptor, MessageBus, Events, Properties, DirectivePosition, NestedProp } from 'protocol';
 import { PropertyDataSource } from './property-data-source';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { getExpandedDirectiveProperties } from './property-expanded-directive-properties';
-import { Observable } from 'rxjs';
 import { Property, FlatNode } from './element-property-resolver';
 import { ViewEncapsulation } from '@angular/core';
-import { arrayifyProps } from './arrayify-props';
+import { getTreeFlattener } from './flatten';
 
 export interface DirectiveTreeData {
   dataSource: PropertyDataSource;
   treeControl: FlatTreeControl<FlatNode>;
 }
-
-const expandable = (prop: Descriptor) => {
-  if (!prop) {
-    return false;
-  }
-  if (!prop.expandable) {
-    return false;
-  }
-  return !(prop.type !== PropType.Object && prop.type !== PropType.Array);
-};
 
 const getDirectiveControls = (
   dataSource: PropertyDataSource
@@ -43,18 +31,7 @@ export const constructPathOfKeysToPropertyValue = (nodePropToGetKeysFor: Propert
 };
 
 export class DirectivePropertyResolver {
-  private _treeFlattener = new MatTreeFlattener(
-    (node: Property, level: number): FlatNode => {
-      return {
-        expandable: expandable(node.descriptor),
-        prop: node,
-        level,
-      };
-    },
-    (node) => node.level,
-    (node) => node.expandable,
-    (node) => this._getChildren(node)
-  );
+  private _treeFlattener = getTreeFlattener();
 
   private _treeControl = new FlatTreeControl<FlatNode>(
     (node) => node.level,
@@ -123,18 +100,6 @@ export class DirectivePropertyResolver {
     const keyPath = constructPathOfKeysToPropertyValue(node.prop);
     this._messageBus.emit('updateState', [{ directiveId, keyPath, newValue }]);
     node.prop.descriptor.value = newValue;
-  }
-
-  private _getChildren(prop: Property): Property[] | undefined {
-    const descriptor = prop.descriptor;
-    if (
-      (descriptor.type === PropType.Object || descriptor.type === PropType.Array) &&
-      !(descriptor.value instanceof Observable)
-    ) {
-      return arrayifyProps(descriptor.value || {}, prop);
-    } else {
-      console.error('Unexpected data type', descriptor, 'in property', prop);
-    }
   }
 
   private _initDataSources(): void {
