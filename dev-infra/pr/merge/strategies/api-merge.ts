@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PullsListCommitsResponse, PullsMergeParams} from '@octokit/rest';
+import {Octokit} from '@octokit/rest';
 import {prompt} from 'inquirer';
 
 import {parseCommitMessage} from '../../../commit-message/parse';
@@ -74,7 +74,7 @@ export class GithubApiMergeStrategy extends MergeStrategy {
       return failure;
     }
 
-    const mergeOptions: PullsMergeParams = {
+    const mergeOptions: Octokit.PullsMergeParams = {
       pull_number: prNumber,
       merge_method: method,
       ...this.git.remoteParams,
@@ -159,7 +159,8 @@ export class GithubApiMergeStrategy extends MergeStrategy {
    * strategy, we cannot start an interactive rebase because we merge using the Github API.
    * The Github API only allows modifications to PR title and body for squash merges.
    */
-  private async _promptCommitMessageEdit(pullRequest: PullRequest, mergeOptions: PullsMergeParams) {
+  private async _promptCommitMessageEdit(
+      pullRequest: PullRequest, mergeOptions: Octokit.PullsMergeParams) {
     const commitMessage = await this._getDefaultSquashCommitMessage(pullRequest);
     const {result} = await prompt<{result: string}>({
       type: 'editor',
@@ -197,7 +198,7 @@ export class GithubApiMergeStrategy extends MergeStrategy {
   private async _getPullRequestCommitMessages({prNumber}: PullRequest) {
     const request = this.git.github.pulls.listCommits.endpoint.merge(
         {...this.git.remoteParams, pull_number: prNumber});
-    const allCommits: PullsListCommitsResponse = await this.git.github.paginate(request);
+    const allCommits: Octokit.PullsListCommitsResponse = await this.git.github.paginate(request);
     return allCommits.map(({commit}) => commit.message);
   }
 
