@@ -279,7 +279,7 @@ describe('LocationService', () => {
         service.currentUrl.subscribe(u => url = u);
 
         service.go('');
-        expect(url).toEqual(initialUrl, 'should not have re-navigated locally');
+        expect(url).withContext('should not have re-navigated locally').toEqual(initialUrl);
         expect(goExternalSpy).not.toHaveBeenCalled();
     });
 
@@ -331,7 +331,7 @@ describe('LocationService', () => {
       spyOn(service, 'goExternal');
       service.currentUrl.subscribe(url => localUrl = url);
       service.go('https://some/far/away/land');
-      expect(localUrl).toBeFalsy('should not set local url');
+      expect(localUrl).withContext('should not set local url').toBeFalsy();
     });
 
   });
@@ -537,27 +537,27 @@ describe('LocationService', () => {
         anchor.href = 'cat-photo.png';
         let result = service.handleAnchorClick(anchor);
         expect(service.go).not.toHaveBeenCalled();
-        expect(result).toBe(true, 'png');
+        expect(result).withContext('png').toBe(true);
 
         anchor.href = 'cat-photo.gif';
         result = service.handleAnchorClick(anchor);
         expect(service.go).not.toHaveBeenCalled();
-        expect(result).toBe(true, 'gif');
+        expect(result).withContext('gif').toBe(true);
 
         anchor.href = 'cat-photo.jpg';
         result = service.handleAnchorClick(anchor);
         expect(service.go).not.toHaveBeenCalled();
-        expect(result).toBe(true, 'jpg');
+        expect(result).withContext('jpg').toBe(true);
 
         anchor.href = 'dog-bark.mp3';
         result = service.handleAnchorClick(anchor);
         expect(service.go).not.toHaveBeenCalled();
-        expect(result).toBe(true, 'mp3');
+        expect(result).withContext('mp3').toBe(true);
 
         anchor.href = 'pet-tricks.mp4';
         result = service.handleAnchorClick(anchor);
         expect(service.go).not.toHaveBeenCalled();
-        expect(result).toBe(true, 'mp4');
+        expect(result).withContext('mp4').toBe(true);
       });
 
       it('url has any extension', () => {
@@ -583,14 +583,14 @@ describe('LocationService', () => {
     it('should call locationChanged with initial URL', () => {
       const initialUrl = location.path().replace(/^\/+/, '');  // strip leading slashes
 
-      expect(gaLocationChanged.calls.count()).toBe(1, 'gaService.locationChanged');
+      expect(gaLocationChanged.calls.count()).withContext('gaService.locationChanged').toBe(1);
       const args = gaLocationChanged.calls.first().args;
       expect(args[0]).toBe(initialUrl);
     });
 
     it('should call locationChanged when `go` to a page', () => {
       service.go('some-new-url');
-      expect(gaLocationChanged.calls.count()).toBe(2, 'gaService.locationChanged');
+      expect(gaLocationChanged.calls.count()).withContext('gaService.locationChanged').toBe(2);
       const args = gaLocationChanged.calls.argsFor(1);
       expect(args[0]).toBe('some-new-url');
     });
@@ -601,16 +601,16 @@ describe('LocationService', () => {
       service.go('some-new-url#one');
       service.go('some-new-url#two');
       service.go('some-new-url/?foo="true"');
-      expect(gaLocationChanged.calls.count()).toBe(4, 'gaService.locationChanged called');
+      expect(gaLocationChanged.calls.count()).withContext('gaService.locationChanged called').toBe(4);
       const args = gaLocationChanged.calls.allArgs();
-      expect(args[1]).toEqual(args[2], 'same url for hash calls');
-      expect(args[1]).toEqual(args[3], 'same url for query string call');
+      expect(args[1]).withContext('same url for hash calls').toEqual(args[2]);
+      expect(args[1]).withContext('same url for query string call').toEqual(args[3]);
     });
 
     it('should call locationChanged when window history changes', () => {
       location.simulatePopState('/next-url');
 
-      expect(gaLocationChanged.calls.count()).toBe(2, 'gaService.locationChanged');
+      expect(gaLocationChanged.calls.count()).withContext('gaService.locationChanged').toBe(2);
       const args = gaLocationChanged.calls.argsFor(1);
       expect(args[0]).toBe('next-url');
     });

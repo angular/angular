@@ -159,7 +159,7 @@ describe('CodeComponent', () => {
 
       // `<li>`s are a tell-tale for line numbers
       const lis = fixture.nativeElement.querySelectorAll('li');
-      expect(lis.length).toBe(0, 'should be no linenums');
+      expect(lis.length).withContext('should be no linenums').toBe(0);
     });
   });
 
@@ -171,7 +171,7 @@ describe('CodeComponent', () => {
     }
 
     it('should not display "code-missing" class when there is some code', () => {
-      expect(getErrorMessage()).toBeNull('should not have element with "code-missing" class');
+      expect(getErrorMessage()).withContext('should not have element with "code-missing" class').toBeNull();
     });
 
     it('should display error message when there is no code (after trimming)', () => {
@@ -232,16 +232,16 @@ describe('CodeComponent', () => {
     it('should call copier service when clicked', () => {
       const clipboard = TestBed.inject(Clipboard);
       const spy = spyOn(clipboard, 'copy');
-      expect(spy.calls.count()).toBe(0, 'before click');
+      expect(spy.calls.count()).withContext('before click').toBe(0);
       getButton().click();
-      expect(spy.calls.count()).toBe(1, 'after click');
+      expect(spy.calls.count()).withContext('after click').toBe(1);
     });
 
     it('should copy code text when clicked', () => {
       const clipboard = TestBed.inject(Clipboard);
       const spy = spyOn(clipboard, 'copy');
       getButton().click();
-      expect(spy.calls.argsFor(0)[0]).toBe(oneLineCode, 'after click');
+      expect(spy.calls.argsFor(0)[0]).withContext('after click').toBe(oneLineCode);
     });
 
     it('should preserve newlines in the copied code', () => {
@@ -258,7 +258,7 @@ describe('CodeComponent', () => {
         getButton().click();
         actualCode = spy.calls.mostRecent().args[0];
 
-        expect(actualCode).toBe(expectedCode, `when linenums=${linenums}`);
+        expect(actualCode).withContext(`when linenums=${linenums}`).toBe(expectedCode);
         expect(actualCode.match(/\r?\n/g)?.length).toBe(5);
 
         spy.calls.reset();

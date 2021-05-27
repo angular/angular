@@ -20,6 +20,9 @@ describe('PWA manifest', () => {
 
     it('should exist', async () => {
       for (const {short_name, url} of shortcuts) {
+        // In Jasmine, passing an `expectationFailOutput` to the `toBe()` method is deprecated in
+        // favor of using the `.withContext()` matcher. However, JasmineWD does not support that.
+        // tslint:disable-next-line: deprecation
         expect(await pageExists(url)).toBe(
             true,
             `Page for shortcut '${short_name}' (from '${page.pwaManifestUrl}') does not exist. (URL: ${url})`);
