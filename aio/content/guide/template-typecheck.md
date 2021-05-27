@@ -112,55 +112,56 @@ In case of a false positive like these, there are a few options:
 * You can disable certain type-checking operations individually, while maintaining strictness in other aspects, by setting a _strictness flag_ to `false`.
 * If you want to use `strictTemplates` and `strictNullChecks` together, you can opt out of strict null type checking specifically for input bindings via `strictNullInputTypes`.
 
+Unless otherwise noted, each option below is set to the value for `strictTemplates` (`true` when `strictTemplates` is `true` and vice versa).
 <table>
-    <thead>
-        <tr>
-            <td>Strictness flag</td>
-            <td>Effect</td>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>`strictInputTypes`</td>
-            <td>Whether the assignability of a binding expression to the `@Input()` field is checked. Also affects the inference of directive generic types.</td>
-        </tr>
-        <tr>
-            <td>`strictInputAccessModifiers`</td>
-            <td>Whether access modifiers such as `private`/`protected`/`readonly` are honored when assigning a binding expression to an `@Input()`. If disabled, the access modifiers of the `@Input` are ignored; only the type is checked.</td>
-        </tr>
-        <tr>
-            <td>`strictNullInputTypes`</td>
-            <td>Whether `strictNullChecks` is honored when checking `@Input()` bindings (per `strictInputTypes`). Turning this off can be useful when using a library that was not built with `strictNullChecks` in mind.</td>
-        </tr>
-        <tr>
-            <td>`strictAttributeTypes`</td>
-            <td>Whether to check `@Input()` bindings that are made using text attributes (for example, `&lt;mat-tab label="Step 1"&gt;` vs `&lt;mat-tab [label]="'Step 1'"&gt;`).</td>
-        </tr>
-        <tr>
-            <td>`strictSafeNavigationTypes`</td>
-            <td>Whether the return type of safe navigation operations (for example, `user?.name`) will be correctly inferred based on the type of `user`). If disabled, `user?.name` will be of type `any`.</td>
-        </tr>
-        <tr>
-            <td>`strictDomLocalRefTypes`</td>
-            <td>Whether local references to DOM elements will have the correct type. If disabled `ref` will be of type `any` for `&lt;input #ref&gt;`.</td>
-        </tr>
-        <tr>
-            <td>`strictOutputEventTypes`</td>
-            <td>Whether `$event` will have the correct type for event bindings to component/directive an `@Output()`, or to animation events. If disabled, it will be `any`.</td>
-        </tr>
-        <tr>
-            <td>`strictDomEventTypes`</td>
-            <td>Whether `$event` will have the correct type for event bindings to DOM events. If disabled, it will be `any`.</td>
-        </tr>
-        <tr>
-            <td>`strictContextGenerics`</td>
-            <td>Whether the type parameters of generic components will be inferred correctly (including any generic bounds). If disabled, any type parameters will be `any`.</td>
-        </tr>
-        <tr>
-            <td>`strictLiteralTypes`</td>
-            <td>Whether object and array literals declared in the template will have their type inferred. If disabled, the type of such literals will be `any`.</td>
-        </tr>
-    </tbody>
+  <thead>
+    <tr>
+      <th>Strictness flag</th>
+      <th>Effect</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>strictInputTypes</code></td>
+      <td>Whether the assignability of a binding expression to the <code>@Input()</code> field is checked. Also affects the inference of directive generic types.</td>
+    </tr>
+    <tr>
+      <td><code>strictInputAccessModifiers</code></td>
+      <td>Whether access modifiers such as <code>private</code>/<code>protected</code>/<code>readonly</code> are honored when assigning a binding expression to an <code>@Input()</code>. If disabled, the access modifiers of the <code>@Input</code> are ignored; only the type is checked. This option is <code>false</code> by default, even with <code>strictTemplates</code> set to <code>true</code>.</td>
+    </tr>
+    <tr>
+      <td><code>strictNullInputTypes</code></td>
+      <td>Whether <code>strictNullChecks</code> is honored when checking <code>@Input()</code> bindings (per <code>strictInputTypes</code>). Turning this off can be useful when using a library that was not built with <code>strictNullChecks</code> in mind.</td>
+    </tr>
+    <tr>
+      <td><code>strictAttributeTypes</code></td>
+      <td>Whether to check <code>@Input()</code> bindings that are made using text attributes (for example, <code>&lt;mat-tab label="Step 1"&gt;</code> vs <code>&lt;mat-tab [label]="'Step 1'"&gt;</code>).</td>
+    </tr>
+    <tr>
+      <td><code>strictSafeNavigationTypes</code></td>
+      <td>Whether the return type of safe navigation operations (for example, <code>user?.name</code>) will be correctly inferred based on the type of <code>user</code>). If disabled, <code>user?.name</code> will be of type <code>any</code>.</td>
+    </tr>
+    <tr>
+      <td><code>strictDomLocalRefTypes</code></td>
+      <td>Whether local references to DOM elements will have the correct type. If disabled <code>ref</code> will be of type <code>any</code> for <code>&lt;input #ref&gt;</code>.</td>
+    </tr>
+    <tr>
+      <td><code>strictOutputEventTypes</code></td>
+      <td>Whether <code>$event</code> will have the correct type for event bindings to component/directive an <code>@Output()</code>, or to animation events. If disabled, it will be <code>any</code>.</td>
+    </tr>
+    <tr>
+      <td><code>strictDomEventTypes</code></td>
+      <td>Whether <code>$event</code> will have the correct type for event bindings to DOM events. If disabled, it will be <code>any</code>.</td>
+    </tr>
+    <tr>
+      <td><code>strictContextGenerics</code></td>
+      <td>Whether the type parameters of generic components will be inferred correctly (including any generic bounds). If disabled, any type parameters will be <code>any</code>.</td>
+    </tr>
+    <tr>
+      <td><code>strictLiteralTypes</code></td>
+      <td>Whether object and array literals declared in the template will have their type inferred. If disabled, the type of such literals will be <code>any</code>. This flag is <code>true</code> when <em>either</em> <code>fullTemplateTypeCheck</code> or <code>strictTemplates</code> is set to <code>true</code>.</td>
+    </tr>
+  </tbody>
 </table>
 
 If you still have issues after troubleshooting with these flags, you can fall back to full mode by disabling `strictTemplates`.
