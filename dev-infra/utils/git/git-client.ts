@@ -23,6 +23,10 @@ export class GitCommandError extends Error {
     // accidentally leak the Github token that might be used in a command,
     // we sanitize the command that will be part of the error message.
     super(`Command failed: git ${client.sanitizeConsoleOutput(args.join(' '))}`);
+
+    // Set the prototype explicitly because in ES5, the prototype is accidentally lost due to
+    // a limitation in down-leveling.
+    // https://github.com/Microsoft/TypeScript/wiki/FAQ#why-doesnt-extending-built-ins-like-error-array-and-map-work.
     Object.setPrototypeOf(this, GitCommandError.prototype);
   }
 }
