@@ -22,7 +22,6 @@ var conventionalCommitsParser = require('conventional-commits-parser');
 var gitCommits_ = require('git-raw-commits');
 var cliProgress = require('cli-progress');
 var os = require('os');
-var shelljs = require('shelljs');
 var minimatch = require('minimatch');
 var ejs = require('ejs');
 var ora = require('ora');
@@ -317,6 +316,9 @@ var GitCommandError = /** @class */ (function (_super) {
         // we sanitize the command that will be part of the error message.
         _super.call(this, "Command failed: git " + client.sanitizeConsoleOutput(args.join(' '))) || this;
         _this.args = args;
+        // Set the prototype explicitly because in ES5, the prototype is accidentally lost due to
+        // a limitation in down-leveling.
+        // https://github.com/Microsoft/TypeScript/wiki/FAQ#why-doesnt-extending-built-ins-like-error-array-and-map-work.
         Object.setPrototypeOf(_this, GitCommandError.prototype);
         return _this;
     }
@@ -2447,6 +2449,113 @@ function buildCommitMessageParser(localYargs) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+/**
+ * Spawns a given command with the specified arguments inside an interactive shell. All process
+ * stdin, stdout and stderr output is printed to the current console.
+ *
+ * @returns a Promise resolving on success, and rejecting on command failure with the status code.
+ */
+function spawnInteractive(command, args, options) {
+    if (options === void 0) { options = {}; }
+    return new Promise(function (resolve, reject) {
+        var commandText = command + " " + args.join(' ');
+        debug("Executing command: " + commandText);
+        var childProcess = child_process.spawn(command, args, tslib.__assign(tslib.__assign({}, options), { shell: true, stdio: 'inherit' }));
+        childProcess.on('exit', function (status) { return status === 0 ? resolve() : reject(status); });
+    });
+}
+/**
+ * Spawns a given command with the specified arguments inside a shell. All process stdout
+ * output is captured and returned as resolution on completion. Depending on the chosen
+ * output mode, stdout/stderr output is also printed to the console, or only on error.
+ *
+ * @returns a Promise resolving with captured stdout and stderr on success. The promise
+ *   rejects on command failure.
+ */
+function spawn(command, args, options) {
+    if (options === void 0) { options = {}; }
+    return new Promise(function (resolve, reject) {
+        var commandText = command + " " + args.join(' ');
+        var outputMode = options.mode;
+        debug("Executing command: " + commandText);
+        var childProcess = child_process.spawn(command, args, tslib.__assign(tslib.__assign({}, options), { shell: true, stdio: 'pipe' }));
+        var logOutput = '';
+        var stdout = '';
+        var stderr = '';
+        // Capture the stdout separately so that it can be passed as resolve value.
+        // This is useful if commands return parsable stdout.
+        childProcess.stderr.on('data', function (message) {
+            stderr += message;
+            logOutput += message;
+            // If console output is enabled, print the message directly to the stderr. Note that
+            // we intentionally print all output to stderr as stdout should not be polluted.
+            if (outputMode === undefined || outputMode === 'enabled') {
+                process.stderr.write(message);
+            }
+        });
+        childProcess.stdout.on('data', function (message) {
+            stdout += message;
+            logOutput += message;
+            // If console output is enabled, print the message directly to the stderr. Note that
+            // we intentionally print all output to stderr as stdout should not be polluted.
+            if (outputMode === undefined || outputMode === 'enabled') {
+                process.stderr.write(message);
+            }
+        });
+        childProcess.on('exit', function (exitCode, signal) {
+            var exitDescription = exitCode !== null ? "exit code \"" + exitCode + "\"" : "signal \"" + signal + "\"";
+            var printFn = outputMode === 'on-error' ? error : debug;
+            var status = statusFromExitCodeAndSignal(exitCode, signal);
+            printFn("Command \"" + commandText + "\" completed with " + exitDescription + ".");
+            printFn("Process output: \n" + logOutput);
+            // On success, resolve the promise. Otherwise reject with the captured stderr
+            // and stdout log output if the output mode was set to `silent`.
+            if (status === 0 || options.suppressErrorOnFailingExitCode) {
+                resolve({ stdout: stdout, stderr: stderr, status: status });
+            }
+            else {
+                reject(outputMode === 'silent' ? logOutput : undefined);
+            }
+        });
+    });
+}
+/**
+ * Spawns a given command with the specified arguments inside a shell synchronously.
+ *
+ * @returns The command's stdout and stderr.
+ */
+function spawnSync(command, args, options) {
+    if (options === void 0) { options = {}; }
+    var commandText = command + " " + args.join(' ');
+    debug("Executing command: " + commandText);
+    var _a = child_process.spawnSync(command, args, tslib.__assign(tslib.__assign({}, options), { encoding: 'utf8', shell: true, stdio: 'pipe' })), exitCode = _a.status, signal = _a.signal, stdout = _a.stdout, stderr = _a.stderr;
+    /** The status of the spawn result. */
+    var status = statusFromExitCodeAndSignal(exitCode, signal);
+    if (status === 0 || options.suppressErrorOnFailingExitCode) {
+        return { status: status, stdout: stdout, stderr: stderr };
+    }
+    throw new Error(stderr);
+}
+/**
+ * Convert the provided exitCode and signal to a single status code.
+ *
+ * During `exit` node provides either a `code` or `signal`, one of which is guaranteed to be
+ * non-null.
+ *
+ * For more details see: https://nodejs.org/api/child_process.html#child_process_event_exit
+ */
+function statusFromExitCodeAndSignal(exitCode, signal) {
+    var _a;
+    return (_a = exitCode !== null && exitCode !== void 0 ? exitCode : signal) !== null && _a !== void 0 ? _a : -1;
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 /** Retrieve and validate the config as `FormatConfig`. */
 function getFormatConfig() {
     // List of errors encountered validating the config.
@@ -2644,7 +2753,9 @@ class Prettier extends Formatter {
          * The configuration path of the prettier config, obtained during construction to prevent needing
          * to discover it repeatedly for each execution.
          */
-        this.configPath = this.config['prettier'] ? shelljs.exec(`${this.binaryFilePath} --find-config-path .`).trim() : '';
+        this.configPath = this.config['prettier'] ?
+            spawnSync(this.binaryFilePath, ['--find-config-path', '.']).stdout.trim() :
+            '';
         this.actions = {
             check: {
                 commandFlags: `--config ${this.configPath} --check`,
@@ -2747,9 +2858,11 @@ function runFormatterInParallel(allFiles, action) {
             }
             // Get the file and formatter for the next command.
             const { file, formatter } = nextCommand;
-            shelljs.exec(`${formatter.commandFor(action)} ${file}`, { async: true, silent: true }, (code, stdout, stderr) => {
+            const [spawnCmd, ...spawnArgs] = [...formatter.commandFor(action).split(' '), file];
+            spawn(spawnCmd, spawnArgs, { suppressErrorOnFailingExitCode: true, mode: 'silent' })
+                .then(({ stdout, stderr, status }) => {
                 // Run the provided callback function.
-                const failed = formatter.callbackFor(action)(file, code, stdout, stderr);
+                const failed = formatter.callbackFor(action)(file, status, stdout, stderr);
                 if (failed) {
                     failures.push({ filePath: file, message: stderr });
                 }
@@ -3383,21 +3496,6 @@ const CheckoutCommandModule = {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-/**
- * Runs an given command as child process. By default, child process
- * output will not be printed.
- */
-function exec(cmd, opts) {
-    return shelljs.exec(cmd, tslib.__assign(tslib.__assign({ silent: true }, opts), { async: false }));
-}
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
 /* Graphql schema for the response body for each pending PR. */
 const PR_SCHEMA$1 = {
     headRef: {
@@ -3494,7 +3592,9 @@ function discoverNewConflictsForPr(newPrNumber, updatedAfter) {
                 if (err instanceof GitCommandError) {
                     conflicts.push(pr);
                 }
-                throw err;
+                else {
+                    throw err;
+                }
             }
             // Abort any outstanding rebase attempt.
             git.runGraceful(['rebase', '--abort'], { stdio: 'ignore' });
@@ -3504,7 +3604,7 @@ function discoverNewConflictsForPr(newPrNumber, updatedAfter) {
         progressBar.stop();
         info();
         info(`Result:`);
-        cleanUpGitState(previousBranchOrRevision);
+        git.checkout(previousBranchOrRevision, true);
         // If no conflicts are found, exit successfully.
         if (conflicts.length === 0) {
             info(`No new conflicting PRs found after #${newPrNumber} merging`);
@@ -3518,17 +3618,6 @@ function discoverNewConflictsForPr(newPrNumber, updatedAfter) {
         error.groupEnd();
         process.exit(1);
     });
-}
-/** Reset git back to the provided branch or revision. */
-function cleanUpGitState(previousBranchOrRevision) {
-    // Ensure that any outstanding rebases are aborted.
-    exec(`git rebase --abort`);
-    // Ensure that any changes in the current repo state are cleared.
-    exec(`git reset --hard`);
-    // Checkout the original branch from before the run began.
-    exec(`git checkout ${previousBranchOrRevision}`);
-    // Delete the generated branch.
-    exec(`git branch -D ${tempWorkingBranch}`);
 }
 
 /**
@@ -5984,88 +6073,6 @@ const ReleaseNotesCommandModule = {
  * found in the LICENSE file at https://angular.io/license
  */
 /**
- * Spawns a given command with the specified arguments inside an interactive shell. All process
- * stdin, stdout and stderr output is printed to the current console.
- *
- * @returns a Promise resolving on success, and rejecting on command failure with the status code.
- */
-function spawnInteractive(command, args, options) {
-    if (options === void 0) { options = {}; }
-    return new Promise(function (resolve, reject) {
-        var commandText = command + " " + args.join(' ');
-        debug("Executing command: " + commandText);
-        var childProcess = child_process.spawn(command, args, tslib.__assign(tslib.__assign({}, options), { shell: true, stdio: 'inherit' }));
-        childProcess.on('exit', function (status) { return status === 0 ? resolve() : reject(status); });
-    });
-}
-/**
- * Spawns a given command with the specified arguments inside a shell. All process stdout
- * output is captured and returned as resolution on completion. Depending on the chosen
- * output mode, stdout/stderr output is also printed to the console, or only on error.
- *
- * @returns a Promise resolving with captured stdout and stderr on success. The promise
- *   rejects on command failure
- */
-function spawn(command, args, options) {
-    if (options === void 0) { options = {}; }
-    return new Promise(function (resolve, reject) {
-        var commandText = command + " " + args.join(' ');
-        var outputMode = options.mode;
-        debug("Executing command: " + commandText);
-        var childProcess = child_process.spawn(command, args, tslib.__assign(tslib.__assign({}, options), { shell: true, stdio: 'pipe' }));
-        var logOutput = '';
-        var stdout = '';
-        var stderr = '';
-        // Capture the stdout separately so that it can be passed as resolve value.
-        // This is useful if commands return parsable stdout.
-        childProcess.stderr.on('data', function (message) {
-            stderr += message;
-            logOutput += message;
-            // If console output is enabled, print the message directly to the stderr. Note that
-            // we intentionally print all output to stderr as stdout should not be polluted.
-            if (outputMode === undefined || outputMode === 'enabled') {
-                process.stderr.write(message);
-            }
-        });
-        childProcess.stdout.on('data', function (message) {
-            stdout += message;
-            logOutput += message;
-            // If console output is enabled, print the message directly to the stderr. Note that
-            // we intentionally print all output to stderr as stdout should not be polluted.
-            if (outputMode === undefined || outputMode === 'enabled') {
-                process.stderr.write(message);
-            }
-        });
-        childProcess.on('exit', function (exitCode, signal) {
-            var exitDescription = exitCode !== null ? "exit code \"" + exitCode + "\"" : "signal \"" + signal + "\"";
-            var printFn = outputMode === 'on-error' ? error : debug;
-            var status = statusFromExitCodeAndSignal(exitCode, signal);
-            printFn("Command \"" + commandText + "\" completed with " + exitDescription + ".");
-            printFn("Process output: \n" + logOutput);
-            // On success, resolve the promise. Otherwise reject with the captured stderr
-            // and stdout log output if the output mode was set to `silent`.
-            if (status === 0 || options.suppressErrorOnFailingExitCode) {
-                resolve({ stdout: stdout, stderr: stderr, status: status });
-            }
-            else {
-                reject(outputMode === 'silent' ? logOutput : undefined);
-            }
-        });
-    });
-}
-/** Convert the provided exitCode and signal to a single status code. */
-function statusFromExitCodeAndSignal(exitCode, signal) {
-    return exitCode !== null ? exitCode : signal !== null ? signal : -1;
-}
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-/**
  * Runs NPM publish within a specified package directory.
  * @throws With the process log output if the publish failed.
  */
@@ -7655,20 +7662,17 @@ const ReleaseSetDistTagCommand = {
  */
 function buildEnvStamp(mode) {
     console.info(`BUILD_SCM_BRANCH ${getCurrentBranch()}`);
-    console.info(`BUILD_SCM_COMMIT_SHA ${getCurrentSha()}`);
-    console.info(`BUILD_SCM_HASH ${getCurrentSha()}`);
+    console.info(`BUILD_SCM_COMMIT_SHA ${getCurrentBranchOrRevision()}`);
+    console.info(`BUILD_SCM_HASH ${getCurrentBranchOrRevision()}`);
     console.info(`BUILD_SCM_LOCAL_CHANGES ${hasLocalChanges()}`);
     console.info(`BUILD_SCM_USER ${getCurrentGitUser()}`);
     console.info(`BUILD_SCM_VERSION ${getSCMVersion(mode)}`);
-    process.exit(0);
-}
-/** Run the exec command and return the stdout as a trimmed string. */
-function exec$1(cmd) {
-    return exec(cmd).trim();
+    process.exit();
 }
 /** Whether the repo has local changes. */
 function hasLocalChanges() {
-    return !!exec$1(`git status --untracked-files=no --porcelain`);
+    const git = GitClient.get();
+    return git.hasUncommittedChanges();
 }
 /**
  * Get the version for generated packages.
@@ -7677,30 +7681,34 @@ function hasLocalChanges() {
  * In release mode, the version is based on the base package.json version.
  */
 function getSCMVersion(mode) {
+    const git = GitClient.get();
     if (mode === 'release') {
-        const git = GitClient.get();
         const packageJsonPath = path.join(git.baseDir, 'package.json');
         const { version } = require(packageJsonPath);
         return version;
     }
     if (mode === 'snapshot') {
-        const version = exec$1(`git describe --match [0-9]*.[0-9]*.[0-9]* --abbrev=7 --tags HEAD`);
+        const version = git.run(['describe', '--match', '[0-9]*.[0-9]*.[0-9]*', '--abbrev=7', '--tags', 'HEAD'])
+            .stdout.trim();
         return `${version.replace(/-([0-9]+)-g/, '+$1.sha-')}${(hasLocalChanges() ? '.with-local-changes' : '')}`;
     }
     return '0.0.0';
 }
-/** Get the current SHA of HEAD. */
-function getCurrentSha() {
-    return exec$1(`git rev-parse HEAD`);
+/** Get the current branch or revision of HEAD. */
+function getCurrentBranchOrRevision() {
+    const git = GitClient.get();
+    return git.getCurrentBranchOrRevision();
 }
 /** Get the currently checked out branch. */
 function getCurrentBranch() {
-    return exec$1(`git symbolic-ref --short HEAD`);
+    const git = GitClient.get();
+    return git.run(['symbolic-ref', '--short', 'HEAD']).stdout.trim();
 }
 /** Get the current git user based on the git config. */
 function getCurrentGitUser() {
-    const userName = exec$1(`git config user.name`);
-    const userEmail = exec$1(`git config user.email`);
+    const git = GitClient.get();
+    let userName = git.runGraceful(['config', 'user.name']).stdout.trim() || 'Unknown User';
+    let userEmail = git.runGraceful(['config', 'user.email']).stdout.trim() || 'unknown_email';
     return `${userName} <${userEmail}>`;
 }
 
@@ -8187,8 +8195,8 @@ function handler$e({ projectRoot }) {
         }
         info(chalk.green(` ✓  Built release output.`));
         for (const { outputPath, name } of releaseOutputs) {
-            exec(`yarn link --cwd ${outputPath}`);
-            exec(`yarn link --cwd ${projectRoot} ${name}`);
+            yield spawn('yarn', ['link', '--cwd', outputPath]);
+            yield spawn('yarn', ['link', '--cwd', projectRoot, name]);
         }
         info(chalk.green(` ✓  Linked release packages in provided project.`));
     });

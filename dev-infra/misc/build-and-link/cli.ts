@@ -7,13 +7,13 @@
  */
 
 import {green} from 'chalk';
-import {lstatSync, stat, Stats} from 'fs';
-import {isAbsolute, join, resolve} from 'path';
+import {lstatSync} from 'fs';
+import {resolve} from 'path';
 import {Arguments, Argv, CommandModule} from 'yargs';
 
 import {buildReleaseOutput} from '../../release/build/index';
+import {spawn} from '../../utils/child-process';
 import {error, info, red} from '../../utils/console';
-import {exec} from '../../utils/shelljs';
 
 
 /** Command line options. */
@@ -52,8 +52,8 @@ async function handler({projectRoot}: Arguments<BuildAndLinkOptions>) {
   info(green(` ✓  Built release output.`));
 
   for (const {outputPath, name} of releaseOutputs) {
-    exec(`yarn link --cwd ${outputPath}`);
-    exec(`yarn link --cwd ${projectRoot} ${name}`);
+    await spawn('yarn', ['link', '--cwd', outputPath]);
+    await spawn('yarn', ['link', '--cwd', projectRoot, name]);
   }
 
   info(green(` ✓  Linked release packages in provided project.`));

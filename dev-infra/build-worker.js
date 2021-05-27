@@ -145,6 +145,9 @@ var GitCommandError = /** @class */ (function (_super) {
         // we sanitize the command that will be part of the error message.
         _super.call(this, "Command failed: git " + client.sanitizeConsoleOutput(args.join(' '))) || this;
         _this.args = args;
+        // Set the prototype explicitly because in ES5, the prototype is accidentally lost due to
+        // a limitation in down-leveling.
+        // https://github.com/Microsoft/TypeScript/wiki/FAQ#why-doesnt-extending-built-ins-like-error-array-and-map-work.
         Object.setPrototypeOf(_this, GitCommandError.prototype);
         return _this;
     }

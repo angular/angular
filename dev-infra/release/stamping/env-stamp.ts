@@ -9,8 +9,6 @@
 import {join} from 'path';
 import {GitClient} from '../../utils/git/git-client';
 
-import {exec as _exec} from '../../utils/shelljs';
-
 export type EnvStampMode = 'snapshot'|'release';
 
 /**
@@ -25,22 +23,18 @@ export type EnvStampMode = 'snapshot'|'release';
  */
 export function buildEnvStamp(mode: EnvStampMode) {
   console.info(`BUILD_SCM_BRANCH ${getCurrentBranch()}`);
-  console.info(`BUILD_SCM_COMMIT_SHA ${getCurrentSha()}`);
-  console.info(`BUILD_SCM_HASH ${getCurrentSha()}`);
+  console.info(`BUILD_SCM_COMMIT_SHA ${getCurrentBranchOrRevision()}`);
+  console.info(`BUILD_SCM_HASH ${getCurrentBranchOrRevision()}`);
   console.info(`BUILD_SCM_LOCAL_CHANGES ${hasLocalChanges()}`);
   console.info(`BUILD_SCM_USER ${getCurrentGitUser()}`);
   console.info(`BUILD_SCM_VERSION ${getSCMVersion(mode)}`);
-  process.exit(0);
-}
-
-/** Run the exec command and return the stdout as a trimmed string. */
-function exec(cmd: string) {
-  return _exec(cmd).trim();
+  process.exit();
 }
 
 /** Whether the repo has local changes. */
 function hasLocalChanges() {
-  return !!exec(`git status --untracked-files=no --porcelain`);
+  const git = GitClient.get();
+  return git.hasUncommittedChanges();
 }
 
 /**
@@ -50,34 +44,38 @@ function hasLocalChanges() {
  * In release mode, the version is based on the base package.json version.
  */
 function getSCMVersion(mode: EnvStampMode) {
+  const git = GitClient.get();
   if (mode === 'release') {
-    const git = GitClient.get();
     const packageJsonPath = join(git.baseDir, 'package.json');
     const {version} = require(packageJsonPath);
     return version;
   }
   if (mode === 'snapshot') {
-    const version = exec(`git describe --match [0-9]*.[0-9]*.[0-9]* --abbrev=7 --tags HEAD`);
+    const version =
+        git.run(['describe', '--match', '[0-9]*.[0-9]*.[0-9]*', '--abbrev=7', '--tags', 'HEAD'])
+            .stdout.trim();
     return `${version.replace(/-([0-9]+)-g/, '+$1.sha-')}${
         (hasLocalChanges() ? '.with-local-changes' : '')}`;
   }
   return '0.0.0';
 }
 
-/** Get the current SHA of HEAD. */
-function getCurrentSha() {
-  return exec(`git rev-parse HEAD`);
+/** Get the current branch or revision of HEAD. */
+function getCurrentBranchOrRevision() {
+  const git = GitClient.get();
+  return git.getCurrentBranchOrRevision();
 }
 
 /** Get the currently checked out branch. */
 function getCurrentBranch() {
-  return exec(`git symbolic-ref --short HEAD`);
+  const git = GitClient.get();
+  return git.run(['symbolic-ref', '--short', 'HEAD']).stdout.trim();
 }
 
 /** Get the current git user based on the git config. */
 function getCurrentGitUser() {
-  const userName = exec(`git config user.name`);
-  const userEmail = exec(`git config user.email`);
-
+  const git = GitClient.get();
+  let userName = git.runGraceful(['config', 'user.name']).stdout.trim() || 'Unknown User';
+  let userEmail = git.runGraceful(['config', 'user.email']).stdout.trim() || 'unknown_email';
   return `${userName} <${userEmail}>`;
 }
