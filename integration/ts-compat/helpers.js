@@ -13,7 +13,8 @@ const npmPackages = getNpmPackagesFromRunfiles();
 // Path to the node modules of the workspace.
 const nodeModulesDir = runfiles.resolve('npm/node_modules');
 // Path to the generated file that imports all entry-points.
-const testFilePath = require.resolve('./import-all-entry-points.ts');
+const testFilePath = runfiles.resolveWorkspaceRelative(
+  'integration/ts-compat/import-all-entry-points.ts');
 
 /**
  * Runs the TypeScript compatibility test with the specified tsc binary. The
@@ -36,6 +37,9 @@ exports.runTypeScriptCompatibilityTest = async (tscBinPath) => {
 
     const tscArgs = [
       '--strict',
+      // Disables automatic type resolution. In non-sandbox environments, the node modules
+      // are accessible and types could end up as part of the program.
+      '--types',
       '--lib', 'es2015,dom',
       // Ensures that `node_modules` can be resolved. By default, in sandbox environments the
       // node modules cannot be resolved because they are wrapped in the `npm/node_modules` folder
