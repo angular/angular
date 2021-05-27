@@ -409,7 +409,10 @@ groups:
           'aio/content/guide/template-statements.md',
           'aio/content/guide/user-input.md',
           'aio/content/examples/user-input/**',
-          'aio/content/images/guide/user-input/**'
+          'aio/content/images/guide/user-input/**',
+          'aio/content/guide/view-encapsulation.md',
+          'aio/content/examples/view-encapsulation/**',
+          'aio/content/images/guide/view-encapsulation/**'
           ])
     reviewers:
       users:
