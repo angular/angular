@@ -1,3 +1,20 @@
+<a name="12.0.2"></a>
+# 12.0.2 (2021-05-26)
+### forms
+| Commit | Description |
+| -- | -- |
+| 19d7bf4162 | fix(forms): Add float number support for min and max validator (#42223) |
+### migrations
+| Commit | Description |
+| -- | -- |
+| 11c7bec065 | fix(migrations): add migration to replace `/deep/` with `::ng-deep` (#42214) |
+### platform-browser
+| Commit | Description |
+| -- | -- |
+| 84ab81c286 | fix(platform-browser): update started state on reset (#41608) |
+## Special Thanks:
+Alan Agius, Andrew Scott, David Shevitz, George Kalpakas, Igor Minar, Joey Perrott, Kapunahele Wong, Madleina Scheidegger, Paul Gschwendtner, Pete Bacon Darwin, Sam Severance, Teri Glover, Zach Arend, chenyunhsin, iRealNirmal, mgechev and twerske
+
 <a name="12.1.0-next.3"></a>
 # 12.1.0-next.3 (2021-05-26)
 ### forms
