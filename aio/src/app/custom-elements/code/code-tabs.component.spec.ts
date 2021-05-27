@@ -48,7 +48,8 @@ describe('CodeTabsComponent', () => {
     // Second code pane expectations
     expect(tabs[1].class).toBe('class-B');
     expect(tabs[1].language).toBe('language-B');
-    expect(tabs[1].linenums).toBe('default-linenums', 'Default linenums should have been used');
+    expect(tabs[1].linenums).withContext('Default linenums should have been used')
+        .toBe('default-linenums');
     expect(tabs[1].path).toBe('path-B');
     expect(tabs[1].region).toBe('region-B');
     expect(tabs[1].header).toBe('header-B');

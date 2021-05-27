@@ -104,7 +104,7 @@ describe('ApiService', () => {
         // called twice during this test
         // (1) during subscribe
         // (2) after refresh
-        expect(sections).toEqual(data, 'call ' + call++);
+        expect(sections).withContext('call ' + call++).toEqual(data);
       });
 
       httpMock.expectOne({}).flush(data);
@@ -114,7 +114,7 @@ describe('ApiService', () => {
       service.fetchSections();
       httpMock.expectOne({}).flush(data);
 
-      expect(call).toBe(2, 'should be called twice');
+      expect(call).withContext('should be called twice').toBe(2);
     });
   });
 });

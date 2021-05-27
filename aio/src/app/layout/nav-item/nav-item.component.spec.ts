@@ -74,21 +74,21 @@ describe('NavItemComponent', () => {
       it('should de-select if previously selected', () => {
         component.isSelected = true;
         onChanges();
-        expect(component.isSelected).toBe(false, 'becomes de-selected');
+        expect(component.isSelected).withContext('becomes de-selected').toBe(false);
       });
 
       it('should collapse if previously expanded in narrow mode', () => {
         component.isWide = false;
         component.isExpanded = true;
         onChanges();
-        expect(component.isExpanded).toBe(false, 'becomes collapsed');
+        expect(component.isExpanded).withContext('becomes collapsed').toBe(false);
       });
 
       it('should remain expanded in wide mode', () => {
         component.isWide = true;
         component.isExpanded = true;
         onChanges();
-        expect(component.isExpanded).toBe(true, 'remains expanded');
+        expect(component.isExpanded).withContext('remains expanded').toBe(true);
       });
     });
 
@@ -100,17 +100,17 @@ describe('NavItemComponent', () => {
       it('should select when previously not selected', () => {
         component.isSelected = false;
         onChanges();
-        expect(component.isSelected).toBe(true, 'becomes selected');
+        expect(component.isSelected).withContext('becomes selected').toBe(true);
       });
 
       it('should expand the current node or keep it expanded', () => {
         component.isExpanded = false;
         onChanges();
-        expect(component.isExpanded).toBe(true, 'becomes true');
+        expect(component.isExpanded).withContext('becomes true').toBe(true);
 
         component.isExpanded = true;
         onChanges();
-        expect(component.isExpanded).toBe(true, 'remains true');
+        expect(component.isExpanded).withContext('remains true').toBe(true);
       });
     });
 
@@ -122,17 +122,17 @@ describe('NavItemComponent', () => {
       it('should select when previously not selected', () => {
         component.isSelected = false;
         onChanges();
-        expect(component.isSelected).toBe(true, 'becomes selected');
+        expect(component.isSelected).withContext('becomes selected').toBe(true);
       });
 
       it('should always expand this header', () => {
         component.isExpanded = false;
         onChanges();
-        expect(component.isExpanded).toBe(true, 'becomes expanded');
+        expect(component.isExpanded).withContext('becomes expanded').toBe(true);
 
         component.isExpanded = false;
         onChanges();
-        expect(component.isExpanded).toBe(true, 'stays expanded');
+        expect(component.isExpanded).withContext('stays expanded').toBe(true);
       });
     });
 
@@ -142,23 +142,23 @@ describe('NavItemComponent', () => {
       it('should expand when headerClicked() and previously collapsed', () => {
         component.isExpanded = false;
         component.headerClicked();
-        expect(component.isExpanded).toBe(true, 'should be expanded');
+        expect(component.isExpanded).withContext('should be expanded').toBe(true);
       });
 
       it('should collapse when headerClicked() and previously expanded', () => {
         component.isExpanded = true;
         component.headerClicked();
-        expect(component.isExpanded).toBe(false, 'should be collapsed');
+        expect(component.isExpanded).withContext('should be collapsed').toBe(false);
       });
 
       it('should not change isSelected when headerClicked()', () => {
         component.isSelected = true;
         component.headerClicked();
-        expect(component.isSelected).toBe(true, 'remains selected');
+        expect(component.isSelected).withContext('remains selected').toBe(true);
 
         component.isSelected = false;
         component.headerClicked();
-        expect(component.isSelected).toBe(false, 'remains not selected');
+        expect(component.isSelected).withContext('remains not selected').toBe(false);
       });
 
       it('should set classes', () => {
@@ -201,14 +201,14 @@ describe('NavItemComponent', () => {
       component.ngOnChanges(); // assume component.ngOnChanges ignores arguments
       fixture.detectChanges();
       let children = fixture.debugElement.queryAll(By.directive(NavItemComponent));
-      expect(children.length).toEqual(2, 'when IsWide is true');
+      expect(children.length).withContext('when IsWide is true').toEqual(2);
       children.forEach(child => expect(child.componentInstance.isWide).toBe(true));
 
       component.isWide = false;
       component.ngOnChanges();
       fixture.detectChanges();
       children = fixture.debugElement.queryAll(By.directive(NavItemComponent));
-      expect(children.length).toEqual(2, 'when IsWide is false');
+      expect(children.length).withContext('when IsWide is false').toEqual(2);
       children.forEach(child => expect(child.componentInstance.isWide).toBe(false));
     });
   });
