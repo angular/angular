@@ -169,7 +169,7 @@ function getDeclarationSymbolOfNode(node: ts.Node, checker: ts.TypeChecker): ts.
 
 
 /** Tries to resolve the name of the Material module that a node is imported from. */
-function resolveModuleName(node: ts.Identifier, typeChecker: ts.TypeChecker) {
+function resolveModuleName(node: ts.Identifier, typeChecker: ts.TypeChecker): string|null {
   // Get the symbol for the named binding element. Note that we cannot determine the
   // value declaration based on the type of the element as types are not necessarily
   // specific to a given secondary entry-point (e.g. exports with the type of "string")
@@ -186,7 +186,12 @@ function resolveModuleName(node: ts.Identifier, typeChecker: ts.TypeChecker) {
   // The filename for the source file of the node that contains the
   // first declaration of the symbol. All symbol declarations must be
   // part of a defining node, so parent can be asserted to be defined.
-  const resolvedNode = symbol.valueDeclaration || symbol.declarations[0];
+  const resolvedNode = symbol.valueDeclaration || symbol.declarations?.[0];
+
+  if (resolvedNode === undefined) {
+    return null;
+  }
+
   const sourceFile = resolvedNode.getSourceFile().fileName;
 
   // File the module the symbol belongs to from a regex match of the

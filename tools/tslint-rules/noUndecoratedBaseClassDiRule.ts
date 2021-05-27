@@ -72,7 +72,8 @@ class Walker extends Lint.RuleWalker {
         return null;
       }
       const symbol = this._typeChecker.getTypeAtLocation(baseTypes[0]).getSymbol();
-      if (!symbol || !ts.isClassDeclaration(symbol.valueDeclaration)) {
+      if (symbol?.valueDeclaration === undefined ||
+          !ts.isClassDeclaration(symbol.valueDeclaration)) {
         return null;
       }
       if (this.hasExplicitConstructor(symbol.valueDeclaration)) {

@@ -94,10 +94,11 @@ export class ConstructorSignatureMigration extends Migration<UpgradeData> {
           signature => getParameterTypesFromSignature(signature, this.typeChecker));
 
       const expressionName = isNewExpression ? `new ${className}` : 'super';
-      const signatures =
-          classSignatures.map(signature => signature.map(t => this.typeChecker.typeToString(t)))
-              .map(signature => `${expressionName}(${signature.join(', ')})`)
-              .join(' or ');
+      const signatures = classSignatures
+          .map(signature =>
+              signature.map(t => t === null ? 'any' : this.typeChecker.typeToString(t)))
+          .map(signature => `${expressionName}(${signature.join(', ')})`)
+          .join(' or ');
 
       this.createFailureAtNode(
           node,
@@ -111,9 +112,9 @@ export class ConstructorSignatureMigration extends Migration<UpgradeData> {
 
 /** Resolves the type for each parameter in the specified signature. */
 function getParameterTypesFromSignature(
-    signature: ts.Signature, typeChecker: ts.TypeChecker): ts.Type[] {
+    signature: ts.Signature, typeChecker: ts.TypeChecker): (ts.Type|null)[] {
   return signature.getParameters().map(
-      param => typeChecker.getTypeAtLocation(param.declarations[0]));
+      param => param.declarations ? typeChecker.getTypeAtLocation(param.declarations[0]) : null);
 }
 
 /**

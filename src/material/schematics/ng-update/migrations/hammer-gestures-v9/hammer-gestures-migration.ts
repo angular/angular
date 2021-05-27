@@ -648,7 +648,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
     const mainFilePath = getProjectMainFile(project);
     const rootModuleSymbol = this._getRootModuleSymbol(mainFilePath);
 
-    if (rootModuleSymbol === null) {
+    if (rootModuleSymbol === null || rootModuleSymbol.valueDeclaration === undefined) {
       this.failures.push({
         filePath: mainFilePath,
         message: `Could not setup Hammer gestures in module. Please ` +
@@ -726,7 +726,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
     const mainFilePath = getProjectMainFile(project);
     const rootModuleSymbol = this._getRootModuleSymbol(mainFilePath);
 
-    if (rootModuleSymbol === null) {
+    if (rootModuleSymbol === null || rootModuleSymbol.valueDeclaration === undefined) {
       this.failures.push({
         filePath: mainFilePath,
         message: `Could not setup HammerModule. Please manually set up the "HammerModule" ` +

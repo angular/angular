@@ -128,7 +128,7 @@ class Walker extends Lint.RuleWalker {
       }
 
       const symbol = this._typeChecker.getTypeAtLocation(baseType).getSymbol();
-      currentClass = symbol && ts.isClassDeclaration(symbol.valueDeclaration) ?
+      currentClass = symbol?.valueDeclaration && ts.isClassDeclaration(symbol.valueDeclaration) ?
           symbol.valueDeclaration : null;
 
       if (currentClass) {
