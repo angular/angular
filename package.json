@@ -62,7 +62,7 @@
     "@bazel/terser": "3.5.0",
     "@bazel/typescript": "3.5.0",
     "@microsoft/api-extractor": "7.7.11",
-    "@octokit/rest": "16.28.7",
+    "@octokit/rest": "16.43.2",
     "@octokit/types": "^6.0.0",
     "@schematics/angular": "12.0.1",
     "@types/angular": "^1.6.47",
