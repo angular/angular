@@ -3,11 +3,11 @@
 ## Overview of template type checking
 
 Just as TypeScript catches type errors in your code, Angular checks the expressions and bindings within the templates of your application and can report any type errors it finds.
-Angular currently has three modes of doing this, depending on the value of the `fullTemplateTypeCheck` and `strictTemplates` flags in the [TypeScript configuration file](guide/typescript-configuration).
+Angular currently has three modes of doing this, depending on the value of the [`fullTemplateTypeCheck`](guide/angular-compiler-options#fullTemplateTypeCheck) and [`strictTemplates`](guide/angular-compiler-options#stricttemplates) flags in the [TypeScript configuration file](guide/typescript-configuration).
 
 ### Basic mode
 
-In the most basic type-checking mode, with the `fullTemplateTypeCheck` flag set to `false`, Angular validates only top-level expressions in a template.
+In the most basic type-checking mode, with the [`fullTemplateTypeCheck`](guide/angular-compiler-options#fullTemplateTypeCheck) flag set to `false`, Angular validates only top-level expressions in a template.
 
 If you write `<map [city]="user.address.city">`, the compiler verifies the following:
 
@@ -28,7 +28,7 @@ In many cases, these things end up as type `any`, which can cause subsequent par
 
 ### Full mode
 
-If the `fullTemplateTypeCheck` flag is set to `true`, Angular is more aggressive in its type-checking within templates.
+If the [`fullTemplateTypeCheck`](guide/angular-compiler-options#fullTemplateTypeCheck) flag is set to `true`, Angular is more aggressive in its type-checking within templates.
 In particular:
 
 * Embedded views (such as those within an `*ngIf` or `*ngFor`) are checked.
@@ -46,15 +46,15 @@ The following still have type `any`.
 
 ### Strict mode
 
-Angular maintains the behavior of the `fullTemplateTypeCheck` flag, and introduces a third "strict mode".
-Strict mode is a superset of full mode, and is accessed by setting the `strictTemplates` flag to true. This flag supersedes the `fullTemplateTypeCheck` flag.
+Angular maintains the behavior of the [`fullTemplateTypeCheck`](guide/angular-compiler-options#fullTemplateTypeCheck) flag, and introduces a third "strict mode".
+Strict mode is a superset of full mode, and is accessed by setting the [`strictTemplates`](guide/angular-compiler-options#stricttemplates) flag to true. This flag supersedes the [`fullTemplateTypeCheck`](guide/angular-compiler-options#fullTemplateTypeCheck) flag.
 In strict mode, Angular uses checks that go beyond the version 8 type-checker.
 Note that strict mode is only available if using Ivy.
 
 In addition to the full mode behavior, Angular does the following:
 
 * Verifies that component/directive bindings are assignable to their `@Input()`s.
-* Obeys TypeScript's `strictNullChecks` flag when validating the above.
+* Obeys TypeScript's [`strictTemplates`](guide/angular-compiler-options#stricttemplates) flag when validating the above.
 * Infers the correct type of components/directives, including generics.
 * Infers template context types where configured (for example, allowing correct type-checking of `NgFor`).
 * Infers the correct type of `$event` in component/directive, DOM, and animation event bindings.
@@ -108,65 +108,13 @@ There can also be false positives when the typings of an Angular library are eit
 In case of a false positive like these, there are a few options:
 
 * Use the [`$any()` type-cast function](guide/template-expression-operators#any-type-cast-function) in certain contexts to opt out of type-checking for a part of the expression.
-* You can disable strict checks entirely by setting `strictTemplates: false` in the application's TypeScript configuration file, `tsconfig.json`.
-* You can disable certain type-checking operations individually, while maintaining strictness in other aspects, by setting a _strictness flag_ to `false`.
-* If you want to use `strictTemplates` and `strictNullChecks` together, you can opt out of strict null type checking specifically for input bindings using `strictNullInputTypes`.
+* You can disable strict checks entirely by setting [`strictTemplates`](guide/angular-compiler-options#stricttemplates) to `false` in the application's TypeScript configuration file, `tsconfig.json`.
+* You can disable certain type-checking operations individually, while maintaining strictness in other aspects, by setting one or multiple [fine-grained strictness flags](guide/angular-compiler-options#) to `false`.
+* If you want to use [`strictTemplates`](guide/angular-compiler-options#stricttemplates) and[`strictNullChecks`](https://www.typescriptlang.org/tsconfig#strictNullChecks) together, you can opt out of strict null type checking specifically for input bindings via the fine-grained strictness flag [`strictNullInputTypes`](guide/angular-compiler-options#stricttemplates).
 
-Unless otherwise noted, each option below is set to the value for `strictTemplates` (`true` when `strictTemplates` is `true` and vice versa).
-<table>
-  <thead>
-    <tr>
-      <th>Strictness flag</th>
-      <th>Effect</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>strictInputTypes</code></td>
-      <td>Whether the assignability of a binding expression to the <code>@Input()</code> field is checked. Also affects the inference of directive generic types.</td>
-    </tr>
-    <tr>
-      <td><code>strictInputAccessModifiers</code></td>
-      <td>Whether access modifiers such as <code>private</code>/<code>protected</code>/<code>readonly</code> are honored when assigning a binding expression to an <code>@Input()</code>. If disabled, the access modifiers of the <code>@Input</code> are ignored; only the type is checked. This option is <code>false</code> by default, even with <code>strictTemplates</code> set to <code>true</code>.</td>
-    </tr>
-    <tr>
-      <td><code>strictNullInputTypes</code></td>
-      <td>Whether <code>strictNullChecks</code> is honored when checking <code>@Input()</code> bindings (per <code>strictInputTypes</code>). Turning this off can be useful when using a library that was not built with <code>strictNullChecks</code> in mind.</td>
-    </tr>
-    <tr>
-      <td><code>strictAttributeTypes</code></td>
-      <td>Whether to check <code>@Input()</code> bindings that are made using text attributes (for example, <code>&lt;mat-tab label="Step 1"&gt;</code> vs <code>&lt;mat-tab [label]="'Step 1'"&gt;</code>).</td>
-    </tr>
-    <tr>
-      <td><code>strictSafeNavigationTypes</code></td>
-      <td>Whether the return type of safe navigation operations (for example, <code>user?.name</code>) will be correctly inferred based on the type of <code>user</code>). If disabled, <code>user?.name</code> will be of type <code>any</code>.</td>
-    </tr>
-    <tr>
-      <td><code>strictDomLocalRefTypes</code></td>
-      <td>Whether local references to DOM elements will have the correct type. If disabled <code>ref</code> will be of type <code>any</code> for <code>&lt;input #ref&gt;</code>.</td>
-    </tr>
-    <tr>
-      <td><code>strictOutputEventTypes</code></td>
-      <td>Whether <code>$event</code> will have the correct type for event bindings to component/directive an <code>@Output()</code>, or to animation events. If disabled, it will be <code>any</code>.</td>
-    </tr>
-    <tr>
-      <td><code>strictDomEventTypes</code></td>
-      <td>Whether <code>$event</code> will have the correct type for event bindings to DOM events. If disabled, it will be <code>any</code>.</td>
-    </tr>
-    <tr>
-      <td><code>strictContextGenerics</code></td>
-      <td>Whether the type parameters of generic components will be inferred correctly (including any generic bounds). If disabled, any type parameters will be <code>any</code>.</td>
-    </tr>
-    <tr>
-      <td><code>strictLiteralTypes</code></td>
-      <td>Whether object and array literals declared in the template will have their type inferred. If disabled, the type of such literals will be <code>any</code>. This flag is <code>true</code> when <em>either</em> <code>fullTemplateTypeCheck</code> or <code>strictTemplates</code> is set to <code>true</code>.</td>
-    </tr>
-  </tbody>
-</table>
-
-If you still have issues after troubleshooting with these flags, you can fall back to full mode by disabling `strictTemplates`.
-
-If that doesn't work, an option of last resort is to turn off full mode entirely with `fullTemplateTypeCheck: false`.
+If that doesn't work, you have two options of last resort:
+* Fall back to full mode by disabling [`strictTemplates`](guide/angular-compiler-options#stricttemplates).
+* Turn off full mode entirely with [`fullTemplateTypeCheck`](guide/angular-compiler-options#fullTemplateTypeCheck) set to `false`.
 
 A type-checking error that you cannot resolve with any of the recommended methods can be the result of a bug in the template type-checker itself.
 If you get errors that require falling back to basic mode, it is likely to be such a bug.
