@@ -12,7 +12,7 @@ $overlay-backdrop-color: rgba(0, 0, 0, 0.32) !default;
 $backdrop-animation-duration: 400ms !default;
 $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
 
-
+/// Emits structural styles required for cdk/overlay to function.
 @mixin overlay() {
   .cdk-overlay-container, .cdk-global-overlay-wrapper {
     // Disable events from being captured on the overlay container.

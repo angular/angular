@@ -2,7 +2,13 @@
 @use 'typography-utils';
 @use '../theming/theming';
 
-// Represents a typography level from the Material design spec.
+/// Defines a typography level from the Material Design spec.
+/// @param {String} $font-size The font-size for this level.
+/// @param {String | Number} $line-height The line-height for this level.
+/// @param {String | Number} $font-weight The font-weight for this level.
+/// @param {String} $font-family The font-family for this level.
+/// @param {String} $letter-spacing The letter-spacing for this level.
+/// @returns {Map} A map representing the definition of this typpographic level.
 @function define-typography-level(
   $font-size,
   $line-height: $font-size,
@@ -19,10 +25,27 @@
   );
 }
 
-// Represents a collection of typography levels.
-// Defaults come from https://material.io/guidelines/style/typography.html
-// Note: The spec doesn't mention letter spacing. The values here come from
-// eyeballing it until it looked exactly like the spec examples.
+/// Defines a collection of typography levels to configure typography for an application.
+/// Any level not specified defaults to the values defined in the Material Design specification:
+/// https://material.io/guidelines/style/typography.html.
+///
+/// Note that the Material Design specification does not describe explicit letter-spacing values.
+/// The values here come from reverse engineering the Material Design examples.
+/// @param {String} $font-family Default font-family for levels that don't specify font-family.
+/// @param {Map} $display-4 Configuration for the "display-4" typographic level.
+/// @param {Map} $display-3 Configuration for the "display-3" typographic level.
+/// @param {Map} $display-2 Configuration for the "display-2" typographic level.
+/// @param {Map} $display-1 Configuration for the "display-1" typographic level.
+/// @param {Map} $headline Configuration for the "headline" typographic level.
+/// @param {Map} $title Configuration for the "title" typographic level.
+/// @param {Map} $subheading-2 Configuration for the "subheading-2" typographic level.
+/// @param {Map} $subheading-1 Configuration for the "subheading-1" typographic level.
+/// @param {Map} $body-2 Configuration for the "body-2" typographic level.
+/// @param {Map} $body-1 Configuration for the "body-1" typographic level.
+/// @param {Map} $caption Configuration for the "caption" typographic level.
+/// @param {Map} $button Configuration for the "button" typographic level.
+/// @param {Map} $input Configuration for the "input" typographic level.
+/// @returns {Map} A typography config for the application.
 @function define-typography-config(
   $font-family:   'Roboto, "Helvetica Neue", sans-serif',
   $display-4:     define-typography-level(112px, 112px, 300, $letter-spacing: -0.05em),
@@ -148,8 +171,12 @@
   @return $config;
 }
 
-// Adds the base typography styles, based on a config.
-// stylelint-disable-next-line material/theme-mixin-api
+// stylelint-disable material/theme-mixin-api
+
+/// Emits baseline typographic styles based on a given config.
+/// @param {Map} $config-or-theme A typography config for an entire theme.
+/// @param {String} $selector Ancestor selector under which native elements, such as h1, will
+///     be styled.
 @mixin typography-hierarchy($config-or-theme, $selector: '.mat-typography') {
   $config: private-typography-to-2014-config(theming.get-typography-config($config-or-theme));
 
@@ -236,3 +263,5 @@
     margin: 0 0 64px;
   }
 }
+
+// stylelint-enable material/theme-mixin-api

@@ -20,21 +20,23 @@ $_emitted-color: () !default;
 $_emitted-typography: () !default;
 $_emitted-density: () !default;
 
-// For a given hue in a palette, return the contrast color from the map of contrast palettes.
-// @param $palette
-// @param $hue
+/// For a given hue in a palette, return the contrast color from the map of contrast palettes.
+/// @param {Map} $palette The palette from which to extract a color.
+/// @param {String | Number} $hue The hue for which to get a contrast color.
+/// @returns {Color} The contrast color for the given palette and hue.
 @function get-contrast-color-from-palette($palette, $hue) {
   @return map.get(map.get($palette, contrast), $hue);
 }
 
 
-// Creates a map of hues to colors for a theme. This is used to define a theme palette in terms
-// of the Material Design hues.
-// @param $base-palette
-// @param $default
-// @param $lighter
-// @param $darker
-// @param $text
+/// Creates a map of hues to colors for a theme. This is used to define a theme palette in terms
+/// of the Material Design hues.
+/// @param {Map} $base-palette Map of hue keys to color values for the basis for this palette.
+/// @param {String | Number} $default Default hue for this palette.
+/// @param {String | Number} $lighter "lighter" hue for this palette.
+/// @param {String | Number} $darker "darker" hue for this palette.
+/// @param {String | Number} $text "text" hue for this palette.
+/// @returns {Map} A complete Angular Material theming palette.
 @function define-palette($base-palette, $default: 500, $lighter: 100, $darker: 700,
   $text: $default) {
   $result: map.merge($base-palette, (
@@ -59,14 +61,15 @@ $_emitted-density: () !default;
 }
 
 
-// Gets a color from a theme palette (the output of mat-palette).
-// The hue can be one of the standard values (500, A400, etc.), one of the three preconfigured
-// hues (default, lighter, darker), or any of the aforementioned prefixed with "-contrast".
-//
-// @param $palette The theme palette (output of mat-palette).
-// @param $hue The hue from the palette to use. If this is a value between 0 and 1, it will
-//     be treated as opacity.
-// @param $opacity The alpha channel value for the color.
+/// Gets a color from a theme palette (the output of mat-palette).
+/// The hue can be one of the standard values (500, A400, etc.), one of the three preconfigured
+/// hues (default, lighter, darker), or any of the aforementioned prefixed with "-contrast".
+///
+/// @param {Map} $palette The palette from which to extract a color.
+/// @param {String | Number} $hue The hue from the palette to use. If this is a value between 0
+//     and 1, it will be treated as opacity.
+/// @param {Number} $opacity The alpha channel value for the color.
+/// @returns {Color} The color for the given palette, hue, and opacity.
 @function get-color-from-palette($palette, $hue: default, $opacity: null) {
   // If hueKey is a number between zero and one, then it actually contains an
   // opacity value, so recall this function with the default hue and that given opacity.
@@ -130,9 +133,12 @@ $_emitted-density: () !default;
   );
 }
 
-// Creates a container object for a light theme to be given to individual component theme mixins.
-// TODO: Remove legacy API and rename `$primary` to `$config`. Currently it cannot be renamed
+// TODO: Remove legacy API and rename `$primary` below to `$config`. Currently it cannot be renamed
 // as it would break existing apps that set the parameter by name.
+
+/// Creates a container object for a light theme to be given to individual component theme mixins.
+/// @param {Map} $primary The theme configuration object.
+/// @returns {Map} A complete Angular Material theme map.
 @function define-light-theme($primary, $accent: null, $warn: define-palette(palette.$red-palette)) {
   // This function creates a container object for the individual component theme mixins. Consumers
   // can construct such an object by calling this function, or by building the object manually.
@@ -167,9 +173,12 @@ $_emitted-density: () !default;
   @return private-create-backwards-compatibility-theme(_mat-validate-theme($result));
 }
 
-// Creates a container object for a dark theme to be given to individual component theme mixins.
-// TODO: Remove legacy API and rename `$primary` to `$config`. Currently it cannot be renamed
+// TODO: Remove legacy API and rename below `$primary` to `$config`. Currently it cannot be renamed
 // as it would break existing apps that set the parameter by name.
+
+/// Creates a container object for a dark theme to be given to individual component theme mixins.
+/// @param {Map} $primary The theme configuration object.
+/// @returns {Map} A complete Angular Material theme map.
 @function define-dark-theme($primary, $accent: null, $warn: define-palette(palette.$red-palette)) {
   // This function creates a container object for the individual component theme mixins. Consumers
   // can construct such an object by calling this function, or by building the object manually.
@@ -205,6 +214,10 @@ $_emitted-density: () !default;
 }
 
 /// Gets the color configuration from the given theme or configuration.
+/// @param {Map} $theme The theme map returned from `define-light-theme` or `define-dark-theme`.
+/// @param {Map} $default The default value returned if the given `$theme` does not include a
+///     `color` configuration.
+/// @returns {Map} Color configuration for a theme.
 @function get-color-config($theme, $default: null) {
   // If a configuration has been passed, return the config directly.
   @if not private-is-theme-object($theme) {
@@ -225,6 +238,11 @@ $_emitted-density: () !default;
 }
 
 /// Gets the density configuration from the given theme or configuration.
+/// @param {Map} $theme-or-config  The theme map returned from `define-light-theme` or
+///     `define-dark-theme`.
+/// @param {Map} $default The default value returned if the given `$theme` does not include a
+///     `density` configuration.
+/// @returns {Map} Density configuration for a theme.
 @function get-density-config($theme-or-config, $default: 0) {
   // If a configuration has been passed, return the config directly.
   @if not private-is-theme-object($theme-or-config) {
@@ -240,6 +258,11 @@ $_emitted-density: () !default;
 
 /// Gets the typography configuration from the given theme or configuration.
 /// For backwards compatibility, typography is not included by default.
+/// @param {Map} $theme-or-config  The theme map returned from `define-light-theme` or
+///     `define-dark-theme`.
+/// @param {Map} $default The default value returned if the given `$theme` does not include a
+///     `typography` configuration.
+/// @returns {Map} Typography configuration for a theme.
 @function get-typography-config($theme-or-config, $default: null) {
   // If a configuration has been passed, return the config directly.
   @if not private-is-theme-object($theme-or-config) {

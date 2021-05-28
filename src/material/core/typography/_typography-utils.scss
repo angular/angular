@@ -1,32 +1,44 @@
 @use 'sass:map';
 @use 'sass:meta';
 @use 'sass:string';
+
+
 // Utility for fetching a nested value from a typography config.
 @function _mat-get-type-value($config, $level, $name) {
   @return map.get(map.get($config, $level), $name);
 }
 
-// Gets the font size for a level inside a typography config.
+/// Gets the font size for a level inside a typography config.
+/// @param {Map} $config A typography config.
+/// @param {Map} $level A typography level.
 @function font-size($config, $level) {
   @return _mat-get-type-value($config, $level, font-size);
 }
 
-// Gets the line height for a level inside a typography config.
+/// Gets the line height for a level inside a typography config.
+/// @param {Map} $config A typography config.
+/// @param {Map} $level A typography level.
 @function line-height($config, $level) {
   @return _mat-get-type-value($config, $level, line-height);
 }
 
-// Gets the font weight for a level inside a typography config.
+/// Gets the font weight for a level inside a typography config.
+/// @param {Map} $config A typography config.
+/// @param {Map} $level A typography level.
 @function font-weight($config, $level) {
   @return _mat-get-type-value($config, $level, font-weight);
 }
 
-// Gets the letter spacing for a level inside a typography config.
+/// Gets the letter spacing for a level inside a typography config.
+/// @param {Map} $config A typography config.
+/// @param {Map} $level A typography level.
 @function letter-spacing($config, $level) {
   @return _mat-get-type-value($config, $level, letter-spacing);
 }
 
-// Gets the font-family from a typography config and removes the quotes around it.
+/// Gets the font-family from a typography config and removes the quotes around it.
+/// @param {Map} $config A typography config.
+/// @param {Map} $level A typography level.
 @function font-family($config, $level: null) {
   $font-family: map.get($config, font-family);
 
@@ -38,8 +50,13 @@
   @return if(meta.type-of($font-family) == string, string.unquote($font-family), $font-family);
 }
 
-// Outputs the shorthand `font` CSS property, based on a set of typography values. Falls back to
-// the individual properties if a value that isn't allowed in the shorthand is passed in.
+/// Outputs the shorthand `font` CSS property, based on a set of typography values. Falls back to
+/// the individual properties if a value that isn't allowed in the shorthand is passed in.
+/// @param {String} $font-size The font-size value.
+/// @param {String | Number} $font-weight The font-weight value.
+/// @param {String | Number} $line-height The line-height value.
+/// @param {String} $font-family The font-family value.
+/// @returns {String} The `font` shorthand value combining the given parts.
 @mixin font-shorthand($font-size, $font-weight, $line-height, $font-family) {
   // If any of the values are set to `inherit`, we can't use the shorthand
   // so we fall back to passing in the individual properties.
@@ -65,7 +82,9 @@
   }
 }
 
-// Converts a typography level into CSS styles.
+/// Emits CSS styles for the given typography level.
+/// @param {Map} $config A typography config.
+/// @param {Map} $level A typography level.
 @mixin typography-level($config, $level) {
   $font-size: font-size($config, $level);
   $font-weight: font-weight($config, $level);
