@@ -78,21 +78,19 @@ These extra selectors enable the scoping rules described in this page.
 
 ## Mixing encapsulation modes
 
-It is not recommended to mix components that use different view encapsulation modes, but where it is necessary you should be aware of how the component styles will interact.
+It is not recommended to mix components that use different view encapsulation, but where it is necessary you should be aware of how the component styles will interact.
 
-- The styles of components with `ViewEncapsulation.Emulated` and `ViewEncapsulation.None` are added to the `<head>` of the document, making them available throughout the application.
+- The styles of components with `ViewEncapsulation.Emulated` are added to the `<head>` of the document, making them available throughout the application, but are "scoped" so they only affect elements within the component's template.
 
-  The result is that styling for components with `ViewEncapsulation.None` will affect any matching elements in the document, while styling for `ViewEncapsulation.Emulated` components will only affect elements that are within their component's templates.
+- The styles of components with `ViewEncapsulation.None` are added to the `<head>` of the document, making them available throughout the application, and are not "scoped" so they can affect any element in the application.
 
-- The styles of components with `ViewEncapsulation.ShadowDom` are only added to the shadow DOM host.
+- The styles of components with `ViewEncapsulation.ShadowDom` are only added to the shadow DOM host, ensuring that they only affect elements within the component's template.
 
-  This approach ensures that styling for components with `ViewEncapsulation.ShadowDom` can only affect matching elements within the component's template.
+**All the global styles (including those added for `ViewEncapsulation.Emulated` and `ViewEncapsulation.None` components) are also added to the shadow DOM host of each `ViewEncapsulation.ShadowDom` component.**
 
-- All the global styles (including those added for `ViewEncapsulation.Emulated` and `ViewEncapsulation.None` components) are also added to the shadow DOM host of each `ViewEncapsulation.ShadowDom` component.
+The result is that styling for components with `ViewEncapsulation.None` will affect matching elements within the shadow DOM.
 
-  **The result is that styling for components with `ViewEncapsulation.None` will affect matching elements within the shadow DOM.**
-
-  This approach may seem counter-intuitive at first, but without it a component with `ViewEncapsulation.None` could not be used within a component with `ViewEncapsulation.ShadowDom`, since its styles would not be available.
+This approach may seem counter-intuitive at first, but without it a component with `ViewEncapsulation.None` could not be used within a component with `ViewEncapsulation.ShadowDom`, since its styles would not be available.
 
 ### Examples
 
@@ -102,40 +100,42 @@ See the <live-example noDownload></live-example> to try out these components you
 
 #### No encapsulation
 
-The first example shows the `NoEncapsulationComponent` that has `ViewEncapsulation.None`. This component colors its template nodes red.
+The first example shows a component that has `ViewEncapsulation.None`. This component colors its template elements red.
 
 <code-example path="view-encapsulation/src/app/no-encapsulation.component.ts" header="src/app/no-encapsulation.component.ts"></code-example>>
 
 Angular adds the styles for this component as global styles to the `<head>` of the document.
-**Angular also adds the styles to all shadow DOM hosts.**
-Therefore the styles are available throughout the application.
+
+**Angular also adds the styles to all shadow DOM hosts.** Therefore the styles are available throughout the application.
 
 <img src="generated/images/guide/view-encapsulation/no-encapsulation.png" alt="component with no encapsulation">
 
 #### Emulated encapsulation
 
-The second example shows the `EmulatedEncapsulationComponent` that has `ViewEncapsulation.Emulated`. This component colors its template nodes green.
+The second example shows a component that has `ViewEncapsulation.Emulated`. This component colors its template elements green.
 
 <code-example path="view-encapsulation/src/app/emulated-encapsulation.component.ts" header="src/app/emulated-encapsulation.component.ts"></code-example>>
 
 Similar to `ViewEncapsulation.None`, Angular adds the styles for this component to the `<head>` of the document, and to all the shadow DOM hosts.
 But in this case, the styles are "scoped" by the attributes described in ["Inspecting generated CSS"](#inspecting-generated-css) above.
-Therefore, only the nodes directly within this component's template will match its styles.
+
+Therefore, only the elements directly within this component's template will match its styles.
 Since the "scoped" styles from the `EmulatedEncapsulationComponent` are very specific, they override the global styles from the `NoEncapsulationComponent`.
 
 In this example, the `EmulatedEncapsulationComponent` contains a `NoEncapsulationComponent`.
-The `NoEncapsulationComponent` is styled as expected because the scoped styles do not match its contents.
+The `NoEncapsulationComponent` is styled as expected because the scoped styles do not match elements in its template.
 
 <img src="generated/images/guide/view-encapsulation/emulated-encapsulation.png" alt="component with no encapsulation">
 
 #### Shadow DOM encapsulation
 
-Finally, there is the `ShadowDomEncapsulationComponent` that has `ViewEncapsulation.ShadowDom`. This component colors its contents blue.
+The third example show a component that has `ViewEncapsulation.ShadowDom`. This component colors its template elements blue.
 
 <code-example path="view-encapsulation/src/app/shadow-dom-encapsulation.component.ts" header="src/app/shadow-dom-encapsulation.component.ts"></code-example>>
 
 Angular adds styles for this component only to the shadow DOM host, so they are not visible outside the shadow DOM.
-Angular also adds the global styles from the `NoEncapsulationComponent` and `ViewEncapsulationComponent` to the shadow DOM host, so those styles are still available to the nodes in the template of this component.
+
+Note that Angular also adds the global styles from the `NoEncapsulationComponent` and `ViewEncapsulationComponent` to the shadow DOM host, so those styles are still available to the elements in the template of this component.
 
 In this example, the `ShadowDomEncapsulationComponent` contains both a `NoEncapsulationComponent` and `ViewEncapsulationComponent`.
 
@@ -143,7 +143,7 @@ The styles added by the `ShadowDomEncapsulationComponent` component are availabl
 
 The `EmulatedEncapsulationComponent` has specific "scoped" styles, so the styling of this component's template is unaffected.
 
-But since styles from `ShadowDomEncapsulationComponent` are added to the shadow host after the global styles, the `ShadowDomEncapsulationComponent` styles override the styles from the `NoEncapsulationComponent`.
-The result is that the nodes in the `NoEncapsulationComponent` match the styles from the `ShadowDomEncapsulationComponent`, which may not be what the component author intended.
+But since styles from `ShadowDomEncapsulationComponent` are added to the shadow host after the global styles, the `h2` style overrides the style from the `NoEncapsulationComponent`.
+The result is that the `<h2>` element in the `NoEncapsulationComponent` is colored blue rather than red, which may not be what the component author intended.
 
 <img src="generated/images/guide/view-encapsulation/shadow-dom-encapsulation.png" alt="component with no encapsulation">

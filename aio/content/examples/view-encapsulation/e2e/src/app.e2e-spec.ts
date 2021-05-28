@@ -8,41 +8,76 @@ describe('View Encapsulation App', () => {
 
   beforeAll(() => browser.get(''));
 
-  it('should color the top level `NoEncapsulationComponent` red', async () => {
+  it('should color the `NoEncapsulationComponent` heading red, when it is at the top level', async () => {
     const noEncapsulationHeading = element(by.css('app-root > app-no-encapsulation > h2'));
     expect(await noEncapsulationHeading.getCssValue('color')).toEqual(RED);
   });
 
-  it('should color the top level `EmulatedEncapsulationComponent` green', async () => {
+  it('should color the `NoEncapsulationComponent` message red, when it is at the top level', async () => {
+    const noEncapsulationMessage = element(by.css('app-root > app-no-encapsulation > .none-message'));
+    expect(await noEncapsulationMessage.getCssValue('color')).toEqual(RED);
+  });
+  
+  it('should color the `EmulatedEncapsulationComponent` heading green, when it is at the top level', async () => {
     const noEncapsulationHeading = element(by.css('app-root > app-emulated-encapsulation > h2'));
     expect(await noEncapsulationHeading.getCssValue('color')).toEqual(GREEN);
   });
 
-  it('should color the `NoEncapsulationComponent` under the top level `EmulatedEncapsulationComponent` red', async () => {
+  it('should color the `EmulatedEncapsulationComponent` message green, when it is at the top level', async () => {
+    const noEncapsulationMessage = element(by.css('app-root > app-emulated-encapsulation > .emulated-message'));
+    expect(await noEncapsulationMessage.getCssValue('color')).toEqual(GREEN);
+  });
+  
+  it('should color the `NoEncapsulationComponent` heading red, when it is a child of `EmulatedEncapsulationComponent`)', async () => {
     const noEncapsulationHeading = element(by.css('app-root > app-emulated-encapsulation > app-no-encapsulation > h2'));
     expect(await noEncapsulationHeading.getCssValue('color')).toEqual(RED);
   });
 
-  it('should color the top level `ShadowDomEncapsulationComponent` blue', async () => {
+  it('should color the `NoEncapsulationComponent` message red, when it is a child of `EmulatedEncapsulationComponent`)', async () => {
+    const noEncapsulationMessage = element(by.css('app-root > app-emulated-encapsulation > app-no-encapsulation > .none-message'));
+    expect(await noEncapsulationMessage.getCssValue('color')).toEqual(RED);
+  });
+  
+  it('should color the `ShadowDomEncapsulationComponent` heading blue', async () => {
     const noEncapsulationHeading = await findShadowDomElement('app-root > app-shadow-dom-encapsulation', 'h2');
     expect(await noEncapsulationHeading.getCssValue('color')).toEqual(BLUE);
   });
 
-  it('should color `EmulatedEncapsulationComponent` under the `ShadowDomEncapsulationComponent` green', async () => {
+  it('should color the `ShadowDomEncapsulationComponent` message blue', async () => {
+    const noEncapsulationHMessage = await findShadowDomElement('app-root > app-shadow-dom-encapsulation', '.shadow-message');
+    expect(await noEncapsulationHMessage.getCssValue('color')).toEqual(BLUE);
+  });
+  
+  it('should color the `EmulatedEncapsulationComponent` heading green, when it is a child of `ShadowDomEncapsulationComponent`', async () => {
     const noEncapsulationHeading = await findShadowDomElement('app-root > app-shadow-dom-encapsulation', 'app-emulated-encapsulation > h2');
     expect(await noEncapsulationHeading.getCssValue('color')).toEqual(GREEN);
   });
 
-  it('should color `NoEncapsulationComponent` under the `ShadowDomEncapsulationComponent` blue (not red!)', async () => {
+  it('should color the `EmulatedEncapsulationComponent` message green, when it is a child of `ShadowDomEncapsulationComponent`', async () => {
+    const noEncapsulationMessage = await findShadowDomElement('app-root > app-shadow-dom-encapsulation', 'app-emulated-encapsulation > .emulated-message');
+    expect(await noEncapsulationMessage.getCssValue('color')).toEqual(GREEN);
+  });
+  
+  it('should color the `NoEncapsulationComponent` heading blue (not red!), when it is a child of the `ShadowDomEncapsulationComponent`', async () => {
     const noEncapsulationHeading = await findShadowDomElement('app-root > app-shadow-dom-encapsulation', 'app-no-encapsulation > h2');
     expect(await noEncapsulationHeading.getCssValue('color')).toEqual(BLUE);
   });
 
-  it('should color `NoEncapsulationComponent` under the `EmulatedEncapsulationComponent` under the `ShadowDomEncapsulationComponent` blue (not red!)', async () => {
+  it('should color the `NoEncapsulationComponent` message red (not blue!), when it is a child of the `ShadowDomEncapsulationComponent`', async () => {
+    const noEncapsulationMessage = await findShadowDomElement('app-root > app-shadow-dom-encapsulation', 'app-no-encapsulation > .none-message');
+    expect(await noEncapsulationMessage.getCssValue('color')).toEqual(RED);
+  });
+  
+  it('should color the `NoEncapsulationComponent` heading blue (not red!), when it is a child of the `EmulatedEncapsulationComponent`, which is a child of the `ShadowDomEncapsulationComponent`', async () => {
     const noEncapsulationHeading = await findShadowDomElement('app-root > app-shadow-dom-encapsulation', 'app-emulated-encapsulation > app-no-encapsulation > h2');
     expect(await noEncapsulationHeading.getCssValue('color')).toEqual(BLUE);
   });
 
+  it('should color the `NoEncapsulationComponent` message red (not blue!), when it is a child of the `EmulatedEncapsulationComponent`, which is a child of the `ShadowDomEncapsulationComponent`', async () => {
+    const noEncapsulationMessage = await findShadowDomElement('app-root > app-shadow-dom-encapsulation', 'app-emulated-encapsulation > app-no-encapsulation > .none-message');
+    expect(await noEncapsulationMessage.getCssValue('color')).toEqual(RED);
+  });
+  
   afterEach(async () => {
     // Assert that there are no errors emitted from the browser
     const logs = await browser.manage().logs().get(logging.Type.BROWSER);
