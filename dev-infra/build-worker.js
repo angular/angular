@@ -172,7 +172,7 @@ var GitCommandError = /** @class */ (function (_super) {
 var GitClient = /** @class */ (function () {
     /**
      * @param githubToken The github token used for authentication, if provided.
-     * @param _config The configuration, containing the github specific configuration.
+     * @param config The configuration, containing the github specific configuration.
      * @param baseDir The full path to the root of the repository base.
      */
     function GitClient(githubToken, config, baseDir) {
@@ -292,10 +292,6 @@ var GitClient = /** @class */ (function () {
     };
     /** Gets whether the current Git repository has uncommitted changes. */
     GitClient.prototype.hasUncommittedChanges = function () {
-        return this.runGraceful(['diff-index', '--quiet', 'HEAD']).status !== 0;
-    };
-    /** Whether the repo has any local changes. */
-    GitClient.prototype.hasLocalChanges = function () {
         return this.runGraceful(['diff-index', '--quiet', 'HEAD']).status !== 0;
     };
     /** Sanitizes a given message by omitting the provided Github token if present. */
