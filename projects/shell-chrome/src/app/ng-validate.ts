@@ -44,6 +44,10 @@ function detectAngular(win: Window): void {
     } as AngularDetection,
     '*'
   );
+
+  if (!isAngular) {
+    setTimeout(() => detectAngular(win), 1000);
+  }
 }
 
 function installScript(fn: string): void {
