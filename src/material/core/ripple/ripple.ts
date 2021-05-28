@@ -189,9 +189,11 @@ export class MatRipple implements OnInit, OnDestroy, RippleTarget {
   launch(config: RippleConfig): RippleRef;
 
   /**
-   * Launches a manual ripple at the specified coordinates within the element.
-   * @param x Coordinate within the element, along the X axis at which to fade-in the ripple.
-   * @param y Coordinate within the element, along the Y axis at which to fade-in the ripple.
+   * Launches a manual ripple at the specified coordinates relative to the viewport.
+   * @param x Coordinate along the X axis at which to fade-in the ripple. Coordinate
+   *   should be relative to the viewport.
+   * @param y Coordinate along the Y axis at which to fade-in the ripple. Coordinate
+   *   should be relative to the viewport.
    * @param config Optional ripple configuration for the manual ripple.
    */
   launch(x: number, y: number, config?: RippleConfig): RippleRef;
