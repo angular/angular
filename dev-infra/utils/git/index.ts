@@ -115,7 +115,7 @@ export class GitClient<Authenticated extends boolean> {
 
   /**
    * @param githubToken The github token used for authentication, if provided.
-   * @param _config The configuration, containing the github specific configuration.
+   * @param config The configuration, containing the github specific configuration.
    * @param baseDir The full path to the root of the repository base.
    */
   protected constructor(public githubToken: Authenticated extends true? string: undefined,
@@ -211,11 +211,6 @@ export class GitClient<Authenticated extends boolean> {
 
   /** Gets whether the current Git repository has uncommitted changes. */
   hasUncommittedChanges(): boolean {
-    return this.runGraceful(['diff-index', '--quiet', 'HEAD']).status !== 0;
-  }
-
-  /** Whether the repo has any local changes. */
-  hasLocalChanges(): boolean {
     return this.runGraceful(['diff-index', '--quiet', 'HEAD']).status !== 0;
   }
 

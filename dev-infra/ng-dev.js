@@ -368,7 +368,7 @@ var GitCommandError = /** @class */ (function (_super) {
 var GitClient = /** @class */ (function () {
     /**
      * @param githubToken The github token used for authentication, if provided.
-     * @param _config The configuration, containing the github specific configuration.
+     * @param config The configuration, containing the github specific configuration.
      * @param baseDir The full path to the root of the repository base.
      */
     function GitClient(githubToken, config, baseDir) {
@@ -488,10 +488,6 @@ var GitClient = /** @class */ (function () {
     };
     /** Gets whether the current Git repository has uncommitted changes. */
     GitClient.prototype.hasUncommittedChanges = function () {
-        return this.runGraceful(['diff-index', '--quiet', 'HEAD']).status !== 0;
-    };
-    /** Whether the repo has any local changes. */
-    GitClient.prototype.hasLocalChanges = function () {
         return this.runGraceful(['diff-index', '--quiet', 'HEAD']).status !== 0;
     };
     /** Sanitizes a given message by omitting the provided Github token if present. */
@@ -3128,7 +3124,7 @@ function checkOutPullRequestLocally(prNumber, githubToken, opts = {}) {
         const git = GitClient.getAuthenticatedInstance();
         // In order to preserve local changes, checkouts cannot occur if local changes are present in the
         // git environment. Checked before retrieving the PR to fail fast.
-        if (git.hasLocalChanges()) {
+        if (git.hasUncommittedChanges()) {
             throw new UnexpectedLocalChangesError('Unable to checkout PR due to uncommitted changes.');
         }
         /**
@@ -3268,7 +3264,7 @@ function discoverNewConflictsForPr(newPrNumber, updatedAfter) {
         const git = GitClient.getAuthenticatedInstance();
         // If there are any local changes in the current repository state, the
         // check cannot run as it needs to move between branches.
-        if (git.hasLocalChanges()) {
+        if (git.hasUncommittedChanges()) {
             error('Cannot run with local changes. Please make sure there are no local changes.');
             process.exit(1);
         }
@@ -4584,8 +4580,7 @@ function rebasePr(prNumber, githubToken, config = getConfig()) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         /** The singleton instance of the GitClient. */
         const git = GitClient.getAuthenticatedInstance();
-        // TODO: Rely on a common assertNoLocalChanges function.
-        if (git.hasLocalChanges()) {
+        if (git.hasUncommittedChanges()) {
             error('Cannot perform rebase of PR with local changes.');
             process.exit(1);
         }
