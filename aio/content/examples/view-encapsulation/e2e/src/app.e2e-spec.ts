@@ -2,41 +2,45 @@ import { browser, by, element, logging, WebElement } from 'protractor';
 
 describe('View Encapsulation App', () => {
 
+  const RED = 'rgba(255, 0, 0, 1)';
+  const GREEN = 'rgba(0, 128, 0, 1)';
+  const BLUE = 'rgba(0, 0, 255, 1)';
+
   beforeAll(() => browser.get(''));
 
-  it('should colour the top level `NoEncapsulationComponent` red', async () => {
+  it('should color the top level `NoEncapsulationComponent` red', async () => {
     const noEncapsulationHeading = element(by.css('app-root > app-no-encapsulation > h2'));
-    expect(await noEncapsulationHeading.getCssValue('color')).toEqual('rgba(255, 0, 0, 1)');
+    expect(await noEncapsulationHeading.getCssValue('color')).toEqual(RED);
   });
 
-  it('should colour the top level `EmulatedEncapsulationComponent` green', async () => {
+  it('should color the top level `EmulatedEncapsulationComponent` green', async () => {
     const noEncapsulationHeading = element(by.css('app-root > app-emulated-encapsulation > h2'));
-    expect(await noEncapsulationHeading.getCssValue('color')).toEqual('rgba(0, 128, 0, 1)');
+    expect(await noEncapsulationHeading.getCssValue('color')).toEqual(GREEN);
   });
 
-  it('should colour the `NoEncapsulationComponent` under the top level `EmulatedEncapsulationComponent` red', async () => {
+  it('should color the `NoEncapsulationComponent` under the top level `EmulatedEncapsulationComponent` red', async () => {
     const noEncapsulationHeading = element(by.css('app-root > app-emulated-encapsulation > app-no-encapsulation > h2'));
-    expect(await noEncapsulationHeading.getCssValue('color')).toEqual('rgba(255, 0, 0, 1)');
+    expect(await noEncapsulationHeading.getCssValue('color')).toEqual(RED);
   });
 
-  it('should colour the top level `ShadowDomEncapsulationComponent` blue', async () => {
+  it('should color the top level `ShadowDomEncapsulationComponent` blue', async () => {
     const noEncapsulationHeading = await findShadowDomElement('app-root > app-shadow-dom-encapsulation', 'h2');
-    expect(await noEncapsulationHeading.getCssValue('color')).toEqual('rgba(0, 0, 255, 1)');
+    expect(await noEncapsulationHeading.getCssValue('color')).toEqual(BLUE);
   });
 
-  it('should colour `EmulatedEncapsulationComponent` under the `ShadowDomEncapsulationComponent` green', async () => {
+  it('should color `EmulatedEncapsulationComponent` under the `ShadowDomEncapsulationComponent` green', async () => {
     const noEncapsulationHeading = await findShadowDomElement('app-root > app-shadow-dom-encapsulation', 'app-emulated-encapsulation > h2');
-    expect(await noEncapsulationHeading.getCssValue('color')).toEqual('rgba(0, 128, 0, 1)');
+    expect(await noEncapsulationHeading.getCssValue('color')).toEqual(GREEN);
   });
 
-  it('should colour `NoEncapsulationComponent` under the `ShadowDomEncapsulationComponent` blue (not red!)', async () => {
+  it('should color `NoEncapsulationComponent` under the `ShadowDomEncapsulationComponent` blue (not red!)', async () => {
     const noEncapsulationHeading = await findShadowDomElement('app-root > app-shadow-dom-encapsulation', 'app-no-encapsulation > h2');
-    expect(await noEncapsulationHeading.getCssValue('color')).toEqual('rgba(0, 0, 255, 1)');
+    expect(await noEncapsulationHeading.getCssValue('color')).toEqual(BLUE);
   });
 
-  it('should colour `NoEncapsulationComponent` under the `EmulatedEncapsulationComponent` under the `ShadowDomEncapsulationComponent` blue (not red!)', async () => {
+  it('should color `NoEncapsulationComponent` under the `EmulatedEncapsulationComponent` under the `ShadowDomEncapsulationComponent` blue (not red!)', async () => {
     const noEncapsulationHeading = await findShadowDomElement('app-root > app-shadow-dom-encapsulation', 'app-emulated-encapsulation > app-no-encapsulation > h2');
-    expect(await noEncapsulationHeading.getCssValue('color')).toEqual('rgba(0, 0, 255, 1)');
+    expect(await noEncapsulationHeading.getCssValue('color')).toEqual(BLUE);
   });
 
   afterEach(async () => {
