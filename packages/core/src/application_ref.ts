@@ -683,25 +683,22 @@ export class ApplicationRef {
 
   /**
    * Bootstrap a component onto the element identified by its selector or, optionally, to a
-   specified
-   * element
+   * specified element.
    *
    * @usageNotes
    * ### Bootstrap process
    *
-   * When bootstrapping an application with a component, Angular mounts the specified application
-   * component onto a DOM element, and kicks off automatic change detection to finish initializing
-   * the component.
+   * When bootstrapping a component, Angular mounts it onto a target DOM element
+   * and kicks off automatic change detection. The target DOM element can be
+   * provided using the `rootSelectorOrNode` argument.
    *
-   * If not provided in the `rootSelectorOrNode` argument, the selector of the provided
-   * `componentOrFactory` will be used to match the DOM elements.
-   *
-   * Please note that if multiple elements match the selector, the first matched element will be
-   * used as a host element.
+   * If the target DOM element is not provided, Angular tries to find one on a page
+   * using the `selector` of the component that is being bootstrapped
+   * (first matched element is used).
    *
    * ### Example
    *
-   * Generally, we define the component to bootstrap in the bootstrap array of `NgModule`,
+   * Generally, we define the component to bootstrap in the `bootstrap` array of `NgModule`,
    * but it requires us to know the component while writing the application code.
    *
    * Imagine a situation where we have to wait for an API call to decide about the component to
@@ -711,22 +708,15 @@ export class ApplicationRef {
    * {@example core/ts/platform/platform.ts region='componentSelector'}
    *
    * Optionally, a component can be mounted onto a DOM element that does not match the
-   * componentType's selector.
+   * selector of the bootstraped component.
    *
-   * ```typescript
-   * ngDoBootstrap(appRef: ApplicationRef) {
-   *   // it can be a CSS selector
-   *   . . .
-   *   appRef.bootstrap(this.componentMap[componentName], '#root-element');
-   *   . . .
-
-   *   // or it can be a reference to a DOM node
-   *   . . .
-   *   const element = document.querySelector('#root-element');
-   *   appRef.bootstrap(this.componentMap[componentName], element);
-   *   . . .
-   * }
-   * ```
+   * In the following example, we are providing a CSS selector to match the target element.
+   *
+   * {@example core/ts/platform/platform.ts region='cssSelector'}
+   *
+   * While in this example, we are providing reference to a DOM node.
+   *
+   * {@example core/ts/platform/platform.ts region='domNode'}
    */
   bootstrap<C>(componentOrFactory: ComponentFactory<C>|Type<C>, rootSelectorOrNode?: string|any):
       ComponentRef<C> {
