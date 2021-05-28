@@ -46,8 +46,7 @@ export async function rebasePr(
     prNumber: number, githubToken: string, config: Pick<NgDevConfig, 'github'> = getConfig()) {
   /** The singleton instance of the GitClient. */
   const git = GitClient.getAuthenticatedInstance();
-  // TODO: Rely on a common assertNoLocalChanges function.
-  if (git.hasLocalChanges()) {
+  if (git.hasUncommittedChanges()) {
     error('Cannot perform rebase of PR with local changes.');
     process.exit(1);
   }

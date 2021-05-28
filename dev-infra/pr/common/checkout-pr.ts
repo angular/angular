@@ -67,7 +67,7 @@ export async function checkOutPullRequestLocally(
 
   // In order to preserve local changes, checkouts cannot occur if local changes are present in the
   // git environment. Checked before retrieving the PR to fail fast.
-  if (git.hasLocalChanges()) {
+  if (git.hasUncommittedChanges()) {
     throw new UnexpectedLocalChangesError('Unable to checkout PR due to uncommitted changes.');
   }
 

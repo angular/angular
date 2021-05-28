@@ -57,7 +57,7 @@ export async function discoverNewConflictsForPr(newPrNumber: number, updatedAfte
   const git = GitClient.getAuthenticatedInstance();
   // If there are any local changes in the current repository state, the
   // check cannot run as it needs to move between branches.
-  if (git.hasLocalChanges()) {
+  if (git.hasUncommittedChanges()) {
     error('Cannot run with local changes. Please make sure there are no local changes.');
     process.exit(1);
   }
