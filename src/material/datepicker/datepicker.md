@@ -325,7 +325,7 @@ The easiest way to ensure this is to import one of the provided date modules:
   </tbody>
 </table>
 
-`MatMomentDateModule`
+`MatMomentDateModule` (installed via `@angular/material-moment-adapter`)
 
 <table>
   <tbody>
@@ -351,8 +351,9 @@ The easiest way to ensure this is to import one of the provided date modules:
 *Please note: `MatNativeDateModule` is based off the functionality available in JavaScript's
 native [`Date` object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date).
 Thus it is not suitable for many locales. One of the biggest shortcomings of the native `Date`
-object is the inability to set the parse format. We highly recommend using the `MomentDateAdapter`
-or a custom `DateAdapter` that works with the formatting/parsing library of your choice.*
+object is the inability to set the parse format. We strongly recommend using an adapter based on
+a more robust formatting and parsing library. You can use the `MomentDateAdapter`
+or a custom `DateAdapter` that works with the library of your choice.*
 
 These modules include providers for `DateAdapter` and `MAT_DATE_FORMATS`.
 
