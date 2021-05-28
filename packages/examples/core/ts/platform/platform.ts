@@ -11,6 +11,13 @@ import {BrowserModule} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
+  template: ` <h1>App Component</h1> `,
+})
+export class AppComponent {
+}
+
+@Component({
+  selector: 'app-root',
   template: ` <h1>Component One</h1> `,
 })
 export class ComponentOne {
@@ -23,8 +30,8 @@ export class ComponentOne {
 export class ComponentTwo {
 }
 
-// #docregion componentSelector
 @NgModule({imports: [BrowserModule], declarations: [ComponentOne, ComponentTwo]})
+// #docregion componentSelector
 export class AppModule implements DoBootstrap {
   readonly componentMap: {[key: string]: Type<unknown>} = {
     'ComponentOne': ComponentOne,
@@ -48,3 +55,20 @@ export class AppModule implements DoBootstrap {
   // #docregion componentSelector
 }
 // #enddocregion
+
+export class AppModule2 extends AppModule {
+  // #docregion cssSelector
+  ngDoBootstrap(appRef: ApplicationRef) {
+    appRef.bootstrap(AppComponent, '#root-element');
+  }
+  // #enddocregion cssSelector
+}
+
+export class AppModule3 extends AppModule {
+  // #docregion domNode
+  ngDoBootstrap(appRef: ApplicationRef) {
+    const element = document.querySelector('#root-element');
+    appRef.bootstrap(AppComponent, element);
+  }
+  // #enddocregion domNode
+}
