@@ -5,9 +5,10 @@ To check that your services are working as you intend, you can write tests speci
 
 <div class="alert is-helpful">
 
-  For the sample application that the testing guides describe, see the <live-example name="testing" embedded-style noDownload>sample app</live-example>.
-
-  For the tests features in the testing guides, see <live-example name="testing" stackblitz="specs" noDownload>tests</live-example>.
+  See the <live-example name="testing" noDownload>sample app</live-example> / <live-example name="testing" stackblitz="specs" noDownload>tests</live-example>
+  for a working example containing the code snippets in this guide.
+  
+  Download the sample app and tests <live-example name="testing" downloadOnly>here</live-example>.
 
 </div>
 
