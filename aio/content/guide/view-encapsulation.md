@@ -8,7 +8,7 @@ component_ basis, you can set the _view encapsulation mode_ in the component met
 Choose from the following modes:
 
 - `ShadowDom` view encapsulation uses the browser's native shadow DOM implementation (see
-  [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Shadow_DOM)
+  [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Shadow_DOM))
   to attach a shadow DOM to the component's host element, and then puts the component
   view inside that shadow DOM. The component's styles are included within the shadow DOM.
 
@@ -106,7 +106,7 @@ The first example shows a component that has `ViewEncapsulation.None`. This comp
 
 Angular adds the styles for this component as global styles to the `<head>` of the document.
 
-**Angular also adds the styles to all shadow DOM hosts.** Therefore the styles are available throughout the application.
+**Angular also adds the styles to all shadow DOM hosts.** Therefore, the styles are available throughout the application.
 
 <img src="generated/images/guide/view-encapsulation/no-encapsulation.png" alt="component with no encapsulation">
 
@@ -117,7 +117,7 @@ The second example shows a component that has `ViewEncapsulation.Emulated`. This
 <code-example path="view-encapsulation/src/app/emulated-encapsulation.component.ts" header="src/app/emulated-encapsulation.component.ts"></code-example>>
 
 Similar to `ViewEncapsulation.None`, Angular adds the styles for this component to the `<head>` of the document, and to all the shadow DOM hosts.
-But in this case, the styles are "scoped" by the attributes described in ["Inspecting generated CSS"](#inspecting-generated-css) above.
+But in this case, the styles are "scoped" by the attributes described in ["Inspecting generated CSS"](#inspecting-generated-css).
 
 Therefore, only the elements directly within this component's template will match its styles.
 Since the "scoped" styles from the `EmulatedEncapsulationComponent` are very specific, they override the global styles from the `NoEncapsulationComponent`.
@@ -129,7 +129,7 @@ The `NoEncapsulationComponent` is styled as expected because the scoped styles d
 
 #### Shadow DOM encapsulation
 
-The third example show a component that has `ViewEncapsulation.ShadowDom`. This component colors its template elements blue.
+The third example shows a component that has `ViewEncapsulation.ShadowDom`. This component colors its template elements blue.
 
 <code-example path="view-encapsulation/src/app/shadow-dom-encapsulation.component.ts" header="src/app/shadow-dom-encapsulation.component.ts"></code-example>>
 
