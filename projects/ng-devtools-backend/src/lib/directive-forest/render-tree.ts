@@ -56,6 +56,11 @@ export class RTreeStrategy {
   }
 
   build(element: Element): ComponentTreeNode[] {
+    // We want to start from the root element so that we can find components which are attached to the application ref
+    // and which host elements have been inserted with DOM APIs.
+    while (element.parentElement) {
+      element = element.parentElement;
+    }
     const getComponent = (window as any).ng.getComponent as (element: Element) => {};
     const getDirectives = (window as any).ng.getDirectives as (node: Node) => {}[];
     const result = extractViewTree(element, [], getComponent, getDirectives);
