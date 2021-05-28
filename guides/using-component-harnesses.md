@@ -130,7 +130,7 @@ it('should work', async () => {
   const cancel = await loader.getHarness(MatButtonHarness.with({text: 'Cancel'}));
   // Harness for mat-button with class 'confirm' and whose text is either 'Ok' or 'Okay'.
   const okButton = await loader.getHarness(
-      MatButtonHarness.with({selector: '.confirm', text: /^(Ok|Okay)$/})
+      MatButtonHarness.with({selector: '.confirm', text: /^(Ok|Okay)$/}));
 });
 ```
 
