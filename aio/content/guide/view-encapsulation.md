@@ -78,7 +78,7 @@ These extra selectors enable the scoping rules described in this page.
 
 ## Mixing encapsulation modes
 
-It is not recommended to mix components that use different view encapsulation, but where it is necessary you should be aware of how the component styles will interact.
+Avoid mixing components that use different view encapsulation. Where it is necessary, you should be aware of how the component styles will interact.
 
 - The styles of components with `ViewEncapsulation.Emulated` are added to the `<head>` of the document, making them available throughout the application, but are "scoped" so they only affect elements within the component's template.
 
@@ -86,7 +86,7 @@ It is not recommended to mix components that use different view encapsulation, b
 
 - The styles of components with `ViewEncapsulation.ShadowDom` are only added to the shadow DOM host, ensuring that they only affect elements within the component's template.
 
-**All the global styles (including those added for `ViewEncapsulation.Emulated` and `ViewEncapsulation.None` components) are also added to the shadow DOM host of each `ViewEncapsulation.ShadowDom` component.**
+**All the styles for `ViewEncapsulation.Emulated` and `ViewEncapsulation.None` components are also added to the shadow DOM host of each `ViewEncapsulation.ShadowDom` component.**
 
 The result is that styling for components with `ViewEncapsulation.None` will affect matching elements within the shadow DOM.
 
