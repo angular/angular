@@ -61,6 +61,7 @@ export const DEV_APP_ROUTES: Routes = [
   {path: 'grid-list', loadChildren: 'grid-list/grid-list-demo-module#GridListDemoModule'},
   {path: 'icon', loadChildren: 'icon/icon-demo-module#IconDemoModule'},
   {path: 'input', loadChildren: 'input/input-demo-module#InputDemoModule'},
+  {path: 'layout', loadChildren: 'layout/layout-demo-module#LayoutDemoModule'},
   {path: 'list', loadChildren: 'list/list-demo-module#ListDemoModule'},
   {
     path: 'live-announcer',

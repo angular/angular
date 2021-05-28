@@ -56,6 +56,7 @@ export class DevAppLayout {
     {name: 'Icon', route: '/icon'},
     {name: 'Input', route: '/input'},
     {name: 'List', route: '/list'},
+    {name: 'Layout', route: '/layout'},
     {name: 'Live Announcer', route: '/live-announcer'},
     {name: 'Menu', route: '/menu'},
     {name: 'Menubar', route: '/menubar'},

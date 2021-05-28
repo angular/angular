@@ -8,6 +8,8 @@ size ranges between breakpoints correspond to different standard screen sizes.
 `BreakpointObserver` lets you evaluate media queries to determine the current screen size and
 react to changes when the viewport size crosses a breakpoint.
 
+<!-- example(breakpoint-observer-overview) -->
+
 #### Check the current viewport size
 You can use the `isMatched` method to evaluate one or more media queries against the current
 viewport size.

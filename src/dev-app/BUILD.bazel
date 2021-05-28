@@ -45,6 +45,7 @@ ng_module(
         "//src/dev-app/grid-list",
         "//src/dev-app/icon",
         "//src/dev-app/input",
+        "//src/dev-app/layout",
         "//src/dev-app/list",
         "//src/dev-app/live-announcer",
         "//src/dev-app/mdc-autocomplete",
