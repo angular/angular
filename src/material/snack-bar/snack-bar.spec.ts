@@ -185,10 +185,10 @@ describe('MatSnackBar', () => {
   });
 
   it('should open and close a snackbar without a ViewContainerRef', fakeAsync(() => {
-    let snackBarRef = snackBar.open('Snack time!', 'Chew');
+    const snackBarRef = snackBar.open('Snack time!', 'Chew');
     viewContainerFixture.detectChanges();
 
-    let messageElement = overlayContainerElement.querySelector('snack-bar-container')!;
+    const messageElement = overlayContainerElement.querySelector('snack-bar-container')!;
     expect(messageElement.textContent).toContain('Snack time!',
        'Expected snack bar to show a message without a ViewContainerRef');
 
@@ -201,8 +201,8 @@ describe('MatSnackBar', () => {
   }));
 
   it('should open a simple message with a button', () => {
-    let config: MatSnackBarConfig = {viewContainerRef: testViewContainerRef};
-    let snackBarRef = snackBar.open(simpleMessage, simpleActionLabel, config);
+    const config: MatSnackBarConfig = {viewContainerRef: testViewContainerRef};
+    const snackBarRef = snackBar.open(simpleMessage, simpleActionLabel, config);
 
     viewContainerFixture.detectChanges();
 
@@ -212,11 +212,11 @@ describe('MatSnackBar', () => {
       .toBe(snackBarRef,
             'Expected the snack bar reference to be placed in the component instance');
 
-    let messageElement = overlayContainerElement.querySelector('snack-bar-container')!;
+    const messageElement = overlayContainerElement.querySelector('snack-bar-container')!;
     expect(messageElement.textContent)
         .toContain(simpleMessage, `Expected the snack bar message to be '${simpleMessage}'`);
 
-    let buttonElement = overlayContainerElement.querySelector('button.mat-button')!;
+    const buttonElement = overlayContainerElement.querySelector('button.mat-button')!;
     expect(buttonElement.tagName)
         .toBe('BUTTON', 'Expected snack bar action label to be a <button>');
     expect(buttonElement.textContent)
@@ -225,8 +225,8 @@ describe('MatSnackBar', () => {
   });
 
   it('should open a simple message with no button', () => {
-    let config: MatSnackBarConfig = {viewContainerRef: testViewContainerRef};
-    let snackBarRef = snackBar.open(simpleMessage, undefined, config);
+    const config: MatSnackBarConfig = {viewContainerRef: testViewContainerRef};
+    const snackBarRef = snackBar.open(simpleMessage, undefined, config);
 
     viewContainerFixture.detectChanges();
 
@@ -235,7 +235,7 @@ describe('MatSnackBar', () => {
     expect(snackBarRef.instance.snackBarRef)
       .toBe(snackBarRef, 'Expected the snack bar reference to be placed in the component instance');
 
-    let messageElement = overlayContainerElement.querySelector('snack-bar-container')!;
+    const messageElement = overlayContainerElement.querySelector('snack-bar-container')!;
     expect(messageElement.textContent)
         .toContain(simpleMessage, `Expected the snack bar message to be '${simpleMessage}'`);
     expect(overlayContainerElement.querySelector('button.mat-button'))
@@ -243,10 +243,10 @@ describe('MatSnackBar', () => {
   });
 
   it('should dismiss the snack bar and remove itself from the view', fakeAsync(() => {
-    let config: MatSnackBarConfig = {viewContainerRef: testViewContainerRef};
-    let dismissCompleteSpy = jasmine.createSpy('dismiss complete spy');
+    const config: MatSnackBarConfig = {viewContainerRef: testViewContainerRef};
+    const dismissCompleteSpy = jasmine.createSpy('dismiss complete spy');
 
-    let snackBarRef = snackBar.open(simpleMessage, undefined, config);
+    const snackBarRef = snackBar.open(simpleMessage, undefined, config);
     viewContainerFixture.detectChanges();
     expect(overlayContainerElement.childElementCount)
         .toBeGreaterThan(0, 'Expected overlay container element to have at least one child');
@@ -322,8 +322,8 @@ describe('MatSnackBar', () => {
   }));
 
   it('should set the animation state to visible on entry', () => {
-    let config: MatSnackBarConfig = {viewContainerRef: testViewContainerRef};
-    let snackBarRef = snackBar.open(simpleMessage, undefined, config);
+    const config: MatSnackBarConfig = {viewContainerRef: testViewContainerRef};
+    const snackBarRef = snackBar.open(simpleMessage, undefined, config);
 
     viewContainerFixture.detectChanges();
     const container = snackBarRef.containerInstance as MatSnackBarContainer;
@@ -337,8 +337,8 @@ describe('MatSnackBar', () => {
   });
 
   it('should set the animation state to complete on exit', () => {
-    let config: MatSnackBarConfig = {viewContainerRef: testViewContainerRef};
-    let snackBarRef = snackBar.open(simpleMessage, undefined, config);
+    const config: MatSnackBarConfig = {viewContainerRef: testViewContainerRef};
+    const snackBarRef = snackBar.open(simpleMessage, undefined, config);
     snackBarRef.dismiss();
 
     viewContainerFixture.detectChanges();
@@ -349,17 +349,17 @@ describe('MatSnackBar', () => {
 
   it(`should set the old snack bar animation state to complete and the new snack bar animation
       state to visible on entry of new snack bar`, fakeAsync(() => {
-    let config: MatSnackBarConfig = {viewContainerRef: testViewContainerRef};
-    let snackBarRef = snackBar.open(simpleMessage, undefined, config);
-    let dismissCompleteSpy = jasmine.createSpy('dismiss complete spy');
+    const config: MatSnackBarConfig = {viewContainerRef: testViewContainerRef};
+    const snackBarRef = snackBar.open(simpleMessage, undefined, config);
+    const dismissCompleteSpy = jasmine.createSpy('dismiss complete spy');
 
     viewContainerFixture.detectChanges();
     const container1 = snackBarRef.containerInstance as MatSnackBarContainer;
     expect(container1._animationState)
         .toBe('visible', `Expected the animation state would be 'visible'.`);
 
-    let config2 = {viewContainerRef: testViewContainerRef};
-    let snackBarRef2 = snackBar.open(simpleMessage, undefined, config2);
+    const config2 = {viewContainerRef: testViewContainerRef};
+    const snackBarRef2 = snackBar.open(simpleMessage, undefined, config2);
 
     viewContainerFixture.detectChanges();
     snackBarRef.afterDismissed().subscribe({complete: dismissCompleteSpy});
@@ -374,7 +374,7 @@ describe('MatSnackBar', () => {
   }));
 
   it('should open a new snackbar after dismissing a previous snackbar', fakeAsync(() => {
-    let config: MatSnackBarConfig = {viewContainerRef: testViewContainerRef};
+    const config: MatSnackBarConfig = {viewContainerRef: testViewContainerRef};
     let snackBarRef = snackBar.open(simpleMessage, 'Dismiss', config);
 
     viewContainerFixture.detectChanges();
@@ -433,7 +433,7 @@ describe('MatSnackBar', () => {
       snackBarRef.afterDismissed().subscribe({complete: dismissCompleteSpy});
       snackBarRef.onAction().subscribe({complete: actionCompleteSpy});
 
-      let actionButton =
+      const actionButton =
         overlayContainerElement.querySelector('button.mat-button') as HTMLButtonElement;
       actionButton.click();
       viewContainerFixture.detectChanges();
@@ -495,10 +495,10 @@ describe('MatSnackBar', () => {
   }));
 
   it('should dismiss automatically after a specified timeout', fakeAsync(() => {
-    let config = new MatSnackBarConfig();
+    const config = new MatSnackBarConfig();
     config.duration = 250;
-    let snackBarRef = snackBar.open('content', 'test', config);
-    let afterDismissSpy = jasmine.createSpy('after dismiss spy');
+    const snackBarRef = snackBar.open('content', 'test', config);
+    const afterDismissSpy = jasmine.createSpy('after dismiss spy');
     snackBarRef.afterDismissed().subscribe(afterDismissSpy);
 
     viewContainerFixture.detectChanges();
@@ -512,7 +512,7 @@ describe('MatSnackBar', () => {
   }));
 
   it('should clear the dismiss timeout when dismissed before timeout expiration', fakeAsync(() => {
-    let config = new MatSnackBarConfig();
+    const config = new MatSnackBarConfig();
     config.duration = 1000;
     snackBar.open('content', 'test', config);
 
@@ -526,7 +526,7 @@ describe('MatSnackBar', () => {
   }));
 
   it('should clear the dismiss timeout when dismissed with action', fakeAsync(() => {
-    let config = new MatSnackBarConfig();
+    const config = new MatSnackBarConfig();
     config.duration = 1000;
     const snackBarRef = snackBar.open('content', 'test', config);
 
@@ -543,7 +543,8 @@ describe('MatSnackBar', () => {
     snackBar.open(simpleMessage, simpleActionLabel, { panelClass: ['one', 'two'] });
     viewContainerFixture.detectChanges();
 
-    let containerClasses = overlayContainerElement.querySelector('snack-bar-container')!.classList;
+    const containerClasses =
+      overlayContainerElement.querySelector('snack-bar-container')!.classList;
 
     expect(containerClasses).toContain('one');
     expect(containerClasses).toContain('two');
@@ -553,7 +554,7 @@ describe('MatSnackBar', () => {
     snackBar.open(simpleMessage, simpleActionLabel, { direction: 'rtl' });
     viewContainerFixture.detectChanges();
 
-    let pane = overlayContainerElement.querySelector('.cdk-global-overlay-wrapper')!;
+    const pane = overlayContainerElement.querySelector('.cdk-global-overlay-wrapper')!;
 
     expect(pane.getAttribute('dir')).toBe('rtl', 'Expected the pane to be in RTL mode.');
   });
