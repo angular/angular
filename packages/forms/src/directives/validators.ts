@@ -167,7 +167,7 @@ export const MAX_VALIDATOR: StaticProvider = {
   selector:
       'input[type=number][max][formControlName],input[type=number][max][formControl],input[type=number][max][ngModel]',
   providers: [MAX_VALIDATOR],
-  host: {'[attr.max]': 'max ? max : null'}
+  host: {'[attr.max]': 'max ?? null'}
 })
 export class MaxValidator extends AbstractValidatorDirective implements OnChanges {
   /**
@@ -227,7 +227,7 @@ export const MIN_VALIDATOR: StaticProvider = {
   selector:
       'input[type=number][min][formControlName],input[type=number][min][formControl],input[type=number][min][ngModel]',
   providers: [MIN_VALIDATOR],
-  host: {'[attr.min]': 'min ? min : null'}
+  host: {'[attr.min]': 'min ?? null'}
 })
 export class MinValidator extends AbstractValidatorDirective implements OnChanges {
   /**
