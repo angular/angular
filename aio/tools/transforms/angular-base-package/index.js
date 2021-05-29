@@ -67,7 +67,7 @@ module.exports = new Package('angular-base', [
     collectExamples.exampleFolders = [];
 
     generateKeywordsProcessor.ignoreWords = require(path.resolve(__dirname, 'ignore-words'))['en'];
-    generateKeywordsProcessor.docTypesToIgnore = [undefined, 'example-region', 'json-doc', 'api-list-data', 'api-list-data', 'contributors-json', 'navigation-json', 'announcements-json', 'disambiguator'];
+    generateKeywordsProcessor.docTypesToIgnore = [undefined, 'example-region', 'json-doc', 'api-list-data', 'api-list-data', 'contributors-json', 'navigation-json', 'announcements-json'];
     generateKeywordsProcessor.propertiesToIgnore = ['basePath', 'renderedContent', 'docType', 'searchTitle'];
   })
 
@@ -168,5 +168,5 @@ module.exports = new Package('angular-base', [
   })
 
   .config(function(convertToJsonProcessor) {
-    convertToJsonProcessor.docTypes = ['disambiguator'];
+    convertToJsonProcessor.docTypes = [];
   });
