@@ -104,7 +104,7 @@ For more information about how the TypeScript configuration affects compilation,
 Many JavaScript libraries, such as jQuery, the Jasmine testing library, and Angular,
 extend the JavaScript environment with features and syntax
 that the TypeScript compiler doesn't recognize natively.
-When the compiler doesn't recognize something, it throws an error.
+When the compiler doesn't recognize something, it reports an error.
 
 Use [TypeScript type definition files](https://www.typescriptlang.org/docs/handbook/writing-declaration-files.html)&mdash;`d.ts files`&mdash;to tell the compiler about the libraries you load.
 
@@ -139,10 +139,21 @@ Fortunately, either their authors or community contributors have created separat
 published them in well-known locations.
 
 You can install these typings with `npm` using the
-[`@types/*` scoped package](https://www.typescriptlang.org/docs/handbook/declaration-files/consumption.html)
-and Typescript, starting at 2.0, automatically recognizes them.
+[`@types/*` scoped package](https://www.typescriptlang.org/docs/handbook/declaration-files/consumption.html).
 
-For instance, to install typings for `jasmine` you run `npm install @types/jasmine --save-dev`.
+Which ambient declaration files in `@types/*` are automatically included is determined by
+the [`types` TypeScript compiler option](https://www.typescriptlang.org/tsconfig#types). The Angular
+CLI generates a `tsconfig.app.json` file which is used to build an application, in which the
+`types` compiler option is set to `[]` to disable automatic inclusion of declarations
+from `@types/*`. Similarly, the `tsconfig.spec.json` file is used for testing and sets
+`"types": ["jasmine"]` to allow using Jasmine's ambient declarations in tests.
+
+After installing `@types/*` declarations, you have to update the `tsconfig.app.json` and
+`tsconfig.spec.json` files to add the newly installed declarations to the list of `types`. If the
+declarations are only meant for testing, then only the `tsconfig.spec.json` file should be updated.
+
+For instance, to install typings for `chai` you run `npm install @types/chai --save-dev` and then
+update `tsconfig.spec.json` to add `"chai"` to the list of `types`.
 
 
 {@a target}
