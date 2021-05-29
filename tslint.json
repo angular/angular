@@ -20,7 +20,6 @@
     "no-construct": true,
     "no-duplicate-imports": true,
     "no-duplicate-variable": true,
-    "no-jasmine-focus": true,
     "no-var-keyword": true,
     "prefer-literal": [
       true,
@@ -49,7 +48,12 @@
       true,
       "function"
     ],
-    "no-debugger": true
+    "no-debugger": true,
+    "ban": [
+      true,
+      {"name": "fdescribe", "message": "Don't keep jasmine focus methods."},
+      {"name": "fit", "message": "Don't keep jasmine focus methods."}
+    ]
   },
   "jsRules": {
     "file-header": [
@@ -65,7 +69,6 @@
     ],
     "no-duplicate-imports": true,
     "no-duplicate-variable": true,
-    "no-jasmine-focus": true,
     "require-internal-with-underscore": true,
     "semicolon": [
       true
@@ -77,6 +80,11 @@
     "no-inner-declarations": [
       true,
       "function"
+    ],
+    "ban": [
+      true,
+      {"name": "fdescribe", "message": "Don't keep jasmine focus methods."},
+      {"name": "fit", "message": "Don't keep jasmine focus methods."}
     ]
   },
   "linterOptions": {
