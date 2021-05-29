@@ -1524,6 +1524,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            input.value = '';
            dispatchEvent(input, 'input');
            fixture.detectChanges();
+           expect(input.getAttribute('max')).toEqual('10');
            expect(form.valid).toEqual(true);
            expect(form.controls.max.errors).toBeNull();
 
@@ -1534,6 +1535,21 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            expect(form.controls.max.errors).toEqual({max: {max: 10, actual: 11}});
 
            input.value = 9;
+           dispatchEvent(input, 'input');
+           fixture.detectChanges();
+           expect(form.valid).toEqual(true);
+           expect(form.controls.max.errors).toBeNull();
+
+           fixture.componentInstance.max = 0;
+           fixture.detectChanges();
+           tick();
+           dispatchEvent(input, 'input');
+           fixture.detectChanges();
+           expect(input.getAttribute('max')).toEqual('0');
+           expect(form.valid).toEqual(false);
+           expect(form.controls.max.errors).toEqual({max: {max: 0, actual: 9}});
+
+           input.value = 0;
            dispatchEvent(input, 'input');
            fixture.detectChanges();
            expect(form.valid).toEqual(true);
@@ -1552,6 +1568,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            input.value = '';
            dispatchEvent(input, 'input');
            fixture.detectChanges();
+           expect(input.getAttribute('max')).toEqual('10.25');
            expect(form.valid).toEqual(true);
            expect(form.controls.max.errors).toBeNull();
 
@@ -1586,6 +1603,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            input.value = '11';
            dispatchEvent(input, 'input');
            fixture.detectChanges();
+           expect(input.getAttribute('max')).toEqual('10');
            expect(form.valid).toEqual(false);
            expect(form.controls.max.errors).toEqual({max: {max: 10, actual: 11}});
 
@@ -1635,6 +1653,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            input.value = '';
            dispatchEvent(input, 'input');
            fixture.detectChanges();
+           expect(input.getAttribute('min')).toEqual('10');
            expect(form.valid).toEqual(true);
            expect(form.controls.min.errors).toBeNull();
 
@@ -1649,6 +1668,22 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            fixture.detectChanges();
            expect(form.valid).toEqual(false);
            expect(form.controls.min.errors).toEqual({min: {min: 10, actual: 9}});
+
+           fixture.componentInstance.min = 0;
+           fixture.detectChanges();
+           tick();
+           input.value = -5;
+           dispatchEvent(input, 'input');
+           fixture.detectChanges();
+           expect(input.getAttribute('min')).toEqual('0');
+           expect(form.valid).toEqual(false);
+           expect(form.controls.min.errors).toEqual({min: {min: 0, actual: -5}});
+
+           input.value = 0;
+           dispatchEvent(input, 'input');
+           fixture.detectChanges();
+           expect(form.valid).toEqual(true);
+           expect(form.controls.min.errors).toBeNull();
          }));
 
       it('should validate min for float number', fakeAsync(() => {
@@ -1663,6 +1698,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            input.value = '';
            dispatchEvent(input, 'input');
            fixture.detectChanges();
+           expect(input.getAttribute('min')).toEqual('10.25');
            expect(form.valid).toEqual(true);
            expect(form.controls.min.errors).toBeNull();
 
@@ -1696,6 +1732,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            input.value = '11';
            dispatchEvent(input, 'input');
            fixture.detectChanges();
+           expect(input.getAttribute('min')).toEqual('10');
            expect(form.valid).toEqual(true);
            expect(form.controls.min.errors).toBeNull();
 
