@@ -2558,8 +2558,23 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             fixture.componentInstance.max = 1;
             fixture.detectChanges();
 
+            expect(input.getAttribute('max')).toEqual('1');
             expect(form.valid).toBeFalse();
             expect(form.controls.pin.errors).toEqual({max: {max: 1, actual: 2}});
+
+            fixture.componentInstance.min = 0;
+            fixture.componentInstance.max = 0;
+            fixture.detectChanges();
+            expect(input.getAttribute('min')).toEqual('0');
+            expect(input.getAttribute('max')).toEqual('0');
+            expect(form.valid).toBeFalse();
+            expect(form.controls.pin.errors).toEqual({max: {max: 0, actual: 2}});
+
+            input.value = 0;
+            dispatchEvent(input, 'input');
+            fixture.detectChanges();
+            expect(form.valid).toBeTruthy();
+            expect(form.controls.pin.errors).toBeNull();
           });
 
           it('should validate max for float number', () => {
@@ -2573,6 +2588,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             const input = fixture.debugElement.query(By.css('input')).nativeElement;
             const form = fixture.componentInstance.form;
 
+            expect(input.getAttribute('max')).toEqual('10.35');
             expect(input.value).toEqual('10.25');
             expect(form.valid).toBeTruthy();
             expect(form.controls.pin.errors).toBeNull();
@@ -2586,6 +2602,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             fixture.componentInstance.max = 10.05;
             fixture.detectChanges();
 
+            expect(input.getAttribute('max')).toEqual('10.05');
             expect(form.valid).toBeFalse();
             expect(form.controls.pin.errors).toEqual({max: {max: 10.05, actual: 10.15}});
 
@@ -2618,6 +2635,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
             fixture.componentInstance.max = 1;
             fixture.detectChanges();
+            expect(input.getAttribute('max')).toEqual('1');
             expect(form.valid).toBeFalse();
             expect(form.controls.pin.errors).toEqual({max: {max: 1, actual: 2}});
           });
@@ -2644,8 +2662,23 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
             fixture.componentInstance.min = 5;
             fixture.detectChanges();
+            expect(input.getAttribute('min')).toEqual('5');
             expect(form.valid).toBeFalse();
             expect(form.controls.pin.errors).toEqual({min: {min: 5, actual: 2}});
+
+            fixture.componentInstance.min = 0;
+            input.value = -5;
+            dispatchEvent(input, 'input');
+            fixture.detectChanges();
+            expect(input.getAttribute('min')).toEqual('0');
+            expect(form.valid).toBeFalse();
+            expect(form.controls.pin.errors).toEqual({min: {min: 0, actual: -5}});
+
+            input.value = 0;
+            dispatchEvent(input, 'input');
+            fixture.detectChanges();
+            expect(form.valid).toBeTruthy();
+            expect(form.controls.pin.errors).toBeNull();
           });
 
           it('should validate min for float number', () => {
@@ -2660,6 +2693,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             const input = fixture.debugElement.query(By.css('input')).nativeElement;
             const form = fixture.componentInstance.form;
 
+            expect(input.getAttribute('min')).toEqual('10.25');
+            expect(input.getAttribute('max')).toEqual('10.5');
             expect(input.value).toEqual('10.25');
             expect(form.valid).toBeTruthy();
             expect(form.controls.pin.errors).toBeNull();
@@ -2672,6 +2707,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
             fixture.componentInstance.min = 10.40;
             fixture.detectChanges();
+            expect(input.getAttribute('min')).toEqual('10.4');
             expect(form.valid).toBeFalse();
             expect(form.controls.pin.errors).toEqual({min: {min: 10.40, actual: 10.35}});
 
@@ -2704,6 +2740,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
             fixture.componentInstance.min = 5;
             fixture.detectChanges();
+            expect(input.getAttribute('min')).toEqual('5');
             expect(form.valid).toBeFalse();
             expect(form.controls.pin.errors).toEqual({min: {min: 5, actual: 2}});
           });
