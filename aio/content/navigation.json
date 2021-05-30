@@ -446,6 +446,21 @@
               "tooltip": "Configuring service worker caching behavior."
             }
           ]
+        },
+        {
+          "url": "guide/web-worker",
+          "title": "Web Workers",
+          "tooltip": "Using web workers for background processing."
+        },
+        {
+          "url": "guide/universal",
+          "title": "Server-side Rendering",
+          "tooltip": "Render HTML server-side with Angular Universal."
+        },
+        {
+          "url": "guide/prerendering",
+          "title": "Prerendering",
+          "tooltip": "Prerender HTML server-side with Angular Universal."
         }
       ]
     },
@@ -537,11 +552,6 @@
           "tooltip": "Using builders to customize Angular CLI."
         },
         {
-          "url": "guide/universal",
-          "title": "Server-side Rendering",
-          "tooltip": "Render HTML server-side with Angular Universal."
-        },
-        {
           "url": "guide/language-service",
           "title": "Language Service",
           "tooltip": "Use Angular Language Service to speed up dev time."
@@ -628,11 +638,6 @@
           "url": "guide/forms",
           "title": "Building a Template-driven Form",
           "tooltip": "Create a template-driven form using directives and Angular template syntax."
-        },
-        {
-          "url": "guide/web-worker",
-          "title": "Web Workers",
-          "tooltip": "Using web workers for background processing."
         },
         {
           "title": "Angular Libraries",
