@@ -39,10 +39,10 @@ import { WindowToken, windowProvider } from 'app/shared/window';
 
 import { CustomElementsModule } from 'app/custom-elements/custom-elements.module';
 import { SharedModule } from 'app/shared/shared.module';
+import { ThemeToggleComponent } from 'app/shared/theme-picker/theme-toggle.component';
 import { SwUpdatesModule } from 'app/sw-updates/sw-updates.module';
 
-import {environment} from '../environments/environment';
-import { ThemeToggleComponent } from './shared/theme-picker/theme-toggle.component';
+import { environment } from '../environments/environment';
 
 // These are the hardcoded inline svg sources to be used by the `<mat-icon>` component.
 // tslint:disable: max-line-length
@@ -171,7 +171,7 @@ export const svgIconProviders = [
     SearchBoxComponent,
     NotificationComponent,
     TopMenuComponent,
-    ThemeToggleComponent
+    ThemeToggleComponent,
   ],
   providers: [
     Deployment,

@@ -46,6 +46,10 @@ section#intro {
   margin: 0 auto -32px;
   padding: 48px 0 0;
 
+  .hero-logo {
+    background-image: url(/assets/images/logos/angular/angular.svg);
+  }
+
   @media (max-width: 780px) {
     flex-direction: column;
     justify-content: center;

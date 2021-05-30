@@ -203,23 +203,15 @@ mat-toolbar.app-toolbar {
     flex-shrink: 0; // This is required for the icons to be displayed correctly in IE11.
     height: 100%;
 
-    @media screen and (max-width: 350px) {
-      a[title="GitHub"] {
-        display: none;
-      }
-    }
-
-    a[title="Twitter"], a[title="YouTube"] {
-      @media screen and (max-width: 420px) {
-        display: none;
-      }
-    }
-
     a {
       display: flex;
       align-items: center;
       padding: 0;
       margin: 24px 8px;
+
+      &:hover {
+        opacity: 0.8;
+      }
 
       &:focus {
         outline-offset: 8px;
@@ -230,8 +222,16 @@ mat-toolbar.app-toolbar {
         padding: 0;
       }
 
-      &:hover {
-        opacity: 0.8;
+      @media screen and (max-width: 420px) {
+        &:not([title="GitHub"]) {
+          display: none;
+        }
+      }
+
+      @media screen and (max-width: 350px) {
+        &[title="GitHub"] {
+          display: none;
+        }
       }
 
       img {
