@@ -32,7 +32,7 @@ There are also some top-level files in `[src/styles/](.):
 
 For each area/component, there is a sub-directory in either `1-layouts/` or `2-modules/`.
 
-Each such sub-directory contains a `<name>.scss` file with styles for the corresponding area/component and may also contains a `<name>-theme.scss` file with styles related to theming.
+Each such sub-directory contains a `<name>.scss` file with styles for the corresponding area/component and may also contain a `<name>-theme.scss` file with styles related to theming.
 See the next section for more details.
 
 When appropriate, the styles in these files should be scoped to the targeted component (for example, by using the component's selector).
