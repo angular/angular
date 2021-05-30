@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { ThemeStorage, ThemeToggleComponent } from './theme-toggle.component';
 
@@ -7,18 +6,18 @@ class FakeThemeStorage implements ThemeStorage {
   fakeStorage: string | null = null;
 
   getThemePreference(): string | null {
-      return this.fakeStorage;
+    return this.fakeStorage;
   }
 
   setThemePreference(isDark: boolean): void {
-      this.fakeStorage = String(isDark);
+    this.fakeStorage = String(isDark);
   }
 }
 
-let themeStorage: ThemeStorage;
-
 // Verify that FakeThemeStorage behaves like ThemeStorage would
 describe('FakeThemeStorage', () => {
+  let themeStorage: ThemeStorage;
+
   beforeEach(() => {
     themeStorage = new FakeThemeStorage();
   });
@@ -39,23 +38,19 @@ describe('FakeThemeStorage', () => {
 });
 
 
-let component: ThemeToggleComponent;
-let fixture: ComponentFixture<ThemeToggleComponent>;
-let debugElement: DebugElement;
-
 describe('ThemeToggleComponent', () => {
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ ThemeToggleComponent ],
-      providers: [ { provide: ThemeStorage, useClass: FakeThemeStorage } ],
-    })
-    .compileComponents();
-  });
+  let component: ThemeToggleComponent;
+  let fixture: ComponentFixture<ThemeToggleComponent>;
 
   beforeEach(() => {
+    TestBed.configureTestingModule({
+      declarations: [ ThemeToggleComponent ],
+      providers: [ { provide: ThemeStorage, useClass: FakeThemeStorage } ],
+    });
+
     fixture = TestBed.createComponent(ThemeToggleComponent);
     component = fixture.componentInstance;
-    debugElement = fixture.debugElement;
+
     fixture.detectChanges();
   });
 
@@ -81,12 +76,13 @@ describe('ThemeToggleComponent', () => {
   });
 
   it('should have the correct aria-label', () => {
-    expect(component.getToggleLabel()).toBe(`Switch to dark mode`);
+    expect(component.getToggleLabel()).toBe('Switch to dark mode');
     component.toggleTheme();
-    expect(component.getToggleLabel()).toBe(`Switch to light mode`);
+    expect(component.getToggleLabel()).toBe('Switch to light mode');
   });
-});
 
-function getToggleButton(): HTMLButtonElement {
-  return debugElement.query(By.css('button')).nativeElement;
-}
+  // Helpers
+  function getToggleButton(): HTMLButtonElement {
+    return fixture.debugElement.query(By.css('button')).nativeElement;
+  }
+});
