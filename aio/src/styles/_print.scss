@@ -1,4 +1,5 @@
 @use './constants';
+@use './mixins';
 
 @media print {
   // General Adjustments
@@ -76,6 +77,23 @@
 
   .sidenav-content {
     overflow: visible;
+  }
+
+  section#intro {
+    .hero-logo {
+      align-items: center;
+      background: none;
+      justify-content: center;
+
+      &::after {
+        @include mixins.font-size(64);
+        @include mixins.line-height(100);
+
+        color: constants.$brightred;
+        content: 'Angular';
+        font-weight: bold;
+      }
+    }
   }
 
   .filetree {
