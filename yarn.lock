@@ -2866,6 +2866,11 @@
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.3.tgz#3dca0e3f33b200fc7d1139c0cd96c1268cadfd9d"
   integrity sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
 
+"@types/minimist@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.1.tgz#283f669ff76d7b8260df8ab7a4262cc83d988256"
+  integrity sha512-fZQQafSREFyuZcdWFAExYjBiCL7AUCdgsk80iO0q4yihYYdcIiH28CcuPTGFgLOCC8RlW49GSQxdHwZP+I7CNg==
+
 "@types/node@*":
   version "14.0.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.0.1.tgz#5d93e0a099cd0acd5ef3d5bde3c086e1f49ff68c"
@@ -12203,10 +12208,12 @@ ts-node@~10.0.0:
     source-map-support "^0.5.17"
     yn "3.1.1"
 
-tsickle@^0.39.0:
-  version "0.39.1"
-  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.39.1.tgz#7ccf672cde5b430f5dd0b281ee49e170ef390ff9"
-  integrity sha512-CCc9cZhZbKoNizVM+K3Uqgit/go8GacjpqTv1cpwG/n2P0gB9GMoWZbxrUULDE9Wz26Lh86CGf6QyIPUVV1lnQ==
+tsickle@^0.40.0:
+  version "0.40.0"
+  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.40.0.tgz#24516c7699c54da2b8468ade9eb4f801a38260f1"
+  integrity sha512-k5H6W0NkHyTbyMxvTMPcsEHURHhioVky6cc5d3YY1+xiQ+nQQeay5SP6YjwzO6OAZ2WTuRmwsbZvQf/UJQHWGg==
+  dependencies:
+    "@types/minimist" "^1.2.1"
 
 tslib@2.2.0:
   version "2.2.0"
