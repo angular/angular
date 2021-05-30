@@ -560,6 +560,7 @@ groups:
       - >
         contains_any_globs(files, [
           'packages/platform-server/**',
+          'aio/content/guide/prerendering.md',
           'aio/content/guide/universal.md',
           'aio/content/examples/universal/**'
           ])

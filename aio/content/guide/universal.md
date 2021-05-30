@@ -290,3 +290,27 @@ Here, "request URL" refers to the URL of the request as a response to which the 
 For example, if the client requested `https://my-server.com/dashboard` and you are rendering the application on the server to respond to that request, `options.url` should be set to `https://my-server.com/dashboard`.
 
 Now, on every HTTP request made as part of rendering the application on the server, Angular can correctly resolve the request URL to an absolute URL, using the provided `options.url`.
+
+### Useful scripts
+
+- `npm run dev:ssr`
+
+  This command is similar to [`ng serve`](cli/serve), which offers live reload during development, but uses server-side rendering. The application will run in watch mode and refresh the browser after every change.
+  This command is slower than the actual `ng serve` command.
+
+- `ng build && ng run app-name:server`
+
+  This command builds both the server script and the application in production mode.
+  Use this command when you want to build the project for deployment.
+
+- `npm run serve:ssr`
+
+  This command starts the server script for serving the application locally with server-side rendering.
+  It uses the build artifacts created by `ng run build:ssr`, so make sure you have run that command as well.
+
+  Note that `serve:ssr` is not intended to be used to serve your application in production, but only for testing the server-side rendered application locally.
+
+- `npm run prerender`
+
+  This script can be used to prerender an application's pages.
+  You can read more about prerendering [here](guide/prerendering).
