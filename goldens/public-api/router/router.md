@@ -182,7 +182,6 @@ export type DetachedRouteHandle = {};
 
 // @public
 type Event_2 = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart | ChildActivationEnd | ActivationStart | ActivationEnd | Scroll;
-
 export { Event_2 as Event }
 
 // @public
@@ -565,7 +564,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
     routerLinkActiveOptions: {
         exact: boolean;
     } | IsActiveMatchOptions;
-    }
+}
 
 // @public
 export class RouterLinkWithHref implements OnChanges, OnDestroy {
@@ -627,16 +626,18 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     ngOnDestroy(): void;
     // (undocumented)
     ngOnInit(): void;
-    }
+}
 
 // @public
 export interface RouterOutletContract {
     activatedRoute: ActivatedRoute | null;
     activatedRouteData: Data;
+    activateEvents?: EventEmitter<unknown>;
     activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver | null): void;
     attach(ref: ComponentRef<unknown>, activatedRoute: ActivatedRoute): void;
     component: Object | null;
     deactivate(): void;
+    deactivateEvents?: EventEmitter<unknown>;
     detach(): ComponentRef<unknown>;
     isActivated: boolean;
 }
@@ -650,7 +651,7 @@ export class RouterPreloader implements OnDestroy {
     preload(): Observable<any>;
     // (undocumented)
     setUpPreloading(): void;
-    }
+}
 
 // @public
 export class RouterState extends ɵangular_packages_router_router_m<ActivatedRoute> {
@@ -787,7 +788,6 @@ export class UrlTree {
 
 // @public (undocumented)
 export const VERSION: Version;
-
 
 // (No @packageDocumentation comment for this package)
 
