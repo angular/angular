@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectorRef, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, Injector, OnDestroy, OnInit, Output, ViewContainerRef} from '@angular/core';
-
+import {Attribute, ChangeDetectorRef, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, Injector, OnDestroy, OnInit, Output, ViewContainerRef,} from '@angular/core';
 import {Data} from '../config';
 import {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRoute} from '../router_state';
@@ -72,6 +71,16 @@ export interface RouterOutletContract {
    * Called when the `RouteReuseStrategy` instructs to re-attach a previously detached subtree.
    */
   attach(ref: ComponentRef<unknown>, activatedRoute: ActivatedRoute): void;
+
+  /**
+   * Emits an activate event when a new component is instantiated
+   **/
+  activateEvents?: EventEmitter<unknown>;
+
+  /**
+   * Emits a deactivate event when a component is destroyed.
+   */
+  deactivateEvents?: EventEmitter<unknown>;
 }
 
 /**
