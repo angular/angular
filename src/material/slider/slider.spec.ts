@@ -331,7 +331,7 @@ describe('MatSlider', () => {
 
       // Computed by multiplying the difference between the min and the max by the percentage from
       // the mousedown and adding that to the minimum.
-      let value = Math.round(4 + (0.09 * (6 - 4)));
+      const value = Math.round(4 + (0.09 * (6 - 4)));
       expect(sliderInstance.value).toBe(value);
     });
 
@@ -341,7 +341,7 @@ describe('MatSlider', () => {
 
       // Computed by multiplying the difference between the min and the max by the percentage from
       // the mousedown and adding that to the minimum.
-      let value = Math.round(4 + (0.62 * (6 - 4)));
+      const value = Math.round(4 + (0.62 * (6 - 4)));
       expect(sliderInstance.value).toBe(value);
     });
 
@@ -1136,10 +1136,10 @@ describe('MatSlider', () => {
       testComponent.dir = 'rtl';
       fixture.detectChanges();
 
-      let initialTrackFillStyles = sliderInstance._getTrackFillStyles();
-      let initialTicksContainerStyles = sliderInstance._getTicksContainerStyles();
-      let initialTicksStyles = sliderInstance._getTicksStyles();
-      let initialThumbContainerStyles = sliderInstance._getThumbContainerStyles();
+      const initialTrackFillStyles = sliderInstance._getTrackFillStyles();
+      const initialTicksContainerStyles = sliderInstance._getTicksContainerStyles();
+      const initialTicksStyles = sliderInstance._getTicksStyles();
+      const initialThumbContainerStyles = sliderInstance._getThumbContainerStyles();
 
       testComponent.dir = 'ltr';
       fixture.detectChanges();
@@ -1449,7 +1449,7 @@ describe('MatSlider', () => {
     });
 
     it('should have the correct control state initially and after interaction', () => {
-      let sliderControl = testComponent.control;
+      const sliderControl = testComponent.control;
 
       // The control should start off valid, pristine, and untouched.
       expect(sliderControl.valid).toBe(true);
