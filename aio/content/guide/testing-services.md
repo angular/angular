@@ -7,7 +7,7 @@ To check that your services are working as you intend, you can write tests speci
 
   For a hands-on experience you can <live-example name="testing" stackblitz="specs" noDownload>run tests and explore the test code</live-example> in your browser as your read this guide.
 
-  Similarly, you can also <live-example name="testing" embedded-style noDownload>run and explore the application</live-example> that this testing guides describes.
+  Similarly, you can also <live-example name="testing" noDownload>run and explore the application</live-example> that this testing guides describes.
 
 </div>
 
