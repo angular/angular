@@ -30,32 +30,32 @@ describe('MatProgressSpinner', () => {
   }));
 
   it('should apply a mode of "determinate" if no mode is provided.', () => {
-    let fixture = TestBed.createComponent(BasicProgressSpinner);
+    const fixture = TestBed.createComponent(BasicProgressSpinner);
     fixture.detectChanges();
 
-    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
+    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
     expect(progressElement.componentInstance.mode).toBe('determinate');
   });
 
   it('should not modify the mode if a valid mode is provided.', () => {
-    let fixture = TestBed.createComponent(IndeterminateProgressSpinner);
+    const fixture = TestBed.createComponent(IndeterminateProgressSpinner);
     fixture.detectChanges();
 
-    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
+    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
     expect(progressElement.componentInstance.mode).toBe('indeterminate');
   });
 
   it('should define a default value of zero for the value attribute', () => {
-    let fixture = TestBed.createComponent(BasicProgressSpinner);
+    const fixture = TestBed.createComponent(BasicProgressSpinner);
     fixture.detectChanges();
 
-    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
+    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
     expect(progressElement.componentInstance.value).toBe(0);
   });
 
   it('should set the value to 0 when the mode is set to indeterminate', () => {
-    let fixture = TestBed.createComponent(ProgressSpinnerWithValueAndBoundMode);
-    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
+    const fixture = TestBed.createComponent(ProgressSpinnerWithValueAndBoundMode);
+    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
     fixture.componentInstance.mode = 'determinate';
     fixture.detectChanges();
 
@@ -66,8 +66,8 @@ describe('MatProgressSpinner', () => {
   });
 
   it('should retain the value if it updates while indeterminate', () => {
-    let fixture = TestBed.createComponent(ProgressSpinnerWithValueAndBoundMode);
-    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
+    const fixture = TestBed.createComponent(ProgressSpinnerWithValueAndBoundMode);
+    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
 
     fixture.componentInstance.mode = 'determinate';
     fixture.detectChanges();
@@ -105,11 +105,11 @@ describe('MatProgressSpinner', () => {
   });
 
   it('should clamp the value of the progress between 0 and 100', () => {
-    let fixture = TestBed.createComponent(BasicProgressSpinner);
+    const fixture = TestBed.createComponent(BasicProgressSpinner);
     fixture.detectChanges();
 
-    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
-    let progressComponent = progressElement.componentInstance;
+    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
+    const progressComponent = progressElement.componentInstance;
 
     progressComponent.value = 50;
     expect(progressComponent.value).toBe(50);
@@ -281,10 +281,10 @@ describe('MatProgressSpinner', () => {
   });
 
   it('should set the color class on the mat-spinner', () => {
-    let fixture = TestBed.createComponent(SpinnerWithColor);
+    const fixture = TestBed.createComponent(SpinnerWithColor);
     fixture.detectChanges();
 
-    let progressElement = fixture.debugElement.query(By.css('mat-spinner'))!;
+    const progressElement = fixture.debugElement.query(By.css('mat-spinner'))!;
 
     expect(progressElement.nativeElement.classList).toContain('mat-primary');
 
@@ -296,10 +296,10 @@ describe('MatProgressSpinner', () => {
   });
 
   it('should set the color class on the mat-progress-spinner', () => {
-    let fixture = TestBed.createComponent(ProgressSpinnerWithColor);
+    const fixture = TestBed.createComponent(ProgressSpinnerWithColor);
     fixture.detectChanges();
 
-    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
+    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
 
     expect(progressElement.nativeElement.classList).toContain('mat-primary');
 
@@ -337,8 +337,8 @@ describe('MatProgressSpinner', () => {
   });
 
   it('should update the element size when changed dynamically', () => {
-    let fixture = TestBed.createComponent(BasicProgressSpinner);
-    let spinner = fixture.debugElement.query(By.directive(MatProgressSpinner))!;
+    const fixture = TestBed.createComponent(BasicProgressSpinner);
+    const spinner = fixture.debugElement.query(By.directive(MatProgressSpinner))!;
     spinner.componentInstance.diameter = 32;
     fixture.detectChanges();
     expect(spinner.nativeElement.style.width).toBe('32px');
