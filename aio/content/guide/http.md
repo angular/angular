@@ -655,7 +655,7 @@ There are many more interceptors in the complete sample code.
 
 Angular applies interceptors in the order that you provide them.
 For example, consider a situation in which you want to handle the authentication of your HTTP requests and log them before sending them to a server. To accomplish this task, you could provide an `AuthInterceptor` service and then a `LoggingInterceptor` service.
-Outgoing requests would flow from the `AuthInterceptor` to the `AuthInterceptor`.
+Outgoing requests would flow from the `AuthInterceptor` to the `LoggingInterceptor`.
 Responses from these requests would flow in the other direction, from `LoggingInterceptor` back to `AuthInterceptor`.
 The following is a visual representation of the process:
 
