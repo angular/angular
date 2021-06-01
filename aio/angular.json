@@ -31,6 +31,14 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "webWorkerTsConfig": "tsconfig.worker.json",
+            "optimization": {
+              "fonts": true,
+              "scripts": true,
+              "styles": {
+                "inlineCritical": false,
+                "minify": true
+              }
+            },
             "outputHashing": "all",
             "sourceMap": true,
             "namedChunks": true,
