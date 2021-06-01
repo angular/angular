@@ -44,7 +44,7 @@ yarn start
 
 ### Build and Install on Chrome locally
 
-1. After installation, genrate chrome build by running `yarn build:chrome`
+1. After installation, generate chrome build by running `yarn build:chrome`
 2. Navigate to `chrome://extensions` and enable Developer mode.
 3. Choose "Load unpacked extension".
 4. In the dialog, select the directory `dist/shell-chrome`.
