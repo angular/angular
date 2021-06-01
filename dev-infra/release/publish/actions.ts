@@ -151,7 +151,9 @@ export abstract class ReleaseAction {
     // Commit message for the release point.
     const commitMessage = getCommitMessageForRelease(newVersion);
     // Create a release staging commit including changelog and version bump.
-    await this.createCommit(commitMessage, [packageJsonPath, changelogPath]);
+    await this.createCommit(
+        commitMessage,
+        [packageJsonPath, changelogPath, ...(this.config.additionalCommitFiles || [])]);
 
     info(green(`  ✓   Created release commit for: "${newVersion}".`));
   }

@@ -28,6 +28,8 @@ export interface ReleaseConfig {
   releasePrLabels?: string[];
   /** Configuration for creating release notes during publishing. */
   releaseNotes: ReleaseNotesConfig;
+  /** List of files to include in release commits additional to CHANGELOG.md and package.json. */
+  additionalCommitFiles?: string[];
 }
 
 /** Configuration for creating release notes during publishing. */
