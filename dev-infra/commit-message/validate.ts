@@ -26,16 +26,29 @@ export interface ValidateCommitMessageResult {
 
 /** Regex matching a URL for an entire commit body line. */
 const COMMIT_BODY_URL_LINE_RE = /^https?:\/\/.*$/;
+
 /**
- * Regex matching a breaking change.
+ * Regular expression matching potential misuse of the `BREAKING CHANGE:` marker in a
+ * commit message. Commit messages containing one of the following snippets will fail:
  *
- * - Starts with BREAKING CHANGE
- * - Followed by a colon
- * - Followed by a single space or two consecutive new lines
- *
- * NB: Anything after `BREAKING CHANGE` is optional to facilitate the validation.
+ *   - `BREAKING CHANGE <some-content>` | Here we assume the colon is missing by accident.
+ *   - `BREAKING-CHANGE: <some-content>` | The wrong keyword is used here.
+ *   - `BREAKING CHANGES: <some-content>` | The wrong keyword is used here.
+ *   - `BREAKING-CHANGES: <some-content>` | The wrong keyword is used here.
  */
-const COMMIT_BODY_BREAKING_CHANGE_RE = /^BREAKING CHANGE(:( |\n{2}))?/m;
+const INCORRECT_BREAKING_CHANGE_BODY_RE =
+    /^(BREAKING CHANGE[^:]|BREAKING-CHANGE|BREAKING[ -]CHANGES)/m;
+
+/**
+ * Regular expression matching potential misuse of the `DEPRECATED:` marker in a commit
+ * message. Commit messages containing one of the following snippets will fail:
+ *
+ *   - `DEPRECATED <some-content>` | Here we assume the colon is missing by accident.
+ *   - `DEPRECATIONS: <some-content>` | The wrong keyword is used here.
+ *   - `DEPRECATE: <some-content>` | The wrong keyword is used here.
+ *   - `DEPRECATES: <some-content>` | The wrong keyword is used here.
+ */
+const INCORRECT_DEPRECATION_BODY_RE = /^(DEPRECATED[^:]|DEPRECATIONS|DEPRECATE:|DEPRECATES)/m;
 
 /** Validate a commit message against using the local repo's config. */
 export function validateCommitMessage(
@@ -161,14 +174,14 @@ export function validateCommitMessage(
     // Breaking change
     // Check if the commit message contains a valid break change description.
     // https://github.com/angular/angular/blob/88fbc066775ab1a2f6a8c75f933375b46d8fa9a4/CONTRIBUTING.md#commit-message-footer
-    const hasBreakingChange = COMMIT_BODY_BREAKING_CHANGE_RE.exec(commit.fullText);
-    if (hasBreakingChange !== null) {
-      const [, breakingChangeDescription] = hasBreakingChange;
-      if (!breakingChangeDescription) {
-        // Not followed by :, space or two consecutive new lines,
-        errors.push(`The commit message body contains an invalid breaking change description.`);
-        return false;
-      }
+    if (INCORRECT_BREAKING_CHANGE_BODY_RE.test(commit.fullText)) {
+      errors.push(`The commit message body contains an invalid breaking change note.`);
+      return false;
+    }
+
+    if (INCORRECT_DEPRECATION_BODY_RE.test(commit.fullText)) {
+      errors.push(`The commit message body contains an invalid deprecation note.`);
+      return false;
     }
 
     return true;

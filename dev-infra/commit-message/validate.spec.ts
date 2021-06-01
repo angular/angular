@@ -8,6 +8,7 @@
 
 // Imports
 import * as validateConfig from './config';
+import {parseCommitMessage} from './parse';
 import {validateCommitMessage, ValidateCommitMessageResult} from './validate';
 
 type CommitMessageConfig = validateConfig.CommitMessageConfig;
@@ -278,6 +279,78 @@ describe('validate-commit-message.js', () => {
          });
     });
 
+    describe('deprecations', () => {
+      it('should allow valid deprecation notes in commit messages', () => {
+        const msgWithListOfDeprecations =
+            'feat(compiler): this is just a usual commit message title\n\n' +
+            'This is a normal commit message body which does not exceed the max length\n' +
+            'limit. For more details see the following super long URL:\n\n' +
+            'DEPRECATED:\n' +
+            ' * A to be removed\n' +
+            ' * B to be removed';
+        expectValidationResult(validateCommitMessage(msgWithListOfDeprecations), VALID);
+        expect(parseCommitMessage(msgWithListOfDeprecations).deprecations.length).toBe(1);
+
+        const msgWithSummary = 'feat(compiler): this is just a usual commit message title\n\n' +
+            'This is a normal commit message body which does not exceed the max length\n' +
+            'limit. For more details see the following super long URL:\n\n' +
+            'DEPRECATED: All methods in X to be removed in v12.';
+
+        expectValidationResult(validateCommitMessage(msgWithSummary), VALID);
+        expect(parseCommitMessage(msgWithSummary).deprecations.length).toBe(1);
+
+        const msgWithSummaryAndDescription =
+            'feat(compiler): this is just a usual commit message title\n\n' +
+            'This is a normal commit message body which does not exceed the max length\n' +
+            'limit. For more details see the following super long URL:\n\n' +
+            'DEPRECATED: All methods in X to be removed in v12.\n' +
+            '' +
+            'This is the more detailed description about the deprecation of X.';
+
+        expectValidationResult(validateCommitMessage(msgWithSummaryAndDescription), VALID);
+        expect(parseCommitMessage(msgWithSummaryAndDescription).deprecations.length).toBe(1);
+
+        const msgWithNoDeprecation =
+            'feat(compiler): this is just a usual commit message title\n\n' +
+            'This is not a\n' +
+            'deprecation commit.';
+        expectValidationResult(validateCommitMessage(msgWithNoDeprecation), VALID);
+        expect(parseCommitMessage(msgWithNoDeprecation).deprecations.length).toBe(0);
+      });
+
+      it('should fail for non-valid deprecation notes in commit messages', () => {
+        const incorrectKeyword1 = 'feat(compiler): this is just a usual commit message title\n\n' +
+            'This is a normal commit message body which does not exceed the max length\n' +
+            'limit. For more details see the following super long URL:\n\n' +
+            'DEPRECATE:\n' +
+            ' * A to be removed\n' +
+            ' * B to be removed';
+        expectValidationResult(
+            validateCommitMessage(incorrectKeyword1), INVALID,
+            ['The commit message body contains an invalid deprecation note.']);
+
+        const incorrectKeyword2 = 'feat(compiler): this is just a usual commit message title\n\n' +
+            'This is a normal commit message body which does not exceed the max length\n' +
+            'limit. For more details see the following super long URL:\n\n' +
+            'DEPRECATES:\n' +
+            ' * A to be removed\n' +
+            ' * B to be removed';
+        expectValidationResult(
+            validateCommitMessage(incorrectKeyword2), INVALID,
+            ['The commit message body contains an invalid deprecation note.']);
+
+        const incorrectKeyword3 = 'feat(compiler): this is just a usual commit message title\n\n' +
+            'This is a normal commit message body which does not exceed the max length\n' +
+            'limit. For more details see the following super long URL:\n\n' +
+            'DEPRECATIONS:\n' +
+            ' * A to be removed\n' +
+            ' * B to be removed';
+        expectValidationResult(
+            validateCommitMessage(incorrectKeyword3), INVALID,
+            ['The commit message body contains an invalid deprecation note.']);
+      });
+    });
+
     describe('breaking change', () => {
       it('should allow valid breaking change commit descriptions', () => {
         const msgWithSummary = 'feat(compiler): this is just a usual commit message title\n\n' +
@@ -285,13 +358,31 @@ describe('validate-commit-message.js', () => {
             'limit. For more details see the following super long URL:\n\n' +
             'BREAKING CHANGE: This is a summary of a breaking change.';
         expectValidationResult(validateCommitMessage(msgWithSummary), VALID);
+        expect(parseCommitMessage(msgWithSummary).breakingChanges.length).toBe(1);
 
-        const msgWithDescription = 'feat(compiler): this is just a usual commit message title\n\n' +
+        const msgWithDescriptionDoubleLineBreakSeparator =
+            'feat(compiler): this is just a usual commit message title\n\n' +
             'This is a normal commit message body which does not exceed the max length\n' +
             'limit. For more details see the following super long URL:\n\n' +
             'BREAKING CHANGE:\n\n' +
             'This is a full description of the breaking change.';
-        expectValidationResult(validateCommitMessage(msgWithDescription), VALID);
+        expectValidationResult(
+            validateCommitMessage(msgWithDescriptionDoubleLineBreakSeparator), VALID);
+        expect(
+            parseCommitMessage(msgWithDescriptionDoubleLineBreakSeparator).breakingChanges.length)
+            .toBe(1);
+
+        const msgWithDescriptionSingleLineBreakSeparator =
+            'feat(compiler): this is just a usual commit message title\n\n' +
+            'This is a normal commit message body which does not exceed the max length\n' +
+            'limit. For more details see the following super long URL:\n\n' +
+            'BREAKING CHANGE:\n' +
+            'This is a full description of the breaking change.';
+        expectValidationResult(
+            validateCommitMessage(msgWithDescriptionSingleLineBreakSeparator), VALID);
+        expect(
+            parseCommitMessage(msgWithDescriptionSingleLineBreakSeparator).breakingChanges.length)
+            .toBe(1);
 
         const msgWithSummaryAndDescription =
             'feat(compiler): this is just a usual commit message title\n\n' +
@@ -300,11 +391,13 @@ describe('validate-commit-message.js', () => {
             'BREAKING CHANGE: This is a summary of a breaking change.\n\n' +
             'This is a full description of the breaking change.';
         expectValidationResult(validateCommitMessage(msgWithSummaryAndDescription), VALID);
+        expect(parseCommitMessage(msgWithSummaryAndDescription).breakingChanges.length).toBe(1);
 
         const msgWithNonBreaking = 'feat(compiler): this is just a usual commit message title\n\n' +
             'This is not a\n' +
             'breaking change commit.';
         expectValidationResult(validateCommitMessage(msgWithNonBreaking), VALID);
+        expect(parseCommitMessage(msgWithNonBreaking).breakingChanges.length).toBe(0);
       });
 
       it('should fail for non-valid breaking change commit descriptions', () => {
@@ -314,7 +407,7 @@ describe('validate-commit-message.js', () => {
             'BREAKING CHANGE This is a summary of a breaking change.';
         expectValidationResult(
             validateCommitMessage(msgWithSummary), INVALID,
-            [`The commit message body contains an invalid breaking change description.`]);
+            [`The commit message body contains an invalid breaking change note.`]);
 
         const msgWithPlural = 'feat(compiler): this is just a usual commit message title\n\n' +
             'This is a normal commit message body which does not exceed the max length\n' +
@@ -322,16 +415,17 @@ describe('validate-commit-message.js', () => {
             'BREAKING CHANGES: This is a summary of a breaking change.';
         expectValidationResult(
             validateCommitMessage(msgWithPlural), INVALID,
-            [`The commit message body contains an invalid breaking change description.`]);
+            [`The commit message body contains an invalid breaking change note.`]);
 
-        const msgWithDescription = 'feat(compiler): this is just a usual commit message title\n\n' +
+        const msgWithWithDashedKeyword =
+            'feat(compiler): this is just a usual commit message title\n\n' +
             'This is a normal commit message body which does not exceed the max length\n' +
             'limit. For more details see the following super long URL:\n\n' +
-            'BREAKING CHANGE:\n' +
+            'BREAKING-CHANGE:' +
             'This is a full description of the breaking change.';
         expectValidationResult(
-            validateCommitMessage(msgWithDescription), INVALID,
-            [`The commit message body contains an invalid breaking change description.`]);
+            validateCommitMessage(msgWithWithDashedKeyword), INVALID,
+            [`The commit message body contains an invalid breaking change note.`]);
 
         const msgWithSummaryAndDescription =
             'feat(compiler): this is just a usual commit message title\n\n' +
@@ -341,7 +435,34 @@ describe('validate-commit-message.js', () => {
             'This is a full description of the breaking change.';
         expectValidationResult(
             validateCommitMessage(msgWithSummaryAndDescription), INVALID,
-            [`The commit message body contains an invalid breaking change description.`]);
+            [`The commit message body contains an invalid breaking change note.`]);
+
+        const incorrectKeyword1 = 'feat(compiler): this is just a usual commit message title\n\n' +
+            'This is a normal commit message body which does not exceed the max length\n' +
+            'limit. For more details see the following super long URL:\n\n' +
+            'BREAKING CHANGES:\n' +
+            ' * A has been removed\n';
+        expectValidationResult(
+            validateCommitMessage(incorrectKeyword1), INVALID,
+            ['The commit message body contains an invalid breaking change note.']);
+
+        const incorrectKeyword2 = 'feat(compiler): this is just a usual commit message title\n\n' +
+            'This is a normal commit message body which does not exceed the max length\n' +
+            'limit. For more details see the following super long URL:\n\n' +
+            'BREAKING-CHANGE:\n' +
+            ' * A has been removed\n';
+        expectValidationResult(
+            validateCommitMessage(incorrectKeyword2), INVALID,
+            ['The commit message body contains an invalid breaking change note.']);
+
+        const incorrectKeyword3 = 'feat(compiler): this is just a usual commit message title\n\n' +
+            'This is a normal commit message body which does not exceed the max length\n' +
+            'limit. For more details see the following super long URL:\n\n' +
+            'BREAKING-CHANGES:\n' +
+            ' * A has been removed\n';
+        expectValidationResult(
+            validateCommitMessage(incorrectKeyword3), INVALID,
+            ['The commit message body contains an invalid breaking change note.']);
       });
     });
   });
