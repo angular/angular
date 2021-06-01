@@ -2,6 +2,7 @@ import { Component, ElementRef, ViewChild, ViewEncapsulation } from '@angular/co
 import { ZippyComponent } from './zippy/zippy.component';
 
 @Component({
+  selector: 'app-demo-component',
   templateUrl: './demo-app.component.html',
   styleUrls: ['./demo-app.component.scss'],
   encapsulation: ViewEncapsulation.None,

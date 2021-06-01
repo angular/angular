@@ -24,7 +24,7 @@ describe('Viewing component metadata', () => {
   });
 
   describe('viewing DemoAppComponent', () => {
-    beforeEach(() => prepareHeaderExpansionPanelForAssertions('.tree-node:contains("ng-component")'));
+    beforeEach(() => prepareHeaderExpansionPanelForAssertions('.tree-node:contains("app-demo-component")'));
 
     it('should display view encapsulation', () => {
       cy.get('.meta-data-container').find('.mat-button').first().should('have.text', ' View Encapsulation: None');
