@@ -125,8 +125,8 @@ export class DirectivePropertyResolver {
     outputProps: { [name: string]: Descriptor };
     stateProps: { [name: string]: Descriptor };
   } {
-    const inputLabels: Set<string> = new Set(Object.keys(this._props.metadata?.inputs || {}));
-    const outputLabels: Set<string> = new Set(Object.keys(this._props.metadata?.outputs || {}));
+    const inputLabels: Set<string> = new Set(Object.values(this._props.metadata?.inputs || {}));
+    const outputLabels: Set<string> = new Set(Object.values(this._props.metadata?.outputs || {}));
 
     const inputProps = {};
     const outputProps = {};
