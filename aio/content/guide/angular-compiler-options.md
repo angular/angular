@@ -210,6 +210,10 @@ When `true` (recommended), reports an error for a supplied parameter whose injec
 
 When you use the CLI command `ng new --strict`, it is set to `true` in the generated project's configuration.
 
+### `strictInputAccessModifiers`
+
+Whether access modifiers such as `private`, `protected`, `readonly` are honored when assigning a binding expression to an `@Input()`. If disabled, the access modifiers of the `@Input` are ignored; only the type is checked. This option is `false` by default when the `strictTemplates` option is enabled.
+
 ### `strictTemplates`
 
 When `true`, enables [strict template type checking](guide/template-typecheck#strict-mode).
@@ -220,8 +224,7 @@ If the number of issues is large, you can simplify the transition to strict temp
 
 Fine-grained strictness flags allow you to enable or disable specific types of strict template type checking.
 
-Turning on all fine-grained strictness flags is equivalent to turning on the `strictTemplates` flag,
-with the exception of `strictInputAccessModifiers` which as noted below is not affected by this global flag.
+Turning on all the following fine-grained strictness flags is equivalent to turning on the `strictTemplates` flag.
 
 <table>
   <thead>
@@ -234,10 +237,6 @@ with the exception of `strictInputAccessModifiers` which as noted below is not a
     <tr>
       <td><code>strictInputTypes</code></td>
       <td>Whether the assignability of a binding expression to the <code>@Input()</code> field is checked. Also affects the inference of directive generic types.</td>
-    </tr>
-    <tr>
-      <td><code>strictInputAccessModifiers</code></td>
-      <td>Whether access modifiers such as <code>private</code>/<code>protected</code>/<code>readonly</code> are honored when assigning a binding expression to an <code>@Input()</code>. If disabled, the access modifiers of the <code>@Input</code> are ignored; only the type is checked. This option is <code>false</code> by default, even with <code>strictTemplates</code> set to <code>true</code>.</td>
     </tr>
     <tr>
       <td><code>strictNullInputTypes</code></td>
