@@ -11,7 +11,7 @@
     {{optionalLabelTextChoice}}
   </mat-radio-button>
 </mat-radio-group>
-<mat-horizontal-stepper class="demo-stepper" #stepper>
+<mat-stepper class="demo-stepper" #stepper>
   <mat-step [stepControl]="firstFormGroup">
     <form [formGroup]="firstFormGroup">
       <ng-template matStepLabel>Fill out your name</ng-template>
@@ -56,4 +56,4 @@
       <button mat-button (click)="stepper.reset()">Reset</button>
     </div>
   </mat-step>
-</mat-horizontal-stepper>
+</mat-stepper>

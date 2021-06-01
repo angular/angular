@@ -2,7 +2,7 @@
   {{!isEditable ? 'Enable edit mode' : 'Disable edit mode'}}
 </button>
 
-<mat-horizontal-stepper linear #stepper>
+<mat-stepper linear #stepper>
 <!-- #docregion editable -->
   <mat-step [stepControl]="firstFormGroup" [editable]="isEditable">
 <!-- #enddocregion editable -->
@@ -41,4 +41,4 @@
       <button mat-button (click)="stepper.reset()">Reset</button>
     </div>
   </mat-step>
-</mat-horizontal-stepper>
+</mat-stepper>

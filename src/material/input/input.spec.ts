@@ -2245,7 +2245,7 @@ class AutosizeTextareaInATab {}
 
 @Component({
   template: `
-    <mat-horizontal-stepper>
+    <mat-stepper>
       <mat-step label="Step 1">
         <mat-form-field>
           <textarea matInput matTextareaAautosize>
@@ -2253,7 +2253,7 @@ class AutosizeTextareaInATab {}
           </textarea>
         </mat-form-field>
       </mat-step>
-    </mat-horizontal-stepper>
+    </mat-stepper>
   `
 })
 class AutosizeTextareaInAStep {}

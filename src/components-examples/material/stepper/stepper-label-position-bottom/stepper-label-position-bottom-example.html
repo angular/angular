@@ -1,5 +1,5 @@
 <!-- #docregion label-position -->
-<mat-horizontal-stepper labelPosition="bottom" #stepper>
+<mat-stepper labelPosition="bottom" #stepper>
 <!-- #enddocregion label-position -->
   <mat-step [stepControl]="firstFormGroup">
     <form [formGroup]="firstFormGroup">
@@ -37,4 +37,4 @@
       <button mat-button (click)="stepper.reset()">Reset</button>
     </div>
   </mat-step>
-</mat-horizontal-stepper>
+</mat-stepper>

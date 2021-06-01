@@ -1,4 +1,4 @@
-<mat-horizontal-stepper #stepper>
+<mat-stepper #stepper>
   <mat-step [stepControl]="firstFormGroup">
     <form [formGroup]="firstFormGroup">
       <ng-template matStepLabel>Fill out your name</ng-template>
@@ -33,10 +33,10 @@
       <button mat-button (click)="stepper.reset()">Reset</button>
     </div>
   </mat-step>
-</mat-horizontal-stepper>
+</mat-stepper>
 
 <!-- #docregion states -->
-<mat-horizontal-stepper>
+<mat-stepper>
 <!-- #docregion label -->
   <mat-step label="Step 1" state="phone">
     <p>Put down your phones.</p>
@@ -64,6 +64,6 @@
   <ng-template matStepperIcon="chat">
     <mat-icon>forum</mat-icon>
   </ng-template>
-</mat-horizontal-stepper>
+</mat-stepper>
 <!-- #enddocregion override-icons -->
 <!-- #enddocregion states -->

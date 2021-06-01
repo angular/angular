@@ -76,7 +76,7 @@
 </form>
 
 <h3>Linear Horizontal Stepper Demo using a different form for each step</h3>
-<mat-horizontal-stepper #linearHorizontalStepper="matHorizontalStepper" [linear]="!isNonLinear"
+<mat-stepper #linearHorizontalStepper="matHorizontalStepper" [linear]="!isNonLinear"
                         [disableRipple]="disableRipple"
                         [labelPosition]="showLabelBottom ? 'bottom' : 'end'"
                         [color]="theme">
@@ -124,11 +124,11 @@
       </div>
     </form>
   </mat-step>
-</mat-horizontal-stepper>
+</mat-stepper>
 
 <h3>Vertical Stepper Demo</h3>
 <mat-checkbox [(ngModel)]="isNonEditable">Make steps non-editable</mat-checkbox>
-<mat-vertical-stepper [color]="theme">
+<mat-stepper orientation="vertical" [color]="theme">
   <mat-step [editable]="!isNonEditable">
     <ng-template matStepLabel>Fill out your name</ng-template>
     <mat-form-field>
@@ -180,10 +180,10 @@
       <button mat-button>Done</button>
     </div>
   </mat-step>
-</mat-vertical-stepper>
+</mat-stepper>
 
 <h3>Horizontal Stepper Demo with Text Label</h3>
-<mat-horizontal-stepper [color]="theme">
+<mat-stepper [color]="theme">
   <mat-step label="Fill out your name">
     <mat-form-field>
       <mat-label>First name</mat-label>
@@ -227,10 +227,10 @@
       <button mat-button>Done</button>
     </div>
   </mat-step>
-</mat-horizontal-stepper>
+</mat-stepper>
 
 <h3>Horizontal Stepper Demo with Templated Label</h3>
-<mat-horizontal-stepper [color]="theme">
+<mat-stepper [color]="theme">
   <mat-step *ngFor="let step of steps">
     <ng-template matStepLabel>{{step.label}}</ng-template>
     <mat-form-field>
@@ -242,15 +242,15 @@
       <button mat-button matStepperNext>Next</button>
     </div>
   </mat-step>
-</mat-horizontal-stepper>
+</mat-stepper>
 
 <h3>Stepper with autosize textarea</h3>
-<mat-horizontal-stepper [color]="theme">
+<mat-stepper [color]="theme">
   <mat-step label="Step 1">
     <mat-form-field>
       <mat-label>Autosize textarea</mat-label>
       <textarea matInput cdkTextareaAutosize>This is an autosize textarea, it should adjust to the size of its content.</textarea>
     </mat-form-field>
   </mat-step>
-</mat-horizontal-stepper>
+</mat-stepper>
 

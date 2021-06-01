@@ -5,7 +5,7 @@ describe('stepper', () => {
   beforeEach(async () => await browser.get('/stepper'));
 
   it('should render a stepper', async () => {
-    await expectToExist('mat-horizontal-stepper');
+    await expectToExist('mat-stepper');
   });
 
   describe('basic behavior', () => {

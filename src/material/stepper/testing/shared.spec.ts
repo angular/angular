@@ -262,7 +262,7 @@ export function runHarnessTests(
 
 @Component({
   template: `
-    <mat-vertical-stepper id="one-stepper">
+    <mat-stepper orientation="vertical" id="one-stepper">
       <mat-step label="One">
         <button matStepperNext>Next</button>
       </mat-step>
@@ -277,9 +277,9 @@ export function runHarnessTests(
       <mat-step label="Four" aria-label="Fourth step">
         <button matStepperPrevious>Previous</button>
       </mat-step>
-    </mat-vertical-stepper>
+    </mat-stepper>
 
-    <mat-horizontal-stepper id="two-stepper">
+    <mat-stepper id="two-stepper">
       <mat-step>
         <ng-template matStepLabel>One</ng-template>
       </mat-step>
@@ -289,9 +289,9 @@ export function runHarnessTests(
       <mat-step optional>
         <ng-template matStepLabel>Three</ng-template>
       </mat-step>
-    </mat-horizontal-stepper>
+    </mat-stepper>
 
-    <mat-vertical-stepper id="three-stepper">
+    <mat-stepper orientation="vertical" id="three-stepper">
       <mat-step [stepControl]="oneGroup" label="One">
         <form [formGroup]="oneGroup">
           <input formControlName="oneCtrl" required>
@@ -302,7 +302,7 @@ export function runHarnessTests(
           <input formControlName="twoCtrl" required>
         </form>
       </mat-step>
-    </mat-vertical-stepper>
+    </mat-stepper>
   `
 })
 class StepperHarnessTest {

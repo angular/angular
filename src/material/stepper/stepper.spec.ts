@@ -76,13 +76,13 @@ describe('MatStepper', () => {
 
     it('should default to the first step', () => {
       let stepperComponent = fixture.debugElement
-          .query(By.css('mat-vertical-stepper'))!.componentInstance;
+          .query(By.css('mat-stepper'))!.componentInstance;
       expect(stepperComponent.selectedIndex).toBe(0);
     });
 
     it('should throw when a negative `selectedIndex` is assigned', () => {
       const stepperComponent: MatStepper = fixture.debugElement
-          .query(By.css('mat-vertical-stepper'))!.componentInstance;
+          .query(By.css('mat-stepper'))!.componentInstance;
 
       expect(() => {
         stepperComponent.selectedIndex = -10;
@@ -92,7 +92,7 @@ describe('MatStepper', () => {
 
     it('should throw when an out-of-bounds `selectedIndex` is assigned', () => {
       const stepperComponent: MatStepper = fixture.debugElement
-          .query(By.css('mat-vertical-stepper'))!.componentInstance;
+          .query(By.css('mat-stepper'))!.componentInstance;
 
       expect(() => {
         stepperComponent.selectedIndex = 1337;
@@ -126,7 +126,7 @@ describe('MatStepper', () => {
     });
 
     it('should set the "tablist" role on stepper', () => {
-      let stepperEl = fixture.debugElement.query(By.css('mat-vertical-stepper'))!.nativeElement;
+      let stepperEl = fixture.debugElement.query(By.css('mat-stepper'))!.nativeElement;
       expect(stepperEl.getAttribute('role')).toBe('tablist');
     });
 
@@ -361,7 +361,7 @@ describe('MatStepper', () => {
 
     it('should adjust the index when removing a step before the current one', () => {
       const stepperComponent: MatStepper = fixture.debugElement
-          .query(By.css('mat-vertical-stepper'))!.componentInstance;
+          .query(By.css('mat-stepper'))!.componentInstance;
 
       stepperComponent.selectedIndex = 2;
       fixture.detectChanges();
@@ -401,7 +401,7 @@ describe('MatStepper', () => {
     it('should not throw', () => {
       const fixture = createComponent(SimpleMatVerticalStepperApp);
       const stepperComponent: MatStepper = fixture.debugElement
-          .query(By.css('mat-vertical-stepper'))!.componentInstance;
+          .query(By.css('mat-stepper'))!.componentInstance;
 
       expect(() => stepperComponent.selected).not.toThrow();
     });
@@ -411,7 +411,7 @@ describe('MatStepper', () => {
     it('should not throw', () => {
       const fixture = createComponent(SimpleMatVerticalStepperApp);
       const stepperComponent: MatStepper = fixture.debugElement
-          .query(By.css('mat-vertical-stepper'))!.componentInstance;
+          .query(By.css('mat-stepper'))!.componentInstance;
 
       expect(() => stepperComponent.selected = null!).not.toThrow();
       expect(stepperComponent.selectedIndex).toBe(-1);
@@ -529,7 +529,7 @@ describe('MatStepper', () => {
 
       testComponent = fixture.componentInstance;
       stepperComponent = fixture.debugElement
-          .query(By.css('mat-vertical-stepper'))!.componentInstance;
+          .query(By.css('mat-stepper'))!.componentInstance;
     });
 
     it('should have true linear attribute', () => {
@@ -843,7 +843,7 @@ describe('MatStepper', () => {
       let fixture = createComponent(SimpleMatVerticalStepperApp);
       fixture.detectChanges();
 
-      let stepperEl = fixture.debugElement.query(By.css('mat-vertical-stepper'))!.nativeElement;
+      let stepperEl = fixture.debugElement.query(By.css('mat-stepper'))!.nativeElement;
       expect(stepperEl.getAttribute('aria-orientation')).toBe('vertical');
     });
 
@@ -950,7 +950,7 @@ describe('MatStepper', () => {
       let fixture = createComponent(SimpleMatHorizontalStepperApp);
       fixture.detectChanges();
 
-      let stepperEl = fixture.debugElement.query(By.css('mat-horizontal-stepper'))!.nativeElement;
+      let stepperEl = fixture.debugElement.query(By.css('mat-stepper'))!.nativeElement;
       expect(stepperEl.getAttribute('aria-orientation')).toBe('horizontal');
     });
 
@@ -1098,7 +1098,7 @@ describe('MatStepper', () => {
 
       testComponent = fixture.componentInstance;
       stepper = fixture.debugElement
-          .query(By.css('mat-horizontal-stepper'))!.componentInstance;
+          .query(By.css('mat-stepper'))!.componentInstance;
     });
 
     it('must be visited if not optional', () => {
@@ -1179,7 +1179,7 @@ describe('MatStepper', () => {
       );
       fixture.detectChanges();
       stepper = fixture.debugElement
-          .query(By.css('mat-horizontal-stepper'))!.componentInstance;
+          .query(By.css('mat-stepper'))!.componentInstance;
     }
 
     it('should show error state', () => {
@@ -1242,7 +1242,7 @@ describe('MatStepper', () => {
       );
       fixture.detectChanges();
       stepper = fixture.debugElement
-          .query(By.css('mat-horizontal-stepper'))!.componentInstance;
+          .query(By.css('mat-stepper'))!.componentInstance;
     });
 
     it('should show done state when step is completed and its not the current step', () => {
@@ -1573,7 +1573,7 @@ function createComponent<T>(component: Type<T>,
 @Component({
   template: `
   <form [formGroup]="formGroup">
-    <mat-horizontal-stepper>
+    <mat-stepper>
       <mat-step errorMessage="This field is required"
         [stepControl]="formGroup.get('firstNameCtrl')">
         <ng-template matStepLabel>Step 1</ng-template>
@@ -1595,7 +1595,7 @@ function createComponent<T>(component: Type<T>,
           <button mat-button matStepperNext>Next</button>
         </div>
       </mat-step>
-    </mat-horizontal-stepper>
+    </mat-stepper>
   </form>
   `
 })
@@ -1614,7 +1614,7 @@ class MatHorizontalStepperWithErrorsApp implements OnInit {
 
 @Component({
   template: `
-    <mat-horizontal-stepper [disableRipple]="disableRipple" [color]="stepperTheme">
+    <mat-stepper [disableRipple]="disableRipple" [color]="stepperTheme">
       <mat-step>
         <ng-template matStepLabel>Step 1</ng-template>
         Content 1
@@ -1638,7 +1638,7 @@ class MatHorizontalStepperWithErrorsApp implements OnInit {
           <button mat-button matStepperNext>Next</button>
         </div>
       </mat-step>
-    </mat-horizontal-stepper>
+    </mat-stepper>
   `
 })
 class SimpleMatHorizontalStepperApp {
@@ -1651,7 +1651,7 @@ class SimpleMatHorizontalStepperApp {
 
 @Component({
   template: `
-    <mat-vertical-stepper [disableRipple]="disableRipple" [color]="stepperTheme">
+    <mat-stepper orientation="vertical" [disableRipple]="disableRipple" [color]="stepperTheme">
       <mat-step>
         <ng-template matStepLabel>Step 1</ng-template>
         Content 1
@@ -1675,7 +1675,7 @@ class SimpleMatHorizontalStepperApp {
           <button mat-button matStepperNext>Next</button>
         </div>
       </mat-step>
-    </mat-vertical-stepper>
+    </mat-stepper>
   `
 })
 class SimpleMatVerticalStepperApp {
@@ -1689,7 +1689,7 @@ class SimpleMatVerticalStepperApp {
 
 @Component({
   template: `
-    <mat-vertical-stepper linear>
+    <mat-stepper orientation="vertical" linear>
       <mat-step [stepControl]="oneGroup">
         <form [formGroup]="oneGroup">
           <ng-template matStepLabel>Step one</ng-template>
@@ -1723,7 +1723,7 @@ class SimpleMatVerticalStepperApp {
       <mat-step>
         Done
       </mat-step>
-    </mat-vertical-stepper>
+    </mat-stepper>
   `
 })
 class LinearMatVerticalStepperApp implements OnInit {
@@ -1748,11 +1748,11 @@ class LinearMatVerticalStepperApp implements OnInit {
 
 @Component({
   template: `
-    <mat-horizontal-stepper [linear]="true" [selectedIndex]="index">
+    <mat-stepper [linear]="true" [selectedIndex]="index">
       <mat-step label="One"></mat-step>
       <mat-step label="Two"></mat-step>
       <mat-step label="Three"></mat-step>
-    </mat-horizontal-stepper>
+    </mat-stepper>
   `
 })
 class SimplePreselectedMatHorizontalStepperApp {
@@ -1761,12 +1761,12 @@ class SimplePreselectedMatHorizontalStepperApp {
 
 @Component({
   template: `
-    <mat-horizontal-stepper linear>
+    <mat-stepper linear>
       <mat-step
         *ngFor="let step of steps"
         [label]="step.label"
         [completed]="step.completed"></mat-step>
-    </mat-horizontal-stepper>
+    </mat-stepper>
   `
 })
 class SimpleStepperWithoutStepControl {
@@ -1779,13 +1779,13 @@ class SimpleStepperWithoutStepControl {
 
 @Component({
   template: `
-    <mat-horizontal-stepper linear>
+    <mat-stepper linear>
       <mat-step
         *ngFor="let step of steps"
         [label]="step.label"
         [stepControl]="step.control"
         [completed]="step.completed"></mat-step>
-    </mat-horizontal-stepper>
+    </mat-stepper>
   `
 })
 class SimpleStepperWithStepControlAndCompletedBinding {
@@ -1798,7 +1798,7 @@ class SimpleStepperWithStepControlAndCompletedBinding {
 
 @Component({
   template: `
-    <mat-horizontal-stepper>
+    <mat-stepper>
       <ng-template matStepperIcon="edit">Custom edit</ng-template>
       <ng-template matStepperIcon="done">Custom done</ng-template>
       <ng-template matStepperIcon="number" let-index="index">
@@ -1808,7 +1808,7 @@ class SimpleStepperWithStepControlAndCompletedBinding {
       <mat-step>Content 1</mat-step>
       <mat-step>Content 2</mat-step>
       <mat-step>Content 3</mat-step>
-    </mat-horizontal-stepper>
+    </mat-stepper>
 `
 })
 class IconOverridesStepper {
@@ -1831,7 +1831,7 @@ class IconOverridesStepper {
 
 @Component({
   template: `
-    <mat-horizontal-stepper>
+    <mat-stepper>
       <ng-container [ngSwitch]="true">
         <ng-template matStepperIcon="edit">Custom edit</ng-template>
         <ng-template matStepperIcon="done">Custom done</ng-template>
@@ -1843,7 +1843,7 @@ class IconOverridesStepper {
       <mat-step>Content 1</mat-step>
       <mat-step>Content 2</mat-step>
       <mat-step>Content 3</mat-step>
-    </mat-horizontal-stepper>
+    </mat-stepper>
 `
 })
 class IndirectDescendantIconOverridesStepper extends IconOverridesStepper {
@@ -1851,11 +1851,11 @@ class IndirectDescendantIconOverridesStepper extends IconOverridesStepper {
 
 @Component({
   template: `
-    <mat-horizontal-stepper linear>
+    <mat-stepper linear>
       <mat-step label="Step 1" [stepControl]="controls[0]"></mat-step>
       <mat-step label="Step 2" [stepControl]="controls[1]" [optional]="step2Optional"></mat-step>
       <mat-step label="Step 3" [stepControl]="controls[2]"></mat-step>
-    </mat-horizontal-stepper>
+    </mat-stepper>
   `
 })
 class LinearStepperWithValidOptionalStep {
@@ -1866,9 +1866,9 @@ class LinearStepperWithValidOptionalStep {
 
 @Component({
   template: `
-    <mat-horizontal-stepper>
+    <mat-stepper>
       <mat-step [aria-label]="ariaLabel" [aria-labelledby]="ariaLabelledby" label="One"></mat-step>
-    </mat-horizontal-stepper>
+    </mat-stepper>
   `
 })
 class StepperWithAriaInputs {
@@ -1879,13 +1879,13 @@ class StepperWithAriaInputs {
 
 @Component({
   template: `
-    <mat-vertical-stepper>
+    <mat-stepper orientation="vertical">
       <ng-container [ngSwitch]="true">
         <mat-step label="Step 1">Content 1</mat-step>
         <mat-step label="Step 2">Content 2</mat-step>
         <mat-step label="Step 3">Content 3</mat-step>
       </ng-container>
-    </mat-vertical-stepper>
+    </mat-stepper>
   `
 })
 class StepperWithIndirectDescendantSteps {
@@ -1894,7 +1894,7 @@ class StepperWithIndirectDescendantSteps {
 
 @Component({
   template: `
-    <mat-vertical-stepper>
+    <mat-stepper orientation="vertical">
       <mat-step>
         <ng-template matStepLabel>Step 1</ng-template>
       </mat-step>
@@ -1902,7 +1902,7 @@ class StepperWithIndirectDescendantSteps {
       <mat-step *ngIf="showStep2">
         <ng-template matStepLabel>Step 2</ng-template>
       </mat-step>
-    </mat-vertical-stepper>
+    </mat-stepper>
   `
 })
 class StepperWithNgIf {
@@ -1912,16 +1912,16 @@ class StepperWithNgIf {
 
 @Component({
   template: `
-    <mat-vertical-stepper>
+    <mat-stepper orientation="vertical">
       <mat-step label="Step 1">Content 1</mat-step>
       <mat-step label="Step 2">Content 2</mat-step>
       <mat-step label="Step 3">
-        <mat-horizontal-stepper>
+        <mat-stepper>
           <mat-step label="Sub-Step 1">Sub-Content 1</mat-step>
           <mat-step label="Sub-Step 2">Sub-Content 2</mat-step>
-        </mat-horizontal-stepper>
+        </mat-stepper>
       </mat-step>
-    </mat-vertical-stepper>
+    </mat-stepper>
   `
 })
 class NestedSteppers {
@@ -1931,11 +1931,11 @@ class NestedSteppers {
 
 @Component({
   template: `
-    <mat-vertical-stepper selectedIndex="1337">
+    <mat-stepper orientation="vertical" selectedIndex="1337">
       <mat-step label="Step 1">Content 1</mat-step>
       <mat-step label="Step 2">Content 2</mat-step>
       <mat-step label="Step 3">Content 3</mat-step>
-    </mat-vertical-stepper>
+    </mat-stepper>
   `
 })
 class StepperWithStaticOutOfBoundsIndex {
@@ -1945,7 +1945,7 @@ class StepperWithStaticOutOfBoundsIndex {
 
 @Component({
   template: `
-    <mat-vertical-stepper [selectedIndex]="selectedIndex">
+    <mat-stepper orientation="vertical" [selectedIndex]="selectedIndex">
       <mat-step>
         <ng-template matStepLabel>Step 1</ng-template>
         <ng-template matStepContent>Step 1 content</ng-template>
@@ -1958,7 +1958,7 @@ class StepperWithStaticOutOfBoundsIndex {
         <ng-template matStepLabel>Step 3</ng-template>
         <ng-template matStepContent>Step 3 content</ng-template>
       </mat-step>
-    </mat-vertical-stepper>
+    </mat-stepper>
   `
 })
 class StepperWithLazyContent {

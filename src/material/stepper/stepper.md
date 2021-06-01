@@ -5,16 +5,12 @@ that drives a stepped workflow. Material stepper extends the CDK stepper and has
 styling.
 
 ### Stepper variants
-There are two stepper components: `mat-horizontal-stepper` and `mat-vertical-stepper`. They
-can be used the same way. The only difference is the orientation of stepper.
+There are two stepper variants: `horizontal` and `vertical`. You can switch between the two using
+the `orientation` attribute.
 
 <!-- example(stepper-overview) -->
 
 <!-- example(stepper-vertical) -->
-
-`mat-horizontal-stepper` selector can be used to create a horizontal stepper, and
-`mat-vertical-stepper` can be used to create a vertical stepper. `mat-step` components need to be
-placed inside either one of the two stepper components.
 
 ### Labels
 If a step's label is only text, then the `label` attribute can be used.
@@ -29,7 +25,7 @@ For more complex labels, add a template with the `matStepLabel` directive inside
               "region": "step-label"}) -->
 
 #### Label position
-For `mat-horizontal-stepper` it's possible to define the position of the label. `end` is the
+For a horizontal `mat-stepper` it's possible to define the position of the label. `end` is the
 default value, while `bottom` will place it under the step icon instead of at its side.
 This behaviour is controlled by `labelPosition` property.
 
@@ -45,10 +41,10 @@ There are two button directives to support navigation between different steps:
               "region": "buttons"}) -->
 
 ### Linear stepper
-The `linear` attribute can be set on `mat-horizontal-stepper` and `mat-vertical-stepper` to create
-a linear stepper that requires the user to complete previous steps before proceeding to following
-steps. For each `mat-step`, the `stepControl` attribute can be set to the top level
-`AbstractControl` that is used to check the validity of the step.
+The `linear` attribute can be set on `mat-stepper` to create a linear stepper that requires the
+user to complete previous steps before proceeding to following steps. For each `mat-step`, the
+`stepControl` attribute can be set to the top level `AbstractControl` that is used to check the
+validity of the step.
 
 There are two possible approaches. One is using a single form for stepper, and the other is
 using a different form for each step.
@@ -64,7 +60,7 @@ are completed.
 
 ```html
 <form [formGroup]="formGroup">
-  <mat-horizontal-stepper formArrayName="formArray" linear>
+  <mat-stepper formArrayName="formArray" linear>
     <mat-step formGroupName="0" [stepControl]="formArray.get([0])">
       ...
       <div>
@@ -79,13 +75,13 @@ are completed.
       </div>
     </mat-step>
     ...
-  </mat-horizontal-stepper>
+  </mat-stepper>
 </form>
 ```
 
 #### Using a different form for each step
 ```html
-<mat-vertical-stepper linear>
+<mat-stepper orientation="vertical" linear>
   <mat-step [stepControl]="formGroup1">
     <form [formGroup]="formGroup1">
       ...
@@ -96,7 +92,7 @@ are completed.
       ...
     </form>
   </mat-step>
-</mat-vertical-stepper>
+</mat-stepper>
 ```
 ### Types of steps
 
