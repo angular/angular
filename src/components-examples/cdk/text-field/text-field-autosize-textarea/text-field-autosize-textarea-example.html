@@ -1,4 +1,4 @@
-<mat-form-field>
+<mat-form-field appearance="fill">
   <mat-label>Font size</mat-label>
   <mat-select #fontSize value="16px" (selectionChange)="triggerResize()">
     <mat-option value="10px">10px</mat-option>
@@ -10,7 +10,7 @@
   </mat-select>
 </mat-form-field>
 
-<mat-form-field [style.fontSize]="fontSize.value">
+<mat-form-field [style.fontSize]="fontSize.value" appearance="fill">
   <mat-label>Autosize textarea</mat-label>
   <textarea matInput
             cdkTextareaAutosize

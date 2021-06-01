@@ -3,19 +3,19 @@
     <h2 class="example-h2">Slider configuration</h2>
 
     <section class="example-section">
-      <mat-form-field class="example-margin">
+      <mat-form-field class="example-margin" appearance="fill">
         <mat-label>Value</mat-label>
         <input matInput type="number" [(ngModel)]="value">
       </mat-form-field>
-      <mat-form-field class="example-margin">
+      <mat-form-field class="example-margin" appearance="fill">
         <mat-label>Min value</mat-label>
         <input matInput type="number" [(ngModel)]="min">
       </mat-form-field>
-      <mat-form-field class="example-margin">
+      <mat-form-field class="example-margin" appearance="fill">
         <mat-label>Max value</mat-label>
         <input matInput type="number" [(ngModel)]="max">
       </mat-form-field>
-      <mat-form-field class="example-margin">
+      <mat-form-field class="example-margin" appearance="fill">
         <mat-label>Step size</mat-label>
         <input matInput type="number" [(ngModel)]="step">
       </mat-form-field>
@@ -26,7 +26,7 @@
       <mat-checkbox class="example-margin" [(ngModel)]="autoTicks" *ngIf="showTicks">
         Auto ticks
       </mat-checkbox>
-      <mat-form-field class="example-margin" *ngIf="showTicks && !autoTicks">
+      <mat-form-field class="example-margin" appearance="fill" *ngIf="showTicks && !autoTicks">
         <mat-label>Tick interval</mat-label>
         <input matInput type="number" [(ngModel)]="tickInterval">
       </mat-form-field>

@@ -15,7 +15,7 @@
   <mat-step [stepControl]="firstFormGroup">
     <form [formGroup]="firstFormGroup">
       <ng-template matStepLabel>Fill out your name</ng-template>
-      <mat-form-field class="demo-form-field">
+      <mat-form-field class="demo-form-field" appearance="fill">
         <mat-label>Name</mat-label>
         <input
           matInput
@@ -34,7 +34,7 @@
     label="Fill out your address"
     optional>
     <form [formGroup]="secondFormGroup">
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Address</mat-label>
         <input
           matInput

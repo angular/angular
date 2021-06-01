@@ -8,7 +8,7 @@
 
   <mat-tree-node *matTreeNodeDef="let node; when: hasNoContent" matTreeNodePadding>
     <button mat-icon-button disabled></button>
-    <mat-form-field>
+    <mat-form-field appearance="fill">
       <mat-label>New item...</mat-label>
       <input matInput #itemValue placeholder="Ex. Lettuce">
     </mat-form-field>

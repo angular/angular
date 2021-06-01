@@ -10,7 +10,7 @@
 <!-- #docregion step-label -->
       <ng-template matStepLabel>Fill out your name</ng-template>
 <!-- #enddocregion step-label -->
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Name</mat-label>
         <input matInput formControlName="firstCtrl" placeholder="Last name, First name" required>
       </mat-form-field>
@@ -22,7 +22,7 @@
   <mat-step [stepControl]="secondFormGroup" [editable]="isEditable">
     <form [formGroup]="secondFormGroup">
       <ng-template matStepLabel>Fill out your address</ng-template>
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Address</mat-label>
         <input matInput formControlName="secondCtrl" placeholder="Ex. 1 Main St, New York, NY"
                required>

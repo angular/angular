@@ -11,7 +11,7 @@
           [matEditLensPreservedFormValue]="preservedWeightValues.get(element)"
           (matEditLensPreservedFormValueChange)="preservedWeightValues.set(element, $event)">
         <div mat-edit-content>
-          <mat-form-field>
+          <mat-form-field appearance="fill">
             <input matInput type="number" [ngModel]="element.weight" name="weight" required>
           </mat-form-field>
         </div>
@@ -31,7 +31,7 @@
     <mat-cell *matCellDef="let element"
         [matPopoverEdit]="nameEdit">
       {{element.name}}
-      
+
       <!-- This edit is defined in the cell and can implicitly access element -->
       <ng-template #nameEdit>
         <div>
@@ -42,7 +42,7 @@
               (matEditLensPreservedFormValueChange)="preservedNameValues.set(element, $event)">
             <h2 mat-edit-title>Name</h2>
             <div mat-edit-content>
-              <mat-form-field>
+              <mat-form-field appearance="fill">
                 <input matInput [ngModel]="element.name" name="name" required>
               </mat-form-field>
             </div>
@@ -67,7 +67,7 @@
     <mat-cell *matCellDef="let element"
         [matPopoverEdit]="weightEdit" [matPopoverEditContext]="element">
       {{element.weight}}
-      
+
       <span *matRowHoverContent>
         <button mat-icon-button matEditOpen><mat-icon>edit</mat-icon></button>
       </span>

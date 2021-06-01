@@ -1,10 +1,10 @@
 <form (submit)="$event.preventDefault()">
-  <mat-form-field>
+  <mat-form-field appearance="fill">
     <mat-label>First name</mat-label>
     <input matInput #first>
     <mat-hint *ngIf="firstNameAutofilled">Autofilled!</mat-hint>
   </mat-form-field>
-  <mat-form-field>
+  <mat-form-field appearance="fill">
     <mat-label>Last name</mat-label>
     <input matInput #last>
     <mat-hint *ngIf="lastNameAutofilled">Autofilled!</mat-hint>

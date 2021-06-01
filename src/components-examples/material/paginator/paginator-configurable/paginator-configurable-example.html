@@ -1,13 +1,13 @@
-<mat-form-field>
+<mat-form-field appearance="fill">
   <mat-label>List length</mat-label>
   <input matInput [(ngModel)]="length" type="number">
 </mat-form-field>
 
-<mat-form-field>
+<mat-form-field appearance="fill">
   <mat-label>Page size</mat-label>
   <input matInput [(ngModel)]="pageSize" type="number">
 </mat-form-field>
-<mat-form-field>
+<mat-form-field appearance="fill">
   <mat-label>Page size options</mat-label>
   <input matInput [ngModel]="pageSizeOptions" (ngModelChange)="setPageSizeOptions($event)"
          [ngModelOptions]="{updateOn: 'blur'}" placeholder="Ex. 10,25,50">
