@@ -9,7 +9,7 @@ Code coverage reports show you any parts of your code base that may not be prope
 
   For a hands-on experience you can <live-example name="testing" stackblitz="specs" noDownload>run tests and explore the test code</live-example> in your browser as your read this guide.
 
-  Similarly, you can also <live-example name="testing" noDownload>run and explore the application</live-example> that this testing guides describes.
+  If you'd like to experiment with the application that this guide describes, you can <live-example name="testing" noDownload>run it in your browser</live-example> or <live-example name="testing" downloadOnly>download and run it locally</live-example>.
 
 </div>
 
