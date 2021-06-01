@@ -10,7 +10,9 @@ import {ThemePalette} from '@angular/material/core';
 
 /** Default `mat-checkbox` options that can be overridden. */
 export interface MatCheckboxDefaultOptions {
+  /** Default theme color palette to be used for checkboxes. */
   color?: ThemePalette;
+  /** Default checkbox click action for checkboxes. */
   clickAction?: MatCheckboxClickAction;
 }
 
