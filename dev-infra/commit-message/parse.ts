@@ -111,7 +111,7 @@ const parseOptions: Options&{notesPattern: (keywords: string) => RegExp} = {
   headerPattern,
   headerCorrespondence,
   noteKeywords: [NoteSections.BREAKING_CHANGE, NoteSections.DEPRECATED],
-  notesPattern: (keywords: string) => new RegExp(`(${keywords})(?:: ?)(.*)`),
+  notesPattern: (keywords: string) => new RegExp(`(${keywords}): ?(.*)`),
 };
 
 /** Parse a commit message into its composite parts. */
