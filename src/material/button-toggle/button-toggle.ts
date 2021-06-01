@@ -53,6 +53,10 @@ export type MatButtonToggleAppearance = 'legacy' | 'standard';
  * using the `MAT_BUTTON_TOGGLE_DEFAULT_OPTIONS` injection token.
  */
 export interface MatButtonToggleDefaultOptions {
+  /**
+   * Default appearance to be used by button toggles. Can be overridden by explicitly
+   * setting an appearance on a button toggle or group.
+   */
   appearance?: MatButtonToggleAppearance;
 }
 
