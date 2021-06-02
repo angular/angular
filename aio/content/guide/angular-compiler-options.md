@@ -223,8 +223,9 @@ Turning this flag on for existing codebases will likely surface previously hidde
 If the number of issues is large, you can simplify the transition to strict template type checking by incrementally turning on fine-grained strictness flags and resolving the issues uncover.
 
 Fine-grained strictness flags allow you to enable or disable specific types of strict template type checking.
-
-Turning on all the following fine-grained strictness flags is equivalent to turning on the `strictTemplates` flag.
+These flags are useful primarily when turning on `strictTemplates` in large codebases surfaces too many type checking issues.
+In this scenario, you can enable the `strictTemplates` flag, and use the fine-grained strictness flags to temporarily disable the most problematic type checks.
+The fine-grained strictness flags can then be removed incrementally as the issues are resolved.
 
 <table>
   <thead>
