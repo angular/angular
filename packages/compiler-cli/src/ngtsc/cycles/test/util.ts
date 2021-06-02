@@ -30,6 +30,8 @@ import {makeProgram} from '../../testing';
  * "a:*b,c;b;c"
  *
  * represents a program where a.ts exports from b.ts and imports from c.ts.
+ *
+ * An import can be suffixed with ! to make it a type-only import.
  */
 export function makeProgramFromGraph(fs: PathManipulation, graph: string): {
   program: ts.Program,
@@ -43,6 +45,9 @@ export function makeProgramFromGraph(fs: PathManipulation, graph: string): {
                            if (i.startsWith('*')) {
                              const sym = i.substr(1);
                              return `export {${sym}} from './${sym}';`;
+                           } else if (i.endsWith('!')) {
+                             const sym = i.substr(0, i.length - 1);
+                             return `import type {${sym}} from './${sym}';`;
                            } else {
                              return `import {${i}} from './${i}';`;
                            }
