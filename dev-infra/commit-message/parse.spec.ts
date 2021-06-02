@@ -135,6 +135,15 @@ describe('commit message parsing:', () => {
       expect(parsedMessage.breakingChanges[0].text).toBe(`${summary}\n\n${description}`);
       expect(parsedMessage.breakingChanges.length).toBe(1);
     });
+
+    it('only when keyword is at the beginning of a line', () => {
+      const message = buildCommitMessage({
+        body: 'This changes how the `BREAKING CHANGE: ` commit message note\n' +
+            'keyword is detected for the changelog.',
+      });
+      const parsedMessage = parseCommitMessage(message);
+      expect(parsedMessage.breakingChanges.length).toBe(0);
+    });
   });
 
   describe('parses deprecation notes', () => {
@@ -167,6 +176,15 @@ describe('commit message parsing:', () => {
       const parsedMessage = parseCommitMessage(message);
       expect(parsedMessage.deprecations[0].text).toBe(`${summary}\n\n${description}`);
       expect(parsedMessage.deprecations.length).toBe(1);
+    });
+
+    it('only when keyword is at the beginning of a line', () => {
+      const message = buildCommitMessage({
+        body: 'This changes how the `DEPRECATED: ` commit message note\n' +
+            'keyword is detected for the changelog.',
+      });
+      const parsedMessage = parseCommitMessage(message);
+      expect(parsedMessage.deprecations.length).toBe(0);
     });
   });
 });
