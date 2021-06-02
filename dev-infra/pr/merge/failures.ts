@@ -93,6 +93,13 @@ export class PullRequestFailure {
     return new this(message);
   }
 
+  static hasDeprecations(label: TargetLabel) {
+    const message = `Cannot merge into branch for "${label.pattern}" as the pull request ` +
+        `contains deprecations. Deprecations can only be merged with the "target: minor" or ` +
+        `"target: major" label.`;
+    return new this(message);
+  }
+
   static hasFeatureCommits(label: TargetLabel) {
     const message = `Cannot merge into branch for "${label.pattern}" as the pull request has ` +
         'commits with the "feat" type. New features can only be merged with the "target: minor" ' +

@@ -3444,6 +3444,12 @@ var PullRequestFailure = /** @class */ (function () {
             "breaking changes. Breaking changes can only be merged with the \"target: major\" label.";
         return new this(message);
     };
+    PullRequestFailure.hasDeprecations = function (label) {
+        var message = "Cannot merge into branch for \"" + label.pattern + "\" as the pull request " +
+            "contains deprecations. Deprecations can only be merged with the \"target: minor\" or " +
+            "\"target: major\" label.";
+        return new this(message);
+    };
     PullRequestFailure.hasFeatureCommits = function (label) {
         var message = "Cannot merge into branch for \"" + label.pattern + "\" as the pull request has " +
             'commits with the "feat" type. New features can only be merged with the "target: minor" ' +
@@ -3602,15 +3608,13 @@ var PR_SCHEMA$2 = {
 /** Fetches a pull request from Github. Returns null if an error occurred. */
 function fetchPullRequestFromGithub(git, prNumber) {
     return tslib.__awaiter(this, void 0, void 0, function () {
-        var x, e_1;
+        var e_1;
         return tslib.__generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     _a.trys.push([0, 2, , 3]);
                     return [4 /*yield*/, getPr(PR_SCHEMA$2, prNumber, git)];
-                case 1:
-                    x = _a.sent();
-                    return [2 /*return*/, x];
+                case 1: return [2 /*return*/, _a.sent()];
                 case 2:
                     e_1 = _a.sent();
                     // If the pull request could not be found, we want to return `null` so
@@ -3629,8 +3633,9 @@ function isPullRequest(v) {
     return v.targetBranches !== undefined;
 }
 /**
- * Assert the commits provided are allowed to merge to the provided target label, throwing a
- * PullRequestFailure otherwise.
+ * Assert the commits provided are allowed to merge to the provided target label,
+ * throwing an error otherwise.
+ * @throws {PullRequestFailure}
  */
 function assertChangesAllowForTargetLabel(commits, label, config) {
     /**
@@ -3641,6 +3646,7 @@ function assertChangesAllowForTargetLabel(commits, label, config) {
     /** List of commits which are subject to content requirements for the target label. */
     commits = commits.filter(function (commit) { return !exemptedScopes.includes(commit.scope); });
     var hasBreakingChanges = commits.some(function (commit) { return commit.breakingChanges.length !== 0; });
+    var hasDeprecations = commits.some(function (commit) { return commit.deprecations.length !== 0; });
     var hasFeatureCommits = commits.some(function (commit) { return commit.type === 'feat'; });
     switch (label.pattern) {
         case 'target: major':
@@ -3659,6 +3665,12 @@ function assertChangesAllowForTargetLabel(commits, label, config) {
             if (hasFeatureCommits) {
                 throw PullRequestFailure.hasFeatureCommits(label);
             }
+            // Deprecations should not be merged into RC, patch or LTS branches.
+            // https://semver.org/#spec-item-7. Deprecations should be part of
+            // minor releases, or major releases according to SemVer.
+            if (hasDeprecations) {
+                throw PullRequestFailure.hasDeprecations(label);
+            }
             break;
         default:
             warn(red('WARNING: Unable to confirm all commits in the pull request are eligible to be'));
@@ -3669,6 +3681,7 @@ function assertChangesAllowForTargetLabel(commits, label, config) {
 /**
  * Assert the pull request has the proper label for breaking changes if there are breaking change
  * commits, and only has the label if there are breaking change commits.
+ * @throws {PullRequestFailure}
  */
 function assertCorrectBreakingChangeLabeling(commits, labels, config) {
     /** Whether the PR has a label noting a breaking change. */
@@ -3682,7 +3695,10 @@ function assertCorrectBreakingChangeLabeling(commits, labels, config) {
         throw PullRequestFailure.missingBreakingChangeCommit();
     }
 }
-/** Assert the pull request is pending, not closed, merged or in draft. */
+/**
+ * Assert the pull request is pending, not closed, merged or in draft.
+ * @throws {PullRequestFailure} if the pull request is not pending.
+ */
 function assertPendingState(pr) {
     if (pr.isDraft) {
         throw PullRequestFailure.isDraft();

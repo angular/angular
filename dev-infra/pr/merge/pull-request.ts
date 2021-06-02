@@ -201,6 +201,7 @@ function assertChangesAllowForTargetLabel(
   /** List of commits which are subject to content requirements for the target label. */
   commits = commits.filter(commit => !exemptedScopes.includes(commit.scope));
   const hasBreakingChanges = commits.some(commit => commit.breakingChanges.length !== 0);
+  const hasDeprecations = commits.some(commit => commit.deprecations.length !== 0);
   const hasFeatureCommits = commits.some(commit => commit.type === 'feat');
   switch (label.pattern) {
     case 'target: major':
@@ -218,6 +219,12 @@ function assertChangesAllowForTargetLabel(
       }
       if (hasFeatureCommits) {
         throw PullRequestFailure.hasFeatureCommits(label);
+      }
+      // Deprecations should not be merged into RC, patch or LTS branches.
+      // https://semver.org/#spec-item-7. Deprecations should be part of
+      // minor releases, or major releases according to SemVer.
+      if (hasDeprecations) {
+        throw PullRequestFailure.hasDeprecations(label);
       }
       break;
     default:
