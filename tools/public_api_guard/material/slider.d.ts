@@ -4,7 +4,7 @@ export declare class MatSlider extends _MatSliderBase implements ControlValueAcc
     _animationMode?: string | undefined;
     protected _document: Document;
     _isActive: boolean;
-    _isSliding: boolean;
+    _isSliding: 'keyboard' | 'pointer' | null;
     readonly change: EventEmitter<MatSliderChange>;
     get displayValue(): string | number;
     displayWith: (value: number) => string | number;

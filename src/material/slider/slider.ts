@@ -326,10 +326,10 @@ export class MatSlider extends _MatSliderBase
   private _percent: number = 0;
 
   /**
-   * Whether or not the thumb is sliding.
+   * Whether or not the thumb is sliding and what the user is using to slide it with.
    * Used to determine if there should be a transition for the thumb and fill track.
    */
-  _isSliding: boolean = false;
+  _isSliding: 'keyboard' | 'pointer' | null = null;
 
   /**
    * Whether or not the slider is active (clicked or sliding).
@@ -569,7 +569,8 @@ export class MatSlider extends _MatSliderBase
   }
 
   _onKeydown(event: KeyboardEvent) {
-    if (this.disabled || hasModifierKey(event)) {
+    if (this.disabled || hasModifierKey(event) ||
+        (this._isSliding && this._isSliding !== 'keyboard')) {
       return;
     }
 
@@ -619,12 +620,14 @@ export class MatSlider extends _MatSliderBase
       this._emitChangeEvent();
     }
 
-    this._isSliding = true;
+    this._isSliding = 'keyboard';
     event.preventDefault();
   }
 
   _onKeyup() {
-    this._isSliding = false;
+    if (this._isSliding === 'keyboard') {
+      this._isSliding = null;
+    }
   }
 
   /** Called when the user has put their pointer down on the slider. */
@@ -642,7 +645,7 @@ export class MatSlider extends _MatSliderBase
 
       if (pointerPosition) {
         const oldValue = this.value;
-        this._isSliding = true;
+        this._isSliding = 'pointer';
         this._lastPointerEvent = event;
         event.preventDefault();
         this._focusHostElement();
@@ -665,7 +668,7 @@ export class MatSlider extends _MatSliderBase
    * starting to drag. Bound on the document level.
    */
   private _pointerMove = (event: TouchEvent | MouseEvent) => {
-    if (this._isSliding) {
+    if (this._isSliding === 'pointer') {
       const pointerPosition = getPointerPositionOnPage(event, this._touchId);
 
       if (pointerPosition) {
@@ -685,14 +688,14 @@ export class MatSlider extends _MatSliderBase
 
   /** Called when the user has lifted their pointer. Bound on the document level. */
   private _pointerUp = (event: TouchEvent | MouseEvent) => {
-    if (this._isSliding) {
+    if (this._isSliding === 'pointer') {
       if (!isTouchEvent(event) || typeof this._touchId !== 'number' ||
           // Note that we use `changedTouches`, rather than `touches` because it
           // seems like in most cases `touches` is empty for `touchend` events.
           findMatchingTouch(event.changedTouches, this._touchId)) {
         event.preventDefault();
         this._removeGlobalEvents();
-        this._isSliding = false;
+        this._isSliding = null;
         this._touchId = undefined;
 
         if (this._valueOnSlideStart != this.value && !this.disabled) {

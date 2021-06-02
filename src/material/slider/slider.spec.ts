@@ -9,6 +9,7 @@ import {
   PAGE_UP,
   RIGHT_ARROW,
   UP_ARROW,
+  A,
 } from '@angular/cdk/keycodes';
 import {
   createMouseEvent,
@@ -129,6 +130,28 @@ describe('MatSlider', () => {
       expect(sliderNativeElement.classList).not.toContain('mat-slider-sliding');
 
       dispatchSlideStartEvent(sliderNativeElement, 0);
+      fixture.detectChanges();
+
+      expect(sliderNativeElement.classList).toContain('mat-slider-sliding');
+
+      dispatchSlideEndEvent(sliderNativeElement, 0.34);
+      fixture.detectChanges();
+
+      expect(sliderNativeElement.classList).not.toContain('mat-slider-sliding');
+    });
+
+    it('should not interrupt sliding by pressing a key', () => {
+      expect(sliderNativeElement.classList).not.toContain('mat-slider-sliding');
+
+      dispatchSlideStartEvent(sliderNativeElement, 0);
+      fixture.detectChanges();
+
+      expect(sliderNativeElement.classList).toContain('mat-slider-sliding');
+
+      // Any key code will do here. Use A since it isn't associated with other actions.
+      dispatchKeyboardEvent(sliderNativeElement, 'keydown', A);
+      fixture.detectChanges();
+      dispatchKeyboardEvent(sliderNativeElement, 'keyup', A);
       fixture.detectChanges();
 
       expect(sliderNativeElement.classList).toContain('mat-slider-sliding');
