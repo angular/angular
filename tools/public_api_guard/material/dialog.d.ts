@@ -88,7 +88,8 @@ export declare class MatDialogClose implements OnInit, OnChanges {
     dialogRef: MatDialogRef<any>;
     dialogResult: any;
     type: 'submit' | 'button' | 'reset';
-    constructor(dialogRef: MatDialogRef<any>, _elementRef: ElementRef<HTMLElement>, _dialog: MatDialog);
+    constructor(
+    dialogRef: MatDialogRef<any>, _elementRef: ElementRef<HTMLElement>, _dialog: MatDialog);
     _onButtonClick(event: MouseEvent): void;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnInit(): void;
@@ -148,7 +149,8 @@ export declare class MatDialogRef<T, R = any> {
     componentInstance: T;
     disableClose: boolean | undefined;
     readonly id: string;
-    constructor(_overlayRef: OverlayRef, _containerInstance: _MatDialogContainerBase, id?: string);
+    constructor(_overlayRef: OverlayRef, _containerInstance: _MatDialogContainerBase,
+    id?: string);
     addPanelClass(classes: string | string[]): this;
     afterClosed(): Observable<R | undefined>;
     afterOpened(): Observable<void>;

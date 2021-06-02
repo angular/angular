@@ -54,6 +54,7 @@ export class MatDialogRef<T, R = any> {
   constructor(
     private _overlayRef: OverlayRef,
     public _containerInstance: _MatDialogContainerBase,
+    /** Id of the dialog. */
     readonly id: string = `mat-dialog-${uniqueId++}`) {
 
     // Pass the id along to the container.

@@ -46,6 +46,12 @@ export class MatDialogClose implements OnInit, OnChanges {
   @Input('matDialogClose') _matDialogClose: any;
 
   constructor(
+
+    /**
+     * Reference to the containing dialog.
+     * @deprecated `dialogRef` property to become private.
+     * @breaking-change 13.0.0
+     */
     // The dialog title directive is always used in combination with a `MatDialogRef`.
     // tslint:disable-next-line: lightweight-tokens
     @Optional() public dialogRef: MatDialogRef<any>,
@@ -93,6 +99,7 @@ export class MatDialogClose implements OnInit, OnChanges {
   },
 })
 export class MatDialogTitle implements OnInit {
+  /** Unique id for the dialog title. If none is supplied, it will be auto-generated. */
   @Input() id: string = `mat-dialog-title-${dialogElementUid++}`;
 
   constructor(
