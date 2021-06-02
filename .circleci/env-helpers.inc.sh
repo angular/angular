@@ -15,8 +15,8 @@
 #
 # Usage: `setPublicVar <name> <value>`
 function setPublicVar() {
-  setSecretVar $1 "$2";
-  echo "$1=$2";
+  setSecretVar $1 "$2"
+  echo "$1=$2"
 }
 
 # Set (without printing) an environment variable.
@@ -28,15 +28,14 @@ function setPublicVar() {
 function setSecretVar() {
   # WARNING: Secrets (e.g. passwords, access tokens) should NOT be printed.
   # (Keep original shell options to restore at the end.)
-  local -r originalShellOptions=$(set +o);
-  set +x -eu -o pipefail;
+  local -r originalShellOptions=$(set +o)
+  set +x -eu -o pipefail
 
-  echo "export $1=\"${2:-}\";" >> $BASH_ENV;
+  echo "export $1=\"${2:-}\";" >>$BASH_ENV
 
   # Restore original shell options.
-  eval "$originalShellOptions";
+  eval "$originalShellOptions"
 }
-
 
 # Create a function to set an environment variable, when called.
 #
@@ -69,5 +68,5 @@ function setSecretVar() {
 # echo $MY_VAR;  # FOO
 # ```
 function createPublicVarSetter() {
-  echo "setPublicVar_$1() { setPublicVar $1 \"$2\"; }" >> $BASH_ENV;
+  echo "setPublicVar_$1() { setPublicVar $1 \"$2\"; }" >>$BASH_ENV
 }

@@ -5,10 +5,10 @@ logFile=/var/log/aio/verify-setup.log
 previewServerLogFile=/var/log/aio/preview-server-verify-setup.log
 
 exec 3>&1
-exec >> $logFile
+exec >>$logFile
 exec 2>&1
 
-echo "[`date`] - Starting verification..."
+echo "[$(date)] - Starting verification..."
 
 # Helpers
 function countdown {
@@ -25,7 +25,7 @@ function countdown {
 function onExit {
   echo -e "Stopping Test Server"
   aio-preview-server-test stop
-  echo -e "Full logs in '$logFile'.\n" > /dev/fd/3
+  echo -e "Full logs in '$logFile'.\n" >/dev/fd/3
 }
 
 # Setup EXIT trap
@@ -36,7 +36,7 @@ echo -e "Starting Test Server"
 aio-preview-server-test start --log $previewServerLogFile
 
 # Give the preview-server some time to start :(
-countdown "Starting" 5 > /dev/fd/3
+countdown "Starting" 5 >/dev/fd/3
 
 # Run the tests
 echo Running the tests

@@ -26,9 +26,8 @@ fi
 
 # Create a compressed archive for each package.
 # (This is useful for referencing the path/URL to the resulting archive in `package.json`.)
-for dir in $inputDir/*
-do
-  packageName=`basename "$dir"`
+for dir in $inputDir/*; do
+  packageName=$(basename "$dir")
   outputFileName="$packageName$fileSuffix"
   outputFilePath="$outputDir/$outputFileName"
 

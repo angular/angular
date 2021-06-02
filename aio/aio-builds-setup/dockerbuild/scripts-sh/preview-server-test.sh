@@ -3,7 +3,7 @@ set -eu -o pipefail
 
 # Start the preview-server instance
 appName=aio-preview-server-test
-if [[ "$1" == "stop" ]]; then
+if [[ $1 == "stop" ]]; then
   pm2 delete $appName
 else
   source aio-test-env

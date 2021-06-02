@@ -6,8 +6,7 @@ java -jar ./node_modules/google-closure-compiler-java/compiler.jar --flagfile '.
 # the names of Zone exposed API should be kept correctly with zone externs, test program should exit with 0.
 node build/closure/zone-closure-bundle.js
 
-if [ $? -eq 0 ]
-then
+if [ $? -eq 0 ]; then
   echo "Successfully pass closure compiler with zone externs"
 else
   echo "failed to pass closure compiler with zone externs"
@@ -19,8 +18,7 @@ java -jar node_modules/google-closure-compiler-java/compiler.jar --flagfile 'scr
 
 node build/closure/zone-closure-bundle.js
 
-if [ $? -eq 1 ]
-then
+if [ $? -eq 1 ]; then
   echo "Successfully detect closure compiler error without zone externs"
 else
   echo "failed to detect closure compiler error without zone externs"

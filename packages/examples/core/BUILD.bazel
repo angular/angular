@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "jasmine_node_test", "ng_module", "protractor_web_test_suite", "ts_devserver", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "core_examples",

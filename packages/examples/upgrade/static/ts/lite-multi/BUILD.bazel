@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//packages/examples/upgrade:upgrade_example.bzl", "create_upgrade_example_targets")
+
+package(default_visibility = ["//visibility:public"])
 
 create_upgrade_example_targets(
     name = "lite-multi",

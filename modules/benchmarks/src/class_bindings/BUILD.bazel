@@ -1,7 +1,7 @@
-package(default_visibility = ["//modules/benchmarks:__subpackages__"])
-
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 load("//dev-infra/benchmark/component_benchmark:component_benchmark.bzl", "component_benchmark")
+
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
 sass_binary(
     name = "class_bindings_styles",

@@ -42,9 +42,9 @@ set -u -e -o pipefail
 @wait_for() {
   local m="$1"
   local f="$2"
-  if [[ ! -f "${f}" ]]; then
+  if [[ ! -f ${f} ]]; then
     printf "# ${m} (${f})"
-    while [[ ! -f "${f}" ]]; do
+    while [[ ! -f ${f} ]]; do
       printf "."
       sleep 0.5
     done
@@ -55,7 +55,10 @@ set -u -e -o pipefail
 ####################################################################################################
 # Sauce service functions
 
-readonly SCRIPT_DIR=$(cd $(dirname $0); pwd)
+readonly SCRIPT_DIR=$(
+  cd $(dirname $0)
+  pwd
+)
 readonly TMP_DIR="/tmp/angular/sauce-service"
 mkdir -p ${TMP_DIR}
 
@@ -81,56 +84,57 @@ readonly SERVICE_PID_FILE="${TMP_DIR}/service.pid"
 readonly SERVICE_LOG_FILE="${TMP_DIR}/service.log"
 
 service-setup-command() {
-  if [[ -z "${SAUCE_USERNAME:-}" ]]; then
+  if [[ -z ${SAUCE_USERNAME:-} ]]; then
     @fail "SAUCE_USERNAME environment variable required"
   fi
 
-  if [[ -z "${SAUCE_ACCESS_KEY:-}" ]]; then
+  if [[ -z ${SAUCE_ACCESS_KEY:-} ]]; then
     @fail "SAUCE_ACCESS_KEY environment variable required"
   fi
 
-  if [[ -z "${SAUCE_TUNNEL_IDENTIFIER:-}" ]]; then
+  if [[ -z ${SAUCE_TUNNEL_IDENTIFIER:-} ]]; then
     @fail "SAUCE_TUNNEL_IDENTIFIER environment variable required"
   fi
 
   local unameOut="$(uname -s)"
   case "${unameOut}" in
-      Linux*)     local machine=linux ;;
-      Darwin*)    local machine=darwin ;;
-      CYGWIN*)    local machine=windows ;;
-      MINGW*)     local machine=windows ;;
-      MSYS_NT*)   local machine=windows ;;
-      *)          local machine=linux
-                  printf "\nUnrecongized uname '${unameOut}'; defaulting to use node for linux.\n" >&2
-                  printf "Please file an issue to https://github.com/bazelbuild/rules_nodejs/issues if \n" >&2
-                  printf "you would like to add your platform to the supported rules_nodejs node platforms.\n\n" >&2
-                  ;;
+  Linux*) local machine=linux ;;
+  Darwin*) local machine=darwin ;;
+  CYGWIN*) local machine=windows ;;
+  MINGW*) local machine=windows ;;
+  MSYS_NT*) local machine=windows ;;
+  *)
+    local machine=linux
+    printf "\nUnrecongized uname '${unameOut}'; defaulting to use node for linux.\n" >&2
+    printf "Please file an issue to https://github.com/bazelbuild/rules_nodejs/issues if \n" >&2
+    printf "you would like to add your platform to the supported rules_nodejs node platforms.\n\n" >&2
+    ;;
   esac
 
   case "${machine}" in
-    # Path to sauce connect executable
-    linux)
-      if [[ -z "${BUILD_WORKSPACE_DIRECTORY:-}" ]]; then
-        # Started manually
-        SAUCE_CONNECT="${SCRIPT_DIR}/../../node_modules/sauce-connect/bin/sc"
-      else
-        # Started via `bazel run`
-        SAUCE_CONNECT="${BUILD_WORKSPACE_DIRECTORY}/node_modules/sauce-connect/bin/sc"
-      fi
-      ;;
-    *)
-      if [[ -z "${SAUCE_CONNECT:-}" ]]; then
-        @fail "SAUCE_CONNECT environment variable is required on non-linux environments"
-        exit 1
-      fi
-      ;;
+  # Path to sauce connect executable
+  linux)
+    if [[ -z ${BUILD_WORKSPACE_DIRECTORY:-} ]]; then
+      # Started manually
+      SAUCE_CONNECT="${SCRIPT_DIR}/../../node_modules/sauce-connect/bin/sc"
+    else
+      # Started via `bazel run`
+      SAUCE_CONNECT="${BUILD_WORKSPACE_DIRECTORY}/node_modules/sauce-connect/bin/sc"
+    fi
+    ;;
+  *)
+    if [[ -z ${SAUCE_CONNECT:-} ]]; then
+      @fail "SAUCE_CONNECT environment variable is required on non-linux environments"
+      exit 1
+    fi
+    ;;
   esac
 
   if [[ ! -f ${SAUCE_CONNECT} ]]; then
     @fail "sc binary not found at ${SAUCE_CONNECT}"
   fi
 
-  echo "{ \"SAUCE_USERNAME\": \"${SAUCE_USERNAME}\", \"SAUCE_ACCESS_KEY\": \"${SAUCE_ACCESS_KEY}\", \"SAUCE_TUNNEL_IDENTIFIER\": \"${SAUCE_TUNNEL_IDENTIFIER}\", \"SAUCE_LOCALHOST_ALIAS_DOMAIN\": \"${SAUCE_LOCALHOST_ALIAS_DOMAIN:-}\" }" > ${SAUCE_PARAMS_JSON_FILE}
+  echo "{ \"SAUCE_USERNAME\": \"${SAUCE_USERNAME}\", \"SAUCE_ACCESS_KEY\": \"${SAUCE_ACCESS_KEY}\", \"SAUCE_TUNNEL_IDENTIFIER\": \"${SAUCE_TUNNEL_IDENTIFIER}\", \"SAUCE_LOCALHOST_ALIAS_DOMAIN\": \"${SAUCE_LOCALHOST_ALIAS_DOMAIN:-}\" }" >${SAUCE_PARAMS_JSON_FILE}
 
   # Command arguments that will be passed to sauce-connect.
   # By default we disable SSL bumping for all requests. This is because SSL bumping is
@@ -148,7 +152,7 @@ service-setup-command() {
     # Don't add the --api-key here so we don't echo it out in service-pre-start
   )
 
-  if [[ -n "${SAUCE_LOCALHOST_ALIAS_DOMAIN:-}" ]]; then
+  if [[ -n ${SAUCE_LOCALHOST_ALIAS_DOMAIN:-} ]]; then
     # Ensures that requests to the localhost alias domain are always resolved through the tunnel.
     # This environment variable is usually configured on CI, and refers to a domain that has been
     # locally configured in the current machine's hosts file (e.g. `/etc/hosts`). The domain should
@@ -164,7 +168,7 @@ service-setup-command() {
 
 # Called by pre-start & post-stop
 service-cleanup() {
-  if [[ -f "${SAUCE_PID_FILE}" ]]; then
+  if [[ -f ${SAUCE_PID_FILE} ]]; then
     local p=$(cat "${SAUCE_PID_FILE}")
     @echo "Stopping Sauce Connect (pid $p)..."
     @kill $p
@@ -191,9 +195,9 @@ service-pre-start() {
 
 # Called after service is started
 service-post-start() {
-  if [[ ! -f "${SAUCE_PID_FILE}" ]]; then
+  if [[ ! -f ${SAUCE_PID_FILE} ]]; then
     printf "# Waiting for Sauce Connect Proxy process (${SAUCE_PID_FILE})"
-    while [[ ! -f "${SAUCE_PID_FILE}" ]]; do
+    while [[ ! -f ${SAUCE_PID_FILE} ]]; do
       if ! @serviceStatus >/dev/null 2>&1; then
         printf "\n"
         @serviceStop
@@ -211,7 +215,7 @@ service-post-start() {
 
 # Called if service fails to start
 service-failed-setup() {
-  if [[ -f "${SERVICE_LOG_FILE}" ]]; then
+  if [[ -f ${SERVICE_LOG_FILE} ]]; then
     @echo "tail ${SERVICE_LOG_FILE}:"
     echo "--------------------------------------------------------------------------------"
     tail "${SERVICE_LOG_FILE}"
@@ -222,21 +226,21 @@ service-failed-setup() {
 
 # Called by ready-wait action
 service-ready-wait() {
-  if [[ ! -f "${SAUCE_PID_FILE}" ]]; then
+  if [[ ! -f ${SAUCE_PID_FILE} ]]; then
     @fail "Sauce Connect not running"
   fi
-  if [[ ! -f "${SAUCE_READY_FILE}" ]]; then
+  if [[ ! -f ${SAUCE_READY_FILE} ]]; then
     # Wait for saucelabs tunnel to connect
     printf "# Waiting for saucelabs tunnel to connect (${SAUCE_READY_FILE})"
     counter=0
-    while [[ ! -f "${SAUCE_READY_FILE}" ]]; do
+    while [[ ! -f ${SAUCE_READY_FILE} ]]; do
       counter=$((counter + 1))
 
       # Counter needs to be multiplied by two because the while loop only sleeps a half second.
       # This has been made in favor of better progress logging (printing dots every half second)
-      if [ $counter -gt $[${SAUCE_READY_FILE_TIMEOUT} * 2] ]; then
+      if [ $counter -gt $((SAUCE_READY_FILE_TIMEOUT * 2)) ]; then
         @echo "Timed out after ${SAUCE_READY_FILE_TIMEOUT} seconds waiting for tunnel ready file."
-        if [[ -f "${SAUCE_LOG_FILE}" ]]; then
+        if [[ -f ${SAUCE_LOG_FILE} ]]; then
           echo "================================================================================"
           echo "${SAUCE_LOG_FILE}:"
           cat "${SAUCE_LOG_FILE}"
@@ -272,7 +276,10 @@ service-post-stop() {
   # Check is Lock File exists, if not create it and set trap on exit
   printf "# Waiting for service action lock (${SERVICE_LOCK_FILE})"
   while true; do
-    if { set -C; 2>/dev/null >"${SERVICE_LOCK_FILE}"; }; then
+    if {
+      set -C
+      2>/dev/null >"${SERVICE_LOCK_FILE}"
+    }; then
       trap "rm -f \"${SERVICE_LOCK_FILE}\"" EXIT
       printf "\n"
       break
@@ -315,9 +322,9 @@ service-post-stop() {
   service-pre-setup
   service-setup-command
 
-  (
+  ( 
     (
-      if [[ -z "${SERVICE_COMMAND:-}" ]]; then
+      if [[ -z ${SERVICE_COMMAND:-} ]]; then
         @fail "No SERVICE_COMMAND is set"
       fi
       @wait_for "Waiting for start file" "${SERVICE_START_FILE}"
@@ -344,7 +351,7 @@ service-post-stop() {
   else
     @serviceSetup
   fi
-  if [[ -f "${SERVICE_START_FILE}" ]]; then
+  if [[ -f ${SERVICE_START_FILE} ]]; then
     @echo "Service already started"
   else
     @echo "Starting service..."
@@ -409,51 +416,51 @@ service-post-stop() {
 }
 
 case "${1:-}" in
-  setup)
-    @serviceLock
-    @serviceSetup
-    ;;
-  start)
-    @serviceLock
-    @serviceStart
-    ;;
-  start-ready-wait)
-    @serviceLock
-    @serviceStartReadyWait
-    ;;
-  ready-wait)
-    @serviceLock
-    @serviceReadyWait
-    ;;
-  stop)
-    @serviceLock
-    @serviceStop
-    ;;
-  restart)
-    @serviceLock
-    @serviceRestart
-    ;;
-  status)
-    @serviceLock
-    @serviceStatus
-    ;;
-  run)
-    (
-      service-setup-command
-      if [[ -z "${SERVICE_COMMAND:-}" ]]; then
-        @fail "No SERVICE_COMMAND is set"
-      fi
-      ${SERVICE_COMMAND}
-    )
-    ;;
-  log)
-    @serviceLog
-    ;;
-  tail)
-    @serviceTail
-    ;;
-  *)
-    @echo "Actions: [setup|start|start-read-wait|ready-wait|stop|restart|status|run|tail]"
-    exit 1
-    ;;
+setup)
+  @serviceLock
+  @serviceSetup
+  ;;
+start)
+  @serviceLock
+  @serviceStart
+  ;;
+start-ready-wait)
+  @serviceLock
+  @serviceStartReadyWait
+  ;;
+ready-wait)
+  @serviceLock
+  @serviceReadyWait
+  ;;
+stop)
+  @serviceLock
+  @serviceStop
+  ;;
+restart)
+  @serviceLock
+  @serviceRestart
+  ;;
+status)
+  @serviceLock
+  @serviceStatus
+  ;;
+run)
+  (
+    service-setup-command
+    if [[ -z ${SERVICE_COMMAND:-} ]]; then
+      @fail "No SERVICE_COMMAND is set"
+    fi
+    ${SERVICE_COMMAND}
+  )
+  ;;
+log)
+  @serviceLog
+  ;;
+tail)
+  @serviceTail
+  ;;
+*)
+  @echo "Actions: [setup|start|start-read-wait|ready-wait|stop|restart|status|run|tail]"
+  exit 1
+  ;;
 esac

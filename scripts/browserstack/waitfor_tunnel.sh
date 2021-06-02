@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 # Wait for Connect to be ready before exiting
 # Time out if we wait for more than 2 minutes, so that we can print logs.
 let "counter=0"

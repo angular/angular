@@ -1,7 +1,7 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "karma_web_test_suite", "ts_library")
 load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
+
+package(default_visibility = ["//visibility:public"])
 
 circular_dependency_test(
     name = "circular_deps_test",

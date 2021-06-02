@@ -62,7 +62,7 @@ def ts_api_guardian_test(
         args += ["--allowModuleIdentifiers", i]
 
     if use_angular_tag_rules:
-        args += ["--useAngularTagRules"]
+        args.append("--useAngularTagRules")
 
     nodejs_test(
         name = name,
@@ -126,7 +126,7 @@ def ts_api_guardian_test_npm_package(
         args += ["--allowModuleIdentifiers", i]
 
     if use_angular_tag_rules:
-        args += ["--useAngularTagRules"]
+        args.append("--useAngularTagRules")
 
     nodejs_test(
         name = name,

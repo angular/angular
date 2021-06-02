@@ -10,7 +10,7 @@ ngc
 cp -r src/* built/src
 
 # Bundle the server which hosts all the server side apps.
-webpack  --config webpack.server.config.js
+webpack --config webpack.server.config.js
 
 # Bundle the clients into individual bundles.
-webpack  --config webpack.client.config.js
+webpack --config webpack.client.config.js

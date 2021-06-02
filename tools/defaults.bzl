@@ -366,14 +366,14 @@ def jasmine_node_test(bootstrap = [], **kwargs):
     # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
     templated_args = ["--bazel_patch_module_resolver"] + kwargs.pop("templated_args", [])
     for label in bootstrap:
-        deps += [label]
-        templated_args += ["--node_options=--require=$$(rlocation $(rootpath %s))" % label]
+        deps.append(label)
+        templated_args.append("--node_options=--require=$$(rlocation $(rootpath %s))" % label)
         if label.endswith("_es5"):
             # If this label is a filegroup derived from a ts_library then automatically
             # add the ts_library target (which is the label sans `_es5`) to deps so we pull
             # in all of its transitive deps. This removes the need for duplicate deps on the
             # target and makes the usage of this rule less verbose.
-            deps += [label[:-4]]
+            deps.append(label[:-4])
 
     _jasmine_node_test(
         deps = deps,

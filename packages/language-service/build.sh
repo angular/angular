@@ -8,7 +8,7 @@ set -ex
 readonly bazel_bin=$(yarn run -s bazel info bazel-bin)
 readonly extension_repo="$1"
 
-if [[ -z "${extension_repo}" ]]; then
+if [[ -z ${extension_repo} ]]; then
   echo "Please provide path to the vscode-ng-language-service repo"
   exit 1
 fi

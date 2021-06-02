@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "pkg_npm", "ts_config", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
 
 ts_config(
     name = "tsconfig",

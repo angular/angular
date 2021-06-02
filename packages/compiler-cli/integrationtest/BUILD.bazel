@@ -1,7 +1,7 @@
-package(default_visibility = ["//visibility:public"])
-
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_test")
 load("//tools:defaults.bzl", "nodejs_binary")
+
+package(default_visibility = ["//visibility:public"])
 
 nodejs_binary(
     name = "ngc_bin",

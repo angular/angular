@@ -11,7 +11,7 @@ echo -e "
 |\_/|      \_________________/
 \___/
 
-A new merge script is available using `ng-dev`!
+A new merge script is available using $(ng-dev)!
 
 To merge a pr using the new tooling run:
 
