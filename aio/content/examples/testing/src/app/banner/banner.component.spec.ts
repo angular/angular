@@ -1,7 +1,6 @@
 // #docplaster
 // #docregion
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { DebugElement } from '@angular/core';
 
 import { BannerComponent } from './banner.component';
 

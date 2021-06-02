@@ -1,5 +1,5 @@
 // #docplaster
-import { ComponentFixture, inject, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { addMatchers, asyncData, click } from '../../testing';
 import { HeroService } from '../model/hero.service';
