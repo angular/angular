@@ -45,7 +45,7 @@ export class GithubClient {
   /** The graphql instance with authentication set during construction. */
   private _graphql = graphql.defaults({headers: {authorization: `token ${this.token}`}});
   /** The Octokit instance actually performing API requests. */
-  private _octokit = new Octokit({token: this.token});
+  private _octokit = new Octokit({auth: this.token});
 
   /**
    * @param token The github authentication token for Github Rest and Graphql API requests.
