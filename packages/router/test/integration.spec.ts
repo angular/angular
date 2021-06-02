@@ -5647,6 +5647,17 @@ describe('Integration', () => {
       }
     }
 
+    it('should be injectable', () => {
+      TestBed.configureTestingModule({
+        imports: [RouterTestingModule],
+        providers: [{provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy}]
+      });
+
+      const router = TestBed.inject(Router);
+
+      expect(router.routeReuseStrategy).toBeInstanceOf(AttachDetachReuseStrategy);
+    });
+
     it('should support attaching & detaching fragments',
        fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
          const fixture = createRoot(router, RootCmp);
