@@ -1843,7 +1843,7 @@ const parseOptions = {
     headerPattern,
     headerCorrespondence,
     noteKeywords: [NoteSections.BREAKING_CHANGE, NoteSections.DEPRECATED],
-    notesPattern: (keywords) => new RegExp(`(${keywords}): ?(.*)`),
+    notesPattern: (keywords) => new RegExp(`^\s*(${keywords}): ?(.*)`),
 };
 /** Parse a commit message into its composite parts. */
 const parseCommitMessage = parseInternal;
