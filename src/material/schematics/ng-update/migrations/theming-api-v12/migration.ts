@@ -207,6 +207,12 @@ function renameSymbols(content: string,
 /** Inserts an `@use` statement in a string. */
 function insertUseStatement(content: string, importPath: string, importsToIgnore: string[],
                             namespace: string): string {
+  // If the content already has the `@use` import, we don't need to add anything.
+  const alreadyImportedPattern = new RegExp(`@use +['"]${importPath}['"]`, 'g');
+  if (alreadyImportedPattern.test(content)) {
+    return content;
+  }
+
   // We want to find the first import that isn't in the list of ignored imports or find nothing,
   // because the imports being replaced might be the only ones in the file and they can be further
   // down. An easy way to do this is to replace the imports with a random character and run

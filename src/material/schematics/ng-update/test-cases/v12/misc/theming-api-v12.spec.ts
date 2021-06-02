@@ -737,4 +737,21 @@ describe('v12 theming API migration', () => {
       `@include mat.core();`,
     ]);
   });
+
+  it('should not add duplicate @use statements', async () => {
+    writeLines(THEME_PATH, [
+      `@use '~@angular/material' as mat;`,
+      `@import '~@angular/material/theming';`,
+      `$something: mat.$red-palette;`,
+      `$another: $mat-pink;`,
+    ]);
+
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
+      `@use '~@angular/material' as mat;`,
+      `$something: mat.$red-palette;`,
+      `$another: mat.$pink-palette;`,
+    ]);
+  });
 });
