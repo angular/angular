@@ -205,7 +205,7 @@ describe('MDC-based MatSelectionList without forms', () => {
       dispatchMouseEvent(testListItem._hostElement, 'click');
       fixture.detectChanges();
 
-      expect(listOptions[2].nativeElement.classList.contains('mdc-deprecated-list-item--selected'))
+      expect(listOptions[2].nativeElement.classList.contains('mdc-list-item--selected'))
         .toBe(false);
     });
 
@@ -522,7 +522,7 @@ describe('MDC-based MatSelectionList without forms', () => {
     it('should disable list item ripples when the ripples on the list have been disabled',
       fakeAsync(() => {
         const rippleTarget = fixture.nativeElement
-          .querySelector('.mat-mdc-list-option:not(.mdc-deprecated-list-item--disabled)');
+          .querySelector('.mat-mdc-list-option:not(.mdc-list-item--disabled)');
         const {enterDuration, exitDuration} = defaultRippleAnimationConfig;
 
         dispatchMouseEvent(rippleTarget, 'mousedown');
@@ -649,12 +649,12 @@ describe('MDC-based MatSelectionList without forms', () => {
     });
 
     it('should apply the "mat-list-item-disabled" class properly', () => {
-      expect(listOptionEl.classList).not.toContain('mdc-deprecated-list-item--disabled');
+      expect(listOptionEl.classList).not.toContain('mdc-list-item--disabled');
 
       fixture.componentInstance.disableItem = true;
       fixture.detectChanges();
 
-      expect(listOptionEl.classList).toContain('mdc-deprecated-list-item--disabled');
+      expect(listOptionEl.classList).toContain('mdc-list-item--disabled');
     });
   });
 
@@ -734,10 +734,10 @@ describe('MDC-based MatSelectionList without forms', () => {
     }));
 
     it('should be able to customize checkbox position', () => {
-      expect(fixture.nativeElement.querySelector('.mdc-deprecated-list-item__meta .mdc-checkbox'))
+      expect(fixture.nativeElement.querySelector('.mdc-list-item__end .mdc-checkbox'))
         .toBeTruthy('Expected checkbox to show up after content.');
       expect(
-        fixture.nativeElement.querySelector('.mdc-deprecated-list-item__graphic .mdc-checkbox')
+        fixture.nativeElement.querySelector('.mdc-list-item__start .mdc-checkbox')
       )
         .toBeFalsy('Expected no checkbox to show up before content.');
     });
@@ -757,17 +757,62 @@ describe('MDC-based MatSelectionList without forms', () => {
     function expectCheckboxAtPosition(listItemElement: HTMLElement,
                               position: MatListOptionCheckboxPosition) {
       const containerSelector = position === 'before' ?
-          '.mdc-deprecated-list-item__graphic' : 'mdc-deprecated-list-item__meta';
+          '.mdc-list-item__start' : 'mdc-list-item__end';
+      const checkboxPositionClass = position === 'before' ?
+          'mdc-list-item--with-leading-checkbox' : 'mdc-list-item--with-trailing-checkbox';
       expect(listItemElement.querySelector(`${containerSelector} .mdc-checkbox`))
           .toBeDefined(`Expected checkbox to be aligned ${position}`);
+      expect(listItemElement.classList).toContain(checkboxPositionClass);
+    }
+
+    /**
+     * Expects an icon to be shown at the given position. Also
+     * ensures no avatar is shown at the specified position.
+     */
+    function expectIconAt(item: HTMLElement, position: 'before'|'after') {
+      const icon = item.querySelector('.mat-mdc-list-icon')!;
+
+      expect(item.classList).not.toContain('mdc-list-item--with-leading-avatar');
+      expect(item.classList).not.toContain('mat-mdc-list-option-with-trailing-avatar');
+
+      if (position === 'before') {
+        expect(icon.classList).toContain('mdc-list-item__start');
+        expect(item.classList).toContain('mdc-list-item--with-leading-icon');
+        expect(item.classList).not.toContain('mdc-list-item--with-trailing-icon');
+      } else {
+        expect(icon.classList).toContain('mdc-list-item__end');
+        expect(item.classList).toContain('mdc-list-item--with-trailing-icon');
+        expect(item.classList).not.toContain('mdc-list-item--with-leading-icon');
+      }
+    }
+
+    /**
+     * Expects an avatar to be shown at the given position. Also
+     * ensures that no icon is shown at the specified position.
+     */
+    function expectAvatarAt(item: HTMLElement, position: 'before'|'after') {
+      const avatar = item.querySelector('.mat-mdc-list-avatar')!;
+
+      expect(item.classList).not.toContain('mdc-list-item--with-leading-icon');
+      expect(item.classList).not.toContain('mdc-list-item--with-trailing-icon');
+
+      if (position === 'before') {
+        expect(avatar.classList).toContain('mdc-list-item__start');
+        expect(item.classList).toContain('mdc-list-item--with-leading-avatar');
+        expect(item.classList).not.toContain('mat-mdc-list-option-with-trailing-avatar');
+      } else {
+        expect(avatar.classList).toContain('mdc-list-item__end');
+        expect(item.classList).toContain('mat-mdc-list-option-with-trailing-avatar');
+        expect(item.classList).not.toContain('mdc-list-item--with-leading-avatar');
+      }
     }
 
     it('should add a class to reflect that it has an avatar', () => {
-      const fixture = TestBed.createComponent(SelectionListWithIcon);
+      const fixture = TestBed.createComponent(SelectionListWithAvatar);
       fixture.detectChanges();
 
       const listOption = fixture.nativeElement.querySelector('.mat-mdc-list-option');
-      expect(listOption.classList).toContain('mat-mdc-list-item-with-avatar');
+      expect(listOption.classList).toContain('mdc-list-item--with-leading-avatar');
     });
 
     it('should add a class to reflect that it has an icon', () => {
@@ -775,7 +820,7 @@ describe('MDC-based MatSelectionList without forms', () => {
       fixture.detectChanges();
 
       const listOption = fixture.nativeElement.querySelector('.mat-mdc-list-option');
-      expect(listOption.classList).toContain('mat-mdc-list-item-with-avatar');
+      expect(listOption.classList).toContain('mdc-list-item--with-leading-icon');
     });
 
     it('should align icons properly together with checkbox', () => {
@@ -783,20 +828,19 @@ describe('MDC-based MatSelectionList without forms', () => {
       fixture.detectChanges();
       const listOption = fixture.nativeElement
         .querySelector('.mat-mdc-list-option')! as HTMLElement;
-      const icon = listOption.querySelector('.mat-mdc-list-icon')!;
 
       expectCheckboxAtPosition(listOption, 'after');
-      expect(icon.classList).toContain('mdc-deprecated-list-item__graphic');
+      expectIconAt(listOption, 'before');
 
       fixture.componentInstance.checkboxPosition = 'before';
       fixture.detectChanges();
       expectCheckboxAtPosition(listOption, 'before');
-      expect(icon.classList).toContain('mdc-deprecated-list-item__meta');
+      expectIconAt(listOption, 'after');
 
       fixture.componentInstance.checkboxPosition = 'after';
       fixture.detectChanges();
       expectCheckboxAtPosition(listOption, 'after');
-      expect(icon.classList).toContain('mdc-deprecated-list-item__graphic');
+      expectIconAt(listOption, 'before');
     });
 
     it('should align avatars properly together with checkbox', () => {
@@ -804,20 +848,19 @@ describe('MDC-based MatSelectionList without forms', () => {
       fixture.detectChanges();
       const listOption = fixture.nativeElement
           .querySelector('.mat-mdc-list-option')! as HTMLElement;
-      const avatar = listOption.querySelector('.mat-mdc-list-avatar')!;
 
       expectCheckboxAtPosition(listOption, 'after');
-      expect(avatar.classList).toContain('mdc-deprecated-list-item__graphic');
+      expectAvatarAt(listOption, 'before');
 
       fixture.componentInstance.checkboxPosition = 'before';
       fixture.detectChanges();
-      expect(avatar.classList).toContain('mdc-deprecated-list-item__meta');
       expectCheckboxAtPosition(listOption, 'before');
+      expectAvatarAt(listOption, 'after');
 
       fixture.componentInstance.checkboxPosition = 'after';
       fixture.detectChanges();
-      expect(avatar.classList).toContain('mdc-deprecated-list-item__graphic');
       expectCheckboxAtPosition(listOption, 'after');
+      expectAvatarAt(listOption, 'before');
     });
   });
 
@@ -857,16 +900,16 @@ describe('MDC-based MatSelectionList without forms', () => {
       fixture.detectChanges();
 
       expect(selectList.selected).toEqual([testListItem1]);
-      expect(listOptions[1].nativeElement.classList.contains('mdc-deprecated-list-item--selected'))
+      expect(listOptions[1].nativeElement.classList.contains('mdc-list-item--selected'))
         .toBe(true);
 
       dispatchMouseEvent(testListItem2._hostElement, 'click');
       fixture.detectChanges();
 
       expect(selectList.selected).toEqual([testListItem2]);
-      expect(listOptions[1].nativeElement.classList.contains('mdc-deprecated-list-item--selected'))
+      expect(listOptions[1].nativeElement.classList.contains('mdc-list-item--selected'))
         .toBe(false);
-      expect(listOptions[2].nativeElement.classList.contains('mdc-deprecated-list-item--selected'))
+      expect(listOptions[2].nativeElement.classList.contains('mdc-list-item--selected'))
         .toBe(true);
     });
 

@@ -35,13 +35,13 @@ export class ListDemo {
       from: 'Nancy',
       subject: 'Brunch?',
       message: 'Did you want to go on Sunday? I was thinking that might work.',
-      image: 'https://angular.io/generated/images/bios/julie-ralph.jpg'
+      image: 'https://angular.io/generated/images/bios/cindygreenekaplan.jpg'
     },
     {
       from: 'Mary',
       subject: 'Summer BBQ',
       message: 'Wish I could come, but I have some prior obligations.',
-      image: 'https://angular.io/generated/images/bios/juleskremer.jpg'
+      image: 'https://angular.io/generated/images/bios/twerske.jpg'
     },
     {
       from: 'Bobby',

@@ -1,80 +1,13 @@
-@use '@material/list' as mdc-list;
+@use '@material/list/evolution-mixins' as mdc-list;
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/style/layout-common';
-@use '../../cdk/a11y';
 
-@include mdc-list.deprecated-without-ripple($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-list.without-ripple($query: mdc-helpers.$mat-base-styles-query);
 
 // MDC expects the list element to be a `<ul>`, since we use `<mat-list>` instead we need to
 // explicitly set `display: block`
 .mat-mdc-list-base {
   display: block;
-}
-
-// .mdc-deprecated-list-item__primary-text adds its own margin settings, so only reset if it doesn't
-// have that class
-.mat-mdc-list-base .mdc-deprecated-list-item__text > :not(.mdc-deprecated-list-item__primary-text),
-.mat-mdc-list-base .mdc-deprecated-list-item__text > :not(.mdc-deprecated-list-item__primary-text) {
-  margin: 0;
-
-  // Fixes the gap between the 2nd & 3rd lines.
-  &.mdc-deprecated-list-item__secondary-text {
-    margin-top: -3px;
-  }
-}
-
-
-// MDC does have 2-line support, but it's a per-list setting, whereas ours applies to individual
-// items. Therefore, we need to add our own styles.
-.mat-mdc-2-line {
-  height: 72px;
-
-  .mdc-deprecated-list-item__text {
-    align-self: flex-start;
-  }
-}
-
-// MDC does not support more than 2 lines, so we need to add our own styles.
-.mat-mdc-3-line {
-  height: 88px;
-
-  .mdc-deprecated-list-item__text {
-    align-self: flex-start;
-  }
-}
-
-// MDC supports avatars, but it's a per-list setting, whereas ours applies to individual
-// items. Therefore, we need to add our own styles.
-.mat-mdc-list-avatar {
-  // Styles here come from `mdc-list.$graphic-size_`:
-  // https://github.com/material-components/material-components-web/blob/3ca8c4c45a3d2a654ef3cb8fc7525bcde37badf0/packages/mdc-list/_mixins.scss#L538
-  $size: 40px;
-  $margin-value: 72px - mdc-list.$deprecated-side-padding - $size;
-
-  width: $size;
-  height: $size;
-  border-radius: 50%;
-
-  // Avatars that come before the text have the .mdc-deprecated-list-item__graphic class.
-  // MDC's .mdc-deprecated-list--avatar-list class would normally apply overrides to set the
-  // appropriate margins for avatar images, but since ours is a per-list-item setting we need to add
-  // similar styles ourselves.
-  &.mdc-deprecated-list-item__graphic {
-    margin-left: 0;
-    margin-right: $margin-value;
-
-    [dir='rtl'] & {
-      margin-left: $margin-value;
-      margin-right: 0;
-    }
-  }
-}
-
-.mat-mdc-list-avatar {
-  // MDC's styles don't specify this, but they probably should. It gives a nicer experience when the
-  // image is not 1:1 aspect ratio.
-  // See https://github.com/material-components/material-components-web/issues/5897
-  object-fit: cover;
 }
 
 // MDC expects that the list items are always `<li>`, since we actually use `<button>` in some
@@ -86,6 +19,7 @@
 }
 
 // MDC doesn't have list dividers, so we use mat-divider and style appropriately.
+// TODO(devversion): check if we can use the MDC dividers.
 .mat-mdc-list-item,
 .mat-mdc-list-option {
   .mat-divider-inset {
@@ -114,7 +48,7 @@
 
 // MDC always sets the cursor to `pointer`. We do not want to show this for non-interactive
 // lists. See: https://github.com/material-components/material-components-web/issues/6443
-.mat-mdc-list-non-interactive .mdc-deprecated-list-item {
+.mat-mdc-list-non-interactive .mdc-list-item {
   cursor: default;
 }
 
@@ -126,34 +60,12 @@
   pointer-events: none;
 }
 
-
-@include a11y.high-contrast(active, off) {
-  .mat-mdc-list-option,
-  .mat-mdc-nav-list .mat-mdc-list-item,
-  .mat-mdc-action-list .mat-mdc-list-item {
-    &:hover, &:focus {
-      outline: dotted 1px;
-    }
-  }
-
-  // In single selection mode, the selected option is indicated by changing its
-  // background color, but that doesn't work in high contrast mode. We add an
-  // alternate indication by rendering out a circle.
-  .mat-mdc-list-option.mdc-list-item--selected::after {
-    $size: 10px;
-    content: '';
-    position: absolute;
-    top: 50%;
-    right: mdc-list.$deprecated-side-padding;
-    transform: translateY(-50%);
-    width: $size;
-    height: 0;
-    border-bottom: solid $size;
-    border-radius: $size;
-  }
-
-  [dir='rtl'] .mat-mdc-list-option.mdc-list-item--selected::after {
-    right: auto;
-    left: mdc-list.$deprecated-side-padding;
-  }
+// If there are projected lines, we project any remaining content into the list-item's end
+// container and set the `--with-trailing-meta` class. If this container is empty due to no
+// projected content though, we want to hide the element because otherwise the empty container
+// would take up horizontal space. There is no good way to check for remaining projected content
+// in the template, so we just use CSS with the `:empty` selector. Note that we need increased
+// specificity here because MDC overrides the `display` with the `--trailing-meta` class too.
+.mat-mdc-list-item.mdc-list-item--with-trailing-meta > .mdc-list-item__end:empty {
+  display: none;
 }

@@ -60,7 +60,7 @@ export class MatSelectionListChange {
   selector: 'mat-selection-list',
   exportAs: 'matSelectionList',
   host: {
-    'class': 'mat-mdc-selection-list mat-mdc-list-base mdc-deprecated-list',
+    'class': 'mat-mdc-selection-list mat-mdc-list-base mdc-list',
     'role': 'listbox',
     '[attr.aria-multiselectable]': 'multiple',
   },

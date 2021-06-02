@@ -88,7 +88,7 @@ export class MatListOptionHarness extends MatListItemHarnessBase {
   }
 
   private _beforeCheckbox =
-      this.locatorForOptional('.mdc-deprecated-list-item__graphic .mdc-checkbox');
+      this.locatorForOptional('.mdc-list-item__start .mdc-checkbox');
 
   /** Gets the position of the checkbox relative to the list option content. */
   async getCheckboxPosition(): Promise<MatListOptionCheckboxPosition> {

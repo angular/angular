@@ -27,10 +27,10 @@ describe('MDC-based MatList', () => {
     const fixture = TestBed.createComponent(ListWithOneItem);
     const listItem = fixture.debugElement.query(By.css('mat-list-item'))!;
     fixture.detectChanges();
-    expect(listItem.nativeElement.classList.length).toBe(3);
     expect(listItem.nativeElement.classList).toContain('mat-mdc-list-item');
-    expect(listItem.nativeElement.classList).toContain('mdc-deprecated-list-item');
+    expect(listItem.nativeElement.classList).toContain('mdc-list-item');
     expect(listItem.nativeElement.classList).toContain('mat-mdc-list-item-single-line');
+    expect(listItem.nativeElement.classList).toContain('mdc-list-item--with-one-line');
   });
 
   it('should apply a particular class to lists with two lines', () => {
@@ -65,8 +65,10 @@ describe('MDC-based MatList', () => {
     fixture.detectChanges();
 
     const listItems = fixture.debugElement.children[0].queryAll(By.css('mat-list-item'));
-    expect(listItems[0].nativeElement.className).toContain('mat-mdc-list-item-with-avatar');
-    expect(listItems[1].nativeElement.className).not.toContain('mat-mdc-list-item-with-avatar');
+    expect(listItems[0].nativeElement.className).
+      toContain('mdc-list-item--with-leading-avatar');
+    expect(listItems[1].nativeElement.className).
+      not.toContain('mdc-list-item--with-leading-avatar');
   });
 
   it('should have a strong focus indicator configured for all list-items', () => {
@@ -93,14 +95,15 @@ describe('MDC-based MatList', () => {
     fixture.detectChanges();
 
     const listItem = fixture.debugElement.children[0].query(By.css('mat-list-item'))!;
-    expect(listItem.nativeElement.classList.length).toBe(3);
+    expect(listItem.nativeElement.classList).toContain('mdc-list-item--with-two-lines');
     expect(listItem.nativeElement.classList).toContain('mat-mdc-2-line');
     expect(listItem.nativeElement.classList).toContain('mat-mdc-list-item');
-    expect(listItem.nativeElement.classList).toContain('mdc-deprecated-list-item');
+    expect(listItem.nativeElement.classList).toContain('mdc-list-item');
 
     fixture.debugElement.componentInstance.showThirdLine = true;
     fixture.detectChanges();
     expect(listItem.nativeElement.className).toContain('mat-mdc-3-line');
+    expect(listItem.nativeElement.className).toContain('mdc-list-item--with-three-lines');
   });
 
   it('should add aria roles properly', () => {
@@ -302,14 +305,14 @@ describe('MDC-based MatList', () => {
     fixture.detectChanges();
 
     expect(listItems.map(item => {
-      return item.classList.contains('mdc-deprecated-list-item--disabled');
+      return item.classList.contains('mdc-list-item--disabled');
     })).toEqual([false, false, false]);
 
     fixture.componentInstance.firstItemDisabled = true;
     fixture.detectChanges();
 
     expect(listItems.map(item => {
-      return item.classList.contains('mdc-deprecated-list-item--disabled');
+      return item.classList.contains('mdc-list-item--disabled');
     })).toEqual([true, false, false]);
   });
 
@@ -320,13 +323,13 @@ describe('MDC-based MatList', () => {
     fixture.detectChanges();
 
     expect(listItems.every(item =>
-        item.classList.contains('mdc-deprecated-list-item--disabled'))).toBe(false);
+        item.classList.contains('mdc-list-item--disabled'))).toBe(false);
 
     fixture.componentInstance.listDisabled = true;
     fixture.detectChanges();
 
     expect(listItems.every(item =>
-        item.classList.contains('mdc-deprecated-list-item--disabled'))).toBe(true);
+        item.classList.contains('mdc-list-item--disabled'))).toBe(true);
   });
 
 });

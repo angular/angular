@@ -65,7 +65,6 @@ export abstract class MatListItemBase implements AfterContentInit, OnDestroy, Ri
   private _disableRipple: boolean = false;
 
   /** Whether the list-item is disabled. */
-  @HostBinding('class.mdc-deprecated-list-item--disabled')
   @HostBinding('class.mdc-list-item--disabled')
   @HostBinding('attr.aria-disabled')
   @Input()
@@ -155,11 +154,17 @@ export abstract class MatListItemBase implements AfterContentInit, OnDestroy, Ri
       this._subscriptions.add(this.lines.changes.pipe(startWith(this.lines))
           .subscribe((lines: QueryList<ElementRef<Element>>) => {
             toggleClass(this._hostElement, 'mat-mdc-list-item-single-line', lines.length <= 1);
+            toggleClass(this._hostElement, 'mdc-list-item--with-one-line', lines.length <= 1);
+
             lines.forEach((line: ElementRef<Element>, index: number) => {
-              toggleClass(line.nativeElement,
-                  'mdc-deprecated-list-item__primary-text', index === 0 && lines.length > 1);
               toggleClass(
-                  line.nativeElement, 'mdc-deprecated-list-item__secondary-text', index !== 0);
+                this._hostElement, 'mdc-list-item--with-two-lines', lines.length === 2);
+              toggleClass(
+                this._hostElement, 'mdc-list-item--with-three-lines', lines.length === 3);
+              toggleClass(line.nativeElement,
+                  'mdc-list-item__primary-text', index === 0 && lines.length > 1);
+              toggleClass(
+                  line.nativeElement, 'mdc-list-item__secondary-text', index !== 0);
             });
             setLines(lines, this._elementRef, 'mat-mdc');
           }));

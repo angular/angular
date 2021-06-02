@@ -1,41 +1,27 @@
-@use '@material/theme/theme' as mdc-theme;
 @use '@material/checkbox' as mdc-checkbox;
-@use '@material/list' as mdc-list;
 @use '../mdc-checkbox/checkbox-theme';
 @use '../mdc-helpers/mdc-helpers';
-
+@use './list-option-trailing-avatar-compat';
 
 // Mixin that overrides the selected item and checkbox colors for list options. By
 // default, the MDC list uses the `primary` color for list items. The MDC checkbox
 // inside list options by default uses the `primary` color too.
 @mixin private-list-option-color-override($color) {
-  & .mdc-deprecated-list-item__meta, & .mdc-deprecated-list-item__graphic {
+  & .mdc-list-item__start, & .mdc-list-item__end {
     @include checkbox-theme.private-checkbox-styles-with-color($color);
-  }
-
-  &.mdc-deprecated-list-item--selected {
-    @include mdc-list.deprecated-item-primary-text-ink-color($color);
-    @include mdc-list.deprecated-item-graphic-ink-color($color);
-
-    &::before {
-      @include mdc-theme.prop(background, $color);
-    }
   }
 }
 
 @mixin private-list-option-density-styles($density-scale) {
-  .mat-mdc-list-option {
-    .mdc-deprecated-list-item__meta, .mdc-deprecated-list-item__graphic {
-      .mdc-checkbox {
-        @include mdc-checkbox.density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
-      }
-    }
-  }
+  @include list-option-trailing-avatar-compat.density-styles($density-scale);
 }
 
 @mixin private-list-option-typography-styles() {
+  @include list-option-trailing-avatar-compat.core-styles(
+      $query: mdc-helpers.$mat-typography-styles-query);
+
   .mat-mdc-list-option {
-    .mdc-deprecated-list-item__meta, .mdc-deprecated-list-item__graphic {
+    .mdc-list-item__start, .mdc-list-item__end {
       @include mdc-checkbox.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
     }
   }

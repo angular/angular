@@ -62,12 +62,21 @@ export interface SelectionList extends MatListBase {
   exportAs: 'matListOption',
   styleUrls: ['list-option.css'],
   host: {
-    'class': 'mat-mdc-list-item mat-mdc-list-option mdc-deprecated-list-item',
+    'class': 'mat-mdc-list-item mat-mdc-list-option mdc-list-item',
     'role': 'option',
     // As per MDC, only list items in single selection mode should receive the `--selected`
     // class. For multi selection, the checkbox is used as indicator.
-    '[class.mdc-deprecated-list-item--selected]': 'selected && !_selectionList.multiple',
-    '[class.mat-mdc-list-item-with-avatar]': '_hasIconOrAvatar()',
+    '[class.mdc-list-item--selected]': 'selected && !_selectionList.multiple',
+    // Based on the checkbox position and whether there are icons or avatars, we apply MDC's
+    // list-item `--leading` and `--trailing` classes.
+    '[class.mdc-list-item--with-leading-avatar]': '_hasProjected("avatars", "before")',
+    '[class.mdc-list-item--with-leading-icon]': '_hasProjected("icons", "before")',
+    '[class.mdc-list-item--with-trailing-icon]': '_hasProjected("icons", "after")',
+    '[class.mat-mdc-list-option-with-trailing-avatar]': '_hasProjected("avatars", "after")',
+    // Based on the checkbox position, we apply the `--leading` or `--trailing` MDC classes
+    // which ensure that the checkbox is positioned correctly within the list item.
+    '[class.mdc-list-item--with-leading-checkbox]': '_hasCheckboxAt("before")',
+    '[class.mdc-list-item--with-trailing-checkbox]': '_hasCheckboxAt("after")',
     '[class.mat-accent]': 'color !== "primary" && color !== "warn"',
     '[class.mat-warn]': 'color === "warn"',
     '(blur)': '_handleBlur()',
@@ -188,14 +197,22 @@ export class MatListOption extends MatListItemBase implements ListOption, OnInit
     this._hostElement.focus();
   }
 
-  /** Whether the checkbox should be shown at the given position. */
-  _shouldShowCheckboxAt(position: MatListOptionCheckboxPosition): boolean {
+  /** Whether a checkbox is shown at the given position. */
+  _hasCheckboxAt(position: MatListOptionCheckboxPosition): boolean {
     return this._selectionList.multiple && this._getCheckboxPosition() === position;
   }
 
-  /** Whether icons and avatars should be shown at the given position. */
-  _shouldShowIconsAndAvatarsAt(position: 'before'|'after'): boolean {
-    return this._getCheckboxPosition() !== position && this._hasIconOrAvatar();
+  /** Whether icons or avatars are shown at the given position. */
+  _hasIconsOrAvatarsAt(position: 'before'|'after'): boolean {
+    return this._hasProjected('icons', position) || this._hasProjected('avatars', position);
+  }
+
+  /** Gets whether the given type of element is projected at the specified position. */
+  _hasProjected(type: 'icons'|'avatars', position: 'before'|'after'): boolean {
+    // If the checkbox is shown at the specified position, neither icons or
+    // avatars can be shown at the position.
+    return this._getCheckboxPosition() !== position &&
+      (type === 'avatars' ? this._avatars.length !== 0 : this._icons.length !== 0);
   }
 
   _handleBlur() {

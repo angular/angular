@@ -31,7 +31,7 @@ import {MatListBase, MatListItemBase} from './list-base';
   exportAs: 'matList',
   template: '<ng-content></ng-content>',
   host: {
-    'class': 'mat-mdc-list mat-mdc-list-base mdc-deprecated-list',
+    'class': 'mat-mdc-list mat-mdc-list-base mdc-list',
   },
   styleUrls: ['list.css'],
   encapsulation: ViewEncapsulation.None,
@@ -46,8 +46,14 @@ export class MatList extends MatListBase {}
   selector: 'mat-list-item, a[mat-list-item], button[mat-list-item]',
   exportAs: 'matListItem',
   host: {
-    'class': 'mat-mdc-list-item mdc-deprecated-list-item',
-    '[class.mat-mdc-list-item-with-avatar]': '_hasIconOrAvatar()',
+    'class': 'mat-mdc-list-item mdc-list-item',
+    '[class.mdc-list-item--with-leading-avatar]': '_avatars.length !== 0',
+    '[class.mdc-list-item--with-leading-icon]': '_icons.length !== 0',
+    // If there are projected lines, we project the remaining content into the `mdc-list-item__end`
+    // container. In order to make sure the container aligns properly (if there is content), we add
+    // the trailing meta class. Note that we also add this even if there is no projected `meta`
+    // content. This is because there is no good way to check for remaining projected content.
+    '[class.mdc-list-item--with-trailing-meta]': 'lines.length !== 0',
   },
   templateUrl: 'list-item.html',
   encapsulation: ViewEncapsulation.None,
