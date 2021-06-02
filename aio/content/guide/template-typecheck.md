@@ -110,7 +110,7 @@ In case of a false positive like these, there are a few options:
 * Use the [`$any()` type-cast function](guide/template-expression-operators#any-type-cast-function) in certain contexts to opt out of type-checking for a part of the expression.
 * You can disable strict checks entirely by setting [`strictTemplates`](guide/angular-compiler-options#stricttemplates) to `false` in the application's TypeScript configuration file, `tsconfig.json`.
 * You can disable certain type-checking operations individually, while maintaining strictness in other aspects, by setting one or multiple [fine-grained strictness flags](guide/angular-compiler-options#) to `false`.
-* If you want to use [`strictTemplates`](guide/angular-compiler-options#stricttemplates) and[`strictNullChecks`](https://www.typescriptlang.org/tsconfig#strictNullChecks) together, you can opt out of strict null type checking specifically for input bindings via the fine-grained strictness flag [`strictNullInputTypes`](guide/angular-compiler-options#stricttemplates).
+* If you want to use [`strictTemplates`](guide/angular-compiler-options#stricttemplates) and [`strictNullChecks`](https://www.typescriptlang.org/tsconfig#strictNullChecks) together, you can opt out of strict null type checking specifically for input bindings via the fine-grained strictness flag [`strictNullInputTypes`](guide/angular-compiler-options#stricttemplates).
 
 If that doesn't work, you have two options of last resort:
 * Fall back to full mode by disabling [`strictTemplates`](guide/angular-compiler-options#stricttemplates).
