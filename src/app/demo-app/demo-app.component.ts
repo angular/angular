@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ZippyComponent } from './zippy/zippy.component';
 
 @Component({
@@ -10,6 +10,12 @@ import { ZippyComponent } from './zippy/zippy.component';
 export class DemoAppComponent {
   @ViewChild(ZippyComponent) zippy: ZippyComponent;
   @ViewChild('elementReference') elementRef: ElementRef;
+
+  @Input('input_one') inputOne = 'input one';
+  @Input() inputTwo = 'input two';
+
+  @Output() outputOne = new EventEmitter();
+  @Output('output_two') outputTwo = new EventEmitter();
 
   getTitle(): '► Click to expand' | '▼ Click to collapse' {
     if (!this.zippy || !this.zippy.visible) {
