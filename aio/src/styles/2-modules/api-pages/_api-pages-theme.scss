@@ -1,5 +1,4 @@
 @use '../../constants';
-@import '~@angular/material/theming';
 
 @mixin api-pages-theme($theme) {
   .api-body {

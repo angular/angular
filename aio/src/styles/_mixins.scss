@@ -1,3 +1,5 @@
+@use 'sass:list';
+@use 'sass:selector';
 @use './constants';
 
 // REM Font Adjustments
@@ -127,7 +129,7 @@
   );
 
   @if $nestParentSelector and & {
-    @at-root #{selector-nest(#{$selectors}, &)} {
+    @at-root #{selector.nest(#{$selectors}, &)} {
       @content;
     }
   } @else {
@@ -179,10 +181,10 @@
     '.page-presskit',
     '.page-resources',
   );
-  $selectors: join($marketingPagesSelectors, $extraSelectors, $separator: comma);
+  $selectors: list.join($marketingPagesSelectors, $extraSelectors, $separator: comma);
 
   @if $nestParentSelector and & {
-    @at-root #{selector-nest(#{$selectors}, &)} {
+    @at-root #{selector.nest(#{$selectors}, &)} {
       @content;
     }
   } @else {

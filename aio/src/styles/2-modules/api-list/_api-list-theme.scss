@@ -1,9 +1,9 @@
+@use 'sass:map';
 @use '../../constants';
 @use '../../mixins';
-@import '~@angular/material/theming';
 
 @mixin theme($theme) {
-  $is-dark-theme: map-get($theme, is-dark);
+  $is-dark-theme: map.get($theme, is-dark);
 
   aio-api-list {
     .api-filter {

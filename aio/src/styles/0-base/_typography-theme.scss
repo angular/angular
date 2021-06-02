@@ -1,7 +1,8 @@
+@use 'sass:map';
 @use '../constants';
 
 @mixin theme($theme) {
-  $is-dark-theme: map-get($theme, is-dark);
+  $is-dark-theme: map.get($theme, is-dark);
 
   body {
     color: if($is-dark-theme, constants.$offwhite, constants.$darkgray);

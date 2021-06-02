@@ -1,8 +1,8 @@
+@use 'sass:map';
 @use '../../constants';
-@import '~@angular/material/theming';
 
-@mixin theme($theme) { 
-  $is-dark-theme: map-get($theme, is-dark);
+@mixin theme($theme) {
+  $is-dark-theme: map.get($theme, is-dark);
 
   .card-container {
     .docs-card {
