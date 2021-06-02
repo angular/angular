@@ -77,7 +77,7 @@ var GithubClient = /** @class */ (function () {
         /** The graphql instance with authentication set during construction. */
         this._graphql = graphql.graphql.defaults({ headers: { authorization: "token " + this.token } });
         /** The Octokit instance actually performing API requests. */
-        this._octokit = new rest.Octokit({ token: this.token });
+        this._octokit = new rest.Octokit({ auth: this.token });
         this.pulls = this._octokit.pulls;
         this.repos = this._octokit.repos;
         this.issues = this._octokit.issues;
