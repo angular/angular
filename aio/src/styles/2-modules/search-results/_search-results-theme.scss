@@ -19,7 +19,7 @@
 
         ul {
           .search-result-item {
-            color: if($is-dark-theme, constants.$offwhite , constants.$lightgray);
+            color: if($is-dark-theme, constants.$offwhite, constants.$lightgray);
 
             &:hover {
               color: constants.$white;
@@ -45,7 +45,7 @@
           }
 
           .search-result-item {
-            color: if($is-dark-theme, constants.$offwhite ,color.adjust(constants.$darkgray, $lightness: 10));
+            color: if($is-dark-theme, constants.$offwhite, color.adjust(constants.$darkgray, $lightness: 10%));
 
             &:hover {
               color: constants.$accentblue;

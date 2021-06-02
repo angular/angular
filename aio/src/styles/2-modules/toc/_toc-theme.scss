@@ -48,7 +48,7 @@
           }
 
           a {
-            color: if($is-dark-theme, constants.$white, color.adjust(constants.$darkgray, $lightness: 10));
+            color: if($is-dark-theme, constants.$white, color.adjust(constants.$darkgray, $lightness: 10%));
           }
 
           &:hover {

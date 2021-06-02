@@ -1,8 +1,6 @@
 @use 'sass:color';
 @use '../mixins';
-
-@use '../constants' as *;
-@use '../mixins' as *;
+@use '../constants';
 
 code-example,
 code-tabs {

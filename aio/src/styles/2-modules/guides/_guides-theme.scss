@@ -6,6 +6,6 @@
   $is-dark-theme: map.get($theme, is-dark);
 
   .reviewed {
-    color: if($is-dark-theme, constants.$offwhite, color.adjust(constants.$darkgray, $lightness: 10));
+    color: if($is-dark-theme, constants.$offwhite, color.adjust(constants.$darkgray, $lightness: 10%));
   }
 }
