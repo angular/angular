@@ -40,7 +40,7 @@ export class CldrData {
   cldrDataDir = runfiles.resolve('cldr_data');
 
   /** List of all available locales CLDR provides data for. */
-  availableLocales: string[];
+  availableLocales: CldrStatic[];
 
   constructor() {
     this._loadAndPopulateCldrData();
@@ -53,8 +53,28 @@ export class CldrData {
   }
 
   /** Gets a list of all locales CLDR provides data for. */
-  private _getAvailableLocales(): string[] {
-    return require(`${this.cldrDataDir}/${CLDR_AVAILABLE_LOCALES_PATH}`).availableLocales.full;
+  private _getAvailableLocales(): CldrStatic[] {
+    const allLocales =
+        require(`${this.cldrDataDir}/${CLDR_AVAILABLE_LOCALES_PATH}`).availableLocales.full;
+    const localesWithData: CldrStatic[] = [];
+
+    for (const localeName of allLocales) {
+      const localeData = this.getLocaleData(localeName);
+
+      // If `cldrjs` is unable to resolve a `bundle` for the current locale, then there is no data
+      // for this locale, and it should not be generated. This can happen as with older versions of
+      // CLDR where `availableLocales.json` specifies locales for which no data is available
+      // (even within the `full` tier packages). See:
+      // http://cldr.unicode.org/development/development-process/design-proposals/json-packaging.
+      // TODO(devversion): Remove if we update to CLDR v39 where this seems fixed. Note that this
+      //  worked before in the Gulp tooling without such a check because the `cldr-data-downloader`
+      //  overwrote the `availableLocales` to only capture locales with data.
+      if (localeData && (localeData.attributes as any).bundle) {
+        localesWithData.push(localeData);
+      }
+    }
+
+    return localesWithData;
   }
 
   /** Loads the CLDR data and populates the `cldrjs` library with it. */
