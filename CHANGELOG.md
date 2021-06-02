@@ -1,3 +1,13 @@
+<a name="12.0.3"></a>
+# 12.0.3 (2021-06-02)
+### compiler-cli
+| Commit | Description |
+| -- | -- |
+| 8bdcca1e08 | fix(compiler-cli): better detect classes that are indirectly exported (#42207) |
+## Special Thanks:
+AleksanderBodurri, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, David Pfeiffer, David Shevitz, Doug Parker, Dylan Hunn, George Kalpakas, Igor Minar, Joey Perrott, JoostK, Kristiyan Kostadinov, Sam Severance, Serguei Cambour, Suguru Inatomi, Teri Glover, Wagner Maciel, Zach Arend, mgechev and 不肖・高橋
+
+
 <a name="12.0.2"></a>
 # 12.0.2 (2021-05-26)
 ### forms
