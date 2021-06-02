@@ -5,18 +5,18 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Fetch rules_nodejs so we can install our npm dependencies
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "10f534e1c80f795cffe1f2822becd4897754d18564612510c59b3c73544ae7c6",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/3.5.0/rules_nodejs-3.5.0.tar.gz"],
+    sha256 = "4a5d654a4ccd4a4c24eca5d319d85a88a650edf119601550c95bf400c8cc897e",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/3.5.1/rules_nodejs-3.5.1.tar.gz"],
 )
 
 # Fetch sass rules for compiling sass files
 http_archive(
     name = "io_bazel_rules_sass",
-    sha256 = "7e5966078b4d7d04929ffcce96c3d2cbb2f9d510aed85cb1d7419cc54c97989c",
-    strip_prefix = "rules_sass-1.33.0",
+    sha256 = "80d3e70ab5a8d59494aa9e3a7e4722f9f9a6fe98d1497be6bfa0b9e106b1ea54",
+    strip_prefix = "rules_sass-1.34.1",
     urls = [
-        "https://github.com/bazelbuild/rules_sass/archive/1.33.0.zip",
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_sass/archive/1.33.0.zip",
+        "https://github.com/bazelbuild/rules_sass/archive/1.34.1.zip",
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_sass/archive/1.34.1.zip",
     ],
 )
 
