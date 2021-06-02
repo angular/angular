@@ -70,6 +70,17 @@ runInEachFileSystem(() => {
       expect(cycle).toBeInstanceOf(Cycle);
       expect(importPath(cycle!.getPath())).toEqual('b,c,b');
     });
+
+    it('should not consider type-only imports', () => {
+      const {program, analyzer} = makeAnalyzer('a:b,c!;b;c');
+      const a = getSourceFileOrError(program, (_('/a.ts')));
+      const b = getSourceFileOrError(program, (_('/b.ts')));
+      const c = getSourceFileOrError(program, (_('/c.ts')));
+      expect(analyzer.wouldCreateCycle(c, a)).toBe(null);
+      const cycle = analyzer.wouldCreateCycle(b, a);
+      expect(cycle).toBeInstanceOf(Cycle);
+      expect(importPath(cycle!.getPath())).toEqual('b,a,b');
+    });
   });
 
   function makeAnalyzer(graph: string): {program: ts.Program, analyzer: CycleAnalyzer} {

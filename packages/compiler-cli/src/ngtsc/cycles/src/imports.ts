@@ -110,6 +110,13 @@ export class ImportGraph {
           continue;
         }
 
+        if (ts.isImportDeclaration(stmt) && stmt.importClause !== undefined &&
+            stmt.importClause.isTypeOnly) {
+          // Exclude type-only imports as they are always elided, so they don't contribute to
+          // cycles.
+          continue;
+        }
+
         const symbol = this.checker.getSymbolAtLocation(stmt.moduleSpecifier);
         if (symbol === undefined || symbol.valueDeclaration === undefined) {
           // No symbol could be found to skip over this import/export.
