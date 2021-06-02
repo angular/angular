@@ -170,8 +170,7 @@ type RawPullRequest = typeof PR_SCHEMA;
 async function fetchPullRequestFromGithub(
     git: GitClient<true>, prNumber: number): Promise<RawPullRequest|null> {
   try {
-    const x = await getPr(PR_SCHEMA, prNumber, git);
-    return x;
+    return await getPr(PR_SCHEMA, prNumber, git);
   } catch (e) {
     // If the pull request could not be found, we want to return `null` so
     // that the error can be handled gracefully.
@@ -188,8 +187,9 @@ export function isPullRequest(v: PullRequestFailure|PullRequest): v is PullReque
 }
 
 /**
- * Assert the commits provided are allowed to merge to the provided target label, throwing a
- * PullRequestFailure otherwise.
+ * Assert the commits provided are allowed to merge to the provided target label,
+ * throwing an error otherwise.
+ * @throws {PullRequestFailure}
  */
 function assertChangesAllowForTargetLabel(
     commits: Commit[], label: TargetLabel, config: MergeConfig) {
@@ -230,6 +230,7 @@ function assertChangesAllowForTargetLabel(
 /**
  * Assert the pull request has the proper label for breaking changes if there are breaking change
  * commits, and only has the label if there are breaking change commits.
+ * @throws {PullRequestFailure}
  */
 function assertCorrectBreakingChangeLabeling(
     commits: Commit[], labels: string[], config: MergeConfig) {
@@ -248,7 +249,10 @@ function assertCorrectBreakingChangeLabeling(
 }
 
 
-/** Assert the pull request is pending, not closed, merged or in draft. */
+/**
+ * Assert the pull request is pending, not closed, merged or in draft.
+ * @throws {PullRequestFailure} if the pull request is not pending.
+ */
 function assertPendingState(pr: RawPullRequest) {
   if (pr.isDraft) {
     throw PullRequestFailure.isDraft();
