@@ -1,9 +1,10 @@
+@use 'sass:map';
 @use '../../constants';
-@import '~@angular/material/theming';
+@use '~@angular/material' as mat;
 
 @mixin theme($theme) {
-  $background: map-get($theme, background);
-  $is-dark-theme: map-get($theme, is-dark);
+  $background: map.get($theme, background);
+  $is-dark-theme: map.get($theme, is-dark);
 
   .presskit-container {
     .presskit-section {
@@ -18,7 +19,7 @@
               background-color: constants.$white;
 
               &-inverse {
-                background-color: if($is-dark-theme, mat-color($background, background), constants.$deepgray);
+                background-color: if($is-dark-theme, mat.get-color-from-palette($background, background), constants.$deepgray);
               }
             }
           }

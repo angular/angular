@@ -1,5 +1,5 @@
+@use 'sass:color';
 @use '../../constants';
-@import '~@angular/material/theming';
 
 @mixin theme($theme) {
   // This rule overrides some Angular Material styles defined for `.mat-button`
@@ -20,7 +20,7 @@
 
     &.button-subtle {
       background: constants.$mediumgray;
-      color: darken(constants.$offwhite, 10%);
+      color: color.adjust(constants.$offwhite, $lightness: -10%);
 
       &:hover {
         color: rgba(constants.$white, 0.7);

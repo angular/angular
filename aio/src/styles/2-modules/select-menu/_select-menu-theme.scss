@@ -1,9 +1,10 @@
+@use 'sass:map';
 @use '../../constants';
-@import '~@angular/material/theming';
+@use '~@angular/material' as mat;
 
 @mixin theme($theme) {
-  $background: map-get($theme, background);
-  $is-dark-theme: map-get($theme, is-dark);
+  $background: map.get($theme, background);
+  $is-dark-theme: map.get($theme, is-dark);
 
   aio-select {
     .form-select-button {
@@ -23,7 +24,7 @@
     }
 
     .form-select-dropdown {
-      background: mat-color($background, background);
+      background: mat.get-color-from-palette($background, background);
       box-shadow: 0 16px 16px rgba(constants.$black, 0.24), 0 0 16px rgba(constants.$black, 0.12);
 
       li {

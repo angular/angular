@@ -1,13 +1,14 @@
+@use 'sass:map';
 @use '../../constants';
-@import '~@angular/material/theming';
+@use '~@angular/material' as mat;
 
 @mixin theme($theme) {
-  $background: map-get($theme, background);
-  $is-dark-theme: map-get($theme, is-dark);
+  $background: map.get($theme, background);
+  $is-dark-theme: map.get($theme, is-dark);
 
   table {
     box-shadow: 0 2px 2px rgba(constants.$mediumgray, 0.24), 0 0 2px rgba(if($is-dark-theme, constants.$white, constants.$black), 0.12);
-    background-color: if($is-dark-theme, mat-color($background, background), constants.$white);
+    background-color: if($is-dark-theme, mat.get-color-from-palette($background, background), constants.$white);
 
     thead > {
       tr > th {

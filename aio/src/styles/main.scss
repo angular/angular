@@ -6,8 +6,8 @@
 // import print styles
 @use './print';
 
-@import '~@angular/material/theming';
+@use '~@angular/material' as mat;
 
 // Include the base styles for Angular Material core. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
-@include mat-core();
+@include mat.core();

@@ -1,11 +1,12 @@
+@use 'sass:map';
 @use '../../constants';
-@import '~@angular/material/theming';
+@use '~@angular/material' as mat;
 
 @mixin theme($theme) {
-  $background: map-get($theme, background);
+  $background: map.get($theme, background);
 
   aio-contributor {
-    background: mat-color($background, background);
+    background: mat.get-color-from-palette($background, background);
 
     .contributor-info {
       background: rgba(constants.$darkgray, 0.5);

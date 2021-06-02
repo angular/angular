@@ -1,5 +1,5 @@
+@use 'sass:map';
 @use '../../constants';
-@import '~@angular/material/theming';
 
 @mixin theme($theme) {
   .symbol {
@@ -10,10 +10,10 @@
     // Symbol mapping variables in *constants*
     @each $name, $symbol in constants.$api-symbols {
       &.#{$name} {
-        background: map-get($symbol, background);
+        background: map.get($symbol, background);
 
         &:before {
-          content: map-get($symbol, content);
+          content: map.get($symbol, content);
         }
       }
     }
