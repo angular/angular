@@ -486,12 +486,15 @@ export abstract class _MatRadioButtonBase extends _MatRadioButtonMixinBase imple
   /** The native `<input type=radio>` element */
   @ViewChild('input') _inputElement: ElementRef<HTMLInputElement>;
 
+  /** Whether animations are disabled. */
+  _noopAnimations: boolean;
+
   constructor(radioGroup: _MatRadioGroupBase<_MatRadioButtonBase>,
               elementRef: ElementRef,
               protected _changeDetector: ChangeDetectorRef,
               private _focusMonitor: FocusMonitor,
               private _radioDispatcher: UniqueSelectionDispatcher,
-              public _animationMode?: string,
+              animationMode?: string,
               private _providerOverride?: MatRadioDefaultOptions,
               tabIndex?: string) {
     super(elementRef);
@@ -499,6 +502,7 @@ export abstract class _MatRadioButtonBase extends _MatRadioButtonMixinBase imple
     // Assertions. Ideally these should be stripped out by the compiler.
     // TODO(jelbourn): Assert that there's no name binding AND a parent radio group.
     this.radioGroup = radioGroup;
+    this._noopAnimations = animationMode === 'NoopAnimations';
 
     if (tabIndex) {
       this.tabIndex = coerceNumberProperty(tabIndex, 0);
@@ -633,7 +637,7 @@ export abstract class _MatRadioButtonBase extends _MatRadioButtonMixinBase imple
     'class': 'mat-radio-button',
     '[class.mat-radio-checked]': 'checked',
     '[class.mat-radio-disabled]': 'disabled',
-    '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
+    '[class._mat-animation-noopable]': '_noopAnimations',
     '[class.mat-primary]': 'color === "primary"',
     '[class.mat-accent]': 'color === "accent"',
     '[class.mat-warn]': 'color === "warn"',

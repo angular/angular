@@ -131,20 +131,18 @@ export class MatRadioButton extends _MatRadioButtonBase implements AfterViewInit
 
   _radioFoundation = new MDCRadioFoundation(this._radioAdapter);
   _classes: {[key: string]: boolean} = {};
-  _noopAnimations: boolean;
 
   constructor(@Optional() @Inject(MAT_RADIO_GROUP) radioGroup: MatRadioGroup,
               elementRef: ElementRef,
               _changeDetector: ChangeDetectorRef,
               _focusMonitor: FocusMonitor,
               _radioDispatcher: UniqueSelectionDispatcher,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) _animationMode?: string,
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
               @Optional() @Inject(MAT_RADIO_DEFAULT_OPTIONS)
               _providerOverride?: MatRadioDefaultOptions,
               @Attribute('tabindex') tabIndex?: string) {
     super(radioGroup, elementRef, _changeDetector, _focusMonitor,
-        _radioDispatcher, _animationMode, _providerOverride, tabIndex);
-    this._noopAnimations = _animationMode === 'NoopAnimations';
+        _radioDispatcher, animationMode, _providerOverride, tabIndex);
     this._rippleAnimation =
         this._noopAnimations ? {enterDuration: 0, exitDuration: 0} : RIPPLE_ANIMATION_CONFIG;
   }

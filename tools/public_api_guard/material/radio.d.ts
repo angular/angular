@@ -1,7 +1,7 @@
 export declare abstract class _MatRadioButtonBase extends _MatRadioButtonMixinBase implements OnInit, AfterViewInit, OnDestroy, CanDisableRipple, HasTabIndex {
-    _animationMode?: string | undefined;
     protected _changeDetector: ChangeDetectorRef;
     _inputElement: ElementRef<HTMLInputElement>;
+    _noopAnimations: boolean;
     ariaDescribedby: string;
     ariaLabel: string;
     ariaLabelledby: string;
@@ -22,7 +22,7 @@ export declare abstract class _MatRadioButtonBase extends _MatRadioButtonMixinBa
     set required(value: boolean);
     get value(): any;
     set value(value: any);
-    constructor(radioGroup: _MatRadioGroupBase<_MatRadioButtonBase>, elementRef: ElementRef, _changeDetector: ChangeDetectorRef, _focusMonitor: FocusMonitor, _radioDispatcher: UniqueSelectionDispatcher, _animationMode?: string | undefined, _providerOverride?: MatRadioDefaultOptions | undefined, tabIndex?: string);
+    constructor(radioGroup: _MatRadioGroupBase<_MatRadioButtonBase>, elementRef: ElementRef, _changeDetector: ChangeDetectorRef, _focusMonitor: FocusMonitor, _radioDispatcher: UniqueSelectionDispatcher, animationMode?: string, _providerOverride?: MatRadioDefaultOptions | undefined, tabIndex?: string);
     _isRippleDisabled(): boolean;
     _markForCheck(): void;
     _onInputChange(event: Event): void;

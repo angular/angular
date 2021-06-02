@@ -26,7 +26,7 @@
          [matRippleDisabled]="_isRippleDisabled()"
          [matRippleCentered]="true"
          [matRippleRadius]="20"
-         [matRippleAnimation]="{enterDuration: 150}">
+         [matRippleAnimation]="{enterDuration: _noopAnimations ? 0 : 150}">
 
       <span class="mat-ripple-element mat-radio-persistent-ripple"></span>
     </span>
