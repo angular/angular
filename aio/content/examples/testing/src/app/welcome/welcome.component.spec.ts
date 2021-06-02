@@ -130,6 +130,6 @@ describe('WelcomeComponent', () => {
   }));
 
   it('TestBed and Component UserService should be the same', () => {
-    expect(userService === componentUserService).toBe(true);
+    expect(userService).toBe(componentUserService);
   });
 });
