@@ -1,14 +1,15 @@
+@use 'sass:map';
 @use '../../constants';
-@import '~@angular/material/theming';
+@use '~@angular/material' as mat;
 
 @mixin theme($theme) {
-  $primary: map-get($theme, primary);
-  $foreground: map-get($theme, foreground);
-  $is-dark-theme: map-get($theme, is-dark);
+  $primary: map.get($theme, primary);
+  $foreground: map.get($theme, foreground);
+  $is-dark-theme: map.get($theme, is-dark);
 
   .background-sky {
-    background: linear-gradient(145deg, mat-color($primary, 900), if($is-dark-theme, mat-color($primary, 700), #42a5f5));
-    color: mat-color($foreground, text);
+    background: linear-gradient(145deg, mat.get-color-from-palette($primary, 900), if($is-dark-theme, mat.get-color-from-palette($primary, 700), #42a5f5));
+    color: mat.get-color-from-palette($foreground, text);
   }
 
   section#intro {
@@ -59,7 +60,7 @@
   }
 
   .marketing-banner {
-    background-color: if($is-dark-theme, mat-color($primary, 800), mat-color($primary, 600));
+    background-color: if($is-dark-theme, mat.get-color-from-palette($primary, 800), mat.get-color-from-palette($primary, 600));
 
     .banner-headline {
       color: constants.$white;

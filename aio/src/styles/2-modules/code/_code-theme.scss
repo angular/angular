@@ -1,8 +1,9 @@
+@use 'sass:color';
+@use 'sass:map';
 @use '../../constants';
-@import "~@angular/material/theming";
 
 @mixin theme($theme) {
-  $is-dark-theme: map-get($theme, is-dark);
+  $is-dark-theme: map.get($theme, is-dark);
 
   code-example {
     &:not(.no-box) {
@@ -51,11 +52,11 @@
     pre.prettyprint {
       code {
         ol.linenums {
-          color: lighten(constants.$mediumgray, 25%);
+          color: color.adjust(constants.$mediumgray, $lightness: 25%);
 
           li {
             &::marker {
-              color: lighten(constants.$mediumgray, 25%);
+              color: color.adjust(constants.$mediumgray, $lightness: 25%);
             }
           }
         }

@@ -1,10 +1,11 @@
+@use 'sass:color';
+@use 'sass:map';
 @use '../../constants';
-@import '~@angular/material/theming';
 
 @mixin theme($theme) {
-    $is-dark-theme: map-get($theme, is-dark);
+  $is-dark-theme: map.get($theme, is-dark);
 
-    .reviewed {
-        color: if($is-dark-theme, constants.$offwhite, lighten(constants.$darkgray, 10));
-      }
+  .reviewed {
+    color: if($is-dark-theme, constants.$offwhite, color.adjust(constants.$darkgray, $lightness: 10%));
+  }
 }

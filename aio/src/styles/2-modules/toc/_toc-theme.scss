@@ -1,9 +1,11 @@
+@use 'sass:color';
+@use 'sass:map';
 @use '../../constants';
-@import '~@angular/material/theming';
+@use '~@angular/material' as mat;
 
 @mixin theme($theme) {
-  $foreground: map-get($theme, foreground);
-  $is-dark-theme: map-get($theme, is-dark);
+  $foreground: map.get($theme, foreground);
+  $is-dark-theme: map.get($theme, is-dark);
 
   aio-toc {
     .toc-inner {
@@ -46,7 +48,7 @@
           }
 
           a {
-            color: if($is-dark-theme, constants.$white, lighten(constants.$darkgray, 10));
+            color: if($is-dark-theme, constants.$white, color.adjust(constants.$darkgray, $lightness: 10%));
           }
 
           &:hover {
@@ -84,7 +86,7 @@
       .toc-inner {
         .toc-heading {
           &.secondary {
-            color: mat-color($foreground, text);
+            color: mat.get-color-from-palette($foreground, text);
           }
         }
       }

@@ -1,21 +1,22 @@
+@use 'sass:map';
 @use '../../constants';
 @use '../../mixins';
-@import '~@angular/material/theming';
+@use '~@angular/material' as mat;
 
 @mixin theme($theme) {
-  $primary: map-get($theme, primary);
-  $is-dark-theme: map-get($theme, is-dark);
+  $primary: map.get($theme, primary);
+  $is-dark-theme: map.get($theme, is-dark);
 
   mat-toolbar.app-toolbar {
     @if $is-dark-theme {
       &.mat-primary {
-        background: mat-color($primary, darker)
+        background: mat.get-color-from-palette($primary, darker)
       }
     }
 
     // HOME PAGE OVERRIDE: TOPNAV TOOLBAR
     .page-home & {
-      background: if($is-dark-theme, mat-color($primary, darker), constants.$blue);
+      background: if($is-dark-theme, mat.get-color-from-palette($primary, darker), constants.$blue);
     }
 
     mat-icon {
