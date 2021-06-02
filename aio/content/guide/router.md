@@ -483,7 +483,7 @@ For more information on providers and the bootstrap process, see [Dependency Inj
 
 ## Choosing a routing strategy
 
-You must choose a routing strategy early in the development of you project because once the application is in production, visitors to your site use and depend on application URL references.
+You must choose a routing strategy early in the development of your project because once the application is in production, visitors to your site use and depend on application URL references.
 
 Almost all Angular projects should use the default HTML5 style.
 It produces URLs that are easier for users to understand and it preserves the option to do server-side rendering.
