@@ -69,13 +69,28 @@ const properties: Properties = {
         },
       },
     },
+    i_1: {
+      editable: true,
+      expandable: false,
+      preview: 'input i1',
+      type: PropType.String,
+      value: 'input i1',
+    },
+    o_1: {
+      editable: false,
+      expandable: true,
+      preview: '',
+      type: PropType.Object,
+    },
   },
   metadata: {
     inputs: {
       i: 'i',
+      i1: 'i_1',
     },
     outputs: {
       o: 'o',
+      o1: 'o_1',
     },
     encapsulation: 1,
     onPush: false,
@@ -94,7 +109,13 @@ describe('DirectivePropertyResolver', () => {
       directive: 0,
     });
     expect(resolver.directiveInputControls.dataSource.data[0].prop.name).toBe('i');
+    expect(resolver.directiveInputControls.dataSource.data[1].prop.name).toBe('a1');
+    expect(resolver.directiveInputControls.dataSource.data[2].prop.name).toBe('b1');
+    expect(resolver.directiveInputControls.dataSource.data[3].prop.name).toBe('i_1');
     expect(resolver.directiveOutputControls.dataSource.data[0].prop.name).toBe('o');
+    expect(resolver.directiveOutputControls.dataSource.data[1].prop.name).toBe('a1');
+    expect(resolver.directiveOutputControls.dataSource.data[2].prop.name).toBe('b1');
+    expect(resolver.directiveOutputControls.dataSource.data[3].prop.name).toBe('o_1');
     expect(resolver.directiveStateControls.dataSource.data[0].prop.name).toBe('p');
   });
 
@@ -106,6 +127,6 @@ describe('DirectivePropertyResolver', () => {
     const props = resolver.getExpandedProperties();
     const propNames = props.map((o) => o.name);
     // First level properties should be now sorted
-    expect(propNames.join('')).toEqual('iop');
+    expect(propNames.join('')).toEqual('ii_1oo_1p');
   });
 });
