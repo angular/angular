@@ -42,7 +42,7 @@ ng_web_test_suite(
 
 markdown_to_html(
     name = "overview",
-    srcs = [],
+    srcs = [":accordion.md"],
 )
 
 filegroup(

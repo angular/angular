@@ -54,6 +54,7 @@ ALL_EXAMPLES = [
     "//src/components-examples/cdk/stepper",
     "//src/components-examples/cdk/scrolling",
     "//src/components-examples/cdk/portal",
+    "//src/components-examples/cdk/accordion",
     "//src/components-examples/cdk/platform",
     "//src/components-examples/cdk/drag-drop",
     "//src/components-examples/cdk/clipboard",
