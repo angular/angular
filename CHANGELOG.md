@@ -1,3 +1,13 @@
+<a name="12.1.0-next.4"></a>
+# 12.1.0-next.4 (2021-06-02)
+### compiler-cli
+| Commit | Description |
+| -- | -- |
+| e039075a28 | fix(compiler-cli): better detect classes that are indirectly exported (#42207) |
+## Special Thanks:
+AleksanderBodurri, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, David Pfeiffer, David Shevitz, Doug Parker, Dylan Hunn, George Kalpakas, Igor Minar, Joey Perrott, JoostK, Kristiyan Kostadinov, Renovate Bot, Sam Severance, Serguei Cambour, Suguru Inatomi, Teri Glover, Wagner Maciel, Zach Arend, mgechev and 不肖・高橋
+
+
 <a name="12.0.3"></a>
 # 12.0.3 (2021-06-02)
 ### compiler-cli
