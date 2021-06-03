@@ -68,15 +68,15 @@ export function getTestingMocksForReleaseAction() {
 export function setupReleaseActionForTesting<T extends ReleaseAction>(
     actionCtor: ReleaseActionConstructor<T>, active: ActiveReleaseTrains,
     isNextPublishedToNpm = true): TestReleaseAction<T> {
-  installVirtualGitClientSpies();
-  installMockReleaseNotes();
-
   // Reset existing HTTP interceptors.
   nock.cleanAll();
 
   const {gitClient, githubConfig, releaseConfig} = getTestingMocksForReleaseAction();
   const repo = new GithubTestingRepo(githubConfig.owner, githubConfig.name);
   const fork = new GithubTestingRepo('some-user', 'fork');
+
+  installVirtualGitClientSpies(gitClient);
+  installMockReleaseNotes();
 
   // The version for the release-train in the next phase does not necessarily need to be
   // published to NPM. We mock the NPM package request and fake the state of the next
