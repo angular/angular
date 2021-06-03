@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 
 import {absoluteFromSourceFile} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
-import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, DeclarationNode, Decorator, EnumMember, Import, isConcreteDeclaration, isDecoratorIdentifier, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, reflectObjectLiteral, SpecialDeclarationKind, TypeScriptReflectionHost, TypeValueReference, TypeValueReferenceKind, ValueUnavailableKind} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, DeclarationNode, Decorator, EnumMember, getModuleNameFromSpecifier, Import, isConcreteDeclaration, isDecoratorIdentifier, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, reflectObjectLiteral, SpecialDeclarationKind, TypeScriptReflectionHost, TypeValueReference, TypeValueReferenceKind, ValueUnavailableKind} from '../../../src/ngtsc/reflection';
 import {isWithinPackage} from '../analysis/util';
 import {BundleProgram} from '../packages/bundle_program';
 import {findAll, getNameText, hasNameIdentifier, isDefined, stripDollarSuffix} from '../utils';
@@ -1649,7 +1649,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     return {
       kind: TypeValueReferenceKind.IMPORTED,
       valueDeclaration: decl.node,
-      moduleName: imp.from,
+      moduleName: getModuleNameFromSpecifier(imp.from),
       importedName: imp.name,
       nestedPath: null,
     };
@@ -1783,9 +1783,10 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    */
   protected isFromCore(decorator: Decorator): boolean {
     if (this.isCore) {
-      return !decorator.import || /^\./.test(decorator.import.from);
+      return !decorator.import || /^\./.test(getModuleNameFromSpecifier(decorator.import.from));
     } else {
-      return !!decorator.import && decorator.import.from === '@angular/core';
+      return !!decorator.import &&
+          getModuleNameFromSpecifier(decorator.import.from) === '@angular/core';
     }
   }
 

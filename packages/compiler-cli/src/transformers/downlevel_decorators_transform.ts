@@ -7,7 +7,9 @@
  */
 
 import * as ts from 'typescript';
-import {Decorator, ReflectionHost} from '../ngtsc/reflection';
+
+import {Decorator, getModuleNameFromSpecifier, ReflectionHost} from '../ngtsc/reflection';
+
 import {isAliasImportDeclaration, loadIsReferencedAliasDeclarationPatch} from './patch_alias_reference_resolution';
 
 /**
@@ -15,7 +17,9 @@ import {isAliasImportDeclaration, loadIsReferencedAliasDeclarationPatch} from '.
  * Either it's used in @angular/core, or it's imported from there.
  */
 function isAngularDecorator(decorator: Decorator, isCore: boolean): boolean {
-  return isCore || (decorator.import !== null && decorator.import.from === '@angular/core');
+  return isCore ||
+      (decorator.import !== null &&
+       getModuleNameFromSpecifier(decorator.import.from) === '@angular/core');
 }
 
 /*

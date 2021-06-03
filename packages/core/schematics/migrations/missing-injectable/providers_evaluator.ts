@@ -48,7 +48,7 @@ export class ProvidersEvaluator extends StaticInterpreter {
     this._providerLiterals = [];
     const resolvedValue = this.visit(expr, {
       originatingFile: expr.getSourceFile(),
-      absoluteModuleName: null,
+      absoluteModuleSpecifier: null,
       resolutionContext: expr.getSourceFile().fileName,
       scope: new Map(),
       foreignFunctionResolver: forwardRefResolver

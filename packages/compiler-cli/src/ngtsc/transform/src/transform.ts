@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {DefaultImportTracker, ImportRewriter} from '../../imports';
 import {getDefaultImportDeclaration} from '../../imports/src/default';
 import {PerfPhase, PerfRecorder} from '../../perf';
-import {Decorator, ReflectionHost} from '../../reflection';
+import {Decorator, getModuleNameFromSpecifier, ReflectionHost} from '../../reflection';
 import {ImportManager, RecordWrappedNodeFn, translateExpression, translateStatement, TranslatorOptions} from '../../translator';
 import {visit, VisitListEntryResult, Visitor} from '../../util/src/visitor';
 
@@ -368,7 +368,8 @@ function maybeFilterDecorator(
 }
 
 function isFromAngularCore(decorator: Decorator): boolean {
-  return decorator.import !== null && decorator.import.from === '@angular/core';
+  return decorator.import !== null &&
+      getModuleNameFromSpecifier(decorator.import.from) === '@angular/core';
 }
 
 function createRecorderFn(defaultImportTracker: DefaultImportTracker):

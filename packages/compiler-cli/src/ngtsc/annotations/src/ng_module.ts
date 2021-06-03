@@ -15,7 +15,7 @@ import {isArrayEqual, isReferenceEqual, isSymbolEqual, SemanticReference, Semant
 import {InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
 import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../perf';
-import {ClassDeclaration, Decorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
+import {ClassDeclaration, Decorator, getModuleNameFromSpecifier, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
 import {NgModuleRouteAnalyzer} from '../../routing';
 import {LocalModuleScopeRegistry, ScopeData} from '../../scope';
 import {FactoryTracker} from '../../shims/api';
@@ -253,7 +253,8 @@ export class NgModuleDecoratorHandler implements
               rawExpr, result, 'NgModule.schemas must be an array of schemas');
         }
         const id = schemaRef.getIdentityIn(schemaRef.node.getSourceFile());
-        if (id === null || schemaRef.ownedByModuleGuess !== '@angular/core') {
+        if (id === null ||
+            getModuleNameFromSpecifier(schemaRef.ownedByModuleGuess) !== '@angular/core') {
           throw createValueHasWrongTypeError(
               rawExpr, result, 'NgModule.schemas must be an array of schemas');
         }
@@ -619,7 +620,7 @@ export class NgModuleDecoratorHandler implements
     }
 
     // If it's not from @angular/core, bail.
-    if (!this.isCore && id.from !== '@angular/core') {
+    if (!this.isCore && getModuleNameFromSpecifier(id.from) !== '@angular/core') {
       return null;
     }
 

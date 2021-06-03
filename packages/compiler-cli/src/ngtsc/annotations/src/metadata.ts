@@ -9,7 +9,7 @@
 import {Expression, FunctionExpr, LiteralArrayExpr, LiteralExpr, literalMap, R3ClassMetadata, ReturnStatement, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {CtorParameter, DeclarationNode, Decorator, ReflectionHost, TypeValueReferenceKind} from '../../reflection';
+import {CtorParameter, DeclarationNode, Decorator, getModuleNameFromSpecifier, ReflectionHost, TypeValueReferenceKind} from '../../reflection';
 
 import {valueReferenceToExpression, wrapFunctionExpressionsInParens} from './util';
 
@@ -151,7 +151,9 @@ function decoratorToMetadata(
  * Either it's used in @angular/core, or it's imported from there.
  */
 function isAngularDecorator(decorator: Decorator, isCore: boolean): boolean {
-  return isCore || (decorator.import !== null && decorator.import.from === '@angular/core');
+  return isCore ||
+      (decorator.import !== null &&
+       getModuleNameFromSpecifier(decorator.import.from) === '@angular/core');
 }
 
 /**

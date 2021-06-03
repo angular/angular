@@ -9,14 +9,14 @@
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {ClassDeclaration, ClassMember, ClassMemberKind, isNamedClassDeclaration, ReflectionHost, reflectTypeEntityToDeclaration} from '../../reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, isNamedClassDeclaration, ModuleSpecifier, ReflectionHost, reflectTypeEntityToDeclaration} from '../../reflection';
 import {nodeDebugInfo} from '../../util/src/typescript';
 
 import {DirectiveMeta, DirectiveTypeCheckMeta, MetadataReader, NgModuleMeta, PipeMeta, TemplateGuardMeta} from './api';
 import {ClassPropertyMapping, ClassPropertyName} from './property_mapping';
 
 export function extractReferencesFromType(
-    checker: ts.TypeChecker, def: ts.TypeNode, ngModuleImportedFrom: string|null,
+    checker: ts.TypeChecker, def: ts.TypeNode, ngModuleImportedFrom: ModuleSpecifier|null,
     resolutionContext: string): Reference<ClassDeclaration>[] {
   if (!ts.isTupleTypeNode(def)) {
     return [];
@@ -31,7 +31,7 @@ export function extractReferencesFromType(
     if (!isNamedClassDeclaration(node)) {
       throw new Error(`Expected named ClassDeclaration: ${nodeDebugInfo(node)}`);
     }
-    const specifier = (from !== null && !from.startsWith('.') ? from : ngModuleImportedFrom);
+    const specifier = (from !== null && !from.text.startsWith('.') ? from : ngModuleImportedFrom);
     if (specifier !== null) {
       return new Reference(node, {specifier, resolutionContext});
     } else {

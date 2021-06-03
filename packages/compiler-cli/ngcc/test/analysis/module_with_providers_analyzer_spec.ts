@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {DeclarationNode} from '../../../src/ngtsc/reflection';
+import {DeclarationNode, getModuleNameFromSpecifier} from '../../../src/ngtsc/reflection';
 import {getDeclaration, isNamedDeclaration, loadTestFiles} from '../../../src/ngtsc/testing';
 import {ModuleWithProvidersAnalyses, ModuleWithProvidersAnalyzer} from '../../src/analysis/module_with_providers_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
@@ -655,7 +655,7 @@ runInEachFileSystem(() => {
                               info =>
                                   [getName(info.container) + info.declaration.name!.getText(),
                                    (info.ngModule.node as ts.ClassDeclaration).name!.getText(),
-                                   info.ngModule.ownedByModuleGuess]) :
+                                   getModuleNameFromSpecifier(info.ngModule.ownedByModuleGuess)]) :
                           [];
       }
 

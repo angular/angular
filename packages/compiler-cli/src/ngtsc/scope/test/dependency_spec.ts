@@ -69,7 +69,10 @@ function makeTestEnv(
       if (exportedSymbol !== undefined) {
         const decl = exportedSymbol.valueDeclaration as ts.ClassDeclaration;
         const specifier = MODULE_FROM_NODE_MODULES_PATH.exec(sf.fileName)![1];
-        return new Reference(decl, {specifier, resolutionContext: sf.fileName});
+        return new Reference(decl, {
+          specifier: jasmine.objectContaining({text: specifier}) as any,
+          resolutionContext: sf.fileName
+        });
       }
     }
     throw new Error('Class not found: ' + name);
@@ -146,7 +149,11 @@ runInEachFileSystem(() => {
       expect(scopeToRefs(scope)).toEqual([Dir]);
 
       // Explicitly verify that the directive has the correct owning module.
-      expect(scope.exported.directives[0].ref.ownedByModuleGuess).toBe('declaration');
+      const owningModule = scope.exported.directives[0].ref.ownedByModuleGuess;
+      if (owningModule === null || typeof owningModule === 'string') {
+        return fail('Owning module should be the ts.StringLiteral of the module specifier');
+      }
+      expect(owningModule.text).toBe('declaration');
     });
 
     it('should write correct aliases for deep dependencies', () => {

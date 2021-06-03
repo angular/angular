@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {UnifiedModulesHost} from '../../core/api';
 import {absoluteFromSourceFile, dirname, LogicalFileSystem, LogicalProjectPath, relative, toRelativeImport} from '../../file_system';
 import {stripExtension} from '../../file_system/src/util';
-import {DeclarationNode, ReflectionHost} from '../../reflection';
+import {DeclarationNode, getModuleNameFromSpecifier, ModuleSpecifier, ReflectionHost} from '../../reflection';
 import {getSourceFile, isDeclaration, isNamedDeclaration, isTypeDeclaration, nodeNameForError} from '../../util/src/typescript';
 
 import {findExportedNameOfNode} from './find_export';
@@ -220,32 +220,35 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
 
     // Try to find the exported name of the declaration, if one is available.
     const {specifier, resolutionContext} = ref.bestGuessOwningModule;
+    const moduleName = getModuleNameFromSpecifier(specifier);
     const exports = this.getExportsOfModule(specifier, resolutionContext);
     if (exports === null || !exports.exportMap.has(ref.node)) {
       // TODO(alxhub): make this error a ts.Diagnostic pointing at whatever caused this import to be
       // triggered.
       throw new Error(`Symbol ${ref.debugName} declared in ${
-          getSourceFile(ref.node).fileName} is not exported from ${specifier} (import into ${
+          getSourceFile(ref.node).fileName} is not exported from ${moduleName} (import into ${
           context.fileName})`);
     }
     const symbolName = exports.exportMap.get(ref.node)!;
 
     return {
-      expression: new ExternalExpr(new ExternalReference(specifier, symbolName)),
+      expression: new ExternalExpr(new ExternalReference(moduleName, symbolName)),
       importedFile: exports.module,
     };
   }
 
-  private getExportsOfModule(moduleName: string, fromFile: string): ModuleExports|null {
+  private getExportsOfModule(specifier: ModuleSpecifier, fromFile: string): ModuleExports|null {
+    const moduleName = getModuleNameFromSpecifier(specifier);
     if (!this.moduleExportsCache.has(moduleName)) {
-      this.moduleExportsCache.set(moduleName, this.enumerateExportsOfModule(moduleName, fromFile));
+      this.moduleExportsCache.set(moduleName, this.enumerateExportsOfModule(specifier, fromFile));
     }
     return this.moduleExportsCache.get(moduleName)!;
   }
 
-  protected enumerateExportsOfModule(specifier: string, fromFile: string): ModuleExports|null {
+  private enumerateExportsOfModule(specifier: ModuleSpecifier, fromFile: string): ModuleExports
+      |null {
     // First, resolve the module specifier to its entry point, and get the ts.Symbol for it.
-    const entryPointFile = this.moduleResolver.resolveModule(specifier, fromFile);
+    const entryPointFile = this.getImportedModule(specifier, fromFile);
     if (entryPointFile === null) {
       return null;
     }
@@ -270,6 +273,19 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
       exportMap.set(declaration.node, name);
     }
     return {module: entryPointFile, exportMap};
+  }
+
+  private getImportedModule(specifier: ModuleSpecifier, fromFile: string): ts.SourceFile|null {
+    if (typeof specifier === 'string') {
+      return this.moduleResolver.resolveModule(specifier, fromFile);
+    }
+
+    const symbol = this.checker.getSymbolAtLocation(specifier);
+    if (symbol === undefined || symbol.valueDeclaration === undefined ||
+        !ts.isSourceFile(symbol.valueDeclaration)) {
+      return null;
+    }
+    return symbol.valueDeclaration;
   }
 }
 

@@ -507,6 +507,12 @@ export interface Parameter {
 }
 
 /**
+ * Represents the module name of an import or export. It can either be the string literal node
+ * that contains the module name, or a raw string if no such node is available.
+ */
+export type ModuleSpecifier = ts.StringLiteral|string;
+
+/**
  * The source of an imported symbol, including the original symbol name and the module from which it
  * was imported.
  */
@@ -521,7 +527,7 @@ export interface Import {
    *
    * This could either be an absolute module name (@angular/core for example) or a relative path.
    */
-  from: string;
+  from: ModuleSpecifier;
 }
 
 /**
@@ -577,7 +583,7 @@ export interface BaseDeclaration<T extends DeclarationNode> {
    * was imported via an absolute module (even through a chain of re-exports). If the symbol is part
    * of the application and was not imported from an absolute path, this will be `null`.
    */
-  viaModule: string|null;
+  viaModule: ModuleSpecifier|null;
 
   /**
    * TypeScript reference to the declaration itself, if one exists.

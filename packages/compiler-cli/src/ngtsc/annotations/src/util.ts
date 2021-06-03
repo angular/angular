@@ -15,7 +15,7 @@ import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation}
 import {ImportFlags, Reference, ReferenceEmitter} from '../../imports';
 import {attachDefaultImportDeclaration} from '../../imports/src/default';
 import {ForeignFunctionResolver, PartialEvaluator} from '../../partial_evaluator';
-import {ClassDeclaration, CtorParameter, Decorator, Import, ImportedTypeValueReference, isNamedClassDeclaration, LocalTypeValueReference, ReflectionHost, TypeValueReference, TypeValueReferenceKind, UnavailableValue, ValueUnavailableKind} from '../../reflection';
+import {ClassDeclaration, CtorParameter, Decorator, getModuleNameFromSpecifier, Import, ImportedTypeValueReference, isNamedClassDeclaration, LocalTypeValueReference, ReflectionHost, TypeValueReference, TypeValueReferenceKind, UnavailableValue, ValueUnavailableKind} from '../../reflection';
 import {DeclarationData} from '../../scope';
 import {CompileResult} from '../../transform';
 
@@ -270,11 +270,13 @@ export function toR3Reference(
 }
 
 export function isAngularCore(decorator: Decorator): decorator is Decorator&{import: Import} {
-  return decorator.import !== null && decorator.import.from === '@angular/core';
+  return decorator.import !== null &&
+      getModuleNameFromSpecifier(decorator.import.from) === '@angular/core';
 }
 
 export function isAngularCoreReference(reference: Reference, symbolName: string): boolean {
-  return reference.ownedByModuleGuess === '@angular/core' && reference.debugName === symbolName;
+  return getModuleNameFromSpecifier(reference.ownedByModuleGuess) === '@angular/core' &&
+      reference.debugName === symbolName;
 }
 
 export function findAngularDecorator(
@@ -357,7 +359,8 @@ export function tryUnwrapForwardRef(node: ts.Expression, reflector: ReflectionHo
   }
 
   const imp = reflector.getImportOfIdentifier(fn);
-  if (imp === null || imp.from !== '@angular/core' || imp.name !== 'forwardRef') {
+  if (imp === null || getModuleNameFromSpecifier(imp.from) !== '@angular/core' ||
+      imp.name !== 'forwardRef') {
     return null;
   }
 

@@ -205,7 +205,10 @@ runInEachFileSystem(() => {
             const decorator = decorators[0];
             expect(decorator.name).toEqual('Directive');
             expect(decorator.identifier!.getText()).toEqual('Directive');
-            expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
+            expect(decorator.import).toEqual({
+              name: 'Directive',
+              from: jasmine.objectContaining({text: '@angular/core'})
+            });
             expect(decorator.args!.map(arg => arg.getText())).toEqual([
               '{ selector: \'[someDirective]\' }',
             ]);
@@ -226,7 +229,10 @@ runInEachFileSystem(() => {
                const decorator = decorators[0];
                expect(decorator.name).toEqual('Directive');
                expect(decorator.identifier!.getText()).toEqual('Directive');
-               expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
+               expect(decorator.import).toEqual({
+                 name: 'Directive',
+                 from: jasmine.objectContaining({text: '@angular/core'})
+               });
                expect(decorator.args!.map(arg => arg.getText())).toEqual([
                  '{ selector: \'[someDirective]\' }',
                ]);
@@ -247,7 +253,10 @@ runInEachFileSystem(() => {
                const decorator = decorators[0];
                expect(decorator.name).toEqual('Directive');
                expect(decorator.identifier!.getText()).toEqual('Directive');
-               expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
+               expect(decorator.import).toEqual({
+                 name: 'Directive',
+                 from: jasmine.objectContaining({text: '@angular/core'})
+               });
                expect(decorator.args!.map(arg => arg.getText())).toEqual([
                  '{ selector: \'[someDirective]\' }',
                ]);
@@ -268,7 +277,10 @@ runInEachFileSystem(() => {
             const decorator = decorators[0];
             expect(decorator.name).toEqual('Directive');
             expect(decorator.identifier!.getText()).toEqual('Directive');
-            expect(decorator.import).toEqual({name: 'Directive', from: './directives'});
+            expect(decorator.import).toEqual({
+              name: 'Directive',
+              from: jasmine.objectContaining({text: './directives'})
+            });
             expect(decorator.args!.map(arg => arg.getText())).toEqual([
               '{ selector: \'[someDirective]\' }',
             ]);
@@ -443,7 +455,9 @@ runInEachFileSystem(() => {
                const decorators = parameters![2].decorators!;
                expect(decorators.length).toEqual(1);
                expect(decorators[0].name).toBe('Inject');
-               expect(decorators[0].import!.from).toBe('@angular/core');
+               expect(decorators[0].import!.from).toEqual(jasmine.objectContaining({
+                 text: '@angular/core'
+               }));
                expect(decorators[0].import!.name).toBe('Inject');
              });
         });
@@ -470,7 +484,9 @@ runInEachFileSystem(() => {
              const decorators = parameters![2].decorators!;
              expect(decorators.length).toEqual(1);
              expect(decorators[0].name).toBe('Inject');
-             expect(decorators[0].import!.from).toBe('@angular/core');
+             expect(decorators[0].import!.from).toEqual(jasmine.objectContaining({
+               text: '@angular/core'
+             }));
              expect(decorators[0].import!.name).toBe('Inject');
            });
 
@@ -515,7 +531,9 @@ runInEachFileSystem(() => {
             const actualDeclaration = host.getDeclarationOfIdentifier(identifierOfDirective!);
             expect(actualDeclaration).not.toBe(null);
             expect(actualDeclaration!.node).toBe(expectedDeclarationNode);
-            expect(actualDeclaration!.viaModule).toBe('@angular/core');
+            expect(actualDeclaration!.viaModule).toEqual(jasmine.objectContaining({
+              text: '@angular/core'
+            }));
           });
         });
 

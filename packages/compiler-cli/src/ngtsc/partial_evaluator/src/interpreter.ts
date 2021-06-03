@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {Reference} from '../../imports';
 import {OwningModule} from '../../imports/src/references';
 import {DependencyTracker} from '../../incremental/api';
-import {Declaration, DeclarationKind, DeclarationNode, EnumMember, FunctionDefinition, isConcreteDeclaration, ReflectionHost, SpecialDeclarationKind} from '../../reflection';
+import {Declaration, DeclarationKind, DeclarationNode, EnumMember, FunctionDefinition, isConcreteDeclaration, ModuleSpecifier, ReflectionHost, SpecialDeclarationKind} from '../../reflection';
 import {isDeclaration} from '../../util/src/typescript';
 
 import {ArrayConcatBuiltinFn, ArraySliceBuiltinFn} from './builtin';
@@ -74,9 +74,9 @@ const UNARY_OPERATORS = new Map<ts.SyntaxKind, (a: any) => any>([
 interface Context {
   originatingFile: ts.SourceFile;
   /**
-   * The module name (if any) which was used to reach the currently resolving symbols.
+   * The module specifier (if any) which was used to reach the currently resolving symbols.
    */
-  absoluteModuleName: string|null;
+  absoluteModuleSpecifier: ModuleSpecifier|null;
 
   /**
    * A file name representing the context in which the current `absoluteModuleName`, if any, was
@@ -452,7 +452,7 @@ export class StaticInterpreter {
       if (lhs.bestGuessOwningModule !== null) {
         context = {
           ...context,
-          absoluteModuleName: lhs.bestGuessOwningModule.specifier,
+          absoluteModuleSpecifier: lhs.bestGuessOwningModule.specifier,
           resolutionContext: node.getSourceFile().fileName,
         };
       }
@@ -716,13 +716,11 @@ function isVariableDeclarationDeclared(node: ts.VariableDeclaration): boolean {
 
 const EMPTY = {};
 
-function joinModuleContext(existing: Context, node: ts.Node, decl: Declaration): {
-  absoluteModuleName?: string,
-  resolutionContext?: string,
-} {
-  if (decl.viaModule !== null && decl.viaModule !== existing.absoluteModuleName) {
+function joinModuleContext(existing: Context, node: ts.Node, decl: Declaration):
+    Partial<Pick<Context, 'absoluteModuleSpecifier'|'resolutionContext'>> {
+  if (decl.viaModule !== null && decl.viaModule !== existing.absoluteModuleSpecifier) {
     return {
-      absoluteModuleName: decl.viaModule,
+      absoluteModuleSpecifier: decl.viaModule,
       resolutionContext: node.getSourceFile().fileName,
     };
   } else {
@@ -731,7 +729,7 @@ function joinModuleContext(existing: Context, node: ts.Node, decl: Declaration):
 }
 
 function owningModule(context: Context, override: OwningModule|null = null): OwningModule|null {
-  let specifier = context.absoluteModuleName;
+  let specifier: ModuleSpecifier|null = context.absoluteModuleSpecifier;
   if (override !== null) {
     specifier = override.specifier;
   }
