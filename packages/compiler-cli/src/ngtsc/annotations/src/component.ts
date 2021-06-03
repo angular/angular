@@ -340,7 +340,8 @@ export class ComponentDecoratorHandler implements
     // Next, read the `@Component`-specific fields.
     const {decorator: component, metadata, inputs, outputs} = directiveResult;
     const encapsulation: number =
-        this._resolveEnumValue(component, 'encapsulation', 'ViewEncapsulation') || 0;
+        this._resolveEnumValue(component, 'encapsulation', 'ViewEncapsulation') ??
+        ViewEncapsulation.Emulated;
     const changeDetection: number|null =
         this._resolveEnumValue(component, 'changeDetection', 'ChangeDetectionStrategy');
 
@@ -1457,7 +1458,7 @@ function validateCustomElementSelector(selector: string): string|null {
   }
 
   if (!selector.includes('-')) {
-    return 'Selector of a ShadowDom-encapsulated component must contain a hyphen.';
+    return 'Selector of a component that uses ViewEncapsulation.ShadowDom must contain a hyphen.';
   }
 
   if (selector.startsWith('-')) {

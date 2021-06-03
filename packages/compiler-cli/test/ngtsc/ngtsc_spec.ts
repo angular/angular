@@ -7879,7 +7879,8 @@ export const Foo = Foo__PRE_R3__;
 
           expect(diags.length).toBe(1);
           expect(diags[0].messageText)
-              .toBe('Selector of a ShadowDom-encapsulated component must contain a hyphen.');
+              .toBe(
+                  'Selector of a component that uses ViewEncapsulation.ShadowDom must contain a hyphen.');
           expect(getDiagnosticSourceCode(diags[0])).toBe(`'cmp'`);
         });
 
