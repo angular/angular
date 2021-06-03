@@ -586,6 +586,10 @@ describe('completions', () => {
                  unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
                  ['ngFor']);
              expectReplacementText(completions, templateFile.contents, 'ng');
+             const details = templateFile.getCompletionEntryDetails(
+                 'ngFor', /* formatOptions */ undefined,
+                 /* preferences */ undefined)!;
+             expect(toText(details.displayParts)).toEqual('(directive) NgFor.NgFor: NgFor');
            });
 
         it('should return structural directive completions for just the structural marker', () => {
