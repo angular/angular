@@ -2431,10 +2431,10 @@ aws4@^1.8.0:
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.11.0.tgz#d61f46d83b2519250e2784daf5b09479a8b41c59"
   integrity sha512-xh1Rl34h6Fi1DC2WWKfxUTVqRsNnr6LsKz2+hfwDxQJWmrx8+c7ylaqBMcHfl1U1r2dsifOvKX3LQuLNZ+XSvA==
 
-axe-core@4.1.3:
-  version "4.1.3"
-  resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.1.3.tgz#64a4c85509e0991f5168340edc4bedd1ceea6966"
-  integrity sha512-vwPpH4Aj4122EW38mxO/fxhGKtwWTMLDIJfZ1He0Edbtjcfna/R3YB67yVhezUMzqc3Jr3+Ii50KRntlENL4xQ==
+axe-core@4.2.1:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.2.1.tgz#2e50bcf10ee5b819014f6e342e41e45096239e34"
+  integrity sha512-evY7DN8qSIbsW2H/TWQ1bX3sXN1d4MNb5Vb4n7BzPuCwRHdkZ1H2eNLuSh73EoQqkGKUtju2G2HCcjCfhvZIAA==
 
 axobject-query@2.0.2:
   version "2.0.2"
@@ -3086,17 +3086,15 @@ chownr@^2.0.0:
   resolved "https://registry.yarnpkg.com/chownr/-/chownr-2.0.0.tgz#15bfbe53d2eab4cf70f18a8cd68ebe5b3cb1dece"
   integrity sha512-bIomtDF5KGpdogkLd9VspvFzk9KfpyyGlS8YFVZl7TGPBHL5snIOnxeshwVgPteQ9b4Eydl+pVbIyE1DcvCWgQ==
 
-chrome-launcher@^0.13.4:
-  version "0.13.4"
-  resolved "https://registry.yarnpkg.com/chrome-launcher/-/chrome-launcher-0.13.4.tgz#4c7d81333c98282899c4e38256da23e00ed32f73"
-  integrity sha512-nnzXiDbGKjDSK6t2I+35OAPBy5Pw/39bgkb/ZAFwMhwJbdYBp6aH+vW28ZgtjdU890Q7D+3wN/tB8N66q5Gi2A==
+chrome-launcher@^0.14.0:
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/chrome-launcher/-/chrome-launcher-0.14.0.tgz#de8d8a534ccaeea0f36ea8dc12dd99e3169f3320"
+  integrity sha512-W//HpflaW6qBGrmuskup7g+XJZN6w03ko9QSIe5CtcTal2u0up5SeReK3Ll1Why4Ey8dPkv8XSodZyHPnGbVHQ==
   dependencies:
     "@types/node" "*"
-    escape-string-regexp "^1.0.5"
+    escape-string-regexp "^4.0.0"
     is-wsl "^2.2.0"
     lighthouse-logger "^1.0.0"
-    mkdirp "^0.5.3"
-    rimraf "^3.0.2"
 
 chrome-trace-event@^1.0.2:
   version "1.0.3"
@@ -6449,16 +6447,6 @@ intl-messageformat@^4.4.0:
   dependencies:
     intl-messageformat-parser "^1.8.1"
 
-intl-pluralrules@^1.0.3:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/intl-pluralrules/-/intl-pluralrules-1.2.2.tgz#2b73542a9502a8a3a742cdd917f3d969fb5482fe"
-  integrity sha512-SBdlNCJAhTA0I0uHg2dn7I+c6BCvSVk6zJ/01ozjwJK7BvKms9RH3w3Sd/Ag24KffZ/Yx6KJRCKAc7eE8TZLNg==
-
-intl@^1.2.5:
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/intl/-/intl-1.2.5.tgz#82244a2190c4e419f8371f5aa34daa3420e2abde"
-  integrity sha1-giRKIZDE5Bn4Nx9ao02qNCDiq94=
-
 ip-regex@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/ip-regex/-/ip-regex-2.1.0.tgz#fa78bf5d2e6913c911ce9f819ee5146bb6d844e9"
@@ -7583,30 +7571,28 @@ lighthouse-logger@^1.0.0, lighthouse-logger@^1.2.0:
     debug "^2.6.8"
     marky "^1.2.0"
 
-lighthouse-stack-packs@^1.4.0:
+lighthouse-stack-packs@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/lighthouse-stack-packs/-/lighthouse-stack-packs-1.5.0.tgz#c191f2b94db21602254baaebfb0bb90307a00ffa"
   integrity sha512-ntVOqFsrrTQYrNf+W+sNE9GjddW+ab5QN0WrrCikjMFsUvEQ28CvT0SXcHPZXFtcsb1lMSuVaNCmEuj7oXtYGQ==
 
-lighthouse@^7.3.0:
-  version "7.5.0"
-  resolved "https://registry.yarnpkg.com/lighthouse/-/lighthouse-7.5.0.tgz#e0a9b9816bc305a0846db5e4bf7d76d11cf9527e"
-  integrity sha512-GKb1lq9E2Fnb4xuZ65f/mvEoTsLbKV9UTrnQbpMVUAWZOlP8YWUItaPqfrYmRT6BhuPHK4e1pDQqypyJr3j/zQ==
+lighthouse@^8.0.0:
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/lighthouse/-/lighthouse-8.0.0.tgz#d55ec021b1e8d84ddb5ec5473fd706446805a2cd"
+  integrity sha512-jjniPn8qIjczsKKR/f91hBpMFsGgrBvwmH/KoQ/0qJlXpymsrRf06Y6Vb8xJXJ1aaR0HiGjeVgg4RlwT5pqXrg==
   dependencies:
-    axe-core "4.1.3"
-    chrome-launcher "^0.13.4"
+    axe-core "4.2.1"
+    chrome-launcher "^0.14.0"
     configstore "^5.0.1"
     csp_evaluator "^1.0.1"
     cssstyle "1.2.1"
     enquirer "^2.3.6"
     http-link-header "^0.8.0"
-    intl "^1.2.5"
     intl-messageformat "^4.4.0"
-    intl-pluralrules "^1.0.3"
     jpeg-js "^0.4.1"
     js-library-detector "^6.4.0"
     lighthouse-logger "^1.2.0"
-    lighthouse-stack-packs "^1.4.0"
+    lighthouse-stack-packs "^1.5.0"
     lodash.clonedeep "^4.5.0"
     lodash.get "^4.4.2"
     lodash.isequal "^4.5.0"
