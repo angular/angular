@@ -11,7 +11,7 @@ import {types as graphqlTypes} from 'typed-graphqlify';
 
 import {error, info} from '../../utils/console';
 import {AuthenticatedGitClient} from '../../utils/git/authenticated-git-client';
-import {GitClient} from '../../utils/git/git-client';
+import {GitCommandError} from '../../utils/git/git-client';
 import {getPendingPrs} from '../../utils/github';
 import {exec} from '../../utils/shelljs';
 
@@ -95,16 +95,20 @@ export async function discoverNewConflictsForPr(newPrNumber: number, updatedAfte
   info(`Checking ${pendingPrs.length} PRs for conflicts after a merge of #${newPrNumber}`);
 
   // Fetch and checkout the PR being checked.
-  exec(`git fetch ${requestedPr.headRef.repository.url} ${requestedPr.headRef.name}`);
-  exec(`git checkout -B ${tempWorkingBranch} FETCH_HEAD`);
+  git.run(['fetch', '-q', requestedPr.headRef.repository.url, requestedPr.headRef.name]);
+  git.run(['checkout', '-q', '-B', tempWorkingBranch, 'FETCH_HEAD']);
 
   // Rebase the PR against the PRs target branch.
-  exec(`git fetch ${requestedPr.baseRef.repository.url} ${requestedPr.baseRef.name}`);
-  const result = exec(`git rebase FETCH_HEAD`);
-  if (result.code) {
-    error('The requested PR currently has conflicts');
-    cleanUpGitState(previousBranchOrRevision);
-    process.exit(1);
+  git.run(['fetch', '-q', requestedPr.baseRef.repository.url, requestedPr.baseRef.name]);
+  try {
+    git.run(['rebase', 'FETCH_HEAD'], {stdio: 'ignore'});
+  } catch (err) {
+    if (err instanceof GitCommandError) {
+      error('The requested PR currently has conflicts');
+      git.checkout(previousBranchOrRevision, true);
+      process.exit(1);
+    }
+    throw err;
   }
 
   // Start the progress bar
@@ -113,15 +117,19 @@ export async function discoverNewConflictsForPr(newPrNumber: number, updatedAfte
   // Check each PR to determine if it can merge cleanly into the repo after the target PR.
   for (const pr of pendingPrs) {
     // Fetch and checkout the next PR
-    exec(`git fetch ${pr.headRef.repository.url} ${pr.headRef.name}`);
-    exec(`git checkout --detach FETCH_HEAD`);
+    git.run(['fetch', '-q', pr.headRef.repository.url, pr.headRef.name]);
+    git.run(['checkout', '-q', '--detach', 'FETCH_HEAD']);
     // Check if the PR cleanly rebases into the repo after the target PR.
-    const result = exec(`git rebase ${tempWorkingBranch}`);
-    if (result.code !== 0) {
-      conflicts.push(pr);
+    try {
+      git.run(['rebase', tempWorkingBranch], {stdio: 'ignore'});
+    } catch (err) {
+      if (err instanceof GitCommandError) {
+        conflicts.push(pr);
+      }
+      throw err;
     }
     // Abort any outstanding rebase attempt.
-    exec(`git rebase --abort`);
+    git.runGraceful(['rebase', '--abort'], {stdio: 'ignore'});
 
     progressBar.increment(1);
   }
