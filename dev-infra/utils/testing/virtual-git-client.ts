@@ -203,8 +203,7 @@ export class VirtualGitClient extends AuthenticatedGitClient {
   }
 }
 
-export function installVirtualGitClientSpies() {
-  const mockInstance = VirtualGitClient.createInstance();
+export function installVirtualGitClientSpies(mockInstance = VirtualGitClient.createInstance()) {
   spyOn(GitClient, 'get').and.returnValue(mockInstance);
   spyOn(AuthenticatedGitClient, 'get').and.returnValue(mockInstance);
 }
