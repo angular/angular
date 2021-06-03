@@ -7,7 +7,9 @@
  */
 
 import * as semver from 'semver';
-import {spawnInteractiveCommand, spawnWithDebugOutput} from '../../utils/child-process';
+
+import {spawn, spawnInteractive} from '../../utils/child-process';
+
 import {NpmDistTag} from './npm-registry';
 
 /**
@@ -21,7 +23,7 @@ export async function runNpmPublish(
   if (registryUrl !== undefined) {
     args.push('--registry', registryUrl);
   }
-  await spawnWithDebugOutput('npm', args, {cwd: packagePath, mode: 'silent'});
+  await spawn('npm', args, {cwd: packagePath, mode: 'silent'});
 }
 
 /**
@@ -35,7 +37,7 @@ export async function setNpmTagForPackage(
   if (registryUrl !== undefined) {
     args.push('--registry', registryUrl);
   }
-  await spawnWithDebugOutput('npm', args, {mode: 'silent'});
+  await spawn('npm', args, {mode: 'silent'});
 }
 
 /**
@@ -49,7 +51,7 @@ export async function npmIsLoggedIn(registryUrl: string|undefined): Promise<bool
     args.push('--registry', registryUrl);
   }
   try {
-    await spawnWithDebugOutput('npm', args, {mode: 'silent'});
+    await spawn('npm', args, {mode: 'silent'});
   } catch (e) {
     return false;
   }
@@ -70,7 +72,7 @@ export async function npmLogin(registryUrl: string|undefined) {
   }
   // The login command prompts for username, password and other profile information. Hence
   // the process needs to be interactive (i.e. respecting current TTYs stdin).
-  await spawnInteractiveCommand('npm', args);
+  await spawnInteractive('npm', args);
 }
 
 /**
@@ -86,7 +88,7 @@ export async function npmLogout(registryUrl: string|undefined): Promise<boolean>
     args.splice(1, 0, '--registry', registryUrl);
   }
   try {
-    await spawnWithDebugOutput('npm', args, {mode: 'silent'});
+    await spawn('npm', args, {mode: 'silent'});
   } finally {
     return npmIsLoggedIn(registryUrl);
   }

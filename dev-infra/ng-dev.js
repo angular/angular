@@ -317,6 +317,7 @@ var GitCommandError = /** @class */ (function (_super) {
         // we sanitize the command that will be part of the error message.
         _super.call(this, "Command failed: git " + client.sanitizeConsoleOutput(args.join(' '))) || this;
         _this.args = args;
+        Object.setPrototypeOf(_this, GitCommandError.prototype);
         return _this;
     }
     return GitCommandError;
@@ -3463,30 +3464,40 @@ function discoverNewConflictsForPr(newPrNumber, updatedAfter) {
         info(`Retrieved ${allPendingPRs.length} total pending PRs`);
         info(`Checking ${pendingPrs.length} PRs for conflicts after a merge of #${newPrNumber}`);
         // Fetch and checkout the PR being checked.
-        exec(`git fetch ${requestedPr.headRef.repository.url} ${requestedPr.headRef.name}`);
-        exec(`git checkout -B ${tempWorkingBranch} FETCH_HEAD`);
+        git.run(['fetch', '-q', requestedPr.headRef.repository.url, requestedPr.headRef.name]);
+        git.run(['checkout', '-q', '-B', tempWorkingBranch, 'FETCH_HEAD']);
         // Rebase the PR against the PRs target branch.
-        exec(`git fetch ${requestedPr.baseRef.repository.url} ${requestedPr.baseRef.name}`);
-        const result = exec(`git rebase FETCH_HEAD`);
-        if (result.code) {
-            error('The requested PR currently has conflicts');
-            cleanUpGitState(previousBranchOrRevision);
-            process.exit(1);
+        git.run(['fetch', '-q', requestedPr.baseRef.repository.url, requestedPr.baseRef.name]);
+        try {
+            git.run(['rebase', 'FETCH_HEAD'], { stdio: 'ignore' });
+        }
+        catch (err) {
+            if (err instanceof GitCommandError) {
+                error('The requested PR currently has conflicts');
+                git.checkout(previousBranchOrRevision, true);
+                process.exit(1);
+            }
+            throw err;
         }
         // Start the progress bar
         progressBar.start(pendingPrs.length, 0);
         // Check each PR to determine if it can merge cleanly into the repo after the target PR.
         for (const pr of pendingPrs) {
             // Fetch and checkout the next PR
-            exec(`git fetch ${pr.headRef.repository.url} ${pr.headRef.name}`);
-            exec(`git checkout --detach FETCH_HEAD`);
+            git.run(['fetch', '-q', pr.headRef.repository.url, pr.headRef.name]);
+            git.run(['checkout', '-q', '--detach', 'FETCH_HEAD']);
             // Check if the PR cleanly rebases into the repo after the target PR.
-            const result = exec(`git rebase ${tempWorkingBranch}`);
-            if (result.code !== 0) {
-                conflicts.push(pr);
+            try {
+                git.run(['rebase', tempWorkingBranch], { stdio: 'ignore' });
+            }
+            catch (err) {
+                if (err instanceof GitCommandError) {
+                    conflicts.push(pr);
+                }
+                throw err;
             }
             // Abort any outstanding rebase attempt.
-            exec(`git rebase --abort`);
+            git.runGraceful(['rebase', '--abort'], { stdio: 'ignore' });
             progressBar.increment(1);
         }
         // End the progress bar as all PRs have been processed.
@@ -5978,7 +5989,7 @@ const ReleaseNotesCommandModule = {
  *
  * @returns a Promise resolving on success, and rejecting on command failure with the status code.
  */
-function spawnInteractiveCommand(command, args, options) {
+function spawnInteractive(command, args, options) {
     if (options === void 0) { options = {}; }
     return new Promise(function (resolve, reject) {
         var commandText = command + " " + args.join(' ');
@@ -5993,9 +6004,9 @@ function spawnInteractiveCommand(command, args, options) {
  * output mode, stdout/stderr output is also printed to the console, or only on error.
  *
  * @returns a Promise resolving with captured stdout and stderr on success. The promise
- *   rejects on command failure.
+ *   rejects on command failure
  */
-function spawnWithDebugOutput(command, args, options) {
+function spawn(command, args, options) {
     if (options === void 0) { options = {}; }
     return new Promise(function (resolve, reject) {
         var commandText = command + " " + args.join(' ');
@@ -6025,21 +6036,26 @@ function spawnWithDebugOutput(command, args, options) {
                 process.stderr.write(message);
             }
         });
-        childProcess.on('exit', function (status, signal) {
-            var exitDescription = status !== null ? "exit code \"" + status + "\"" : "signal \"" + signal + "\"";
+        childProcess.on('exit', function (exitCode, signal) {
+            var exitDescription = exitCode !== null ? "exit code \"" + exitCode + "\"" : "signal \"" + signal + "\"";
             var printFn = outputMode === 'on-error' ? error : debug;
+            var status = statusFromExitCodeAndSignal(exitCode, signal);
             printFn("Command \"" + commandText + "\" completed with " + exitDescription + ".");
             printFn("Process output: \n" + logOutput);
             // On success, resolve the promise. Otherwise reject with the captured stderr
             // and stdout log output if the output mode was set to `silent`.
-            if (status === 0) {
-                resolve({ stdout: stdout, stderr: stderr });
+            if (status === 0 || options.suppressErrorOnFailingExitCode) {
+                resolve({ stdout: stdout, stderr: stderr, status: status });
             }
             else {
                 reject(outputMode === 'silent' ? logOutput : undefined);
             }
         });
     });
+}
+/** Convert the provided exitCode and signal to a single status code. */
+function statusFromExitCodeAndSignal(exitCode, signal) {
+    return exitCode !== null ? exitCode : signal !== null ? signal : -1;
 }
 
 /**
@@ -6060,7 +6076,7 @@ function runNpmPublish(packagePath, distTag, registryUrl) {
         if (registryUrl !== undefined) {
             args.push('--registry', registryUrl);
         }
-        yield spawnWithDebugOutput('npm', args, { cwd: packagePath, mode: 'silent' });
+        yield spawn('npm', args, { cwd: packagePath, mode: 'silent' });
     });
 }
 /**
@@ -6074,7 +6090,7 @@ function setNpmTagForPackage(packageName, distTag, version, registryUrl) {
         if (registryUrl !== undefined) {
             args.push('--registry', registryUrl);
         }
-        yield spawnWithDebugOutput('npm', args, { mode: 'silent' });
+        yield spawn('npm', args, { mode: 'silent' });
     });
 }
 /**
@@ -6089,7 +6105,7 @@ function npmIsLoggedIn(registryUrl) {
             args.push('--registry', registryUrl);
         }
         try {
-            yield spawnWithDebugOutput('npm', args, { mode: 'silent' });
+            yield spawn('npm', args, { mode: 'silent' });
         }
         catch (e) {
             return false;
@@ -6112,7 +6128,7 @@ function npmLogin(registryUrl) {
         }
         // The login command prompts for username, password and other profile information. Hence
         // the process needs to be interactive (i.e. respecting current TTYs stdin).
-        yield spawnInteractiveCommand('npm', args);
+        yield spawnInteractive('npm', args);
     });
 }
 /**
@@ -6129,7 +6145,7 @@ function npmLogout(registryUrl) {
             args.splice(1, 0, '--registry', registryUrl);
         }
         try {
-            yield spawnWithDebugOutput('npm', args, { mode: 'silent' });
+            yield spawn('npm', args, { mode: 'silent' });
         }
         finally {
             return npmIsLoggedIn(registryUrl);
@@ -6251,7 +6267,7 @@ function invokeSetNpmDistCommand(npmDistTag, version) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         try {
             // Note: No progress indicator needed as that is the responsibility of the command.
-            yield spawnWithDebugOutput('yarn', ['--silent', 'ng-dev', 'release', 'set-dist-tag', npmDistTag, version.format()]);
+            yield spawn('yarn', ['--silent', 'ng-dev', 'release', 'set-dist-tag', npmDistTag, version.format()]);
             info(green(`  ✓   Set "${npmDistTag}" NPM dist tag for all packages to v${version}.`));
         }
         catch (e) {
@@ -6271,7 +6287,7 @@ function invokeReleaseBuildCommand() {
         try {
             // Since we expect JSON to be printed from the `ng-dev release build` command,
             // we spawn the process in silent mode. We have set up an Ora progress spinner.
-            const { stdout } = yield spawnWithDebugOutput('yarn', ['--silent', 'ng-dev', 'release', 'build', '--json'], { mode: 'silent' });
+            const { stdout } = yield spawn('yarn', ['--silent', 'ng-dev', 'release', 'build', '--json'], { mode: 'silent' });
             spinner.stop();
             info(green('  ✓   Built release output for all packages.'));
             // The `ng-dev release build` command prints a JSON array to stdout
@@ -6295,7 +6311,7 @@ function invokeYarnInstallCommand(projectDir) {
         try {
             // Note: No progress indicator needed as that is the responsibility of the command.
             // TODO: Consider using an Ora spinner instead to ensure minimal console output.
-            yield spawnWithDebugOutput('yarn', ['install', '--frozen-lockfile', '--non-interactive'], { cwd: projectDir });
+            yield spawn('yarn', ['install', '--frozen-lockfile', '--non-interactive'], { cwd: projectDir });
             info(green('  ✓   Installed project dependencies.'));
         }
         catch (e) {
@@ -7450,7 +7466,7 @@ class ReleaseTool {
             try {
                 // Note: We do not rely on `/usr/bin/env` but rather access the `env` binary directly as it
                 // should be part of the shell's `$PATH`. This is necessary for compatibility with Windows.
-                const pyVersion = yield spawnWithDebugOutput('env', ['python', '--version'], { mode: 'silent' });
+                const pyVersion = yield spawn('env', ['python', '--version'], { mode: 'silent' });
                 const version = pyVersion.stdout.trim() || pyVersion.stderr.trim();
                 if (version.startsWith('Python 3.')) {
                     debug(`Local python version: ${version}`);
