@@ -9,12 +9,12 @@ import {readFileSync} from 'fs';
 import {resolve} from 'path';
 
 import {debug, info} from '../utils/console';
-import {GitClient} from '../utils/git/index';
+import {GitClient} from '../utils/git/git-client';
 import {logGroup, logHeader} from './logging';
 import {getGroupsFromYaml} from './parse-yaml';
 
 export function verify() {
-  const git = GitClient.getInstance();
+  const git = GitClient.get();
   /** Full path to PullApprove config file */
   const PULL_APPROVE_YAML_PATH = resolve(git.baseDir, '.pullapprove.yml');
   /** All tracked files in the repository. */

@@ -7,7 +7,8 @@
  */
 
 import {promptConfirm} from '../../utils/console';
-import {GitClient, GitCommandError} from '../../utils/git/index';
+import {AuthenticatedGitClient} from '../../utils/git/authenticated-git-client';
+import {GitCommandError} from '../../utils/git/git-client';
 
 import {MergeConfigWithRemote} from './config';
 import {PullRequestFailure} from './failures';
@@ -51,7 +52,7 @@ export class PullRequestMergeTask {
   private flags: PullRequestMergeTaskFlags;
 
   constructor(
-      public config: MergeConfigWithRemote, public git: GitClient<true>,
+      public config: MergeConfigWithRemote, public git: AuthenticatedGitClient,
       flags: Partial<PullRequestMergeTaskFlags>) {
     // Update flags property with the provided flags values as patches to the default flag values.
     this.flags = {...defaultPullRequestMergeTaskFlags, ...flags};

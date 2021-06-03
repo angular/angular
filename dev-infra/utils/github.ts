@@ -7,11 +7,12 @@
  */
 
 import {params, types} from 'typed-graphqlify';
+import {AuthenticatedGitClient} from './git/authenticated-git-client';
 
-import {GitClient} from './git/index';
 
 /** Get a PR from github  */
-export async function getPr<PrSchema>(prSchema: PrSchema, prNumber: number, git: GitClient<true>) {
+export async function getPr<PrSchema>(
+    prSchema: PrSchema, prNumber: number, git: AuthenticatedGitClient) {
   /** The owner and name of the repository */
   const {owner, name} = git.remoteConfig;
   /** The Graphql query object to get a the PR */
@@ -32,7 +33,7 @@ export async function getPr<PrSchema>(prSchema: PrSchema, prNumber: number, git:
 }
 
 /** Get all pending PRs from github  */
-export async function getPendingPrs<PrSchema>(prSchema: PrSchema, git: GitClient<true>) {
+export async function getPendingPrs<PrSchema>(prSchema: PrSchema, git: AuthenticatedGitClient) {
   /** The owner and name of the repository */
   const {owner, name} = git.remoteConfig;
   /** The Graphql query object to get a page of pending PRs */

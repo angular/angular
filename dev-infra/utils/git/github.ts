@@ -32,46 +32,36 @@ export class GithubApiRequestError extends Error {
   }
 }
 
-/** Error for failed Github API requests. */
-export class GithubGraphqlClientError extends Error {}
+/** A Github client for interacting with the Github APIs. */
+export class GithubClient {
+  /** The octokit instance actually performing API requests. */
+  private _octokit = new Octokit(this._octokitOptions);
+
+  readonly pulls = this._octokit.pulls;
+  readonly repos = this._octokit.repos;
+  readonly issues = this._octokit.issues;
+  readonly git = this._octokit.git;
+  readonly paginate = this._octokit.paginate;
+  readonly rateLimit = this._octokit.rateLimit;
+
+  constructor(private _octokitOptions?: Octokit.Options) {}
+}
 
 /**
- * A Github client for interacting with the Github APIs.
- *
- * Additionally, provides convenience methods for actions which require multiple requests, or
- * would provide value from memoized style responses.
- **/
-export class GithubClient {
+ * Extension of the `GithubClient` that provides utilities which are specific
+ * to authenticated instances.
+ */
+export class AuthenticatedGithubClient extends GithubClient {
   /** The graphql instance with authentication set during construction. */
-  private _graphql = graphql.defaults({headers: {authorization: `token ${this.token}`}});
-  /** The Octokit instance actually performing API requests. */
-  private _octokit = new Octokit({auth: this.token});
+  private _graphql = graphql.defaults({headers: {authorization: `token ${this._token}`}});
 
-  /**
-   * @param token The github authentication token for Github Rest and Graphql API requests.
-   */
-  constructor(private token?: string) {
-    this._octokit.hook.error('request', error => {
-      // Wrap API errors in a known error class. This allows us to
-      // expect Github API errors better and in a non-ambiguous way.
-      throw new GithubApiRequestError(error.status, error.message);
-    });
+  constructor(private _token: string) {
+    // Set the token for the octokit instance.
+    super({auth: _token});
   }
 
   /** Perform a query using Github's Graphql API. */
   async graphql<T extends GraphqlQueryObject>(queryObject: T, params: RequestParameters = {}) {
-    if (this.token === undefined) {
-      throw new GithubGraphqlClientError(
-          'Cannot query via graphql without an authentication token set, use the authenticated ' +
-          '`GitClient` by calling `GitClient.getAuthenticatedInstance()`.');
-    }
     return (await this._graphql(query(queryObject).toString(), params)) as T;
   }
-
-  pulls = this._octokit.pulls;
-  repos = this._octokit.repos;
-  issues = this._octokit.issues;
-  git = this._octokit.git;
-  paginate = this._octokit.paginate;
-  rateLimit = this._octokit.rateLimit;
 }

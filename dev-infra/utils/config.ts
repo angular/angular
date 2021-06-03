@@ -10,7 +10,7 @@ import {existsSync} from 'fs';
 import {dirname, join} from 'path';
 
 import {debug, error} from './console';
-import {GitClient} from './git/index';
+import {GitClient} from './git/git-client';
 import {isTsNodeAvailable} from './ts-node';
 
 /** Configuration for Git client interactions. */
@@ -69,7 +69,7 @@ export function getConfig(baseDir?: string): NgDevConfig;
 export function getConfig(baseDir?: string): NgDevConfig {
   // If the global config is not defined, load it from the file system.
   if (cachedConfig === null) {
-    baseDir = baseDir || GitClient.getInstance().baseDir;
+    baseDir = baseDir || GitClient.get().baseDir;
     // The full path to the configuration file.
     const configPath = join(baseDir, CONFIG_FILE_PATH);
     // Read the configuration and validate it before caching it for the future.
@@ -154,7 +154,7 @@ export function assertNoErrors(errors: string[]) {
 export function getUserConfig() {
   // If the global config is not defined, load it from the file system.
   if (userConfig === null) {
-    const git = GitClient.getInstance();
+    const git = GitClient.get();
     // The full path to the configuration file.
     const configPath = join(git.baseDir, USER_CONFIG_FILE_PATH);
     // Set the global config object.

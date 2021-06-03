@@ -12,8 +12,8 @@ import {Commit} from '../../commit-message/parse';
 import {getCommitsInRange} from '../../commit-message/utils';
 import {getConfig, NgDevConfig} from '../../utils/config';
 import {error, info, promptConfirm} from '../../utils/console';
+import {AuthenticatedGitClient} from '../../utils/git/authenticated-git-client';
 import {addTokenToGitHttpsUrl} from '../../utils/git/github-urls';
-import {GitClient} from '../../utils/git/index';
 import {getPr} from '../../utils/github';
 
 /* Graphql schema for the response body for each pending PR. */
@@ -44,8 +44,8 @@ const PR_SCHEMA = {
  */
 export async function rebasePr(
     prNumber: number, githubToken: string, config: Pick<NgDevConfig, 'github'> = getConfig()) {
-  /** The singleton instance of the GitClient. */
-  const git = GitClient.getAuthenticatedInstance();
+  /** The singleton instance of the authenticated git client. */
+  const git = AuthenticatedGitClient.get();
   if (git.hasUncommittedChanges()) {
     error('Cannot perform rebase of PR with local changes.');
     process.exit(1);

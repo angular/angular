@@ -9,9 +9,9 @@
 
 import {getConfig} from '../../utils/config';
 import {error, green, info, promptConfirm, red, yellow} from '../../utils/console';
+import {AuthenticatedGitClient} from '../../utils/git/authenticated-git-client';
 import {GithubApiRequestError} from '../../utils/git/github';
 import {GITHUB_TOKEN_GENERATE_URL} from '../../utils/git/github-urls';
-import {GitClient} from '../../utils/git/index';
 
 import {loadAndValidateConfig, MergeConfigWithRemote} from './config';
 import {MergeResult, MergeStatus, PullRequestMergeTask, PullRequestMergeTaskFlags} from './task';
@@ -126,8 +126,8 @@ export async function mergePullRequest(prNumber: number, flags: PullRequestMerge
  */
 async function createPullRequestMergeTask(flags: PullRequestMergeTaskFlags) {
   const devInfraConfig = getConfig();
-  /** The singleton instance of the GitClient. */
-  const git = GitClient.getAuthenticatedInstance();
+  /** The singleton instance of the authenticated git client. */
+  const git = AuthenticatedGitClient.get();
   const {config, errors} = await loadAndValidateConfig(devInfraConfig, git.github);
 
   if (errors) {
