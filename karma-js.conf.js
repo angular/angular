@@ -8,6 +8,7 @@
 
 const browserProvidersConf = require('./browser-providers.conf');
 const {generateSeed} = require('./tools/jasmine-seed-generator');
+const {hostname} = require('os');
 
 // Karma configuration
 // Generated on Thu Sep 25 2014 11:52:02 GMT-0700 (PDT)
@@ -20,6 +21,7 @@ module.exports = function(config) {
         random: true,
         seed: generateSeed('karma-js.conf'),
       },
+      captureConsole: process.env.CI ? false : true,
     },
 
     files: [
@@ -182,6 +184,8 @@ module.exports = function(config) {
   // More context can be found in: https://github.com/angular/angular/pull/35171.
   if (process.env.SAUCE_LOCALHOST_ALIAS_DOMAIN) {
     conf.hostname = process.env.SAUCE_LOCALHOST_ALIAS_DOMAIN;
+  } else {
+    conf.hostname = hostname();
   }
 
   if (process.env.KARMA_WEB_TEST_MODE) {
