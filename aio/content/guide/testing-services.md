@@ -41,7 +41,7 @@ The first test creates a `ValueService` with `new` and passes it to the `MasterS
 However, injecting the real service rarely works well as most dependent services are difficult to create and control.
 
 Instead you can mock the dependency, use a dummy value, or create a
-[spy](https://jasmine.github.io/2.0/introduction.html#section-Spies)
+[spy](https://jasmine.github.io/tutorials/your_first_suite#section-Spies)
 on the pertinent service method.
 
 <div class="alert is-helpful">
