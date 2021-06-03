@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as yargs from 'yargs';
-import {GitClient} from '../utils/git/index';
+import {GitClient} from '../utils/git/git-client';
 
 import {checkFiles, formatFiles} from './format';
 
@@ -24,7 +24,7 @@ export function buildFormatParser(localYargs: yargs.Argv) {
           'all', 'Run the formatter on all files in the repository', args => args,
           ({check}) => {
             const executionCmd = check ? checkFiles : formatFiles;
-            const allFiles = GitClient.getInstance().allFiles();
+            const allFiles = GitClient.get().allFiles();
             executionCmd(allFiles);
           })
       .command(
@@ -33,14 +33,14 @@ export function buildFormatParser(localYargs: yargs.Argv) {
           ({shaOrRef, check}) => {
             const sha = shaOrRef || 'master';
             const executionCmd = check ? checkFiles : formatFiles;
-            const allChangedFilesSince = GitClient.getInstance().allChangesFilesSince(sha);
+            const allChangedFilesSince = GitClient.get().allChangesFilesSince(sha);
             executionCmd(allChangedFilesSince);
           })
       .command(
           'staged', 'Run the formatter on all staged files', args => args,
           ({check}) => {
             const executionCmd = check ? checkFiles : formatFiles;
-            const allStagedFiles = GitClient.getInstance().allStagedFiles();
+            const allStagedFiles = GitClient.get().allStagedFiles();
             executionCmd(allStagedFiles);
           })
       .command(

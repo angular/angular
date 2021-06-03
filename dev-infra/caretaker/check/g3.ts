@@ -10,7 +10,7 @@ import {existsSync, readFileSync} from 'fs';
 import * as multimatch from 'multimatch';
 import {join} from 'path';
 import {parse as parseYaml} from 'yaml';
-import {bold, debug, error, info} from '../../utils/console';
+import {bold, debug, info} from '../../utils/console';
 
 import {BaseModule} from './base';
 

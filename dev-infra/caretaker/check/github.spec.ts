@@ -7,7 +7,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as console from '../../utils/console';
-import {GithubClient} from '../../utils/git/github';
+import {AuthenticatedGithubClient, GithubClient} from '../../utils/git/github';
 import {installVirtualGitClientSpies, mockNgDevConfig} from '../../utils/testing';
 
 import {GithubQueriesModule} from './github';
@@ -18,7 +18,7 @@ describe('GithubQueriesModule', () => {
   let infoGroupSpy: jasmine.Spy;
 
   beforeEach(() => {
-    githubApiSpy = spyOn(GithubClient.prototype, 'graphql')
+    githubApiSpy = spyOn(AuthenticatedGithubClient.prototype, 'graphql')
                        .and.throwError(
                            'The graphql query response must always be manually defined in a test.');
     installVirtualGitClientSpies();

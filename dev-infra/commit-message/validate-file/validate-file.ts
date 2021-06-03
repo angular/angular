@@ -9,14 +9,14 @@ import {readFileSync} from 'fs';
 import {resolve} from 'path';
 
 import {error, green, info, log, red, yellow} from '../../utils/console';
-import {GitClient} from '../../utils/git/index';
+import {GitClient} from '../../utils/git/git-client';
 
 import {deleteCommitMessageDraft, saveCommitMessageDraft} from '../restore-commit-message/commit-message-draft';
 import {printValidationErrors, validateCommitMessage} from '../validate';
 
 /** Validate commit message at the provided file path. */
 export function validateFile(filePath: string, isErrorMode: boolean) {
-  const git = GitClient.getInstance();
+  const git = GitClient.get();
   const commitMessage = readFileSync(resolve(git.baseDir, filePath), 'utf8');
   const {valid, errors} = validateCommitMessage(commitMessage);
   if (valid) {

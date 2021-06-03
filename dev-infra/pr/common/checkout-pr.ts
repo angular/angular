@@ -9,8 +9,8 @@
 import {types as graphqlTypes} from 'typed-graphqlify';
 
 import {info} from '../../utils/console';
+import {AuthenticatedGitClient} from '../../utils/git/authenticated-git-client';
 import {addTokenToGitHttpsUrl} from '../../utils/git/github-urls';
-import {GitClient} from '../../utils/git/index';
 import {getPr} from '../../utils/github';
 
 /* Graphql schema for the response body for a pending PR. */
@@ -62,8 +62,8 @@ export interface PullRequestCheckoutOptions {
  */
 export async function checkOutPullRequestLocally(
     prNumber: number, githubToken: string, opts: PullRequestCheckoutOptions = {}) {
-  /** The singleton instance of the GitClient. */
-  const git = GitClient.getAuthenticatedInstance();
+  /** The singleton instance of the authenticated git client. */
+  const git = AuthenticatedGitClient.get();
 
   // In order to preserve local changes, checkouts cannot occur if local changes are present in the
   // git environment. Checked before retrieving the PR to fail fast.

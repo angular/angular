@@ -12,7 +12,7 @@ import {SemVer} from 'semver';
 import {Arguments, Argv, CommandModule} from 'yargs';
 
 import {debug, info} from '../../utils/console';
-import {GitClient} from '../../utils/git/index';
+import {GitClient} from '../../utils/git/git-client';
 
 import {ReleaseNotes} from './release-notes';
 
@@ -58,7 +58,7 @@ function builder(argv: Argv): Argv<ReleaseNotesOptions> {
 async function handler({releaseVersion, from, to, outFile, type}: Arguments<ReleaseNotesOptions>) {
   // Since `yargs` evaluates defaults even if a value as been provided, if no value is provided to
   // the handler, the latest semver tag on the branch is used.
-  from = from || GitClient.getInstance().getLatestSemverTag().format();
+  from = from || GitClient.get().getLatestSemverTag().format();
   /** The ReleaseNotes instance to generate release notes. */
   const releaseNotes = await ReleaseNotes.fromRange(releaseVersion, from, to);
 

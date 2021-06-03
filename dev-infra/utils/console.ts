@@ -12,7 +12,7 @@ import {prompt} from 'inquirer';
 import {join} from 'path';
 import {Arguments} from 'yargs';
 
-import {GitClient} from './git/index';
+import {GitClient} from './git/git-client';
 
 /** Reexport of chalk colors for convenient access. */
 export const red = chalk.red;
@@ -144,7 +144,7 @@ export function captureLogOutputForCommand(argv: Arguments) {
     throw Error('`captureLogOutputForCommand` cannot be called multiple times');
   }
 
-  const git = GitClient.getInstance();
+  const git = GitClient.get();
   /** The date time used for timestamping when the command was invoked. */
   const now = new Date();
   /** Header line to separate command runs in log files. */

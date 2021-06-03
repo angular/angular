@@ -8,8 +8,9 @@
 
 
 import {URL} from 'url';
+
 import {GithubConfig} from '../config';
-import {GitClient} from './index';
+import {GitClient} from './git-client';
 
 /** URL to the Github page where personal access tokens can be managed. */
 export const GITHUB_TOKEN_SETTINGS_URL = 'https://github.com/settings/tokens';
@@ -37,6 +38,6 @@ export function getRepositoryGitUrl(config: GithubConfig, githubToken?: string):
 }
 
 /** Gets a Github URL that refers to a list of recent commits within a specified branch. */
-export function getListCommitsInBranchUrl({remoteParams}: GitClient<boolean>, branchName: string) {
+export function getListCommitsInBranchUrl({remoteParams}: GitClient, branchName: string) {
   return `https://github.com/${remoteParams.owner}/${remoteParams.repo}/commits/${branchName}`;
 }
