@@ -12,8 +12,8 @@ import {join} from 'path';
 import * as semver from 'semver';
 
 import {debug, error, green, info, promptConfirm, red, warn, yellow} from '../../utils/console';
+import {AuthenticatedGitClient} from '../../utils/git/authenticated-git-client';
 import {getListCommitsInBranchUrl, getRepositoryGitUrl} from '../../utils/git/github-urls';
-import {GitClient} from '../../utils/git/index';
 import {BuiltPackage, ReleaseConfig} from '../config/index';
 import {ReleaseNotes} from '../notes/release-notes';
 import {NpmDistTag} from '../versioning';
@@ -50,7 +50,7 @@ export interface ReleaseActionConstructor<T extends ReleaseAction = ReleaseActio
   /** Whether the release action is currently active. */
   isActive(active: ActiveReleaseTrains, config: ReleaseConfig): Promise<boolean>;
   /** Constructs a release action. */
-  new(...args: [ActiveReleaseTrains, GitClient<true>, ReleaseConfig, string]): T;
+  new(...args: [ActiveReleaseTrains, AuthenticatedGitClient, ReleaseConfig, string]): T;
 }
 
 /**
@@ -77,7 +77,7 @@ export abstract class ReleaseAction {
   private _cachedForkRepo: GithubRepo|null = null;
 
   constructor(
-      protected active: ActiveReleaseTrains, protected git: GitClient<true>,
+      protected active: ActiveReleaseTrains, protected git: AuthenticatedGitClient,
       protected config: ReleaseConfig, protected projectDir: string) {}
 
   /** Updates the version in the project top-level `package.json` file. */

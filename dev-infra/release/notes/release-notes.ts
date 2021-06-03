@@ -11,7 +11,7 @@ import {CommitFromGitLog} from '../../commit-message/parse';
 
 import {getCommitsInRange} from '../../commit-message/utils';
 import {promptInput} from '../../utils/console';
-import {GitClient} from '../../utils/git/index';
+import {GitClient} from '../../utils/git/git-client';
 import {DevInfraReleaseConfig, getReleaseConfig, ReleaseNotesConfig} from '../config/index';
 import {RenderContext} from './context';
 
@@ -25,7 +25,7 @@ export class ReleaseNotes {
   }
 
   /** An instance of GitClient. */
-  private git = GitClient.getInstance();
+  private git = GitClient.get();
   /** The RenderContext to be used during rendering. */
   private renderContext: RenderContext|undefined;
   /** The title to use for the release. */

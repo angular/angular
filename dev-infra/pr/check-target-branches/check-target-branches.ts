@@ -8,7 +8,7 @@
 
 import {getConfig} from '../../utils/config';
 import {error, info, red} from '../../utils/console';
-import {GitClient} from '../../utils/git/index';
+import {GitClient} from '../../utils/git/git-client';
 import {loadAndValidateConfig, TargetLabel} from '../merge/config';
 import {getBranchesFromTargetLabel, getTargetLabelFromPullRequest, InvalidTargetLabelError} from '../merge/target-label';
 
@@ -18,7 +18,7 @@ export async function getTargetBranchesForPr(prNumber: number) {
   /** Repo owner and name for the github repository. */
   const {owner, name: repo} = config.github;
   /** The singleton instance of the GitClient. */
-  const git = GitClient.getInstance();
+  const git = GitClient.get();
   /** The validated merge config. */
   const {config: mergeConfig, errors} = await loadAndValidateConfig(config, git.github);
   if (errors !== undefined) {

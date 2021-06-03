@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {GitClient} from '../../../utils/git/index';
+import {AuthenticatedGitClient} from '../../../utils/git/authenticated-git-client';
 import {PullRequestFailure} from '../failures';
 import {PullRequest} from '../pull-request';
 
@@ -22,7 +22,7 @@ export const TEMP_PR_HEAD_BRANCH = 'merge_pr_head';
  * merges it into the determined target branches.
  */
 export abstract class MergeStrategy {
-  constructor(protected git: GitClient<true>) {}
+  constructor(protected git: AuthenticatedGitClient) {}
 
   /**
    * Prepares a merge of the given pull request. The strategy by default will

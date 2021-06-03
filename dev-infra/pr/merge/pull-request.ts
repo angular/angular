@@ -7,13 +7,13 @@
  */
 
 import {params, types as graphqlTypes} from 'typed-graphqlify';
+
 import {Commit, parseCommitMessage} from '../../commit-message/parse';
 import {red, warn} from '../../utils/console';
-
-import {GitClient} from '../../utils/git/index';
+import {AuthenticatedGitClient} from '../../utils/git/authenticated-git-client';
 import {getPr} from '../../utils/github';
-import {MergeConfig, TargetLabel} from './config';
 
+import {MergeConfig, TargetLabel} from './config';
 import {PullRequestFailure} from './failures';
 import {matchesPattern} from './string-pattern';
 import {getBranchesFromTargetLabel, getTargetLabelFromPullRequest, InvalidTargetBranchError, InvalidTargetLabelError} from './target-label';
@@ -168,7 +168,7 @@ type RawPullRequest = typeof PR_SCHEMA;
 
 /** Fetches a pull request from Github. Returns null if an error occurred. */
 async function fetchPullRequestFromGithub(
-    git: GitClient<true>, prNumber: number): Promise<RawPullRequest|null> {
+    git: AuthenticatedGitClient, prNumber: number): Promise<RawPullRequest|null> {
   try {
     return await getPr(PR_SCHEMA, prNumber, git);
   } catch (e) {
