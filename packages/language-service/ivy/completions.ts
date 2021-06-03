@@ -579,6 +579,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
         displayParts = info.displayParts;
         documentation = info.documentation;
         break;
+      case AttributeCompletionKind.StructuralDirectiveAttribute:
       case AttributeCompletionKind.DirectiveInput:
       case AttributeCompletionKind.DirectiveOutput:
         const propertySymbol = getAttributeCompletionSymbol(completion, this.typeChecker);
@@ -586,11 +587,17 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
           return undefined;
         }
 
+        let kind: DisplayInfoKind;
+        if (completion.kind === AttributeCompletionKind.DirectiveInput) {
+          kind = DisplayInfoKind.PROPERTY;
+        } else if (completion.kind === AttributeCompletionKind.DirectiveOutput) {
+          kind = DisplayInfoKind.EVENT;
+        } else {
+          kind = DisplayInfoKind.DIRECTIVE;
+        }
+
         info = getTsSymbolDisplayInfo(
-            this.tsLS, this.typeChecker, propertySymbol,
-            completion.kind === AttributeCompletionKind.DirectiveInput ? DisplayInfoKind.PROPERTY :
-                                                                         DisplayInfoKind.EVENT,
-            completion.directive.tsSymbol.name);
+            this.tsLS, this.typeChecker, propertySymbol, kind, completion.directive.tsSymbol.name);
         if (info === null) {
           return undefined;
         }
@@ -602,7 +609,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       name: entryName,
       kind: unsafeCastDisplayInfoKindToScriptElementKind(kind),
       kindModifiers: ts.ScriptElementKindModifier.none,
-      displayParts: [],
+      displayParts,
       documentation,
     };
   }

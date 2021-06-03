@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {isNamedClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {DirectiveInScope, ReferenceSymbol, ShimLocation, Symbol, SymbolKind, VariableSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript';
 
@@ -155,7 +156,9 @@ export function getTsSymbolDisplayInfo(
     tsLS: ts.LanguageService, checker: ts.TypeChecker, symbol: ts.Symbol, kind: DisplayInfoKind,
     ownerName: string|null): DisplayInfo|null {
   const decl = symbol.valueDeclaration;
-  if (decl === undefined || (!ts.isPropertyDeclaration(decl) && !ts.isMethodDeclaration(decl)) ||
+  if (decl === undefined ||
+      (!ts.isPropertyDeclaration(decl) && !ts.isMethodDeclaration(decl) &&
+       !isNamedClassDeclaration(decl)) ||
       !ts.isIdentifier(decl.name)) {
     return null;
   }
