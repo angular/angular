@@ -53,7 +53,7 @@ export async function assertActiveLtsBranch(
   // allow the merge as per our LTS guarantees. Can be forcibly overridden if desired.
   // See: https://angular.io/guide/releases#support-policy-and-schedule.
   if (today > ltsEndDate) {
-    const ltsEndDateText = ltsEndDate.toLocaleDateString();
+    const ltsEndDateText = ltsEndDate.toLocaleDateString('en-US');
     warn(red(`Long-term support ended for v${version.major} on ${ltsEndDateText}.`));
     warn(yellow(
         `Merging of pull requests for this major is generally not ` +
