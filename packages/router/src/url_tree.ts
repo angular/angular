@@ -497,12 +497,15 @@ function serializeMatrixParams(params: {[key: string]: string}): string {
 }
 
 function serializeQueryParams(params: {[key: string]: any}): string {
-  const strParams: string[] = Object.keys(params).map((name) => {
-    const value = params[name];
-    return Array.isArray(value) ?
-        value.map(v => `${encodeUriQuery(name)}=${encodeUriQuery(v)}`).join('&') :
-        `${encodeUriQuery(name)}=${encodeUriQuery(value)}`;
-  });
+  const strParams: string[] =
+      Object.keys(params)
+          .map((name) => {
+            const value = params[name];
+            return Array.isArray(value) ?
+                value.map(v => `${encodeUriQuery(name)}=${encodeUriQuery(v)}`).join('&') :
+                `${encodeUriQuery(name)}=${encodeUriQuery(value)}`;
+          })
+          .filter(s => !!s);
 
   return strParams.length ? `?${strParams.join('&')}` : '';
 }
