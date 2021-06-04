@@ -460,7 +460,7 @@ export declare class RadioControlValueAccessor extends ɵangular_packages_forms_
     name: string;
     onChange: () => void;
     value: any;
-    constructor(renderer: Renderer2, elementRef: ElementRef, _registry: ɵangular_packages_forms_forms_r, _injector: Injector);
+    constructor(renderer: Renderer2, elementRef: ElementRef, _registry: ɵangular_packages_forms_forms_q, _injector: Injector);
     fireUncheck(value: any): void;
     ngOnDestroy(): void;
     ngOnInit(): void;

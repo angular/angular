@@ -187,21 +187,6 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              dispatchEvent(input, 'input');
              fixture.detectChanges();
              expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
-
-             const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
-             dispatchEvent(formEl, 'submit');
-             fixture.detectChanges();
-
-             expect(sortedClassList(formEl)).toEqual([
-               'ng-dirty', 'ng-submitted', 'ng-touched', 'ng-valid'
-             ]);
-             expect(sortedClassList(input)).not.toContain('ng-submitted');
-
-             dispatchEvent(formEl, 'reset');
-             fixture.detectChanges();
-
-             expect(sortedClassList(formEl)).toEqual(['ng-pristine', 'ng-untouched', 'ng-valid']);
-             expect(sortedClassList(input)).not.toContain('ng-submitted');
            });
          }));
 
@@ -259,51 +244,8 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 
              expect(sortedClassList(modelGroup)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
              expect(sortedClassList(form)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
-
-             const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
-             dispatchEvent(formEl, 'submit');
-             fixture.detectChanges();
-
-             expect(sortedClassList(formEl)).toEqual([
-               'ng-dirty', 'ng-submitted', 'ng-touched', 'ng-valid'
-             ]);
            });
          }));
-
-      it('should set status classes involving nested FormGroups', () => {
-        const fixture = initTest(NgModelNestedForm);
-        fixture.componentInstance.first = '';
-        fixture.componentInstance.other = '';
-        fixture.detectChanges();
-
-        const form = fixture.debugElement.query(By.css('form')).nativeElement;
-        const modelGroup = fixture.debugElement.query(By.css('[ngModelGroup]')).nativeElement;
-        const input = fixture.debugElement.query(By.css('input')).nativeElement;
-
-        fixture.whenStable().then(() => {
-          fixture.detectChanges();
-          expect(sortedClassList(modelGroup)).toEqual(['ng-pristine', 'ng-untouched', 'ng-valid']);
-
-          expect(sortedClassList(form)).toEqual(['ng-pristine', 'ng-untouched', 'ng-valid']);
-
-          const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
-          dispatchEvent(formEl, 'submit');
-          fixture.detectChanges();
-
-          expect(sortedClassList(modelGroup)).toEqual(['ng-pristine', 'ng-untouched', 'ng-valid']);
-          expect(sortedClassList(form)).toEqual([
-            'ng-pristine', 'ng-submitted', 'ng-untouched', 'ng-valid'
-          ]);
-          expect(sortedClassList(input)).not.toContain('ng-submitted');
-
-          dispatchEvent(formEl, 'reset');
-          fixture.detectChanges();
-
-          expect(sortedClassList(modelGroup)).toEqual(['ng-pristine', 'ng-untouched', 'ng-valid']);
-          expect(sortedClassList(form)).toEqual(['ng-pristine', 'ng-untouched', 'ng-valid']);
-          expect(sortedClassList(input)).not.toContain('ng-submitted');
-        });
-      });
 
       it('should not create a template-driven form when ngNoForm is used', () => {
         const fixture = initTest(NgNoFormComp);
@@ -2423,24 +2365,6 @@ class NgModelNgIfForm {
   emailShowing = true;
   // TODO(issue/24571): remove '!'.
   email!: string;
-}
-
-@Component({
-  selector: 'ng-model-nested',
-  template: `
-    <form>
-      <div ngModelGroup="contact-info">
-        <input name="first" [(ngModel)]="first">
-        <div ngModelGroup="other-names">
-          <input name="other-names" [(ngModel)]="other">
-        </div>
-      </div>
-    </form>
-  `
-})
-class NgModelNestedForm {
-  first!: string;
-  other!: string;
 }
 
 @Component({
