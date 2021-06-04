@@ -11,7 +11,7 @@ def webdriver_test(name, tags = [], **kwargs):
 
     web_test(
         name = "%s_chromium_web_test" % name,
-        browser = "@npm//@angular/dev-infra-private/browsers/chromium:chromium",
+        browser = "@npm//@angular/dev-infra-private/bazel/browsers/chromium:chromium",
         tags = tags + ["manual"],
         test = ":%s_jasmine_test" % name,
     )

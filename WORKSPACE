@@ -87,6 +87,9 @@ sass_repositories()
 # TODO(wagnermaciel): deduplicate browsers - this will load another version of chromium in the
 # repository. We probably want to use the chromium version loaded here (from dev-infra) as that
 # one has RBE improvements.
-load("@npm//@angular/dev-infra-private/browsers:browser_repositories.bzl", _dev_infra_browser_repositories = "browser_repositories")
+load(
+    "@npm//@angular/dev-infra-private/bazel/browsers:browser_repositories.bzl",
+    _dev_infra_browser_repositories = "browser_repositories",
+)
 
 _dev_infra_browser_repositories()

@@ -76,7 +76,7 @@
     "@angular-devkit/schematics": "^12.0.0",
     "@angular/bazel": "^12.0.0",
     "@angular/compiler-cli": "^12.0.0",
-    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#2e0271af93b020a811323fbc274afcf588dbc91e",
+    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#881f9af1d66194d25a66043021f6b3bf2a678490",
     "@angular/localize": "^12.0.0",
     "@angular/platform-browser-dynamic": "^12.0.0",
     "@angular/platform-server": "^12.0.0",
