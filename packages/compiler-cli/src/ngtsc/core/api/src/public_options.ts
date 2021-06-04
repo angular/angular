@@ -310,6 +310,22 @@ export interface I18nOptions {
   i18nInLocale?: string;
 
   /**
+   * Export format (xlf, xlf2 or xmb) when the xi18n operation is requested.
+   */
+  i18nOutFormat?: string;
+
+  /**
+   * Path to the extracted message file to emit when the xi18n operation is requested.
+   */
+  i18nOutFile?: string;
+
+
+  /**
+   * Locale of the application (used when xi18n is requested).
+   */
+  i18nOutLocale?: string;
+
+  /**
    * Render `$localize` messages with legacy format ids.
    *
    * This is only active if we are building with `enableIvy: true`.
