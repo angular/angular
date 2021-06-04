@@ -7,6 +7,9 @@ export interface I18nOptions {
     enableI18nLegacyMessageIdFormat?: boolean;
     i18nInLocale?: string;
     i18nNormalizeLineEndingsInICUs?: boolean;
+    i18nOutFile?: string;
+    i18nOutFormat?: string;
+    i18nOutLocale?: string;
     i18nUseExternalIds?: boolean;
 }
 

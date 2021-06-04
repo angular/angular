@@ -6,15 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {GeneratedFile} from '@angular/compiler';
+import {GeneratedFile, HtmlParser, MessageBundle} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import * as api from '../transformers/api';
+import {i18nExtract} from '../transformers/i18n';
 import {verifySupportedTypeScriptVersion} from '../typescript_support';
 
 import {CompilationTicket, freshCompilationTicket, incrementalFromCompilerTicket, NgCompiler, NgCompilerHost} from './core';
 import {NgCompilerOptions} from './core/api';
-import {absoluteFrom, AbsoluteFsPath, getFileSystem} from './file_system';
+import {absoluteFrom, AbsoluteFsPath, getFileSystem, resolve} from './file_system';
 import {TrackedIncrementalBuildStrategy} from './incremental';
 import {IndexedComponent} from './indexer';
 import {ActivePerfRecorder, PerfCheckpoint as PerfCheckpoint, PerfEvent, PerfPhase} from './perf';
@@ -22,8 +23,6 @@ import {TsCreateProgramDriver} from './program_driver';
 import {DeclarationNode} from './reflection';
 import {retagAllTsFiles, untagAllTsFiles} from './shims';
 import {OptimizeFor} from './typecheck/api';
-
-
 
 /**
  * Entrypoint to the Angular Compiler (Ivy+) which sits behind the `api.Program` interface, allowing
@@ -227,6 +226,14 @@ export class NgtscProgram implements api.Program {
     return this.compiler.listLazyRoutes(entryRoute);
   }
 
+  private emitXi18n(): void {
+    const ctx = new MessageBundle(new HtmlParser(), [], {}, this.options.i18nOutLocale ?? null);
+    this.compiler.xi18n(ctx);
+    i18nExtract(
+        this.options.i18nOutFormat ?? null, this.options.i18nOutFile ?? null, this.host,
+        this.options, ctx, resolve);
+  }
+
   emit(opts?: {
     emitFlags?: api.EmitFlags|undefined;
     cancellationToken?: ts.CancellationToken | undefined;
@@ -234,6 +241,23 @@ export class NgtscProgram implements api.Program {
     emitCallback?: api.TsEmitCallback | undefined;
     mergeEmitResultsCallback?: api.TsMergeEmitResultsCallback | undefined;
   }|undefined): ts.EmitResult {
+    // Check if emission of the i18n messages bundle was requested.
+    if (opts !== undefined && opts.emitFlags !== undefined &&
+        opts.emitFlags & api.EmitFlags.I18nBundle) {
+      this.emitXi18n();
+
+      // `api.EmitFlags` is a View Engine compiler concept. We only pay attention to the absence of
+      // the other flags here if i18n emit was requested (since this is usually done in the xi18n
+      // flow, where we don't want to emit JS at all).
+      if (!(opts.emitFlags & api.EmitFlags.JS)) {
+        return {
+          diagnostics: [],
+          emitSkipped: true,
+          emittedFiles: [],
+        };
+      }
+    }
+
     this.compiler.perfRecorder.memory(PerfCheckpoint.PreEmit);
 
     const res = this.compiler.perfRecorder.inPhase(PerfPhase.TypeScriptEmit, () => {
