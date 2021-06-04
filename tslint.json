@@ -6,6 +6,7 @@
     "node_modules/tslint-no-toplevel-property-access/rules"
   ],
   "rules": {
+    "eofline": true,
     "file-header": [
       true,
       {
@@ -56,6 +57,7 @@
     ]
   },
   "jsRules": {
+    "eofline": true,
     "file-header": [
       true,
       {
