@@ -31,6 +31,7 @@ import {aliasTransformFactory, CompilationMode, declarationTransformFactory, Dec
 import {TemplateTypeCheckerImpl} from '../../typecheck';
 import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig} from '../../typecheck/api';
 import {getSourceFileOrNull, isDtsPath, resolveModuleName, toUnredirectedSourceFile} from '../../util/src/typescript';
+import {Xi18nContext} from '../../xi18n';
 import {LazyRoute, NgCompilerAdapter, NgCompilerOptions} from '../api';
 
 import {compileUndecoratedClassesWithAngularFeatures} from './config';
@@ -672,6 +673,16 @@ export class NgCompiler {
     const context = new IndexingContext();
     compilation.traitCompiler.index(context);
     return generateAnalysis(context);
+  }
+
+  /**
+   * Collect i18n messages into the `Xi18nContext`.
+   */
+  xi18n(ctx: Xi18nContext): void {
+    // Note that the 'resolve' phase is not strictly necessary for xi18n, but this is not currently
+    // optimized.
+    const compilation = this.ensureAnalyzed();
+    compilation.traitCompiler.xi18n(ctx);
   }
 
   private ensureAnalyzed(this: NgCompiler): LazyCompilationState {
