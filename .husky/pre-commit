@@ -4,7 +4,7 @@
 set +e
 yarn -s ng-dev format staged 2>/dev/null
 if [ $? -ne 0 ]; then
-  echo "WARNING: failed to run pre-commit hook"
+  echo "WARNING: failed to run file formatting (ng-dev format staged)"
 fi
 
 

@@ -5,7 +5,7 @@ set +e
 
 yarn -s ng-dev commit-message restore-commit-message-draft $1 $2 2>/dev/null
 if [ $? -ne 0 ]; then
-  echo "WARNING: failed to run prepare-commit-msg hook"
+  echo "WARNING: failed to attempt to restore commit message draft (ng-dev commit-message restore-commit-message-draft)"
 fi
 
 exit 0;
