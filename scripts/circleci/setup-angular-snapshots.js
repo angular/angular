@@ -14,6 +14,14 @@
  * Read more here: https://yarnpkg.com/lang/en/docs/package-json/#toc-resolutions
  */
 
+/** List of packages which should not be updated to a snapshot build. */
+const ignorePackages = [
+  // Skip update for the shared dev-infra package. We do not want to update to a snapshot
+  // version of the dev-infra tooling as that could break tooling from running snapshot
+  // tests for the actual snapshot Angular framework code.
+  '@angular/dev-infra-private',
+]
+
 const {writeFileSync} = require('fs');
 const {join} = require('path');
 
@@ -21,22 +29,25 @@ const [tag] = process.argv.slice(2);
 const projectDir = join(__dirname, '../../');
 const packageJsonPath = join(projectDir, 'package.json');
 const packageJson = require(packageJsonPath);
+const packageSuffix = tag ? ` (${tag})` : '';
 
 // Initialize the "resolutions" property in case it is not present in the "package.json" yet.
 // See: https://yarnpkg.com/lang/en/docs/package-json/#toc-resolutions for the API.
 packageJson['resolutions'] = packageJson['resolutions'] || {};
 
-// List that contains the names of all installed Angular packages (e.g. "@angular/core")
-const angularPackages = Object.keys({...packageJson.dependencies, ...packageJson.devDependencies})
-  .filter(packageName => packageName.startsWith('@angular/'));
-const packageSuffix = tag ? ` (${tag})` : '';
+// List of packages which should be updated to their most recent snapshot version, or
+// snapshot version based on the specified tag.
+const snapshotPackages = Object
+  .keys({...packageJson.dependencies, ...packageJson.devDependencies})
+  .filter(packageName =>
+      packageName.startsWith('@angular/') && !ignorePackages.includes(packageName));
 
 console.log('Setting up snapshot builds for:\n');
-console.log(`  ${angularPackages.map(n => `${n}${packageSuffix}`).join('\n  ')}\n`);
+console.log(`  ${snapshotPackages.map(n => `${n}${packageSuffix}`).join('\n  ')}\n`);
 
 // Setup the snapshot version for each Angular package specified in the "package.json" file.
-angularPackages.forEach(packageName => {
-  let buildsUrl = `github:angular/${packageName.split('/')[1]}-builds${tag ? `#${tag}` : ''}`;
+snapshotPackages.forEach(packageName => {
+  const buildsUrl = `github:angular/${packageName.split('/')[1]}-builds${tag ? `#${tag}` : ''}`;
 
   // Add resolutions for each package in the format "**/{PACKAGE}" so that all
   // nested versions of that specific Angular package will have the same version.
