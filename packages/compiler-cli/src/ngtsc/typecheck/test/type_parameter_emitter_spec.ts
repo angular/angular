@@ -222,5 +222,32 @@ runInEachFileSystem(() => {
       expect(emitter.canEmit()).toBe(true);
       expect(emit(emitter)).toEqual('<T extends test.MyType>');
     });
+
+    it('transforms generic type parameter defaults', () => {
+      const additionalFiles: TestFile[] = [{
+        name: absoluteFrom('/node_modules/types/index.d.ts'),
+        contents: `export declare type MyType = string;`,
+      }];
+      const emitter = createEmitter(
+          `
+          import {MyType} from 'types';
+
+          export class TestClass<T extends MyType = MyType> {}`,
+          additionalFiles);
+
+      expect(emitter.canEmit()).toBe(true);
+      expect(emit(emitter)).toEqual('<T extends test.MyType = test.MyType>');
+    });
+
+    it('cannot emit when a type parameter default cannot be emitted', () => {
+      const emitter = createEmitter(`
+          interface Local {}
+
+          export class TestClass<T extends object = Local> {}`);
+
+      expect(emitter.canEmit()).toBe(false);
+      expect(() => emit(emitter))
+          .toThrowError('A type reference to emit must be imported from an absolute module');
+    });
   });
 });
