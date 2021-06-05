@@ -438,7 +438,7 @@ export class ComponentDecoratorHandler implements
     }
 
     if (encapsulation === ViewEncapsulation.ShadowDom && metadata.selector !== null) {
-      const selectorError = validateCustomElementSelector(metadata.selector);
+      const selectorError = checkCustomElementSelectorForErrors(metadata.selector);
       if (selectorError !== null) {
         if (diagnostics === undefined) {
           diagnostics = [];
@@ -1447,13 +1447,13 @@ function makeCyclicImportInfo(
 
 /**
  * Checks whether a selector is a valid custom element tag name.
- * Based loosely on https://mothereff.in/custom-element-name.
+ * Based loosely on https://github.com/sindresorhus/validate-element-name.
  */
-function validateCustomElementSelector(selector: string): string|null {
-  // Avoid flagging components with an attribute selector. This isn't bulletproof since it won't
-  // catch cases like `foo[]bar`, but we don't need it to be. This is mainly to avoid flagging
+function checkCustomElementSelectorForErrors(selector: string): string|null {
+  // Avoid flagging components with an attribute or class selector. This isn't bulletproof since it
+  // won't catch cases like `foo[]bar`, but we don't need it to be. This is mainly to avoid flagging
   // something like `foo-bar[baz]` incorrectly.
-  if (selector.includes('[') && selector.includes(']')) {
+  if (selector.includes('.') || (selector.includes('[') && selector.includes(']'))) {
     return null;
   }
 

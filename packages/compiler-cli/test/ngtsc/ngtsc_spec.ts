@@ -7951,6 +7951,20 @@ export const Foo = Foo__PRE_R3__;
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(0);
         });
+
+        it('should not emit a diagnostic for a component using a class selector', () => {
+          env.write('test.ts', `
+            import {Component, ViewEncapsulation} from '@angular/core';
+            @Component({
+              template: '',
+              selector: '.button',
+              encapsulation: ViewEncapsulation.ShadowDom
+            })
+            export class TestCmp {}
+          `);
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(0);
+        });
       });
 
       describe('i18n errors', () => {
