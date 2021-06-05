@@ -33,16 +33,21 @@ runInEachFileSystem(() => {
     }
 
     function emit(emitter: TypeParameterEmitter) {
+      const canEmit = emitter.canEmit();
       const emitted = emitter.emit(ref => {
         const typeName = ts.createQualifiedName(ts.createIdentifier('test'), ref.debugName!);
         return ts.createTypeReferenceNode(typeName, /* typeArguments */ undefined);
       });
 
       if (emitted === undefined) {
-        return '';
+        return canEmit ? '' : null;
       }
 
-      const printer = ts.createPrinter();
+      if (!canEmit) {
+        fail('canEmit must be true when emitting succeeds');
+      }
+
+      const printer = ts.createPrinter({newLine: ts.NewLineKind.LineFeed});
       const sf = ts.createSourceFile('test.ts', '', ts.ScriptTarget.Latest);
       const generics =
           emitted.map(param => printer.printNode(ts.EmitHint.Unspecified, param, sf)).join(', ');
@@ -71,6 +76,14 @@ runInEachFileSystem(() => {
           .toEqual('<T extends undefined>');
       expect(emit(createEmitter(`export class TestClass<T extends string[]> {}`)))
           .toEqual('<T extends string[]>');
+      expect(emit(createEmitter(`export class TestClass<T extends [string, boolean]> {}`)))
+          .toEqual('<T extends [\n    string,\n    boolean\n]>');
+      expect(emit(createEmitter(`export class TestClass<T extends string | boolean> {}`)))
+          .toEqual('<T extends string | boolean>');
+      expect(emit(createEmitter(`export class TestClass<T extends string & boolean> {}`)))
+          .toEqual('<T extends string & boolean>');
+      expect(emit(createEmitter(`export class TestClass<T extends { [key: string]: boolean }> {}`)))
+          .toEqual('<T extends {\n    [key: string]: boolean;\n}>');
     });
 
     it('can emit references into external modules', () => {
