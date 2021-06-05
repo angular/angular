@@ -25,6 +25,7 @@ and runs that code.
 This is the best compilation mode for production environments, with decreased load time and increased performance compared to [just-in-time (JIT) compilation](#jit).
 
 By compiling your application using the `ngc` command-line tool, you can bootstrap directly to a module factory, so you don't need to include the Angular compiler in your JavaScript bundle.
+AOT is the default since Angular 9.
 
 {@a angular-element}
 
@@ -527,7 +528,7 @@ See [ECMAScript](#ecma), [TypeScript](#typescript).
 The Angular just-in-time (JIT) compiler converts your Angular HTML and TypeScript code into
 efficient JavaScript code at run time, as part of bootstrapping.
 
-JIT compilation is the default (as opposed to AOT compilation) when you run Angular's `ng build` and `ng serve` CLI commands, and is a good choice during development.
+JIT compilation was default until Angular 8 when you ran Angular's `ng build` and `ng serve` CLI commands (From Angular 9 AOT is default), and JIT is a good choice during development.
 JIT mode is strongly discouraged for production use
 because it results in large application payloads that hinder the bootstrap performance.
 
