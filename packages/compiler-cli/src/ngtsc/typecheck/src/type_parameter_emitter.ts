@@ -32,12 +32,16 @@ export class TypeParameterEmitter {
     }
 
     return this.typeParameters.every(typeParam => {
-      if (typeParam.constraint === undefined) {
-        return true;
-      }
-
-      return canEmitType(typeParam.constraint, type => this.resolveTypeReference(type));
+      return this.canEmitType(typeParam.constraint) && this.canEmitType(typeParam.default);
     });
+  }
+
+  private canEmitType(type: ts.TypeNode|undefined): boolean {
+    if (type === undefined) {
+      return true;
+    }
+
+    return canEmitType(type, typeReference => this.resolveTypeReference(typeReference));
   }
 
   /**
@@ -53,12 +57,14 @@ export class TypeParameterEmitter {
     return this.typeParameters.map(typeParam => {
       const constraint =
           typeParam.constraint !== undefined ? emitter.emitType(typeParam.constraint) : undefined;
+      const defaultType =
+          typeParam.default !== undefined ? emitter.emitType(typeParam.default) : undefined;
 
       return ts.updateTypeParameterDeclaration(
           /* node */ typeParam,
           /* name */ typeParam.name,
           /* constraint */ constraint,
-          /* defaultType */ typeParam.default);
+          /* defaultType */ defaultType);
     });
   }
 
