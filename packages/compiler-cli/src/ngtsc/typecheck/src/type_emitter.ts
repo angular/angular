@@ -10,7 +10,7 @@ import {Reference} from '../../imports';
 
 /**
  * A resolved type reference can either be a `Reference`, the original `ts.TypeReferenceNode` itself
- * or null to indicate the no reference could be resolved.
+ * or null to indicate the no reference could be resolved, or that the reference can not be emitted.
  */
 export type ResolvedTypeReference = Reference|ts.TypeReferenceNode|null;
 
@@ -69,10 +69,9 @@ export function canEmitType(type: ts.TypeNode, resolver: TypeReferenceResolver):
       return false;
     }
 
-    // If the type is a reference without a owning module, consider the type not to be eligible for
-    // emitting.
-    if (reference instanceof Reference && !reference.hasOwningModuleGuess) {
-      return false;
+    // If the type is a reference, consider the type not to be eligible for emitting.
+    if (reference instanceof Reference) {
+      return true;
     }
 
     // The type can be emitted if either it does not have any type arguments, or all of them can be
@@ -157,10 +156,6 @@ export class TypeEmitter {
     // Emit the type name.
     let typeName = type.typeName;
     if (reference instanceof Reference) {
-      if (!reference.hasOwningModuleGuess) {
-        throw new Error('A type reference to emit must be imported from an absolute module');
-      }
-
       const emittedType = this.emitReference(reference);
       if (!ts.isTypeReferenceNode(emittedType)) {
         throw new Error(`Expected TypeReferenceNode for emitted reference, got ${

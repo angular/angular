@@ -8,7 +8,7 @@
 import * as ts from 'typescript';
 
 import {OwningModule, Reference} from '../../imports';
-import {DeclarationNode, ReflectionHost} from '../../reflection';
+import {DeclarationNode, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
 
 import {canEmitType, ResolvedTypeReference, TypeEmitter} from './type_emitter';
 
@@ -92,7 +92,17 @@ export class TypeParameterEmitter {
       };
     }
 
+    // If no owning module is known, the reference needs to be exported to be able to emit an import
+    // statement for it. If the declaration is not exported, null is returned to prevent emit.
+    if (owningModule === null && !this.isStaticallyExported(declaration.node)) {
+      return null;
+    }
+
     return new Reference(declaration.node, owningModule);
+  }
+
+  private isStaticallyExported(decl: DeclarationNode): boolean {
+    return isNamedClassDeclaration(decl) && this.reflector.isStaticallyExported(decl);
   }
 
   private isLocalTypeParameter(decl: DeclarationNode): boolean {
