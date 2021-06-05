@@ -116,26 +116,34 @@ runInEachFileSystem(() => {
       expect(emit(emitter)).toEqual('<T, U extends test.NgIterable<T>>');
     });
 
-    it('cannot emit references to local declarations', () => {
+    it('can emit references to local, exported declarations', () => {
       const emitter = createEmitter(`
-          export class Local {};
+          class Local {};
+          export {Local};
+          export class TestClass<T extends Local> {}`);
+
+      expect(emitter.canEmit()).toBe(true);
+      expect(emit(emitter)).toEqual('<T extends test.Local>');
+    });
+
+    it('cannot emit references to non-exported local declarations', () => {
+      const emitter = createEmitter(`
+          class Local {};
           export class TestClass<T extends Local> {}`);
 
       expect(emitter.canEmit()).toBe(false);
-      expect(() => emit(emitter))
-          .toThrowError('A type reference to emit must be imported from an absolute module');
+      expect(() => emit(emitter)).toThrowError('Unable to emit an unresolved reference');
     });
 
     it('cannot emit references to local declarations as nested type arguments', () => {
       const emitter = createEmitter(`
           import {NgIterable} from '@angular/core';
 
-          export class Local {};
+          class Local {};
           export class TestClass<T extends NgIterable<Local>> {}`);
 
       expect(emitter.canEmit()).toBe(false);
-      expect(() => emit(emitter))
-          .toThrowError('A type reference to emit must be imported from an absolute module');
+      expect(() => emit(emitter)).toThrowError('Unable to emit an unresolved reference');
     });
 
     it('can emit references into external modules within array types', () => {
@@ -150,15 +158,14 @@ runInEachFileSystem(() => {
 
     it('cannot emit references to local declarations within array types', () => {
       const emitter = createEmitter(`
-          export class Local {};
+          class Local {};
           export class TestClass<T extends Local[]> {}`);
 
       expect(emitter.canEmit()).toBe(false);
-      expect(() => emit(emitter))
-          .toThrowError('A type reference to emit must be imported from an absolute module');
+      expect(() => emit(emitter)).toThrowError('Unable to emit an unresolved reference');
     });
 
-    it('cannot emit references into relative files', () => {
+    it('can emit references into relative files', () => {
       const additionalFiles: TestFile[] = [{
         name: absoluteFrom('/internal.ts'),
         contents: `export class Internal {}`,
@@ -170,9 +177,8 @@ runInEachFileSystem(() => {
           export class TestClass<T extends Internal> {}`,
           additionalFiles);
 
-      expect(emitter.canEmit()).toBe(false);
-      expect(() => emit(emitter))
-          .toThrowError('A type reference to emit must be imported from an absolute module');
+      expect(emitter.canEmit()).toBe(true);
+      expect(emit(emitter)).toEqual('<T extends test.Internal>');
     });
 
     it('can emit references to interfaces', () => {
@@ -246,8 +252,7 @@ runInEachFileSystem(() => {
           export class TestClass<T extends object = Local> {}`);
 
       expect(emitter.canEmit()).toBe(false);
-      expect(() => emit(emitter))
-          .toThrowError('A type reference to emit must be imported from an absolute module');
+      expect(() => emit(emitter)).toThrowError('Unable to emit an unresolved reference');
     });
   });
 });
