@@ -53,7 +53,7 @@ Using the Angular CLI, create a new application, _angular-custom-route-match_. I
 1. In your code editor, locate the file, `app.component.html` and replace
    the placeholder content with the following HTML.
     
-   <code-example path="routing-with-urlmatcher/src/app/profile/profile.component.html" header="routing-with-urlmatcher/src/app/profile/profile.component.html"></code-example>
+   <code-example path="routing-with-urlmatcher/src/app/app.component.html" header="routing-with-urlmatcher/src/app/app.component.html"></code-example>
 
 ## Configure your routes for your application
 
