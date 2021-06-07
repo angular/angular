@@ -1219,7 +1219,7 @@ describe('MatInput with forms', () => {
       expect(describedBy).toBe(errorIds);
     }));
 
-    it('should not set `aria-invalid` to true if the input is empty', fakeAsync(() => {
+    it('should set `aria-invalid` to true if the input is empty', fakeAsync(() => {
       // Submit the form since it's the one that triggers the default error state matcher.
       dispatchFakeEvent(fixture.nativeElement.querySelector('form'), 'submit');
       fixture.detectChanges();
@@ -1228,7 +1228,7 @@ describe('MatInput with forms', () => {
       expect(testComponent.formControl.invalid).toBe(true, 'Expected form control to be invalid');
       expect(inputEl.value).toBeFalsy();
       expect(inputEl.getAttribute('aria-invalid'))
-          .toBe('false', 'Expected aria-invalid to be set to "false".');
+          .toBe('true', 'Expected aria-invalid to be set to "true".');
 
       inputEl.value = 'not valid';
       fixture.detectChanges();
