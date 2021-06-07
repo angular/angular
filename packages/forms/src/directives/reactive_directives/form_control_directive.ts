@@ -149,7 +149,7 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
    * Returns an array that represents the path from the top-level form to this control.
    * Each index is the string name of the control on that level.
    */
-  get path(): string[] {
+  override get path(): string[] {
     return [];
   }
 

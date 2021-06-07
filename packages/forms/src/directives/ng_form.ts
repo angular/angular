@@ -148,7 +148,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
    * @description
    * The directive instance.
    */
-  get formDirective(): Form {
+  override get formDirective(): Form {
     return this;
   }
 
@@ -165,7 +165,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
    * Returns an array representing the path to this group. Because this directive
    * always lives at the top level of a form, it is always an empty array.
    */
-  get path(): string[] {
+  override get path(): string[] {
     return [];
   }
 
