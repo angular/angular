@@ -188,9 +188,9 @@ describe('MatChipList', () => {
       });
 
       it('should watch for chip focus', () => {
-        let array = chips.toArray();
-        let lastIndex = array.length - 1;
-        let lastItem = array[lastIndex];
+        const array = chips.toArray();
+        const lastIndex = array.length - 1;
+        const lastItem = array[lastIndex];
 
         lastItem.focus();
         fixture.detectChanges();
@@ -222,8 +222,8 @@ describe('MatChipList', () => {
       describe('on chip destroy', () => {
 
         it('should focus the next item', () => {
-          let array = chips.toArray();
-          let midItem = array[2];
+          const array = chips.toArray();
+          const midItem = array[2];
 
           // Focus the middle item
           midItem.focus();
@@ -237,9 +237,9 @@ describe('MatChipList', () => {
         });
 
         it('should focus the previous item', () => {
-          let array = chips.toArray();
-          let lastIndex = array.length - 1;
-          let lastItem = array[lastIndex];
+          const array = chips.toArray();
+          const lastIndex = array.length - 1;
+          const lastItem = array[lastIndex];
 
           // Focus the last item
           lastItem.focus();
@@ -253,8 +253,8 @@ describe('MatChipList', () => {
         });
 
         it('should not focus if chip list is not focused', () => {
-          let array = chips.toArray();
-          let midItem = array[2];
+          const array = chips.toArray();
+          const midItem = array[2];
 
           // Focus and blur the middle item
           midItem.focus();
@@ -317,12 +317,12 @@ describe('MatChipList', () => {
         });
 
         it('should focus previous item when press LEFT ARROW', () => {
-          let nativeChips = chipListNativeElement.querySelectorAll('mat-chip');
-          let lastNativeChip = nativeChips[nativeChips.length - 1] as HTMLElement;
+          const nativeChips = chipListNativeElement.querySelectorAll('mat-chip');
+          const lastNativeChip = nativeChips[nativeChips.length - 1] as HTMLElement;
 
-          let array = chips.toArray();
-          let lastIndex = array.length - 1;
-          let lastItem = array[lastIndex];
+          const array = chips.toArray();
+          const lastIndex = array.length - 1;
+          const lastItem = array[lastIndex];
 
           // Focus the last item in the array
           lastItem.focus();
@@ -338,11 +338,11 @@ describe('MatChipList', () => {
         });
 
         it('should focus next item when press RIGHT ARROW', () => {
-          let nativeChips = chipListNativeElement.querySelectorAll('mat-chip');
-          let firstNativeChip = nativeChips[0] as HTMLElement;
+          const nativeChips = chipListNativeElement.querySelectorAll('mat-chip');
+          const firstNativeChip = nativeChips[0] as HTMLElement;
 
-          let array = chips.toArray();
-          let firstItem = array[0];
+          const array = chips.toArray();
+          const firstItem = array[0];
 
           // Focus the last item in the array
           firstItem.focus();
@@ -406,12 +406,12 @@ describe('MatChipList', () => {
         });
 
         it('should focus previous item when press RIGHT ARROW', () => {
-          let nativeChips = chipListNativeElement.querySelectorAll('mat-chip');
-          let lastNativeChip = nativeChips[nativeChips.length - 1] as HTMLElement;
+          const nativeChips = chipListNativeElement.querySelectorAll('mat-chip');
+          const lastNativeChip = nativeChips[nativeChips.length - 1] as HTMLElement;
 
-          let array = chips.toArray();
-          let lastIndex = array.length - 1;
-          let lastItem = array[lastIndex];
+          const array = chips.toArray();
+          const lastIndex = array.length - 1;
+          const lastItem = array[lastIndex];
 
           // Focus the last item in the array
           lastItem.focus();
@@ -427,11 +427,11 @@ describe('MatChipList', () => {
         });
 
         it('should focus next item when press LEFT ARROW', () => {
-          let nativeChips = chipListNativeElement.querySelectorAll('mat-chip');
-          let firstNativeChip = nativeChips[0] as HTMLElement;
+          const nativeChips = chipListNativeElement.querySelectorAll('mat-chip');
+          const firstNativeChip = nativeChips[0] as HTMLElement;
 
-          let array = chips.toArray();
-          let firstItem = array[0];
+          const array = chips.toArray();
+          const firstItem = array[0];
 
           // Focus the last item in the array
           firstItem.focus();
@@ -480,12 +480,12 @@ describe('MatChipList', () => {
         setupStandardList();
         manager = chipListInstance._keyManager;
 
-        let nativeChips = chipListNativeElement.querySelectorAll('mat-chip');
-        let firstNativeChip = nativeChips[0] as HTMLElement;
+        const nativeChips = chipListNativeElement.querySelectorAll('mat-chip');
+        const firstNativeChip = nativeChips[0] as HTMLElement;
 
-        let RIGHT_EVENT = createKeyboardEvent('keydown', RIGHT_ARROW);
-        let array = chips.toArray();
-        let firstItem = array[0];
+        const RIGHT_EVENT = createKeyboardEvent('keydown', RIGHT_ARROW);
+        const array = chips.toArray();
+        const firstItem = array[0];
 
         firstItem.focus();
         expect(manager.activeItemIndex).toBe(0);
@@ -537,7 +537,7 @@ describe('MatChipList', () => {
       describe('when the input has focus', () => {
 
         it('should not focus the last chip when press DELETE', () => {
-          let nativeInput = fixture.nativeElement.querySelector('input');
+          const nativeInput = fixture.nativeElement.querySelector('input');
 
           // Focus the input
           nativeInput.focus();
@@ -552,7 +552,7 @@ describe('MatChipList', () => {
         });
 
         it('should focus the last chip when press BACKSPACE', () => {
-          let nativeInput = fixture.nativeElement.querySelector('input');
+          const nativeInput = fixture.nativeElement.querySelector('input');
 
           // Focus the input
           nativeInput.focus();
@@ -1307,7 +1307,7 @@ describe('MatChipList', () => {
     });
 
     it('sets the aria-describedby to reference errors when in error state', () => {
-      let hintId =
+      const hintId =
           fixture.debugElement.query(By.css('.mat-hint'))!.nativeElement.getAttribute('id');
       let describedBy = chipListEl.getAttribute('aria-describedby');
 
@@ -1317,7 +1317,7 @@ describe('MatChipList', () => {
       fixture.componentInstance.formControl.markAsTouched();
       fixture.detectChanges();
 
-      let errorIds = fixture.debugElement.queryAll(By.css('.mat-error'))
+      const errorIds = fixture.debugElement.queryAll(By.css('.mat-error'))
         .map(el => el.nativeElement.getAttribute('id')).join(' ');
       describedBy = chipListEl.getAttribute('aria-describedby');
 

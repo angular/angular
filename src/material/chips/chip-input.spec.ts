@@ -20,7 +20,7 @@ describe('MatChipInput', () => {
   let inputDebugElement: DebugElement;
   let inputNativeElement: HTMLElement;
   let chipInputDirective: MatChipInput;
-  let dir = 'ltr';
+  const dir = 'ltr';
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({

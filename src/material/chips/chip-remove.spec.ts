@@ -31,7 +31,7 @@ describe('Chip Remove', () => {
 
   describe('basic behavior', () => {
     it('should apply a CSS class to the remove icon', () => {
-      let buttonElement = chipNativeElement.querySelector('button')!;
+      const buttonElement = chipNativeElement.querySelector('button')!;
 
       expect(buttonElement.classList).toContain('mat-chip-remove');
     });
@@ -49,7 +49,7 @@ describe('Chip Remove', () => {
     });
 
     it('should emit (removed) on click', () => {
-      let buttonElement = chipNativeElement.querySelector('button')!;
+      const buttonElement = chipNativeElement.querySelector('button')!;
 
       testChip.removable = true;
       fixture.detectChanges();
@@ -63,7 +63,7 @@ describe('Chip Remove', () => {
     });
 
     it('should not remove if parent chip is disabled', () => {
-      let buttonElement = chipNativeElement.querySelector('button')!;
+      const buttonElement = chipNativeElement.querySelector('button')!;
 
       testChip.disabled = true;
       testChip.removable = true;
