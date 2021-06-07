@@ -34,7 +34,7 @@ export class CutReleaseCandidateAction extends ReleaseAction {
     await this.cherryPickChangelogIntoNextBranch(releaseNotes, branchName);
   }
 
-  static async isActive(active: ActiveReleaseTrains) {
+  static override async isActive(active: ActiveReleaseTrains) {
     // A release-candidate can be cut for an active release-train currently
     // in the feature-freeze phase.
     return active.releaseCandidate !== null &&

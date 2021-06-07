@@ -100,7 +100,7 @@ export class MoveNextIntoFeatureFreezeAction extends ReleaseAction {
     info(yellow(`      Please ask team members to review: ${nextUpdatePullRequest.url}.`));
   }
 
-  static async isActive(active: ActiveReleaseTrains) {
+  static override async isActive(active: ActiveReleaseTrains) {
     // A new feature-freeze/release-candidate branch can only be created if there
     // is no active release-train in feature-freeze/release-candidate phase.
     return active.releaseCandidate === null;
