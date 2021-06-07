@@ -410,7 +410,7 @@ export class CheckboxRequiredValidator extends RequiredValidator {
    * Returns the validation result if enabled, otherwise null.
    * @nodoc
    */
-  validate(control: AbstractControl): ValidationErrors|null {
+  override validate(control: AbstractControl): ValidationErrors|null {
     return this.required ? requiredTrueValidator(control) : null;
   }
 }

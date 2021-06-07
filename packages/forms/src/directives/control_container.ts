@@ -37,7 +37,7 @@ export abstract class ControlContainer extends AbstractControlDirective {
    * @description
    * The path to this group.
    */
-  get path(): string[]|null {
+  override get path(): string[]|null {
     return null;
   }
 }
