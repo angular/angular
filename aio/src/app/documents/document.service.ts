@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { AsyncSubject, Observable, of } from 'rxjs';
+import { AsyncSubject, Observable, of, throwError } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
 
 import { DocumentContents } from './document-contents';
@@ -66,6 +66,20 @@ export class DocumentService {
             throw Error('Invalid data');
           }
         }),
+        // HACK: PREPARE FOR CHANGING TO CASE-INSENSITIVE URLS
+        catchError((error: HttpErrorResponse) => {
+          const encodedPath = encodeToLowercase(requestPath);
+          return error.status === 404 && encodedPath !== requestPath ?
+              this.http.get<DocumentContents>(encodedPath) :
+              throwError(error);
+        }),
+        catchError((error: HttpErrorResponse) => {
+          const disambiguatedPath = convertDisambiguatedPath(requestPath);
+          return error.status === 404 && disambiguatedPath !== requestPath ?
+              this.http.get<DocumentContents>(disambiguatedPath) :
+              throwError(error);
+        }),
+        // END HACK: PREPARE FOR CHANGING TO CASE-INSENSITIVE URLS
         catchError((error: HttpErrorResponse) => {
           return error.status === 404 ? this.getFileNotFoundDoc(id) : this.getErrorDoc(id, error);
         }),
@@ -96,4 +110,31 @@ export class DocumentService {
       contents: FETCHING_ERROR_CONTENTS(id),
     });
   }
+}
+
+/**
+ * Encode the path to the content in a deterministic, reversible, case-insensitive form.
+ *
+ * This avoids collisions on case-insensitive file-systems.
+ *
+ * - Escape underscores (_) to double underscores (__).
+ * - Convert all uppercase letters to lowercase followed by an underscore.
+ */
+function encodeToLowercase(str: string): string {
+  return str.replace(/[A-Z_]/g, char => char.toLowerCase() + '_');
+}
+
+/**
+ * A temporary function to deal with a future change to URL disambiguation.
+ *
+ * Currently there are disambiguated URLs such as `INJECTOR-0` and `Injector-1`, which
+ * will attempt to load their document contents from `injector-0.json` and `injector-1.json`
+ * respectively. In a future version of the AIO app, the disambiguation will be changed to
+ * escape the upper-case characters instead.
+ *
+ * This function will be called if the current AIO is trying to request documents from a
+ * server that has been updated to use the new disambiguated URLs.
+ */
+function convertDisambiguatedPath(str: string): string {
+  return encodeToLowercase(str.replace(/-\d+\.json$/, '.json'));
 }
