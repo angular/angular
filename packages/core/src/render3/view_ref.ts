@@ -308,15 +308,15 @@ export class RootViewRef<T> extends ViewRef<T> {
     super(_view);
   }
 
-  detectChanges(): void {
+  override detectChanges(): void {
     detectChangesInRootView(this._view);
   }
 
-  checkNoChanges(): void {
+  override checkNoChanges(): void {
     checkNoChangesInRootView(this._view);
   }
 
-  get context(): T {
+  override get context(): T {
     return null!;
   }
 }

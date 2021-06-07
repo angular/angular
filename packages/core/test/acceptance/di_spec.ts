@@ -2040,7 +2040,7 @@ describe('di', () => {
       }
 
       class MyRootService extends MyService {
-        id = 2;
+        override id = 2;
       }
 
       @Component({template: ''})
