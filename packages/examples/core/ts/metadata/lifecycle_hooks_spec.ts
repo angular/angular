@@ -107,7 +107,7 @@ describe('lifecycle hooks examples', () => {
     @Component({selector: 'my-cmp', template: `...`})
     class MyComponent implements OnChanges {
       
-      @Input() prop: number;
+      @Input() prop: number = 0;
 
       ngOnChanges(changes: SimpleChanges) {
         // changes.prop contains the old and the new value...
