@@ -203,7 +203,7 @@ As an alternative to listing every component that your application uses, Angular
 Sass mixins that includes styles for all components in the library: `all-component-colors`,
 `all-component-typographies`, and `all-component-themes`. These mixins behave the same as individual
 component mixins, except they emit styles for `core-theme` and _all_ 35+ components in Angular
-Material. Unless your application uses every single component, this will produce unecessary CSS.
+Material. Unless your application uses every single component, this will produce unnecessary CSS.
 
 ```scss
 @use '~@angular/material' as mat;
