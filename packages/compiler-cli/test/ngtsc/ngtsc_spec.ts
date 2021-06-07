@@ -7889,7 +7889,7 @@ export const Foo = Foo__PRE_R3__;
             import {Component, ViewEncapsulation} from '@angular/core';
             @Component({
               template: '',
-              selector: 'My-Comp',
+              selector: 'my-Comp',
               encapsulation: ViewEncapsulation.ShadowDom
             })
             export class TestCmp {}
@@ -7898,8 +7898,8 @@ export const Foo = Foo__PRE_R3__;
 
           expect(diags.length).toBe(1);
           expect(diags[0].messageText)
-              .toBe('Selector of a ShadowDom-encapsulated component must be in lower case.');
-          expect(getDiagnosticSourceCode(diags[0])).toBe(`'My-Comp'`);
+              .toBe('Selector of a ShadowDom-encapsulated component must all be in lower case.');
+          expect(getDiagnosticSourceCode(diags[0])).toBe(`'my-Comp'`);
         });
 
         it('should emit a diagnostic when a selector starts with a digit', () => {
@@ -7916,7 +7916,8 @@ export const Foo = Foo__PRE_R3__;
 
           expect(diags.length).toBe(1);
           expect(diags[0].messageText)
-              .toBe('Selector of a ShadowDom-encapsulated component must not start with a digit.');
+              .toBe(
+                  'Selector of a ShadowDom-encapsulated component must start with a lower case letter.');
           expect(getDiagnosticSourceCode(diags[0])).toBe(`'123-comp'`);
         });
 
@@ -7934,7 +7935,8 @@ export const Foo = Foo__PRE_R3__;
 
           expect(diags.length).toBe(1);
           expect(diags[0].messageText)
-              .toBe('Selector of a ShadowDom-encapsulated component must not start with a hyphen.');
+              .toBe(
+                  'Selector of a ShadowDom-encapsulated component must start with a lower case letter.');
           expect(getDiagnosticSourceCode(diags[0])).toBe(`'-comp'`);
         });
 

@@ -52,7 +52,7 @@ export enum ErrorCode {
 
   /**
    * Raised when a component uses `ShadowDom` view encapsulation, but its selector
-   * does not match the shadow DOM requirements.
+   * does not match the shadow DOM tag name requirements.
    */
   COMPONENT_INVALID_SHADOW_DOM_SELECTOR = 2009,
 

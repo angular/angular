@@ -1457,20 +1457,16 @@ function checkCustomElementSelectorForErrors(selector: string): string|null {
     return null;
   }
 
-  if (!selector.includes('-')) {
-    return 'Selector of a component that uses ViewEncapsulation.ShadowDom must contain a hyphen.';
-  }
-
-  if (selector.startsWith('-')) {
-    return 'Selector of a ShadowDom-encapsulated component must not start with a hyphen.';
+  if (!(/^[a-z]/.test(selector))) {
+    return 'Selector of a ShadowDom-encapsulated component must start with a lower case letter.';
   }
 
   if (/[A-Z]/.test(selector)) {
-    return 'Selector of a ShadowDom-encapsulated component must be in lower case.';
+    return 'Selector of a ShadowDom-encapsulated component must all be in lower case.';
   }
 
-  if (/^\d/i.test(selector)) {
-    return 'Selector of a ShadowDom-encapsulated component must not start with a digit.';
+  if (!selector.includes('-')) {
+    return 'Selector of a component that uses ViewEncapsulation.ShadowDom must contain a hyphen.';
   }
 
   return null;
