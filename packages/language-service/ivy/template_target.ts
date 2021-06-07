@@ -143,10 +143,21 @@ export interface TwoWayBindingContext {
 }
 
 /**
+ * Special marker AST that can be used when the cursor is within the `sourceSpan` but not
+ * the key or value span of a node with key/value spans.
+ */
+class OutsideKeyValueMarkerAst extends e.AST {
+  visit(): null {
+    return null;
+  }
+}
+
+/**
  * This special marker is added to the path when the cursor is within the sourceSpan but not the key
  * or value span of a node with key/value spans.
  */
-const OUTSIDE_K_V_MARKER = new e.AST(new ParseSpan(-1, -1), new e.AbsoluteSourceSpan(-1, -1));
+const OUTSIDE_K_V_MARKER =
+    new OutsideKeyValueMarkerAst(new ParseSpan(-1, -1), new e.AbsoluteSourceSpan(-1, -1));
 
 /**
  * Return the template AST node or expression AST node that most accurately
@@ -415,7 +426,7 @@ class ExpressionVisitor extends e.RecursiveAstVisitor {
     super();
   }
 
-  visit(node: e.AST, path: Array<t.Node|e.AST>) {
+  override visit(node: e.AST, path: Array<t.Node|e.AST>) {
     if (node instanceof e.ASTWithSource) {
       // In order to reduce noise, do not include `ASTWithSource` in the path.
       // For the purpose of source spans, there is no difference between
