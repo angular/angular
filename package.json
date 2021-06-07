@@ -67,7 +67,7 @@
     "rxjs": "^6.5.3",
     "rxjs-tslint-rules": "^4.33.1",
     "systemjs": "0.19.43",
-    "tslib": "^2.1.0",
+    "tslib": "^2.2.0",
     "zone.js": "~0.11.3"
   },
   "devDependencies": {
