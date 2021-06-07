@@ -70,7 +70,7 @@ class FancyService {
 }
 
 class MockFancyService extends FancyService {
-  value: string = 'mocked out value';
+  override value: string = 'mocked out value';
 }
 
 @Component({

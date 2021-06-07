@@ -368,26 +368,26 @@ class MockAnimationEngine extends InjectableAnimationEngine {
     data.push(args);
   }
 
-  registerTrigger(
+  override registerTrigger(
       componentId: string, namespaceId: string, hostElement: any, name: string,
       metadata: AnimationTriggerMetadata): void {
     this.triggers.push(metadata);
   }
 
-  onInsert(namespaceId: string, element: any): void {
+  override onInsert(namespaceId: string, element: any): void {
     this._capture('onInsert', [element]);
   }
 
-  onRemove(namespaceId: string, element: any, domFn: () => any): void {
+  override onRemove(namespaceId: string, element: any, domFn: () => any): void {
     this._capture('onRemove', [element]);
   }
 
-  process(namespaceId: string, element: any, property: string, value: any): boolean {
+  override process(namespaceId: string, element: any, property: string, value: any): boolean {
     this._capture('setProperty', [element, property, value]);
     return true;
   }
 
-  listen(
+  override listen(
       namespaceId: string, element: any, eventName: string, eventPhase: string,
       callback: (event: any) => any): () => void {
     // we don't capture the callback here since the renderer wraps it in a zone
@@ -395,21 +395,21 @@ class MockAnimationEngine extends InjectableAnimationEngine {
     return () => {};
   }
 
-  flush() {}
+  override flush() {}
 
-  destroy(namespaceId: string) {}
+  override destroy(namespaceId: string) {}
 }
 
 @Injectable()
 class ExtendedAnimationRendererFactory extends AnimationRendererFactory {
   public log: string[] = [];
 
-  begin() {
+  override begin() {
     super.begin();
     this.log.push('begin');
   }
 
-  end() {
+  override end() {
     super.end();
     this.log.push('end');
   }
