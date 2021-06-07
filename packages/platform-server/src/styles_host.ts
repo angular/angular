@@ -33,7 +33,7 @@ export class ServerStylesHost extends SharedStylesHost {
     this._styleNodes.add(el);
   }
 
-  onStylesAdded(additions: Set<string>) {
+  override onStylesAdded(additions: Set<string>) {
     additions.forEach(style => this._addStyle(style));
   }
 
