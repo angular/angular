@@ -132,7 +132,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    * @description
    * Returns this directive's instance.
    */
-  get formDirective(): Form {
+  override get formDirective(): Form {
     return this;
   }
 
@@ -149,7 +149,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    * Returns an array representing the path to this group. Because this directive
    * always lives at the top level of a form, it always an empty array.
    */
-  get path(): string[] {
+  override get path(): string[] {
     return [];
   }
 

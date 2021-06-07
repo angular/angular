@@ -162,7 +162,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    * uses this name as a key to retrieve this control's value.
    */
   // TODO(issue/24571): remove '!'.
-  @Input() name!: string;
+  @Input() override name!: string;
 
   /**
    * @description
@@ -240,7 +240,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    * Returns an array that represents the path from the top-level form to this control.
    * Each index is the string name of the control on that level.
    */
-  get path(): string[] {
+  override get path(): string[] {
     return this._parent ? controlPath(this.name, this._parent) : [this.name];
   }
 
