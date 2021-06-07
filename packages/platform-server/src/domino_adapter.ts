@@ -36,34 +36,34 @@ export function serializeDocument(doc: Document): string {
  * DOM Adapter for the server platform based on https://github.com/fgnass/domino.
  */
 export class DominoAdapter extends BrowserDomAdapter {
-  static makeCurrent() {
+  static override makeCurrent() {
     setDomTypes();
     setRootDomAdapter(new DominoAdapter());
   }
 
-  readonly supportsDOMEvents = false;
+  override readonly supportsDOMEvents = false;
   private static defaultDoc: Document;
 
-  createHtmlDocument(): HTMLDocument {
+  override createHtmlDocument(): HTMLDocument {
     return parseDocument('<html><head><title>fakeTitle</title></head><body></body></html>');
   }
 
-  getDefaultDocument(): Document {
+  override getDefaultDocument(): Document {
     if (!DominoAdapter.defaultDoc) {
       DominoAdapter.defaultDoc = domino.createDocument();
     }
     return DominoAdapter.defaultDoc;
   }
 
-  isElementNode(node: any): boolean {
+  override isElementNode(node: any): boolean {
     return node ? node.nodeType === DominoAdapter.defaultDoc.ELEMENT_NODE : false;
   }
-  isShadowRoot(node: any): boolean {
+  override isShadowRoot(node: any): boolean {
     return node.shadowRoot == node;
   }
 
   /** @deprecated No longer being used in Ivy code. To be removed in version 14. */
-  getGlobalEventTarget(doc: Document, target: string): EventTarget|null {
+  override getGlobalEventTarget(doc: Document, target: string): EventTarget|null {
     if (target === 'window') {
       return doc.defaultView;
     }
@@ -76,12 +76,12 @@ export class DominoAdapter extends BrowserDomAdapter {
     return null;
   }
 
-  getBaseHref(doc: Document): string {
+  override getBaseHref(doc: Document): string {
     // TODO(alxhub): Need relative path logic from BrowserDomAdapter here?
     return doc.documentElement!.querySelector('base')?.getAttribute('href') || '';
   }
 
-  dispatchEvent(el: Node, evt: any) {
+  override dispatchEvent(el: Node, evt: any) {
     el.dispatchEvent(evt);
 
     // Dispatch the event to the window also.
@@ -92,11 +92,11 @@ export class DominoAdapter extends BrowserDomAdapter {
     }
   }
 
-  getUserAgent(): string {
+  override getUserAgent(): string {
     return 'Fake user agent';
   }
 
-  getCookie(name: string): string {
+  override getCookie(name: string): string {
     throw new Error('getCookie has not been implemented');
   }
 }
