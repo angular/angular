@@ -646,21 +646,21 @@ class MockDriverExtension extends WebDriverExtension {
     super();
   }
 
-  timeBegin(name: string): Promise<any> {
+  override timeBegin(name: string): Promise<any> {
     this._commandLog.push(['timeBegin', name]);
     return Promise.resolve(null);
   }
 
-  timeEnd(name: string, restartName: string|null): Promise<any> {
+  override timeEnd(name: string, restartName: string|null): Promise<any> {
     this._commandLog.push(['timeEnd', name, restartName]);
     return Promise.resolve(null);
   }
 
-  perfLogFeatures(): PerfLogFeatures {
+  override perfLogFeatures(): PerfLogFeatures {
     return this._perfLogFeatures;
   }
 
-  readPerfLog(): Promise<any> {
+  override readPerfLog(): Promise<any> {
     this._commandLog.push('readPerfLog');
     if (this._perfLogs.length > 0) {
       const next = this._perfLogs[0];
@@ -671,7 +671,7 @@ class MockDriverExtension extends WebDriverExtension {
     }
   }
 
-  gc(): Promise<any> {
+  override gc(): Promise<any> {
     this._commandLog.push(['gc']);
     return Promise.resolve(null);
   }

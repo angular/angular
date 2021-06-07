@@ -54,11 +54,11 @@ export class ChromeDriverExtension extends WebDriverExtension {
     return parseInt(v, 10);
   }
 
-  gc() {
+  override gc() {
     return this.driver.executeScript('window.gc()');
   }
 
-  async timeBegin(name: string): Promise<any> {
+  override async timeBegin(name: string): Promise<any> {
     if (this._firstRun) {
       this._firstRun = false;
       // Before the first run, read out the existing performance logs
@@ -68,7 +68,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
     return this.driver.executeScript(`performance.mark('${name}-bpstart');`);
   }
 
-  timeEnd(name: string, restartName: string|null = null): Promise<any> {
+  override timeEnd(name: string, restartName: string|null = null): Promise<any> {
     let script = `performance.mark('${name}-bpend');`;
     if (restartName) {
       script += `performance.mark('${restartName}-bpstart');`;
@@ -78,7 +78,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
 
   // See [Chrome Trace Event
   // Format](https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/edit)
-  readPerfLog(): Promise<PerfLogEvent[]> {
+  override readPerfLog(): Promise<PerfLogEvent[]> {
     // TODO(tbosch): Chromedriver bug https://code.google.com/p/chromedriver/issues/detail?id=1098
     // Need to execute at least one command so that the browser logs can be read out!
     return this.driver.executeScript('1+1')
@@ -200,11 +200,11 @@ export class ChromeDriverExtension extends WebDriverExtension {
     return !expectedName ? hasCategories : hasCategories && eventName === expectedName;
   }
 
-  perfLogFeatures(): PerfLogFeatures {
+  override perfLogFeatures(): PerfLogFeatures {
     return new PerfLogFeatures({render: true, gc: true, frameCapture: true, userTiming: true});
   }
 
-  supports(capabilities: {[key: string]: any}): boolean {
+  override supports(capabilities: {[key: string]: any}): boolean {
     return this._majorChromeVersion >= 44 && capabilities['browserName'].toLowerCase() === 'chrome';
   }
 }
