@@ -124,26 +124,26 @@ export class JitEmitterVisitor extends AbstractJsEmitterVisitor {
     return null;
   }
 
-  visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): any {
+  override visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): any {
     this._emitReferenceToExternal(ast, ast.node, ctx);
     return null;
   }
 
-  visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any {
+  override visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any {
     if (stmt.hasModifier(o.StmtModifier.Exported)) {
       this._evalExportedVars.push(stmt.name);
     }
     return super.visitDeclareVarStmt(stmt, ctx);
   }
 
-  visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, ctx: EmitterVisitorContext): any {
+  override visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, ctx: EmitterVisitorContext): any {
     if (stmt.hasModifier(o.StmtModifier.Exported)) {
       this._evalExportedVars.push(stmt.name);
     }
     return super.visitDeclareFunctionStmt(stmt, ctx);
   }
 
-  visitDeclareClassStmt(stmt: o.ClassStmt, ctx: EmitterVisitorContext): any {
+  override visitDeclareClassStmt(stmt: o.ClassStmt, ctx: EmitterVisitorContext): any {
     if (stmt.hasModifier(o.StmtModifier.Exported)) {
       this._evalExportedVars.push(stmt.name);
     }

@@ -58,7 +58,7 @@ export class Xtb extends Serializer {
     return digest(message);
   }
 
-  createNameMapper(message: i18n.Message): PlaceholderMapper {
+  override createNameMapper(message: i18n.Message): PlaceholderMapper {
     return new SimplePlaceholderMapper(message, toPublicName);
   }
 }

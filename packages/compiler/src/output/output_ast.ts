@@ -1050,7 +1050,7 @@ export class JSDocComment extends LeadingComment {
   constructor(public tags: JSDocTag[]) {
     super('', /* multiline */ true, /* trailingNewline */ true);
   }
-  toString(): string {
+  override toString(): string {
     return serializeTags(this.tags);
   }
 }
@@ -1726,15 +1726,15 @@ export function findReadVarNames(stmts: Statement[]): Set<string> {
 
 class _ReadVarVisitor extends RecursiveAstVisitor {
   varNames = new Set<string>();
-  visitDeclareFunctionStmt(stmt: DeclareFunctionStmt, context: any): any {
+  override visitDeclareFunctionStmt(stmt: DeclareFunctionStmt, context: any): any {
     // Don't descend into nested functions
     return stmt;
   }
-  visitDeclareClassStmt(stmt: ClassStmt, context: any): any {
+  override visitDeclareClassStmt(stmt: ClassStmt, context: any): any {
     // Don't descend into nested classes
     return stmt;
   }
-  visitReadVarExpr(ast: ReadVarExpr, context: any): any {
+  override visitReadVarExpr(ast: ReadVarExpr, context: any): any {
     if (ast.name) {
       this.varNames.add(ast.name);
     }
@@ -1750,7 +1750,7 @@ export function collectExternalReferences(stmts: Statement[]): ExternalReference
 
 class _FindExternalReferencesVisitor extends RecursiveAstVisitor {
   externalReferences: ExternalReference[] = [];
-  visitExternalExpr(e: ExternalExpr, context: any) {
+  override visitExternalExpr(e: ExternalExpr, context: any) {
     this.externalReferences.push(e.value);
     return super.visitExternalExpr(e, context);
   }
@@ -1786,7 +1786,7 @@ class _ApplySourceSpanTransformer extends AstTransformer {
     return clone;
   }
 
-  transformExpr(expr: Expression, context: any): Expression {
+  override transformExpr(expr: Expression, context: any): Expression {
     if (!expr.sourceSpan) {
       expr = this._clone(expr);
       expr.sourceSpan = this.sourceSpan;
@@ -1794,7 +1794,7 @@ class _ApplySourceSpanTransformer extends AstTransformer {
     return expr;
   }
 
-  transformStmt(stmt: Statement, context: any): Statement {
+  override transformStmt(stmt: Statement, context: any): Statement {
     if (!stmt.sourceSpan) {
       stmt = this._clone(stmt);
       stmt.sourceSpan = this.sourceSpan;

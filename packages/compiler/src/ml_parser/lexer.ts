@@ -1006,22 +1006,22 @@ class EscapedCharacterCursor extends PlainCharacterCursor {
     }
   }
 
-  advance(): void {
+  override advance(): void {
     this.state = this.internalState;
     super.advance();
     this.processEscapeSequence();
   }
 
-  init(): void {
+  override init(): void {
     super.init();
     this.processEscapeSequence();
   }
 
-  clone(): EscapedCharacterCursor {
+  override clone(): EscapedCharacterCursor {
     return new EscapedCharacterCursor(this);
   }
 
-  getChars(start: this): string {
+  override getChars(start: this): string {
     const cursor = start.clone();
     let chars = '';
     while (cursor.internalState.offset < this.internalState.offset) {

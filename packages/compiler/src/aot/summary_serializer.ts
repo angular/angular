@@ -234,7 +234,7 @@ class ToJsonSerializer extends ValueTransformer {
     return visitValue(value, this, flags);
   }
 
-  visitOther(value: any, context: any): any {
+  override visitOther(value: any, context: any): any {
     if (value instanceof StaticSymbol) {
       let baseSymbol = this.symbolResolver.getStaticSymbol(value.filePath, value.name);
       const index = this.visitStaticSymbol(baseSymbol, context);
@@ -249,7 +249,7 @@ class ToJsonSerializer extends ValueTransformer {
    * TODO: find out a way to have line and character numbers in errors without
    * excessive recompilation in bazel.
    */
-  visitStringMap(map: {[key: string]: any}, context: any): any {
+  override visitStringMap(map: {[key: string]: any}, context: any): any {
     if (map['__symbolic'] === 'resolved') {
       return visitValue(map['symbol'], this, context);
     }
@@ -481,7 +481,7 @@ class FromJsonDeserializer extends ValueTransformer {
     return {moduleName: data.moduleName, summaries, importAs: allImportAs};
   }
 
-  visitStringMap(map: {[key: string]: any}, context: any): any {
+  override visitStringMap(map: {[key: string]: any}, context: any): any {
     if ('__symbol' in map) {
       const baseSymbol = this.symbols[map['__symbol']];
       const members = map['members'];

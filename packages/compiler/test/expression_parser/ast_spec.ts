@@ -30,7 +30,7 @@ describe('RecursiveAstVisitor', () => {
 });
 
 class Visitor extends RecursiveAstVisitor {
-  visit(node: AST, path: AST[]) {
+  override visit(node: AST, path: AST[]) {
     path.push(node);
     node.visit(this, path);
   }
