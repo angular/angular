@@ -70,18 +70,17 @@ export class DocumentService {
         catchError((error: HttpErrorResponse) => {
           const encodedPath = encodeToLowercase(requestPath);
           return error.status === 404 && encodedPath !== requestPath ?
-              this.http.get<DocumentContents>(encodeToLowercase(requestPath)) :
+              this.http.get<DocumentContents>(encodedPath) :
               throwError(error);
         }),
         catchError((error: HttpErrorResponse) => {
           const disambiguatedPath = convertDisambiguatedPath(requestPath);
           return error.status === 404 && disambiguatedPath !== requestPath ?
-              this.http.get<DocumentContents>(convertDisambiguatedPath(requestPath)) :
+              this.http.get<DocumentContents>(disambiguatedPath) :
               throwError(error);
         }),
         // END HACK: PREPARE FOR CHANGING TO CASE-INSENSITIVE URLS
         catchError((error: HttpErrorResponse) => {
-          console.log('3');
           return error.status === 404 ? this.getFileNotFoundDoc(id) : this.getErrorDoc(id, error);
         }),
       )
