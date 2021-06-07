@@ -160,12 +160,12 @@ class MockDriverAdapter extends WebDriverAdapter {
     super();
   }
 
-  executeScript(script: string) {
+  override executeScript(script: string) {
     this._log.push(['executeScript', script]);
     return Promise.resolve(null);
   }
 
-  logs(type: string): Promise<any[]> {
+  override logs(type: string): Promise<any[]> {
     this._log.push(['logs', type]);
     if (type === 'performance') {
       return Promise.resolve(this._perfRecords.map(function(record) {

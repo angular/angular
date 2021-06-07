@@ -71,7 +71,7 @@ export class ConsoleReporter extends Reporter {
     this._printStringRow(this._metricNames.map((_) => ''), '-');
   }
 
-  reportMeasureValues(measureValues: MeasureValues): Promise<any> {
+  override reportMeasureValues(measureValues: MeasureValues): Promise<any> {
     const formattedValues = this._metricNames.map(metricName => {
       const value = measureValues.values[metricName];
       return formatNum(value);
@@ -80,7 +80,8 @@ export class ConsoleReporter extends Reporter {
     return Promise.resolve(null);
   }
 
-  reportSample(completeSample: MeasureValues[], validSamples: MeasureValues[]): Promise<any> {
+  override reportSample(completeSample: MeasureValues[], validSamples: MeasureValues[]):
+      Promise<any> {
     this._printStringRow(this._metricNames.map((_) => ''), '=');
     this._printStringRow(
         this._metricNames.map(metricName => formatStats(validSamples, metricName)));

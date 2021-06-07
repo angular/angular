@@ -33,7 +33,7 @@ export class MultiMetric extends Metric {
   /**
    * Starts measuring
    */
-  beginMeasure(): Promise<any> {
+  override beginMeasure(): Promise<any> {
     return Promise.all(this._metrics.map(metric => metric.beginMeasure()));
   }
 
@@ -42,7 +42,7 @@ export class MultiMetric extends Metric {
    * since the begin call.
    * @param restart: Whether to restart right after this.
    */
-  endMeasure(restart: boolean): Promise<{[key: string]: any}> {
+  override endMeasure(restart: boolean): Promise<{[key: string]: any}> {
     return Promise.all(this._metrics.map(metric => metric.endMeasure(restart)))
         .then(values => mergeStringMaps(<any>values));
   }
@@ -51,7 +51,7 @@ export class MultiMetric extends Metric {
    * Describes the metrics provided by this metric implementation.
    * (e.g. units, ...)
    */
-  describe(): {[key: string]: any} {
+  override describe(): {[key: string]: any} {
     return mergeStringMaps(this._metrics.map((metric) => metric.describe()));
   }
 }

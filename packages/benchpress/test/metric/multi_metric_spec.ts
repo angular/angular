@@ -50,17 +50,17 @@ class MockMetric extends Metric {
     super();
   }
 
-  beginMeasure(): Promise<string> {
+  override beginMeasure(): Promise<string> {
     return Promise.resolve(`${this._id}_beginMeasure`);
   }
 
-  endMeasure(restart: boolean): Promise<{[key: string]: any}> {
+  override endMeasure(restart: boolean): Promise<{[key: string]: any}> {
     const result: {[key: string]: any} = {};
     result[this._id] = {'restart': restart};
     return Promise.resolve(result);
   }
 
-  describe(): {[key: string]: string} {
+  override describe(): {[key: string]: string} {
     const result: {[key: string]: string} = {};
     result[this._id] = 'describe';
     return result;
