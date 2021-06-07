@@ -31,7 +31,7 @@ export class CommonJsRenderingFormatter extends Esm5RenderingFormatter {
   /**
    *  Add the imports below any in situ imports as `require` calls.
    */
-  addImports(output: MagicString, imports: Import[], file: ts.SourceFile): void {
+  override addImports(output: MagicString, imports: Import[], file: ts.SourceFile): void {
     // Avoid unnecessary work if there are no imports to add.
     if (imports.length === 0) {
       return;
@@ -46,7 +46,7 @@ export class CommonJsRenderingFormatter extends Esm5RenderingFormatter {
   /**
    * Add the exports to the bottom of the file.
    */
-  addExports(
+  override addExports(
       output: MagicString, entryPointBasePath: string, exports: ExportInfo[],
       importManager: ImportManager, file: ts.SourceFile): void {
     exports.forEach(e => {
@@ -61,7 +61,7 @@ export class CommonJsRenderingFormatter extends Esm5RenderingFormatter {
     });
   }
 
-  addDirectExports(
+  override addDirectExports(
       output: MagicString, exports: Reexport[], importManager: ImportManager,
       file: ts.SourceFile): void {
     for (const e of exports) {
@@ -72,7 +72,7 @@ export class CommonJsRenderingFormatter extends Esm5RenderingFormatter {
     }
   }
 
-  protected findEndOfImports(sf: ts.SourceFile): number {
+  protected override findEndOfImports(sf: ts.SourceFile): number {
     for (const statement of sf.statements) {
       if (ts.isExpressionStatement(statement) && isRequireCall(statement.expression)) {
         continue;

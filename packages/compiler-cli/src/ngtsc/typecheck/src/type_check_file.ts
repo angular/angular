@@ -77,7 +77,7 @@ export class TypeCheckFile extends Environment {
     return source;
   }
 
-  getPreludeStatements(): ts.Statement[] {
+  override getPreludeStatements(): ts.Statement[] {
     return [];
   }
 }

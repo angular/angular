@@ -38,7 +38,7 @@ export class MockFileSystemNative extends MockFileSystem {
     return NodeJSFileSystem.prototype.basename.call(this, filePath, extension);
   }
 
-  isCaseSensitive() {
+  override isCaseSensitive() {
     return NodeJSFileSystem.prototype.isCaseSensitive.call(this);
   }
 
@@ -46,7 +46,7 @@ export class MockFileSystemNative extends MockFileSystem {
     return NodeJSFileSystem.prototype.isRooted.call(this, path);
   }
 
-  isRoot(path: AbsoluteFsPath): boolean {
+  override isRoot(path: AbsoluteFsPath): boolean {
     return NodeJSFileSystem.prototype.isRoot.call(this, path);
   }
 

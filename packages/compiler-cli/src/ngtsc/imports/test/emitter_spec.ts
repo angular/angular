@@ -175,7 +175,7 @@ runInEachFileSystem(() => {
     it('should enumerate exports with the ReflectionHost', () => {
       // Use a modified ReflectionHost that prefixes all export names that it enumerates.
       class TestHost extends TypeScriptReflectionHost {
-        getExportsOfModule(node: ts.Node): Map<string, Declaration>|null {
+        override getExportsOfModule(node: ts.Node): Map<string, Declaration>|null {
           const realExports = super.getExportsOfModule(node);
           if (realExports === null) {
             return null;

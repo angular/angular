@@ -36,7 +36,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     this.compilerHost = src.host;
   }
 
-  getImportOfIdentifier(id: ts.Identifier): Import|null {
+  override getImportOfIdentifier(id: ts.Identifier): Import|null {
     // Is `id` a namespaced property access, e.g. `Directive` in `core.Directive`?
     // If so capture the symbol of the namespace, e.g. `core`.
     const nsIdentifier = findNamespaceOfIdentifier(id);
@@ -45,7 +45,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     return from !== null ? {from, name: id.text} : null;
   }
 
-  getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
+  override getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
     // First we try one of the following:
     // 1. The `exports` identifier - referring to the current file/module.
     // 2. An identifier (e.g. `foo`) that refers to an imported UMD module.
@@ -83,7 +83,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     };
   }
 
-  getExportsOfModule(module: ts.Node): Map<string, Declaration>|null {
+  override getExportsOfModule(module: ts.Node): Map<string, Declaration>|null {
     return super.getExportsOfModule(module) || this.umdExports.get(module.getSourceFile());
   }
 
@@ -107,12 +107,13 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
    * @param sourceFile The module whose statements we want.
    * @returns An array of top level statements for the given module.
    */
-  protected getModuleStatements(sourceFile: ts.SourceFile): ts.Statement[] {
+  protected override getModuleStatements(sourceFile: ts.SourceFile): ts.Statement[] {
     const umdModule = this.getUmdModule(sourceFile);
     return umdModule !== null ? Array.from(umdModule.factoryFn.body.statements) : [];
   }
 
-  protected getClassSymbolFromOuterDeclaration(declaration: ts.Node): NgccClassSymbol|undefined {
+  protected override getClassSymbolFromOuterDeclaration(declaration: ts.Node): NgccClassSymbol
+      |undefined {
     const superSymbol = super.getClassSymbolFromOuterDeclaration(declaration);
     if (superSymbol) {
       return superSymbol;
@@ -143,7 +144,8 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
   }
 
 
-  protected getClassSymbolFromInnerDeclaration(declaration: ts.Node): NgccClassSymbol|undefined {
+  protected override getClassSymbolFromInnerDeclaration(declaration: ts.Node): NgccClassSymbol
+      |undefined {
     const superClassSymbol = super.getClassSymbolFromInnerDeclaration(declaration);
     if (superClassSymbol !== undefined) {
       return superClassSymbol;
@@ -164,7 +166,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
   /**
    * Extract all "classes" from the `statement` and add them to the `classes` map.
    */
-  protected addClassSymbolsFromStatement(
+  protected override addClassSymbolsFromStatement(
       classes: Map<ts.Symbol, NgccClassSymbol>, statement: ts.Statement): void {
     super.addClassSymbolsFromStatement(classes, statement);
 
@@ -184,7 +186,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
    *
    * @param statement The statement that needs to be preprocessed.
    */
-  protected preprocessStatement(statement: ts.Statement): void {
+  protected override preprocessStatement(statement: ts.Statement): void {
     super.preprocessStatement(statement);
 
     if (!isExportsStatement(statement)) {
@@ -474,7 +476,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
    * If this is an IIFE then try to grab the outer and inner classes otherwise fallback on the super
    * class.
    */
-  protected getDeclarationOfExpression(expression: ts.Expression): Declaration|null {
+  protected override getDeclarationOfExpression(expression: ts.Expression): Declaration|null {
     const inner = getInnerClassDeclaration(expression);
     if (inner !== null) {
       const outer = getOuterNodeFromInnerDeclaration(inner);

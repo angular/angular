@@ -28,20 +28,20 @@ runInEachFileSystem(() => {
         super(fs, new MockLogger());
         fs.ensureDir(fs.dirname(this.path));
       }
-      remove() {
+      override remove() {
         this.log.push('remove()');
         super.remove();
       }
-      write() {
+      override write() {
         this.log.push('write()');
         super.write();
       }
-      read() {
+      override read() {
         const contents = super.read();
         this.log.push('read() => ' + contents);
         return contents;
       }
-      createUnlocker(): ChildProcess {
+      override createUnlocker(): ChildProcess {
         this.log = this.log || [];
         this.log.push('createUnlocker()');
         const log = this.log;

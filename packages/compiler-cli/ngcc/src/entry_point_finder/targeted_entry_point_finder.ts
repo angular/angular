@@ -35,7 +35,7 @@ export class TargetedEntryPointFinder extends TracingEntryPointFinder {
    * Search for Angular entry-points that can be reached from the entry-point specified by the given
    * `targetPath`.
    */
-  findEntryPoints(): SortedEntryPointsInfo {
+  override findEntryPoints(): SortedEntryPointsInfo {
     const entryPoints = super.findEntryPoints();
 
     const invalidTarget =

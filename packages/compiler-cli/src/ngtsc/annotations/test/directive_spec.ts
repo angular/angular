@@ -153,7 +153,7 @@ runInEachFileSystem(() => {
         super(checker);
       }
 
-      hasBaseClass(_class: ClassDeclaration): boolean {
+      override hasBaseClass(_class: ClassDeclaration): boolean {
         return hasBaseClass;
       }
     }
