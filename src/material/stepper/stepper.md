@@ -178,7 +178,7 @@ will not affect steppers marked as `linear`.
 
 ### Lazy rendering
 By default, the stepper will render all of it's content when it's initialized. If you have some
-content that you want to want to defer until the particular step is opened, you can put it inside
+content that you want to defer until the particular step is opened, you can put it inside
 an `ng-template` with the `matStepContent` attribute.
 
 <!-- example(stepper-lazy-content) -->
