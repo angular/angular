@@ -44,7 +44,7 @@ export class ConfigureNextAsMajorAction extends ReleaseAction {
     info(yellow(`      Please ask team members to review: ${pullRequest.url}.`));
   }
 
-  static async isActive(active: ActiveReleaseTrains) {
+  static override async isActive(active: ActiveReleaseTrains) {
     // The `next` branch can always be switched to a major version, unless it already
     // is targeting a new major. A major can contain minor changes, so we can always
     // change the target from a minor to a major.

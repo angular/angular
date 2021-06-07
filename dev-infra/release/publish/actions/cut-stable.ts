@@ -73,7 +73,7 @@ export class CutStableAction extends ReleaseAction {
     return semver.parse(`${version.major}.${version.minor}.${version.patch}`)!;
   }
 
-  static async isActive(active: ActiveReleaseTrains) {
+  static override async isActive(active: ActiveReleaseTrains) {
     // A stable version can be cut for an active release-train currently in the
     // release-candidate phase. Note: It is not possible to directly release from
     // feature-freeze phase into a stable version.

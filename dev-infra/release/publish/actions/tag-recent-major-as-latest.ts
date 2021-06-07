@@ -35,7 +35,7 @@ export class TagRecentMajorAsLatest extends ReleaseAction {
     await invokeSetNpmDistCommand('latest', this.active.latest.version);
   }
 
-  static async isActive({latest}: ActiveReleaseTrains, config: ReleaseConfig) {
+  static override async isActive({latest}: ActiveReleaseTrains, config: ReleaseConfig) {
     // If the latest release-train does currently not have a major version as version. e.g.
     // the latest branch is `10.0.x` with the version being `10.0.2`. In such cases, a major
     // has not been released recently, and this action should never become active.

@@ -31,19 +31,19 @@ export class AuthenticatedGitClient extends GitClient {
   private _cachedOauthScopes: Promise<string[]>|null = null;
 
   /** Instance of an authenticated github client. */
-  readonly github = new AuthenticatedGithubClient(this.githubToken);
+  override readonly github = new AuthenticatedGithubClient(this.githubToken);
 
   protected constructor(readonly githubToken: string, baseDir?: string, config?: NgDevConfig) {
     super(baseDir, config);
   }
 
   /** Sanitizes a given message by omitting the provided Github token if present. */
-  sanitizeConsoleOutput(value: string): string {
+  override sanitizeConsoleOutput(value: string): string {
     return value.replace(this._githubTokenRegex, '<TOKEN>');
   }
 
   /** Git URL that resolves to the configured repository. */
-  getRepoGitUrl() {
+  override getRepoGitUrl() {
     return getRepositoryGitUrl(this.remoteConfig, this.githubToken);
   }
 
@@ -102,7 +102,7 @@ export class AuthenticatedGitClient extends GitClient {
    * Static method to get the singleton instance of the `AuthenticatedGitClient`,
    * creating it if it has not yet been created.
    */
-  static get(): AuthenticatedGitClient {
+  static override get(): AuthenticatedGitClient {
     if (!AuthenticatedGitClient._authenticatedInstance) {
       throw new Error('No instance of `AuthenticatedGitClient` has been set up yet.');
     }
