@@ -70,7 +70,7 @@ class TestComponent {
 }
 
 class TestUrlResolver extends UrlResolver {
-  resolve(baseUrl: string, url: string): string {
+  override resolve(baseUrl: string, url: string): string {
     // Don't use baseUrl to get the same URL as templateUrl.
     // This is to remove any difference between Dart and TS tests.
     return url;
