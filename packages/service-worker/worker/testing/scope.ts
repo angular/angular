@@ -71,7 +71,7 @@ export class SwTestHarnessImpl extends Adapter<MockCacheStorage> implements
         },
   } as any;
 
-  get time() {
+  override get time() {
     return this.mockTime;
   }
 
@@ -84,7 +84,7 @@ export class SwTestHarnessImpl extends Adapter<MockCacheStorage> implements
     fired: boolean,
   }[] = [];
 
-  parseUrl = parseUrl;
+  override parseUrl = parseUrl;
 
   constructor(private server: MockServerState, caches: MockCacheStorage, scopeUrl: string) {
     super(scopeUrl, caches);
@@ -156,15 +156,15 @@ export class SwTestHarnessImpl extends Adapter<MockCacheStorage> implements
     this.eventHandlers.delete(type);
   }
 
-  newRequest(url: string, init: Object = {}): Request {
+  override newRequest(url: string, init: Object = {}): Request {
     return new MockRequest(normalizeUrl(url, this.scopeUrl), init);
   }
 
-  newResponse(body: string, init: Object = {}): Response {
+  override newResponse(body: string, init: Object = {}): Response {
     return new MockResponse(body, init);
   }
 
-  newHeaders(headers: {[name: string]: string}): Headers {
+  override newHeaders(headers: {[name: string]: string}): Headers {
     return Object.keys(headers).reduce((mock, name) => {
       mock.set(name, headers[name]);
       return mock;
@@ -227,7 +227,7 @@ export class SwTestHarnessImpl extends Adapter<MockCacheStorage> implements
     return event.ready;
   }
 
-  timeout(ms: number): Promise<void> {
+  override timeout(ms: number): Promise<void> {
     const promise = new Promise<void>(resolve => {
       this.timers.push({
         at: this.mockTime + ms,
@@ -254,7 +254,7 @@ export class SwTestHarnessImpl extends Adapter<MockCacheStorage> implements
         });
   }
 
-  isClient(obj: any): obj is Client {
+  override isClient(obj: any): obj is Client {
     return obj instanceof MockClient;
   }
 }
