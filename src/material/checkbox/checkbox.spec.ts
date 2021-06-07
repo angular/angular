@@ -280,7 +280,8 @@ describe('MatCheckbox', () => {
     });
 
     it('should project the checkbox content into the label element', () => {
-      let label = <HTMLLabelElement>checkboxNativeElement.querySelector('.mat-checkbox-label');
+      const label =
+          <HTMLLabelElement>checkboxNativeElement.querySelector('.mat-checkbox-label');
       expect(label.textContent!.trim()).toBe('Simple checkbox');
     });
 
@@ -690,7 +691,7 @@ describe('MatCheckbox', () => {
     });
 
     it('should emit the event to the change observable', () => {
-      let changeSpy = jasmine.createSpy('onChangeObservable');
+      const changeSpy = jasmine.createSpy('onChangeObservable');
 
       checkboxInstance.change.subscribe(changeSpy);
 
@@ -916,7 +917,7 @@ describe('MatCheckbox', () => {
     });
 
     it('should assign a unique id to each checkbox', () => {
-      let [firstId, secondId] =
+      const [firstId, secondId] =
           fixture.debugElement.queryAll(By.directive(MatCheckbox))
           .map(debugElement => debugElement.nativeElement.querySelector('input').id);
 
@@ -926,7 +927,7 @@ describe('MatCheckbox', () => {
     });
 
     it('should not change focus origin if origin not specified', () => {
-      let [firstCheckboxDebugEl, secondCheckboxDebugEl] =
+      const [firstCheckboxDebugEl, secondCheckboxDebugEl] =
              fixture.debugElement.queryAll(By.directive(MatCheckbox));
       fixture.detectChanges();
 
@@ -1067,8 +1068,8 @@ describe('MatCheckbox', () => {
     });
 
     it('should forward name value to input element', () => {
-      let checkboxElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
-      let inputElement = <HTMLInputElement> checkboxElement.nativeElement.querySelector('input');
+      const checkboxElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
+      const inputElement = <HTMLInputElement> checkboxElement.nativeElement.querySelector('input');
 
       expect(inputElement.getAttribute('name')).toBe('test-name');
     });
