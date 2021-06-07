@@ -67,6 +67,30 @@ describe('DocumentService', () => {
       expect(latestDocument).toEqual(doc1);
     });
 
+    // HACK: PREPARE FOR CHANGING TO CASE-INSENSITIVE URLS
+    it('should attempt disambiguated document paths if the document is not found on the server', () => {
+      let currentDocument: DocumentContents|undefined;
+      const notFoundDoc = { id: FILE_NOT_FOUND_ID, contents: '<h1>Page Not Found</h1>' };
+      const { docService, logger } = getServices('missing/Doc-1');
+      docService.currentDocument.subscribe(doc => currentDocument = doc);
+
+      // Initial request return 404.
+      httpMock.expectOne({url: 'generated/docs/missing/Doc-1.json'}).flush(null, {status: 404, statusText: 'NOT FOUND'});
+      httpMock.expectOne({url: 'generated/docs/missing/d_oc-1.json'}).flush(null, {status: 404, statusText: 'NOT FOUND'});
+      httpMock.expectOne({url: 'generated/docs/missing/d_oc.json'}).flush(null, {status: 404, statusText: 'NOT FOUND'});
+      expect(logger.output.error).toEqual([
+        [jasmine.any(Error)]
+      ]);
+      expect(logger.output.error[0][0].message).toEqual(`Document file not found at 'missing/Doc-1'`);
+
+      // Subsequent request for not-found document.
+      logger.output.error = [];
+      httpMock.expectOne(CONTENT_URL_PREFIX + 'file-not-found.json').flush(notFoundDoc);
+      expect(logger.output.error).toEqual([]); // does not report repeated errors
+      expect(currentDocument).toEqual(notFoundDoc);
+    });
+    // END HACK: PREPARE FOR CHANGING TO CASE-INSENSITIVE URLS
+
     it('should emit the not-found document if the document is not found on the server', () => {
       let currentDocument: DocumentContents|undefined;
       const notFoundDoc = { id: FILE_NOT_FOUND_ID, contents: '<h1>Page Not Found</h1>' };
@@ -83,7 +107,7 @@ describe('DocumentService', () => {
       // Subsequent request for not-found document.
       logger.output.error = [];
       httpMock.expectOne(CONTENT_URL_PREFIX + 'file-not-found.json').flush(notFoundDoc);
-      expect(logger.output.error).toEqual([]); // does not report repeate errors
+      expect(logger.output.error).toEqual([]); // does not report repeated errors
       expect(currentDocument).toEqual(notFoundDoc);
     });
 
