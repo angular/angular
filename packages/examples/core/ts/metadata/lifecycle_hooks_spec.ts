@@ -106,7 +106,6 @@ describe('lifecycle hooks examples', () => {
     // #docregion OnChanges
     @Component({selector: 'my-cmp', template: `...`})
     class MyComponent implements OnChanges {
-      
       @Input() prop: number = 0;
 
       ngOnChanges(changes: SimpleChanges) {
