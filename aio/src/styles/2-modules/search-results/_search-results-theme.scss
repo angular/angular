@@ -29,7 +29,7 @@
       }
 
       .no-results {
-        color: mat.get-color-from-palette($foreground, text);
+        color: constants.$white;
       }
 
       a {
