@@ -7,7 +7,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompiler, AotCompilerOptions, core, createAotCompiler, FormattedMessageChain, GeneratedFile, getMissingNgModuleMetadataErrorData, getParseErrors, isFormattedError, isSyntaxError, MessageBundle, NgAnalyzedFileWithInjectables, NgAnalyzedModules, ParseSourceSpan, PartialModule, Serializer, Xliff, Xliff2, Xmb} from '@angular/compiler';
+import {AotCompiler, AotCompilerOptions, core, createAotCompiler, FormattedMessageChain, GeneratedFile, getMissingNgModuleMetadataErrorData, getParseErrors, isFormattedError, isSyntaxError, MessageBundle, NgAnalyzedFileWithInjectables, NgAnalyzedModules, ParseSourceSpan, PartialModule} from '@angular/compiler';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -22,6 +22,7 @@ import {verifySupportedTypeScriptVersion} from '../typescript_support';
 import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, DiagnosticMessageChain, EmitFlags, LazyRoute, LibrarySummary, Program, SOURCE, TsEmitCallback, TsMergeEmitResultsCallback} from './api';
 import {CodeGenerator, getOriginalReferences, TsCompilerAotCompilerTypeCheckHostAdapter} from './compiler_host';
 import {getDownlevelDecoratorsTransform} from './downlevel_decorators_transform';
+import {i18nExtract} from './i18n';
 import {getInlineResourcesTransformFactory, InlineResourcesMetadataTransformer} from './inline_resources';
 import {getExpressionLoweringTransformFactory, LowerMetadataTransform} from './lower_expressions';
 import {MetadataCache, MetadataTransformer} from './metadata_cache';
@@ -936,66 +937,6 @@ export function createSrcToOutPathMapper(
     // normalized paths (e.g. if a custom compiler host is used)
     return (srcFileName) => normalizeSeparators(srcFileName);
   }
-}
-
-export function i18nExtract(
-    formatName: string|null, outFile: string|null, host: ts.CompilerHost, options: CompilerOptions,
-    bundle: MessageBundle): string[] {
-  formatName = formatName || 'xlf';
-  // Checks the format and returns the extension
-  const ext = i18nGetExtension(formatName);
-  const content = i18nSerialize(bundle, formatName, options);
-  const dstFile = outFile || `messages.${ext}`;
-  const dstPath = path.resolve(options.outDir || options.basePath!, dstFile);
-  host.writeFile(dstPath, content, false, undefined, []);
-  return [dstPath];
-}
-
-export function i18nSerialize(
-    bundle: MessageBundle, formatName: string, options: CompilerOptions): string {
-  const format = formatName.toLowerCase();
-  let serializer: Serializer;
-
-  switch (format) {
-    case 'xmb':
-      serializer = new Xmb();
-      break;
-    case 'xliff2':
-    case 'xlf2':
-      serializer = new Xliff2();
-      break;
-    case 'xlf':
-    case 'xliff':
-    default:
-      serializer = new Xliff();
-  }
-
-  return bundle.write(serializer, getPathNormalizer(options.basePath));
-}
-
-function getPathNormalizer(basePath?: string) {
-  // normalize source paths by removing the base path and always using "/" as a separator
-  return (sourcePath: string) => {
-    sourcePath = basePath ? path.relative(basePath, sourcePath) : sourcePath;
-    return sourcePath.split(path.sep).join('/');
-  };
-}
-
-export function i18nGetExtension(formatName: string): string {
-  const format = formatName.toLowerCase();
-
-  switch (format) {
-    case 'xmb':
-      return 'xmb';
-    case 'xlf':
-    case 'xlif':
-    case 'xliff':
-    case 'xlf2':
-    case 'xliff2':
-      return 'xlf';
-  }
-
-  throw new Error(`Unsupported format "${formatName}"`);
 }
 
 function mergeEmitResults(emitResults: ts.EmitResult[]): ts.EmitResult {
