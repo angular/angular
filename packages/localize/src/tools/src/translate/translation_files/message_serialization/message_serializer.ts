@@ -36,7 +36,7 @@ export class MessageSerializer<T> extends BaseVisitor {
     return this.renderer.message;
   }
 
-  visitElement(element: Element): void {
+  override visitElement(element: Element): void {
     if (this.config.placeholder && element.name === this.config.placeholder.elementName) {
       const name = getAttrOrThrow(element, this.config.placeholder.nameAttribute);
       const body = this.config.placeholder.bodyAttribute &&
@@ -55,18 +55,18 @@ export class MessageSerializer<T> extends BaseVisitor {
     }
   }
 
-  visitText(text: Text): void {
+  override visitText(text: Text): void {
     this.renderer.text(text.value);
   }
 
-  visitExpansion(expansion: Expansion): void {
+  override visitExpansion(expansion: Expansion): void {
     this.renderer.startIcu();
     this.renderer.text(`${expansion.switchValue}, ${expansion.type},`);
     visitAll(this, expansion.cases);
     this.renderer.endIcu();
   }
 
-  visitExpansionCase(expansionCase: ExpansionCase): void {
+  override visitExpansionCase(expansionCase: ExpansionCase): void {
     this.renderer.text(` ${expansionCase.value} {`);
     this.renderer.startContainer();
     visitAll(this, expansionCase.expression);

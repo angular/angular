@@ -90,7 +90,7 @@ interface TranslationVisitorContext {
 }
 
 class Xliff2TranslationVisitor extends BaseVisitor {
-  visitElement(element: Element, {bundle, unit}: TranslationVisitorContext): any {
+  override visitElement(element: Element, {bundle, unit}: TranslationVisitorContext): any {
     if (element.name === 'unit') {
       this.visitUnitElement(element, bundle);
     } else if (element.name === 'segment') {

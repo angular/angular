@@ -82,7 +82,7 @@ export class XtbTranslationParser implements TranslationParser<XmlTranslationPar
 }
 
 class XtbVisitor extends BaseVisitor {
-  visitElement(element: Element, bundle: ParsedTranslationBundle): any {
+  override visitElement(element: Element, bundle: ParsedTranslationBundle): any {
     switch (element.name) {
       case 'translation':
         // Error if no `id` attribute
