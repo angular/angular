@@ -64,7 +64,7 @@ export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
     this._hostNodes.delete(hostNode);
   }
 
-  onStylesAdded(additions: Set<string>): void {
+  override onStylesAdded(additions: Set<string>): void {
     this._hostNodes.forEach((styleNodes, hostNode) => {
       this._addStylesToHost(additions, hostNode, styleNodes);
     });

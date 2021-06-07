@@ -241,7 +241,7 @@ export class AnimationRenderer extends BaseAnimationRenderer implements Renderer
     this.namespaceId = namespaceId;
   }
 
-  setProperty(el: any, name: string, value: any): void {
+  override setProperty(el: any, name: string, value: any): void {
     if (name.charAt(0) == ANIMATION_PREFIX) {
       if (name.charAt(1) == '.' && name == DISABLE_ANIMATIONS_FLAG) {
         value = value === undefined ? true : !!value;
@@ -254,8 +254,9 @@ export class AnimationRenderer extends BaseAnimationRenderer implements Renderer
     }
   }
 
-  listen(target: 'window'|'document'|'body'|any, eventName: string, callback: (event: any) => any):
-      () => void {
+  override listen(
+      target: 'window'|'document'|'body'|any, eventName: string,
+      callback: (event: any) => any): () => void {
     if (eventName.charAt(0) == ANIMATION_PREFIX) {
       const element = resolveElementFromTarget(target);
       let name = eventName.substr(1);
