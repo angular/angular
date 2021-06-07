@@ -232,7 +232,7 @@ class ParentInjectorPromise extends SyncPromise<Injector> {
     element.data!(this.injectorKey, this);
   }
 
-  resolve(injector: Injector): void {
+  override resolve(injector: Injector): void {
     // Store the real injector on the element.
     this.element.data!(this.injectorKey, injector);
 
