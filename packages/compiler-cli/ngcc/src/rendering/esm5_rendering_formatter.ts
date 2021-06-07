@@ -24,7 +24,8 @@ export class Esm5RenderingFormatter extends EsmRenderingFormatter {
    * Add the definitions, directly before the return statement, inside the IIFE of each decorated
    * class.
    */
-  addDefinitions(output: MagicString, compiledClass: CompiledClass, definitions: string): void {
+  override addDefinitions(output: MagicString, compiledClass: CompiledClass, definitions: string):
+      void {
     const classSymbol = this.host.getClassSymbol(compiledClass.declaration);
     if (!classSymbol) {
       throw new Error(
@@ -63,7 +64,8 @@ export class Esm5RenderingFormatter extends EsmRenderingFormatter {
    *
    * @return The JavaScript code corresponding to `stmt` (in the appropriate format).
    */
-  printStatement(stmt: Statement, sourceFile: ts.SourceFile, importManager: ImportManager): string {
+  override printStatement(stmt: Statement, sourceFile: ts.SourceFile, importManager: ImportManager):
+      string {
     const node = translateStatement(
         stmt, importManager, {downlevelTaggedTemplates: true, downlevelVariableDeclarations: true});
     const code = this.printer.printNode(ts.EmitHint.Unspecified, node, sourceFile);

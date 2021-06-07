@@ -41,7 +41,7 @@ export class ParallelTaskQueue extends BaseTaskQueue {
     return nextTask;
   }
 
-  markAsCompleted(task: Task): void {
+  override markAsCompleted(task: Task): void {
     super.markAsCompleted(task);
 
     if (!this.dependencies.has(task)) {
@@ -62,7 +62,7 @@ export class ParallelTaskQueue extends BaseTaskQueue {
     }
   }
 
-  toString(): string {
+  override toString(): string {
     return `${super.toString()}\n` +
         `  Blocked tasks (${this.blockedTasks.size}): ${this.stringifyBlockedTasks('    ')}`;
   }
