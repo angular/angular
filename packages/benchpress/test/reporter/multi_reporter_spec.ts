@@ -51,11 +51,11 @@ class MockReporter extends Reporter {
     super();
   }
 
-  reportMeasureValues(values: MeasureValues): Promise<{[key: string]: any}> {
+  override reportMeasureValues(values: MeasureValues): Promise<{[key: string]: any}> {
     return Promise.resolve({'id': this._id, 'values': values});
   }
 
-  reportSample(completeSample: MeasureValues[], validSample: MeasureValues[]):
+  override reportSample(completeSample: MeasureValues[], validSample: MeasureValues[]):
       Promise<{[key: string]: any}> {
     return Promise.resolve(
         {'id': this._id, 'completeSample': completeSample, 'validSample': validSample});
