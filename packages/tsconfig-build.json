@@ -8,6 +8,7 @@
     "declaration": true,
     "stripInternal": true,
     "noImplicitAny": true,
+    "noImplicitOverride": true,
     "strictNullChecks": true,
     "strict": true,
     "strictPropertyInitialization": true,

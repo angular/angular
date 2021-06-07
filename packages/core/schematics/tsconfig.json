@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "noImplicitReturns": true,
+    "noImplicitOverride": true,
     "noFallthroughCasesInSwitch": true,
     "strict": true,
     "moduleResolution": "node",
