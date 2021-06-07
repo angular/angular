@@ -193,7 +193,7 @@ export class BrowserPlatformLocation extends PlatformLocation {
     this._history.back();
   }
 
-  historyGo(relativePosition: number = 0): void {
+  override historyGo(relativePosition: number = 0): void {
     this._history.go(relativePosition);
   }
 
