@@ -18,7 +18,7 @@ export class DirectStylePlayer extends NoopAnimationPlayer {
     this._styles = hypenatePropsObject(styles);
   }
 
-  init() {
+  override init() {
     if (this.__initialized || !this._startingStyles) return;
     this.__initialized = true;
     Object.keys(this._styles).forEach(prop => {
@@ -27,7 +27,7 @@ export class DirectStylePlayer extends NoopAnimationPlayer {
     super.init();
   }
 
-  play() {
+  override play() {
     if (!this._startingStyles) return;
     this.init();
     Object.keys(this._styles)
@@ -35,7 +35,7 @@ export class DirectStylePlayer extends NoopAnimationPlayer {
     super.play();
   }
 
-  destroy() {
+  override destroy() {
     if (!this._startingStyles) return;
     Object.keys(this._startingStyles).forEach(prop => {
       const value = this._startingStyles![prop];

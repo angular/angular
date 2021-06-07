@@ -122,7 +122,7 @@ class SuffixNormalizer extends AnimationStyleNormalizer {
 }
 
 class SuperMockDriver extends MockAnimationDriver {
-  computeStyle(element: any, prop: string, defaultValue?: string): string {
+  override computeStyle(element: any, prop: string, defaultValue?: string): string {
     return '*star*';
   }
 }
