@@ -16,7 +16,7 @@ class MyApp {
 }
 
 class MyUrlResolver extends UrlResolver {
-  resolve(baseUrl: string, url: string): string {
+  override resolve(baseUrl: string, url: string): string {
     // Serve CSS files from a special CDN.
     if (url.substr(-4) === '.css') {
       return super.resolve('http://cdn.myapp.com/css/', url);

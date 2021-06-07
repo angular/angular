@@ -62,7 +62,7 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
         }
 
         class Square extends Shape {
-          name = 'square';
+          override name = 'square';
         }
 
         const injector = ReflectiveInjector.resolveAndCreate([{provide: Shape, useClass: Square}]);
@@ -80,7 +80,7 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
         }
 
         class FormalGreeting extends Greeting {
-          salutation = 'Greetings';
+          override salutation = 'Greetings';
         }
 
         const injector = ReflectiveInjector.resolveAndCreate(
@@ -101,7 +101,7 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
         }
 
         class Square extends Shape {
-          name = 'square';
+          override name = 'square';
         }
 
         const injector =
@@ -120,7 +120,7 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
         }
 
         class FormalGreeting extends Greeting {
-          salutation = 'Greetings';
+          override salutation = 'Greetings';
         }
 
         const injector = Injector.create({
@@ -161,7 +161,7 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
         }
 
         class FormalGreeting extends Greeting {
-          salutation = 'Greetings';
+          override salutation = 'Greetings';
         }
 
         const injector = Injector.create({
