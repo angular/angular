@@ -93,7 +93,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     }
   }
 
-  visitLiteralExpr(ast: o.LiteralExpr, ctx: EmitterVisitorContext): any {
+  override visitLiteralExpr(ast: o.LiteralExpr, ctx: EmitterVisitorContext): any {
     const value = ast.value;
     if (value == null && ast.type != o.INFERRED_TYPE) {
       ctx.print(ast, `(${value} as any)`);
@@ -107,7 +107,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   // In SNC mode, [] have the type never[], so we cast here to any[].
   // TODO: narrow the cast to a more explicit type, or use a pattern that does not
   // start with [].concat. see https://github.com/angular/angular/pull/11846
-  visitLiteralArrayExpr(ast: o.LiteralArrayExpr, ctx: EmitterVisitorContext): any {
+  override visitLiteralArrayExpr(ast: o.LiteralArrayExpr, ctx: EmitterVisitorContext): any {
     if (ast.entries.length === 0) {
       ctx.print(ast, '(');
     }
@@ -123,7 +123,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     return null;
   }
 
-  visitAssertNotNullExpr(ast: o.AssertNotNull, ctx: EmitterVisitorContext): any {
+  override visitAssertNotNullExpr(ast: o.AssertNotNull, ctx: EmitterVisitorContext): any {
     const result = super.visitAssertNotNullExpr(ast, ctx);
     ctx.print(ast, '!');
     return result;
@@ -162,7 +162,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     return null;
   }
 
-  visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): never {
+  override visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): never {
     throw new Error('Cannot visit a WrappedNodeExpr when outputting Typescript.');
   }
 
@@ -175,7 +175,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     return null;
   }
 
-  visitInstantiateExpr(ast: o.InstantiateExpr, ctx: EmitterVisitorContext): any {
+  override visitInstantiateExpr(ast: o.InstantiateExpr, ctx: EmitterVisitorContext): any {
     ctx.print(ast, `new `);
     this.typeExpression++;
     ast.classExpr.visitExpression(this, ctx);
