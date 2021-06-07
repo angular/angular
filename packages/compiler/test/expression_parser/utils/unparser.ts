@@ -231,7 +231,7 @@ export function unparseWithSpan(
       ]);
     }
 
-    visit(ast: AST, unparsedList: UnparsedWithSpan[]) {
+    override visit(ast: AST, unparsedList: UnparsedWithSpan[]) {
       this.recordUnparsed(ast, 'span', unparsedList);
       if (ast.hasOwnProperty('nameSpan')) {
         this.recordUnparsed(ast, 'nameSpan', unparsedList);

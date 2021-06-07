@@ -1495,7 +1495,7 @@ export class ValueConverter extends AstMemoryEfficientTransformer {
   }
 
   // AstMemoryEfficientTransformer
-  visitPipe(pipe: BindingPipe, context: any): AST {
+  override visitPipe(pipe: BindingPipe, context: any): AST {
     // Allocate a slot to create the pipe
     const slot = this.allocateSlot();
     const slotPseudoLocal = `PIPE:${slot}`;
@@ -1528,7 +1528,7 @@ export class ValueConverter extends AstMemoryEfficientTransformer {
     });
   }
 
-  visitLiteralArray(array: LiteralArray, context: any): AST {
+  override visitLiteralArray(array: LiteralArray, context: any): AST {
     return new BuiltinFunctionCall(
         array.span, array.sourceSpan, this.visitAll(array.expressions), values => {
           // If the literal has calculated (non-literal) elements transform it into
@@ -1539,7 +1539,7 @@ export class ValueConverter extends AstMemoryEfficientTransformer {
         });
   }
 
-  visitLiteralMap(map: LiteralMap, context: any): AST {
+  override visitLiteralMap(map: LiteralMap, context: any): AST {
     return new BuiltinFunctionCall(map.span, map.sourceSpan, this.visitAll(map.values), values => {
       // If the literal has calculated (non-literal) elements  transform it into
       // calls to literal factories that compose the literal and will cache intermediate

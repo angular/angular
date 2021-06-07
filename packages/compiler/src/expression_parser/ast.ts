@@ -24,16 +24,16 @@ export class ParseSpan {
   }
 }
 
-export class AST {
+export abstract class AST {
   constructor(
       public span: ParseSpan,
       /**
        * Absolute location of the expression AST in a source code file.
        */
       public sourceSpan: AbsoluteSourceSpan) {}
-  visit(visitor: AstVisitor, context: any = null): any {
-    return null;
-  }
+
+  abstract visit(visitor: AstVisitor, context?: any): any;
+
   toString(): string {
     return 'AST';
   }
@@ -68,7 +68,7 @@ export class Quote extends AST {
   visit(visitor: AstVisitor, context: any = null): any {
     return visitor.visitQuote(this, context);
   }
-  toString(): string {
+  override toString(): string {
     return 'Quote';
   }
 }
@@ -94,7 +94,7 @@ export class ImplicitReceiver extends AST {
  * TODO: we should find a way for this class not to extend from `ImplicitReceiver` in the future.
  */
 export class ThisReceiver extends ImplicitReceiver {
-  visit(visitor: AstVisitor, context: any = null): any {
+  override visit(visitor: AstVisitor, context: any = null): any {
     return visitor.visitThisReceiver?.(this, context);
   }
 }
@@ -260,9 +260,9 @@ export class Binary extends AST {
 export class Unary extends Binary {
   // Redeclare the properties that are inherited from `Binary` as `never`, as consumers should not
   // depend on these fields when operating on `Unary`.
-  left: never;
-  right: never;
-  operation: never;
+  override left: never;
+  override right: never;
+  override operation: never;
 
   /**
    * Creates a unary minus expression "-x", represented as `Binary` using "0 - x".
@@ -290,7 +290,7 @@ export class Unary extends Binary {
     super(span, sourceSpan, binaryOp, binaryLeft, binaryRight);
   }
 
-  visit(visitor: AstVisitor, context: any = null): any {
+  override visit(visitor: AstVisitor, context: any = null): any {
     if (visitor.visitUnary !== undefined) {
       return visitor.visitUnary(this, context);
     }
@@ -374,7 +374,7 @@ export class ASTWithSource extends AST {
     }
     return this.ast.visit(visitor, context);
   }
-  toString(): string {
+  override toString(): string {
     return `${this.source} in ${this.location}`;
   }
 }

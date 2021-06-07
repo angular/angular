@@ -90,7 +90,7 @@ export class Xmb extends Serializer {
   }
 
 
-  createNameMapper(message: i18n.Message): PlaceholderMapper {
+  override createNameMapper(message: i18n.Message): PlaceholderMapper {
     return new SimplePlaceholderMapper(message, toPublicName);
   }
 }

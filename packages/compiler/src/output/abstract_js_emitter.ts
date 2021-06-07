@@ -87,11 +87,11 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     ctx.println(stmt, `};`);
   }
 
-  visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): any {
+  override visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): any {
     throw new Error('Cannot emit a WrappedNodeExpr in Javascript.');
   }
 
-  visitReadVarExpr(ast: o.ReadVarExpr, ctx: EmitterVisitorContext): string|null {
+  override visitReadVarExpr(ast: o.ReadVarExpr, ctx: EmitterVisitorContext): string|null {
     if (ast.builtin === o.BuiltinVar.This) {
       ctx.print(ast, 'self');
     } else if (ast.builtin === o.BuiltinVar.Super) {
@@ -115,7 +115,8 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     ast.value.visitExpression(this, ctx);
     return null;
   }
-  visitInvokeFunctionExpr(expr: o.InvokeFunctionExpr, ctx: EmitterVisitorContext): string|null {
+  override visitInvokeFunctionExpr(expr: o.InvokeFunctionExpr, ctx: EmitterVisitorContext): string
+      |null {
     const fnExpr = expr.fn;
     if (fnExpr instanceof o.ReadVarExpr && fnExpr.builtin === o.BuiltinVar.Super) {
       ctx.currentClass!.parent!.visitExpression(this, ctx);
@@ -130,7 +131,7 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     }
     return null;
   }
-  visitTaggedTemplateExpr(ast: o.TaggedTemplateExpr, ctx: EmitterVisitorContext): any {
+  override visitTaggedTemplateExpr(ast: o.TaggedTemplateExpr, ctx: EmitterVisitorContext): any {
     // The following convoluted piece of code is effectively the downlevelled equivalent of
     // ```
     // tag`...`
@@ -188,7 +189,7 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     return null;
   }
 
-  visitLocalizedString(ast: o.LocalizedString, ctx: EmitterVisitorContext): any {
+  override visitLocalizedString(ast: o.LocalizedString, ctx: EmitterVisitorContext): any {
     // The following convoluted piece of code is effectively the downlevelled equivalent of
     // ```
     // $localize `...`

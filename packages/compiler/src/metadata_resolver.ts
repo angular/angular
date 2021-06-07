@@ -1268,7 +1268,7 @@ function extractIdentifiers(value: any, targetIdentifiers: cpl.CompileIdentifier
 }
 
 class _CompileValueConverter extends ValueTransformer {
-  visitOther(value: any, targetIdentifiers: cpl.CompileIdentifierMetadata[]): any {
+  override visitOther(value: any, targetIdentifiers: cpl.CompileIdentifierMetadata[]): any {
     targetIdentifiers.push({reference: value});
   }
 }

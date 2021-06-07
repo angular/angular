@@ -367,7 +367,7 @@ export class Parser {
 }
 
 export class IvyParser extends Parser {
-  simpleExpressionChecker = IvySimpleExpressionChecker;
+  override simpleExpressionChecker = IvySimpleExpressionChecker;
 }
 
 /** Describes a stateful context an expression parser is in. */
@@ -1371,7 +1371,7 @@ class SimpleExpressionChecker implements AstVisitor {
 class IvySimpleExpressionChecker extends RecursiveAstVisitor implements SimpleExpressionChecker {
   errors: string[] = [];
 
-  visitPipe() {
+  override visitPipe() {
     this.errors.push('pipes');
   }
 }

@@ -28,7 +28,7 @@ export class MockNgModuleResolver extends NgModuleResolver {
    * default
    * `NgModuleResolver`, see `setNgModule`.
    */
-  resolve(type: core.Type, throwIfNotFound = true): core.NgModule {
+  override resolve(type: core.Type, throwIfNotFound = true): core.NgModule {
     return this._ngModules.get(type) || super.resolve(type, throwIfNotFound)!;
   }
 }
