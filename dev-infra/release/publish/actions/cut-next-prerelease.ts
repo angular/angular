@@ -64,7 +64,7 @@ export class CutNextPrereleaseAction extends ReleaseAction {
     }
   }
 
-  static async isActive() {
+  static override async isActive() {
     // Pre-releases for the `next` NPM dist tag can always be cut. Depending on whether
     // there is a feature-freeze/release-candidate branch, the next pre-releases are either
     // cut from such a branch, or from the actual `next` release-train branch (i.e. master).

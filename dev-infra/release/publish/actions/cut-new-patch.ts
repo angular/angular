@@ -36,7 +36,7 @@ export class CutNewPatchAction extends ReleaseAction {
     await this.cherryPickChangelogIntoNextBranch(releaseNotes, branchName);
   }
 
-  static async isActive(active: ActiveReleaseTrains) {
+  static override async isActive(active: ActiveReleaseTrains) {
     // Patch versions can be cut at any time. See:
     // https://hackmd.io/2Le8leq0S6G_R5VEVTNK9A#Release-prompt-options.
     return true;
