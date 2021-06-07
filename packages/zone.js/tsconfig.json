@@ -9,6 +9,7 @@
     "noEmitOnError": false,
     "stripInternal": false,
     "strict": true,
+    "noImplicitOverride": true,
     "lib": [
       "es5",
       "dom",

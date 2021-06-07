@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
     "strict": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "noImplicitAny": true,
+    "noImplicitOverride": true
   }
 }
