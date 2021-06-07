@@ -180,7 +180,7 @@ export class DiagnosticContext {
       };
       const urlResolver = createOfflineCompileUrlResolver();
       const htmlParser = new class extends HtmlParser {
-        parse(): ParseTreeResult {
+        override parse(): ParseTreeResult {
           return new ParseTreeResult([], []);
         }
       };

@@ -23,7 +23,7 @@ import {AstResult, Declaration, DeclarationError, DiagnosticMessageChain, Langua
  * syntactically incorrect templates.
  */
 export class DummyHtmlParser extends HtmlParser {
-  parse(): ParseTreeResult {
+  override parse(): ParseTreeResult {
     return new ParseTreeResult([], []);
   }
 }
