@@ -53,19 +53,8 @@ export class MergeInheritedProperties implements Processor {
       // tslint:disable-next-line:ban Need to use Object.assign to preserve the prototype.
       const newMemberDoc = Object.assign(Object.create(memberDoc), memberDoc);
 
-      // Dgeni won't add the `description` if the member doc belongs to a class
-      // that isn't exported. If that's the case, we fall back to assigning it
-      // ourselves by stripping JSDoc tags from the raw description.
-      // TODO: figure out a more robust solution that will ensure that the description is
-      // always added.
-      newMemberDoc.description = newMemberDoc.description || stripJsDocTags(memberDoc.content);
       newMemberDoc.containerDoc = destination;
       destination.members.push(newMemberDoc);
     }
   }
-}
-
-/** Strips all of the content after the first JSDoc tag from a string. */
-function stripJsDocTags(text: string): string {
-  return text.split(/\s@[a-zA-Z-]*\s/)[0];
 }

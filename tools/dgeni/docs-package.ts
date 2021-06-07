@@ -10,6 +10,7 @@ import {DocsPrivateFilter} from './processors/docs-private-filter';
 import {EntryPointGrouper} from './processors/entry-point-grouper';
 import {FilterDuplicateExports} from './processors/filter-duplicate-exports';
 import {mergeInheritedProperties} from './processors/merge-inherited-properties';
+import {resolveInheritedDocs} from './processors/resolve-inherited-docs';
 
 // Dgeni packages that the Material docs package depends on.
 const jsdocPackage = require('dgeni-packages/jsdoc');
@@ -34,6 +35,11 @@ export const apiDocsPackage = new Package('material2-api-docs', [
   nunjucksPackage,
   typescriptPackage,
 ]);
+
+// Processor that resolves inherited docs of class docs. The resolved docs will
+// be added to the pipeline so that the JSDoc processors can capture these too.
+// Note: needs to use a factory function since the processor relies on DI.
+apiDocsPackage.processor(resolveInheritedDocs);
 
 // Processor that filters out duplicate exports that should not be shown in the docs.
 apiDocsPackage.processor(new FilterDuplicateExports());

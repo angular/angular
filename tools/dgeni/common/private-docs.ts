@@ -1,5 +1,6 @@
 import {ApiDoc} from 'dgeni-packages/typescript/api-doc-types/ApiDoc';
 import {MemberDoc} from 'dgeni-packages/typescript/api-doc-types/MemberDoc';
+import {isInheritanceCreatedDoc} from './class-inheritance';
 
 const INTERNAL_METHODS = [
   // Lifecycle methods
@@ -27,9 +28,17 @@ const INTERNAL_METHODS = [
 
 /** Checks whether the given API document is public. */
 export function isPublicDoc(doc: ApiDoc) {
+  // Always skip documents which have been created through inheritance. These docs are
+  // not exported as they have not been resolved by Dgeni through a module entry-point.
+  // The `@docs-public` tag is only applicable if a symbol is at least exported.
+  if (isInheritanceCreatedDoc(doc)) {
+    return false;
+  }
+
   if (_isEnforcedPublicDoc(doc)) {
     return true;
   }
+
   if (_hasDocsPrivateTag(doc) || doc.name.startsWith('_') ||
       doc.name.startsWith('ngAcceptInputType_')) {
     return false;

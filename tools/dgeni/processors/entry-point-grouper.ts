@@ -91,6 +91,7 @@ export class EntryPointDoc {
 export class EntryPointGrouper implements Processor {
   name = 'entryPointGrouper';
   $runBefore = ['docs-processed'];
+  $runAfter = ['docs-private-filter'];
   entryPoints: string[] = [];
 
   $process(docs: DocCollection) {
