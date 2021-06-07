@@ -107,7 +107,7 @@ describe('pipe', () => {
       transform() {
         return this.sayHelloService.getHello();
       }
-      static ɵfac = (t?: any) => ɵɵgetInheritedFactory(t || SayHelloPipe)(SayHelloPipe);
+      static override ɵfac = (t?: any) => ɵɵgetInheritedFactory(t || SayHelloPipe)(SayHelloPipe);
       static ɵpipe = ɵɵdefinePipe({name: 'sayHello', type: SayHelloPipe, pure: true});
     }
 

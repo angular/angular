@@ -155,7 +155,7 @@ describe('event listeners', () => {
       let noOfErrors = 0;
 
       class CountingErrorHandler extends ErrorHandler {
-        handleError(error: any): void {
+        override handleError(error: any): void {
           noOfErrors++;
         }
       }

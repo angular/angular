@@ -1253,17 +1253,17 @@ it('should call all hooks in correct order when several directives on same node'
 
   @Directive({selector: 'div'})
   class DirA extends AllHooks {
-    @Input('a') id: number = 0;
+    @Input('a') override id: number = 0;
   }
 
   @Directive({selector: 'div'})
   class DirB extends AllHooks {
-    @Input('b') id: number = 0;
+    @Input('b') override id: number = 0;
   }
 
   @Directive({selector: 'div'})
   class DirC extends AllHooks {
-    @Input('c') id: number = 0;
+    @Input('c') override id: number = 0;
   }
 
   @Component({selector: 'app-comp', template: '<div [a]="1" [b]="2" [c]="3"></div>'})

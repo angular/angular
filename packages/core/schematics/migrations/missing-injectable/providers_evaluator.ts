@@ -28,7 +28,7 @@ export interface ProviderLiteral {
 export class ProvidersEvaluator extends StaticInterpreter {
   private _providerLiterals: ProviderLiteral[] = [];
 
-  visitObjectLiteralExpression(node: ts.ObjectLiteralExpression, context: any) {
+  override visitObjectLiteralExpression(node: ts.ObjectLiteralExpression, context: any) {
     const resolvedValue =
         super.visitObjectLiteralExpression(node, {...context, insideProviderDef: true});
     // do not collect nested object literals. e.g. a provider could use a
