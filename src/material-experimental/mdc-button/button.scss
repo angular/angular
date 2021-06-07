@@ -2,7 +2,7 @@
 @use '@material/button/variables' as mdc-button-variables;
 @use '../mdc-helpers/mdc-helpers';
 @use '../../cdk/a11y';
-@use '_button-base';
+@use 'button-base';
 
 
 @include mdc-button.without-ripple($query: mdc-helpers.$mat-base-styles-query);
@@ -10,6 +10,7 @@
 .mat-mdc-button, .mat-mdc-unelevated-button, .mat-mdc-raised-button, .mat-mdc-outlined-button {
   @include button-base.mat-private-button-interactive();
   @include button-base.mat-private-button-disabled();
+  @include button-base.mat-private-button-touch-target(false);
 }
 
 // MDC expects button icons to contain this HTML content:
