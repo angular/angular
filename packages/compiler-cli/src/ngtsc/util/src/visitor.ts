@@ -45,10 +45,8 @@ export abstract class Visitor {
    * Visit a class declaration, returning at least the transformed declaration and optionally other
    * nodes to insert before the declaration.
    */
-  visitClassDeclaration(node: ts.ClassDeclaration):
-      VisitListEntryResult<ts.Statement, ts.ClassDeclaration> {
-    return {node};
-  }
+  abstract visitClassDeclaration(node: ts.ClassDeclaration):
+      VisitListEntryResult<ts.Statement, ts.ClassDeclaration>;
 
   private _visitListEntryNode<T extends ts.Statement>(
       node: T, visitor: (node: T) => VisitListEntryResult<ts.Statement, T>): T {

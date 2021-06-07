@@ -471,7 +471,7 @@ abstract class TcbDirectiveTypeOpBase extends TcbOp {
 
 /**
  * A `TcbOp` which constructs an instance of a non-generic directive _without_ setting any of its
- * inputs. Inputs  are later set in the `TcbDirectiveInputsOp`. Type checking was found to be
+ * inputs. Inputs are later set in the `TcbDirectiveInputsOp`. Type checking was found to be
  * faster when done in this way as opposed to `TcbDirectiveCtorOp` which is only necessary when the
  * directive is generic.
  *
@@ -483,7 +483,7 @@ class TcbNonGenericDirectiveTypeOp extends TcbDirectiveTypeOpBase {
    * Creates a variable declaration for this op's directive of the argument type. Returns the id of
    * the newly created variable.
    */
-  execute(): ts.Identifier {
+  override execute(): ts.Identifier {
     const dirRef = this.dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
     if (this.dir.isGeneric) {
       throw new Error(`Assertion Error: expected ${dirRef.debugName} not to be generic.`);
@@ -501,7 +501,7 @@ class TcbNonGenericDirectiveTypeOp extends TcbDirectiveTypeOpBase {
  * type parameters set to `any`.
  */
 class TcbGenericDirectiveTypeWithAnyParamsOp extends TcbDirectiveTypeOpBase {
-  execute(): ts.Identifier {
+  override execute(): ts.Identifier {
     const dirRef = this.dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
     if (dirRef.node.typeParameters === undefined) {
       throw new Error(`Assertion Error: expected typeParameters when creating a declaration for ${
@@ -671,7 +671,7 @@ class TcbDirectiveCtorOp extends TcbOp {
     return id;
   }
 
-  circularFallback(): TcbOp {
+  override circularFallback(): TcbOp {
     return new TcbDirectiveCtorCircularFallbackOp(this.tcb, this.scope, this.node, this.dir);
   }
 }
@@ -1980,7 +1980,7 @@ function tcbEventHandlerExpression(ast: AST, tcb: Context, scope: Scope): ts.Exp
 }
 
 class TcbEventHandlerTranslator extends TcbExpressionTranslator {
-  protected resolve(ast: AST): ts.Expression|null {
+  protected override resolve(ast: AST): ts.Expression|null {
     // Recognize a property read on the implicit receiver corresponding with the event parameter
     // that is available in event bindings. Since this variable is a parameter of the handler
     // function that the converted expression becomes a child of, just create a reference to the

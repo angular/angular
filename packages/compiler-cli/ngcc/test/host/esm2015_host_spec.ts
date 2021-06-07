@@ -2506,7 +2506,7 @@ runInEachFileSystem(() => {
         const externalLibWithoutTypingsIndex = _('/an_external_lib_without_typings/index.js');
 
         class TestEsm2015ReflectionHost extends Esm2015ReflectionHost {
-          getExportsOfModule(node: ts.Node) {
+          override getExportsOfModule(node: ts.Node) {
             if (ts.isSourceFile(node) && (node.fileName === externalLibWithoutTypingsIndex)) {
               throw new Error(
                   `'getExportsOfModule()' called on '${externalLibWithoutTypingsIndex}'.`);

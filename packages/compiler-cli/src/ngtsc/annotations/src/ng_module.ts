@@ -67,7 +67,7 @@ export class NgModuleSymbol extends SemanticSymbol {
     return false;
   }
 
-  isEmitAffected(previousSymbol: SemanticSymbol): boolean {
+  override isEmitAffected(previousSymbol: SemanticSymbol): boolean {
     if (!(previousSymbol instanceof NgModuleSymbol)) {
       return true;
     }

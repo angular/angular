@@ -34,7 +34,7 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
     super(fs, logger, errorOnFailedEntryPoint);
   }
 
-  writeBundle(
+  override writeBundle(
       bundle: EntryPointBundle, transformedFiles: FileToWrite[],
       formatProperties: EntryPointJsonProperty[]) {
     // The new folder is at the root of the overall package
@@ -45,7 +45,7 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
     this.updatePackageJson(entryPoint, formatProperties, ngccFolder);
   }
 
-  revertBundle(
+  override revertBundle(
       entryPoint: EntryPoint, transformedFilePaths: AbsoluteFsPath[],
       formatProperties: EntryPointJsonProperty[]): void {
     // IMPLEMENTATION NOTE:
