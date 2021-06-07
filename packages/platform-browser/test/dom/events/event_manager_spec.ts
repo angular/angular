@@ -526,10 +526,10 @@ class FakeNgZone extends NgZone {
   constructor() {
     super({enableLongStackTrace: false, shouldCoalesceEventChangeDetection: true});
   }
-  run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T {
+  override run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T {
     return fn();
   }
-  runOutsideAngular(fn: Function) {
+  override runOutsideAngular(fn: Function) {
     return fn();
   }
 }
