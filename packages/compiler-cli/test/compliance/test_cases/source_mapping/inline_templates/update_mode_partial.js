@@ -10,7 +10,7 @@
 .ɵɵtext(3) // SOURCE: "/update_mode.ts" "{{ 1 + 2 }}"
 …
 // TODO: Work out how to fix the broken segment for the last item in a template
-.ɵɵelem // SOURCE: "/update_mode.ts" "</div>"'
+.ɵɵelem // SOURCE: "/update_mode.ts" "</div>'"
 …
 // NOTE: Update mode
 .ɵɵtextInterpolate(1 + 2) // SOURCE: "/update_mode.ts" "{{ 1 + 2 }}"
