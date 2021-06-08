@@ -3,9 +3,7 @@
 <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
 <!-- #enddocregion ng-submit -->
   <label for="first-name">First Name: </label>
-  <!-- #docregion required-attribute -->
   <input id="first-name" type="text" formControlName="firstName" required>
-  <!-- #enddocregion required-attribute -->
 
   <label for="last-name">Last Name: </label>
   <input id="last-name" type="text" formControlName="lastName">
