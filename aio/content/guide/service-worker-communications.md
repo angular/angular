@@ -95,4 +95,4 @@ You can subscribe to `SwUpdate#unrecoverable` to be notified and handle these er
 ## More on Angular service workers
 
 You may also be interested in the following:
-* [Service Worker in Production](guide/service-worker-devops).
+* [Service Worker Notifications](guide/service-worker-notifications).

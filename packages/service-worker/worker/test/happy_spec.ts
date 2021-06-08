@@ -14,7 +14,7 @@ import {sha1} from '../src/sha1';
 import {clearAllCaches, MockCache} from '../testing/cache';
 import {MockRequest, MockResponse} from '../testing/fetch';
 import {MockFileSystem, MockFileSystemBuilder, MockServerState, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock';
-import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
+import {MockClient, SwTestHarness, SwTestHarnessBuilder, WindowClientImpl} from '../testing/scope';
 
 (function() {
 // Skip environments that don't support the minimum APIs needed to run the SW tests.
@@ -66,9 +66,7 @@ const brokenManifest: Manifest = {
     name: 'assets',
     installMode: 'prefetch',
     updateMode: 'prefetch',
-    urls: [
-      '/foo.txt',
-    ],
+    urls: ['/foo.txt'],
     patterns: [],
     cacheQueryOptions: {ignoreVary: true},
   }],
@@ -87,9 +85,7 @@ const brokenLazyManifest: Manifest = {
       name: 'assets',
       installMode: 'prefetch',
       updateMode: 'prefetch',
-      urls: [
-        '/foo.txt',
-      ],
+      urls: ['/foo.txt'],
       patterns: [],
       cacheQueryOptions: {ignoreVary: true},
     },
@@ -97,9 +93,7 @@ const brokenLazyManifest: Manifest = {
       name: 'lazy-assets',
       installMode: 'lazy',
       updateMode: 'lazy',
-      urls: [
-        '/bar.txt',
-      ],
+      urls: ['/bar.txt'],
       patterns: [],
       cacheQueryOptions: {ignoreVary: true},
     },
@@ -140,24 +134,15 @@ const manifest: Manifest = {
       name: 'assets',
       installMode: 'prefetch',
       updateMode: 'prefetch',
-      urls: [
-        '/foo.txt',
-        '/bar.txt',
-        '/redirected.txt',
-      ],
-      patterns: [
-        '/unhashed/.*',
-      ],
+      urls: ['/foo.txt', '/bar.txt', '/redirected.txt'],
+      patterns: ['/unhashed/.*'],
       cacheQueryOptions: {ignoreVary: true},
     },
     {
       name: 'other',
       installMode: 'lazy',
       updateMode: 'lazy',
-      urls: [
-        '/baz.txt',
-        '/qux.txt',
-      ],
+      urls: ['/baz.txt', '/qux.txt'],
       patterns: [],
       cacheQueryOptions: {ignoreVary: true},
     },
@@ -165,12 +150,7 @@ const manifest: Manifest = {
       name: 'lazy_prefetch',
       installMode: 'lazy',
       updateMode: 'prefetch',
-      urls: [
-        '/quux.txt',
-        '/quuux.txt',
-        '/lazy/unchanged1.txt',
-        '/lazy/unchanged2.txt',
-      ],
+      urls: ['/quux.txt', '/quuux.txt', '/lazy/unchanged1.txt', '/lazy/unchanged2.txt'],
       patterns: [],
       cacheQueryOptions: {ignoreVary: true},
     }
@@ -182,9 +162,7 @@ const manifest: Manifest = {
       maxAge: 3600000,
       maxSize: 100,
       strategy: 'freshness',
-      patterns: [
-        '/api/.*',
-      ],
+      patterns: ['/api/.*'],
       cacheQueryOptions: {ignoreVary: true},
     },
     {
@@ -193,9 +171,7 @@ const manifest: Manifest = {
       maxAge: 3600000,
       maxSize: 100,
       strategy: 'performance',
-      patterns: [
-        '/api-static/.*',
-      ],
+      patterns: ['/api-static/.*'],
       cacheQueryOptions: {ignoreVary: true},
     },
   ],
@@ -216,24 +192,15 @@ const manifestUpdate: Manifest = {
       name: 'assets',
       installMode: 'prefetch',
       updateMode: 'prefetch',
-      urls: [
-        '/foo.txt',
-        '/bar.txt',
-        '/redirected.txt',
-      ],
-      patterns: [
-        '/unhashed/.*',
-      ],
+      urls: ['/foo.txt', '/bar.txt', '/redirected.txt'],
+      patterns: ['/unhashed/.*'],
       cacheQueryOptions: {ignoreVary: true},
     },
     {
       name: 'other',
       installMode: 'lazy',
       updateMode: 'lazy',
-      urls: [
-        '/baz.txt',
-        '/qux.txt',
-      ],
+      urls: ['/baz.txt', '/qux.txt'],
       patterns: [],
       cacheQueryOptions: {ignoreVary: true},
     },
@@ -241,12 +208,7 @@ const manifestUpdate: Manifest = {
       name: 'lazy_prefetch',
       installMode: 'lazy',
       updateMode: 'prefetch',
-      urls: [
-        '/quux.txt',
-        '/quuux.txt',
-        '/lazy/unchanged1.txt',
-        '/lazy/unchanged2.txt',
-      ],
+      urls: ['/quux.txt', '/quuux.txt', '/lazy/unchanged1.txt', '/lazy/unchanged2.txt'],
       patterns: [],
       cacheQueryOptions: {ignoreVary: true},
     }
@@ -291,7 +253,6 @@ const server404 = new MockServerStateBuilder().withStaticFiles(dist).build();
 
 const manifestHash = sha1(JSON.stringify(manifest));
 const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
-
 
 describe('Driver', () => {
   let scope: SwTestHarness;
@@ -721,30 +682,286 @@ describe('Driver', () => {
     }]);
   });
 
-  it('broadcasts notification click events with action', async () => {
-    expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
-    await driver.initialized;
-    await scope.handleClick(
-        {title: 'This is a test with action', body: 'Test body with action'}, 'button');
-    const message: any = scope.clients.getMock('default')!.messages[0];
+  describe('notification click events', () => {
+    it('broadcasts notification click events with action', async () => {
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      await driver.initialized;
+      await scope.handleClick(
+          {title: 'This is a test with action', body: 'Test body with action'}, 'button');
+      const message: any = scope.clients.getMock('default')!.messages[0];
 
-    expect(message.type).toEqual('NOTIFICATION_CLICK');
-    expect(message.data.action).toEqual('button');
-    expect(message.data.notification.title).toEqual('This is a test with action');
-    expect(message.data.notification.body).toEqual('Test body with action');
-  });
+      expect(message.type).toEqual('NOTIFICATION_CLICK');
+      expect(message.data.action).toEqual('button');
+      expect(message.data.notification.title).toEqual('This is a test with action');
+      expect(message.data.notification.body).toEqual('Test body with action');
+    });
 
-  it('broadcasts notification click events without action', async () => {
-    expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
-    await driver.initialized;
-    await scope.handleClick(
-        {title: 'This is a test without action', body: 'Test body without action'});
-    const message: any = scope.clients.getMock('default')!.messages[0];
+    it('broadcasts notification click events without action', async () => {
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      await driver.initialized;
+      await scope.handleClick({
+        title: 'This is a test without action',
+        body: 'Test body without action',
+      });
+      const message: any = scope.clients.getMock('default')!.messages[0];
 
-    expect(message.type).toEqual('NOTIFICATION_CLICK');
-    expect(message.data.action).toBeUndefined();
-    expect(message.data.notification.title).toEqual('This is a test without action');
-    expect(message.data.notification.body).toEqual('Test body without action');
+      expect(message.type).toEqual('NOTIFICATION_CLICK');
+      expect(message.data.action).toBeUndefined();
+      expect(message.data.notification.title).toEqual('This is a test without action');
+      expect(message.data.notification.body).toEqual('Test body without action');
+    });
+
+    describe('Client interactions', () => {
+      describe('`openWindow` operation', () => {
+        it('opens a new client window at url', async () => {
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+
+          spyOn(scope.clients, 'openWindow');
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test with url',
+                body: 'Test body with url',
+                data: {
+                  onActionClick: {
+                    foo: {operation: 'openWindow', url: '/foo'},
+                  },
+                },
+              },
+              'foo');
+          expect(scope.clients.openWindow).toHaveBeenCalledWith('http://localhost/foo');
+        });
+
+        it('opens a new client window with `/` when no `url`', async () => {
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+
+          spyOn(scope.clients, 'openWindow');
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test without url',
+                body: 'Test body without url',
+                data: {
+                  onActionClick: {
+                    foo: {operation: 'openWindow'},
+                  },
+                },
+              },
+              'foo');
+          expect(scope.clients.openWindow).toHaveBeenCalledWith('http://localhost/');
+        });
+      });
+
+      describe('`focusLastFocusedOrOpen` operation', () => {
+        it('focuses last client keeping previous url', async () => {
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+          const mockClient = new WindowClientImpl('fooBar');
+          spyOn(scope.clients, 'matchAll').and.returnValue(Promise.resolve([mockClient]));
+          spyOn(mockClient, 'focus');
+          spyOn(mockClient, 'navigate');
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test with operation focusLastFocusedOrOpen',
+                body: 'Test body with operation focusLastFocusedOrOpen',
+                data: {
+                  onActionClick: {
+                    foo: {operation: 'focusLastFocusedOrOpen', url: '/foo'},
+                  },
+                },
+              },
+              'foo');
+          expect(mockClient.navigate).not.toHaveBeenCalled();
+          expect(mockClient.url).toEqual('http://localhost/unique');
+          expect(mockClient.focus).toHaveBeenCalled();
+        });
+
+        it('falls back to openWindow at url when no last client to focus', async () => {
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+          spyOn(scope.clients, 'openWindow');
+          spyOn(scope.clients, 'matchAll').and.returnValue(Promise.resolve([]));
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test with operation focusLastFocusedOrOpen',
+                body: 'Test body with operation focusLastFocusedOrOpen',
+                data: {
+                  onActionClick: {
+                    foo: {operation: 'focusLastFocusedOrOpen', url: '/foo'},
+                  },
+                },
+              },
+              'foo');
+          expect(scope.clients.openWindow).toHaveBeenCalledWith('http://localhost/foo');
+        });
+
+        it('falls back to openWindow at `/` when no last client and no `url`', async () => {
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+          spyOn(scope.clients, 'openWindow');
+          spyOn(scope.clients, 'matchAll').and.returnValue(Promise.resolve([]));
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test with operation focusLastFocusedOrOpen',
+                body: 'Test body with operation focusLastFocusedOrOpen',
+                data: {
+                  onActionClick: {
+                    foo: {operation: 'focusLastFocusedOrOpen'},
+                  },
+                },
+              },
+              'foo');
+          expect(scope.clients.openWindow).toHaveBeenCalledWith('http://localhost/');
+        });
+      });
+
+      describe('`navigateLastFocusedOrOpen` operation', () => {
+        it('focuses last client with `url`', async () => {
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+          const mockClient = new WindowClientImpl('fooBar');
+          spyOn(scope.clients, 'matchAll').and.returnValue(Promise.resolve([mockClient]));
+          spyOn(mockClient, 'focus');
+          spyOn(mockClient, 'navigate').and.returnValue(Promise.resolve(mockClient));
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test with operation navigateLastFocusedOrOpen',
+                body: 'Test body with operation navigateLastFocusedOrOpen',
+                data: {
+                  onActionClick: {
+                    foo: {operation: 'navigateLastFocusedOrOpen', url: '/foo'},
+                  },
+                },
+              },
+              'foo');
+          expect(mockClient.navigate).toHaveBeenCalledWith('http://localhost/foo');
+          expect(mockClient.focus).toHaveBeenCalled();
+        });
+
+        it('focuses last client with `/` if no `url', async () => {
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+          const mockClient = new WindowClientImpl('fooBar');
+          spyOn(scope.clients, 'matchAll').and.returnValue(Promise.resolve([mockClient]));
+          spyOn(mockClient, 'focus');
+          spyOn(mockClient, 'navigate').and.returnValue(Promise.resolve(mockClient));
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test with operation navigateLastFocusedOrOpen',
+                body: 'Test body with operation navigateLastFocusedOrOpen',
+                data: {
+                  onActionClick: {
+                    foo: {operation: 'navigateLastFocusedOrOpen'},
+                  },
+                },
+              },
+              'foo');
+          expect(mockClient.navigate).toHaveBeenCalledWith('http://localhost/');
+          expect(mockClient.focus).toHaveBeenCalled();
+        });
+
+        it('falls back to openWindow at url when no last client to focus', async () => {
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+          spyOn(scope.clients, 'openWindow');
+          spyOn(scope.clients, 'matchAll').and.returnValue(Promise.resolve([]));
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test with operation navigateLastFocusedOrOpen',
+                body: 'Test body with operation navigateLastFocusedOrOpen',
+                data: {
+                  onActionClick: {
+                    foo: {operation: 'navigateLastFocusedOrOpen', url: '/foo'},
+                  },
+                },
+              },
+              'foo');
+          expect(scope.clients.openWindow).toHaveBeenCalledWith('http://localhost/foo');
+        });
+
+        it('falls back to openWindow at `/` when no last client and no `url`', async () => {
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+          spyOn(scope.clients, 'openWindow');
+          spyOn(scope.clients, 'matchAll').and.returnValue(Promise.resolve([]));
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test with operation navigateLastFocusedOrOpen',
+                body: 'Test body with operation navigateLastFocusedOrOpen',
+                data: {
+                  onActionClick: {
+                    foo: {operation: 'navigateLastFocusedOrOpen'},
+                  },
+                },
+              },
+              'foo');
+          expect(scope.clients.openWindow).toHaveBeenCalledWith('http://localhost/');
+        });
+      });
+
+      describe('No matching onActionClick field', () => {
+        it('no client interaction', async () => {
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+          spyOn(scope.clients, 'openWindow');
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test without onActionClick field',
+                body: 'Test body without onActionClick field',
+                data: {
+                  onActionClick: {
+                    fooz: {operation: 'focusLastFocusedOrOpen', url: 'fooz'},
+                  },
+                },
+              },
+              'foo');
+          expect(scope.clients.openWindow).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('no action', () => {
+        it('uses onActionClick default when no specific action is clicked', async () => {
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+          spyOn(scope.clients, 'openWindow');
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test without action',
+                body: 'Test body without action',
+                data: {
+                  onActionClick: {
+                    default: {operation: 'openWindow', url: 'fooz'},
+                  },
+                },
+              },
+              '');
+          expect(scope.clients.openWindow).toHaveBeenCalledWith('http://localhost/fooz');
+        });
+
+        describe('no onActionClick default', () => {
+          it('has no client interaction', async () => {
+            expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+            spyOn(scope.clients, 'openWindow');
+
+            await driver.initialized;
+            await scope.handleClick(
+                {title: 'This is a test without action', body: 'Test body without action'});
+            expect(scope.clients.openWindow).not.toHaveBeenCalled();
+          });
+        });
+      });
+    });
   });
 
   it('prefetches updates to lazy cache when set', async () => {
@@ -952,10 +1169,7 @@ describe('Driver', () => {
           name: 'eager',
           installMode: 'prefetch',
           updateMode: 'prefetch',
-          urls: [
-            `${baseHref}foo.txt`,
-            `${baseHref}bar.txt`,
-          ],
+          urls: [`${baseHref}foo.txt`, `${baseHref}bar.txt`],
           patterns: [],
           cacheQueryOptions: {ignoreVary: true},
         },
@@ -963,10 +1177,7 @@ describe('Driver', () => {
           name: 'lazy',
           installMode: 'lazy',
           updateMode: 'lazy',
-          urls: [
-            `${baseHref}baz.txt`,
-            `${baseHref}qux.txt`,
-          ],
+          urls: [`${baseHref}baz.txt`, `${baseHref}qux.txt`],
           patterns: [],
           cacheQueryOptions: {ignoreVary: true},
         },
@@ -978,9 +1189,7 @@ describe('Driver', () => {
           maxAge: 3600000,
           maxSize: 100,
           strategy: 'freshness',
-          patterns: [
-            '/api/.*',
-          ],
+          patterns: ['/api/.*'],
           cacheQueryOptions: {ignoreVary: true},
         },
       ],
@@ -1319,14 +1528,8 @@ describe('Driver', () => {
           name: 'eager',
           installMode: 'prefetch',
           updateMode: 'prefetch',
-          urls: [
-            './index.html',
-            './main.js',
-            './styles.css',
-          ],
-          patterns: [
-            '/unhashed/.*',
-          ],
+          urls: ['./index.html', './main.js', './styles.css'],
+          patterns: ['/unhashed/.*'],
           cacheQueryOptions: {ignoreVary: true},
         },
         {
@@ -1339,9 +1542,7 @@ describe('Driver', () => {
             './unchanged/chunk-3.js',
             './unchanged/chunk-4.js',
           ],
-          patterns: [
-            '/lazy/unhashed/.*',
-          ],
+          patterns: ['/lazy/unhashed/.*'],
           cacheQueryOptions: {ignoreVary: true},
         }
       ],
@@ -1612,7 +1813,7 @@ describe('Driver', () => {
          spyOn(MockCache.prototype, 'put').and.throwError('Can\'t touch this');
          spyOn(driver.debugger, 'log');
          expect(await makeRequest(scope, '/api/foo', 'default', {
-           method: 'post'
+           method: 'post',
          })).toEqual('this is api foo');
          expect(driver.state).toBe(DriverReadyState.NORMAL);
          // Since we are swallowing an error here, make sure it is at least properly logged
