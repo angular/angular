@@ -72,7 +72,10 @@ sass_binary(
 sass_binary(
     name = "calendar_body_scss",
     src = "calendar-body.scss",
-    deps = ["//src/cdk/a11y:a11y_scss_lib"],
+    deps = [
+        "//src/cdk/a11y:a11y_scss_lib",
+        "//src/material/core:core_scss_lib",
+    ],
 )
 
 sass_binary(

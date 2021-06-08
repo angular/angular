@@ -1,10 +1,12 @@
+@use '../core/style/private';
+
 $button-horizontal-margin: 8px !default;
 $button-height: 36px !default;
 $line-height: 20px !default;
 // Button vertical margin is used to ensure that a button height of 36px, when the containing
 // space falls below 36px.
 $button-vertical-margin:
-  -(($button-height - $line-height) / 2);
+  -(private.private-div($button-height - $line-height, 2));
 
 .mat-simple-snackbar {
   display: flex;

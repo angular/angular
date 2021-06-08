@@ -1,4 +1,5 @@
 @use '../core/style/variables';
+@use '../core/style/private';
 @use './stepper-variables';
 
 .mat-stepper-vertical,
@@ -32,13 +33,14 @@
 }
 
 %mat-header-horizontal-line-label-position-bottom {
+  $half-side-gap: private.private-div(stepper-variables.$side-gap, 2);
   border-top-width: stepper-variables.$line-width;
   border-top-style: solid;
   content: '';
   display: inline-block;
   height: 0;
   position: absolute;
-  width: calc(50% - #{stepper-variables.$side-gap / 2 + stepper-variables.$line-gap});
+  width: calc(50% - #{$half-side-gap + stepper-variables.$line-gap});
 }
 
 .mat-horizontal-stepper-header {

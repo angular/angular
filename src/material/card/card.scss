@@ -59,8 +59,8 @@ $header-size: 40px !default;
 
 .mat-card-actions {
   @extend %mat-card-section-base;
-  margin-left: -$padding / 2;
-  margin-right: -$padding / 2;
+  margin-left: private.private-div(-$padding, 2);
+  margin-right: private.private-div(-$padding, 2);
   padding: 8px 0;
 }
 

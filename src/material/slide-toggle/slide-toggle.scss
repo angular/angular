@@ -1,6 +1,7 @@
 @use '../core/style/variables';
 @use '../core/ripple/ripple';
 @use '../core/style/list-common';
+@use '../core/style/private';
 @use '../../cdk/a11y';
 
 $thumb-size: 20px !default;
@@ -88,7 +89,7 @@ $bar-track-width: $bar-width - $thumb-size;
 
 // The container includes the visual thumb and the ripple container element.
 .mat-slide-toggle-thumb-container {
-  $thumb-bar-vertical-padding: ($thumb-size - $bar-height) / 2;
+  $thumb-bar-vertical-padding: private.private-div($thumb-size - $bar-height, 2);
 
   position: absolute;
   z-index: 1;
@@ -140,7 +141,7 @@ $bar-track-width: $bar-width - $thumb-size;
 .mat-slide-toggle-input {
   // Move the input to the bottom and in the middle of the thumb.
   // Visual improvement to properly show browser popups when being required.
-  $horizontal-offset: $thumb-size / 2;
+  $horizontal-offset: private.private-div($thumb-size, 2);
 
   bottom: 0;
   left: $horizontal-offset;
@@ -228,6 +229,6 @@ $bar-track-width: $bar-width - $thumb-size;
   // because otherwise the opaque thumb element will hide the outline.
   .mat-slide-toggle.cdk-keyboard-focused .mat-slide-toggle-bar {
     outline: 2px dotted;
-    outline-offset: ($height - $bar-height) / 2;
+    outline-offset: private.private-div($height - $bar-height, 2);
   }
 }

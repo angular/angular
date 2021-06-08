@@ -1,3 +1,4 @@
+@use './private';
 @use './list-common';
 @use './layout-common';
 
@@ -63,7 +64,7 @@ $icon-margin: 16px !default;
 
   // Renders a triangle to indicate that the menu item will open a sub-menu.
   &::after {
-    $size: $triangle-height / 2;
+    $size: private.private-div($triangle-height, 2);
 
     width: 0;
     height: 0;

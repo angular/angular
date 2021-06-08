@@ -7,6 +7,7 @@
 @use '../core/theming/theming';
 @use '../core/typography/typography';
 @use '../core/typography/typography-utils';
+@use '../core/style/private';
 @use '../../cdk/a11y';
 
 $font-size: 12px;
@@ -25,13 +26,13 @@ $large-size: $default-size + 6;
 
   &.mat-badge-above {
     .mat-badge-content {
-      top: -$size / 2;
+      top: private.private-div(-$size, 2);
     }
   }
 
   &.mat-badge-below {
     .mat-badge-content {
-      bottom: -$size / 2;
+      bottom: private.private-div(-$size, 2);
     }
   }
 
@@ -64,27 +65,27 @@ $large-size: $default-size + 6;
   &.mat-badge-overlap {
     &.mat-badge-before {
       .mat-badge-content {
-        left: -$size / 2;
+        left: private.private-div(-$size, 2);
       }
     }
 
     [dir='rtl'] &.mat-badge-before {
       .mat-badge-content {
         left: auto;
-        right: -$size / 2;
+        right: private.private-div(-$size, 2);
       }
     }
 
     &.mat-badge-after {
       .mat-badge-content {
-        right: -$size / 2;
+        right: private.private-div(-$size, 2);
       }
     }
 
     [dir='rtl'] &.mat-badge-after {
       .mat-badge-content {
         right: auto;
-        left: -$size / 2;
+        left: private.private-div(-$size, 2);
       }
     }
   }

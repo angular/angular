@@ -1,4 +1,5 @@
 @use '../core/style/variables';
+@use '../core/style/private';
 @use '../../cdk/a11y';
 
 // Styles that only apply to the fill appearance of the form-field.
@@ -18,7 +19,7 @@ $fill-line-spacing: 0.75em !default;
 $fill-subscript-font-scale: 0.75 !default;
 // The horizontal padding between the edge of the subscript box and the start of the subscript text.
 $fill-subscript-padding:
-    $fill-side-padding / $fill-subscript-font-scale;
+    private.private-div($fill-side-padding, $fill-subscript-font-scale);
 
 
 .mat-form-field-appearance-fill {

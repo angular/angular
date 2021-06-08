@@ -1,4 +1,5 @@
 @use '../core/style/variables';
+@use '../core/style/private';
 
 // Styles that only apply to the outline appearance of the form-field.
 
@@ -16,7 +17,7 @@ $outline-width: 1px;
 $outline-thick-width: 2px;
 // The horizontal padding between the edge of the subscript box and the start of the subscript text.
 $outline-subscript-padding:
-    $outline-side-padding / $outline-subscript-font-scale;
+    private.private-div($outline-side-padding, $outline-subscript-font-scale);
 
 
 .mat-form-field-appearance-outline {

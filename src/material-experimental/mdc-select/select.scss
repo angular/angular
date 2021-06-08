@@ -2,6 +2,7 @@
 @use '@material/list' as mdc-list;
 @use '../../material/core/style/variables';
 @use '../../material/core/style/vendor-prefixes';
+@use '../../material/core/style/private';
 @use '../../cdk/a11y';
 
 $mat-select-arrow-size: 5px !default;
@@ -105,7 +106,8 @@ $scale: 0.75 !default;
 .mat-mdc-select-placeholder {
   // Delay the transition until the label has animated about a third of the way through, in
   // order to prevent the placeholder from overlapping for a split second.
-  transition: color variables.$swift-ease-out-duration variables.$swift-ease-out-duration / 3
+  transition: color variables.$swift-ease-out-duration
+      private.private-div(variables.$swift-ease-out-duration, 3)
       variables.$swift-ease-out-timing-function;
 
   ._mat-animation-noopable & {
@@ -137,7 +139,8 @@ $scale: 0.75 !default;
     }
 
     .mdc-floating-label--float-above {
-      max-width: calc(100% / #{$scale} - #{$mat-select-placeholder-arrow-space / $scale});
+      $arrow-scale: private.private-div($mat-select-placeholder-arrow-space, $scale);
+      max-width: calc(100% / #{$scale} - #{$arrow-scale});
     }
   }
   &.mat-form-field-appearance-outline {

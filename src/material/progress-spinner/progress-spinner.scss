@@ -125,8 +125,8 @@ $_default-circumference: variables.$pi * $_default-radius * 2;
   // iterations to vary where the spin "lands".
   @keyframes mat-progress-spinner-stroke-rotate-fallback {
     @for $i from 0 through $fallback-iterations {
-      $percent: 100 / $fallback-iterations * $i;
-      $offset: 360 / $fallback-iterations;
+      $percent: private.private-div(100, $fallback-iterations) * $i;
+      $offset: private.private-div(360, $fallback-iterations);
       #{$percent}% { transform: rotate(#{$i * (360 * 3 + $offset)}deg); }
     }
   }

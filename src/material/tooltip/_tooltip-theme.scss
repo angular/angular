@@ -2,15 +2,16 @@
 @use '../core/theming/theming';
 @use '../core/typography/typography';
 @use '../core/typography/typography-utils';
+@use '../core/style/private';
 
 $target-height: 22px;
 $font-size: 10px;
-$vertical-padding: ($target-height - $font-size) / 2;
+$vertical-padding: private.private-div($target-height - $font-size, 2);
 
 $handset-target-height: 30px;
 $handset-font-size: 14px;
 $handset-vertical-padding:
-    ($handset-target-height - $handset-font-size) / 2;
+    private.private-div($handset-target-height - $handset-font-size, 2);
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);

@@ -1,9 +1,10 @@
+@use 'sass:map';
 @use '@material/switch/deprecated' as mdc-switch with ($deprecated-suffix: '');
 @use '@material/form-field' as mdc-form-field;
 @use '@material/ripple' as mdc-ripple;
-@use 'sass:map';
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/style/layout-common';
+@use '../../material/core/style/private';
 @use '../../cdk/a11y';
 
 @include mdc-switch.without-ripple($query: mdc-helpers.$mat-base-styles-query);
@@ -87,7 +88,7 @@
       // Usually 1px would be enough, but MDC reduces the opacity on the
       // element so we need to make this a bit more prominent.
       outline: solid 2px;
-      outline-offset: mdc-switch.$track-height / 2;
+      outline-offset: private.private-div(mdc-switch.$track-height, 2);
     }
   }
 }
