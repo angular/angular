@@ -582,6 +582,14 @@
     "mentor": "mgechev",
     "groups": ["GDE", "Collaborators"]
   },
+  "marsibarsi": {
+    "name": "Roman Sedov",
+    "picture": "sedov.jpg",
+    "website": "http://marsibarsi.me/",
+    "twitter": "marsibarsi",
+    "bio": "Roman is an Angular Enthusiast and a Frontend Developer from Nizhny Novgorod, Russia. He writes tech articles, speaks at conferences, develops local GDG community and contributes to Open Source. He is also a co-creator of Taiga UI library and Ng Web APIs Open Source organization.",
+    "groups": ["GDE"]
+  },
   "martinakraus": {
     "name": "Martina Kraus",
     "picture": "martinakraus.jpg",
