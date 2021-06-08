@@ -617,6 +617,7 @@ groups:
           'aio/content/guide/service-worker-config.md',
           'aio/content/guide/service-worker-devops.md',
           'aio/content/guide/service-worker-intro.md',
+          'aio/content/guide/service-worker-notifications.md',
           'aio/content/images/guide/service-worker/**'
           ])
     reviewers:

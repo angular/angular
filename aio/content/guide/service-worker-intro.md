@@ -66,6 +66,7 @@ The rest of the articles in this section specifically address the Angular implem
 
 * [App Shell](guide/app-shell)
 * [Service Worker Communication](guide/service-worker-communications)
+* [Service Worker Notifications](guide/service-worker-notifications)
 * [Service Worker in Production](guide/service-worker-devops)
 * [Service Worker Configuration](guide/service-worker-config)
 

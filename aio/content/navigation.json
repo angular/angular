@@ -436,6 +436,11 @@
               "tooltip": "Services that enable you to interact with an Angular service worker."
             },
             {
+              "url": "guide/service-worker-notifications",
+              "title": "Service Worker Notifications",
+              "tooltip": "Configuring service worker notification behavior."
+            },
+            {
               "url": "guide/service-worker-devops",
               "title": "Service Worker in Production",
               "tooltip": "Running apps with service workers, managing app update, debugging, and killing apps."

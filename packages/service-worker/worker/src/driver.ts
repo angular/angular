@@ -348,12 +348,52 @@ export class Driver implements Debuggable, UpdateSource {
     NOTIFICATION_OPTION_NAMES.filter(name => name in notification)
         .forEach(name => options[name] = notification[name]);
 
+    const notificationAction = action === '' || action === undefined ? 'default' : action;
+
+    const onActionClick = notification?.data?.onActionClick[notificationAction];
+
+    const urlToOpen = new URL(onActionClick?.url ?? '', this.scope.registration.scope).href;
+
+    switch (onActionClick?.operation) {
+      case 'openWindow':
+        await this.scope.clients.openWindow(urlToOpen);
+        break;
+      case 'focusLastFocusedOrOpen': {
+        let matchingClient = await this.getLastFocusedMatchingClient(this.scope);
+        if (matchingClient) {
+          await matchingClient?.focus();
+        } else {
+          await this.scope.clients.openWindow(urlToOpen);
+        }
+        break;
+      }
+      case 'navigateLastFocusedOrOpen': {
+        let matchingClient = await this.getLastFocusedMatchingClient(this.scope);
+        if (matchingClient) {
+          matchingClient = await matchingClient.navigate(urlToOpen);
+          await matchingClient?.focus();
+        } else {
+          await this.scope.clients.openWindow(urlToOpen);
+        }
+        break;
+      }
+      default:
+        break;
+    }
+
     await this.broadcast({
       type: 'NOTIFICATION_CLICK',
       data: {action, notification: options},
     });
   }
 
+  private async getLastFocusedMatchingClient(scope: ServiceWorkerGlobalScope):
+      Promise<WindowClient|null> {
+    const windowClients = await scope.clients.matchAll({type: 'window'});
+
+    // As per the spec windowClients are `sorted in the most recently focused order`
+    return windowClients[0];
+  }
   private async reportStatus(client: Client, promise: Promise<void>, nonce: number): Promise<void> {
     const response = {type: 'STATUS', nonce, status: true};
     try {

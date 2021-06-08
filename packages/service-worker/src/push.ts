@@ -81,6 +81,9 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
  * <code-example path="service-worker/push/module.ts" region="subscribe-to-notification-clicks"
  * header="app.component.ts"></code-example>
  *
+ * You can read more on handling notification clicks in the [Service worker notifications
+ * guide](guide/service-worker-notifications).
+ *
  * @see [Push Notifications](https://developers.google.com/web/fundamentals/codelabs/push-notifications/)
  * @see [Angular Push Notifications](https://blog.angular-university.io/angular-push-notifications/)
  * @see [MDN: Push API](https://developer.mozilla.org/en-US/docs/Web/API/Push_API)

@@ -14,7 +14,7 @@ import {sha1} from '../src/sha1';
 import {clearAllCaches, MockCache} from '../testing/cache';
 import {MockRequest, MockResponse} from '../testing/fetch';
 import {MockFileSystem, MockFileSystemBuilder, MockServerState, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock';
-import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
+import {MockClient, SwTestHarness, SwTestHarnessBuilder, WindowClientImpl} from '../testing/scope';
 
 (function() {
 // Skip environments that don't support the minimum APIs needed to run the SW tests.
@@ -721,30 +721,364 @@ describe('Driver', () => {
     }]);
   });
 
-  it('broadcasts notification click events with action', async () => {
-    expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
-    await driver.initialized;
-    await scope.handleClick(
-        {title: 'This is a test with action', body: 'Test body with action'}, 'button');
-    const message: any = scope.clients.getMock('default')!.messages[0];
+  describe('notification click events', () => {
+    it('broadcasts notification click events with action', async () => {
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      await driver.initialized;
+      await scope.handleClick(
+          {title: 'This is a test with action', body: 'Test body with action'}, 'button');
+      const message: any = scope.clients.getMock('default')!.messages[0];
 
-    expect(message.type).toEqual('NOTIFICATION_CLICK');
-    expect(message.data.action).toEqual('button');
-    expect(message.data.notification.title).toEqual('This is a test with action');
-    expect(message.data.notification.body).toEqual('Test body with action');
-  });
+      expect(message.type).toEqual('NOTIFICATION_CLICK');
+      expect(message.data.action).toEqual('button');
+      expect(message.data.notification.title).toEqual('This is a test with action');
+      expect(message.data.notification.body).toEqual('Test body with action');
+    });
 
-  it('broadcasts notification click events without action', async () => {
-    expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
-    await driver.initialized;
-    await scope.handleClick(
-        {title: 'This is a test without action', body: 'Test body without action'});
-    const message: any = scope.clients.getMock('default')!.messages[0];
+    it('broadcasts notification click events without action', async () => {
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      await driver.initialized;
+      await scope.handleClick({
+        title: 'This is a test without action',
+        body: 'Test body without action',
+      });
+      const message: any = scope.clients.getMock('default')!.messages[0];
 
-    expect(message.type).toEqual('NOTIFICATION_CLICK');
-    expect(message.data.action).toBeUndefined();
-    expect(message.data.notification.title).toEqual('This is a test without action');
-    expect(message.data.notification.body).toEqual('Test body without action');
+      expect(message.type).toEqual('NOTIFICATION_CLICK');
+      expect(message.data.action).toBeUndefined();
+      expect(message.data.notification.title).toEqual('This is a test without action');
+      expect(message.data.notification.body).toEqual('Test body without action');
+    });
+
+    describe('Client interactions', () => {
+      describe('`openWindow` operation', () => {
+        it('opens a new client window at url', async () => {
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+
+          spyOn(scope.clients, 'openWindow');
+          const url = 'foo';
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test with url',
+                body: 'Test body with url',
+                data: {
+                  onActionClick: {
+                    foo: {operation: 'openWindow', url},
+                  },
+                },
+              },
+              'foo');
+          expect(scope.clients.openWindow)
+              .toHaveBeenCalledWith(`${scope.registration.scope}${url}`);
+        });
+
+        it('opens a new client window with `/` when no `url`', async () => {
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+
+          spyOn(scope.clients, 'openWindow');
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test without url',
+                body: 'Test body without url',
+                data: {
+                  onActionClick: {
+                    foo: {operation: 'openWindow'},
+                  },
+                },
+              },
+              'foo');
+          expect(scope.clients.openWindow).toHaveBeenCalledWith(`${scope.registration.scope}`);
+        });
+      });
+
+      describe('`focusLastFocusedOrOpen` operation', () => {
+        it('focuses last client keeping previous url', async () => {
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+          const mockClient = new WindowClientImpl('fooBar');
+          spyOn(scope.clients, 'matchAll').and.returnValue(Promise.resolve([mockClient]));
+          spyOn(mockClient, 'focus');
+          spyOn(mockClient, 'navigate');
+          const url = 'foo';
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test with operation focusLastFocusedOrOpen',
+                body: 'Test body with operation focusLastFocusedOrOpen',
+                data: {
+                  onActionClick: {
+                    foo: {operation: 'focusLastFocusedOrOpen', url},
+                  },
+                },
+              },
+              'foo');
+          expect(mockClient.navigate).not.toHaveBeenCalled();
+          expect(mockClient.url).toEqual('http://localhost/unique');
+          expect(mockClient.focus).toHaveBeenCalled();
+        });
+
+        it('falls back to openWindow at url when no last client to focus', async () => {
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+          spyOn(scope.clients, 'openWindow');
+          spyOn(scope.clients, 'matchAll').and.returnValue(Promise.resolve([]));
+          const url = 'foo';
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test with operation focusLastFocusedOrOpen',
+                body: 'Test body with operation focusLastFocusedOrOpen',
+                data: {
+                  onActionClick: {
+                    foo: {operation: 'focusLastFocusedOrOpen', url},
+                  },
+                },
+              },
+              'foo');
+          expect(scope.clients.openWindow)
+              .toHaveBeenCalledWith(`${scope.registration.scope}${url}`);
+        });
+
+        it('falls back to openWindow at `/` when no last client and no `url`', async () => {
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+          spyOn(scope.clients, 'openWindow');
+          spyOn(scope.clients, 'matchAll').and.returnValue(Promise.resolve([]));
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test with operation focusLastFocusedOrOpen',
+                body: 'Test body with operation focusLastFocusedOrOpen',
+                data: {
+                  onActionClick: {
+                    foo: {operation: 'focusLastFocusedOrOpen'},
+                  },
+                },
+              },
+              'foo');
+          expect(scope.clients.openWindow).toHaveBeenCalledWith(`${scope.registration.scope}`);
+        });
+      });
+
+      describe('`navigateLastFocusedOrOpen` operation', () => {
+        it('navigates last client to `url`', async () => {
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+          const mockClient = new WindowClientImpl('fooBar');
+          spyOn(scope.clients, 'matchAll').and.returnValue(Promise.resolve([mockClient]));
+          spyOn(mockClient, 'focus');
+          spyOn(mockClient, 'navigate').and.returnValue(Promise.resolve(mockClient));
+          const url = 'foo';
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test with operation navigateLastFocusedOrOpen',
+                body: 'Test body with operation navigateLastFocusedOrOpen',
+                data: {
+                  onActionClick: {
+                    foo: {operation: 'navigateLastFocusedOrOpen', url},
+                  },
+                },
+              },
+              'foo');
+          expect(mockClient.navigate).toHaveBeenCalledWith(`${scope.registration.scope}${url}`);
+          expect(mockClient.focus).toHaveBeenCalled();
+        });
+
+        it('navigates last client to `/` if no `url', async () => {
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+          const mockClient = new WindowClientImpl('fooBar');
+          spyOn(scope.clients, 'matchAll').and.returnValue(Promise.resolve([mockClient]));
+          spyOn(mockClient, 'focus');
+          spyOn(mockClient, 'navigate').and.returnValue(Promise.resolve(mockClient));
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test with operation navigateLastFocusedOrOpen',
+                body: 'Test body with operation navigateLastFocusedOrOpen',
+                data: {
+                  onActionClick: {
+                    foo: {operation: 'navigateLastFocusedOrOpen'},
+                  },
+                },
+              },
+              'foo');
+          expect(mockClient.navigate).toHaveBeenCalledWith(`${scope.registration.scope}`);
+          expect(mockClient.focus).toHaveBeenCalled();
+        });
+
+        it('falls back to openWindow at url when no last client to focus', async () => {
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+          spyOn(scope.clients, 'openWindow');
+          spyOn(scope.clients, 'matchAll').and.returnValue(Promise.resolve([]));
+          const url = 'foo';
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test with operation navigateLastFocusedOrOpen',
+                body: 'Test body with operation navigateLastFocusedOrOpen',
+                data: {
+                  onActionClick: {
+                    foo: {operation: 'navigateLastFocusedOrOpen', url},
+                  },
+                },
+              },
+              'foo');
+          expect(scope.clients.openWindow)
+              .toHaveBeenCalledWith(`${scope.registration.scope}${url}`);
+        });
+
+        it('falls back to openWindow at `/` when no last client and no `url`', async () => {
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+          spyOn(scope.clients, 'openWindow');
+          spyOn(scope.clients, 'matchAll').and.returnValue(Promise.resolve([]));
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test with operation navigateLastFocusedOrOpen',
+                body: 'Test body with operation navigateLastFocusedOrOpen',
+                data: {
+                  onActionClick: {
+                    foo: {operation: 'navigateLastFocusedOrOpen'},
+                  },
+                },
+              },
+              'foo');
+          expect(scope.clients.openWindow).toHaveBeenCalledWith(`${scope.registration.scope}`);
+        });
+      });
+
+      describe('No matching onActionClick field', () => {
+        it('no client interaction', async () => {
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+          spyOn(scope.clients, 'openWindow');
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test without onActionClick field',
+                body: 'Test body without onActionClick field',
+                data: {
+                  onActionClick: {
+                    fooz: {operation: 'focusLastFocusedOrOpen', url: 'fooz'},
+                  },
+                },
+              },
+              'foo');
+          expect(scope.clients.openWindow).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('no action', () => {
+        it('uses onActionClick default when no specific action is clicked', async () => {
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+          spyOn(scope.clients, 'openWindow');
+          const url = 'fooz';
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test without action',
+                body: 'Test body without action',
+                data: {
+                  onActionClick: {
+                    default: {operation: 'openWindow', url},
+                  },
+                },
+              },
+              '');
+          expect(scope.clients.openWindow)
+              .toHaveBeenCalledWith(`${scope.registration.scope}${url}`);
+        });
+
+        describe('no onActionClick default', () => {
+          it('has no client interaction', async () => {
+            expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+            spyOn(scope.clients, 'openWindow');
+
+            await driver.initialized;
+            await scope.handleClick(
+                {title: 'This is a test without action', body: 'Test body without action'});
+            expect(scope.clients.openWindow).not.toHaveBeenCalled();
+          });
+        });
+      });
+
+      describe('URL resolution', () => {
+        it('should resolve relative to service worker scope', async () => {
+          (scope.registration.scope as string) = 'http://localhost/foo/bar/';
+
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+
+          spyOn(scope.clients, 'openWindow');
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test with a relative url',
+                body: 'Test body with a relative url',
+                data: {
+                  onActionClick: {
+                    foo: {operation: 'openWindow', url: 'baz/qux'},
+                  },
+                },
+              },
+              'foo');
+          expect(scope.clients.openWindow).toHaveBeenCalledWith('http://localhost/foo/bar/baz/qux');
+        });
+
+        it('should resolve with an absolute path', async () => {
+          (scope.registration.scope as string) = 'http://localhost/foo/bar/';
+
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+
+          spyOn(scope.clients, 'openWindow');
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test with an absolute path url',
+                body: 'Test body with an absolute path url',
+                data: {
+                  onActionClick: {
+                    foo: {operation: 'openWindow', url: '/baz/qux'},
+                  },
+                },
+              },
+              'foo');
+          expect(scope.clients.openWindow).toHaveBeenCalledWith('http://localhost/baz/qux');
+        });
+
+        it('should resolve other origins', async () => {
+          (scope.registration.scope as string) = 'http://localhost/foo/bar/';
+
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+
+          spyOn(scope.clients, 'openWindow');
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test with external origin',
+                body: 'Test body with external origin',
+                data: {
+                  onActionClick: {
+                    foo: {operation: 'openWindow', url: 'http://other.host/baz/qux'},
+                  },
+                },
+              },
+              'foo');
+          expect(scope.clients.openWindow).toHaveBeenCalledWith('http://other.host/baz/qux');
+        });
+      });
+    });
   });
 
   it('prefetches updates to lazy cache when set', async () => {

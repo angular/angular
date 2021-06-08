@@ -36,9 +36,12 @@ declare class Client {
 }
 
 interface Clients {
-  claim(): Promise<any>;
+  claim(): Promise<void>;
   get(id: string): Promise<Client>;
-  matchAll(options?: ClientMatchOptions): Promise<Array<Client>>;
+  matchAll<T extends ClientMatchOptions>(
+    options?: T
+  ): Promise<ReadonlyArray<T['type'] extends 'window' ? WindowClient : Client>>;
+  openWindow(url: string): Promise<WindowClient | null>;
 }
 
 interface ClientMatchOptions {
@@ -46,11 +49,12 @@ interface ClientMatchOptions {
   type?: ClientMatchTypes;
 }
 
-interface WindowClient {
-  focused: boolean;
-  visibilityState: WindowClientState;
+interface WindowClient extends Client {
+  readonly ancestorOrigins: ReadonlyArray<string>;
+  readonly focused: boolean;
+  readonly visibilityState: VisibilityState;
   focus(): Promise<WindowClient>;
-  navigate(url: string): Promise<WindowClient>;
+  navigate(url: string): Promise<WindowClient | null>;
 }
 
 type ClientFrameType = 'auxiliary'|'top-level'|'nested'|'none';
