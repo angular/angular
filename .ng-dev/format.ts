@@ -26,11 +26,6 @@ export const format: FormatConfig = {
       '!dev-infra/build-worker.js',
       // Do not format compliance test-cases since they must match generated code
       '!packages/compiler-cli/test/compliance/test_cases/**/*.js',
-      // Do not format the locale files which are checked-in for Google3, but generated using
-      // the `generate-locales-tool` from `packages/common/locales`.
-      '!packages/core/src/i18n/locale_en.ts',
-      '!packages/common/locales/closure-locale.ts',
-      '!packages/common/src/i18n/currencies.ts',
     ]
   },
   'buildifier': true
