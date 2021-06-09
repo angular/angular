@@ -259,7 +259,7 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
       versions: this.versions,
       depGraph: this.depGraph,
       semanticDepGraph: newGraph,
-      traitCompiler,
+      priorAnalysis: traitCompiler.getAnalyzedRecords(),
       typeCheckResults: null,
       emitted,
     };
@@ -303,7 +303,11 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
       return null;
     }
 
-    return this.step.priorState.traitCompiler.recordsFor(sf);
+    const priorAnalysis = this.step.priorState.priorAnalysis;
+    if (!priorAnalysis.has(sf)) {
+      return null;
+    }
+    return priorAnalysis.get(sf)!;
   }
 
   priorTypeCheckingResultsFor(sf: ts.SourceFile): FileTypeCheckingData|null {

@@ -166,6 +166,18 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     return records;
   }
 
+  getAnalyzedRecords(): Map<ts.SourceFile, ClassRecord[]> {
+    const result = new Map<ts.SourceFile, ClassRecord[]>();
+    for (const [sf, classes] of this.fileToClasses) {
+      const records: ClassRecord[] = [];
+      for (const clazz of classes) {
+        records.push(this.classes.get(clazz)!);
+      }
+      result.set(sf, records);
+    }
+    return result;
+  }
+
   /**
    * Import a `ClassRecord` from a previous compilation.
    *
