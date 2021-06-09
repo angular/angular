@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
   selector: 'app-compose-message',
   templateUrl: './compose-message.component.html',
   styleUrls: ['./compose-message.component.css']
+
 })
 export class ComposeMessageComponent {
   details = '';
