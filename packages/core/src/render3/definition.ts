@@ -410,22 +410,22 @@ export function ɵɵdefineNgModule<T>(def: {
   /** Unique ID for the module that is used with `getModuleFactory`. */
   id?: string | null;
 }): unknown {
-  const res: NgModuleDef<T> = {
-    type: def.type,
-    bootstrap: def.bootstrap || EMPTY_ARRAY,
-    declarations: def.declarations || EMPTY_ARRAY,
-    imports: def.imports || EMPTY_ARRAY,
-    exports: def.exports || EMPTY_ARRAY,
-    transitiveCompileScopes: null,
-    schemas: def.schemas || null,
-    id: def.id || null,
-  };
-  if (def.id != null) {
-    noSideEffects(() => {
+  return noSideEffects(() => {
+    const res: NgModuleDef<T> = {
+      type: def.type,
+      bootstrap: def.bootstrap || EMPTY_ARRAY,
+      declarations: def.declarations || EMPTY_ARRAY,
+      imports: def.imports || EMPTY_ARRAY,
+      exports: def.exports || EMPTY_ARRAY,
+      transitiveCompileScopes: null,
+      schemas: def.schemas || null,
+      id: def.id || null,
+    };
+    if (def.id != null) {
       autoRegisterModuleById[def.id!] = def.type as unknown as NgModuleType;
-    });
-  }
-  return res;
+    }
+    return res;
+  });
 }
 
 /**
