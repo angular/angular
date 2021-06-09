@@ -16,6 +16,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/incremental",
         "//packages/compiler-cli/src/ngtsc/perf",
         "//packages/compiler-cli/src/ngtsc/testing",
+        "//packages/compiler-cli/src/ngtsc/transform",
         "@npm//typescript",
     ],
 )
