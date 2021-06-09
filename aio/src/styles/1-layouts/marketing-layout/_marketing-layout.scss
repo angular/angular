@@ -173,12 +173,11 @@ section#intro {
 // ANGULAR LINE
 
 .home-row .card {
-  @include mixins.card(70%, auto);
+  @include mixins.card(70%);
   display: flex;
   flex-direction: row;
   align-items: center;
   position: relative;
-  width: 70%;
   min-width: 350px;
   height: auto;
   margin: auto;

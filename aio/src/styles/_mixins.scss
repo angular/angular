@@ -47,8 +47,7 @@
 }
 
 // INFO CARD SKELETON
-@mixin card($height, $width) {
-  height: $height;
+@mixin card($width) {
   width: $width;
   border-radius: 4px;
   box-shadow: 0 2px 2px rgba(constants.$black, 0.24), 0 0 2px rgba(constants.$black, 0.12);
