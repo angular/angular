@@ -56,7 +56,7 @@ The application renders with a row of navigation buttons and the *Heroes* view w
 
 
 <div class="lightbox">
-  <img src='generated/images/guide/router/hero-list.png' alt="Hero List">
+  <img src='generated/images/guide/router/hero-list.gif' alt="Example application with a row of navigation buttons and a list of heroes">
 </div>
 
 
@@ -64,7 +64,7 @@ The application renders with a row of navigation buttons and the *Heroes* view w
 Select one hero and the application takes you to a hero editing screen.
 
 <div class="lightbox">
-  <img src='generated/images/guide/router/hero-detail.png' alt="Crisis Center Detail">
+  <img src='generated/images/guide/router/hero-detail.png' alt="Detail view of hero with additional information, input, and back button">
 </div>
 
 
@@ -73,14 +73,14 @@ Alter the name.
 Click the "Back" button and the application returns to the heroes list which displays the changed hero name.
 Notice that the name change took effect immediately.
 
-Had you clicked the browser's back button instead of the application's "Back" button, the app would have returned you to the heroes list as well.
+Had you clicked the browser's back button instead of the application's "Back" button, the application would have returned you to the heroes list as well.
 Angular application navigation updates the browser history as normal web navigation does.
 
 Now click the *Crisis Center* link for a list of ongoing crises.
 
 
 <div class="lightbox">
-  <img src='generated/images/guide/router/crisis-center-list.png' alt="Crisis Center List">
+  <img src='generated/images/guide/router/crisis-center-list.gif' alt="Crisis Center list of crises">
 </div>
 
 Select a crisis and the application takes you to a crisis editing screen.
@@ -91,7 +91,7 @@ Notice that the corresponding name in the crisis list does _not_ change.
 
 
 <div class="lightbox">
-  <img src='generated/images/guide/router/crisis-center-detail.png' alt="Crisis Center Detail">
+  <img src='generated/images/guide/router/crisis-center-detail.gif' alt="Crisis Center detail of a crisis with data, an input, and save and cancel buttons.">
 </div>
 
 
@@ -102,7 +102,7 @@ Click the browser back button or the "Heroes" link to activate a dialog.
 
 
 <div class="lightbox">
-  <img src='generated/images/guide/router/confirm-dialog.png' alt="Confirm Dialog">
+  <img src='generated/images/guide/router/confirm-dialog.png' alt="Alert that asks user to confirm discarding changes">
 </div>
 
 
@@ -123,7 +123,7 @@ Begin with a basic version of the application that navigates between two empty v
 
 
 <div class="lightbox">
-  <img src='generated/images/guide/router/router-1-anim.gif' alt="App in action">
+  <img src='generated/images/guide/router/router-1-anim.gif' alt="Animated image of application with a Crisis Center button and a Heroes button. The pointer clicks each button to show a view for each.">
 </div>
 
 {@a import}
@@ -206,7 +206,7 @@ Registering the `RouterModule.forRoot()` in the `AppModule` `imports` array make
 The root `AppComponent` is the application shell. It has a title, a navigation bar with two links, and a router outlet where the router renders components.
 
 <div class="lightbox">
-  <img src='generated/images/guide/router/shell-and-outlet.png' alt="Shell">
+  <img src='generated/images/guide/router/shell-and-outlet.gif' alt="A nav, made of two navigation buttons, with the first button active and its associated view displayed">
 </div>
 
 The router outlet serves as a placeholder where the routed components are rendered.
@@ -529,10 +529,10 @@ The Routing Module has several characteristics:
 ### Integrate routing with your app
 
 The sample routing application does not include routing by default.
-When you use the [Angular CLI](cli) to create a project that does use routing, set the `--routing` option for the project or app, and for each NgModule.
+When you use the [Angular CLI](cli) to create a project that does use routing, set the `--routing` option for the project or application, and for each NgModule.
 When you create or initialize a new project (using the CLI [`ng new`](cli/new) command) or a new application (using the [`ng generate app`](cli/generate) command), specify the `--routing` option.
 This tells the CLI to include the `@angular/router` npm package and create a file named `app-routing.module.ts`.
-You can then use routing in any NgModule that you add to the project or app.
+You can then use routing in any NgModule that you add to the project or application.
 
 For example, the following command generates an NgModule that can use routing.
 
@@ -603,14 +603,6 @@ This milestone covers the following:
 * Passing required and optional information in route parameters.
 
 This sample application recreates the heroes feature in the "Services" section of the [Tour of Heroes tutorial](tutorial/toh-pt4 "Tour of Heroes: Services"), and reuses much of the code from the <live-example name="toh-pt4" title="Tour of Heroes: Services example code"></live-example>.
-
-<!-- KW - this gif isn't ideal for accessibility. Would like to remove it.-->
-<!-- Here's how the user will experience this version of the app:
-
-
-<div class="lightbox">
-  <img src='generated/images/guide/router/router-2-anim.gif' alt="App in action">
-</div> -->
 
 A typical application has multiple feature areas, each dedicated to a particular business purpose with its own folder.
 
@@ -1001,8 +993,8 @@ Since `ngOnInit()` is only called once per component instantiation, you can dete
 When subscribing to an observable in a component, you almost always unsubscribe when the component is destroyed.
 
 However, `ActivatedRoute` observables are among the exceptions because `ActivatedRoute` and its observables are insulated from the `Router` itself.
-The `Router` destroys a routed component when it is no longer needed. This means all the component's members will also be destroyed, 
-including the injected `ActivatedRoute` and the subscriptions to its `Observable` properties. 
+The `Router` destroys a routed component when it is no longer needed. This means all the component's members will also be destroyed,
+including the injected `ActivatedRoute` and the subscriptions to its `Observable` properties.
 
 The `Router` does not `complete` any `Observable` of the `ActivatedRoute` so any `finalize` or `complete` blocks will not run.
 If you need to handle something in a `finalize`, you will still need to unsubscribe in `ngOnDestroy`. You will also have to
@@ -1180,14 +1172,14 @@ Look for it within the repeated `<li>` tag as shown here:
 
 <code-example path="router/src/app/heroes/hero-list/hero-list.component.html" header="src/app/heroes/hero-list/hero-list.component.html"></code-example>
 
-Add some styles to apply when the list item is selected.
+Add some styles to apply when the hero is selected.
 
 <code-example path="router/src/app/heroes/hero-list/hero-list.component.css" region="selected" header="src/app/heroes/hero-list/hero-list.component.css"></code-example>
 
 When the user navigates from the heroes list to the "Magneta" hero and back, "Magneta" appears selected:
 
 <div class="lightbox">
-  <img src='generated/images/guide/router/selected-hero.png' alt="Selected List">
+  <img src='generated/images/guide/router/selected-hero.png' alt="Selected hero in list has different background color">
 </div>
 
 The optional `foo` route parameter is harmless and the router continues to ignore it.
@@ -1552,13 +1544,7 @@ This section shows you how to organize the crisis center to conform to the follo
 * Each area root component has its own router outlet and child routes.
 * Feature area routes rarely (if ever) cross with routes of other features.
 
-If your application had many feature areas, the app component trees might look like this:
-
-
-<div class="lightbox">
-  <img src='generated/images/guide/router/component-tree.png' alt="Component Tree">
-</div>
-
+If your application had many feature areas, the component trees might consist of multiple components for those features, each with branches of other, related, components.
 
 
 {@a child-routing-component}
@@ -1776,23 +1762,26 @@ It displays a short form with a header, an input box for the message,
 and two buttons, "Send" and "Cancel".
 
 <div class="lightbox">
-  <img src='generated/images/guide/router/contact-popup.png' alt="Contact popup">
+  <img src='generated/images/guide/router/contact-form.png' alt="Contact textarea with send and cancel buttons">
 </div>
 
-Here's the component, its template and styles:
+Here's the component, its template, and styles:
 
 <code-tabs>
 
-  <code-pane header="src/app/compose-message/compose-message.component.css" path="router/src/app/compose-message/compose-message.component.css">
-
+  <code-pane
+      header="src/app/compose-message/compose-message.component.html"
+      path="router/src/app/compose-message/compose-message.component.html">
   </code-pane>
 
-  <code-pane header="src/app/compose-message/compose-message.component.html" path="router/src/app/compose-message/compose-message.component.html">
-
+  <code-pane
+      header="src/app/compose-message/compose-message.component.ts"
+      path="router/src/app/compose-message/compose-message.component.ts">
   </code-pane>
 
-  <code-pane header="src/app/compose-message/compose-message.component.ts" path="router/src/app/compose-message/compose-message.component.ts">
-
+  <code-pane
+      header="src/app/compose-message/compose-message.component.css"
+      path="router/src/app/compose-message/compose-message.component.css">
   </code-pane>
 
 </code-tabs>
@@ -1901,7 +1890,7 @@ Setting the popup `RouterOutlet` to `null` clears the outlet and removes the sec
 
 ## Milestone 5: Route guards
 
-At the moment, any user can navigate anywhere in the application any time, but sometimes you need to control access to different parts of your app for various reasons. Some of which may include the following:
+At the moment, any user can navigate anywhere in the application any time, but sometimes you need to control access to different parts of your application for various reasons. Some of which may include the following:
 
 * Perhaps the user is not authorized to navigate to the target component.
 * Maybe the user must login (authenticate) first.
@@ -2895,8 +2884,8 @@ to see the finished route configuration.
 
 {@a final-app}
 
-## Final app
+## Final application
 
-For the completed router app, see the <live-example name="router"></live-example> for the final source code.
+For the completed router application, see the <live-example name="router"></live-example> for the final source code.
 
 {@a link-parameters-array}
