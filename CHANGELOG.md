@@ -1,3 +1,61 @@
+# 12.1.0-next.0 "concrete-carousel" (2021-06-09)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **stepper:** show error state if explicitly enabled ([#22540](https://github.com/angular/components/issues/22540)) ([5497be56d110cb98b0e6757e4c3eacc0642fc991](https://github.com/angular/components/commit/5497be56d110cb98b0e6757e4c3eacc0642fc991)), closes [#22539](https://github.com/angular/components/issues/22539) |
+
+### material
+
+_Deprecations:_
+
+* **dialog:** `MatDialogClose#dialogRef` class member to become private.
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **datepicker:** range picker placeholders not hidden in high contrast mode ([7cc42f5d835b7971e9ff73e220b801cf7834d515](https://github.com/angular/components/commit/7cc42f5d835b7971e9ff73e220b801cf7834d515)) |
+| bug fix |  **expansion:** unable to assign custom tabindex on header ([#22523](https://github.com/angular/components/issues/22523)) ([6c1383a33a175c72c5648e640b7eee5a18ce4443](https://github.com/angular/components/commit/6c1383a33a175c72c5648e640b7eee5a18ce4443)), closes [#22521](https://github.com/angular/components/issues/22521) |
+| bug fix |  **form-field:** input placeholder not hidden in high contrast mode ([635ee67f325bab8dd189b9cda53d50eaa49997e6](https://github.com/angular/components/commit/635ee67f325bab8dd189b9cda53d50eaa49997e6)) |
+| bug fix |  **menu:** not interrupting keyboard events to other overlays ([#22856](https://github.com/angular/components/issues/22856)) ([aeecb3ccbde1e679766c7bcc2ba4b2e483c27ac2](https://github.com/angular/components/commit/aeecb3ccbde1e679766c7bcc2ba4b2e483c27ac2)), closes [#22694](https://github.com/angular/components/issues/22694) |
+| bug fix |  **paginator:** button icons blending in with background in high contrast mode on Chromium browsers ([#22385](https://github.com/angular/components/issues/22385)) ([d056f9869903debdbd686bbaf68aa9468b17d2bb](https://github.com/angular/components/commit/d056f9869903debdbd686bbaf68aa9468b17d2bb)) |
+| bug fix |  **schematics:** don't drop prebuilt imports in theming API migration ([7cd084d56da7572836e8f2715fc9fd4a744f15f9](https://github.com/angular/components/commit/7cd084d56da7572836e8f2715fc9fd4a744f15f9)), closes [#22697](https://github.com/angular/components/issues/22697) |
+| bug fix |  **slider:** don't interrupt pointer dragging when keyboard is pressed ([#22849](https://github.com/angular/components/issues/22849)) ([23dfbbb238b29fb3cc2bda680186cf0a9b8c40f1](https://github.com/angular/components/commit/23dfbbb238b29fb3cc2bda680186cf0a9b8c40f1)), closes [#22719](https://github.com/angular/components/issues/22719) |
+| bug fix |  **slider:** incorrectly attributing touches for multiple touch events ([#22615](https://github.com/angular/components/issues/22615)) ([2f40a8dcc89425564eeb37fc858ebafc5225ec9e](https://github.com/angular/components/commit/2f40a8dcc89425564eeb37fc858ebafc5225ec9e)), closes [#22614](https://github.com/angular/components/issues/22614) |
+| bug fix |  **sort:** fix undefined object access ([#22634](https://github.com/angular/components/issues/22634)) ([68600b8f4301bd56e6411f2ac1ba5637691ed650](https://github.com/angular/components/commit/68600b8f4301bd56e6411f2ac1ba5637691ed650)) |
+| docs |  **dialog:** add missing descriptions ([#22854](https://github.com/angular/components/issues/22854)) ([5bd088e96e4cb1f59f92d7a0b054091df9fc9976](https://github.com/angular/components/commit/5bd088e96e4cb1f59f92d7a0b054091df9fc9976)) |
+| feature |  **multiple:** add ng-update entry for `google-maps` and `youtube-player` package ([#22710](https://github.com/angular/components/issues/22710)) ([fb1d930d9dc8e89d24b303b956b180a2fec0f924](https://github.com/angular/components/commit/fb1d930d9dc8e89d24b303b956b180a2fec0f924)), closes [#22689](https://github.com/angular/components/issues/22689) |
+| feature |  **tabs:** allow for content tabindex to be customized ([#21912](https://github.com/angular/components/issues/21912)) ([f81f67ded2835f245eee7a8aead42a9ec3469366](https://github.com/angular/components/commit/f81f67ded2835f245eee7a8aead42a9ec3469366)), closes [#14808](https://github.com/angular/components/issues/14808) [#21819](https://github.com/angular/components/issues/21819) |
+
+### google-maps
+
+|            |                       |
+| ---------- | --------------------- |
+| feature |  add visible input to marker ([#22490](https://github.com/angular/components/issues/22490)) ([c7565e26f0d36bcda5601b07b15af8106c4a2ffb](https://github.com/angular/components/commit/c7565e26f0d36bcda5601b07b15af8106c4a2ffb)), closes [#22488](https://github.com/angular/components/issues/22488) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-button:** set proper touch target ([#22846](https://github.com/angular/components/issues/22846)) ([793e1f1310c0d5e38d7fb0766d07292c1ed83522](https://github.com/angular/components/commit/793e1f1310c0d5e38d7fb0766d07292c1ed83522)), closes [#22799](https://github.com/angular/components/issues/22799) |
+| bug fix |  **mdc-form-field:** error with latest canary version ([#22623](https://github.com/angular/components/issues/22623)) ([cabb9ce499c165d936e1defea8d985e1cc48feba](https://github.com/angular/components/commit/cabb9ce499c165d936e1defea8d985e1cc48feba)) |
+| bug fix |  **mdc-input:** only apply styling when inside a form field ([#21876](https://github.com/angular/components/issues/21876)) ([21ab17fb1eea3a7e91463bcacc282ef455f7845b](https://github.com/angular/components/commit/21ab17fb1eea3a7e91463bcacc282ef455f7845b)), closes [#21871](https://github.com/angular/components/issues/21871) |
+| bug fix |  **mdc-list:** add selected indication in high contrast mode ([#22447](https://github.com/angular/components/issues/22447)) ([5e42d15b1609eb5d78c81a2c6a7c18a5d15a0218](https://github.com/angular/components/commit/5e42d15b1609eb5d78c81a2c6a7c18a5d15a0218)) |
+| bug fix |  **mdc-list:** align foundation methods with MDC ([#22624](https://github.com/angular/components/issues/22624)) ([67d6a031c28d0872d563188e4df39ed45d0e0823](https://github.com/angular/components/commit/67d6a031c28d0872d563188e4df39ed45d0e0823)) |
+| bug fix |  **mdc-list:** error with latest MDC list canary version ([#22636](https://github.com/angular/components/issues/22636)) ([be872c06c4678ab5719d96817fbf71b2cf13de2e](https://github.com/angular/components/commit/be872c06c4678ab5719d96817fbf71b2cf13de2e)) |
+| bug fix |  **mdc-menu:** implement increasing elevation ([#22506](https://github.com/angular/components/issues/22506)) ([8ef4a77614e1e1596eec100c031e462c680ac26f](https://github.com/angular/components/commit/8ef4a77614e1e1596eec100c031e462c680ac26f)) |
+| bug fix |  **mdc-progress-bar:** buffer animation not disabled under noop animations module ([#22661](https://github.com/angular/components/issues/22661)) ([cd87b38dc35b999bb29ce854bb1fc815a3d3ee27](https://github.com/angular/components/commit/cd87b38dc35b999bb29ce854bb1fc815a3d3ee27)) |
+| bug fix |  **mdc-progress-bar:** don't rely on JS to change directionality ([#22705](https://github.com/angular/components/issues/22705)) ([4cf77164b49a09ef59d05f7bb834cb1ff354e82b](https://github.com/angular/components/commit/4cf77164b49a09ef59d05f7bb834cb1ff354e82b)), closes [#21650](https://github.com/angular/components/issues/21650) [#21650](https://github.com/angular/components/issues/21650) [#22609](https://github.com/angular/components/issues/22609) |
+| bug fix |  **mdc-progress-spinner:** apply correct color in high contrast mode ([#22435](https://github.com/angular/components/issues/22435)) ([bf99037e17e26336689bf869228f6159189df3dc](https://github.com/angular/components/commit/bf99037e17e26336689bf869228f6159189df3dc)) |
+| bug fix |  **mdc-slide-toggle:** set $deprecated-suffix on import ([#22645](https://github.com/angular/components/issues/22645)) ([c04bd21d6c8d74ec03dcf30ad990e0d2d61d4b4e](https://github.com/angular/components/commit/c04bd21d6c8d74ec03dcf30ad990e0d2d61d4b4e)) |
+| bug fix |  **mdc-slider:** disable animations when noop module is included ([#22649](https://github.com/angular/components/issues/22649)) ([89c847441c24e80c334cf882275f2f904c625424](https://github.com/angular/components/commit/89c847441c24e80c334cf882275f2f904c625424)) |
+| bug fix |  **mdc-slider:** expose theming mixins ([#22764](https://github.com/angular/components/issues/22764)) ([0de3f728831159ba4356d7c7f66a633c44b2f04c](https://github.com/angular/components/commit/0de3f728831159ba4356d7c7f66a633c44b2f04c)) |
+| bug fix |  **mdc-slider:** make small fixes needed to imp… ([#22684](https://github.com/angular/components/issues/22684)) ([aaf9ad20389e4c766117b483f85f52169d4cd3dd](https://github.com/angular/components/commit/aaf9ad20389e4c766117b483f85f52169d4cd3dd)) |
+| feature |  **mdc-slide-toggle:** swap to deprecated switch dependency ([#22515](https://github.com/angular/components/issues/22515)) ([2f702babc5edd52c54b7ece185e98461ce0b1aaa](https://github.com/angular/components/commit/2f702babc5edd52c54b7ece185e98461ce0b1aaa)) |
+| feature |  **mdc-slider:** add test harnesses ([#22648](https://github.com/angular/components/issues/22648)) ([287834aecd878ec5d44624102498e3665571dcc4](https://github.com/angular/components/commit/287834aecd878ec5d44624102498e3665571dcc4)) |
+| feature |  **mdc-slider:** implement the mdc slider ([#22596](https://github.com/angular/components/issues/22596)) ([8dcc94dcf5dc91de9ef8f47b612331bc646438e0](https://github.com/angular/components/commit/8dcc94dcf5dc91de9ef8f47b612331bc646438e0)), closes [#21645](https://github.com/angular/components/issues/21645) [#21655](https://github.com/angular/components/issues/21655) [#21680](https://github.com/angular/components/issues/21680) [#21844](https://github.com/angular/components/issues/21844) [#21971](https://github.com/angular/components/issues/21971) [#21934](https://github.com/angular/components/issues/21934) [#21979](https://github.com/angular/components/issues/21979) [#22016](https://github.com/angular/components/issues/22016) [#22072](https://github.com/angular/components/issues/22072) [#22168](https://github.com/angular/components/issues/22168) [#22193](https://github.com/angular/components/issues/22193) [#22195](https://github.com/angular/components/issues/22195) [#22196](https://github.com/angular/components/issues/22196) [#22199](https://github.com/angular/components/issues/22199) [#22216](https://github.com/angular/components/issues/22216) [#22214](https://github.com/angular/components/issues/22214) [#22238](https://github.com/angular/components/issues/22238) [#22242](https://github.com/angular/components/issues/22242) [#22286](https://github.com/angular/components/issues/22286) [#22445](https://github.com/angular/components/issues/22445) [#22463](https://github.com/angular/components/issues/22463) [#22470](https://github.com/angular/components/issues/22470) [#22474](https://github.com/angular/components/issues/22474) [#22478](https://github.com/angular/components/issues/22478) [#22481](https://github.com/angular/components/issues/22481) [#22546](https://github.com/angular/components/issues/22546) [#22571](https://github.com/angular/components/issues/22571) [#22572](https://github.com/angular/components/issues/22572) [#22579](https://github.com/angular/components/issues/22579) |
+
+
 ## 12.0.4 "glass-gopher" (2021-06-09)
 
 ### material
