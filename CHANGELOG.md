@@ -1,3 +1,13 @@
+<a name="12.1.0-next.6"></a>
+# 12.1.0-next.6 (2021-06-09)
+### core
+| Commit | Description |
+| -- | -- |
+| 3961b3c360 | fix(core): ensure that autoRegisterModuleById registration in ɵɵdefineNgModule is not DCE-ed by closure (#42529) |
+## Special Thanks:
+Igor Minar and Pete Bacon Darwin
+
+
 <a name="12.1.0-next.5"></a>
 # 12.1.0-next.5 (2021-06-09)
 ### common
