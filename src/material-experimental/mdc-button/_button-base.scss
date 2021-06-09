@@ -1,5 +1,3 @@
-@use '@material/touch-target' as mdc-touch-target;
-@use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/style/layout-common';
 
 // Adds styles necessary to provide stateful interactions with the button. This includes providing
@@ -59,19 +57,5 @@
   &[disabled] {
     cursor: default;
     pointer-events: none;
-  }
-}
-
-@mixin mat-private-button-touch-target($is-square) {
-  // Element used to ensure that the button has a touch target that meets the required minimum.
-  // Note that we use this, instead of MDC's built-in `mdc-button--touch` class, because the MDC
-  // class is implemented as `margin-top: 6px; margin-bottom: 6px` on the host element which
-  // goes against our rule of not having margins on the host node. Furthermore, having the margin on
-  // the button itself would require us to wrap it in another div. See:
-  // https://github.com/material-components/material-components-web/tree/master/packages/mdc-button#making-buttons-accessible
-  .mat-mdc-button-touch-target {
-    @include mdc-touch-target.touch-target(
-      $set-width: $is-square,
-      $query: mdc-helpers.$mat-base-styles-query);
   }
 }

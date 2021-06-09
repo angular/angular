@@ -13,7 +13,6 @@
   border-radius: 50%;
 
   @include button-base.mat-private-button-disabled();
-  @include button-base.mat-private-button-touch-target(true);
 
   // MDC adds some styles to icon buttons that conflict with some of our focus indicator styles
   // and don't actually do anything. This undoes those conflicting styles.

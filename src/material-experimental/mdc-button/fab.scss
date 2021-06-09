@@ -1,13 +1,12 @@
 @use '@material/fab' as mdc-fab;
 @use '../mdc-helpers/mdc-helpers';
-@use 'button-base';
+@use '_button-base';
 
 @include mdc-fab.without-ripple($query: mdc-helpers.$mat-base-styles-query);
 
 .mat-mdc-fab, .mat-mdc-mini-fab {
   @include button-base.mat-private-button-interactive();
   @include button-base.mat-private-button-disabled();
-  @include button-base.mat-private-button-touch-target(true);
 
   // MDC adds some styles to fab and mini-fab that conflict with some of our focus indicator
   // styles and don't actually do anything. This undoes those conflicting styles.
