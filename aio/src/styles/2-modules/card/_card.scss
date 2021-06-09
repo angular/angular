@@ -9,13 +9,14 @@
   margin: 16px 0;
 
   .docs-card {
-    @include mixins.card(194px, 35%);
+    @include mixins.card(35%);
 
     max-width: 340px;
     min-width: 300px;
     margin: 24px 16px;
-    padding-bottom: 48px;
-    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 
     @media screen and (max-width: 600px) {
       width: 100%;
@@ -27,7 +28,7 @@
       @include mixins.font-size(20);
       @include mixins.line-height(24);
       margin: 0;
-      padding: 32px 0 24px;
+      padding: 2.7rem 0 2.1rem;
       text-transform: none;
       text-align: center;
     }
@@ -37,16 +38,15 @@
       @include mixins.line-height(24);
       padding: 0 16px;
       margin: 0;
+      margin-bottom: 1.6rem;
       text-align: center;
     }
 
     .card-footer {
-      bottom: 0;
+      margin-bottom: 0;
       box-sizing: border-box;
-      @include mixins.line-height(48);
-      left: 0;
-      position: absolute;
-      right: 0;
+      @include mixins.line-height(24);
+      padding: 1.3rem 15px;
       text-align: right;
 
       a {
