@@ -1,3 +1,8 @@
+h2 {
+  font-size: 1.5rem;
+}
+
 input {
-  width: 20em
+  font-size: 1rem;
+  margin-top: 1rem;
 }

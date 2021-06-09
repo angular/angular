@@ -5,14 +5,14 @@ This topic describes how to implement many of the common tasks associated with a
 {@a basics}
 ## Generate an application with routing enabled
 
-The following command uses the Angular CLI to generate a basic Angular application with an app routing module, called `AppRoutingModule`, which is an NgModule where you can configure your routes.
+The following command uses the Angular CLI to generate a basic Angular application with an application routing module, called `AppRoutingModule`, which is an NgModule where you can configure your routes.
 The application name in the following example is `routing-app`.
 
 <code-example language="sh">
   ng new routing-app --routing
 </code-example>
 
-When generating a new app, the CLI prompts you to select CSS or a CSS preprocessor.
+When generating a new application, the CLI prompts you to select CSS or a CSS preprocessor.
 For this example, accept the default of `CSS`.
 
 ### Adding components for routing
@@ -79,7 +79,7 @@ The following is the default `AppModule` using the CLI with the `--routing` flag
   The Angular CLI performs this step automatically.
   The CLI also sets up a `Routes` array for your routes and configures the `imports` and `exports` arrays for `@NgModule()`.
 
-  <code-example path="router/src/app/app-routing.module.7.ts" header="CLI app routing module">
+  <code-example path="router/src/app/app-routing.module.7.ts" header="CLI application routing module">
 
   </code-example>
 
@@ -496,8 +496,8 @@ This option is only available if application URLs look like normal web URLs with
 ## `<base href>`
 
 The router uses the browser's <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="HTML5 browser history push-state">history.pushState</a> for navigation.
-`pushState` allows you to customize in-app URL paths; for example, `localhost:4200/crisis-center`.
-The in-app URLs can be indistinguishable from server URLs.
+`pushState` allows you to customize in-application URL paths; for example, `localhost:4200/crisis-center`.
+The in-application URLs can be indistinguishable from server URLs.
 
 Modern HTML5 browsers were the first to support `pushState` which is why many people refer to these URLs as "HTML5 style" URLs.
 
