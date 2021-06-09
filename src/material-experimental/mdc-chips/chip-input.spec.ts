@@ -238,7 +238,7 @@ describe('MDC-based MatChipInput', () => {
     <mat-form-field>
       <mat-chip-grid #chipGrid [required]="required">
         <mat-chip-row>Hello</mat-chip-row>
-        <input matInput [matChipInputFor]="chipGrid"
+        <input [matChipInputFor]="chipGrid"
                   [matChipInputAddOnBlur]="addOnBlur"
                   (matChipInputTokenEnd)="add($event)"
                   [placeholder]="placeholder" />

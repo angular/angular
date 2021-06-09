@@ -247,7 +247,7 @@ describe('MatChipInput', () => {
     <mat-form-field>
       <mat-chip-list #chipList [required]="required">
         <mat-chip>Hello</mat-chip>
-        <input matInput [matChipInputFor]="chipList"
+        <input [matChipInputFor]="chipList"
                   [matChipInputAddOnBlur]="addOnBlur"
                   (matChipInputTokenEnd)="add($event)"
                   [placeholder]="placeholder" />
