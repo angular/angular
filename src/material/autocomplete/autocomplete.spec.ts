@@ -1653,9 +1653,9 @@ describe('MatAutocomplete', () => {
 
   describe('Fallback positions', () => {
     it('should use below positioning by default', fakeAsync(() => {
-      let fixture = createComponent(SimpleAutocomplete);
+      const fixture = createComponent(SimpleAutocomplete);
       fixture.detectChanges();
-      let inputReference =
+      const inputReference =
           fixture.debugElement.query(By.css('.mat-form-field-flex'))!.nativeElement;
 
       fixture.componentInstance.trigger.openPanel();
@@ -1673,16 +1673,16 @@ describe('MatAutocomplete', () => {
     }));
 
     it('should reposition the panel on scroll', () => {
-      let scrolledSubject = new Subject();
-      let spacer = document.createElement('div');
-      let fixture = createComponent(SimpleAutocomplete, [{
+      const scrolledSubject = new Subject();
+      const spacer = document.createElement('div');
+      const fixture = createComponent(SimpleAutocomplete, [{
         provide: ScrollDispatcher,
         useValue: {scrolled: () => scrolledSubject}
       }]);
 
       fixture.detectChanges();
 
-      let inputReference =
+      const inputReference =
           fixture.debugElement.query(By.css('.mat-form-field-flex'))!.nativeElement;
       spacer.style.height = '1000px';
       document.body.appendChild(spacer);
@@ -1706,9 +1706,9 @@ describe('MatAutocomplete', () => {
     });
 
     it('should fall back to above position if panel cannot fit below', fakeAsync(() => {
-      let fixture = createComponent(SimpleAutocomplete);
+      const fixture = createComponent(SimpleAutocomplete);
       fixture.detectChanges();
-      let inputReference =
+      const inputReference =
           fixture.debugElement.query(By.css('.mat-form-field-flex'))!.nativeElement;
 
       // Push the autocomplete trigger down so it won't have room to open "below"
@@ -1731,11 +1731,11 @@ describe('MatAutocomplete', () => {
     }));
 
     it('should allow the panel to expand when the number of results increases', fakeAsync(() => {
-      let fixture = createComponent(SimpleAutocomplete);
+      const fixture = createComponent(SimpleAutocomplete);
       fixture.detectChanges();
 
-      let inputEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
-      let inputReference =
+      const inputEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
+      const inputReference =
           fixture.debugElement.query(By.css('.mat-form-field-flex'))!.nativeElement;
 
       // Push the element down so it has a little bit of space, but not enough to render.
@@ -1752,7 +1752,7 @@ describe('MatAutocomplete', () => {
       zone.simulateZoneExit();
 
       let panel = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
-      let initialPanelHeight = panel.getBoundingClientRect().height;
+      const initialPanelHeight = panel.getBoundingClientRect().height;
 
       fixture.componentInstance.trigger.closePanel();
       fixture.detectChanges();
@@ -1773,11 +1773,11 @@ describe('MatAutocomplete', () => {
     }));
 
     it('should align panel properly when filtering in "above" position', fakeAsync(() => {
-      let fixture = createComponent(SimpleAutocomplete);
+      const fixture = createComponent(SimpleAutocomplete);
       fixture.detectChanges();
 
-      let input = fixture.debugElement.query(By.css('input'))!.nativeElement;
-      let inputReference =
+      const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
+      const inputReference =
           fixture.debugElement.query(By.css('.mat-form-field-flex'))!.nativeElement;
 
       // Push the autocomplete trigger down so it won't have room to open "below"
@@ -1802,13 +1802,13 @@ describe('MatAutocomplete', () => {
 
     it('should fall back to above position when requested if options are added while ' +
         'the panel is open', fakeAsync(() => {
-      let fixture = createComponent(SimpleAutocomplete);
+      const fixture = createComponent(SimpleAutocomplete);
       fixture.componentInstance.states = fixture.componentInstance.states.slice(0, 1);
       fixture.componentInstance.filteredStates = fixture.componentInstance.states.slice();
       fixture.detectChanges();
 
-      let inputEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
-      let inputReference =
+      const inputEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
+      const inputReference =
           fixture.debugElement.query(By.css('.mat-form-field-flex'))!.nativeElement;
 
       // Push the element down so it has a little bit of space, but not enough to render.
@@ -1820,7 +1820,7 @@ describe('MatAutocomplete', () => {
       zone.simulateZoneExit();
       fixture.detectChanges();
 
-      let panel = overlayContainerElement.querySelector('.mat-autocomplete-panel')!;
+      const panel = overlayContainerElement.querySelector('.mat-autocomplete-panel')!;
       let inputRect = inputReference.getBoundingClientRect();
       let panelRect = panel.getBoundingClientRect();
 
@@ -1846,17 +1846,17 @@ describe('MatAutocomplete', () => {
     }));
 
     it('should not throw if a panel reposition is requested while the panel is closed', () => {
-        let fixture = createComponent(SimpleAutocomplete);
+        const fixture = createComponent(SimpleAutocomplete);
         fixture.detectChanges();
 
         expect(() => fixture.componentInstance.trigger.updatePosition()).not.toThrow();
     });
 
     it('should be able to force below position even if there is not enough space', fakeAsync(() => {
-      let fixture = createComponent(SimpleAutocomplete);
+      const fixture = createComponent(SimpleAutocomplete);
       fixture.componentInstance.position = 'below';
       fixture.detectChanges();
-      let inputReference =
+      const inputReference =
           fixture.debugElement.query(By.css('.mat-form-field-flex'))!.nativeElement;
 
       // Push the autocomplete trigger down so it won't have room to open below.
@@ -1879,10 +1879,10 @@ describe('MatAutocomplete', () => {
     }));
 
     it('should be able to force above position even if there is not enough space', fakeAsync(() => {
-      let fixture = createComponent(SimpleAutocomplete);
+      const fixture = createComponent(SimpleAutocomplete);
       fixture.componentInstance.position = 'above';
       fixture.detectChanges();
-      let inputReference =
+      const inputReference =
           fixture.debugElement.query(By.css('.mat-form-field-flex'))!.nativeElement;
 
       // Push the autocomplete trigger up so it won't have room to open above.
@@ -1905,11 +1905,11 @@ describe('MatAutocomplete', () => {
     }));
 
     it('should handle the position being changed after the first open', fakeAsync(() => {
-      let fixture = createComponent(SimpleAutocomplete);
+      const fixture = createComponent(SimpleAutocomplete);
       fixture.detectChanges();
-      let inputReference =
+      const inputReference =
           fixture.debugElement.query(By.css('.mat-form-field-flex'))!.nativeElement;
-      let openPanel = () => {
+      const openPanel = () => {
         fixture.componentInstance.trigger.openPanel();
         fixture.detectChanges();
         zone.simulateZoneExit();
@@ -1966,7 +1966,7 @@ describe('MatAutocomplete', () => {
       zone.simulateZoneExit();
       fixture.detectChanges();
 
-      let componentOptions = fixture.componentInstance.options.toArray();
+      const componentOptions = fixture.componentInstance.options.toArray();
       expect(componentOptions[0].selected)
           .toBe(true, `Clicked option should be selected.`);
 
@@ -1992,7 +1992,7 @@ describe('MatAutocomplete', () => {
       zone.simulateZoneExit();
       fixture.detectChanges();
 
-      let componentOptions = fixture.componentInstance.options.toArray();
+      const componentOptions = fixture.componentInstance.options.toArray();
       componentOptions.forEach(option => spyOn(option, 'deselect'));
 
       expect(componentOptions[0].selected)
@@ -2079,7 +2079,7 @@ describe('MatAutocomplete', () => {
       fixture.destroy();
       fixture = TestBed.createComponent(SimpleAutocomplete);
 
-      let spy = jasmine.createSpy('option selection spy');
+      const spy = jasmine.createSpy('option selection spy');
       let subscription: Subscription;
 
       expect(fixture.componentInstance.trigger.autocomplete).toBeFalsy();
@@ -2103,9 +2103,9 @@ describe('MatAutocomplete', () => {
     }));
 
     it('should reposition the panel when the amount of options changes', fakeAsync(() => {
-      let formField = fixture.debugElement.query(By.css('.mat-form-field'))!.nativeElement;
-      let inputReference = formField.querySelector('.mat-form-field-flex');
-      let input = inputReference.querySelector('input');
+      const formField = fixture.debugElement.query(By.css('.mat-form-field'))!.nativeElement;
+      const inputReference = formField.querySelector('.mat-form-field-flex');
+      const input = inputReference.querySelector('input');
 
       formField.style.bottom = '100px';
       formField.style.position = 'fixed';
@@ -2607,7 +2607,7 @@ describe('MatAutocomplete', () => {
 
   it('should show the panel when the options are initialized later within a component with ' +
     'OnPush change detection', fakeAsync(() => {
-      let fixture = createComponent(AutocompleteWithOnPushDelay);
+      const fixture = createComponent(AutocompleteWithOnPushDelay);
 
       fixture.detectChanges();
       dispatchFakeEvent(fixture.debugElement.query(By.css('input'))!.nativeElement, 'focusin');
@@ -2617,8 +2617,9 @@ describe('MatAutocomplete', () => {
       tick();
 
       Promise.resolve().then(() => {
-        let panel = overlayContainerElement.querySelector('.mat-autocomplete-panel') as HTMLElement;
-        let visibleClass = 'mat-autocomplete-visible';
+        const panel =
+            overlayContainerElement.querySelector('.mat-autocomplete-panel') as HTMLElement;
+        const visibleClass = 'mat-autocomplete-visible';
 
         fixture.detectChanges();
         expect(panel.classList).toContain(visibleClass, `Expected panel to be visible.`);
@@ -2626,15 +2627,16 @@ describe('MatAutocomplete', () => {
     }));
 
   it('should emit an event when an option is selected', fakeAsync(() => {
-    let fixture = createComponent(AutocompleteWithSelectEvent);
+    const fixture = createComponent(AutocompleteWithSelectEvent);
 
     fixture.detectChanges();
     fixture.componentInstance.trigger.openPanel();
     zone.simulateZoneExit();
     fixture.detectChanges();
 
-    let options = overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
-    let spy = fixture.componentInstance.optionSelected;
+    const options =
+        overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
+    const spy = fixture.componentInstance.optionSelected;
 
     options[1].click();
     tick();
@@ -2642,14 +2644,14 @@ describe('MatAutocomplete', () => {
 
     expect(spy).toHaveBeenCalledTimes(1);
 
-    let event = spy.calls.mostRecent().args[0] as MatAutocompleteSelectedEvent;
+    const event = spy.calls.mostRecent().args[0] as MatAutocompleteSelectedEvent;
 
     expect(event.source).toBe(fixture.componentInstance.autocomplete);
     expect(event.option.value).toBe('Washington');
   }));
 
   it('should emit an event when a newly-added option is selected', fakeAsync(() => {
-    let fixture = createComponent(AutocompleteWithSelectEvent);
+    const fixture = createComponent(AutocompleteWithSelectEvent);
 
     fixture.detectChanges();
     fixture.componentInstance.trigger.openPanel();
@@ -2661,8 +2663,9 @@ describe('MatAutocomplete', () => {
     tick();
     fixture.detectChanges();
 
-    let options = overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
-    let spy = fixture.componentInstance.optionSelected;
+    const options =
+        overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
+    const spy = fixture.componentInstance.optionSelected;
 
     options[3].click();
     tick();
@@ -2670,7 +2673,7 @@ describe('MatAutocomplete', () => {
 
     expect(spy).toHaveBeenCalledTimes(1);
 
-    let event = spy.calls.mostRecent().args[0] as MatAutocompleteSelectedEvent;
+    const event = spy.calls.mostRecent().args[0] as MatAutocompleteSelectedEvent;
 
     expect(event.source).toBe(fixture.componentInstance.autocomplete);
     expect(event.option.value).toBe('Puerto Rico');
