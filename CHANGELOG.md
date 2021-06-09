@@ -1,3 +1,41 @@
+<a name="12.1.0-next.5"></a>
+# 12.1.0-next.5 (2021-06-09)
+### common
+| Commit | Description |
+| -- | -- |
+| 85c7f7691e | fix(common): infer correct type when `trackBy` is used in `ngFor` (#41995) |
+| 374fa2c26f | fix(common): initialize currencyCode in currencyPipe (#40505) |
+### compiler
+| Commit | Description |
+| -- | -- |
+| afd68e5674 | feat(compiler): emit diagnostic for shadow dom components with an invalid selector (#42245) |
+| ba084857ea | feat(compiler): support safe keyed read expressions (#41911) |
+### compiler-cli
+| Commit | Description |
+| -- | -- |
+| bd1836b999 | fix(compiler-cli): exclude type-only imports from cycle analysis (#42453) |
+### core
+| Commit | Description |
+| -- | -- |
+| 25f763cff8 | feat(core): support TypeScript 4.3 (#42022) |
+### forms
+| Commit | Description |
+| -- | -- |
+| 47270d9e63 | feat(forms): add `ng-submitted` class to forms that have been submitted. (#42132) |
+| 751cd83ae3 | fix(forms): the `min` and `max` validators should work correctly with `0` as a value (#42412) |
+### language-service
+| Commit | Description |
+| -- | -- |
+| a493ea9bcb | fix(language-service): fix autocomplete info display for some cases (#42472) |
+| fe22c2b0b6 | fix(language-service): Correct rename info for pipe name expressions (#41974) |
+### router
+| Commit | Description |
+| -- | -- |
+| c44ab4f6da | fix(router): fix `serializeQueryParams` logic (#42481) |
+## Special Thanks:
+Alex, Alex Inkin, Andrew Kushnir, Andrew Scott, Chris, David Shevitz, Dylan Hunn, George Kalpakas, Gourav102, Igor Minar, Jessica Janiuk, Joey Perrott, JoostK, Kapunahele Wong, Kristiyan Kostadinov, MarsiBarsi, MrJithil, Paul Gschwendtner, Pete Bacon Darwin, Renovate Bot, Sam Severance, Santosh Yadav, Teri Glover, Tiago Temporin, Vahid Mohammadi, anups1, cindygk, iRealNirmal, kuncevic and mgechev
+
+
 <a name="12.0.4"></a>
 # 12.0.4 (2021-06-09)
 ### common
