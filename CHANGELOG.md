@@ -1,3 +1,30 @@
+<a name="12.0.4"></a>
+# 12.0.4 (2021-06-09)
+### common
+| Commit | Description |
+| -- | -- |
+| 200cc31df4 | fix(common): infer correct type when `trackBy` is used in `ngFor` (#41995) |
+| 0dad375de7 | fix(common): initialize currencyCode in currencyPipe (#40505) |
+### compiler-cli
+| Commit | Description |
+| -- | -- |
+| b6d6a34eef | fix(compiler-cli): exclude type-only imports from cycle analysis (#42453) |
+### forms
+| Commit | Description |
+| -- | -- |
+| 50c87e86b6 | fix(forms): the `min` and `max` validators should work correctly with `0` as a value (#42412) |
+### language-service
+| Commit | Description |
+| -- | -- |
+| 34dd3c360b | fix(language-service): fix autocomplete info display for some cases (#42472) |
+### router
+| Commit | Description |
+| -- | -- |
+| a77ec5bcab | fix(router): fix `serializeQueryParams` logic (#42481) |
+## Special Thanks:
+Alex, Alex Inkin, Andrew Kushnir, Andrew Scott, Chris, David Shevitz, George Kalpakas, Gourav102, Igor Minar, Joey Perrott, JoostK, Kapunahele Wong, Kristiyan Kostadinov, MarsiBarsi, MrJithil, Paul Gschwendtner, Pete Bacon Darwin, Sam Severance, Santosh Yadav, Teri Glover, Tiago Temporin, Vahid Mohammadi, anups1, cindygk, iRealNirmal, kuncevic and mgechev
+
+
 <a name="12.1.0-next.4"></a>
 # 12.1.0-next.4 (2021-06-02)
 ### compiler-cli
