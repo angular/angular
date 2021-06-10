@@ -313,6 +313,7 @@ class _TreeBuilder {
    * opening tag is recovered).
    */
   private _popElement(fullName: string, endSourceSpan: ParseSourceSpan|null): boolean {
+    let unexpectedCloseTagDetected = false;
     for (let stackIndex = this._elementStack.length - 1; stackIndex >= 0; stackIndex--) {
       const el = this._elementStack[stackIndex];
       if (el.name == fullName) {
@@ -323,11 +324,14 @@ class _TreeBuilder {
         el.sourceSpan.end = endSourceSpan !== null ? endSourceSpan.end : el.sourceSpan.end;
 
         this._elementStack.splice(stackIndex, this._elementStack.length - stackIndex);
-        return true;
+        return !unexpectedCloseTagDetected;
       }
 
       if (!this.getTagDefinition(el.name).closedByParent) {
-        return false;
+        // Note that we encountered an unexpected close tag but continue processing the element
+        // stack so we can assign an `endSourceSpan` if there is a corresponding start tag for this
+        // end tag in the stack.
+        unexpectedCloseTagDetected = true;
       }
     }
     return false;
