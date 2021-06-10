@@ -1167,7 +1167,7 @@ export class FormControl extends AbstractControl {
       // `VALID` or `INVALID`.
       // The status should be broadcasted via the `statusChanges` observable, so we set `emitEvent`
       // to `true` to allow that during the control creation process.
-      emitEvent: !!asyncValidator
+      emitEvent: !!this.asyncValidator
     });
   }
 
@@ -1433,7 +1433,7 @@ export class FormGroup extends AbstractControl {
       // If `asyncValidator` is present, it will trigger control status change from `PENDING` to
       // `VALID` or `INVALID`. The status should be broadcasted via the `statusChanges` observable,
       // so we set `emitEvent` to `true` to allow that during the control creation process.
-      emitEvent: !!asyncValidator
+      emitEvent: !!this.asyncValidator
     });
   }
 
@@ -1887,7 +1887,7 @@ export class FormArray extends AbstractControl {
       // `VALID` or `INVALID`.
       // The status should be broadcasted via the `statusChanges` observable, so we set `emitEvent`
       // to `true` to allow that during the control creation process.
-      emitEvent: !!asyncValidator
+      emitEvent: !!this.asyncValidator
     });
   }
 
