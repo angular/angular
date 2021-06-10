@@ -108,12 +108,13 @@ export class Location {
    *
    * @param path The given URL path.
    * @param query Query parameters.
+   * @param includeHash True to include an anchor fragment in the path.
    *
    * @returns True if the given URL path is equal to the current normalized path, false
    * otherwise.
    */
-  isCurrentPathEqualTo(path: string, query: string = ''): boolean {
-    return this.path() == this.normalize(path + normalizeQueryParams(query));
+  isCurrentPathEqualTo(path: string, query: string = '', includeHash: boolean = false): boolean {
+    return this.path(includeHash) == this.normalize(path + normalizeQueryParams(query));
   }
 
   /**
