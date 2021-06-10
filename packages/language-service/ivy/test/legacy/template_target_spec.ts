@@ -797,3 +797,39 @@ describe('findNodeAtPosition for microsyntax expression', () => {
     expect((context as SingleNodeTarget).node).toBeInstanceOf(t.Element);
   });
 });
+
+describe('unclosed elements', () => {
+  it('should locate children of unclosed elements', () => {
+    const {errors, nodes, position} = parse(`<div> {{b¦ar}}`);
+    expect(errors).toBe(null);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    const {node} = context as SingleNodeTarget;
+    expect(isExpressionNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(e.PropertyRead);
+  });
+
+  it('should locate children of outside of unclosed when parent is closed elements', () => {
+    const {nodes, position} = parse(`<li><div></li> {{b¦ar}}`);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    const {node} = context as SingleNodeTarget;
+    expect(isExpressionNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(e.PropertyRead);
+  });
+
+  it('should locate nodes before unclosed element', () => {
+    const {nodes, position} = parse(`<li>{{b¦ar}}<div></li>`);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    const {node} = context as SingleNodeTarget;
+    expect(isExpressionNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(e.PropertyRead);
+  });
+
+  it('should be correct for end tag of parent node with unclosed child', () => {
+    const {nodes, position} = parse(`<li><div><div>{{bar}}</l¦i>`);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    const {node} = context as SingleNodeTarget;
+    expect(isTemplateNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(t.Element);
+    expect((node as t.Element).name).toBe('li');
+  });
+});
