@@ -24,8 +24,8 @@ export class FirebaseRedirectSource {
     const star = /\*/g;
     const doubleStar = /(^|\/)\*\*($|\/)/g;           // e.g. a/**/b or **/b or a/** but not a**b
     const modifiedPatterns = /(.)\(([^)]+)\)/g;       // e.g. `@(a|b)
-    const restParam = /\/:([A-Za-z]+)\*/g;            // e.g. `:rest*`
-    const namedParam = /\/:([A-Za-z]+)/g;             // e.g. `:api`
+    const restParam = /(\/?):([A-Za-z]+)\*/g;            // e.g. `:rest*`
+    const namedParam = /(\/?):([A-Za-z]+)/g;             // e.g. `:api`
     const possiblyEmptyInitialSegments = /^\.🐷\//g;  // e.g. `**/a` can also match `a`
     const possiblyEmptySegments = /\/\.🐷\//g;        // e.g. `a/**/b` can also match `a/b`
     const willBeStar = /🐷/g;                         // e.g. `a**b` not matched by previous rule
@@ -35,12 +35,12 @@ export class FirebaseRedirectSource {
       const pattern = glob
           .replace(dot, '\\.')
           .replace(modifiedPatterns, replaceModifiedPattern)
-          .replace(restParam, (_, param) => {
+          .replace(restParam, (_, leadingSlash, groupName) => {
             // capture the rest of the string
-            restNamedGroups.push(param);
-            return `(?:/(?<${param}>.🐷))?`;
+            restNamedGroups.push(groupName);
+            return `(?:${leadingSlash}(?<${groupName}>.🐷))?`;
           })
-          .replace(namedParam, `/(?<$1>[^/]+)`)
+          .replace(namedParam, `$1(?<$2>[^/]+)`)
           .replace(doubleStar, '$1.🐷$2')                 // use the pig to avoid replacing ** in next rule
           .replace(star, '[^/]*')                         // match a single segment
           .replace(possiblyEmptyInitialSegments, '(?:.*)')// deal with **/ special cases

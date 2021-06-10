@@ -124,6 +124,10 @@
       {"type": 301, "source": "/testing", "destination": "/guide/testing"},
       {"type": 301, "source": "/testing/**", "destination": "/guide/testing"},
 
+      // Work around Firebase hosting bug with `/index.html?<query>` leading to infinite redirects.
+      // See https://github.com/angular/angular/issues/42518#issuecomment-858545483 for details.
+      {"type": 301, "source": "/index.html:query*", "destination": "/:query*"},
+
       // Strip off the `.html` extension, because Firebase will not do this automatically any more
       // (unless the new URL points to an existing file, which is not necessarily the case here).
       {"type": 301, "source": "/:somePath*/:file.html", "destination": "/:somePath*/:file"},
