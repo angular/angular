@@ -20,6 +20,7 @@ import {
   Inject,
   OnDestroy,
   StaticProvider,
+  InjectFlags,
 } from '@angular/core';
 import {of as observableOf} from 'rxjs';
 import {MAT_BOTTOM_SHEET_DATA, MatBottomSheetConfig} from './bottom-sheet-config';
@@ -191,8 +192,8 @@ export class MatBottomSheet implements OnDestroy {
       {provide: MAT_BOTTOM_SHEET_DATA, useValue: config.data}
     ];
 
-    if (config.direction &&
-        (!userInjector || !userInjector.get<Directionality | null>(Directionality, null))) {
+    if (config.direction && (!userInjector ||
+      !userInjector.get<Directionality | null>(Directionality, null, InjectFlags.Optional))) {
       providers.push({
         provide: Directionality,
         useValue: {value: config.direction, change: observableOf()}

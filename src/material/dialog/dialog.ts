@@ -20,6 +20,7 @@ import {
   Directive,
   Inject,
   Injectable,
+  InjectFlags,
   InjectionToken,
   Injector,
   OnDestroy,
@@ -307,8 +308,8 @@ export abstract class _MatDialogBase<C extends _MatDialogContainerBase> implemen
       {provide: this._dialogRefConstructor, useValue: dialogRef}
     ];
 
-    if (config.direction &&
-        (!userInjector || !userInjector.get<Directionality | null>(Directionality, null))) {
+    if (config.direction && (!userInjector ||
+        !userInjector.get<Directionality | null>(Directionality, null, InjectFlags.Optional))) {
       providers.push({
         provide: Directionality,
         useValue: {value: config.direction, change: observableOf()}

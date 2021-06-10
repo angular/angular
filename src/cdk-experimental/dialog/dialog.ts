@@ -16,7 +16,8 @@ import {
   ComponentRef,
   OnDestroy,
   Type,
-  StaticProvider
+  StaticProvider,
+  InjectFlags
 } from '@angular/core';
 import {ComponentPortal, TemplatePortal} from '@angular/cdk/portal';
 import {of as observableOf, Observable, Subject, defer} from 'rxjs';
@@ -285,8 +286,8 @@ export class Dialog implements OnDestroy {
       {provide: DIALOG_DATA, useValue: config.data}
     ];
 
-    if (config.direction &&
-        (!userInjector || !userInjector.get<Directionality | null>(Directionality, null))) {
+    if (config.direction && (!userInjector ||
+      !userInjector.get<Directionality | null>(Directionality, null, InjectFlags.Optional))) {
       providers.push({
         provide: Directionality,
         useValue: {value: config.direction, change: observableOf()}
