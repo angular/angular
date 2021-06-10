@@ -151,7 +151,7 @@ export class DragRef<T = any> {
    * Whether the dragging sequence has been started. Doesn't
    * necessarily mean that the element has been moved.
    */
-  private _hasStartedDragging: boolean;
+  private _hasStartedDragging = false;
 
   /** Whether the element has moved since the user started dragging it. */
   private _hasMoved: boolean;
@@ -982,10 +982,13 @@ export class DragRef<T = any> {
       });
     }
 
-    this._dropContainer!._startScrollingIfNecessary(rawX, rawY);
-    this._dropContainer!._sortItem(this, x, y, this._pointerDirectionDelta);
-    this._applyPreviewTransform(
-      x - this._pickupPositionInElement.x, y - this._pickupPositionInElement.y);
+    // Dragging may have been interrupted as a result of the events above.
+    if (this.isDragging()) {
+      this._dropContainer!._startScrollingIfNecessary(rawX, rawY);
+      this._dropContainer!._sortItem(this, x, y, this._pointerDirectionDelta);
+      this._applyPreviewTransform(
+        x - this._pickupPositionInElement.x, y - this._pickupPositionInElement.y);
+    }
   }
 
   /**

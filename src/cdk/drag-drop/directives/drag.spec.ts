@@ -5447,6 +5447,28 @@ describe('CdkDrag', () => {
       expect(itemEnterEvent).toEqual(expectedEvent);
     }));
 
+    it('should not throw if dragging was interrupted as a result of the entered event',
+      fakeAsync(() => {
+        const fixture = createComponent(ConnectedDropZones);
+        fixture.detectChanges();
+
+        const groups = fixture.componentInstance.groupedDragItems;
+        const item = groups[0][1];
+        const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
+
+        fixture.componentInstance.enteredSpy.and.callFake(() => {
+          fixture.componentInstance.todo = [];
+          fixture.detectChanges();
+        });
+
+        expect(() => {
+          dragElementViaMouse(
+            fixture, item.element.nativeElement, targetRect.left + 1, targetRect.top + 1);
+          flush();
+          fixture.detectChanges();
+        }).not.toThrow();
+      }));
+
     it('should be able to drop into a new container after scrolling into view', fakeAsync(() => {
       const fixture = createComponent(ConnectedDropZones);
       fixture.detectChanges();
