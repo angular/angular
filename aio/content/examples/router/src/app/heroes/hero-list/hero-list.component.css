@@ -36,11 +36,11 @@
 }
 
 /* #docregion selected */
-.heroes a.selected {
+.heroes .selected a {
   background-color: #d6e6f7;
 }
 
-.heroes a.selected:hover {
+.heroes .selected a:hover {
   background-color: #bdd7f5;
 }
 /* #enddocregion selected */

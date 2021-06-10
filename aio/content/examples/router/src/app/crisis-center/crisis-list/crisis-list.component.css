@@ -5,6 +5,15 @@
   padding: 0;
 }
 
+.crises li {
+  position: relative;
+  cursor: pointer;
+}
+
+.crises li:hover {
+  left: .1em;
+}
+
 .crises a {
   color: black;
   text-decoration: none;
@@ -29,6 +38,14 @@
   left: .1em;
 }
 
+.heroes .selected a {
+  background-color: #d6e6f7;
+}
+
+.heroes .selected a:hover {
+  background-color: #bdd7f5;
+}
+
 .crises .badge {
   padding: .5em .6em;
   color: white;
@@ -36,13 +53,4 @@
   min-width: 16px;
   margin-right: .8em;
   border-radius: 4px 0 0 4px;
-}
-
-.crises li a.selected {
-  background-color: black;
-  color: white;
-}
-.crises li a.selected:hover {
-  background-color: #edf9fb;
-  color: black;
 }

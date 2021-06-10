@@ -993,8 +993,8 @@ Since `ngOnInit()` is only called once per component instantiation, you can dete
 When subscribing to an observable in a component, you almost always unsubscribe when the component is destroyed.
 
 However, `ActivatedRoute` observables are among the exceptions because `ActivatedRoute` and its observables are insulated from the `Router` itself.
-The `Router` destroys a routed component when it is no longer needed. This means all the component's members will also be destroyed, 
-including the injected `ActivatedRoute` and the subscriptions to its `Observable` properties. 
+The `Router` destroys a routed component when it is no longer needed. This means all the component's members will also be destroyed,
+including the injected `ActivatedRoute` and the subscriptions to its `Observable` properties.
 
 The `Router` does not `complete` any `Observable` of the `ActivatedRoute` so any `finalize` or `complete` blocks will not run.
 If you need to handle something in a `finalize`, you will still need to unsubscribe in `ngOnDestroy`. You will also have to
@@ -1168,7 +1168,7 @@ In `ngOnInit()` you subscribe to those values, set the `selectedId`, and get the
 
 Update the template with a [class binding](guide/attribute-binding#class-binding).
 The binding adds the `selected` CSS class when the comparison returns `true` and removes it when `false`.
-Look for it within the `<a>` tag as shown here:
+Look for it within the repeated `<li>` tag as shown here:
 
 <code-example path="router/src/app/heroes/hero-list/hero-list.component.html" header="src/app/heroes/hero-list/hero-list.component.html"></code-example>
 
@@ -1769,14 +1769,19 @@ Here's the component, its template, and styles:
 
 <code-tabs>
 
-  <code-pane header="src/app/compose-message/compose-message.component.html" path="router/src/app/compose-message/compose-message.component.html">
-
+  <code-pane
+      header="src/app/compose-message/compose-message.component.html"
+      path="router/src/app/compose-message/compose-message.component.html">
   </code-pane>
 
-  <code-pane header="src/app/compose-message/compose-message.component.ts" path="router/src/app/compose-message/compose-message.component.ts">
+  <code-pane
+      header="src/app/compose-message/compose-message.component.ts"
+      path="router/src/app/compose-message/compose-message.component.ts">
+  </code-pane>
 
-  <code-pane header="src/app/compose-message/compose-message.component.css" path="router/src/app/compose-message/compose-message.component.css">
-
+  <code-pane
+      header="src/app/compose-message/compose-message.component.css"
+      path="router/src/app/compose-message/compose-message.component.css">
   </code-pane>
 
 </code-tabs>
