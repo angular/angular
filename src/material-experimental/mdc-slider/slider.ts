@@ -331,12 +331,6 @@ export class MatSliderThumb implements AfterViewInit, ControlValueAccessor, OnIn
   /** Event emitted every time the MatSliderThumb is focused. */
   @Output() readonly _focus: EventEmitter<void> = new EventEmitter<void>();
 
-  /** Event emitted on pointer up or after left or right arrow key presses. */
-  @Output() readonly change: EventEmitter<Event> = new EventEmitter<Event>();
-
-  /** Event emitted on each value change that happens to the slider. */
-  @Output() readonly input: EventEmitter<Event> = new EventEmitter<Event>();
-
   /**
    * Used to determine the disabled state of the MatSlider (ControlValueAccessor).
    * For ranged sliders, the disabled state of the MatSlider depends on the combined state of the
