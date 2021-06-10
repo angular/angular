@@ -27,7 +27,7 @@ export function generateLocaleGlobalFile(
     global.ng.common = global.ng.common || {};
     global.ng.common.locales = global.ng.common.locales || {};
     const u = undefined;
-    ${getPluralFunction(locale, false)}
+    ${getPluralFunction(localeData, false)}
     global.ng.common.locales['${normalizeLocale(locale)}'] = ${data};
   })(typeof globalThis !== 'undefined' && globalThis || typeof global !== 'undefined' && global || typeof window !== 'undefined' && window);
     `;
