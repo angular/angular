@@ -145,11 +145,6 @@ describe('MDC-based MatSliderHarness', () => {
     expect(await (await slider.getStartThumb()).getId()).toBe('price-input');
   });
 
-  it('should get whether a slider thumb is required', async () => {
-    const slider = await loader.getHarness(MatSliderHarness);
-    expect(await (await slider.getStartThumb()).isRequired()).toBe(true);
-  });
-
   it('should be able to focus and blur a slider thumb', async () => {
     const slider = await loader.getHarness(MatSliderHarness);
     const thumb = await slider.getStartThumb();
@@ -169,7 +164,6 @@ describe('MDC-based MatSliderHarness', () => {
       <input
         name="price"
         id="price-input"
-        required
         matSliderThumb
         (input)="inputListener()"
         (change)="changeListener()">

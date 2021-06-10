@@ -82,11 +82,6 @@ export class MatSliderThumbHarness extends ComponentHarness {
     return (await this.host()).getProperty('disabled');
   }
 
-  /** Whether the thumb is required. */
-  async isRequired(): Promise<boolean> {
-    return (await this.host()).getProperty('required');
-  }
-
   /** Gets the name of the thumb. */
   async getName(): Promise<string> {
     return (await (await this.host()).getProperty('name'));
