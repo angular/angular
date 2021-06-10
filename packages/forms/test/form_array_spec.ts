@@ -1055,6 +1055,23 @@ describe('FormArray', () => {
          expect(g.errors).toEqual({'async': true, 'other': true});
          expect(g.pending).toEqual(false);
        }));
+
+    it('should fire statusChanges events when async validators are added via options object',
+       fakeAsync(() => {
+         // The behavior is tested (in other spec files) for each of the model types (`FormControl`,
+         // `FormGroup` and `FormArray`).
+         let statuses: string[] = [];
+
+         // Create a form control with an async validator added via options object.
+         const asc = new FormArray([], {asyncValidators: [() => Promise.resolve(null)]});
+
+         // Subscribe to status changes.
+         asc.statusChanges.subscribe((status: any) => statuses.push(status));
+
+         // After a tick, the async validator should change status PENDING -> VALID.
+         tick();
+         expect(statuses).toEqual(['VALID']);
+       }));
   });
 
   describe('disable() & enable()', () => {
