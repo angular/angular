@@ -23,8 +23,8 @@ export declare class MatSlider extends _MatSliderBase implements ControlValueAcc
     set thumbLabel(value: boolean);
     get tickInterval(): 'auto' | number;
     set tickInterval(value: 'auto' | number);
-    get value(): number | null;
-    set value(v: number | null);
+    get value(): number;
+    set value(v: number);
     readonly valueChange: EventEmitter<number | null>;
     valueText: string;
     get vertical(): boolean;

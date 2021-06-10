@@ -181,11 +181,6 @@ export class MatSlider extends _MatSliderBase
   get min(): number { return this._min; }
   set min(v: number) {
     this._min = coerceNumberProperty(v, this._min);
-
-    // If the value wasn't explicitly set by the user, set it to the min.
-    if (this._value === null) {
-      this.value = this._min;
-    }
     this._percent = this._calculatePercentage(this._value);
 
     // Since this also modifies the percentage, we need to let the change detection know.
@@ -233,16 +228,16 @@ export class MatSlider extends _MatSliderBase
 
   /** Value of the slider. */
   @Input()
-  get value(): number | null {
+  get value(): number {
     // If the value needs to be read and it is still uninitialized, initialize it to the min.
     if (this._value === null) {
       this.value = this._min;
     }
-    return this._value;
+    return this._value as number;
   }
-  set value(v: number | null) {
+  set value(v: number) {
     if (v !== this._value) {
-      let value = coerceNumberProperty(v);
+      let value = coerceNumberProperty(v, 0);
 
       // While incrementing by a decimal we can end up with values like 33.300000000000004.
       // Truncate it to ensure that it matches the label and to make it easier to work with.
