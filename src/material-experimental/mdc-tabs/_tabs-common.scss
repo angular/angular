@@ -146,7 +146,9 @@ $mat-tab-animation-duration: 500ms !default;
     }
   }
 
-  ._mat-animation-noopable .mdc-tab-indicator__content {
+  // The `span` is in the selector in order to increase the specificity, ensuring
+  // that it's always higher than the selector that declares the transition.
+  ._mat-animation-noopable span.mdc-tab-indicator__content {
     transition: none;
   }
 }
