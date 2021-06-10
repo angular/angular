@@ -71,6 +71,7 @@ describe('MDC-based MatSlider' , () => {
       expect(inputInstance.value).toBe(0);
       expect(sliderInstance.min).toBe(0);
       expect(sliderInstance.max).toBe(100);
+      expect(inputInstance._hostElement.getAttribute('aria-valuetext')).toBe('0');
     });
 
     it('should update the value on mousedown', () => {
@@ -126,6 +127,8 @@ describe('MDC-based MatSlider' , () => {
       expect(endInputInstance.value).toBe(100);
       expect(sliderInstance.min).toBe(0);
       expect(sliderInstance.max).toBe(100);
+      expect(startInputInstance._hostElement.getAttribute('aria-valuetext')).toBe('0');
+      expect(endInputInstance._hostElement.getAttribute('aria-valuetext')).toBe('100');
     });
 
     it('should update the start value on a slide', () => {
@@ -657,6 +660,7 @@ describe('MDC-based MatSlider' , () => {
   describe('slider with custom thumb label formatting', () => {
     let fixture: ComponentFixture<DiscreteSliderWithDisplayWith>;
     let sliderInstance: MatSlider;
+    let inputInstance: MatSliderThumb;
     let valueIndicatorTextElement: Element;
 
     beforeEach(() => {
@@ -667,6 +671,13 @@ describe('MDC-based MatSlider' , () => {
       sliderInstance = sliderDebugElement.componentInstance;
       valueIndicatorTextElement =
         sliderNativeElement.querySelector('.mdc-slider__value-indicator-text')!;
+      inputInstance = sliderInstance._getInput(Thumb.END);
+    });
+
+    it('should set the aria-valuetext attribute with the given `displayWith` function', () => {
+      expect(inputInstance._hostElement.getAttribute('aria-valuetext')).toBe('$1');
+      sliderInstance._setValue(10000, Thumb.END);
+      expect(inputInstance._hostElement.getAttribute('aria-valuetext')).toBe('$10k');
     });
 
     it('should invoke the passed-in `displayWith` function with the value', () => {
@@ -687,12 +698,16 @@ describe('MDC-based MatSlider' , () => {
     let sliderInstance: MatSlider;
     let startValueIndicatorTextElement: Element;
     let endValueIndicatorTextElement: Element;
+    let startInputInstance: MatSliderThumb;
+    let endInputInstance: MatSliderThumb;
 
     beforeEach(() => {
       fixture = createComponent(DiscreteRangeSliderWithDisplayWith);
       fixture.detectChanges();
       const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider))!;
       sliderInstance = sliderDebugElement.componentInstance;
+      startInputInstance = sliderInstance._getInput(Thumb.START);
+      endInputInstance = sliderInstance._getInput(Thumb.END);
 
       const startThumbElement = sliderInstance._getThumbElement(Thumb.START);
       const endThumbElement = sliderInstance._getThumbElement(Thumb.END);
@@ -700,6 +715,15 @@ describe('MDC-based MatSlider' , () => {
         startThumbElement.querySelector('.mdc-slider__value-indicator-text')!;
       endValueIndicatorTextElement =
         endThumbElement.querySelector('.mdc-slider__value-indicator-text')!;
+    });
+
+    it('should set the aria-valuetext attribute with the given `displayWith` function', () => {
+      expect(startInputInstance._hostElement.getAttribute('aria-valuetext')).toBe('$1');
+      expect(endInputInstance._hostElement.getAttribute('aria-valuetext')).toBe('$1000k');
+      sliderInstance._setValue(250000, Thumb.START);
+      sliderInstance._setValue(810000, Thumb.END);
+      expect(startInputInstance._hostElement.getAttribute('aria-valuetext')).toBe('$250k');
+      expect(endInputInstance._hostElement.getAttribute('aria-valuetext')).toBe('$810k');
     });
 
     it('should invoke the passed-in `displayWith` function with the start value', () => {
