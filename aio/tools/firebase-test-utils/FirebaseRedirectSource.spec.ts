@@ -137,6 +137,21 @@ describe('FirebaseRedirectSource', () => {
         });
       });
 
+      it('should capture a named param not preceded by a slash', () => {
+        testGlobMatch('/a/b:x', {
+          named: ['x']
+        }, {
+          '/a/bc': {x: 'c'},
+          '/a/bcd': {x: 'cd'},
+          '/a/b-c': {x: '-c'},
+          '/a': undefined,
+          '/a/': undefined,
+          '/a/b/': undefined,
+          '/a/cd': undefined,
+          '/a/b/c': undefined,
+        });
+      });
+
       it('should capture multiple named params', () => {
         testGlobMatch('/a/:b/:c', {
           named: ['b', 'c']
@@ -184,6 +199,35 @@ describe('FirebaseRedirectSource', () => {
           '/a//': {b: '/'},
           '/a/a/b': {b: 'a/b'},
           '/a/a/b/': {b: 'a/b/'},
+        });
+      });
+
+      it('should capture a rest param not preceded by a slash', () => {
+        testGlobMatch('/a:bc*', {
+          rest: ['bc']
+        }, {
+          '/ab': {bc: 'b'},
+          '/a/b': {bc: '/b'},
+          '/a/bcd': {bc: '/bcd'},
+          '/a/b/c': {bc: '/b/c'},
+          '/a//': {bc: '//'},
+          '/ab/c': {bc: 'b/c'},
+          '/ab/c/': {bc: 'b/c/'},
+          '/a': {bc: undefined},
+          '/bc': undefined,
+        });
+
+        testGlobMatch('/a/b:c*', {
+          rest: ['c']
+        }, {
+          '/a/bc': {c: 'c'},
+          '/a/bcd': {c: 'cd'},
+          '/a/b/': {c: '/'},
+          '/a/b/c/': {c: '/c/'},
+          '/a/ba/c': {c: 'a/c'},
+          '/a/ba/c/': {c: 'a/c/'},
+          '/a/b': {c: undefined},
+          '/a/': undefined,
         });
       });
 
