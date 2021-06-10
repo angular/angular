@@ -10,12 +10,20 @@ import {DOCUMENT} from '@angular/common';
 import {Inject, Injectable, OnDestroy} from '@angular/core';
 import {Platform} from '@angular/cdk/platform';
 
+declare const __karma__: unknown;
+declare const jasmine: unknown;
+declare const jest: unknown;
+declare const Mocha: unknown;
+
 /**
  * Whether we're in a testing environment.
- * TODO(crisbeto): remove this once we have an overlay testing module.
+ * TODO(crisbeto): remove this once we have an overlay testing module or Angular starts tearing
+ * down the testing `NgModule` (see https://github.com/angular/angular/issues/18831).
  */
-const isTestEnvironment: boolean = typeof window !== 'undefined' && !!window &&
-  !!((window as any).__karma__ || (window as any).jasmine);
+const isTestEnvironment = (typeof __karma__ !== 'undefined' && !!__karma__) ||
+                          (typeof jasmine !== 'undefined' && !!jasmine) ||
+                          (typeof jest !== 'undefined' && !!jest) ||
+                          (typeof Mocha !== 'undefined' && !!Mocha);
 
 /** Container inside which all overlays will render. */
 @Injectable({providedIn: 'root'})
