@@ -15,6 +15,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { AppComponent } from 'app/app.component';
 import { CustomIconRegistry, SVG_ICONS } from 'app/shared/custom-icon-registry';
 import { Deployment } from 'app/shared/deployment.service';
+import { CookiesPopupComponent } from 'app/layout/cookies-popup/cookies-popup.component';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { DtComponent } from 'app/layout/doc-viewer/dt.component';
 import { ModeBannerComponent } from 'app/layout/mode-banner/mode-banner.component';
@@ -163,6 +164,7 @@ export const svgIconProviders = [
   ],
   declarations: [
     AppComponent,
+    CookiesPopupComponent,
     DocViewerComponent,
     DtComponent,
     FooterComponent,

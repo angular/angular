@@ -7,6 +7,7 @@
 @use 'card/card-theme';
 @use 'code/code-theme';
 @use 'contributor/contributor-theme';
+@use 'cookies-popup/cookies-popup-theme';
 @use 'deploy-theme/deploy-theme';
 @use 'details/details-theme';
 @use 'errors/errors-theme';
@@ -33,6 +34,7 @@
   @include card-theme.theme($theme);
   @include code-theme.theme($theme);
   @include contributor-theme.theme($theme);
+  @include cookies-popup-theme.theme($theme);
   @include deploy-theme.theme($theme);
   @include details-theme.theme($theme);
   @include errors-theme.theme($theme);
