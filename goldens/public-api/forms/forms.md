@@ -384,7 +384,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     resetForm(value?: any): void;
     readonly submitted: boolean;
     updateModel(dir: FormControlName, value: any): void;
-    }
+}
 
 // @public
 export class FormGroupName extends AbstractFormGroupDirective implements OnInit, OnDestroy {
@@ -398,12 +398,14 @@ export class FormsModule {
 
 // @public
 export class MaxLengthValidator implements Validator, OnChanges {
-    maxlength: string | number;
+    // (undocumented)
+    enabled(): boolean;
+    maxlength: string | number | null;
     // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
     registerOnValidatorChange(fn: () => void): void;
     validate(control: AbstractControl): ValidationErrors | null;
-    }
+}
 
 // @public
 export class MaxValidator extends AbstractValidatorDirective implements OnChanges {
@@ -413,12 +415,14 @@ export class MaxValidator extends AbstractValidatorDirective implements OnChange
 
 // @public
 export class MinLengthValidator implements Validator, OnChanges {
-    minlength: string | number;
+    // (undocumented)
+    enabled(): boolean;
+    minlength: string | number | null;
     // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
     registerOnValidatorChange(fn: () => void): void;
     validate(control: AbstractControl): ValidationErrors | null;
-    }
+}
 
 // @public
 export class MinValidator extends AbstractValidatorDirective implements OnChanges {
@@ -539,7 +543,7 @@ export class PatternValidator implements Validator, OnChanges {
     pattern: string | RegExp;
     registerOnValidatorChange(fn: () => void): void;
     validate(control: AbstractControl): ValidationErrors | null;
-    }
+}
 
 // @public
 export class RadioControlValueAccessor extends ɵangular_packages_forms_forms_g implements ControlValueAccessor, OnDestroy, OnInit {
@@ -631,7 +635,6 @@ export class Validators {
 
 // @public (undocumented)
 export const VERSION: Version;
-
 
 // (No @packageDocumentation comment for this package)
 

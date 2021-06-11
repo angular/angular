@@ -9,7 +9,7 @@
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {Component, Directive, forwardRef, Input, NgModule, OnDestroy, Type} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, ControlValueAccessor, DefaultValueAccessor, FormArray, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormsModule, MaxValidator, MinValidator, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
+import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, ControlValueAccessor, DefaultValueAccessor, FormArray, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormsModule, MaxValidator, MinLengthValidator, MinValidator, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent, sortedClassList} from '@angular/platform-browser/testing/src/browser_util';
 import {merge, NEVER, of, Subscription, timer} from 'rxjs';
@@ -2663,6 +2663,97 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
            expect(resultArr.length)
                .toEqual(2, `Expected original observable to be canceled on the next value change.`);
          }));
+
+      describe('enabling validators conditionally', () => {
+        it('should not activate minlength and maxlength validators if input is null', () => {
+          @Component({
+            selector: 'min-max-length-null',
+            template: `
+                <form [formGroup]="form">
+                  <input [formControl]="control" name="control" [minlength]="minlen" [maxlength]="maxlen">
+                </form> `
+          })
+          class MinMaxLengthComponent {
+            control: FormControl = new FormControl();
+            form: FormGroup = new FormGroup({'control': this.control});
+            minlen: number|null = null;
+            maxlen: number|null = null;
+          }
+
+          const fixture = initTest(MinMaxLengthComponent);
+          const control = fixture.componentInstance.control;
+          fixture.detectChanges();
+
+          const form = fixture.componentInstance.form;
+          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+
+          interface minmax {
+            minlength: number|null;
+            maxlength: number|null;
+          }
+
+          interface state {
+            isValid: boolean;
+            failedValidator?: string;
+          }
+
+          const setInputValue = (value: number) => {
+            input.value = value;
+            dispatchEvent(input, 'input');
+            fixture.detectChanges();
+          };
+          const setValidatorValues = (values: minmax) => {
+            fixture.componentInstance.minlen = values.minlength;
+            fixture.componentInstance.maxlen = values.maxlength;
+            fixture.detectChanges();
+          };
+          const verifyValidatorAttrValues = (values: {minlength: any, maxlength: any}) => {
+            expect(input.getAttribute('minlength')).toBe(values.minlength);
+            expect(input.getAttribute('maxlength')).toBe(values.maxlength);
+          };
+          const verifyFormState = (state: state) => {
+            expect(form.valid).toBe(state.isValid);
+            if (state.failedValidator) {
+              expect(control!.hasError('minlength')).toEqual(state.failedValidator === 'minlength');
+              expect(control!.hasError('maxlength')).toEqual(state.failedValidator === 'maxlength');
+            }
+          };
+
+          ////////// Actual test scenarios start below //////////
+          // 1. Verify that validators are disabled when input is `null`.
+          setValidatorValues({minlength: null, maxlength: null});
+          verifyValidatorAttrValues({minlength: null, maxlength: null});
+          verifyFormState({isValid: true});
+
+          // 2. Verify that setting validator inputs (to a value different from `null`) activate
+          // validators.
+          setInputValue(12345);
+          setValidatorValues({minlength: 2, maxlength: 4});
+          verifyValidatorAttrValues({minlength: '2', maxlength: '4'});
+          verifyFormState({isValid: false, failedValidator: 'maxlength'});
+
+          // 3. Changing value to the valid range should make the form valid.
+          setInputValue(123);
+          verifyFormState({isValid: true});
+
+          // 4. Changing value to trigger `minlength` validator.
+          setInputValue(1);
+          verifyFormState({isValid: false, failedValidator: 'minlength'});
+
+          // 5. Changing validator inputs to verify that attribute values are updated (and the form
+          // is now valid).
+          setInputValue(1);
+          setValidatorValues({minlength: 1, maxlength: 5});
+          verifyValidatorAttrValues({minlength: '1', maxlength: '5'});
+          verifyFormState({isValid: true});
+
+          // 6. Reset validator inputs back to `null` should deactivate validators.
+          setInputValue(123);
+          setValidatorValues({minlength: null, maxlength: null});
+          verifyValidatorAttrValues({minlength: null, maxlength: null});
+          verifyFormState({isValid: true});
+        });
+      });
 
       describe('min and max validators', () => {
         function getComponent(dir: string): Type<MinMaxFormControlComp|MinMaxFormControlNameComp> {
