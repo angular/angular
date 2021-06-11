@@ -524,7 +524,7 @@ export class RouterEvent {
 
 // @public
 export class RouterLink implements OnChanges {
-    constructor(router: Router, route: ActivatedRoute, tabIndex: string, renderer: Renderer2, el: ElementRef);
+    constructor(router: Router, route: ActivatedRoute, tabIndexAttribute: string | null | undefined, renderer: Renderer2, el: ElementRef);
     fragment?: string;
     // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
@@ -541,7 +541,7 @@ export class RouterLink implements OnChanges {
         [k: string]: any;
     };
     // (undocumented)
-    get urlTree(): UrlTree;
+    get urlTree(): UrlTree | null;
 }
 
 // @public
@@ -571,7 +571,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     constructor(router: Router, route: ActivatedRoute, locationStrategy: LocationStrategy);
     fragment?: string;
     // (undocumented)
-    href: string;
+    href: string | null;
     // (undocumented)
     ngOnChanges(changes: SimpleChanges): any;
     // (undocumented)
@@ -591,7 +591,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     // (undocumented)
     target: string;
     // (undocumented)
-    get urlTree(): UrlTree;
+    get urlTree(): UrlTree | null;
 }
 
 // @public
