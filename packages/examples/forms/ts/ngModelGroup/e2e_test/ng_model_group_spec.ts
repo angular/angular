@@ -23,7 +23,8 @@ describe('ngModelGroup example', () => {
 
   it('should populate the UI with initial values', () => {
     expect(inputs.get(0).getAttribute('value')).toEqual('Nancy');
-    expect(inputs.get(1).getAttribute('value')).toEqual('Drew');
+    expect(inputs.get(1).getAttribute('value')).toEqual('J');
+    expect(inputs.get(2).getAttribute('value')).toEqual('Drew');
   });
 
   it('should show the error when name is invalid', () => {
@@ -37,6 +38,7 @@ describe('ngModelGroup example', () => {
   it('should set the value when changing the domain model', () => {
     buttons.get(1).click();
     expect(inputs.get(0).getAttribute('value')).toEqual('Bess');
-    expect(inputs.get(1).getAttribute('value')).toEqual('Marvin');
+    expect(inputs.get(1).getAttribute('value')).toEqual('S');
+    expect(inputs.get(2).getAttribute('value')).toEqual('Marvin');
   });
 });
