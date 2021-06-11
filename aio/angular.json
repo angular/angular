@@ -11,16 +11,19 @@
   "newProjectRoot": "projects",
   "projects": {
     "site": {
-      "root": "",
-      "sourceRoot": "src",
       "projectType": "application",
-      "prefix": "aio",
       "schematics": {
+        "@schematics/angular:application": {
+          "strict": true
+        },
         "@schematics/angular:component": {
           "inlineStyle": true,
           "style": "scss"
         }
       },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "aio",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
@@ -64,16 +67,18 @@
             "scripts": [],
             "budgets": [
               {
+                "type": "initial",
+                "maximumWarning": "850kb",
+                "maximumError": "1mb"
+              },
+              {
                 "type": "anyComponentStyle",
-                "maximumWarning": "6kb"
+                "maximumWarning": "2kb",
+                "maximumError": "4kb"
               }
             ]
           },
           "configurations": {
-            "fast": {
-              "buildOptimizer": false,
-              "optimization": false
-            },
             "next": {
               "fileReplacements": [
                 {
@@ -112,18 +117,20 @@
             },
             "ci": {
               "progress": false
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "outputHashing": "none",
+              "vendorChunk": true,
+              "extractLicenses": false
             }
-          }
+          },
+          "defaultConfiguration": "stable"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
-          "options": {
-            "browserTarget": "site:build"
-          },
           "configurations": {
-            "fast": {
-              "browserTarget": "site:build:fast"
-            },
             "next": {
               "browserTarget": "site:build:next"
             },
@@ -138,8 +145,12 @@
             },
             "ci": {
               "browserTarget": "site:build:ci"
+            },
+            "development": {
+              "browserTarget": "site:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
