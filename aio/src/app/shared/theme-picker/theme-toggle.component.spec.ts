@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatIconModule } from '@angular/material/icon';
 import { By } from '@angular/platform-browser';
 import { ThemeStorage, ThemeToggleComponent } from './theme-toggle.component';
 
@@ -45,7 +46,7 @@ describe('ThemeToggleComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [ ThemeToggleComponent ],
-      providers: [ { provide: ThemeStorage, useClass: FakeThemeStorage } ],
+      imports: [ MatIconModule ],
     });
 
     fixture = TestBed.createComponent(ThemeToggleComponent);
