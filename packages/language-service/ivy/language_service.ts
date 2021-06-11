@@ -117,7 +117,7 @@ export class LanguageService {
       if (!isInAngularContext(compiler.getCurrentProgram(), fileName, position)) {
         return undefined;
       }
-      return new DefinitionBuilder(this.tsLS, compiler)
+      return new DefinitionBuilder(this.tsLS, compiler, this.programDriver)
           .getDefinitionAndBoundSpan(fileName, position);
     });
   }
@@ -128,7 +128,7 @@ export class LanguageService {
       if (!isTemplateContext(compiler.getCurrentProgram(), fileName, position)) {
         return undefined;
       }
-      return new DefinitionBuilder(this.tsLS, compiler)
+      return new DefinitionBuilder(this.tsLS, compiler, this.programDriver)
           .getTypeDefinitionsAtPosition(fileName, position);
     });
   }
