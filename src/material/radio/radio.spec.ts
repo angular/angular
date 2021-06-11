@@ -758,8 +758,8 @@ describe('MatRadio', () => {
     });
 
     it('should forward focus to native input', () => {
-      let radioButtonEl = fixture.debugElement.query(By.css('.mat-radio-button'))!.nativeElement;
-      let inputEl = fixture.debugElement.query(By.css('.mat-radio-input'))!.nativeElement;
+      const radioButtonEl = fixture.debugElement.query(By.css('.mat-radio-button'))!.nativeElement;
+      const inputEl = fixture.debugElement.query(By.css('.mat-radio-input'))!.nativeElement;
 
       radioButtonEl.focus();
       // Focus events don't always fire in tests, so we need to fake it.

@@ -1155,8 +1155,8 @@ describe('MatSelect', () => {
         }));
 
         it('should set the `aria-labelledby` attribute', fakeAsync(() => {
-          let group = groups[0];
-          let label = group.querySelector('span')!;
+          const group = groups[0];
+          const label = group.querySelector('span')!;
 
           expect(label.getAttribute('id')).toBeTruthy('Expected label to have an id.');
           expect(group.getAttribute('aria-labelledby'))
@@ -1533,8 +1533,8 @@ describe('MatSelect', () => {
       }));
 
       it('should deselect other options when one is programmatically selected', fakeAsync(() => {
-        let control = fixture.componentInstance.control;
-        let foods = fixture.componentInstance.foods;
+        const control = fixture.componentInstance.control;
+        const foods = fixture.componentInstance.foods;
 
         trigger.click();
         fixture.detectChanges();
@@ -1570,13 +1570,14 @@ describe('MatSelect', () => {
       }));
 
       it('should remove selection if option has been removed', fakeAsync(() => {
-        let select = fixture.componentInstance.select;
+        const select = fixture.componentInstance.select;
 
         trigger.click();
         fixture.detectChanges();
         flush();
 
-        let firstOption = overlayContainerElement.querySelectorAll('mat-option')[0] as HTMLElement;
+        const firstOption =
+            overlayContainerElement.querySelectorAll('mat-option')[0] as HTMLElement;
 
         firstOption.click();
         fixture.detectChanges();
@@ -1712,7 +1713,7 @@ describe('MatSelect', () => {
           fixture.destroy();
           fixture = TestBed.createComponent(BasicSelect);
 
-          let spy = jasmine.createSpy('option selection spy');
+          const spy = jasmine.createSpy('option selection spy');
           let subscription: Subscription;
 
           expect(fixture.componentInstance.select.options).toBeFalsy();
@@ -1739,9 +1740,10 @@ describe('MatSelect', () => {
 
       it('should emit to `optionSelectionChanges` after the list of options has changed',
         fakeAsync(() => {
-          let spy = jasmine.createSpy('option selection spy');
-          let subscription = fixture.componentInstance.select.optionSelectionChanges.subscribe(spy);
-          let selectFirstOption = () => {
+          const spy = jasmine.createSpy('option selection spy');
+          const subscription =
+              fixture.componentInstance.select.optionSelectionChanges.subscribe(spy);
+          const selectFirstOption = () => {
             trigger.click();
             fixture.detectChanges();
             flush();
@@ -2000,7 +2002,7 @@ describe('MatSelect', () => {
 
         fixture.componentInstance.control.disable();
         fixture.detectChanges();
-        let trigger =
+        const trigger =
             fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
         expect(getComputedStyle(trigger).getPropertyValue('cursor'))
             .toEqual('default', `Expected cursor to be default arrow on disabled control.`);
@@ -2338,7 +2340,7 @@ describe('MatSelect', () => {
       }));
 
       it('should set the option id', fakeAsync(() => {
-        let firstOptionID = options[0].id;
+        const firstOptionID = options[0].id;
 
         expect(options[0].id)
             .toContain('mat-option', `Expected option ID to have the correct prefix.`);
@@ -3562,7 +3564,7 @@ describe('MatSelect', () => {
 
         fixture.destroy();
 
-        let groupFixture = TestBed.createComponent(SelectWithGroups);
+        const groupFixture = TestBed.createComponent(SelectWithGroups);
         groupFixture.detectChanges();
         trigger = groupFixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
         formField = groupFixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
@@ -3601,7 +3603,7 @@ describe('MatSelect', () => {
 
           fixture.destroy();
 
-          let groupFixture = TestBed.createComponent(SelectWithIndirectDescendantGroups);
+          const groupFixture = TestBed.createComponent(SelectWithIndirectDescendantGroups);
           groupFixture.detectChanges();
           trigger = groupFixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
           formField = groupFixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
@@ -4257,7 +4259,7 @@ describe('MatSelect', () => {
         // There appears to be a small rounding error on IE, so we verify that the value is close,
         // not exact.
         if (platform.TRIDENT) {
-          let difference =
+          const difference =
               Math.abs(optionTop + (menuItemHeight - triggerHeight) / 2 - triggerTop);
           expect(difference)
               .toBeLessThan(0.1, 'Expected trigger to align with the first option.');

@@ -332,7 +332,7 @@ describe('MatIcon', () => {
       const fixture = TestBed.createComponent(IconFromSvgName);
       const testComponent = fixture.componentInstance;
       const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
-      let svgElement: any;
+      let svgElement: SVGElement;
       let svgChild: any;
 
       testComponent.iconName = 'farm:pig';
@@ -365,7 +365,7 @@ describe('MatIcon', () => {
       const fixture = TestBed.createComponent(IconFromSvgName);
       const testComponent = fixture.componentInstance;
       const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
-      let svgElement: any;
+      let svgElement: SVGElement;
       let svgChild: any;
 
       testComponent.iconName = 'farm:pig with spaces';
@@ -408,7 +408,7 @@ describe('MatIcon', () => {
       const fixture = TestBed.createComponent(IconFromSvgName);
       const testComponent = fixture.componentInstance;
       const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
-      let svgElement: any;
+      let svgElement: SVGElement;
       let svgChild: any;
 
       testComponent.iconName = 'farm:pig';
@@ -498,7 +498,7 @@ describe('MatIcon', () => {
       const fixture = TestBed.createComponent(IconFromSvgName);
       const testComponent = fixture.componentInstance;
       const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
-      let svgElement: any;
+      let svgElement: SVGElement;
 
       testComponent.iconName = 'left-arrow';
       fixture.detectChanges();
@@ -516,7 +516,7 @@ describe('MatIcon', () => {
       const fixture = TestBed.createComponent(IconFromSvgName);
       const testComponent = fixture.componentInstance;
       const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
-      let svgElement: any;
+      let svgElement: SVGElement;
 
       testComponent.iconName = 'left-arrow';
       fixture.detectChanges();
@@ -563,7 +563,7 @@ describe('MatIcon', () => {
       const fixture = TestBed.createComponent(IconFromSvgName);
       const testComponent = fixture.componentInstance;
       const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
-      let svgElement: any;
+      let svgElement: SVGElement;
 
       testComponent.iconName = 'left-arrow';
       fixture.detectChanges();
@@ -714,7 +714,7 @@ describe('MatIcon', () => {
       const fixture = TestBed.createComponent(IconFromSvgName);
       const testComponent = fixture.componentInstance;
       const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
-      let svgElement: any;
+      let svgElement: SVGElement;
       let svgChild: any;
 
       testComponent.iconName = 'farm:pig';
@@ -749,7 +749,7 @@ describe('MatIcon', () => {
       const fixture = TestBed.createComponent(IconFromSvgName);
       const testComponent = fixture.componentInstance;
       const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
-      let svgElement: any;
+      let svgElement: SVGElement;
       let svgChild: any;
 
       testComponent.iconName = 'farm:pig';
@@ -787,7 +787,7 @@ describe('MatIcon', () => {
       const fixture = TestBed.createComponent(IconFromSvgName);
       const testComponent = fixture.componentInstance;
       const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
-      let svgElement: any;
+      let svgElement: SVGElement;
 
       testComponent.iconName = 'left-arrow';
       fixture.detectChanges();
@@ -817,7 +817,7 @@ describe('MatIcon', () => {
       const fixture = TestBed.createComponent(IconFromSvgName);
       const testComponent = fixture.componentInstance;
       const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
-      let svgElement: any;
+      let svgElement: SVGElement;
 
       testComponent.iconName = 'left-arrow';
       fixture.detectChanges();

@@ -630,7 +630,7 @@ describe('MatMenu', () => {
     fixture.componentInstance.trigger.openMenu();
     fixture.detectChanges();
 
-    let [firstMenuItemDebugEl, secondMenuItemDebugEl] =
+    const [firstMenuItemDebugEl, secondMenuItemDebugEl] =
            fixture.debugElement.queryAll(By.css('.mat-menu-item'))!;
 
     const firstMenuItemInstance = firstMenuItemDebugEl.componentInstance as MatMenuItem;
@@ -1063,7 +1063,7 @@ describe('MatMenu', () => {
 
     it('should focus the first menu item when opening a lazy menu via keyboard', fakeAsync(() => {
       let zone: MockNgZone;
-      let fixture = createComponent(SimpleLazyMenu, [{
+      const fixture = createComponent(SimpleLazyMenu, [{
         provide: NgZone, useFactory: () => zone = new MockNgZone()
       }]);
 
@@ -1109,14 +1109,14 @@ describe('MatMenu', () => {
 
     it('should respect the DOM order, rather than insertion order, when moving focus using ' +
       'the arrow keys', fakeAsync(() => {
-        let fixture = createComponent(SimpleMenuWithRepeater);
+        const fixture = createComponent(SimpleMenuWithRepeater);
 
         fixture.detectChanges();
         fixture.componentInstance.trigger.openMenu();
         fixture.detectChanges();
         tick(500);
 
-        let menuPanel = document.querySelector('.mat-menu-panel')!;
+        const menuPanel = document.querySelector('.mat-menu-panel')!;
         let items = menuPanel.querySelectorAll('.mat-menu-panel [mat-menu-item]');
 
         expect(document.activeElement).toBe(items[0], 'Expected first item to be focused on open');
