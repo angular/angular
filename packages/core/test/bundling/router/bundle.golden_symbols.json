@@ -1428,9 +1428,6 @@
     "name": "getSelectedIndex"
   },
   {
-    "name": "getSelectedTNode"
-  },
-  {
     "name": "getSimpleChangesStore"
   },
   {
@@ -1516,9 +1513,6 @@
   },
   {
     "name": "invokeHostBindingsInCreationMode"
-  },
-  {
-    "name": "isAnimationProp"
   },
   {
     "name": "isArray"
@@ -1905,9 +1899,6 @@
     "name": "setInjectImplementation"
   },
   {
-    "name": "setInputsForProperty"
-  },
-  {
     "name": "setInputsFromAttrs"
   },
   {
@@ -2092,9 +2083,6 @@
   },
   {
     "name": "ɵɵelementStart"
-  },
-  {
-    "name": "ɵɵhostProperty"
   },
   {
     "name": "ɵɵinject"
