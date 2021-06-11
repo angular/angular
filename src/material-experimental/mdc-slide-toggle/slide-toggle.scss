@@ -83,12 +83,15 @@
 
 
 @include a11y.high-contrast(active, off) {
-  .mat-mdc-slide-toggle-focused {
-    .mdc-switch__track {
-      // Usually 1px would be enough, but MDC reduces the opacity on the
-      // element so we need to make this a bit more prominent.
-      outline: solid 2px;
-      outline-offset: private.private-div(mdc-switch.$track-height, 2);
-    }
+  // Bump the opacity on the disable slide toggle to make it easier to see.
+  .mat-mdc-slide-toggle .mdc-switch--disabled {
+    opacity: 0.75;
+  }
+
+  .mat-mdc-slide-toggle-focused .mdc-switch__track {
+    // Usually 1px would be enough, but MDC reduces the opacity on the
+    // element so we need to make this a bit more prominent.
+    outline: solid 2px;
+    outline-offset: private.private-div(mdc-switch.$track-height, 2);
   }
 }
