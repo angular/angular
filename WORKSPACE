@@ -82,11 +82,7 @@ load("@io_bazel_rules_sass//:defs.bzl", "sass_repositories")
 
 sass_repositories()
 
-# Load pinned rules_webtesting browser versions for tests.
-#
-# TODO(wagnermaciel): deduplicate browsers - this will load another version of chromium in the
-# repository. We probably want to use the chromium version loaded here (from dev-infra) as that
-# one has RBE improvements.
+# Setup repositories for browsers provided by the shared dev-infra package.
 load(
     "@npm//@angular/dev-infra-private/bazel/browsers:browser_repositories.bzl",
     _dev_infra_browser_repositories = "browser_repositories",
