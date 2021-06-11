@@ -80,8 +80,9 @@ aio-nav-menu {
 
       //icons _within_ nav
       .mat-icon {
-        height: 24px;
-        width: 24px;
+        flex: 0 0 2.4rem;
+        display: flex;
+        align-items: center;
       }
     }
 
