@@ -7,6 +7,7 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { By, Title } from '@angular/platform-browser';
 import { ElementsLoader } from 'app/custom-elements/elements-loader';
 import { DocumentService } from 'app/documents/document.service';
+import { CookiesPopupComponent } from 'app/layout/cookies-popup/cookies-popup.component';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { CurrentNodes } from 'app/navigation/navigation.model';
 import { NavigationNode, NavigationService } from 'app/navigation/navigation.service';
@@ -698,6 +699,13 @@ describe('AppComponent', () => {
       it('should have version number', () => {
         const versionEl: HTMLElement = fixture.debugElement.query(By.css('aio-footer')).nativeElement;
         expect(versionEl.textContent).toContain(TestHttpClient.versionInfo.full);
+      });
+    });
+
+    describe('aio-cookies-popup', () => {
+      it('should have a cookies popup', () => {
+        const cookiesPopupDe = fixture.debugElement.query(By.directive(CookiesPopupComponent));
+        expect(cookiesPopupDe.componentInstance).toBeInstanceOf(CookiesPopupComponent);
       });
     });
 
