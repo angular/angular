@@ -82,6 +82,12 @@ export function updateToV12(): Rule {
       TargetVersion.V12, materialMigrations, materialUpgradeData, onMigrationComplete);
 }
 
+/** Entry point for the migration schematics with target of Angular Material v13 */
+export function updateToV13(): Rule {
+  return createMigrationSchematicRule(
+      TargetVersion.V13, materialMigrations, materialUpgradeData, onMigrationComplete);
+}
+
 /** Function that will be called when the migration completed. */
 function onMigrationComplete(context: SchematicContext, targetVersion: TargetVersion,
                              hasFailures: boolean) {
