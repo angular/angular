@@ -11,7 +11,7 @@
     "aio-use-npm": "node tools/ng-packages-installer restore .",
     "aio-check-local": "node tools/ng-packages-installer check .",
     "ng": "yarn check-env && ng",
-    "start": "yarn check-env && ng serve --configuration=fast",
+    "start": "yarn check-env && ng serve",
     "prebuild": "yarn setup",
     "build": "yarn ~~build",
     "prebuild-local": "yarn setup-local",
