@@ -5,6 +5,7 @@ import {Injector} from '@angular/core';
 import {fakeAsync, tick} from '@angular/core/testing';
 
 import {ScrollService, topMargin} from './scroll.service';
+import {SessionStorage, NoopStorage} from './storage.service';
 
 describe('ScrollService', () => {
   const scrollServiceInstances: ScrollService[] = [];
@@ -20,6 +21,7 @@ describe('ScrollService', () => {
   let platformLocation: MockPlatformLocation;
   let scrollService: ScrollService;
   let location: SpyLocation;
+  let sessionStorage: Storage;
 
   class MockPlatformLocation {
     hash: string;
@@ -46,13 +48,14 @@ describe('ScrollService', () => {
         {
           provide: ScrollService,
           useFactory: createScrollService,
-          deps: [DOCUMENT, PlatformLocation, ViewportScroller, Location],
+          deps: [DOCUMENT, PlatformLocation, ViewportScroller, Location, SessionStorage],
         },
-        {provide: Location, useClass: SpyLocation, deps: [] },
+        {provide: Location, useClass: SpyLocation, deps: []},
         {provide: DOCUMENT, useClass: MockDocument, deps: []},
         {provide: PlatformLocation, useClass: MockPlatformLocation, deps: []},
         {provide: ViewportScroller, useValue: viewportScrollerStub},
-        {provide: LocationStrategy, useClass: MockLocationStrategy, deps: []}
+        {provide: LocationStrategy, useClass: MockLocationStrategy, deps: []},
+        {provide: SessionStorage, useValue: new NoopStorage()},
       ]
     });
 
@@ -60,13 +63,13 @@ describe('ScrollService', () => {
     document = injector.get(DOCUMENT) as unknown as MockDocument;
     scrollService = injector.get(ScrollService);
     location = injector.get(Location) as unknown as SpyLocation;
+    sessionStorage = injector.get(SessionStorage);
 
     spyOn(window, 'scrollBy');
   });
 
   afterEach(() => {
     scrollServiceInstances.forEach(instance => instance.ngOnDestroy());
-    window.sessionStorage.clear();
   });
 
   it('should debounce `updateScrollPositonInHistory()`', fakeAsync(() => {
@@ -92,7 +95,8 @@ describe('ScrollService', () => {
         configurable: true,
       });
       scrollService = createScrollService(
-          document, platformLocation as PlatformLocation, viewportScrollerStub, location);
+          document, platformLocation as PlatformLocation, viewportScrollerStub, location,
+          sessionStorage);
 
       expect(scrollService.supportManualScrollRestoration).toBe(false);
     } finally {
@@ -110,32 +114,6 @@ describe('ScrollService', () => {
     } else {
       expect(window.history.scrollRestoration).toBeUndefined();
     }
-  });
-
-  it('should not break when cookies are disabled in the browser', () => {
-    expect(() => {
-      const originalSessionStorage = Object.getOwnPropertyDescriptor(window, 'sessionStorage') as PropertyDescriptor;
-
-      try {
-        // Simulate `window.sessionStorage` being inaccessible, when cookies are disabled.
-        Object.defineProperty(window, 'sessionStorage', {
-          get() {
-            throw new Error('The operation is insecure');
-          },
-        });
-
-        const platformLoc = platformLocation as PlatformLocation;
-        const service = createScrollService(document, platformLoc, viewportScrollerStub, location);
-
-        service.updateScrollLocationHref();
-        expect(service.getStoredScrollLocationHref()).toBeNull();
-
-        service.removeStoredScrollInfo();
-        expect(service.getStoredScrollPosition()).toBeNull();
-      } finally {
-        Object.defineProperty(window, 'sessionStorage', originalSessionStorage);
-      }
-    }).not.toThrow();
   });
 
   describe('#topOffset', () => {

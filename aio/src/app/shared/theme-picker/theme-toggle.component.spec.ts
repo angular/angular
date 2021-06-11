@@ -1,43 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIconModule } from '@angular/material/icon';
 import { By } from '@angular/platform-browser';
-import { ThemeStorage, ThemeToggleComponent } from './theme-toggle.component';
-
-class FakeThemeStorage implements ThemeStorage {
-  fakeStorage: string | null = null;
-
-  getThemePreference(): string | null {
-    return this.fakeStorage;
-  }
-
-  setThemePreference(isDark: boolean): void {
-    this.fakeStorage = String(isDark);
-  }
-}
-
-// Verify that FakeThemeStorage behaves like ThemeStorage would
-describe('FakeThemeStorage', () => {
-  let themeStorage: ThemeStorage;
-
-  beforeEach(() => {
-    themeStorage = new FakeThemeStorage();
-  });
-
-  it('should have null stored initially', () => {
-    expect(themeStorage.getThemePreference()).toBeNull();
-  });
-
-  it('should store true as a string if isDark is true', () => {
-    themeStorage.setThemePreference(true);
-    expect(themeStorage.getThemePreference()).toBe('true');
-  });
-
-  it('should store false as a string if isDark is false', () => {
-    themeStorage.setThemePreference(false);
-    expect(themeStorage.getThemePreference()).toBe('false');
-  });
-});
-
+import { LocalStorage, NoopStorage } from '../storage.service';
+import { storageKey as themeStorageKey, ThemeToggleComponent } from './theme-toggle.component';
 
 describe('ThemeToggleComponent', () => {
   let component: ThemeToggleComponent;
@@ -47,6 +12,7 @@ describe('ThemeToggleComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ThemeToggleComponent ],
       imports: [ MatIconModule ],
+      providers: [ { provide: LocalStorage, useValue: new NoopStorage() } ],
     });
 
     fixture = TestBed.createComponent(ThemeToggleComponent);
@@ -80,6 +46,30 @@ describe('ThemeToggleComponent', () => {
     expect(component.getToggleLabel()).toBe('Switch to dark mode');
     component.toggleTheme();
     expect(component.getToggleLabel()).toBe('Switch to light mode');
+  });
+
+  it('should store the theme in `localStorage`', () => {
+    const storage = TestBed.inject(LocalStorage);
+    const setItemSpy = spyOn(storage, 'setItem');
+
+    component.toggleTheme();
+    expect(setItemSpy).toHaveBeenCalledWith(themeStorageKey, 'true');
+
+    component.toggleTheme();
+    expect(setItemSpy).toHaveBeenCalledWith(themeStorageKey, 'false');
+  });
+
+  it('should initialize the theme from `localStorage`', () => {
+    const storage = TestBed.inject(LocalStorage);
+    const getItemSpy = spyOn(storage, 'getItem').withArgs(themeStorageKey);
+
+    getItemSpy.and.returnValue('false');
+    const component1 = TestBed.createComponent(ThemeToggleComponent).componentInstance;
+    expect(component1.isDark).toBe(false);
+
+    getItemSpy.and.returnValue('true');
+    const component2 = TestBed.createComponent(ThemeToggleComponent).componentInstance;
+    expect(component2.isDark).toBe(true);
   });
 
   // Helpers

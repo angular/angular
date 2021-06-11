@@ -1,27 +1,8 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, Inject, Injectable } from '@angular/core';
+import { Component, Inject } from '@angular/core';
+import { LocalStorage } from 'app/shared/storage.service';
 
-/** Injectable facade around localStorage for theme preference to make testing easier. */
-@Injectable({ providedIn: 'root' })
-export class ThemeStorage {
-  getThemePreference(): string | null {
-    // Wrap localStorage access in try/catch because user agents can block localStorage. If it is
-    // blocked, we treat it as if no preference was previously stored.
-    try {
-      return localStorage.getItem('aio-theme');
-    } catch {
-      return null;
-    }
-  }
-
-  setThemePreference(isDark: boolean): void {
-    // Wrap localStorage access in try/catch because user agents can block localStorage. If it
-    // fails, we persist nothing.
-    try {
-      localStorage.setItem('aio-theme', String(isDark));
-    } catch { }
-  }
-}
+export const storageKey = 'aio-theme';
 
 @Component({
   selector: 'aio-theme-toggle',
@@ -37,7 +18,7 @@ export class ThemeStorage {
 export class ThemeToggleComponent {
   isDark = false;
 
-  constructor(@Inject(DOCUMENT) private document: Document, private readonly themeStorage: ThemeStorage) {
+  constructor(@Inject(DOCUMENT) private document: Document, @Inject(LocalStorage) private storage: Storage) {
     this.initializeThemeFromPreferences();
   }
 
@@ -48,7 +29,7 @@ export class ThemeToggleComponent {
 
   private initializeThemeFromPreferences(): void {
     // Check whether there's an explicit preference in localStorage.
-    const storedPreference = this.themeStorage.getThemePreference();
+    const storedPreference = this.storage.getItem(storageKey);
 
     // If we do have a preference in localStorage, use that. Otherwise,
     // initialize based on the prefers-color-scheme media query.
@@ -86,6 +67,6 @@ export class ThemeToggleComponent {
       customLinkElement.href = `${this.getThemeName()}-theme.css`;
     }
 
-    this.themeStorage.setThemePreference(this.isDark);
+    this.storage.setItem(storageKey, String(this.isDark));
   }
 }

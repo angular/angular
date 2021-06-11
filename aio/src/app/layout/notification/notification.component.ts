@@ -1,7 +1,7 @@
 import { animate, state, style, trigger, transition } from '@angular/animations';
 import { Component, EventEmitter, HostBinding, Inject, Input, OnInit, Output } from '@angular/core';
 import { CurrentDateToken } from 'app/shared/current-date';
-import { WindowToken } from 'app/shared/window';
+import { LocalStorage } from 'app/shared/storage.service';
 
 const LOCAL_STORAGE_NAMESPACE = 'aio-notification/';
 
@@ -20,8 +20,6 @@ const LOCAL_STORAGE_NAMESPACE = 'aio-notification/';
   ]
 })
 export class NotificationComponent implements OnInit {
-  private storage: Storage;
-
   @Input() dismissOnContentClick: boolean;
   @Input() notificationId: string;
   @Input() expirationDate: string;
@@ -30,25 +28,7 @@ export class NotificationComponent implements OnInit {
   @HostBinding('@hideAnimation')
   showNotification: 'show'|'hide';
 
-  constructor(
-    @Inject(WindowToken) window: Window,
-    @Inject(CurrentDateToken) private currentDate: Date
-  ) {
-    try {
-      this.storage = window.localStorage;
-    } catch {
-      // When cookies are disabled in the browser, even trying to access
-      // `window.localStorage` throws an error. Use a no-op storage.
-      this.storage = {
-        length: 0,
-        clear: () => undefined,
-        getItem: () => null,
-        key: () => null,
-        removeItem: () => undefined,
-        setItem: () => undefined
-      };
-    }
-  }
+  constructor(@Inject(LocalStorage) private storage: Storage, @Inject(CurrentDateToken) private currentDate: Date) {}
 
   ngOnInit() {
     const previouslyHidden = this.storage.getItem(LOCAL_STORAGE_NAMESPACE + this.notificationId) === 'hide';
