@@ -176,6 +176,35 @@ describe('definitions', () => {
     assertFileNames(definitions, ['style.scss']);
   });
 
+  it('gets definition for property of variable declared in template', () => {
+    initMockFileSystem('Native');
+    const files = {
+      'app.html': `
+        <ng-container *ngIf="{prop: myVal} as myVar">
+          {{myVar.prop.name}}
+        </ng-container>
+      `,
+      'app.ts': `
+        import {Component} from '@angular/core';
+
+        @Component({templateUrl: '/app.html'})
+        export class AppCmp {
+          myVal = {name: 'Andrew'};
+        }
+      `,
+    };
+    const env = LanguageServiceTestEnv.setup();
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    const template = project.openFile('app.html');
+    project.expectNoSourceDiagnostics();
+
+    template.moveCursorToText('{{myVar.pro¦p.name}}');
+    const {definitions} = getDefinitionsAndAssertBoundSpan(env, template);
+    expect(definitions![0].name).toEqual('"prop"');
+    assertFileNames(Array.from(definitions!), ['app.html']);
+  });
+
   function getDefinitionsAndAssertBoundSpan(env: LanguageServiceTestEnv, file: OpenBuffer) {
     env.expectNoSourceDiagnostics();
     const definitionAndBoundSpan = file.getDefinitionAndBoundSpan();
