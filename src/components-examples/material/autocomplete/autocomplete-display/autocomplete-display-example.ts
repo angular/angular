@@ -40,6 +40,6 @@ export class AutocompleteDisplayExample implements OnInit {
   private _filter(name: string): User[] {
     const filterValue = name.toLowerCase();
 
-    return this.options.filter(option => option.name.toLowerCase().indexOf(filterValue) === 0);
+    return this.options.filter(option => option.name.toLowerCase().includes(filterValue));
   }
 }

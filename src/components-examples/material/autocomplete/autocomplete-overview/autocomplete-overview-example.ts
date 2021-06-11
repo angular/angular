@@ -59,6 +59,6 @@ export class AutocompleteOverviewExample {
   private _filterStates(value: string): State[] {
     const filterValue = value.toLowerCase();
 
-    return this.states.filter(state => state.name.toLowerCase().indexOf(filterValue) === 0);
+    return this.states.filter(state => state.name.toLowerCase().includes(filterValue));
   }
 }

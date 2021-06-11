@@ -11,7 +11,7 @@ export interface StateGroup {
 export const _filter = (opt: string[], value: string): string[] => {
   const filterValue = value.toLowerCase();
 
-  return opt.filter(item => item.toLowerCase().indexOf(filterValue) === 0);
+  return opt.filter(item => item.toLowerCase().includes(filterValue));
 };
 
 /**
