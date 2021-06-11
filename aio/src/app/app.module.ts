@@ -21,6 +21,7 @@ import { ModeBannerComponent } from 'app/layout/mode-banner/mode-banner.componen
 import { GaService } from 'app/shared/ga.service';
 import { Logger } from 'app/shared/logger.service';
 import { LocationService } from 'app/shared/location.service';
+import { STORAGE_PROVIDERS } from 'app/shared/storage.service';
 import { NavigationService } from 'app/navigation/navigation.service';
 import { DocumentService } from 'app/documents/document.service';
 import { SearchService } from 'app/search/search.service';
@@ -187,6 +188,7 @@ export const svgIconProviders = [
     ScrollService,
     ScrollSpyService,
     SearchService,
+    STORAGE_PROVIDERS,
     svgIconProviders,
     TocService,
     { provide: CurrentDateToken, useFactory: currentDateProvider },
