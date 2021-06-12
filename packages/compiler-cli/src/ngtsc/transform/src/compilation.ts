@@ -82,6 +82,12 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
    */
   protected fileToClasses = new Map<ts.SourceFile, Set<ClassDeclaration>>();
 
+  /**
+   * Tracks which source files have been analyzed but did not contain any traits. This set allows
+   * the compiler to skip analyzing these files in an incremental rebuild.
+   */
+  protected filesWithoutTraits = new Set<ts.SourceFile>();
+
   private reexportMap = new Map<string, Map<string, [string, string]>>();
 
   private handlersByName =
@@ -121,12 +127,17 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
 
     const priorWork = this.incrementalBuild.priorAnalysisFor(sf);
     if (priorWork !== null) {
-      for (const priorRecord of priorWork) {
-        this.adopt(priorRecord);
-      }
-
       this.perf.eventCount(PerfEvent.SourceFileReuseAnalysis);
-      this.perf.eventCount(PerfEvent.TraitReuseAnalysis, priorWork.length);
+
+      if (priorWork.length > 0) {
+        for (const priorRecord of priorWork) {
+          this.adopt(priorRecord);
+        }
+
+        this.perf.eventCount(PerfEvent.TraitReuseAnalysis, priorWork.length);
+      } else {
+        this.filesWithoutTraits.add(sf);
+      }
 
       // Skip the rest of analysis, as this file's prior traits are being reused.
       return;
@@ -175,6 +186,9 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
         records.push(this.classes.get(clazz)!);
       }
       result.set(sf, records);
+    }
+    for (const sf of this.filesWithoutTraits) {
+      result.set(sf, []);
     }
     return result;
   }
