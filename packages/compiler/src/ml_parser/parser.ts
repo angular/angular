@@ -10,8 +10,9 @@ import {ParseError, ParseLocation, ParseSourceSpan} from '../parse_util';
 
 import * as html from './ast';
 import {NAMED_ENTITIES} from './entities';
-import * as lex from './lexer';
+import {tokenize, TokenizeOptions} from './lexer';
 import {getNsPrefix, mergeNsAndName, splitNsName, TagDefinition} from './tags';
+import {AttributeNameToken, AttributeQuoteToken, CdataStartToken, CommentStartToken, ExpansionCaseExpressionEndToken, ExpansionCaseExpressionStartToken, ExpansionCaseValueToken, ExpansionFormStartToken, IncompleteTagOpenToken, InterpolatedAttributeToken, InterpolatedTextToken, TagCloseToken, TagOpenStartToken, TextToken, Token, TokenType} from './tokens';
 
 export class TreeError extends ParseError {
   static create(elementName: string|null, span: ParseSourceSpan, msg: string): TreeError {
@@ -30,8 +31,8 @@ export class ParseTreeResult {
 export class Parser {
   constructor(public getTagDefinition: (tagName: string) => TagDefinition) {}
 
-  parse(source: string, url: string, options?: lex.TokenizeOptions): ParseTreeResult {
-    const tokenizeResult = lex.tokenize(source, url, this.getTagDefinition, options);
+  parse(source: string, url: string, options?: TokenizeOptions): ParseTreeResult {
+    const tokenizeResult = tokenize(source, url, this.getTagDefinition, options);
     const parser = new _TreeBuilder(tokenizeResult.tokens, this.getTagDefinition);
     parser.build();
     return new ParseTreeResult(
@@ -43,38 +44,38 @@ export class Parser {
 
 class _TreeBuilder {
   private _index: number = -1;
-  // `_peek` will be initialized by the call to `advance()` in the constructor.
-  private _peek!: lex.Token;
+  // `_peek` will be initialized by the call to `_advance()` in the constructor.
+  private _peek!: Token;
   private _elementStack: html.Element[] = [];
 
   rootNodes: html.Node[] = [];
   errors: TreeError[] = [];
 
   constructor(
-      private tokens: lex.Token[], private getTagDefinition: (tagName: string) => TagDefinition) {
+      private tokens: Token[], private getTagDefinition: (tagName: string) => TagDefinition) {
     this._advance();
   }
 
   build(): void {
-    while (this._peek.type !== lex.TokenType.EOF) {
-      if (this._peek.type === lex.TokenType.TAG_OPEN_START ||
-          this._peek.type === lex.TokenType.INCOMPLETE_TAG_OPEN) {
-        this._consumeStartTag(this._advance());
-      } else if (this._peek.type === lex.TokenType.TAG_CLOSE) {
-        this._consumeEndTag(this._advance());
-      } else if (this._peek.type === lex.TokenType.CDATA_START) {
+    while (this._peek.type !== TokenType.EOF) {
+      if (this._peek.type === TokenType.TAG_OPEN_START ||
+          this._peek.type === TokenType.INCOMPLETE_TAG_OPEN) {
+        this._consumeStartTag(this._advance<TagOpenStartToken|IncompleteTagOpenToken>());
+      } else if (this._peek.type === TokenType.TAG_CLOSE) {
+        this._consumeEndTag(this._advance<TagCloseToken>());
+      } else if (this._peek.type === TokenType.CDATA_START) {
         this._closeVoidElement();
-        this._consumeCdata(this._advance());
-      } else if (this._peek.type === lex.TokenType.COMMENT_START) {
+        this._consumeCdata(this._advance<CdataStartToken>());
+      } else if (this._peek.type === TokenType.COMMENT_START) {
         this._closeVoidElement();
-        this._consumeComment(this._advance());
+        this._consumeComment(this._advance<CommentStartToken>());
       } else if (
-          this._peek.type === lex.TokenType.TEXT || this._peek.type === lex.TokenType.RAW_TEXT ||
-          this._peek.type === lex.TokenType.ESCAPABLE_RAW_TEXT) {
+          this._peek.type === TokenType.TEXT || this._peek.type === TokenType.RAW_TEXT ||
+          this._peek.type === TokenType.ESCAPABLE_RAW_TEXT) {
         this._closeVoidElement();
-        this._consumeText(this._advance());
-      } else if (this._peek.type === lex.TokenType.EXPANSION_FORM_START) {
-        this._consumeExpansion(this._advance());
+        this._consumeText(this._advance<TextToken>());
+      } else if (this._peek.type === TokenType.EXPANSION_FORM_START) {
+        this._consumeExpansion(this._advance<ExpansionFormStartToken>());
       } else {
         // Skip all other tokens...
         this._advance();
@@ -82,50 +83,50 @@ class _TreeBuilder {
     }
   }
 
-  private _advance(): lex.Token {
+  private _advance<T extends Token>(): T {
     const prev = this._peek;
     if (this._index < this.tokens.length - 1) {
       // Note: there is always an EOF token at the end
       this._index++;
     }
     this._peek = this.tokens[this._index];
-    return prev;
+    return prev as T;
   }
 
-  private _advanceIf(type: lex.TokenType): lex.Token|null {
+  private _advanceIf<T extends TokenType>(type: T): (Token&{type: T})|null {
     if (this._peek.type === type) {
-      return this._advance();
+      return this._advance<Token&{type: T}>();
     }
     return null;
   }
 
-  private _consumeCdata(_startToken: lex.Token) {
-    this._consumeText(this._advance());
-    this._advanceIf(lex.TokenType.CDATA_END);
+  private _consumeCdata(_startToken: CdataStartToken) {
+    this._consumeText(this._advance<TextToken>());
+    this._advanceIf(TokenType.CDATA_END);
   }
 
-  private _consumeComment(token: lex.Token) {
-    const text = this._advanceIf(lex.TokenType.RAW_TEXT);
-    this._advanceIf(lex.TokenType.COMMENT_END);
+  private _consumeComment(token: CommentStartToken) {
+    const text = this._advanceIf(TokenType.RAW_TEXT);
+    this._advanceIf(TokenType.COMMENT_END);
     const value = text != null ? text.parts[0].trim() : null;
     this._addToParent(new html.Comment(value, token.sourceSpan));
   }
 
-  private _consumeExpansion(token: lex.Token) {
-    const switchValue = this._advance();
+  private _consumeExpansion(token: ExpansionFormStartToken) {
+    const switchValue = this._advance<TextToken>();
 
-    const type = this._advance();
+    const type = this._advance<TextToken>();
     const cases: html.ExpansionCase[] = [];
 
     // read =
-    while (this._peek.type === lex.TokenType.EXPANSION_CASE_VALUE) {
+    while (this._peek.type === TokenType.EXPANSION_CASE_VALUE) {
       const expCase = this._parseExpansionCase();
       if (!expCase) return;  // error
       cases.push(expCase);
     }
 
     // read the final }
-    if (this._peek.type !== lex.TokenType.EXPANSION_FORM_END) {
+    if (this._peek.type !== TokenType.EXPANSION_FORM_END) {
       this.errors.push(
           TreeError.create(null, this._peek.sourceSpan, `Invalid ICU message. Missing '}'.`));
       return;
@@ -139,23 +140,23 @@ class _TreeBuilder {
   }
 
   private _parseExpansionCase(): html.ExpansionCase|null {
-    const value = this._advance();
+    const value = this._advance<ExpansionCaseValueToken>();
 
     // read {
-    if (this._peek.type !== lex.TokenType.EXPANSION_CASE_EXP_START) {
+    if (this._peek.type !== TokenType.EXPANSION_CASE_EXP_START) {
       this.errors.push(
           TreeError.create(null, this._peek.sourceSpan, `Invalid ICU message. Missing '{'.`));
       return null;
     }
 
     // read until }
-    const start = this._advance();
+    const start = this._advance<ExpansionCaseExpressionStartToken>();
 
     const exp = this._collectExpansionExpTokens(start);
     if (!exp) return null;
 
-    const end = this._advance();
-    exp.push(new lex.Token(lex.TokenType.EOF, [], end.sourceSpan));
+    const end = this._advance<ExpansionCaseExpressionEndToken>();
+    exp.push({type: TokenType.EOF, parts: [], sourceSpan: end.sourceSpan});
 
     // parse everything in between { and }
     const expansionCaseParser = new _TreeBuilder(exp, this.getTagDefinition);
@@ -173,18 +174,18 @@ class _TreeBuilder {
         value.parts[0], expansionCaseParser.rootNodes, sourceSpan, value.sourceSpan, expSourceSpan);
   }
 
-  private _collectExpansionExpTokens(start: lex.Token): lex.Token[]|null {
-    const exp: lex.Token[] = [];
-    const expansionFormStack = [lex.TokenType.EXPANSION_CASE_EXP_START];
+  private _collectExpansionExpTokens(start: Token): Token[]|null {
+    const exp: Token[] = [];
+    const expansionFormStack = [TokenType.EXPANSION_CASE_EXP_START];
 
     while (true) {
-      if (this._peek.type === lex.TokenType.EXPANSION_FORM_START ||
-          this._peek.type === lex.TokenType.EXPANSION_CASE_EXP_START) {
+      if (this._peek.type === TokenType.EXPANSION_FORM_START ||
+          this._peek.type === TokenType.EXPANSION_CASE_EXP_START) {
         expansionFormStack.push(this._peek.type);
       }
 
-      if (this._peek.type === lex.TokenType.EXPANSION_CASE_EXP_END) {
-        if (lastOnStack(expansionFormStack, lex.TokenType.EXPANSION_CASE_EXP_START)) {
+      if (this._peek.type === TokenType.EXPANSION_CASE_EXP_END) {
+        if (lastOnStack(expansionFormStack, TokenType.EXPANSION_CASE_EXP_START)) {
           expansionFormStack.pop();
           if (expansionFormStack.length == 0) return exp;
 
@@ -195,8 +196,8 @@ class _TreeBuilder {
         }
       }
 
-      if (this._peek.type === lex.TokenType.EXPANSION_FORM_END) {
-        if (lastOnStack(expansionFormStack, lex.TokenType.EXPANSION_FORM_START)) {
+      if (this._peek.type === TokenType.EXPANSION_FORM_END) {
+        if (lastOnStack(expansionFormStack, TokenType.EXPANSION_FORM_START)) {
           expansionFormStack.pop();
         } else {
           this.errors.push(
@@ -205,7 +206,7 @@ class _TreeBuilder {
         }
       }
 
-      if (this._peek.type === lex.TokenType.EOF) {
+      if (this._peek.type === TokenType.EOF) {
         this.errors.push(
             TreeError.create(null, start.sourceSpan, `Invalid ICU message. Missing '}'.`));
         return null;
@@ -215,7 +216,7 @@ class _TreeBuilder {
     }
   }
 
-  private _consumeText(token: lex.Token) {
+  private _consumeText(token: InterpolatedTextToken) {
     const tokens = [token];
     const startSpan = token.sourceSpan;
     let text = token.parts[0];
@@ -224,22 +225,21 @@ class _TreeBuilder {
       if (parent != null && parent.children.length == 0 &&
           this.getTagDefinition(parent.name).ignoreFirstLf) {
         text = text.substring(1);
-        tokens[0] = {type: token.type, sourceSpan: token.sourceSpan, parts: [text]};
+        tokens[0] = {type: token.type, sourceSpan: token.sourceSpan, parts: [text]} as typeof token;
       }
     }
 
-    while (this._peek.type === lex.TokenType.INTERPOLATION ||
-           this._peek.type === lex.TokenType.TEXT ||
-           this._peek.type === lex.TokenType.ENCODED_ENTITY) {
+    while (this._peek.type === TokenType.INTERPOLATION || this._peek.type === TokenType.TEXT ||
+           this._peek.type === TokenType.ENCODED_ENTITY) {
       token = this._advance();
       tokens.push(token);
-      if (token.type === lex.TokenType.INTERPOLATION) {
+      if (token.type === TokenType.INTERPOLATION) {
         // For backward compatibility we decode HTML entities that appear in interpolation
         // expressions. This is arguably a bug, but it could be a considerable breaking change to
         // fix it. It should be addressed in a larger project to refactor the entire parser/lexer
         // chain after View Engine has been removed.
         text += token.parts.join('').replace(/&([^;]+);/g, decodeEntity);
-      } else if (token.type === lex.TokenType.ENCODED_ENTITY) {
+      } else if (token.type === TokenType.ENCODED_ENTITY) {
         text += token.parts[0];
       } else {
         text += token.parts.join('');
@@ -262,17 +262,17 @@ class _TreeBuilder {
     }
   }
 
-  private _consumeStartTag(startTagToken: lex.Token) {
+  private _consumeStartTag(startTagToken: TagOpenStartToken|IncompleteTagOpenToken) {
     const [prefix, name] = startTagToken.parts;
     const attrs: html.Attribute[] = [];
-    while (this._peek.type === lex.TokenType.ATTR_NAME) {
-      attrs.push(this._consumeAttr(this._advance()));
+    while (this._peek.type === TokenType.ATTR_NAME) {
+      attrs.push(this._consumeAttr(this._advance<AttributeNameToken>()));
     }
     const fullName = this._getElementFullName(prefix, name, this._getParentElement());
     let selfClosing = false;
     // Note: There could have been a tokenizer error
     // so that we don't get a token for the end tag...
-    if (this._peek.type === lex.TokenType.TAG_OPEN_END_VOID) {
+    if (this._peek.type === TokenType.TAG_OPEN_END_VOID) {
       this._advance();
       selfClosing = true;
       const tagDef = this.getTagDefinition(fullName);
@@ -281,7 +281,7 @@ class _TreeBuilder {
             fullName, startTagToken.sourceSpan,
             `Only void and foreign elements can be self closed "${startTagToken.parts[1]}"`));
       }
-    } else if (this._peek.type === lex.TokenType.TAG_OPEN_END) {
+    } else if (this._peek.type === TokenType.TAG_OPEN_END) {
       this._advance();
       selfClosing = false;
     }
@@ -297,7 +297,7 @@ class _TreeBuilder {
       // Elements that are self-closed have their `endSourceSpan` set to the full span, as the
       // element start tag also represents the end tag.
       this._popElement(fullName, span);
-    } else if (startTagToken.type === lex.TokenType.INCOMPLETE_TAG_OPEN) {
+    } else if (startTagToken.type === TokenType.INCOMPLETE_TAG_OPEN) {
       // We already know the opening tag is not complete, so it is unlikely it has a corresponding
       // close tag. Let's optimistically parse it as a full element and emit an error.
       this._popElement(fullName, null);
@@ -317,7 +317,7 @@ class _TreeBuilder {
     this._elementStack.push(el);
   }
 
-  private _consumeEndTag(endTagToken: lex.Token) {
+  private _consumeEndTag(endTagToken: TagCloseToken) {
     const fullName = this._getElementFullName(
         endTagToken.parts[0], endTagToken.parts[1], this._getParentElement());
 
@@ -363,35 +363,40 @@ class _TreeBuilder {
     return false;
   }
 
-  private _consumeAttr(attrName: lex.Token): html.Attribute {
+  private _consumeAttr(attrName: AttributeNameToken): html.Attribute {
     const fullName = mergeNsAndName(attrName.parts[0], attrName.parts[1]);
     let attrEnd = attrName.sourceSpan.end;
 
     // Consume any quote
-    if (this._peek.type === lex.TokenType.ATTR_QUOTE) {
+    if (this._peek.type === TokenType.ATTR_QUOTE) {
       this._advance();
     }
 
     // Consume the attribute value
     let value = '';
-    const valueTokens: lex.Token[] = [];
+    const valueTokens: InterpolatedAttributeToken[] = [];
     let valueStartSpan: ParseSourceSpan|undefined = undefined;
     let valueEnd: ParseLocation|undefined = undefined;
-    if (this._peek.type === lex.TokenType.ATTR_VALUE_TEXT) {
+    // NOTE: We need to use a new variable `nextTokenType` here to hide the actual type of
+    // `_peek.type` from TS. Otherwise TS will narrow the type of `_peek.type` preventing it from
+    // being able to consider `ATTR_VALUE_INTERPOLATION` as an option. This is because TS is not
+    // able to see that `_advance()` will actually mutate `_peek`.
+    const nextTokenType = this._peek.type;
+    if (nextTokenType === TokenType.ATTR_VALUE_TEXT) {
       valueStartSpan = this._peek.sourceSpan;
       valueEnd = this._peek.sourceSpan.end;
-      while (this._peek.type === lex.TokenType.ATTR_VALUE_TEXT ||
-             this._peek.type === lex.TokenType.ATTR_VALUE_INTERPOLATION ||
-             this._peek.type === lex.TokenType.ENCODED_ENTITY) {
-        const valueToken = this._advance();
+      while (this._peek.type === TokenType.ATTR_VALUE_TEXT ||
+             this._peek.type === TokenType.ATTR_VALUE_INTERPOLATION ||
+             this._peek.type === TokenType.ENCODED_ENTITY) {
+        const valueToken = this._advance<InterpolatedAttributeToken>();
         valueTokens.push(valueToken);
-        if (valueToken.type === lex.TokenType.ATTR_VALUE_INTERPOLATION) {
+        if (valueToken.type === TokenType.ATTR_VALUE_INTERPOLATION) {
           // For backward compatibility we decode HTML entities that appear in interpolation
           // expressions. This is arguably a bug, but it could be a considerable breaking change to
           // fix it. It should be addressed in a larger project to refactor the entire parser/lexer
           // chain after View Engine has been removed.
           value += valueToken.parts.join('').replace(/&([^;]+);/g, decodeEntity);
-        } else if (valueToken.type === lex.TokenType.ENCODED_ENTITY) {
+        } else if (valueToken.type === TokenType.ENCODED_ENTITY) {
           value += valueToken.parts[0];
         } else {
           value += valueToken.parts.join('');
@@ -401,8 +406,8 @@ class _TreeBuilder {
     }
 
     // Consume any quote
-    if (this._peek.type === lex.TokenType.ATTR_QUOTE) {
-      const quoteToken = this._advance();
+    if (this._peek.type === TokenType.ATTR_QUOTE) {
+      const quoteToken = this._advance<AttributeQuoteToken>();
       attrEnd = quoteToken.sourceSpan.end;
     }
 
