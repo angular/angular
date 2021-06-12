@@ -12,39 +12,7 @@ import {NAMED_ENTITIES} from './entities';
 
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './interpolation_config';
 import {TagContentType, TagDefinition} from './tags';
-
-export enum TokenType {
-  TAG_OPEN_START,
-  TAG_OPEN_END,
-  TAG_OPEN_END_VOID,
-  TAG_CLOSE,
-  INCOMPLETE_TAG_OPEN,
-  TEXT,
-  ESCAPABLE_RAW_TEXT,
-  RAW_TEXT,
-  INTERPOLATION,
-  ENCODED_ENTITY,
-  COMMENT_START,
-  COMMENT_END,
-  CDATA_START,
-  CDATA_END,
-  ATTR_NAME,
-  ATTR_QUOTE,
-  ATTR_VALUE_TEXT,
-  ATTR_VALUE_INTERPOLATION,
-  DOC_TYPE,
-  EXPANSION_FORM_START,
-  EXPANSION_CASE_VALUE,
-  EXPANSION_CASE_EXP_START,
-  EXPANSION_CASE_EXP_END,
-  EXPANSION_FORM_END,
-  EOF
-}
-
-export class Token {
-  constructor(
-      public type: TokenType|null, public parts: string[], public sourceSpan: ParseSourceSpan) {}
-}
+import {IncompleteTagOpenToken, TagOpenStartToken, Token, TokenType} from './tokens';
 
 export class TokenError extends ParseError {
   constructor(errorMsg: string, public tokenType: TokenType|null, span: ParseSourceSpan) {
@@ -290,9 +258,12 @@ class _Tokenizer {
           'Programming error - attempted to end a token which has no token type', null,
           this._cursor.getSpan(this._currentTokenStart));
     }
-    const token = new Token(
-        this._currentTokenType, parts,
-        (end ?? this._cursor).getSpan(this._currentTokenStart, this._leadingTriviaCodePoints));
+    const token = {
+      type: this._currentTokenType,
+      parts,
+      sourceSpan:
+          (end ?? this._cursor).getSpan(this._currentTokenStart, this._leadingTriviaCodePoints),
+    } as Token;
     this.tokens.push(token);
     this._currentTokenStart = null;
     this._currentTokenType = null;
@@ -527,7 +498,7 @@ class _Tokenizer {
   private _consumeTagOpen(start: CharacterCursor) {
     let tagName: string;
     let prefix: string;
-    let openTagToken: Token|undefined;
+    let openTagToken: TagOpenStartToken|IncompleteTagOpenToken|undefined;
     try {
       if (!chars.isAsciiLetter(this._cursor.peek())) {
         throw this._createError(
@@ -590,10 +561,10 @@ class _Tokenizer {
     this._endToken([prefix, tagName]);
   }
 
-  private _consumeTagOpenStart(start: CharacterCursor) {
+  private _consumeTagOpenStart(start: CharacterCursor): TagOpenStartToken {
     this._beginToken(TokenType.TAG_OPEN_START, start);
     const parts = this._consumePrefixAndName();
-    return this._endToken(parts);
+    return this._endToken(parts) as TagOpenStartToken;
   }
 
   private _consumeAttributeName() {
@@ -764,7 +735,7 @@ class _Tokenizer {
    */
   private _consumeInterpolation(
       interpolationTokenType: TokenType, interpolationStart: CharacterCursor,
-      prematureEndPredicate: (() => boolean)|null) {
+      prematureEndPredicate: (() => boolean)|null): void {
     const parts: string[] = [];
     this._beginToken(interpolationTokenType, interpolationStart);
     parts.push(this._interpolationConfig.start);
@@ -783,7 +754,8 @@ class _Tokenizer {
         // (This is actually wrong but here for backward compatibility).
         this._cursor = current;
         parts.push(this._getProcessedChars(expressionStart, current));
-        return this._endToken(parts);
+        this._endToken(parts);
+        return;
       }
 
       if (inQuote === null) {
@@ -791,7 +763,8 @@ class _Tokenizer {
           // We are not in a string, and we hit the end interpolation marker
           parts.push(this._getProcessedChars(expressionStart, current));
           parts.push(this._interpolationConfig.end);
-          return this._endToken(parts);
+          this._endToken(parts);
+          return;
         } else if (this._attemptStr('//')) {
           // Once we are in a comment we ignore any quotes
           inComment = true;
@@ -814,7 +787,7 @@ class _Tokenizer {
 
     // We hit EOF without finding a closing interpolation marker
     parts.push(this._getProcessedChars(expressionStart, this._cursor));
-    return this._endToken(parts);
+    this._endToken(parts);
   }
 
   private _getProcessedChars(start: CharacterCursor, end: CharacterCursor): string {
