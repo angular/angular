@@ -16,6 +16,10 @@
       .actions {
         .mat-button {
           color: if($is-dark-theme, c.$blue, c.$lightblue);
+
+          .mat-button-focus-overlay {
+            background: if($is-dark-theme, c.$black, c.$white);
+          }
         }
       }
     }

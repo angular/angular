@@ -19,6 +19,10 @@ aio-cookies-popup {
       display: flex;
       justify-content: flex-end;
       margin: $inner-spacing $inner-spacing / -2 0 0;
+
+      .mat-button {
+        text-transform: uppercase;
+      }
     }
   }
 }
