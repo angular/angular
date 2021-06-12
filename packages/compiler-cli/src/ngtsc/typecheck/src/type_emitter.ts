@@ -10,7 +10,8 @@ import {Reference} from '../../imports';
 
 /**
  * A resolved type reference can either be a `Reference`, the original `ts.TypeReferenceNode` itself
- * or null to indicate the no reference could be resolved, or that the reference can not be emitted.
+ * or null. A value of null indicates that no reference could be resolved or that the reference can
+ * not be emitted.
  */
 export type ResolvedTypeReference = Reference|ts.TypeReferenceNode|null;
 
@@ -69,7 +70,7 @@ export function canEmitType(type: ts.TypeNode, resolver: TypeReferenceResolver):
       return false;
     }
 
-    // If the type is a reference, consider the type not to be eligible for emitting.
+    // If the type is a reference, consider the type to be eligible for emitting.
     if (reference instanceof Reference) {
       return true;
     }
