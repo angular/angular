@@ -19,9 +19,11 @@ import {AbsoluteFsPath} from '../file_system';
  */
 export interface IncrementalBuild<AnalysisT, FileTypeCheckDataT> {
   /**
-   * Retrieve the prior analysis work, if any, done for the given source file.
+   * Retrieve the prior analysis work, if any, done for the given source file. If the file has been
+   * analyzed but did not contain any Angular behavior, null is returned. If the file has not been
+   * analyzed before or prior analysis data is outdated, undefined is returned.
    */
-  priorAnalysisFor(sf: ts.SourceFile): AnalysisT[]|null;
+  priorAnalysisFor(sf: ts.SourceFile): AnalysisT[]|null|undefined;
 
   /**
    * Retrieve the prior type-checking work, if any, that's been done for the given source file.
