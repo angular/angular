@@ -7,7 +7,8 @@
  */
 
 import {getHtmlTagDefinition} from '../../src/ml_parser/html_tags';
-import * as lex from '../../src/ml_parser/lexer';
+import {TokenError, tokenize, TokenizeOptions, TokenizeResult} from '../../src/ml_parser/lexer';
+import {Token, TokenType} from '../../src/ml_parser/tokens';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_util';
 
 {
@@ -15,41 +16,41 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
     describe('line/column numbers', () => {
       it('should work without newlines', () => {
         expect(tokenizeAndHumanizeLineColumn('<t>a</t>')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '0:0'],
-          [lex.TokenType.TAG_OPEN_END, '0:2'],
-          [lex.TokenType.TEXT, '0:3'],
-          [lex.TokenType.TAG_CLOSE, '0:4'],
-          [lex.TokenType.EOF, '0:8'],
+          [TokenType.TAG_OPEN_START, '0:0'],
+          [TokenType.TAG_OPEN_END, '0:2'],
+          [TokenType.TEXT, '0:3'],
+          [TokenType.TAG_CLOSE, '0:4'],
+          [TokenType.EOF, '0:8'],
         ]);
       });
 
       it('should work with one newline', () => {
         expect(tokenizeAndHumanizeLineColumn('<t>\na</t>')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '0:0'],
-          [lex.TokenType.TAG_OPEN_END, '0:2'],
-          [lex.TokenType.TEXT, '0:3'],
-          [lex.TokenType.TAG_CLOSE, '1:1'],
-          [lex.TokenType.EOF, '1:5'],
+          [TokenType.TAG_OPEN_START, '0:0'],
+          [TokenType.TAG_OPEN_END, '0:2'],
+          [TokenType.TEXT, '0:3'],
+          [TokenType.TAG_CLOSE, '1:1'],
+          [TokenType.EOF, '1:5'],
         ]);
       });
 
       it('should work with multiple newlines', () => {
         expect(tokenizeAndHumanizeLineColumn('<t\n>\na</t>')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '0:0'],
-          [lex.TokenType.TAG_OPEN_END, '1:0'],
-          [lex.TokenType.TEXT, '1:1'],
-          [lex.TokenType.TAG_CLOSE, '2:1'],
-          [lex.TokenType.EOF, '2:5'],
+          [TokenType.TAG_OPEN_START, '0:0'],
+          [TokenType.TAG_OPEN_END, '1:0'],
+          [TokenType.TEXT, '1:1'],
+          [TokenType.TAG_CLOSE, '2:1'],
+          [TokenType.EOF, '2:5'],
         ]);
       });
 
       it('should work with CR and LF', () => {
         expect(tokenizeAndHumanizeLineColumn('<t\n>\r\na\r</t>')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '0:0'],
-          [lex.TokenType.TAG_OPEN_END, '1:0'],
-          [lex.TokenType.TEXT, '1:1'],
-          [lex.TokenType.TAG_CLOSE, '2:1'],
-          [lex.TokenType.EOF, '2:5'],
+          [TokenType.TAG_OPEN_START, '0:0'],
+          [TokenType.TAG_OPEN_END, '1:0'],
+          [TokenType.TEXT, '1:1'],
+          [TokenType.TAG_CLOSE, '2:1'],
+          [TokenType.EOF, '2:5'],
         ]);
       });
 
@@ -57,11 +58,11 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(
             tokenizeAndHumanizeFullStart('<t>\n \t a</t>', {leadingTriviaChars: ['\n', ' ', '\t']}))
             .toEqual([
-              [lex.TokenType.TAG_OPEN_START, '0:0', '0:0'],
-              [lex.TokenType.TAG_OPEN_END, '0:2', '0:2'],
-              [lex.TokenType.TEXT, '1:3', '0:3'],
-              [lex.TokenType.TAG_CLOSE, '1:4', '1:4'],
-              [lex.TokenType.EOF, '1:8', '1:8'],
+              [TokenType.TAG_OPEN_START, '0:0', '0:0'],
+              [TokenType.TAG_OPEN_END, '0:2', '0:2'],
+              [TokenType.TEXT, '1:3', '0:3'],
+              [TokenType.TAG_CLOSE, '1:4', '1:4'],
+              [TokenType.EOF, '1:8', '1:8'],
             ]);
       });
     });
@@ -72,8 +73,8 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
                    'pre 1\npre 2\npre 3 `line 1\nline 2\nline 3` post 1\n post 2\n post 3',
                    {range: {startPos: 19, startLine: 2, startCol: 7, endPos: 39}}))
             .toEqual([
-              [lex.TokenType.TEXT, 'line 1\nline 2\nline 3'],
-              [lex.TokenType.EOF, ''],
+              [TokenType.TEXT, 'line 1\nline 2\nline 3'],
+              [TokenType.EOF, ''],
             ]);
       });
 
@@ -82,8 +83,8 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
                    'pre 1\npre 2\npre 3 `line 1\nline 2\nline 3` post 1\n post 2\n post 3',
                    {range: {startPos: 19, startLine: 2, startCol: 7, endPos: 39}}))
             .toEqual([
-              [lex.TokenType.TEXT, '2:7'],
-              [lex.TokenType.EOF, '4:6'],
+              [TokenType.TEXT, '2:7'],
+              [TokenType.EOF, '4:6'],
             ]);
       });
     });
@@ -91,49 +92,49 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
     describe('comments', () => {
       it('should parse comments', () => {
         expect(tokenizeAndHumanizeParts('<!--t\ne\rs\r\nt-->')).toEqual([
-          [lex.TokenType.COMMENT_START],
-          [lex.TokenType.RAW_TEXT, 't\ne\ns\nt'],
-          [lex.TokenType.COMMENT_END],
-          [lex.TokenType.EOF],
+          [TokenType.COMMENT_START],
+          [TokenType.RAW_TEXT, 't\ne\ns\nt'],
+          [TokenType.COMMENT_END],
+          [TokenType.EOF],
         ]);
       });
 
       it('should store the locations', () => {
         expect(tokenizeAndHumanizeSourceSpans('<!--t\ne\rs\r\nt-->')).toEqual([
-          [lex.TokenType.COMMENT_START, '<!--'],
-          [lex.TokenType.RAW_TEXT, 't\ne\rs\r\nt'],
-          [lex.TokenType.COMMENT_END, '-->'],
-          [lex.TokenType.EOF, ''],
+          [TokenType.COMMENT_START, '<!--'],
+          [TokenType.RAW_TEXT, 't\ne\rs\r\nt'],
+          [TokenType.COMMENT_END, '-->'],
+          [TokenType.EOF, ''],
         ]);
       });
 
       it('should report <!- without -', () => {
         expect(tokenizeAndHumanizeErrors('<!-a')).toEqual([
-          [lex.TokenType.COMMENT_START, 'Unexpected character "a"', '0:3']
+          [TokenType.COMMENT_START, 'Unexpected character "a"', '0:3']
         ]);
       });
 
       it('should report missing end comment', () => {
         expect(tokenizeAndHumanizeErrors('<!--')).toEqual([
-          [lex.TokenType.RAW_TEXT, 'Unexpected character "EOF"', '0:4']
+          [TokenType.RAW_TEXT, 'Unexpected character "EOF"', '0:4']
         ]);
       });
 
       it('should accept comments finishing by too many dashes (even number)', () => {
         expect(tokenizeAndHumanizeSourceSpans('<!-- test ---->')).toEqual([
-          [lex.TokenType.COMMENT_START, '<!--'],
-          [lex.TokenType.RAW_TEXT, ' test --'],
-          [lex.TokenType.COMMENT_END, '-->'],
-          [lex.TokenType.EOF, ''],
+          [TokenType.COMMENT_START, '<!--'],
+          [TokenType.RAW_TEXT, ' test --'],
+          [TokenType.COMMENT_END, '-->'],
+          [TokenType.EOF, ''],
         ]);
       });
 
       it('should accept comments finishing by too many dashes (odd number)', () => {
         expect(tokenizeAndHumanizeSourceSpans('<!-- test --->')).toEqual([
-          [lex.TokenType.COMMENT_START, '<!--'],
-          [lex.TokenType.RAW_TEXT, ' test -'],
-          [lex.TokenType.COMMENT_END, '-->'],
-          [lex.TokenType.EOF, ''],
+          [TokenType.COMMENT_START, '<!--'],
+          [TokenType.RAW_TEXT, ' test -'],
+          [TokenType.COMMENT_END, '-->'],
+          [TokenType.EOF, ''],
         ]);
       });
     });
@@ -141,21 +142,21 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
     describe('doctype', () => {
       it('should parse doctypes', () => {
         expect(tokenizeAndHumanizeParts('<!doctype html>')).toEqual([
-          [lex.TokenType.DOC_TYPE, 'doctype html'],
-          [lex.TokenType.EOF],
+          [TokenType.DOC_TYPE, 'doctype html'],
+          [TokenType.EOF],
         ]);
       });
 
       it('should store the locations', () => {
         expect(tokenizeAndHumanizeSourceSpans('<!doctype html>')).toEqual([
-          [lex.TokenType.DOC_TYPE, '<!doctype html>'],
-          [lex.TokenType.EOF, ''],
+          [TokenType.DOC_TYPE, '<!doctype html>'],
+          [TokenType.EOF, ''],
         ]);
       });
 
       it('should report missing end doctype', () => {
         expect(tokenizeAndHumanizeErrors('<!')).toEqual([
-          [lex.TokenType.DOC_TYPE, 'Unexpected character "EOF"', '0:2']
+          [TokenType.DOC_TYPE, 'Unexpected character "EOF"', '0:2']
         ]);
       });
     });
@@ -163,31 +164,31 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
     describe('CDATA', () => {
       it('should parse CDATA', () => {
         expect(tokenizeAndHumanizeParts('<![CDATA[t\ne\rs\r\nt]]>')).toEqual([
-          [lex.TokenType.CDATA_START],
-          [lex.TokenType.RAW_TEXT, 't\ne\ns\nt'],
-          [lex.TokenType.CDATA_END],
-          [lex.TokenType.EOF],
+          [TokenType.CDATA_START],
+          [TokenType.RAW_TEXT, 't\ne\ns\nt'],
+          [TokenType.CDATA_END],
+          [TokenType.EOF],
         ]);
       });
 
       it('should store the locations', () => {
         expect(tokenizeAndHumanizeSourceSpans('<![CDATA[t\ne\rs\r\nt]]>')).toEqual([
-          [lex.TokenType.CDATA_START, '<![CDATA['],
-          [lex.TokenType.RAW_TEXT, 't\ne\rs\r\nt'],
-          [lex.TokenType.CDATA_END, ']]>'],
-          [lex.TokenType.EOF, ''],
+          [TokenType.CDATA_START, '<![CDATA['],
+          [TokenType.RAW_TEXT, 't\ne\rs\r\nt'],
+          [TokenType.CDATA_END, ']]>'],
+          [TokenType.EOF, ''],
         ]);
       });
 
       it('should report <![ without CDATA[', () => {
         expect(tokenizeAndHumanizeErrors('<![a')).toEqual([
-          [lex.TokenType.CDATA_START, 'Unexpected character "a"', '0:3']
+          [TokenType.CDATA_START, 'Unexpected character "a"', '0:3']
         ]);
       });
 
       it('should report missing end cdata', () => {
         expect(tokenizeAndHumanizeErrors('<![CDATA[')).toEqual([
-          [lex.TokenType.RAW_TEXT, 'Unexpected character "EOF"', '0:9']
+          [TokenType.RAW_TEXT, 'Unexpected character "EOF"', '0:9']
         ]);
       });
     });
@@ -195,86 +196,86 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
     describe('open tags', () => {
       it('should parse open tags without prefix', () => {
         expect(tokenizeAndHumanizeParts('<test>')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 'test'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 'test'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.EOF],
         ]);
       });
 
       it('should parse namespace prefix', () => {
         expect(tokenizeAndHumanizeParts('<ns1:test>')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, 'ns1', 'test'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, 'ns1', 'test'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.EOF],
         ]);
       });
 
       it('should parse void tags', () => {
         expect(tokenizeAndHumanizeParts('<test/>')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 'test'],
-          [lex.TokenType.TAG_OPEN_END_VOID],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 'test'],
+          [TokenType.TAG_OPEN_END_VOID],
+          [TokenType.EOF],
         ]);
       });
 
       it('should allow whitespace after the tag name', () => {
         expect(tokenizeAndHumanizeParts('<test >')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 'test'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 'test'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.EOF],
         ]);
       });
 
       it('should store the locations', () => {
         expect(tokenizeAndHumanizeSourceSpans('<test>')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '<test'],
-          [lex.TokenType.TAG_OPEN_END, '>'],
-          [lex.TokenType.EOF, ''],
+          [TokenType.TAG_OPEN_START, '<test'],
+          [TokenType.TAG_OPEN_END, '>'],
+          [TokenType.EOF, ''],
         ]);
       });
 
       describe('tags', () => {
         it('terminated with EOF', () => {
           expect(tokenizeAndHumanizeSourceSpans('<div')).toEqual([
-            [lex.TokenType.INCOMPLETE_TAG_OPEN, '<div'],
-            [lex.TokenType.EOF, ''],
+            [TokenType.INCOMPLETE_TAG_OPEN, '<div'],
+            [TokenType.EOF, ''],
           ]);
         });
 
         it('after tag name', () => {
           expect(tokenizeAndHumanizeSourceSpans('<div<span><div</span>')).toEqual([
-            [lex.TokenType.INCOMPLETE_TAG_OPEN, '<div'],
-            [lex.TokenType.TAG_OPEN_START, '<span'],
-            [lex.TokenType.TAG_OPEN_END, '>'],
-            [lex.TokenType.INCOMPLETE_TAG_OPEN, '<div'],
-            [lex.TokenType.TAG_CLOSE, '</span>'],
-            [lex.TokenType.EOF, ''],
+            [TokenType.INCOMPLETE_TAG_OPEN, '<div'],
+            [TokenType.TAG_OPEN_START, '<span'],
+            [TokenType.TAG_OPEN_END, '>'],
+            [TokenType.INCOMPLETE_TAG_OPEN, '<div'],
+            [TokenType.TAG_CLOSE, '</span>'],
+            [TokenType.EOF, ''],
           ]);
         });
 
         it('in attribute', () => {
           expect(tokenizeAndHumanizeSourceSpans('<div class="hi" sty<span></span>')).toEqual([
-            [lex.TokenType.INCOMPLETE_TAG_OPEN, '<div'],
-            [lex.TokenType.ATTR_NAME, 'class'],
-            [lex.TokenType.ATTR_QUOTE, '"'],
-            [lex.TokenType.ATTR_VALUE_TEXT, 'hi'],
-            [lex.TokenType.ATTR_QUOTE, '"'],
-            [lex.TokenType.ATTR_NAME, 'sty'],
-            [lex.TokenType.TAG_OPEN_START, '<span'],
-            [lex.TokenType.TAG_OPEN_END, '>'],
-            [lex.TokenType.TAG_CLOSE, '</span>'],
-            [lex.TokenType.EOF, ''],
+            [TokenType.INCOMPLETE_TAG_OPEN, '<div'],
+            [TokenType.ATTR_NAME, 'class'],
+            [TokenType.ATTR_QUOTE, '"'],
+            [TokenType.ATTR_VALUE_TEXT, 'hi'],
+            [TokenType.ATTR_QUOTE, '"'],
+            [TokenType.ATTR_NAME, 'sty'],
+            [TokenType.TAG_OPEN_START, '<span'],
+            [TokenType.TAG_OPEN_END, '>'],
+            [TokenType.TAG_CLOSE, '</span>'],
+            [TokenType.EOF, ''],
           ]);
         });
 
         it('after quote', () => {
           expect(tokenizeAndHumanizeSourceSpans('<div "<span></span>')).toEqual([
-            [lex.TokenType.INCOMPLETE_TAG_OPEN, '<div'],
-            [lex.TokenType.TEXT, '"'],
-            [lex.TokenType.TAG_OPEN_START, '<span'],
-            [lex.TokenType.TAG_OPEN_END, '>'],
-            [lex.TokenType.TAG_CLOSE, '</span>'],
-            [lex.TokenType.EOF, ''],
+            [TokenType.INCOMPLETE_TAG_OPEN, '<div'],
+            [TokenType.TEXT, '"'],
+            [TokenType.TAG_OPEN_START, '<span'],
+            [TokenType.TAG_OPEN_END, '>'],
+            [TokenType.TAG_CLOSE, '</span>'],
+            [TokenType.EOF, ''],
           ]);
         });
       });
@@ -283,226 +284,226 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
     describe('attributes', () => {
       it('should parse attributes without prefix', () => {
         expect(tokenizeAndHumanizeParts('<t a>')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 't'],
-          [lex.TokenType.ATTR_NAME, '', 'a'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 't'],
+          [TokenType.ATTR_NAME, '', 'a'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.EOF],
         ]);
       });
 
       it('should parse attributes with interpolation', () => {
         expect(tokenizeAndHumanizeParts('<t a="{{v}}" b="s{{m}}e" c="s{{m//c}}e">')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 't'],
-          [lex.TokenType.ATTR_NAME, '', 'a'],
-          [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_VALUE_TEXT, ''],
-          [lex.TokenType.ATTR_VALUE_INTERPOLATION, '{{', 'v', '}}'],
-          [lex.TokenType.ATTR_VALUE_TEXT, ''],
-          [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_NAME, '', 'b'],
-          [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 's'],
-          [lex.TokenType.ATTR_VALUE_INTERPOLATION, '{{', 'm', '}}'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 'e'],
-          [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_NAME, '', 'c'],
-          [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 's'],
-          [lex.TokenType.ATTR_VALUE_INTERPOLATION, '{{', 'm//c', '}}'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 'e'],
-          [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 't'],
+          [TokenType.ATTR_NAME, '', 'a'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, ''],
+          [TokenType.ATTR_VALUE_INTERPOLATION, '{{', 'v', '}}'],
+          [TokenType.ATTR_VALUE_TEXT, ''],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_NAME, '', 'b'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, 's'],
+          [TokenType.ATTR_VALUE_INTERPOLATION, '{{', 'm', '}}'],
+          [TokenType.ATTR_VALUE_TEXT, 'e'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_NAME, '', 'c'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, 's'],
+          [TokenType.ATTR_VALUE_INTERPOLATION, '{{', 'm//c', '}}'],
+          [TokenType.ATTR_VALUE_TEXT, 'e'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.EOF],
         ]);
       });
 
       it('should end interpolation on an unescaped matching quote', () => {
         expect(tokenizeAndHumanizeParts('<t a="{{ a \\" \' b ">')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 't'],
-          [lex.TokenType.ATTR_NAME, '', 'a'],
-          [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_VALUE_TEXT, ''],
-          [lex.TokenType.ATTR_VALUE_INTERPOLATION, '{{', ' a \\" \' b '],
-          [lex.TokenType.ATTR_VALUE_TEXT, ''],
-          [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 't'],
+          [TokenType.ATTR_NAME, '', 'a'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, ''],
+          [TokenType.ATTR_VALUE_INTERPOLATION, '{{', ' a \\" \' b '],
+          [TokenType.ATTR_VALUE_TEXT, ''],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.EOF],
         ]);
 
         expect(tokenizeAndHumanizeParts('<t a=\'{{ a " \\\' b \'>')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 't'],
-          [lex.TokenType.ATTR_NAME, '', 'a'],
-          [lex.TokenType.ATTR_QUOTE, '\''],
-          [lex.TokenType.ATTR_VALUE_TEXT, ''],
-          [lex.TokenType.ATTR_VALUE_INTERPOLATION, '{{', ' a " \\\' b '],
-          [lex.TokenType.ATTR_VALUE_TEXT, ''],
-          [lex.TokenType.ATTR_QUOTE, '\''],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 't'],
+          [TokenType.ATTR_NAME, '', 'a'],
+          [TokenType.ATTR_QUOTE, '\''],
+          [TokenType.ATTR_VALUE_TEXT, ''],
+          [TokenType.ATTR_VALUE_INTERPOLATION, '{{', ' a " \\\' b '],
+          [TokenType.ATTR_VALUE_TEXT, ''],
+          [TokenType.ATTR_QUOTE, '\''],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.EOF],
         ]);
       });
 
       it('should parse attributes with prefix', () => {
         expect(tokenizeAndHumanizeParts('<t ns1:a>')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 't'],
-          [lex.TokenType.ATTR_NAME, 'ns1', 'a'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 't'],
+          [TokenType.ATTR_NAME, 'ns1', 'a'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.EOF],
         ]);
       });
 
       it('should parse attributes whose prefix is not valid', () => {
         expect(tokenizeAndHumanizeParts('<t (ns1:a)>')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 't'],
-          [lex.TokenType.ATTR_NAME, '', '(ns1:a)'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 't'],
+          [TokenType.ATTR_NAME, '', '(ns1:a)'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.EOF],
         ]);
       });
 
       it('should parse attributes with single quote value', () => {
         expect(tokenizeAndHumanizeParts('<t a=\'b\'>')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 't'],
-          [lex.TokenType.ATTR_NAME, '', 'a'],
-          [lex.TokenType.ATTR_QUOTE, '\''],
-          [lex.TokenType.ATTR_VALUE_TEXT, 'b'],
-          [lex.TokenType.ATTR_QUOTE, '\''],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 't'],
+          [TokenType.ATTR_NAME, '', 'a'],
+          [TokenType.ATTR_QUOTE, '\''],
+          [TokenType.ATTR_VALUE_TEXT, 'b'],
+          [TokenType.ATTR_QUOTE, '\''],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.EOF],
         ]);
       });
 
       it('should parse attributes with double quote value', () => {
         expect(tokenizeAndHumanizeParts('<t a="b">')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 't'],
-          [lex.TokenType.ATTR_NAME, '', 'a'],
-          [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 'b'],
-          [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 't'],
+          [TokenType.ATTR_NAME, '', 'a'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, 'b'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.EOF],
         ]);
       });
 
       it('should parse attributes with unquoted value', () => {
         expect(tokenizeAndHumanizeParts('<t a=b>')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 't'],
-          [lex.TokenType.ATTR_NAME, '', 'a'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 'b'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 't'],
+          [TokenType.ATTR_NAME, '', 'a'],
+          [TokenType.ATTR_VALUE_TEXT, 'b'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.EOF],
         ]);
       });
 
       it('should parse attributes with unquoted interpolation value', () => {
         expect(tokenizeAndHumanizeParts('<a a={{link.text}}>')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 'a'],
-          [lex.TokenType.ATTR_NAME, '', 'a'],
-          [lex.TokenType.ATTR_VALUE_TEXT, ''],
-          [lex.TokenType.ATTR_VALUE_INTERPOLATION, '{{', 'link.text', '}}'],
-          [lex.TokenType.ATTR_VALUE_TEXT, ''],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 'a'],
+          [TokenType.ATTR_NAME, '', 'a'],
+          [TokenType.ATTR_VALUE_TEXT, ''],
+          [TokenType.ATTR_VALUE_INTERPOLATION, '{{', 'link.text', '}}'],
+          [TokenType.ATTR_VALUE_TEXT, ''],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.EOF],
         ]);
       });
 
       it('should parse attributes with empty quoted value', () => {
         expect(tokenizeAndHumanizeParts('<t a="">')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 't'],
-          [lex.TokenType.ATTR_NAME, '', 'a'],
-          [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_VALUE_TEXT, ''],
-          [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 't'],
+          [TokenType.ATTR_NAME, '', 'a'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, ''],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.EOF],
         ]);
       });
 
       it('should allow whitespace', () => {
         expect(tokenizeAndHumanizeParts('<t a = b >')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 't'],
-          [lex.TokenType.ATTR_NAME, '', 'a'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 'b'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 't'],
+          [TokenType.ATTR_NAME, '', 'a'],
+          [TokenType.ATTR_VALUE_TEXT, 'b'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.EOF],
         ]);
       });
 
       it('should parse attributes with entities in values', () => {
         expect(tokenizeAndHumanizeParts('<t a="&#65;&#x41;">')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 't'],
-          [lex.TokenType.ATTR_NAME, '', 'a'],
-          [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_VALUE_TEXT, ''],
-          [lex.TokenType.ENCODED_ENTITY, 'A', '&#65;'],
-          [lex.TokenType.ATTR_VALUE_TEXT, ''],
-          [lex.TokenType.ENCODED_ENTITY, 'A', '&#x41;'],
-          [lex.TokenType.ATTR_VALUE_TEXT, ''],
-          [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 't'],
+          [TokenType.ATTR_NAME, '', 'a'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, ''],
+          [TokenType.ENCODED_ENTITY, 'A', '&#65;'],
+          [TokenType.ATTR_VALUE_TEXT, ''],
+          [TokenType.ENCODED_ENTITY, 'A', '&#x41;'],
+          [TokenType.ATTR_VALUE_TEXT, ''],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.EOF],
         ]);
       });
 
       it('should not decode entities without trailing ";"', () => {
         expect(tokenizeAndHumanizeParts('<t a="&amp" b="c&&d">')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 't'],
-          [lex.TokenType.ATTR_NAME, '', 'a'],
-          [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_VALUE_TEXT, '&amp'],
-          [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_NAME, '', 'b'],
-          [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 'c&&d'],
-          [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 't'],
+          [TokenType.ATTR_NAME, '', 'a'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, '&amp'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_NAME, '', 'b'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, 'c&&d'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.EOF],
         ]);
       });
 
       it('should parse attributes with "&" in values', () => {
         expect(tokenizeAndHumanizeParts('<t a="b && c &">')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 't'],
-          [lex.TokenType.ATTR_NAME, '', 'a'],
-          [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 'b && c &'],
-          [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 't'],
+          [TokenType.ATTR_NAME, '', 'a'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, 'b && c &'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.EOF],
         ]);
       });
 
       it('should parse values with CR and LF', () => {
         expect(tokenizeAndHumanizeParts('<t a=\'t\ne\rs\r\nt\'>')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 't'],
-          [lex.TokenType.ATTR_NAME, '', 'a'],
-          [lex.TokenType.ATTR_QUOTE, '\''],
-          [lex.TokenType.ATTR_VALUE_TEXT, 't\ne\ns\nt'],
-          [lex.TokenType.ATTR_QUOTE, '\''],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 't'],
+          [TokenType.ATTR_NAME, '', 'a'],
+          [TokenType.ATTR_QUOTE, '\''],
+          [TokenType.ATTR_VALUE_TEXT, 't\ne\ns\nt'],
+          [TokenType.ATTR_QUOTE, '\''],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.EOF],
         ]);
       });
 
       it('should store the locations', () => {
         expect(tokenizeAndHumanizeSourceSpans('<t a=b>')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '<t'],
-          [lex.TokenType.ATTR_NAME, 'a'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 'b'],
-          [lex.TokenType.TAG_OPEN_END, '>'],
-          [lex.TokenType.EOF, ''],
+          [TokenType.TAG_OPEN_START, '<t'],
+          [TokenType.ATTR_NAME, 'a'],
+          [TokenType.ATTR_VALUE_TEXT, 'b'],
+          [TokenType.TAG_OPEN_END, '>'],
+          [TokenType.EOF, ''],
         ]);
       });
 
       it('should report missing closing single quote', () => {
         expect(tokenizeAndHumanizeErrors('<t a=\'b>')).toEqual([
-          [lex.TokenType.ATTR_VALUE_TEXT, 'Unexpected character "EOF"', '0:8'],
+          [TokenType.ATTR_VALUE_TEXT, 'Unexpected character "EOF"', '0:8'],
         ]);
       });
 
       it('should report missing closing double quote', () => {
         expect(tokenizeAndHumanizeErrors('<t a="b>')).toEqual([
-          [lex.TokenType.ATTR_VALUE_TEXT, 'Unexpected character "EOF"', '0:8'],
+          [TokenType.ATTR_VALUE_TEXT, 'Unexpected character "EOF"', '0:8'],
         ]);
       });
     });
@@ -510,41 +511,41 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
     describe('closing tags', () => {
       it('should parse closing tags without prefix', () => {
         expect(tokenizeAndHumanizeParts('</test>')).toEqual([
-          [lex.TokenType.TAG_CLOSE, '', 'test'],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_CLOSE, '', 'test'],
+          [TokenType.EOF],
         ]);
       });
 
       it('should parse closing tags with prefix', () => {
         expect(tokenizeAndHumanizeParts('</ns1:test>')).toEqual([
-          [lex.TokenType.TAG_CLOSE, 'ns1', 'test'],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_CLOSE, 'ns1', 'test'],
+          [TokenType.EOF],
         ]);
       });
 
       it('should allow whitespace', () => {
         expect(tokenizeAndHumanizeParts('</ test >')).toEqual([
-          [lex.TokenType.TAG_CLOSE, '', 'test'],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_CLOSE, '', 'test'],
+          [TokenType.EOF],
         ]);
       });
 
       it('should store the locations', () => {
         expect(tokenizeAndHumanizeSourceSpans('</test>')).toEqual([
-          [lex.TokenType.TAG_CLOSE, '</test>'],
-          [lex.TokenType.EOF, ''],
+          [TokenType.TAG_CLOSE, '</test>'],
+          [TokenType.EOF, ''],
         ]);
       });
 
       it('should report missing name after </', () => {
         expect(tokenizeAndHumanizeErrors('</')).toEqual([
-          [lex.TokenType.TAG_CLOSE, 'Unexpected character "EOF"', '0:2']
+          [TokenType.TAG_CLOSE, 'Unexpected character "EOF"', '0:2']
         ]);
       });
 
       it('should report missing >', () => {
         expect(tokenizeAndHumanizeErrors('</test')).toEqual([
-          [lex.TokenType.TAG_CLOSE, 'Unexpected character "EOF"', '0:6']
+          [TokenType.TAG_CLOSE, 'Unexpected character "EOF"', '0:6']
         ]);
       });
     });
@@ -552,60 +553,60 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
     describe('entities', () => {
       it('should parse named entities', () => {
         expect(tokenizeAndHumanizeParts('a&amp;b')).toEqual([
-          [lex.TokenType.TEXT, 'a'],
-          [lex.TokenType.ENCODED_ENTITY, '&', '&amp;'],
-          [lex.TokenType.TEXT, 'b'],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, 'a'],
+          [TokenType.ENCODED_ENTITY, '&', '&amp;'],
+          [TokenType.TEXT, 'b'],
+          [TokenType.EOF],
         ]);
       });
 
       it('should parse hexadecimal entities', () => {
         expect(tokenizeAndHumanizeParts('&#x41;&#X41;')).toEqual([
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.ENCODED_ENTITY, 'A', '&#x41;'],
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.ENCODED_ENTITY, 'A', '&#X41;'],
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, ''],
+          [TokenType.ENCODED_ENTITY, 'A', '&#x41;'],
+          [TokenType.TEXT, ''],
+          [TokenType.ENCODED_ENTITY, 'A', '&#X41;'],
+          [TokenType.TEXT, ''],
+          [TokenType.EOF],
         ]);
       });
 
       it('should parse decimal entities', () => {
         expect(tokenizeAndHumanizeParts('&#65;')).toEqual([
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.ENCODED_ENTITY, 'A', '&#65;'],
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, ''],
+          [TokenType.ENCODED_ENTITY, 'A', '&#65;'],
+          [TokenType.TEXT, ''],
+          [TokenType.EOF],
         ]);
       });
 
       it('should store the locations', () => {
         expect(tokenizeAndHumanizeSourceSpans('a&amp;b')).toEqual([
-          [lex.TokenType.TEXT, 'a'],
-          [lex.TokenType.ENCODED_ENTITY, '&amp;'],
-          [lex.TokenType.TEXT, 'b'],
-          [lex.TokenType.EOF, ''],
+          [TokenType.TEXT, 'a'],
+          [TokenType.ENCODED_ENTITY, '&amp;'],
+          [TokenType.TEXT, 'b'],
+          [TokenType.EOF, ''],
         ]);
       });
 
       it('should report malformed/unknown entities', () => {
         expect(tokenizeAndHumanizeErrors('&tbo;')).toEqual([[
-          lex.TokenType.ENCODED_ENTITY,
+          TokenType.ENCODED_ENTITY,
           'Unknown entity "tbo" - use the "&#<decimal>;" or  "&#x<hex>;" syntax', '0:0'
         ]]);
         expect(tokenizeAndHumanizeErrors('&#3sdf;')).toEqual([[
-          lex.TokenType.ENCODED_ENTITY,
+          TokenType.ENCODED_ENTITY,
           'Unable to parse entity "&#3s" - decimal character reference entities must end with ";"',
           '0:4'
         ]]);
         expect(tokenizeAndHumanizeErrors('&#xasdf;')).toEqual([[
-          lex.TokenType.ENCODED_ENTITY,
+          TokenType.ENCODED_ENTITY,
           'Unable to parse entity "&#xas" - hexadecimal character reference entities must end with ";"',
           '0:5'
         ]]);
 
         expect(tokenizeAndHumanizeErrors('&#xABC')).toEqual([
-          [lex.TokenType.ENCODED_ENTITY, 'Unexpected character "EOF"', '0:6']
+          [TokenType.ENCODED_ENTITY, 'Unexpected character "EOF"', '0:6']
         ]);
       });
     });
@@ -613,8 +614,8 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
     describe('regular text', () => {
       it('should parse text', () => {
         expect(tokenizeAndHumanizeParts('a')).toEqual([
-          [lex.TokenType.TEXT, 'a'],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, 'a'],
+          [TokenType.EOF],
         ]);
       });
 
@@ -622,168 +623,168 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeParts(
                    '{{ a }}b{{ c // comment }}d{{ e "}} \' " f }}g{{ h // " i }}'))
             .toEqual([
-              [lex.TokenType.TEXT, ''],
-              [lex.TokenType.INTERPOLATION, '{{', ' a ', '}}'],
-              [lex.TokenType.TEXT, 'b'],
-              [lex.TokenType.INTERPOLATION, '{{', ' c // comment ', '}}'],
-              [lex.TokenType.TEXT, 'd'],
-              [lex.TokenType.INTERPOLATION, '{{', ' e "}} \' " f ', '}}'],
-              [lex.TokenType.TEXT, 'g'],
-              [lex.TokenType.INTERPOLATION, '{{', ' h // " i ', '}}'],
-              [lex.TokenType.TEXT, ''],
-              [lex.TokenType.EOF],
+              [TokenType.TEXT, ''],
+              [TokenType.INTERPOLATION, '{{', ' a ', '}}'],
+              [TokenType.TEXT, 'b'],
+              [TokenType.INTERPOLATION, '{{', ' c // comment ', '}}'],
+              [TokenType.TEXT, 'd'],
+              [TokenType.INTERPOLATION, '{{', ' e "}} \' " f ', '}}'],
+              [TokenType.TEXT, 'g'],
+              [TokenType.INTERPOLATION, '{{', ' h // " i ', '}}'],
+              [TokenType.TEXT, ''],
+              [TokenType.EOF],
             ]);
 
         expect(tokenizeAndHumanizeSourceSpans('{{ a }}b{{ c // comment }}')).toEqual([
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.INTERPOLATION, '{{ a }}'],
-          [lex.TokenType.TEXT, 'b'],
-          [lex.TokenType.INTERPOLATION, '{{ c // comment }}'],
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.EOF, ''],
+          [TokenType.TEXT, ''],
+          [TokenType.INTERPOLATION, '{{ a }}'],
+          [TokenType.TEXT, 'b'],
+          [TokenType.INTERPOLATION, '{{ c // comment }}'],
+          [TokenType.TEXT, ''],
+          [TokenType.EOF, ''],
         ]);
       });
 
       it('should parse interpolation with custom markers', () => {
         expect(tokenizeAndHumanizeParts('{% a %}', {interpolationConfig: {start: '{%', end: '%}'}}))
             .toEqual([
-              [lex.TokenType.TEXT, ''],
-              [lex.TokenType.INTERPOLATION, '{%', ' a ', '%}'],
-              [lex.TokenType.TEXT, ''],
-              [lex.TokenType.EOF],
+              [TokenType.TEXT, ''],
+              [TokenType.INTERPOLATION, '{%', ' a ', '%}'],
+              [TokenType.TEXT, ''],
+              [TokenType.EOF],
             ]);
       });
 
       it('should handle CR & LF in text', () => {
         expect(tokenizeAndHumanizeParts('t\ne\rs\r\nt')).toEqual([
-          [lex.TokenType.TEXT, 't\ne\ns\nt'],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, 't\ne\ns\nt'],
+          [TokenType.EOF],
         ]);
 
         expect(tokenizeAndHumanizeSourceSpans('t\ne\rs\r\nt')).toEqual([
-          [lex.TokenType.TEXT, 't\ne\rs\r\nt'],
-          [lex.TokenType.EOF, ''],
+          [TokenType.TEXT, 't\ne\rs\r\nt'],
+          [TokenType.EOF, ''],
         ]);
       });
 
       it('should handle CR & LF in interpolation', () => {
         expect(tokenizeAndHumanizeParts('{{t\ne\rs\r\nt}}')).toEqual([
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.INTERPOLATION, '{{', 't\ne\ns\nt', '}}'],
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, ''],
+          [TokenType.INTERPOLATION, '{{', 't\ne\ns\nt', '}}'],
+          [TokenType.TEXT, ''],
+          [TokenType.EOF],
         ]);
 
         expect(tokenizeAndHumanizeSourceSpans('{{t\ne\rs\r\nt}}')).toEqual([
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.INTERPOLATION, '{{t\ne\rs\r\nt}}'],
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.EOF, ''],
+          [TokenType.TEXT, ''],
+          [TokenType.INTERPOLATION, '{{t\ne\rs\r\nt}}'],
+          [TokenType.TEXT, ''],
+          [TokenType.EOF, ''],
         ]);
       });
 
       it('should parse entities', () => {
         expect(tokenizeAndHumanizeParts('a&amp;b')).toEqual([
-          [lex.TokenType.TEXT, 'a'],
-          [lex.TokenType.ENCODED_ENTITY, '&', '&amp;'],
-          [lex.TokenType.TEXT, 'b'],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, 'a'],
+          [TokenType.ENCODED_ENTITY, '&', '&amp;'],
+          [TokenType.TEXT, 'b'],
+          [TokenType.EOF],
         ]);
 
         expect(tokenizeAndHumanizeSourceSpans('a&amp;b')).toEqual([
-          [lex.TokenType.TEXT, 'a'],
-          [lex.TokenType.ENCODED_ENTITY, '&amp;'],
-          [lex.TokenType.TEXT, 'b'],
-          [lex.TokenType.EOF, ''],
+          [TokenType.TEXT, 'a'],
+          [TokenType.ENCODED_ENTITY, '&amp;'],
+          [TokenType.TEXT, 'b'],
+          [TokenType.EOF, ''],
         ]);
       });
 
       it('should parse text starting with "&"', () => {
         expect(tokenizeAndHumanizeParts('a && b &')).toEqual([
-          [lex.TokenType.TEXT, 'a && b &'],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, 'a && b &'],
+          [TokenType.EOF],
         ]);
       });
 
       it('should store the locations', () => {
         expect(tokenizeAndHumanizeSourceSpans('a')).toEqual([
-          [lex.TokenType.TEXT, 'a'],
-          [lex.TokenType.EOF, ''],
+          [TokenType.TEXT, 'a'],
+          [TokenType.EOF, ''],
         ]);
       });
 
       it('should allow "<" in text nodes', () => {
         expect(tokenizeAndHumanizeParts('{{ a < b ? c : d }}')).toEqual([
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.INTERPOLATION, '{{', ' a < b ? c : d ', '}}'],
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, ''],
+          [TokenType.INTERPOLATION, '{{', ' a < b ? c : d ', '}}'],
+          [TokenType.TEXT, ''],
+          [TokenType.EOF],
         ]);
 
         expect(tokenizeAndHumanizeSourceSpans('<p>a<b</p>')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '<p'],
-          [lex.TokenType.TAG_OPEN_END, '>'],
-          [lex.TokenType.TEXT, 'a'],
-          [lex.TokenType.INCOMPLETE_TAG_OPEN, '<b'],
-          [lex.TokenType.TAG_CLOSE, '</p>'],
-          [lex.TokenType.EOF, ''],
+          [TokenType.TAG_OPEN_START, '<p'],
+          [TokenType.TAG_OPEN_END, '>'],
+          [TokenType.TEXT, 'a'],
+          [TokenType.INCOMPLETE_TAG_OPEN, '<b'],
+          [TokenType.TAG_CLOSE, '</p>'],
+          [TokenType.EOF, ''],
         ]);
 
         expect(tokenizeAndHumanizeParts('< a>')).toEqual([
-          [lex.TokenType.TEXT, '< a>'],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, '< a>'],
+          [TokenType.EOF],
         ]);
       });
 
       it('should break out of interpolation in text token on valid start tag', () => {
         expect(tokenizeAndHumanizeParts('{{ a <b && c > d }}')).toEqual([
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.INTERPOLATION, '{{', ' a '],
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.TAG_OPEN_START, '', 'b'],
-          [lex.TokenType.ATTR_NAME, '', '&&'],
-          [lex.TokenType.ATTR_NAME, '', 'c'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.TEXT, ' d }}'],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, ''],
+          [TokenType.INTERPOLATION, '{{', ' a '],
+          [TokenType.TEXT, ''],
+          [TokenType.TAG_OPEN_START, '', 'b'],
+          [TokenType.ATTR_NAME, '', '&&'],
+          [TokenType.ATTR_NAME, '', 'c'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TEXT, ' d }}'],
+          [TokenType.EOF],
         ]);
       });
 
       it('should break out of interpolation in text token on valid comment', () => {
         expect(tokenizeAndHumanizeParts('{{ a }<!---->}')).toEqual([
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.INTERPOLATION, '{{', ' a }'],
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.COMMENT_START],
-          [lex.TokenType.RAW_TEXT, ''],
-          [lex.TokenType.COMMENT_END],
-          [lex.TokenType.TEXT, '}'],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, ''],
+          [TokenType.INTERPOLATION, '{{', ' a }'],
+          [TokenType.TEXT, ''],
+          [TokenType.COMMENT_START],
+          [TokenType.RAW_TEXT, ''],
+          [TokenType.COMMENT_END],
+          [TokenType.TEXT, '}'],
+          [TokenType.EOF],
         ]);
       });
 
       it('should end interpolation on a valid closing tag', () => {
         expect(tokenizeAndHumanizeParts('<p>{{ a </p>')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 'p'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.INTERPOLATION, '{{', ' a '],
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.TAG_CLOSE, '', 'p'],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 'p'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TEXT, ''],
+          [TokenType.INTERPOLATION, '{{', ' a '],
+          [TokenType.TEXT, ''],
+          [TokenType.TAG_CLOSE, '', 'p'],
+          [TokenType.EOF],
         ]);
       });
 
       it('should break out of interpolation in text token on valid CDATA', () => {
         expect(tokenizeAndHumanizeParts('{{ a }<![CDATA[]]>}')).toEqual([
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.INTERPOLATION, '{{', ' a }'],
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.CDATA_START],
-          [lex.TokenType.RAW_TEXT, ''],
-          [lex.TokenType.CDATA_END],
-          [lex.TokenType.TEXT, '}'],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, ''],
+          [TokenType.INTERPOLATION, '{{', ' a }'],
+          [TokenType.TEXT, ''],
+          [TokenType.CDATA_START],
+          [TokenType.RAW_TEXT, ''],
+          [TokenType.CDATA_END],
+          [TokenType.TEXT, '}'],
+          [TokenType.EOF],
         ]);
       });
 
@@ -792,82 +793,82 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         // incorrectly be considered part of an ICU.
         expect(tokenizeAndHumanizeParts(`<code>{{'<={'}}</code>`, {tokenizeExpansionForms: true}))
             .toEqual([
-              [lex.TokenType.TAG_OPEN_START, '', 'code'],
-              [lex.TokenType.TAG_OPEN_END],
-              [lex.TokenType.TEXT, ''],
-              [lex.TokenType.INTERPOLATION, '{{', '\'<={\'', '}}'],
-              [lex.TokenType.TEXT, ''],
-              [lex.TokenType.TAG_CLOSE, '', 'code'],
-              [lex.TokenType.EOF],
+              [TokenType.TAG_OPEN_START, '', 'code'],
+              [TokenType.TAG_OPEN_END],
+              [TokenType.TEXT, ''],
+              [TokenType.INTERPOLATION, '{{', '\'<={\'', '}}'],
+              [TokenType.TEXT, ''],
+              [TokenType.TAG_CLOSE, '', 'code'],
+              [TokenType.EOF],
             ]);
       });
 
       it('should parse start tags quotes in place of an attribute name as text', () => {
         expect(tokenizeAndHumanizeParts('<t ">')).toEqual([
-          [lex.TokenType.INCOMPLETE_TAG_OPEN, '', 't'],
-          [lex.TokenType.TEXT, '">'],
-          [lex.TokenType.EOF],
+          [TokenType.INCOMPLETE_TAG_OPEN, '', 't'],
+          [TokenType.TEXT, '">'],
+          [TokenType.EOF],
         ]);
 
         expect(tokenizeAndHumanizeParts('<t \'>')).toEqual([
-          [lex.TokenType.INCOMPLETE_TAG_OPEN, '', 't'],
-          [lex.TokenType.TEXT, '\'>'],
-          [lex.TokenType.EOF],
+          [TokenType.INCOMPLETE_TAG_OPEN, '', 't'],
+          [TokenType.TEXT, '\'>'],
+          [TokenType.EOF],
         ]);
       });
 
       it('should parse start tags quotes in place of an attribute name (after a valid attribute)',
          () => {
            expect(tokenizeAndHumanizeParts('<t a="b" ">')).toEqual([
-             [lex.TokenType.INCOMPLETE_TAG_OPEN, '', 't'],
-             [lex.TokenType.ATTR_NAME, '', 'a'],
-             [lex.TokenType.ATTR_QUOTE, '"'],
-             [lex.TokenType.ATTR_VALUE_TEXT, 'b'],
-             [lex.TokenType.ATTR_QUOTE, '"'],
+             [TokenType.INCOMPLETE_TAG_OPEN, '', 't'],
+             [TokenType.ATTR_NAME, '', 'a'],
+             [TokenType.ATTR_QUOTE, '"'],
+             [TokenType.ATTR_VALUE_TEXT, 'b'],
+             [TokenType.ATTR_QUOTE, '"'],
              // TODO(ayazhafiz): the " symbol should be a synthetic attribute,
              // allowing us to complete the opening tag correctly.
-             [lex.TokenType.TEXT, '">'],
-             [lex.TokenType.EOF],
+             [TokenType.TEXT, '">'],
+             [TokenType.EOF],
            ]);
 
            expect(tokenizeAndHumanizeParts('<t a=\'b\' \'>')).toEqual([
-             [lex.TokenType.INCOMPLETE_TAG_OPEN, '', 't'],
-             [lex.TokenType.ATTR_NAME, '', 'a'],
-             [lex.TokenType.ATTR_QUOTE, '\''],
-             [lex.TokenType.ATTR_VALUE_TEXT, 'b'],
-             [lex.TokenType.ATTR_QUOTE, '\''],
+             [TokenType.INCOMPLETE_TAG_OPEN, '', 't'],
+             [TokenType.ATTR_NAME, '', 'a'],
+             [TokenType.ATTR_QUOTE, '\''],
+             [TokenType.ATTR_VALUE_TEXT, 'b'],
+             [TokenType.ATTR_QUOTE, '\''],
              // TODO(ayazhafiz): the ' symbol should be a synthetic attribute,
              // allowing us to complete the opening tag correctly.
-             [lex.TokenType.TEXT, '\'>'],
-             [lex.TokenType.EOF],
+             [TokenType.TEXT, '\'>'],
+             [TokenType.EOF],
            ]);
          });
 
       it('should be able to escape {', () => {
         expect(tokenizeAndHumanizeParts('{{ "{" }}')).toEqual([
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.INTERPOLATION, '{{', ' "{" ', '}}'],
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, ''],
+          [TokenType.INTERPOLATION, '{{', ' "{" ', '}}'],
+          [TokenType.TEXT, ''],
+          [TokenType.EOF],
         ]);
       });
 
       it('should be able to escape {{', () => {
         expect(tokenizeAndHumanizeParts('{{ "{{" }}')).toEqual([
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.INTERPOLATION, '{{', ' "{{" ', '}}'],
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, ''],
+          [TokenType.INTERPOLATION, '{{', ' "{{" ', '}}'],
+          [TokenType.TEXT, ''],
+          [TokenType.EOF],
         ]);
       });
 
       it('should capture everything up to the end of file in the interpolation expression part if there are mismatched quotes',
          () => {
            expect(tokenizeAndHumanizeParts('{{ "{{a}}\' }}')).toEqual([
-             [lex.TokenType.TEXT, ''],
-             [lex.TokenType.INTERPOLATION, '{{', ' "{{a}}\' }}'],
-             [lex.TokenType.TEXT, ''],
-             [lex.TokenType.EOF],
+             [TokenType.TEXT, ''],
+             [TokenType.INTERPOLATION, '{{', ' "{{a}}\' }}'],
+             [TokenType.TEXT, ''],
+             [TokenType.EOF],
            ]);
          });
 
@@ -875,11 +876,11 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeParts(
                    '<span>{a, b, =4 {c}}</span>', {tokenizeExpansionForms: false}))
             .toEqual([
-              [lex.TokenType.TAG_OPEN_START, '', 'span'],
-              [lex.TokenType.TAG_OPEN_END],
-              [lex.TokenType.TEXT, '{a, b, =4 {c}}'],
-              [lex.TokenType.TAG_CLOSE, '', 'span'],
-              [lex.TokenType.EOF],
+              [TokenType.TAG_OPEN_START, '', 'span'],
+              [TokenType.TAG_OPEN_END],
+              [TokenType.TEXT, '{a, b, =4 {c}}'],
+              [TokenType.TAG_CLOSE, '', 'span'],
+              [TokenType.EOF],
             ]);
       });
     });
@@ -887,51 +888,51 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
     describe('raw text', () => {
       it('should parse text', () => {
         expect(tokenizeAndHumanizeParts(`<script>t\ne\rs\r\nt</script>`)).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 'script'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.RAW_TEXT, 't\ne\ns\nt'],
-          [lex.TokenType.TAG_CLOSE, '', 'script'],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 'script'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.RAW_TEXT, 't\ne\ns\nt'],
+          [TokenType.TAG_CLOSE, '', 'script'],
+          [TokenType.EOF],
         ]);
       });
 
       it('should not detect entities', () => {
         expect(tokenizeAndHumanizeParts(`<script>&amp;</SCRIPT>`)).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 'script'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.RAW_TEXT, '&amp;'],
-          [lex.TokenType.TAG_CLOSE, '', 'script'],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 'script'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.RAW_TEXT, '&amp;'],
+          [TokenType.TAG_CLOSE, '', 'script'],
+          [TokenType.EOF],
         ]);
       });
 
       it('should ignore other opening tags', () => {
         expect(tokenizeAndHumanizeParts(`<script>a<div></script>`)).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 'script'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.RAW_TEXT, 'a<div>'],
-          [lex.TokenType.TAG_CLOSE, '', 'script'],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 'script'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.RAW_TEXT, 'a<div>'],
+          [TokenType.TAG_CLOSE, '', 'script'],
+          [TokenType.EOF],
         ]);
       });
 
       it('should ignore other closing tags', () => {
         expect(tokenizeAndHumanizeParts(`<script>a</test></script>`)).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 'script'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.RAW_TEXT, 'a</test>'],
-          [lex.TokenType.TAG_CLOSE, '', 'script'],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 'script'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.RAW_TEXT, 'a</test>'],
+          [TokenType.TAG_CLOSE, '', 'script'],
+          [TokenType.EOF],
         ]);
       });
 
       it('should store the locations', () => {
         expect(tokenizeAndHumanizeSourceSpans(`<script>a</script>`)).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '<script'],
-          [lex.TokenType.TAG_OPEN_END, '>'],
-          [lex.TokenType.RAW_TEXT, 'a'],
-          [lex.TokenType.TAG_CLOSE, '</script>'],
-          [lex.TokenType.EOF, ''],
+          [TokenType.TAG_OPEN_START, '<script'],
+          [TokenType.TAG_OPEN_END, '>'],
+          [TokenType.RAW_TEXT, 'a'],
+          [TokenType.TAG_CLOSE, '</script>'],
+          [TokenType.EOF, ''],
         ]);
       });
     });
@@ -939,53 +940,53 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
     describe('escapable raw text', () => {
       it('should parse text', () => {
         expect(tokenizeAndHumanizeParts(`<title>t\ne\rs\r\nt</title>`)).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 'title'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.ESCAPABLE_RAW_TEXT, 't\ne\ns\nt'],
-          [lex.TokenType.TAG_CLOSE, '', 'title'],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 'title'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.ESCAPABLE_RAW_TEXT, 't\ne\ns\nt'],
+          [TokenType.TAG_CLOSE, '', 'title'],
+          [TokenType.EOF],
         ]);
       });
 
       it('should detect entities', () => {
         expect(tokenizeAndHumanizeParts(`<title>&amp;</title>`)).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 'title'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.ESCAPABLE_RAW_TEXT, ''],
-          [lex.TokenType.ENCODED_ENTITY, '&', '&amp;'],
-          [lex.TokenType.ESCAPABLE_RAW_TEXT, ''],
-          [lex.TokenType.TAG_CLOSE, '', 'title'],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 'title'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.ESCAPABLE_RAW_TEXT, ''],
+          [TokenType.ENCODED_ENTITY, '&', '&amp;'],
+          [TokenType.ESCAPABLE_RAW_TEXT, ''],
+          [TokenType.TAG_CLOSE, '', 'title'],
+          [TokenType.EOF],
         ]);
       });
 
       it('should ignore other opening tags', () => {
         expect(tokenizeAndHumanizeParts(`<title>a<div></title>`)).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 'title'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.ESCAPABLE_RAW_TEXT, 'a<div>'],
-          [lex.TokenType.TAG_CLOSE, '', 'title'],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 'title'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.ESCAPABLE_RAW_TEXT, 'a<div>'],
+          [TokenType.TAG_CLOSE, '', 'title'],
+          [TokenType.EOF],
         ]);
       });
 
       it('should ignore other closing tags', () => {
         expect(tokenizeAndHumanizeParts(`<title>a</test></title>`)).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 'title'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.ESCAPABLE_RAW_TEXT, 'a</test>'],
-          [lex.TokenType.TAG_CLOSE, '', 'title'],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 'title'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.ESCAPABLE_RAW_TEXT, 'a</test>'],
+          [TokenType.TAG_CLOSE, '', 'title'],
+          [TokenType.EOF],
         ]);
       });
 
       it('should store the locations', () => {
         expect(tokenizeAndHumanizeSourceSpans(`<title>a</title>`)).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '<title'],
-          [lex.TokenType.TAG_OPEN_END, '>'],
-          [lex.TokenType.ESCAPABLE_RAW_TEXT, 'a'],
-          [lex.TokenType.TAG_CLOSE, '</title>'],
-          [lex.TokenType.EOF, ''],
+          [TokenType.TAG_OPEN_START, '<title'],
+          [TokenType.TAG_OPEN_END, '>'],
+          [TokenType.ESCAPABLE_RAW_TEXT, 'a'],
+          [TokenType.TAG_CLOSE, '</title>'],
+          [TokenType.EOF, ''],
         ]);
       });
     });
@@ -993,24 +994,24 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
     describe('parsable data', () => {
       it('should parse an SVG <title> tag', () => {
         expect(tokenizeAndHumanizeParts(`<svg:title>test</svg:title>`)).toEqual([
-          [lex.TokenType.TAG_OPEN_START, 'svg', 'title'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.TEXT, 'test'],
-          [lex.TokenType.TAG_CLOSE, 'svg', 'title'],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, 'svg', 'title'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TEXT, 'test'],
+          [TokenType.TAG_CLOSE, 'svg', 'title'],
+          [TokenType.EOF],
         ]);
       });
 
       it('should parse an SVG <title> tag with children', () => {
         expect(tokenizeAndHumanizeParts(`<svg:title><f>test</f></svg:title>`)).toEqual([
-          [lex.TokenType.TAG_OPEN_START, 'svg', 'title'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.TAG_OPEN_START, '', 'f'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.TEXT, 'test'],
-          [lex.TokenType.TAG_CLOSE, '', 'f'],
-          [lex.TokenType.TAG_CLOSE, 'svg', 'title'],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, 'svg', 'title'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TAG_OPEN_START, '', 'f'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TEXT, 'test'],
+          [TokenType.TAG_CLOSE, '', 'f'],
+          [TokenType.TAG_CLOSE, 'svg', 'title'],
+          [TokenType.EOF],
         ]);
       });
     });
@@ -1021,23 +1022,23 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
             tokenizeAndHumanizeParts(
                 '{one.two, three, =4 {four} =5 {five} foo {bar} }', {tokenizeExpansionForms: true}))
             .toEqual([
-              [lex.TokenType.EXPANSION_FORM_START],
-              [lex.TokenType.RAW_TEXT, 'one.two'],
-              [lex.TokenType.RAW_TEXT, 'three'],
-              [lex.TokenType.EXPANSION_CASE_VALUE, '=4'],
-              [lex.TokenType.EXPANSION_CASE_EXP_START],
-              [lex.TokenType.TEXT, 'four'],
-              [lex.TokenType.EXPANSION_CASE_EXP_END],
-              [lex.TokenType.EXPANSION_CASE_VALUE, '=5'],
-              [lex.TokenType.EXPANSION_CASE_EXP_START],
-              [lex.TokenType.TEXT, 'five'],
-              [lex.TokenType.EXPANSION_CASE_EXP_END],
-              [lex.TokenType.EXPANSION_CASE_VALUE, 'foo'],
-              [lex.TokenType.EXPANSION_CASE_EXP_START],
-              [lex.TokenType.TEXT, 'bar'],
-              [lex.TokenType.EXPANSION_CASE_EXP_END],
-              [lex.TokenType.EXPANSION_FORM_END],
-              [lex.TokenType.EOF],
+              [TokenType.EXPANSION_FORM_START],
+              [TokenType.RAW_TEXT, 'one.two'],
+              [TokenType.RAW_TEXT, 'three'],
+              [TokenType.EXPANSION_CASE_VALUE, '=4'],
+              [TokenType.EXPANSION_CASE_EXP_START],
+              [TokenType.TEXT, 'four'],
+              [TokenType.EXPANSION_CASE_EXP_END],
+              [TokenType.EXPANSION_CASE_VALUE, '=5'],
+              [TokenType.EXPANSION_CASE_EXP_START],
+              [TokenType.TEXT, 'five'],
+              [TokenType.EXPANSION_CASE_EXP_END],
+              [TokenType.EXPANSION_CASE_VALUE, 'foo'],
+              [TokenType.EXPANSION_CASE_EXP_START],
+              [TokenType.TEXT, 'bar'],
+              [TokenType.EXPANSION_CASE_EXP_END],
+              [TokenType.EXPANSION_FORM_END],
+              [TokenType.EOF],
             ]);
       });
 
@@ -1045,17 +1046,17 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeParts(
                    'before{one.two, three, =4 {four}}after', {tokenizeExpansionForms: true}))
             .toEqual([
-              [lex.TokenType.TEXT, 'before'],
-              [lex.TokenType.EXPANSION_FORM_START],
-              [lex.TokenType.RAW_TEXT, 'one.two'],
-              [lex.TokenType.RAW_TEXT, 'three'],
-              [lex.TokenType.EXPANSION_CASE_VALUE, '=4'],
-              [lex.TokenType.EXPANSION_CASE_EXP_START],
-              [lex.TokenType.TEXT, 'four'],
-              [lex.TokenType.EXPANSION_CASE_EXP_END],
-              [lex.TokenType.EXPANSION_FORM_END],
-              [lex.TokenType.TEXT, 'after'],
-              [lex.TokenType.EOF],
+              [TokenType.TEXT, 'before'],
+              [TokenType.EXPANSION_FORM_START],
+              [TokenType.RAW_TEXT, 'one.two'],
+              [TokenType.RAW_TEXT, 'three'],
+              [TokenType.EXPANSION_CASE_VALUE, '=4'],
+              [TokenType.EXPANSION_CASE_EXP_START],
+              [TokenType.TEXT, 'four'],
+              [TokenType.EXPANSION_CASE_EXP_END],
+              [TokenType.EXPANSION_FORM_END],
+              [TokenType.TEXT, 'after'],
+              [TokenType.EOF],
             ]);
       });
 
@@ -1063,21 +1064,21 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeParts(
                    '<div><span>{a, b, =4 {c}}</span></div>', {tokenizeExpansionForms: true}))
             .toEqual([
-              [lex.TokenType.TAG_OPEN_START, '', 'div'],
-              [lex.TokenType.TAG_OPEN_END],
-              [lex.TokenType.TAG_OPEN_START, '', 'span'],
-              [lex.TokenType.TAG_OPEN_END],
-              [lex.TokenType.EXPANSION_FORM_START],
-              [lex.TokenType.RAW_TEXT, 'a'],
-              [lex.TokenType.RAW_TEXT, 'b'],
-              [lex.TokenType.EXPANSION_CASE_VALUE, '=4'],
-              [lex.TokenType.EXPANSION_CASE_EXP_START],
-              [lex.TokenType.TEXT, 'c'],
-              [lex.TokenType.EXPANSION_CASE_EXP_END],
-              [lex.TokenType.EXPANSION_FORM_END],
-              [lex.TokenType.TAG_CLOSE, '', 'span'],
-              [lex.TokenType.TAG_CLOSE, '', 'div'],
-              [lex.TokenType.EOF],
+              [TokenType.TAG_OPEN_START, '', 'div'],
+              [TokenType.TAG_OPEN_END],
+              [TokenType.TAG_OPEN_START, '', 'span'],
+              [TokenType.TAG_OPEN_END],
+              [TokenType.EXPANSION_FORM_START],
+              [TokenType.RAW_TEXT, 'a'],
+              [TokenType.RAW_TEXT, 'b'],
+              [TokenType.EXPANSION_CASE_VALUE, '=4'],
+              [TokenType.EXPANSION_CASE_EXP_START],
+              [TokenType.TEXT, 'c'],
+              [TokenType.EXPANSION_CASE_EXP_END],
+              [TokenType.EXPANSION_FORM_END],
+              [TokenType.TAG_CLOSE, '', 'span'],
+              [TokenType.TAG_CLOSE, '', 'div'],
+              [TokenType.EOF],
             ]);
       });
 
@@ -1085,23 +1086,23 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeParts(
                    '<div><span> {a, b, =4 {c}} </span></div>', {tokenizeExpansionForms: true}))
             .toEqual([
-              [lex.TokenType.TAG_OPEN_START, '', 'div'],
-              [lex.TokenType.TAG_OPEN_END],
-              [lex.TokenType.TAG_OPEN_START, '', 'span'],
-              [lex.TokenType.TAG_OPEN_END],
-              [lex.TokenType.TEXT, ' '],
-              [lex.TokenType.EXPANSION_FORM_START],
-              [lex.TokenType.RAW_TEXT, 'a'],
-              [lex.TokenType.RAW_TEXT, 'b'],
-              [lex.TokenType.EXPANSION_CASE_VALUE, '=4'],
-              [lex.TokenType.EXPANSION_CASE_EXP_START],
-              [lex.TokenType.TEXT, 'c'],
-              [lex.TokenType.EXPANSION_CASE_EXP_END],
-              [lex.TokenType.EXPANSION_FORM_END],
-              [lex.TokenType.TEXT, ' '],
-              [lex.TokenType.TAG_CLOSE, '', 'span'],
-              [lex.TokenType.TAG_CLOSE, '', 'div'],
-              [lex.TokenType.EOF],
+              [TokenType.TAG_OPEN_START, '', 'div'],
+              [TokenType.TAG_OPEN_END],
+              [TokenType.TAG_OPEN_START, '', 'span'],
+              [TokenType.TAG_OPEN_END],
+              [TokenType.TEXT, ' '],
+              [TokenType.EXPANSION_FORM_START],
+              [TokenType.RAW_TEXT, 'a'],
+              [TokenType.RAW_TEXT, 'b'],
+              [TokenType.EXPANSION_CASE_VALUE, '=4'],
+              [TokenType.EXPANSION_CASE_EXP_START],
+              [TokenType.TEXT, 'c'],
+              [TokenType.EXPANSION_CASE_EXP_END],
+              [TokenType.EXPANSION_FORM_END],
+              [TokenType.TEXT, ' '],
+              [TokenType.TAG_CLOSE, '', 'span'],
+              [TokenType.TAG_CLOSE, '', 'div'],
+              [TokenType.EOF],
             ]);
       });
 
@@ -1109,19 +1110,19 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeParts(
                    '{one.two, three, =4 {four <b>a</b>}}', {tokenizeExpansionForms: true}))
             .toEqual([
-              [lex.TokenType.EXPANSION_FORM_START],
-              [lex.TokenType.RAW_TEXT, 'one.two'],
-              [lex.TokenType.RAW_TEXT, 'three'],
-              [lex.TokenType.EXPANSION_CASE_VALUE, '=4'],
-              [lex.TokenType.EXPANSION_CASE_EXP_START],
-              [lex.TokenType.TEXT, 'four '],
-              [lex.TokenType.TAG_OPEN_START, '', 'b'],
-              [lex.TokenType.TAG_OPEN_END],
-              [lex.TokenType.TEXT, 'a'],
-              [lex.TokenType.TAG_CLOSE, '', 'b'],
-              [lex.TokenType.EXPANSION_CASE_EXP_END],
-              [lex.TokenType.EXPANSION_FORM_END],
-              [lex.TokenType.EOF],
+              [TokenType.EXPANSION_FORM_START],
+              [TokenType.RAW_TEXT, 'one.two'],
+              [TokenType.RAW_TEXT, 'three'],
+              [TokenType.EXPANSION_CASE_VALUE, '=4'],
+              [TokenType.EXPANSION_CASE_EXP_START],
+              [TokenType.TEXT, 'four '],
+              [TokenType.TAG_OPEN_START, '', 'b'],
+              [TokenType.TAG_OPEN_END],
+              [TokenType.TEXT, 'a'],
+              [TokenType.TAG_CLOSE, '', 'b'],
+              [TokenType.EXPANSION_CASE_EXP_END],
+              [TokenType.EXPANSION_FORM_END],
+              [TokenType.EOF],
             ]);
       });
 
@@ -1129,17 +1130,17 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeParts(
                    '{one.two, three, =4 {four {{a}}}}', {tokenizeExpansionForms: true}))
             .toEqual([
-              [lex.TokenType.EXPANSION_FORM_START],
-              [lex.TokenType.RAW_TEXT, 'one.two'],
-              [lex.TokenType.RAW_TEXT, 'three'],
-              [lex.TokenType.EXPANSION_CASE_VALUE, '=4'],
-              [lex.TokenType.EXPANSION_CASE_EXP_START],
-              [lex.TokenType.TEXT, 'four '],
-              [lex.TokenType.INTERPOLATION, '{{', 'a', '}}'],
-              [lex.TokenType.TEXT, ''],
-              [lex.TokenType.EXPANSION_CASE_EXP_END],
-              [lex.TokenType.EXPANSION_FORM_END],
-              [lex.TokenType.EOF],
+              [TokenType.EXPANSION_FORM_START],
+              [TokenType.RAW_TEXT, 'one.two'],
+              [TokenType.RAW_TEXT, 'three'],
+              [TokenType.EXPANSION_CASE_VALUE, '=4'],
+              [TokenType.EXPANSION_CASE_EXP_START],
+              [TokenType.TEXT, 'four '],
+              [TokenType.INTERPOLATION, '{{', 'a', '}}'],
+              [TokenType.TEXT, ''],
+              [TokenType.EXPANSION_CASE_EXP_END],
+              [TokenType.EXPANSION_FORM_END],
+              [TokenType.EOF],
             ]);
       });
 
@@ -1147,23 +1148,23 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeParts(
                    `{one.two, three, =4 { {xx, yy, =x {one}} }}`, {tokenizeExpansionForms: true}))
             .toEqual([
-              [lex.TokenType.EXPANSION_FORM_START],
-              [lex.TokenType.RAW_TEXT, 'one.two'],
-              [lex.TokenType.RAW_TEXT, 'three'],
-              [lex.TokenType.EXPANSION_CASE_VALUE, '=4'],
-              [lex.TokenType.EXPANSION_CASE_EXP_START],
-              [lex.TokenType.EXPANSION_FORM_START],
-              [lex.TokenType.RAW_TEXT, 'xx'],
-              [lex.TokenType.RAW_TEXT, 'yy'],
-              [lex.TokenType.EXPANSION_CASE_VALUE, '=x'],
-              [lex.TokenType.EXPANSION_CASE_EXP_START],
-              [lex.TokenType.TEXT, 'one'],
-              [lex.TokenType.EXPANSION_CASE_EXP_END],
-              [lex.TokenType.EXPANSION_FORM_END],
-              [lex.TokenType.TEXT, ' '],
-              [lex.TokenType.EXPANSION_CASE_EXP_END],
-              [lex.TokenType.EXPANSION_FORM_END],
-              [lex.TokenType.EOF],
+              [TokenType.EXPANSION_FORM_START],
+              [TokenType.RAW_TEXT, 'one.two'],
+              [TokenType.RAW_TEXT, 'three'],
+              [TokenType.EXPANSION_CASE_VALUE, '=4'],
+              [TokenType.EXPANSION_CASE_EXP_START],
+              [TokenType.EXPANSION_FORM_START],
+              [TokenType.RAW_TEXT, 'xx'],
+              [TokenType.RAW_TEXT, 'yy'],
+              [TokenType.EXPANSION_CASE_VALUE, '=x'],
+              [TokenType.EXPANSION_CASE_EXP_START],
+              [TokenType.TEXT, 'one'],
+              [TokenType.EXPANSION_CASE_EXP_END],
+              [TokenType.EXPANSION_FORM_END],
+              [TokenType.TEXT, ' '],
+              [TokenType.EXPANSION_CASE_EXP_END],
+              [TokenType.EXPANSION_FORM_END],
+              [TokenType.EOF],
             ]);
       });
 
@@ -1184,22 +1185,22 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
                    });
 
                expect(humanizeParts(result.tokens)).toEqual([
-                 [lex.TokenType.EXPANSION_FORM_START],
-                 [lex.TokenType.RAW_TEXT, '\n    messages.length'],
-                 [lex.TokenType.RAW_TEXT, 'plural'],
-                 [lex.TokenType.EXPANSION_CASE_VALUE, '=0'],
-                 [lex.TokenType.EXPANSION_CASE_EXP_START],
-                 [lex.TokenType.TEXT, 'You have \nno\n messages'],
-                 [lex.TokenType.EXPANSION_CASE_EXP_END],
-                 [lex.TokenType.EXPANSION_CASE_VALUE, '=1'],
-                 [lex.TokenType.EXPANSION_CASE_EXP_START],
-                 [lex.TokenType.TEXT, 'One '],
-                 [lex.TokenType.INTERPOLATION, '{{', 'message', '}}'],
-                 [lex.TokenType.TEXT, ''],
-                 [lex.TokenType.EXPANSION_CASE_EXP_END],
-                 [lex.TokenType.EXPANSION_FORM_END],
-                 [lex.TokenType.TEXT, '\n'],
-                 [lex.TokenType.EOF],
+                 [TokenType.EXPANSION_FORM_START],
+                 [TokenType.RAW_TEXT, '\n    messages.length'],
+                 [TokenType.RAW_TEXT, 'plural'],
+                 [TokenType.EXPANSION_CASE_VALUE, '=0'],
+                 [TokenType.EXPANSION_CASE_EXP_START],
+                 [TokenType.TEXT, 'You have \nno\n messages'],
+                 [TokenType.EXPANSION_CASE_EXP_END],
+                 [TokenType.EXPANSION_CASE_VALUE, '=1'],
+                 [TokenType.EXPANSION_CASE_EXP_START],
+                 [TokenType.TEXT, 'One '],
+                 [TokenType.INTERPOLATION, '{{', 'message', '}}'],
+                 [TokenType.TEXT, ''],
+                 [TokenType.EXPANSION_CASE_EXP_END],
+                 [TokenType.EXPANSION_FORM_END],
+                 [TokenType.TEXT, '\n'],
+                 [TokenType.EOF],
                ]);
 
                expect(result.nonNormalizedIcuExpressions).toEqual([]);
@@ -1216,22 +1217,22 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
                    {tokenizeExpansionForms: true, escapedString: true});
 
                expect(humanizeParts(result.tokens)).toEqual([
-                 [lex.TokenType.EXPANSION_FORM_START],
-                 [lex.TokenType.RAW_TEXT, '\r\n    messages.length'],
-                 [lex.TokenType.RAW_TEXT, 'plural'],
-                 [lex.TokenType.EXPANSION_CASE_VALUE, '=0'],
-                 [lex.TokenType.EXPANSION_CASE_EXP_START],
-                 [lex.TokenType.TEXT, 'You have \nno\n messages'],
-                 [lex.TokenType.EXPANSION_CASE_EXP_END],
-                 [lex.TokenType.EXPANSION_CASE_VALUE, '=1'],
-                 [lex.TokenType.EXPANSION_CASE_EXP_START],
-                 [lex.TokenType.TEXT, 'One '],
-                 [lex.TokenType.INTERPOLATION, '{{', 'message', '}}'],
-                 [lex.TokenType.TEXT, ''],
-                 [lex.TokenType.EXPANSION_CASE_EXP_END],
-                 [lex.TokenType.EXPANSION_FORM_END],
-                 [lex.TokenType.TEXT, '\n'],
-                 [lex.TokenType.EOF],
+                 [TokenType.EXPANSION_FORM_START],
+                 [TokenType.RAW_TEXT, '\r\n    messages.length'],
+                 [TokenType.RAW_TEXT, 'plural'],
+                 [TokenType.EXPANSION_CASE_VALUE, '=0'],
+                 [TokenType.EXPANSION_CASE_EXP_START],
+                 [TokenType.TEXT, 'You have \nno\n messages'],
+                 [TokenType.EXPANSION_CASE_EXP_END],
+                 [TokenType.EXPANSION_CASE_VALUE, '=1'],
+                 [TokenType.EXPANSION_CASE_EXP_START],
+                 [TokenType.TEXT, 'One '],
+                 [TokenType.INTERPOLATION, '{{', 'message', '}}'],
+                 [TokenType.TEXT, ''],
+                 [TokenType.EXPANSION_CASE_EXP_END],
+                 [TokenType.EXPANSION_FORM_END],
+                 [TokenType.TEXT, '\n'],
+                 [TokenType.EOF],
                ]);
 
                expect(result.nonNormalizedIcuExpressions!.length).toBe(1);
@@ -1253,26 +1254,26 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
                        `}`,
                    {tokenizeExpansionForms: true, escapedString: true});
                expect(humanizeParts(result.tokens)).toEqual([
-                 [lex.TokenType.EXPANSION_FORM_START],
-                 [lex.TokenType.RAW_TEXT, '\r\n  messages.length'],
-                 [lex.TokenType.RAW_TEXT, 'plural'],
-                 [lex.TokenType.EXPANSION_CASE_VALUE, '=0'],
-                 [lex.TokenType.EXPANSION_CASE_EXP_START],
-                 [lex.TokenType.TEXT, 'zero \n       '],
+                 [TokenType.EXPANSION_FORM_START],
+                 [TokenType.RAW_TEXT, '\r\n  messages.length'],
+                 [TokenType.RAW_TEXT, 'plural'],
+                 [TokenType.EXPANSION_CASE_VALUE, '=0'],
+                 [TokenType.EXPANSION_CASE_EXP_START],
+                 [TokenType.TEXT, 'zero \n       '],
 
-                 [lex.TokenType.EXPANSION_FORM_START],
-                 [lex.TokenType.RAW_TEXT, '\r\n         p.gender'],
-                 [lex.TokenType.RAW_TEXT, 'select'],
-                 [lex.TokenType.EXPANSION_CASE_VALUE, 'male'],
-                 [lex.TokenType.EXPANSION_CASE_EXP_START],
-                 [lex.TokenType.TEXT, 'm'],
-                 [lex.TokenType.EXPANSION_CASE_EXP_END],
-                 [lex.TokenType.EXPANSION_FORM_END],
+                 [TokenType.EXPANSION_FORM_START],
+                 [TokenType.RAW_TEXT, '\r\n         p.gender'],
+                 [TokenType.RAW_TEXT, 'select'],
+                 [TokenType.EXPANSION_CASE_VALUE, 'male'],
+                 [TokenType.EXPANSION_CASE_EXP_START],
+                 [TokenType.TEXT, 'm'],
+                 [TokenType.EXPANSION_CASE_EXP_END],
+                 [TokenType.EXPANSION_FORM_END],
 
-                 [lex.TokenType.TEXT, '\n     '],
-                 [lex.TokenType.EXPANSION_CASE_EXP_END],
-                 [lex.TokenType.EXPANSION_FORM_END],
-                 [lex.TokenType.EOF],
+                 [TokenType.TEXT, '\n     '],
+                 [TokenType.EXPANSION_CASE_EXP_END],
+                 [TokenType.EXPANSION_FORM_END],
+                 [TokenType.EOF],
                ]);
 
                expect(result.nonNormalizedIcuExpressions!.length).toBe(2);
@@ -1299,22 +1300,22 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
                    });
 
                expect(humanizeParts(result.tokens)).toEqual([
-                 [lex.TokenType.EXPANSION_FORM_START],
-                 [lex.TokenType.RAW_TEXT, '\n    messages.length'],
-                 [lex.TokenType.RAW_TEXT, 'plural'],
-                 [lex.TokenType.EXPANSION_CASE_VALUE, '=0'],
-                 [lex.TokenType.EXPANSION_CASE_EXP_START],
-                 [lex.TokenType.TEXT, 'You have \nno\n messages'],
-                 [lex.TokenType.EXPANSION_CASE_EXP_END],
-                 [lex.TokenType.EXPANSION_CASE_VALUE, '=1'],
-                 [lex.TokenType.EXPANSION_CASE_EXP_START],
-                 [lex.TokenType.TEXT, 'One '],
-                 [lex.TokenType.INTERPOLATION, '{{', 'message', '}}'],
-                 [lex.TokenType.TEXT, ''],
-                 [lex.TokenType.EXPANSION_CASE_EXP_END],
-                 [lex.TokenType.EXPANSION_FORM_END],
-                 [lex.TokenType.TEXT, '\n'],
-                 [lex.TokenType.EOF],
+                 [TokenType.EXPANSION_FORM_START],
+                 [TokenType.RAW_TEXT, '\n    messages.length'],
+                 [TokenType.RAW_TEXT, 'plural'],
+                 [TokenType.EXPANSION_CASE_VALUE, '=0'],
+                 [TokenType.EXPANSION_CASE_EXP_START],
+                 [TokenType.TEXT, 'You have \nno\n messages'],
+                 [TokenType.EXPANSION_CASE_EXP_END],
+                 [TokenType.EXPANSION_CASE_VALUE, '=1'],
+                 [TokenType.EXPANSION_CASE_EXP_START],
+                 [TokenType.TEXT, 'One '],
+                 [TokenType.INTERPOLATION, '{{', 'message', '}}'],
+                 [TokenType.TEXT, ''],
+                 [TokenType.EXPANSION_CASE_EXP_END],
+                 [TokenType.EXPANSION_FORM_END],
+                 [TokenType.TEXT, '\n'],
+                 [TokenType.EOF],
                ]);
 
                expect(result.nonNormalizedIcuExpressions).toEqual([]);
@@ -1331,22 +1332,22 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
                    {tokenizeExpansionForms: true, escapedString: false});
 
                expect(humanizeParts(result.tokens)).toEqual([
-                 [lex.TokenType.EXPANSION_FORM_START],
-                 [lex.TokenType.RAW_TEXT, '\r\n    messages.length'],
-                 [lex.TokenType.RAW_TEXT, 'plural'],
-                 [lex.TokenType.EXPANSION_CASE_VALUE, '=0'],
-                 [lex.TokenType.EXPANSION_CASE_EXP_START],
-                 [lex.TokenType.TEXT, 'You have \nno\n messages'],
-                 [lex.TokenType.EXPANSION_CASE_EXP_END],
-                 [lex.TokenType.EXPANSION_CASE_VALUE, '=1'],
-                 [lex.TokenType.EXPANSION_CASE_EXP_START],
-                 [lex.TokenType.TEXT, 'One '],
-                 [lex.TokenType.INTERPOLATION, '{{', 'message', '}}'],
-                 [lex.TokenType.TEXT, ''],
-                 [lex.TokenType.EXPANSION_CASE_EXP_END],
-                 [lex.TokenType.EXPANSION_FORM_END],
-                 [lex.TokenType.TEXT, '\n'],
-                 [lex.TokenType.EOF],
+                 [TokenType.EXPANSION_FORM_START],
+                 [TokenType.RAW_TEXT, '\r\n    messages.length'],
+                 [TokenType.RAW_TEXT, 'plural'],
+                 [TokenType.EXPANSION_CASE_VALUE, '=0'],
+                 [TokenType.EXPANSION_CASE_EXP_START],
+                 [TokenType.TEXT, 'You have \nno\n messages'],
+                 [TokenType.EXPANSION_CASE_EXP_END],
+                 [TokenType.EXPANSION_CASE_VALUE, '=1'],
+                 [TokenType.EXPANSION_CASE_EXP_START],
+                 [TokenType.TEXT, 'One '],
+                 [TokenType.INTERPOLATION, '{{', 'message', '}}'],
+                 [TokenType.TEXT, ''],
+                 [TokenType.EXPANSION_CASE_EXP_END],
+                 [TokenType.EXPANSION_FORM_END],
+                 [TokenType.TEXT, '\n'],
+                 [TokenType.EOF],
                ]);
 
                expect(result.nonNormalizedIcuExpressions!.length).toBe(1);
@@ -1369,26 +1370,26 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
                    {tokenizeExpansionForms: true});
 
                expect(humanizeParts(result.tokens)).toEqual([
-                 [lex.TokenType.EXPANSION_FORM_START],
-                 [lex.TokenType.RAW_TEXT, '\r\n  messages.length'],
-                 [lex.TokenType.RAW_TEXT, 'plural'],
-                 [lex.TokenType.EXPANSION_CASE_VALUE, '=0'],
-                 [lex.TokenType.EXPANSION_CASE_EXP_START],
-                 [lex.TokenType.TEXT, 'zero \n       '],
+                 [TokenType.EXPANSION_FORM_START],
+                 [TokenType.RAW_TEXT, '\r\n  messages.length'],
+                 [TokenType.RAW_TEXT, 'plural'],
+                 [TokenType.EXPANSION_CASE_VALUE, '=0'],
+                 [TokenType.EXPANSION_CASE_EXP_START],
+                 [TokenType.TEXT, 'zero \n       '],
 
-                 [lex.TokenType.EXPANSION_FORM_START],
-                 [lex.TokenType.RAW_TEXT, '\r\n         p.gender'],
-                 [lex.TokenType.RAW_TEXT, 'select'],
-                 [lex.TokenType.EXPANSION_CASE_VALUE, 'male'],
-                 [lex.TokenType.EXPANSION_CASE_EXP_START],
-                 [lex.TokenType.TEXT, 'm'],
-                 [lex.TokenType.EXPANSION_CASE_EXP_END],
-                 [lex.TokenType.EXPANSION_FORM_END],
+                 [TokenType.EXPANSION_FORM_START],
+                 [TokenType.RAW_TEXT, '\r\n         p.gender'],
+                 [TokenType.RAW_TEXT, 'select'],
+                 [TokenType.EXPANSION_CASE_VALUE, 'male'],
+                 [TokenType.EXPANSION_CASE_EXP_START],
+                 [TokenType.TEXT, 'm'],
+                 [TokenType.EXPANSION_CASE_EXP_END],
+                 [TokenType.EXPANSION_FORM_END],
 
-                 [lex.TokenType.TEXT, '\n     '],
-                 [lex.TokenType.EXPANSION_CASE_EXP_END],
-                 [lex.TokenType.EXPANSION_FORM_END],
-                 [lex.TokenType.EOF],
+                 [TokenType.TEXT, '\n     '],
+                 [TokenType.EXPANSION_CASE_EXP_END],
+                 [TokenType.EXPANSION_FORM_END],
+                 [TokenType.EOF],
                ]);
 
                expect(result.nonNormalizedIcuExpressions!.length).toBe(2);
@@ -1406,7 +1407,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
       it('should report unescaped "{" on error', () => {
         expect(tokenizeAndHumanizeErrors(`<p>before { after</p>`, {tokenizeExpansionForms: true}))
             .toEqual([[
-              lex.TokenType.RAW_TEXT,
+              TokenType.RAW_TEXT,
               `Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`,
               '0:21',
             ]]);
@@ -1418,7 +1419,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
                       `<code>{{b}<!---->}</code><pre>import {a} from 'a';</pre>`,
                       {tokenizeExpansionForms: true}))
                .toEqual([[
-                 lex.TokenType.RAW_TEXT,
+                 TokenType.RAW_TEXT,
                  `Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`,
                  '0:56',
                ]]);
@@ -1429,7 +1430,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         const file = new ParseSourceFile(src, 'file://');
         const location = new ParseLocation(file, 12, 123, 456);
         const span = new ParseSourceSpan(location, location);
-        const error = new lex.TokenError('**ERROR**', null!, span);
+        const error = new TokenError('**ERROR**', null!, span);
         expect(error.toString())
             .toEqual(`**ERROR** ("\n222\n333\n[ERROR ->]E\n444\n555\n"): file://@123:456`);
       });
@@ -1438,11 +1439,11 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
     describe('unicode characters', () => {
       it('should support unicode characters', () => {
         expect(tokenizeAndHumanizeSourceSpans(`<p>İ</p>`)).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '<p'],
-          [lex.TokenType.TAG_OPEN_END, '>'],
-          [lex.TokenType.TEXT, 'İ'],
-          [lex.TokenType.TAG_CLOSE, '</p>'],
-          [lex.TokenType.EOF, ''],
+          [TokenType.TAG_OPEN_START, '<p'],
+          [TokenType.TAG_OPEN_END, '>'],
+          [TokenType.TEXT, 'İ'],
+          [TokenType.TAG_CLOSE, '</p>'],
+          [TokenType.EOF, ''],
         ]);
       });
     });
@@ -1450,63 +1451,63 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
     describe('(processing escaped strings)', () => {
       it('should unescape standard escape sequences', () => {
         expect(tokenizeAndHumanizeParts('\\\' \\\' \\\'', {escapedString: true})).toEqual([
-          [lex.TokenType.TEXT, '\' \' \''],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, '\' \' \''],
+          [TokenType.EOF],
         ]);
         expect(tokenizeAndHumanizeParts('\\" \\" \\"', {escapedString: true})).toEqual([
-          [lex.TokenType.TEXT, '\" \" \"'],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, '\" \" \"'],
+          [TokenType.EOF],
         ]);
         expect(tokenizeAndHumanizeParts('\\` \\` \\`', {escapedString: true})).toEqual([
-          [lex.TokenType.TEXT, '\` \` \`'],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, '\` \` \`'],
+          [TokenType.EOF],
         ]);
         expect(tokenizeAndHumanizeParts('\\\\ \\\\ \\\\', {escapedString: true})).toEqual([
-          [lex.TokenType.TEXT, '\\ \\ \\'],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, '\\ \\ \\'],
+          [TokenType.EOF],
         ]);
         expect(tokenizeAndHumanizeParts('\\n \\n \\n', {escapedString: true})).toEqual([
-          [lex.TokenType.TEXT, '\n \n \n'],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, '\n \n \n'],
+          [TokenType.EOF],
         ]);
         expect(tokenizeAndHumanizeParts('\\r{{\\r}}\\r', {escapedString: true})).toEqual([
           // post processing converts `\r` to `\n`
-          [lex.TokenType.TEXT, '\n'],
-          [lex.TokenType.INTERPOLATION, '{{', '\n', '}}'],
-          [lex.TokenType.TEXT, '\n'],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, '\n'],
+          [TokenType.INTERPOLATION, '{{', '\n', '}}'],
+          [TokenType.TEXT, '\n'],
+          [TokenType.EOF],
         ]);
         expect(tokenizeAndHumanizeParts('\\v \\v \\v', {escapedString: true})).toEqual([
-          [lex.TokenType.TEXT, '\v \v \v'],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, '\v \v \v'],
+          [TokenType.EOF],
         ]);
         expect(tokenizeAndHumanizeParts('\\t \\t \\t', {escapedString: true})).toEqual([
-          [lex.TokenType.TEXT, '\t \t \t'],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, '\t \t \t'],
+          [TokenType.EOF],
         ]);
         expect(tokenizeAndHumanizeParts('\\b \\b \\b', {escapedString: true})).toEqual([
-          [lex.TokenType.TEXT, '\b \b \b'],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, '\b \b \b'],
+          [TokenType.EOF],
         ]);
         expect(tokenizeAndHumanizeParts('\\f \\f \\f', {escapedString: true})).toEqual([
-          [lex.TokenType.TEXT, '\f \f \f'],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, '\f \f \f'],
+          [TokenType.EOF],
         ]);
         expect(tokenizeAndHumanizeParts(
                    '\\\' \\" \\` \\\\ \\n \\r \\v \\t \\b \\f', {escapedString: true}))
             .toEqual([
-              [lex.TokenType.TEXT, '\' \" \` \\ \n \n \v \t \b \f'],
-              [lex.TokenType.EOF],
+              [TokenType.TEXT, '\' \" \` \\ \n \n \v \t \b \f'],
+              [TokenType.EOF],
             ]);
       });
 
       it('should unescape null sequences', () => {
         expect(tokenizeAndHumanizeParts('\\0', {escapedString: true})).toEqual([
-          [lex.TokenType.EOF],
+          [TokenType.EOF],
         ]);
         // \09 is not an octal number so the \0 is taken as EOF
         expect(tokenizeAndHumanizeParts('\\09', {escapedString: true})).toEqual([
-          [lex.TokenType.EOF],
+          [TokenType.EOF],
         ]);
       });
 
@@ -1517,15 +1518,15 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeParts(
                    '\\001 \\01 \\1 \\12 \\223 \\19 \\2234 \\999', {escapedString: true}))
             .toEqual([
-              [lex.TokenType.TEXT, '\x01 \x01 \x01 \x0A \x93 \x019 \x934 999'],
-              [lex.TokenType.EOF],
+              [TokenType.TEXT, '\x01 \x01 \x01 \x0A \x93 \x019 \x934 999'],
+              [TokenType.EOF],
             ]);
       });
 
       it('should unescape hex sequences', () => {
         expect(tokenizeAndHumanizeParts('\\x12 \\x4F \\xDC', {escapedString: true})).toEqual([
-          [lex.TokenType.TEXT, '\x12 \x4F \xDC'],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, '\x12 \x4F \xDC'],
+          [TokenType.EOF],
         ]);
       });
 
@@ -1535,18 +1536,18 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         ]);
 
         expect(tokenizeAndHumanizeErrors('abc \\x xyz', {escapedString: true})).toEqual([
-          [lex.TokenType.TEXT, 'Invalid hexadecimal escape sequence', '0:6']
+          [TokenType.TEXT, 'Invalid hexadecimal escape sequence', '0:6']
         ]);
 
         expect(tokenizeAndHumanizeErrors('abc\\x', {escapedString: true})).toEqual([
-          [lex.TokenType.TEXT, 'Unexpected character "EOF"', '0:5']
+          [TokenType.TEXT, 'Unexpected character "EOF"', '0:5']
         ]);
       });
 
       it('should unescape fixed length Unicode sequences', () => {
         expect(tokenizeAndHumanizeParts('\\u0123 \\uABCD', {escapedString: true})).toEqual([
-          [lex.TokenType.TEXT, '\u0123 \uABCD'],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, '\u0123 \uABCD'],
+          [TokenType.EOF],
         ]);
       });
 
@@ -1560,8 +1561,8 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeParts(
                    '\\u{01} \\u{ABC} \\u{1234} \\u{123AB}', {escapedString: true}))
             .toEqual([
-              [lex.TokenType.TEXT, '\u{01} \u{ABC} \u{1234} \u{123AB}'],
-              [lex.TokenType.EOF],
+              [TokenType.TEXT, '\u{01} \u{ABC} \u{1234} \u{123AB}'],
+              [TokenType.EOF],
             ]);
       });
 
@@ -1573,27 +1574,27 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
 
       it('should unescape line continuations', () => {
         expect(tokenizeAndHumanizeParts('abc\\\ndef', {escapedString: true})).toEqual([
-          [lex.TokenType.TEXT, 'abcdef'],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, 'abcdef'],
+          [TokenType.EOF],
         ]);
         expect(tokenizeAndHumanizeParts('\\\nx\\\ny\\\n', {escapedString: true})).toEqual([
-          [lex.TokenType.TEXT, 'xy'],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, 'xy'],
+          [TokenType.EOF],
         ]);
       });
 
       it('should remove backslash from "non-escape" sequences', () => {
         expect(tokenizeAndHumanizeParts('\a \g \~', {escapedString: true})).toEqual([
-          [lex.TokenType.TEXT, 'a g ~'],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, 'a g ~'],
+          [TokenType.EOF],
         ]);
       });
 
       it('should unescape sequences in plain text', () => {
         expect(tokenizeAndHumanizeParts('abc\ndef\\nghi\\tjkl\\`\\\'\\"mno', {escapedString: true}))
             .toEqual([
-              [lex.TokenType.TEXT, 'abc\ndef\nghi\tjkl`\'"mno'],
-              [lex.TokenType.EOF],
+              [TokenType.TEXT, 'abc\ndef\nghi\tjkl`\'"mno'],
+              [TokenType.EOF],
             ]);
       });
 
@@ -1601,11 +1602,11 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeParts(
                    '<script>abc\ndef\\nghi\\tjkl\\`\\\'\\"mno</script>', {escapedString: true}))
             .toEqual([
-              [lex.TokenType.TAG_OPEN_START, '', 'script'],
-              [lex.TokenType.TAG_OPEN_END],
-              [lex.TokenType.RAW_TEXT, 'abc\ndef\nghi\tjkl`\'"mno'],
-              [lex.TokenType.TAG_CLOSE, '', 'script'],
-              [lex.TokenType.EOF],
+              [TokenType.TAG_OPEN_START, '', 'script'],
+              [TokenType.TAG_OPEN_END],
+              [TokenType.RAW_TEXT, 'abc\ndef\nghi\tjkl`\'"mno'],
+              [TokenType.TAG_CLOSE, '', 'script'],
+              [TokenType.EOF],
             ]);
       });
 
@@ -1613,90 +1614,90 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeParts(
                    '<title>abc\ndef\\nghi\\tjkl\\`\\\'\\"mno</title>', {escapedString: true}))
             .toEqual([
-              [lex.TokenType.TAG_OPEN_START, '', 'title'],
-              [lex.TokenType.TAG_OPEN_END],
-              [lex.TokenType.ESCAPABLE_RAW_TEXT, 'abc\ndef\nghi\tjkl`\'"mno'],
-              [lex.TokenType.TAG_CLOSE, '', 'title'],
-              [lex.TokenType.EOF],
+              [TokenType.TAG_OPEN_START, '', 'title'],
+              [TokenType.TAG_OPEN_END],
+              [TokenType.ESCAPABLE_RAW_TEXT, 'abc\ndef\nghi\tjkl`\'"mno'],
+              [TokenType.TAG_CLOSE, '', 'title'],
+              [TokenType.EOF],
             ]);
       });
 
       it('should parse over escape sequences in tag definitions', () => {
         expect(tokenizeAndHumanizeParts('<t a=\\"b\\" \\n c=\\\'d\\\'>', {escapedString: true}))
             .toEqual([
-              [lex.TokenType.TAG_OPEN_START, '', 't'],
-              [lex.TokenType.ATTR_NAME, '', 'a'],
-              [lex.TokenType.ATTR_QUOTE, '"'],
-              [lex.TokenType.ATTR_VALUE_TEXT, 'b'],
-              [lex.TokenType.ATTR_QUOTE, '"'],
-              [lex.TokenType.ATTR_NAME, '', 'c'],
-              [lex.TokenType.ATTR_QUOTE, '\''],
-              [lex.TokenType.ATTR_VALUE_TEXT, 'd'],
-              [lex.TokenType.ATTR_QUOTE, '\''],
-              [lex.TokenType.TAG_OPEN_END],
-              [lex.TokenType.EOF],
+              [TokenType.TAG_OPEN_START, '', 't'],
+              [TokenType.ATTR_NAME, '', 'a'],
+              [TokenType.ATTR_QUOTE, '"'],
+              [TokenType.ATTR_VALUE_TEXT, 'b'],
+              [TokenType.ATTR_QUOTE, '"'],
+              [TokenType.ATTR_NAME, '', 'c'],
+              [TokenType.ATTR_QUOTE, '\''],
+              [TokenType.ATTR_VALUE_TEXT, 'd'],
+              [TokenType.ATTR_QUOTE, '\''],
+              [TokenType.TAG_OPEN_END],
+              [TokenType.EOF],
             ]);
       });
 
       it('should parse over escaped new line in tag definitions', () => {
         const text = '<t\\n></t>';
         expect(tokenizeAndHumanizeParts(text, {escapedString: true})).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 't'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.TAG_CLOSE, '', 't'],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 't'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TAG_CLOSE, '', 't'],
+          [TokenType.EOF],
         ]);
       });
 
       it('should parse over escaped characters in tag definitions', () => {
         const text = '<t\u{000013}></t>';
         expect(tokenizeAndHumanizeParts(text, {escapedString: true})).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 't'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.TAG_CLOSE, '', 't'],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 't'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TAG_CLOSE, '', 't'],
+          [TokenType.EOF],
         ]);
       });
 
       it('should unescape characters in tag names', () => {
         const text = '<t\\x64></t\\x64>';
         expect(tokenizeAndHumanizeParts(text, {escapedString: true})).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 'td'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.TAG_CLOSE, '', 'td'],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 'td'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TAG_CLOSE, '', 'td'],
+          [TokenType.EOF],
         ]);
         expect(tokenizeAndHumanizeSourceSpans(text, {escapedString: true})).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '<t\\x64'],
-          [lex.TokenType.TAG_OPEN_END, '>'],
-          [lex.TokenType.TAG_CLOSE, '</t\\x64>'],
-          [lex.TokenType.EOF, ''],
+          [TokenType.TAG_OPEN_START, '<t\\x64'],
+          [TokenType.TAG_OPEN_END, '>'],
+          [TokenType.TAG_CLOSE, '</t\\x64>'],
+          [TokenType.EOF, ''],
         ]);
       });
 
       it('should unescape characters in attributes', () => {
         const text = '<t \\x64="\\x65"></t>';
         expect(tokenizeAndHumanizeParts(text, {escapedString: true})).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 't'],
-          [lex.TokenType.ATTR_NAME, '', 'd'],
-          [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 'e'],
-          [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.TAG_CLOSE, '', 't'],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 't'],
+          [TokenType.ATTR_NAME, '', 'd'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, 'e'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TAG_CLOSE, '', 't'],
+          [TokenType.EOF],
         ]);
       });
 
       it('should parse over escaped new line in attribute values', () => {
         const text = '<t a=b\\n></t>';
         expect(tokenizeAndHumanizeParts(text, {escapedString: true})).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 't'],
-          [lex.TokenType.ATTR_NAME, '', 'a'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 'b'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.TAG_CLOSE, '', 't'],
-          [lex.TokenType.EOF],
+          [TokenType.TAG_OPEN_START, '', 't'],
+          [TokenType.ATTR_NAME, '', 'a'],
+          [TokenType.ATTR_VALUE_TEXT, 'b'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TAG_CLOSE, '', 't'],
+          [TokenType.EOF],
         ]);
       });
 
@@ -1710,12 +1711,12 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
           endPos: 59,
         };
         expect(tokenizeAndHumanizeParts(text, {range, escapedString: true})).toEqual([
-          [lex.TokenType.TEXT, 'line 1\n"line 2"\nline 3'],
-          [lex.TokenType.EOF],
+          [TokenType.TEXT, 'line 1\n"line 2"\nline 3'],
+          [TokenType.EOF],
         ]);
         expect(tokenizeAndHumanizeSourceSpans(text, {range, escapedString: true})).toEqual([
-          [lex.TokenType.TEXT, 'line 1\\n\\"line 2\\"\\nline 3'],
-          [lex.TokenType.EOF, ''],
+          [TokenType.TEXT, 'line 1\\n\\"line 2\\"\\nline 3'],
+          [TokenType.EOF, ''],
         ]);
       });
 
@@ -1725,61 +1726,57 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
             '<t>line 3\\\n' +             // <- line continuation
             '</t>';
         expect(tokenizeAndHumanizeParts(text, {escapedString: true})).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 't'], [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.TEXT, 'line 1'], [lex.TokenType.TAG_CLOSE, '', 't'],
-          [lex.TokenType.TEXT, '\n'],
+          [TokenType.TAG_OPEN_START, '', 't'], [TokenType.TAG_OPEN_END], [TokenType.TEXT, 'line 1'],
+          [TokenType.TAG_CLOSE, '', 't'], [TokenType.TEXT, '\n'],
 
-          [lex.TokenType.TAG_OPEN_START, '', 't'], [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.TEXT, 'line 2'], [lex.TokenType.TAG_CLOSE, '', 't'],
-          [lex.TokenType.TEXT, '\n'],
+          [TokenType.TAG_OPEN_START, '', 't'], [TokenType.TAG_OPEN_END], [TokenType.TEXT, 'line 2'],
+          [TokenType.TAG_CLOSE, '', 't'], [TokenType.TEXT, '\n'],
 
-          [lex.TokenType.TAG_OPEN_START, '', 't'], [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.TEXT, 'line 3'],  // <- line continuation does not appear in token
-          [lex.TokenType.TAG_CLOSE, '', 't'],
+          [TokenType.TAG_OPEN_START, '', 't'], [TokenType.TAG_OPEN_END],
+          [TokenType.TEXT, 'line 3'],  // <- line continuation does not appear in token
+          [TokenType.TAG_CLOSE, '', 't'],
 
-          [lex.TokenType.EOF]
+          [TokenType.EOF]
         ]);
         expect(tokenizeAndHumanizeLineColumn(text, {escapedString: true})).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '0:0'],
-          [lex.TokenType.TAG_OPEN_END, '0:2'],
-          [lex.TokenType.TEXT, '0:3'],
-          [lex.TokenType.TAG_CLOSE, '0:9'],
-          [lex.TokenType.TEXT, '0:13'],  // <- real newline increments the row
+          [TokenType.TAG_OPEN_START, '0:0'],
+          [TokenType.TAG_OPEN_END, '0:2'],
+          [TokenType.TEXT, '0:3'],
+          [TokenType.TAG_CLOSE, '0:9'],
+          [TokenType.TEXT, '0:13'],  // <- real newline increments the row
 
-          [lex.TokenType.TAG_OPEN_START, '1:0'],
-          [lex.TokenType.TAG_OPEN_END, '1:2'],
-          [lex.TokenType.TEXT, '1:3'],
-          [lex.TokenType.TAG_CLOSE, '1:9'],
-          [lex.TokenType.TEXT, '1:13'],  // <- escaped newline does not increment the row
+          [TokenType.TAG_OPEN_START, '1:0'],
+          [TokenType.TAG_OPEN_END, '1:2'],
+          [TokenType.TEXT, '1:3'],
+          [TokenType.TAG_CLOSE, '1:9'],
+          [TokenType.TEXT, '1:13'],  // <- escaped newline does not increment the row
 
-          [lex.TokenType.TAG_OPEN_START, '1:15'],
-          [lex.TokenType.TAG_OPEN_END, '1:17'],
-          [lex.TokenType.TEXT, '1:18'],  // <- the line continuation increments the row
-          [lex.TokenType.TAG_CLOSE, '2:0'],
+          [TokenType.TAG_OPEN_START, '1:15'],
+          [TokenType.TAG_OPEN_END, '1:17'],
+          [TokenType.TEXT, '1:18'],  // <- the line continuation increments the row
+          [TokenType.TAG_CLOSE, '2:0'],
 
-          [lex.TokenType.EOF, '2:4'],
+          [TokenType.EOF, '2:4'],
         ]);
         expect(tokenizeAndHumanizeSourceSpans(text, {escapedString: true})).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '<t'], [lex.TokenType.TAG_OPEN_END, '>'],
-          [lex.TokenType.TEXT, 'line 1'], [lex.TokenType.TAG_CLOSE, '</t>'],
-          [lex.TokenType.TEXT, '\n'],
+          [TokenType.TAG_OPEN_START, '<t'], [TokenType.TAG_OPEN_END, '>'],
+          [TokenType.TEXT, 'line 1'], [TokenType.TAG_CLOSE, '</t>'], [TokenType.TEXT, '\n'],
 
-          [lex.TokenType.TAG_OPEN_START, '<t'], [lex.TokenType.TAG_OPEN_END, '>'],
-          [lex.TokenType.TEXT, 'line 2'], [lex.TokenType.TAG_CLOSE, '</t>'],
-          [lex.TokenType.TEXT, '\\n'],
+          [TokenType.TAG_OPEN_START, '<t'], [TokenType.TAG_OPEN_END, '>'],
+          [TokenType.TEXT, 'line 2'], [TokenType.TAG_CLOSE, '</t>'], [TokenType.TEXT, '\\n'],
 
-          [lex.TokenType.TAG_OPEN_START, '<t'], [lex.TokenType.TAG_OPEN_END, '>'],
-          [lex.TokenType.TEXT, 'line 3\\\n'], [lex.TokenType.TAG_CLOSE, '</t>'],
+          [TokenType.TAG_OPEN_START, '<t'], [TokenType.TAG_OPEN_END, '>'],
+          [TokenType.TEXT, 'line 3\\\n'], [TokenType.TAG_CLOSE, '</t>'],
 
-          [lex.TokenType.EOF, '']
+          [TokenType.EOF, '']
         ]);
       });
     });
   });
 }
 
-function tokenizeWithoutErrors(input: string, options?: lex.TokenizeOptions): lex.TokenizeResult {
-  const tokenizeResult = lex.tokenize(input, 'someUrl', getHtmlTagDefinition, options);
+function tokenizeWithoutErrors(input: string, options?: TokenizeOptions): TokenizeResult {
+  const tokenizeResult = tokenize(input, 'someUrl', getHtmlTagDefinition, options);
 
   if (tokenizeResult.errors.length > 0) {
     const errorString = tokenizeResult.errors.join('\n');
@@ -1789,15 +1786,15 @@ function tokenizeWithoutErrors(input: string, options?: lex.TokenizeOptions): le
   return tokenizeResult;
 }
 
-function humanizeParts(tokens: lex.Token[]) {
-  return tokens.map(token => [token.type, ...token.parts] as [lex.TokenType, ...string[]]);
+function humanizeParts(tokens: Token[]) {
+  return tokens.map(token => [token.type, ...token.parts]);
 }
 
-function tokenizeAndHumanizeParts(input: string, options?: lex.TokenizeOptions): any[] {
+function tokenizeAndHumanizeParts(input: string, options?: TokenizeOptions): any[] {
   return humanizeParts(tokenizeWithoutErrors(input, options).tokens);
 }
 
-function tokenizeAndHumanizeSourceSpans(input: string, options?: lex.TokenizeOptions): any[] {
+function tokenizeAndHumanizeSourceSpans(input: string, options?: TokenizeOptions): any[] {
   return tokenizeWithoutErrors(input, options)
       .tokens.map(token => [<any>token.type, token.sourceSpan.toString()]);
 }
@@ -1806,12 +1803,12 @@ function humanizeLineColumn(location: ParseLocation): string {
   return `${location.line}:${location.col}`;
 }
 
-function tokenizeAndHumanizeLineColumn(input: string, options?: lex.TokenizeOptions): any[] {
+function tokenizeAndHumanizeLineColumn(input: string, options?: TokenizeOptions): any[] {
   return tokenizeWithoutErrors(input, options)
       .tokens.map(token => [<any>token.type, humanizeLineColumn(token.sourceSpan.start)]);
 }
 
-function tokenizeAndHumanizeFullStart(input: string, options?: lex.TokenizeOptions): any[] {
+function tokenizeAndHumanizeFullStart(input: string, options?: TokenizeOptions): any[] {
   return tokenizeWithoutErrors(input, options)
       .tokens.map(
           token =>
@@ -1819,7 +1816,7 @@ function tokenizeAndHumanizeFullStart(input: string, options?: lex.TokenizeOptio
                humanizeLineColumn(token.sourceSpan.fullStart)]);
 }
 
-function tokenizeAndHumanizeErrors(input: string, options?: lex.TokenizeOptions): any[] {
-  return lex.tokenize(input, 'someUrl', getHtmlTagDefinition, options)
+function tokenizeAndHumanizeErrors(input: string, options?: TokenizeOptions): any[] {
+  return tokenize(input, 'someUrl', getHtmlTagDefinition, options)
       .errors.map(e => [<any>e.tokenType, e.msg, humanizeLineColumn(e.span.start)]);
 }
