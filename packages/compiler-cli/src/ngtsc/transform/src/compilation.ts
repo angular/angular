@@ -82,6 +82,12 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
    */
   protected fileToClasses = new Map<ts.SourceFile, Set<ClassDeclaration>>();
 
+  /**
+   * Tracks which source files have been analyzed but did not contain any traits. This set allows
+   * the compiler to skip analyzing these files in an incremental rebuild.
+   */
+  protected filesWithoutTraits = new Set<ts.SourceFile>();
+
   private reexportMap = new Map<string, Map<string, [string, string]>>();
 
   private handlersByName =
@@ -120,13 +126,18 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     const promises: Promise<void>[] = [];
 
     const priorWork = this.incrementalBuild.priorAnalysisFor(sf);
-    if (priorWork !== null) {
-      for (const priorRecord of priorWork) {
-        this.adopt(priorRecord);
-      }
-
+    if (priorWork !== undefined) {
       this.perf.eventCount(PerfEvent.SourceFileReuseAnalysis);
-      this.perf.eventCount(PerfEvent.TraitReuseAnalysis, priorWork.length);
+
+      if (priorWork !== null) {
+        for (const priorRecord of priorWork) {
+          this.adopt(priorRecord);
+        }
+
+        this.perf.eventCount(PerfEvent.TraitReuseAnalysis, priorWork.length);
+      } else {
+        this.filesWithoutTraits.add(sf);
+      }
 
       // Skip the rest of analysis, as this file's prior traits are being reused.
       return;
@@ -140,6 +151,13 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     };
 
     visit(sf);
+
+    // If no traits have been detected in the source file, record the file as analysed without
+    // traits to allow subsequent incremental builds not to visit this source file again if it is
+    // not affected.
+    if (!this.fileToClasses.has(sf)) {
+      this.filesWithoutTraits.add(sf);
+    }
 
     if (preanalyze && promises.length > 0) {
       return Promise.all(promises).then(() => undefined as void);
@@ -167,14 +185,17 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     return records;
   }
 
-  getAnalyzedRecords(): Map<ts.SourceFile, ClassRecord[]> {
-    const result = new Map<ts.SourceFile, ClassRecord[]>();
+  getAnalyzedRecords(): Map<ts.SourceFile, ClassRecord[]|null> {
+    const result = new Map<ts.SourceFile, ClassRecord[]|null>();
     for (const [sf, classes] of this.fileToClasses) {
       const records: ClassRecord[] = [];
       for (const clazz of classes) {
         records.push(this.classes.get(clazz)!);
       }
       result.set(sf, records);
+    }
+    for (const sf of this.filesWithoutTraits) {
+      result.set(sf, null);
     }
     return result;
   }
