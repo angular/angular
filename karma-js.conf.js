@@ -59,7 +59,6 @@ module.exports = function(config) {
         included: false,
         watched: false
       },
-      {pattern: 'node_modules/mutation-observer/index.js', included: false, watched: false},
 
       {pattern: 'node_modules/rxjs/**', included: false, watched: false, served: true},
       'node_modules/reflect-metadata/Reflect.js',
