@@ -191,7 +191,6 @@
     "karma-sauce-launcher": "^2.0.2",
     "madge": "^4.0.2",
     "multimatch": "^5.0.0",
-    "mutation-observer": "^1.0.3",
     "nock": "^13.0.3",
     "ora": "^5.0.0",
     "prettier": "^2.3.0",
