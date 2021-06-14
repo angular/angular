@@ -10,6 +10,7 @@ import {Location, LocationStrategy} from '@angular/common';
 import {MockLocationStrategy, SpyLocation} from '@angular/common/testing';
 import {Compiler, Injectable, Injector, ModuleWithProviders, NgModule, NgModuleFactory, NgModuleFactoryLoader, Optional} from '@angular/core';
 import {ChildrenOutletContexts, ExtraOptions, NoPreloading, PreloadingStrategy, provideRoutes, Route, Router, ROUTER_CONFIGURATION, RouterModule, ROUTES, Routes, UrlHandlingStrategy, UrlSerializer, ɵassignExtraOptionsToRouter as assignExtraOptionsToRouter, ɵflatten as flatten, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS} from '@angular/router';
+import {PageTitleStrategy} from '@angular/router/src';
 
 
 
@@ -115,7 +116,8 @@ export function setupTestingRouter(
 export function setupTestingRouter(
     urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
     loader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, routes: Route[][],
-    opts?: ExtraOptions|UrlHandlingStrategy, urlHandlingStrategy?: UrlHandlingStrategy) {
+    opts?: ExtraOptions|UrlHandlingStrategy, urlHandlingStrategy?: UrlHandlingStrategy,
+    pageTitleStrategy?: PageTitleStrategy) {
   const router = new Router(
       null!, urlSerializer, contexts, location, injector, loader, compiler, flatten(routes));
   if (opts) {
@@ -131,6 +133,7 @@ export function setupTestingRouter(
   if (urlHandlingStrategy) {
     router.urlHandlingStrategy = urlHandlingStrategy;
   }
+  router.pageTitleStrategy = pageTitleStrategy ?? router.pageTitleStrategy;
   return router;
 }
 
@@ -170,7 +173,8 @@ export function setupTestingRouter(
       useFactory: setupTestingRouter,
       deps: [
         UrlSerializer, ChildrenOutletContexts, Location, NgModuleFactoryLoader, Compiler, Injector,
-        ROUTES, ROUTER_CONFIGURATION, [UrlHandlingStrategy, new Optional()]
+        ROUTES, ROUTER_CONFIGURATION, [UrlHandlingStrategy, new Optional()],
+        [PageTitleStrategy, new Optional()]
       ]
     },
     {provide: PreloadingStrategy, useExisting: NoPreloading}, provideRoutes([])

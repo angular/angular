@@ -16,6 +16,7 @@ import {RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
 import {Event} from './events';
+import {PageTitleStrategy} from './page_title_strategy';
 import {RouteReuseStrategy} from './route_reuse_strategy';
 import {ErrorHandler, Router} from './router';
 import {ROUTES} from './router_config_loader';
@@ -54,7 +55,7 @@ export const ROUTER_PROVIDERS: Provider[] = [
     deps: [
       UrlSerializer, ChildrenOutletContexts, Location, Injector, NgModuleFactoryLoader, Compiler,
       ROUTES, ROUTER_CONFIGURATION, [UrlHandlingStrategy, new Optional()],
-      [RouteReuseStrategy, new Optional()]
+      [RouteReuseStrategy, new Optional()], [PageTitleStrategy, new Optional()]
     ]
   },
   ChildrenOutletContexts,
@@ -433,7 +434,7 @@ export function setupRouter(
     urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
     injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Route[][],
     opts: ExtraOptions = {}, urlHandlingStrategy?: UrlHandlingStrategy,
-    routeReuseStrategy?: RouteReuseStrategy) {
+    routeReuseStrategy?: RouteReuseStrategy, pageTitleStrategy?: PageTitleStrategy) {
   const router = new Router(
       null, urlSerializer, contexts, location, injector, loader, compiler, flatten(config));
 
@@ -443,6 +444,10 @@ export function setupRouter(
 
   if (routeReuseStrategy) {
     router.routeReuseStrategy = routeReuseStrategy;
+  }
+
+  if (pageTitleStrategy) {
+    router.pageTitleStrategy = pageTitleStrategy;
   }
 
   assignExtraOptionsToRouter(opts, router);

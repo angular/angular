@@ -21,6 +21,7 @@ import {checkGuards} from './operators/check_guards';
 import {recognize} from './operators/recognize';
 import {resolveData} from './operators/resolve_data';
 import {switchTap} from './operators/switch_tap';
+import {NoopPageTitleStrategy, PageTitleStrategy} from './page_title_strategy';
 import {DefaultRouteReuseStrategy, RouteReuseStrategy} from './route_reuse_strategy';
 import {RouterConfigLoader} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
@@ -479,6 +480,8 @@ export class Router {
    * A strategy for re-using routes.
    */
   routeReuseStrategy: RouteReuseStrategy = new DefaultRouteReuseStrategy();
+
+  pageTitleStrategy: PageTitleStrategy = new NoopPageTitleStrategy();
 
   /**
    * How to handle a navigation request to the current URL. One of:
@@ -1327,6 +1330,7 @@ export class Router {
           this.navigated = true;
           this.lastSuccessfulId = t.id;
           this.currentPageId = t.targetPageId;
+          this.pageTitleStrategy.setTitle(this.routerState.snapshot);
           (this.events as Subject<Event>)
               .next(new NavigationEnd(
                   t.id, this.serializeUrl(t.extractedUrl), this.serializeUrl(this.currentUrlTree)));
