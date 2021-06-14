@@ -171,6 +171,9 @@
     "name": "DefaultKeyValueDifferFactory"
   },
   {
+    "name": "DefaultTitleStrategy"
+  },
+  {
     "name": "DefaultUrlSerializer"
   },
   {
@@ -555,6 +558,9 @@
     "name": "RouteExampleModule"
   },
   {
+    "name": "RouteTitle"
+  },
+  {
     "name": "Router"
   },
   {
@@ -709,6 +715,12 @@
   },
   {
     "name": "ThrowIfEmptySubscriber"
+  },
+  {
+    "name": "Title"
+  },
+  {
+    "name": "TitleStrategy"
   },
   {
     "name": "Tree"

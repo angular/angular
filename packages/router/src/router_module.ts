@@ -8,6 +8,7 @@
 
 import {APP_BASE_HREF, HashLocationStrategy, Location, LOCATION_INITIALIZED, LocationStrategy, PathLocationStrategy, PlatformLocation, ViewportScroller} from '@angular/common';
 import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, Inject, Injectable, InjectionToken, Injector, ModuleWithProviders, NgModule, NgProbeToken, OnDestroy, Optional, Provider, SkipSelf} from '@angular/core';
+import {Title} from '@angular/platform-browser';
 import {of, Subject} from 'rxjs';
 
 import {EmptyOutletComponent} from './components/empty_outlet';
@@ -16,6 +17,7 @@ import {RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
 import {Event} from './events';
+import {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';
 import {RouteReuseStrategy} from './route_reuse_strategy';
 import {ErrorHandler, Router} from './router';
 import {ROUTES} from './router_config_loader';
@@ -53,8 +55,8 @@ export const ROUTER_PROVIDERS: Provider[] = [
     useFactory: setupRouter,
     deps: [
       UrlSerializer, ChildrenOutletContexts, Location, Injector, Compiler, ROUTES,
-      ROUTER_CONFIGURATION, [UrlHandlingStrategy, new Optional()],
-      [RouteReuseStrategy, new Optional()]
+      ROUTER_CONFIGURATION, DefaultTitleStrategy, [TitleStrategy, new Optional()],
+      [UrlHandlingStrategy, new Optional()], [RouteReuseStrategy, new Optional()]
     ]
   },
   ChildrenOutletContexts,
@@ -453,6 +455,7 @@ export interface ExtraOptions {
 export function setupRouter(
     urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
     injector: Injector, compiler: Compiler, config: Route[][], opts: ExtraOptions = {},
+    defaultTitleStrategy: DefaultTitleStrategy, titleStrategy?: TitleStrategy,
     urlHandlingStrategy?: UrlHandlingStrategy, routeReuseStrategy?: RouteReuseStrategy) {
   const router =
       new Router(null, urlSerializer, contexts, location, injector, compiler, flatten(config));
@@ -464,6 +467,8 @@ export function setupRouter(
   if (routeReuseStrategy) {
     router.routeReuseStrategy = routeReuseStrategy;
   }
+
+  router.titleStrategy = titleStrategy ?? defaultTitleStrategy;
 
   assignExtraOptionsToRouter(opts, router);
 
