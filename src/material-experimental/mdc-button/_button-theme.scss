@@ -159,6 +159,7 @@
   .mat-mdc-unelevated-button,
   .mat-mdc-outlined-button {
     @include mdc-button-theme.density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
+    @include button-theme-private.touch-target-density($density-scale);
   }
 }
 

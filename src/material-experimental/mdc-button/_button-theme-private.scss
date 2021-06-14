@@ -45,3 +45,11 @@ $fab-state-target: '.mdc-fab__ripple';
   @include mdc-theme.prop(background-color, rgba(mdc-theme-color.prop-value(on-surface), 0.12));
 }
 
+// Hides the touch target on lower densities.
+@mixin touch-target-density($scale) {
+  @if ($scale == -2 or $scale == 'minimum') {
+    .mat-mdc-button-touch-target {
+      display: none;
+    }
+  }
+}

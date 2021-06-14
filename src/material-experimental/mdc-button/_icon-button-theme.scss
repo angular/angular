@@ -58,6 +58,7 @@
   $density-scale: theming.get-density-config($config-or-theme);
   .mat-mdc-icon-button {
     @include mdc-icon-button.density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
+    @include button-theme-private.touch-target-density($density-scale);
   }
 }
 

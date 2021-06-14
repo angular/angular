@@ -1,6 +1,6 @@
 @use '@material/icon-button' as mdc-icon-button;
 @use '../mdc-helpers/mdc-helpers';
-@use '_button-base';
+@use 'button-base';
 
 @include mdc-icon-button.without-ripple($query: mdc-helpers.$mat-base-styles-query);
 
@@ -13,6 +13,7 @@
   border-radius: 50%;
 
   @include button-base.mat-private-button-disabled();
+  @include button-base.mat-private-button-touch-target(true);
 
   // MDC adds some styles to icon buttons that conflict with some of our focus indicator styles
   // and don't actually do anything. This undoes those conflicting styles.
