@@ -1,5 +1,5 @@
 /**
- * Documents attributes that can appear on "special elements", such as `selector` on `<ng-content>`.
+ * Documents attributes that can appear on "special elements", such as `select` on `<ng-content>`.
  *
  * For example:
  *
