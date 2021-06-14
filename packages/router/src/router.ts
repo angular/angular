@@ -21,6 +21,7 @@ import {checkGuards} from './operators/check_guards';
 import {recognize} from './operators/recognize';
 import {resolveData} from './operators/resolve_data';
 import {switchTap} from './operators/switch_tap';
+import {TitleStrategy} from './page_title_strategy';
 import {DefaultRouteReuseStrategy, RouteReuseStrategy} from './route_reuse_strategy';
 import {RouterConfigLoader} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
@@ -510,6 +511,11 @@ export class Router {
   routeReuseStrategy: RouteReuseStrategy = new DefaultRouteReuseStrategy();
 
   /**
+   * A strategy for setting the title based on the `routerState`.
+   */
+  titleStrategy?: TitleStrategy;
+
+  /**
    * How to handle a navigation request to the current URL. One of:
    *
    * - `'ignore'` :  The router ignores the request.
@@ -525,7 +531,7 @@ export class Router {
   onSameUrlNavigation: 'reload'|'ignore' = 'ignore';
 
   /**
-   * How to merge parameters, data, and resolved data from parent to child
+   * How to merge parameters, data, resolved data, and title from parent to child
    * routes. One of:
    *
    * - `'emptyOnly'` : Inherit parent parameters, data, and resolved data
@@ -1339,6 +1345,7 @@ export class Router {
               .next(new NavigationEnd(
                   t.id, this.serializeUrl(t.extractedUrl), this.serializeUrl(this.currentUrlTree)));
           this.lastSuccessfulNavigation = this.currentNavigation;
+          this.titleStrategy?.updateTitle(this.routerState.snapshot);
           t.resolve(true);
         },
         e => {

@@ -369,6 +369,14 @@ export type RunGuardsAndResolvers =
  */
 export interface Route {
   /**
+   * Used to define a page title for the route. This can be a static string or an `Injectable` that
+   * implements `Resolve`.
+   *
+   * @see `PageTitleStrategy`
+   */
+  title?: string|unknown;
+
+  /**
    * The path to match against. Cannot be used together with a custom `matcher` function.
    * A URL string that uses router matching notation.
    * Can be a wild card (`**`) that matches any URL (see Usage Notes below).
