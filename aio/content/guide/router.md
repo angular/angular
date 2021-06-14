@@ -226,6 +226,22 @@ The one difference is that you place child routes in a `children` array within t
 
 </code-example>
 
+{@ setting-the-page-title}
+
+## Setting the page title
+
+Each page in your application should have a unique title so that they can be identified in the browser history.
+The `Router` sets the document's title using the `pageTitle` property in the route data when using the 
+`PageTitleStrategy`. All you need to do to enable this in your application is inject the `PageTitleStrategy`
+somewhere in your application. In this example, we inject `PageTitleStrategy` in the `AppRoutingModule` constructor:
+
+<code-example path="router/src/app/app-routing.module.10.ts" region="page-title" header="AppRoutingModule (excerpt)">
+</code-example>
+
+You can also provide a custom page title strategy by extending the `PageTitleStrategy`.
+<code-example path="router/src/app/app-routing.module.10.ts" region="custom-page-title" header="AppRoutingModule (excerpt)">
+</code-example>
+
 {@a using-relative-paths}
 
 ## Using relative paths

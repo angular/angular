@@ -25,6 +25,7 @@ import { OnInit } from '@angular/core';
 import { QueryList } from '@angular/core';
 import { Renderer2 } from '@angular/core';
 import { SimpleChanges } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { Type } from '@angular/core';
 import { Version } from '@angular/core';
 import { ViewContainerRef } from '@angular/core';
@@ -346,6 +347,22 @@ export class OutletContext {
     resolver: ComponentFactoryResolver | null;
     // (undocumented)
     route: ActivatedRoute | null;
+}
+
+// @public
+export class PageTitleStrategy implements OnDestroy {
+    constructor(title: Title, router: Router);
+    // (undocumented)
+    getPageTitle(snapshot: RouterStateSnapshot): string | undefined;
+    // (undocumented)
+    ngOnDestroy(): void;
+    setTitle(title: string): void;
+    // (undocumented)
+    protected readonly title: Title;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<PageTitleStrategy, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<PageTitleStrategy>;
 }
 
 // @public
