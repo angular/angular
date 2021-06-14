@@ -134,18 +134,17 @@ module.exports =
               fileReader: 'packageContentFileReader'
             },
             {
-              basePath: CONTENTS_PATH + '/special_elements',
-              include: CONTENTS_PATH + '/special_elements/*/**/*.md',
+              basePath: CONTENTS_PATH + '/special-elements',
+              include: CONTENTS_PATH + '/special-elements/*/**/*.md',
               fileReader: 'specialElementFileReader'
+            },
+            {
+              basePath: API_SOURCE_PATH,
+              include: API_SOURCE_PATH + '/examples/**/*',
+              fileReader: 'exampleFileReader'
             }
           ];
 
-          // API examples docs
-          readFilesProcessor.sourceFiles.push({
-            basePath: API_SOURCE_PATH,
-            include: API_SOURCE_PATH + '/examples/**/*',
-            fileReader: 'exampleFileReader'
-          });
           collectExamples.exampleFolders.push('examples');
         })
 

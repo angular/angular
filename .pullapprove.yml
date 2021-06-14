@@ -413,7 +413,7 @@ groups:
           'aio/content/guide/view-encapsulation.md',
           'aio/content/examples/view-encapsulation/**',
           'aio/content/images/guide/view-encapsulation/**',
-          'aio/content/special_elements/**'
+          'aio/content/special-elements/**'
           ])
     reviewers:
       users:

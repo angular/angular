@@ -1,3 +1,14 @@
+/**
+ * Documents attributes that can appear on "special elements", such as `selector` on `<ng-content>`.
+ *
+ * For example:
+ *
+ * ```
+ * @elementAttribute select="selector"
+ *
+ * Only select elements from the projected content that match the given CSS `selector`.
+ * ```
+ */
 module.exports = function() {
   return {
     name: 'elementAttribute',
