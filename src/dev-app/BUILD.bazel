@@ -1,7 +1,7 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
 load("//tools:create-system-config.bzl", "create_system_config")
 load("//tools:defaults.bzl", "ng_module", "sass_binary")
-load("//tools:es5-named-output.bzl", "es5_named_output")
+load("//tools:es5-module-output.bzl", "es5_module_output")
 load("//tools/dev-server:index.bzl", "dev_server")
 
 package(default_visibility = ["//visibility:public"])
@@ -200,7 +200,7 @@ dev_server(
 
 # Collects all ES5 JavaScript files which are required to serve the dev-app. By default,
 # ts_library and ng_module targets only expose the type definition files as outputs.
-es5_named_output(
+es5_module_output(
     name = "dev_app_js_sources",
     tags = ["manual"],
     deps = [":dev-app"],
