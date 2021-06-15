@@ -770,7 +770,8 @@ describe('Driver', () => {
                 },
               },
               'foo');
-          expect(scope.clients.openWindow).toHaveBeenCalledWith(`${scope.registration.scope}${url}`);
+          expect(scope.clients.openWindow)
+              .toHaveBeenCalledWith(`${scope.registration.scope}${url}`);
         });
 
         it('opens a new client window with `/` when no `url`', async () => {
@@ -838,7 +839,8 @@ describe('Driver', () => {
                 },
               },
               'foo');
-          expect(scope.clients.openWindow).toHaveBeenCalledWith(`${scope.registration.scope}${url}`);
+          expect(scope.clients.openWindow)
+              .toHaveBeenCalledWith(`${scope.registration.scope}${url}`);
         });
 
         it('falls back to openWindow at `/` when no last client and no `url`', async () => {
@@ -928,7 +930,8 @@ describe('Driver', () => {
                 },
               },
               'foo');
-          expect(scope.clients.openWindow).toHaveBeenCalledWith(`${scope.registration.scope}${url}`);
+          expect(scope.clients.openWindow)
+              .toHaveBeenCalledWith(`${scope.registration.scope}${url}`);
         });
 
         it('falls back to openWindow at `/` when no last client and no `url`', async () => {
@@ -991,7 +994,8 @@ describe('Driver', () => {
                 },
               },
               '');
-          expect(scope.clients.openWindow).toHaveBeenCalledWith(`${scope.registration.scope}${url}`);
+          expect(scope.clients.openWindow)
+              .toHaveBeenCalledWith(`${scope.registration.scope}${url}`);
         });
 
         describe('no onActionClick default', () => {
