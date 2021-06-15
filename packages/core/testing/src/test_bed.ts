@@ -18,6 +18,12 @@ import {TestingCompiler, TestingCompilerFactory} from './test_compiler';
 let _nextRootElementId = 0;
 
 /**
+ * Whether test modules should be torn down by default.
+ * Currently disabled for backwards-compatibility reasons.
+ */
+export const TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT = false;
+
+/**
  * @publicApi
  */
 export interface TestBed {
@@ -100,7 +106,16 @@ export interface TestBed {
  * according to the compiler used.
  */
 export class TestBedViewEngine implements TestBed {
+  /**
+   * Teardown options that have been configured at the environment level.
+   * Used as a fallback if no instance-level options have been provided.
+   */
   private static _environmentTeardownOptions: ModuleTeardownOptions|undefined;
+
+  /**
+   * Teardown options that have been configured at the `TestBed` instance level.
+   * These options take precedence over the environemnt-level ones.
+   */
   private _instanceTeardownOptions: ModuleTeardownOptions|undefined;
 
   /**
@@ -338,6 +353,10 @@ export class TestBedViewEngine implements TestBed {
     this._declarations = [];
     this._imports = [];
     this._schemas = [];
+
+    // We have to chain a couple of try/finally blocks, because each step can
+    // throw errors and we don't want it to interrupt the next step and we also
+    // want an error to be thrown at the end.
     try {
       this.destroyActiveFixtures();
     } finally {
@@ -671,7 +690,8 @@ export class TestBedViewEngine implements TestBed {
 
   shouldTearDownTestingModule(): boolean {
     return this._instanceTeardownOptions?.destroyAfterEach ??
-        TestBedViewEngine._environmentTeardownOptions?.destroyAfterEach ?? false;
+        TestBedViewEngine._environmentTeardownOptions?.destroyAfterEach ??
+        TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT;
   }
 
   tearDownTestingModule() {
@@ -690,13 +710,13 @@ export class TestBedViewEngine implements TestBed {
           TestBedViewEngine._environmentTeardownOptions?.rethrowErrors ?? true) {
         throw e;
       } else {
-        console.error('Error during cleanup of module', {
+        console.error('Error during cleanup of a testing module', {
           component: this._moduleRef.instance,
           stacktrace: e,
         });
       }
     } finally {
-      testRenderer?.removeAllRootElements();
+      testRenderer?.removeAllRootElements?.();
     }
   }
 }

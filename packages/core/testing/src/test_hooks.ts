@@ -24,6 +24,9 @@ if (_global.beforeEach) {
   _global.beforeEach(getCleanupHook(false));
 }
 
+// We provide both a `beforeEach` and `afterEach`, because the updated behavior for
+// tearing down the module is supposed to run after the test so that we can associate
+// teardown errors with the correct test.
 if (_global.afterEach) {
   _global.afterEach(getCleanupHook(true));
 }

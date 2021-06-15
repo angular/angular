@@ -1466,4 +1466,18 @@ describe('TestBed module teardown', () => {
        TestBed.resetTestingModule();
        expect(fixtureDocument.querySelectorAll('style').length).toBeLessThan(styleCountBefore);
      });
+
+
+  it('should remove the fixture root element from the DOM when module teardown is enabled', () => {
+    TestBed.configureTestingModule({
+      declarations: [SimpleCmp],
+      teardown: {destroyAfterEach: true},
+    });
+    const fixture = TestBed.createComponent(SimpleCmp);
+    const fixtureDocument = fixture.nativeElement.ownerDocument;
+
+    expect(fixtureDocument.body.contains(fixture.nativeElement)).toBe(true);
+    TestBed.resetTestingModule();
+    expect(fixtureDocument.body.contains(fixture.nativeElement)).toBe(false);
+  });
 });

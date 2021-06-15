@@ -137,7 +137,7 @@ export declare interface TestBedStatic {
 
 export declare class TestComponentRenderer {
     insertRootElement(rootElementId: string): void;
-    removeAllRootElements(): void;
+    removeAllRootElements?(): void;
 }
 
 export declare interface TestEnvironmentOptions {

@@ -35,7 +35,7 @@ import {
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
 import {R3TestBedCompiler} from './r3_test_bed_compiler';
-import {TestBed} from './test_bed';
+import {TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT, TestBed} from './test_bed';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, ModuleTeardownOptions, TestBedStatic, TestComponentRenderer, TestEnvironmentOptions, TestModuleMetadata} from './test_bed_common';
 
 let _nextRootElementId = 0;
@@ -52,7 +52,16 @@ let _nextRootElementId = 0;
  * according to the compiler used.
  */
 export class TestBedRender3 implements TestBed {
+  /**
+   * Teardown options that have been configured at the environment level.
+   * Used as a fallback if no instance-level options have been provided.
+   */
   private static _environmentTeardownOptions: ModuleTeardownOptions|undefined;
+
+  /**
+   * Teardown options that have been configured at the `TestBed` instance level.
+   * These options take precedence over the environemnt-level ones.
+   */
   private _instanceTeardownOptions: ModuleTeardownOptions|undefined;
 
   /**
@@ -251,8 +260,14 @@ export class TestBedRender3 implements TestBed {
   resetTestingModule(): void {
     this.checkGlobalCompilationFinished();
     resetCompiledComponents();
-    this.compiler?.restoreOriginalState();
+    if (this._compiler !== null) {
+      this.compiler.restoreOriginalState();
+    }
     this._compiler = new R3TestBedCompiler(this.platform, this.ngModule);
+
+    // We have to chain a couple of try/finally blocks, because each step can
+    // throw errors and we don't want it to interrupt the next step and we also
+    // want an error to be thrown at the end.
     try {
       this.destroyActiveFixtures();
     } finally {
@@ -469,7 +484,8 @@ export class TestBedRender3 implements TestBed {
 
   shouldTearDownTestingModule(): boolean {
     return this._instanceTeardownOptions?.destroyAfterEach ??
-        TestBedRender3._environmentTeardownOptions?.destroyAfterEach ?? false;
+        TestBedRender3._environmentTeardownOptions?.destroyAfterEach ??
+        TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT;
   }
 
   tearDownTestingModule() {
@@ -486,13 +502,13 @@ export class TestBedRender3 implements TestBed {
       if (this.shouldRethrowTeardownErrors()) {
         throw e;
       } else {
-        console.error('Error during cleanup of module', {
+        console.error('Error during cleanup of a testing module', {
           component: this._testModuleRef.instance,
           stacktrace: e,
         });
       }
     } finally {
-      testRenderer.removeAllRootElements();
+      testRenderer.removeAllRootElements?.();
     }
   }
 }

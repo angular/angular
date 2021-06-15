@@ -19,7 +19,7 @@ import {TestBed} from './test_bed';
  */
 export class TestComponentRenderer {
   insertRootElement(rootElementId: string) {}
-  removeAllRootElements() {}
+  removeAllRootElements?() {}
 }
 
 /**
