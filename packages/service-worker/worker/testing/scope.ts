@@ -154,7 +154,12 @@ export class SwTestHarness extends Adapter implements ServiceWorkerGlobalScope, 
 
   private mockTime = Date.now();
 
-  private timers: {at: number, duration: number, fn: Function, fired: boolean}[] = [];
+  private timers: {
+    at: number,
+    duration: number,
+    fn: Function,
+    fired: boolean,
+  }[] = [];
 
   parseUrl = parseUrl;
 

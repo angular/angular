@@ -66,7 +66,9 @@ const brokenManifest: Manifest = {
     name: 'assets',
     installMode: 'prefetch',
     updateMode: 'prefetch',
-    urls: ['/foo.txt'],
+    urls: [
+      '/foo.txt',
+    ],
     patterns: [],
     cacheQueryOptions: {ignoreVary: true},
   }],
@@ -85,7 +87,9 @@ const brokenLazyManifest: Manifest = {
       name: 'assets',
       installMode: 'prefetch',
       updateMode: 'prefetch',
-      urls: ['/foo.txt'],
+      urls: [
+        '/foo.txt',
+      ],
       patterns: [],
       cacheQueryOptions: {ignoreVary: true},
     },
@@ -93,7 +97,9 @@ const brokenLazyManifest: Manifest = {
       name: 'lazy-assets',
       installMode: 'lazy',
       updateMode: 'lazy',
-      urls: ['/bar.txt'],
+      urls: [
+        '/bar.txt',
+      ],
       patterns: [],
       cacheQueryOptions: {ignoreVary: true},
     },
@@ -134,15 +140,24 @@ const manifest: Manifest = {
       name: 'assets',
       installMode: 'prefetch',
       updateMode: 'prefetch',
-      urls: ['/foo.txt', '/bar.txt', '/redirected.txt'],
-      patterns: ['/unhashed/.*'],
+      urls: [
+        '/foo.txt',
+        '/bar.txt',
+        '/redirected.txt',
+      ],
+      patterns: [
+        '/unhashed/.*',
+      ],
       cacheQueryOptions: {ignoreVary: true},
     },
     {
       name: 'other',
       installMode: 'lazy',
       updateMode: 'lazy',
-      urls: ['/baz.txt', '/qux.txt'],
+      urls: [
+        '/baz.txt',
+        '/qux.txt',
+      ],
       patterns: [],
       cacheQueryOptions: {ignoreVary: true},
     },
@@ -150,7 +165,12 @@ const manifest: Manifest = {
       name: 'lazy_prefetch',
       installMode: 'lazy',
       updateMode: 'prefetch',
-      urls: ['/quux.txt', '/quuux.txt', '/lazy/unchanged1.txt', '/lazy/unchanged2.txt'],
+      urls: [
+        '/quux.txt',
+        '/quuux.txt',
+        '/lazy/unchanged1.txt',
+        '/lazy/unchanged2.txt',
+      ],
       patterns: [],
       cacheQueryOptions: {ignoreVary: true},
     }
@@ -162,7 +182,9 @@ const manifest: Manifest = {
       maxAge: 3600000,
       maxSize: 100,
       strategy: 'freshness',
-      patterns: ['/api/.*'],
+      patterns: [
+        '/api/.*',
+      ],
       cacheQueryOptions: {ignoreVary: true},
     },
     {
@@ -171,7 +193,9 @@ const manifest: Manifest = {
       maxAge: 3600000,
       maxSize: 100,
       strategy: 'performance',
-      patterns: ['/api-static/.*'],
+      patterns: [
+        '/api-static/.*',
+      ],
       cacheQueryOptions: {ignoreVary: true},
     },
   ],
@@ -192,15 +216,24 @@ const manifestUpdate: Manifest = {
       name: 'assets',
       installMode: 'prefetch',
       updateMode: 'prefetch',
-      urls: ['/foo.txt', '/bar.txt', '/redirected.txt'],
-      patterns: ['/unhashed/.*'],
+      urls: [
+        '/foo.txt',
+        '/bar.txt',
+        '/redirected.txt',
+      ],
+      patterns: [
+        '/unhashed/.*',
+      ],
       cacheQueryOptions: {ignoreVary: true},
     },
     {
       name: 'other',
       installMode: 'lazy',
       updateMode: 'lazy',
-      urls: ['/baz.txt', '/qux.txt'],
+      urls: [
+        '/baz.txt',
+        '/qux.txt',
+      ],
       patterns: [],
       cacheQueryOptions: {ignoreVary: true},
     },
@@ -208,7 +241,12 @@ const manifestUpdate: Manifest = {
       name: 'lazy_prefetch',
       installMode: 'lazy',
       updateMode: 'prefetch',
-      urls: ['/quux.txt', '/quuux.txt', '/lazy/unchanged1.txt', '/lazy/unchanged2.txt'],
+      urls: [
+        '/quux.txt',
+        '/quuux.txt',
+        '/lazy/unchanged1.txt',
+        '/lazy/unchanged2.txt',
+      ],
       patterns: [],
       cacheQueryOptions: {ignoreVary: true},
     }
@@ -253,6 +291,7 @@ const server404 = new MockServerStateBuilder().withStaticFiles(dist).build();
 
 const manifestHash = sha1(JSON.stringify(manifest));
 const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
+
 
 describe('Driver', () => {
   let scope: SwTestHarness;
@@ -717,6 +756,7 @@ describe('Driver', () => {
           expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
 
           spyOn(scope.clients, 'openWindow');
+          const url = `foo`;
 
           await driver.initialized;
           await scope.handleClick(
@@ -725,12 +765,12 @@ describe('Driver', () => {
                 body: 'Test body with url',
                 data: {
                   onActionClick: {
-                    foo: {operation: 'openWindow', url: '/foo'},
+                    foo: {operation: 'openWindow', url},
                   },
                 },
               },
               'foo');
-          expect(scope.clients.openWindow).toHaveBeenCalledWith('http://localhost/foo');
+          expect(scope.clients.openWindow).toHaveBeenCalledWith(`${scope.registration.scope}${url}`);
         });
 
         it('opens a new client window with `/` when no `url`', async () => {
@@ -750,7 +790,7 @@ describe('Driver', () => {
                 },
               },
               'foo');
-          expect(scope.clients.openWindow).toHaveBeenCalledWith('http://localhost/');
+          expect(scope.clients.openWindow).toHaveBeenCalledWith(`${scope.registration.scope}`);
         });
       });
 
@@ -761,6 +801,7 @@ describe('Driver', () => {
           spyOn(scope.clients, 'matchAll').and.returnValue(Promise.resolve([mockClient]));
           spyOn(mockClient, 'focus');
           spyOn(mockClient, 'navigate');
+          const url = `foo`;
 
           await driver.initialized;
           await scope.handleClick(
@@ -769,7 +810,7 @@ describe('Driver', () => {
                 body: 'Test body with operation focusLastFocusedOrOpen',
                 data: {
                   onActionClick: {
-                    foo: {operation: 'focusLastFocusedOrOpen', url: '/foo'},
+                    foo: {operation: 'focusLastFocusedOrOpen', url},
                   },
                 },
               },
@@ -783,6 +824,7 @@ describe('Driver', () => {
           expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
           spyOn(scope.clients, 'openWindow');
           spyOn(scope.clients, 'matchAll').and.returnValue(Promise.resolve([]));
+          const url = `foo`;
 
           await driver.initialized;
           await scope.handleClick(
@@ -791,12 +833,12 @@ describe('Driver', () => {
                 body: 'Test body with operation focusLastFocusedOrOpen',
                 data: {
                   onActionClick: {
-                    foo: {operation: 'focusLastFocusedOrOpen', url: '/foo'},
+                    foo: {operation: 'focusLastFocusedOrOpen', url},
                   },
                 },
               },
               'foo');
-          expect(scope.clients.openWindow).toHaveBeenCalledWith('http://localhost/foo');
+          expect(scope.clients.openWindow).toHaveBeenCalledWith(`${scope.registration.scope}${url}`);
         });
 
         it('falls back to openWindow at `/` when no last client and no `url`', async () => {
@@ -816,17 +858,18 @@ describe('Driver', () => {
                 },
               },
               'foo');
-          expect(scope.clients.openWindow).toHaveBeenCalledWith('http://localhost/');
+          expect(scope.clients.openWindow).toHaveBeenCalledWith(`${scope.registration.scope}`);
         });
       });
 
       describe('`navigateLastFocusedOrOpen` operation', () => {
-        it('focuses last client with `url`', async () => {
+        it('navigates last client to `url`', async () => {
           expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
           const mockClient = new WindowClientImpl('fooBar');
           spyOn(scope.clients, 'matchAll').and.returnValue(Promise.resolve([mockClient]));
           spyOn(mockClient, 'focus');
           spyOn(mockClient, 'navigate').and.returnValue(Promise.resolve(mockClient));
+          const url = 'foo';
 
           await driver.initialized;
           await scope.handleClick(
@@ -835,16 +878,16 @@ describe('Driver', () => {
                 body: 'Test body with operation navigateLastFocusedOrOpen',
                 data: {
                   onActionClick: {
-                    foo: {operation: 'navigateLastFocusedOrOpen', url: '/foo'},
+                    foo: {operation: 'navigateLastFocusedOrOpen', url},
                   },
                 },
               },
               'foo');
-          expect(mockClient.navigate).toHaveBeenCalledWith('http://localhost/foo');
+          expect(mockClient.navigate).toHaveBeenCalledWith(`${scope.registration.scope}${url}`);
           expect(mockClient.focus).toHaveBeenCalled();
         });
 
-        it('focuses last client with `/` if no `url', async () => {
+        it('navigates last client to `/` if no `url', async () => {
           expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
           const mockClient = new WindowClientImpl('fooBar');
           spyOn(scope.clients, 'matchAll').and.returnValue(Promise.resolve([mockClient]));
@@ -863,7 +906,7 @@ describe('Driver', () => {
                 },
               },
               'foo');
-          expect(mockClient.navigate).toHaveBeenCalledWith('http://localhost/');
+          expect(mockClient.navigate).toHaveBeenCalledWith(`${scope.registration.scope}`);
           expect(mockClient.focus).toHaveBeenCalled();
         });
 
@@ -871,6 +914,7 @@ describe('Driver', () => {
           expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
           spyOn(scope.clients, 'openWindow');
           spyOn(scope.clients, 'matchAll').and.returnValue(Promise.resolve([]));
+          const url = 'foo';
 
           await driver.initialized;
           await scope.handleClick(
@@ -879,12 +923,12 @@ describe('Driver', () => {
                 body: 'Test body with operation navigateLastFocusedOrOpen',
                 data: {
                   onActionClick: {
-                    foo: {operation: 'navigateLastFocusedOrOpen', url: '/foo'},
+                    foo: {operation: 'navigateLastFocusedOrOpen', url},
                   },
                 },
               },
               'foo');
-          expect(scope.clients.openWindow).toHaveBeenCalledWith('http://localhost/foo');
+          expect(scope.clients.openWindow).toHaveBeenCalledWith(`${scope.registration.scope}${url}`);
         });
 
         it('falls back to openWindow at `/` when no last client and no `url`', async () => {
@@ -904,7 +948,7 @@ describe('Driver', () => {
                 },
               },
               'foo');
-          expect(scope.clients.openWindow).toHaveBeenCalledWith('http://localhost/');
+          expect(scope.clients.openWindow).toHaveBeenCalledWith(`${scope.registration.scope}`);
         });
       });
 
@@ -933,6 +977,7 @@ describe('Driver', () => {
         it('uses onActionClick default when no specific action is clicked', async () => {
           expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
           spyOn(scope.clients, 'openWindow');
+          const url = 'fooz';
 
           await driver.initialized;
           await scope.handleClick(
@@ -941,12 +986,12 @@ describe('Driver', () => {
                 body: 'Test body without action',
                 data: {
                   onActionClick: {
-                    default: {operation: 'openWindow', url: 'fooz'},
+                    default: {operation: 'openWindow', url},
                   },
                 },
               },
               '');
-          expect(scope.clients.openWindow).toHaveBeenCalledWith('http://localhost/fooz');
+          expect(scope.clients.openWindow).toHaveBeenCalledWith(`${scope.registration.scope}${url}`);
         });
 
         describe('no onActionClick default', () => {
@@ -1169,7 +1214,10 @@ describe('Driver', () => {
           name: 'eager',
           installMode: 'prefetch',
           updateMode: 'prefetch',
-          urls: [`${baseHref}foo.txt`, `${baseHref}bar.txt`],
+          urls: [
+            `${baseHref}foo.txt`,
+            `${baseHref}bar.txt`,
+          ],
           patterns: [],
           cacheQueryOptions: {ignoreVary: true},
         },
@@ -1177,7 +1225,10 @@ describe('Driver', () => {
           name: 'lazy',
           installMode: 'lazy',
           updateMode: 'lazy',
-          urls: [`${baseHref}baz.txt`, `${baseHref}qux.txt`],
+          urls: [
+            `${baseHref}baz.txt`,
+            `${baseHref}qux.txt`,
+          ],
           patterns: [],
           cacheQueryOptions: {ignoreVary: true},
         },
@@ -1189,7 +1240,9 @@ describe('Driver', () => {
           maxAge: 3600000,
           maxSize: 100,
           strategy: 'freshness',
-          patterns: ['/api/.*'],
+          patterns: [
+            '/api/.*',
+          ],
           cacheQueryOptions: {ignoreVary: true},
         },
       ],
@@ -1528,8 +1581,14 @@ describe('Driver', () => {
           name: 'eager',
           installMode: 'prefetch',
           updateMode: 'prefetch',
-          urls: ['./index.html', './main.js', './styles.css'],
-          patterns: ['/unhashed/.*'],
+          urls: [
+            './index.html',
+            './main.js',
+            './styles.css',
+          ],
+          patterns: [
+            '/unhashed/.*',
+          ],
           cacheQueryOptions: {ignoreVary: true},
         },
         {
@@ -1542,7 +1601,9 @@ describe('Driver', () => {
             './unchanged/chunk-3.js',
             './unchanged/chunk-4.js',
           ],
-          patterns: ['/lazy/unhashed/.*'],
+          patterns: [
+            '/lazy/unhashed/.*',
+          ],
           cacheQueryOptions: {ignoreVary: true},
         }
       ],
@@ -1813,7 +1874,7 @@ describe('Driver', () => {
          spyOn(MockCache.prototype, 'put').and.throwError('Can\'t touch this');
          spyOn(driver.debugger, 'log');
          expect(await makeRequest(scope, '/api/foo', 'default', {
-           method: 'post',
+           method: 'post'
          })).toEqual('this is api foo');
          expect(driver.state).toBe(DriverReadyState.NORMAL);
          // Since we are swallowing an error here, make sure it is at least properly logged

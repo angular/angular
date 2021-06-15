@@ -437,7 +437,7 @@
             },
             {
               "url": "guide/service-worker-notifications",
-              "title": "Service Notifications",
+              "title": "Service Worker Notifications",
               "tooltip": "Configuring service worker notification behavior."
             },
             {

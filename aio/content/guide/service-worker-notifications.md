@@ -4,52 +4,45 @@ Push notifications are a compelling way to engage users. Through the power of se
 
 The Angular service worker enables the display of push notifications and the handling of notification click events.
 
+<div class="alert is-helpful">
+
+  When using the Angular service worker, push notification interactions can be handled using the `SwPush` service.
+
+</div>
+
+<div class="alert is-helpful"> 
+
+  For details about the native APIs used by the service worker, see
+
+  [Push API](https://marketfinder.thinkwithgoogle.com/intl/en_us/guide/how-to-approach-i18n/#overview).
+
+  [Using the Notifications API](https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API/Using_the_Notifications_API).
+
+</div>
+
+
 #### Prerequisites
 
 A basic understanding of the following:
 
 - [Getting Started with Service Workers](guide/service-worker-getting-started).
 
-### Notification Payload
+## Notification payload
 
-Invoke Push Notifications by pushing a message with the following payload.
-
-```json
- {
-   "notification": {
-     "actions": NotificationAction[],
-     "badge": USVString
-     "body": DOMString,
-     "data": any,
-     "dir": "auto"|"ltr"|"rtl",
-     "icon": USVString,
-     "image": USVString,
-     "lang": DOMString,
-     "renotify": boolean,
-     "requireInteraction": boolean,
-     "silent": boolean,
-     "tag": DOMString,
-     "timestamp": DOMTimeStamp,
-     "title": DOMString,
-     "vibrate": number[]
-   }
- }
-```
-
-Only `title` is required. See `Notification` [instance properties](https://developer.mozilla.org/en-US/docs/Web/API/Notification#Instance_properties).
+Invoke push notifications by pushing a message with a valid payload. See `SwPush` for guidance.
 
 <div class="alert is-helpful">
 
-  In chrome you can push a notification without a backend.
-  Open chrome devtools -> Application -> Service Workers -> Use the `Push` input to send a valid json notification payload
+  In Chrome, you can test push notifications without a backend.
+  Open Devtools -> Application -> Service Workers and use the `Push` input to send a JSON notification payload.
 
 </div>
 
-### Notification Behaviour
+## Notification click handling
 
-The default behaviour for the `notificationclick` event, is to close the notification.
+The default behaviour for the `notificationclick` event, is to close the notification and notify `SwPush#notificationClicks`.
 
-This can easily be changed by adding a `onActionClick` field to the data object, and provide a `default` operation.
+This can easily be changed by adding an `onActionClick` property to the `data` object, and provide a `default` operation.
 
 ```json
 {
@@ -57,28 +50,36 @@ This can easily be changed by adding a `onActionClick` field to the data object,
     "title": "New Notification!",
     "data": {
       "onActionClick": {
-        "default": {"operation": "openWindow", "url": "/foo"}
+        "default": {"operation": "openWindow", "url": "foo"}
       }
     }
   }
 }
 ```
 
-### Operations
+#### Operations
 
-Angular service worker supports the following operations:
+The Angular service worker supports the following operations:
 
-- `openWindow`: will open a new client at the given url relative to the service worker scope
+- `openWindow`: Opens a new tab at the specified URL, which is resolved relative to the service worker scope.
 
-- `focusLastFocusedOrOpen`: will focus the last focussed client. If there is no client open, then will open a new client at the given url relative to the service worker scope
+- `focusLastFocusedOrOpen`: Focuses the last focused client. If there is no client open, then it opens a new tab at the specified URL, which is resolved relative to the service worker scope.
 
-- `navigateLastFocusedOrOpen`: will focus the last focussed client and navigate that client to the given url relative to the service worker scope. If there is no client open, then will open a new client at the given url relative to the service worker scope
+- `navigateLastFocusedOrOpen`: Focuses the last focused client and navigates it to the specified URL, which is resolved relative to the service worker scope. If there is no client open, then it opens a new tab at the specified URL.
 
-### Actions
+<div class="alert is-important">
 
-Actions are a good way to expand how the end user interacts with the notification.
+  If a corresponding `onActionClick` field does not have a defined `url` then the service worker's registration scope will be used with no path.
+  
+</div>
 
-Using the `onActionClick` field, each action can be tied to an `operation`:
+#### Actions
+
+Actions offer a way to customize how the user can interact with a notification.
+
+Using the `actions` property, you can define a set of available actions. Each action is represented as an action button that the user can click to interact with the notification.
+
+In addition, using the `onActionClick` property on the `data` object, you can tie each action to an operation to be performed when the corresponding action button is clicked:
 
 ```ts
 {
@@ -88,14 +89,14 @@ Using the `onActionClick` field, each action can be tied to an `operation`:
       {"action": "foo", "title": "Open new tab"},
       {"action": "bar", "title": "Focus last"},
       {"action": "baz", "title": "Navigate last"},
-      {"action": "bazza", "title": "default openWindow"}
+      {"action": "qux", "title": "Just notify existing clients"}
     ],
     "data": {
       "onActionClick": {
         "default": {"operation": "openWindow", "url": "/foo"},
-        "foo": {"operation": "openWindow", "url": "/foo"},
-        "bar": {"operation": "focusLastFocusedOrOpen", "url": "/foo"},
-        "baz": {"operation": "navigateLastFocusedOrOpen", "url": "/foo"}
+        "foo": {"operation": "openWindow", "url": "foo"},
+        "bar": {"operation": "focusLastFocusedOrOpen", "url": "foo"},
+        "baz": {"operation": "navigateLastFocusedOrOpen", "url": "foo"}
       }
     }
   }
@@ -104,14 +105,8 @@ Using the `onActionClick` field, each action can be tied to an `operation`:
 
 <div class="alert is-important">
 
-  If an action does not have a corresponding `onActionClick` field, then it will use the configured `default` `onActionClick`.
+  If an action does not have a corresponding `onActionClick` property, then the notification is closed and `SwPush#notificationClicks` is notified.
 
-</div>
-
-<div class="alert is-important">
-
-  If a corresponding `onActionClick` field does not have a defined `url` then the service worker's registration scope will be used with no path.
-  
 </div>
 
 ## More on Angular service workers

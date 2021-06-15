@@ -352,7 +352,7 @@ export class Driver implements Debuggable, UpdateSource {
 
     const onActionClick = notification?.data?.onActionClick[notificationAction];
 
-    const urlToOpen = new URL(onActionClick?.url ?? '/', this.scope.registration.scope).href;
+    const urlToOpen = new URL(onActionClick?.url ?? '', this.scope.registration.scope).href;
 
     switch (onActionClick?.operation) {
       case 'openWindow':

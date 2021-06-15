@@ -38,7 +38,7 @@ declare class Client {
 interface Clients {
   claim(): Promise<void>;
   get(id: string): Promise<Client>;
-  matchAll<T extends ClientQueryOptions>(
+  matchAll<T extends ClientMatchOptions>(
     options?: T
   ): Promise<ReadonlyArray<T['type'] extends 'window' ? WindowClient : Client>>;
   openWindow(url: string): Promise<WindowClient | null>;
