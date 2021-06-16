@@ -15,7 +15,6 @@ export interface Fruit {
   styleUrls: ['chips-input-example.css'],
 })
 export class ChipsInputExample {
-  visible = true;
   selectable = true;
   removable = true;
   addOnBlur = true;

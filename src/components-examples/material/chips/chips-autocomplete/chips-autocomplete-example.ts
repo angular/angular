@@ -15,7 +15,6 @@ import {map, startWith} from 'rxjs/operators';
   styleUrls: ['chips-autocomplete-example.css'],
 })
 export class ChipsAutocompleteExample {
-  visible = true;
   selectable = true;
   removable = true;
   separatorKeysCodes: number[] = [ENTER, COMMA];
