@@ -1,29 +1,10 @@
 mat-toolbar {
-  padding-left: 9px;
-  white-space: nowrap;
+  padding-left: 10px;
+  display: block;
   text-overflow: ellipsis;
   overflow: hidden;
   line-height: 25px;
   font-size: 11px;
   font-weight: 500;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   height: auto;
-}
-
-::ng-deep {
-  .mat-button {
-    height: 18px;
-    width: 18px;
-    line-height: 15px;
-    margin-right: 7px;
-  }
-
-  .mat-icon-button {
-    height: 18px;
-    width: 18px;
-    line-height: 15px;
-    margin-right: 7px;
-  }
 }
