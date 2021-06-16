@@ -28,7 +28,7 @@ export interface NgccProjectConfig<T = RawNgccPackageConfig> {
   /**
    * Name of hash algorithm used to generate hashes of the configuration.
    *
-   * Defaults to `md5`.
+   * Defaults to `sha256`.
    */
   hashAlgorithm?: string;
 }
@@ -308,7 +308,7 @@ export class NgccConfiguration {
 
   private processProjectConfig(projectConfig: NgccProjectConfig): PartiallyProcessedConfig {
     const processedConfig:
-        PartiallyProcessedConfig = {packages: {}, locking: {}, hashAlgorithm: 'md5'};
+        PartiallyProcessedConfig = {packages: {}, locking: {}, hashAlgorithm: 'sha256'};
 
     // locking configuration
     if (projectConfig.locking !== undefined) {

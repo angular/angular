@@ -40,7 +40,7 @@ runInEachFileSystem(() => {
       beforeEach(() => {
         manifestFile = {
           ngccVersion: NGCC_VERSION,
-          lockFileHash: createHash('md5').update('LOCK FILE CONTENTS').digest('hex'),
+          lockFileHash: createHash('sha256').update('LOCK FILE CONTENTS').digest('hex'),
           configFileHash: config.hash,
           entryPointPaths: []
         };
@@ -278,7 +278,7 @@ runInEachFileSystem(() => {
             JSON.parse(fs.readFile(_Abs('/project/node_modules/__ngcc_entry_points__.json'))) as
             EntryPointManifestFile;
         expect(file.lockFileHash)
-            .toEqual(createHash('md5').update('LOCK FILE CONTENTS').digest('hex'));
+            .toEqual(createHash('sha256').update('LOCK FILE CONTENTS').digest('hex'));
       });
 
       it('should write a hash of the package-lock.json file', () => {
@@ -288,7 +288,7 @@ runInEachFileSystem(() => {
             JSON.parse(fs.readFile(_Abs('/project/node_modules/__ngcc_entry_points__.json'))) as
             EntryPointManifestFile;
         expect(file.lockFileHash)
-            .toEqual(createHash('md5').update('LOCK FILE CONTENTS').digest('hex'));
+            .toEqual(createHash('sha256').update('LOCK FILE CONTENTS').digest('hex'));
       });
 
       it('should write a hash of the project config', () => {
