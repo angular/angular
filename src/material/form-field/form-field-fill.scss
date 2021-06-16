@@ -33,6 +33,12 @@ $fill-subscript-padding:
     }
   }
 
+  &.mat-focused .mat-form-field-flex {
+    @include a11y.high-contrast(active, off) {
+      outline: dashed 3px;
+    }
+  }
+
   .mat-form-field-underline::before {
     content: '';
     display: block;
@@ -47,8 +53,9 @@ $fill-subscript-padding:
     height: $fill-underline-ripple-height;
 
     @include a11y.high-contrast(active, off) {
+      // In high-contrast mode, we hide the ripple as we have a dashed outline as
+      // focus indicator.
       height: 0;
-      border-top: solid $fill-underline-ripple-height;
     }
   }
 

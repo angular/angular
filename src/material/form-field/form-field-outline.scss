@@ -1,5 +1,6 @@
 @use '../core/style/variables';
 @use '../core/style/private';
+@use '../../cdk/a11y';
 
 // Styles that only apply to the outline appearance of the form-field.
 
@@ -114,6 +115,12 @@ $outline-subscript-padding:
     }
     .mat-form-field-outline-thick {
       opacity: 1;
+    }
+  }
+
+  &.mat-focused .mat-form-field-outline-thick {
+    @include a11y.high-contrast(active, off) {
+      border: 3px dashed;
     }
   }
 

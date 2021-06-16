@@ -20,16 +20,10 @@
     }
   }
 
-  // For form fields with outline appearance, we unset the outline solid borders
-  // and show a dashed thick border to indicate focus.
+  // For form fields with outline appearance, we show a dashed thick border on top
+  // of the solid notched-outline border to indicate focus.
   .mat-mdc-form-field.mat-focused .mdc-notched-outline {
     @include a11y.high-contrast(active, off) {
-      .mdc-notched-outline__leading,
-      .mdc-notched-outline__trailing,
-      .mdc-notched-outline__notch, {
-        border: none;
-      }
-
       border: $focus-indicator-style $focus-indicator-width;
     }
   }
