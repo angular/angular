@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {CldrLocaleData} from './cldr-data';
 
 // There are no types available for `cldr`.
 const cldr = require('cldr');
@@ -15,13 +14,8 @@ const cldr = require('cldr');
  * TODO(ocombe): replace "cldr" extractPluralRuleFunction with our own extraction using "CldrJS"
  * because the 2 libs can become out of sync if they use different versions of the cldr database
  */
-export function getPluralFunction(localeData: CldrLocaleData, withTypes = true) {
-  // We use the resolved bundle for extracting the plural function. This matches with the
-  // lookup logic used by other extractions in the tool (using `cldrjs`), and also ensures
-  // we follow the CLDR-specified bundle lookup algorithm. A language does not necessarily
-  // resolve directly to a bundle CLDR provides data for.
-  const bundleName = localeData.attributes.bundle;
-  let fn = cldr.extractPluralRuleFunction(bundleName).toString();
+export function getPluralFunction(locale: string, withTypes = true) {
+  let fn = cldr.extractPluralRuleFunction(locale).toString();
 
   const numberType = withTypes ? ': number' : '';
   fn =

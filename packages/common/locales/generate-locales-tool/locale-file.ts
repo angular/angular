@@ -23,7 +23,7 @@ export function generateLocale(
   return `${fileHeader}
 const u = undefined;
 
-${getPluralFunction(localeData)}
+${getPluralFunction(locale)}
 
 export default ${generateBasicLocaleString(locale, localeData, baseCurrencies)};
 `;
