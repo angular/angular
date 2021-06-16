@@ -59,12 +59,7 @@ export class ErrorHandler {
 
   /** @internal */
   _findContext(error: any): any {
-    if (error) {
-      return getDebugContext(error) ? getDebugContext(error) :
-                                      this._findContext(getOriginalError(error));
-    }
-
-    return null;
+    return !error ? null : getDebugContext(error) ?? this._findContext(getOriginalError(error));
   }
 
   /** @internal */
