@@ -159,7 +159,7 @@ export class EntryPointManifest {
       const lockFilePath = this.fs.resolve(directory, lockFileName);
       if (this.fs.exists(lockFilePath)) {
         const lockFileContents = this.fs.readFile(lockFilePath);
-        return createHash('md5').update(lockFileContents).digest('hex');
+        return createHash(this.config.hashAlgorithm).update(lockFileContents).digest('hex');
       }
     }
     return null;
