@@ -55,8 +55,8 @@ describe('MatTabNavBar', () => {
     });
 
     it('should add the active class if active', () => {
-      let tabLink1 = fixture.debugElement.queryAll(By.css('a'))[0];
-      let tabLink2 = fixture.debugElement.queryAll(By.css('a'))[1];
+      const tabLink1 = fixture.debugElement.queryAll(By.css('a'))[0];
+      const tabLink2 = fixture.debugElement.queryAll(By.css('a'))[1];
       const tabLinkElements = fixture.debugElement.queryAll(By.css('a'))
         .map(tabLinkDebugEl => tabLinkDebugEl.nativeElement);
 
@@ -72,8 +72,8 @@ describe('MatTabNavBar', () => {
     });
 
     it('should toggle aria-current based on active state', () => {
-      let tabLink1 = fixture.debugElement.queryAll(By.css('a'))[0];
-      let tabLink2 = fixture.debugElement.queryAll(By.css('a'))[1];
+      const tabLink1 = fixture.debugElement.queryAll(By.css('a'))[0];
+      const tabLink2 = fixture.debugElement.queryAll(By.css('a'))[1];
       const tabLinkElements = fixture.debugElement.queryAll(By.css('a'))
         .map(tabLinkDebugEl => tabLinkDebugEl.nativeElement);
 
@@ -214,10 +214,10 @@ describe('MatTabNavBar', () => {
   }));
 
   it('should clean up the ripple event handlers on destroy', () => {
-    let fixture: ComponentFixture<TabLinkWithNgIf> = TestBed.createComponent(TabLinkWithNgIf);
+    const fixture: ComponentFixture<TabLinkWithNgIf> = TestBed.createComponent(TabLinkWithNgIf);
     fixture.detectChanges();
 
-    let link = fixture.debugElement.nativeElement.querySelector('.mat-tab-link');
+    const link = fixture.debugElement.nativeElement.querySelector('.mat-tab-link');
 
     fixture.componentInstance.isDestroyed = true;
     fixture.detectChanges();
@@ -229,7 +229,7 @@ describe('MatTabNavBar', () => {
   });
 
   it('should support the native tabindex attribute', () => {
-      const fixture = TestBed.createComponent(TabLinkWithNativeTabindexAttr);
+    const fixture = TestBed.createComponent(TabLinkWithNativeTabindexAttr);
     fixture.detectChanges();
 
     const tabLink = fixture.debugElement.query(By.directive(MatTabLink))!

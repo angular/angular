@@ -74,8 +74,8 @@ describe('MatSort', () => {
     }));
 
     it('should use the column definition if used within a cdk table', () => {
-      let cdkTableMatSortAppFixture = TestBed.createComponent(CdkTableMatSortApp);
-      let cdkTableMatSortAppComponent = cdkTableMatSortAppFixture.componentInstance;
+      const cdkTableMatSortAppFixture = TestBed.createComponent(CdkTableMatSortApp);
+      const cdkTableMatSortAppComponent = cdkTableMatSortAppFixture.componentInstance;
 
       cdkTableMatSortAppFixture.detectChanges();
       cdkTableMatSortAppFixture.detectChanges();
@@ -88,8 +88,8 @@ describe('MatSort', () => {
     });
 
     it('should use the column definition if used within an mat table', () => {
-      let matTableMatSortAppFixture = TestBed.createComponent(MatTableMatSortApp);
-      let matTableMatSortAppComponent = matTableMatSortAppFixture.componentInstance;
+      const matTableMatSortAppFixture = TestBed.createComponent(MatTableMatSortApp);
+      const matTableMatSortAppComponent = matTableMatSortAppFixture.componentInstance;
 
       matTableMatSortAppFixture.detectChanges();
       matTableMatSortAppFixture.detectChanges();
@@ -469,7 +469,7 @@ function testSingleColumnSortDirectionSequence(
   component.matSort.direction = '';
 
   // Run through the sequence to confirm the order
-  let actualSequence = expectedSequence.map(() => {
+  const actualSequence = expectedSequence.map(() => {
     component.sort(id);
 
     // Check that the sort event's active sort is consistent with the MatSort

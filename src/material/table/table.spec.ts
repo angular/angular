@@ -37,7 +37,7 @@ describe('MatTable', () => {
 
   describe('with basic data source', () => {
     it('should be able to create a table with the right content and without when row', () => {
-      let fixture = TestBed.createComponent(MatTableApp);
+      const fixture = TestBed.createComponent(MatTableApp);
       fixture.detectChanges();
 
       const tableElement = fixture.nativeElement.querySelector('.mat-table')!;
@@ -53,7 +53,7 @@ describe('MatTable', () => {
     });
 
     it('should create a table with special when row', () => {
-      let fixture = TestBed.createComponent(MatTableWithWhenRowApp);
+      const fixture = TestBed.createComponent(MatTableWithWhenRowApp);
       fixture.detectChanges();
 
       const tableElement = fixture.nativeElement.querySelector('.mat-table');
@@ -68,7 +68,7 @@ describe('MatTable', () => {
     });
 
     it('should create a table with multiTemplateDataRows true', () => {
-      let fixture = TestBed.createComponent(MatTableWithWhenRowApp);
+      const fixture = TestBed.createComponent(MatTableWithWhenRowApp);
       fixture.componentInstance.multiTemplateDataRows = true;
       fixture.detectChanges();
 
@@ -116,7 +116,7 @@ describe('MatTable', () => {
   });
 
   it('should be able to render a table correctly with native elements', () => {
-    let fixture = TestBed.createComponent(NativeHtmlTableApp);
+    const fixture = TestBed.createComponent(NativeHtmlTableApp);
     fixture.detectChanges();
 
     const tableElement = fixture.nativeElement.querySelector('table');
@@ -168,7 +168,7 @@ describe('MatTable', () => {
   });
 
   it('should render with MatTableDataSource and sort', () => {
-    let fixture = TestBed.createComponent(MatTableWithSortApp);
+    const fixture = TestBed.createComponent(MatTableWithSortApp);
     fixture.detectChanges();
 
     const tableElement = fixture.nativeElement.querySelector('.mat-table')!;
@@ -182,7 +182,7 @@ describe('MatTable', () => {
   });
 
   it('should render with MatTableDataSource and pagination', () => {
-    let fixture = TestBed.createComponent(MatTableWithPaginatorApp);
+    const fixture = TestBed.createComponent(MatTableWithPaginatorApp);
     fixture.detectChanges();
 
     const tableElement = fixture.nativeElement.querySelector('.mat-table')!;
@@ -196,7 +196,7 @@ describe('MatTable', () => {
   });
 
   it('should apply custom sticky CSS class to sticky cells', fakeAsync(() => {
-    let fixture = TestBed.createComponent(StickyTableApp);
+    const fixture = TestBed.createComponent(StickyTableApp);
     fixture.detectChanges();
     flushMicrotasks();
 

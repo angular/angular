@@ -467,7 +467,7 @@ describe('MatTabHeader', () => {
 
         expect(header.scrollDistance).toBeGreaterThan(0, 'Expected to scroll after some time.');
 
-        let previousDistance = header.scrollDistance;
+        const previousDistance = header.scrollDistance;
 
         dispatchFakeEvent(headerElement, 'mouseleave');
         fixture.detectChanges();
@@ -504,7 +504,7 @@ describe('MatTabHeader', () => {
 
         expect(header.scrollDistance).toBeGreaterThan(0, 'Expected to scroll after some time.');
 
-        let previousDistance = header.scrollDistance;
+        const previousDistance = header.scrollDistance;
 
         tick(100);
 
