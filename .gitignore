@@ -50,5 +50,8 @@ baseline.json
 # Ignore .history for the xyz.local-history VSCode extension
 .history
 
+# CLDR data
+tools/gulp-tasks/cldr/cldr-data/
+
 # Husky
 .husky/_
