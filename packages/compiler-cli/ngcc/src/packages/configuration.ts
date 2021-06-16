@@ -236,10 +236,12 @@ export class NgccConfiguration {
   private projectConfig: PartiallyProcessedConfig;
   private cache = new Map<string, VersionedPackageConfig>();
   readonly hash: string;
+  readonly hashAlgorithm: string;
 
   constructor(private fs: ReadonlyFileSystem, baseDir: AbsoluteFsPath) {
     this.defaultConfig = this.processProjectConfig(DEFAULT_NGCC_CONFIG);
     this.projectConfig = this.processProjectConfig(this.loadProjectConfig(baseDir));
+    this.hashAlgorithm = this.projectConfig.hashAlgorithm;
     this.hash = this.computeHash();
   }
 
@@ -390,9 +392,7 @@ export class NgccConfiguration {
   }
 
   private computeHash(): string {
-    return createHash(this.projectConfig.hashAlgorithm)
-        .update(JSON.stringify(this.projectConfig))
-        .digest('hex');
+    return createHash(this.hashAlgorithm).update(JSON.stringify(this.projectConfig)).digest('hex');
   }
 }
 
