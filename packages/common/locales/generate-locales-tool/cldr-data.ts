@@ -31,9 +31,6 @@ const CLDR_DATA_GLOBS = [
 /** Path to the CLDR available locales file. */
 const CLDR_AVAILABLE_LOCALES_PATH = 'cldr-core-37.0.0/availableLocales.json';
 
-/** Path to the CLDR locale aliases file. */
-const CLDR_LOCALE_ALIASES_PATH = 'cldr-core-37.0.0/supplemental/aliases.json';
-
 /**
  * Instance providing access to a locale's CLDR data. This type extends the `cldrjs`
  * instance type with the missing `bundle` attribute property.
@@ -47,13 +44,6 @@ export type CldrLocaleData = CldrStatic&{
     bundle: string;
   }
 };
-
-/**
- * Possible reasons for an alias in the CLDR supplemental data. See:
- * https://unicode.org/reports/tr35/tr35-info.html#Appendix_Supplemental_Metadata.
- */
-export type CldrLocaleAliasReason =
-    'deprecated'|'overlong'|'macrolanguage'|'legacy'|'bibliographic';
 
 /**
  * Class that provides access to the CLDR data downloaded as part of
@@ -85,16 +75,6 @@ export class CldrData {
     }
 
     return localeData;
-  }
-
-  /**
-   * Gets the CLDR language aliases.
-   * http://cldr.unicode.org/index/cldr-spec/language-tag-equivalences.
-   */
-  getLanguageAliases():
-      {[localeName: string]: {_reason: CldrLocaleAliasReason, _replacement: string}} {
-    return require(`${this.cldrDataDir}/${CLDR_LOCALE_ALIASES_PATH}`)
-        .supplemental.metadata.alias.languageAlias;
   }
 
   /** Gets a list of all locales CLDR provides data for. */
