@@ -56,9 +56,9 @@ export function migrateFileContent(content: string,
 
   // Try to migrate the symbols even if there are no imports. This is used
   // to cover the case where the Components symbols were used transitively.
+  content = migrateCdkSymbols(content, newCdkImportPath, cdkResults);
   content = migrateMaterialSymbols(
       content, newMaterialImportPath, materialResults, extraMaterialSymbols);
-  content = migrateCdkSymbols(content, newCdkImportPath, cdkResults);
   content = replaceRemovedVariables(content, removedMaterialVariables);
 
   // We can assume that the migration has taken care of any Components symbols that were
@@ -142,7 +142,7 @@ function migrateMaterialSymbols(content: string, importPath: string,
 
   if (content !== initialContent) {
     // Add an import to the new API only if any of the APIs were being used.
-    content = insertUseStatement(content, importPath, detectedImports.imports, namespace);
+    content = insertUseStatement(content, importPath, namespace);
   }
 
   return content;
@@ -165,7 +165,7 @@ function migrateCdkSymbols(content: string, importPath: string,
   // Previously the CDK symbols were exposed through `material/theming`, but now we have a
   // dedicated entrypoint for the CDK. Only add an import for it if any of the symbols are used.
   if (content !== initialContent) {
-    content = insertUseStatement(content, importPath, detectedImports.imports, namespace);
+    content = insertUseStatement(content, importPath, namespace);
   }
 
   return content;
@@ -186,10 +186,8 @@ function renameSymbols(content: string,
                        getKeyPattern: (namespace: string|null, key: string) => RegExp,
                        formatValue: (key: string) => string): string {
   // The null at the end is so that we make one last pass to cover non-namespaced symbols.
-  [...namespaces.slice().sort(sortLengthDescending), null].forEach(namespace => {
-    // Migrate the longest keys first so that our regex-based replacements don't accidentally
-    // capture keys that contain other keys. E.g. `$mat-blue` is contained within `$mat-blue-grey`.
-    Object.keys(mapping).sort(sortLengthDescending).forEach(key => {
+  [...namespaces.slice(), null].forEach(namespace => {
+    Object.keys(mapping).forEach(key => {
       const pattern = getKeyPattern(namespace, key);
 
       // Sanity check since non-global regexes will only replace the first match.
@@ -205,26 +203,24 @@ function renameSymbols(content: string,
 }
 
 /** Inserts an `@use` statement in a string. */
-function insertUseStatement(content: string, importPath: string, importsToIgnore: string[],
-                            namespace: string): string {
+function insertUseStatement(content: string, importPath: string, namespace: string): string {
   // If the content already has the `@use` import, we don't need to add anything.
-  const alreadyImportedPattern = new RegExp(`@use +['"]${importPath}['"]`, 'g');
-  if (alreadyImportedPattern.test(content)) {
+  if (new RegExp(`@use +['"]${importPath}['"]`, 'g').test(content)) {
     return content;
   }
 
-  // We want to find the first import that isn't in the list of ignored imports or find nothing,
-  // because the imports being replaced might be the only ones in the file and they can be further
-  // down. An easy way to do this is to replace the imports with a random character and run
-  // `indexOf` on the result. This isn't the most efficient way of doing it, but it's more compact
-  // and it allows us to easily deal with things like comment nodes.
-  const contentToSearch = importsToIgnore.reduce((accumulator, current) =>
-    accumulator.replace(current, '◬'.repeat(current.length)), content);
+  // Sass will throw an error if an `@use` statement comes after another statement. The safest way
+  // to ensure that we conform to that requirement is by always inserting our imports at the top
+  // of the file. Detecting where the user's content starts is tricky, because there are many
+  // different kinds of syntax we'd have to account for. One approach is to find the first `@import`
+  // and insert before it, but the problem is that Sass allows `@import` to be placed anywhere.
+  let newImportIndex = 0;
 
-  // Sass has a limitation that all `@use` declarations have to come before `@import` so we have
-  // to find the first import and insert before it. Technically we can get away with always
-  // inserting at 0, but the file may start with something like a license header.
-  const newImportIndex = Math.max(0, contentToSearch.indexOf('@import '));
+  // One special case is if the file starts with a license header which we want to preserve on top.
+  if (content.trim().startsWith('/*')) {
+    const commentEndIndex = content.indexOf('*/', content.indexOf('/*'));
+    newImportIndex = content.indexOf('\n', commentEndIndex) + 1;
+  }
 
   return content.slice(0, newImportIndex) + `@use '${importPath}' as ${namespace};\n` +
          content.slice(newImportIndex);
@@ -247,7 +243,8 @@ function getMixinValueFormatter(namespace: string): (name: string) => string {
 
 /** Formats a migration key as a Sass function invocation. */
 function functionKeyFormatter(namespace: string|null, name: string): RegExp {
-  return new RegExp(escapeRegExp(`${namespace ? namespace + '.' : ''}${name}(`), 'g');
+  const functionName = escapeRegExp(`${namespace ? namespace + '.' : ''}${name}(`);
+  return new RegExp(`(?<![-_a-zA-Z0-9])${functionName}`, 'g');
 }
 
 /** Returns a function that can be used to format a Sass function replacement. */
@@ -257,7 +254,8 @@ function getFunctionValueFormatter(namespace: string): (name: string) => string 
 
 /** Formats a migration key as a Sass variable. */
 function variableKeyFormatter(namespace: string|null, name: string): RegExp {
-  return new RegExp(escapeRegExp(`${namespace ? namespace + '.' : ''}$${name}`), 'g');
+  const variableName = escapeRegExp(`${namespace ? namespace + '.' : ''}$${name}`);
+  return new RegExp(`${variableName}(?![-_a-zA-Z0-9])`, 'g');
 }
 
 /** Returns a function that can be used to format a Sass variable replacement. */
@@ -268,11 +266,6 @@ function getVariableValueFormatter(namespace: string): (name: string) => string 
 /** Escapes special regex characters in a string. */
 function escapeRegExp(str: string): string {
   return str.replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
-}
-
-/** Used with `Array.prototype.sort` to order strings in descending length. */
-function sortLengthDescending(a: string, b: string) {
-  return b.length - a.length;
 }
 
 /** Removes all strings from another string. */
@@ -325,7 +318,7 @@ function extractNamespaceFromUseStatement(fullImport: string): string {
  * @param variables Mapping between variable names and their values.
  */
 function replaceRemovedVariables(content: string, variables: Record<string, string>): string {
-  Object.keys(variables).sort(sortLengthDescending).forEach(variableName => {
+  Object.keys(variables).forEach(variableName => {
     // Note that the pattern uses a negative lookahead to exclude
     // variable assignments, because they can't be migrated.
     const regex = new RegExp(`\\$${escapeRegExp(variableName)}(?!\\s+:|:)`, 'g');
