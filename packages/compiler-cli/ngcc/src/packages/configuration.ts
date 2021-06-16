@@ -25,6 +25,12 @@ export interface NgccProjectConfig<T = RawNgccPackageConfig> {
    * Options that control how locking the process is handled.
    */
   locking?: ProcessLockingConfiguration;
+  /**
+   * Name of hash algorithm used to generate hashes of the configuration.
+   *
+   * Defaults to `md5`.
+   */
+  hashAlgorithm?: string;
 }
 
 /**
@@ -299,7 +305,8 @@ export class NgccConfiguration {
   }
 
   private processProjectConfig(projectConfig: NgccProjectConfig): PartiallyProcessedConfig {
-    const processedConfig: PartiallyProcessedConfig = {packages: {}, locking: {}};
+    const processedConfig:
+        PartiallyProcessedConfig = {packages: {}, locking: {}, hashAlgorithm: 'md5'};
 
     // locking configuration
     if (projectConfig.locking !== undefined) {
@@ -315,6 +322,11 @@ export class NgccConfiguration {
             processedConfig.packages[packageName] || (processedConfig.packages[packageName] = []);
         packageConfigs!.push({...packageConfig, versionRange});
       }
+    }
+
+    // hash algorithm config
+    if (projectConfig.hashAlgorithm !== undefined) {
+      processedConfig.hashAlgorithm = projectConfig.hashAlgorithm;
     }
 
     return processedConfig;
@@ -378,7 +390,9 @@ export class NgccConfiguration {
   }
 
   private computeHash(): string {
-    return createHash('md5').update(JSON.stringify(this.projectConfig)).digest('hex');
+    return createHash(this.projectConfig.hashAlgorithm)
+        .update(JSON.stringify(this.projectConfig))
+        .digest('hex');
   }
 }
 
