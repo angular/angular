@@ -189,7 +189,7 @@ describe('MatBottomSheet', () => {
 
     viewContainerFixture.detectChanges();
 
-    let backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+    const backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
 
     backdrop.click();
     viewContainerFixture.detectChanges();
@@ -252,7 +252,7 @@ describe('MatBottomSheet', () => {
 
     viewContainerFixture.detectChanges();
 
-    let overlayPane = overlayContainerElement.querySelector('.cdk-global-overlay-wrapper')!;
+    const overlayPane = overlayContainerElement.querySelector('.cdk-global-overlay-wrapper')!;
 
     expect(overlayPane.getAttribute('dir')).toBe('rtl');
   });
@@ -320,7 +320,7 @@ describe('MatBottomSheet', () => {
   }));
 
   it('should open a new bottom sheet after dismissing a previous sheet', fakeAsync(() => {
-    let config: MatBottomSheetConfig = {viewContainerRef: testViewContainerRef};
+    const config: MatBottomSheetConfig = {viewContainerRef: testViewContainerRef};
     let bottomSheetRef: MatBottomSheetRef<any> = bottomSheet.open(PizzaMsg, config);
 
     viewContainerFixture.detectChanges();
@@ -495,7 +495,8 @@ describe('MatBottomSheet', () => {
 
       viewContainerFixture.detectChanges();
 
-      let backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+      const backdrop =
+          overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
       backdrop.click();
       viewContainerFixture.detectChanges();
       flush();
@@ -518,14 +519,15 @@ describe('MatBottomSheet', () => {
     }));
 
     it('should allow for the disableClose option to be updated while open', fakeAsync(() => {
-      let bottomSheetRef = bottomSheet.open(PizzaMsg, {
+      const bottomSheetRef = bottomSheet.open(PizzaMsg, {
         disableClose: true,
         viewContainerRef: testViewContainerRef
       });
 
       viewContainerFixture.detectChanges();
 
-      let backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+      const backdrop =
+          overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
       backdrop.click();
 
       expect(overlayContainerElement.querySelector('mat-bottom-sheet-container')).toBeTruthy();
