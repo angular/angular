@@ -43,8 +43,10 @@ export interface DirectoryEntry {
  * changes. This is necessary to support virtual file systems as used in the CLI devkit.
  */
 export abstract class FileSystem {
-  /** Checks whether the given file or directory exists. */
-  abstract exists(path: WorkspacePath): boolean;
+  /** Checks whether the given file exists. */
+  abstract fileExists(path: WorkspacePath): boolean;
+  /** Checks whether the given directory exists. */
+  abstract directoryExists(path: WorkspacePath): boolean;
   /** Gets the contents of the given file. */
   abstract read(filePath: WorkspacePath): string|null;
   /** Reads the given directory to retrieve children. */

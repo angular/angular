@@ -148,7 +148,7 @@ export class ComponentResourceCollector {
 
         // In case the template does not exist in the file system, skip this
         // external template.
-        if (!this._fileSystem.exists(templatePath)) {
+        if (!this._fileSystem.fileExists(templatePath)) {
           return;
         }
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {basename, dirname, normalize, NormalizedRoot, Path} from '@angular-devkit/core';
+import {normalize, Path} from '@angular-devkit/core';
 import {Tree, UpdateRecorder} from '@angular-devkit/schematics';
 import {DirectoryEntry, FileSystem} from '../update-tool/file-system';
 import * as path from 'path';
@@ -42,10 +42,25 @@ export class DevkitFileSystem extends FileSystem {
     this._updateRecorderCache.clear();
   }
 
-  exists(fileOrDirPath: Path) {
-    // We need to check for both file or directory existence, in order
-    // to comply with the expectation from the TypeScript compiler.
-    return this._tree.exists(fileOrDirPath) || this._isExistingDirectory(fileOrDirPath);
+  fileExists(filePath: Path) {
+    return this._tree.exists(filePath);
+  }
+
+  directoryExists(dirPath: Path) {
+    // The devkit tree does not expose an API for checking whether a given
+    // directory exists. It throws a specific error though if a directory
+    // is being read as a file. We use that to check if a directory exists.
+    try {
+      this._tree.get(dirPath);
+    } catch (e) {
+      // Note: We do not use an `instanceof` check here. It could happen that the devkit version
+      // used by the CLI is different than the one we end up loading. This can happen depending
+      // on how Yarn/NPM hoists the NPM packages / whether there are multiple versions installed.
+      if (e instanceof Error && e.constructor.name === 'PathIsDirectoryException') {
+        return true;
+      }
+    }
+    return false;
   }
 
   overwrite(filePath: Path, content: string) {
@@ -68,24 +83,5 @@ export class DevkitFileSystem extends FileSystem {
   readDirectory(dirPath: Path): DirectoryEntry {
     const {subdirs: directories, subfiles: files} = this._tree.getDir(dirPath);
     return {directories, files};
-  }
-
-  private _isExistingDirectory(dirPath: Path) {
-    if (dirPath === NormalizedRoot) {
-      return true;
-    }
-
-    const parent = dirname(dirPath);
-    const dirName = basename(dirPath);
-    // TypeScript also checks potential entry points, so e.g. importing
-    // package.json will result in a lookup of /package.json/package.json
-    // and /package.json/index.ts. In order to avoid failure, we check if
-    // the parent is an existing file and return false, if that is the case.
-    if (this._tree.exists(parent)) {
-      return false;
-    }
-
-    const dir = this._tree.getDir(parent);
-    return dir.subdirs.indexOf(dirName) !== -1;
   }
 }

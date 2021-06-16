@@ -483,13 +483,13 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
    * be stored in the specified file path.
    */
   private _getAvailableGestureConfigFileName(sourceRoot: Path) {
-    if (!this.fileSystem.exists(join(sourceRoot, `${GESTURE_CONFIG_FILE_NAME}.ts`))) {
+    if (!this.fileSystem.fileExists(join(sourceRoot, `${GESTURE_CONFIG_FILE_NAME}.ts`))) {
       return `${GESTURE_CONFIG_FILE_NAME}.ts`;
     }
 
     let possibleName = `${GESTURE_CONFIG_FILE_NAME}-`;
     let index = 1;
-    while (this.fileSystem.exists(join(sourceRoot, `${possibleName}-${index}.ts`))) {
+    while (this.fileSystem.fileExists(join(sourceRoot, `${possibleName}-${index}.ts`))) {
       index++;
     }
     return `${possibleName + index}.ts`;
@@ -630,7 +630,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
   private _removeHammerFromIndexFile() {
     const indexFilePaths = getProjectIndexFiles(this.context.project);
     indexFilePaths.forEach(filePath => {
-      if (!this.fileSystem.exists(filePath)) {
+      if (!this.fileSystem.fileExists(filePath)) {
         return;
       }
 

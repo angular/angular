@@ -40,7 +40,7 @@ export class FileSystemHost implements ts.ParseConfigHost {
   constructor(private _fileSystem: FileSystem) {}
 
   fileExists(path: string): boolean {
-    return this._fileSystem.exists(this._fileSystem.resolve(path));
+    return this._fileSystem.fileExists(this._fileSystem.resolve(path));
   }
 
   readFile(path: string): string|undefined {
@@ -84,7 +84,7 @@ export function createFileSystemCompilerHost(
   host.readFile = virtualHost.readFile.bind(virtualHost);
   host.readDirectory = virtualHost.readDirectory.bind(virtualHost);
   host.fileExists = virtualHost.fileExists.bind(virtualHost);
-  host.directoryExists = (dirPath) => fileSystem.exists(fileSystem.resolve(dirPath));
+  host.directoryExists = (dirPath) => fileSystem.directoryExists(fileSystem.resolve(dirPath));
   host.getCurrentDirectory = () => '/';
   host.getCanonicalFileName = p => fileSystem.resolve(p);
 
