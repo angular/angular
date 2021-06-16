@@ -26,6 +26,9 @@
             "aot": true,
             "assets": ["src/assets"],
             "styles": ["src/styles.scss"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["node_modules"]
+            },
             "scripts": []
           },
           "configurations": {
@@ -105,6 +108,9 @@
             "karmaConfig": "karma.conf.js",
             "assets": ["src/assets"],
             "styles": ["src/styles.scss"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["node_modules"]
+            },
             "scripts": []
           }
         },
@@ -158,6 +164,9 @@
               "projects/shell-chrome/src/popups"
             ],
             "styles": ["projects/shell-chrome/src/styles.scss"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["node_modules"]
+            },
             "scripts": []
           },
           "configurations": {
@@ -220,6 +229,9 @@
             "karmaConfig": "projects/shell-chrome/karma.conf.js",
             "assets": ["projects/shell-chrome/src/assets"],
             "styles": ["projects/shell-chrome/src/styles.scss"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["node_modules"]
+            },
             "scripts": []
           }
         },
@@ -277,7 +289,10 @@
             "main": "projects/ng-devtools/src/test.ts",
             "tsConfig": "projects/ng-devtools/tsconfig.spec.json",
             "karmaConfig": "projects/ng-devtools/karma.conf.js",
-            "codeCoverage": true
+            "codeCoverage": true,
+            "stylePreprocessorOptions": {
+              "includePaths": ["node_modules"]
+            }
           }
         },
         "lint": {
