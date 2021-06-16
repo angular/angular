@@ -164,7 +164,6 @@
     "@bazel/buildifier": "^4.0.1",
     "@bazel/ibazel": "^0.15.8",
     "@octokit/graphql": "^4.6.1",
-    "@types/cldrjs": "^0.4.22",
     "@types/cli-progress": "^3.4.2",
     "@types/conventional-commits-parser": "^3.0.1",
     "@types/ejs": "^3.0.6",
@@ -174,7 +173,8 @@
     "browserstacktunnel-wrapper": "^2.0.4",
     "check-side-effects": "0.0.23",
     "clang-format": "^1.4.0",
-    "cldr": "5.7.0",
+    "cldr": "7.0.0",
+    "cldr-data-downloader": "^0.3.5",
     "cldrjs": "0.5.5",
     "cli-progress": "^3.7.0",
     "conventional-changelog": "^3.1.24",
@@ -217,5 +217,6 @@
     "@babel/template": "7.8.6",
     "@babel/traverse": "7.8.6",
     "@babel/types": "7.8.6"
-  }
+  },
+  "cldr-data-coverage": "full"
 }
