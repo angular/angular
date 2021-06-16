@@ -1,3 +1,30 @@
+<a name="12.0.5"></a>
+# 12.0.5 (2021-06-16)
+### compiler
+| Commit | Description |
+| -- | -- |
+| 89fc131ef8 | fix(compiler): always match close tag to the nearest open element (#42554) |
+### compiler-cli
+| Commit | Description |
+| -- | -- |
+| 60dbf017fb | fix(compiler-cli): prevent prior compilations from being retained in watch builds (#42537) |
+### core
+| Commit | Description |
+| -- | -- |
+| 785da0f1bf | fix(core): ensure that autoRegisterModuleById registration in ɵɵdefineNgModule is not DCE-ed by closure (#42529) |
+### forms
+| Commit | Description |
+| -- | -- |
+| 6f1b907b79 | fix(forms): changes to status not always being emitted to statusChanges observable for async validators. (#42553) |
+### language-service
+| Commit | Description |
+| -- | -- |
+| 8192f1e1c2 | fix(language-service): 'go to defininition' for objects defined in template (#42559) |
+| 11e0f53352 | fix(language-service): Use last child end span for parent without close tag (#42554) |
+## Special Thanks:
+Ahmed Ayed, Alan Agius, Andrew Scott, Ankit Choudhary, Aristeidis Bampakos, Daniel Trevino, Dario Piotrowicz, Dylan Hunn, George Kalpakas, Igor Minar, JiaLiPassion, JoostK, Kapunahele Wong, Kristiyan Kostadinov, Marius Bethge, Pete Bacon Darwin, Pham Huu Hien, dario-piotrowicz and gobika21
+
+
 <a name="12.1.0-next.5"></a>
 # 12.1.0-next.5 (2021-06-09)
 ### common
