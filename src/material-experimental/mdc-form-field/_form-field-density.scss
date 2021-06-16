@@ -33,7 +33,7 @@
 
 // Mixin that includes the density styles for form fields. MDC provides their own density
 // styles for MDC text-field which we cannot use. MDC relies on input elements to stretch
-// vertically when the height is reduced as per density scale. This doesn't work for for our
+// vertically when the height is reduced as per density scale. This doesn't work for our
 // form field since we support custom form field controls without a fixed height. Instead, we
 // provide spacing that makes arbitrary controls align as specified in the Material Design
 // specification. In order to support density, we need to adjust the vertical spacing to be

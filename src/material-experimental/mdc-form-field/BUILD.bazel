@@ -77,6 +77,7 @@ sass_library(
     srcs = [
         "_form-field-density.scss",
         "_form-field-focus-overlay.scss",
+        "_form-field-high-contrast.scss",
         "_form-field-native-select.scss",
         "_form-field-sizing.scss",
         "_form-field-subscript.scss",

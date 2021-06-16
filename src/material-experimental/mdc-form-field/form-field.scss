@@ -5,6 +5,7 @@
 @use './form-field-sizing';
 @use './form-field-subscript';
 @use './form-field-focus-overlay';
+@use './form-field-high-contrast';
 @use './form-field-native-select';
 @use './mdc-text-field-textarea-overrides';
 @use './mdc-text-field-structure-overrides';
@@ -23,10 +24,11 @@
 @include mdc-text-field-textarea-overrides.private-text-field-textarea-overrides();
 @include mdc-text-field-structure-overrides.private-text-field-structure-overrides();
 
-// Include the subscript, focus-overlay and native select styles.
+// Include the subscript, focus-overlay, native select and high-contrast styles.
 @include form-field-subscript.private-form-field-subscript();
 @include form-field-focus-overlay.private-form-field-focus-overlay();
 @include form-field-native-select.private-form-field-native-select();
+@include form-field-high-contrast.private-form-field-high-contrast();
 
 // Host element of the form-field. It contains the mdc-text-field wrapper
 // and the subscript wrapper.
