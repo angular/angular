@@ -1,3 +1,63 @@
+# 12.1.0-next.1 "iron-idol" (2021-06-16)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **a11y:** Fix the touch/program origin regression introduced in the recent FocusMonitor refactor. ([#22754](https://github.com/angular/components/issues/22754)) ([93499e95c9cfd13fcf9fdfcf7bb98773773ededa](https://github.com/angular/components/commit/93499e95c9cfd13fcf9fdfcf7bb98773773ededa)) |
+| bug fix |  **drag-drop:** error if dragged item is destroyed as a result of the `entered` event ([#22904](https://github.com/angular/components/issues/22904)) ([0431d8152bb1a0ff2c4bec31bb8684a8cba04b5f](https://github.com/angular/components/commit/0431d8152bb1a0ff2c4bec31bb8684a8cba04b5f)), closes [#22813](https://github.com/angular/components/issues/22813) |
+| bug fix |  **overlay:** expand test environment check ([#22927](https://github.com/angular/components/issues/22927)) ([3f26e99c8686417ebb29208fc8a2333593f9f07e](https://github.com/angular/components/commit/3f26e99c8686417ebb29208fc8a2333593f9f07e)), closes [#22926](https://github.com/angular/components/issues/22926) |
+| bug fix |  **schematics:** avoid runtime errors thrown by devkit tree ([#22982](https://github.com/angular/components/issues/22982)) ([805d3aef8b722ab2b19e6bcb5e13c849b21f2abf](https://github.com/angular/components/commit/805d3aef8b722ab2b19e6bcb5e13c849b21f2abf)), closes [#22919](https://github.com/angular/components/issues/22919) |
+| feature |  **a11y:** Add a new InputModalityDetector service to detect the user's current input modality. ([#22371](https://github.com/angular/components/issues/22371)) ([f11775c663768c64f2e8df127606f1a048fde5dd](https://github.com/angular/components/commit/f11775c663768c64f2e8df127606f1a048fde5dd)) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **multiple:** add inject flags to manual injector calls ([#22922](https://github.com/angular/components/issues/22922)) ([fc8a6f9cf5d9560dbd8ece6347a9066bb5f1020c](https://github.com/angular/components/commit/fc8a6f9cf5d9560dbd8ece6347a9066bb5f1020c)), closes [#22665](https://github.com/angular/components/issues/22665) |
+| bug fix |  **schematics:** incorrectly migrating some cases ([#22983](https://github.com/angular/components/issues/22983)) ([3c140fdb7f8aecd09054a348986975404e9614a8](https://github.com/angular/components/commit/3c140fdb7f8aecd09054a348986975404e9614a8)) |
+| bug fix |  **slider:** make value non-nullable ([#22912](https://github.com/angular/components/issues/22912)) ([71afc4616baafdb46571a7b58d2037c18cd75317](https://github.com/angular/components/commit/71afc4616baafdb46571a7b58d2037c18cd75317)), closes [#22444](https://github.com/angular/components/issues/22444) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-button:** set proper touch target ([#22931](https://github.com/angular/components/issues/22931)) ([32844962f26cef48f4339181dbd30c714bd005fd](https://github.com/angular/components/commit/32844962f26cef48f4339181dbd30c714bd005fd)), closes [#22799](https://github.com/angular/components/issues/22799) |
+| bug fix |  **mdc-checkbox:** add larger touch target ([#22892](https://github.com/angular/components/issues/22892)) ([437aba6e7e5ea8e0842fd294ab63b7d103aac97b](https://github.com/angular/components/commit/437aba6e7e5ea8e0842fd294ab63b7d103aac97b)) |
+| bug fix |  **mdc-slide-toggle:** increase contrast in high contrast mode ([#22945](https://github.com/angular/components/issues/22945)) ([87ab033fe2c1b82e5f14ff8805d35f66886aa99a](https://github.com/angular/components/commit/87ab033fe2c1b82e5f14ff8805d35f66886aa99a)), closes [#22941](https://github.com/angular/components/issues/22941) |
+| bug fix |  **mdc-slider:** align test harness inferred position with component ([#22879](https://github.com/angular/components/issues/22879)) ([24d33a85a979d80c41ce4120e2991a4200cd9664](https://github.com/angular/components/commit/24d33a85a979d80c41ce4120e2991a4200cd9664)) |
+| bug fix |  **mdc-slider:** delete isRequired function ([#22876](https://github.com/angular/components/issues/22876)) ([4cee3b7079a76b2f28657f5ac2a571add026aa24](https://github.com/angular/components/commit/4cee3b7079a76b2f28657f5ac2a571add026aa24)) |
+| bug fix |  **mdc-slider:** initialize the aria-valuetext … ([#22877](https://github.com/angular/components/issues/22877)) ([d5a5de2f5a853e02f210f8b55d2d9c7126695730](https://github.com/angular/components/commit/d5a5de2f5a853e02f210f8b55d2d9c7126695730)) |
+| bug fix |  **mdc-slider:** remove unused event emitters ([#22921](https://github.com/angular/components/issues/22921)) ([f750db2addd7c67482b16f09fa7a0cbee8b99eb0](https://github.com/angular/components/commit/f750db2addd7c67482b16f09fa7a0cbee8b99eb0)) |
+| bug fix |  **mdc-tabs:** ink bar animation not always disabled ([#22848](https://github.com/angular/components/issues/22848)) ([61ce45da1b58bd10cf2c412ce7d961707ca7ff55](https://github.com/angular/components/commit/61ce45da1b58bd10cf2c412ce7d961707ca7ff55)) |
+
+
+## 12.0.5 "honeycomb-heart" (2021-06-16)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **drag-drop:** error if dragged item is destroyed as a result of the `entered` event ([#22904](https://github.com/angular/components/issues/22904)) ([db855c2d3371ec5ef9e1a7c236408442be78dc39](https://github.com/angular/components/commit/db855c2d3371ec5ef9e1a7c236408442be78dc39)), closes [#22813](https://github.com/angular/components/issues/22813) |
+| bug fix |  **overlay:** expand test environment check ([#22927](https://github.com/angular/components/issues/22927)) ([1208456477b618167bc44a8e5df5ed2839b81a3d](https://github.com/angular/components/commit/1208456477b618167bc44a8e5df5ed2839b81a3d)), closes [#22926](https://github.com/angular/components/issues/22926) |
+| bug fix |  **schematics:** avoid runtime errors thrown by devkit tree ([#22982](https://github.com/angular/components/issues/22982)) ([ce1e11c2a85e769fc4a7d659ca17935d0286a975](https://github.com/angular/components/commit/ce1e11c2a85e769fc4a7d659ca17935d0286a975)), closes [#22919](https://github.com/angular/components/issues/22919) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **multiple:** add inject flags to manual injector calls ([#22922](https://github.com/angular/components/issues/22922)) ([2e2f755e361f0d31edd49f140f3b678cfe7f1332](https://github.com/angular/components/commit/2e2f755e361f0d31edd49f140f3b678cfe7f1332)), closes [#22665](https://github.com/angular/components/issues/22665) |
+| bug fix |  **slider:** make value non-nullable ([#22912](https://github.com/angular/components/issues/22912)) ([383f7b650b46172b8ac4f91813cd485db8dba84f](https://github.com/angular/components/commit/383f7b650b46172b8ac4f91813cd485db8dba84f)), closes [#22444](https://github.com/angular/components/issues/22444) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-button:** set proper touch target ([#22931](https://github.com/angular/components/issues/22931)) ([0012409b717bd8b5dc97ffed4e4e70afc9a84bca](https://github.com/angular/components/commit/0012409b717bd8b5dc97ffed4e4e70afc9a84bca)), closes [#22799](https://github.com/angular/components/issues/22799) |
+| bug fix |  **mdc-checkbox:** add larger touch target ([#22892](https://github.com/angular/components/issues/22892)) ([dee60fa411bb1e81d2487f1b54faf280bfdf56c0](https://github.com/angular/components/commit/dee60fa411bb1e81d2487f1b54faf280bfdf56c0)) |
+| bug fix |  **mdc-tabs:** ink bar animation not always disabled ([#22848](https://github.com/angular/components/issues/22848)) ([2af24d86e8aaf582a8ce8878d9ab9054807d2676](https://github.com/angular/components/commit/2af24d86e8aaf582a8ce8878d9ab9054807d2676)) |
+
+
 # 12.1.0-next.0 "concrete-carousel" (2021-06-09)
 
 ### cdk
