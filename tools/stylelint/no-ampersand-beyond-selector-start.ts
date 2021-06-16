@@ -1,6 +1,5 @@
 import {createPlugin, utils} from 'stylelint';
 import {basename} from 'path';
-import {Node} from './stylelint-postcss-types';
 
 const isStandardSyntaxRule = require('stylelint/lib/utils/isStandardSyntaxRule');
 const isStandardSyntaxSelector = require('stylelint/lib/utils/isStandardSyntaxSelector');
@@ -37,43 +36,24 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, _options?) => {
     }
 
     root.walkRules(rule => {
-      if (
-        rule.parent.type === 'rule' &&
-        isStandardSyntaxRule(rule) &&
-        isStandardSyntaxSelector(rule.selector) &&
-        // Using the ampersand at the beginning is fine, anything else can cause issues in themes.
-        rule.selector.indexOf('&') > 0) {
-
-        const mixinName = getClosestMixinName(rule);
-
-        // Skip rules inside private mixins.
-        if (!mixinName || !mixinName.startsWith('_')) {
-          utils.report({
-            result,
-            ruleName,
-            message: messages.expected(),
-            node: rule
-          });
-        }
+      if (rule.parent.type === 'rule' &&
+          isStandardSyntaxRule(rule) &&
+          isStandardSyntaxSelector(rule.selector) &&
+          hasInvalidAmpersandUsage(rule.selector)) {
+        utils.report({
+          result,
+          ruleName,
+          message: messages.expected(),
+          node: rule
+        });
       }
     });
   };
-
-  /** Walks up the AST and finds the name of the closest mixin. */
-  function getClosestMixinName(node: Node): string | undefined {
-    let parent = node.parent;
-
-    while (parent) {
-      if (parent.type === 'atrule' && parent.name === 'mixin') {
-        return parent.params;
-      }
-
-      parent = parent.parent;
-    }
-
-    return undefined;
-  }
 });
+
+function hasInvalidAmpersandUsage(selector: string): boolean {
+  return selector.split(',').some(part => part.trim().indexOf('&', 1) > -1);
+}
 
 plugin.ruleName = ruleName;
 plugin.messages = messages;

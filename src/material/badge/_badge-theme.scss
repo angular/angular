@@ -18,6 +18,8 @@ $large-size: $default-size + 6;
 
 // Mixin for building offset given different sizes
 @mixin _badge-size($size) {
+  // This mixin isn't used in the context of a theme so we can disable the ampersand check.
+  // stylelint-disable material/no-ampersand-beyond-selector-start
   .mat-badge-content {
     width: $size;
     height: $size;
@@ -89,6 +91,7 @@ $large-size: $default-size + 6;
       }
     }
   }
+  // stylelint-enable
 }
 
 @mixin color($config-or-theme) {
