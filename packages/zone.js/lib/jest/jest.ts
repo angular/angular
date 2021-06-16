@@ -131,6 +131,14 @@ Zone.__load_patch('jest', (context: any, Zone: ZoneType, api: _ZonePrivate) => {
     };
   });
 
+  const beforeEach = context['beforeEach'];
+  if (beforeEach) {
+    beforeEach(() => {
+      const proxyZoneSpec = ProxyZoneSpec.get();
+      proxyZoneSpec && proxyZoneSpec.resetDelegate();
+    });
+  }
+
   (Zone as any).patchJestObject = function patchJestObject(Timer: any, isModern = false) {
     // check whether currently the test is inside fakeAsync()
     function isPatchingFakeTimer() {
