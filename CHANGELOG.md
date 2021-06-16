@@ -1,3 +1,8 @@
+# 12.1.0-rc.0 "resin-rose" (2021-06-16)
+
+No changes from 12.1.0-next.1
+
+
 # 12.1.0-next.1 "iron-idol" (2021-06-16)
 
 ### cdk

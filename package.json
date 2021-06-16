@@ -52,7 +52,7 @@
     "check-tools": "yarn tsc --project tools/tsconfig-ci.json",
     "prepare": "husky install"
   },
-  "version": "12.1.0-next.1",
+  "version": "12.2.0-next.0",
   "dependencies": {
     "@angular/animations": "^12.1.0-next.5",
     "@angular/common": "^12.1.0-next.5",
