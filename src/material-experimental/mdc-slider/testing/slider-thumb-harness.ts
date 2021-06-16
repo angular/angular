@@ -31,8 +31,9 @@ export class MatSliderThumbHarness extends ComponentHarness {
 
   /** Gets the position of the thumb inside the slider. */
   async getPosition(): Promise<ThumbPosition> {
-    const isEnd = (await (await this.host()).getAttribute('matSliderEndThumb')) != null;
-    return isEnd ? ThumbPosition.END : ThumbPosition.START;
+    // Meant to mimic MDC's logic where `matSliderThumb` is treated as END.
+    const isStart = (await (await this.host()).getAttribute('matSliderStartThumb')) != null;
+    return isStart ? ThumbPosition.START : ThumbPosition.END;
   }
 
   /** Gets the value of the thumb. */

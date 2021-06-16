@@ -51,18 +51,18 @@ export class MatSliderHarness extends ComponentHarness {
   /** Gets the value step increments of the slider. */
   async getStep(): Promise<number> {
     // The same step value is forwarded to both thumbs.
-    const startHost = await (await this.getStartThumb()).host();
+    const startHost = await (await this.getEndThumb()).host();
     return coerceNumberProperty(await startHost.getProperty('step'));
   }
 
   /** Gets the maximum value of the slider. */
   async getMaxValue(): Promise<number> {
-    const endThumb = await this.isRange() ? await this.getEndThumb() : await this.getStartThumb();
-    return endThumb.getMaxValue();
+    return (await this.getEndThumb()).getMaxValue();
   }
 
   /** Gets the minimum value of the slider. */
   async getMinValue(): Promise<number> {
-    return (await this.getStartThumb()).getMinValue();
+    const startThumb = await this.isRange() ? await this.getStartThumb() : await this.getEndThumb();
+    return startThumb.getMinValue();
   }
 }
