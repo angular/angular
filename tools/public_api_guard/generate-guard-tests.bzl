@@ -7,14 +7,18 @@ load("@npm//ts-api-guardian:index.bzl", "ts_api_guardian_test")
   against the associated source entry point.
 """
 
-def generate_test_targets(golden_files):
-    for golden_file in golden_files:
+def generate_test_targets(targets):
+    for target_name in targets:
         # Splits the path that is relative to the current directory into the package name and
         # entry point tail path. The package name is always the first path segment (e.g. "cdk/")
-        [package_name, entry_point_tail] = golden_file.split("/", 1)
+        [package_name, entry_point_tail] = target_name.split("/", 1)
 
         # Name of the entry-point (e.g. "a11y", "drag-drop", "platform")
         entry_point = entry_point_tail[:-len(".d.ts")]
+
+        # Name of the .d.ts file that will be produced. We replace the slashes in the entry
+        # point name with underscores so that we can get a flat directory of golden files.
+        golden_file = "%s/%s" % (package_name, entry_point_tail.replace("/", "-"))
 
         # Construct the path to the given entry-point. Note that we also need to find a way to
         # allow guards for the primary entry-point of a package. e.g. "//src/cdk:cdk" should be also
@@ -24,7 +28,7 @@ def generate_test_targets(golden_files):
 
         # Create the test rule that compares the build output with the golden file.
         ts_api_guardian_test(
-            name = "%s_api" % golden_file,
+            name = "%s_api" % target_name,
             actual = "angular_material/src/%s/index.d.ts" % entry_point_path,
             data = [golden_file] + [
                 "//src/%s" % (entry_point_path),
