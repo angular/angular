@@ -239,6 +239,23 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
           ]);
           expect(parsed.errors).toEqual([]);
         });
+
+        it('should treat prematurely terminated interpolation as text', () => {
+          const {errors, rootNodes} =
+              parser.parse('<div><span>x {{ expr }<!---->} y</span><div></div></div>', 'TestComp');
+          expect(humanizeNodes(rootNodes, true)).toEqual([
+            [
+              html.Element, 'div', 0, '<div><span>x {{ expr }<!---->} y</span><div></div></div>',
+              '<div>', '</div>'
+            ],
+            [html.Element, 'span', 1, '<span>x {{ expr }<!---->} y</span>', '<span>', '</span>'],
+            [html.Text, 'x {{ expr }', 2, ['x '], ['{{', ' expr }'], [''], 'x {{ expr }'],
+            [html.Comment, '', 2, '<!--'],
+            [html.Text, '} y', 2, ['} y'], '} y'],
+            [html.Element, 'div', 1, '<div></div>', '<div>', '</div>'],
+          ]);
+          expect(errors).toEqual([]);
+        });
       });
 
       describe('attributes', () => {
@@ -317,6 +334,16 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
             [html.Element, ':svg:use', 0],
             [html.Attribute, ':xlink:href', 'Port', ['Port']],
           ]);
+        });
+
+        it('should support a prematurely terminated interpolation in attribute', () => {
+          const {errors, rootNodes} = parser.parse('<div p="{{ abc"><span></span>', 'TestComp');
+          expect(humanizeNodes(rootNodes, true)).toEqual([
+            [html.Element, 'div', 0, '<div p="{{ abc">', '<div p="{{ abc">', null],
+            [html.Attribute, 'p', '{{ abc', [''], ['{{', ' abc'], [''], 'p="{{ abc"'],
+            [html.Element, 'span', 1, '<span></span>', '<span>', '</span>'],
+          ]);
+          expect(humanizeErrors(errors)).toEqual([]);
         });
       });
 
