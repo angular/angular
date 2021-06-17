@@ -20,7 +20,8 @@
           "https://fonts.gstatic.com/s/**"
         ]
       }
-    }, {
+    },
+    {
       "name": "assets-eager",
       "installMode": "prefetch",
       "updateMode": "prefetch",
@@ -32,7 +33,8 @@
           "!/**/_unused/**"
         ]
       }
-    }, {
+    },
+    {
       "name": "assets-lazy",
       "installMode": "lazy",
       "updateMode": "prefetch",
@@ -44,7 +46,8 @@
           "!/**/_unused/**"
         ]
       }
-    }, {
+    },
+    {
       "name": "docs-index",
       "installMode": "prefetch",
       "updateMode": "prefetch",
@@ -56,7 +59,8 @@
           "/generated/docs/app/search-data.json"
         ]
       }
-    }, {
+    },
+    {
       "name": "docs-lazy",
       "installMode": "lazy",
       "updateMode": "lazy",
@@ -75,13 +79,13 @@
     "!/**/*__*",
     "!/**/*__*/**",
     "!/**/stackblitz/{0,1}",
-    "!/api/*/**/*-(class|directive|var|interface|function|pipe|let|type-alias|decorator)",
     "!/api/**/AnimationStateDeclarationMetadata*",
     "!/api/**/CORE_DIRECTIVES*",
     "!/api/**/DirectiveMetadata*",
     "!/api/**/HTTP_PROVIDERS*",
     "!/api/**/NgFor-*",
     "!/api/**/PLATFORM_PIPES*",
+    "!/api/*/**/*-(class|directive|var|interface|function|pipe|let|type-alias|decorator)",
     "!/api/animate/**",
     "!/api/api/**",
     "!/api/common/Control*",
@@ -91,37 +95,37 @@
     "!/api/http/{0,1}",
     "!/api/platform-browser/AnimationDriver*",
     "!/api/testing/**",
-    "!/docs/?*",
+    "!/config/**",
+    "!/devtools/{0,1}",
     "!/docs/*/**",
+    "!/docs/?*",
+    "!/getting-started/**",
+    "!/getting-started/{0,1}",
     "!/guide/bazel/{0,1}",
     "!/guide/change-log/{0,1}",
-    "!/getting-started/{0,1}",
-    "!/getting-started/**",
     "!/guide/cli-quickstart/{0,1}",
     "!/guide/displaying-data/{0,1}",
     "!/guide/learning-angular/{0,1}",
     "!/guide/metadata/{0,1}",
     "!/guide/ngmodule/{0,1}",
-    "!/guide/service-worker-getstart/{0,1}",
+    "!/guide/quickstart/{0,1}",
     "!/guide/service-worker-comm/{0,1}",
     "!/guide/service-worker-configref/{0,1}",
+    "!/guide/service-worker-getstart/{0,1}",
+    "!/guide/setup-systemjs-anatomy/{0,1}",
+    "!/guide/setup/{0,1}",
     "!/guide/updating-to-version-10/{0,1}",
     "!/guide/updating-to-version-11/{0,1}",
     "!/guide/webpack/{0,1}",
-    "!/guide/setup/{0,1}",
-    "!/guide/setup-systemjs-anatomy/{0,1}",
-    "!/guide/quickstart/{0,1}",
     "!/news/{0,1}",
     "!/start/data/{0,1}",
     "!/start/deployment/{0,1}",
     "!/start/forms/{0,1}",
     "!/start/routing/{0,1}",
-    "!/styleguide/{0,1}",
-    "!/styleguide/**",
-    "!/testing/{0,1}",
-    "!/testing/**",
-    "!/config/**",
     "!/strict/{0,1}",
-    "!/devtools/{0,1}"
+    "!/styleguide/**",
+    "!/styleguide/{0,1}",
+    "!/testing/**",
+    "!/testing/{0,1}"
   ]
 }
