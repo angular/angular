@@ -19,7 +19,7 @@ export function getRedirector() {
 }
 
 export function getSwNavigationUrlChecker() {
-  const config = loadJson(`${AIO_DIR}/ngsw-config.json`);
+  const config = loadJson(`${AIO_DIR}/src/generated/ngsw-config.json`);
   const navigationUrlSpecs = processNavigationUrls('', config.navigationUrls);
 
   const includePatterns = navigationUrlSpecs
