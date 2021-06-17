@@ -35,8 +35,8 @@ import {
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
 import {R3TestBedCompiler} from './r3_test_bed_compiler';
-import {TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT, TestBed} from './test_bed';
-import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, ModuleTeardownOptions, TestBedStatic, TestComponentRenderer, TestEnvironmentOptions, TestModuleMetadata} from './test_bed_common';
+import {TestBed} from './test_bed';
+import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, ModuleTeardownOptions, TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT, TestBedStatic, TestComponentRenderer, TestEnvironmentOptions, TestModuleMetadata} from './test_bed_common';
 
 let _nextRootElementId = 0;
 

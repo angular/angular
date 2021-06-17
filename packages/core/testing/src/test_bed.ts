@@ -11,17 +11,11 @@ import {ApplicationInitStatus, CompilerOptions, Component, Directive, InjectFlag
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
 import {_getTestBedRender3, TestBedRender3} from './r3_test_bed';
-import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, ModuleTeardownOptions, TestBedStatic, TestComponentRenderer, TestEnvironmentOptions, TestModuleMetadata} from './test_bed_common';
+import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, ModuleTeardownOptions, TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT, TestBedStatic, TestComponentRenderer, TestEnvironmentOptions, TestModuleMetadata} from './test_bed_common';
 import {TestingCompiler, TestingCompilerFactory} from './test_compiler';
 
 
 let _nextRootElementId = 0;
-
-/**
- * Whether test modules should be torn down by default.
- * Currently disabled for backwards-compatibility reasons.
- */
-export const TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT = false;
 
 /**
  * @publicApi
