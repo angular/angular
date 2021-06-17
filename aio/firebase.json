@@ -1,8 +1,55 @@
 {
+  // Docs on Firebase hosting configuration: https://firebase.google.com/docs/hosting/full-config
   "hosting": {
     "target": "aio",
     "public": "dist",
     "cleanUrls": true,
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    // ADDING REDIRECTS
+    //
+    // In order to permanently redirect a URL to a new address, add an new entry in the `redirects`
+    // list:
+    // ```json
+    // {"type": 301, "source": "/old/url", "destination": "/new/url"}
+    // ```
+    //
+    // This will cause the server to redirect any clients that visit `/old/url` to `/new/url`. At
+    // the same time, the ServiceWorker will be automatically configured to let requests for
+    // `/old/url` pass through to the server (instead of serving them locally with the cached
+    // `index.html`).
+    //
+    // In addition, you should also add a corresponding testcase in `URLS_TO_REDIRECT.txt` (inside
+    // `tests/deployment/shared/`) to ensure that the new redirect behaves as expected.
+    //
+    // NOTE 1:
+    // On clients that still have an old ServiceWorker version installed the next time they visit a
+    // recently redirected URL, the ServiceWorker will not yet know to let the request pass through
+    // to the server (and get redirected). In such cases, those clients will get a "Page not found"
+    // error, as the app tries to load `generated/docs/old/url.json` (which no longer exists). Such
+    // errors would typically go away after reloading the page (since the ServiceWorker will have
+    // updated to the latest version in the background).
+    //
+    // This temporary error is usually not a concern, because it only affects clients with an old
+    // ServiceWorker version at the time of the first visit and it goes away on reload. If, however,
+    // it is important to avoid this error for a specific redirect, you can add an additional
+    // redirect entry for the requested JSON file:
+    // ```json
+    // {"type": 302, "source": "/generated/docs/old/url.json", "destination": "/generated/docs/new/url.json"}
+    // ```
+    //
+    // In order to avoid bloating the redirects config, it is recommended to remove this additional
+    // entry after some time has passed, at which point the large majority of existing clients will
+    // have switched to an updated ServiceWorker version.
+    //
+    // NOTE 2:
+    // If you decide to add the additional entry described above, keep in mind that the JSON file
+    // URL is derived from the page URL by prepending `/generated/docs`, replacing any upper-case
+    // letters with the corresponding lower-case ones followed by an underscore (`_`) and appending
+    // `.json`.
+    //
+    // For example, the page URL `/api/forms/FormBuilder` would result in requesting the JSON file
+    // `/generated/docs/api/forms/f_ormb_uilder.json`.
+    //////////////////////////////////////////////////////////////////////////////////////////////
     "redirects": [
       // A random bad indexed page that used `api/api`
       {"type": 301, "source": "/api/api/:rest*", "destination": "/api/:rest*"},
