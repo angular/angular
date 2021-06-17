@@ -1034,8 +1034,7 @@ describe('Driver', () => {
                 },
               },
               'foo');
-          expect(scope.clients.openWindow)
-              .toHaveBeenCalledWith('http://localhost/foo/bar/baz/qux');
+          expect(scope.clients.openWindow).toHaveBeenCalledWith('http://localhost/foo/bar/baz/qux');
         });
 
         it('should resolve with an absolute path', async () => {
@@ -1060,8 +1059,7 @@ describe('Driver', () => {
                 },
               },
               'foo');
-          expect(scope.clients.openWindow)
-              .toHaveBeenCalledWith('http://localhost/baz/qux');
+          expect(scope.clients.openWindow).toHaveBeenCalledWith('http://localhost/baz/qux');
         });
 
         it('should resolve other origins', async () => {
@@ -1086,8 +1084,7 @@ describe('Driver', () => {
                 },
               },
               'foo');
-          expect(scope.clients.openWindow)
-              .toHaveBeenCalledWith('http://other.host/baz/qux');
+          expect(scope.clients.openWindow).toHaveBeenCalledWith('http://other.host/baz/qux');
         });
       });
     });
