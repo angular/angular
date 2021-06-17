@@ -6,20 +6,10 @@ The Angular service worker enables the display of push notifications and the han
 
 <div class="alert is-helpful">
 
-  When using the Angular service worker, push notification interactions can be handled using the `SwPush` service.
+  When using the Angular service worker, push notification interactions are handled using the `SwPush` service.
+  To learn more about the native APIs involved see [Push API](https://developer.mozilla.org/en-US/docs/Web/API/Push_API) and [Using the Notifications API](https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API/Using_the_Notifications_API).
 
 </div>
-
-<div class="alert is-helpful"> 
-
-  For details about the native APIs used by the service worker, see
-
-  [Push API](https://marketfinder.thinkwithgoogle.com/intl/en_us/guide/how-to-approach-i18n/#overview).
-
-  [Using the Notifications API](https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API/Using_the_Notifications_API).
-
-</div>
-
 
 #### Prerequisites
 
@@ -40,7 +30,7 @@ Invoke push notifications by pushing a message with a valid payload. See `SwPush
 
 ## Notification click handling
 
-The default behaviour for the `notificationclick` event, is to close the notification and notify `SwPush#notificationClicks`.
+The default behaviour for the `notificationclick` event, is to close the notification and notify `SwPush.notificationClicks`.
 
 This can easily be changed by adding an `onActionClick` property to the `data` object, and provide a `default` operation.
 
@@ -57,7 +47,7 @@ This can easily be changed by adding an `onActionClick` property to the `data` o
 }
 ```
 
-#### Operations
+### Operations
 
 The Angular service worker supports the following operations:
 
@@ -69,11 +59,11 @@ The Angular service worker supports the following operations:
 
 <div class="alert is-important">
 
-  If a corresponding `onActionClick` field does not have a defined `url` then the service worker's registration scope will be used with no path.
+  If an `onActionClick` item does not define a `url`, then the service worker's registration scope will be used.
   
 </div>
 
-#### Actions
+### Actions
 
 Actions offer a way to customize how the user can interact with a notification.
 
@@ -93,10 +83,10 @@ In addition, using the `onActionClick` property on the `data` object, you can ti
     ],
     "data": {
       "onActionClick": {
-        "default": {"operation": "openWindow", "url": "/foo"},
-        "foo": {"operation": "openWindow", "url": "foo"},
-        "bar": {"operation": "focusLastFocusedOrOpen", "url": "foo"},
-        "baz": {"operation": "navigateLastFocusedOrOpen", "url": "foo"}
+        "default": {"operation": "openWindow"},
+        "foo": {"operation": "openWindow", "url": "/absolute/path"},
+        "bar": {"operation": "focusLastFocusedOrOpen", "url": "relative/path"},
+        "baz": {"operation": "navigateLastFocusedOrOpen", "url": "https://other.domain.com/"}
       }
     }
   }
@@ -105,7 +95,7 @@ In addition, using the `onActionClick` property on the `data` object, you can ti
 
 <div class="alert is-important">
 
-  If an action does not have a corresponding `onActionClick` property, then the notification is closed and `SwPush#notificationClicks` is notified.
+  If an action does not have a corresponding `onActionClick` entry, then the notification is closed and `SwPush.notificationClicks` is notified on existing clients.
 
 </div>
 

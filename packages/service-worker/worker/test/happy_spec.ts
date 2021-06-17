@@ -756,7 +756,7 @@ describe('Driver', () => {
           expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
 
           spyOn(scope.clients, 'openWindow');
-          const url = `foo`;
+          const url = 'foo';
 
           await driver.initialized;
           await scope.handleClick(
@@ -802,7 +802,7 @@ describe('Driver', () => {
           spyOn(scope.clients, 'matchAll').and.returnValue(Promise.resolve([mockClient]));
           spyOn(mockClient, 'focus');
           spyOn(mockClient, 'navigate');
-          const url = `foo`;
+          const url = 'foo';
 
           await driver.initialized;
           await scope.handleClick(
@@ -825,7 +825,7 @@ describe('Driver', () => {
           expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
           spyOn(scope.clients, 'openWindow');
           spyOn(scope.clients, 'matchAll').and.returnValue(Promise.resolve([]));
-          const url = `foo`;
+          const url = 'foo';
 
           await driver.initialized;
           await scope.handleClick(
@@ -1008,6 +1008,86 @@ describe('Driver', () => {
                 {title: 'This is a test without action', body: 'Test body without action'});
             expect(scope.clients.openWindow).not.toHaveBeenCalled();
           });
+        });
+      });
+
+      describe('URL resolution', () => {
+        it('should resolve relative to service worker scope', async () => {
+          scope = new SwTestHarnessBuilder().withServerState(server).build();
+          (scope.registration.scope as string) = 'http://localhost/foo/bar/';
+          driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+
+          spyOn(scope.clients, 'openWindow');
+          const url = 'baz/qux';
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test with a relative url',
+                body: 'Test body with a relative url',
+                data: {
+                  onActionClick: {
+                    foo: {operation: 'openWindow', url},
+                  },
+                },
+              },
+              'foo');
+          expect(scope.clients.openWindow)
+              .toHaveBeenCalledWith('http://localhost/foo/bar/baz/qux');
+        });
+
+        it('should resolve with an absolute path', async () => {
+          scope = new SwTestHarnessBuilder().withServerState(server).build();
+          (scope.registration.scope as string) = 'http://localhost/foo/bar/';
+          driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+
+          spyOn(scope.clients, 'openWindow');
+          const url = '/baz/qux';
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test with an absolute path url',
+                body: 'Test body with an absolute path url',
+                data: {
+                  onActionClick: {
+                    foo: {operation: 'openWindow', url},
+                  },
+                },
+              },
+              'foo');
+          expect(scope.clients.openWindow)
+              .toHaveBeenCalledWith('http://localhost/baz/qux');
+        });
+
+        it('should resolve other origins', async () => {
+          scope = new SwTestHarnessBuilder().withServerState(server).build();
+          (scope.registration.scope as string) = 'http://localhost/foo/bar/';
+          driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+
+          spyOn(scope.clients, 'openWindow');
+          const url = 'http://other.host/baz/qux';
+
+          await driver.initialized;
+          await scope.handleClick(
+              {
+                title: 'This is a test with external origin',
+                body: 'Test body with external origin',
+                data: {
+                  onActionClick: {
+                    foo: {operation: 'openWindow', url},
+                  },
+                },
+              },
+              'foo');
+          expect(scope.clients.openWindow)
+              .toHaveBeenCalledWith('http://other.host/baz/qux');
         });
       });
     });
