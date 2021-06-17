@@ -79,10 +79,10 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 @Pipe({name: 'number'})
 export class DecimalPipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private _locale: string) {}
+
   transform(value: number|string, digitsInfo?: string, locale?: string): string|null;
   transform(value: null|undefined, digitsInfo?: string, locale?: string): null;
   transform(value: number|string|null|undefined, digitsInfo?: string, locale?: string): string|null;
-
   /**
    * @param value The value to be formatted.
    * @param digitsInfo Sets digit and decimal representation.
@@ -129,6 +129,9 @@ export class DecimalPipe implements PipeTransform {
 export class PercentPipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private _locale: string) {}
 
+  transform(value: number|string, digitsInfo?: string, locale?: string): string|null;
+  transform(value: null|undefined, digitsInfo?: string, locale?: string): null;
+  transform(value: number|string|null|undefined, digitsInfo?: string, locale?: string): string|null;
   /**
    *
    * @param value The number to be formatted as a percentage.
@@ -145,9 +148,6 @@ export class PercentPipe implements PipeTransform {
    * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
    * See [Setting your app locale](guide/i18n#setting-up-the-locale-of-your-app).
    */
-  transform(value: number|string, digitsInfo?: string, locale?: string): string|null;
-  transform(value: null|undefined, digitsInfo?: string, locale?: string): null;
-  transform(value: number|string|null|undefined, digitsInfo?: string, locale?: string): string|null;
   transform(value: number|string|null|undefined, digitsInfo?: string, locale?: string): string
       |null {
     if (!isValue(value)) return null;
@@ -207,6 +207,18 @@ export class CurrencyPipe implements PipeTransform {
       @Inject(LOCALE_ID) private _locale: string,
       @Inject(DEFAULT_CURRENCY_CODE) private _defaultCurrencyCode: string = 'USD') {}
 
+  transform(
+      value: number|string, currencyCode?: string,
+      display?: 'code'|'symbol'|'symbol-narrow'|string|boolean, digitsInfo?: string,
+      locale?: string): string|null;
+  transform(
+      value: null|undefined, currencyCode?: string,
+      display?: 'code'|'symbol'|'symbol-narrow'|string|boolean, digitsInfo?: string,
+      locale?: string): null;
+  transform(
+      value: number|string|null|undefined, currencyCode?: string,
+      display?: 'code'|'symbol'|'symbol-narrow'|string|boolean, digitsInfo?: string,
+      locale?: string): string|null;
   /**
    *
    * @param value The number to be formatted as currency.
@@ -240,18 +252,6 @@ export class CurrencyPipe implements PipeTransform {
    * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
    * See [Setting your app locale](guide/i18n#setting-up-the-locale-of-your-app).
    */
-  transform(
-      value: number|string, currencyCode?: string,
-      display?: 'code'|'symbol'|'symbol-narrow'|string|boolean, digitsInfo?: string,
-      locale?: string): string|null;
-  transform(
-      value: null|undefined, currencyCode?: string,
-      display?: 'code'|'symbol'|'symbol-narrow'|string|boolean, digitsInfo?: string,
-      locale?: string): null;
-  transform(
-      value: number|string|null|undefined, currencyCode?: string,
-      display?: 'code'|'symbol'|'symbol-narrow'|string|boolean, digitsInfo?: string,
-      locale?: string): string|null;
   transform(
       value: number|string|null|undefined, currencyCode: string = this._defaultCurrencyCode,
       display: 'code'|'symbol'|'symbol-narrow'|string|boolean = 'symbol', digitsInfo?: string,
