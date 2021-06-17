@@ -24,6 +24,7 @@
 /api/core/testing/inject-function.html --> /api/core/testing/inject
 /api/foo/bar/HTTP_PROVIDERS --> /guide/deprecations#http
 /api/foo/bar/HTTP_PROVIDERS_AND_MORE --> /guide/deprecations#http
+/api/http --> /guide/deprecations#http
 /api/http/Headers-class --> /guide/deprecations#http
 /api/http/Headers-class.html --> /guide/deprecations#http
 /api/http/HTTP_PROVIDERS-let --> /guide/deprecations#http
