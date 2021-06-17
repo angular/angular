@@ -71,10 +71,11 @@
     "~~audit-web-app": "node scripts/audit-web-app",
     "~~check-env": "node scripts/check-environment",
     "~~clean-generated": "node --eval \"require('shelljs').rm('-rf', 'src/generated')\"",
-    "pre~~build": "yarn ~~build-ce-es5-polyfills",
+    "pre~~build": "yarn ~~build-ce-es5-polyfills && yarn ~~build-ngsw-config",
     "~~build": "ng build --configuration=stable",
     "post~~build": "yarn build-404-page",
     "~~build-ce-es5-polyfills": "esbuild src/custom-elements-es5-polyfills.js --bundle --minify | swc --config=minify=true --filename=custom-elements-es5-polyfills.js --out-file=src/generated/js/custom-elements-es5-polyfills.js --no-swcrc",
+    "~~build-ngsw-config": "node scripts/build-ngsw-config",
     "~~light-server": "light-server --bind=localhost --historyindex=/index.html --no-reload"
   },
   "//engines-comment": "Keep this in sync with /package.json and /aio/tools/examples/shared/package.json",
