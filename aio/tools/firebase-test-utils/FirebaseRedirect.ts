@@ -6,7 +6,8 @@ export class FirebaseRedirect {
   source: FirebaseRedirectSource;
   destination: string;
 
-  constructor({source, regex, destination}: FirebaseRedirectConfig) {
+  constructor(readonly rawConfig: FirebaseRedirectConfig) {
+    const {source, regex, destination} = rawConfig;
     this.source = (typeof source === 'string') ?
       FirebaseRedirectSource.fromGlobPattern(source) :
       FirebaseRedirectSource.fromRegexPattern(regex!);

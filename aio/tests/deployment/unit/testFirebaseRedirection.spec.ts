@@ -1,4 +1,6 @@
-import { getRedirector, loadLegacyUrls, loadLocalSitemapUrls, loadRedirects } from '../shared/helpers';
+import {
+  getRedirector, loadLegacyUrls, loadLocalSitemapUrls, loadRedirects, PATH_TO_LEGACY_URLS,
+} from '../shared/helpers';
 
 describe('firebase.json redirect config', () => {
   describe('with sitemap urls', () => {
@@ -13,6 +15,14 @@ describe('firebase.json redirect config', () => {
 
   describe('with legacy urls', () => {
     const redirector = getRedirector();
+
+    afterAll(() => {
+      expect(redirector.unusedRedirectConfigs)
+          .withContext(
+              'Some redirect rules from \'firebase.json\' were not tested. ' +
+              `Ensure there is at least one testcase for each redirect rule in '${PATH_TO_LEGACY_URLS}'.`)
+          .toEqual([]);
+    });
 
     loadLegacyUrls().forEach(urlPair => {
       it(`should redirect legacy URL '${urlPair[0]}'`, () => {
