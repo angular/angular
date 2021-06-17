@@ -24,12 +24,12 @@ describe('firebase.json redirect config', () => {
         }
       });
     });
+  });
 
-    describe('destinations', () => {
-      loadRedirects().forEach(redirect => {
-        it('should match pattern "^(https?:/)?/.*"', () => {
-          expect(redirect.destination).toMatch(/^(https?:\/)?\/.*/);
-        });
+  describe('destinations', () => {
+    loadRedirects().forEach(redirect => {
+      it('should match pattern "^(https?:/)?/.*"', () => {
+        expect(redirect.destination).toMatch(/^(https?:\/)?\/.*/);
       });
     });
   });
