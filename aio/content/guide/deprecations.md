@@ -80,7 +80,7 @@ Tip: In the [API reference section](api) of this site, deprecated APIs are indic
 
 | API                                                                                           | Replacement                                         | Deprecation announced | Notes |
 | --------------------------------------------------------------------------------------------- | --------------------------------------------------- | --------------------- | ----- |
-| [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | `{provide: DEFAULT_CURRENCY_CODE, useValue: 'USD'}` | v9                    | From v11 the default code will be extracted from the locale data given by `LOCAL_ID`, rather than `USD`. |
+| [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | `{provide: DEFAULT_CURRENCY_CODE, useValue: 'USD'}` | v9                    | From v11 the default code will be extracted from the locale data given by `LOCALE_ID`, rather than `USD`. |
 
 
 {@a common-http}
