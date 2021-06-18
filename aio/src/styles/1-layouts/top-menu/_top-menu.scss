@@ -198,28 +198,13 @@ mat-toolbar.app-toolbar {
 
   // EXTERNAL LINK ICONS
   .toolbar-external-icons-container {
-    display: flex;
-    flex-direction: row;
-    flex-shrink: 0; // This is required for the icons to be displayed correctly in IE11.
-    height: 100%;
-
     a {
-      display: flex;
-      align-items: center;
-      padding: 0;
-      margin: 24px 8px;
-
-      &:hover {
-        opacity: 0.8;
-      }
-
-      &:focus {
-        outline-offset: 8px;
-      }
-
       @media screen and (max-width: 480px) {
-        margin: 0 0 0 8px;
-        padding: 0;
+        margin: 0;
+
+        &:not(:first-child) {
+          margin-left: -8px;
+        }
       }
 
       @media screen and (max-width: 420px) {
