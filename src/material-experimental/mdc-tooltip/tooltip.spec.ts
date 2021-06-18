@@ -865,6 +865,23 @@ describe('MDC-based MatTooltip', () => {
       fixture.destroy();
     }));
 
+    it('should set the multiline class on tooltips with messages that overflow', fakeAsync(() => {
+      fixture.componentInstance.message = 'This is a very long message that should cause the'
+        + 'tooltip message body to overflow onto a new line.';
+      tooltipDirective.show();
+      fixture.detectChanges();
+      tick();
+
+      // Need to detect changes again to wait for the multiline class to be applied.
+      fixture.detectChanges();
+
+      const tooltipElement =
+          overlayContainerElement.querySelector('.mat-mdc-tooltip') as HTMLElement;
+
+      expect(tooltipElement.classList).toContain('mdc-tooltip--multiline');
+      expect(tooltipDirective._tooltipInstance?._isMultiline).toBeTrue();
+    }));
+
   });
 
   describe('fallback positions', () => {

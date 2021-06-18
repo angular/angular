@@ -791,6 +791,7 @@ export abstract class _TooltipComponentBase implements OnDestroy {
     this._showTimeoutId = setTimeout(() => {
       this._visibility = 'visible';
       this._showTimeoutId = undefined;
+      this._onShow();
 
       // Mark for check so if any parent component has set the
       // ChangeDetectionStrategy to OnPush it will be checked anyways
@@ -867,6 +868,13 @@ export abstract class _TooltipComponentBase implements OnDestroy {
   _markForCheck(): void {
     this._changeDetectorRef.markForCheck();
   }
+
+  /**
+   * Callback for when the timeout in this.show() gets completed.
+   * This method is only needed by the mdc-tooltip, and so it is only implemented
+   * in the mdc-tooltip, not here.
+   */
+  protected _onShow(): void {}
 }
 
 /**

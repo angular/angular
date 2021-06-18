@@ -115,7 +115,21 @@ export class MatTooltip extends _MatTooltipBase<TooltipComponent> {
   }
 })
 export class TooltipComponent extends _TooltipComponentBase {
-  constructor(changeDetectorRef: ChangeDetectorRef) {
+  /* Whether the tooltip text overflows to multiple lines */
+  _isMultiline: boolean = false;
+
+  constructor(changeDetectorRef: ChangeDetectorRef, private _elementRef: ElementRef) {
     super(changeDetectorRef);
+  }
+
+  /** @override */
+  protected _onShow(): void {
+    this._isMultiline = this._isTooltipMultiline();
+  }
+
+  /** Whether the tooltip text has overflown to the next line */
+  private _isTooltipMultiline() {
+    const rect = this._elementRef.nativeElement.getBoundingClientRect();
+    return rect.height > numbers.MIN_HEIGHT && rect.width >= numbers.MAX_WIDTH;
   }
 }

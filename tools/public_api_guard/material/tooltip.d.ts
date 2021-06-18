@@ -56,6 +56,7 @@ export declare abstract class _TooltipComponentBase implements OnDestroy {
     _animationStart(): void;
     _handleBodyInteraction(): void;
     _markForCheck(): void;
+    protected _onShow(): void;
     afterHidden(): Observable<void>;
     hide(delay: number): void;
     isVisible(): boolean;
