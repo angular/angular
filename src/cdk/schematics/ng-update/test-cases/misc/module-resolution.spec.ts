@@ -10,7 +10,7 @@ describe('ng update typescript program module resolution', () => {
       'migration-v6', MIGRATION_PATH, []);
 
     writeFile('/node_modules/some-other-module/package.json', `{}`);
-    writeFile('/node_modules/some-other-module/styles.css', '')
+    writeFile('/node_modules/some-other-module/styles.css', '');
 
     // We add an import to a non-existent sub-path of `some-other-module/styles`. The TypeScript
     // module resolution logic could try various sub-paths. This previously resulted in an error

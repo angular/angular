@@ -224,8 +224,10 @@
       // Exclude schematic template files and test cases that can't be linted.
       "src/material/schematics/ng-generate/*/files/**/*",
       "src/cdk/schematics/ng-generate/*/files/**/*",
-      "src/cdk/schematics/ng-update/test-cases/**/*",
-      "src/material/schematics/ng-update/test-cases/**/*"
+      "src/cdk/schematics/ng-update/test-cases/**/*_input.ts",
+      "src/cdk/schematics/ng-update/test-cases/**/*_expected_output.ts",
+      "src/material/schematics/ng-update/test-cases/**/*_input.ts",
+      "src/material/schematics/ng-update/test-cases/**/*_expected_output.ts"
     ]
   }
 }

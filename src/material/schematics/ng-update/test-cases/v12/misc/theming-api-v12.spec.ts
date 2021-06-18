@@ -1,6 +1,8 @@
 import {UnitTestTree} from '@angular-devkit/schematics/testing';
 import {createTestCaseSetup} from '@angular/cdk/schematics/testing';
-import {migrateFileContent} from '@angular/material/schematics/ng-update/migrations/theming-api-v12/migration';
+import {
+  migrateFileContent
+} from '@angular/material/schematics/ng-update/migrations/theming-api-v12/migration';
 import {join} from 'path';
 import {MIGRATION_PATH} from '../../../../paths';
 

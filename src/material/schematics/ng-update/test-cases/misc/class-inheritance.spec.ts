@@ -10,10 +10,12 @@ describe('class inheritance misc checks', () => {
 
       const {logOutput} = await runFixers();
 
+      // tslint:disable:max-line-length
       expect(logOutput).toMatch(
           /Found class "WithoutLabelProp".*extends "MatFormFieldControl.*must define "shouldLabelFloat"/);
       expect(logOutput).not.toMatch(
           /Found class "WithLabelProp".*extends "MatFormFieldControl".*must define "shouldLabelFloat"/);
+      // tslint:enable:max-line-length
     });
   });
 });
