@@ -12,40 +12,70 @@ import {BaseCurrencies} from './locale-base-currencies';
 import {generateLocale} from './locale-file';
 
 interface ClosureLocale {
-  /** Locale name to match with a Closure-supported locale. */
-  closureLocaleName: string;
+  /** Closure-supported locale names that resolve to this locale. */
+  closureLocaleNames: string[];
+  /** Canonical locale name that is used to resolve the CLDR data. */
+  canonicalLocaleName: string;
   /** Locale data. Can have a different locale name if this captures an aliased locale. */
   data: CldrLocaleData;
 }
+
+/**
+ * Locales used by closure that need to be captured within the Closure Locale file. Extracted from:
+ * https://github.com/google/closure-library/blob/c7445058af72f679ef3273274e936d5d5f40b55a/closure/goog/i18n/datetimepatterns.js#L2450
+ */
+const closureLibraryLocales = [
+  'af',    'am',    'ar',    'ar-DZ', 'az',    'be',    'bg',      'bn',         'br',      'bs',
+  'ca',    'chr',   'cs',    'cy',    'da',    'de',    'de-AT',   'de-CH',      'el',      'en-AU',
+  'en-CA', 'en-GB', 'en-IE', 'en-IN', 'en-SG', 'en-ZA', 'es',      'es-419',     'es-MX',   'es-US',
+  'et',    'eu',    'fa',    'fi',    'fr',    'fr-CA', 'ga',      'gl',         'gsw',     'gu',
+  'haw',   'hi',    'hr',    'hu',    'hy',    'id',    'is',      'it',         'he',      'ja',
+  'ka',    'kk',    'km',    'kn',    'ko',    'ky',    'ln',      'lo',         'lt',      'lv',
+  'mk',    'ml',    'mn',    'ro-MD', 'mr',    'ms',    'mt',      'my',         'ne',      'nl',
+  'nb',    'or',    'pa',    'pl',    'pt',    'pt-PT', 'ro',      'ru',         'sr-Latn', 'si',
+  'sk',    'sl',    'sq',    'sr',    'sv',    'sw',    'ta',      'te',         'th',      'fil',
+  'tr',    'uk',    'ur',    'uz',    'vi',    'zh',    'zh-Hans', 'zh-Hant-HK', 'zh-Hant', 'zu'
+] as const;
+
+/** Union type matching possible Closure Library locales. */
+type ClosureLibraryLocaleName = typeof closureLibraryLocales[number];
+
+/**
+ * Locale ID aliases to support deprecated locale ids used by Closure. Maps locales supported
+ * by Closure library to a list of aliases that match the same locale data.
+ */
+const closureLibraryAliases: {[l in ClosureLibraryLocaleName]?: string[]} = {
+  'id': ['in'],
+  'he': ['iw'],
+  'ro-MD': ['mo'],
+  'nb': ['no', 'no-NO'],
+  'sr-Latn': ['sh'],
+  'fil': ['tl'],
+  'pt': ['pt-BR'],
+  'zh-Hans': ['zh-Hans-CN', 'zh-CN'],
+  'zh-Hant-HK': ['zh-HK'],
+  'zh-Hant': ['zh-Hant-TW', 'zh-TW'],
+};
+
 
 /**
  * Generate a file that contains all locale to import for closure.
  * Tree shaking will only keep the data for the `goog.LOCALE` locale.
  */
 export function generateClosureLocaleFile(cldrData: CldrData, baseCurrencies: BaseCurrencies) {
-  const locales: ClosureLocale[] =
-      [...cldrData.availableLocales.map(data => ({closureLocaleName: data.locale, data}))];
-  const aliases = cldrData.getLanguageAliases();
+  const locales: ClosureLocale[] = closureLibraryLocales.map(localeName => {
+    const data = cldrData.getLocaleData(localeName);
 
-  // We also generate locale data for aliases known within CLDR. Closure compiler does not
-  // limit its locale identifiers to CLDR-canonical identifiers/or BCP47 identifiers.
-  // To ensure deprecated/historical locale identifiers which are supported by Closure
-  // can work with closure-compiled Angular applications, we respect CLDR locale aliases.
-  for (const [aliasName, data] of Object.entries(aliases)) {
-    // We skip bibliographic aliases as those have never been supported by Closure compiler.
-    if (data._reason === 'bibliographic') {
-      continue;
+    if (data === null) {
+      throw Error(`Missing locale data for Closure locale: ${localeName}`);
     }
 
-    const localeData = cldrData.getLocaleData(data._replacement);
-
-    // If CLDR does not provide data for the replacement locale, we skip this alias.
-    if (localeData === null) {
-      continue;
-    }
-
-    locales.push({closureLocaleName: aliasName, data: localeData});
-  }
+    return {
+      data,
+      canonicalLocaleName: localeName,
+      closureLocaleNames: computeEquivalentLocaleNames(localeName),
+    };
+  });
 
   return `${fileHeader}
 
@@ -53,33 +83,79 @@ import {registerLocaleData} from '../src/i18n/locale_data';
 
 const u = undefined;
 
-${locales.map(locale => `${generateLocaleConstant(locale)}`).join('\n')}
+${locales.map(locale => generateLocaleConstants(locale)).join('\n')}
 
 let l: any;
+let locales: string[] = [];
 
 switch (goog.LOCALE) {
 ${locales.map(locale => generateCase(locale)).join('')}}
 
 if (l) {
-  registerLocaleData(l);
+  locales.forEach(locale => registerLocaleData(l, locale));
 }
 `;
 
-  function generateLocaleConstant(locale: ClosureLocale): string {
-    const localeNameFormattedForJs = formatLocale(locale.closureLocaleName);
-    return generateLocale(locale.closureLocaleName, locale.data, baseCurrencies)
+  /**
+   * Generates locale data constants for all locale names within the specified
+   * Closure Library locale.
+   */
+  function generateLocaleConstants(locale: ClosureLocale): string {
+    // Closure Locale names contain both the dashed and underscore variant. We filter out
+    // the dashed variant as otherwise we would end up with the same constant twice. e.g.
+    // https://github.com/google/closure-library/blob/c7445058af72f679ef3273274e936d5d5f40b55a/closure/goog/i18n/datetimepatternsext.js#L11659-L11660.
+    const localeConstantNames = locale.closureLocaleNames.filter(d => !d.includes('-'))
+                                    .map(d => `locale_${formatLocale(d)}`);
+    const dataConstantName = localeConstantNames[0];
+    const otherAliasConstantNames = localeConstantNames.slice(1);
+
+    // We only generate the locale data once. All other constants just refer to the
+    // first constant with the actual locale data. This reduces the Closure Locale file
+    // size and potentially speeds up compilation with Closure Compiler.
+    return `
+${generateLocaleConstant(locale, dataConstantName)}
+${otherAliasConstantNames.map(d => `export const ${d} = ${dataConstantName};`).join('\n')}`;
+  }
+
+  /** Generates a locale data constant for the specified locale. */
+  function generateLocaleConstant(locale: ClosureLocale, constantName: string): string {
+    return generateLocale(locale.canonicalLocaleName, locale.data, baseCurrencies)
         .replace(`${fileHeader}\n`, '')
-        .replace('export default ', `export const locale_${localeNameFormattedForJs} = `)
-        .replace('function plural', `function plural_${localeNameFormattedForJs}`)
-        .replace(/,\s+plural/, `, plural_${localeNameFormattedForJs}`)
+        .replace('export default ', `export const ${constantName} = `)
+        .replace('function plural', `function plural_${constantName}`)
+        .replace(/,\s+plural/, `, plural_${constantName}`)
         .replace(/\s*const u = undefined;\s*/, '');
   }
 
-  function generateCase(locale: ClosureLocale) {
-    return `case '${locale.closureLocaleName}':\n` +
-        `l = locale_${formatLocale(locale.closureLocaleName)};\n` +
-        `break;\n`;
+  /** Generates a TypeScript `switch` case for the specified locale. */
+  function generateCase(locale: ClosureLocale): string {
+    return `
+${locale.closureLocaleNames.map(l => `case '${l}':`).join('\n')}
+  l = locale_${formatLocale(locale.canonicalLocaleName)};
+  locales = [${locale.closureLocaleNames.map(n => `"${n}"`).join(', ')}];
+  break;`;
   }
+}
+
+function computeEquivalentLocaleNames(localeName: ClosureLibraryLocaleName): string[] {
+  const equivalents = new Set<string>([localeName]);
+
+  if (localeName.includes('-')) {
+    equivalents.add(localeName.replace(/-/g, '_'));
+  }
+
+  const aliases = closureLibraryAliases[localeName];
+  if (aliases !== undefined) {
+    aliases.forEach(aliasName => {
+      equivalents.add(aliasName);
+
+      if (aliasName.includes('-')) {
+        equivalents.add(aliasName.replace(/-/g, '_'));
+      }
+    });
+  }
+
+  return Array.from(equivalents);
 }
 
 function formatLocale(locale: string): string {
