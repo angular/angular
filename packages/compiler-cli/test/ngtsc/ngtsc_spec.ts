@@ -1278,9 +1278,9 @@ function allTests(os: string) {
           .toContain(
               'TestModule.ɵfac = function TestModule_Factory(t) { return new (t || TestModule)(); }');
       expect(jsContents)
-          .toContain(`i0.ɵɵdefineInjector({ imports: [[OtherModule, RouterModule.forRoot()],
-            OtherModule,
-            RouterModule] });`);
+          .toContain(
+              'i0.ɵɵdefineInjector({ imports: [[OtherModule, RouterModule.forRoot()],' +
+              ' OtherModule, RouterModule] });');
     });
 
     it('should compile NgModules with services without errors', () => {
