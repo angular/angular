@@ -5,7 +5,7 @@
         "runtime-es2017": 4619,
         "main-es2017": 456578,
         "polyfills-es2017": 55210,
-        "styles": 69719,
+        "styles": 69643,
         "light-theme": 79520,
         "dark-theme": 79419
       }
@@ -17,7 +17,7 @@
         "runtime-es2017": 4619,
         "main-es2017": 456717,
         "polyfills-es2017": 55348,
-        "styles": 69719,
+        "styles": 69643,
         "light-theme": 79520,
         "dark-theme": 79419
       }
