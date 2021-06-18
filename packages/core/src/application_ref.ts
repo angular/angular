@@ -708,7 +708,7 @@ export class ApplicationRef {
    * {@example core/ts/platform/platform.ts region='componentSelector'}
    *
    * Optionally, a component can be mounted onto a DOM element that does not match the
-   * selector of the bootstraped component.
+   * selector of the bootstrapped component.
    *
    * In the following example, we are providing a CSS selector to match the target element.
    *
