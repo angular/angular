@@ -122,8 +122,7 @@ export class TooltipComponent extends _TooltipComponentBase {
     super(changeDetectorRef);
   }
 
-  /** @override */
-  protected _onShow(): void {
+  protected override _onShow(): void {
     this._isMultiline = this._isTooltipMultiline();
   }
 
