@@ -10,6 +10,7 @@
     "lib": ["es2015"],
     "skipLibCheck": true,
     // Don't emit to the file system, because we only want to check for compilation errors.
-    "noEmit": true
+    "noEmit": true,
+    "downlevelIteration": true
   }
 }

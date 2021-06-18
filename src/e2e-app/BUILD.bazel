@@ -1,4 +1,3 @@
-load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
 load("@npm//@bazel/concatjs:index.bzl", "concatjs_devserver")
 load("//:packages.bzl", "getAngularUmdTargets")
 load("//tools:defaults.bzl", "ng_module", "sass_binary")
@@ -116,46 +115,4 @@ concatjs_devserver(
     static_files = devserverIndexHtmlDependencies,
     tags = ["manual"],
     deps = [":e2e-app"],
-)
-
-# Bundles the `e2e-app` using rollup while running the Angular linker to transform
-# partial declarations to their corresponding Angular definitions. This target should
-# only be run if the e2e-app is built in partial compilation mode. Technically this
-# target could be run with full compilation mode too, but we want to raise an error if
-# the partial compilation is not enabled (as the mode has been forgotten most likely).
-rollup_bundle(
-    name = "linked_app_bundle",
-    testonly = True,
-    config_file = ":rollup-with-linker.config.js",
-    entry_points = {
-        "main.ts": "bundle",
-    },
-    sourcemap = "false",
-    tags = ["manual"],
-    deps = select(
-        {
-            # We rely on the partial compilation build setting here to ensure that the target
-            # cannot be built if partial compilation is not enabled.
-            "//tools:partial_compilation_enabled": [
-                ":e2e-app",
-                "@npm//rollup-plugin-node-resolve",
-                "@npm//@angular/compiler-cli",
-                "@npm//@rollup/plugin-babel",
-                "@npm//@rollup/plugin-commonjs",
-                "@npm//glob",
-            ],
-        },
-        no_match_error = "Partial compilation needs to be enabled. The following flag enables partial " +
-                         "compilation: --//tools:partial_compilation=True",
-    ),
-)
-
-# Basic web server that serves the e2e-app processed by the Angular linker.
-concatjs_devserver(
-    name = "devserver_with_linked_declarations",
-    testonly = True,
-    additional_root_paths = ["npm/node_modules"],
-    port = 4200,
-    static_files = [":linked_app_bundle"] + devserverIndexHtmlDependencies,
-    tags = ["manual"],
 )

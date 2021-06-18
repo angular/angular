@@ -197,8 +197,7 @@ jobs:
 
       # Exclude release and docs packages here as those will be built within
       # the "build_release_packages" and "publish_snapshots" jobs.
-      # TODO(devversion): remove target exclusion once https://github.com/bazelbuild/rules_nodejs/pull/2646 is available.
-      - run: bazel build --build_tag_filters=-docs-package,-release-package -- src/... -//src/e2e-app:devserver_with_linked_declarations.MF
+      - run: bazel build --build_tag_filters=-docs-package,-release-package -- src/...
       - *slack_notify_on_failure
 
   # -----------------------------------
@@ -220,8 +219,7 @@ jobs:
 
       # Exclude release and docs packages here as those will be built within
       # the "build_release_packages" and "publish_snapshots" jobs.
-      # TODO(devversion): remove target exclusion once https://github.com/bazelbuild/rules_nodejs/pull/2646 is available.
-      - run: bazel build --build_tag_filters=-docs-package,-release-package --config=view-engine -- src/... -//src/e2e-app:devserver_with_linked_declarations.MF
+      - run: bazel build --build_tag_filters=-docs-package,-release-package --config=view-engine -- src/...
       - *slack_notify_on_failure
 
   # --------------------------------------------------------------------------------------------
@@ -283,8 +281,7 @@ jobs:
       - *yarn_install
       - *setup_bazel_binary
 
-      # TODO(devversion): remove target exclusion once https://github.com/bazelbuild/rules_nodejs/pull/2646 is available.
-      - run: bazel test --build_tag_filters=-e2e --test_tag_filters=-e2e --build_tests_only -- src/... -//src/e2e-app:devserver_with_linked_declarations.MF
+      - run: bazel test --build_tag_filters=-e2e --test_tag_filters=-e2e --build_tests_only -- src/...
       - *slack_notify_on_failure
 
   # ----------------------------------------------------------------------------
@@ -536,8 +533,7 @@ jobs:
     - *yarn_install_loose_lockfile
     - *setup_bazel_binary
 
-    # TODO(devversion): remove target exclusion once https://github.com/bazelbuild/rules_nodejs/pull/2646 is available.
-    - run: bazel test --build_tag_filters=-e2e --test_tag_filters=-e2e --build_tests_only -- src/... -//src/e2e-app:devserver_with_linked_declarations.MF
+    - run: bazel test --build_tag_filters=-e2e --test_tag_filters=-e2e --build_tests_only -- src/...
     - *slack_notify_on_failure
 
   # ----------------------------------------------------------------------------
@@ -558,8 +554,7 @@ jobs:
       - *setup_bazel_binary
 
       # Run project tests with NGC and View Engine.
-      # TODO(devversion): remove target exclusion once https://github.com/bazelbuild/rules_nodejs/pull/2646 is available.
-      - run: bazel test --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --config=view-engine --build_tests_only -- src/... -//src/e2e-app:devserver_with_linked_declarations.MF
+      - run: bazel test --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --config=view-engine --build_tests_only -- src/...
       - *slack_notify_on_failure
 
   # ----------------------------------------------------------------------------
@@ -580,8 +575,7 @@ jobs:
       - *setup_bazel_binary
 
       # Run project tests with NGC and View Engine.
-      # TODO(devversion): remove target exclusion once https://github.com/bazelbuild/rules_nodejs/pull/2646 is available.
-      - run: bazel test --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --config=view-engine --build_tests_only -- src/... -//src/e2e-app:devserver_with_linked_declarations.MF
+      - run: bazel test --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --config=view-engine --build_tests_only -- src/...
       - *slack_notify_on_failure
 
   # ----------------------------------------------------------------------------
@@ -654,8 +648,7 @@ jobs:
 
       # Setup the components repository to use the MDC snapshot builds.
       # Run project tests with the MDC canary builds.
-      # TODO(devversion): remove target exclusion once https://github.com/bazelbuild/rules_nodejs/pull/2646 is available.
-      - run: bazel test --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --build_tests_only -- src/... -//src/e2e-app:devserver_with_linked_declarations.MF
+      - run: bazel test --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --build_tests_only -- src/...
       - *slack_notify_on_failure
 
 # ----------------------------------------------------------------------------------------

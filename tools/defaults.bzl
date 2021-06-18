@@ -9,6 +9,7 @@ load("@npm//@bazel/typescript:index.bzl", _ts_library = "ts_library")
 load("//:packages.bzl", "VERSION_PLACEHOLDER_REPLACEMENTS", "getAngularUmdTargets")
 load("//:rollup-globals.bzl", "ROLLUP_GLOBALS")
 load("//tools/markdown-to-html:index.bzl", _markdown_to_html = "markdown_to_html")
+load("//tools/linker-process:index.bzl", "linker_process")
 
 _DEFAULT_TSCONFIG_BUILD = "//src:bazel-tsconfig-build.json"
 _DEFAULT_TSCONFIG_TEST = "//src:tsconfig-test"
@@ -161,8 +162,22 @@ def ng_e2e_test_library(deps = [], tsconfig = None, **kwargs):
 
 def karma_web_test_suite(name, **kwargs):
     web_test_args = {}
+    test_deps = ["//tools/rxjs:rxjs_umd_modules"] + kwargs.get("deps", [])
+
     kwargs["srcs"] = ["@npm//:node_modules/tslib/tslib.js"] + getAngularUmdTargets() + kwargs.get("srcs", [])
-    kwargs["deps"] = ["//tools/rxjs:rxjs_umd_modules"] + kwargs.get("deps", [])
+    kwargs["tags"] = ["partial-compilation-integration"] + kwargs.get("tags", [])
+    kwargs["deps"] = select({
+        # Based on whether partial compilation is enabled, use the linker processed dependencies.
+        "//tools:partial_compilation_enabled": ["%s_linker_processed_deps" % name],
+        "//conditions:default": test_deps,
+    })
+
+    linker_process(
+        name = "%s_linker_processed_deps" % name,
+        srcs = test_deps,
+        testonly = True,
+        tags = ["manual"],
+    )
 
     # Set up default browsers if no explicit `browsers` have been specified.
     if not hasattr(kwargs, "browsers"):
