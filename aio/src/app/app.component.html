@@ -70,13 +70,3 @@
 <footer class="no-print">
   <aio-footer [nodes]="footerNodes" [versionInfo]="versionInfo"></aio-footer>
 </footer>
-
-<!--
-  Work-around to ensure that the `.woff2` file for the 'Material Icons' font will always be fetched.
-  This allows the SW to cache the file (even if there are no icons in the current page) and ensure
-  material icons on other pages are displayed correctly in offline mode.
-  (Note: Instantiate lazily to avoid affecting the initial rendering.)
--->
-<div class="cdk-visually-hidden" *ngIf="!isStarting">
-  <mat-icon>&nbsp;</mat-icon>
-</div>
