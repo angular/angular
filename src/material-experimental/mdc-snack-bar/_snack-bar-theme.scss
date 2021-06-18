@@ -35,8 +35,10 @@
   mdc-snackbar.$label-ink-color: $orig-label-ink-color;
   mdc-snackbar.$dismiss-ink-color: $orig-dismiss-ink-color;
 
-  // The extra level of nesting here is to increase the specificity.
-  .mat-mdc-simple-snack-bar .mat-mdc-snack-bar-actions .mdc-snackbar__action {
+  // Four classes is necessary to make it higher specificity than the mdc-button theme styles.
+  // This ensures the correct styles will be applied regardless of the order te mixins are
+  // @included.
+  .mat-mdc-simple-snack-bar .mat-mdc-snack-bar-actions .mdc-snackbar__action.mdc-snackbar__action {
     $is-dark-theme: map.get($config, is-dark);
     $accent: map.get($config, accent);
     color: if($is-dark-theme, inherit, theming.get-color-from-palette($accent, text));
