@@ -12,7 +12,7 @@ import {MatChipInputEvent} from '@angular/material/chips';
 })
 export class ChipsFormControlExample {
   keywords = new Set(['angular', 'how-to', 'tutorial']);
-  formControl = new FormControl();
+  formControl = new FormControl(['angular']);
 
   addKeywordFromInput(event: MatChipInputEvent) {
     if (event.value) {

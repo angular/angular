@@ -4,15 +4,17 @@
 </div>
 
 <p>
-  Selected keywords: {{formControl.value}}
+  <i>Select a focused chip by pressing <code>SPACE</code></i>
 </p>
 
 <mat-form-field class="example-chip-list" appearance="fill">
   <mat-label>Video keywords</mat-label>
   <mat-chip-list #chipList aria-label="Video keywords" multiple [formControl]="formControl">
     <mat-chip
-      *ngFor="let keyword of keywords"
-      (removed)="removeKeyword(keyword)">
+        *ngFor="let keyword of keywords"
+        [selected]="keyword"
+        [value]="keyword"
+        (removed)="removeKeyword(keyword)">
       {{keyword}}
     </mat-chip>
     <input
@@ -21,3 +23,7 @@
       (matChipInputTokenEnd)="addKeywordFromInput($event)">
   </mat-chip-list>
 </mat-form-field>
+
+<p>
+  <b>The following keywords are selected:</b> {{formControl.value}}
+</p>
