@@ -120,6 +120,8 @@ export declare class CdkVirtualScrollViewport extends CdkScrollable implements O
     _contentWrapper: ElementRef<HTMLElement>;
     _totalContentHeight: string;
     _totalContentWidth: string;
+    get appendOnly(): boolean;
+    set appendOnly(value: boolean);
     elementRef: ElementRef<HTMLElement>;
     get orientation(): 'horizontal' | 'vertical';
     set orientation(orientation: 'horizontal' | 'vertical');
@@ -143,7 +145,8 @@ export declare class CdkVirtualScrollViewport extends CdkScrollable implements O
     setRenderedContentOffset(offset: number, to?: 'to-start' | 'to-end'): void;
     setRenderedRange(range: ListRange): void;
     setTotalContentSize(size: number): void;
-    static ɵcmp: i0.ɵɵComponentDeclaration<CdkVirtualScrollViewport, "cdk-virtual-scroll-viewport", never, { "orientation": "orientation"; }, { "scrolledIndexChange": "scrolledIndexChange"; }, never, ["*"]>;
+    static ngAcceptInputType_appendOnly: BooleanInput;
+    static ɵcmp: i0.ɵɵComponentDeclaration<CdkVirtualScrollViewport, "cdk-virtual-scroll-viewport", never, { "orientation": "orientation"; "appendOnly": "appendOnly"; }, { "scrolledIndexChange": "scrolledIndexChange"; }, never, ["*"]>;
     static ɵfac: i0.ɵɵFactoryDeclaration<CdkVirtualScrollViewport, [null, null, null, { optional: true; }, { optional: true; }, null, null]>;
 }
 

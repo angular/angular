@@ -37,6 +37,7 @@ import {CdkScrollable, ExtendedScrollToOptions} from './scrollable';
 import {VIRTUAL_SCROLL_STRATEGY, VirtualScrollStrategy} from './virtual-scroll-strategy';
 import {ViewportRuler} from './viewport-ruler';
 import {CdkVirtualScrollRepeater} from './virtual-scroll-repeater';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 
 /** Checks if the given ranges are equal. */
 function rangesEqual(r1: ListRange, r2: ListRange): boolean {
@@ -88,6 +89,19 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
     }
   }
   private _orientation: 'horizontal' | 'vertical' = 'vertical';
+
+  /**
+   * Whether rendered items should persist in the DOM after scrolling out of view. By default, items
+   * will be removed.
+   */
+  @Input()
+  get appendOnly(): boolean {
+    return this._appendOnly;
+  }
+  set appendOnly(value: boolean) {
+    this._appendOnly = coerceBooleanProperty(value);
+  }
+  private _appendOnly = false;
 
   // Note: we don't use the typical EventEmitter here because we need to subscribe to the scroll
   // strategy lazily (i.e. only if the user is actually listening to the events). We do this because
@@ -271,6 +285,9 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
   /** Sets the currently rendered range of indices. */
   setRenderedRange(range: ListRange) {
     if (!rangesEqual(this._renderedRange, range)) {
+      if (this.appendOnly) {
+        range = {start: 0, end: Math.max(this._renderedRange.end, range.end)};
+      }
       this._renderedRangeSubject.next(this._renderedRange = range);
       this._markChangeDetectionNeeded(() => this._scrollStrategy.onContentRendered());
     }
@@ -431,4 +448,6 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
     this._totalContentWidth =
         this.orientation === 'horizontal' ? `${this._totalContentSize}px` : '';
   }
+
+  static ngAcceptInputType_appendOnly: BooleanInput;
 }

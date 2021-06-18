@@ -121,3 +121,10 @@ custom strategy by creating a class that implements the `VirtualScrollStrategy` 
 providing it as the `VIRTUAL_SCROLL_STRATEGY` on the component containing your viewport.
 
 <!-- example(cdk-virtual-scroll-custom-strategy) -->
+
+### Append only mode
+Virtual scroll viewports that render nontrivial items may find it more performant to simply append
+to the list as the user scrolls without removing rendered views. The `appendOnly` input ensures
+views that are already rendered persist in the DOM after they scroll out of view.
+
+<!-- example(cdk-virtual-scroll-append-only) -->

@@ -170,3 +170,11 @@
     </tr>
   </table>
 </cdk-virtual-scroll-viewport>
+
+<h2>Append only</h2>
+<cdk-virtual-scroll-viewport class="demo-viewport" appendOnly [itemSize]="50">
+  <div *cdkVirtualFor="let size of fixedSizeData; let i = index" class="demo-item"
+       [style.height.px]="size">
+    Item #{{i}} - ({{size}}px)
+  </div>
+</cdk-virtual-scroll-viewport>

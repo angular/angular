@@ -1,6 +1,9 @@
 import {ScrollingModule} from '@angular/cdk/scrolling';
 import {NgModule} from '@angular/core';
 import {
+  CdkVirtualScrollAppendOnlyExample
+} from './cdk-virtual-scroll-append-only/cdk-virtual-scroll-append-only-example';
+import {
   CdkVirtualScrollContextExample
 } from './cdk-virtual-scroll-context/cdk-virtual-scroll-context-example';
 import {
@@ -24,6 +27,7 @@ import {
 } from './cdk-virtual-scroll-template-cache/cdk-virtual-scroll-template-cache-example';
 
 export {
+  CdkVirtualScrollAppendOnlyExample,
   CdkVirtualScrollContextExample,
   CdkVirtualScrollCustomStrategyExample,
   CdkVirtualScrollDataSourceExample,
@@ -35,6 +39,7 @@ export {
 };
 
 const EXAMPLES = [
+  CdkVirtualScrollAppendOnlyExample,
   CdkVirtualScrollContextExample,
   CdkVirtualScrollCustomStrategyExample,
   CdkVirtualScrollDataSourceExample,

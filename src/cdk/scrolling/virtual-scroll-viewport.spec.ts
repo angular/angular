@@ -928,6 +928,34 @@ describe('CdkVirtualScrollViewport', () => {
       expect(testComponent.trackBy).toHaveBeenCalled();
     }));
   });
+
+  describe('with append only', () => {
+    let fixture: ComponentFixture<VirtualScrollWithAppendOnly>;
+    let testComponent: VirtualScrollWithAppendOnly;
+    let viewport: CdkVirtualScrollViewport;
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [ScrollingModule, CommonModule],
+        declarations: [VirtualScrollWithAppendOnly],
+      }).compileComponents();
+      fixture = TestBed.createComponent(VirtualScrollWithAppendOnly);
+      testComponent = fixture.componentInstance;
+      viewport = testComponent.viewport;
+    }));
+
+    it('should not remove item that have already been rendered', fakeAsync(() => {
+      finishInit(fixture);
+      viewport.setRenderedRange({start: 100, end: 200});
+      fixture.detectChanges();
+      flush();
+      viewport.setRenderedRange({start: 10, end: 50});
+      fixture.detectChanges();
+      flush();
+
+      expect(viewport.getRenderedRange()).toEqual({start: 0, end: 200});
+    }));
+  });
 });
 
 
@@ -1181,4 +1209,37 @@ class DelayedInitializationVirtualScroll {
   items = Array(20000).fill(0).map((_, i) => i);
   trackBy = jasmine.createSpy('trackBy').and.callFake((item: unknown) => item);
   renderVirtualFor = false;
+}
+
+@Component({
+  template: `
+    <cdk-virtual-scroll-viewport appendOnly itemSize="50">
+      <div class="item" *cdkVirtualFor="let item of items">{{item}}</div>
+    </cdk-virtual-scroll-viewport>
+  `,
+  styles: [`
+    .cdk-virtual-scroll-content-wrapper {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cdk-virtual-scroll-viewport {
+      width: 200px;
+      height: 200px;
+      background-color: #f5f5f5;
+    }
+
+    .item {
+      width: 100%;
+      height: 50px;
+      box-sizing: border-box;
+      border: 1px dashed #ccc;
+    }
+  `],
+  encapsulation: ViewEncapsulation.None
+})
+class VirtualScrollWithAppendOnly {
+  @ViewChild(CdkVirtualScrollViewport, {static: true}) viewport: CdkVirtualScrollViewport;
+  itemSize = 50;
+  items = Array(20000).fill(0).map((_, i) => i);
 }
