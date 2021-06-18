@@ -337,7 +337,7 @@ describe('Overlay', () => {
     class CustomErrorHandler extends ErrorHandler {
       constructor(private _overlay: Overlay) { super(); }
 
-      handleError(error: any) {
+      override handleError(error: any) {
         const overlayRef = this._overlay.create({hasBackdrop: !!error});
         overlayRef.dispose();
       }

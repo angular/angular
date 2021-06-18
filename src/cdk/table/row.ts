@@ -104,7 +104,7 @@ export class CdkHeaderRowDef extends _CdkHeaderRowDefBase implements CanStick, O
 
   // Prerender fails to recognize that ngOnChanges in a part of this class through inheritance.
   // Explicitly define it so that the method is called as part of the Angular lifecycle.
-  ngOnChanges(changes: SimpleChanges): void {
+  override ngOnChanges(changes: SimpleChanges): void {
     super.ngOnChanges(changes);
   }
 
@@ -135,7 +135,7 @@ export class CdkFooterRowDef extends _CdkFooterRowDefBase implements CanStick, O
 
   // Prerender fails to recognize that ngOnChanges in a part of this class through inheritance.
   // Explicitly define it so that the method is called as part of the Angular lifecycle.
-  ngOnChanges(changes: SimpleChanges): void {
+  override ngOnChanges(changes: SimpleChanges): void {
     super.ngOnChanges(changes);
   }
 

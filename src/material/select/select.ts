@@ -384,7 +384,7 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
   @Input('aria-labelledby') ariaLabelledby: string;
 
   /** Object used to control when error messages are shown. */
-  @Input() errorStateMatcher: ErrorStateMatcher;
+  @Input() override errorStateMatcher: ErrorStateMatcher;
 
   /** Time to wait in milliseconds after the last keystroke before moving focus to an item. */
   @Input()
@@ -455,7 +455,7 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
     @Optional() _parentForm: NgForm,
     @Optional() _parentFormGroup: FormGroupDirective,
     @Optional() @Inject(MAT_FORM_FIELD) protected _parentFormField: MatFormField,
-    @Self() @Optional() public ngControl: NgControl,
+    @Self() @Optional() ngControl: NgControl,
     @Attribute('tabindex') tabIndex: string,
     @Inject(MAT_SELECT_SCROLL_STRATEGY) scrollStrategyFactory: any,
     private _liveAnnouncer: LiveAnnouncer,
@@ -1169,7 +1169,7 @@ export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit
     return Math.min(Math.max(0, optimalScrollPosition), maxScroll);
   }
 
-  ngOnInit() {
+  override ngOnInit() {
     super.ngOnInit();
     this._viewportRuler.change().pipe(takeUntil(this._destroy)).subscribe(() => {
       if (this.panelOpen) {
@@ -1179,7 +1179,7 @@ export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit
     });
   }
 
-  open(): void {
+  override open(): void {
     if (super._canOpen()) {
       super.open();
       this._triggerRect = this.trigger.nativeElement.getBoundingClientRect();
@@ -1217,7 +1217,7 @@ export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit
     this.panel.nativeElement.scrollTop = this._scrollTop;
   }
 
-  protected _panelDoneAnimating(isOpen: boolean) {
+  protected override _panelDoneAnimating(isOpen: boolean) {
     if (this.panelOpen) {
       this._scrollTop = 0;
     } else {

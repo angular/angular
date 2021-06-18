@@ -80,7 +80,7 @@ class Walker extends Lint.RuleWalker {
                     fileGlobs.some(p => minimatch(relativeFilePath, p));
   }
 
-  visitClassDeclaration(node: ts.ClassDeclaration) {
+  override visitClassDeclaration(node: ts.ClassDeclaration) {
     if (this._enabled) {
       if (node.decorators) {
         node.decorators.forEach(decorator => this._validateDecorator(decorator));

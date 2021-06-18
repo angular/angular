@@ -236,17 +236,17 @@ abstract class BaseTestComponent {
 
 @Directive()
 abstract class BaseTestComponentRtl extends BaseTestComponent {
-  direction = 'rtl';
+  override direction = 'rtl';
 
-  getColumnOriginPosition(index: number): number {
+  override getColumnOriginPosition(index: number): number {
     return this.getColumnElement(index).offsetLeft;
   }
 
-  updateResizeWithMouseInProgress(totalDelta: number): void {
+  override updateResizeWithMouseInProgress(totalDelta: number): void {
     super.updateResizeWithMouseInProgress(-totalDelta);
   }
 
-  completeResizeWithMouseInProgress(totalDelta: number): void {
+  override completeResizeWithMouseInProgress(totalDelta: number): void {
     super.completeResizeWithMouseInProgress(-totalDelta);
   }
 }

@@ -23,7 +23,7 @@ class Walker extends Lint.RuleWalker {
     this._pattern = options.ruleArguments.length ? new RegExp(options.ruleArguments[0]) : null;
   }
 
-  visitGetAccessor(getter: ts.GetAccessorDeclaration) {
+  override visitGetAccessor(getter: ts.GetAccessorDeclaration) {
     const getterName = getter.name.getText();
     const matchesPattern = !this._pattern || this._pattern.test(getterName);
     const isPrivate = getter.modifiers && getter.modifiers.some(modifier => {

@@ -6601,7 +6601,7 @@ class DraggableWithCanvasInDropZone extends DraggableInDropZone implements After
     super(elementRef);
   }
 
-  ngAfterViewInit() {
+  override ngAfterViewInit() {
     super.ngAfterViewInit();
     const canvases = this._elementRef.nativeElement.querySelectorAll('canvas');
 

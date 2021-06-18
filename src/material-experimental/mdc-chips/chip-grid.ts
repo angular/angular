@@ -137,8 +137,10 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
    * @docs-private
    */
   @Input()
-  get disabled(): boolean { return this.ngControl ? !!this.ngControl.disabled : this._disabled; }
-  set disabled(value: boolean) {
+  override get disabled(): boolean {
+    return this.ngControl ? !!this.ngControl.disabled : this._disabled;
+  }
+  override set disabled(value: boolean) {
     this._disabled = coerceBooleanProperty(value);
     this._syncChipsState();
   }
@@ -153,13 +155,13 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
    * Implemented as part of MatFormFieldControl.
    * @docs-private
    */
-  get empty(): boolean {
+  override get empty(): boolean {
     return (!this._chipInput || this._chipInput.empty) &&
         (!this._chips || this._chips.length === 0);
   }
 
-    /** The ARIA role applied to the chip grid. */
-  get role(): string | null { return this.empty ? null : 'grid'; }
+  /** The ARIA role applied to the chip grid. */
+  override get role(): string | null { return this.empty ? null : 'grid'; }
 
   /**
    * Implemented as part of MatFormFieldControl.
@@ -177,7 +179,7 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
   protected _placeholder: string;
 
   /** Whether any chips or the matChipInput inside of this chip-grid has focus. */
-  get focused(): boolean { return this._chipInput.focused || this._hasFocusedChip(); }
+  override get focused(): boolean { return this._chipInput.focused || this._hasFocusedChip(); }
 
   /**
    * Implemented as part of MatFormFieldControl.
@@ -209,7 +211,7 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
   protected _value: any[] = [];
 
   /** An object used to control when error messages are shown. */
-  @Input() errorStateMatcher: ErrorStateMatcher;
+  @Input() override errorStateMatcher: ErrorStateMatcher;
 
   /** Combined stream of all of the child chips' blur events. */
   get chipBlurChanges(): Observable<MatChipEvent> {
@@ -237,7 +239,7 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
     // indirect descendants if it's left as false.
     descendants: true
   })
-  _chips: QueryList<MatChipRow>;
+  override _chips: QueryList<MatChipRow>;
 
   constructor(_elementRef: ElementRef,
               _changeDetectorRef: ChangeDetectorRef,
@@ -245,8 +247,7 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
               @Optional() _parentForm: NgForm,
               @Optional() _parentFormGroup: FormGroupDirective,
               _defaultErrorStateMatcher: ErrorStateMatcher,
-              /** @docs-private */
-              @Optional() @Self() public ngControl: NgControl) {
+              @Optional() @Self() ngControl: NgControl) {
     super(_elementRef, _changeDetectorRef, _dir, _defaultErrorStateMatcher, _parentForm,
         _parentFormGroup, ngControl);
     if (this.ngControl) {
@@ -254,7 +255,7 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
     }
   }
 
-  ngAfterContentInit() {
+  override ngAfterContentInit() {
     super.ngAfterContentInit();
     this._initKeyManager();
 
@@ -266,7 +267,7 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
     });
   }
 
-  ngAfterViewInit() {
+  override ngAfterViewInit() {
     super.ngAfterViewInit();
     if (!this._chipInput && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('mat-chip-grid must be used in combination with matChipInputFor.');
@@ -282,7 +283,7 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
     }
   }
 
-  ngOnDestroy() {
+  override ngOnDestroy() {
     super.ngOnDestroy();
     this.stateChanges.complete();
   }
@@ -307,7 +308,7 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
    * Focuses the first chip in this chip grid, or the associated input when there
    * are no eligible chips.
    */
-  focus(): void {
+  override focus(): void {
     if (this.disabled || this._chipInput.focused) {
       return;
     }
@@ -420,7 +421,7 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
   }
 
   /** Unsubscribes from all chip events. */
-  protected _dropSubscriptions() {
+  protected override _dropSubscriptions() {
     super._dropSubscriptions();
     if (this._chipBlurSubscription) {
       this._chipBlurSubscription.unsubscribe();
@@ -434,7 +435,7 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
   }
 
   /** Subscribes to events on the child chips. */
-  protected _subscribeToChipEvents() {
+  protected override _subscribeToChipEvents() {
     super._subscribeToChipEvents();
     this._listenToChipsFocus();
     this._listenToChipsBlur();
@@ -515,6 +516,8 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
     this._chipInput.focus();
   }
 
-  static ngAcceptInputType_disabled: BooleanInput;
+  // Even though this member is inherited, we explicitly need to set it here as the `disabled`
+  // input is overwritten in this class too. This is needed for the lint rule.
+  static override ngAcceptInputType_disabled: BooleanInput;
   static ngAcceptInputType_required: BooleanInput;
 }

@@ -11,13 +11,13 @@ import {Resizable} from '@angular/cdk-experimental/column-resize';
 import {MatColumnResizeOverlayHandle} from '../overlay-handle';
 
 export abstract class AbstractMatResizable extends Resizable<MatColumnResizeOverlayHandle> {
-  minWidthPxInternal = 32;
+  override minWidthPxInternal = 32;
 
-  protected getInlineHandleCssClassName(): string {
+  protected override getInlineHandleCssClassName(): string {
     return 'mat-resizable-handle';
   }
 
-  protected getOverlayHandleComponentType(): Type<MatColumnResizeOverlayHandle> {
+  protected override getOverlayHandleComponentType(): Type<MatColumnResizeOverlayHandle> {
     return MatColumnResizeOverlayHandle;
   }
 }

@@ -32,7 +32,6 @@ export declare abstract class _MatSelectBase<C> extends _MatSelectMixinBase impl
     set id(value: string);
     get multiple(): boolean;
     set multiple(value: boolean);
-    ngControl: NgControl;
     readonly openedChange: EventEmitter<boolean>;
     abstract optionGroups: QueryList<MatOptgroup>;
     readonly optionSelectionChanges: Observable<MatOptionSelectionChange>;

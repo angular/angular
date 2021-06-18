@@ -30,7 +30,6 @@ import {
   MatCheckboxDefaultOptions, MAT_CHECKBOX_DEFAULT_OPTIONS_FACTORY
 } from '@angular/material/checkbox';
 import {
-  ThemePalette,
   RippleAnimationConfig,
   mixinColor,
   mixinDisabled,
@@ -104,9 +103,6 @@ export class MatCheckbox extends _MatCheckboxBase implements AfterViewInit, OnDe
 
   /** The 'aria-describedby' attribute is read after the element's label and field type. */
   @Input('aria-describedby') ariaDescribedby: string;
-
-  /** The color palette  for this checkbox ('primary', 'accent', or 'warn'). */
-  @Input() color: ThemePalette;
 
   /** Whether the label should appear after or before the checkbox. Defaults to 'after'. */
   @Input() labelPosition: 'before'|'after' = 'after';

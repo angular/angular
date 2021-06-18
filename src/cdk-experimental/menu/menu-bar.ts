@@ -86,7 +86,7 @@ export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, 
     super();
   }
 
-  ngAfterContentInit() {
+  override ngAfterContentInit() {
     super.ngAfterContentInit();
 
     this._setKeyManager();
@@ -287,7 +287,7 @@ export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, 
     return !!this._openItem;
   }
 
-  ngOnDestroy() {
+  override ngOnDestroy() {
     super.ngOnDestroy();
 
     this._destroyed.next();

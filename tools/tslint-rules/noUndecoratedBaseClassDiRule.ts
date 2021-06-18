@@ -24,7 +24,7 @@ class Walker extends Lint.RuleWalker {
     super(sourceFile, options);
   }
 
-  visitClassDeclaration(node: ts.ClassDeclaration) {
+  override visitClassDeclaration(node: ts.ClassDeclaration) {
     // If the class isn't decorated or it has an explicit constructor we don't need to check it.
     if (!this.hasDirectiveDecorator(node) || this.hasExplicitConstructor(node)) {
       return;

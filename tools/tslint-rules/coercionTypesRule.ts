@@ -49,14 +49,14 @@ class Walker extends Lint.RuleWalker {
     this._coercionInterfaces = options.ruleArguments[1] || {};
   }
 
-  visitPropertyDeclaration(node: ts.PropertyDeclaration) {
+  override visitPropertyDeclaration(node: ts.PropertyDeclaration) {
     if (ts.isIdentifier(node.name) && node.name.text.startsWith(TYPE_ACCEPT_MEMBER_PREFIX)) {
       this._lintCoercionMember(node);
     }
     super.visitPropertyDeclaration(node);
   }
 
-  visitClassDeclaration(node: ts.ClassDeclaration) {
+  override visitClassDeclaration(node: ts.ClassDeclaration) {
     if (this._shouldLintClass(node)) {
       this._lintClass(node, node, true);
       this._lintSuperClasses(node);

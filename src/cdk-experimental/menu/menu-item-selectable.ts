@@ -40,7 +40,7 @@ export abstract class CdkMenuItemSelectable extends CdkMenuItem {
   @Input() id: string = `cdk-selectable-item-${nextId++}`;
 
   /** If the element is not disabled emit the click event */
-  trigger() {
+  override trigger() {
     if (!this.disabled) {
       this.toggled.next(this);
     }

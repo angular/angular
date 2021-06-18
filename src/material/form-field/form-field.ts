@@ -267,7 +267,7 @@ export class MatFormField extends _MatFormFieldBase
   @ContentChildren(MAT_SUFFIX, {descendants: true}) _suffixChildren: QueryList<MatSuffix>;
 
   constructor(
-      public _elementRef: ElementRef, private _changeDetectorRef: ChangeDetectorRef,
+      elementRef: ElementRef, private _changeDetectorRef: ChangeDetectorRef,
       /**
        * @deprecated `_labelOptions` parameter no longer being used. To be removed.
        * @breaking-change 12.0.0
@@ -279,7 +279,7 @@ export class MatFormField extends _MatFormFieldBase
       @Optional() @Inject(MAT_FORM_FIELD_DEFAULT_OPTIONS) private _defaults:
           MatFormFieldDefaultOptions, private _platform: Platform, private _ngZone: NgZone,
       @Optional() @Inject(ANIMATION_MODULE_TYPE) _animationMode: string) {
-    super(_elementRef);
+    super(elementRef);
 
     this.floatLabel = this._getDefaultFloatLabelState();
     this._animationsEnabled = _animationMode !== 'NoopAnimations';

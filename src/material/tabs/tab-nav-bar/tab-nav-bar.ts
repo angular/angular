@@ -58,7 +58,7 @@ export abstract class _MatTabNavBase extends MatPaginatedTabHeader implements Af
   AfterContentInit, OnDestroy {
 
   /** Query list of all tab links of the tab navigation. */
-  abstract _items: QueryList<MatPaginatedTabHeaderItem & {active: boolean}>;
+  abstract override _items: QueryList<MatPaginatedTabHeaderItem & {active: boolean}>;
 
   /** Background color of the tab nav. */
   @Input()
@@ -98,7 +98,7 @@ export abstract class _MatTabNavBase extends MatPaginatedTabHeader implements Af
     // noop
   }
 
-  ngAfterContentInit() {
+  override ngAfterContentInit() {
     // We need this to run before the `changes` subscription in parent to ensure that the
     // selectedIndex is up-to-date by the time the super class starts looking for it.
     this._items.changes.pipe(startWith(null), takeUntil(this._destroyed)).subscribe(() => {
@@ -281,7 +281,7 @@ export class MatTabLink extends _MatTabLinkBase implements OnDestroy {
     this._tabLinkRipple.setupTriggerEvents(elementRef.nativeElement);
   }
 
-  ngOnDestroy() {
+  override ngOnDestroy() {
     super.ngOnDestroy();
     this._tabLinkRipple._removeTriggerEvents();
   }

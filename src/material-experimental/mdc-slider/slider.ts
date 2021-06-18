@@ -653,7 +653,7 @@ export class MatSlider extends _MatSliderMixinBase
   constructor(
     readonly _ngZone: NgZone,
     readonly _cdr: ChangeDetectorRef,
-    readonly _elementRef: ElementRef<HTMLElement>,
+    elementRef: ElementRef<HTMLElement>,
     private readonly _platform: Platform,
     readonly _globalChangeAndInputListener: GlobalChangeAndInputListener<'input'|'change'>,
     @Inject(DOCUMENT) document: any,
@@ -661,7 +661,7 @@ export class MatSlider extends _MatSliderMixinBase
     @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS)
       readonly _globalRippleOptions?: RippleGlobalOptions,
     @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
-      super(_elementRef);
+      super(elementRef);
       this._document = document;
       this._window = this._document.defaultView || window;
       this._noopAnimations = animationMode === 'NoopAnimations';

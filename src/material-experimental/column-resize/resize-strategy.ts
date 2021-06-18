@@ -32,7 +32,7 @@ export class MatFlexTableResizeStrategy extends CdkFlexTableResizeStrategy {
     super(columnResize, styleScheduler, table, document);
   }
 
-  protected getColumnCssClass(cssFriendlyColumnName: string): string {
+  protected override getColumnCssClass(cssFriendlyColumnName: string): string {
     return `mat-column-${cssFriendlyColumnName}`;
   }
 }

@@ -121,7 +121,7 @@ export abstract class _MatMenuHarnessBase<
     return menu.clickItem(...subItemFilters as [Omit<ItemFilters, 'ancestor'>]);
   }
 
-  protected async getRootHarnessLoader(): Promise<HarnessLoader> {
+  protected override async getRootHarnessLoader(): Promise<HarnessLoader> {
     const panelId = await this._getPanelId();
     return this.documentRootLocatorFactory().harnessLoaderFor(`#${panelId}`);
   }

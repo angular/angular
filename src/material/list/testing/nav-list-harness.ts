@@ -27,7 +27,7 @@ export class MatNavListHarness extends MatListHarnessBase<
     return new HarnessPredicate(MatNavListHarness, options);
   }
 
-  _itemHarness = MatNavListItemHarness;
+  override _itemHarness = MatNavListItemHarness;
 }
 
 /** Harness for interacting with a nav list item. */

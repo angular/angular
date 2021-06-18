@@ -5,7 +5,7 @@ import {MatStepperIntl} from '@angular/material/stepper';
 @Injectable()
 export class StepperIntl extends MatStepperIntl {
   // the default optional label text, if unspecified is "Optional"
-  optionalLabel = 'Optional Label';
+  override optionalLabel = 'Optional Label';
 }
 
 /**

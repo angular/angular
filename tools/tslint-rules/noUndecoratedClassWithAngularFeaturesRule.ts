@@ -27,7 +27,7 @@ class Walker extends Lint.RuleWalker {
     super(sourceFile, options);
   }
 
-  visitClassDeclaration(node: ts.ClassDeclaration) {
+  override visitClassDeclaration(node: ts.ClassDeclaration) {
     if (this._hasAngularDecorator(node)) {
       return;
     }

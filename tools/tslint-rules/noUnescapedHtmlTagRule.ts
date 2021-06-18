@@ -19,7 +19,7 @@ export class Rule extends Lint.Rules.AbstractRule {
 
 class NoUnescapedHtmlTagWalker extends Lint.RuleWalker {
 
-  visitSourceFile(sourceFile: ts.SourceFile) {
+  override visitSourceFile(sourceFile: ts.SourceFile) {
     utils.forEachComment(sourceFile, (fullText, commentRange) => {
       const htmlIsEscaped =
         this._parseForHtml(fullText.substring(commentRange.pos, commentRange.end));

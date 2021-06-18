@@ -54,8 +54,8 @@ export const TOOLTIP_PANEL_CLASS = 'mat-mdc-tooltip-panel';
   }
 })
 export class MatTooltip extends _MatTooltipBase<TooltipComponent> {
-  protected readonly _tooltipComponent = TooltipComponent;
-  protected readonly _cssClassPrefix = 'mat-mdc';
+  protected override readonly _tooltipComponent = TooltipComponent;
+  protected override readonly _cssClassPrefix = 'mat-mdc';
 
   constructor(
     overlay: Overlay,
@@ -76,7 +76,7 @@ export class MatTooltip extends _MatTooltipBase<TooltipComponent> {
     this._viewportMargin = numbers.MIN_VIEWPORT_TOOLTIP_THRESHOLD;
   }
 
-  protected _addOffset(position: ConnectedPosition): ConnectedPosition {
+  protected override _addOffset(position: ConnectedPosition): ConnectedPosition {
     const offset = numbers.UNBOUNDED_ANCHOR_GAP;
     const isLtr = !this._dir || this._dir.value == 'ltr';
 

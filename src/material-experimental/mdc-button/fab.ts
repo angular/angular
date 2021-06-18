@@ -85,7 +85,7 @@ const defaults = MAT_FAB_DEFAULT_OPTIONS_FACTORY();
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatFabButton extends MatButtonBase {
-  _isFab = true;
+  override _isFab = true;
 
   private _extended: boolean;
   get extended(): boolean { return this._extended; }
@@ -119,7 +119,7 @@ export class MatFabButton extends MatButtonBase {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatMiniFabButton extends MatButtonBase {
-  _isFab = true;
+  override _isFab = true;
 
   constructor(
     elementRef: ElementRef, platform: Platform, ngZone: NgZone,
@@ -169,7 +169,7 @@ export class MatMiniFabButton extends MatButtonBase {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatFabAnchor extends MatAnchor {
-  _isFab = true;
+  override _isFab = true;
 
   private _extended: boolean;
   get extended(): boolean { return this._extended; }
@@ -204,7 +204,7 @@ export class MatFabAnchor extends MatAnchor {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatMiniFabAnchor extends MatAnchor {
-  _isFab = true;
+  override _isFab = true;
 
   constructor(
     elementRef: ElementRef, platform: Platform, ngZone: NgZone,

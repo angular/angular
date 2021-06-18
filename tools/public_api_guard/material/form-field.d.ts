@@ -33,7 +33,6 @@ export declare class MatFormField extends _MatFormFieldBase implements AfterCont
     set _control(value: MatFormFieldControl<any>);
     _controlNonStatic: MatFormFieldControl<any>;
     _controlStatic: MatFormFieldControl<any>;
-    _elementRef: ElementRef;
     _errorChildren: QueryList<MatError>;
     _hintChildren: QueryList<MatHint>;
     readonly _hintLabelId: string;
@@ -54,7 +53,7 @@ export declare class MatFormField extends _MatFormFieldBase implements AfterCont
     get hintLabel(): string;
     set hintLabel(value: string);
     underlineRef: ElementRef;
-    constructor(_elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef,
+    constructor(elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef,
     _labelOptions: any, _dir: Directionality, _defaults: MatFormFieldDefaultOptions, _platform: Platform, _ngZone: NgZone, _animationMode: string);
     _animateAndLockLabel(): void;
     _canLabelFloat(): boolean;

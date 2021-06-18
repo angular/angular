@@ -30,16 +30,16 @@ export class MapBicyclingLayer extends MapBaseLayer {
    */
   bicyclingLayer?: google.maps.BicyclingLayer;
 
-  protected _initializeObject() {
+  protected override _initializeObject() {
     this.bicyclingLayer = new google.maps.BicyclingLayer();
   }
 
-  protected _setMap() {
+  protected override _setMap() {
     this._assertLayerInitialized();
     this.bicyclingLayer.setMap(this._map.googleMap!);
   }
 
-  protected _unsetMap() {
+  protected override _unsetMap() {
     if (this.bicyclingLayer) {
       this.bicyclingLayer.setMap(null);
     }

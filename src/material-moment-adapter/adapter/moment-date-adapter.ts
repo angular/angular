@@ -88,7 +88,7 @@ export class MomentDateAdapter extends DateAdapter<Moment> {
     this.setLocale(dateLocale || moment.locale());
   }
 
-  setLocale(locale: string) {
+  override setLocale(locale: string) {
     super.setLocale(locale);
 
     let momentLocaleData = moment.localeData(locale);
@@ -217,7 +217,7 @@ export class MomentDateAdapter extends DateAdapter<Moment> {
    * (https://www.ietf.org/rfc/rfc3339.txt) and valid Date objects into valid Moments and empty
    * string into null. Returns an invalid date for all other values.
    */
-  deserialize(value: any): Moment | null {
+  override deserialize(value: any): Moment | null {
     let date;
     if (value instanceof Date) {
       date = this._createMoment(value).locale(this.locale);

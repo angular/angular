@@ -171,7 +171,7 @@ export class FixedTileStyler extends TileStyler {
 
   constructor(public fixedRowHeight: string) { super(); }
 
-  init(gutterSize: string, tracker: TileCoordinator, cols: number, direction: string) {
+  override init(gutterSize: string, tracker: TileCoordinator, cols: number, direction: string) {
     super.init(gutterSize, tracker, cols, direction);
     this.fixedRowHeight = normalizeUnits(this.fixedRowHeight);
 
@@ -181,18 +181,18 @@ export class FixedTileStyler extends TileStyler {
     }
   }
 
-  setRowStyles(tile: MatGridTile, rowIndex: number): void {
+  override setRowStyles(tile: MatGridTile, rowIndex: number): void {
     tile._setStyle('top', this.getTilePosition(this.fixedRowHeight, rowIndex));
     tile._setStyle('height', calc(this.getTileSize(this.fixedRowHeight, tile.rowspan)));
   }
 
-  getComputedHeight(): [string, string] {
+  override getComputedHeight(): [string, string] {
     return [
       'height', calc(`${this.getTileSpan(this.fixedRowHeight)} + ${this.getGutterSpan()}`)
     ];
   }
 
-  reset(list: TileStyleTarget) {
+  override reset(list: TileStyleTarget) {
     list._setListStyle(['height', null]);
 
     if (list._tiles) {
@@ -233,7 +233,7 @@ export class RatioTileStyler extends TileStyler {
     tile._setStyle('paddingTop', calc(this.getTileSize(this.baseTileHeight, tile.rowspan)));
   }
 
-  getComputedHeight(): [string, string] {
+  override getComputedHeight(): [string, string] {
     return [
       'paddingBottom', calc(`${this.getTileSpan(this.baseTileHeight)} + ${this.getGutterSpan()}`)
     ];

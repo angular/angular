@@ -17,14 +17,14 @@ import {
 /** Harness for interacting with an MDC-based Angular Material table cell. */
 export class MatCellHarness extends BaseMatCellHarness {
   /** The selector for the host element of a `MatCellHarness` instance. */
-  static hostSelector = '.mat-mdc-cell';
+  static override hostSelector = '.mat-mdc-cell';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a table cell with specific attributes.
    * @param options Options for narrowing the search
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: CellHarnessFilters = {}): HarnessPredicate<MatCellHarness> {
+  static override with(options: CellHarnessFilters = {}): HarnessPredicate<MatCellHarness> {
     return BaseMatCellHarness._getCellPredicate(MatCellHarness, options);
   }
 }
@@ -32,7 +32,7 @@ export class MatCellHarness extends BaseMatCellHarness {
 /** Harness for interacting with an MDC-based Angular Material table header cell. */
 export class MatHeaderCellHarness extends BaseMatHeaderCellHarness {
   /** The selector for the host element of a `MatHeaderCellHarness` instance. */
-  static hostSelector = '.mat-mdc-header-cell';
+  static override hostSelector = '.mat-mdc-header-cell';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for
@@ -40,7 +40,7 @@ export class MatHeaderCellHarness extends BaseMatHeaderCellHarness {
    * @param options Options for narrowing the search
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: CellHarnessFilters = {}): HarnessPredicate<MatHeaderCellHarness> {
+  static override with(options: CellHarnessFilters = {}): HarnessPredicate<MatHeaderCellHarness> {
     return BaseMatHeaderCellHarness._getCellPredicate(MatHeaderCellHarness, options);
   }
 }
@@ -48,7 +48,7 @@ export class MatHeaderCellHarness extends BaseMatHeaderCellHarness {
 /** Harness for interacting with an MDC-based Angular Material table footer cell. */
 export class MatFooterCellHarness extends BaseMatFooterCellHarness {
   /** The selector for the host element of a `MatFooterCellHarness` instance. */
-  static hostSelector = '.mat-mdc-footer-cell';
+  static override hostSelector = '.mat-mdc-footer-cell';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for
@@ -56,7 +56,7 @@ export class MatFooterCellHarness extends BaseMatFooterCellHarness {
    * @param options Options for narrowing the search
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: CellHarnessFilters = {}): HarnessPredicate<MatFooterCellHarness> {
+  static override with(options: CellHarnessFilters = {}): HarnessPredicate<MatFooterCellHarness> {
     return BaseMatFooterCellHarness._getCellPredicate(MatFooterCellHarness, options);
   }
 }

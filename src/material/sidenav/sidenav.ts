@@ -130,8 +130,7 @@ export class MatSidenavContainer extends MatDrawerContainer {
     // indirect descendants if it's left as false.
     descendants: true
   })
-  _allDrawers: QueryList<MatSidenav>;
+  override _allDrawers: QueryList<MatSidenav>;
 
-  @ContentChild(MatSidenavContent) _content: MatSidenavContent;
-  static ngAcceptInputType_hasBackdrop: BooleanInput;
+  @ContentChild(MatSidenavContent) override _content: MatSidenavContent;
 }

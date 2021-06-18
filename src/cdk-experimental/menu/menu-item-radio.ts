@@ -63,7 +63,7 @@ export class CdkMenuItemRadio extends CdkMenuItemSelectable implements OnDestroy
   }
 
   /** Toggles the checked state of the radio-button. */
-  trigger() {
+  override trigger() {
     super.trigger();
 
     if (!this.disabled) {
@@ -71,7 +71,7 @@ export class CdkMenuItemRadio extends CdkMenuItemSelectable implements OnDestroy
     }
   }
 
-  ngOnDestroy() {
+  override ngOnDestroy() {
     super.ngOnDestroy();
     this._removeDispatcherListener();
   }

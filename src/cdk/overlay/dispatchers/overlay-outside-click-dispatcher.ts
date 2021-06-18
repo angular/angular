@@ -27,7 +27,7 @@ export class OverlayOutsideClickDispatcher extends BaseOverlayDispatcher {
   }
 
   /** Add a new overlay to the list of attached overlay refs. */
-  add(overlayRef: OverlayReference): void {
+  override add(overlayRef: OverlayReference): void {
     super.add(overlayRef);
 
     // Safari on iOS does not generate click events for non-interactive

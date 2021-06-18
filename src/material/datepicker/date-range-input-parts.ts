@@ -36,7 +36,6 @@ import {
   MatDateFormats,
   ErrorStateMatcher,
 } from '@angular/material/core';
-import {BooleanInput} from '@angular/cdk/coercion';
 import {BACKSPACE} from '@angular/cdk/keycodes';
 import {MatDatepickerInputBase, DateFilterFn} from './datepicker-input-base';
 import {DateRange, DateSelectionModelChange} from './date-selection-model';
@@ -78,9 +77,9 @@ abstract class MatDateRangeInputPartBase<D>
   /** @docs-private */
   abstract updateErrorState(): void;
 
-  protected abstract _validator: ValidatorFn | null;
-  protected abstract _assignValueToModel(value: D | null): void;
-  protected abstract _getValueFromModel(modelValue: DateRange<D>): D | null;
+  protected abstract override _validator: ValidatorFn | null;
+  protected abstract override _assignValueToModel(value: D | null): void;
+  protected abstract override _getValueFromModel(modelValue: DateRange<D>): D | null;
 
   constructor(
     @Inject(MAT_DATE_RANGE_INPUT_PARENT) public _rangeInput: MatDateRangeInputParent<D>,
@@ -134,7 +133,7 @@ abstract class MatDateRangeInputPartBase<D>
   }
 
   /** Handles `input` events on the input element. */
-  _onInput(value: string) {
+  override _onInput(value: string) {
     super._onInput(value);
     this._rangeInput._handleChildValueChange();
   }
@@ -159,7 +158,7 @@ abstract class MatDateRangeInputPartBase<D>
     return this._rangeInput.dateFilter;
   }
 
-  protected _parentDisabled() {
+  protected override _parentDisabled() {
     return this._rangeInput._groupDisabled;
   }
 
@@ -167,7 +166,7 @@ abstract class MatDateRangeInputPartBase<D>
     return source !== this._rangeInput._startInput && source !== this._rangeInput._endInput;
   }
 
-  protected _assignValueProgrammatically(value: D | null) {
+  protected override _assignValueProgrammatically(value: D | null) {
     super._assignValueProgrammatically(value);
     const opposite = (this === this._rangeInput._startInput ? this._rangeInput._endInput :
         this._rangeInput._startInput) as MatDateRangeInputPartBase<D> | undefined;
@@ -232,7 +231,7 @@ export class MatStartDate<D> extends _MatDateRangeInputBase<D> implements
         dateAdapter, dateFormats);
   }
 
-  ngOnInit() {
+  override ngOnInit() {
     // Normally this happens automatically, but it seems to break if not added explicitly when all
     // of the criteria below are met:
     // 1) The class extends a TS mixin.
@@ -242,7 +241,7 @@ export class MatStartDate<D> extends _MatDateRangeInputBase<D> implements
     super.ngOnInit();
   }
 
-  ngDoCheck() {
+  override ngDoCheck() {
     // Normally this happens automatically, but it seems to break if not added explicitly when all
     // of the criteria below are met:
     // 1) The class extends a TS mixin.
@@ -258,7 +257,8 @@ export class MatStartDate<D> extends _MatDateRangeInputBase<D> implements
     return modelValue.start;
   }
 
-  protected _shouldHandleChangeEvent(change: DateSelectionModelChange<DateRange<D>>): boolean {
+  protected override _shouldHandleChangeEvent(
+      change: DateSelectionModelChange<DateRange<D>>): boolean {
     if (!super._shouldHandleChangeEvent(change)) {
       return false;
     } else {
@@ -275,7 +275,7 @@ export class MatStartDate<D> extends _MatDateRangeInputBase<D> implements
     }
   }
 
-  protected _formatValue(value: D | null) {
+  protected override _formatValue(value: D | null) {
     super._formatValue(value);
 
     // Any time the input value is reformatted we need to tell the parent.
@@ -288,8 +288,6 @@ export class MatStartDate<D> extends _MatDateRangeInputBase<D> implements
     const value = element.value;
     return value.length > 0 ? value : element.placeholder;
   }
-
-  static ngAcceptInputType_disabled: BooleanInput;
 }
 
 
@@ -346,7 +344,7 @@ export class MatEndDate<D> extends _MatDateRangeInputBase<D> implements
         dateAdapter, dateFormats);
   }
 
-  ngOnInit() {
+  override ngOnInit() {
     // Normally this happens automatically, but it seems to break if not added explicitly when all
     // of the criteria below are met:
     // 1) The class extends a TS mixin.
@@ -356,7 +354,7 @@ export class MatEndDate<D> extends _MatDateRangeInputBase<D> implements
     super.ngOnInit();
   }
 
-  ngDoCheck() {
+  override ngDoCheck() {
     // Normally this happens automatically, but it seems to break if not added explicitly when all
     // of the criteria below are met:
     // 1) The class extends a TS mixin.
@@ -372,7 +370,8 @@ export class MatEndDate<D> extends _MatDateRangeInputBase<D> implements
     return modelValue.end;
   }
 
-  protected _shouldHandleChangeEvent(change: DateSelectionModelChange<DateRange<D>>): boolean {
+  protected override _shouldHandleChangeEvent(
+      change: DateSelectionModelChange<DateRange<D>>): boolean {
     if (!super._shouldHandleChangeEvent(change)) {
       return false;
     } else {
@@ -389,7 +388,7 @@ export class MatEndDate<D> extends _MatDateRangeInputBase<D> implements
     }
   }
 
-  _onKeydown(event: KeyboardEvent) {
+  override _onKeydown(event: KeyboardEvent) {
     // If the user is pressing backspace on an empty end input, move focus back to the start.
     if (event.keyCode === BACKSPACE && !this._elementRef.nativeElement.value) {
       this._rangeInput._startInput.focus();
@@ -397,6 +396,4 @@ export class MatEndDate<D> extends _MatDateRangeInputBase<D> implements
 
     super._onKeydown(event);
   }
-
-  static ngAcceptInputType_disabled: BooleanInput;
 }

@@ -17,7 +17,7 @@ import {MatSnackBarContainer} from './snack-bar-container';
  */
 @Injectable({providedIn: MatSnackBarModule})
 export class MatSnackBar extends BaseMatSnackBar {
-  protected simpleSnackBarComponent = MatSimpleSnackBar;
-  protected snackBarContainerComponent = MatSnackBarContainer;
-  protected handsetCssClass = 'mat-mdc-snack-bar-handset';
+  protected override simpleSnackBarComponent = MatSimpleSnackBar;
+  protected override snackBarContainerComponent = MatSnackBarContainer;
+  protected override handsetCssClass = 'mat-mdc-snack-bar-handset';
 }

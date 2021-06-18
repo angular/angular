@@ -27,7 +27,7 @@ export class MatListHarness extends
     return new HarnessPredicate(MatListHarness, options);
   }
 
-  _itemHarness = MatListItemHarness;
+  override _itemHarness = MatListItemHarness;
 }
 
 /** Harness for interacting with a list item. */

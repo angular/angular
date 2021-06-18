@@ -18,7 +18,7 @@ export interface NestedTreeControlOptions<T, K> {
 export class NestedTreeControl<T, K = T> extends BaseTreeControl<T, K> {
   /** Construct with nested tree function getChildren. */
   constructor(
-      public getChildren: (dataNode: T) => (Observable<T[]>| T[] | undefined | null),
+      public override getChildren: (dataNode: T) => (Observable<T[]>| T[] | undefined | null),
       public options?: NestedTreeControlOptions<T, K>) {
     super();
 

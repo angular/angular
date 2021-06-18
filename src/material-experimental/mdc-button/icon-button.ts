@@ -44,7 +44,7 @@ import {
 })
 export class MatIconButton extends MatButtonBase {
   // Set the ripple to be centered for icon buttons
-  _isRippleCentered = true;
+  override _isRippleCentered = true;
 
   constructor(
       elementRef: ElementRef, platform: Platform, ngZone: NgZone,
@@ -70,7 +70,7 @@ export class MatIconButton extends MatButtonBase {
 })
 export class MatIconAnchor extends MatAnchorBase {
   // Set the ripple to be centered for icon buttons
-  _isRippleCentered = true;
+  override _isRippleCentered = true;
 
   constructor(
       elementRef: ElementRef, platform: Platform, ngZone: NgZone,

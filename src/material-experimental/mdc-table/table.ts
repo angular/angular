@@ -65,12 +65,12 @@ export class MatRecycleRows {}
 })
 export class MatTable<T> extends CdkTable<T> implements OnInit {
   /** Overrides the sticky CSS class set by the `CdkTable`. */
-  protected stickyCssClass = 'mat-mdc-table-sticky';
+  protected override stickyCssClass = 'mat-mdc-table-sticky';
 
   /** Overrides the need to add position: sticky on every sticky cell element in `CdkTable`. */
-  protected needsPositionStickyOnElement = false;
+  protected override needsPositionStickyOnElement = false;
 
-  ngOnInit() {
+  override ngOnInit() {
     super.ngOnInit();
 
     // After ngOnInit, the `CdkTable` has created and inserted the table sections (thead, tbody,

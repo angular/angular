@@ -113,13 +113,13 @@ export class MatChipOption extends MatChip implements AfterContentInit {
   }
 
   /** The unstyled chip selector for this component. */
-  protected basicChipAttrName = 'mat-basic-chip-option';
+  protected override basicChipAttrName = 'mat-basic-chip-option';
 
   /** Emitted when the chip is selected or deselected. */
   @Output() readonly selectionChange: EventEmitter<MatChipSelectionChange> =
       new EventEmitter<MatChipSelectionChange>();
 
-  ngAfterContentInit() {
+  override ngAfterContentInit() {
     super.ngAfterContentInit();
 
     if (this.selected && this.leadingIcon) {

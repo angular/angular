@@ -117,7 +117,7 @@ export class MatInput extends _MatInputBase implements MatFormFieldControl<any>,
    * Implemented as part of MatFormFieldControl.
    * @docs-private
    */
-  readonly stateChanges: Subject<void> = new Subject<void>();
+  override readonly stateChanges: Subject<void> = new Subject<void>();
 
   /**
    * Implemented as part of MatFormFieldControl.
@@ -195,7 +195,7 @@ export class MatInput extends _MatInputBase implements MatFormFieldControl<any>,
   protected _type = 'text';
 
   /** An object used to control when error messages are shown. */
-  @Input() errorStateMatcher: ErrorStateMatcher;
+  @Input() override errorStateMatcher: ErrorStateMatcher;
 
   /**
    * Implemented as part of MatFormFieldControl.
@@ -234,8 +234,7 @@ export class MatInput extends _MatInputBase implements MatFormFieldControl<any>,
   constructor(
       protected _elementRef: ElementRef<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
       protected _platform: Platform,
-      /** @docs-private */
-      @Optional() @Self() public ngControl: NgControl,
+      @Optional() @Self() ngControl: NgControl,
       @Optional() _parentForm: NgForm,
       @Optional() _parentFormGroup: FormGroupDirective,
       _defaultErrorStateMatcher: ErrorStateMatcher,

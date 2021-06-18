@@ -166,7 +166,7 @@ export class MatDatepickerInput<D> extends MatDatepickerInputBase<D | null, D>
     return this.value;
   }
 
-  ngOnDestroy() {
+  override ngOnDestroy() {
     super.ngOnDestroy();
     this._closedSubscription.unsubscribe();
   }
@@ -206,8 +206,4 @@ export class MatDatepickerInput<D> extends MatDatepickerInputBase<D | null, D>
   protected _shouldHandleChangeEvent(event: DateSelectionModelChange<D>) {
     return event.source !== this;
   }
-
-  // Accept `any` to avoid conflicts with other directives on `<input>` that
-  // may accept different types.
-  static ngAcceptInputType_value: any;
 }

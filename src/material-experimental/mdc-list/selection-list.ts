@@ -136,7 +136,7 @@ export class MatSelectionList extends MatInteractiveListBase<MatListOption>
     super._initWithAdapter(getSelectionListAdapter(this));
   }
 
-  ngAfterViewInit() {
+  override ngAfterViewInit() {
     // Mark the selection list as initialized so that the `multiple`
     // binding can no longer be changed.
     this._initialized = true;
@@ -175,7 +175,7 @@ export class MatSelectionList extends MatInteractiveListBase<MatListOption>
     }
   }
 
-  ngOnDestroy() {
+  override ngOnDestroy() {
     this._destroyed.next();
     this._destroyed.complete();
     this._isDestroyed = true;

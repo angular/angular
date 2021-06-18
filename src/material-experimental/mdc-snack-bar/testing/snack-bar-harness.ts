@@ -20,10 +20,10 @@ export class MatSnackBarHarness extends BaseMatSnackBarHarness {
   // animation is finished and since it runs outside of Angular, we don't have a way of being
   // notified when it's done.
   /** The selector for the host element of a `MatSnackBar` instance. */
-  static hostSelector = '.mat-mdc-snack-bar-container:not([mat-exit])';
-  protected _messageSelector = '.mat-mdc-simple-snack-bar .mat-mdc-snack-bar-label';
-  protected _simpleSnackBarSelector = '.mat-mdc-simple-snack-bar';
-  protected _actionButtonSelector = '.mat-mdc-simple-snack-bar .mat-mdc-snack-bar-action';
+  static override hostSelector = '.mat-mdc-snack-bar-container:not([mat-exit])';
+  protected override _messageSelector = '.mat-mdc-simple-snack-bar .mat-mdc-snack-bar-label';
+  protected override _simpleSnackBarSelector = '.mat-mdc-simple-snack-bar';
+  protected override _actionButtonSelector = '.mat-mdc-simple-snack-bar .mat-mdc-snack-bar-action';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a `MatSnackBarHarness` that meets
@@ -31,7 +31,8 @@ export class MatSnackBarHarness extends BaseMatSnackBarHarness {
    * @param options Options for filtering which snack bar instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: SnackBarHarnessFilters = {}): HarnessPredicate<BaseMatSnackBarHarness> {
+  static override with(
+      options: SnackBarHarnessFilters = {}): HarnessPredicate<BaseMatSnackBarHarness> {
     return new HarnessPredicate<BaseMatSnackBarHarness>(MatSnackBarHarness, options);
   }
 }

@@ -12,7 +12,7 @@ import {ChipOptionHarnessFilters} from './chip-harness-filters';
 
 export class MatChipOptionHarness extends MatChipHarness {
   /** The selector for the host element of a selectable chip instance. */
-  static hostSelector = '.mat-chip';
+  static override hostSelector = '.mat-chip';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a `MatChipOptionHarness`
@@ -20,7 +20,7 @@ export class MatChipOptionHarness extends MatChipHarness {
    * @param options Options for filtering which chip instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: ChipOptionHarnessFilters = {}):
+  static override with(options: ChipOptionHarnessFilters = {}):
     HarnessPredicate<MatChipOptionHarness> {
     return new HarnessPredicate(MatChipOptionHarness, options)
         .addOption('text', options.text,
@@ -30,26 +30,26 @@ export class MatChipOptionHarness extends MatChipHarness {
   }
 
   /** Whether the chip is selected. */
-  async isSelected(): Promise<boolean> {
+  override async isSelected(): Promise<boolean> {
     return (await this.host()).hasClass('mat-chip-selected');
   }
 
   /** Selects the given chip. Only applies if it's selectable. */
-  async select(): Promise<void> {
+  override async select(): Promise<void> {
     if (!(await this.isSelected())) {
       await this.toggle();
     }
   }
 
   /** Deselects the given chip. Only applies if it's selectable. */
-  async deselect(): Promise<void> {
+  override async deselect(): Promise<void> {
     if (await this.isSelected()) {
       await this.toggle();
     }
   }
 
   /** Toggles the selected state of the given chip. */
-  async toggle(): Promise<void> {
+  override async toggle(): Promise<void> {
     return (await this.host()).sendKeys(' ');
   }
 }

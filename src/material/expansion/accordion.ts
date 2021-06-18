@@ -94,7 +94,7 @@ export class MatAccordion extends CdkAccordion implements MatAccordionBase,
     this._keyManager.updateActiveItem(header);
   }
 
-  ngOnDestroy() {
+  override ngOnDestroy() {
     super.ngOnDestroy();
     this._ownHeaders.destroy();
   }

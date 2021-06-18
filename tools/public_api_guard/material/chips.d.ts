@@ -11,7 +11,6 @@ export declare class MatChip extends _MatChipMixinBase implements FocusableOptio
     _chipListDisabled: boolean;
     _chipListMultiple: boolean;
     protected _disabled: boolean;
-    _elementRef: ElementRef<HTMLElement>;
     _hasFocus: boolean;
     readonly _onBlur: Subject<MatChipEvent>;
     readonly _onFocus: Subject<MatChipEvent>;
@@ -39,7 +38,7 @@ export declare class MatChip extends _MatChipMixinBase implements FocusableOptio
     trailingIcon: MatChipTrailingIcon;
     get value(): any;
     set value(value: any);
-    constructor(_elementRef: ElementRef<HTMLElement>, _ngZone: NgZone, platform: Platform, globalRippleOptions: RippleGlobalOptions | null, _changeDetectorRef: ChangeDetectorRef, _document: any, animationMode?: string, tabIndex?: string);
+    constructor(elementRef: ElementRef<HTMLElement>, _ngZone: NgZone, platform: Platform, globalRippleOptions: RippleGlobalOptions | null, _changeDetectorRef: ChangeDetectorRef, _document: any, animationMode?: string, tabIndex?: string);
     _addHostClassName(): void;
     _blur(): void;
     _handleClick(event: Event): void;
@@ -144,7 +143,6 @@ export declare class MatChipList extends _MatChipListBase implements MatFormFiel
     get id(): string;
     get multiple(): boolean;
     set multiple(value: boolean);
-    ngControl: NgControl;
     get placeholder(): string;
     set placeholder(value: string);
     get required(): boolean;
@@ -158,8 +156,7 @@ export declare class MatChipList extends _MatChipListBase implements MatFormFiel
     get value(): any;
     set value(value: any);
     readonly valueChange: EventEmitter<any>;
-    constructor(_elementRef: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, _dir: Directionality, _parentForm: NgForm, _parentFormGroup: FormGroupDirective, _defaultErrorStateMatcher: ErrorStateMatcher,
-    ngControl: NgControl);
+    constructor(_elementRef: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, _dir: Directionality, _parentForm: NgForm, _parentFormGroup: FormGroupDirective, _defaultErrorStateMatcher: ErrorStateMatcher, ngControl: NgControl);
     _allowFocusEscape(): void;
     _blur(): void;
     _focusInput(options?: FocusOptions): void;

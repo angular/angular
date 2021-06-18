@@ -1,13 +1,10 @@
 export declare class MatNestedTreeNode<T, K = T> extends CdkNestedTreeNode<T, K> implements AfterContentInit, DoCheck, OnDestroy, OnInit {
-    protected _differs: IterableDiffers;
-    protected _elementRef: ElementRef<HTMLElement>;
-    protected _tree: CdkTree<T, K>;
     get disabled(): any;
     set disabled(value: any);
     node: T;
     get tabIndex(): number;
     set tabIndex(value: number);
-    constructor(_elementRef: ElementRef<HTMLElement>, _tree: CdkTree<T, K>, _differs: IterableDiffers, tabIndex: string);
+    constructor(elementRef: ElementRef<HTMLElement>, tree: CdkTree<T, K>, differs: IterableDiffers, tabIndex: string);
     ngAfterContentInit(): void;
     ngDoCheck(): void;
     ngOnDestroy(): void;
@@ -57,9 +54,7 @@ export declare class MatTreeNestedDataSource<T> extends DataSource<T> {
 }
 
 export declare class MatTreeNode<T, K = T> extends _MatTreeNodeBase<T, K> implements CanDisable, DoCheck, HasTabIndex, OnInit, OnDestroy {
-    protected _elementRef: ElementRef<HTMLElement>;
-    protected _tree: CdkTree<T, K>;
-    constructor(_elementRef: ElementRef<HTMLElement>, _tree: CdkTree<T, K>, tabIndex: string);
+    constructor(elementRef: ElementRef<HTMLElement>, tree: CdkTree<T, K>, tabIndex: string);
     ngDoCheck(): void;
     ngOnDestroy(): void;
     ngOnInit(): void;

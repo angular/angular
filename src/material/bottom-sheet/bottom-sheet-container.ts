@@ -132,7 +132,7 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
    * @deprecated To be turned into a method.
    * @breaking-change 10.0.0
    */
-  attachDomPortal = (portal: DomPortal) => {
+  override attachDomPortal = (portal: DomPortal) => {
     this._validatePortalAttached();
     this._setPanelClass();
     this._savePreviouslyFocusedElement();

@@ -29,5 +29,5 @@ export class MatNavList extends MatListBase {
   // through keyboard shortcuts. We want all items for the navigation list to be reachable
   // through tab key as we do not intend to provide any special accessibility treatment. The
   // accessibility treatment depends on how the end-user will interact with it.
-  _isNonInteractive = false;
+  override _isNonInteractive = false;
 }

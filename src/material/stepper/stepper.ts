@@ -7,7 +7,6 @@
  */
 
 import {Directionality} from '@angular/cdk/bidi';
-import {BooleanInput} from '@angular/cdk/coercion';
 import {
   CdkStep,
   CdkStepper,
@@ -67,7 +66,7 @@ export class MatStep extends CdkStep implements ErrorStateMatcher, AfterContentI
   private _isSelected = Subscription.EMPTY;
 
   /** Content for step label given by `<ng-template matStepLabel>`. */
-  @ContentChild(MatStepLabel) stepLabel: MatStepLabel;
+  @ContentChild(MatStepLabel) override stepLabel: MatStepLabel;
 
   /** Theme color for the particular step. */
   @Input() color: ThemePalette;
@@ -124,7 +123,7 @@ export class MatStep extends CdkStep implements ErrorStateMatcher, AfterContentI
  */
 @Directive()
 abstract class _MatProxyStepperBase extends CdkStepper {
-  readonly steps: QueryList<MatStep>;
+  override readonly steps: QueryList<MatStep>;
   readonly animationDone: EventEmitter<void>;
   disableRipple: boolean;
   color: ThemePalette;
@@ -176,13 +175,13 @@ export class MatVerticalStepper extends _MatProxyStepperBase {}
 })
 export class MatStepper extends CdkStepper implements AfterContentInit {
   /** The list of step headers of the steps in the stepper. */
-  @ViewChildren(MatStepHeader) _stepHeader: QueryList<MatStepHeader>;
+  @ViewChildren(MatStepHeader) override _stepHeader: QueryList<MatStepHeader>;
 
   /** Full list of steps inside the stepper, including inside nested steppers. */
-  @ContentChildren(MatStep, {descendants: true}) _steps: QueryList<MatStep>;
+  @ContentChildren(MatStep, {descendants: true}) override _steps: QueryList<MatStep>;
 
   /** Steps that belong to the current stepper, excluding ones from nested steppers. */
-  readonly steps: QueryList<MatStep> = new QueryList<MatStep>();
+  override readonly steps: QueryList<MatStep> = new QueryList<MatStep>();
 
   /** Custom icon overrides passed in by the consumer. */
   @ContentChildren(MatStepperIcon, {descendants: true}) _icons: QueryList<MatStepperIcon>;
@@ -219,7 +218,7 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
     this.orientation = nodeName === 'mat-vertical-stepper' ? 'vertical' : 'horizontal';
   }
 
-  ngAfterContentInit() {
+  override ngAfterContentInit() {
     super.ngAfterContentInit();
     this._icons.forEach(({name, templateRef}) => this._iconOverrides[name] = templateRef);
 
@@ -240,9 +239,4 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
       }
     });
   }
-
-  static ngAcceptInputType_editable: BooleanInput;
-  static ngAcceptInputType_optional: BooleanInput;
-  static ngAcceptInputType_completed: BooleanInput;
-  static ngAcceptInputType_hasError: BooleanInput;
 }

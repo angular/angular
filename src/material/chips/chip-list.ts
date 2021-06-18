@@ -161,7 +161,7 @@ export class MatChipList extends _MatChipListBase implements MatFormFieldControl
   get role(): string | null { return this.empty ? null : 'listbox'; }
 
   /** An object used to control when error messages are shown. */
-  @Input() errorStateMatcher: ErrorStateMatcher;
+  @Input() override errorStateMatcher: ErrorStateMatcher;
 
   /** Whether the user should be allowed to select multiple chips. */
   @Input()
@@ -332,8 +332,7 @@ export class MatChipList extends _MatChipListBase implements MatFormFieldControl
               @Optional() _parentForm: NgForm,
               @Optional() _parentFormGroup: FormGroupDirective,
               _defaultErrorStateMatcher: ErrorStateMatcher,
-              /** @docs-private */
-              @Optional() @Self() public ngControl: NgControl) {
+              @Optional() @Self() ngControl: NgControl) {
     super(_defaultErrorStateMatcher, _parentForm, _parentFormGroup, ngControl);
     if (this.ngControl) {
       this.ngControl.valueAccessor = this;

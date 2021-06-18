@@ -4,7 +4,6 @@ export declare function MAT_PROGRESS_BAR_LOCATION_FACTORY(): MatProgressBarLocat
 
 export declare class MatProgressBar extends _MatProgressBarBase implements CanColor, AfterViewInit, OnDestroy {
     _animationMode?: string | undefined;
-    _elementRef: ElementRef;
     _isNoopAnimation: boolean;
     _primaryValueBar: ElementRef;
     _rectangleFillValue: string;
@@ -15,7 +14,7 @@ export declare class MatProgressBar extends _MatProgressBarBase implements CanCo
     progressbarId: string;
     get value(): number;
     set value(v: number);
-    constructor(_elementRef: ElementRef, _ngZone: NgZone, _animationMode?: string | undefined,
+    constructor(elementRef: ElementRef, _ngZone: NgZone, _animationMode?: string | undefined,
     location?: MatProgressBarLocation);
     _bufferTransform(): {
         transform: string;

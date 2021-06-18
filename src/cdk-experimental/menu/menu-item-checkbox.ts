@@ -31,7 +31,7 @@ import {CdkMenuItem} from './menu-item';
 })
 export class CdkMenuItemCheckbox extends CdkMenuItemSelectable {
   /** Toggle the checked state of the checkbox. */
-  trigger() {
+  override trigger() {
     super.trigger();
 
     if (!this.disabled) {

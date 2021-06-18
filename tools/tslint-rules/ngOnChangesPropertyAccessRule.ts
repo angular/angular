@@ -13,7 +13,7 @@ export class Rule extends Lint.Rules.TypedRule {
 }
 
 class Walker extends Lint.ProgramAwareRuleWalker {
-  visitMethodDeclaration(method: ts.MethodDeclaration) {
+  override visitMethodDeclaration(method: ts.MethodDeclaration) {
     // Walk through all of the `ngOnChanges` methods that have at least one parameter.
     if (method.name.getText() !== 'ngOnChanges' || !method.parameters.length || !method.body) {
       return;

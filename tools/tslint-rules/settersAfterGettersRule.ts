@@ -12,7 +12,7 @@ export class Rule extends Lint.Rules.AbstractRule {
 }
 
 class Walker extends Lint.RuleWalker {
-  visitGetAccessor(getter: ts.GetAccessorDeclaration) {
+  override visitGetAccessor(getter: ts.GetAccessorDeclaration) {
     if (getter.parent && tsutils.isClassDeclaration(getter.parent)) {
       const getterName = getter.name.getText();
       const setter = getter.parent.members.find(member => {

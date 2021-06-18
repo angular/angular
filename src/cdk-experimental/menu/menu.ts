@@ -124,7 +124,7 @@ export class CdkMenu extends CdkMenuGroup implements Menu, AfterContentInit, OnI
     this._registerWithParentPanel();
   }
 
-  ngAfterContentInit() {
+  override ngAfterContentInit() {
     super.ngAfterContentInit();
 
     this._completeChangeEmitter();
@@ -348,7 +348,7 @@ export class CdkMenu extends CdkMenuGroup implements Menu, AfterContentInit, OnI
     return this._menuStack instanceof NoopMenuStack;
   }
 
-  ngOnDestroy() {
+  override ngOnDestroy() {
     this._emitClosedEvent();
     this._pointerTracker?.destroy();
   }

@@ -27,7 +27,7 @@ export class MatActionListHarness extends MatListHarnessBase<
     return new HarnessPredicate(MatActionListHarness, options);
   }
 
-  _itemHarness = MatActionListItemHarness;
+  override _itemHarness = MatActionListItemHarness;
 }
 
 /** Harness for interacting with an action list item. */

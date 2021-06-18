@@ -105,14 +105,14 @@ let progressbarId = 0;
 })
 export class MatProgressBar extends _MatProgressBarBase implements CanColor,
                                                       AfterViewInit, OnDestroy {
-  constructor(public _elementRef: ElementRef, private _ngZone: NgZone,
+  constructor(elementRef: ElementRef, private _ngZone: NgZone,
               @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
               /**
                * @deprecated `location` parameter to be made required.
                * @breaking-change 8.0.0
                */
               @Optional() @Inject(MAT_PROGRESS_BAR_LOCATION) location?: MatProgressBarLocation) {
-    super(_elementRef);
+    super(elementRef);
 
     // We need to prefix the SVG reference with the current path, otherwise they won't work
     // in Safari if the page has a `<base>` tag. Note that we need quotes inside the `url()`,

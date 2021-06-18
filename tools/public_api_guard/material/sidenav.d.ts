@@ -113,7 +113,6 @@ export declare class MatSidenav extends MatDrawer {
 export declare class MatSidenavContainer extends MatDrawerContainer {
     _allDrawers: QueryList<MatSidenav>;
     _content: MatSidenavContent;
-    static ngAcceptInputType_hasBackdrop: BooleanInput;
     static ɵcmp: i0.ɵɵComponentDeclaration<MatSidenavContainer, "mat-sidenav-container", ["matSidenavContainer"], {}, {}, ["_content", "_allDrawers"], ["mat-sidenav", "mat-sidenav-content", "*"]>;
     static ɵfac: i0.ɵɵFactoryDeclaration<MatSidenavContainer, never>;
 }

@@ -23,10 +23,8 @@ export declare const CDK_TREE_NODE_OUTLET_NODE: InjectionToken<{}>;
 export declare class CdkNestedTreeNode<T, K = T> extends CdkTreeNode<T, K> implements AfterContentInit, DoCheck, OnDestroy, OnInit {
     protected _children: T[];
     protected _differs: IterableDiffers;
-    protected _elementRef: ElementRef<HTMLElement>;
-    protected _tree: CdkTree<T, K>;
     nodeOutlet: QueryList<CdkTreeNodeOutlet>;
-    constructor(_elementRef: ElementRef<HTMLElement>, _tree: CdkTree<T, K>, _differs: IterableDiffers);
+    constructor(elementRef: ElementRef<HTMLElement>, tree: CdkTree<T, K>, _differs: IterableDiffers);
     protected _clear(): void;
     ngAfterContentInit(): void;
     ngDoCheck(): void;

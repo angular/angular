@@ -129,7 +129,7 @@ export class MatExpansionPanel extends CdkAccordionItem implements AfterContentI
   readonly _inputChanges = new Subject<SimpleChanges>();
 
   /** Optionally defined accordion the expansion panel belongs to. */
-  accordion: MatAccordionBase;
+  override accordion: MatAccordionBase;
 
   /** Content that will be rendered lazily. */
   @ContentChild(MatExpansionPanelContent) _lazyContent: MatExpansionPanelContent;
@@ -191,17 +191,17 @@ export class MatExpansionPanel extends CdkAccordionItem implements AfterContentI
   }
 
   /** Toggles the expanded state of the expansion panel. */
-  toggle(): void {
+  override toggle(): void {
     this.expanded = !this.expanded;
   }
 
   /** Sets the expanded state of the expansion panel to false. */
-  close(): void {
+  override close(): void {
     this.expanded = false;
   }
 
   /** Sets the expanded state of the expansion panel to true. */
-  open(): void {
+  override open(): void {
     this.expanded = true;
   }
 
@@ -222,7 +222,7 @@ export class MatExpansionPanel extends CdkAccordionItem implements AfterContentI
     this._inputChanges.next(changes);
   }
 
-  ngOnDestroy() {
+  override ngOnDestroy() {
     super.ngOnDestroy();
     this._bodyAnimationDone.complete();
     this._inputChanges.complete();

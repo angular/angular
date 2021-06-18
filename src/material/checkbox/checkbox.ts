@@ -245,8 +245,8 @@ export class MatCheckbox extends _MatCheckboxBase implements ControlValueAccesso
    * mixinDisabled, but the mixin is still required because mixinTabIndex requires it.
    */
   @Input()
-  get disabled() { return this._disabled; }
-  set disabled(value: any) {
+  override get disabled() { return this._disabled; }
+  override set disabled(value: any) {
     const newValue = coerceBooleanProperty(value);
 
     if (newValue !== this.disabled) {

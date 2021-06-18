@@ -55,15 +55,15 @@ export class CdkNestedTreeNode<T, K = T> extends CdkTreeNode<T, K>
   })
   nodeOutlet: QueryList<CdkTreeNodeOutlet>;
 
-  constructor(protected _elementRef: ElementRef<HTMLElement>,
-              protected _tree: CdkTree<T, K>,
+  constructor(elementRef: ElementRef<HTMLElement>,
+              tree: CdkTree<T, K>,
               protected _differs: IterableDiffers) {
-    super(_elementRef, _tree);
+    super(elementRef, tree);
     // The classes are directly added here instead of in the host property because classes on
     // the host property are not inherited with View Engine. It is not set as a @HostBinding because
     // it is not set by the time it's children nodes try to read the class from it.
     // TODO: move to host after View Engine deprecation
-    this._elementRef.nativeElement.classList.add('cdk-nested-tree-node');
+    elementRef.nativeElement.classList.add('cdk-nested-tree-node');
   }
 
   ngAfterContentInit() {
@@ -84,15 +84,15 @@ export class CdkNestedTreeNode<T, K = T> extends CdkTreeNode<T, K>
 
   // This is a workaround for https://github.com/angular/angular/issues/23091
   // In aot mode, the lifecycle hooks from parent class are not called.
-  ngOnInit() {
+  override ngOnInit() {
     super.ngOnInit();
   }
 
-  ngDoCheck() {
+  override ngDoCheck() {
     super.ngDoCheck();
   }
 
-  ngOnDestroy() {
+  override ngOnDestroy() {
     this._clear();
     super.ngOnDestroy();
   }

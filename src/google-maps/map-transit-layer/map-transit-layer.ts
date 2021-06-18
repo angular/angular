@@ -30,16 +30,16 @@ export class MapTransitLayer extends MapBaseLayer {
    */
   transitLayer?: google.maps.TransitLayer;
 
-  protected _initializeObject() {
+  protected override _initializeObject() {
     this.transitLayer = new google.maps.TransitLayer();
   }
 
-  protected _setMap() {
+  protected override _setMap() {
     this._assertLayerInitialized();
     this.transitLayer.setMap(this._map.googleMap!);
   }
 
-  protected _unsetMap() {
+  protected override _unsetMap() {
     if (this.transitLayer) {
       this.transitLayer.setMap(null);
     }

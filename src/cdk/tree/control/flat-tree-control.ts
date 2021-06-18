@@ -18,7 +18,8 @@ export class FlatTreeControl<T, K = T> extends BaseTreeControl<T, K> {
 
   /** Construct with flat tree data node functions getLevel and isExpandable. */
   constructor(
-      public getLevel: (dataNode: T) => number, public isExpandable: (dataNode: T) => boolean,
+      public override getLevel: (dataNode: T) => number,
+      public override isExpandable: (dataNode: T) => boolean,
       public options?: FlatTreeControlOptions<T, K>) {
     super();
 

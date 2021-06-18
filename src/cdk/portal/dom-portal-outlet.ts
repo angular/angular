@@ -115,7 +115,7 @@ export class DomPortalOutlet extends BasePortalOutlet {
    * @deprecated To be turned into a method.
    * @breaking-change 10.0.0
    */
-  attachDomPortal = (portal: DomPortal) => {
+  override attachDomPortal = (portal: DomPortal) => {
     // @breaking-change 10.0.0 Remove check and error once the
     // `_document` constructor parameter is required.
     if (!this._document && (typeof ngDevMode === 'undefined' || ngDevMode)) {
@@ -146,7 +146,7 @@ export class DomPortalOutlet extends BasePortalOutlet {
   /**
    * Clears out a portal from the DOM.
    */
-  dispose(): void {
+  override dispose(): void {
     super.dispose();
     if (this.outletElement.parentNode != null) {
       this.outletElement.parentNode.removeChild(this.outletElement);

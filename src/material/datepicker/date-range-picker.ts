@@ -38,7 +38,7 @@ export interface MatDateRangePickerInput<D> extends MatDatepickerControl<D> {
 })
 export class MatDateRangePicker<D> extends MatDatepickerBase<MatDateRangePickerInput<D>,
   DateRange<D>, D> {
-  protected _forwardContentValues(instance: MatDatepickerContent<DateRange<D>, D>) {
+  protected override _forwardContentValues(instance: MatDatepickerContent<DateRange<D>, D>) {
     super._forwardContentValues(instance);
 
     const input = this.datepickerInput;

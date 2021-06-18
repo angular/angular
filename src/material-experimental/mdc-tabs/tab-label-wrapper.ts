@@ -35,10 +35,10 @@ export class MatTabLabelWrapper extends BaseMatTabLabelWrapper
   get fitInkBarToContent(): boolean { return this._foundation.getFitToContent(); }
   set fitInkBarToContent(v: boolean) { this._foundation.setFitToContent(coerceBooleanProperty(v)); }
 
-  constructor(public elementRef: ElementRef, @Inject(DOCUMENT) _document: any) {
+  constructor(elementRef: ElementRef, @Inject(DOCUMENT) _document: any) {
     super(elementRef);
     this._document = _document;
-    this._foundation = new MatInkBarFoundation(this.elementRef.nativeElement, this._document);
+    this._foundation = new MatInkBarFoundation(elementRef.nativeElement, this._document);
   }
 
   ngOnInit() {
@@ -47,11 +47,6 @@ export class MatTabLabelWrapper extends BaseMatTabLabelWrapper
 
   ngOnDestroy() {
     this._foundation.destroy();
-  }
-
-  /** Sets focus on the wrapper element */
-  focus(): void {
-    this.elementRef.nativeElement.focus();
   }
 
   static ngAcceptInputType_fitInkBarToContent: BooleanInput;

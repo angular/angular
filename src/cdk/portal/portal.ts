@@ -144,12 +144,12 @@ export class TemplatePortal<C = any> extends Portal<EmbeddedViewRef<C>> {
    * When a context is provided it will override the `context` property of the `TemplatePortal`
    * instance.
    */
-  attach(host: PortalOutlet, context: C | undefined = this.context): EmbeddedViewRef<C> {
+  override attach(host: PortalOutlet, context: C | undefined = this.context): EmbeddedViewRef<C> {
     this.context = context;
     return super.attach(host);
   }
 
-  detach(): void {
+  override detach(): void {
     this.context = undefined;
     return super.detach();
   }

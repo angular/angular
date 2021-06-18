@@ -68,7 +68,7 @@ export class MatTabHeader extends _MatTabHeaderBase implements AfterContentInit 
     super(elementRef, changeDetectorRef, viewportRuler, dir, ngZone, platform, animationMode);
   }
 
-  ngAfterContentInit() {
+  override ngAfterContentInit() {
     this._inkBar = new MatInkBar(this._items);
     super.ngAfterContentInit();
   }

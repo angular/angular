@@ -185,14 +185,14 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
     this._value = Math.max(0, Math.min(100, coerceNumberProperty(newValue)));
   }
 
-  constructor(public _elementRef: ElementRef<HTMLElement>,
+  constructor(elementRef: ElementRef<HTMLElement>,
               platform: Platform,
               @Optional() @Inject(DOCUMENT) private _document: any,
               @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode: string,
               @Inject(MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS)
                   defaults?: MatProgressSpinnerDefaultOptions) {
 
-    super(_elementRef);
+    super(elementRef);
 
     const trackedDiameters = MatProgressSpinner._diameters;
     this._spinnerAnimationLabel = this._getSpinnerAnimationLabel();

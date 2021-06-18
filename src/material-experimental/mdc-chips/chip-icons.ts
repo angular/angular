@@ -202,7 +202,7 @@ export class MatChipRemove extends _MatChipRemoveMixinBase implements CanDisable
     event.stopPropagation();
   }
 
-  focus() {
+  override focus() {
     this._elementRef.nativeElement.focus();
   }
 

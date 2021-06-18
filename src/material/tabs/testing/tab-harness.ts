@@ -79,7 +79,7 @@ export class MatTabHarness extends ContentContainerComponentHarness<string> {
     return this.getRootHarnessLoader();
   }
 
-  protected async getRootHarnessLoader(): Promise<HarnessLoader> {
+  protected override async getRootHarnessLoader(): Promise<HarnessLoader> {
     const contentId = await this._getContentId();
     return this.documentRootLocatorFactory().harnessLoaderFor(`#${contentId}`);
   }

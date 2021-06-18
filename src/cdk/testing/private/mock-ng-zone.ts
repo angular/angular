@@ -18,17 +18,17 @@ import {EventEmitter, Injectable, NgZone} from '@angular/core';
  */
 @Injectable()
 export class MockNgZone extends NgZone {
-  readonly onStable = new EventEmitter(false);
+  override readonly onStable = new EventEmitter(false);
 
   constructor() {
     super({enableLongStackTrace: false});
   }
 
-  run(fn: Function): any {
+  override run(fn: Function): any {
     return fn();
   }
 
-  runOutsideAngular(fn: Function): any {
+  override runOutsideAngular(fn: Function): any {
     return fn();
   }
 

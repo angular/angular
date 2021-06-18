@@ -60,7 +60,7 @@ export class MatColumnResizeOverlayHandle extends ResizeOverlayHandle {
     this.document = document;
   }
 
-  protected updateResizeActive(active: boolean): void {
+  protected override updateResizeActive(active: boolean): void {
     super.updateResizeActive(active);
 
     this.resizeRef.overlayRef.updateSize({

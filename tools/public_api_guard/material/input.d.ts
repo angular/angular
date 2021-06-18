@@ -27,7 +27,6 @@ export declare class MatInput extends _MatInputBase implements MatFormFieldContr
     focused: boolean;
     get id(): string;
     set id(value: string);
-    ngControl: NgControl;
     placeholder: string;
     get readonly(): boolean;
     set readonly(value: boolean);
@@ -40,8 +39,7 @@ export declare class MatInput extends _MatInputBase implements MatFormFieldContr
     userAriaDescribedBy: string;
     get value(): string;
     set value(value: string);
-    constructor(_elementRef: ElementRef<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>, _platform: Platform,
-    ngControl: NgControl, _parentForm: NgForm, _parentFormGroup: FormGroupDirective, _defaultErrorStateMatcher: ErrorStateMatcher, inputValueAccessor: any, _autofillMonitor: AutofillMonitor, ngZone: NgZone, _formField?: MatFormField | undefined);
+    constructor(_elementRef: ElementRef<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>, _platform: Platform, ngControl: NgControl, _parentForm: NgForm, _parentFormGroup: FormGroupDirective, _defaultErrorStateMatcher: ErrorStateMatcher, inputValueAccessor: any, _autofillMonitor: AutofillMonitor, ngZone: NgZone, _formField?: MatFormField | undefined);
     protected _dirtyCheckNativeValue(): void;
     _focusChanged(isFocused: boolean): void;
     protected _isBadInput(): boolean;

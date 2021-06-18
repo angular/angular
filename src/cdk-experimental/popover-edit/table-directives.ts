@@ -362,7 +362,7 @@ export class CdkPopoverEdit<C> implements AfterViewInit, OnDestroy {
   inputs: POPOVER_EDIT_INPUTS,
 })
 export class CdkPopoverEditTabOut<C> extends CdkPopoverEdit<C> {
-  protected focusTrap?: FocusEscapeNotifier;
+  protected override focusTrap?: FocusEscapeNotifier;
 
   constructor(
       elementRef: ElementRef, viewContainerRef: ViewContainerRef, services: EditServices,
@@ -370,7 +370,7 @@ export class CdkPopoverEditTabOut<C> extends CdkPopoverEdit<C> {
     super(services, elementRef, viewContainerRef);
   }
 
-  protected initFocusTrap(): void {
+  protected override initFocusTrap(): void {
     this.focusTrap = this.focusEscapeNotifierFactory.create(this.overlayRef!.overlayElement);
 
     this.focusTrap.escapes().pipe(takeUntil(this.destroyed)).subscribe(direction => {

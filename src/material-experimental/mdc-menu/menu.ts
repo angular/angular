@@ -58,8 +58,8 @@ export const MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER: Provider = {
   ]
 })
 export class MatMenu extends _MatMenuBase {
-  protected _elevationPrefix = 'mat-mdc-elevation-z';
-  protected _baseElevation = 8;
+  protected override _elevationPrefix = 'mat-mdc-elevation-z';
+  protected override _baseElevation = 8;
 
   constructor(_elementRef: ElementRef<HTMLElement>,
               _ngZone: NgZone,

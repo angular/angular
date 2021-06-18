@@ -33,7 +33,7 @@ export class MatSelectionListHarness extends MatListHarnessBase<
     return new HarnessPredicate(MatSelectionListHarness, options);
   }
 
-  _itemHarness = MatListOptionHarness;
+  override _itemHarness = MatListOptionHarness;
 
   /** Whether the selection list is disabled. */
   async isDisabled(): Promise<boolean> {

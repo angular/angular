@@ -110,7 +110,7 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
   _onChange: (value: any) => void = () => {};
 
   /** The ARIA role applied to the chip listbox. */
-  get role(): string | null { return this.empty ? null : 'listbox'; }
+  override get role(): string | null { return this.empty ? null : 'listbox'; }
 
   /** Whether the user should be allowed to select multiple chips. */
   @Input()
@@ -201,12 +201,12 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
     // indirect descendants if it's left as false.
     descendants: true
   })
-  _chips: QueryList<MatChipOption>;
+  override _chips: QueryList<MatChipOption>;
 
-  constructor(protected _elementRef: ElementRef,
-              _changeDetectorRef: ChangeDetectorRef,
+  constructor(elementRef: ElementRef,
+              changeDetectorRef: ChangeDetectorRef,
               @Optional() _dir: Directionality) {
-    super(_elementRef, _changeDetectorRef, _dir);
+    super(elementRef, changeDetectorRef, _dir);
     this._chipSetAdapter.selectChipAtIndex = (index: number, selected: boolean) => {
       this._setSelected(index, selected);
     };
@@ -215,7 +215,7 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
     this._updateMdcSelectionClasses();
   }
 
-  ngAfterContentInit() {
+  override ngAfterContentInit() {
     super.ngAfterContentInit();
     this._initKeyManager();
 
@@ -235,7 +235,7 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
    * Focuses the first selected chip in this chip listbox, or the first non-disabled chip when there
    * are no selected chips.
    */
-  focus(): void {
+  override focus(): void {
     if (this.disabled) {
       return;
     }
@@ -472,7 +472,7 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
   }
 
   /** Unsubscribes from all chip events. */
-  protected _dropSubscriptions() {
+  protected override _dropSubscriptions() {
     super._dropSubscriptions();
     if (this._chipSelectionSubscription) {
       this._chipSelectionSubscription.unsubscribe();
@@ -491,7 +491,7 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
   }
 
   /** Subscribes to events on the child chips. */
-  protected _subscribeToChipEvents() {
+  protected override _subscribeToChipEvents() {
     super._subscribeToChipEvents();
     this._listenToChipsSelection();
     this._listenToChipsFocus();

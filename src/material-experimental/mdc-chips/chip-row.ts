@@ -76,7 +76,7 @@ export interface MatChipEditedEvent extends MatChipEvent {
 })
 export class MatChipRow extends MatChip implements AfterContentInit, AfterViewInit,
   GridKeyManagerRow<HTMLElement> {
-  protected basicChipAttrName = 'mat-basic-chip-row';
+  protected override basicChipAttrName = 'mat-basic-chip-row';
 
   @Input() editable: boolean = false;
 
@@ -116,7 +116,7 @@ export class MatChipRow extends MatChip implements AfterContentInit, AfterViewIn
     super(changeDetectorRef, elementRef, ngZone, dir, animationMode, globalRippleOptions);
   }
 
-  ngAfterContentInit() {
+  override ngAfterContentInit() {
     super.ngAfterContentInit();
 
     if (this.removeIcon) {
@@ -130,7 +130,7 @@ export class MatChipRow extends MatChip implements AfterContentInit, AfterViewIn
     }
   }
 
-  ngAfterViewInit() {
+  override ngAfterViewInit() {
     super.ngAfterViewInit();
     this.cells = this.removeIcon ?
       [this.chipContent.nativeElement, this.removeIcon._elementRef.nativeElement] :
@@ -225,14 +225,14 @@ export class MatChipRow extends MatChip implements AfterContentInit, AfterViewIn
     return this._chipFoundation.isEditing();
   }
 
-  protected _onEditStart() {
+  protected override _onEditStart() {
     // Defer initializing the input so it has time to be added to the DOM.
     setTimeout(() => {
       this._getEditInput().initialize(this.value);
     });
   }
 
-  protected _onEditFinish() {
+  protected override _onEditFinish() {
     // If the edit input is still focused or focus was returned to the body after it was destroyed,
     // return focus to the chip contents.
     if (this._document.activeElement === this._getEditInput().getNativeElement() ||

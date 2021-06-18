@@ -35,7 +35,7 @@ class Walker extends Lint.RuleWalker {
     }, {} as {[key: string]: RegExp});
   }
 
-  visitClassDeclaration(node: ts.ClassDeclaration) {
+  override visitClassDeclaration(node: ts.ClassDeclaration) {
     node.members.forEach(member => {
       // Members without a modifier are considered public.
       if (!member.modifiers || tsutils.hasModifier(member.modifiers, ts.SyntaxKind.PublicKeyword)) {
@@ -50,7 +50,7 @@ class Walker extends Lint.RuleWalker {
     super.visitClassDeclaration(node);
   }
 
-  visitConstructorDeclaration(node: ts.ConstructorDeclaration) {
+  override visitConstructorDeclaration(node: ts.ConstructorDeclaration) {
     node.parameters.forEach(param => {
       const modifiers = param.modifiers;
 

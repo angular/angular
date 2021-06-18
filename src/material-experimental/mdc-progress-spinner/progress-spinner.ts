@@ -106,11 +106,11 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements After
       this._determinateCircle.nativeElement.setAttribute(attributeName, value),
   };
 
-  constructor(public _elementRef: ElementRef<HTMLElement>,
+  constructor(elementRef: ElementRef<HTMLElement>,
               @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode: string,
               @Inject(MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS)
                 defaults?: MatProgressSpinnerDefaultOptions) {
-    super(_elementRef);
+    super(elementRef);
     this._noopAnimations = animationMode === 'NoopAnimations' &&
       (!!defaults && !defaults._forceAnimations);
 

@@ -64,11 +64,11 @@ export type ProgressBarMode = 'determinate' | 'indeterminate' | 'buffer' | 'quer
 export class MatProgressBar extends _MatProgressBarBase implements AfterViewInit, OnDestroy,
   CanColor {
 
-  constructor(public _elementRef: ElementRef<HTMLElement>,
+  constructor(elementRef: ElementRef<HTMLElement>,
               private _ngZone: NgZone,
               @Optional() dir?: Directionality,
               @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
-    super(_elementRef);
+    super(elementRef);
     this._isNoopAnimation = _animationMode === 'NoopAnimations';
     if (dir) {
       this._dirChangeSubscription = dir.change.subscribe(() => {

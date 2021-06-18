@@ -46,30 +46,30 @@ export class MatTreeNode<T, K = T> extends _MatTreeNodeBase<T, K>
     implements CanDisable, DoCheck, HasTabIndex, OnInit, OnDestroy {
 
 
-  constructor(protected _elementRef: ElementRef<HTMLElement>,
-              protected _tree: CdkTree<T, K>,
+  constructor(elementRef: ElementRef<HTMLElement>,
+              tree: CdkTree<T, K>,
               @Attribute('tabindex') tabIndex: string) {
-    super(_elementRef, _tree);
+    super(elementRef, tree);
 
     this.tabIndex = Number(tabIndex) || 0;
     // The classes are directly added here instead of in the host property because classes on
     // the host property are not inherited with View Engine. It is not set as a @HostBinding because
     // it is not set by the time it's children nodes try to read the class from it.
     // TODO: move to host after View Engine deprecation
-    this._elementRef.nativeElement.classList.add('mat-tree-node');
+    elementRef.nativeElement.classList.add('mat-tree-node');
   }
 
   // This is a workaround for https://github.com/angular/angular/issues/23091
   // In aot mode, the lifecycle hooks from parent class are not called.
-  ngOnInit() {
+  override ngOnInit() {
     super.ngOnInit();
   }
 
-  ngDoCheck() {
+  override ngDoCheck() {
     super.ngDoCheck();
   }
 
-  ngOnDestroy() {
+  override ngOnDestroy() {
     super.ngOnDestroy();
   }
 
@@ -124,35 +124,35 @@ export class MatNestedTreeNode<T, K = T> extends CdkNestedTreeNode<T, K>
   }
   private _tabIndex: number;
 
-  constructor(protected _elementRef: ElementRef<HTMLElement>,
-              protected _tree: CdkTree<T, K>,
-              protected _differs: IterableDiffers,
+  constructor(elementRef: ElementRef<HTMLElement>,
+              tree: CdkTree<T, K>,
+              differs: IterableDiffers,
               @Attribute('tabindex') tabIndex: string) {
-    super(_elementRef, _tree, _differs);
+    super(elementRef, tree, differs);
     this.tabIndex = Number(tabIndex) || 0;
     // The classes are directly added here instead of in the host property because classes on
     // the host property are not inherited with View Engine. It is not set as a @HostBinding because
     // it is not set by the time it's children nodes try to read the class from it.
     // TODO: move to host after View Engine deprecation
-    this._elementRef.nativeElement.classList.add('mat-nested-tree-node');
+    elementRef.nativeElement.classList.add('mat-nested-tree-node');
   }
 
   // This is a workaround for https://github.com/angular/angular/issues/19145
   // In aot mode, the lifecycle hooks from parent class are not called.
   // TODO(tinayuangao): Remove when the angular issue #19145 is fixed
-  ngOnInit() {
+  override ngOnInit() {
     super.ngOnInit();
   }
 
-  ngDoCheck() {
+  override ngDoCheck() {
     super.ngDoCheck();
   }
 
-  ngAfterContentInit() {
+  override ngAfterContentInit() {
     super.ngAfterContentInit();
   }
 
-  ngOnDestroy() {
+  override ngOnDestroy() {
     super.ngOnDestroy();
   }
 

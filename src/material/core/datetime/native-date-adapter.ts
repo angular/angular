@@ -252,7 +252,7 @@ export class NativeDateAdapter extends DateAdapter<Date> {
    * (https://www.ietf.org/rfc/rfc3339.txt) into valid Dates and empty string into null. Returns an
    * invalid date for all other values.
    */
-  deserialize(value: any): Date | null {
+  override deserialize(value: any): Date | null {
     if (typeof value === 'string') {
       if (!value) {
         return null;

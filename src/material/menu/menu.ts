@@ -504,8 +504,8 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
   ]
 })
 export class MatMenu extends _MatMenuBase {
-  protected _elevationPrefix = 'mat-elevation-z';
-  protected _baseElevation = 4;
+  protected override _elevationPrefix = 'mat-elevation-z';
+  protected override _baseElevation = 4;
 
   constructor(elementRef: ElementRef<HTMLElement>, ngZone: NgZone,
       @Inject(MAT_MENU_DEFAULT_OPTIONS) defaultOptions: MatMenuDefaultOptions) {

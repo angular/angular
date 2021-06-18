@@ -89,7 +89,7 @@ export class MatStepHarness extends ContentContainerComponentHarness<string> {
     await (await this.host()).click();
   }
 
-  protected async getRootHarnessLoader(): Promise<HarnessLoader> {
+  protected override async getRootHarnessLoader(): Promise<HarnessLoader> {
     const contentId = await (await this.host()).getAttribute('aria-controls');
     return this.documentRootLocatorFactory().harnessLoaderFor(`#${contentId}`);
   }

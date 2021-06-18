@@ -33,7 +33,7 @@ class Walker extends Lint.RuleWalker {
     this._enabled = fileGlobs.some(p => minimatch(relativeFilePath, p));
   }
 
-  visitPropertyAccessExpression(node: ts.PropertyAccessExpression) {
+  override visitPropertyAccessExpression(node: ts.PropertyAccessExpression) {
     // Flag any accesses of the lifecycle hooks that are
     // inside function call and don't match the allowed criteria.
     if (this._enabled && ts.isCallExpression(node.parent) && hooks.has(node.name.text) &&

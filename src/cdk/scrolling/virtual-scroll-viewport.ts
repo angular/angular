@@ -166,7 +166,7 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
   /** Subscription to changes in the viewport size. */
   private _viewportChanges = Subscription.EMPTY;
 
-  constructor(public elementRef: ElementRef<HTMLElement>,
+  constructor(public override elementRef: ElementRef<HTMLElement>,
               private _changeDetectorRef: ChangeDetectorRef,
               ngZone: NgZone,
               @Optional() @Inject(VIRTUAL_SCROLL_STRATEGY)
@@ -185,7 +185,7 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
     });
   }
 
-  ngOnInit() {
+  override ngOnInit() {
     super.ngOnInit();
 
     // It's still too early to measure the viewport at this point. Deferring with a promise allows
@@ -210,7 +210,7 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
     }));
   }
 
-  ngOnDestroy() {
+  override ngOnDestroy() {
     this.detach();
     this._scrollStrategy.detach();
 
@@ -367,7 +367,8 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
    * @param from The edge to measure the offset from. Defaults to 'top' in vertical mode and 'start'
    *     in horizontal mode.
    */
-  measureScrollOffset(from?: 'top' | 'left' | 'right' | 'bottom' | 'start' | 'end'): number {
+  override measureScrollOffset(
+      from?: 'top' | 'left' | 'right' | 'bottom' | 'start' | 'end'): number {
     return from ?
       super.measureScrollOffset(from) :
       super.measureScrollOffset(this.orientation === 'horizontal' ? 'start' : 'top');

@@ -26,11 +26,11 @@ import {Directive, Input, Output, EventEmitter} from '@angular/core';
 export class MatSelection<T> extends CdkSelection<T> {
   /** Whether to support multiple selection */
   @Input('matSelectionMultiple')
-  get multiple(): boolean { return this._multiple; }
-  set multiple(multiple: boolean) { this._multiple = coerceBooleanProperty(multiple); }
+  override get multiple(): boolean { return this._multiple; }
+  override set multiple(multiple: boolean) { this._multiple = coerceBooleanProperty(multiple); }
 
   /** Emits when selection changes. */
-  @Output('matSelectionChange') readonly change = new EventEmitter<SelectionChange<T>>();
+  @Output('matSelectionChange') override readonly change = new EventEmitter<SelectionChange<T>>();
 }
 
 /**

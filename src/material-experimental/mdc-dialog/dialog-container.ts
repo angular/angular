@@ -70,7 +70,7 @@ export class MatDialogContainer extends _MatDialogContainerBase implements OnDes
     super(elementRef, focusTrapFactory, changeDetectorRef, document, config, focusMonitor);
   }
 
-  _initializeWithAttachedContent() {
+  override _initializeWithAttachedContent() {
     // Delegate to the original dialog-container initialization (i.e. saving the
     // previous element, setting up the focus trap and moving focus to the container).
     super._initializeWithAttachedContent();

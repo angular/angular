@@ -8,7 +8,7 @@ export class Rule extends Lint.Rules.AbstractRule {
 }
 
 class Walker extends Lint.RuleWalker {
-  visitClassDeclaration(node: ts.ClassDeclaration) {
+  override visitClassDeclaration(node: ts.ClassDeclaration) {
     if (!node.modifiers || !this.getOptions().length) { return; }
 
     // Do not check the class if its abstract.

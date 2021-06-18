@@ -330,16 +330,16 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
 
   constructor(
       public _changeDetectorRef: ChangeDetectorRef,
-      readonly _elementRef: ElementRef, protected _ngZone: NgZone,
+      elementRef: ElementRef, protected _ngZone: NgZone,
       @Optional() private _dir: Directionality,
       @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
       @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS)
         private _globalRippleOptions?: RippleGlobalOptions) {
-    super(_elementRef);
+    super(elementRef);
     this._chipFoundation = new deprecated.MDCChipFoundation(this._chipAdapter);
     this._animationsDisabled = animationMode === 'NoopAnimations';
-    this._isBasicChip = _elementRef.nativeElement.hasAttribute(this.basicChipAttrName) ||
-                        _elementRef.nativeElement.tagName.toLowerCase() === this.basicChipAttrName;
+    this._isBasicChip = elementRef.nativeElement.hasAttribute(this.basicChipAttrName) ||
+                        elementRef.nativeElement.tagName.toLowerCase() === this.basicChipAttrName;
   }
 
   ngAfterContentInit() {

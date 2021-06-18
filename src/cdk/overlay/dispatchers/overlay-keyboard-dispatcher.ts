@@ -25,7 +25,7 @@ export class OverlayKeyboardDispatcher extends BaseOverlayDispatcher {
   }
 
   /** Add a new overlay to the list of attached overlay refs. */
-  add(overlayRef: OverlayReference): void {
+  override add(overlayRef: OverlayReference): void {
     super.add(overlayRef);
 
     // Lazily start dispatcher once first overlay is added

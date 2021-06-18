@@ -147,12 +147,12 @@ export class MatRadioButton extends _MatRadioButtonBase implements AfterViewInit
         this._noopAnimations ? {enterDuration: 0, exitDuration: 0} : RIPPLE_ANIMATION_CONFIG;
   }
 
-  ngAfterViewInit() {
+  override ngAfterViewInit() {
     super.ngAfterViewInit();
     this._radioFoundation.init();
   }
 
-  ngOnDestroy() {
+  override ngOnDestroy() {
     super.ngOnDestroy();
     this._radioFoundation.destroy();
   }
@@ -163,10 +163,10 @@ export class MatRadioButton extends _MatRadioButtonBase implements AfterViewInit
   }
 
   /**
-   * Overrides the parent function so that the foundation can be set with the current disabled
-   * state.
+   * Overrides the parent function so that the foundation can be set with the current
+   * disabled state.
    */
-  protected _setDisabled(value: boolean) {
+  protected override _setDisabled(value: boolean) {
     super._setDisabled(value);
     this._radioFoundation.setDisabled(this.disabled);
   }

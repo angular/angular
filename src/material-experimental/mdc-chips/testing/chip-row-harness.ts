@@ -12,14 +12,14 @@ import {MatChipHarness} from './chip-harness';
 
 /** Harness for interacting with a mat-chip-row in tests. */
 export class MatChipRowHarness extends MatChipHarness {
-  static hostSelector = '.mat-mdc-chip-row';
+  static override hostSelector = '.mat-mdc-chip-row';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a chip row with specific attributes.
    */
   // Note(mmalerba): generics are used as a workaround for lack of polymorphic `this` in static
   // methods. See https://github.com/microsoft/TypeScript/issues/5863
-  static with<T extends typeof MatChipHarness>(
+  static override with<T extends typeof MatChipHarness>(
       this: T, options: ChipRowHarnessFilters = {}): HarnessPredicate<InstanceType<T>> {
     return new HarnessPredicate(MatChipRowHarness, options) as
         unknown as HarnessPredicate<InstanceType<T>>;

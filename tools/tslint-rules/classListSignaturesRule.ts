@@ -12,7 +12,7 @@ export class Rule extends Lint.Rules.TypedRule {
 }
 
 class Walker extends Lint.ProgramAwareRuleWalker {
-  visitPropertyAccessExpression(propertyAccess: ts.PropertyAccessExpression) {
+  override visitPropertyAccessExpression(propertyAccess: ts.PropertyAccessExpression) {
     const parent = propertyAccess.parent;
 
     // We only care about property accesses inside of calls.

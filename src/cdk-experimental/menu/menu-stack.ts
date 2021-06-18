@@ -130,5 +130,5 @@ export class MenuStack {
 /** NoopMenuStack is a placeholder MenuStack used for inline menus. */
 export class NoopMenuStack extends MenuStack {
   /** Noop push - does not add elements to the MenuStack. */
-  push(_: MenuStackItem) {}
+  override push(_: MenuStackItem) {}
 }

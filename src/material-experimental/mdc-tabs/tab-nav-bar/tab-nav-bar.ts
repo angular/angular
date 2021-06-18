@@ -98,7 +98,7 @@ export class MatTabNav extends _MatTabNavBase implements AfterContentInit {
         defaultConfig.fitInkBarToContent : false;
   }
 
-  ngAfterContentInit() {
+  override ngAfterContentInit() {
     this._inkBar = new MatInkBar(this._items);
     super.ngAfterContentInit();
   }
@@ -150,7 +150,7 @@ export class MatTabLink extends _MatTabLinkBase implements MatInkBarItem, OnInit
     this._foundation.init();
   }
 
-  ngOnDestroy() {
+  override ngOnDestroy() {
     this._destroyed.next();
     this._destroyed.complete();
     super.ngOnDestroy();

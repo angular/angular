@@ -28,7 +28,7 @@ export class FullscreenOverlayContainer extends OverlayContainer implements OnDe
     super(_document, platform);
   }
 
-  ngOnDestroy() {
+  override ngOnDestroy() {
     super.ngOnDestroy();
 
     if (this._fullScreenEventName && this._fullScreenListener) {
@@ -36,7 +36,7 @@ export class FullscreenOverlayContainer extends OverlayContainer implements OnDe
     }
   }
 
-  protected _createContainer(): void {
+  protected override _createContainer(): void {
     super._createContainer();
     this._adjustParentForFullscreenChange();
     this._addFullscreenChangeListener(() => this._adjustParentForFullscreenChange());

@@ -195,7 +195,7 @@ export class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestr
    * @deprecated To be turned into a method.
    * @breaking-change 10.0.0
    */
-  attachDomPortal = (portal: DomPortal) => {
+  override attachDomPortal = (portal: DomPortal) => {
     // @breaking-change 9.0.0 Remove check and error once the
     // `_document` constructor parameter is required.
     if (!this._document && (typeof ngDevMode === 'undefined' || ngDevMode)) {

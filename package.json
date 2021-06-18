@@ -50,6 +50,7 @@
     "check-mdc-tests": "ts-node --project scripts/tsconfig.json scripts/check-mdc-tests.ts",
     "check-mdc-exports": "ts-node --project scripts/tsconfig.json scripts/check-mdc-exports.ts",
     "check-tools": "yarn tsc --project tools/tsconfig-ci.json",
+    "tsc": "node ./node_modules/typescript/bin/tsc",
     "prepare": "husky install"
   },
   "version": "12.2.0-next.0",

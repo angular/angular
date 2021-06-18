@@ -44,7 +44,7 @@ class RequireLicenseBannerWalker extends Lint.RuleWalker {
     this._enabled = fileGlobs.some(p => minimatch(relativeFilePath, p));
   }
 
-  visitSourceFile(sourceFile: ts.SourceFile) {
+  override visitSourceFile(sourceFile: ts.SourceFile) {
     if (!this._enabled) {
       return;
     }

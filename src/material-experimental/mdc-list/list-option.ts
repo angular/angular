@@ -177,7 +177,7 @@ export class MatListOption extends MatListItemBase implements ListOption, OnInit
     this._inputsInitialized = true;
   }
 
-  ngOnDestroy(): void {
+  override ngOnDestroy(): void {
     if (this.selected) {
       // We have to delay this until the next tick in order
       // to avoid changed after checked errors.

@@ -20,7 +20,7 @@ export class Rule extends Lint.Rules.AbstractRule {
 
 class NoExposedTodoWalker extends Lint.RuleWalker {
 
-  visitSourceFile(sourceFile: ts.SourceFile) {
+  override visitSourceFile(sourceFile: ts.SourceFile) {
     utils.forEachComment(sourceFile, (text, commentRange) => {
       const isTodoComment = text.substring(commentRange.pos, commentRange.end).includes('TODO:');
 
