@@ -1026,7 +1026,7 @@ describe('Driver', () => {
                 body: 'Test body with a relative url',
                 data: {
                   onActionClick: {
-                    foo: {operation: 'openWindow', url:'baz/qux'},
+                    foo: {operation: 'openWindow', url: 'baz/qux'},
                   },
                 },
               },
@@ -1048,7 +1048,7 @@ describe('Driver', () => {
                 body: 'Test body with an absolute path url',
                 data: {
                   onActionClick: {
-                    foo: {operation: 'openWindow', url:'/baz/qux'},
+                    foo: {operation: 'openWindow', url: '/baz/qux'},
                   },
                 },
               },
@@ -1070,7 +1070,7 @@ describe('Driver', () => {
                 body: 'Test body with external origin',
                 data: {
                   onActionClick: {
-                    foo: {operation: 'openWindow', url:'http://other.host/baz/qux'},
+                    foo: {operation: 'openWindow', url: 'http://other.host/baz/qux'},
                   },
                 },
               },
