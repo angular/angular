@@ -385,18 +385,7 @@ export class MatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
 
   /** Updates today's date after an update of the active date */
   updateTodaysDate() {
-    const currentView = this.currentView;
-    let view: MatMonthView<D> | MatYearView<D> | MatMultiYearView<D>;
-
-    if (currentView === 'month') {
-      view = this.monthView;
-    } else if (currentView === 'year') {
-      view = this.yearView;
-    } else {
-      view = this.multiYearView;
-    }
-
-    view._init();
+    this._getCurrentViewComponent()._init();
   }
 
   /** Handles date selection in the month view. */
@@ -428,7 +417,10 @@ export class MatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
   }
 
   /** Returns the component instance that corresponds to the current calendar view. */
-  private _getCurrentViewComponent() {
+  private _getCurrentViewComponent(): MatMonthView<D> | MatYearView<D> | MatMultiYearView<D> {
+    // The return type is explicitly written as a union to ensure that the Closure compiler does
+    // not optimize calls to _init(). Without the explict return type, TypeScript narrows it to
+    // only the first component type. See https://github.com/angular/components/issues/22996.
     return this.monthView || this.yearView || this.multiYearView;
   }
 }
