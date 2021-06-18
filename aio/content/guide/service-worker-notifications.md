@@ -32,7 +32,7 @@ Invoke push notifications by pushing a message with a valid payload. See `SwPush
 
 The default behaviour for the `notificationclick` event, is to close the notification and notify `SwPush.notificationClicks`.
 
-This can easily be changed by adding an `onActionClick` property to the `data` object, and provide a `default` operation.
+You can specify an additional operation to be executed on `notificationclick` by adding an `onActionClick` property to the `data` object, and providing a `default` entry. This is especially useful for when there are no open clients when a notification is clicked.
 
 ```json
 {

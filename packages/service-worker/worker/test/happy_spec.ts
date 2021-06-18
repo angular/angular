@@ -1013,14 +1013,11 @@ describe('Driver', () => {
 
       describe('URL resolution', () => {
         it('should resolve relative to service worker scope', async () => {
-          scope = new SwTestHarnessBuilder().withServerState(server).build();
           (scope.registration.scope as string) = 'http://localhost/foo/bar/';
-          driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
 
           expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
 
           spyOn(scope.clients, 'openWindow');
-          const url = 'baz/qux';
 
           await driver.initialized;
           await scope.handleClick(
@@ -1029,7 +1026,7 @@ describe('Driver', () => {
                 body: 'Test body with a relative url',
                 data: {
                   onActionClick: {
-                    foo: {operation: 'openWindow', url},
+                    foo: {operation: 'openWindow', url:'baz/qux'},
                   },
                 },
               },
@@ -1038,14 +1035,11 @@ describe('Driver', () => {
         });
 
         it('should resolve with an absolute path', async () => {
-          scope = new SwTestHarnessBuilder().withServerState(server).build();
           (scope.registration.scope as string) = 'http://localhost/foo/bar/';
-          driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
 
           expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
 
           spyOn(scope.clients, 'openWindow');
-          const url = '/baz/qux';
 
           await driver.initialized;
           await scope.handleClick(
@@ -1054,7 +1048,7 @@ describe('Driver', () => {
                 body: 'Test body with an absolute path url',
                 data: {
                   onActionClick: {
-                    foo: {operation: 'openWindow', url},
+                    foo: {operation: 'openWindow', url:'/baz/qux'},
                   },
                 },
               },
@@ -1063,14 +1057,11 @@ describe('Driver', () => {
         });
 
         it('should resolve other origins', async () => {
-          scope = new SwTestHarnessBuilder().withServerState(server).build();
           (scope.registration.scope as string) = 'http://localhost/foo/bar/';
-          driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
 
           expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
 
           spyOn(scope.clients, 'openWindow');
-          const url = 'http://other.host/baz/qux';
 
           await driver.initialized;
           await scope.handleClick(
@@ -1079,7 +1070,7 @@ describe('Driver', () => {
                 body: 'Test body with external origin',
                 data: {
                   onActionClick: {
-                    foo: {operation: 'openWindow', url},
+                    foo: {operation: 'openWindow', url:'http://other.host/baz/qux'},
                   },
                 },
               },
