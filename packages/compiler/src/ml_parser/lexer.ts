@@ -713,6 +713,10 @@ class _Tokenizer {
       }
     } while (!this._isTextEnd());
 
+    // It is possible that an interpolation was started but not ended inside this text token.
+    // Make sure that we reset the state of the lexer correctly.
+    this._inInterpolation = false;
+
     this._endToken([this._processCarriageReturns(parts.join(''))]);
   }
 

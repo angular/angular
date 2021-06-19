@@ -1208,6 +1208,18 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
             ]]);
       });
 
+      it('should report unescaped "{" as an error, even after a prematurely terminated interpolation',
+         () => {
+           expect(tokenizeAndHumanizeErrors(
+                      `<code>{{b}<!---->}</code><pre>import {a} from 'a';</pre>`,
+                      {tokenizeExpansionForms: true}))
+               .toEqual([[
+                 lex.TokenType.RAW_TEXT,
+                 `Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`,
+                 '0:56',
+               ]]);
+         });
+
       it('should include 2 lines of context in message', () => {
         const src = '111\n222\n333\nE\n444\n555\n666\n';
         const file = new ParseSourceFile(src, 'file://');
