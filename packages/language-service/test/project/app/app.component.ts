@@ -48,7 +48,11 @@ export class AppComponent {
   constNames = [{name: 'name'}] as const;
   private myField = 'My Field';
   strOrNumber: string|number = '';
+  name = 'Frodo';
   setTitle(newTitle: string) {
     this.title = newTitle;
+  }
+  setHero(obj: Hero) {
+    this.hero = obj;
   }
 }

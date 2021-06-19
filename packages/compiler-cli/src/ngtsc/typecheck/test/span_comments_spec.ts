@@ -42,6 +42,15 @@ describe('type check blocks diagnostics', () => {
               '(ctx).m /*3,4*/({ "foo": ((ctx).a /*11,12*/) /*11,12*/, "bar": ((ctx).b /*19,20*/) /*19,20*/ } /*5,21*/) /*3,22*/');
     });
 
+    it('should annotate literal map expressions with shorthand declarations', () => {
+      // The additional method call is present to avoid that the object literal is emitted as
+      // statement, which would wrap it into parenthesis that clutter the expected output.
+      const TEMPLATE = '{{ m({a, b}) }}';
+      expect(tcbWithSpans(TEMPLATE))
+          .toContain(
+              '((ctx).m /*3,4*/({ "a": ((ctx).a /*6,7*/) /*6,7*/, "b": ((ctx).b /*9,10*/) /*9,10*/ } /*5,11*/) /*3,12*/)');
+    });
+
     it('should annotate literal array expressions', () => {
       const TEMPLATE = '{{ [a, b] }}';
       expect(tcbWithSpans(TEMPLATE))

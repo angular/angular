@@ -668,12 +668,16 @@ runInEachFileSystem(() => {
           const fileName = absoluteFrom('/main.ts');
           const templateString = `
           {{ [1, 2, 3] }}
-          {{ { hello: "world" } }}`;
+          {{ { hello: "world" } }}
+          {{ { foo } }}`;
           const testValues = setup([
             {
               fileName,
               templates: {'Cmp': templateString},
-              source: `export class Cmp {}`,
+              source: `
+                type Foo {name: string;}
+                export class Cmp {foo: Foo;}
+              `,
             },
           ]);
           templateTypeChecker = testValues.templateTypeChecker;
@@ -700,6 +704,15 @@ runInEachFileSystem(() => {
           expect(program.getTypeChecker().symbolToString(symbol.tsSymbol!)).toEqual('__object');
           expect(program.getTypeChecker().typeToString(symbol.tsType))
               .toEqual('{ hello: string; }');
+        });
+
+        it('literal map shorthand property', () => {
+          const shorthandProp =
+              (interpolation.expressions[2] as LiteralMap).values[0] as PropertyRead;
+          const symbol = templateTypeChecker.getSymbolOfNode(shorthandProp, cmp)!;
+          assertExpressionSymbol(symbol);
+          expect(program.getTypeChecker().symbolToString(symbol.tsSymbol!)).toEqual('foo');
+          expect(program.getTypeChecker().typeToString(symbol.tsType)).toEqual('Foo');
         });
       });
 
