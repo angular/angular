@@ -528,4 +528,28 @@ describe('event listeners', () => {
         expect(eventVariable).toBe(10);
         expect(eventObject?.type).toBe('click');
       });
+
+  it('should be able to use a keyed write on `this` from a listener inside an ng-template', () => {
+    @Component({
+      template: `
+        <ng-template #template>
+          <button (click)="this['mes' + 'sage'] = 'hello'">Click me</button>
+        </ng-template>
+
+        <ng-container [ngTemplateOutlet]="template"></ng-container>
+      `
+    })
+    class MyComp {
+      message = '';
+    }
+
+    TestBed.configureTestingModule({declarations: [MyComp], imports: [CommonModule]});
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
+    const button = fixture.nativeElement.querySelector('button');
+    button.click();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.message).toBe('hello');
+  });
 });
