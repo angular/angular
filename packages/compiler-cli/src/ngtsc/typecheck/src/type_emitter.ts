@@ -24,7 +24,10 @@ export type TypeReferenceResolver = (type: ts.TypeReferenceNode) => ResolvedType
  * A marker to indicate that a type reference is ineligible for emitting. This needs to be truthy
  * as it's returned from `ts.forEachChild`, which only returns truthy values.
  */
-const INELIGIBLE = {};
+type INELIGIBLE = {
+  __brand: 'ineligible';
+};
+const INELIGIBLE: INELIGIBLE = {} as INELIGIBLE;
 
 /**
  * Determines whether the provided type can be emitted, which means that it can be safely emitted
@@ -41,7 +44,16 @@ export function canEmitType(type: ts.TypeNode, resolver: TypeReferenceResolver):
     return visitNode(type) !== INELIGIBLE;
   }
 
-  function visitNode(node: ts.Node): typeof INELIGIBLE|undefined {
+  // To determine whether a type can be emitted, we have to recursively look through all type nodes.
+  // If a type reference node is found at any position within the type and that type reference
+  // cannot be emitted, then the `INELIGIBLE` constant is returned to stop the recursive walk as
+  // the type as a whole cannot be emitted in that case. Otherwise, the result of visiting all child
+  // nodes determines the result. If no ineligible type reference node is found then the walk
+  // returns `undefined`, indicating that no type node was visited that could not be emitted.
+  function visitNode(node: ts.Node): INELIGIBLE|undefined {
+    // Emitting a type reference node in a different context requires that an import for the type
+    // can be created. If a type reference node cannot be emitted, `INELIGIBLE` is returned to stop
+    // the walk.
     if (ts.isTypeReferenceNode(node) && !canEmitTypeReference(node)) {
       return INELIGIBLE;
     } else {
