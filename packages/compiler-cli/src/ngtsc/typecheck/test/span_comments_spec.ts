@@ -129,6 +129,13 @@ describe('type check blocks diagnostics', () => {
               '(null as any ? (((ctx).a /*3,4*/) /*3,4*/)!.method /*6,12*/(((ctx).b /*13,14*/) /*13,14*/) : undefined) /*3,15*/');
     });
 
+    it('should annotate safe keyed reads', () => {
+      const TEMPLATE = `{{ a?.[0] }}`;
+      expect(tcbWithSpans(TEMPLATE))
+          .toContain(
+              '(null as any ? (((ctx).a /*3,4*/) /*3,4*/)![0 /*7,8*/] /*3,9*/ : undefined) /*3,9*/');
+    });
+
     it('should annotate $any casts', () => {
       const TEMPLATE = `{{ $any(a) }}`;
       expect(tcbWithSpans(TEMPLATE)).toContain('(((ctx).a /*8,9*/) /*8,9*/ as any) /*3,10*/');

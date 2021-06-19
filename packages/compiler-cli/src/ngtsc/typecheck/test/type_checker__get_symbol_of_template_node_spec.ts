@@ -394,6 +394,7 @@ runInEachFileSystem(() => {
         <div [inputA]="person?.address?.street"></div>
         <div [inputA]="person ? person.address : noPersonError"></div>
         <div [inputA]="person?.speak()"></div>
+        <div [inputA]="person?.cars?.[1].engine"></div>
       `;
           const testValues = setup(
               [
@@ -405,9 +406,14 @@ runInEachFileSystem(() => {
                 street: string;
               }
 
+              interface Car {
+                engine: string;
+              }
+
               interface Person {
                 address: Address;
                 speak(): string;
+                cars?: Car[];
               }
               export class Cmp {person?: Person; noPersonError = 'no person'}
             `,
@@ -446,6 +452,19 @@ runInEachFileSystem(() => {
               .toEqual('Person');
           expect(program.getTypeChecker().typeToString(methodCallSymbol.tsType))
               .toEqual('string | undefined');
+        });
+
+        it('safe keyed reads', () => {
+          const nodes = getAstElements(templateTypeChecker, cmp);
+          const safeKeyedRead = nodes[3].inputs[0].value as ASTWithSource;
+          const keyedReadSymbol = templateTypeChecker.getSymbolOfNode(safeKeyedRead, cmp)!;
+          assertExpressionSymbol(keyedReadSymbol);
+          expect(program.getTypeChecker().symbolToString(keyedReadSymbol.tsSymbol!))
+              .toEqual('engine');
+          expect((keyedReadSymbol.tsSymbol!.declarations![0] as ts.PropertyDeclaration)
+                     .parent.name!.getText())
+              .toEqual('Car');
+          expect(program.getTypeChecker().typeToString(keyedReadSymbol.tsType)).toEqual('string');
         });
 
         it('ternary expressions', () => {
