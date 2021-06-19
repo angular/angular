@@ -462,6 +462,50 @@ class TestComponent {
         `TestComponent.html(4, 18): Property 'heihgt' does not exist on type 'TestComponent'. Did you mean 'height'?`,
       ]);
     });
+
+    it('works for shorthand property declarations', () => {
+      const messages = diagnose(
+          `<div dir [input]="{a, b: 2}"></div>`, `
+        class Dir {
+          input: {a: string, b: number};
+        }
+        class TestComponent {
+          a: number;
+        }`,
+          [{
+            type: 'directive',
+            name: 'Dir',
+            selector: '[dir]',
+            exportAs: ['dir'],
+            inputs: {input: 'input'},
+          }]);
+
+      expect(messages).toEqual(
+          [`TestComponent.html(1, 20): Type 'number' is not assignable to type 'string'.`]);
+    });
+
+    it('works for shorthand property declarations referring to template variables', () => {
+      const messages = diagnose(
+          `
+          <span #span></span>
+          <div dir [input]="{span, b: 2}"></div>
+        `,
+          `
+          class Dir {
+            input: {span: string, b: number};
+          }
+          class TestComponent {}`,
+          [{
+            type: 'directive',
+            name: 'Dir',
+            selector: '[dir]',
+            exportAs: ['dir'],
+            inputs: {input: 'input'},
+          }]);
+
+      expect(messages).toEqual(
+          [`TestComponent.html(3, 30): Type 'HTMLElement' is not assignable to type 'string'.`]);
+    });
   });
 
   describe('method call spans', () => {

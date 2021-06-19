@@ -458,6 +458,32 @@ describe('definitions', () => {
       const definitionAndBoundSpan = ngLS.getDefinitionAndBoundSpan(APP_COMPONENT, position);
       expect(definitionAndBoundSpan).toBeUndefined();
     });
+
+    it('should work for object literals with shorthand declarations in an action', () => {
+      const definitions = getDefinitionsAndAssertBoundSpan({
+        templateOverride: `<div (click)="setHero({na¦me, id: 1})"></div>`,
+        expectedSpanText: 'name',
+      });
+      expect(definitions!.length).toEqual(1);
+
+      const [def] = definitions;
+      expect(def.textSpan).toEqual('name');
+      expect(def.fileName).toContain('/app/app.component.ts');
+      expect(def.contextSpan).toContain(`name = 'Frodo';`);
+    });
+
+    it('should work for object literals with shorthand declarations in a data binding', () => {
+      const definitions = getDefinitionsAndAssertBoundSpan({
+        templateOverride: `{{ {na¦me} }}`,
+        expectedSpanText: 'name',
+      });
+      expect(definitions!.length).toEqual(1);
+
+      const [def] = definitions;
+      expect(def.textSpan).toEqual('name');
+      expect(def.fileName).toContain('/app/app.component.ts');
+      expect(def.contextSpan).toContain(`name = 'Frodo';`);
+    });
   });
 
   describe('external resources', () => {

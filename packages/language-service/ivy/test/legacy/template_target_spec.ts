@@ -622,6 +622,38 @@ describe('getTargetAtPosition for expression AST', () => {
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.Conditional);
   });
+
+  describe('object literal shorthand', () => {
+    it('should locate on literal with one shorthand property', () => {
+      const {errors, nodes, position} = parse(`{{ {va¦l1} }}`);
+      expect(errors).toBe(null);
+      const {context} = getTargetAtPosition(nodes, position)!;
+      expect(context.kind).toBe(TargetNodeKind.RawExpression);
+      const {node} = context as SingleNodeTarget;
+      expect(node).toBeInstanceOf(e.PropertyRead);
+      expect((node as e.PropertyRead).name).toBe('val1');
+    });
+
+    it('should locate on literal with multiple shorthand properties', () => {
+      const {errors, nodes, position} = parse(`{{ {val1, va¦l2} }}`);
+      expect(errors).toBe(null);
+      const {context} = getTargetAtPosition(nodes, position)!;
+      expect(context.kind).toBe(TargetNodeKind.RawExpression);
+      const {node} = context as SingleNodeTarget;
+      expect(node).toBeInstanceOf(e.PropertyRead);
+      expect((node as e.PropertyRead).name).toBe('val2');
+    });
+
+    it('should locale on property with mixed shorthand and regular properties', () => {
+      const {errors, nodes, position} = parse(`{{ {val1: 'val1', va¦l2} }}`);
+      expect(errors).toBe(null);
+      const {context} = getTargetAtPosition(nodes, position)!;
+      expect(context.kind).toBe(TargetNodeKind.RawExpression);
+      const {node} = context as SingleNodeTarget;
+      expect(node).toBeInstanceOf(e.PropertyRead);
+      expect((node as e.PropertyRead).name).toBe('val2');
+    });
+  });
 });
 
 describe('findNodeAtPosition for microsyntax expression', () => {
