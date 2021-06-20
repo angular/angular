@@ -158,6 +158,74 @@ export class ShadowCss {
   }
 
   /*
+   * Process styles to add scope to keyframes, this implies modifying both
+   * the names of the keyframes defined in the component styles and also the css
+   * animation rules using them (animation rules using keyframes defined
+   * elsewhere need not to be modified to allow for globally defined keyframes)
+   *
+   * For example, we convert this css:
+   *
+   * .box {
+   *   animation: box-animation 1s forwards;
+   * }
+   *
+   * @keyframes box-animation {
+   *   to {
+   *     background-color: green;
+   *   }
+   * }
+   *
+   * to this:
+   *
+   * .box {
+   *   animation: scopeName_box-animation 1s forwards;
+   * }
+   *
+   * @keyframes scopeName_box-animation {
+   *   to {
+   *     background-color: green;
+   *   }
+   * }
+   *
+   **/
+  private _scopeLocalKeyframes(cssText: string, scopeSelector: string): string {
+    // This set is used to collect all keyframes names (before scoping) so that they can
+    // later be used to scope the animation rules.
+    const unscopedKeyframes = new Set<string>();
+
+    const scopedKeyframesCssText = processRules(cssText, rule => {
+      return {
+        ...rule,
+        selector: rule.selector.replace(
+            /^@(-webkit-)?keyframes\s+(['"]?)([^\s'"]+)\2\s*$/,
+            (_, webkit, quote, keyframeName) => {
+              unscopedKeyframes.add(keyframeName);
+              return `@${webkit || ''}keyframes ${quote}${scopeSelector}_${keyframeName}${quote} `;
+            })
+      };
+    });
+
+    const scopeAnimationKeyframe = (keyframe: string) => keyframe.replace(
+        /^(['"]?)(.+)\1$/,
+        (_, quote, name) =>
+            `${quote}${unscopedKeyframes.has(name) ? scopeSelector + '_' : ''}${name}${quote}`);
+
+    return processRules(scopedKeyframesCssText, rule => {
+      let content = rule.content;
+      content = content.replace(
+          /animation\s*:\s*([^\s;,]+)/,
+          (_, keyframe) => `animation:${scopeAnimationKeyframe(keyframe)}`);
+      content = content.replace(
+          /animation-name:([^;]+)/g,
+          (_, csvKeyframes) => `animation-name:${
+              csvKeyframes.split(',')
+                  .map((keyframe: string) => scopeAnimationKeyframe(keyframe.trim()))
+                  .join(',')};`);
+      return {...rule, content};
+    });
+  }
+
+  /*
    * Process styles to convert native ShadowDOM rules that will trip
    * up the css parser; we rely on decorating the stylesheet with inert rules.
    *
@@ -217,6 +285,7 @@ export class ShadowCss {
     cssText = this._convertColonHostContext(cssText);
     cssText = this._convertShadowDOMSelectors(cssText);
     if (scopeSelector) {
+      cssText = this._scopeLocalKeyframes(cssText, scopeSelector);
       cssText = this._scopeSelectors(cssText, scopeSelector, hostSelector);
     }
     cssText = cssText + '\n' + unscopedRules;
