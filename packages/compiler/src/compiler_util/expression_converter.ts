@@ -490,7 +490,6 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     const value: o.Expression = this._visit(ast.value, _Mode.Expression);
 
     if (obj === this._implicitReceiver) {
-      this.usesImplicitReceiver = true;
       this._localResolver.maybeRestoreView(0, false);
     }
 
