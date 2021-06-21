@@ -11,13 +11,6 @@ import {BrowserModule} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
-  template: ` <h1>App Component</h1> `,
-})
-export class AppComponent {
-}
-
-@Component({
-  selector: 'app-root',
   template: ` <h1>Component One</h1> `,
 })
 export class ComponentOne {
@@ -30,17 +23,30 @@ export class ComponentOne {
 export class ComponentTwo {
 }
 
+@Component({
+  selector: 'app-root',
+  template: ` <h1>Component Three</h1> `,
+})
+export class ComponentThree {
+}
+
+@Component({
+  selector: 'app-root',
+  template: ` <h1>Component Four</h1> `,
+})
+export class ComponentFour {
+}
+
 @NgModule({imports: [BrowserModule], declarations: [ComponentOne, ComponentTwo]})
 // #docregion componentSelector
 export class AppModule implements DoBootstrap {
-  readonly componentMap: {[key: string]: Type<unknown>} = {
-    'ComponentOne': ComponentOne,
-    'ComponentTwo': ComponentTwo,
-  };
-
   ngDoBootstrap(appRef: ApplicationRef) {
     this.fetchDataFromApi().then((componentName: string) => {
-      appRef.bootstrap(this.componentMap[componentName]);
+      if (componentName === 'ComponentOne') {
+        appRef.bootstrap(ComponentOne);
+      } else {
+        appRef.bootstrap(ComponentTwo);
+      }
     });
   }
   // #enddocregion
@@ -56,19 +62,21 @@ export class AppModule implements DoBootstrap {
 }
 // #enddocregion
 
-export class AppModule2 extends AppModule {
+@NgModule({imports: [BrowserModule], declarations: [ComponentThree]})
+export class AppModuleTwo implements DoBootstrap {
   // #docregion cssSelector
   ngDoBootstrap(appRef: ApplicationRef) {
-    appRef.bootstrap(AppComponent, '#root-element');
+    appRef.bootstrap(ComponentThree, '#root-element');
   }
   // #enddocregion cssSelector
 }
 
-export class AppModule3 extends AppModule {
+@NgModule({imports: [BrowserModule], declarations: [ComponentFour]})
+export class AppModuleThree implements DoBootstrap {
   // #docregion domNode
   ngDoBootstrap(appRef: ApplicationRef) {
     const element = document.querySelector('#root-element');
-    appRef.bootstrap(AppComponent, element);
+    appRef.bootstrap(ComponentFour, element);
   }
   // #enddocregion domNode
 }
