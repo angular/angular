@@ -19,6 +19,11 @@ interface GroupCondition {
   unverifiable: boolean;
 }
 
+interface GroupReviewers {
+  users?: string[];
+  teams?: string[];
+}
+
 /** Result of testing files against the group. */
 export interface PullApproveGroupResult {
   groupName: string;
@@ -40,12 +45,15 @@ const FALLBACK_GROUP_NAME = 'fallback';
 /** A PullApprove group to be able to test files against. */
 export class PullApproveGroup {
   /** List of conditions for the group. */
-  conditions: GroupCondition[] = [];
+  readonly conditions: GroupCondition[] = [];
+  /** List of reviewers for the group. */
+  readonly reviewers: GroupReviewers;
 
   constructor(
       public groupName: string, config: PullApproveGroupConfig,
       readonly precedingGroups: PullApproveGroup[] = []) {
     this._captureConditions(config);
+    this.reviewers = config.reviewers ?? {users: [], teams: []};
   }
 
   private _captureConditions(config: PullApproveGroupConfig) {

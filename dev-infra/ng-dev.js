@@ -4917,11 +4917,13 @@ const FALLBACK_GROUP_NAME = 'fallback';
 /** A PullApprove group to be able to test files against. */
 class PullApproveGroup {
     constructor(groupName, config, precedingGroups = []) {
+        var _a;
         this.groupName = groupName;
         this.precedingGroups = precedingGroups;
         /** List of conditions for the group. */
         this.conditions = [];
         this._captureConditions(config);
+        this.reviewers = (_a = config.reviewers) !== null && _a !== void 0 ? _a : { users: [], teams: [] };
     }
     _captureConditions(config) {
         if (config.conditions && this.groupName !== FALLBACK_GROUP_NAME) {
@@ -5063,12 +5065,16 @@ function verify$1() {
      * Whether all group condition lines match at least one file and all files
      * are matched by at least one group.
      */
-    const verificationSucceeded = resultsByGroup.every(r => !r.unmatchedCount) && !unmatchedFiles.length;
+    const allGroupConditionsValid = resultsByGroup.every(r => !r.unmatchedCount) && !unmatchedFiles.length;
+    /** Whether all groups have at least one reviewer user or team defined.  */
+    const groupsWithoutReviewers = groups.filter(group => Object.keys(group.reviewers).length === 0);
+    /** The overall result of the verifcation. */
+    const overallResult = allGroupConditionsValid && groupsWithoutReviewers.length === 0;
     /**
      * Overall result
      */
     logHeader('Overall Result');
-    if (verificationSucceeded) {
+    if (overallResult) {
         info('PullApprove verification succeeded!');
     }
     else {
@@ -5077,6 +5083,16 @@ function verify$1() {
         info(`Please update '.pullapprove.yml' to ensure that all necessary`);
         info(`files/directories have owners and all patterns that appear in`);
         info(`the file correspond to actual files/directories in the repo.`);
+    }
+    /** Reviewers check */
+    logHeader(`Group Reviewers Check`);
+    if (groupsWithoutReviewers.length === 0) {
+        info('All group contain at least one reviewer user or team.');
+    }
+    else {
+        info.group(`Discovered ${groupsWithoutReviewers.length} group(s) without a reviewer defined`);
+        groupsWithoutReviewers.forEach(g => info(g.groupName));
+        info.groupEnd();
     }
     /**
      * File by file Summary
@@ -5108,7 +5124,7 @@ function verify$1() {
     unverifiableConditionsInGroups.forEach(group => logGroup(group, 'unverifiableConditions'));
     info.groupEnd();
     // Provide correct exit code based on verification success.
-    process.exit(verificationSucceeded ? 0 : 1);
+    process.exit(overallResult ? 0 : 1);
 }
 
 /** Build the parser for the pullapprove commands. */
