@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {config} from 'yargs';
 import {error} from '../utils/console';
 import {convertConditionToFunction} from './condition_evaluator';
 import {PullApproveGroupConfig} from './parse-yaml';
@@ -17,6 +18,11 @@ interface GroupCondition {
   checkFn: (files: string[], groups: PullApproveGroup[]) => boolean;
   matchedFiles: Set<string>;
   unverifiable: boolean;
+}
+
+interface GroupReviewers {
+  users?: string[];
+  teams?: string[];
 }
 
 /** Result of testing files against the group. */
@@ -40,12 +46,15 @@ const FALLBACK_GROUP_NAME = 'fallback';
 /** A PullApprove group to be able to test files against. */
 export class PullApproveGroup {
   /** List of conditions for the group. */
-  conditions: GroupCondition[] = [];
+  readonly conditions: GroupCondition[] = [];
+  /** List of conditions for the group. */
+  readonly reviewers: GroupReviewers = {};
 
   constructor(
       public groupName: string, config: PullApproveGroupConfig,
       readonly precedingGroups: PullApproveGroup[] = []) {
     this._captureConditions(config);
+    this.reviewers = config.reviewers ?? {};
   }
 
   private _captureConditions(config: PullApproveGroupConfig) {
