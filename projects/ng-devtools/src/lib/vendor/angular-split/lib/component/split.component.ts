@@ -448,7 +448,10 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
       }
       // Multiple areas > use each percent basis
       else {
-        const sumGutterSize = this.getNbGutters() * this.gutterSize!;
+        // Size in pixels
+        const visibleGutterSize = 1;
+        // Use visible gutter size in calculation instead of the invisible draggable gutter
+        const sumGutterSize = this.getNbGutters() * visibleGutterSize;
 
         this.displayedAreas.forEach((area) => {
           area.component.setStyleFlex(
