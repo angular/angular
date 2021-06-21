@@ -951,9 +951,6 @@
     "name": "getDOM"
   },
   {
-    "name": "getDebugContext"
-  },
-  {
     "name": "getDeclarationTNode"
   },
   {
