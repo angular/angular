@@ -13,6 +13,7 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
 import {Subject} from 'rxjs';
 
 import {createCustomElement, NgElementConstructor} from '../src/create-custom-element';
+import {useReflectionBasedCustomElements} from '../src/custom-element-impl';
 import {NgElementStrategy, NgElementStrategyEvent, NgElementStrategyFactory} from '../src/element-strategy';
 
 type WithFooBar = {
@@ -21,8 +22,20 @@ type WithFooBar = {
 };
 
 if (browserDetection.supportsCustomElements) {
-  describe('createCustomElement', () => {
-    let selectorUid = 0;
+  // Run the tests using the default ES2015 classes.
+  runTests('ES2015 classes');
+
+  // Run the tests again, this time using `Reflect.construct` based custom elements.
+  useReflectionBasedCustomElements();
+  runTests('Reflect.construct');
+}
+
+// This must be defined outside `runTests`, so that the tests will use unique selectors even when
+// repeated in both custom element modes.
+let selectorUid = 0;
+
+function runTests(descriptionSuffix: string): void {
+  describe(`createCustomElement (${descriptionSuffix})`, () => {
     let testContainer: HTMLDivElement;
     let NgElementCtor: NgElementConstructor<WithFooBar>;
     let strategy: TestStrategy;
@@ -145,7 +158,8 @@ if (browserDetection.supportsCustomElements) {
              'strategy-event', evt => capturedEvents.push((evt as CustomEvent).detail));
          element.connectedCallback();
 
-         // The "connect" event (emitted during initialization) was missed, but things didn't break.
+         // The "connect" event (emitted during initialization) was missed, but things didn't
+         // break.
          expect(capturedEvents).toEqual([]);
 
          // Subsequent events are still captured.
@@ -209,8 +223,8 @@ if (browserDetection.supportsCustomElements) {
          expect(element.fooFoo).toBe('foo-prop-value');
          expect(element.barBar).toBe('bar-prop-value');
 
-         // Upgrade the element to a Custom Element (without inserting it into the DOM) and update a
-         // property.
+         // Upgrade the element to a Custom Element (without inserting it into the DOM) and update
+         // a property.
          customElements.define(selector, ElementCtor);
          customElements.upgrade(element);
          element.barBar = 'bar-prop-value-2';

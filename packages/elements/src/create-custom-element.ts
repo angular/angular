@@ -10,6 +10,7 @@ import {Injector, Type} from '@angular/core';
 import {Subscription} from 'rxjs';
 
 import {ComponentNgElementStrategyFactory} from './component-factory-strategy';
+import {newCustomElementWithBehavior, NgElement, NgElementBehavior} from './custom-element-impl';
 import {NgElementStrategy, NgElementStrategyFactory} from './element-strategy';
 import {createCustomEvent, getComponentInputs, getDefaultAttributeToPropertyInputs} from './utils';
 
@@ -37,43 +38,6 @@ export interface NgElementConstructor<P> {
 }
 
 /**
- * Implements the functionality needed for a custom element.
- *
- * @publicApi
- */
-export abstract class NgElement extends HTMLElement {
-  /**
-   * The strategy that controls how a component is transformed in a custom element.
-   */
-  protected abstract ngElementStrategy: NgElementStrategy;
-  /**
-   * A subscription to change, connect, and disconnect events in the custom element.
-   */
-  protected ngElementEventsSubscription: Subscription|null = null;
-
-  /**
-   * Prototype for a handler that responds to a change in an observed attribute.
-   * @param attrName The name of the attribute that has changed.
-   * @param oldValue The previous value of the attribute.
-   * @param newValue The new value of the attribute.
-   * @param namespace The namespace in which the attribute is defined.
-   * @returns Nothing.
-   */
-  abstract attributeChangedCallback(
-      attrName: string, oldValue: string|null, newValue: string, namespace?: string): void;
-  /**
-   * Prototype for a handler that responds to the insertion of the custom element in the DOM.
-   * @returns Nothing.
-   */
-  abstract connectedCallback(): void;
-  /**
-   * Prototype for a handler that responds to the deletion of the custom element from the DOM.
-   * @returns Nothing.
-   */
-  abstract disconnectedCallback(): void;
-}
-
-/**
  * Additional type information that can be added to the NgElement class,
  * for properties that are added based
  * on the inputs and methods of the underlying component.
@@ -83,6 +47,8 @@ export abstract class NgElement extends HTMLElement {
 export type WithProperties<P> = {
   [property in keyof P]: P[property]
 };
+
+class EmptyBase {}
 
 /**
  * A configuration that initializes an NgElementConstructor with the
@@ -134,114 +100,143 @@ export function createCustomElement<P>(
 
   const attributeToPropertyInputs = getDefaultAttributeToPropertyInputs(inputs);
 
-  class NgElementImpl extends NgElement {
-    // Work around a bug in closure typed optimizations(b/79557487) where it is not honoring static
-    // field externs. So using quoted access to explicitly prevent renaming.
-    static readonly['observedAttributes'] = Object.keys(attributeToPropertyInputs);
+  const NgElementImplCtor = newCustomElementWithBehavior(baseClass => {
+    class NgElementImpl extends baseClass implements NgElementBehavior<NgElementImpl> {
+      // Work around a bug in closure typed optimizations(b/79557487) where it is not honoring
+      // static field externs. So using quoted access to explicitly prevent renaming.
+      static readonly['observedAttributes'] = Object.keys(attributeToPropertyInputs);
 
-    protected get ngElementStrategy(): NgElementStrategy {
-      // NOTE:
-      // Some polyfills (e.g. `document-register-element`) do not call the constructor, therefore
-      // it is not safe to set `ngElementStrategy` in the constructor and assume it will be
-      // available inside the methods.
-      //
-      // TODO(andrewseguin): Add e2e tests that cover cases where the constructor isn't called. For
-      // now this is tested using a Google internal test suite.
-      if (!this._ngElementStrategy) {
-        const strategy = this._ngElementStrategy =
-            strategyFactory.create(this.injector || config.injector);
+      private ngElementEventsSubscription: Subscription|null = null;
 
-        // Re-apply pre-existing input values (set as properties on the element) through the
-        // strategy.
-        inputs.forEach(({propName}) => {
-          if (!this.hasOwnProperty(propName)) {
-            // No pre-existing value for `propName`.
-            return;
-          }
+      get ngElementStrategy(): NgElementStrategy {
+        // NOTE:
+        // Some polyfills (e.g. `document-register-element`) do not call the constructor,
+        // therefore it is not safe to set `ngElementStrategy` in the constructor and assume it
+        // will be available inside the methods.
+        //
+        // TODO(andrewseguin): Add e2e tests that cover cases where the constructor isn't
+        // called. For now this is tested using a Google internal test suite.
+        if (!this._ngElementStrategy) {
+          const strategy = this._ngElementStrategy =
+              strategyFactory.create(this.injector || config.injector);
 
-          // Delete the property from the instance and re-apply it through the strategy.
-          const value = (this as any)[propName];
-          delete (this as any)[propName];
-          strategy.setInputValue(propName, value);
+          // Re-apply pre-existing input values (set as properties on the element) through the
+          // strategy.
+          inputs.forEach(({propName}) => {
+            if (!this.htmlElement.hasOwnProperty(propName)) {
+              // No pre-existing value for `propName`.
+              return;
+            }
+
+            // Delete the property from the instance and re-apply it through the strategy.
+            const value = (this.htmlElement as any)[propName];
+            delete (this.htmlElement as any)[propName];
+            strategy.setInputValue(propName, value);
+          });
+        }
+
+        return this._ngElementStrategy!;
+      }
+
+      private _ngElementStrategy?: NgElementStrategy;
+
+      get behavior(): NgElementImpl {
+        return this;
+      }
+
+      /**
+       * The actual custom element (`HTMLElement` instance).
+       *
+       * Depending on how custom element construction is configured, this is either `this`, or a
+       * separate `HTMLElement` instance.
+       */
+      private htmlElement: HTMLElement;
+
+      constructor(private readonly injector?: Injector, htmlElement?: HTMLElement) {
+        super();
+
+        // Depending on the mode by which this custom element was defined, either `this` is also the
+        // custom element (`HTMLElement`) instance, or there's a separate element instance that was
+        // passed into the constructor.
+        if (htmlElement !== undefined) {
+          this.htmlElement = htmlElement;
+        } else {
+          this.htmlElement = (this as unknown as HTMLElement);
+        }
+      }
+
+      attributeChangedCallback(
+          attrName: string, oldValue: string|null, newValue: string, namespace?: string): void {
+        const propName = attributeToPropertyInputs[attrName]!;
+        this.ngElementStrategy.setInputValue(propName, newValue);
+      }
+
+      connectedCallback(): void {
+        // For historical reasons, some strategies may not have initialized the `events` property
+        // until after `connect()` is run. Subscribe to `events` if it is available before running
+        // `connect()` (in order to capture events emitted suring inittialization), otherwise
+        // subscribe afterwards.
+        //
+        // TODO: Consider deprecating/removing the post-connect subscription in a future major
+        // version
+        //       (e.g. v11).
+
+        let subscribedToEvents = false;
+
+        if (this.ngElementStrategy.events) {
+          // `events` are already available: Subscribe to it asap.
+          this.subscribeToEvents();
+          subscribedToEvents = true;
+        }
+
+        this.ngElementStrategy.connect(this.htmlElement);
+
+        if (!subscribedToEvents) {
+          // `events` were not initialized before running `connect()`: Subscribe to them now.
+          // The events emitted during the component initialization have been missed, but at least
+          // future events will be captured.
+          this.subscribeToEvents();
+        }
+      }
+
+      disconnectedCallback(): void {
+        // Not using `this.ngElementStrategy` to avoid unnecessarily creating the
+        // `NgElementStrategy`.
+        if (this._ngElementStrategy) {
+          this._ngElementStrategy.disconnect();
+        }
+
+        if (this.ngElementEventsSubscription) {
+          this.ngElementEventsSubscription.unsubscribe();
+          this.ngElementEventsSubscription = null;
+        }
+      }
+
+      private subscribeToEvents(): void {
+        // Listen for events from the strategy and dispatch them as custom events.
+        this.ngElementEventsSubscription = this.ngElementStrategy.events.subscribe(e => {
+          const customEvent = createCustomEvent(this.htmlElement.ownerDocument!, e.name, e.value);
+          this.htmlElement.dispatchEvent(customEvent);
         });
       }
-
-      return this._ngElementStrategy!;
     }
 
-    private _ngElementStrategy?: NgElementStrategy;
-
-    constructor(private readonly injector?: Injector) {
-      super();
-    }
-
-    attributeChangedCallback(
-        attrName: string, oldValue: string|null, newValue: string, namespace?: string): void {
-      const propName = attributeToPropertyInputs[attrName]!;
-      this.ngElementStrategy.setInputValue(propName, newValue);
-    }
-
-    connectedCallback(): void {
-      // For historical reasons, some strategies may not have initialized the `events` property
-      // until after `connect()` is run. Subscribe to `events` if it is available before running
-      // `connect()` (in order to capture events emitted suring inittialization), otherwise
-      // subscribe afterwards.
-      //
-      // TODO: Consider deprecating/removing the post-connect subscription in a future major version
-      //       (e.g. v11).
-
-      let subscribedToEvents = false;
-
-      if (this.ngElementStrategy.events) {
-        // `events` are already available: Subscribe to it asap.
-        this.subscribeToEvents();
-        subscribedToEvents = true;
-      }
-
-      this.ngElementStrategy.connect(this);
-
-      if (!subscribedToEvents) {
-        // `events` were not initialized before running `connect()`: Subscribe to them now.
-        // The events emitted during the component initialization have been missed, but at least
-        // future events will be captured.
-        this.subscribeToEvents();
-      }
-    }
-
-    disconnectedCallback(): void {
-      // Not using `this.ngElementStrategy` to avoid unnecessarily creating the `NgElementStrategy`.
-      if (this._ngElementStrategy) {
-        this._ngElementStrategy.disconnect();
-      }
-
-      if (this.ngElementEventsSubscription) {
-        this.ngElementEventsSubscription.unsubscribe();
-        this.ngElementEventsSubscription = null;
-      }
-    }
-
-    private subscribeToEvents(): void {
-      // Listen for events from the strategy and dispatch them as custom events.
-      this.ngElementEventsSubscription = this.ngElementStrategy.events.subscribe(e => {
-        const customEvent = createCustomEvent(this.ownerDocument!, e.name, e.value);
-        this.dispatchEvent(customEvent);
-      });
-    }
-  }
+    return NgElementImpl;
+  });
 
   // Add getters and setters to the prototype for each property input.
   inputs.forEach(({propName}) => {
-    Object.defineProperty(NgElementImpl.prototype, propName, {
-      get(): any {
-        return this.ngElementStrategy.getInputValue(propName);
+    Object.defineProperty(NgElementImplCtor.prototype, propName, {
+      get(this: InstanceType<typeof NgElementImplCtor>): any {
+        return this.behavior.ngElementStrategy.getInputValue(propName);
       },
-      set(newValue: any): void {
-        this.ngElementStrategy.setInputValue(propName, newValue);
+      set(this: InstanceType<typeof NgElementImplCtor>, newValue: any): void {
+        this.behavior.ngElementStrategy.setInputValue(propName, newValue);
       },
       configurable: true,
       enumerable: true,
     });
   });
 
-  return (NgElementImpl as any) as NgElementConstructor<P>;
+  return (NgElementImplCtor as any) as NgElementConstructor<P>;
 }
