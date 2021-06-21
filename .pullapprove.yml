@@ -1336,3 +1336,17 @@ groups:
       # ensure that no explicit global approval has been provided.
       - *can-be-global-approved
       - *can-be-global-docs-approved
+    # PullApprove uses a combination of users defined in the pullapprove configuration and the
+    # number of users who have performed reviews on Github in the recent past if the configuration
+    # does not specify it. Because, as an open source project, anyone on Github can perform a
+    # review we need to ensure that all groups, including the fallback group, have at least one user
+    # or group defined as reviewers.
+    reviewers:
+      users:
+        - josephperrott
+    reviews:
+      request: 0
+      required: 1
+      # Reviewed-for is required on fallback as it should not ever actually be reviewed, requiring
+      # Reviewed-for helps insure an accidental approval doesn't occur on the fallback group.
+      reviewed_for: required
