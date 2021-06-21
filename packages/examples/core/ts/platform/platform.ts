@@ -38,8 +38,8 @@ export class ComponentFour {
 }
 
 @NgModule({imports: [BrowserModule], declarations: [ComponentOne, ComponentTwo]})
-// #docregion componentSelector
 export class AppModule implements DoBootstrap {
+  // #docregion componentSelector
   ngDoBootstrap(appRef: ApplicationRef) {
     this.fetchDataFromApi().then((componentName: string) => {
       if (componentName === 'ComponentOne') {
@@ -58,9 +58,7 @@ export class AppModule implements DoBootstrap {
       }, 2000);
     });
   }
-  // #docregion componentSelector
 }
-// #enddocregion
 
 @NgModule({imports: [BrowserModule], declarations: [ComponentThree]})
 export class AppModuleTwo implements DoBootstrap {
