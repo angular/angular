@@ -4,18 +4,19 @@ import { BehaviorSubject, merge, Observable, Subscription } from 'rxjs';
 import { MatTreeFlattener } from '@angular/material/tree';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { map } from 'rxjs/operators';
-import { DefaultIterableDiffer } from '@angular/core';
+import { DefaultIterableDiffer, TrackByFunction } from '@angular/core';
 import { diff } from '../../diffing';
 import { FlatNode, Property } from './element-property-resolver';
 import { arrayifyProps } from './arrayify-props';
 
-const trackBy = (_: number, item: FlatNode) => `#${item.prop.name}#${item.prop.descriptor.preview}#${item.level}`;
+const trackBy: TrackByFunction<FlatNode> = (_: number, item: FlatNode) =>
+  `#${item.prop.name}#${item.prop.descriptor.preview}#${item.level}`;
 
 export class PropertyDataSource extends DataSource<FlatNode> {
   private _data = new BehaviorSubject<FlatNode[]>([]);
   private _subscriptions: Subscription[] = [];
   private _expandedData = new BehaviorSubject<FlatNode[]>([]);
-  private _differ = new DefaultIterableDiffer(trackBy);
+  private _differ = new DefaultIterableDiffer<FlatNode>(trackBy);
 
   constructor(
     props: { [prop: string]: Descriptor },
