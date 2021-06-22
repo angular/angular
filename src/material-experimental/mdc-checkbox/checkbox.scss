@@ -92,10 +92,4 @@
   @include mdc-touch-target.touch-target(
     $set-width: true,
     $query: mdc-helpers.$mat-base-styles-query);
-
-  [dir='rtl'] & {
-    left: 0;
-    right: 50%;
-    transform: translate(50%, -50%);
-  }
 }

@@ -73,13 +73,5 @@
     @include mdc-touch-target.touch-target(
       $set-width: $is-square,
       $query: mdc-helpers.$mat-base-styles-query);
-
-      @if ($is-square) {
-        [dir='rtl'] & {
-          left: auto;
-          right: 50%;
-          transform: translate(50%, -50%);
-        }
-      }
   }
 }
