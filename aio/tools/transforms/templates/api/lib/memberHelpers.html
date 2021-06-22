@@ -130,16 +130,14 @@
       <td>
         <details class="overloads">
           <summary>
-            <div class="icon-action-header">
-                <h4 class="no-anchor">{$ method.overloads.length $} overloads...</h4>
-                <span class="actions">
-                  <span class="show-all">Show All</span>
-                  <span class="collapse-all">Hide All</span>
-                  <i class="material-icons expand">expand_more</i>
-                </span>
-              </div>
+            <h4 class="no-anchor">{$ method.overloads.length $} overloads...</h4>
+            <span class="actions">
+              <span class="action-expand">Show All</span>
+              <span class="action-collapse">Hide All</span>
+              <i class="material-icons expand">expand_more</i>
+            </span>
           </summary>
-          <div class="detail-contents">
+          <div class="details-content">
             {% if method.isAbstract %}
               {$ renderOverloadInfo(method, cssClass + '-overload', method) $}
               <hr class="hr-margin fullwidth">

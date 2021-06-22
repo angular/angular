@@ -10,53 +10,23 @@
   details.overloads {
     box-shadow: none;
 
-    .icon-action-header {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
+    > summary {
       justify-content: space-between;
-
-      a {
-        display: flex;
-      }
-    }
-
-    .detail-contents {
-      padding: 0;
-      border-radius: 2px;
-      box-shadow: none;
-
-      > *:not(hr) {
-        margin: 16px 24px;
-      }
-    }
-
-    summary {
-      height: inherit;
       padding: 0;
 
       h4 {
         margin: 0;
         clear: left;
       }
-      .actions {
-        display: flex;
-        @include mixins.font-size(14);
-      }
-      .show-all {
-        display: initial;
-      }
-      .collapse-all {
-        display: none;
-      }
     }
 
-    &[open] > summary {
-      .show-all {
-        display: none;
-      }
-      .collapse-all {
-        display: initial;
+    > .details-content {
+      padding: 0;
+      border-radius: 2px;
+      box-shadow: none;
+
+      > *:not(hr) {
+        margin: 16px 24px;
       }
     }
   }
