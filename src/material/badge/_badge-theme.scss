@@ -15,6 +15,7 @@ $font-weight: 600;
 $default-size: 22px !default;
 $small-size: $default-size - 6;
 $large-size: $default-size + 6;
+$_badge-structure-emitted: false !default;
 
 // Mixin for building offset given different sizes
 @mixin _badge-size($size) {
@@ -94,6 +95,57 @@ $large-size: $default-size + 6;
   // stylelint-enable
 }
 
+// Structural styles for the badge. They have to be included as a part of the theme,
+// because the badge is a directive and we have no other way of attaching styles to it.
+@mixin _badge-structure {
+  .mat-badge {
+    position: relative;
+  }
+
+  .mat-badge-hidden {
+    .mat-badge-content {
+      display: none;
+    }
+  }
+
+  .mat-badge-content {
+    position: absolute;
+    text-align: center;
+    display: inline-block;
+    border-radius: 50%;
+    transition: transform 200ms ease-in-out;
+    transform: scale(0.6);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    pointer-events: none;
+  }
+
+  .ng-animate-disabled .mat-badge-content,
+  .mat-badge-content._mat-animation-noopable {
+    transition: none;
+  }
+
+  // The active class is added after the element is added
+  // so it can animate scale to default
+  .mat-badge-content.mat-badge-active {
+    // Scale to `none` instead of `1` to avoid blurry text in some browsers.
+    transform: none;
+  }
+
+  .mat-badge-small {
+    @include _badge-size($small-size);
+  }
+
+  .mat-badge-medium {
+    @include _badge-size($default-size);
+  }
+
+  .mat-badge-large {
+    @include _badge-size($large-size);
+  }
+}
+
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   $accent: map.get($config, accent);
@@ -126,16 +178,6 @@ $large-size: $default-size + 6;
     }
   }
 
-  .mat-badge {
-    position: relative;
-  }
-
-  .mat-badge-hidden {
-    .mat-badge-content {
-      display: none;
-    }
-  }
-
   .mat-badge-disabled {
     .mat-badge-content {
       $app-background: theming.get-color-from-palette($background, 'background');
@@ -156,41 +198,6 @@ $large-size: $default-size + 6;
 
       color: theming.get-color-from-palette($foreground, disabled-text);
     }
-  }
-
-  .mat-badge-content {
-    position: absolute;
-    text-align: center;
-    display: inline-block;
-    border-radius: 50%;
-    transition: transform 200ms ease-in-out;
-    transform: scale(0.6);
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    pointer-events: none;
-  }
-
-  .ng-animate-disabled .mat-badge-content,
-  .mat-badge-content._mat-animation-noopable {
-    transition: none;
-  }
-
-  // The active class is added after the element is added
-  // so it can animate scale to default
-  .mat-badge-content.mat-badge-active {
-    // Scale to `none` instead of `1` to avoid blurry text in some browsers.
-    transform: none;
-  }
-
-  .mat-badge-small {
-    @include _badge-size($small-size);
-  }
-  .mat-badge-medium {
-    @include _badge-size($default-size);
-  }
-  .mat-badge-large {
-    @include _badge-size($large-size);
   }
 }
 
@@ -221,6 +228,18 @@ $large-size: $default-size + 6;
     $color: theming.get-color-config($theme);
     $density: theming.get-density-config($theme);
     $typography: theming.get-typography-config($theme);
+
+    // Try to reduce the number of times that the structural styles are emitted.
+    @if not $_badge-structure-emitted {
+      @include _badge-structure;
+
+      // Only flip the flag if the mixin is included at the top level. Otherwise the first
+      // inclusion might be inside of a theme class which will exclude the structural styles
+      // from all other themes.
+      @if not & {
+        $_badge-structure-emitted: true !global;
+      }
+    }
 
     @if $color != null {
       @include color($color);
