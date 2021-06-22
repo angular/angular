@@ -122,3 +122,7 @@ $calendar-next-icon-transform: translateX(-2px) rotate(45deg);
     height: $calendar-header-divider-width;
   }
 }
+
+.mat-calendar-abbr {
+  text-decoration: none;
+}

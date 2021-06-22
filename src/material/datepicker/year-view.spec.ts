@@ -118,7 +118,7 @@ describe('MatYearView', () => {
     describe('a11y', () => {
       it('should set the correct role on the internal table node', () => {
         const table = yearViewNativeElement.querySelector('table')!;
-        expect(table.getAttribute('role')).toBe('presentation');
+        expect(table.getAttribute('role')).toBe('grid');
       });
 
       describe('calendar body', () => {

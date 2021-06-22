@@ -114,7 +114,7 @@ describe('MatMonthView', () => {
       describe('a11y', () => {
         it('should set the correct role on the internal table node', () => {
           const table = monthViewNativeElement.querySelector('table')!;
-          expect(table.getAttribute('role')).toBe('presentation');
+          expect(table.getAttribute('role')).toBe('grid');
         });
 
         it('should set the correct scope on the table headers', () => {

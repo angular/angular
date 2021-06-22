@@ -58,8 +58,6 @@ export interface MatCalendarUserEvent<D> {
   styleUrls: ['calendar-body.css'],
   host: {
     'class': 'mat-calendar-body',
-    'role': 'grid',
-    'aria-readonly': 'true'
   },
   exportAs: 'matCalendarBody',
   encapsulation: ViewEncapsulation.None,
