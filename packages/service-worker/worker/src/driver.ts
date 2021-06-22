@@ -609,7 +609,8 @@ export class Driver implements Debuggable, UpdateSource {
   private async assignVersion(event: FetchEvent): Promise<AppVersion|null> {
     // First, check whether the event has a (non empty) client ID. If it does, the version may
     // already be associated.
-    const clientId = event.clientId;
+    // (For navigation requests, we care about the `resultingClientId`.)
+    const clientId = event.resultingClientId || event.clientId;
     if (clientId) {
       // Check if there is an assigned client id.
       if (this.clientVersionMap.has(clientId)) {
