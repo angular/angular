@@ -4922,10 +4922,8 @@ class PullApproveGroup {
         this.precedingGroups = precedingGroups;
         /** List of conditions for the group. */
         this.conditions = [];
-        /** List of conditions for the group. */
-        this.reviewers = {};
         this._captureConditions(config);
-        this.reviewers = (_a = config.reviewers) !== null && _a !== void 0 ? _a : {};
+        this.reviewers = (_a = config.reviewers) !== null && _a !== void 0 ? _a : { users: [], teams: [] };
     }
     _captureConditions(config) {
         if (config.conditions && this.groupName !== FALLBACK_GROUP_NAME) {

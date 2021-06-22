@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {config} from 'yargs';
 import {error} from '../utils/console';
 import {convertConditionToFunction} from './condition_evaluator';
 import {PullApproveGroupConfig} from './parse-yaml';
@@ -47,14 +46,14 @@ const FALLBACK_GROUP_NAME = 'fallback';
 export class PullApproveGroup {
   /** List of conditions for the group. */
   readonly conditions: GroupCondition[] = [];
-  /** List of conditions for the group. */
-  readonly reviewers: GroupReviewers = {};
+  /** List of reviewers for the group. */
+  readonly reviewers: GroupReviewers;
 
   constructor(
       public groupName: string, config: PullApproveGroupConfig,
       readonly precedingGroups: PullApproveGroup[] = []) {
     this._captureConditions(config);
-    this.reviewers = config.reviewers ?? {};
+    this.reviewers = config.reviewers ?? {users: [], teams: []};
   }
 
   private _captureConditions(config: PullApproveGroupConfig) {
