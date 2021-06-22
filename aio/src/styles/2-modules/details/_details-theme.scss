@@ -3,9 +3,5 @@
 @mixin theme($theme) {
   details {
     box-shadow: 0 1px 4px 0 rgba(constants.$black, 0.37);
-
-    > summary {
-      color: constants.$black;
-    }
   }
 }
