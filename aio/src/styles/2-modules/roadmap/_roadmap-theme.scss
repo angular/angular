@@ -1,11 +1,12 @@
-@use 'sass:color';
 @use 'sass:map';
 @use '../../constants';
 
 @mixin theme($theme) {
   $is-dark-theme: map.get($theme, is-dark);
 
-  .roadmap-done-summary::marker {
-    color: if($is-dark-theme, constants.$offwhite, color.adjust(constants.$darkgray, $lightness: 10%));
+  .page-guide-roadmap {
+    .completed-details {
+      border-top: 1px solid if($is-dark-theme, constants.$mediumgray, constants.$lightgray);
+    }
   }
 }
