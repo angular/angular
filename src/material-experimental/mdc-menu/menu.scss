@@ -1,6 +1,7 @@
-@use '@material/density' as mdc-density;
+@use 'sass:map';
 @use '@material/menu-surface' as mdc-menu-surface;
-@use '@material/list' as mdc-list;
+@use '@material/list/evolution-mixins' as mdc-list-mixins;
+@use '@material/list/evolution-variables' as mdc-list-variables;
 @use '../../material/core/style/menu-common';
 @use '../../material/core/style/button-common';
 @use '../../cdk/a11y';
@@ -14,9 +15,7 @@ mat-menu {
 }
 
 .mat-mdc-menu-content {
-  // Note that we include this private mixin, because the public
-  // one adds a bunch of styles that we aren't using for the menu.
-  @include mdc-list.deprecated-base_($query: structure);
+  @include mdc-list-mixins.list-base($query: structure);
 }
 
 .mat-mdc-menu-panel {
@@ -34,23 +33,13 @@ mat-menu {
 }
 
 .mat-mdc-menu-item {
-  $height: mdc-density.prop-value(
-    $density-config: mdc-list.$deprecated-single-line-density-config,
-    $density-scale: mdc-list.$deprecated-single-line-density-scale,
-    $property-name: height,
-  );
-
-  // Note that we include this private mixin, because the public
-  // one adds a bunch of styles that we aren't using for the menu.
-  @include mdc-list.deprecated-item-base_;
-  @include mdc-list.deprecated-list-item-padding-variant(
-    mdc-list.$deprecated-textual-variant-config, $query: mdc-helpers.$mat-base-styles-query);
+  @include mdc-list-mixins.item-base;
+  @include mdc-list-mixins.item-spacing(
+    mdc-list-variables.$side-padding, $query: mdc-helpers.$mat-base-styles-query);
 
   // MDC's menu items are `<li>` nodes which don't need resets, however ours
   // can be anything, including buttons, so we need to do the reset ourselves.
   @include button-common.reset;
-  @include mdc-list.deprecated-single-line-height($height,
-    $query: mdc-helpers.$mat-base-styles-query);
   cursor: pointer;
   width: 100%;
   text-align: left;
@@ -59,6 +48,12 @@ mat-menu {
   font-size: inherit;
   background: none;
   text-decoration: none;
+
+  // Set the `min-height` here ourselves, instead of going through
+  // the `mdc-list-one-line-item-density` mixin, because it sets a `height`
+  // which doesn't work well with multi-line items.
+  $height-config: map.get(mdc-list-variables.$one-line-item-density-config, height);
+  min-height: map.get($height-config, default);
 
   &[disabled] {
     // Usually every click inside the menu closes it, however some browsers will stop events
@@ -71,7 +66,7 @@ mat-menu {
   }
 
   .mat-icon {
-    margin-right: mdc-list.$deprecated-side-padding;
+    margin-right: mdc-list-variables.$side-padding;
   }
 
   [dir='rtl'] & {
@@ -79,7 +74,7 @@ mat-menu {
 
     .mat-icon {
       margin-right: 0;
-      margin-left: mdc-list.$deprecated-side-padding;
+      margin-left: mdc-list-variables.$side-padding;
     }
   }
 
@@ -99,7 +94,7 @@ mat-menu {
 }
 
 .mat-mdc-menu-item-submenu-trigger {
-  @include menu-common.item-submenu-trigger(mdc-list.$deprecated-side-padding);
+  @include menu-common.item-submenu-trigger(mdc-list-variables.$side-padding);
 }
 
 .mat-mdc-menu-submenu-icon {

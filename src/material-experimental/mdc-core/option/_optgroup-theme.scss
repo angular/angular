@@ -1,4 +1,3 @@
-@use '@material/list' as mdc-list;
 @use '@material/theme/theme' as mdc-theme;
 @use '../../mdc-helpers/mdc-helpers';
 @use '../../../material/core/theming/theming';
@@ -12,8 +11,6 @@
       // Since this will usually be rendered in an overlay,
       // we have to explicitly set the default color.
       @include mdc-theme.prop(color, text-primary-on-background);
-      @include mdc-list.deprecated-item-disabled-text-color(
-        mdc-list.$deprecated-text-disabled-color, $query: mdc-helpers.$mat-theme-styles-query);
     }
   }
 }

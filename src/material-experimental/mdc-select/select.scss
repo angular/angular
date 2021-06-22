@@ -1,5 +1,5 @@
 @use '@material/menu-surface' as mdc-menu-surface;
-@use '@material/list' as mdc-list;
+@use '@material/list/evolution-mixins' as mdc-list;
 @use '../../material/core/style/variables';
 @use '../../material/core/style/vendor-prefixes';
 @use '../../material/core/style/private';
@@ -83,9 +83,7 @@ $scale: 0.75 !default;
   position: static; // MDC uses `absolute` by default which will throw off our positioning.
   outline: 0;
 
-  // Note that we include this private mixin, because the public
-  // one adds a bunch of styles that we aren't using for the menu.
-  @include mdc-list.deprecated-base_($query: structure);
+  @include mdc-list.list-base($query: structure);
   @include a11y.high-contrast(active, off) {
     outline: solid 1px;
   }

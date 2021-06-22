@@ -1,5 +1,5 @@
 @use '@material/menu-surface/mixins' as mdc-menu-surface;
-@use '@material/list/mixins' as mdc-list;
+@use '@material/list/evolution-mixins' as mdc-list;
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/typography/typography';
 @use '../../material/core/theming/theming';
@@ -8,7 +8,7 @@
   $config: theming.get-color-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-theme($config) {
     @include mdc-menu-surface.core-styles(mdc-helpers.$mat-theme-styles-query);
-    @include mdc-list.deprecated-without-ripple(mdc-helpers.$mat-theme-styles-query);
+    @include mdc-list.without-ripple(mdc-helpers.$mat-theme-styles-query);
   }
 }
 
@@ -21,7 +21,7 @@
     .mat-mdc-autocomplete-panel {
       // Note that we include this private mixin, because the public one adds
       // a bunch of styles that we aren't using for the autocomplete panel.
-      @include mdc-list.deprecated-base_(mdc-helpers.$mat-typography-styles-query);
+      @include mdc-list.list-base(mdc-helpers.$mat-typography-styles-query);
     }
   }
 }

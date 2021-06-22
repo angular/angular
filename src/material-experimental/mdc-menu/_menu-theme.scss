@@ -1,7 +1,7 @@
 @use '@material/theme/theme-color' as mdc-theme-color;
 @use '@material/theme/theme' as mdc-theme;
 @use '@material/menu-surface' as mdc-menu-surface;
-@use '@material/list' as mdc-list;
+@use '@material/list/evolution-mixins' as mdc-list;
 @use '@material/typography' as mdc-typography;
 @use '@material/ripple' as mdc-ripple;
 @use '../mdc-helpers/mdc-helpers';
@@ -12,7 +12,7 @@
   $config: theming.get-color-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-theme($config) {
     @include mdc-menu-surface.core-styles(mdc-helpers.$mat-theme-styles-query);
-    @include mdc-list.deprecated-without-ripple(mdc-helpers.$mat-theme-styles-query);
+    @include mdc-list.without-ripple(mdc-helpers.$mat-theme-styles-query);
 
     // MDC doesn't appear to have disabled styling for menu
     // items so we have to grey them out ourselves.
@@ -53,11 +53,11 @@
     .mat-mdc-menu-content {
       // Note that we include this private mixin, because the public
       // one adds a bunch of styles that we aren't using for the menu.
-      @include mdc-list.deprecated-base_(mdc-helpers.$mat-typography-styles-query);
+      @include mdc-list.list-base(mdc-helpers.$mat-typography-styles-query);
 
       // MDC uses the `subtitle1` level for list items, but the spec shows `body1` as the correct
       // level.
-      .mat-mdc-menu-item {
+      .mat-mdc-menu-item .mdc-list-item__primary-text {
         @include mdc-typography.typography(body1, $query: mdc-helpers.$mat-typography-styles-query);
       }
     }

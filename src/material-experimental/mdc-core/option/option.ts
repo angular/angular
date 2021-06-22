@@ -32,10 +32,10 @@ import {MatOptgroup} from './optgroup';
   host: {
     'role': 'option',
     '[attr.tabindex]': '_getTabIndex()',
-    '[class.mdc-deprecated-list-item--selected]': 'selected',
+    '[class.mdc-list-item--selected]': 'selected',
     '[class.mat-mdc-option-multiple]': 'multiple',
     '[class.mat-mdc-option-active]': 'active',
-    '[class.mdc-deprecated-list-item--disabled]': 'disabled',
+    '[class.mdc-list-item--disabled]': 'disabled',
     '[id]': 'id',
     '[attr.aria-selected]': '_getAriaSelected()',
     '[attr.aria-disabled]': 'disabled.toString()',
