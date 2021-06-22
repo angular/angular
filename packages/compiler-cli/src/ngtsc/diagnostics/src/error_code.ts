@@ -167,6 +167,12 @@ export enum ErrorCode {
   DUPLICATE_VARIABLE_DECLARATION = 8006,
 
   /**
+   * A template has a two way binding (two bindings created by a single syntactial element)
+   * in which the input and output are going to different places.
+   */
+  SPLIT_TWO_WAY_BINDING = 8007,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */
