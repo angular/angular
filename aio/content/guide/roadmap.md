@@ -80,10 +80,16 @@ A long-standing feature request is to add the ability to add directives to host 
 
 A common problem with web applications is their slow initial load time. A way to improve it is to apply more granular code-splitting on a component level. To encourage this practice, we’ll be working on more ergonomic code-splitting APIs.
 
-<details class="roadmap-done-details" open="true">
-<summary class="roadmap-done-summary">
+<details class="completed-details" open="true">
+<summary>
   <h2>Done</h2>
+  <span class="actions">
+    <span class="action-expand">Show all</span>
+    <span class="action-collapse">Hide all</span>
+    <i class="material-icons expand">expand_more</i>
+  </span>
 </summary>
+<div class="details-content">
 
 ### Accelerated debugging and performance profiling with Angular DevTools
 
@@ -163,4 +169,5 @@ _Completed Q4 2020_
 
 We are actively investing up to 50% of our engineering capacity on triaging issues and PRs until we have a clear understanding of broader community needs. After that, we'll commit up to 20% of our engineering capacity to keep up with new submissions promptly.
 
+</div>
 </details>

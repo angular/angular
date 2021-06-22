@@ -1,13 +1,16 @@
-.roadmap-done-details {
-  padding: 0 20px 20px;
-  margin: 0 -20px;
-}
+.page-guide-roadmap {
+  .completed-details {
+    box-shadow: none;
+    margin-top: 4rem;
+    padding: 4rem 0 2rem;
 
-.roadmap-done-summary {
-  margin: 0 -20px;
-  font-size: 3.2rem;
-  height: 40px;
-  padding-bottom: 0;
-  display: list-item;
-  user-select: none;
+    > summary {
+      justify-content: space-between;
+      padding: 0;
+    }
+
+    > .details-content {
+      padding: 0;
+    }
+  }
 }
