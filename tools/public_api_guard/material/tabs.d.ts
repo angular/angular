@@ -91,6 +91,7 @@ export declare class _MatTabLinkBase extends _MatTabLinkMixinBase implements Aft
     rippleConfig: RippleConfig & RippleGlobalOptions;
     get rippleDisabled(): boolean;
     constructor(_tabNavBar: _MatTabNavBase, elementRef: ElementRef, globalRippleOptions: RippleGlobalOptions | null, tabIndex: string, _focusMonitor: FocusMonitor, animationMode?: string);
+    _handleFocus(): void;
     focus(): void;
     ngAfterViewInit(): void;
     ngOnDestroy(): void;

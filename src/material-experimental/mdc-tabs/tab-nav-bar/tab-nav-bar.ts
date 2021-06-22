@@ -125,6 +125,7 @@ export class MatTabNav extends _MatTabNavBase implements AfterContentInit {
     '[attr.tabIndex]': 'tabIndex',
     '[class.mat-mdc-tab-disabled]': 'disabled',
     '[class.mdc-tab--active]': 'active',
+    '(focus)': '_handleFocus()'
   }
 })
 export class MatTabLink extends _MatTabLinkBase implements MatInkBarItem, OnInit, OnDestroy {

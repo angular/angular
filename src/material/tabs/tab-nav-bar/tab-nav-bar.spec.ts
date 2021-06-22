@@ -202,6 +202,13 @@ describe('MatTabNavBar', () => {
       expect(inkBar.hide).toHaveBeenCalled();
     });
 
+    it('should update the focusIndex when a tab receives focus directly', () => {
+      const thirdLink = fixture.debugElement.queryAll(By.css('a'))[2];
+      dispatchFakeEvent(thirdLink.nativeElement, 'focus');
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.tabNavBar.focusIndex).toBe(2);
+    });
   });
 
   it('should hide the ink bar if no tabs are active on init', fakeAsync(() => {

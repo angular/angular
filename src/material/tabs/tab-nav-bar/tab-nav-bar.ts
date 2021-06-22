@@ -243,6 +243,12 @@ export class _MatTabLinkBase extends _MatTabLinkMixinBase implements AfterViewIn
     this._focusMonitor.stopMonitoring(this.elementRef);
   }
 
+  _handleFocus() {
+    // Since we allow navigation through tabbing in the nav bar, we
+    // have to update the focused index whenever the link receives focus.
+    this._tabNavBar.focusIndex = this._tabNavBar._items.toArray().indexOf(this);
+  }
+
   static ngAcceptInputType_active: BooleanInput;
   static ngAcceptInputType_disabled: BooleanInput;
   static ngAcceptInputType_disableRipple: BooleanInput;
@@ -264,6 +270,7 @@ export class _MatTabLinkBase extends _MatTabLinkMixinBase implements AfterViewIn
     '[attr.tabIndex]': 'tabIndex',
     '[class.mat-tab-disabled]': 'disabled',
     '[class.mat-tab-label-active]': 'active',
+    '(focus)': '_handleFocus()'
   }
 })
 export class MatTabLink extends _MatTabLinkBase implements OnDestroy {
