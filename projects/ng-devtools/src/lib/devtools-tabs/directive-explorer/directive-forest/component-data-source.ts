@@ -4,7 +4,7 @@ import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { MatTreeFlattener } from '@angular/material/tree';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { map } from 'rxjs/operators';
-import { DefaultIterableDiffer } from '@angular/core';
+import { DefaultIterableDiffer, TrackByFunction } from '@angular/core';
 import { IndexedNode, indexForest } from './index-forest';
 import { diff } from '../../diffing';
 
@@ -22,7 +22,7 @@ export interface FlatNode {
 
 const expandable = (node: IndexedNode) => !!node.children && node.children.length > 0;
 
-const trackBy = (_: number, item: FlatNode) => `${item.id}#${item.expandable}`;
+const trackBy: TrackByFunction<FlatNode> = (_: number, item: FlatNode) => `${item.id}#${item.expandable}`;
 
 const getId = (node: IndexedNode) => {
   let prefix = '';
@@ -61,7 +61,7 @@ const filterCommentNodes = (nodes: IndexedNode[]) => {
 };
 
 export class ComponentDataSource extends DataSource<FlatNode> {
-  private _differ = new DefaultIterableDiffer(trackBy);
+  private _differ = new DefaultIterableDiffer<FlatNode>(trackBy);
   private _expandedData = new BehaviorSubject<FlatNode[]>([]);
   private _flattenedData = new BehaviorSubject<FlatNode[]>([]);
   private _nodeToFlat = new WeakMap<IndexedNode, FlatNode>();
