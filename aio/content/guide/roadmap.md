@@ -4,7 +4,7 @@ Angular receives a large number of feature requests, both from inside Google and
 
 The projects below are not associated with a particular Angular version. We'll release them on completion, and they will be part of a specific version based on our release schedule, following semantic versioning. For example, features are released in the next minor after they are complete, or the next major if they include breaking changes.
 
-## In Progress
+## In progress
 
 ### Improve test times and debugging with automatic test environment tear down
 
@@ -82,7 +82,7 @@ A common problem with web applications is their slow initial load time. A way to
 
 <details class="completed-details" open="true">
 <summary>
-  <h2>Done</h2>
+  <h2>Completed</h2>
   <span class="actions">
     <span class="action-expand">Show all</span>
     <span class="action-collapse">Hide all</span>
@@ -163,7 +163,7 @@ _Completed Q4 2020_
 
 With the deprecation of TSLint we will be moving to ESLint. As part of the process, we will work on ensuring backward compatibility with our current recommended TSLint configuration, implement a migration strategy for existing Angular applications and introduce new tooling to the Angular CLI toolchain.
 
-### Operation Bye Bye Backlog (aka Operation Byelog) 
+### Operation Bye Bye Backlog (aka Operation Byelog)
 
 _Completed Q4 2020_
 
