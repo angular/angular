@@ -12163,10 +12163,10 @@ ts-node@~10.0.0:
     source-map-support "^0.5.17"
     yn "3.1.1"
 
-tsickle@^0.40.0:
-  version "0.40.0"
-  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.40.0.tgz#24516c7699c54da2b8468ade9eb4f801a38260f1"
-  integrity sha512-k5H6W0NkHyTbyMxvTMPcsEHURHhioVky6cc5d3YY1+xiQ+nQQeay5SP6YjwzO6OAZ2WTuRmwsbZvQf/UJQHWGg==
+tsickle@^0.43.0:
+  version "0.43.0"
+  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.43.0.tgz#d53501ee54932382c4923a77de9ab5a82abd9e98"
+  integrity sha512-n0lgIQBLliB7EFVTDpqrd/GjyB9I3NCodfX4R3NE/H73PQvGjgrkSZc8RVcWBG6s1MDiFjYDHIezYkuh8GYslw==
   dependencies:
     "@types/minimist" "^1.2.1"
 
