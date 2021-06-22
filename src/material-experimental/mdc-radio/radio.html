@@ -1,6 +1,8 @@
 <div class="mdc-form-field" #formField
      [class.mdc-form-field--align-end]="labelPosition == 'before'">
   <div class="mdc-radio" [ngClass]="_classes">
+    <!-- Render this element first so the input is on top. -->
+    <div class="mat-mdc-radio-touch-target" (click)="_onInputInteraction($event)"></div>
     <input #input class="mdc-radio__native-control" type="radio"
            [id]="inputId"
            [checked]="checked"
@@ -12,7 +14,7 @@
            [attr.aria-label]="ariaLabel"
            [attr.aria-labelledby]="ariaLabelledby"
            [attr.aria-describedby]="ariaDescribedby"
-           (change)="_onInputChange($event)">
+           (change)="_onInputInteraction($event)">
     <div class="mdc-radio__background">
       <div class="mdc-radio__outer-circle"></div>
       <div class="mdc-radio__inner-circle"></div>

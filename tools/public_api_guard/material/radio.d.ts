@@ -25,8 +25,8 @@ export declare abstract class _MatRadioButtonBase extends _MatRadioButtonMixinBa
     constructor(radioGroup: _MatRadioGroupBase<_MatRadioButtonBase>, elementRef: ElementRef, _changeDetector: ChangeDetectorRef, _focusMonitor: FocusMonitor, _radioDispatcher: UniqueSelectionDispatcher, animationMode?: string, _providerOverride?: MatRadioDefaultOptions | undefined, tabIndex?: string);
     _isRippleDisabled(): boolean;
     _markForCheck(): void;
-    _onInputChange(event: Event): void;
     _onInputClick(event: Event): void;
+    _onInputInteraction(event: Event): void;
     protected _setDisabled(value: boolean): void;
     focus(options?: FocusOptions, origin?: FocusOrigin): void;
     ngAfterViewInit(): void;

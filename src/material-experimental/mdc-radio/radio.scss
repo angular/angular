@@ -1,6 +1,7 @@
 @use '@material/radio/radio' as mdc-radio;
 @use '@material/radio/radio-theme' as mdc-radio-theme;
 @use '@material/form-field' as mdc-form-field;
+@use '@material/touch-target' as mdc-touch-target;
 @use '../mdc-helpers/mdc-helpers';
 @use '../../cdk/a11y';
 @use '../../material/core/style/layout-common';
@@ -23,6 +24,19 @@
 
 .mat-mdc-radio-button:not(._mat-animation-noopable) {
   @include mdc-radio.without-ripple($query: animation);
+}
+
+// Element used to provide a larger tap target for users on touch devices.
+.mat-mdc-radio-touch-target {
+  @include mdc-touch-target.touch-target(
+    $set-width: true,
+    $query: mdc-helpers.$mat-base-styles-query);
+
+  [dir='rtl'] & {
+    left: 0;
+    right: 50%;
+    transform: translate(50%, -50%);
+  }
 }
 
 // Note that this creates a square box around the circle, however it's consistent with

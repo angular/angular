@@ -585,24 +585,23 @@ export abstract class _MatRadioButtonBase extends _MatRadioButtonMixinBase imple
     event.stopPropagation();
   }
 
-  /**
-   * Triggered when the radio button received a click or the input recognized any change.
-   * Clicking on a label element, will trigger a change event on the associated input.
-   */
-  _onInputChange(event: Event) {
+  /** Triggered when the radio button receives an interaction from the user. */
+   _onInputInteraction(event: Event) {
     // We always have to stop propagation on the change event.
     // Otherwise the change event, from the input element, will bubble up and
     // emit its event object to the `change` output.
     event.stopPropagation();
 
-    const groupValueChanged = this.radioGroup && this.value !== this.radioGroup.value;
-    this.checked = true;
-    this._emitChangeEvent();
+    if (!this.checked && !this.disabled) {
+      const groupValueChanged = this.radioGroup && this.value !== this.radioGroup.value;
+      this.checked = true;
+      this._emitChangeEvent();
 
-    if (this.radioGroup) {
-      this.radioGroup._controlValueAccessorChangeFn(this.value);
-      if (groupValueChanged) {
-        this.radioGroup._emitChangeEvent();
+      if (this.radioGroup) {
+        this.radioGroup._controlValueAccessorChangeFn(this.value);
+        if (groupValueChanged) {
+          this.radioGroup._emitChangeEvent();
+        }
       }
     }
   }

@@ -58,6 +58,12 @@
   .mat-mdc-radio-button .mdc-radio {
     @include mdc-radio-theme.density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
   }
+
+  @if ($density-scale == -2 or $density-scale == 'minimum') {
+    .mat-mdc-radio-touch-target {
+      display: none;
+    }
+  }
 }
 
 @mixin theme($theme-or-color-config) {

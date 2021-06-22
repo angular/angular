@@ -16,7 +16,7 @@
         [attr.aria-label]="ariaLabel"
         [attr.aria-labelledby]="ariaLabelledby"
         [attr.aria-describedby]="ariaDescribedby"
-        (change)="_onInputChange($event)"
+        (change)="_onInputInteraction($event)"
         (click)="_onInputClick($event)">
 
     <!-- The ripple comes after the input so that we can target it with a CSS

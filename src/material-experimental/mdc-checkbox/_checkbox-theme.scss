@@ -125,6 +125,12 @@
       $query: mdc-helpers.$mat-base-styles-query
     );
   }
+
+  @if ($density-scale == -2 or $density-scale == 'minimum') {
+    .mat-mdc-checkbox-touch-target {
+      display: none;
+    }
+  }
 }
 
 @mixin theme($theme-or-color-config) {
