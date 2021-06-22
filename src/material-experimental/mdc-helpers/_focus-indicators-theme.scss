@@ -1,21 +1,37 @@
 @use 'sass:map';
+@use 'sass:meta';
 @use '../../material/core/theming/theming';
 
-@mixin color($config-or-theme) {
-  $config: theming.get-color-config($config-or-theme);
-  $border-color: theming.get-color-from-palette(map.get($config, primary));
-
+@mixin _border-color($color) {
   .mat-mdc-focus-indicator::before {
-    border-color: $border-color;
+    border-color: $color;
   }
 }
 
-@mixin theme($theme-or-color-config) {
-  $theme: theming.private-legacy-get-theme($theme-or-color-config);
-  @include theming.private-check-duplicate-theme-styles($theme, 'mat-mdc-focus-indicators') {
-    $color: theming.get-color-config($theme);
-    @if $color != null {
-      @include color($color);
+// stylelint-disable-next-line material/theme-mixin-api
+@mixin color($config-or-theme-or-color) {
+  @if meta.type-of($config-or-theme-or-color) == 'color' {
+    @include _border-color($config-or-theme-or-color);
+  }
+  @else {
+    $config: theming.get-color-config($config-or-theme-or-color);
+    $border-color: theming.get-color-from-palette(map.get($config, primary));
+    @include _border-color($border-color);
+  }
+}
+
+// stylelint-disable-next-line material/theme-mixin-api
+@mixin theme($theme-or-color-config-or-color) {
+  @if meta.type-of($theme-or-color-config-or-color) == 'color' {
+    @include _border-color($theme-or-color-config-or-color);
+  }
+  @else {
+    $theme: theming.private-legacy-get-theme($theme-or-color-config-or-color);
+    @include theming.private-check-duplicate-theme-styles($theme, 'mat-mdc-focus-indicators') {
+      $color: theming.get-color-config($theme);
+      @if $color != null {
+        @include color($color);
+      }
     }
   }
 }

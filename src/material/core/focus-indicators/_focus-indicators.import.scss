@@ -16,7 +16,8 @@ $mat-white-6-opacity, $mat-white-87-opacity;
 strong-focus-indicators;
 @forward 'focus-indicators-theme' hide color, theme;
 @forward 'focus-indicators' as mat-*;
-@forward 'focus-indicators-theme' as mat-strong-focus-indicators-*;
+@forward 'focus-indicators-theme' as mat-strong-focus-indicators-* hide
+mat-strong-focus-indicators-border-color;
 
 @import '../theming/theming';
 @import '../style/layout-common';
