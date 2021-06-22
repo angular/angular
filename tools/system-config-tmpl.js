@@ -31,6 +31,7 @@ var nodeModulesPath = '$NODE_MODULES_BASE_PATH';
 var pathMapping = {
   'tslib': 'node:tslib/tslib.js',
   'moment': 'node:moment/min/moment-with-locales.min.js',
+  'moment/locale': 'node:moment/locale',
   'kagekiri': 'node:kagekiri/dist/kagekiri.umd.min.js',
 
   'rxjs': 'node:rxjs/bundles/rxjs.umd.min.js',
