@@ -44,28 +44,33 @@ const ITEM_WIDTH = 75;
 
 describe('CdkDrag', () => {
   function createComponent<T>(
-      componentType: Type<T>, providers: Provider[] = [], dragDistance = 0,
-      extraDeclarations: Type<any>[] = []): ComponentFixture<T> {
-    TestBed
-        .configureTestingModule({
-          imports: [DragDropModule, CdkScrollableModule],
-          declarations: [componentType, PassthroughComponent, ...extraDeclarations],
-          providers: [
-            {
-              provide: CDK_DRAG_CONFIG,
-              useValue: {
-                // We default the `dragDistance` to zero, because the majority of the tests
-                // don't care about it and drags are a lot easier to simulate when we don't
-                // have to deal with thresholds.
-                dragStartThreshold: dragDistance,
-                pointerDirectionChangeThreshold: 5
-              } as DragDropConfig
-            },
-            ...providers
-          ],
-        })
-        .compileComponents();
+    componentType: Type<T>, providers: Provider[] = [], dragDistance = 0,
+    extraDeclarations: Type<any>[] = [], encapsulation?: ViewEncapsulation): ComponentFixture<T> {
+    TestBed.configureTestingModule({
+        imports: [DragDropModule, CdkScrollableModule],
+        declarations: [componentType, PassthroughComponent, ...extraDeclarations],
+        providers: [
+          {
+            provide: CDK_DRAG_CONFIG,
+            useValue: {
+              // We default the `dragDistance` to zero, because the majority of the tests
+              // don't care about it and drags are a lot easier to simulate when we don't
+              // have to deal with thresholds.
+              dragStartThreshold: dragDistance,
+              pointerDirectionChangeThreshold: 5
+            } as DragDropConfig
+          },
+          ...providers
+        ],
+      });
 
+    if (encapsulation != null) {
+      TestBed.overrideComponent(componentType, {
+        set: {encapsulation}
+      });
+    }
+
+    TestBed.compileComponents();
     return TestBed.createComponent<T>(componentType);
   }
 
@@ -2010,6 +2015,54 @@ describe('CdkDrag', () => {
       });
     }));
 
+    it('should calculate the index if the list is scrolled while dragging inside the shadow DOM',
+      fakeAsync(() => {
+        // This test is only relevant for Shadow DOM-supporting browsers.
+        if (!_supportsShadowDom()) {
+          return;
+        }
+
+        const fixture = createComponent(DraggableInScrollableVerticalDropZone, [], undefined, [],
+          ViewEncapsulation.ShadowDom);
+        fixture.detectChanges();
+        const dragItems = fixture.componentInstance.dragItems;
+        const firstItem = dragItems.first;
+        const thirdItemRect = dragItems.toArray()[2].element.nativeElement.getBoundingClientRect();
+        const list = fixture.componentInstance.dropInstance.element.nativeElement;
+
+        startDraggingViaMouse(fixture, firstItem.element.nativeElement);
+        fixture.detectChanges();
+
+        dispatchMouseEvent(document, 'mousemove', thirdItemRect.left + 1, thirdItemRect.top + 1);
+        fixture.detectChanges();
+
+        list.scrollTop = ITEM_HEIGHT * 10;
+        dispatchFakeEvent(list, 'scroll');
+        fixture.detectChanges();
+
+        dispatchMouseEvent(document, 'mouseup');
+        fixture.detectChanges();
+        flush();
+        fixture.detectChanges();
+
+        expect(fixture.componentInstance.droppedSpy).toHaveBeenCalledTimes(1);
+
+        const event = fixture.componentInstance.droppedSpy.calls.mostRecent().args[0];
+
+        // Assert the event like this, rather than `toHaveBeenCalledWith`, because Jasmine will
+        // go into an infinite loop trying to stringify the event, if the test fails.
+        expect(event).toEqual({
+          previousIndex: 0,
+          currentIndex: 12,
+          item: firstItem,
+          container: fixture.componentInstance.dropInstance,
+          previousContainer: fixture.componentInstance.dropInstance,
+          isPointerOverContainer: jasmine.any(Boolean),
+          distance: {x: jasmine.any(Number), y: jasmine.any(Number)},
+          dropPoint: {x: jasmine.any(Number), y: jasmine.any(Number)}
+        });
+      }));
+
     it('should calculate the index if the viewport is scrolled while dragging', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone);
 
@@ -2259,6 +2312,54 @@ describe('CdkDrag', () => {
       expect(Math.abs(previewRect.bottom - listRect.bottom)).toBeLessThan(2);
       cleanup();
     }));
+
+    it('should update the boundary if a parent is scrolled while dragging inside the shadow DOM',
+      fakeAsync(() => {
+        // This test is only relevant for Shadow DOM-supporting browsers.
+        if (!_supportsShadowDom()) {
+          return;
+        }
+
+        const fixture = createComponent(DraggableInScrollableParentContainer, [], undefined, [],
+          ViewEncapsulation.ShadowDom);
+        fixture.componentInstance.boundarySelector = '.cdk-drop-list';
+        fixture.detectChanges();
+
+        const container: HTMLElement = fixture.nativeElement.shadowRoot
+          .querySelector('.scroll-container');
+        const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+        const list = fixture.componentInstance.dropInstance.element.nativeElement;
+        const cleanup = makeScrollable('vertical', container);
+        container.scrollTop = 10;
+
+        // Note that we need to measure after scrolling.
+        let listRect = list.getBoundingClientRect();
+
+        startDraggingViaMouse(fixture, item);
+        startDraggingViaMouse(fixture, item, listRect.right, listRect.bottom);
+        flush();
+        dispatchMouseEvent(document, 'mousemove', listRect.right, listRect.bottom);
+        fixture.detectChanges();
+
+        const preview = fixture.nativeElement.shadowRoot
+          .querySelector('.cdk-drag-preview')! as HTMLElement;
+        let previewRect = preview.getBoundingClientRect();
+
+        // Different browsers round the scroll position differently so
+        // assert that the offsets are within a pixel of each other.
+        expect(Math.abs(previewRect.bottom - listRect.bottom)).toBeLessThan(2);
+
+        container.scrollTop = 0;
+        dispatchFakeEvent(container, 'scroll');
+        fixture.detectChanges();
+        listRect = list.getBoundingClientRect(); // We need to update these since we've scrolled.
+        dispatchMouseEvent(document, 'mousemove', listRect.right, listRect.bottom);
+        fixture.detectChanges();
+        previewRect = preview.getBoundingClientRect();
+
+        expect(Math.abs(previewRect.bottom - listRect.bottom)).toBeLessThan(2);
+        cleanup();
+      }));
 
     it('should clear the id from the preview', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone);
@@ -5520,7 +5621,8 @@ describe('CdkDrag', () => {
         return;
       }
 
-      const fixture = createComponent(ConnectedDropZonesInsideShadowRoot);
+      const fixture = createComponent(ConnectedDropZones, [], undefined, [],
+        ViewEncapsulation.ShadowDom);
       fixture.detectChanges();
 
       const groups = fixture.componentInstance.groupedDragItems;
@@ -5651,7 +5753,8 @@ describe('CdkDrag', () => {
         return;
       }
 
-      const fixture = createComponent(ConnectedDropZonesInsideShadowRoot);
+      const fixture = createComponent(ConnectedDropZones, [], undefined, [],
+          ViewEncapsulation.ShadowDom);
       fixture.detectChanges();
       const item = fixture.componentInstance.groupedDragItems[0][1];
 
@@ -5961,7 +6064,7 @@ class DraggableInDropZone implements AfterViewInit {
     // Firefox preserves the `scrollTop` value from previous similar containers. This
     // could throw off test assertions and result in flaky results.
     // See: https://bugzilla.mozilla.org/show_bug.cgi?id=959812.
-    this._elementRef.nativeElement.querySelector('.scroll-container').scrollTop = 0;
+    this.dropInstance.element.nativeElement.scrollTop = 0;
   }
 }
 
@@ -6361,14 +6464,6 @@ class ConnectedDropZones implements AfterViewInit {
       this.groupedDragItems[index].push(...dropZone.getSortedItems());
     });
   }
-}
-
-@Component({
-  encapsulation: ViewEncapsulation.ShadowDom,
-  styles: CONNECTED_DROP_ZONES_STYLES,
-  template: CONNECTED_DROP_ZONES_TEMPLATE
-})
-class ConnectedDropZonesInsideShadowRoot extends ConnectedDropZones {
 }
 
 @Component({

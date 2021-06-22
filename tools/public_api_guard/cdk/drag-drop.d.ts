@@ -254,6 +254,7 @@ export declare class DragDropRegistry<I extends {
     registerDropContainer(drop: C): void;
     removeDragItem(drag: I): void;
     removeDropContainer(drop: C): void;
+    scrolled(shadowRoot?: DocumentOrShadowRoot | null): Observable<Event>;
     startDragging(drag: I, event: TouchEvent | MouseEvent): void;
     stopDragging(drag: I): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<DragDropRegistry<any, any>, never>;

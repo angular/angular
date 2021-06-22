@@ -899,33 +899,35 @@ export class DropListRef<T = any> {
    * Used for updating the internal state of the list.
    */
   private _listenToScrollEvents() {
-    this._viewportScrollSubscription = this._dragDropRegistry.scroll.subscribe(event => {
-      if (this.isDragging()) {
-        const scrollDifference = this._parentPositions.handleScroll(event);
+    this._viewportScrollSubscription = this._dragDropRegistry
+      .scrolled(this._getShadowRoot())
+      .subscribe(event => {
+        if (this.isDragging()) {
+          const scrollDifference = this._parentPositions.handleScroll(event);
 
-        if (scrollDifference) {
-          // Since we know the amount that the user has scrolled we can shift all of the
-          // client rectangles ourselves. This is cheaper than re-measuring everything and
-          // we can avoid inconsistent behavior where we might be measuring the element before
-          // its position has changed.
-          this._itemPositions.forEach(({clientRect}) => {
-            adjustClientRect(clientRect, scrollDifference.top, scrollDifference.left);
-          });
+          if (scrollDifference) {
+            // Since we know the amount that the user has scrolled we can shift all of the
+            // client rectangles ourselves. This is cheaper than re-measuring everything and
+            // we can avoid inconsistent behavior where we might be measuring the element before
+            // its position has changed.
+            this._itemPositions.forEach(({clientRect}) => {
+              adjustClientRect(clientRect, scrollDifference.top, scrollDifference.left);
+            });
 
-          // We need two loops for this, because we want all of the cached
-          // positions to be up-to-date before we re-sort the item.
-          this._itemPositions.forEach(({drag}) => {
-            if (this._dragDropRegistry.isDragging(drag)) {
-              // We need to re-sort the item manually, because the pointer move
-              // events won't be dispatched while the user is scrolling.
-              drag._sortFromLastPointerPosition();
-            }
-          });
+            // We need two loops for this, because we want all of the cached
+            // positions to be up-to-date before we re-sort the item.
+            this._itemPositions.forEach(({drag}) => {
+              if (this._dragDropRegistry.isDragging(drag)) {
+                // We need to re-sort the item manually, because the pointer move
+                // events won't be dispatched while the user is scrolling.
+                drag._sortFromLastPointerPosition();
+              }
+            });
+          }
+        } else if (this.isReceiving()) {
+          this._cacheParentPositions();
         }
-      } else if (this.isReceiving()) {
-        this._cacheParentPositions();
-      }
-    });
+      });
   }
 
   /**

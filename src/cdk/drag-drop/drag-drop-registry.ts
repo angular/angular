@@ -9,7 +9,7 @@
 import {Injectable, NgZone, OnDestroy, Inject} from '@angular/core';
 import {DOCUMENT} from '@angular/common';
 import {normalizePassiveListenerOptions} from '@angular/cdk/platform';
-import {Subject} from 'rxjs';
+import {merge, Observable, Observer, Subject} from 'rxjs';
 
 /** Event options that can be used to bind an active, capturing event. */
 const activeCapturingEventOptions = normalizePassiveListenerOptions({
@@ -62,7 +62,11 @@ export class DragDropRegistry<I extends {isDragging(): boolean}, C> implements O
    */
   readonly pointerUp: Subject<TouchEvent | MouseEvent> = new Subject<TouchEvent | MouseEvent>();
 
-  /** Emits when the viewport has been scrolled while the user is dragging an item. */
+  /**
+   * Emits when the viewport has been scrolled while the user is dragging an item.
+   * @deprecated To be turned into a private member. Use the `scrolled` method instead.
+   * @breaking-change 13.0.0
+   */
   readonly scroll: Subject<Event> = new Subject<Event>();
 
   constructor(
@@ -183,6 +187,41 @@ export class DragDropRegistry<I extends {isDragging(): boolean}, C> implements O
   /** Gets whether a drag item instance is currently being dragged. */
   isDragging(drag: I) {
     return this._activeDragInstances.indexOf(drag) > -1;
+  }
+
+  /**
+   * Gets a stream that will emit when any element on the page is scrolled while an item is being
+   * dragged.
+   * @param shadowRoot Optional shadow root that the current dragging sequence started from.
+   *   Top-level listeners won't pick up events coming from the shadow DOM so this parameter can
+   *   be used to include an additional top-level listener at the shadow root level.
+   */
+  scrolled(shadowRoot?: DocumentOrShadowRoot | null): Observable<Event> {
+    const streams: Observable<Event>[] = [this.scroll];
+
+    if (shadowRoot && shadowRoot !== this._document) {
+      // Note that this is basically the same as `fromEvent` from rjxs, but we do it ourselves,
+      // because we want to guarantee that the event is bound outside of the `NgZone`. With
+      // `fromEvent` it'll only happen if the subscription is outside the `NgZone`.
+      streams.push(new Observable((observer: Observer<Event>) => {
+        return this._ngZone.runOutsideAngular(() => {
+          const eventOptions = true;
+          const callback = (event: Event) => {
+            if (this._activeDragInstances.length) {
+              observer.next(event);
+            }
+          };
+
+          (shadowRoot as ShadowRoot).addEventListener('scroll', callback, eventOptions);
+
+          return () => {
+            (shadowRoot as ShadowRoot).removeEventListener('scroll', callback, eventOptions);
+          };
+        });
+      }));
+    }
+
+    return merge(...streams);
   }
 
   ngOnDestroy() {

@@ -22,7 +22,7 @@ import {
 } from './drag-styling';
 import {getTransformTransitionDurationInMs} from './transition-duration';
 import {getMutableClientRect, adjustClientRect} from './client-rect';
-import {ParentPositionTracker} from './parent-position-tracker';
+import {getEventTarget, ParentPositionTracker} from './parent-position-tracker';
 import {deepCloneNode} from './clone-node';
 
 /** Object that can be used to configure the behavior of DragRef. */
@@ -623,7 +623,7 @@ export class DragRef<T = any> {
     // Delegate the event based on whether it started from a handle or the element itself.
     if (this._handles.length) {
       const targetHandle = this._handles.find(handle => {
-        const target = event.target;
+        const target = getEventTarget(event);
         return !!target && (target === handle || handle.contains(target as HTMLElement));
       });
 
@@ -851,6 +851,7 @@ export class DragRef<T = any> {
     const isTouchSequence = isTouchEvent(event);
     const isAuxiliaryMouseButton = !isTouchSequence && (event as MouseEvent).button !== 0;
     const rootElement = this._rootElement;
+    const target = getEventTarget(event);
     const isSyntheticEvent = !isTouchSequence && this._lastTouchEventTime &&
       this._lastTouchEventTime + MOUSE_EVENT_IGNORE_TIME > Date.now();
 
@@ -860,7 +861,7 @@ export class DragRef<T = any> {
     // it's flaky and it fails if the user drags it away quickly. Also note that we only want
     // to do this for `mousedown` since doing the same for `touchstart` will stop any `click`
     // events from firing on touch devices.
-    if (event.target && (event.target as HTMLElement).draggable && event.type === 'mousedown') {
+    if (target && (target as HTMLElement).draggable && event.type === 'mousedown') {
       event.preventDefault();
     }
 
@@ -884,9 +885,9 @@ export class DragRef<T = any> {
     this._removeSubscriptions();
     this._pointerMoveSubscription = this._dragDropRegistry.pointerMove.subscribe(this._pointerMove);
     this._pointerUpSubscription = this._dragDropRegistry.pointerUp.subscribe(this._pointerUp);
-    this._scrollSubscription = this._dragDropRegistry.scroll.subscribe(scrollEvent => {
-      this._updateOnScroll(scrollEvent);
-    });
+    this._scrollSubscription = this._dragDropRegistry
+      .scrolled(this._getShadowRoot())
+      .subscribe(scrollEvent => this._updateOnScroll(scrollEvent));
 
     if (this._boundaryElement) {
       this._boundaryRect = getMutableClientRect(this._boundaryElement);
@@ -1084,7 +1085,8 @@ export class DragRef<T = any> {
     return this._ngZone.runOutsideAngular(() => {
       return new Promise(resolve => {
         const handler = ((event: TransitionEvent) => {
-          if (!event || (event.target === this._preview && event.propertyName === 'transform')) {
+          if (!event || (getEventTarget(event) === this._preview &&
+              event.propertyName === 'transform')) {
             this._preview.removeEventListener('transitionend', handler);
             resolve();
             clearTimeout(timeout);
@@ -1379,7 +1381,7 @@ export class DragRef<T = any> {
     const scrollDifference = this._parentPositions.handleScroll(event);
 
     if (scrollDifference) {
-      const target = event.target as Node;
+      const target = getEventTarget(event);
 
       // ClientRect dimensions are based on the scroll position of the page and its parent node so
       // we have to update the cached boundary ClientRect if the user has scrolled. Check for

@@ -47,7 +47,7 @@ export class ParentPositionTracker {
 
   /** Handles scrolling while a drag is taking place. */
   handleScroll(event: Event): ScrollPosition | null {
-    const target = event.target as HTMLElement | Document;
+    const target = getEventTarget(event);
     const cachedPosition = this.positions.get(target);
 
     if (!cachedPosition) {
@@ -87,4 +87,9 @@ export class ParentPositionTracker {
 
     return {top: topDifference, left: leftDifference};
   }
+}
+
+/** Gets the target of an event while accounting for shadow dom. */
+export function getEventTarget(event: Event): HTMLElement | Document {
+  return (event.composedPath ? event.composedPath()[0] : event.target) as HTMLElement | Document;
 }

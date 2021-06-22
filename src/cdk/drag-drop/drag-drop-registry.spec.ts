@@ -224,7 +224,7 @@ describe('DragDropRegistry', () => {
 
   it('should dispatch `scroll` events if the viewport is scrolled while dragging', () => {
     const spy = jasmine.createSpy('scroll spy');
-    const subscription = registry.scroll.subscribe(spy);
+    const subscription = registry.scrolled().subscribe(spy);
     const item = new DragItem();
 
     registry.startDragging(item, createMouseEvent('mousedown'));
@@ -236,7 +236,7 @@ describe('DragDropRegistry', () => {
 
   it('should not dispatch `scroll` events when not dragging', () => {
     const spy = jasmine.createSpy('scroll spy');
-    const subscription = registry.scroll.subscribe(spy);
+    const subscription = registry.scrolled().subscribe(spy);
 
     dispatchFakeEvent(document, 'scroll');
 
