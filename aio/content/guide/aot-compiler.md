@@ -173,7 +173,7 @@ Define metadata objects with the following limited syntax:
     <td><code>`pie is ${multiplier} times better than cake`</code></td>
    <tr>
     <td>Literal string</td>
-    <td><code>pi</code></td>
+    <td><code>'pi'</code></td>
   </tr>
    <tr>
     <td>Literal number</td>
