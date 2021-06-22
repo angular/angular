@@ -1,6 +1,5 @@
 import {A, ALT, B, C, CONTROL, MAC_META, META, SHIFT} from '@angular/cdk/keycodes';
 import {Platform} from '@angular/cdk/platform';
-import {NgZone, PLATFORM_ID} from '@angular/core';
 
 import {
   createMouseEvent,
@@ -10,26 +9,36 @@ import {
   dispatchEvent,
   createTouchEvent,
 } from '@angular/cdk/testing/private';
-import {fakeAsync, inject, tick} from '@angular/core/testing';
-import {InputModality, InputModalityDetector, TOUCH_BUFFER_MS} from './input-modality-detector';
+import {fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {
+  InputModality,
+  InputModalityDetector,
+  InputModalityDetectorOptions,
+  INPUT_MODALITY_DETECTOR_OPTIONS,
+  TOUCH_BUFFER_MS,
+} from './input-modality-detector';
 
 describe('InputModalityDetector', () => {
-  let platform: Platform;
-  let ngZone: NgZone;
   let detector: InputModalityDetector;
 
-  beforeEach(inject([PLATFORM_ID], (platformId: Object) => {
-    platform = new Platform(platformId);
-    ngZone = new NgZone({});
-  }));
+  function setupTest(isBrowser = true, options: InputModalityDetectorOptions = {}) {
+    TestBed.configureTestingModule({
+      providers: [
+        {provide: Platform, useValue: {isBrowser}},
+        {provide: INPUT_MODALITY_DETECTOR_OPTIONS, useValue: options},
+      ]
+    });
+
+    detector = TestBed.inject(InputModalityDetector);
+  }
 
   afterEach(() => {
     detector?.ngOnDestroy();
+    detector = undefined!;
   });
 
   it('should do nothing on non-browser platforms', () => {
-    platform.isBrowser = false;
-    detector = new InputModalityDetector(platform, ngZone, document);
+    setupTest(false);
     expect(detector.mostRecentModality).toBe(null);
 
     dispatchKeyboardEvent(document, 'keydown');
@@ -43,25 +52,25 @@ describe('InputModalityDetector', () => {
   });
 
   it('should detect keyboard input modality', () => {
-    detector = new InputModalityDetector(platform, ngZone, document);
+    setupTest();
     dispatchKeyboardEvent(document, 'keydown');
     expect(detector.mostRecentModality).toBe('keyboard');
   });
 
   it('should detect mouse input modality', () => {
-    detector = new InputModalityDetector(platform, ngZone, document);
+    setupTest();
     dispatchMouseEvent(document, 'mousedown');
     expect(detector.mostRecentModality).toBe('mouse');
   });
 
   it('should detect touch input modality', () => {
-    detector = new InputModalityDetector(platform, ngZone, document);
+    setupTest();
     dispatchTouchEvent(document, 'touchstart');
     expect(detector.mostRecentModality).toBe('touch');
   });
 
   it('should detect changes in input modality', () => {
-    detector = new InputModalityDetector(platform, ngZone, document);
+    setupTest();
 
     dispatchKeyboardEvent(document, 'keydown');
     expect(detector.mostRecentModality).toBe('keyboard');
@@ -77,9 +86,9 @@ describe('InputModalityDetector', () => {
   });
 
   it('should emit when input modalities are detected', () => {
-    detector = new InputModalityDetector(platform, ngZone, document);
+    setupTest();
     const emitted: InputModality[] = [];
-    detector.modalityDetected.subscribe((modality: InputModality) => {
+    detector.modalityDetected.subscribe(modality => {
       emitted.push(modality);
     });
 
@@ -102,9 +111,9 @@ describe('InputModalityDetector', () => {
   });
 
   it('should emit changes in input modality', () => {
-    detector = new InputModalityDetector(platform, ngZone, document);
+    setupTest();
     const emitted: InputModality[] = [];
-    detector.modalityChanged.subscribe((modality: InputModality) => {
+    detector.modalityChanged.subscribe(modality => {
       emitted.push(modality);
     });
 
@@ -130,7 +139,7 @@ describe('InputModalityDetector', () => {
   });
 
   it('should detect fake screen reader mouse events as keyboard input modality', () => {
-    detector = new InputModalityDetector(platform, ngZone, document);
+    setupTest();
 
     // Create a fake screen-reader mouse event.
     const event = createMouseEvent('mousedown');
@@ -141,7 +150,7 @@ describe('InputModalityDetector', () => {
   });
 
   it('should detect fake screen reader touch events as keyboard input modality', () => {
-    detector = new InputModalityDetector(platform, ngZone, document);
+    setupTest();
 
     // Create a fake screen-reader touch event.
     const event = createTouchEvent('touchstart');
@@ -152,7 +161,7 @@ describe('InputModalityDetector', () => {
   });
 
   it('should ignore certain modifier keys by default', () => {
-    detector = new InputModalityDetector(platform, ngZone, document);
+    setupTest();
 
     dispatchKeyboardEvent(document, 'keydown', ALT);
     dispatchKeyboardEvent(document, 'keydown', CONTROL);
@@ -164,13 +173,13 @@ describe('InputModalityDetector', () => {
   });
 
   it('should not ignore modifier keys if specified', () => {
-    detector = new InputModalityDetector(platform, ngZone, document, {ignoreKeys: []});
+    setupTest(true, {ignoreKeys: []});
     dispatchKeyboardEvent(document, 'keydown', CONTROL);
     expect(detector.mostRecentModality).toBe('keyboard');
   });
 
   it('should ignore keys if specified', () => {
-    detector = new InputModalityDetector(platform, ngZone, document, {ignoreKeys: [A, B, C]});
+    setupTest(true, {ignoreKeys: [A, B, C]});
 
     dispatchKeyboardEvent(document, 'keydown', A);
     dispatchKeyboardEvent(document, 'keydown', B);
@@ -180,7 +189,7 @@ describe('InputModalityDetector', () => {
   });
 
   it('should ignore mouse events that occur too closely after a touch event', fakeAsync(() => {
-    detector = new InputModalityDetector(platform, ngZone, document);
+    setupTest();
 
     dispatchTouchEvent(document, 'touchstart');
     dispatchMouseEvent(document, 'mousedown');
