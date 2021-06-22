@@ -281,23 +281,43 @@ describe('v12 theming API migration', () => {
     ]);
   });
 
-  it('should account for file headers placed aboved the @import statements', async () => {
-    writeLines(THEME_PATH, [
-      `/** This is a license. */`,
-      `@import './foo'`,
-      `@import '~@angular/material/theming';`,
-      `@include mat-core();`,
-    ]);
+  it('should account for multi-line comment file headers placed aboved the @import statements',
+    async () => {
+      writeLines(THEME_PATH, [
+        `/** This is a license. */`,
+        `@import './foo'`,
+        `@import '~@angular/material/theming';`,
+        `@include mat-core();`,
+      ]);
 
-    await runMigration();
+      await runMigration();
 
-    expect(splitFile(THEME_PATH)).toEqual([
-      `/** This is a license. */`,
-      `@use '~@angular/material' as mat;`,
-      `@import './foo'`,
-      `@include mat.core();`,
-    ]);
-  });
+      expect(splitFile(THEME_PATH)).toEqual([
+        `/** This is a license. */`,
+        `@use '~@angular/material' as mat;`,
+        `@import './foo'`,
+        `@include mat.core();`,
+      ]);
+    });
+
+  it('should account for single-line comment file headers placed aboved the @import statements',
+    async () => {
+      writeLines(THEME_PATH, [
+        `// This is a license.`,
+        `@import './foo'`,
+        `@import '~@angular/material/theming';`,
+        `@include mat-core();`,
+      ]);
+
+      await runMigration();
+
+      expect(splitFile(THEME_PATH)).toEqual([
+        `// This is a license.`,
+        `@use '~@angular/material' as mat;`,
+        `@import './foo'`,
+        `@include mat.core();`,
+      ]);
+    });
 
   it('should migrate multiple files within the same project', async () => {
     const componentPath = join(PROJECT_PATH, 'components/dialog.scss');
@@ -806,4 +826,52 @@ describe('v12 theming API migration', () => {
       `}`,
     ]);
   });
+
+  it('should not migrate commented out code', async () => {
+    writeLines(THEME_PATH, [
+      `// @import '~@angular/material/theming';`,
+      '/* @include mat-core(); */',
+    ]);
+
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
+      `// @import '~@angular/material/theming';`,
+      '/* @include mat-core(); */',
+    ]);
+  });
+
+  it('should not migrate single-line commented code at the end of the file', async () => {
+    writeLines(THEME_PATH, [
+      `// @import '~@angular/material/theming';`,
+      '// @include mat-core();',
+      '// @include mat-button-theme();',
+    ]);
+
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
+      `// @import '~@angular/material/theming';`,
+      '// @include mat-core();',
+      '// @include mat-button-theme();',
+    ]);
+  });
+
+  it('should handle mixed commented and non-commented content', async () => {
+    writeLines(THEME_PATH, [
+      `// @import '~@angular/material/theming';`,
+      '@include mat-core();',
+      '@include mat-button-theme();',
+    ]);
+
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
+      `// @import '~@angular/material/theming';`,
+      `@use '~@angular/material' as mat;`,
+      '@include mat.core();',
+      '@include mat.button-theme();',
+    ]);
+  });
+
 });
