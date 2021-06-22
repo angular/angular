@@ -77,6 +77,10 @@ mat-menu {
   @include menu-common.item-submenu-trigger(menu-common.$side-padding);
 }
 
+.mat-menu-submenu-icon {
+  @include menu-common.item-submenu-icon(menu-common.$side-padding);
+}
+
 button.mat-menu-item {
   width: 100%;
 }

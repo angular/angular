@@ -18,7 +18,7 @@
     // items so we have to grey them out ourselves.
     .mat-mdc-menu-item[disabled] {
       &,
-      &::after,
+      .mat-mdc-menu-submenu-icon,
       .mat-icon-no-color {
         @include mdc-theme.prop(color, text-disabled-on-background);
       }
@@ -27,7 +27,7 @@
     // Since we're creating `mat-icon` and the submenu trigger
     // chevron ourselves, we have to handle the color as well.
     .mat-mdc-menu-item .mat-icon-no-color,
-    .mat-mdc-menu-item-submenu-trigger::after {
+    .mat-mdc-menu-submenu-icon {
       @include mdc-theme.prop(color, text-icon-on-background);
     }
 

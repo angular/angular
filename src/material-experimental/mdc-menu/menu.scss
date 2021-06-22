@@ -98,9 +98,12 @@ mat-menu {
   }
 }
 
-// Renders out a chevron on menu items that trigger a sub-menu.
 .mat-mdc-menu-item-submenu-trigger {
   @include menu-common.item-submenu-trigger(mdc-list.$deprecated-side-padding);
+}
+
+.mat-mdc-menu-submenu-icon {
+  @include menu-common.item-submenu-icon(mdc-list.$deprecated-side-padding);
 }
 
 // Increase specificity because ripple styles are part of the `mat-core` mixin and can

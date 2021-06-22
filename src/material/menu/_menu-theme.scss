@@ -21,7 +21,7 @@
 
     &[disabled] {
       &,
-      &::after,
+      .mat-menu-submenu-icon,
       .mat-icon-no-color {
         color: theming.get-color-from-palette($foreground, 'disabled');
       }
@@ -29,7 +29,7 @@
   }
 
   .mat-menu-item .mat-icon-no-color,
-  .mat-menu-item-submenu-trigger::after {
+  .mat-menu-submenu-icon {
     color: theming.get-color-from-palette($foreground, 'icon');
   }
 

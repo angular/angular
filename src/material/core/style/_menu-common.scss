@@ -1,4 +1,4 @@
-@use './private';
+@use '../../../cdk/a11y';
 @use './list-common';
 @use './layout-common';
 
@@ -58,36 +58,34 @@ $icon-margin: 16px !default;
   }
 }
 
-@mixin item-submenu-trigger($side-padding, $triangle-height: 10px) {
+@mixin item-submenu-trigger($side-padding) {
   // Increase the side padding to prevent the indicator from overlapping the text.
   padding-right: $side-padding * 2;
-
-  // Renders a triangle to indicate that the menu item will open a sub-menu.
-  &::after {
-    $size: private.private-div($triangle-height, 2);
-
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: $size 0 $size $size;
-    border-color: transparent transparent transparent currentColor;
-    content: '';
-    display: inline-block;
-    position: absolute;
-    top: 50%;
-    right: $side-padding;
-    transform: translateY(-50%);
-  }
 
   [dir='rtl'] & {
     padding-right: $side-padding;
     padding-left: $side-padding * 2;
+  }
+}
 
-    &::after {
-      right: auto;
-      left: $side-padding;
-      transform: rotateY(180deg) translateY(-50%);
-    }
+@mixin item-submenu-icon($side-padding) {
+  position: absolute;
+  top: 50%;
+  right: $side-padding;
+  transform: translateY(-50%);
+  width: 5px;
+  height: 10px;
+  fill: currentColor;
+
+  [dir='rtl'] & {
+    right: auto;
+    left: $side-padding;
+    transform: translateY(-50%) scaleX(-1);
+  }
+
+  // Fix for Chromium-based browsers blending in the `currentColor` with the background.
+  @include a11y.high-contrast(active, off) {
+    fill: CanvasText;
   }
 }
 
