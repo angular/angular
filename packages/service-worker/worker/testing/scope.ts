@@ -219,12 +219,14 @@ export class SwTestHarness extends Adapter implements ServiceWorkerGlobalScope, 
 
   waitUntil(promise: Promise<void>): void {}
 
-  handleFetch(req: Request, clientId: string|null = null):
-      [Promise<Response|undefined>, Promise<void>] {
+  handleFetch(req: Request, clientId = ''): [Promise<Response|undefined>, Promise<void>] {
     if (!this.eventHandlers.has('fetch')) {
       throw new Error('No fetch handler registered');
     }
-    const event = new MockFetchEvent(req, clientId);
+
+    const isNavigation = req.mode === 'navigate';
+    const event = isNavigation ? new MockFetchEvent(req, '', clientId) :
+                                 new MockFetchEvent(req, clientId, '');
     this.eventHandlers.get('fetch')!.call(this, event);
 
     if (clientId) {
@@ -373,7 +375,8 @@ class MockExtendableEvent extends OneTimeContext {}
 class MockFetchEvent extends MockExtendableEvent {
   response: Promise<Response|undefined> = Promise.resolve(undefined);
 
-  constructor(readonly request: Request, readonly clientId: string|null) {
+  constructor(
+      readonly request: Request, readonly clientId: string, readonly resultingClientId: string) {
     super();
   }
 
