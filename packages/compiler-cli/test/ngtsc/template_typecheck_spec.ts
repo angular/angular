@@ -338,6 +338,85 @@ export declare class AnimationEvent {
       expect(diags.length).toBe(0);
     });
 
+    it('should check split two way binding', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+        import {Component, Input, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '<child-cmp [(value)]="counterValue"></child-cmp>',
+        })
+
+        export class TestCmp {
+          counterValue = 0;
+        }
+
+        @Component({
+          selector: 'child-cmp',
+          template: '',
+        })
+
+        export class ChildCmp {
+          @Input() value = 0;
+        }
+
+        @NgModule({
+          declarations: [TestCmp, ChildCmp],
+        })
+        export class Module {}
+      `);
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.SPLIT_TWO_WAY_BINDING));
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe('value');
+      expect(diags[0].relatedInformation!.length).toBe(2);
+      expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toBe('ChildCmp');
+      expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![1])).toBe('child-cmp');
+    });
+
+    it('when input and output go to different directives', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+        import {Component, Input, NgModule, Output, Directive} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '<child-cmp [(value)]="counterValue"></child-cmp>',
+        })
+        export class TestCmp {
+          counterValue = 0;
+        }
+
+        @Directive({
+          selector: 'child-cmp'
+        })
+        export class ChildCmpDir {
+          @Output() valueChange: any;
+        }
+
+        @Component({
+          selector: 'child-cmp',
+          template: '',
+        })
+        export class ChildCmp {
+          @Input() value = 0;
+        }
+
+        @NgModule({
+          declarations: [TestCmp, ChildCmp, ChildCmpDir],
+        })
+        export class Module {}
+      `);
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.SPLIT_TWO_WAY_BINDING));
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe('value');
+      expect(diags[0].relatedInformation!.length).toBe(2);
+      expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toBe('ChildCmp');
+      expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![1])).toBe('ChildCmpDir');
+    });
+
     describe('strictInputTypes', () => {
       beforeEach(() => {
         env.write('test.ts', `

@@ -984,6 +984,11 @@ export class TcbDirectiveOutputsOp extends TcbOp {
       if (output.type !== ParsedEventType.Regular || !outputs.hasBindingPropertyName(output.name)) {
         continue;
       }
+
+      if (this.tcb.env.config.checkTypeOfOutputEvents && output.name.endsWith('Change')) {
+        const inputName = output.name.slice(0, -6);
+        isSplitTwoWayBinding(inputName, output, this.node.inputs, this.tcb);
+      }
       // TODO(alxhub): consider supporting multiple fields with the same property name for outputs.
       const field = outputs.getByBindingPropertyName(output.name)![0].classPropertyName;
 
@@ -1047,6 +1052,14 @@ class TcbUnclaimedOutputsOp extends TcbOp {
       if (this.claimedOutputs.has(output.name)) {
         // Skip this event handler as it was claimed by a directive.
         continue;
+      }
+
+      if (this.tcb.env.config.checkTypeOfOutputEvents && output.name.endsWith('Change')) {
+        const inputName = output.name.slice(0, -6);
+        if (isSplitTwoWayBinding(inputName, output, this.element.inputs, this.tcb)) {
+          // Skip this event handler as the error was already handled.
+          continue;
+        }
       }
 
       if (output.type === ParsedEventType.Animation) {
@@ -1977,6 +1990,31 @@ function tcbCreateEventHandler(
 function tcbEventHandlerExpression(ast: AST, tcb: Context, scope: Scope): ts.Expression {
   const translator = new TcbEventHandlerTranslator(tcb, scope);
   return translator.translate(ast);
+}
+
+function isSplitTwoWayBinding(
+    inputName: string, output: TmplAstBoundEvent, inputs: TmplAstBoundAttribute[], tcb: Context) {
+  const input = inputs.find(input => input.name === inputName);
+  if (input === undefined || input.sourceSpan !== output.sourceSpan) {
+    return false;
+  }
+  // Input consumer should be a directive because it's claimed
+  const inputConsumer = tcb.boundTarget.getConsumerOfBinding(input) as TypeCheckableDirectiveMeta;
+  const outputConsumer = tcb.boundTarget.getConsumerOfBinding(output);
+  if (outputConsumer === null || inputConsumer.ref === undefined ||
+      outputConsumer instanceof TmplAstTemplate) {
+    return false;
+  }
+  if (outputConsumer instanceof TmplAstElement) {
+    tcb.oobRecorder.splitTwoWayBinding(
+        tcb.id, input, output, inputConsumer.ref.node, outputConsumer);
+    return true;
+  } else if (outputConsumer.ref !== inputConsumer.ref) {
+    tcb.oobRecorder.splitTwoWayBinding(
+        tcb.id, input, output, inputConsumer.ref.node, outputConsumer.ref.node);
+    return true;
+  }
+  return false;
 }
 
 class TcbEventHandlerTranslator extends TcbExpressionTranslator {
