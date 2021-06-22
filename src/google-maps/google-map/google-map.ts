@@ -23,12 +23,14 @@ import {
   PLATFORM_ID,
   NgZone,
   SimpleChanges,
+  EventEmitter,
 } from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
 import {Observable} from 'rxjs';
 import {MapEventManager} from '../map-event-manager';
 
 interface GoogleMapsWindow extends Window {
+  gm_authFailure?: () => void;
   google?: typeof google;
 }
 
@@ -60,6 +62,7 @@ export const DEFAULT_WIDTH = '500px';
 export class GoogleMap implements OnChanges, OnInit, OnDestroy {
   private _eventManager: MapEventManager = new MapEventManager(this._ngZone);
   private _mapEl: HTMLElement;
+  private _existingAuthFailureCallback: GoogleMapsWindow['gm_authFailure'];
 
   /**
    * The underlying google.maps.Map object
@@ -100,6 +103,12 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
     this._options = options || DEFAULT_OPTIONS;
   }
   private _options = DEFAULT_OPTIONS;
+
+  /**
+   * See
+   * https://developers.google.com/maps/documentation/javascript/events#auth-errors
+   */
+   @Output() readonly authFailure: EventEmitter<void> = new EventEmitter<void>();
 
   /**
    * See
@@ -245,6 +254,14 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
             'https://developers.google.com/maps/documentation/javascript/' +
             'tutorial#Loading_the_Maps_API');
       }
+
+      this._existingAuthFailureCallback = googleMapsWindow.gm_authFailure;
+      googleMapsWindow.gm_authFailure = () => {
+        if (this._existingAuthFailureCallback) {
+          this._existingAuthFailureCallback();
+        }
+        this.authFailure.emit();
+      };
     }
   }
 
@@ -293,6 +310,11 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
 
   ngOnDestroy() {
     this._eventManager.destroy();
+
+    if (this._isBrowser) {
+      const googleMapsWindow: GoogleMapsWindow = window;
+      googleMapsWindow.gm_authFailure = this._existingAuthFailureCallback;
+    }
   }
 
   /**

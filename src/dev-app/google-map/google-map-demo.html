@@ -3,6 +3,7 @@
               width="750px"
               [center]="center"
               [zoom]="zoom"
+              (authFailure)="authFailure()"
               (mapClick)="handleClick($event)"
               (mapMousemove)="handleMove($event)"
               (mapRightclick)="handleRightclick()"

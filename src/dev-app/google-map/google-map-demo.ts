@@ -107,6 +107,10 @@ export class GoogleMapDemo {
 
   constructor(private readonly _mapDirectionsService: MapDirectionsService) {}
 
+  authFailure() {
+    console.log('Auth failure event emitted');
+  }
+
   handleClick(event: google.maps.MapMouseEvent) {
     this.markerPositions.push(event.latLng.toJSON());
   }

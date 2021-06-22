@@ -39,6 +39,7 @@ describe('GoogleMap', () => {
 
   afterEach(() => {
     (window.google as any) = undefined;
+    (window as any).gm_authFailure = undefined;
   });
 
   it('throws an error is the Google Maps JavaScript API was not loaded', () => {
@@ -358,6 +359,28 @@ describe('GoogleMap', () => {
     expect(mapConstructorSpy.calls.mostRecent()?.args[1].mapTypeId).toBe('satellite');
   });
 
+  it('should emit authFailure event when window.gm_authFailure is called', () => {
+    mapSpy = createMapSpy(DEFAULT_OPTIONS);
+    mapConstructorSpy = createMapConstructorSpy(mapSpy);
+
+    expect((window as any).gm_authFailure).toBeUndefined();
+
+    const createFixture = () => {
+      const fixture = TestBed.createComponent(TestApp);
+      fixture.detectChanges();
+      spyOn(fixture.componentInstance.map.authFailure, 'emit');
+      return fixture;
+    };
+
+    const fixture1 = createFixture();
+    const fixture2 = createFixture();
+
+    expect((window as any).gm_authFailure).toBeDefined();
+    (window as any).gm_authFailure();
+
+    expect(fixture1.componentInstance.map.authFailure.emit).toHaveBeenCalled();
+    expect(fixture2.componentInstance.map.authFailure.emit).toHaveBeenCalled();
+  });
 });
 
 @Component({
