@@ -10,7 +10,8 @@ import {Reference} from '../../imports';
 
 /**
  * A resolved type reference can either be a `Reference`, the original `ts.TypeReferenceNode` itself
- * or null to indicate the no reference could be resolved.
+ * or null. A value of null indicates that no reference could be resolved or that the reference can
+ * not be emitted.
  */
 export type ResolvedTypeReference = Reference|ts.TypeReferenceNode|null;
 
@@ -19,6 +20,15 @@ export type ResolvedTypeReference = Reference|ts.TypeReferenceNode|null;
  * reference and verifying whether it can be emitted.
  */
 export type TypeReferenceResolver = (type: ts.TypeReferenceNode) => ResolvedTypeReference;
+
+/**
+ * A marker to indicate that a type reference is ineligible for emitting. This needs to be truthy
+ * as it's returned from `ts.forEachChild`, which only returns truthy values.
+ */
+type INELIGIBLE = {
+  __brand: 'ineligible';
+};
+const INELIGIBLE: INELIGIBLE = {} as INELIGIBLE;
 
 /**
  * Determines whether the provided type can be emitted, which means that it can be safely emitted
@@ -32,13 +42,24 @@ export function canEmitType(type: ts.TypeNode, resolver: TypeReferenceResolver):
   return canEmitTypeWorker(type);
 
   function canEmitTypeWorker(type: ts.TypeNode): boolean {
-    return visitTypeNode(type, {
-      visitTypeReferenceNode: type => canEmitTypeReference(type),
-      visitArrayTypeNode: type => canEmitTypeWorker(type.elementType),
-      visitKeywordType: () => true,
-      visitLiteralType: () => true,
-      visitOtherType: () => false,
-    });
+    return visitNode(type) !== INELIGIBLE;
+  }
+
+  // To determine whether a type can be emitted, we have to recursively look through all type nodes.
+  // If a type reference node is found at any position within the type and that type reference
+  // cannot be emitted, then the `INELIGIBLE` constant is returned to stop the recursive walk as
+  // the type as a whole cannot be emitted in that case. Otherwise, the result of visiting all child
+  // nodes determines the result. If no ineligible type reference node is found then the walk
+  // returns `undefined`, indicating that no type node was visited that could not be emitted.
+  function visitNode(node: ts.Node): INELIGIBLE|undefined {
+    // Emitting a type reference node in a different context requires that an import for the type
+    // can be created. If a type reference node cannot be emitted, `INELIGIBLE` is returned to stop
+    // the walk.
+    if (ts.isTypeReferenceNode(node) && !canEmitTypeReference(node)) {
+      return INELIGIBLE;
+    } else {
+      return ts.forEachChild(node, visitNode);
+    }
   }
 
   function canEmitTypeReference(type: ts.TypeReferenceNode): boolean {
@@ -49,10 +70,9 @@ export function canEmitType(type: ts.TypeNode, resolver: TypeReferenceResolver):
       return false;
     }
 
-    // If the type is a reference without a owning module, consider the type not to be eligible for
-    // emitting.
-    if (reference instanceof Reference && !reference.hasOwningModuleGuess) {
-      return false;
+    // If the type is a reference, consider the type to be eligible for emitting.
+    if (reference instanceof Reference) {
+      return true;
     }
 
     // The type can be emitted if either it does not have any type arguments, or all of them can be
@@ -108,15 +128,17 @@ export class TypeEmitter {
   }
 
   emitType(type: ts.TypeNode): ts.TypeNode {
-    return visitTypeNode(type, {
-      visitTypeReferenceNode: type => this.emitTypeReference(type),
-      visitArrayTypeNode: type => ts.updateArrayTypeNode(type, this.emitType(type.elementType)),
-      visitKeywordType: type => type,
-      visitLiteralType: type => type,
-      visitOtherType: () => {
-        throw new Error('Unable to emit a complex type');
-      },
-    });
+    const typeReferenceTransformer: ts.TransformerFactory<ts.TypeNode> = context => {
+      const visitNode = (node: ts.Node): ts.Node => {
+        if (ts.isTypeReferenceNode(node)) {
+          return this.emitTypeReference(node);
+        } else {
+          return ts.visitEachChild(node, visitNode, context);
+        }
+      };
+      return node => ts.visitNode(node, visitNode);
+    };
+    return ts.transform(type, [typeReferenceTransformer]).transformed[0];
   }
 
   private emitTypeReference(type: ts.TypeReferenceNode): ts.TypeNode {
@@ -135,10 +157,6 @@ export class TypeEmitter {
     // Emit the type name.
     let typeName = type.typeName;
     if (reference instanceof Reference) {
-      if (!reference.hasOwningModuleGuess) {
-        throw new Error('A type reference to emit must be imported from an absolute module');
-      }
-
       const emittedType = this.emitReference(reference);
       if (!ts.isTypeReferenceNode(emittedType)) {
         throw new Error(`Expected TypeReferenceNode for emitted reference, got ${
@@ -149,42 +167,5 @@ export class TypeEmitter {
     }
 
     return ts.updateTypeReferenceNode(type, typeName, typeArguments);
-  }
-}
-
-/**
- * Visitor interface that allows for unified recognition of the different types of `ts.TypeNode`s,
- * so that `visitTypeNode` is a centralized piece of recognition logic to be used in both
- * `canEmitType` and `TypeEmitter`.
- */
-interface TypeEmitterVisitor<R> {
-  visitTypeReferenceNode(type: ts.TypeReferenceNode): R;
-  visitArrayTypeNode(type: ts.ArrayTypeNode): R;
-  visitKeywordType(type: ts.KeywordTypeNode): R;
-  visitLiteralType(type: ts.LiteralTypeNode): R;
-  visitOtherType(type: ts.TypeNode): R;
-}
-
-function visitTypeNode<R>(type: ts.TypeNode, visitor: TypeEmitterVisitor<R>): R {
-  if (ts.isTypeReferenceNode(type)) {
-    return visitor.visitTypeReferenceNode(type);
-  } else if (ts.isArrayTypeNode(type)) {
-    return visitor.visitArrayTypeNode(type);
-  } else if (ts.isLiteralTypeNode(type)) {
-    return visitor.visitLiteralType(type);
-  }
-
-  switch (type.kind) {
-    case ts.SyntaxKind.AnyKeyword:
-    case ts.SyntaxKind.UnknownKeyword:
-    case ts.SyntaxKind.NumberKeyword:
-    case ts.SyntaxKind.ObjectKeyword:
-    case ts.SyntaxKind.BooleanKeyword:
-    case ts.SyntaxKind.StringKeyword:
-    case ts.SyntaxKind.UndefinedKeyword:
-    case ts.SyntaxKind.NullKeyword:
-      return visitor.visitKeywordType(type as ts.KeywordTypeNode);
-    default:
-      return visitor.visitOtherType(type);
   }
 }

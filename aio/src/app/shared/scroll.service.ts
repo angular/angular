@@ -2,6 +2,7 @@ import {DOCUMENT, Location, PlatformLocation, PopStateEvent, ViewportScroller} f
 import {Inject, Injectable, OnDestroy} from '@angular/core';
 import {fromEvent, Subject} from 'rxjs';
 import {debounceTime, takeUntil} from 'rxjs/operators';
+import {SessionStorage} from './storage.service';
 
 type ScrollPosition = [number, number];
 interface ScrollPositionPopStateEvent extends PopStateEvent {
@@ -18,7 +19,6 @@ export class ScrollService implements OnDestroy {
   private _topOffset: number|null;
   private _topOfPageElement: Element;
   private onDestroy = new Subject<void>();
-  private storage: Storage;
 
   // The scroll position which has to be restored, after a `popstate` event.
   poppedStateScrollPosition: ScrollPosition|null = null;
@@ -45,22 +45,8 @@ export class ScrollService implements OnDestroy {
 
   constructor(
       @Inject(DOCUMENT) private document: any, private platformLocation: PlatformLocation,
-      private viewportScroller: ViewportScroller, private location: Location) {
-    try {
-      this.storage = window.sessionStorage;
-    } catch {
-      // When cookies are disabled in the browser, even trying to access
-      // `window.sessionStorage` throws an error. Use a no-op storage.
-      this.storage = {
-        length: 0,
-        clear: () => undefined,
-        getItem: () => null,
-        key: () => null,
-        removeItem: () => undefined,
-        setItem: () => undefined
-      };
-    }
-
+      private viewportScroller: ViewportScroller, private location: Location,
+      @Inject(SessionStorage) private storage: Storage) {
     // On resize, the toolbar might change height, so "invalidate" the top offset.
     fromEvent(window, 'resize')
         .pipe(takeUntil(this.onDestroy))

@@ -62,7 +62,7 @@ describe(browser.baseUrl, () => {
 
     describe('(api docs pages)', () => {
       const textPerUrl: { [key: string]: string } = {
-        /* Class */ 'api/core/Injector-0': 'class injector',
+        /* Class */ 'api/core/Injector': 'class injector',
         /* Const */ 'api/forms/NG_VALIDATORS': 'const ng_validators',
         /* Decorator */ 'api/core/Component': '@component',
         /* Directive */ 'api/common/NgIf': 'class ngif',

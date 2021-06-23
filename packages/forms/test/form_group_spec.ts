@@ -819,6 +819,21 @@ describe('FormGroup', () => {
       group = new FormGroup({'one': control});
     }));
 
+    it('should fire statusChanges events for async validators added via options object',
+       fakeAsync(() => {
+         // The behavior can be tested for each of the model types.
+         let statuses: string[] = [];
+
+         // Create a form control with an async validator added via options object.
+         const asc = new FormGroup({}, {asyncValidators: [() => Promise.resolve(null)]});
+
+         // Subscribe to status changes.
+         asc.statusChanges.subscribe((status: any) => statuses.push(status));
+
+         // After a tick, the async validator should change status PENDING -> VALID.
+         tick();
+         expect(statuses).toEqual(['VALID']);
+       }));
 
     // TODO(kara): update these tests to use fake Async
     it('should fire a statusChange if child has async validation change', done => {

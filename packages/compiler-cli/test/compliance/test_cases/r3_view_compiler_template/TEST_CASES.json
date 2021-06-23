@@ -269,6 +269,23 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should handle shorthand property declarations in templates",
+      "inputFiles": [
+        "shorthand_property_declaration.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "shorthand_property_declaration_template.js",
+              "generated": "shorthand_property_declaration.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }

@@ -7,6 +7,7 @@
 @use 'card/card-theme';
 @use 'code/code-theme';
 @use 'contributor/contributor-theme';
+@use 'cookies-popup/cookies-popup-theme';
 @use 'deploy-theme/deploy-theme';
 @use 'details/details-theme';
 @use 'errors/errors-theme';
@@ -19,6 +20,7 @@
 @use 'notification/notification-theme';
 @use 'presskit/presskit-theme';
 @use 'resources/resources-theme';
+@use 'roadmap/roadmap-theme';
 @use 'search-results/search-results-theme';
 @use 'select-menu/select-menu-theme';
 @use 'table/table-theme';
@@ -33,6 +35,7 @@
   @include card-theme.theme($theme);
   @include code-theme.theme($theme);
   @include contributor-theme.theme($theme);
+  @include cookies-popup-theme.theme($theme);
   @include deploy-theme.theme($theme);
   @include details-theme.theme($theme);
   @include errors-theme.theme($theme);
@@ -45,6 +48,7 @@
   @include notification-theme.theme($theme);
   @include presskit-theme.theme($theme);
   @include resources-theme.theme($theme);
+  @include roadmap-theme.theme($theme);
   @include search-results-theme.theme($theme);
   @include select-menu-theme.theme($theme);
   @include table-theme.theme($theme);

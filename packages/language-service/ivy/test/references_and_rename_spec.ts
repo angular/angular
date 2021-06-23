@@ -235,7 +235,7 @@ describe('find references and rename locations', () => {
 
     beforeEach(() => {
       const files = {
-        'app.ts': ` 
+        'app.ts': `
           import {Component} from '@angular/core';
 
           @Component({template: '<div (click)="title = otherTitle"></div>' })
@@ -617,7 +617,7 @@ describe('find references and rename locations', () => {
       let file: OpenBuffer;
       beforeEach(() => {
         const files = {
-          'app.ts': ` 
+          'app.ts': `
           import {Component} from '@angular/core';
 
           @Component({template: '<div *ngFor="let hero of heroes; let iRef = index">{{iRef}}</div>'})
@@ -723,6 +723,42 @@ describe('find references and rename locations', () => {
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
         file = project.openFile('app.ts');
         file.moveCursorToText('hero.na¦me');
+      });
+
+      it('should find references', () => {
+        const refs = getReferencesAtPosition(file)!;
+        expect(refs.length).toBe(2);
+        assertFileNames(refs, ['app.ts']);
+        assertTextSpans(refs, ['name']);
+      });
+
+      it('should find rename locations', () => {
+        const renameLocations = getRenameLocationsAtPosition(file)!;
+        expect(renameLocations.length).toBe(2);
+        assertFileNames(renameLocations, ['app.ts']);
+        assertTextSpans(renameLocations, ['name']);
+      });
+    });
+
+    describe('when cursor is on property read of variable', () => {
+      let file: OpenBuffer;
+      beforeEach(() => {
+        const files = {
+          'app.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({template: '<div (click)="setHero({name})"></div>'})
+            export class AppCmp {
+              name = 'Frodo';
+
+              setHero(hero: {name: string}) {}
+            }`
+        };
+
+        env = LanguageServiceTestEnv.setup();
+        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+        file = project.openFile('app.ts');
+        file.moveCursorToText('{na¦me}');
       });
 
       it('should find references', () => {
@@ -1245,7 +1281,7 @@ describe('find references and rename locations', () => {
       }`,
       'app.ts': `
       import {Component} from '@angular/core';
-  
+
       @Component({template: '<div string-model [(model)]="title"></div>'})
       export class AppCmp {
         title = 'title';

@@ -286,7 +286,7 @@ class TemplateTargetVisitor implements t.Visitor {
 
   visit(node: t.Node) {
     const {start, end} = getSpanIncludingEndTag(node);
-    if (!isWithin(this.position, {start, end})) {
+    if (end !== null && !isWithin(this.position, {start, end})) {
       return;
     }
 
@@ -441,8 +441,16 @@ function getSpanIncludingEndTag(ast: t.Node) {
   // the end of the closing tag. Otherwise, for situation like
   // <my-component></my-comp¦onent> where the cursor is in the closing tag
   // we will not be able to return any information.
-  if ((ast instanceof t.Element || ast instanceof t.Template) && ast.endSourceSpan) {
-    result.end = ast.endSourceSpan.end.offset;
+  if (ast instanceof t.Element || ast instanceof t.Template) {
+    if (ast.endSourceSpan) {
+      result.end = ast.endSourceSpan.end.offset;
+    } else if (ast.children.length > 0) {
+      // If the AST has children but no end source span, then it is an unclosed element with an end
+      // that should be the end of the last child.
+      result.end = getSpanIncludingEndTag(ast.children[ast.children.length - 1]).end;
+    } else {
+      // This is likely a self-closing tag with no children so the `sourceSpan.end` is correct.
+    }
   }
   return result;
 }

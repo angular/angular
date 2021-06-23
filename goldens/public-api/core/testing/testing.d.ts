@@ -49,6 +49,11 @@ export declare type MetadataOverride<T> = {
     set?: Partial<T>;
 };
 
+export declare interface ModuleTeardownOptions {
+    destroyAfterEach: boolean;
+    rethrowErrors?: boolean;
+}
+
 export declare function resetFakeAsyncZone(): void;
 
 export declare interface TestBed {
@@ -64,6 +69,7 @@ export declare interface TestBed {
     execute(tokens: any[], fn: Function, context?: any): any;
     /** @deprecated */ get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
     /** @deprecated */ get(token: any, notFoundValue?: any): any;
+    initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, options?: TestEnvironmentOptions): void;
     initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): void;
     inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
     inject<T>(token: ProviderToken<T>, notFoundValue: null, flags?: InjectFlags): T | null;
@@ -101,6 +107,9 @@ export declare interface TestBedStatic {
     createComponent<T>(component: Type<T>): ComponentFixture<T>;
     /** @deprecated */ get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
     /** @deprecated */ get(token: any, notFoundValue?: any): any;
+    initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, options?: {
+        teardown?: ModuleTeardownOptions;
+    }): TestBed;
     initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): TestBed;
     inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
     inject<T>(token: ProviderToken<T>, notFoundValue: null, flags?: InjectFlags): T | null;
@@ -128,6 +137,12 @@ export declare interface TestBedStatic {
 
 export declare class TestComponentRenderer {
     insertRootElement(rootElementId: string): void;
+    removeAllRootElements?(): void;
+}
+
+export declare interface TestEnvironmentOptions {
+    aotSummaries?: () => any[];
+    teardown?: ModuleTeardownOptions;
 }
 
 export declare type TestModuleMetadata = {
@@ -136,6 +151,7 @@ export declare type TestModuleMetadata = {
     imports?: any[];
     schemas?: Array<SchemaMetadata | any[]>;
     aotSummaries?: () => any[];
+    teardown?: ModuleTeardownOptions;
 };
 
 export declare function tick(millis?: number, tickOptions?: {

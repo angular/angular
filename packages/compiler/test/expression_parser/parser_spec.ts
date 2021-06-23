@@ -122,6 +122,23 @@ describe('parser', () => {
         expectActionError('{1234:0}', 'expected identifier, keyword, or string');
         expectActionError('{#myField:0}', 'expected identifier, keyword or string');
       });
+
+      it('should parse property shorthand declarations', () => {
+        checkAction('{a, b, c}', '{a: a, b: b, c: c}');
+        checkAction('{a: 1, b}', '{a: 1, b: b}');
+        checkAction('{a, b: 1}', '{a: a, b: 1}');
+        checkAction('{a: 1, b, c: 2}', '{a: 1, b: b, c: 2}');
+      });
+
+      it('should not allow property shorthand declaration on quoted properties', () => {
+        expectActionError('{"a-b"}', 'expected : at column 7');
+      });
+
+      it('should not infer invalid identifiers as shorthand property declarations', () => {
+        expectActionError('{a.b}', 'expected } at column 3');
+        expectActionError('{a["b"]}', 'expected } at column 3');
+        expectActionError('{1234}', ' expected identifier, keyword, or string at column 2');
+      });
     });
 
     describe('member access', () => {

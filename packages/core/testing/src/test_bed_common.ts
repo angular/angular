@@ -13,12 +13,19 @@ import {MetadataOverride} from './metadata_override';
 import {TestBed} from './test_bed';
 
 /**
+ * Whether test modules should be torn down by default.
+ * Currently disabled for backwards-compatibility reasons.
+ */
+export const TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT = false;
+
+/**
  * An abstract class for inserting the root test component element in a platform independent way.
  *
  * @publicApi
  */
 export class TestComponentRenderer {
   insertRootElement(rootElementId: string) {}
+  removeAllRootElements?() {}
 }
 
 /**
@@ -41,7 +48,28 @@ export type TestModuleMetadata = {
   imports?: any[],
   schemas?: Array<SchemaMetadata|any[]>,
   aotSummaries?: () => any[],
+  teardown?: ModuleTeardownOptions;
 };
+
+/**
+ * @publicApi
+ */
+export interface TestEnvironmentOptions {
+  aotSummaries?: () => any[];
+  teardown?: ModuleTeardownOptions;
+}
+
+/**
+ * Object used to configure the test module teardown behavior in `TestBed`.
+ * @publicApi
+ */
+export interface ModuleTeardownOptions {
+  /** Whether the test module should be destroyed after every test. */
+  destroyAfterEach: boolean;
+
+  /** Whether errors during test module destruction should be re-thrown. Defaults to `true`. */
+  rethrowErrors?: boolean;
+}
 
 /**
  * Static methods implemented by the `TestBedViewEngine` and `TestBedRender3`
@@ -51,6 +79,9 @@ export type TestModuleMetadata = {
 export interface TestBedStatic {
   new(...args: any[]): TestBed;
 
+  initTestEnvironment(ngModule: Type<any>|Type<any>[], platform: PlatformRef, options?: {
+    teardown?: ModuleTeardownOptions
+  }): TestBed;
   initTestEnvironment(
       ngModule: Type<any>|Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): TestBed;
 

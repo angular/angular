@@ -165,7 +165,10 @@ most applications have only one component tree and bootstrap a single root compo
 This one root component is usually called `AppComponent` and is in the
 root module's `bootstrap` array.
 
-
+In a situation where you want to bootstrap a component based on an API response,
+or you want to mount the `AppComponent` in a different DOM node that doesn't match
+the component selector, please refer to `ApplicationRef.bootstrap()`
+documentation.
 
 ## More about Angular Modules
 

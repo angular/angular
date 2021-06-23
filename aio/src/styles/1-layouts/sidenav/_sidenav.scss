@@ -41,7 +41,7 @@ mat-sidenav-container.sidenav-container {
 
 aio-nav-menu {
   display: block;
-  margin: 0 auto;
+  margin: 0 2px;
   max-width: 268px;
 
   &:first-of-type {
@@ -80,8 +80,9 @@ aio-nav-menu {
 
       //icons _within_ nav
       .mat-icon {
-        height: 24px;
-        width: 24px;
+        flex: 0 0 2.4rem;
+        display: flex;
+        align-items: center;
       }
     }
 
@@ -90,6 +91,7 @@ aio-nav-menu {
       background-color: transparent;
       margin: 0;
       width: 100%;
+      overflow: hidden;
     }
 
     .heading-children {

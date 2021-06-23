@@ -8,7 +8,7 @@
 import * as ts from 'typescript';
 
 import {OwningModule, Reference} from '../../imports';
-import {DeclarationNode, ReflectionHost} from '../../reflection';
+import {DeclarationNode, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
 
 import {canEmitType, ResolvedTypeReference, TypeEmitter} from './type_emitter';
 
@@ -32,12 +32,16 @@ export class TypeParameterEmitter {
     }
 
     return this.typeParameters.every(typeParam => {
-      if (typeParam.constraint === undefined) {
-        return true;
-      }
-
-      return canEmitType(typeParam.constraint, type => this.resolveTypeReference(type));
+      return this.canEmitType(typeParam.constraint) && this.canEmitType(typeParam.default);
     });
+  }
+
+  private canEmitType(type: ts.TypeNode|undefined): boolean {
+    if (type === undefined) {
+      return true;
+    }
+
+    return canEmitType(type, typeReference => this.resolveTypeReference(typeReference));
   }
 
   /**
@@ -53,12 +57,14 @@ export class TypeParameterEmitter {
     return this.typeParameters.map(typeParam => {
       const constraint =
           typeParam.constraint !== undefined ? emitter.emitType(typeParam.constraint) : undefined;
+      const defaultType =
+          typeParam.default !== undefined ? emitter.emitType(typeParam.default) : undefined;
 
       return ts.updateTypeParameterDeclaration(
           /* node */ typeParam,
           /* name */ typeParam.name,
           /* constraint */ constraint,
-          /* defaultType */ typeParam.default);
+          /* defaultType */ defaultType);
     });
   }
 
@@ -86,7 +92,17 @@ export class TypeParameterEmitter {
       };
     }
 
+    // If no owning module is known, the reference needs to be exported to be able to emit an import
+    // statement for it. If the declaration is not exported, null is returned to prevent emit.
+    if (owningModule === null && !this.isStaticallyExported(declaration.node)) {
+      return null;
+    }
+
     return new Reference(declaration.node, owningModule);
+  }
+
+  private isStaticallyExported(decl: DeclarationNode): boolean {
+    return isNamedClassDeclaration(decl) && this.reflector.isStaticallyExported(decl);
   }
 
   private isLocalTypeParameter(decl: DeclarationNode): boolean {

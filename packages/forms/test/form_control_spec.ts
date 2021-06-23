@@ -879,6 +879,22 @@ describe('FormControl', () => {
          tick();
        }));
 
+    it('should fire statusChanges events for async validators added via options object',
+       fakeAsync(() => {
+         // The behavior can be tested for each of the model types.
+         let statuses: string[] = [];
+
+         // Create a form control with an async validator added via options object.
+         const asc = new FormControl('', {asyncValidators: [() => Promise.resolve(null)]});
+
+         // Subscribe to status changes.
+         asc.statusChanges.subscribe((status: any) => statuses.push(status));
+
+         // After a tick, the async validator should change status PENDING -> VALID.
+         tick();
+         expect(statuses).toEqual(['VALID']);
+       }));
+
     it('should fire an event after the status has been updated to pending', fakeAsync(() => {
          const c = new FormControl('old', Validators.required, asyncValidator('expected'));
 
