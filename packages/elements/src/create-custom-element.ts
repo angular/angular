@@ -8,6 +8,7 @@
 
 import {Injector, Type} from '@angular/core';
 import {Subscription} from 'rxjs';
+import {BaseCustomElement, NgElement} from './base-html-element';
 
 import {ComponentNgElementStrategyFactory} from './component-factory-strategy';
 import {NgElementStrategy, NgElementStrategyFactory} from './element-strategy';
@@ -34,43 +35,6 @@ export interface NgElementConstructor<P> {
    * @param injector If provided, overrides the configured injector.
    */
   new(injector?: Injector): NgElement&WithProperties<P>;
-}
-
-/**
- * Implements the functionality needed for a custom element.
- *
- * @publicApi
- */
-export abstract class NgElement extends HTMLElement {
-  /**
-   * The strategy that controls how a component is transformed in a custom element.
-   */
-  protected abstract ngElementStrategy: NgElementStrategy;
-  /**
-   * A subscription to change, connect, and disconnect events in the custom element.
-   */
-  protected ngElementEventsSubscription: Subscription|null = null;
-
-  /**
-   * Prototype for a handler that responds to a change in an observed attribute.
-   * @param attrName The name of the attribute that has changed.
-   * @param oldValue The previous value of the attribute.
-   * @param newValue The new value of the attribute.
-   * @param namespace The namespace in which the attribute is defined.
-   * @returns Nothing.
-   */
-  abstract attributeChangedCallback(
-      attrName: string, oldValue: string|null, newValue: string, namespace?: string): void;
-  /**
-   * Prototype for a handler that responds to the insertion of the custom element in the DOM.
-   * @returns Nothing.
-   */
-  abstract connectedCallback(): void;
-  /**
-   * Prototype for a handler that responds to the deletion of the custom element from the DOM.
-   * @returns Nothing.
-   */
-  abstract disconnectedCallback(): void;
 }
 
 /**
@@ -134,11 +98,19 @@ export function createCustomElement<P>(
 
   const attributeToPropertyInputs = getDefaultAttributeToPropertyInputs(inputs);
 
-  class NgElementImpl extends NgElement {
+  class NgElementImpl extends BaseCustomElement {
     // Work around a bug in closure typed optimizations(b/79557487) where it is not honoring static
     // field externs. So using quoted access to explicitly prevent renaming.
     static readonly['observedAttributes'] = Object.keys(attributeToPropertyInputs);
 
+    /**
+     * A subscription to change, connect, and disconnect events in the custom element.
+     */
+    protected ngElementEventsSubscription: Subscription|null = null;
+
+    /**
+     * The strategy that controls how a component is transformed in a custom element.
+     */
     protected get ngElementStrategy(): NgElementStrategy {
       // NOTE:
       // Some polyfills (e.g. `document-register-element`) do not call the constructor, therefore
