@@ -68,38 +68,34 @@ export class AppVersion implements UpdateSource {
 
   constructor(
       private scope: ServiceWorkerGlobalScope, private adapter: Adapter, private database: Database,
-      private idle: IdleScheduler, private debugHandler: DebugHandler, readonly manifest: Manifest,
+      idle: IdleScheduler, private debugHandler: DebugHandler, readonly manifest: Manifest,
       readonly manifestHash: string) {
     // The hashTable within the manifest is an Object - convert it to a Map for easier lookups.
-    Object.keys(this.manifest.hashTable).forEach(url => {
-      this.hashTable.set(adapter.normalizeUrl(url), this.manifest.hashTable[url]);
+    Object.keys(manifest.hashTable).forEach(url => {
+      this.hashTable.set(adapter.normalizeUrl(url), manifest.hashTable[url]);
     });
 
     // Process each `AssetGroup` declared in the manifest. Each declared group gets an `AssetGroup`
-    // instance
-    // created for it, of a type that depends on the configuration mode.
+    // instance created for it, of a type that depends on the configuration mode.
+    const assetCacheNamePrefix = `${adapter.cacheNamePrefix}:${manifestHash}:assets`;
     this.assetGroups = (manifest.assetGroups || []).map(config => {
-      // Every asset group has a cache that's prefixed by the manifest hash and the name of the
-      // group.
-      const prefix = `${adapter.cacheNamePrefix}:${this.manifestHash}:assets`;
       // Check the caching mode, which determines when resources will be fetched/updated.
       switch (config.installMode) {
         case 'prefetch':
           return new PrefetchAssetGroup(
-              this.scope, this.adapter, this.idle, config, this.hashTable, this.database, prefix);
+              scope, adapter, idle, config, this.hashTable, database, assetCacheNamePrefix);
         case 'lazy':
           return new LazyAssetGroup(
-              this.scope, this.adapter, this.idle, config, this.hashTable, this.database, prefix);
+              scope, adapter, idle, config, this.hashTable, database, assetCacheNamePrefix);
       }
     });
 
     // Process each `DataGroup` declared in the manifest.
-    this.dataGroups =
-        (manifest.dataGroups || [])
-            .map(
-                config => new DataGroup(
-                    this.scope, this.adapter, config, this.database, this.debugHandler,
-                    `${adapter.cacheNamePrefix}:${config.version}:data`));
+    this.dataGroups = (manifest.dataGroups || [])
+                          .map(
+                              config => new DataGroup(
+                                  scope, adapter, config, database, debugHandler,
+                                  `${adapter.cacheNamePrefix}:${config.version}:data`));
 
     // This keeps backwards compatibility with app versions without navigation urls.
     // Fix: https://github.com/angular/angular/issues/27209

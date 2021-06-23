@@ -38,7 +38,7 @@ export abstract class AssetGroup {
 
   /**
    * A Promise which resolves to the `Cache` used to back this asset group. This
-   * is openedfrom the constructor.
+   * is opened from the constructor.
    */
   protected cache: Promise<Cache>;
 
@@ -55,7 +55,8 @@ export abstract class AssetGroup {
   constructor(
       protected scope: ServiceWorkerGlobalScope, protected adapter: Adapter,
       protected idle: IdleScheduler, protected config: AssetGroupConfig,
-      protected hashes: Map<string, string>, protected db: Database, protected prefix: string) {
+      protected hashes: Map<string, string>, protected db: Database,
+      protected cacheNamePrefix: string) {
     this.name = config.name;
 
     // Normalize the config's URLs to take the ServiceWorker's scope into account.
@@ -65,13 +66,13 @@ export abstract class AssetGroup {
     this.patterns = config.patterns.map(pattern => new RegExp(pattern));
 
     // This is the primary cache, which holds all of the cached requests for this group. If a
-    // resource
-    // isn't in this cache, it hasn't been fetched yet.
-    this.cache = scope.caches.open(`${this.prefix}:${config.name}:cache`);
+    // resource isn't in this cache, it hasn't been fetched yet.
+    this.cache = scope.caches.open(`${cacheNamePrefix}:${config.name}:cache`);
 
     // This is the metadata table, which holds specific information for each cached URL, such as
     // the timestamp of when it was added to the cache.
-    this.metadata = this.db.open(`${this.prefix}:${config.name}:meta`, config.cacheQueryOptions);
+    this.metadata =
+        this.db.open(`${cacheNamePrefix}:${config.name}:meta`, config.cacheQueryOptions);
   }
 
   async cacheStatus(url: string): Promise<UpdateCacheStatus> {
@@ -102,8 +103,8 @@ export abstract class AssetGroup {
    * Clean up all the cached data for this group.
    */
   async cleanup(): Promise<void> {
-    await this.scope.caches.delete(`${this.prefix}:${this.config.name}:cache`);
-    await this.db.delete(`${this.prefix}:${this.config.name}:meta`);
+    await this.scope.caches.delete(`${this.cacheNamePrefix}:${this.config.name}:cache`);
+    await this.db.delete(`${this.cacheNamePrefix}:${this.config.name}:meta`);
   }
 
   /**
@@ -136,7 +137,8 @@ export abstract class AssetGroup {
           // to make sure it's still usable.
           if (await this.needToRevalidate(req, cachedResponse)) {
             this.idle.schedule(
-                `revalidate(${this.prefix}, ${this.config.name}): ${req.url}`, async () => {
+                `revalidate(${this.cacheNamePrefix}, ${this.config.name}): ${req.url}`,
+                async () => {
                   await this.fetchAndCacheOnce(req);
                 });
           }
@@ -314,7 +316,7 @@ export abstract class AssetGroup {
       try {
         // This response is safe to cache (as long as it's cloned). Wait until the cache operation
         // is complete.
-        const cache = await this.scope.caches.open(`${this.prefix}:${this.config.name}:cache`);
+        const cache = await this.cache;
         await cache.put(req, res.clone());
 
         // If the request is not hashed, update its metadata, especially the timestamp. This is

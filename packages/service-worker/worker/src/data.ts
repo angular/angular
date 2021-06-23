@@ -247,13 +247,13 @@ export class DataGroup {
   constructor(
       private scope: ServiceWorkerGlobalScope, private adapter: Adapter,
       private config: DataGroupConfig, private db: Database, private debugHandler: DebugHandler,
-      private prefix: string) {
-    this.patterns = this.config.patterns.map(pattern => new RegExp(pattern));
-    this.cache = this.scope.caches.open(`${this.prefix}:dynamic:${this.config.name}:cache`);
-    this.lruTable = this.db.open(
-        `${this.prefix}:dynamic:${this.config.name}:lru`, this.config.cacheQueryOptions);
-    this.ageTable = this.db.open(
-        `${this.prefix}:dynamic:${this.config.name}:age`, this.config.cacheQueryOptions);
+      private cacheNamePrefix: string) {
+    this.patterns = config.patterns.map(pattern => new RegExp(pattern));
+    this.cache = scope.caches.open(`${cacheNamePrefix}:dynamic:${config.name}:cache`);
+    this.lruTable =
+        this.db.open(`${cacheNamePrefix}:dynamic:${config.name}:lru`, config.cacheQueryOptions);
+    this.ageTable =
+        this.db.open(`${cacheNamePrefix}:dynamic:${config.name}:age`, config.cacheQueryOptions);
   }
 
   /**
@@ -550,9 +550,9 @@ export class DataGroup {
   async cleanup(): Promise<void> {
     // Remove both the cache and the database entries which track LRU stats.
     await Promise.all([
-      this.scope.caches.delete(`${this.prefix}:dynamic:${this.config.name}:cache`),
-      this.db.delete(`${this.prefix}:dynamic:${this.config.name}:age`),
-      this.db.delete(`${this.prefix}:dynamic:${this.config.name}:lru`),
+      this.scope.caches.delete(`${this.cacheNamePrefix}:dynamic:${this.config.name}:cache`),
+      this.db.delete(`${this.cacheNamePrefix}:dynamic:${this.config.name}:age`),
+      this.db.delete(`${this.cacheNamePrefix}:dynamic:${this.config.name}:lru`),
     ]);
   }
 
