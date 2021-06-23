@@ -31,7 +31,7 @@ const server = new MockServerStateBuilder().withStaticFiles(dist).withManifest(m
 
 const scope = new SwTestHarnessBuilder().withServerState(server).build();
 
-const db = new CacheDatabase(scope, scope);
+const db = new CacheDatabase(scope);
 
 
 describe('prefetch assets', () => {
@@ -57,10 +57,11 @@ describe('prefetch assets', () => {
   });
   it('persists the cache across restarts', async () => {
     await group.initializeFully();
-    const freshScope = new SwTestHarnessBuilder().withCacheState(scope.caches.dehydrate()).build();
+    const freshScope =
+        new SwTestHarnessBuilder().withCacheState(scope.caches.original.dehydrate()).build();
     group = new PrefetchAssetGroup(
         freshScope, freshScope, idle, manifest.assetGroups![0], tmpHashTable(manifest),
-        new CacheDatabase(freshScope, freshScope), 'test');
+        new CacheDatabase(freshScope), 'test');
     await group.initializeFully();
     const res1 = await group.handleFetch(scope.newRequest('/foo.txt'), scope);
     const res2 = await group.handleFetch(scope.newRequest('/bar.txt'), scope);
@@ -82,7 +83,7 @@ describe('prefetch assets', () => {
     const badScope = new SwTestHarnessBuilder().withServerState(badServer).build();
     group = new PrefetchAssetGroup(
         badScope, badScope, idle, manifest.assetGroups![0], tmpHashTable(manifest),
-        new CacheDatabase(badScope, badScope), 'test');
+        new CacheDatabase(badScope), 'test');
     const err = await errorFrom(group.initializeFully());
     expect(err.message).toContain('Hash mismatch');
   });

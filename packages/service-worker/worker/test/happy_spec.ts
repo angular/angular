@@ -304,7 +304,7 @@ describe('Driver', () => {
     brokenServer.reset();
 
     scope = new SwTestHarnessBuilder().withServerState(server).build();
-    driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+    driver = new Driver(scope, scope, new CacheDatabase(scope));
   });
 
   it('activates without waiting', async () => {
@@ -553,10 +553,10 @@ describe('Driver', () => {
     await driver.initialized;
 
     scope = new SwTestHarnessBuilder()
-                .withCacheState(scope.caches.dehydrate())
+                .withCacheState(scope.caches.original.dehydrate())
                 .withServerState(serverUpdate)
                 .build();
-    driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+    driver = new Driver(scope, scope, new CacheDatabase(scope));
     expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
     await driver.initialized;
     serverUpdate.assertNoOtherRequests();
@@ -609,10 +609,10 @@ describe('Driver', () => {
     serverUpdate.clearRequests();
 
     scope = new SwTestHarnessBuilder()
-                .withCacheState(scope.caches.dehydrate())
+                .withCacheState(scope.caches.original.dehydrate())
                 .withServerState(serverUpdate)
                 .build();
-    driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+    driver = new Driver(scope, scope, new CacheDatabase(scope));
 
     expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
     expect(await makeRequest(scope, '/foo.txt', 'new')).toEqual('this is foo v2');
@@ -671,16 +671,16 @@ describe('Driver', () => {
     await driver.initialized;
 
     scope = new SwTestHarnessBuilder()
-                .withCacheState(scope.caches.dehydrate())
+                .withCacheState(scope.caches.original.dehydrate())
                 .withServerState(serverUpdate)
                 .build();
-    driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+    driver = new Driver(scope, scope, new CacheDatabase(scope));
     expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
     await driver.initialized;
     serverUpdate.assertNoOtherRequests();
 
     let keys = await scope.caches.keys();
-    let hasOriginalCaches = keys.some(name => name.startsWith(`ngsw:/:${manifestHash}:`));
+    let hasOriginalCaches = keys.some(name => name.startsWith(`${manifestHash}:`));
     expect(hasOriginalCaches).toEqual(true);
 
     scope.clients.remove('default');
@@ -689,11 +689,11 @@ describe('Driver', () => {
     await driver.idle.empty;
     serverUpdate.clearRequests();
 
-    driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+    driver = new Driver(scope, scope, new CacheDatabase(scope));
     expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo v2');
 
     keys = await scope.caches.keys();
-    hasOriginalCaches = keys.some(name => name.startsWith(`ngsw:/:${manifestHash}:`));
+    hasOriginalCaches = keys.some(name => name.startsWith(`${manifestHash}:`));
     expect(hasOriginalCaches).toEqual(false);
   });
 
@@ -1255,7 +1255,7 @@ describe('Driver', () => {
     it('should show debug info when the scope is not root', async () => {
       const newScope =
           new SwTestHarnessBuilder('http://localhost/foo/bar/').withServerState(server).build();
-      new Driver(newScope, newScope, new CacheDatabase(newScope, newScope));
+      new Driver(newScope, newScope, new CacheDatabase(newScope));
 
       expect(await makeRequest(newScope, '/foo/bar/ngsw/state'))
           .toMatch(/^NGSW Debug Info:\n\nDriver version: .+\nDriver state: NORMAL/);
@@ -1324,7 +1324,8 @@ describe('Driver', () => {
     });
 
     const getClientAssignments = async (sw: SwTestHarness, baseHref: string) => {
-      const cache = await sw.caches.open(`ngsw:${baseHref}:db:control`) as unknown as MockCache;
+      const cache =
+          await sw.caches.original.open(`ngsw:${baseHref}:db:control`) as unknown as MockCache;
       const dehydrated = cache.dehydrate();
       return JSON.parse(dehydrated['/assignments'].body!) as any;
     };
@@ -1344,7 +1345,7 @@ describe('Driver', () => {
                            .withCacheState(initialCacheState)
                            .withServerState(serverState)
                            .build();
-      const newDriver = new Driver(newScope, newScope, new CacheDatabase(newScope, newScope));
+      const newDriver = new Driver(newScope, newScope, new CacheDatabase(newScope));
 
       await makeRequest(newScope, newManifest.index, baseHref.replace(/\//g, '_'));
       await newDriver.initialized;
@@ -1359,14 +1360,14 @@ describe('Driver', () => {
     it('includes the SW scope in all cache names', async () => {
       // SW with scope `/`.
       const [rootScope, rootManifestHash] = await initializeSwFor('/');
-      const cacheNames = await rootScope.caches.keys();
+      const cacheNames = await rootScope.caches.original.keys();
 
       expect(cacheNames).toEqual(cacheKeysFor('/', rootManifestHash));
       expect(cacheNames.every(name => name.includes('/'))).toBe(true);
 
       // SW with scope `/foo/`.
       const [fooScope, fooManifestHash] = await initializeSwFor('/foo/');
-      const fooCacheNames = await fooScope.caches.keys();
+      const fooCacheNames = await fooScope.caches.original.keys();
 
       expect(fooCacheNames).toEqual(cacheKeysFor('/foo/', fooManifestHash));
       expect(fooCacheNames.every(name => name.includes('/foo/'))).toBe(true);
@@ -1381,8 +1382,8 @@ describe('Driver', () => {
 
       // Add new SW with different scope.
       const [barScope, barManifestHash] =
-          await initializeSwFor('/bar/', await fooScope.caches.dehydrate());
-      const barCacheNames = await barScope.caches.keys();
+          await initializeSwFor('/bar/', await fooScope.caches.original.dehydrate());
+      const barCacheNames = await barScope.caches.original.keys();
       const barAssignments = await getClientAssignments(barScope, '/bar/');
 
       expect(barAssignments).toEqual({_bar_: barManifestHash});
@@ -1412,7 +1413,7 @@ describe('Driver', () => {
 
       // Add new SW with same scope.
       const [fooScope2, fooManifestHash2] =
-          await initializeSwFor('/foo/', await fooScope.caches.dehydrate());
+          await initializeSwFor('/foo/', await fooScope.caches.original.dehydrate());
 
       // Update client `_foo_` but not client `_bar_`.
       await fooScope2.handleMessage({action: 'CHECK_FOR_UPDATES'}, '_foo_');
@@ -1490,9 +1491,9 @@ describe('Driver', () => {
       expect(await makeRequest(scope, '/unhashed/a.txt')).toEqual('this is unhashed');
       server.clearRequests();
 
-      const state = scope.caches.dehydrate();
+      const state = scope.caches.original.dehydrate();
       scope = new SwTestHarnessBuilder().withCacheState(state).withServerState(server).build();
-      driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+      driver = new Driver(scope, scope, new CacheDatabase(scope));
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
       server.assertNoRequestFor('/unhashed/a.txt');
@@ -1514,10 +1515,10 @@ describe('Driver', () => {
       server.clearRequests();
 
       scope = new SwTestHarnessBuilder()
-                  .withCacheState(scope.caches.dehydrate())
+                  .withCacheState(scope.caches.original.dehydrate())
                   .withServerState(serverUpdate)
                   .build();
-      driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+      driver = new Driver(scope, scope, new CacheDatabase(scope));
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
 
@@ -1709,7 +1710,7 @@ describe('Driver', () => {
       scope = new SwTestHarnessBuilder('http://localhost/base/href/')
                   .withServerState(serverWithBaseHref)
                   .build();
-      driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+      driver = new Driver(scope, scope, new CacheDatabase(scope));
     });
 
     it('initializes prefetched content correctly, after a request kicks it off', async () => {
@@ -1820,21 +1821,21 @@ describe('Driver', () => {
       ];
       const allCacheNames = oldSwCacheNames.concat(otherCacheNames);
 
-      await Promise.all(allCacheNames.map(name => scope.caches.open(name)));
-      expect(await scope.caches.keys()).toEqual(allCacheNames);
+      await Promise.all(allCacheNames.map(name => scope.caches.original.open(name)));
+      expect(await scope.caches.original.keys()).toEqual(allCacheNames);
 
       await driver.cleanupOldSwCaches();
-      expect(await scope.caches.keys()).toEqual(otherCacheNames);
+      expect(await scope.caches.original.keys()).toEqual(otherCacheNames);
     });
 
     it('should delete other caches even if deleting one of them fails', async () => {
       const oldSwCacheNames = ['ngsw:active', 'ngsw:staged', 'ngsw:manifest:a1b2c3:super:duper'];
       const deleteSpy =
-          spyOn(scope.caches, 'delete')
+          spyOn(scope.caches.original, 'delete')
               .and.callFake(
                   (cacheName: string) => Promise.reject(`Failed to delete cache '${cacheName}'.`));
 
-      await Promise.all(oldSwCacheNames.map(name => scope.caches.open(name)));
+      await Promise.all(oldSwCacheNames.map(name => scope.caches.original.open(name)));
       const error = await driver.cleanupOldSwCaches().catch(err => err);
 
       expect(error).toBe('Failed to delete cache \'ngsw:active\'.');
@@ -1847,7 +1848,7 @@ describe('Driver', () => {
     it('does not crash with bad index hash', async () => {
       scope = new SwTestHarnessBuilder().withServerState(brokenServer).build();
       (scope.registration as any).scope = 'http://site.com';
-      driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+      driver = new Driver(scope, scope, new CacheDatabase(scope));
 
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo (broken)');
     });
@@ -1858,10 +1859,10 @@ describe('Driver', () => {
       server.clearRequests();
 
       scope = new SwTestHarnessBuilder()
-                  .withCacheState(scope.caches.dehydrate())
+                  .withCacheState(scope.caches.original.dehydrate())
                   .withServerState(brokenServer)
                   .build();
-      driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+      driver = new Driver(scope, scope, new CacheDatabase(scope));
       await driver.checkForUpdate();
 
       scope.advance(12000);
@@ -2018,7 +2019,7 @@ describe('Driver', () => {
          expect(driver.state).toBe(DriverReadyState.NORMAL);
 
          // Ensure the data has been stored in the DB.
-         const db: MockCache = await scope.caches.open('ngsw:/:db:control') as any;
+         const db: MockCache = await scope.caches.open('db:control') as any;
          const getLatestHashFromDb = async () => (await (await db.match('/latest')).json()).latest;
          expect(await getLatestHashFromDb()).toBe(manifestHash);
 
@@ -2145,7 +2146,7 @@ describe('Driver', () => {
 
         // Create initial server state and initialize the SW.
         scope = new SwTestHarnessBuilder().withServerState(serverState1).build();
-        driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+        driver = new Driver(scope, scope, new CacheDatabase(scope));
 
         // Verify that all three clients are able to make the request.
         expect(await makeRequest(scope, '/foo.hash.js', 'client1')).toBe('console.log("FOO");');
@@ -2223,7 +2224,7 @@ describe('Driver', () => {
 
         // Create initial server state and initialize the SW.
         scope = new SwTestHarnessBuilder().withServerState(originalServer).build();
-        driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+        driver = new Driver(scope, scope, new CacheDatabase(scope));
 
         expect(await makeRequest(scope, '/foo.hash.js')).toBe('console.log("FOO");');
         await driver.initialized;
@@ -2236,10 +2237,10 @@ describe('Driver', () => {
         // Update the server state to emulate deploying a new version (where `foo.hash.js` does not
         // exist any more). Keep the cache though.
         scope = new SwTestHarnessBuilder()
-                    .withCacheState(scope.caches.dehydrate())
+                    .withCacheState(scope.caches.original.dehydrate())
                     .withServerState(updatedServer)
                     .build();
-        driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+        driver = new Driver(scope, scope, new CacheDatabase(scope));
 
         // The SW is still able to serve `foo.hash.js` from the cache.
         expect(await makeRequest(scope, '/foo.hash.js')).toBe('console.log("FOO");');
@@ -2267,7 +2268,7 @@ describe('Driver', () => {
                              .build();
 
         scope = new SwTestHarnessBuilder().withServerState(serverV5).build();
-        driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+        driver = new Driver(scope, scope, new CacheDatabase(scope));
       });
 
       // Test this bug: https://github.com/angular/angular/issues/27209
@@ -2321,7 +2322,7 @@ describe('Driver', () => {
       const freshnessManifest: Manifest = {...manifest, navigationRequestStrategy: 'freshness'};
       const server = serverBuilderBase.withManifest(freshnessManifest).build();
       const scope = new SwTestHarnessBuilder().withServerState(server).build();
-      const driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+      const driver = new Driver(scope, scope, new CacheDatabase(scope));
 
       return {server, scope, driver};
     }
@@ -2333,8 +2334,7 @@ async function removeAssetFromCache(
     scope: SwTestHarness, appVersionManifest: Manifest, assetPath: string) {
   const assetGroupName =
       appVersionManifest.assetGroups?.find(group => group.urls.includes(assetPath))?.name;
-  const cacheName = `${scope.cacheNamePrefix}:${sha1(JSON.stringify(appVersionManifest))}:assets:${
-      assetGroupName}:cache`;
+  const cacheName = `${sha1(JSON.stringify(appVersionManifest))}:assets:${assetGroupName}:cache`;
   const cache = await scope.caches.open(cacheName);
   return cache.delete(assetPath);
 }
