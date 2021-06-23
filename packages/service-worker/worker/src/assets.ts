@@ -9,6 +9,7 @@
 import {Adapter, Context} from './adapter';
 import {CacheState, NormalizedUrl, UpdateCacheStatus, UpdateSource, UrlMetadata} from './api';
 import {Database, Table} from './database';
+import {CacheTable} from './db-cache';
 import {errorToString, SwCriticalError, SwUnrecoverableStateError} from './error';
 import {IdleScheduler} from './idle';
 import {AssetGroupConfig} from './manifest';
@@ -100,13 +101,14 @@ export abstract class AssetGroup {
   abstract initializeFully(updateFrom?: UpdateSource): Promise<void>;
 
   /**
-   * Clean up all the cached data for this group.
+   * Return a list of the names of all caches used by this group.
    */
-  async cleanup(): Promise<void> {
-    await Promise.all([
-      this.cache.then(cache => this.adapter.caches.delete(cache.name)),
-      this.metadata.then(metadata => this.db.delete(metadata.name)),
+  async getCacheNames(): Promise<string[]> {
+    const [cache, metadata] = await Promise.all([
+      this.cache,
+      this.metadata as Promise<CacheTable>,
     ]);
+    return [cache.name, metadata.cacheName];
   }
 
   /**

@@ -698,6 +698,42 @@ describe('Driver', () => {
     expect(hasOriginalCaches).toEqual(false);
   });
 
+  it('cleans up properly when failing to load stored state', async () => {
+    // Initialize the SW and cache the original app-version.
+    expect(await makeRequest(scope, '/foo.txt')).toBe('this is foo');
+    await driver.initialized;
+
+    // Update and cache the updated app-version.
+    scope.updateServerState(serverUpdate);
+    expect(await driver.checkForUpdate()).toBeTrue();
+    expect(await makeRequest(scope, '/foo.txt', 'newClient')).toBe('this is foo v2');
+
+    // Verify both app-versions are stored in the cache.
+    let cacheNames = await scope.caches.keys();
+    let hasOriginalVersion = cacheNames.some(name => name.startsWith(`${manifestHash}:`));
+    let hasUpdatedVersion = cacheNames.some(name => name.startsWith(`${manifestUpdateHash}:`));
+    expect(hasOriginalVersion).withContext('Has caches for original version').toBeTrue();
+    expect(hasUpdatedVersion).withContext('Has caches for updated version').toBeTrue();
+
+    // Simulate failing to load the stored state (and thus starting from an empty state).
+    scope.caches.delete('db:control');
+    driver = new Driver(scope, scope, new CacheDatabase(scope));
+
+    expect(await makeRequest(scope, '/foo.txt')).toBe('this is foo v2');
+    await driver.initialized;
+
+    // Verify that the caches for the obsolete original version are cleaned up.
+    // await driver.cleanupCaches();
+    scope.advance(6000);
+    await driver.idle.empty;
+
+    cacheNames = await scope.caches.keys();
+    hasOriginalVersion = cacheNames.some(name => name.startsWith(`${manifestHash}:`));
+    hasUpdatedVersion = cacheNames.some(name => name.startsWith(`${manifestUpdateHash}:`));
+    expect(hasOriginalVersion).withContext('Has caches for original version').toBeFalse();
+    expect(hasUpdatedVersion).withContext('Has caches for updated version').toBeTrue();
+  });
+
   it('shows notifications for push notifications', async () => {
     expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
     await driver.initialized;
@@ -1481,6 +1517,7 @@ describe('Driver', () => {
       // Another 6 seconds.
       scope.advance(6000);
       await driver.idle.empty;
+      await new Promise(resolve => setTimeout(resolve));  // Wait for async operations to complete.
       serverUpdate.assertSawRequestFor('/unhashed/a.txt');
 
       // Now the new version of the resource should be served.
@@ -1817,16 +1854,19 @@ describe('Driver', () => {
         'ngsuu:active',
         'not:ngsw:active',
         'NgSw:StAgEd',
-        'ngsw:/:active',
-        'ngsw:/foo/:staged',
+        'ngsw:/:db:control',
+        'ngsw:/foo/:active',
+        'ngsw:/bar/:staged',
       ];
       const allCacheNames = oldSwCacheNames.concat(otherCacheNames);
 
       await Promise.all(allCacheNames.map(name => scope.caches.original.open(name)));
-      expect(await scope.caches.original.keys()).toEqual(allCacheNames);
+      expect(await scope.caches.original.keys())
+          .toEqual(jasmine.arrayWithExactContents(allCacheNames));
 
       await driver.cleanupOldSwCaches();
-      expect(await scope.caches.original.keys()).toEqual(otherCacheNames);
+      expect(await scope.caches.original.keys())
+          .toEqual(jasmine.arrayWithExactContents(otherCacheNames));
     });
 
     it('should delete other caches even if deleting one of them fails', async () => {

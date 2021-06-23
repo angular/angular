@@ -8,6 +8,7 @@
 
 import {Adapter, Context} from './adapter';
 import {Database, Table} from './database';
+import {CacheTable} from './db-cache';
 import {DebugHandler} from './debug';
 import {DataGroupConfig} from './manifest';
 import {NamedCache} from './named-cache-storage';
@@ -553,6 +554,17 @@ export class DataGroup {
       this.ageTable.then(table => this.db.delete(table.name)),
       this.lruTable.then(table => this.db.delete(table.name)),
     ]);
+  }
+  /**
+   * Return a list of the names of all caches used by this group.
+   */
+  async getCacheNames(): Promise<string[]> {
+    const [cache, ageTable, lruTable] = await Promise.all([
+      this.cache,
+      this.ageTable as Promise<CacheTable>,
+      this.lruTable as Promise<CacheTable>,
+    ]);
+    return [cache.name, ageTable.cacheName, lruTable.cacheName];
   }
 
   /**
