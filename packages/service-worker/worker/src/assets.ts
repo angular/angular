@@ -67,7 +67,8 @@ export abstract class AssetGroup {
 
     // This is the primary cache, which holds all of the cached requests for this group. If a
     // resource isn't in this cache, it hasn't been fetched yet.
-    this.cache = scope.caches.open(`${cacheNamePrefix}:${config.name}:cache`);
+    this.cache =
+        scope.caches.open(`${adapter.cacheNamePrefix}:${cacheNamePrefix}:${config.name}:cache`);
 
     // This is the metadata table, which holds specific information for each cached URL, such as
     // the timestamp of when it was added to the cache.
@@ -103,7 +104,8 @@ export abstract class AssetGroup {
    * Clean up all the cached data for this group.
    */
   async cleanup(): Promise<void> {
-    await this.scope.caches.delete(`${this.cacheNamePrefix}:${this.config.name}:cache`);
+    await this.scope.caches.delete(
+        `${this.adapter.cacheNamePrefix}:${this.cacheNamePrefix}:${this.config.name}:cache`);
     await this.db.delete(`${this.cacheNamePrefix}:${this.config.name}:meta`);
   }
 

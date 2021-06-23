@@ -77,7 +77,7 @@ export class AppVersion implements UpdateSource {
 
     // Process each `AssetGroup` declared in the manifest. Each declared group gets an `AssetGroup`
     // instance created for it, of a type that depends on the configuration mode.
-    const assetCacheNamePrefix = `${adapter.cacheNamePrefix}:${manifestHash}:assets`;
+    const assetCacheNamePrefix = `${manifestHash}:assets`;
     this.assetGroups = (manifest.assetGroups || []).map(config => {
       // Check the caching mode, which determines when resources will be fetched/updated.
       switch (config.installMode) {
@@ -91,11 +91,11 @@ export class AppVersion implements UpdateSource {
     });
 
     // Process each `DataGroup` declared in the manifest.
-    this.dataGroups = (manifest.dataGroups || [])
-                          .map(
-                              config => new DataGroup(
-                                  scope, adapter, config, database, debugHandler,
-                                  `${adapter.cacheNamePrefix}:${config.version}:data`));
+    this.dataGroups =
+        (manifest.dataGroups || [])
+            .map(
+                config => new DataGroup(
+                    scope, adapter, config, database, debugHandler, `${config.version}:data`));
 
     // This keeps backwards compatibility with app versions without navigation urls.
     // Fix: https://github.com/angular/angular/issues/27209
