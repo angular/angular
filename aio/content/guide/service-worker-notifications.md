@@ -13,7 +13,7 @@ The Angular service worker enables the display of push notifications and the han
 
 #### Prerequisites
 
-A basic understanding of the following:
+We recommend you have a basic understanding of the following:
 
 - [Getting Started with Service Workers](guide/service-worker-getting-started).
 
@@ -30,7 +30,7 @@ Invoke push notifications by pushing a message with a valid payload. See `SwPush
 
 ## Notification click handling
 
-The default behaviour for the `notificationclick` event, is to close the notification and notify `SwPush.notificationClicks`.
+The default behavior for the `notificationclick` event is to close the notification and notify `SwPush.notificationClicks`.
 
 You can specify an additional operation to be executed on `notificationclick` by adding an `onActionClick` property to the `data` object, and providing a `default` entry. This is especially useful for when there are no open clients when a notification is clicked.
 
@@ -59,7 +59,7 @@ The Angular service worker supports the following operations:
 
 <div class="alert is-important">
 
-  If an `onActionClick` item does not define a `url`, then the service worker's registration scope will be used.
+  If an `onActionClick` item does not define a `url`, then the service worker's registration scope is used.
   
 </div>
 
