@@ -11,8 +11,10 @@ export interface NamedCache extends Cache {
 }
 
 /**
- * A wrapper around `CacheStorage` to allow interacting with the caches more easily while
- * name-spacing caches to avoid conflicts with other caches on the same domain.
+ * A wrapper around `CacheStorage` to allow interacting with caches more easily and consistently by:
+ * - Adding a `name` property to all opened caches, which can be used to easily perform other
+ *   operations that require the cache name.
+ * - Name-spacing cache names to avoid conflicts with other caches on the same domain.
  */
 export class NamedCacheStorage<T extends CacheStorage> implements CacheStorage {
   constructor(readonly original: T, private cacheNamePrefix: string) {}
@@ -22,7 +24,7 @@ export class NamedCacheStorage<T extends CacheStorage> implements CacheStorage {
   }
 
   has(cacheName: string): Promise<boolean> {
-    return this.original.delete(`${this.cacheNamePrefix}:${cacheName}`);
+    return this.original.has(`${this.cacheNamePrefix}:${cacheName}`);
   }
 
   async keys(): Promise<string[]> {

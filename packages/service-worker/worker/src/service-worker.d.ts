@@ -111,9 +111,9 @@ interface ExtendableMessageEvent extends ExtendableEvent {
 // ServiceWorkerGlobalScope
 
 interface ServiceWorkerGlobalScope {
-  // Disallow accessing `CacheStorage APIs directly to ensure that all accesses go through a
-  // `NamedCacheStorage` instance (exposed by the `Adapter`).
-  //caches: CacheStorage;
+  // Intentionally does not include a `caches` property to disallow accessing `CacheStorage` APIs
+  // directly. All interactions with `CacheStorage` should go through a `NamedCacheStorage` instance
+  // (exposed by the `Adapter`).
   clients: Clients;
   registration: ServiceWorkerRegistration;
 

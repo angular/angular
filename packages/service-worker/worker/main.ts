@@ -13,4 +13,4 @@ import {Driver} from './src/driver';
 const scope = self as unknown as ServiceWorkerGlobalScope;
 
 const adapter = new Adapter(scope.registration.scope, self.caches);
-const driver = new Driver(scope, adapter, new CacheDatabase(adapter));
+new Driver(scope, adapter, new CacheDatabase(adapter));
