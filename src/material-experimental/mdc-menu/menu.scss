@@ -98,7 +98,7 @@ mat-menu {
 }
 
 .mat-mdc-menu-submenu-icon {
-  @include menu-common.item-submenu-icon(mdc-list.$deprecated-side-padding);
+  @include menu-common.item-submenu-icon(mdc-list-variables.$side-padding);
 }
 
 // Increase specificity because ripple styles are part of the `mat-core` mixin and can
