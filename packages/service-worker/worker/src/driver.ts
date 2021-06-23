@@ -10,6 +10,7 @@ import {Adapter} from './adapter';
 import {CacheState, Debuggable, DebugIdleState, DebugState, DebugVersion, NormalizedUrl, UpdateCacheStatus, UpdateSource} from './api';
 import {AppVersion} from './app-version';
 import {Database} from './database';
+import {CacheTable} from './db-cache';
 import {DebugHandler} from './debug';
 import {errorToString} from './error';
 import {IdleScheduler} from './idle';
@@ -109,6 +110,9 @@ export class Driver implements Debuggable, UpdateSource {
   idle: IdleScheduler;
 
   debugger: DebugHandler;
+
+  // A promise resolving to the control DB table.
+  private controlTable = this.db.open('control');
 
   constructor(
       private scope: ServiceWorkerGlobalScope, private adapter: Adapter, private db: Database) {
@@ -517,8 +521,7 @@ export class Driver implements Debuggable, UpdateSource {
     // the SW has run or the DB state has been wiped or is inconsistent. In that case,
     // load a fresh copy of the manifest and reset the state from scratch.
 
-    // Open up the DB table.
-    const table = await this.db.open('control');
+    const table = await this.controlTable;
 
     // Attempt to load the needed state from the DB. If this fails, the catch {} block
     // will populate these variables with freshly constructed values.
@@ -568,12 +571,7 @@ export class Driver implements Debuggable, UpdateSource {
 
     // Schedule cleaning up obsolete caches in the background.
     this.idle.schedule('init post-load (cleanup)', async () => {
-      try {
-        await this.cleanupCaches();
-      } catch (err) {
-        // Nothing to do - cleanup failed. Just log it.
-        this.debugger.log(err, 'cleanupCaches @ init post-load');
-      }
+      await this.cleanupCaches();
     });
 
     // Initialize the `versions` map by setting each hash to a new `AppVersion` instance
@@ -901,8 +899,7 @@ export class Driver implements Debuggable, UpdateSource {
    * Synchronize the existing state to the underlying database.
    */
   private async sync(): Promise<void> {
-    // Open up the DB table.
-    const table = await this.db.open('control');
+    const table = await this.controlTable;
 
     // Construct a serializable map of hashes to manifests.
     const manifests: ManifestMap = {};
@@ -931,56 +928,45 @@ export class Driver implements Debuggable, UpdateSource {
   }
 
   async cleanupCaches(): Promise<void> {
-    // Query for all currently active clients, and list the client ids. This may skip
-    // some clients in the browser back-forward cache, but not much can be done about
-    // that.
-    const activeClients: ClientId[] =
-        (await this.scope.clients.matchAll()).map(client => client.id);
+    try {
+      // Query for all currently active clients, and list the client IDs. This may skip some clients
+      // in the browser back-forward cache, but not much can be done about that.
+      const activeClients =
+          new Set<ClientId>((await this.scope.clients.matchAll()).map(client => client.id));
 
-    // A simple list of client ids that the SW has kept track of. Subtracting
-    // activeClients from this list will result in the set of client ids which are
-    // being tracked but are no longer used in the browser, and thus can be cleaned up.
-    const knownClients: ClientId[] = Array.from(this.clientVersionMap.keys());
+      // A simple list of client IDs that the SW has kept track of. Subtracting `activeClients` from
+      // this list will result in the set of client IDs which are being tracked but are no longer
+      // used in the browser, and thus can be cleaned up.
+      const knownClients: ClientId[] = Array.from(this.clientVersionMap.keys());
 
-    // Remove clients in the clientVersionMap that are no longer active.
-    knownClients.filter(id => activeClients.indexOf(id) === -1)
-        .forEach(id => this.clientVersionMap.delete(id));
+      // Remove clients in the `clientVersionMap` that are no longer active.
+      const obsoleteClients = knownClients.filter(id => !activeClients.has(id));
+      obsoleteClients.forEach(id => this.clientVersionMap.delete(id));
 
-    // Next, determine the set of versions which are still used. All others can be
-    // removed.
-    const usedVersions = new Set<string>();
-    this.clientVersionMap.forEach((version, _) => usedVersions.add(version));
+      // Next, determine the set of versions which are still used. All others can be removed.
+      const usedVersions = new Set(this.clientVersionMap.values());
 
-    // Collect all obsolete versions by filtering out used versions from the set of all versions.
-    const obsoleteVersions =
-        Array.from(this.versions.keys())
-            .filter(version => !usedVersions.has(version) && version !== this.latestHash);
+      // Collect all obsolete versions by filtering out used versions from the set of all versions.
+      const obsoleteVersions =
+          Array.from(this.versions.keys())
+              .filter(version => !usedVersions.has(version) && version !== this.latestHash);
 
-    // Remove all the versions which are no longer used.
-    await obsoleteVersions.reduce(async (previous, version) => {
-      // Wait for the other cleanup operations to complete.
-      await previous;
+      // Remove all the versions which are no longer used.
+      obsoleteVersions.forEach(version => this.versions.delete(version));
 
-      // Try to get past the failure of one particular version to clean up (this
-      // shouldn't happen, but handle it just in case).
-      try {
-        // Get ahold of the AppVersion for this particular hash.
-        const instance = this.versions.get(version)!;
+      // Commit all the changes to the saved state.
+      await this.sync();
 
-        // Delete it from the canonical map.
-        this.versions.delete(version);
-
-        // Clean it up.
-        await instance.cleanup();
-      } catch (err) {
-        // Oh well? Not much that can be done here. These caches will be removed when
-        // the SW revs its format version, which happens from time to time.
-        this.debugger.log(err, `cleanupCaches - cleanup ${version}`);
-      }
-    }, Promise.resolve());
-
-    // Commit all the changes to the saved state.
-    await this.sync();
+      // Delete all caches that are no longer needed.
+      const allCaches = await this.adapter.caches.keys();
+      const usedCaches = new Set(await this.getCacheNames());
+      const cachesToDelete = allCaches.filter(name => !usedCaches.has(name));
+      await Promise.all(cachesToDelete.map(name => this.adapter.caches.delete(name)));
+    } catch (err) {
+      // Oh well? Not much that can be done here. These caches will be removed on the next attempt
+      // or when the SW revs its format version, which happens from time to time.
+      this.debugger.log(err, 'cleanupCaches');
+    }
   }
 
   /**
@@ -1149,5 +1135,13 @@ export class Driver implements Debuggable, UpdateSource {
         statusText: 'Gateway Timeout',
       });
     }
+  }
+
+  private async getCacheNames(): Promise<string[]> {
+    const controlTable = await this.controlTable as CacheTable;
+    const appVersions = Array.from(this.versions.values());
+    const appVersionCacheNames =
+        await Promise.all(appVersions.map(version => version.getCacheNames()));
+    return [controlTable.cacheName].concat(...appVersionCacheNames);
   }
 }

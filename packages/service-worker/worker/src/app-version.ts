@@ -284,11 +284,14 @@ export class AppVersion implements UpdateSource {
   }
 
   /**
-   * Erase this application version, by cleaning up all the caches.
+   * Return a list of the names of all caches used by this version.
    */
-  async cleanup(): Promise<void> {
-    await Promise.all(this.assetGroups.map(group => group.cleanup()));
-    await Promise.all(this.dataGroups.map(group => group.cleanup()));
+  async getCacheNames(): Promise<string[]> {
+    const allGroupCacheNames = await Promise.all([
+      ...this.assetGroups.map(group => group.getCacheNames()),
+      ...this.dataGroups.map(group => group.getCacheNames()),
+    ]);
+    return ([] as string[]).concat(...allGroupCacheNames);
   }
 
   /**
