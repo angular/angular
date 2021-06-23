@@ -31,7 +31,10 @@ export class CacheDatabase implements Database {
     const prefix = `${this.cacheNamePrefix}:`;
     const allCacheNames = await this.scope.caches.keys();
     const dbCacheNames = allCacheNames.filter(name => name.startsWith(prefix));
-    return dbCacheNames;
+
+    // Return the un-prefixed table names, so they can be used with other `CacheDatabase` methods
+    // (for example, for opening/deleting a table).
+    return dbCacheNames.map(name => name.slice(prefix.length));
   }
 
   async open(name: string, cacheQueryOptions?: CacheQueryOptions): Promise<Table> {
