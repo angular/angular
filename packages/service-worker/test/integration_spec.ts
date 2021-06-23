@@ -87,7 +87,7 @@ describe('ngsw + companion lib', () => {
     mock = new MockServiceWorkerContainer();
     comm = new NgswCommChannel(mock as any);
     scope = new SwTestHarnessBuilder().withServerState(server).build();
-    driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+    driver = new Driver(scope, scope, new CacheDatabase(scope));
 
     scope.clients.add('default');
     scope.clients.getMock('default')!.queue.subscribe(msg => {

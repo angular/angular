@@ -126,7 +126,7 @@ describe('data cache', () => {
   let driver: Driver;
   beforeEach(async () => {
     scope = new SwTestHarnessBuilder().withServerState(server).build();
-    driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+    driver = new Driver(scope, scope, new CacheDatabase(scope));
 
     // Initialize.
     expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
@@ -144,7 +144,7 @@ describe('data cache', () => {
   describe('in performance mode', () => {
     it('names the caches correctly', async () => {
       expect(await makeRequest(scope, '/api/test')).toEqual('version 1');
-      const keys = await scope.caches.keys();
+      const keys = await scope.caches.original.keys();
       expect(keys.every(key => key.startsWith('ngsw:/:'))).toEqual(true);
     });
 

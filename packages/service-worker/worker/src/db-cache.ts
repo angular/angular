@@ -15,21 +15,21 @@ import {Database, NotFound, Table} from './database';
  * state within mock `Response` objects.
  */
 export class CacheDatabase implements Database {
-  private cacheNamePrefix = `${this.adapter.cacheNamePrefix}:db`;
+  private cacheNamePrefix = 'db';
   private tables = new Map<string, CacheTable>();
 
-  constructor(private scope: ServiceWorkerGlobalScope, private adapter: Adapter) {}
+  constructor(private adapter: Adapter) {}
 
   'delete'(name: string): Promise<boolean> {
     if (this.tables.has(name)) {
       this.tables.delete(name);
     }
-    return this.scope.caches.delete(`${this.cacheNamePrefix}:${name}`);
+    return this.adapter.caches.delete(`${this.cacheNamePrefix}:${name}`);
   }
 
   async list(): Promise<string[]> {
     const prefix = `${this.cacheNamePrefix}:`;
-    const allCacheNames = await this.scope.caches.keys();
+    const allCacheNames = await this.adapter.caches.keys();
     const dbCacheNames = allCacheNames.filter(name => name.startsWith(prefix));
 
     // Return the un-prefixed table names, so they can be used with other `CacheDatabase` methods
@@ -39,7 +39,7 @@ export class CacheDatabase implements Database {
 
   async open(name: string, cacheQueryOptions?: CacheQueryOptions): Promise<Table> {
     if (!this.tables.has(name)) {
-      const cache = await this.scope.caches.open(`${this.cacheNamePrefix}:${name}`);
+      const cache = await this.adapter.caches.open(`${this.cacheNamePrefix}:${name}`);
       const table = new CacheTable(name, cache, this.adapter, cacheQueryOptions);
       this.tables.set(name, table);
     }
@@ -52,7 +52,7 @@ export class CacheDatabase implements Database {
  */
 export class CacheTable implements Table {
   constructor(
-      readonly table: string, private cache: Cache, private adapter: Adapter,
+      readonly name: string, private cache: Cache, private adapter: Adapter,
       private cacheQueryOptions?: CacheQueryOptions) {}
 
   private request(key: string): Request {
@@ -70,7 +70,7 @@ export class CacheTable implements Table {
   read(key: string): Promise<any> {
     return this.cache.match(this.request(key), this.cacheQueryOptions).then(res => {
       if (res === undefined) {
-        return Promise.reject(new NotFound(this.table, key));
+        return Promise.reject(new NotFound(this.name, key));
       }
       return res.json();
     });

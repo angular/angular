@@ -11,6 +11,11 @@
  */
 export interface Table {
   /**
+   * The name of this table in the database.
+   */
+  name: string;
+
+  /**
    * Delete a key from the table.
    */
   'delete'(key: string): Promise<boolean>;

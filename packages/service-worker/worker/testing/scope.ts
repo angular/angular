@@ -105,7 +105,8 @@ export class MockClients implements Clients {
   async claim(): Promise<any> {}
 }
 
-export class SwTestHarness extends Adapter implements ServiceWorkerGlobalScope, Context {
+export class SwTestHarness extends Adapter<MockCacheStorage> implements Context,
+                                                                        ServiceWorkerGlobalScope {
   readonly clients = new MockClients();
   private eventHandlers = new Map<string, Function>();
   private skippedWaiting = false;
@@ -163,9 +164,8 @@ export class SwTestHarness extends Adapter implements ServiceWorkerGlobalScope, 
 
   parseUrl = parseUrl;
 
-  constructor(
-      private server: MockServerState, readonly caches: MockCacheStorage, scopeUrl: string) {
-    super(scopeUrl);
+  constructor(private server: MockServerState, caches: MockCacheStorage, scopeUrl: string) {
+    super(scopeUrl, caches);
   }
 
   async resolveSelfMessages(): Promise<void> {

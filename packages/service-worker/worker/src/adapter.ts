@@ -7,6 +7,7 @@
  */
 
 import {NormalizedUrl} from './api';
+import {NamedCacheStorage} from './named-cache-storage';
 
 
 /**
@@ -15,20 +16,20 @@ import {NormalizedUrl} from './api';
  * Mostly, this is used to mock out identifiers which are otherwise read
  * from the global scope.
  */
-export class Adapter {
-  readonly cacheNamePrefix: string;
+export class Adapter<T extends CacheStorage = CacheStorage> {
+  readonly caches: NamedCacheStorage<T>;
   private readonly origin: string;
 
-  constructor(protected readonly scopeUrl: string) {
+  constructor(protected readonly scopeUrl: string, caches: T) {
     const parsedScopeUrl = this.parseUrl(this.scopeUrl);
 
     // Determine the origin from the registration scope. This is used to differentiate between
     // relative and absolute URLs.
     this.origin = parsedScopeUrl.origin;
 
-    // Suffixing `ngsw` with the baseHref to avoid clash of cache names for SWs with different
-    // scopes on the same domain.
-    this.cacheNamePrefix = 'ngsw:' + parsedScopeUrl.path;
+    // Use the baseHref in the cache name prefix to avoid clash of cache names for SWs with
+    // different scopes on the same domain.
+    this.caches = new NamedCacheStorage(caches, `ngsw:${parsedScopeUrl.path}`);
   }
 
   /**
