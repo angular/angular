@@ -12,6 +12,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {Subject} from 'rxjs';
 
+import {useReflectionBasedElements} from '../src/base-html-element';
 import {createCustomElement, NgElementConstructor} from '../src/create-custom-element';
 import {NgElementStrategy, NgElementStrategyEvent, NgElementStrategyFactory} from '../src/element-strategy';
 
@@ -21,8 +22,20 @@ type WithFooBar = {
 };
 
 if (browserDetection.supportsCustomElements) {
-  describe('createCustomElement', () => {
-    let selectorUid = 0;
+  // Run the tests using the default ES2015 classes.
+  runTests('ES2015');
+
+  // Run the tests again, this time using `Reflect.construct` based custom elements.
+  useReflectionBasedElements();
+  runTests('Reflect.construct');
+}
+
+// This must be defined outside `runTests`, so that the tests will use unique selectors even when
+// repeated in both custom element modes.
+let selectorUid = 0;
+
+function runTests(mode: string): void {
+  describe(`createCustomElement (${mode})`, () => {
     let testContainer: HTMLDivElement;
     let NgElementCtor: NgElementConstructor<WithFooBar>;
     let strategy: TestStrategy;

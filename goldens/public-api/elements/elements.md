@@ -6,7 +6,6 @@
 
 import { Injector } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Subscription } from 'rxjs';
 import { Type } from '@angular/core';
 import { Version } from '@angular/core';
 
@@ -18,8 +17,6 @@ export abstract class NgElement extends HTMLElement {
     abstract attributeChangedCallback(attrName: string, oldValue: string | null, newValue: string, namespace?: string): void;
     abstract connectedCallback(): void;
     abstract disconnectedCallback(): void;
-    protected ngElementEventsSubscription: Subscription | null;
-    protected abstract ngElementStrategy: NgElementStrategy;
 }
 
 // @public
@@ -68,7 +65,6 @@ export const VERSION: Version;
 export type WithProperties<P> = {
     [property in keyof P]: P[property];
 };
-
 
 // (No @packageDocumentation comment for this package)
 
