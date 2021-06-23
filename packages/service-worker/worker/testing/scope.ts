@@ -108,7 +108,7 @@ export class MockClients implements Clients {
 export class SwTestHarness extends Adapter implements ServiceWorkerGlobalScope, Context {
   readonly clients = new MockClients();
   private eventHandlers = new Map<string, Function>();
-  private skippedWaiting = true;
+  private skippedWaiting = false;
 
   private selfMessageQueue: any[] = [];
   autoAdvanceTime = false;

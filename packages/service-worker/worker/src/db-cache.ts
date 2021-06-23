@@ -15,7 +15,8 @@ import {Database, NotFound, Table} from './database';
  * state within mock `Response` objects.
  */
 export class CacheDatabase implements Database {
-  private tables = new Map<string, Promise<CacheTable>>();
+  private cacheNamePrefix = `${this.adapter.cacheNamePrefix}:db`;
+  private tables = new Map<string, CacheTable>();
 
   constructor(private scope: ServiceWorkerGlobalScope, private adapter: Adapter) {}
 
@@ -23,19 +24,20 @@ export class CacheDatabase implements Database {
     if (this.tables.has(name)) {
       this.tables.delete(name);
     }
-    return this.scope.caches.delete(`${this.adapter.cacheNamePrefix}:db:${name}`);
+    return this.scope.caches.delete(`${this.cacheNamePrefix}:${name}`);
   }
 
-  list(): Promise<string[]> {
-    return this.scope.caches.keys().then(
-        keys => keys.filter(key => key.startsWith(`${this.adapter.cacheNamePrefix}:db:`)));
+  async list(): Promise<string[]> {
+    const prefix = `${this.cacheNamePrefix}:`;
+    const allCacheNames = await this.scope.caches.keys();
+    const dbCacheNames = allCacheNames.filter(name => name.startsWith(prefix));
+    return dbCacheNames;
   }
 
-  open(name: string, cacheQueryOptions?: CacheQueryOptions): Promise<Table> {
+  async open(name: string, cacheQueryOptions?: CacheQueryOptions): Promise<Table> {
     if (!this.tables.has(name)) {
-      const table =
-          this.scope.caches.open(`${this.adapter.cacheNamePrefix}:db:${name}`)
-              .then(cache => new CacheTable(name, cache, this.adapter, cacheQueryOptions));
+      const cache = await this.scope.caches.open(`${this.cacheNamePrefix}:${name}`);
+      const table = new CacheTable(name, cache, this.adapter, cacheQueryOptions);
       this.tables.set(name, table);
     }
     return this.tables.get(name)!;

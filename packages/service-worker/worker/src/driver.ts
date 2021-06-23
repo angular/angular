@@ -556,8 +556,7 @@ export class Driver implements Debuggable, UpdateSource {
       // server and building up an empty initial state.
       const manifest = await this.fetchLatestManifest();
       const hash = hashManifest(manifest);
-      manifests = {};
-      manifests[hash] = manifest;
+      manifests = {[hash]: manifest};
       assignments = {};
       latest = {latest: hash};
 
