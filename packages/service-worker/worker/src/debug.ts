@@ -9,6 +9,7 @@
 import {Adapter} from './adapter';
 import {Debuggable, DebugLogger} from './api';
 
+const SW_VERSION = '0.0.0-PLACEHOLDER';
 const DEBUG_LOG_BUFFER_SIZE = 100;
 
 interface DebugMessage {
@@ -37,6 +38,7 @@ export class DebugHandler implements DebugLogger {
 
     const msgState = `NGSW Debug Info:
 
+Driver version: ${SW_VERSION}
 Driver state: ${state.state} (${state.why})
 Latest manifest hash: ${state.latestHash || 'none'}
 Last update check: ${this.since(state.lastUpdateCheck)}`;

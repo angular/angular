@@ -1237,19 +1237,19 @@ describe('Driver', () => {
   describe('serving ngsw/state', () => {
     it('should show debug info (when in NORMAL state)', async () => {
       expect(await makeRequest(scope, '/ngsw/state'))
-          .toMatch(/^NGSW Debug Info:\n\nDriver state: NORMAL/);
+          .toMatch(/^NGSW Debug Info:\n\nDriver version: .+\nDriver state: NORMAL/);
     });
 
     it('should show debug info (when in EXISTING_CLIENTS_ONLY state)', async () => {
       driver.state = DriverReadyState.EXISTING_CLIENTS_ONLY;
       expect(await makeRequest(scope, '/ngsw/state'))
-          .toMatch(/^NGSW Debug Info:\n\nDriver state: EXISTING_CLIENTS_ONLY/);
+          .toMatch(/^NGSW Debug Info:\n\nDriver version: .+\nDriver state: EXISTING_CLIENTS_ONLY/);
     });
 
     it('should show debug info (when in SAFE_MODE state)', async () => {
       driver.state = DriverReadyState.SAFE_MODE;
       expect(await makeRequest(scope, '/ngsw/state'))
-          .toMatch(/^NGSW Debug Info:\n\nDriver state: SAFE_MODE/);
+          .toMatch(/^NGSW Debug Info:\n\nDriver version: .+\nDriver state: SAFE_MODE/);
     });
 
     it('should show debug info when the scope is not root', async () => {
@@ -1258,7 +1258,7 @@ describe('Driver', () => {
       new Driver(newScope, newScope, new CacheDatabase(newScope, newScope));
 
       expect(await makeRequest(newScope, '/foo/bar/ngsw/state'))
-          .toMatch(/^NGSW Debug Info:\n\nDriver state: NORMAL/);
+          .toMatch(/^NGSW Debug Info:\n\nDriver version: .+\nDriver state: NORMAL/);
     });
   });
 
