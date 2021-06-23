@@ -402,7 +402,8 @@ describe('Driver', () => {
     expect(driver['latestHash']).toBeNull();
 
     // Pushing a message initializes the driver (fetches assets).
-    await scope.handleMessage({action: 'foo'}, 'someClient');
+    scope.handleMessage({action: 'foo'}, 'someClient');
+    await new Promise(resolve => setTimeout(resolve));  // Wait for async operations to complete.
     expect(driver['latestHash']).toEqual(jasmine.any(String));
     server.assertSawRequestFor('/ngsw.json');
     server.assertSawRequestFor('/foo.txt');
