@@ -1269,12 +1269,12 @@ describe('Driver', () => {
     const cacheKeysFor = (baseHref: string, manifestHash: string) =>
         [`ngsw:${baseHref}:db:control`,
          `ngsw:${baseHref}:${manifestHash}:assets:eager:cache`,
-         `ngsw:${baseHref}:db:ngsw:${baseHref}:${manifestHash}:assets:eager:meta`,
+         `ngsw:${baseHref}:db:${manifestHash}:assets:eager:meta`,
          `ngsw:${baseHref}:${manifestHash}:assets:lazy:cache`,
-         `ngsw:${baseHref}:db:ngsw:${baseHref}:${manifestHash}:assets:lazy:meta`,
-         `ngsw:${baseHref}:42:data:dynamic:api:cache`,
-         `ngsw:${baseHref}:db:ngsw:${baseHref}:42:data:dynamic:api:lru`,
-         `ngsw:${baseHref}:db:ngsw:${baseHref}:42:data:dynamic:api:age`,
+         `ngsw:${baseHref}:db:${manifestHash}:assets:lazy:meta`,
+         `ngsw:${baseHref}:42:data:api:cache`,
+         `ngsw:${baseHref}:db:42:data:api:lru`,
+         `ngsw:${baseHref}:db:42:data:api:age`,
     ];
 
     const createManifestWithBaseHref = (baseHref: string, distDir: MockFileSystem): Manifest => ({

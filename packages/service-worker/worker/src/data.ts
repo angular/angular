@@ -249,11 +249,10 @@ export class DataGroup {
       private config: DataGroupConfig, private db: Database, private debugHandler: DebugHandler,
       private cacheNamePrefix: string) {
     this.patterns = config.patterns.map(pattern => new RegExp(pattern));
-    this.cache = scope.caches.open(`${cacheNamePrefix}:dynamic:${config.name}:cache`);
-    this.lruTable =
-        this.db.open(`${cacheNamePrefix}:dynamic:${config.name}:lru`, config.cacheQueryOptions);
-    this.ageTable =
-        this.db.open(`${cacheNamePrefix}:dynamic:${config.name}:age`, config.cacheQueryOptions);
+    this.cache =
+        scope.caches.open(`${adapter.cacheNamePrefix}:${cacheNamePrefix}:${config.name}:cache`);
+    this.lruTable = this.db.open(`${cacheNamePrefix}:${config.name}:lru`, config.cacheQueryOptions);
+    this.ageTable = this.db.open(`${cacheNamePrefix}:${config.name}:age`, config.cacheQueryOptions);
   }
 
   /**
@@ -550,9 +549,10 @@ export class DataGroup {
   async cleanup(): Promise<void> {
     // Remove both the cache and the database entries which track LRU stats.
     await Promise.all([
-      this.scope.caches.delete(`${this.cacheNamePrefix}:dynamic:${this.config.name}:cache`),
-      this.db.delete(`${this.cacheNamePrefix}:dynamic:${this.config.name}:age`),
-      this.db.delete(`${this.cacheNamePrefix}:dynamic:${this.config.name}:lru`),
+      this.scope.caches.delete(
+          `${this.adapter.cacheNamePrefix}:${this.cacheNamePrefix}:${this.config.name}:cache`),
+      this.db.delete(`${this.cacheNamePrefix}:${this.config.name}:age`),
+      this.db.delete(`${this.cacheNamePrefix}:${this.config.name}:lru`),
     ]);
   }
 
