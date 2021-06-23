@@ -542,14 +542,8 @@ export class Driver implements Debuggable, UpdateSource {
 
       // Successfully loaded from saved state. This implies a manifest exists, so
       // the update check needs to happen in the background.
-      this.idle.schedule('init post-load (update, cleanup)', async () => {
+      this.idle.schedule('init post-load (update)', async () => {
         await this.checkForUpdate();
-        try {
-          await this.cleanupCaches();
-        } catch (err) {
-          // Nothing to do - cleanup failed. Just log it.
-          this.debugger.log(err, 'cleanupCaches @ init post-load');
-        }
       });
     } catch (_) {
       // Something went wrong. Try to start over by fetching a new manifest from the
@@ -571,6 +565,16 @@ export class Driver implements Debuggable, UpdateSource {
     // At this point, either the state has been loaded successfully, or fresh state
     // with a new copy of the manifest has been produced. At this point, the `Driver`
     // can have its internals hydrated from the state.
+
+    // Schedule cleaning up obsolete caches in the background.
+    this.idle.schedule('init post-load (cleanup)', async () => {
+      try {
+        await this.cleanupCaches();
+      } catch (err) {
+        // Nothing to do - cleanup failed. Just log it.
+        this.debugger.log(err, 'cleanupCaches @ init post-load');
+      }
+    });
 
     // Initialize the `versions` map by setting each hash to a new `AppVersion` instance
     // for that manifest.
