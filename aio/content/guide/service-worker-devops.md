@@ -171,6 +171,7 @@ is `ngsw/state`. Here is an example of this debug page's contents:
 ```
 NGSW Debug Info:
 
+Driver version: 13.3.7
 Driver state: NORMAL ((nominal))
 Latest manifest hash: eea7f5f464f90789b621170af5a569d6be077e5c
 Last update check: never
