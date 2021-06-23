@@ -19,7 +19,7 @@ const FETCHING_ERROR_CONTENTS = (path: string) => `
   <div class="nf-container l-flex-wrap flex-center">
     <div class="nf-icon material-icons">error_outline</div>
     <div class="nf-response l-flex-wrap center">
-      <h2 class="no-toc">Request for document failed.</h2>
+      <h1 class="no-toc">Request for document failed.</h1>
       <p>
         We are unable to retrieve the "${path}" page at this time.
         <br/>
