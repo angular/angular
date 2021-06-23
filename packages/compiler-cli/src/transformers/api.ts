@@ -91,13 +91,6 @@ export interface CompilerOptions extends NgCompilerOptions, ts.CompilerOptions {
   // position.
   disableExpressionLowering?: boolean;
 
-  // Locale of the application
-  i18nOutLocale?: string;
-  // Export format (xlf, xlf2 or xmb)
-  i18nOutFormat?: string;
-  // Path to the extracted message file
-  i18nOutFile?: string;
-
   // Import format if different from `i18nFormat`
   i18nInFormat?: string;
   // Path to the translation file

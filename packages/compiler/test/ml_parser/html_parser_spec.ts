@@ -857,6 +857,20 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
           ]]);
         });
 
+        it('gets correct close tag for parent when a child is not closed', () => {
+          const {errors, rootNodes} = parser.parse('<div><span></div>', 'TestComp');
+          expect(errors.length).toEqual(1);
+          expect(humanizeErrors(errors)).toEqual([[
+            'div',
+            'Unexpected closing tag "div". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags',
+            '0:11'
+          ]]);
+          expect(humanizeNodes(rootNodes, true)).toEqual([
+            [html.Element, 'div', 0, '<div><span></div>', '<div>', '</div>'],
+            [html.Element, 'span', 1, '<span>', '<span>', null],
+          ]);
+        });
+
         describe('incomplete element tag', () => {
           it('should parse and report incomplete tags after the tag name', () => {
             const {errors, rootNodes} = parser.parse('<div<span><div  </span>', 'TestComp');

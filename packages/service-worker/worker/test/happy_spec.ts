@@ -538,7 +538,6 @@ describe('Driver', () => {
   it('handles empty client ID', async () => {
     // Initialize the SW.
     expect(await makeNavigationRequest(scope, '/foo/file1', '')).toEqual('this is foo');
-    expect(await makeNavigationRequest(scope, '/bar/file2', null)).toEqual('this is foo');
     await driver.initialized;
 
     // Update to a new version.
@@ -547,7 +546,6 @@ describe('Driver', () => {
 
     // Correctly handle navigation requests, even if `clientId` is null/empty.
     expect(await makeNavigationRequest(scope, '/foo/file1', '')).toEqual('this is foo v2');
-    expect(await makeNavigationRequest(scope, '/bar/file2', null)).toEqual('this is foo v2');
   });
 
   it('checks for updates on restart', async () => {
@@ -2008,8 +2006,7 @@ async function removeAssetFromCache(
 }
 
 async function makeRequest(
-    scope: SwTestHarness, url: string, clientId: string|null = 'default',
-    init?: Object): Promise<string|null> {
+    scope: SwTestHarness, url: string, clientId = 'default', init?: Object): Promise<string|null> {
   const [resPromise, done] = scope.handleFetch(new MockRequest(url, init), clientId);
   await done;
   const res = await resPromise;
@@ -2020,8 +2017,7 @@ async function makeRequest(
 }
 
 function makeNavigationRequest(
-    scope: SwTestHarness, url: string, clientId?: string|null,
-    init: Object = {}): Promise<string|null> {
+    scope: SwTestHarness, url: string, clientId?: string, init: Object = {}): Promise<string|null> {
   return makeRequest(scope, url, clientId, {
     headers: {
       Accept: 'text/plain, text/html, text/css',

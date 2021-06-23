@@ -49,14 +49,18 @@ export function verify() {
    * Whether all group condition lines match at least one file and all files
    * are matched by at least one group.
    */
-  const verificationSucceeded =
+  const allGroupConditionsValid =
       resultsByGroup.every(r => !r.unmatchedCount) && !unmatchedFiles.length;
+  /** Whether all groups have at least one reviewer user or team defined.  */
+  const groupsWithoutReviewers = groups.filter(group => Object.keys(group.reviewers).length === 0);
+  /** The overall result of the verifcation. */
+  const overallResult = allGroupConditionsValid && groupsWithoutReviewers.length === 0;
 
   /**
    * Overall result
    */
   logHeader('Overall Result');
-  if (verificationSucceeded) {
+  if (overallResult) {
     info('PullApprove verification succeeded!');
   } else {
     info(`PullApprove verification failed.`);
@@ -64,6 +68,15 @@ export function verify() {
     info(`Please update '.pullapprove.yml' to ensure that all necessary`);
     info(`files/directories have owners and all patterns that appear in`);
     info(`the file correspond to actual files/directories in the repo.`);
+  }
+  /** Reviewers check */
+  logHeader(`Group Reviewers Check`);
+  if (groupsWithoutReviewers.length === 0) {
+    info('All group contain at least one reviewer user or team.');
+  } else {
+    info.group(`Discovered ${groupsWithoutReviewers.length} group(s) without a reviewer defined`);
+    groupsWithoutReviewers.forEach(g => info(g.groupName));
+    info.groupEnd();
   }
   /**
    * File by file Summary
@@ -97,5 +110,5 @@ export function verify() {
   info.groupEnd();
 
   // Provide correct exit code based on verification success.
-  process.exit(verificationSucceeded ? 0 : 1);
+  process.exit(overallResult ? 0 : 1);
 }

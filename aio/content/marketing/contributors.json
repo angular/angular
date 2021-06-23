@@ -217,6 +217,12 @@
     "groups": ["Angular"],
     "lead": "jelbourn"
   },
+  "danieltre23": {
+    "name": "Daniel Trevino",
+    "picture": "danieltre23.jpg",
+    "bio": "Daniel is a Software Engineer Intern at Google, loves to learn new things, write code and listen to music.",
+    "groups": ["Angular"]
+  },
   "danwahlin": {
     "name": "Dan Wahlin",
     "picture": "danwahlin.jpg",

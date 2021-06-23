@@ -2278,6 +2278,11 @@ describe('ViewContainerRef', () => {
           containerEl = document.createElement('div');
           document.body.appendChild(containerEl);
           containerEl!.appendChild(rootEl);
+        },
+        removeAllRootElements() {
+          if (containerEl) {
+            containerEl.parentNode?.removeChild(containerEl);
+          }
         }
       };
     }

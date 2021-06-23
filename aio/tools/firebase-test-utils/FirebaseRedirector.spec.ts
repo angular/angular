@@ -39,4 +39,25 @@ describe('FirebaseRedirector', () => {
     ]);
     expect(() => redirector.redirect('a')).toThrowError('infinite redirect loop');
   });
+
+  it('should keep track of unused redirects', () => {
+    const redirects = [
+      { source: '/a', destination: '/A' },
+      { regex: '^/b$', destination: '/B' },
+      { source: '/c', destination: '/C' },
+    ];
+    const redirector = new FirebaseRedirector(redirects);
+
+    expect(redirector.unusedRedirectConfigs).toEqual([redirects[0], redirects[1], redirects[2]]);
+
+    redirector.redirect('/a');
+    expect(redirector.unusedRedirectConfigs).toEqual([redirects[1], redirects[2]]);
+
+    redirector.redirect('/not-redirected');
+    expect(redirector.unusedRedirectConfigs).toEqual([redirects[1], redirects[2]]);
+
+    redirector.redirect('/b');
+    redirector.redirect('/c');
+    expect(redirector.unusedRedirectConfigs).toEqual([]);
+  });
 });

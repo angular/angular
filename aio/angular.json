@@ -11,16 +11,19 @@
   "newProjectRoot": "projects",
   "projects": {
     "site": {
-      "root": "",
-      "sourceRoot": "src",
       "projectType": "application",
-      "prefix": "aio",
       "schematics": {
+        "@schematics/angular:application": {
+          "strict": true
+        },
         "@schematics/angular:component": {
           "inlineStyle": true,
           "style": "scss"
         }
       },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "aio",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
@@ -29,6 +32,7 @@
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
+            "ngswConfigPath": "src/generated/ngsw-config.json",
             "tsConfig": "tsconfig.app.json",
             "webWorkerTsConfig": "tsconfig.worker.json",
             "optimization": {
@@ -44,9 +48,16 @@
             "namedChunks": true,
             "assets": [
               "src/assets",
-              "src/generated",
               "src/pwa-manifest.json",
-              "src/google385281288605d160.html"
+              "src/google385281288605d160.html",
+              {
+                "input": "src/generated",
+                "output": "generated",
+                "glob": "**",
+                "ignore": [
+                  "ngsw-config.json"
+                ]
+              }
             ],
             "styles": [
               "src/styles/main.scss",
@@ -64,16 +75,18 @@
             "scripts": [],
             "budgets": [
               {
+                "type": "initial",
+                "maximumWarning": "850kb",
+                "maximumError": "1mb"
+              },
+              {
                 "type": "anyComponentStyle",
-                "maximumWarning": "6kb"
+                "maximumWarning": "2kb",
+                "maximumError": "4kb"
               }
             ]
           },
           "configurations": {
-            "fast": {
-              "buildOptimizer": false,
-              "optimization": false
-            },
             "next": {
               "fileReplacements": [
                 {
@@ -112,18 +125,20 @@
             },
             "ci": {
               "progress": false
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "outputHashing": "none",
+              "vendorChunk": true,
+              "extractLicenses": false
             }
-          }
+          },
+          "defaultConfiguration": "stable"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
-          "options": {
-            "browserTarget": "site:build"
-          },
           "configurations": {
-            "fast": {
-              "browserTarget": "site:build:fast"
-            },
             "next": {
               "browserTarget": "site:build:next"
             },
@@ -138,8 +153,12 @@
             },
             "ci": {
               "browserTarget": "site:build:ci"
+            },
+            "development": {
+              "browserTarget": "site:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -161,7 +180,17 @@
               "src/google385281288605d160.html"
             ],
             "styles": [
-              "src/styles/main.scss"
+              "src/styles/main.scss",
+              {
+                "inject": false,
+                "input": "src/styles/custom-themes/dark-theme.scss",
+                "bundleName": "dark-theme"
+              },
+              {
+                "inject": false,
+                "input": "src/styles/custom-themes/light-theme.scss",
+                "bundleName": "light-theme"
+              }
             ],
             "scripts": []
           }

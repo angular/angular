@@ -95,15 +95,5 @@
         border-right: 1px solid constants.$white;
       }
     }
-
-    // EXTERNAL LINK ICONS
-    .toolbar-external-icons-container {
-      a {
-        &:focus {
-          // `outline-offset` is not applied on Chrome on Windows, if `outline-style` is `auto.
-          outline: 1px solid constants.$focus-outline-ondark;
-        }
-      }
-    }
   }
 }

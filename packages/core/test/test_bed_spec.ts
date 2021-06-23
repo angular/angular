@@ -7,10 +7,11 @@
  */
 
 import {APP_INITIALIZER, ChangeDetectorRef, Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, Optional, Pipe, Type, ViewChild, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵsetNgModuleScope as setNgModuleScope, ɵɵtext as text} from '@angular/core';
-import {getTestBed, TestBed} from '@angular/core/testing/src/test_bed';
+import {getTestBed, TestBed, TestBedViewEngine} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
+import {TestBedRender3} from '../testing/src/r3_test_bed';
 
 const NAME = new InjectionToken<string>('name');
 
@@ -1283,4 +1284,200 @@ describe('TestBed', () => {
         fixture.detectChanges();
         expect(fixture!.nativeElement.textContent).toContain('changed');
       });
+});
+
+
+describe('TestBed module teardown', () => {
+  // Cast the `TestBed` to the internal data type since we're testing private APIs.
+  let TestBed: TestBedRender3|TestBedViewEngine;
+
+  beforeEach(() => {
+    TestBed = getTestBed() as unknown as (TestBedRender3 | TestBedViewEngine);
+    TestBed.resetTestingModule();
+  });
+
+  it('should not tear down the test module by default', () => {
+    expect(TestBed.shouldTearDownTestingModule()).toBe(false);
+  });
+
+  it('should be able to configure the teardown behavior', () => {
+    TestBed.configureTestingModule({teardown: {destroyAfterEach: true}});
+    expect(TestBed.shouldTearDownTestingModule()).toBe(true);
+  });
+
+  it('should reset the teardown behavior back to the default when TestBed is reset', () => {
+    TestBed.configureTestingModule({teardown: {destroyAfterEach: true}});
+    expect(TestBed.shouldTearDownTestingModule()).toBe(true);
+    TestBed.resetTestingModule();
+    expect(TestBed.shouldTearDownTestingModule()).toBe(false);
+  });
+
+  it('should destroy test module providers when test module teardown is enabled', () => {
+    SimpleService.ngOnDestroyCalls = 0;
+    TestBed.configureTestingModule({
+      providers: [SimpleService],
+      declarations: [GreetingCmp],
+      teardown: {destroyAfterEach: true}
+    });
+    TestBed.createComponent(GreetingCmp);
+
+    expect(SimpleService.ngOnDestroyCalls).toBe(0);
+    TestBed.resetTestingModule();
+    expect(SimpleService.ngOnDestroyCalls).toBe(1);
+  });
+
+  it('should remove the fixture root element from the DOM when module teardown is enabled', () => {
+    TestBed.configureTestingModule({
+      declarations: [SimpleCmp],
+      teardown: {destroyAfterEach: true},
+    });
+    const fixture = TestBed.createComponent(SimpleCmp);
+    const fixtureDocument = fixture.nativeElement.ownerDocument;
+
+    expect(fixtureDocument.body.contains(fixture.nativeElement)).toBe(true);
+    TestBed.resetTestingModule();
+    expect(fixtureDocument.body.contains(fixture.nativeElement)).toBe(false);
+  });
+
+  it('should re-throw errors that were thrown during fixture cleanup', () => {
+    @Component({template: ''})
+    class ThrowsOnDestroy {
+      ngOnDestroy() {
+        throw Error('oh no');
+      }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [ThrowsOnDestroy],
+      teardown: {destroyAfterEach: true},
+    });
+    TestBed.createComponent(ThrowsOnDestroy);
+
+    const spy = spyOn(console, 'error');
+    expect(() => TestBed.resetTestingModule())
+        .toThrowError('1 component threw errors during cleanup');
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not interrupt fixture destruction if an error is thrown', () => {
+    @Component({template: ''})
+    class ThrowsOnDestroy {
+      ngOnDestroy() {
+        throw Error('oh no');
+      }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [ThrowsOnDestroy],
+      teardown: {destroyAfterEach: true},
+    });
+
+    for (let i = 0; i < 3; i++) {
+      TestBed.createComponent(ThrowsOnDestroy);
+    }
+
+    const spy = spyOn(console, 'error');
+    expect(() => TestBed.resetTestingModule())
+        .toThrowError('3 components threw errors during cleanup');
+    expect(spy).toHaveBeenCalledTimes(3);
+  });
+
+  it('should re-throw errors that were thrown during module teardown by default', () => {
+    @Injectable()
+    class ThrowsOnDestroy {
+      ngOnDestroy() {
+        throw Error('oh no');
+      }
+    }
+
+    @Component({template: ''})
+    class App {
+      constructor(_service: ThrowsOnDestroy) {}
+    }
+
+    TestBed.configureTestingModule({
+      providers: [ThrowsOnDestroy],
+      declarations: [App],
+      teardown: {destroyAfterEach: true},
+    });
+    TestBed.createComponent(App);
+
+    expect(() => TestBed.resetTestingModule()).toThrowError('oh no');
+  });
+
+  it('should be able to opt out of rethrowing of errors coming from module teardown', () => {
+    @Injectable()
+    class ThrowsOnDestroy {
+      ngOnDestroy() {
+        throw Error('oh no');
+      }
+    }
+
+    @Component({template: ''})
+    class App {
+      constructor(_service: ThrowsOnDestroy) {}
+    }
+
+    TestBed.configureTestingModule({
+      providers: [ThrowsOnDestroy],
+      declarations: [App],
+      teardown: {destroyAfterEach: true, rethrowErrors: false},
+    });
+    TestBed.createComponent(App);
+
+    const spy = spyOn(console, 'error');
+    expect(() => TestBed.resetTestingModule()).not.toThrow();
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should remove the styles associated with a test component when the test module is torn down',
+     () => {
+       @Component({
+         template: '<span>Hello</span>',
+         styles: [`span {color: hotpink;}`],
+       })
+       class StyledComp1 {
+       }
+
+       @Component({
+         template: '<div>Hello</div>',
+         styles: [`div {color: red;}`],
+       })
+       class StyledComp2 {
+       }
+
+       TestBed.configureTestingModule({
+         declarations: [StyledComp1, StyledComp2],
+         teardown: {destroyAfterEach: true},
+       });
+
+       const fixtures = [
+         TestBed.createComponent(StyledComp1),
+         TestBed.createComponent(StyledComp2),
+       ];
+       const fixtureDocument = fixtures[0].nativeElement.ownerDocument;
+       const styleCountBefore = fixtureDocument.querySelectorAll('style').length;
+
+       // Note that we can only assert that the behavior works as expected by checking that the
+       // number of stylesheets has decreased. We can't expect that they'll be zero, because there
+       // may by stylesheets leaking in from other tests that don't use the module teardown
+       // behavior.
+       expect(styleCountBefore).toBeGreaterThan(0);
+       TestBed.resetTestingModule();
+       expect(fixtureDocument.querySelectorAll('style').length).toBeLessThan(styleCountBefore);
+     });
+
+
+  it('should remove the fixture root element from the DOM when module teardown is enabled', () => {
+    TestBed.configureTestingModule({
+      declarations: [SimpleCmp],
+      teardown: {destroyAfterEach: true},
+    });
+    const fixture = TestBed.createComponent(SimpleCmp);
+    const fixtureDocument = fixture.nativeElement.ownerDocument;
+
+    expect(fixtureDocument.body.contains(fixture.nativeElement)).toBe(true);
+    TestBed.resetTestingModule();
+    expect(fixtureDocument.body.contains(fixture.nativeElement)).toBe(false);
+  });
 });

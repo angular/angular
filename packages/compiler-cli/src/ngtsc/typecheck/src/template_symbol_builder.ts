@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, BindingPipe, MethodCall, PropertyWrite, SafeMethodCall, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, ASTWithSource, BindingPipe, MethodCall, PropertyRead, PropertyWrite, SafeMethodCall, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
@@ -482,8 +482,20 @@ export class SymbolBuilder {
         expression.nameSpan :
         expression.sourceSpan;
 
-    let node = findFirstMatchingNode(
-        this.typeCheckBlock, {withSpan, filter: (n: ts.Node): n is ts.Node => true});
+    let node: ts.Node|null = null;
+
+    // Property reads in templates usually map to a `PropertyAccessExpression`
+    // (e.g. `ctx.foo`) so try looking for one first.
+    if (expression instanceof PropertyRead) {
+      node = findFirstMatchingNode(
+          this.typeCheckBlock, {withSpan, filter: ts.isPropertyAccessExpression});
+    }
+
+    // Otherwise fall back to searching for any AST node.
+    if (node === null) {
+      node = findFirstMatchingNode(this.typeCheckBlock, {withSpan, filter: anyNodeFilter});
+    }
+
     if (node === null) {
       return null;
     }
@@ -559,4 +571,9 @@ export class SymbolBuilder {
       return node.getStart();
     }
   }
+}
+
+/** Filter predicate function that matches any AST node. */
+function anyNodeFilter(n: ts.Node): n is ts.Node {
+  return true;
 }

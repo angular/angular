@@ -612,7 +612,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         ]);
       });
 
-      it('should parse valid start tag in interpolation', () => {
+      it('should break out of interpolation in text token on valid start tag', () => {
         expect(tokenizeAndHumanizeParts('{{ a <b && c > d }}')).toEqual([
           [lex.TokenType.TEXT, '{{ a '],
           [lex.TokenType.TAG_OPEN_START, '', 'b'],
@@ -623,6 +623,42 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
           [lex.TokenType.EOF],
         ]);
       });
+
+      it('should break out of interpolation in text token on valid comment', () => {
+        expect(tokenizeAndHumanizeParts('{{ a }<!---->}')).toEqual([
+          [lex.TokenType.TEXT, '{{ a }'],
+          [lex.TokenType.COMMENT_START],
+          [lex.TokenType.RAW_TEXT, ''],
+          [lex.TokenType.COMMENT_END],
+          [lex.TokenType.TEXT, '}'],
+          [lex.TokenType.EOF],
+        ]);
+      });
+
+      it('should break out of interpolation in text token on valid CDATA', () => {
+        expect(tokenizeAndHumanizeParts('{{ a }<![CDATA[]]>}')).toEqual([
+          [lex.TokenType.TEXT, '{{ a }'],
+          [lex.TokenType.CDATA_START],
+          [lex.TokenType.RAW_TEXT, ''],
+          [lex.TokenType.CDATA_END],
+          [lex.TokenType.TEXT, '}'],
+          [lex.TokenType.EOF],
+        ]);
+      });
+
+      it('should ignore invalid start tag in interpolation', () => {
+        // Note that if the `<=` is considered an "end of text" then the following `{` would
+        // incorrectly be considered part of an ICU.
+        expect(tokenizeAndHumanizeParts(`<code>{{'<={'}}</code>`, {tokenizeExpansionForms: true}))
+            .toEqual([
+              [lex.TokenType.TAG_OPEN_START, '', 'code'],
+              [lex.TokenType.TAG_OPEN_END],
+              [lex.TokenType.TEXT, '{{\'<={\'}}'],
+              [lex.TokenType.TAG_CLOSE, '', 'code'],
+              [lex.TokenType.EOF],
+            ]);
+      });
+
 
       it('should parse start tags quotes in place of an attribute name as text', () => {
         expect(tokenizeAndHumanizeParts('<t ">')).toEqual([
@@ -1207,6 +1243,18 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
               '0:21',
             ]]);
       });
+
+      it('should report unescaped "{" as an error, even after a prematurely terminated interpolation',
+         () => {
+           expect(tokenizeAndHumanizeErrors(
+                      `<code>{{b}<!---->}</code><pre>import {a} from 'a';</pre>`,
+                      {tokenizeExpansionForms: true}))
+               .toEqual([[
+                 lex.TokenType.RAW_TEXT,
+                 `Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`,
+                 '0:56',
+               ]]);
+         });
 
       it('should include 2 lines of context in message', () => {
         const src = '111\n222\n333\nE\n444\n555\n666\n';

@@ -3,8 +3,8 @@ import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { CurrentDateToken } from 'app/shared/current-date';
+import { LocalStorage, NoopStorage } from 'app/shared/storage.service';
 import { NotificationComponent } from './notification.component';
-import { WindowToken } from 'app/shared/window';
 
 describe('NotificationComponent', () => {
   let component: NotificationComponent;
@@ -14,7 +14,7 @@ describe('NotificationComponent', () => {
     TestBed.configureTestingModule({
       declarations: [TestComponent, NotificationComponent],
       providers: [
-        { provide: WindowToken, useClass: MockWindow },
+        { provide: LocalStorage, useValue: new NoopStorage() },
         { provide: CurrentDateToken, useValue: now },
       ],
       imports: [NoopAnimationsModule],
@@ -92,7 +92,8 @@ describe('NotificationComponent', () => {
   it('should update localStorage key when dismiss is called', () => {
     configTestingModule();
     createComponent();
-    const setItemSpy: jasmine.Spy = (TestBed.inject(WindowToken) as MockWindow).localStorage.setItem;
+    const localStorage = TestBed.inject(LocalStorage);
+    const setItemSpy = spyOn(localStorage, 'setItem');
     component.dismiss();
     expect(setItemSpy).toHaveBeenCalledWith('aio-notification/survey-january-2018', 'hide');
   });
@@ -105,26 +106,10 @@ describe('NotificationComponent', () => {
 
   it('should not show the notification if the there is a "hide" flag in localStorage', () => {
     configTestingModule();
-    const getItemSpy: jasmine.Spy = (TestBed.inject(WindowToken) as MockWindow).localStorage.getItem;
-    getItemSpy.and.returnValue('hide');
+    const localStorage = TestBed.inject(LocalStorage);
+    const getItemSpy = spyOn(localStorage, 'getItem').and.returnValue('hide');
     createComponent();
     expect(getItemSpy).toHaveBeenCalledWith('aio-notification/survey-january-2018');
-    expect(component.showNotification).toBe('hide');
-  });
-
-  it('should not break when cookies are disabled in the browser', () => {
-    configTestingModule();
-
-    // Simulate `window.localStorage` being inaccessible, when cookies are disabled.
-    const mockWindow: MockWindow = TestBed.inject(WindowToken);
-    Object.defineProperty(mockWindow, 'localStorage', {
-      get() { throw new Error('The operation is insecure'); },
-    });
-
-    expect(() => createComponent()).not.toThrow();
-    expect(component.showNotification).toBe('show');
-
-    component.dismiss();
     expect(component.showNotification).toBe('hide');
   });
 });
@@ -144,8 +129,4 @@ describe('NotificationComponent', () => {
   </aio-notification>`
 })
 class TestComponent {
-}
-
-class MockWindow {
-  localStorage = jasmine.createSpyObj('localStorage', ['getItem', 'setItem']);
 }

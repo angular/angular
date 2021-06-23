@@ -8,10 +8,13 @@
 
 import {AST, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstTemplate, TmplAstTextAttribute} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
+import {ProgramDriver} from '@angular/compiler-cli/src/ngtsc/program_driver';
 import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ShimLocation, Symbol, SymbolKind, TemplateSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript';
 
+import {convertToTemplateDocumentSpan} from './references_and_rename_utils';
 import {getTargetAtPosition, TargetNodeKind} from './template_target';
 import {findTightestNode, getParentClassDeclaration} from './ts_utils';
 import {flatMap, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, getTemplateLocationFromShimLocation, getTextSpanOfNode, isDollarEvent, isTypeScriptFile, TemplateInfo, toTextSpan} from './utils';
@@ -27,7 +30,11 @@ interface HasShimLocation {
 }
 
 export class DefinitionBuilder {
-  constructor(private readonly tsLS: ts.LanguageService, private readonly compiler: NgCompiler) {}
+  private readonly ttc = this.compiler.getTemplateTypeChecker();
+
+  constructor(
+      private readonly tsLS: ts.LanguageService, private readonly compiler: NgCompiler,
+      private readonly driver: ProgramDriver) {}
 
   getDefinitionAndBoundSpan(fileName: string, position: number): ts.DefinitionInfoAndBoundSpan
       |undefined {
@@ -132,8 +139,34 @@ export class DefinitionBuilder {
   private getDefinitionsForSymbols(...symbols: HasShimLocation[]): ts.DefinitionInfo[] {
     return flatMap(symbols, ({shimLocation}) => {
       const {shimPath, positionInShimFile} = shimLocation;
-      return this.tsLS.getDefinitionAtPosition(shimPath, positionInShimFile) ?? [];
+      const definitionInfos = this.tsLS.getDefinitionAtPosition(shimPath, positionInShimFile);
+      if (definitionInfos === undefined) {
+        return [];
+      }
+      return this.mapShimResultsToTemplates(definitionInfos);
     });
+  }
+
+  /**
+   * Converts and definition info result that points to a template typecheck file to a reference to
+   * the corresponding location in the template.
+   */
+  private mapShimResultsToTemplates(definitionInfos: readonly ts.DefinitionInfo[]):
+      readonly ts.DefinitionInfo[] {
+    const result: ts.DefinitionInfo[] = [];
+    for (const info of definitionInfos) {
+      if (this.ttc.isTrackedTypeCheckFile(absoluteFrom(info.fileName))) {
+        const templateDefinitionInfo =
+            convertToTemplateDocumentSpan(info, this.ttc, this.driver.getProgram());
+        if (templateDefinitionInfo === null) {
+          continue;
+        }
+        result.push(templateDefinitionInfo);
+      } else {
+        result.push(info);
+      }
+    }
+    return result;
   }
 
   getTypeDefinitionsAtPosition(fileName: string, position: number):

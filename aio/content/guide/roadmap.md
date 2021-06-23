@@ -80,8 +80,10 @@ A long-standing feature request is to add the ability to add directives to host 
 
 A common problem with web applications is their slow initial load time. A way to improve it is to apply more granular code-splitting on a component level. To encourage this practice, we’ll be working on more ergonomic code-splitting APIs.
 
-<details class="roadmap-done-details">
-<summary class="roadmap-done-summary">Done</summary>
+<details class="roadmap-done-details" open="true">
+<summary class="roadmap-done-summary">
+  <h2>Done</h2>
+</summary>
 
 ### Accelerated debugging and performance profiling with Angular DevTools
 

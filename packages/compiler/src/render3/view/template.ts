@@ -339,6 +339,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this._bindingScope.notifyImplicitReceiverUse();
   }
 
+  // LocalResolver
+  maybeRestoreView(retrievalLevel: number, localRefLookup: boolean): void {
+    this._bindingScope.maybeRestoreView(retrievalLevel, localRefLookup);
+  }
+
   private i18nTranslate(
       message: i18n.Message, params: {[name: string]: o.Expression} = {}, ref?: o.ReadVarExpr,
       transformFn?: (raw: o.ReadVarExpr) => o.Expression): o.ReadVarExpr {

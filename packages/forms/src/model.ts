@@ -1167,7 +1167,7 @@ export class FormControl extends AbstractControl {
       // `VALID` or `INVALID`.
       // The status should be broadcasted via the `statusChanges` observable, so we set `emitEvent`
       // to `true` to allow that during the control creation process.
-      emitEvent: !!asyncValidator
+      emitEvent: !!this.asyncValidator
     });
   }
 
@@ -1433,7 +1433,7 @@ export class FormGroup extends AbstractControl {
       // If `asyncValidator` is present, it will trigger control status change from `PENDING` to
       // `VALID` or `INVALID`. The status should be broadcasted via the `statusChanges` observable,
       // so we set `emitEvent` to `true` to allow that during the control creation process.
-      emitEvent: !!asyncValidator
+      emitEvent: !!this.asyncValidator
     });
   }
 
@@ -1887,7 +1887,7 @@ export class FormArray extends AbstractControl {
       // `VALID` or `INVALID`.
       // The status should be broadcasted via the `statusChanges` observable, so we set `emitEvent`
       // to `true` to allow that during the control creation process.
-      emitEvent: !!asyncValidator
+      emitEvent: !!this.asyncValidator
     });
   }
 
@@ -2091,19 +2091,19 @@ export class FormArray extends AbstractControl {
    * ]);
    * arr.reset(['name', 'last name']);
    *
-   * console.log(this.arr.value);  // ['name', 'last name']
+   * console.log(arr.value);  // ['name', 'last name']
    * ```
    *
    * ### Reset the values in a form array and the disabled status for the first control
    *
    * ```
-   * this.arr.reset([
+   * arr.reset([
    *   {value: 'name', disabled: true},
    *   'last'
    * ]);
    *
-   * console.log(this.arr.value);  // ['name', 'last name']
-   * console.log(this.arr.get(0).status);  // 'DISABLED'
+   * console.log(arr.value);  // ['last']
+   * console.log(arr.at(0).status);  // 'DISABLED'
    * ```
    *
    * @param value Array of values for the controls

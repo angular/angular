@@ -7,7 +7,7 @@
  */
 
 import {APP_BASE_HREF, HashLocationStrategy, Location, LOCATION_INITIALIZED, LocationStrategy, PathLocationStrategy, PlatformLocation, ViewportScroller} from '@angular/common';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, Inject, Injectable, InjectionToken, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, NgProbeToken, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, Inject, Injectable, InjectionToken, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, NgProbeToken, OnDestroy, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
 import {of, Subject} from 'rxjs';
 
 import {EmptyOutletComponent} from './components/empty_outlet';
@@ -503,8 +503,9 @@ export function rootRoute(router: Router): ActivatedRoute {
  * pauses. It waits for the hook to be resolved. We then resolve it only in a bootstrap listener.
  */
 @Injectable()
-export class RouterInitializer {
-  private initNavigation: boolean = false;
+export class RouterInitializer implements OnDestroy {
+  private initNavigation = false;
+  private destroyed = false;
   private resultOfPreactivationDone = new Subject<void>();
 
   constructor(private injector: Injector) {}
@@ -512,6 +513,11 @@ export class RouterInitializer {
   appInitializer(): Promise<any> {
     const p: Promise<any> = this.injector.get(LOCATION_INITIALIZED, Promise.resolve(null));
     return p.then(() => {
+      // If the injector was destroyed, the DI lookups below will fail.
+      if (this.destroyed) {
+        return Promise.resolve(true);
+      }
+
       let resolve: Function = null!;
       const res = new Promise(r => resolve = r);
       const router = this.injector.get(Router);
@@ -565,6 +571,10 @@ export class RouterInitializer {
     router.resetRootComponentType(ref.componentTypes[0]);
     this.resultOfPreactivationDone.next(null!);
     this.resultOfPreactivationDone.complete();
+  }
+
+  ngOnDestroy() {
+    this.destroyed = true;
   }
 }
 

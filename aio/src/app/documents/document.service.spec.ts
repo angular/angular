@@ -67,29 +67,17 @@ describe('DocumentService', () => {
       expect(latestDocument).toEqual(doc1);
     });
 
-    // HACK: PREPARE FOR CHANGING TO CASE-INSENSITIVE URLS
-    it('should attempt disambiguated document paths if the document is not found on the server', () => {
-      let currentDocument: DocumentContents|undefined;
-      const notFoundDoc = { id: FILE_NOT_FOUND_ID, contents: '<h1>Page Not Found</h1>' };
-      const { docService, logger } = getServices('missing/Doc-1');
-      docService.currentDocument.subscribe(doc => currentDocument = doc);
-
-      // Initial request return 404.
-      httpMock.expectOne({url: 'generated/docs/missing/Doc-1.json'}).flush(null, {status: 404, statusText: 'NOT FOUND'});
-      httpMock.expectOne({url: 'generated/docs/missing/d_oc-1.json'}).flush(null, {status: 404, statusText: 'NOT FOUND'});
-      httpMock.expectOne({url: 'generated/docs/missing/d_oc.json'}).flush(null, {status: 404, statusText: 'NOT FOUND'});
-      expect(logger.output.error).toEqual([
-        [jasmine.any(Error)]
-      ]);
-      expect(logger.output.error[0][0].message).toEqual(`Document file not found at 'missing/Doc-1'`);
-
-      // Subsequent request for not-found document.
-      logger.output.error = [];
-      httpMock.expectOne(CONTENT_URL_PREFIX + 'file-not-found.json').flush(notFoundDoc);
-      expect(logger.output.error).toEqual([]); // does not report repeated errors
-      expect(currentDocument).toEqual(notFoundDoc);
+    it('should encode the request path to be case-insensitive', () => {
+      const { docService, locationService } = getServices('initial/Doc');
+      docService.currentDocument.subscribe();
+      httpMock.expectOne(CONTENT_URL_PREFIX + 'initial/d_oc.json').flush({});
+      locationService.go('NEW/Doc');
+      httpMock.expectOne(CONTENT_URL_PREFIX + 'n_e_w_/d_oc.json').flush({});
+      locationService.go('doc_with_underscores');
+      httpMock.expectOne(CONTENT_URL_PREFIX + 'doc__with__underscores.json').flush({});
+      locationService.go('DOC_WITH_UNDERSCORES');
+      httpMock.expectOne(CONTENT_URL_PREFIX + 'd_o_c___w_i_t_h___u_n_d_e_r_s_c_o_r_e_s_.json').flush({});
     });
-    // END HACK: PREPARE FOR CHANGING TO CASE-INSENSITIVE URLS
 
     it('should emit the not-found document if the document is not found on the server', () => {
       let currentDocument: DocumentContents|undefined;
@@ -119,7 +107,7 @@ describe('DocumentService', () => {
 
       docService.currentDocument.subscribe(doc => currentDocument = doc);
 
-      httpMock.expectOne({}).flush(null, { status: 404, statusText: 'NOT FOUND'});
+      httpMock.expectOne({}).flush(null, {status: 404, statusText: 'NOT FOUND'});
       expect(currentDocument).toEqual(hardCodedNotFoundDoc);
 
       // now check that we haven't killed the currentDocument observable sequence
@@ -143,7 +131,7 @@ describe('DocumentService', () => {
         [jasmine.any(Error)]
       ]);
       expect(logger.output.error[0][0].message)
-          .toEqual(`Error fetching document 'initial/doc': (Http failure response for generated/docs/initial/doc.json: 500 Server Error)`);
+        .toEqual(`Error fetching document 'initial/doc': (Http failure response for generated/docs/initial/doc.json: 500 Server Error)`);
 
       locationService.go('new/doc');
       httpMock.expectOne({}).flush(doc1);
