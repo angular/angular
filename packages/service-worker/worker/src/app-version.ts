@@ -287,11 +287,11 @@ export class AppVersion implements UpdateSource {
    * Return a list of the names of all caches used by this version.
    */
   async getCacheNames(): Promise<string[]> {
-    const [assetGroupCacheNames, dataGroupCacheNames] = await Promise.all([
-      Promise.all(this.assetGroups.map(group => group.getCacheNames())),
-      Promise.all(this.dataGroups.map(group => group.getCacheNames())),
+    const allGroupCacheNames = await Promise.all([
+      ...this.assetGroups.map(group => group.getCacheNames()),
+      ...this.dataGroups.map(group => group.getCacheNames()),
     ]);
-    return ([] as string[]).concat(...assetGroupCacheNames, ...dataGroupCacheNames);
+    return ([] as string[]).concat(...allGroupCacheNames);
   }
 
   /**
