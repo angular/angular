@@ -65,7 +65,7 @@ build --config=ivy
 ################################
 
 # Use the Angular team internal GCP instance for remote execution.
-build:remote --remote_instance_name=projects/internal-200822/instances/default_instance
+build:remote --remote_instance_name=projects/internal-200822/instances/primary_instance
 build:remote --project_id=internal-200822
 
 # Needed due to: https://github.com/bazelbuild/bazel/issues/7254
