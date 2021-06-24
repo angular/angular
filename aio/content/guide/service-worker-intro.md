@@ -55,7 +55,7 @@ More specifically:
 It is highly recommended that you ensure that your application works even without service worker support in the browser.
 Although an unsupported browser ignores service worker caching, it will still report errors if the application attempts to interact with the service worker.
 For example, calling `SwUpdate.checkForUpdate()` will return rejected promises.
-To avoid such an error, you can check whether the Angular service worker is enabled using `SwUpdate.isEnabled()`.
+To avoid such an error, you can check whether the Angular service worker is enabled using `SwUpdate.isEnabled`.
 
 To learn more about other browsers that are service worker ready, see the [Can I Use](https://caniuse.com/#feat=serviceworkers) page and [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API).
 
