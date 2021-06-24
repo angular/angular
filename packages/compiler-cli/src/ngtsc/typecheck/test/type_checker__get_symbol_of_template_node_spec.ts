@@ -223,8 +223,9 @@ runInEachFileSystem(() => {
 
         beforeEach(() => {
           const fileName = absoluteFrom('/main.ts');
+          const dirFile = absoluteFrom('/dir.ts');
           const templateString = `
-              <div *ngFor="let user of users; let i = index;">
+              <div *ngFor="let user of users; let i = index;" dir>
                 {{user.name}} {{user.streetNumber}}
                 <div [tabIndex]="i"></div>
               </div>`;
@@ -239,15 +240,36 @@ runInEachFileSystem(() => {
             }
             export class Cmp { users: User[]; }
             `,
-              declarations: [ngForDeclaration()],
+              declarations: [
+                ngForDeclaration(),
+                {
+                  name: 'TestDir',
+                  selector: '[dir]',
+                  file: dirFile,
+                  type: 'directive',
+                  inputs: {name: 'name'}
+                },
+              ],
             },
             ngForTypeCheckTarget(),
+            {
+              fileName: dirFile,
+              source: `export class TestDir {name:string}`,
+              templates: {},
+            },
           ]);
           templateTypeChecker = testValues.templateTypeChecker;
           program = testValues.program;
           const sf = getSourceFileOrError(testValues.program, fileName);
           cmp = getClass(sf, 'Cmp');
           templateNode = getAstTemplates(templateTypeChecker, cmp)[0];
+        });
+
+        it('should retrieve a symbol for a directive on a microsyntax template', () => {
+          const symbol = templateTypeChecker.getSymbolOfNode(templateNode, cmp);
+          const testDir = symbol?.directives.find(dir => dir.selector === '[dir]');
+          expect(testDir).toBeDefined();
+          expect(program.getTypeChecker().symbolToString(testDir!.tsSymbol)).toEqual('TestDir');
         });
 
         it('should retrieve a symbol for an expression inside structural binding', () => {
