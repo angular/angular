@@ -1,0 +1,41 @@
+<mat-card class="bar-graph-container">
+  <p class="txt-frames" matTooltip="{{ selectionLabel }} / {{ (graphData$ | async)?.length }}">
+    {{ selectionLabel }} / {{ (graphData$ | async)?.length }}
+  </p>
+  <button
+    mat-icon-button
+    matTooltip="Select previous frame"
+    (click)="move(-1)"
+    [disabled]="startFrameIndex <= 0 || selectedFrameIndexes.size > 1"
+  >
+    <mat-icon>chevron_left</mat-icon>
+  </button>
+
+  <cdk-virtual-scroll-viewport
+    #barContainer
+    orientation="horizontal"
+    [itemSize]="itemWidth"
+    class="bar-container"
+    (mouseleave)="stopDragScrolling()"
+    (mousedown)="startDragScroll($event)"
+    (mouseup)="stopDragScrolling()"
+    (mousemove)="dragScroll($event)"
+  >
+    <div
+      *cdkVirtualFor="let d of graphData$ | async; let i = index"
+      [ngStyle]="d.style"
+      class="frame-bar"
+      [class.selected]="selectedFrameIndexes.has(i)"
+      (click)="handleFrameSelection(i, $event)"
+    ></div>
+  </cdk-virtual-scroll-viewport>
+
+  <button
+    mat-icon-button
+    matTooltip="Select next frame"
+    (click)="move(1)"
+    [disabled]="endFrameIndex >= (graphData$ | async)?.length - 1 || selectedFrameIndexes.size > 1"
+  >
+    <mat-icon>chevron_right</mat-icon>
+  </button>
+</mat-card>

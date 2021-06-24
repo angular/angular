@@ -1,0 +1,33 @@
+<ng-recording-modal *ngIf="!hasFrames && !visualizing"></ng-recording-modal>
+
+<p class="info" *ngIf="!hasFrames && visualizing">There's no information to show.</p>
+
+<div class="timeline-wrapper">
+  <ng-timeline-controls
+    [class.hidden]="!hasFrames"
+    [record]="frame"
+    [empty]="!hasFrames"
+    [estimatedFrameRate]="estimateFrameRate(frame?.duration)"
+    [visualizationMode]="visualizationMode"
+    [changeDetection]="changeDetection"
+    (changeVisualizationMode)="visualizationMode = $event"
+    (exportProfile)="exportProfile.emit($event)"
+    (toggleChangeDetection)="changeDetection = $event"
+    (filter)="setFilter($event)"
+  ></ng-timeline-controls>
+
+  <ng-frame-selector
+    [class.hidden]="!hasFrames"
+    [graphData$]="graphData$"
+    (selectFrames)="selectFrames($event)"
+  ></ng-frame-selector>
+
+  <p class="info" *ngIf="hasFrames && !frame">Select a bar to preview a particular change detection cycle.</p>
+
+  <ng-timeline-visualizer
+    *ngIf="hasFrames && frame"
+    [visualizationMode]="visualizationMode"
+    [frame]="frame"
+    [changeDetection]="changeDetection"
+  ></ng-timeline-visualizer>
+</div>
