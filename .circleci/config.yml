@@ -735,6 +735,10 @@ jobs:
             # not supported.
             - '/tmp/angular-components-repo'
       - run:
+          # TODO(devversion): remove once https://github.com/angular/components/pull/23056 is available.
+          name: Replace RBE container instance name
+          command: sed -i "s#default_instance#primary_instance#g" ${COMPONENTS_REPO_TMP_DIR}/.bazelrc
+      - run:
           # Updates the `angular/components` `package.json` file to refer to the release output
           # inside the `packages-dist` directory.
           name: Setting up framework release packages.
