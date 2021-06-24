@@ -1,3 +1,38 @@
+<a name="12.1.0"></a>
+# 12.1.0 (2021-06-24)
+### compiler
+| Commit | Description |
+| -- | -- |
+| 9de65dbdce | fix(compiler): should not break a text token on a non-valid start tag (#42605) |
+| c873440ad2 | fix(compiler): do not allow unterminated interpolation to leak into later tokens (#42605) |
+| cc672f05bf | feat(compiler): add support for shorthand property declarations in templates (#42421) |
+| f52df99fe3 | fix(compiler): generate view restoration for keyed write inside template listener (#42603) |
+### compiler-cli
+| Commit | Description |
+| -- | -- |
+| 874de59d35 | fix(compiler-cli): change default ngcc  hash algorithm to be FIPS compliant (#42582) |
+| 729eea5716 | fix(compiler-cli): transform type references in generic type parameter default (#42492) |
+### core
+| Commit | Description |
+| -- | -- |
+| 873229f24b | feat(core): add opt-in test module teardown configuration (#42566) |
+### router
+| Commit | Description |
+| -- | -- |
+| 07c1ddc487 | fix(router): error if module is destroyed before location is initialized (#42560) |
+### service-worker
+| Commit | Description |
+| -- | -- |
+| cc30dc0713 | fix(service-worker): ensure obsolete caches are always cleaned up (#42622) |
+| 01128f5b5d | fix(service-worker): ensure caches are cleaned up when failing to load state (#42622) |
+| 73b0275dc2 | fix(service-worker): improve ServiceWorker cache names (#42622) |
+| 7507ed2e54 | fix(service-worker): use correct names when listing `CacheDatabase` tables (#42622) |
+| 53fe557da7 | feat(service-worker): include ServiceWorker version in debug info (#42622) |
+| d546501ab5 | feat(service-worker): add `openWindow`, `focusLastFocusedOrOpen` and `navigateLastFocusedOrOpen` (#42520) |
+| 9498da1038 | fix(service-worker): correctly determine client ID on navigation requests (#42607) |
+## Special Thanks:
+Alex Rickabaugh, Dale Harris, George Kalpakas, Joey Perrott, JoostK, Kristiyan Kostadinov, Németh Tamás, Paul Gschwendtner, Pete Bacon Darwin, Renovate Bot, Umair Hafeez, codingnuclei and mgechev
+
 <a name="12.1.0-next.6"></a>
 # 12.1.0-next.6 (2021-06-16)
 ### compiler
@@ -22,7 +57,7 @@
 | 4001e9d808 | fix(language-service): 'go to defininition' for objects defined in template (#42559) |
 | 228beeabd1 | fix(language-service): Use last child end span for parent without close tag (#42554) |
 ## Special Thanks:
-Ahmed Ayed, Alan Agius, Alex Rickabaugh, Andrew Scott, Ankit Choudhary, Aristeidis Bampakos, Daniel Trevino, Dario Piotrowicz, Dylan Hunn, George Kalpakas, Igor Minar, JiaLiPassion, JoostK, Kapunahele Wong, Kristiyan Kostadinov, Marius Bethge, Mladen Jakovljević, Paul Gschwendtner, Pete Bacon Darwin, Pham Huu Hien, Renovate Bot, dario-piotrowicz and gobika21
+Ahmed Ayed, Alan Agius, Alex Rickabaugh, Andrew Scott, Ankit Choudhary, Aristeidis Bampakos, Daniel Trevino, Dario Piotrowicz, Dylan Hunn, George Kalpakas, Igor Minar, JiaLiPassion, JoostK, Kapunahele Wong, Kristiyan Kostadinov, Marius Bethge, Mladen Jakovljević, Paul Gschwendtner, Pete Bacon Darwin, Pham Huu Hien, Renovate Bot, dario-piotrowicz and gobika21f
 
 
 <a name="12.0.5"></a>
