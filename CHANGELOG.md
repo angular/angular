@@ -1,3 +1,9 @@
+<a name="12.2.0-next.0"></a>
+# 12.2.0-next.0 (2021-06-24)
+
+This release contains the same set of changes as 12.1.0.
+
+
 <a name="12.1.0"></a>
 # 12.1.0 (2021-06-24)
 ### compiler
