@@ -68,6 +68,7 @@ describe(browser.baseUrl, () => {
         /* Directive */ 'api/common/NgIf': 'class ngif',
         /* Enum */ 'api/core/ChangeDetectionStrategy': 'enum changedetectionstrategy',
         /* Function */ 'api/animations/animate': 'animate(',
+        /* Global */ 'api/core/global/ngApplyChanges': 'ng.applychanges(',
         /* Interface */ 'api/core/OnDestroy': 'interface ondestroy',
         /* Pipe */ 'api/common/JsonPipe': '| json',
         /* Type-Alias */ 'api/common/http/HttpEvent': 'type httpevent',

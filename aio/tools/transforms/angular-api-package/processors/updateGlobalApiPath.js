@@ -6,8 +6,8 @@
  */
 module.exports = function updateGlobalApiPathProcessor() {
   return {
-    $runAfter: ['computePathsProcessor'],
-    $runBefore: ['processNgModuleDocs'],
+    $runAfter: ['paths-computed'],
+    $runBefore: ['disambiguateDocPathsProcessor', 'processNgModuleDocs'],
     $process: function(docs) {
       docs.forEach(doc => {
         if (doc.global && doc.globalNamespace) {
