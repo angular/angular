@@ -9,6 +9,7 @@ ts_library(
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
         "//dev-infra/release/build",
+        "//dev-infra/release/info",
         "//dev-infra/release/notes",
         "//dev-infra/release/publish",
         "//dev-infra/release/set-dist-tag",

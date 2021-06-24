@@ -5259,6 +5259,93 @@ const ReleaseBuildCommandModule = {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+/**
+ * Prints the active release trains to the console.
+ * @params active Active release trains that should be printed.
+ * @params config Release configuration used for querying NPM on published versions.
+ */
+function printActiveReleaseTrains(active, config) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        const { releaseCandidate, next, latest } = active;
+        const isNextPublishedToNpm = yield isVersionPublishedToNpm(next.version, config);
+        const nextTrainType = next.isMajor ? 'major' : 'minor';
+        const ltsBranches = yield fetchLongTermSupportBranchesFromNpm(config);
+        info();
+        info(blue('Current version branches in the project:'));
+        // Print information for release trains in the feature-freeze/release-candidate phase.
+        if (releaseCandidate !== null) {
+            const rcVersion = releaseCandidate.version;
+            const rcTrainType = releaseCandidate.isMajor ? 'major' : 'minor';
+            const rcTrainPhase = rcVersion.prerelease[0] === 'next' ? 'feature-freeze' : 'release-candidate';
+            info(` • ${bold(releaseCandidate.branchName)} contains changes for an upcoming ` +
+                `${rcTrainType} that is currently in ${bold(rcTrainPhase)} phase.`);
+            info(`   Most recent pre-release for this branch is "${bold(`v${rcVersion}`)}".`);
+        }
+        // Print information about the release-train in the latest phase. i.e. the patch branch.
+        info(` • ${bold(latest.branchName)} contains changes for the most recent patch.`);
+        info(`   Most recent patch version for this branch is "${bold(`v${latest.version}`)}".`);
+        // Print information about the release-train in the next phase.
+        info(` • ${bold(next.branchName)} contains changes for a ${nextTrainType} ` +
+            `currently in active development.`);
+        // Note that there is a special case for versions in the next release-train. The version in
+        // the next branch is not always published to NPM. This can happen when we recently branched
+        // off for a feature-freeze release-train. More details are in the next pre-release action.
+        if (isNextPublishedToNpm) {
+            info(`   Most recent pre-release version for this branch is "${bold(`v${next.version}`)}".`);
+        }
+        else {
+            info(`   Version is currently set to "${bold(`v${next.version}`)}", but has not been ` +
+                `published yet.`);
+        }
+        // If no release-train in release-candidate or feature-freeze phase is active,
+        // we print a message as last bullet point to make this clear.
+        if (releaseCandidate === null) {
+            info(' • No release-candidate or feature-freeze branch currently active.');
+        }
+        info();
+        info(blue('Current active LTS version branches:'));
+        // Print all active LTS branches (each branch as own bullet point).
+        if (ltsBranches.active.length !== 0) {
+            for (const ltsBranch of ltsBranches.active) {
+                info(` • ${bold(ltsBranch.name)} is currently in active long-term support phase.`);
+                info(`   Most recent patch version for this branch is "${bold(`v${ltsBranch.version}`)}".`);
+            }
+        }
+        info();
+    });
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/** Yargs command handler for printing release information. */
+function handler$8() {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        const git = GitClient.get();
+        const gitRepoWithApi = Object.assign({ api: git.github }, git.remoteConfig);
+        const releaseTrains = yield fetchActiveReleaseTrains(gitRepoWithApi);
+        // Print the active release trains.
+        yield printActiveReleaseTrains(releaseTrains, getReleaseConfig());
+    });
+}
+/** CLI command module for retrieving release information. */
+const ReleaseInfoCommandModule = {
+    handler: handler$8,
+    command: 'info',
+    describe: 'Prints active release trains to the console.',
+};
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 /** List of types to be included in the release notes. */
 const typesToIncludeInReleaseNotes = Object.values(COMMIT_TYPES)
     .filter(type => type.releaseNotesLevel === ReleaseNotesLevel.Visible)
@@ -5657,7 +5744,7 @@ function builder$8(argv) {
     });
 }
 /** Yargs command handler for generating release notes. */
-function handler$8({ releaseVersion, from, to, outFile, type }) {
+function handler$9({ releaseVersion, from, to, outFile, type }) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         // Since `yargs` evaluates defaults even if a value as been provided, if no value is provided to
         // the handler, the latest semver tag on the branch is used.
@@ -5679,7 +5766,7 @@ function handler$8({ releaseVersion, from, to, outFile, type }) {
 /** CLI command module for generating release notes. */
 const ReleaseNotesCommandModule = {
     builder: builder$8,
-    handler: handler$8,
+    handler: handler$9,
     command: 'notes',
     describe: 'Generate release notes',
 };
@@ -5853,69 +5940,6 @@ function npmLogout(registryUrl) {
         finally {
             return npmIsLoggedIn(registryUrl);
         }
-    });
-}
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-/**
- * Prints the active release trains to the console.
- * @params active Active release trains that should be printed.
- * @params config Release configuration used for querying NPM on published versions.
- */
-function printActiveReleaseTrains(active, config) {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        const { releaseCandidate, next, latest } = active;
-        const isNextPublishedToNpm = yield isVersionPublishedToNpm(next.version, config);
-        const nextTrainType = next.isMajor ? 'major' : 'minor';
-        const ltsBranches = yield fetchLongTermSupportBranchesFromNpm(config);
-        info();
-        info(blue('Current version branches in the project:'));
-        // Print information for release trains in the feature-freeze/release-candidate phase.
-        if (releaseCandidate !== null) {
-            const rcVersion = releaseCandidate.version;
-            const rcTrainType = releaseCandidate.isMajor ? 'major' : 'minor';
-            const rcTrainPhase = rcVersion.prerelease[0] === 'next' ? 'feature-freeze' : 'release-candidate';
-            info(` • ${bold(releaseCandidate.branchName)} contains changes for an upcoming ` +
-                `${rcTrainType} that is currently in ${bold(rcTrainPhase)} phase.`);
-            info(`   Most recent pre-release for this branch is "${bold(`v${rcVersion}`)}".`);
-        }
-        // Print information about the release-train in the latest phase. i.e. the patch branch.
-        info(` • ${bold(latest.branchName)} contains changes for the most recent patch.`);
-        info(`   Most recent patch version for this branch is "${bold(`v${latest.version}`)}".`);
-        // Print information about the release-train in the next phase.
-        info(` • ${bold(next.branchName)} contains changes for a ${nextTrainType} ` +
-            `currently in active development.`);
-        // Note that there is a special case for versions in the next release-train. The version in
-        // the next branch is not always published to NPM. This can happen when we recently branched
-        // off for a feature-freeze release-train. More details are in the next pre-release action.
-        if (isNextPublishedToNpm) {
-            info(`   Most recent pre-release version for this branch is "${bold(`v${next.version}`)}".`);
-        }
-        else {
-            info(`   Version is currently set to "${bold(`v${next.version}`)}", but has not been ` +
-                `published yet.`);
-        }
-        // If no release-train in release-candidate or feature-freeze phase is active,
-        // we print a message as last bullet point to make this clear.
-        if (releaseCandidate === null) {
-            info(' • No release-candidate or feature-freeze branch currently active.');
-        }
-        info();
-        info(blue('Current active LTS version branches:'));
-        // Print all active LTS branches (each branch as own bullet point).
-        if (ltsBranches.active.length !== 0) {
-            for (const ltsBranch of ltsBranches.active) {
-                info(` • ${bold(ltsBranch.name)} is currently in active long-term support phase.`);
-                info(`   Most recent patch version for this branch is "${bold(`v${ltsBranch.version}`)}".`);
-            }
-        }
-        info();
     });
 }
 
@@ -7308,7 +7332,7 @@ function builder$9(argv) {
     return addGithubTokenOption(argv);
 }
 /** Yargs command handler for staging a release. */
-function handler$9() {
+function handler$a() {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const git = GitClient.get();
         const config = getConfig();
@@ -7334,7 +7358,7 @@ function handler$9() {
 /** CLI command module for publishing a release. */
 const ReleasePublishCommandModule = {
     builder: builder$9,
-    handler: handler$9,
+    handler: handler$a,
     command: 'publish',
     describe: 'Publish new releases and configure version branches.',
 };
@@ -7360,7 +7384,7 @@ function builder$a(args) {
     });
 }
 /** Yargs command handler for building a release. */
-function handler$a(args) {
+function handler$b(args) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const { targetVersion: rawVersion, tagName } = args;
         const { npmPackages, publishRegistry } = getReleaseConfig();
@@ -7393,7 +7417,7 @@ function handler$a(args) {
 /** CLI command module for setting an NPM dist tag. */
 const ReleaseSetDistTagCommand = {
     builder: builder$a,
-    handler: handler$a,
+    handler: handler$b,
     command: 'set-dist-tag <tag-name> <target-version>',
     describe: 'Sets a given NPM dist tag for all release packages.',
 };
@@ -7480,7 +7504,7 @@ function builder$b(args) {
         choices: ['snapshot', 'release']
     });
 }
-function handler$b({ mode }) {
+function handler$c({ mode }) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         buildEnvStamp(mode);
     });
@@ -7488,7 +7512,7 @@ function handler$b({ mode }) {
 /** CLI command module for building the environment stamp. */
 const BuildEnvStampCommand = {
     builder: builder$b,
-    handler: handler$b,
+    handler: handler$c,
     command: 'build-env-stamp',
     describe: 'Build the environment stamping information',
 };
@@ -7500,6 +7524,7 @@ function buildReleaseParser(localYargs) {
         .demandCommand()
         .command(ReleasePublishCommandModule)
         .command(ReleaseBuildCommandModule)
+        .command(ReleaseInfoCommandModule)
         .command(ReleaseSetDistTagCommand)
         .command(BuildEnvStampCommand)
         .command(ReleaseNotesCommandModule);
@@ -7929,7 +7954,7 @@ function builder$c(argv) {
     });
 }
 /** Yargs command handler for the command. */
-function handler$c({ projectRoot }) {
+function handler$d({ projectRoot }) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         try {
             if (!fs.lstatSync(projectRoot).isDirectory()) {
@@ -7957,7 +7982,7 @@ function handler$c({ projectRoot }) {
 /** CLI command module. */
 const BuildAndLinkCommandModule = {
     builder: builder$c,
-    handler: handler$c,
+    handler: handler$d,
     command: 'build-and-link <projectRoot>',
     describe: 'Builds the release output, registers the outputs as linked, and links via yarn to the provided project',
 };
