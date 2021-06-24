@@ -21,7 +21,7 @@ async function handler() {
   const releaseTrains = await fetchActiveReleaseTrains(gitRepoWithApi);
 
   // Print the active release trains.
-  await printActiveReleaseTrains(releaseTrains, getReleaseConfig())
+  await printActiveReleaseTrains(releaseTrains, getReleaseConfig());
 }
 
 /** CLI command module for retrieving release information. */
