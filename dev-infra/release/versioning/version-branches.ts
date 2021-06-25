@@ -33,9 +33,14 @@ const versionBranchNameRegex = /^(\d+)\.(\d+)\.x$/;
 /** Gets the version of a given branch by reading the `package.json` upstream. */
 export async function getVersionOfBranch(
     repo: GithubRepoWithApi, branchName: string): Promise<semver.SemVer> {
-  const {data} = await repo.api.repos.getContents(
+  const {data} = await repo.api.repos.getContent(
       {owner: repo.owner, repo: repo.name, path: '/package.json', ref: branchName});
-  const content = Array.isArray(data) ? '' : data.content || '';
+  // Workaround for: https://github.com/octokit/rest.js/issues/32.
+  // TODO: Remove cast once types of Octokit `getContent` are fixed.
+  const content = (data as {content?: string}).content;
+  if (!content) {
+    throw Error(`Unable to read "package.json" file from repository.`);
+  }
   const {version} = JSON.parse(Buffer.from(content, 'base64').toString()) as
       {version: string, [key: string]: any};
   const parsedVersion = semver.parse(version);

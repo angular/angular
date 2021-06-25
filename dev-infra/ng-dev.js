@@ -227,8 +227,11 @@ var GithubClient = /** @class */ (function () {
         this.repos = this._octokit.repos;
         this.issues = this._octokit.issues;
         this.git = this._octokit.git;
-        this.paginate = this._octokit.paginate;
         this.rateLimit = this._octokit.rateLimit;
+        // Note: These are properties from `Octokit` that are brought in by optional plugins.
+        // TypeScript requires us to provide an explicit type for these.
+        this.rest = this._octokit.rest;
+        this.paginate = this._octokit.paginate;
     }
     return GithubClient;
 }());
@@ -673,6 +676,13 @@ function printToLogFile(logLevel) {
 }
 
 /**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/**
  * Extension of the `GitClient` with additional utilities which are useful for
  * authenticated Git client instances.
  */
@@ -737,8 +747,7 @@ var AuthenticatedGitClient = /** @class */ (function (_super) {
         }
         // OAuth scopes are loaded via the /rate_limit endpoint to prevent
         // usage of a request against that rate_limit for this lookup.
-        return this._cachedOauthScopes = this.github.rateLimit.get().then(function (_response) {
-            var response = _response;
+        return this._cachedOauthScopes = this.github.rateLimit.get().then(function (response) {
             var scopes = response.headers['x-oauth-scopes'];
             // If no token is provided, or if the Github client is authenticated incorrectly,
             // the `x-oauth-scopes` response header is not set. We error in such cases as it
@@ -855,8 +864,13 @@ const versionBranchNameRegex = /^(\d+)\.(\d+)\.x$/;
 /** Gets the version of a given branch by reading the `package.json` upstream. */
 function getVersionOfBranch(repo, branchName) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
-        const { data } = yield repo.api.repos.getContents({ owner: repo.owner, repo: repo.name, path: '/package.json', ref: branchName });
-        const content = Array.isArray(data) ? '' : data.content || '';
+        const { data } = yield repo.api.repos.getContent({ owner: repo.owner, repo: repo.name, path: '/package.json', ref: branchName });
+        // Workaround for: https://github.com/octokit/rest.js/issues/32.
+        // TODO: Remove cast once types of Octokit `getContent` are fixed.
+        const content = data.content;
+        if (!content) {
+            throw Error(`Unable to read "package.json" file from repository.`);
+        }
         const { version } = JSON.parse(Buffer.from(content, 'base64').toString());
         const parsedVersion = semver.parse(version);
         if (parsedVersion === null) {
@@ -950,7 +964,7 @@ function fetchActiveReleaseTrains(repo) {
         }
         // Collect all version-branches that should be considered for the latest version-branch,
         // or the feature-freeze/release-candidate.
-        const branches = (yield getBranchesForMajorVersions(repo, majorVersionsToConsider));
+        const branches = yield getBranchesForMajorVersions(repo, majorVersionsToConsider);
         const { latest, releaseCandidate } = yield findActiveReleaseTrainsFromVersionBranches(repo, nextVersion, branches, expectedReleaseCandidateMajor);
         if (latest === null) {
             throw Error(`Unable to determine the latest release-train. The following branches ` +
@@ -2926,6 +2940,10 @@ function getTargetBranchesForPr(prNumber) {
         /** The current state of the pull request from Github. */
         const prData = (yield git.github.pulls.get({ owner, repo, pull_number: prNumber })).data;
         /** The list of labels on the PR as strings. */
+        // Note: The `name` property of labels is always set but the Github OpenAPI spec is incorrect
+        // here.
+        // TODO(devversion): Remove the non-null cast once
+        // https://github.com/github/rest-api-description/issues/169 is fixed.
         const labels = prData.labels.map(l => l.name);
         /** The branch targetted via the Github UI. */
         const githubTargetBranch = prData.base.ref;
@@ -4055,12 +4073,10 @@ var GithubApiMergeStrategy = /** @class */ (function (_super) {
     GithubApiMergeStrategy.prototype._getPullRequestCommitMessages = function (_a) {
         var prNumber = _a.prNumber;
         return tslib.__awaiter(this, void 0, void 0, function () {
-            var request, allCommits;
+            var allCommits;
             return tslib.__generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0:
-                        request = this.git.github.pulls.listCommits.endpoint.merge(tslib.__assign(tslib.__assign({}, this.git.remoteParams), { pull_number: prNumber }));
-                        return [4 /*yield*/, this.git.github.paginate(request)];
+                    case 0: return [4 /*yield*/, this.git.github.paginate(this.git.github.pulls.listCommits, tslib.__assign(tslib.__assign({}, this.git.remoteParams), { pull_number: prNumber }))];
                     case 1:
                         allCommits = _b.sent();
                         return [2 /*return*/, allCommits.map(function (_a) {
@@ -6174,8 +6190,7 @@ function getPullRequestState(api, id) {
  */
 function isPullRequestClosedWithAssociatedCommit(api, id) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
-        const request = api.github.issues.listEvents.endpoint.merge(Object.assign(Object.assign({}, api.remoteParams), { issue_number: id }));
-        const events = yield api.github.paginate(request);
+        const events = yield api.github.paginate(api.github.issues.listEvents, Object.assign(Object.assign({}, api.remoteParams), { issue_number: id }));
         // Iterate through the events of the pull request in reverse. We want to find the most
         // recent events and check if the PR has been closed with a commit associated with it.
         // If the PR has been closed through a commit, we assume that the PR has been merged

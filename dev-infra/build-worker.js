@@ -64,8 +64,11 @@ var GithubClient = /** @class */ (function () {
         this.repos = this._octokit.repos;
         this.issues = this._octokit.issues;
         this.git = this._octokit.git;
-        this.paginate = this._octokit.paginate;
         this.rateLimit = this._octokit.rateLimit;
+        // Note: These are properties from `Octokit` that are brought in by optional plugins.
+        // TypeScript requires us to provide an explicit type for these.
+        this.rest = this._octokit.rest;
+        this.paginate = this._octokit.paginate;
     }
     return GithubClient;
 }());
