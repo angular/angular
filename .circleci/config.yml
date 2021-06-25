@@ -157,15 +157,12 @@ commands:
     description: Checkout and rebase the repository
     steps:
       - checkout
-      - run:
-          name: Set up environment
-          environment:
-              CIRCLE_GIT_BASE_REVISION: << pipeline.git.base_revision >>
-              CIRCLE_GIT_REVISION: << pipeline.git.revision >>
-          command: ./.circleci/env.sh
+      # After checkout, rebase on top of target branch.
       - run:
           name: Rebase PR on target branch
-          # After checkout, rebase on top of target branch.
+          environment:
+            CIRCLE_GIT_BASE_REVISION: << pipeline.git.base_revision >>
+            CIRCLE_GIT_REVISION: << pipeline.git.revision >>
           command: |
             if [ -n "$CIRCLE_PR_NUMBER" ]; then
               # User is required for rebase.

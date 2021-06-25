@@ -184,8 +184,18 @@ function getRefAndShas(sha, owner, name) {
 
 /** Gets the refs and shas for the base and target of the current environment. */
 function getRefsAndShasForChange() {
-  const base = getRefAndShas(process.env['CI_GIT_BASE_REVISION'], process.env['CI_REPO_OWNER'], process.env['CI_REPO_NAME']);
-  const target = getRefAndShas(process.env['CI_GIT_REVISION'], process.env['CI_PR_USERNAME'], process.env['CI_PR_REPONAME']);
+  const base = getRefAndShas(
+    process.env['CIRCLE_GIT_BASE_REVISION'],
+    process.env['CIRCLE_PROJECT_USERNAME'],
+    process.env['CIRCLE_PROJECT_REPONAME']
+  );
+
+  const target = getRefAndShas(
+    process.env['CIRCLE_GIT_REVISION'],
+    process.env['CIRCLE_PR_USERNAME'],
+    process.env['CIRCLE_PR_REPONAME']
+  );
+
   const commonAncestorSha = getCommonAncestorSha(base.sha, target.sha);
   return {
     base,
