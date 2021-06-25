@@ -17,6 +17,7 @@ ts_library(
         "//dev-infra/release/config",
         "//dev-infra/release/versioning",
         "//dev-infra/utils",
+        "@npm//@octokit/plugin-rest-endpoint-methods",
         "@npm//@octokit/rest",
         "@npm//@types/inquirer",
         "@npm//@types/node",

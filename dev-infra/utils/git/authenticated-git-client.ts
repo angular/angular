@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Octokit} from '@octokit/rest';
 
 import {NgDevConfig} from '../config';
 import {yellow} from '../console';
@@ -13,11 +12,6 @@ import {yellow} from '../console';
 import {GitClient} from './git-client';
 import {AuthenticatedGithubClient} from './github';
 import {getRepositoryGitUrl, GITHUB_TOKEN_GENERATE_URL, GITHUB_TOKEN_SETTINGS_URL} from './github-urls';
-
-/** Github response type extended to include the `x-oauth-scopes` headers presence. */
-type RateLimitResponseWithOAuthScopeHeader = Octokit.Response<Octokit.RateLimitGetResponse>&{
-  headers: {'x-oauth-scopes': string|undefined};
-};
 
 /** Describes a function that can be used to test for given Github OAuth scopes. */
 export type OAuthScopeTestFunction = (scopes: string[], missing: string[]) => void;
@@ -87,8 +81,7 @@ export class AuthenticatedGitClient extends GitClient {
     }
     // OAuth scopes are loaded via the /rate_limit endpoint to prevent
     // usage of a request against that rate_limit for this lookup.
-    return this._cachedOauthScopes = this.github.rateLimit.get().then(_response => {
-      const response = _response as RateLimitResponseWithOAuthScopeHeader;
+    return this._cachedOauthScopes = this.github.rateLimit.get().then(response => {
       const scopes = response.headers['x-oauth-scopes'];
 
       // If no token is provided, or if the Github client is authenticated incorrectly,
