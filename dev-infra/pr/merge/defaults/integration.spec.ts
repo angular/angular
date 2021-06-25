@@ -7,12 +7,14 @@
  */
 
 import * as nock from 'nock';
+import {ParsedUrlQuery} from 'querystring';
 
 import {ReleaseConfig} from '../../../release/config/index';
 import {_npmPackageInfoCache, NpmPackageInfo} from '../../../release/versioning/npm-registry';
 import {GithubConfig} from '../../../utils/config';
 import * as console from '../../../utils/console';
 import {GithubClient} from '../../../utils/git/github';
+import {buildGithubPaginationResponseHeader} from '../../../utils/testing/github-pagination-header';
 import {TargetLabel} from '../config';
 import {getBranchesFromTargetLabel, getTargetLabelFromPullRequest} from '../target-label';
 
@@ -79,7 +81,35 @@ describe('default target labels', () => {
     nock(getRepoApiRequestUrl())
         .get('/branches')
         .query(true)
-        .reply(200, branches.map(name => ({name})));
+        .reply(200, branches.slice(0, 29).map(name => ({name})));
+  }
+
+  /**
+   * Mocks a repository branch list API request with pagination.
+   * https://docs.github.com/en/rest/guides/traversing-with-pagination.
+   * https://docs.github.com/en/rest/reference/repos#list-branches.
+   */
+  function interceptBranchesListRequestWithPagination(branches: string[]) {
+    const apiUrl = getRepoApiRequestUrl();
+
+    // For each branch, create its own API page so that pagination is required
+    // to resolve all given branches.
+    for (let index = 0; index < branches.length; index++) {
+      // Pages start with `1` as per the Github API specification.
+      const pageNum = index + 1;
+      const name = branches[index];
+      const linkHeader =
+          buildGithubPaginationResponseHeader(branches.length, pageNum, `${apiUrl}/branches`);
+
+      // For the first page, either `?page=1` needs to be set, or no `page` should be specified.
+      const queryMatch = pageNum === 1 ?
+          (params: ParsedUrlQuery) => params.page === '1' || params.page === undefined :
+          {page: pageNum};
+
+      nock(getRepoApiRequestUrl()).get('/branches').query(queryMatch).reply(200, [{name}], {
+        link: linkHeader,
+      });
+    }
   }
 
   async function getBranchesForLabel(
@@ -99,7 +129,12 @@ describe('default target labels', () => {
   it('should detect "master" as branch for target: minor', async () => {
     interceptBranchVersionRequest('master', '11.0.0-next.0');
     interceptBranchVersionRequest('10.2.x', '10.2.4');
-    interceptBranchesListRequest(['10.2.x']);
+
+    // Note: We add a few more branches here to ensure that branches API requests are
+    // paginated properly. In Angular projects, there are usually many branches so that
+    // pagination is ultimately needed to detect the active release trains.
+    // See: https://github.com/angular/angular/commit/261b060fa168754db00248d1c5c9574bb19a72b4.
+    interceptBranchesListRequestWithPagination(['9.8.x', '10.1.x', '10.2.x']);
 
     expect(await getBranchesForLabel('target: minor')).toEqual(['master']);
   });
