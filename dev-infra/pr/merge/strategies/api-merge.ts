@@ -6,18 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Octokit} from '@octokit/rest';
+import {RestEndpointMethodTypes} from '@octokit/plugin-rest-endpoint-methods';
 import {prompt} from 'inquirer';
 
 import {parseCommitMessage} from '../../../commit-message/parse';
 import {AuthenticatedGitClient} from '../../../utils/git/authenticated-git-client';
-import {GitClient} from '../../../utils/git/git-client';
 import {GithubApiMergeMethod} from '../config';
 import {PullRequestFailure} from '../failures';
 import {PullRequest} from '../pull-request';
 import {matchesPattern} from '../string-pattern';
 
 import {MergeStrategy, TEMP_PR_HEAD_BRANCH} from './strategy';
+
+/** Type describing the parameters for the Octokit `merge` API endpoint. */
+type OctokitMergeParams = RestEndpointMethodTypes['pulls']['merge']['parameters'];
 
 /** Configuration for the Github API merge strategy. */
 export interface GithubApiMergeStrategyConfig {
@@ -75,7 +77,7 @@ export class GithubApiMergeStrategy extends MergeStrategy {
       return failure;
     }
 
-    const mergeOptions: Octokit.PullsMergeParams = {
+    const mergeOptions: OctokitMergeParams = {
       pull_number: prNumber,
       merge_method: method,
       ...this.git.remoteParams,
@@ -161,7 +163,7 @@ export class GithubApiMergeStrategy extends MergeStrategy {
    * The Github API only allows modifications to PR title and body for squash merges.
    */
   private async _promptCommitMessageEdit(
-      pullRequest: PullRequest, mergeOptions: Octokit.PullsMergeParams) {
+      pullRequest: PullRequest, mergeOptions: OctokitMergeParams) {
     const commitMessage = await this._getDefaultSquashCommitMessage(pullRequest);
     const {result} = await prompt<{result: string}>({
       type: 'editor',
@@ -197,9 +199,8 @@ export class GithubApiMergeStrategy extends MergeStrategy {
 
   /** Gets all commit messages of commits in the pull request. */
   private async _getPullRequestCommitMessages({prNumber}: PullRequest) {
-    const request = this.git.github.pulls.listCommits.endpoint.merge(
-        {...this.git.remoteParams, pull_number: prNumber});
-    const allCommits: Octokit.PullsListCommitsResponse = await this.git.github.paginate(request);
+    const allCommits = await this.git.github.paginate(
+        this.git.github.pulls.listCommits, {...this.git.remoteParams, pull_number: prNumber});
     return allCommits.map(({commit}) => commit.message);
   }
 

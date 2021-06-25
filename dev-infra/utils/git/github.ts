@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {OctokitOptions} from '@octokit/core/dist-types/types';
 import {graphql} from '@octokit/graphql';
+import {PaginateInterface} from '@octokit/plugin-paginate-rest';
+import {RestEndpointMethods} from '@octokit/plugin-rest-endpoint-methods/dist-types/generated/method-types';
 import {Octokit} from '@octokit/rest';
 import {RequestParameters} from '@octokit/types';
 import {query} from 'typed-graphqlify';
@@ -41,10 +44,14 @@ export class GithubClient {
   readonly repos = this._octokit.repos;
   readonly issues = this._octokit.issues;
   readonly git = this._octokit.git;
-  readonly paginate = this._octokit.paginate;
   readonly rateLimit = this._octokit.rateLimit;
 
-  constructor(private _octokitOptions?: Octokit.Options) {}
+  // Note: These are properties from `Octokit` that are brought in by optional plugins.
+  // TypeScript requires us to provide an explicit type for these.
+  readonly rest: RestEndpointMethods = this._octokit.rest;
+  readonly paginate: PaginateInterface = this._octokit.paginate;
+
+  constructor(private _octokitOptions?: OctokitOptions) {}
 }
 
 /**

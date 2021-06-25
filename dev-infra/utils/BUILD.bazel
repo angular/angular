@@ -12,7 +12,10 @@ ts_library(
     prodmode_target = "es5",
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
+        "@npm//@octokit/core",
         "@npm//@octokit/graphql",
+        "@npm//@octokit/plugin-paginate-rest",
+        "@npm//@octokit/plugin-rest-endpoint-methods",
         "@npm//@octokit/rest",
         "@npm//@octokit/types",
         "@npm//@types/inquirer",
