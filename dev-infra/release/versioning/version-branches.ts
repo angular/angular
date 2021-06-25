@@ -72,8 +72,8 @@ export function getVersionForVersionBranch(branchName: string): semver.SemVer|nu
  */
 export async function getBranchesForMajorVersions(
     repo: GithubRepoWithApi, majorVersions: number[]): Promise<VersionBranch[]> {
-  const {data: branchData} =
-      await repo.api.repos.listBranches({owner: repo.owner, repo: repo.name, protected: true});
+  const branchData = await repo.api.paginate(
+      repo.api.repos.listBranches, {owner: repo.owner, repo: repo.name, protected: true});
   const branches: VersionBranch[] = [];
 
   for (const {name} of branchData) {

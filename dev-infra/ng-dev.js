@@ -899,7 +899,7 @@ function getVersionForVersionBranch(branchName) {
  */
 function getBranchesForMajorVersions(repo, majorVersions) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
-        const { data: branchData } = yield repo.api.repos.listBranches({ owner: repo.owner, repo: repo.name, protected: true });
+        const branchData = yield repo.api.paginate(repo.api.repos.listBranches, { owner: repo.owner, repo: repo.name, protected: true });
         const branches = [];
         for (const { name } of branchData) {
             if (!isVersionBranch(name)) {
