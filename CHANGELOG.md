@@ -1,3 +1,31 @@
+# 12.1.0 "stainlesssteel-sloth" (2021-06-24)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **drag-drop:** resolve various event tracking issues inside the shadow dom ([#23026](https://github.com/angular/components/issues/23026)) ([1193972ca2718e62a94d64ab84a2242b5ad98fa8](https://github.com/angular/components/commit/1193972ca2718e62a94d64ab84a2242b5ad98fa8)), closes [#22939](https://github.com/angular/components/issues/22939) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **badge:** avoid emitting the structural styles more than once ([#23011](https://github.com/angular/components/issues/23011)) ([cf54d8b63984c153dcd3fc121e710a3d17e97a29](https://github.com/angular/components/commit/cf54d8b63984c153dcd3fc121e710a3d17e97a29)) |
+| bug fix |  **datepicker:** correct structure for grid role ([#23022](https://github.com/angular/components/issues/23022)) ([5b74a0d69a13ab8968637e7595a675a0fb1eef2c](https://github.com/angular/components/commit/5b74a0d69a13ab8968637e7595a675a0fb1eef2c)), closes [#21357](https://github.com/angular/components/issues/21357) |
+| bug fix |  **datepicker:** incorrect appearance when used in MDC form field ([#23028](https://github.com/angular/components/issues/23028)) ([f9ea7188fc267de58bff1a59c2cd2a21110a0a8c](https://github.com/angular/components/commit/f9ea7188fc267de58bff1a59c2cd2a21110a0a8c)) |
+| bug fix |  **datepicker:** Return union of view component types ([#23000](https://github.com/angular/components/issues/23000)) ([2045d0b37dbf42c73b50d9109776053788ce3ccf](https://github.com/angular/components/commit/2045d0b37dbf42c73b50d9109776053788ce3ccf)), closes [#22996](https://github.com/angular/components/issues/22996) |
+| bug fix |  **slide-toggle:** Made label non user selectable ([#22756](https://github.com/angular/components/issues/22756)) ([e5e1b18c5ee8ca7a8a029559050541d71786249c](https://github.com/angular/components/commit/e5e1b18c5ee8ca7a8a029559050541d71786249c)) |
+| bug fix |  **tabs:** update tab nav bar focused index on direct focus ([#22584](https://github.com/angular/components/issues/22584)) ([4f998501a95f08ae34c89c227859e256a8db9e4f](https://github.com/angular/components/commit/4f998501a95f08ae34c89c227859e256a8db9e4f)), closes [#22576](https://github.com/angular/components/issues/22576) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-radio:** add accessible touch targets ([#22994](https://github.com/angular/components/issues/22994)) ([041f582461dd056436a8418761ab3f2c3107e7b9](https://github.com/angular/components/commit/041f582461dd056436a8418761ab3f2c3107e7b9)), closes [#22892](https://github.com/angular/components/issues/22892) [#22991](https://github.com/angular/components/issues/22991) |
+| bug fix |  **mdc-snack-bar:** increase the specificity of styles targeting the action buttons ([#22959](https://github.com/angular/components/issues/22959)) ([16a5aba269c9eb5bdcd49e6af418878f214be99c](https://github.com/angular/components/commit/16a5aba269c9eb5bdcd49e6af418878f214be99c)) |
+| bug fix |  **mdc-tooltip:** fix text alignment of multili… ([#22981](https://github.com/angular/components/issues/22981)) ([da604bf260bab7e48933d45b7a0bb32018b1a4f4](https://github.com/angular/components/commit/da604bf260bab7e48933d45b7a0bb32018b1a4f4)) |
+
+
 # 12.1.0-rc.0 "resin-rose" (2021-06-16)
 
 No changes from 12.1.0-next.1
