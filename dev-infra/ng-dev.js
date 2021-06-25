@@ -899,9 +899,7 @@ function getVersionForVersionBranch(branchName) {
  */
 function getBranchesForMajorVersions(repo, majorVersions) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
-        // TODO(alxhub): actually paginate this, since eventually the number of branches we have will run
-        // off the end of the first page of data returned by `listBranches`.
-        const { data: branchData } = yield repo.api.repos.listBranches({ owner: repo.owner, repo: repo.name, protected: true, per_page: 100 });
+        const branchData = yield repo.api.paginate(repo.api.repos.listBranches, { owner: repo.owner, repo: repo.name, protected: true });
         const branches = [];
         for (const { name } of branchData) {
             if (!isVersionBranch(name)) {

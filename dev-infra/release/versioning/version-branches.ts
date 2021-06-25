@@ -72,10 +72,8 @@ export function getVersionForVersionBranch(branchName: string): semver.SemVer|nu
  */
 export async function getBranchesForMajorVersions(
     repo: GithubRepoWithApi, majorVersions: number[]): Promise<VersionBranch[]> {
-  // TODO(alxhub): actually paginate this, since eventually the number of branches we have will run
-  // off the end of the first page of data returned by `listBranches`.
-  const {data: branchData} = await repo.api.repos.listBranches(
-      {owner: repo.owner, repo: repo.name, protected: true, per_page: 100});
+  const branchData = await repo.api.paginate(
+      repo.api.repos.listBranches, {owner: repo.owner, repo: repo.name, protected: true});
   const branches: VersionBranch[] = [];
 
   for (const {name} of branchData) {

@@ -38,6 +38,7 @@ ts_library(
         "//dev-infra/release/config",
         "//dev-infra/release/versioning",
         "//dev-infra/utils",
+        "//dev-infra/utils/testing",
         "@npm//@types/jasmine",
         "@npm//@types/node",
         "@npm//@types/node-fetch",
