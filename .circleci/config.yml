@@ -87,7 +87,7 @@ executors:
         type: string
         default: medium
     docker:
-      - image: circleci/node:14.16.1-browsers@sha256:b70b37db395c29b95b88ac381e0dc9b438519d89abe63fd10d042057f00bcf41
+      - image: circleci/node:14.16.1@sha256:951e12268fe692615bfd155c327bd910e10c99db98404badd03879f984c32b31
     resource_class: << parameters.resource_class >>
     working_directory: ~/ng
 
@@ -273,7 +273,7 @@ jobs:
           # Yarn's requests sometimes take more than 10mins to complete.
           no_output_timeout: 45m
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
-      - run: yarn --cwd angular-devtools install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
+      - run: yarn --cwd devtools install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
       # Make the bazel directories and add a file to them if they don't exist already so that
       # persist_to_workspace does not fail.
       - run: |
