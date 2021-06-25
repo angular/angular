@@ -87,6 +87,7 @@
     "prettier": "^2.0.0",
     "pretty-quick": "^3.0.0",
     "protractor": "~7.0.0",
+    "puppeteer": "9.0.0",
     "start-server-and-test": "^1.10.11",
     "todomvc-app-css": "^2.3.0",
     "todomvc-common": "^1.0.5",
