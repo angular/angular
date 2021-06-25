@@ -1,6 +1,6 @@
 export const config = {
   // The MDC sidenav hasn't been implemented yet.
-  skippedPackages: ['mdc-sidenav', 'mdc-slider'],
+  skippedPackages: ['mdc-sidenav'],
   skippedExports: {
     'mdc-chips': [
       // These components haven't been implemented for MDC due to a different accessibility pattern.
@@ -79,6 +79,12 @@ export const config = {
     'mdc-slide-toggle/testing': [
       // Private base class that is only exported for MDC.
       '_MatSlideToggleHarnessBase'
+    ],
+    'mdc-slider': [
+      // ControlValueAccessor implementation detail.
+      'MAT_SLIDER_VALUE_ACCESSOR',
+      // Irrelevant for the MDC implementation, because the slider doesn't dispatch any events.
+      'MatSliderChange'
     ],
     'mdc-snack-bar': [
       // Private interface used to ensure consistency for MDC package.
