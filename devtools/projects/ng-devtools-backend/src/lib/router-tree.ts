@@ -1,5 +1,5 @@
-import { Route } from 'protocol';
-import { Router, Routes, Route as AngularRoute } from '@angular/router';
+import {Route as AngularRoute, Router, Routes} from '@angular/router';
+import {Route} from 'protocol';
 
 export function parseRoutes(router: Router): Route {
   const rootName = (router as any).rootComponentType?.name || 'no-name';
@@ -19,7 +19,7 @@ export function parseRoutes(router: Router): Route {
   return root;
 }
 
-function assignChildrenToParent(parentPath: string | null, children: Routes): Route[] {
+function assignChildrenToParent(parentPath: string|null, children: Routes): Route[] {
   return children.map((child: AngularRoute) => {
     const childName = childRouteName(child);
     const childDescendents: [any] = (child as any)._loadedConfig?.routes || child.children;

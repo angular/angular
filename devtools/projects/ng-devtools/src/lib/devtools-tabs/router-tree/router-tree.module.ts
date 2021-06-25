@@ -1,9 +1,9 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MatSelectModule } from '@angular/material/select';
-import { MatDialogModule } from '@angular/material/dialog';
+import {CommonModule} from '@angular/common';
+import {NgModule} from '@angular/core';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatSelectModule} from '@angular/material/select';
 
-import { RouterTreeComponent } from './router-tree.component';
+import {RouterTreeComponent} from './router-tree.component';
 
 @NgModule({
   declarations: [RouterTreeComponent],
@@ -11,4 +11,5 @@ import { RouterTreeComponent } from './router-tree.component';
   exports: [RouterTreeComponent],
   entryComponents: [],
 })
-export class RouterTreeModule {}
+export class RouterTreeModule {
+}

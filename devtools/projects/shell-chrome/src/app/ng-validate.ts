@@ -33,17 +33,17 @@ function detectAngular(win: Window): void {
   }
 
   win.postMessage(
-    {
-      // Needs to be inline because we're stringifying
-      // this function and executing it with eval.
-      isIvy: typeof (window as any).getAllAngularRootElements?.()?.[0]?.__ngContext__ !== 'undefined',
-      isAngular,
-      isDebugMode,
-      isSupportedAngularVersion,
-      isAngularDevTools: true,
-    } as AngularDetection,
-    '*'
-  );
+      {
+        // Needs to be inline because we're stringifying
+        // this function and executing it with eval.
+        isIvy: typeof (window as any).getAllAngularRootElements?.()?.[0]?.__ngContext__ !==
+            'undefined',
+        isAngular,
+        isDebugMode,
+        isSupportedAngularVersion,
+        isAngularDevTools: true,
+      } as AngularDetection,
+      '*');
 
   if (!isAngular) {
     setTimeout(() => detectAngular(win), 1000);

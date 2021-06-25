@@ -1,5 +1,5 @@
-import { ApplicationOperations } from 'ng-devtools';
-import { DirectivePosition, ElementPosition } from 'protocol';
+import {ApplicationOperations} from 'ng-devtools';
+import {DirectivePosition, ElementPosition} from 'protocol';
 
 export class DemoApplicationOperations extends ApplicationOperations {
   viewSource(position: ElementPosition): void {

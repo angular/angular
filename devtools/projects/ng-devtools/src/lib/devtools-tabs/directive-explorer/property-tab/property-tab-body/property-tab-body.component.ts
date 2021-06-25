@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { IndexedNode } from '../../directive-forest/index-forest';
-import { FlatNode } from '../../property-resolver/element-property-resolver';
-import { DirectivePosition } from 'protocol';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {DirectivePosition} from 'protocol';
+
+import {IndexedNode} from '../../directive-forest/index-forest';
+import {FlatNode} from '../../property-resolver/element-property-resolver';
 
 @Component({
   templateUrl: './property-tab-body.component.html',
@@ -9,10 +10,10 @@ import { DirectivePosition } from 'protocol';
   styleUrls: ['./property-tab-body.component.scss'],
 })
 export class PropertyTabBodyComponent {
-  @Input() currentSelectedElement: IndexedNode | null;
-  @Output() inspect = new EventEmitter<{ node: FlatNode; directivePosition: DirectivePosition }>();
+  @Input() currentSelectedElement: IndexedNode|null;
+  @Output() inspect = new EventEmitter<{node: FlatNode; directivePosition: DirectivePosition}>();
 
-  getCurrentDirectives(): string[] | undefined {
+  getCurrentDirectives(): string[]|undefined {
     if (!this.currentSelectedElement) {
       return;
     }

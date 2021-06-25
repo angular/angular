@@ -1,12 +1,7 @@
-import {
-  appIsAngularInDevMode,
-  appIsAngularIvy,
-  appIsAngular,
-  appIsSupportedAngularVersion,
-  getAngularVersion,
-} from './angular-check';
+import {appIsAngular, appIsAngularInDevMode, appIsAngularIvy, appIsSupportedAngularVersion, getAngularVersion,} from './angular-check';
 
-const setNgVersion = (version = '12.0.0'): void => document.documentElement.setAttribute('ng-version', version);
+const setNgVersion = (version = '12.0.0'): void =>
+    document.documentElement.setAttribute('ng-version', version);
 const removeNgVersion = (): void => document.documentElement.removeAttribute('ng-version');
 
 describe('angular-check', () => {
@@ -54,7 +49,7 @@ describe('angular-check', () => {
   describe('appIsAngularIvy', () => {
     it('should not recognize VE apps', () => {
       (window as any).ng = {
-        probe(): void {},
+        probe(): void{},
       };
       setNgVersion();
       expect(appIsAngularIvy()).toBeFalse();
@@ -82,7 +77,7 @@ describe('angular-check', () => {
 
     it('should detect VE apps', () => {
       (window as any).ng = {
-        probe(): void {},
+        probe(): void{},
       };
       setNgVersion();
 
@@ -91,7 +86,7 @@ describe('angular-check', () => {
 
     it('should detect Ivy apps', () => {
       (window as any).ng = {
-        getComponent(): void {},
+        getComponent(): void{},
       };
       setNgVersion();
       expect(appIsAngularInDevMode()).toBeTrue();

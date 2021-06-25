@@ -1,5 +1,5 @@
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { Process } from 'ng-devtools';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {Process} from 'ng-devtools';
 
 declare let process: Process;
 

@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { SelectedDirective } from '../timeline-visualizer.component';
+import {Component, Input} from '@angular/core';
+import {SelectedDirective} from '../timeline-visualizer.component';
 
 @Component({
   selector: 'ng-execution-details',

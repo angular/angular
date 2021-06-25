@@ -1,4 +1,4 @@
-import { parseRoutes } from './router-tree';
+import {parseRoutes} from './router-tree';
 
 describe('parseRoutes', () => {
   it('should work without any routes', () => {
@@ -104,7 +104,7 @@ describe('parseRoutes', () => {
         },
         {
           handler: 'component-two',
-          data: [Object({ key: 'name', value: 'component-two' })],
+          data: [Object({key: 'name', value: 'component-two'})],
           hash: null,
           specificity: null,
           name: 'component-two',

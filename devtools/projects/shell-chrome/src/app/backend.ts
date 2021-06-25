@@ -1,9 +1,12 @@
-import { initializeMessageBus } from 'ng-devtools-backend';
-import { SamePageMessageBus } from './same-page-message-bus';
-import { initializeExtendedWindowOperations } from './chrome-window-extensions';
-import { unHighlight } from '../../../ng-devtools-backend/src/lib/highlighter';
+import {initializeMessageBus} from 'ng-devtools-backend';
 
-const messageBus = new SamePageMessageBus('angular-devtools-backend', 'angular-devtools-content-script');
+import {unHighlight} from '../../../ng-devtools-backend/src/lib/highlighter';
+
+import {initializeExtendedWindowOperations} from './chrome-window-extensions';
+import {SamePageMessageBus} from './same-page-message-bus';
+
+const messageBus =
+    new SamePageMessageBus('angular-devtools-backend', 'angular-devtools-content-script');
 
 let initialized = false;
 messageBus.on('handshake', () => {
@@ -23,15 +26,11 @@ messageBus.on('handshake', () => {
     inspectorRunning = false;
   });
 
-  // handles case when mouse leaves chrome extension too quickly. unHighlight() is not a very expensive function
-  // and has an if check so it's DOM api call is not called more than necessary
-  document.addEventListener(
-    'mousemove',
-    () => {
-      if (!inspectorRunning) {
-        unHighlight();
-      }
-    },
-    false
-  );
+  // handles case when mouse leaves chrome extension too quickly. unHighlight() is not a very
+  // expensive function and has an if check so it's DOM api call is not called more than necessary
+  document.addEventListener('mousemove', () => {
+    if (!inspectorRunning) {
+      unHighlight();
+    }
+  }, false);
 });

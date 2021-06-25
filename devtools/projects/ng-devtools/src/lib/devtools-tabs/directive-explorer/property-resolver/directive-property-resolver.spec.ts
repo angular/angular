@@ -1,5 +1,5 @@
-import { Properties, PropType } from 'protocol';
-import { DirectivePropertyResolver } from './directive-property-resolver';
+import {Properties, PropType} from 'protocol';
+import {DirectivePropertyResolver} from './directive-property-resolver';
 
 const properties: Properties = {
   props: {

@@ -2,8 +2,8 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { Process } from 'ng-devtools';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {Process} from 'ng-devtools';
 
 declare let process: Process;
 

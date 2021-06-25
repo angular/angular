@@ -1,5 +1,6 @@
-import { deeplySerializeSelectedProperties } from './state-serializer';
-import { PropType } from 'protocol';
+import {PropType} from 'protocol';
+
+import {deeplySerializeSelectedProperties} from './state-serializer';
 
 const QUERY_1_1 = [];
 
@@ -173,27 +174,26 @@ describe('deeplySerializeSelectedProperties', () => {
 
   it('should work with getters', () => {
     const result = deeplySerializeSelectedProperties(
-      {
-        get foo(): any {
-          return {
-            baz: {
-              qux: 3,
-            },
-          };
-        },
-      },
-      [
         {
-          name: 'foo',
-          children: [
-            {
-              name: 'baz',
-              children: [],
-            },
-          ],
+          get foo(): any {
+            return {
+              baz: {
+                qux: 3,
+              },
+            };
+          },
         },
-      ]
-    );
+        [
+          {
+            name: 'foo',
+            children: [
+              {
+                name: 'baz',
+                children: [],
+              },
+            ],
+          },
+        ]);
     expect(result).toEqual({
       foo: {
         type: PropType.Object,
@@ -214,17 +214,16 @@ describe('deeplySerializeSelectedProperties', () => {
 
   it('should getters should be readonly', () => {
     const result = deeplySerializeSelectedProperties(
-      {
-        get foo(): number {
-          return 42;
+        {
+          get foo(): number {
+            return 42;
+          },
+          get bar(): number {
+            return 42;
+          },
+          set bar(val: number) {},
         },
-        get bar(): number {
-          return 42;
-        },
-        set bar(val: number) {},
-      },
-      []
-    );
+        []);
     expect(result).toEqual({
       foo: {
         type: PropType.Number,
@@ -247,52 +246,51 @@ describe('deeplySerializeSelectedProperties', () => {
 
   it('should return the precise path requested', () => {
     const result = deeplySerializeSelectedProperties(
-      {
-        state: {
-          nested: {
-            props: {
-              foo: 1,
-              bar: 2,
-            },
-            [Symbol(3)](): number {
-              return 1.618;
-            },
-            get foo(): number {
-              return 42;
+        {
+          state: {
+            nested: {
+              props: {
+                foo: 1,
+                bar: 2,
+              },
+              [Symbol(3)](): number {
+                return 1.618;
+              },
+              get foo(): number {
+                return 42;
+              },
             },
           },
         },
-      },
-      [
-        {
-          name: 'state',
-          children: [
-            {
-              name: 'nested',
-              children: [
-                {
-                  name: 'props',
-                  children: [
-                    {
-                      name: 'foo',
-                      children: [],
-                    },
-                    {
-                      name: 'bar',
-                      children: [],
-                    },
-                  ],
-                },
-                {
-                  name: 'foo',
-                  children: [],
-                },
-              ],
-            },
-          ],
-        },
-      ]
-    );
+        [
+          {
+            name: 'state',
+            children: [
+              {
+                name: 'nested',
+                children: [
+                  {
+                    name: 'props',
+                    children: [
+                      {
+                        name: 'foo',
+                        children: [],
+                      },
+                      {
+                        name: 'bar',
+                        children: [],
+                      },
+                    ],
+                  },
+                  {
+                    name: 'foo',
+                    children: [],
+                  },
+                ],
+              },
+            ],
+          },
+        ]);
     expect(result).toEqual({
       state: {
         type: PropType.Object,
@@ -344,14 +342,13 @@ describe('deeplySerializeSelectedProperties', () => {
 
   it('should not show setters at all when associated getters or values are unavailable', () => {
     const result = deeplySerializeSelectedProperties(
-      {
-        set foo(_: any) {},
-        get bar(): number {
-          return 1;
+        {
+          set foo(_: any) {},
+          get bar(): number {
+            return 1;
+          },
         },
-      },
-      []
-    );
+        []);
     expect(result).toEqual({
       foo: {
         type: PropType.Undefined,

@@ -1,4 +1,4 @@
-import { Process } from 'ng-devtools';
+import {Process} from 'ng-devtools';
 
 declare let process: Process;
 

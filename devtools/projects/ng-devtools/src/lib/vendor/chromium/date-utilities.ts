@@ -16,12 +16,6 @@ export const toISO8601Compact = (date: Date): string => {
   }
 
   return (
-    date.getFullYear() +
-    leadZero(date.getMonth() + 1) +
-    leadZero(date.getDate()) +
-    'T' +
-    leadZero(date.getHours()) +
-    leadZero(date.getMinutes()) +
-    leadZero(date.getSeconds())
-  );
+      date.getFullYear() + leadZero(date.getMonth() + 1) + leadZero(date.getDate()) + 'T' +
+      leadZero(date.getHours()) + leadZero(date.getMinutes()) + leadZero(date.getSeconds()));
 };

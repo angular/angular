@@ -1,6 +1,7 @@
-import { SIMPLE_FORMATTED_TREE_MAP_RECORD, SIMPLE_RECORD } from '../record-formatter-spec-constants';
-import { AppEntry } from '../record-formatter';
-import { TreeMapFormatter, TreeMapNode } from './tree-map-formatter';
+import {AppEntry} from '../record-formatter';
+import {SIMPLE_FORMATTED_TREE_MAP_RECORD, SIMPLE_RECORD} from '../record-formatter-spec-constants';
+
+import {TreeMapFormatter, TreeMapNode} from './tree-map-formatter';
 
 const formatter = new TreeMapFormatter();
 

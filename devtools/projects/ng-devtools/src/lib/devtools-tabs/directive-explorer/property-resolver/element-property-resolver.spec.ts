@@ -1,5 +1,6 @@
-import { ElementPropertyResolver } from './element-property-resolver';
-import { Properties, PropType } from 'protocol';
+import {Properties, PropType} from 'protocol';
+
+import {ElementPropertyResolver} from './element-property-resolver';
 
 const mockIndexedNode = {
   component: {

@@ -1,16 +1,8 @@
-import { deeplySerializeSelectedProperties, serializeDirectiveState } from './state-serializer/state-serializer';
+import {ChangeDetectionStrategy} from '@angular/core';
+import {ComponentExplorerViewQuery, DevToolsNode, DirectiveMetadata, DirectivesProperties, ElementPosition, PropertyQueryTypes, UpdatedStateData,} from 'protocol';
 
-import {
-  ComponentExplorerViewQuery,
-  DevToolsNode,
-  DirectiveMetadata,
-  DirectivesProperties,
-  ElementPosition,
-  PropertyQueryTypes,
-  UpdatedStateData,
-} from 'protocol';
-import { buildDirectiveTree, getLViewFromDirectiveOrElementInstance } from './directive-forest';
-import { ChangeDetectionStrategy } from '@angular/core';
+import {buildDirectiveTree, getLViewFromDirectiveOrElementInstance} from './directive-forest';
+import {deeplySerializeSelectedProperties, serializeDirectiveState} from './state-serializer/state-serializer';
 
 const ngDebug = () => (window as any).ng;
 
@@ -25,46 +17,47 @@ export interface ComponentInstanceType {
   isElement: boolean;
 }
 
-export interface ComponentTreeNode extends DevToolsNode<DirectiveInstanceType, ComponentInstanceType> {
+export interface ComponentTreeNode extends
+    DevToolsNode<DirectiveInstanceType, ComponentInstanceType> {
   children: ComponentTreeNode[];
 }
 
-export const getLatestComponentState = (
-  query: ComponentExplorerViewQuery,
-  directiveForest?: ComponentTreeNode[]
-): DirectivesProperties | undefined => {
-  // if a directive forest is passed in we don't have to build the forest again.
-  directiveForest = directiveForest ?? buildDirectiveForest();
+export const getLatestComponentState =
+    (query: ComponentExplorerViewQuery, directiveForest?: ComponentTreeNode[]):
+        DirectivesProperties|undefined => {
+          // if a directive forest is passed in we don't have to build the forest again.
+          directiveForest = directiveForest ?? buildDirectiveForest();
 
-  const node = queryDirectiveForest(query.selectedElement, directiveForest);
-  if (!node) {
-    return;
-  }
+          const node = queryDirectiveForest(query.selectedElement, directiveForest);
+          if (!node) {
+            return;
+          }
 
-  const result: DirectivesProperties = {};
+          const result: DirectivesProperties = {};
 
-  const populateResultSet = (dir: DirectiveInstanceType | ComponentInstanceType) => {
-    if (query.propertyQuery.type === PropertyQueryTypes.All) {
-      result[dir.name] = {
-        props: serializeDirectiveState(dir.instance),
-        metadata: getDirectiveMetadata(dir.instance),
-      };
-    }
-    if (query.propertyQuery.type === PropertyQueryTypes.Specified) {
-      result[dir.name] = {
-        props: deeplySerializeSelectedProperties(dir.instance, query.propertyQuery.properties[dir.name] || []),
-        metadata: getDirectiveMetadata(dir.instance),
-      };
-    }
-  };
+          const populateResultSet = (dir: DirectiveInstanceType|ComponentInstanceType) => {
+            if (query.propertyQuery.type === PropertyQueryTypes.All) {
+              result[dir.name] = {
+                props: serializeDirectiveState(dir.instance),
+                metadata: getDirectiveMetadata(dir.instance),
+              };
+            }
+            if (query.propertyQuery.type === PropertyQueryTypes.Specified) {
+              result[dir.name] = {
+                props: deeplySerializeSelectedProperties(
+                    dir.instance, query.propertyQuery.properties[dir.name] || []),
+                metadata: getDirectiveMetadata(dir.instance),
+              };
+            }
+          };
 
-  node.directives.forEach(populateResultSet);
-  if (node.component) {
-    populateResultSet(node.component);
-  }
+          node.directives.forEach(populateResultSet);
+          if (node.component) {
+            populateResultSet(node.component);
+          }
 
-  return result;
-};
+          return result;
+        };
 
 const enum DirectiveMetadataKey {
   INPUTS = 'inputs',
@@ -127,7 +120,7 @@ const getRootLViewsHelper = (element: Element, rootLViews = new Set<any>()): Set
 const getRoots = () => {
   const roots = Array.from(document.documentElement.querySelectorAll('[ng-version]'));
   const isTopLevel = (element: HTMLElement) => {
-    let parent: HTMLElement | null = element;
+    let parent: HTMLElement|null = element;
     while (parent?.parentElement) {
       parent = parent.parentElement;
       if (parent.hasAttribute('ng-version')) {
@@ -146,39 +139,41 @@ export const buildDirectiveForest = (): ComponentTreeNode[] => {
 
 // Based on an ElementID we return a specific component node.
 // If we can't find any, we return null.
-export const queryDirectiveForest = (
-  position: ElementPosition,
-  forest: ComponentTreeNode[]
-): ComponentTreeNode | null => {
-  if (!position.length) {
-    return null;
-  }
-  let node: null | ComponentTreeNode = null;
-  for (const i of position) {
-    node = forest[i];
-    if (!node) {
-      return null;
-    }
-    forest = node.children;
-  }
-  return node;
-};
+export const queryDirectiveForest =
+    (position: ElementPosition, forest: ComponentTreeNode[]): ComponentTreeNode|null => {
+      if (!position.length) {
+        return null;
+      }
+      let node: null|ComponentTreeNode = null;
+      for (const i of position) {
+        node = forest[i];
+        if (!node) {
+          return null;
+        }
+        forest = node.children;
+      }
+      return node;
+    };
 
-export const findNodeInForest = (position: ElementPosition, forest: ComponentTreeNode[]): HTMLElement | null => {
-  const foundComponent: ComponentTreeNode | null = queryDirectiveForest(position, forest);
-  return foundComponent ? (foundComponent.nativeElement as HTMLElement) : null;
-};
+export const findNodeInForest =
+    (position: ElementPosition, forest: ComponentTreeNode[]): HTMLElement|null => {
+      const foundComponent: ComponentTreeNode|null = queryDirectiveForest(position, forest);
+      return foundComponent ? (foundComponent.nativeElement as HTMLElement) : null;
+    };
 
-export const findNodeFromSerializedPosition = (serializedPosition: string): ComponentTreeNode | null => {
-  const position: number[] = serializedPosition.split(',').map((index) => parseInt(index, 10));
-  return queryDirectiveForest(position, buildDirectiveForest());
-};
+export const findNodeFromSerializedPosition =
+    (serializedPosition: string): ComponentTreeNode|null => {
+      const position: number[] = serializedPosition.split(',').map((index) => parseInt(index, 10));
+      return queryDirectiveForest(position, buildDirectiveForest());
+    };
 
 export const updateState = (updatedStateData: UpdatedStateData): void => {
   const ngd = ngDebug();
   const node = queryDirectiveForest(updatedStateData.directiveId.element, buildDirectiveForest());
   if (!node) {
-    console.warn('Could not update the state of component', updatedStateData, 'because the component was not found');
+    console.warn(
+        'Could not update the state of component', updatedStateData,
+        'because the component was not found');
     return;
   }
   if (updatedStateData.directiveId.directive !== undefined) {
@@ -210,5 +205,6 @@ const mutateComponentOrDirective = (updatedStateData: UpdatedStateData, compOrDi
   // the line below could throw an error.
   try {
     parentObjectOfValueToUpdate[valueKey] = updatedStateData.newValue;
-  } catch {}
+  } catch {
+  }
 };

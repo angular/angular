@@ -1,5 +1,5 @@
-import { Subject } from 'rxjs';
-import { share } from 'rxjs/operators';
+import {Subject} from 'rxjs';
+import {share} from 'rxjs/operators';
 
 // This service is used to notify the CDK virtual scroll parents
 // when the tab has changed. Alternatively, we risk to have broken

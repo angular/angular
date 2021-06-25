@@ -1,6 +1,7 @@
-import { ChromeMessageBus } from './chrome-message-bus';
-import { MessageBus, Events, Parameters } from 'protocol';
-import { NgZone } from '@angular/core';
+import {NgZone} from '@angular/core';
+import {Events, MessageBus, Parameters} from 'protocol';
+
+import {ChromeMessageBus} from './chrome-message-bus';
 
 export class ZoneAwareChromeMessageBus extends MessageBus<Events> {
   private _bus: ChromeMessageBus;
@@ -10,21 +11,15 @@ export class ZoneAwareChromeMessageBus extends MessageBus<Events> {
   }
 
   on<E extends keyof Events>(topic: E, cb: Events[E]): void {
-    this._bus.on(
-      topic,
-      function (): void {
-        this._ngZone.run(() => cb.apply(null, arguments));
-      }.bind(this)
-    );
+    this._bus.on(topic, function(): void {
+      this._ngZone.run(() => cb.apply(null, arguments));
+    }.bind(this));
   }
 
   once<E extends keyof Events>(topic: E, cb: Events[E]): void {
-    this._bus.once(
-      topic,
-      function (): void {
-        this._ngZone.run(() => cb.apply(null, arguments));
-      }.bind(this)
-    );
+    this._bus.once(topic, function(): void {
+      this._ngZone.run(() => cb.apply(null, arguments));
+    }.bind(this));
   }
 
   emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): boolean {

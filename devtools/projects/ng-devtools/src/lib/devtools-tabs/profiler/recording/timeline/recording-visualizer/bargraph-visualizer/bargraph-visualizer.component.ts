@@ -1,10 +1,11 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { BargraphNode, BarGraphFormatter } from '../../record-formatter/bargraph-formatter';
-import { ProfilerFrame } from 'protocol';
-import { SelectedDirective, SelectedEntry } from '../timeline-visualizer.component';
-import { Theme, ThemeService } from 'projects/ng-devtools/src/lib/theme-service';
-import { Subscription } from 'rxjs';
-import { formatDirectiveProfile } from '../profile-formatter';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Theme, ThemeService} from 'projects/ng-devtools/src/lib/theme-service';
+import {ProfilerFrame} from 'protocol';
+import {Subscription} from 'rxjs';
+
+import {BarGraphFormatter, BargraphNode} from '../../record-formatter/bargraph-formatter';
+import {formatDirectiveProfile} from '../profile-formatter';
+import {SelectedDirective, SelectedEntry} from '../timeline-visualizer.component';
 
 @Component({
   selector: 'ng-bargraph-visualizer',
@@ -21,7 +22,8 @@ export class BargraphVisualizerComponent implements OnInit, OnDestroy {
   private _currentThemeSubscription: Subscription;
   currentTheme: Theme;
 
-  @Input() set frame(data: ProfilerFrame) {
+  @Input()
+  set frame(data: ProfilerFrame) {
     this.profileRecords = this._formatter.formatFrame(data);
   }
 
@@ -46,7 +48,7 @@ export class BargraphVisualizerComponent implements OnInit, OnDestroy {
     this.nodeSelect.emit({
       entry: node,
       parentHierarchy: node.parents.map((element) => {
-        return { name: element.directives[0].name };
+        return {name: element.directives[0].name};
       }),
       selectedDirectives: this.formatEntryData(node),
     });

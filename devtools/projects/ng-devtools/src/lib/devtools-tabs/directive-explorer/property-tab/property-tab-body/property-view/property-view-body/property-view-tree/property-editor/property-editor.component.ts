@@ -1,16 +1,7 @@
-import {
-  AfterViewChecked,
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-} from '@angular/core';
+import {AfterViewChecked, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output,} from '@angular/core';
 
-type EditorType = string | number | boolean;
-type EditorResult = EditorType | Array<EditorType>;
+type EditorType = string|number|boolean;
+type EditorResult = EditorType|Array<EditorType>;
 
 enum PropertyEditorState {
   Read,

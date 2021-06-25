@@ -1,4 +1,4 @@
-import { MessageBus, Events, Parameters } from 'protocol';
+import {Events, MessageBus, Parameters} from 'protocol';
 
 type AnyEventCallback<Ev> = <E extends keyof Ev>(topic: E, args: Parameters<Ev[E]>) => void;
 
@@ -56,13 +56,12 @@ export class SamePageMessageBus extends MessageBus<Events> {
 
   emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): boolean {
     window.postMessage(
-      {
-        source: this._source,
-        topic,
-        args,
-      },
-      '*'
-    );
+        {
+          source: this._source,
+          topic,
+          args,
+        },
+        '*');
     return true;
   }
 

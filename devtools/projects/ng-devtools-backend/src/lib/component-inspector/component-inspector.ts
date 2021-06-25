@@ -1,8 +1,9 @@
-import { unHighlight, highlight, findComponentAndHost } from '../highlighter';
-import { Type } from '@angular/core';
-import { ComponentTreeNode, findNodeInForest } from '../component-tree';
-import { ElementPosition } from 'protocol';
-import { initializeOrGetDirectiveForestHooks } from '../hooks';
+import {Type} from '@angular/core';
+import {ElementPosition} from 'protocol';
+
+import {ComponentTreeNode, findNodeInForest} from '../component-tree';
+import {findComponentAndHost, highlight, unHighlight} from '../highlighter';
+import {initializeOrGetDirectiveForestHooks} from '../hooks';
 
 export interface ComponentInspectorOptions {
   onComponentEnter: (id: number) => void;
@@ -11,18 +12,16 @@ export interface ComponentInspectorOptions {
 }
 
 export class ComponentInspector {
-  private _selectedComponent: { component: Type<unknown>; host: HTMLElement | null };
+  private _selectedComponent: {component: Type<unknown>; host: HTMLElement | null};
   private readonly _onComponentEnter;
   private readonly _onComponentSelect;
   private readonly _onComponentLeave;
 
-  constructor(
-    componentOptions: ComponentInspectorOptions = {
-      onComponentEnter: () => {},
-      onComponentLeave: () => {},
-      onComponentSelect: () => {},
-    }
-  ) {
+  constructor(componentOptions: ComponentInspectorOptions = {
+    onComponentEnter: () => {},
+    onComponentLeave: () => {},
+    onComponentSelect: () => {},
+  }) {
     this.bindMethods();
     this._onComponentEnter = componentOptions.onComponentEnter;
     this._onComponentSelect = componentOptions.onComponentSelect;
@@ -46,7 +45,8 @@ export class ComponentInspector {
     e.preventDefault();
 
     if (this._selectedComponent.component && this._selectedComponent.host) {
-      this._onComponentSelect(initializeOrGetDirectiveForestHooks().getDirectiveId(this._selectedComponent.component));
+      this._onComponentSelect(
+          initializeOrGetDirectiveForestHooks().getDirectiveId(this._selectedComponent.component));
     }
   }
 
@@ -61,7 +61,8 @@ export class ComponentInspector {
     unHighlight();
     if (this._selectedComponent.component && this._selectedComponent.host) {
       highlight(this._selectedComponent.host);
-      this._onComponentEnter(initializeOrGetDirectiveForestHooks().getDirectiveId(this._selectedComponent.component));
+      this._onComponentEnter(
+          initializeOrGetDirectiveForestHooks().getDirectiveId(this._selectedComponent.component));
     }
   }
 
@@ -81,7 +82,7 @@ export class ComponentInspector {
 
   highlightByPosition(position: ElementPosition): void {
     const forest: ComponentTreeNode[] = initializeOrGetDirectiveForestHooks().getDirectiveForest();
-    const elementToHighlight: HTMLElement | null = findNodeInForest(position, forest);
+    const elementToHighlight: HTMLElement|null = findNodeInForest(position, forest);
     if (elementToHighlight) {
       highlight(elementToHighlight);
     }

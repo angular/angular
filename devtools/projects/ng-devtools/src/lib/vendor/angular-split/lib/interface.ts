@@ -1,5 +1,5 @@
 // tslint:disable
-import { SplitAreaDirective } from './directive/splitArea.directive';
+import {SplitAreaDirective} from './directive/splitArea.directive';
 
 export interface IPoint {
   x: number;
@@ -9,9 +9,9 @@ export interface IPoint {
 export interface IArea {
   component: SplitAreaDirective;
   order: number;
-  size: number | null;
-  minSize: number | null;
-  maxSize: number | null;
+  size: number|null;
+  minSize: number|null;
+  maxSize: number|null;
 }
 
 // CREATED ON DRAG START
@@ -52,4 +52,4 @@ export interface IOutputData {
   sizes: IOutputAreaSizes;
 }
 
-export interface IOutputAreaSizes extends Array<number | '*'> {}
+export interface IOutputAreaSizes extends Array<number|'*'> {}

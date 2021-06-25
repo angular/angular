@@ -1,8 +1,8 @@
 const chalk = require('chalk');
-const { createInterface } = require('readline');
+const {createInterface} = require('readline');
 const semver = require('semver');
-const { writeFileSync, readFileSync } = require('fs');
-const { join } = require('path');
+const {writeFileSync, readFileSync} = require('fs');
+const {join} = require('path');
 
 const MANIFEST_PATH = join(__dirname, 'src/manifest.json');
 

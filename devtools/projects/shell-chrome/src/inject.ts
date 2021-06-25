@@ -1,13 +1,11 @@
 export const injectScripts = (scripts: string[], cb?: () => void) => {
   let injected = 0;
-  scripts.forEach(s =>
-    injectScript(chrome.runtime.getURL(s), () => {
-      injected++;
-      if (injected === scripts.length && cb) {
-        cb();
-      }
-    })
-  );
+  scripts.forEach(s => injectScript(chrome.runtime.getURL(s), () => {
+                    injected++;
+                    if (injected === scripts.length && cb) {
+                      cb();
+                    }
+                  }));
 };
 
 const injectScript = (scriptName: string, cb: () => void) => {

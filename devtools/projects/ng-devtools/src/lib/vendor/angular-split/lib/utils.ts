@@ -1,11 +1,12 @@
 // tslint:disable
-import { ElementRef } from '@angular/core';
+import {ElementRef} from '@angular/core';
 
-import { IArea, IPoint, IAreaSnapshot, ISplitSideAbsorptionCapacity, IAreaAbsorptionCapacity } from './interface';
+import {IArea, IAreaAbsorptionCapacity, IAreaSnapshot, IPoint, ISplitSideAbsorptionCapacity} from './interface';
 
-export function getPointFromEvent(event: MouseEvent | TouchEvent): IPoint | null {
+export function getPointFromEvent(event: MouseEvent|TouchEvent): IPoint|null {
   // TouchEvent
-  if ((<TouchEvent>event).changedTouches !== undefined && (<TouchEvent>event).changedTouches.length > 0) {
+  if ((<TouchEvent>event).changedTouches !== undefined &&
+      (<TouchEvent>event).changedTouches.length > 0) {
     return {
       x: (<TouchEvent>event).changedTouches[0].clientX,
       y: (<TouchEvent>event).changedTouches[0].clientY,
@@ -21,7 +22,7 @@ export function getPointFromEvent(event: MouseEvent | TouchEvent): IPoint | null
   return null;
 }
 
-export function getElementPixelSize(elRef: ElementRef, direction: 'horizontal' | 'vertical'): number {
+export function getElementPixelSize(elRef: ElementRef, direction: 'horizontal'|'vertical'): number {
   const rect = (<HTMLElement>elRef.nativeElement).getBoundingClientRect();
 
   return direction === 'horizontal' ? rect.width : rect.height;
@@ -31,14 +32,15 @@ export function getInputBoolean(v: any): boolean {
   return typeof v === 'boolean' ? v : v === 'false' ? false : true;
 }
 
-export function getInputPositiveNumber<T>(v: any, defaultValue: T): number | T {
+export function getInputPositiveNumber<T>(v: any, defaultValue: T): number|T {
   if (v === null || v === undefined) return defaultValue;
 
   v = Number(v);
   return !isNaN(v) && v >= 0 ? v : defaultValue;
 }
 
-export function isUserSizesValid(unit: 'percent' | 'pixel', sizes: Array<number | null>): boolean | undefined {
+export function isUserSizesValid(unit: 'percent'|'pixel', sizes: Array<number|null>): boolean|
+    undefined {
   // All sizes have to be not null and total should be 100
   if (unit === 'percent') {
     const total = sizes.reduce((total, s) => (s !== null ? total! + s : total), 0);
@@ -51,7 +53,7 @@ export function isUserSizesValid(unit: 'percent' | 'pixel', sizes: Array<number 
   }
 }
 
-export function getAreaMinSize(a: IArea): null | number {
+export function getAreaMinSize(a: IArea): null|number {
   if (a.size === null) {
     return null;
   }
@@ -71,7 +73,7 @@ export function getAreaMinSize(a: IArea): null | number {
   return a.component.minSize;
 }
 
-export function getAreaMaxSize(a: IArea): null | number {
+export function getAreaMaxSize(a: IArea): null|number {
   if (a.size === null) {
     return null;
   }
@@ -92,28 +94,19 @@ export function getAreaMaxSize(a: IArea): null | number {
 }
 
 export function getGutterSideAbsorptionCapacity(
-  unit: 'percent' | 'pixel',
-  sideAreas: Array<IAreaSnapshot>,
-  pixels: number,
-  allAreasSizePixel: number
-): ISplitSideAbsorptionCapacity {
-  return sideAreas.reduce(
-    (acc, area) => {
-      const res = getAreaAbsorptionCapacity(unit, area, acc.remain, allAreasSizePixel);
-      (acc.list as any).push(res);
-      acc.remain = res!.pixelRemain;
-      return acc;
-    },
-    { remain: pixels, list: [] }
-  );
+    unit: 'percent'|'pixel', sideAreas: Array<IAreaSnapshot>, pixels: number,
+    allAreasSizePixel: number): ISplitSideAbsorptionCapacity {
+  return sideAreas.reduce((acc, area) => {
+    const res = getAreaAbsorptionCapacity(unit, area, acc.remain, allAreasSizePixel);
+    (acc.list as any).push(res);
+    acc.remain = res!.pixelRemain;
+    return acc;
+  }, {remain: pixels, list: []});
 }
 
 function getAreaAbsorptionCapacity(
-  unit: 'percent' | 'pixel',
-  areaSnapshot: IAreaSnapshot,
-  pixels: number,
-  allAreasSizePixel: number
-): IAreaAbsorptionCapacity | undefined {
+    unit: 'percent'|'pixel', areaSnapshot: IAreaSnapshot, pixels: number,
+    allAreasSizePixel: number): IAreaAbsorptionCapacity|undefined {
   // No pain no gain
   if (pixels === 0) {
     return {
@@ -144,10 +137,8 @@ function getAreaAbsorptionCapacity(
 }
 
 function getAreaAbsorptionCapacityPercent(
-  areaSnapshot: IAreaSnapshot,
-  pixels: number,
-  allAreasSizePixel: number
-): IAreaAbsorptionCapacity | undefined {
+    areaSnapshot: IAreaSnapshot, pixels: number,
+    allAreasSizePixel: number): IAreaAbsorptionCapacity|undefined {
   const tempPixelSize = areaSnapshot.sizePixelAtStart + pixels;
   const tempPercentSize = (tempPixelSize / allAreasSizePixel) * 100;
 
@@ -206,10 +197,8 @@ function getAreaAbsorptionCapacityPercent(
 }
 
 function getAreaAbsorptionCapacityPixel(
-  areaSnapshot: IAreaSnapshot,
-  pixels: number,
-  containerSizePixel: number
-): IAreaAbsorptionCapacity | undefined {
+    areaSnapshot: IAreaSnapshot, pixels: number,
+    containerSizePixel: number): IAreaAbsorptionCapacity|undefined {
   const tempPixelSize = areaSnapshot.sizePixelAtStart + pixels;
 
   // ENLARGE AREA
@@ -261,7 +250,7 @@ function getAreaAbsorptionCapacityPixel(
   }
 }
 
-export function updateAreaSize(unit: 'percent' | 'pixel', item: IAreaAbsorptionCapacity) {
+export function updateAreaSize(unit: 'percent'|'pixel', item: IAreaAbsorptionCapacity) {
   if (unit === 'percent') {
     item.areaSnapshot.area.size = item.percentAfterAbsorption;
   } else if (unit === 'pixel') {

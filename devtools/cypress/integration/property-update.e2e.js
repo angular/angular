@@ -10,17 +10,22 @@ describe('change of the state should reflect in property update', () => {
     });
 
     // Select the todo item
-    cy.get('.tree-wrapper').find('.tree-node:contains("app-todo[TooltipDirective]")').first().click({ force: true });
+    cy.get('.tree-wrapper')
+        .find('.tree-node:contains("app-todo[TooltipDirective]")')
+        .first()
+        .click({force: true});
 
     // Expand the todo in the property explorer
-    cy.get('.explorer-panel:contains("app-todo")').find('ng-property-view mat-tree-node:contains("todo")').click();
+    cy.get('.explorer-panel:contains("app-todo")')
+        .find('ng-property-view mat-tree-node:contains("todo")')
+        .click();
 
     // Verify its value is now completed
     cy.get('.explorer-panel:contains("app-todo")')
-      .find('ng-property-view mat-tree-node:contains("completed")')
-      .find('ng-property-editor .editor')
-      .should((el) => {
-        expect(el.text().trim()).equal('true');
-      });
+        .find('ng-property-view mat-tree-node:contains("completed")')
+        .find('ng-property-editor .editor')
+        .should((el) => {
+          expect(el.text().trim()).equal('true');
+        });
   });
 });

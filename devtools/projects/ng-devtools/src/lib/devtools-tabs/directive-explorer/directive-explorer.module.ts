@@ -1,19 +1,20 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
+import {ScrollingModule} from '@angular/cdk/scrolling';
+import {CommonModule} from '@angular/common';
+import {NgModule} from '@angular/core';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatIconModule} from '@angular/material/icon';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatTreeModule} from '@angular/material/tree';
 
-import { DirectiveExplorerComponent } from './directive-explorer.component';
-import { DirectiveForestComponent } from './directive-forest/directive-forest.component';
-import { FilterComponent } from './directive-forest/filter/filter.component';
-import { MatTreeModule } from '@angular/material/tree';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { PropertyTabModule } from './property-tab/property-tab.module';
-import { DirectiveForestModule } from './directive-forest/directive-forest.module';
-import { ScrollingModule } from '@angular/cdk/scrolling';
-import { AngularSplitModule } from '../../vendor/angular-split/lib/module';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import {AngularSplitModule} from '../../vendor/angular-split/lib/module';
+
+import {DirectiveExplorerComponent} from './directive-explorer.component';
+import {DirectiveForestComponent} from './directive-forest/directive-forest.component';
+import {DirectiveForestModule} from './directive-forest/directive-forest.module';
+import {FilterComponent} from './directive-forest/filter/filter.component';
+import {PropertyTabModule} from './property-tab/property-tab.module';
 
 @NgModule({
   declarations: [DirectiveExplorerComponent, DirectiveForestComponent, FilterComponent],
@@ -32,4 +33,5 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatTooltipModule,
   ],
 })
-export class DirectiveExplorerModule {}
+export class DirectiveExplorerModule {
+}

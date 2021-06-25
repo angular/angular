@@ -1,5 +1,5 @@
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { Process } from 'ng-devtools';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {Process} from 'ng-devtools';
 
 declare let process: Process;
 

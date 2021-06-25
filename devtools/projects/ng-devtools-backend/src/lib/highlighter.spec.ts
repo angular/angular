@@ -3,7 +3,7 @@ import * as highlighter from './highlighter';
 describe('highlighter', () => {
   describe('findComponentAndHost', () => {
     it('should return undefined when no node is provided', () => {
-      expect(highlighter.findComponentAndHost(undefined)).toEqual({ component: null, host: null });
+      expect(highlighter.findComponentAndHost(undefined)).toEqual({component: null, host: null});
     });
 
     it('should return same component and host if component exists', () => {

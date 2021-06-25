@@ -1,7 +1,7 @@
-import { ReplaySubject, Subject } from 'rxjs';
-import { Injectable, RendererFactory2, Renderer2 } from '@angular/core';
+import {Injectable, Renderer2, RendererFactory2} from '@angular/core';
+import {ReplaySubject, Subject} from 'rxjs';
 
-export type Theme = 'dark-theme' | 'light-theme';
+export type Theme = 'dark-theme'|'light-theme';
 
 @Injectable({
   providedIn: 'root',

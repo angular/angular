@@ -1,34 +1,21 @@
-import {
-  DirectivePosition,
-  ElementPosition,
-  Events,
-  MessageBus,
-  DevToolsNode,
-  DirectiveType,
-  ComponentType,
-  ProfilerFrame,
-  ComponentExplorerViewQuery,
-} from 'protocol';
-import { ComponentTreeNode, getLatestComponentState, queryDirectiveForest, updateState } from './component-tree';
-import { start as startProfiling, stop as stopProfiling } from './hooks/capture';
-import { serializeDirectiveState } from './state-serializer/state-serializer';
-import { ComponentInspector } from './component-inspector/component-inspector';
-import { setConsoleReference } from './set-console-reference';
-import { unHighlight } from './highlighter';
-import {
-  getAngularVersion,
-  appIsAngularInDevMode,
-  appIsSupportedAngularVersion,
-  appIsAngularIvy,
-} from './angular-check';
-import { debounceTime } from 'rxjs/operators';
-import { disableTimingAPI, enableTimingAPI, initializeOrGetDirectiveForestHooks } from './hooks';
-import { runOutsideAngular } from './utils';
+import {ComponentExplorerViewQuery, ComponentType, DevToolsNode, DirectivePosition, DirectiveType, ElementPosition, Events, MessageBus, ProfilerFrame,} from 'protocol';
+import {debounceTime} from 'rxjs/operators';
+
+import {appIsAngularInDevMode, appIsAngularIvy, appIsSupportedAngularVersion, getAngularVersion,} from './angular-check';
+import {ComponentInspector} from './component-inspector/component-inspector';
+import {ComponentTreeNode, getLatestComponentState, queryDirectiveForest, updateState} from './component-tree';
+import {unHighlight} from './highlighter';
+import {disableTimingAPI, enableTimingAPI, initializeOrGetDirectiveForestHooks} from './hooks';
+import {start as startProfiling, stop as stopProfiling} from './hooks/capture';
+import {setConsoleReference} from './set-console-reference';
+import {serializeDirectiveState} from './state-serializer/state-serializer';
+import {runOutsideAngular} from './utils';
 
 export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void => {
   messageBus.on('shutdown', shutdownCallback(messageBus));
 
-  messageBus.on('getLatestComponentExplorerView', getLatestComponentExplorerViewCallback(messageBus));
+  messageBus.on(
+      'getLatestComponentExplorerView', getLatestComponentExplorerViewCallback(messageBus));
 
   messageBus.on('queryNgAvailability', checkForAngularCallback(messageBus));
 
@@ -53,8 +40,8 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
     // once every 250ms
     runOutsideAngular(() => {
       initializeOrGetDirectiveForestHooks()
-        .profiler.changeDetection$.pipe(debounceTime(250))
-        .subscribe(() => messageBus.emit('componentTreeDirty'));
+          .profiler.changeDetection$.pipe(debounceTime(250))
+          .subscribe(() => messageBus.emit('componentTreeDirty'));
     });
   }
 };
@@ -67,60 +54,61 @@ const shutdownCallback = (messageBus: MessageBus<Events>) => () => {
   messageBus.destroy();
 };
 
-const getLatestComponentExplorerViewCallback = (messageBus: MessageBus<Events>) => (
-  query?: ComponentExplorerViewQuery
-) => {
-  // We want to force re-indexing of the component tree.
-  // Pressing the refresh button means the user saw stuck UI.
+const getLatestComponentExplorerViewCallback = (messageBus: MessageBus<Events>) =>
+    (query?: ComponentExplorerViewQuery) => {
+      // We want to force re-indexing of the component tree.
+      // Pressing the refresh button means the user saw stuck UI.
 
-  initializeOrGetDirectiveForestHooks().indexForest();
+      initializeOrGetDirectiveForestHooks().indexForest();
 
-  if (!query) {
-    messageBus.emit('latestComponentExplorerView', [
-      {
-        forest: prepareForestForSerialization(initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest()),
-      },
-    ]);
-    return;
-  }
-  messageBus.emit('latestComponentExplorerView', [
-    {
-      forest: prepareForestForSerialization(initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest()),
-      properties: getLatestComponentState(query, initializeOrGetDirectiveForestHooks().getDirectiveForest()),
-    },
-  ]);
-};
+      if (!query) {
+        messageBus.emit('latestComponentExplorerView', [
+          {
+            forest: prepareForestForSerialization(
+                initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest()),
+          },
+        ]);
+        return;
+      }
+      messageBus.emit('latestComponentExplorerView', [
+        {
+          forest: prepareForestForSerialization(
+              initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest()),
+          properties: getLatestComponentState(
+              query, initializeOrGetDirectiveForestHooks().getDirectiveForest()),
+        },
+      ]);
+    };
 
-const checkForAngularCallback = (messageBus: MessageBus<Events>) => () => checkForAngular(messageBus);
+const checkForAngularCallback = (messageBus: MessageBus<Events>) => () =>
+    checkForAngular(messageBus);
 const getRoutesCallback = (messageBus: MessageBus<Events>) => () => getRoutes(messageBus);
 
 const startProfilingCallback = (messageBus: MessageBus<Events>) => () =>
-  startProfiling((frame: ProfilerFrame) => {
-    messageBus.emit('sendProfilerChunk', [frame]);
-  });
+    startProfiling((frame: ProfilerFrame) => {
+      messageBus.emit('sendProfilerChunk', [frame]);
+    });
 
 const stopProfilingCallback = (messageBus: MessageBus<Events>) => () => {
   messageBus.emit('profilerResults', [stopProfiling()]);
 };
 
 const selectedComponentCallback = (position: ElementPosition) => {
-  const node = queryDirectiveForest(position, initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest());
-  setConsoleReference({ node, position });
+  const node = queryDirectiveForest(
+      position, initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest());
+  setConsoleReference({node, position});
 };
 
 const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (
-  position: DirectivePosition,
-  propPath: string[]
-) => {
-  const emitEmpty = () => messageBus.emit('nestedProperties', [position, { props: {} }, propPath]);
+    position: DirectivePosition, propPath: string[]) => {
+  const emitEmpty = () => messageBus.emit('nestedProperties', [position, {props: {}}, propPath]);
   const node = queryDirectiveForest(
-    position.element,
-    initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest()
-  );
+      position.element, initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest());
   if (!node) {
     return emitEmpty();
   }
-  const current = position.directive === undefined ? node.component : node.directives[position.directive];
+  const current =
+      position.directive === undefined ? node.component : node.directives[position.directive];
   if (!current) {
     return emitEmpty();
   }
@@ -131,7 +119,7 @@ const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (
       console.error('Cannot access the properties', propPath, 'of', node);
     }
   }
-  messageBus.emit('nestedProperties', [position, { props: serializeDirectiveState(data) }, propPath]);
+  messageBus.emit('nestedProperties', [position, {props: serializeDirectiveState(data)}, propPath]);
 };
 
 //
@@ -157,7 +145,7 @@ const checkForAngular = (messageBus: MessageBus<Events>): void => {
   }
 
   messageBus.emit('ngAvailability', [
-    { version: ngVersion.toString(), devMode: appIsAngularInDevMode(), ivy: appIsIvy },
+    {version: ngVersion.toString(), devMode: appIsAngularInDevMode(), ivy: appIsIvy},
   ]);
 };
 
@@ -191,30 +179,31 @@ export interface SerializableComponentInstanceType extends ComponentType {
   id: number;
 }
 
-export interface SerializableComponentTreeNode
-  extends DevToolsNode<SerializableDirectiveInstanceType, SerializableComponentInstanceType> {
+export interface SerializableComponentTreeNode extends
+    DevToolsNode<SerializableDirectiveInstanceType, SerializableComponentInstanceType> {
   children: SerializableComponentTreeNode[];
 }
 
 // Here we drop properties to prepare the tree for serialization.
 // We don't need the component instance, so we just traverse the tree
 // and leave the component name.
-const prepareForestForSerialization = (roots: ComponentTreeNode[]): SerializableComponentTreeNode[] => {
-  return roots.map((node) => {
-    return {
-      element: node.element,
-      component: node.component
-        ? {
+const prepareForestForSerialization =
+    (roots: ComponentTreeNode[]): SerializableComponentTreeNode[] => {
+      return roots.map((node) => {
+        return {
+          element: node.element,
+          component: node.component ? {
             name: node.component.name,
             isElement: node.component.isElement,
             id: initializeOrGetDirectiveForestHooks().getDirectiveId(node.component.instance),
-          }
-        : null,
-      directives: node.directives.map((d) => ({
-        name: d.name,
-        id: initializeOrGetDirectiveForestHooks().getDirectiveId(d.instance),
-      })),
-      children: prepareForestForSerialization(node.children),
-    } as SerializableComponentTreeNode;
-  });
-};
+          } :
+                                      null,
+          directives: node.directives.map(
+              (d) => ({
+                name: d.name,
+                id: initializeOrGetDirectiveForestHooks().getDirectiveId(d.instance),
+              })),
+          children: prepareForestForSerialization(node.children),
+        } as SerializableComponentTreeNode;
+      });
+    };

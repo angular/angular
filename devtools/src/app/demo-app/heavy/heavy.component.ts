@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import {Component, Input} from '@angular/core';
 
 const fib = (n: number) => {
   if (n === 1 || n === 2) {
@@ -13,7 +13,9 @@ const fib = (n: number) => {
   styleUrls: ['./heavy.component.scss'],
 })
 export class HeavyComponent {
-  @Input() set foo(_: any) {}
+  @Input()
+  set foo(_: any) {
+  }
 
   state = {
     nested: {
@@ -21,12 +23,14 @@ export class HeavyComponent {
         foo: 1,
         bar: 2,
       },
-      [Symbol(3)](): number {
-        return 1.618;
-      },
-      get foo(): number {
-        return 42;
-      },
+      [Symbol(3)]():
+          number {
+            return 1.618;
+          },
+      get foo():
+          number {
+            return 42;
+          },
     },
   };
   calculate(): number {
