@@ -175,12 +175,12 @@
   dependencies:
     tslib "^2.2.0"
 
-"@angular/cdk@~12.0.0":
-  version "12.0.0"
-  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-12.0.0.tgz#86064923870a7f1d6094d08dc7951e41d8972aaa"
-  integrity sha512-Ij1wNlufbwH2R3zVwkiJgrI0Oc4+yuveEFWMnckcZ7t6E3drmeS1/YeHSbYlWau+fglWs7LtJWC4dEIpGymvzg==
+"@angular/cdk@~12.1.0":
+  version "12.1.0"
+  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-12.1.0.tgz#0d3496b308e43743b7fd8e899ba5b0ad4d21a6bf"
+  integrity sha512-AkkhEveUDwblJyTd1NvuP7eH7Pwj14hyMmMnzfKBcaImvsSXK/z0T58wzp5vVYUtAQc05MuojwfsJQCev5QwNg==
   dependencies:
-    tslib "^2.1.0"
+    tslib "^2.2.0"
   optionalDependencies:
     parse5 "^5.0.0"
 
@@ -279,12 +279,12 @@
   uid f9e27cca7b53c3552a08b4f42f3d1d806d3a8295
   resolved "https://codeload.github.com/angular/language-service-builds/tar.gz/f9e27cca7b53c3552a08b4f42f3d1d806d3a8295"
 
-"@angular/material@~12.0.0":
-  version "12.0.0"
-  resolved "https://registry.yarnpkg.com/@angular/material/-/material-12.0.0.tgz#07eb6ad3c661ae3ab8e65df803eae47fd149735f"
-  integrity sha512-ToWfr4ge2ZINLBtUQOseGm7mzscLMsrKLWYM0HzfVL9lkm6EtfTlReZV84DEzDf6/htky41t9nY5SBPWs2dtug==
+"@angular/material@~12.1.0":
+  version "12.1.0"
+  resolved "https://registry.yarnpkg.com/@angular/material/-/material-12.1.0.tgz#6bd0ce14f5bb491ba332104b9c329a7bc1382384"
+  integrity sha512-YxR09gfqfGmJysySlUWqcGYPWBVNTu2Cb48z1nxTFz13A4idw3qZa1NdHKPxi0f53x1koEd9DxKnx8M1XwvmSg==
   dependencies:
-    tslib "^2.1.0"
+    tslib "^2.2.0"
 
 "@angular/platform-browser-dynamic@github:angular/platform-browser-dynamic-builds#fa91883c499da487d167a532dee743cb51fef3a3":
   version "12.2.0-next.0+3.sha-37a740c"
@@ -12189,11 +12189,6 @@ tslib@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.0.0.tgz#18d13fc2dce04051e20f074cc8387fd8089ce4f3"
   integrity sha512-lTqkx847PI7xEDYJntxZH89L2/aXInsyF2luSafe/+0fHOMjlBNXdH6th7f70qxLDhul7KZK0zC8V5ZIyHl0/g==
-
-tslib@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.1.0.tgz#da60860f1c2ecaa5703ab7d39bc05b6bf988b97a"
-  integrity sha512-hcVC3wYEziELGGmEEXue7D75zbwIIVUMWAVbHItGPx0ziyXxrOMQx4rQEVEV45Ut/1IotuEvwqPopzIOkDMf0A==
 
 tslint@~5.20.0:
   version "5.20.1"
