@@ -263,7 +263,8 @@ export class TestBedViewEngine implements TestBed {
 
   private _compiler: TestingCompiler = null!;
   private _moduleRef: NgModuleRef<any>|null = null;
-  private _moduleFactory: NgModuleFactory<any> = null!;
+  private _moduleFactory: NgModuleFactory<any>|null = null;
+  private _pendingModuleFactory: Type<unknown>|null = null;
 
   private _compilerOptions: CompilerOptions[] = [];
 
@@ -341,7 +342,8 @@ export class TestBedViewEngine implements TestBed {
     this._isRoot = true;
     this._rootProviderOverrides = [];
 
-    this._moduleFactory = null!;
+    this._moduleFactory = null;
+    this._pendingModuleFactory = null;
     this._compilerOptions = [];
     this._providers = [];
     this._declarations = [];
@@ -399,10 +401,16 @@ export class TestBedViewEngine implements TestBed {
     }
 
     const moduleType = this._createCompilerAndModule();
-    return this._compiler.compileModuleAndAllComponentsAsync(moduleType)
-        .then((moduleAndComponentFactories) => {
-          this._moduleFactory = moduleAndComponentFactories.ngModuleFactory;
-        });
+    this._pendingModuleFactory = moduleType;
+    return this._compiler.compileModuleAndAllComponentsAsync(moduleType).then(result => {
+      // If the module mismatches by the time the promise resolves, it means that the module has
+      // already been destroyed and a new compilation has started. If that's the case, avoid
+      // overwriting the module factory, because it can cause downstream errors.
+      if (this._pendingModuleFactory === moduleType) {
+        this._moduleFactory = result.ngModuleFactory;
+        this._pendingModuleFactory = null;
+      }
+    });
   }
 
   private _initIfNeeded(): void {
