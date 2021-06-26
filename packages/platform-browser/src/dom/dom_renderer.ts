@@ -119,6 +119,14 @@ export class DomRendererFactory2 implements RendererFactory2 {
 
         return new ShadowDomRenderer(this.eventManager, this.sharedStylesHost, element, type);
       default: {
+        // If the element is inside of the shadow DOM, we have to use a `ShadowDomRenderer`, even
+        // though its encapsulation isn't explicitly `ShadowDom`, in order to avoid having its
+        // styles leak out into the document.
+        const rootNode = element.getRootNode?.();
+        if (typeof ShadowRoot !== 'undefined' && rootNode instanceof ShadowRoot) {
+          return new ShadowDomRenderer(
+              this.eventManager, this.sharedStylesHost, element, type, rootNode);
+        }
         if (!this.rendererByCompId.has(type.id)) {
           const styles = flattenStyles(type.id, type.styles, []);
           this.sharedStylesHost.addStyles(styles);
@@ -290,8 +298,8 @@ class EmulatedEncapsulationDomRenderer2 extends DefaultDomRenderer2 {
   private hostAttr: string;
 
   constructor(
-      eventManager: EventManager, sharedStylesHost: DomSharedStylesHost,
-      private component: RendererType2, appId: string) {
+      eventManager: EventManager, sharedStylesHost: DomSharedStylesHost, component: RendererType2,
+      appId: string) {
     super(eventManager);
     const styles = flattenStyles(appId + '-' + component.id, component.styles, []);
     sharedStylesHost.addStyles(styles);
@@ -312,13 +320,15 @@ class EmulatedEncapsulationDomRenderer2 extends DefaultDomRenderer2 {
 }
 
 class ShadowDomRenderer extends DefaultDomRenderer2 {
-  private shadowRoot: any;
+  private ownsShadowRoot: boolean;
+  private shadowRoot: ShadowRoot;
 
   constructor(
       eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost,
-      private hostEl: any, component: RendererType2) {
+      private hostEl: any, component: RendererType2, ancestorShadowRoot?: ShadowRoot) {
     super(eventManager);
-    this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
+    this.shadowRoot = ancestorShadowRoot || hostEl.attachShadow({mode: 'open'});
+    this.ownsShadowRoot = !ancestorShadowRoot;
     this.sharedStylesHost.addHost(this.shadowRoot);
     const styles = flattenStyles(component.id, component.styles, []);
     for (let i = 0; i < styles.length; i++) {
@@ -329,7 +339,7 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
   }
 
   private nodeOrShadowRoot(node: any): any {
-    return node === this.hostEl ? this.shadowRoot : node;
+    return (this.ownsShadowRoot && node === this.hostEl) ? this.shadowRoot : node;
   }
 
   destroy() {

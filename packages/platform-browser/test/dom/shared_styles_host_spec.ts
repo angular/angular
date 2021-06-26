@@ -63,5 +63,18 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       ssh.ngOnDestroy();
       expect(someHost.innerHTML).toEqual('');
     });
+
+    it('should remove style nodes when all associated hosts have been removed', () => {
+      ssh.addStyles(['a {};']);
+      ssh.addHost(someHost);
+      ssh.addHost(someHost);
+      expect(someHost.innerHTML).toEqual('<style>a {};</style>');
+
+      ssh.removeHost(someHost);
+      expect(someHost.innerHTML).toEqual('<style>a {};</style>');
+
+      ssh.removeHost(someHost);
+      expect(someHost.innerHTML).toEqual('');
+    });
   });
 }

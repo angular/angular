@@ -26,52 +26,57 @@ export class SharedStylesHost {
   }
 
   onStylesAdded(additions: Set<string>): void {}
-
-  getAllStyles(): string[] {
-    return Array.from(this._stylesSet);
-  }
 }
 
 @Injectable()
 export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
-  // Maps all registered host nodes to a list of style nodes that have been added to the host node.
-  private _hostNodes = new Map<Node, Node[]>();
+  private _insertionNodes = new Map<Node, [hostCount: number, styleNodes: Node[]]>();
 
   constructor(@Inject(DOCUMENT) private _doc: any) {
     super();
-    this._hostNodes.set(_doc.head, []);
+    this.addHost(_doc.head);
   }
 
-  private _addStylesToHost(styles: Set<string>, host: Node, styleNodes: Node[]): void {
-    styles.forEach((style: string) => {
+  private _addStyles(styles: Set<string>, insertionNode: Node, styleNodes: Node[]): void {
+    styles.forEach(style => {
       const styleEl = this._doc.createElement('style');
       styleEl.textContent = style;
-      styleNodes.push(host.appendChild(styleEl));
+      styleNodes.push(insertionNode.appendChild(styleEl));
     });
   }
 
-  addHost(hostNode: Node): void {
-    const styleNodes: Node[] = [];
-    this._addStylesToHost(this._stylesSet, hostNode, styleNodes);
-    this._hostNodes.set(hostNode, styleNodes);
+  addHost(insertionNode: Node): void {
+    const trackedStyles = this._insertionNodes.get(insertionNode);
+    if (trackedStyles) {
+      trackedStyles[0]++;
+    } else {
+      const styleNodes: Node[] = [];
+      this._addStyles(this._stylesSet, insertionNode, styleNodes);
+      this._insertionNodes.set(insertionNode, [1, styleNodes]);
+    }
   }
 
-  removeHost(hostNode: Node): void {
-    const styleNodes = this._hostNodes.get(hostNode);
-    if (styleNodes) {
-      styleNodes.forEach(removeStyle);
+  removeHost(insertionNode: Node): void {
+    const trackedStyles = this._insertionNodes.get(insertionNode);
+    if (trackedStyles) {
+      const [hostCount, styleNodes] = trackedStyles;
+      if (hostCount > 1) {
+        trackedStyles[0]--;
+      } else {
+        styleNodes.forEach(removeStyle);
+        this._insertionNodes.delete(insertionNode);
+      }
     }
-    this._hostNodes.delete(hostNode);
   }
 
   onStylesAdded(additions: Set<string>): void {
-    this._hostNodes.forEach((styleNodes, hostNode) => {
-      this._addStylesToHost(additions, hostNode, styleNodes);
+    this._insertionNodes.forEach(([, styleNodes], insertionNode) => {
+      this._addStyles(additions, insertionNode, styleNodes);
     });
   }
 
   ngOnDestroy(): void {
-    this._hostNodes.forEach(styleNodes => styleNodes.forEach(removeStyle));
+    this._insertionNodes.forEach((_, insertionNode) => this.removeHost(insertionNode));
   }
 }
 

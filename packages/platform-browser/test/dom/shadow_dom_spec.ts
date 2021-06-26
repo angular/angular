@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, destroyPlatform, EventEmitter, Injector, Input, NgModule, Output, Renderer2, ViewEncapsulation} from '@angular/core';
+import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {BrowserModule} from '@angular/platform-browser';
+import {BrowserModule, By} from '@angular/platform-browser';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -76,6 +76,47 @@ if (browserDetection.supportsShadowDom) {
       expect(articleSlot!.assignedNodes()[1].textContent).toBe('Article Subtext!');
       expect(articleContent.assignedSlot).toBe(articleSlot);
       expect(articleSubcontent.assignedSlot).toBe(articleSlot);
+    });
+
+    it('should not leak the styles of unecapsulated components outside of the shadow root', () => {
+      @Component({
+        template: '<div class="my-el outer"></div><shadow-comp></shadow-comp>',
+        styles: ['.my-el { background-color: rgb(0, 255, 0); }'],
+        encapsulation: ViewEncapsulation.None
+      })
+      class App {
+      }
+
+      @Component({
+        selector: 'shadow-comp',
+        encapsulation: ViewEncapsulation.ShadowDom,
+        template: '<unencapsulated-child></unencapsulated-child>',
+        styles: [':host { color: blue; }']
+      })
+      class ShadowComp {
+      }
+
+      @Component({
+        selector: 'unencapsulated-child',
+        template: '<div class="my-el inner"></div>',
+        styles: ['.my-el { background-color: rgb(255, 0, 0); }'],
+        encapsulation: ViewEncapsulation.None
+      })
+      class UnencapsulatedChild {
+      }
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({declarations: [App, ShadowComp, UnencapsulatedChild]});
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const outer: HTMLElement = fixture.debugElement.query(By.css('.my-el.outer')).nativeElement;
+      const inner: HTMLElement = fixture.debugElement.query(By.css('.my-el.inner')).nativeElement;
+      const outerStyles = window.getComputedStyle(outer);
+      const innerStyles = window.getComputedStyle(inner);
+
+      expect(outerStyles.backgroundColor).toBe('rgb(0, 255, 0)');
+      expect(innerStyles.backgroundColor).toBe('rgb(255, 0, 0)');
     });
   });
 }
