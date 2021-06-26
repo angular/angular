@@ -307,6 +307,28 @@ describe('TestBed', () => {
     expect(SimpleService.ngOnDestroyCalls).toBe(0);
   });
 
+  it('should be able to create a fixture if a test module is reset mid-compilation', async () => {
+    @Component({template: 'hello'})
+    class TestComponent {
+    }
+
+    TestBed.resetTestingModule();  // Reset the state from `beforeEach`.
+
+    function compile() {
+      return TestBed
+          .configureTestingModule(
+              {declarations: [TestComponent], teardown: {destroyAfterEach: true}})
+          .compileComponents();
+    }
+
+    const initialCompilation = compile();
+    TestBed.resetTestingModule();
+    await initialCompilation;
+    await compile();
+    const fixture = TestBed.createComponent(TestComponent);
+    expect(fixture.nativeElement).toHaveText('hello');
+  });
+
   describe('module overrides using TestBed.overrideModule', () => {
     @Component({
       selector: 'test-cmp',
