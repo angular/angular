@@ -98,6 +98,8 @@ export abstract class ViewContainerRef {
    * Instantiates an embedded view and inserts it
    * into this container.
    * @param templateRef The HTML template that defines the view.
+   * @param context The data-binding context of the embedded view, as declared
+   * in the `<ng-template>` usage.
    * @param index The 0-based index at which to insert the new view into this container.
    * If not specified, appends the new view as the last entry.
    *
