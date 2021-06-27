@@ -94,7 +94,7 @@
     "tsickle": "^0.43.0",
     "tslint": "~5.20.0",
     "typescript": "~4.2.3",
-    "wait-on": "^5.0.0",
+    "wait-on": "^6.0.0",
     "webpack": "5.40.0"
   }
 }
