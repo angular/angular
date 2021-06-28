@@ -70,6 +70,14 @@ api_golden_test(
     data = [
         "//goldens:public-api",
         "//packages/core",
+        # Additional targets the entry-point indirectly resolves `.d.ts` source files from.
+        # These are transitive to `:core`, but need to be listed explicitly here as only
+        # transitive `JSModule` information is collected (missing the type definitions).
+        "//packages/core/src/compiler",
+        "//packages/core/src/di/interface",
+        "//packages/core/src/interface",
+        "//packages/core/src/reflection",
+        "//packages/core/src/util",
     ],
     entry_point = "angular/packages/core/src/render3/global_utils_api.d.ts",
     golden = "angular/goldens/public-api/core/global_utils.md",
