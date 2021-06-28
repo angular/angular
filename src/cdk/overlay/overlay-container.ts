@@ -10,20 +10,29 @@ import {DOCUMENT} from '@angular/common';
 import {Inject, Injectable, OnDestroy} from '@angular/core';
 import {Platform} from '@angular/cdk/platform';
 
-declare const __karma__: unknown;
-declare const jasmine: unknown;
-declare const jest: unknown;
-declare const Mocha: unknown;
+// Avoid using `declare const` because it caused conflicts inside Google
+// with the real typings for these symbols. We use `declare interface` instead
+// of just `interface` for interop with Closure Compiler (prevents property renaming):
+// https://github.com/angular/tsickle/blob/master/README.md#differences-from-typescript
+declare interface TestGlobals {
+  jasmine: unknown;
+  __karma__: unknown;
+  jest: unknown;
+  Mocha: unknown;
+}
+
+const globalsForTest = (typeof window !== 'undefined' ? window : {}) as {} as TestGlobals;
 
 /**
  * Whether we're in a testing environment.
  * TODO(crisbeto): remove this once we have an overlay testing module or Angular starts tearing
  * down the testing `NgModule` (see https://github.com/angular/angular/issues/18831).
  */
-const isTestEnvironment = (typeof __karma__ !== 'undefined' && !!__karma__) ||
-                          (typeof jasmine !== 'undefined' && !!jasmine) ||
-                          (typeof jest !== 'undefined' && !!jest) ||
-                          (typeof Mocha !== 'undefined' && !!Mocha);
+const isTestEnvironment =
+    (typeof globalsForTest.__karma__ !== 'undefined' && !!globalsForTest.__karma__) ||
+    (typeof globalsForTest.jasmine !== 'undefined' && !!globalsForTest.jasmine) ||
+    (typeof globalsForTest.jest !== 'undefined' && !!globalsForTest.jest) ||
+    (typeof globalsForTest.Mocha !== 'undefined' && !!globalsForTest.Mocha);
 
 /** Container inside which all overlays will render. */
 @Injectable({providedIn: 'root'})
