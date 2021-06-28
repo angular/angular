@@ -194,8 +194,11 @@ $calendar-range-end-body-cell-size:
 }
 
 @include a11y.high-contrast(active, off) {
+  $main-range-border: solid 1px;
+  $comparison-range-border: dashed 1px;
+
   .mat-datepicker-popup:not(:empty),
-  .mat-calendar-body-selected {
+  .mat-calendar-body-cell:not(.mat-calendar-body-in-range) .mat-calendar-body-selected {
     outline: solid 1px;
   }
 
@@ -207,6 +210,61 @@ $calendar-range-end-body-cell-size:
   .cdk-program-focused .mat-calendar-body-active {
     & > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected) {
       outline: dotted 2px;
+    }
+  }
+
+  // These backgrounds need to be removed, because they'll block the date ranges.
+  .mat-calendar-body-cell::before,
+  .mat-calendar-body-cell::after,
+  .mat-calendar-body-selected {
+    background: none;
+  }
+
+  .mat-calendar-body-in-range::before,
+  .mat-calendar-body-comparison-bridge-start::before,
+  .mat-calendar-body-comparison-bridge-end::before {
+    border-top: $main-range-border;
+    border-bottom: $main-range-border;
+  }
+
+  .mat-calendar-body-range-start::before {
+    border-left: $main-range-border;
+
+    [dir='rtl'] & {
+      border-left: 0;
+      border-right: $main-range-border;
+    }
+  }
+
+  .mat-calendar-body-range-end::before {
+    border-right: $main-range-border;
+
+    [dir='rtl'] & {
+      border-right: 0;
+      border-left: $main-range-border;
+    }
+  }
+
+  .mat-calendar-body-in-comparison-range::before {
+    border-top: $comparison-range-border;
+    border-bottom: $comparison-range-border;
+  }
+
+  .mat-calendar-body-comparison-start::before {
+    border-left: $comparison-range-border;
+
+    [dir='rtl'] & {
+      border-left: 0;
+      border-right: $comparison-range-border;
+    }
+  }
+
+  .mat-calendar-body-comparison-end::before {
+    border-right: $comparison-range-border;
+
+    [dir='rtl'] & {
+      border-right: 0;
+      border-left: $comparison-range-border;
     }
   }
 }
