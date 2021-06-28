@@ -146,7 +146,7 @@ If size regression occurs, one way to debug is to get a build which shows the co
 
 1. Check out both the `master` branch as well as the your change (let's refer to it as `change` branch) into two different working locations. (A suggested way to do this is using `git worktree`.)
 2. In both `master` and `change` locations update the failing tests `package.json` with `NG_BUILD_DEBUG_OPTIMIZE=minify` environment variable so that the resulting build would contain a human readable but optimized output. As an example:
-   - Open `integration/cli-hello-world/package.json` and prefix `NG_BUILD_DEBUG_OPTIMIZE=minify` into the `build` rule. Resulting in something like: `"build": "NG_BUILD_DEBUG_OPTIMIZE=minify ng build --prod",`
+   - Open `integration/cli-hello-world/package.json` and prefix `NG_BUILD_DEBUG_OPTIMIZE=minify` into the `build` rule. Resulting in something like: `"build": "NG_BUILD_DEBUG_OPTIMIZE=minify ng build --configuration=production",`
    - Run `bazel run //integration:cli-hello-world_test.debug` to build the output. (optionally just run `yarn build` in the directory if you want to do a quick rebuild which will only pick up changes to the test application (not framework).)
    - Diff the `master` vs `change` to see the differences. `myDiffTool change/integration/cli-hello-world/dist/main-es2015.*.js master/integration/cli-hello-world/dist/main-es2015.*.js`
    - The above should give you a better understanding as to what has changed and what is causing the regression.
