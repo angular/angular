@@ -39,9 +39,7 @@ import {
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
-  CanColorCtor,
   CanDisableRipple,
-  CanDisableRippleCtor,
   MatRipple,
   MAT_RIPPLE_GLOBAL_OPTIONS,
   mixinColor,
@@ -132,30 +130,27 @@ export class MatSliderVisualThumb implements AfterViewInit, OnDestroy {
     this._ripple.radius = 24;
     this._sliderInput = this._slider._getInput(this.thumbPosition);
 
-    this._sliderInput.dragStart.subscribe((e: MatSliderDragEvent) => this._onDragStart(e));
-    this._sliderInput.dragEnd.subscribe((e: MatSliderDragEvent) => this._onDragEnd(e));
+    // Note that we don't unsubscribe from these, because they're complete on destroy.
+    this._sliderInput.dragStart.subscribe(event => this._onDragStart(event));
+    this._sliderInput.dragEnd.subscribe(event => this._onDragEnd(event));
 
     this._sliderInput._focus.subscribe(() => this._onFocus());
     this._sliderInput._blur.subscribe(() => this._onBlur());
 
     // These two listeners don't update any data bindings so we bind them
-    // outside of the NgZone to pervent angular from needlessly running change detection.
+    // outside of the NgZone to prevent Angular from needlessly running change detection.
     this._ngZone.runOutsideAngular(() => {
-      this._elementRef.nativeElement.addEventListener('mouseenter', this._onMouseEnter.bind(this));
-      this._elementRef.nativeElement.addEventListener('mouseleave', this._onMouseLeave.bind(this));
+      this._elementRef.nativeElement.addEventListener('mouseenter', this._onMouseEnter);
+      this._elementRef.nativeElement.addEventListener('mouseleave', this._onMouseLeave);
     });
   }
 
   ngOnDestroy() {
-    this._sliderInput.dragStart.unsubscribe();
-    this._sliderInput.dragEnd.unsubscribe();
-    this._sliderInput._focus.unsubscribe();
-    this._sliderInput._blur.unsubscribe();
     this._elementRef.nativeElement.removeEventListener('mouseenter', this._onMouseEnter);
     this._elementRef.nativeElement.removeEventListener('mouseleave', this._onMouseLeave);
   }
 
-  private _onMouseEnter(): void {
+  private _onMouseEnter = (): void => {
     this._isHovered = true;
     // We don't want to show the hover ripple on top of the focus ripple.
     // This can happen if the user tabs to a thumb and then the user moves their cursor over it.
@@ -164,7 +159,7 @@ export class MatSliderVisualThumb implements AfterViewInit, OnDestroy {
     }
   }
 
-  private _onMouseLeave(): void {
+  private _onMouseLeave = (): void => {
     this._isHovered = false;
     this._hoverRippleRef?.fadeOut();
   }
@@ -279,7 +274,7 @@ export class MatSliderVisualThumb implements AfterViewInit, OnDestroy {
     multi: true
   }],
 })
-export class MatSliderThumb implements AfterViewInit, ControlValueAccessor, OnInit {
+export class MatSliderThumb implements AfterViewInit, ControlValueAccessor, OnInit, OnDestroy {
 
   // ** IMPORTANT NOTE **
   //
@@ -315,7 +310,7 @@ export class MatSliderThumb implements AfterViewInit, ControlValueAccessor, OnIn
    * to facilitate the two-way binding for the `value` input.
    * @docs-private
    */
-   @Output() readonly valueChange: EventEmitter<number> = new EventEmitter<number>();
+  @Output() readonly valueChange: EventEmitter<number> = new EventEmitter<number>();
 
   /** Event emitted when the slider thumb starts being dragged. */
   @Output() readonly dragStart: EventEmitter<MatSliderDragEvent>
@@ -384,6 +379,14 @@ export class MatSliderThumb implements AfterViewInit, ControlValueAccessor, OnIn
     if (this._slider.disabled) {
       this._hostElement.disabled = true;
     }
+  }
+
+  ngOnDestroy() {
+    this.dragStart.complete();
+    this.dragEnd.complete();
+    this._focus.complete();
+    this._blur.complete();
+    this.valueChange.complete();
   }
 
   _onBlur(): void {
@@ -512,15 +515,9 @@ export class MatSliderThumb implements AfterViewInit, ControlValueAccessor, OnIn
 }
 
 // Boilerplate for applying mixins to MatSlider.
-/** @docs-private */
-class MatSliderBase {
+const _MatSliderMixinBase = mixinColor(mixinDisableRipple(class {
   constructor(public _elementRef: ElementRef<HTMLElement>) {}
-}
-const _MatSliderMixinBase:
-    CanColorCtor &
-    CanDisableRippleCtor &
-    typeof MatSliderBase =
-        mixinColor(mixinDisableRipple(MatSliderBase), 'primary');
+}), 'primary');
 
 /**
  * Allows users to select from a range of values by moving the slider thumb. It is similar in
