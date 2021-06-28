@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getCompilerFacade, R3DirectiveMetadataFacade} from '../../compiler/compiler_facade';
+import {getCompilerFacade, JitCompilerUsage, R3DirectiveMetadataFacade} from '../../compiler/compiler_facade';
 import {R3ComponentMetadataFacade, R3QueryMetadataFacade} from '../../compiler/compiler_facade_interface';
 import {resolveForwardRef} from '../../di/forward_ref';
 import {getReflect, reflectDependencies} from '../../di/jit/util';
@@ -68,7 +68,8 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
   Object.defineProperty(type, NG_COMP_DEF, {
     get: () => {
       if (ngComponentDef === null) {
-        const compiler = getCompilerFacade();
+        const compiler =
+            getCompilerFacade({usage: JitCompilerUsage.Decorator, kind: 'component', type: type});
 
         if (componentNeedsResolution(metadata)) {
           const error = [`Component '${type.name}' is not resolved:`];
@@ -180,8 +181,10 @@ export function compileDirective(type: Type<any>, directive: Directive|null): vo
         // that use `@Directive()` with no selector. In that case, pass empty object to the
         // `directiveMetadata` function instead of null.
         const meta = getDirectiveMetadata(type, directive || {});
+        const compiler =
+            getCompilerFacade({usage: JitCompilerUsage.Decorator, kind: 'directive', type});
         ngDirectiveDef =
-            getCompilerFacade().compileDirective(angularCoreEnv, meta.sourceMapUrl, meta.metadata);
+            compiler.compileDirective(angularCoreEnv, meta.sourceMapUrl, meta.metadata);
       }
       return ngDirectiveDef;
     },
@@ -193,7 +196,7 @@ export function compileDirective(type: Type<any>, directive: Directive|null): vo
 function getDirectiveMetadata(type: Type<any>, metadata: Directive) {
   const name = type && type.name;
   const sourceMapUrl = `ng:///${name}/ɵdir.js`;
-  const compiler = getCompilerFacade();
+  const compiler = getCompilerFacade({usage: JitCompilerUsage.Decorator, kind: 'directive', type});
   const facade = directiveMetadata(type as ComponentType<any>, metadata);
   facade.typeSourceSpan = compiler.createParseSourceSpan('Directive', name, sourceMapUrl);
   if (facade.usesInheritance) {
@@ -209,7 +212,8 @@ function addDirectiveFactoryDef(type: Type<any>, metadata: Directive|Component) 
     get: () => {
       if (ngFactoryDef === null) {
         const meta = getDirectiveMetadata(type, metadata);
-        const compiler = getCompilerFacade();
+        const compiler =
+            getCompilerFacade({usage: JitCompilerUsage.Decorator, kind: 'directive', type});
         ngFactoryDef = compiler.compileFactory(angularCoreEnv, `ng:///${type.name}/ɵfac.js`, {
           name: meta.metadata.name,
           type: meta.metadata.type,
