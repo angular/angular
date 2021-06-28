@@ -12,7 +12,7 @@ load("@npm//typescript:index.bzl", "tsc")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("//dev-infra/benchmark/ng_rollup_bundle:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
 load("//tools:ng_benchmark.bzl", _ng_benchmark = "ng_benchmark")
-load("//tools/ts-api-guardian:index.bzl", _ts_api_guardian_test = "ts_api_guardian_test", _ts_api_guardian_test_npm_package = "ts_api_guardian_test_npm_package")
+load("//dev-infra/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
 _INTERNAL_NG_MODULE_API_EXTRACTOR = "//packages/bazel/src/api-extractor:api_extractor"
@@ -495,16 +495,16 @@ def rollup_bundle(name, testonly = False, sourcemap = "true", **kwargs):
     terser_minified(name = name + ".min.es5umd", testonly = testonly, src = name + ".es5umd", **common_terser_args)
     native.filegroup(name = name + ".min.es5umd.js", testonly = testonly, srcs = [name + ".min.es5umd"])
 
-def ts_api_guardian_test(**kwargs):
-    _ts_api_guardian_test(
+def api_golden_test(**kwargs):
+    _api_golden_test(
         tags = [
             "fixme-ivy-aot",
         ],
         **kwargs
     )
 
-def ts_api_guardian_test_npm_package(**kwargs):
-    _ts_api_guardian_test_npm_package(
+def api_golden_test_npm_package(**kwargs):
+    _api_golden_test_npm_package(
         tags = [
             "fixme-ivy-aot",
         ],
