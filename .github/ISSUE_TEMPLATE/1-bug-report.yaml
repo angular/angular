@@ -48,6 +48,22 @@ body:
   id: reproduction
   attributes:
     label: Please provide a link to a minimal reproduction of the bug
+    placeholder: "Angular CLI: 12.0.5
+Node: 14.17.0
+Package Manager: yarn 1.22.10
+OS: linux x64
+
+Angular: 12.0.5
+... animations, cli, common, compiler, compiler-cli, core, forms
+... platform-browser, platform-browser-dynamic, router
+
+Package                         Version
+---------------------------------------------------------
+@angular-devkit/architect       0.1200.5
+@angular-devkit/build-angular   12.0.5
+@angular-devkit/core            12.0.5
+rxjs                            6.6.7
+typescript                      4.2.4"
 
 - type: textarea
   id: exception-or-error
