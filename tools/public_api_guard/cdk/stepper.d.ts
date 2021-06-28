@@ -65,7 +65,8 @@ export declare class CdkStepper implements AfterContentInit, AfterViewInit, OnDe
     set selectedIndex(index: number);
     readonly selectionChange: EventEmitter<StepperSelectionEvent>;
     readonly steps: QueryList<CdkStep>;
-    constructor(_dir: Directionality, _changeDetectorRef: ChangeDetectorRef, _elementRef: ElementRef<HTMLElement>, _document: any);
+    constructor(_dir: Directionality, _changeDetectorRef: ChangeDetectorRef, _elementRef: ElementRef<HTMLElement>,
+    _document: any);
     _getAnimationDirection(index: number): StepContentPositionState;
     _getFocusIndex(): number | null;
     _getIndicatorType(index: number, state?: StepState): StepState;

@@ -30,6 +30,7 @@ import {
   ViewChildren,
   QueryList,
   ViewChild,
+  ViewEncapsulation,
 } from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, inject, TestBed} from '@angular/core/testing';
 import {
@@ -45,6 +46,7 @@ import {
 import {MatRipple, ThemePalette} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {_supportsShadowDom} from '@angular/cdk/platform';
 import {merge, Observable, Subject} from 'rxjs';
 import {map, take} from 'rxjs/operators';
 import {MatStepHeader, MatStepperModule} from './index';
@@ -272,6 +274,31 @@ describe('MatStepper', () => {
     });
 
     it('should focus next step header if focus is inside the stepper', () => {
+      const stepperComponent =
+          fixture.debugElement.query(By.directive(MatStepper))!.componentInstance;
+      const stepHeaderEl =
+          fixture.debugElement.queryAll(By.css('mat-step-header'))[1].nativeElement;
+      const nextButtonNativeEl = fixture.debugElement
+          .queryAll(By.directive(MatStepperNext))[0].nativeElement;
+      spyOn(stepHeaderEl, 'focus');
+      nextButtonNativeEl.focus();
+      nextButtonNativeEl.click();
+      fixture.detectChanges();
+
+      expect(stepperComponent.selectedIndex).toBe(1);
+      expect(stepHeaderEl.focus).toHaveBeenCalled();
+    });
+
+    it('should focus next step header if focus is inside the stepper with shadow DOM', () => {
+      if (!_supportsShadowDom()) {
+        return;
+      }
+
+      fixture.destroy();
+      TestBed.resetTestingModule();
+      fixture = createComponent(SimpleMatVerticalStepperApp, [], [], ViewEncapsulation.ShadowDom);
+      fixture.detectChanges();
+
       const stepperComponent =
           fixture.debugElement.query(By.directive(MatStepper))!.componentInstance;
       const stepHeaderEl =
@@ -1559,7 +1586,8 @@ function asyncValidator(minLength: number, validationTrigger: Subject<void>): As
 
 function createComponent<T>(component: Type<T>,
   providers: Provider[] = [],
-  imports: any[] = []): ComponentFixture<T> {
+  imports: any[] = [],
+  encapsulation?: ViewEncapsulation): ComponentFixture<T> {
   TestBed.configureTestingModule({
     imports: [
       MatStepperModule,
@@ -1572,8 +1600,15 @@ function createComponent<T>(component: Type<T>,
       {provide: Directionality, useFactory: () => dir},
       ...providers
     ],
-  }).compileComponents();
+  });
 
+  if (encapsulation != null) {
+    TestBed.overrideComponent(component, {
+      set: {encapsulation}
+    });
+  }
+
+  TestBed.compileComponents();
   return TestBed.createComponent<T>(component);
 }
 

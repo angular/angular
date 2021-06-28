@@ -40,6 +40,7 @@ import {
   ViewEncapsulation,
   AfterContentInit,
 } from '@angular/core';
+import {_getFocusedElementPierceShadowDom} from '@angular/cdk/platform';
 import {Observable, of as observableOf, Subject} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';
 
@@ -262,8 +263,6 @@ export class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
   /** Used for managing keyboard focus. */
   private _keyManager: FocusKeyManager<FocusableOption>;
 
-  private _document: Document;
-
   /** Full list of steps inside the stepper, including inside nested steppers. */
   @ContentChildren(CdkStep, {descendants: true}) _steps: QueryList<CdkStep>;
 
@@ -344,9 +343,13 @@ export class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
 
   constructor(
       @Optional() private _dir: Directionality, private _changeDetectorRef: ChangeDetectorRef,
-      private _elementRef: ElementRef<HTMLElement>, @Inject(DOCUMENT) _document: any) {
+      private _elementRef: ElementRef<HTMLElement>,
+      /**
+       * @deprecated No longer in use, to be removed.
+       * @breaking-change 13.0.0
+       */
+      @Inject(DOCUMENT) _document: any) {
     this._groupId = nextId++;
-    this._document = _document;
   }
 
   ngAfterContentInit() {
@@ -534,7 +537,7 @@ export class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
   /** Checks whether the stepper contains the focused element. */
   private _containsFocus(): boolean {
     const stepperElement = this._elementRef.nativeElement;
-    const focusedElement = this._document.activeElement;
+    const focusedElement = _getFocusedElementPierceShadowDom();
     return stepperElement === focusedElement || stepperElement.contains(focusedElement);
   }
 

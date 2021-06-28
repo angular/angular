@@ -15,6 +15,7 @@ ng_module(
         "//src/cdk/bidi",
         "//src/cdk/coercion",
         "//src/cdk/keycodes",
+        "//src/cdk/platform",
         "@npm//@angular/core",
         "@npm//@angular/forms",
         "@npm//rxjs",
