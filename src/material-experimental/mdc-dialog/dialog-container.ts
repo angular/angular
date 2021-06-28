@@ -27,7 +27,7 @@ import {cssClasses, numbers} from '@material/dialog';
  * @docs-private
  */
 @Component({
-  selector: 'mat-mdc-dialog-container',
+  selector: 'mat-dialog-container',
   templateUrl: 'dialog-container.html',
   styleUrls: ['dialog.css'],
   encapsulation: ViewEncapsulation.None,

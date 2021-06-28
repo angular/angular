@@ -12,7 +12,7 @@ describe('MDC-based dialog', () => {
 
   it('should open a dialog', async () => {
     await element(by.id('default')).click();
-    await expectToExist('mat-mdc-dialog-container');
+    await expectToExist('mat-dialog-container');
   });
 
   it('should open a template dialog', async () => {
@@ -26,7 +26,7 @@ describe('MDC-based dialog', () => {
 
     await waitForDialog();
     await clickOnBackdrop();
-    await expectToExist('mat-mdc-dialog-container', false);
+    await expectToExist('mat-dialog-container', false);
   });
 
   it('should close by pressing escape', async () => {
@@ -34,16 +34,16 @@ describe('MDC-based dialog', () => {
 
     await waitForDialog();
     await pressKeys(Key.ESCAPE);
-    await expectToExist('mat-mdc-dialog-container', false);
+    await expectToExist('mat-dialog-container', false);
   });
 
   it('should close by pressing escape when the first tabbable element has lost focus', async () => {
     await element(by.id('default')).click();
 
     await waitForDialog();
-    await clickElementAtPoint('mat-mdc-dialog-container', {x: 0, y: 0});
+    await clickElementAtPoint('mat-dialog-container', {x: 0, y: 0});
     await pressKeys(Key.ESCAPE);
-    await expectToExist('mat-mdc-dialog-container', false);
+    await expectToExist('mat-dialog-container', false);
   });
 
   it('should close by clicking on the "close" button', async () => {
@@ -51,14 +51,14 @@ describe('MDC-based dialog', () => {
 
     await waitForDialog();
     await element(by.id('close')).click();
-    await expectToExist('mat-mdc-dialog-container', false);
+    await expectToExist('mat-dialog-container', false);
   });
 
   it('should focus the first focusable element', async () => {
     await element(by.id('default')).click();
 
     await waitForDialog();
-    await expectFocusOn('mat-mdc-dialog-container input');
+    await expectFocusOn('mat-dialog-container input');
   });
 
   it('should restore focus to the element that opened the dialog', async () => {
@@ -84,7 +84,7 @@ describe('MDC-based dialog', () => {
 
     await waitForDialog();
     await clickOnBackdrop();
-    await expectToExist('mat-mdc-dialog-container');
+    await expectToExist('mat-dialog-container');
   });
 
   it('should be able to prevent closing by pressing escape', async () => {
@@ -92,11 +92,11 @@ describe('MDC-based dialog', () => {
 
     await waitForDialog();
     await pressKeys(Key.ESCAPE);
-    await expectToExist('mat-mdc-dialog-container');
+    await expectToExist('mat-dialog-container');
   });
 
   async function waitForDialog() {
-    await waitForElement('mat-mdc-dialog-container');
+    await waitForElement('mat-dialog-container');
   }
 
   async function clickOnBackdrop() {

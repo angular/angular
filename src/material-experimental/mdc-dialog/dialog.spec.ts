@@ -106,7 +106,7 @@ describe('MDC-based MatDialog', () => {
     expect(dialogRef.componentInstance.dialogRef).toBe(dialogRef);
 
     viewContainerFixture.detectChanges();
-    let dialogContainerElement = overlayContainerElement.querySelector('mat-mdc-dialog-container')!;
+    let dialogContainerElement = overlayContainerElement.querySelector('mat-dialog-container')!;
     expect(dialogContainerElement.getAttribute('role')).toBe('dialog');
   });
 
@@ -126,7 +126,7 @@ describe('MDC-based MatDialog', () => {
 
     viewContainerFixture.detectChanges();
 
-    let dialogContainerElement = overlayContainerElement.querySelector('mat-mdc-dialog-container')!;
+    let dialogContainerElement = overlayContainerElement.querySelector('mat-dialog-container')!;
     expect(dialogContainerElement.getAttribute('role')).toBe('dialog');
 
     dialogRef.close();
@@ -170,7 +170,7 @@ describe('MDC-based MatDialog', () => {
     expect(dialogRef.componentInstance.dialogRef).toBe(dialogRef);
 
     viewContainerFixture.detectChanges();
-    let dialogContainerElement = overlayContainerElement.querySelector('mat-mdc-dialog-container')!;
+    let dialogContainerElement = overlayContainerElement.querySelector('mat-dialog-container')!;
     expect(dialogContainerElement.getAttribute('role')).toBe('dialog');
   });
 
@@ -179,7 +179,7 @@ describe('MDC-based MatDialog', () => {
 
     viewContainerFixture.detectChanges();
 
-    let dialogContainerElement = overlayContainerElement.querySelector('mat-mdc-dialog-container')!;
+    let dialogContainerElement = overlayContainerElement.querySelector('mat-dialog-container')!;
     expect(dialogContainerElement.getAttribute('role')).toBe('alertdialog');
   });
 
@@ -188,7 +188,7 @@ describe('MDC-based MatDialog', () => {
 
     viewContainerFixture.detectChanges();
 
-    let dialogContainerElement = overlayContainerElement.querySelector('mat-mdc-dialog-container')!;
+    let dialogContainerElement = overlayContainerElement.querySelector('mat-dialog-container')!;
     expect(dialogContainerElement.getAttribute('aria-describedby')).toBe('description-element');
   });
 
@@ -202,7 +202,7 @@ describe('MDC-based MatDialog', () => {
        flush();
 
        expect(afterCloseCallback).toHaveBeenCalledWith('Charmander');
-       expect(overlayContainerElement.querySelector('mat-mdc-dialog-container')).toBeNull();
+       expect(overlayContainerElement.querySelector('mat-dialog-container')).toBeNull();
      }));
 
   it('should invoke the afterClosed callback inside the NgZone',
@@ -230,7 +230,7 @@ describe('MDC-based MatDialog', () => {
        viewContainerFixture.destroy();
        flush();
 
-       expect(overlayContainerElement.querySelector('mat-mdc-dialog-container')).toBeNull();
+       expect(overlayContainerElement.querySelector('mat-dialog-container')).toBeNull();
      }));
 
   it('should dispatch the beforeClosed and afterClosed events when the ' +
@@ -262,7 +262,7 @@ describe('MDC-based MatDialog', () => {
 
        // beforeClose should emit before dialog container is destroyed
        const beforeCloseHandler = jasmine.createSpy('beforeClose callback').and.callFake(() => {
-         expect(overlayContainerElement.querySelector('mat-mdc-dialog-container'))
+         expect(overlayContainerElement.querySelector('mat-dialog-container'))
              .not.toBeNull('dialog container exists when beforeClose is called');
        });
 
@@ -272,7 +272,7 @@ describe('MDC-based MatDialog', () => {
        flush();
 
        expect(beforeCloseHandler).toHaveBeenCalledWith('Bulbasaur');
-       expect(overlayContainerElement.querySelector('mat-mdc-dialog-container')).toBeNull();
+       expect(overlayContainerElement.querySelector('mat-dialog-container')).toBeNull();
      }));
 
   it('should close a dialog via the escape key', fakeAsync(() => {
@@ -282,7 +282,7 @@ describe('MDC-based MatDialog', () => {
        viewContainerFixture.detectChanges();
        flush();
 
-       expect(overlayContainerElement.querySelector('mat-mdc-dialog-container')).toBeNull();
+       expect(overlayContainerElement.querySelector('mat-dialog-container')).toBeNull();
        expect(event.defaultPrevented).toBe(true);
      }));
 
@@ -294,7 +294,7 @@ describe('MDC-based MatDialog', () => {
        viewContainerFixture.detectChanges();
        flush();
 
-       expect(overlayContainerElement.querySelector('mat-mdc-dialog-container')).toBeTruthy();
+       expect(overlayContainerElement.querySelector('mat-dialog-container')).toBeTruthy();
        expect(event.defaultPrevented).toBe(false);
      }));
 
@@ -310,7 +310,7 @@ describe('MDC-based MatDialog', () => {
        onPushFixture.detectChanges();
        flushMicrotasks();
 
-       expect(overlayContainerElement.querySelectorAll('mat-mdc-dialog-container').length)
+       expect(overlayContainerElement.querySelectorAll('mat-dialog-container').length)
            .toBe(1, 'Expected one open dialog.');
 
        dialogRef.close();
@@ -318,7 +318,7 @@ describe('MDC-based MatDialog', () => {
        onPushFixture.detectChanges();
        tick(500);
 
-       expect(overlayContainerElement.querySelectorAll('mat-mdc-dialog-container').length)
+       expect(overlayContainerElement.querySelectorAll('mat-dialog-container').length)
            .toBe(0, 'Expected no open dialogs.');
      }));
 
@@ -333,7 +333,7 @@ describe('MDC-based MatDialog', () => {
        viewContainerFixture.detectChanges();
        flush();
 
-       expect(overlayContainerElement.querySelector('mat-mdc-dialog-container')).toBeFalsy();
+       expect(overlayContainerElement.querySelector('mat-dialog-container')).toBeFalsy();
      }));
 
   it('should emit the backdropClick stream when clicking on the overlay backdrop', fakeAsync(() => {
@@ -367,7 +367,7 @@ describe('MDC-based MatDialog', () => {
 
        let backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
        let container =
-           overlayContainerElement.querySelector('mat-mdc-dialog-container') as HTMLElement;
+           overlayContainerElement.querySelector('mat-dialog-container') as HTMLElement;
        dispatchKeyboardEvent(document.body, 'keydown', A);
        dispatchKeyboardEvent(backdrop, 'keydown', A);
        dispatchKeyboardEvent(container, 'keydown', A);
@@ -618,39 +618,39 @@ describe('MDC-based MatDialog', () => {
        dialog.open(PizzaMsg);
        dialog.open(PizzaMsg);
 
-       expect(overlayContainerElement.querySelectorAll('mat-mdc-dialog-container').length).toBe(3);
+       expect(overlayContainerElement.querySelectorAll('mat-dialog-container').length).toBe(3);
 
        dialog.closeAll();
        viewContainerFixture.detectChanges();
        flush();
 
-       expect(overlayContainerElement.querySelectorAll('mat-mdc-dialog-container').length).toBe(0);
+       expect(overlayContainerElement.querySelectorAll('mat-dialog-container').length).toBe(0);
      }));
 
   it('should close all dialogs when the user goes forwards/backwards in history', fakeAsync(() => {
        dialog.open(PizzaMsg);
        dialog.open(PizzaMsg);
 
-       expect(overlayContainerElement.querySelectorAll('mat-mdc-dialog-container').length).toBe(2);
+       expect(overlayContainerElement.querySelectorAll('mat-dialog-container').length).toBe(2);
 
        mockLocation.simulateUrlPop('');
        viewContainerFixture.detectChanges();
        flush();
 
-       expect(overlayContainerElement.querySelectorAll('mat-mdc-dialog-container').length).toBe(0);
+       expect(overlayContainerElement.querySelectorAll('mat-dialog-container').length).toBe(0);
      }));
 
   it('should close all open dialogs when the location hash changes', fakeAsync(() => {
        dialog.open(PizzaMsg);
        dialog.open(PizzaMsg);
 
-       expect(overlayContainerElement.querySelectorAll('mat-mdc-dialog-container').length).toBe(2);
+       expect(overlayContainerElement.querySelectorAll('mat-dialog-container').length).toBe(2);
 
        mockLocation.simulateHashChange('');
        viewContainerFixture.detectChanges();
        flush();
 
-       expect(overlayContainerElement.querySelectorAll('mat-mdc-dialog-container').length).toBe(0);
+       expect(overlayContainerElement.querySelectorAll('mat-dialog-container').length).toBe(0);
      }));
 
   it('should close all of the dialogs when the injectable is destroyed', fakeAsync(() => {
@@ -658,13 +658,13 @@ describe('MDC-based MatDialog', () => {
        dialog.open(PizzaMsg);
        dialog.open(PizzaMsg);
 
-       expect(overlayContainerElement.querySelectorAll('mat-mdc-dialog-container').length).toBe(3);
+       expect(overlayContainerElement.querySelectorAll('mat-dialog-container').length).toBe(3);
 
        dialog.ngOnDestroy();
        viewContainerFixture.detectChanges();
        flush();
 
-       expect(overlayContainerElement.querySelectorAll('mat-mdc-dialog-container').length).toBe(0);
+       expect(overlayContainerElement.querySelectorAll('mat-dialog-container').length).toBe(0);
      }));
 
   it('should complete open and close streams when the injectable is destroyed', fakeAsync(() => {
@@ -687,13 +687,13 @@ describe('MDC-based MatDialog', () => {
        dialog.open(PizzaMsg);
        dialog.open(PizzaMsg, {closeOnNavigation: false});
 
-       expect(overlayContainerElement.querySelectorAll('mat-mdc-dialog-container').length).toBe(2);
+       expect(overlayContainerElement.querySelectorAll('mat-dialog-container').length).toBe(2);
 
        mockLocation.simulateUrlPop('');
        viewContainerFixture.detectChanges();
        flush();
 
-       expect(overlayContainerElement.querySelectorAll('mat-mdc-dialog-container').length).toBe(1);
+       expect(overlayContainerElement.querySelectorAll('mat-dialog-container').length).toBe(1);
      }));
 
   it('should have the componentInstance available in the afterClosed callback', fakeAsync(() => {
@@ -880,7 +880,7 @@ describe('MDC-based MatDialog', () => {
          viewContainerFixture.detectChanges();
          flush();
 
-         expect(overlayContainerElement.querySelector('mat-mdc-dialog-container')).toBeTruthy();
+         expect(overlayContainerElement.querySelector('mat-dialog-container')).toBeTruthy();
        }));
 
     it('should prevent closing via the escape key', fakeAsync(() => {
@@ -891,7 +891,7 @@ describe('MDC-based MatDialog', () => {
          viewContainerFixture.detectChanges();
          flush();
 
-         expect(overlayContainerElement.querySelector('mat-mdc-dialog-container')).toBeTruthy();
+         expect(overlayContainerElement.querySelector('mat-dialog-container')).toBeTruthy();
        }));
 
     it('should allow for the disableClose option to be updated while open', fakeAsync(() => {
@@ -904,14 +904,14 @@ describe('MDC-based MatDialog', () => {
              overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
          backdrop.click();
 
-         expect(overlayContainerElement.querySelector('mat-mdc-dialog-container')).toBeTruthy();
+         expect(overlayContainerElement.querySelector('mat-dialog-container')).toBeTruthy();
 
          dialogRef.disableClose = false;
          backdrop.click();
          viewContainerFixture.detectChanges();
          flush();
 
-         expect(overlayContainerElement.querySelector('mat-mdc-dialog-container')).toBeFalsy();
+         expect(overlayContainerElement.querySelector('mat-dialog-container')).toBeFalsy();
        }));
 
     it('should recapture focus when clicking on the backdrop', fakeAsync(() => {
@@ -1293,7 +1293,7 @@ describe('MDC-based MatDialog', () => {
          flushMicrotasks();
 
          expect(document.activeElement!.tagName)
-             .toBe('MAT-MDC-DIALOG-CONTAINER', 'Expected dialog container to be focused.');
+             .toBe('MAT-DIALOG-CONTAINER', 'Expected dialog container to be focused.');
        }));
 
     it('should be able to disable focus restoration', fakeAsync(() => {
@@ -1446,7 +1446,7 @@ describe('MDC-based MatDialog', () => {
 
       it('should set the aria-labelledby attribute to the id of the title', fakeAsync(() => {
            let title = overlayContainerElement.querySelector('[mat-dialog-title]')!;
-           let container = overlayContainerElement.querySelector('mat-mdc-dialog-container')!;
+           let container = overlayContainerElement.querySelector('mat-dialog-container')!;
 
            flush();
            viewContainerFixture.detectChanges();
@@ -1464,7 +1464,7 @@ describe('MDC-based MatDialog', () => {
           PizzaMsg, {ariaLabelledBy: 'Labelled By', viewContainerRef: testViewContainerRef});
       viewContainerFixture.detectChanges();
 
-      const container = overlayContainerElement.querySelector('mat-mdc-dialog-container')!;
+      const container = overlayContainerElement.querySelector('mat-dialog-container')!;
       expect(container.getAttribute('aria-labelledby')).toBe('Labelled By');
     });
 
@@ -1480,7 +1480,7 @@ describe('MDC-based MatDialog', () => {
          tick();
          viewContainerFixture.detectChanges();
 
-         const container = overlayContainerElement.querySelector('mat-mdc-dialog-container')!;
+         const container = overlayContainerElement.querySelector('mat-dialog-container')!;
          expect(container.hasAttribute('aria-labelledby')).toBe(false);
        }));
 
@@ -1493,7 +1493,7 @@ describe('MDC-based MatDialog', () => {
          viewContainerFixture.detectChanges();
          flush();
          let title = overlayContainerElement.querySelector('[mat-dialog-title]')!;
-         let container = overlayContainerElement.querySelector('mat-mdc-dialog-container')!;
+         let container = overlayContainerElement.querySelector('mat-dialog-container')!;
          flush();
          viewContainerFixture.detectChanges();
 
@@ -1507,7 +1507,7 @@ describe('MDC-based MatDialog', () => {
       dialog.open(PizzaMsg, {ariaLabel: 'Hello there', viewContainerRef: testViewContainerRef});
       viewContainerFixture.detectChanges();
 
-      const container = overlayContainerElement.querySelector('mat-mdc-dialog-container')!;
+      const container = overlayContainerElement.querySelector('mat-dialog-container')!;
       expect(container.getAttribute('aria-label')).toBe('Hello there');
     });
 
@@ -1519,7 +1519,7 @@ describe('MDC-based MatDialog', () => {
          tick();
          viewContainerFixture.detectChanges();
 
-         const container = overlayContainerElement.querySelector('mat-mdc-dialog-container')!;
+         const container = overlayContainerElement.querySelector('mat-dialog-container')!;
          expect(container.hasAttribute('aria-labelledby')).toBe(false);
        }));
   });
@@ -1617,7 +1617,7 @@ describe('MDC-based MatDialog with a parent MatDialog', () => {
        fixture.detectChanges();
        flush();
 
-       expect(overlayContainerElement.querySelector('mat-mdc-dialog-container')).toBeNull();
+       expect(overlayContainerElement.querySelector('mat-dialog-container')).toBeNull();
      }));
 
   it('should not close the parent dialogs when a child is destroyed', fakeAsync(() => {
@@ -1693,7 +1693,7 @@ describe('MDC-based MatDialog with default options', () => {
     expect(overlayContainerElement.querySelector('.cdk-overlay-backdrop')).toBeFalsy();
 
     dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
-    expect(overlayContainerElement.querySelector('mat-mdc-dialog-container')).toBeTruthy();
+    expect(overlayContainerElement.querySelector('mat-dialog-container')).toBeTruthy();
 
     expect(document.activeElement!.tagName).not.toBe('INPUT');
 
@@ -1719,7 +1719,7 @@ describe('MDC-based MatDialog with default options', () => {
        viewContainerFixture.detectChanges();
        flush();
 
-       expect(overlayContainerElement.querySelector('mat-mdc-dialog-container')).toBeFalsy();
+       expect(overlayContainerElement.querySelector('mat-dialog-container')).toBeFalsy();
      }));
 });
 
