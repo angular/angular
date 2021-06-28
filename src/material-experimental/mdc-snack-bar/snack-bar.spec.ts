@@ -68,7 +68,7 @@ describe('MatSnackBar', () => {
     snackBar.open('Snack time!', 'Chew');
     viewContainerFixture.detectChanges();
 
-    const containerElement = overlayContainerElement.querySelector('mat-mdc-snack-bar-container')!;
+    const containerElement = overlayContainerElement.querySelector('mat-snack-bar-container')!;
     const inertElement = containerElement.querySelector('[aria-hidden]')!;
 
     expect(inertElement.getAttribute('aria-hidden'))
@@ -85,7 +85,7 @@ describe('MatSnackBar', () => {
     snackBar.open('Snack time!', 'Chew');
     viewContainerFixture.detectChanges();
 
-    const containerElement = overlayContainerElement.querySelector('mat-mdc-snack-bar-container')!;
+    const containerElement = overlayContainerElement.querySelector('mat-snack-bar-container')!;
     const liveElement = containerElement.querySelector('[aria-live]')!;
     tick(announceDelay);
 
@@ -120,7 +120,7 @@ describe('MatSnackBar', () => {
 
     viewContainerFixture.detectChanges();
 
-    const containerElement = overlayContainerElement.querySelector('mat-mdc-snack-bar-container')!;
+    const containerElement = overlayContainerElement.querySelector('mat-snack-bar-container')!;
     const liveElement = containerElement.querySelector('[aria-live]')!;
 
     expect(liveElement.getAttribute('aria-live')).toBe('assertive',
@@ -133,7 +133,7 @@ describe('MatSnackBar', () => {
         {announcementMessage: 'Yay Burritos', politeness: 'assertive'});
     viewContainerFixture.detectChanges();
 
-    const containerElement = overlayContainerElement.querySelector('mat-mdc-snack-bar-container')!;
+    const containerElement = overlayContainerElement.querySelector('mat-snack-bar-container')!;
     const liveElement = containerElement.querySelector('[aria-live]')!;
 
     expect(liveElement.getAttribute('aria-live'))
@@ -144,7 +144,7 @@ describe('MatSnackBar', () => {
     snackBar.openFromComponent(BurritosNotification, {politeness: 'polite'});
     viewContainerFixture.detectChanges();
 
-    const containerElement = overlayContainerElement.querySelector('mat-mdc-snack-bar-container')!;
+    const containerElement = overlayContainerElement.querySelector('mat-snack-bar-container')!;
     const liveElement = containerElement.querySelector('[aria-live]')!;
 
     expect(liveElement.getAttribute('aria-live'))
@@ -155,7 +155,7 @@ describe('MatSnackBar', () => {
     snackBar.openFromComponent(BurritosNotification, {politeness: 'off'});
     viewContainerFixture.detectChanges();
 
-    const containerElement = overlayContainerElement.querySelector('mat-mdc-snack-bar-container')!;
+    const containerElement = overlayContainerElement.querySelector('mat-snack-bar-container')!;
     const liveElement = containerElement.querySelector('[aria-live]')!;
 
     expect(liveElement.getAttribute('aria-live'))
@@ -167,7 +167,7 @@ describe('MatSnackBar', () => {
     snackBar.openFromComponent(BurritosNotification, {politeness: 'assertive'});
     viewContainerFixture.detectChanges();
 
-    const containerElement = overlayContainerElement.querySelector('mat-mdc-snack-bar-container')!;
+    const containerElement = overlayContainerElement.querySelector('mat-snack-bar-container')!;
     const liveElement = containerElement.querySelector('[aria-live]')!;
 
     expect(liveElement.getAttribute('role'))
@@ -179,7 +179,7 @@ describe('MatSnackBar', () => {
     snackBar.openFromComponent(BurritosNotification, {politeness: 'polite'});
     viewContainerFixture.detectChanges();
 
-    const containerElement = overlayContainerElement.querySelector('mat-mdc-snack-bar-container')!;
+    const containerElement = overlayContainerElement.querySelector('mat-snack-bar-container')!;
     const liveElement = containerElement.querySelector('[aria-live]')!;
 
     expect(liveElement.getAttribute('role'))
@@ -198,7 +198,7 @@ describe('MatSnackBar', () => {
     let snackBarRef = snackBar.open('Snack time!', 'Chew');
     viewContainerFixture.detectChanges();
 
-    let messageElement = overlayContainerElement.querySelector('mat-mdc-snack-bar-container')!;
+    let messageElement = overlayContainerElement.querySelector('mat-snack-bar-container')!;
     expect(messageElement.textContent).toContain('Snack time!',
         'Expected snack bar to show a message without a ViewContainerRef');
 
@@ -222,7 +222,7 @@ describe('MatSnackBar', () => {
         .toBe(snackBarRef,
             'Expected the snack bar reference to be placed in the component instance');
 
-    let messageElement = overlayContainerElement.querySelector('mat-mdc-snack-bar-container')!;
+    let messageElement = overlayContainerElement.querySelector('mat-snack-bar-container')!;
     expect(messageElement.textContent)
         .toContain(simpleMessage, `Expected the snack bar message to be '${simpleMessage}'`);
 
@@ -246,7 +246,7 @@ describe('MatSnackBar', () => {
         .toBe(snackBarRef,
             'Expected the snack bar reference to be placed in the component instance');
 
-    let messageElement = overlayContainerElement.querySelector('mat-mdc-snack-bar-container')!;
+    let messageElement = overlayContainerElement.querySelector('mat-snack-bar-container')!;
     expect(messageElement.textContent)
         .toContain(simpleMessage, `Expected the snack bar message to be '${simpleMessage}'`);
     expect(overlayContainerElement.querySelector('button.mat-mdc-button'))
@@ -266,7 +266,7 @@ describe('MatSnackBar', () => {
 
     snackBarRef.dismiss();
     viewContainerFixture.detectChanges();
-    const messageElement = overlayContainerElement.querySelector('mat-mdc-snack-bar-container')!;
+    const messageElement = overlayContainerElement.querySelector('mat-snack-bar-container')!;
     expect (messageElement.hasAttribute('mat-exit'))
         .toBe(true, 'Expected the snackbar container to have the "exit" attribute upon dismiss');
 
@@ -485,7 +485,7 @@ describe('MatSnackBar', () => {
     viewContainerFixture.detectChanges();
 
     let containerClasses =
-        overlayContainerElement.querySelector('mat-mdc-snack-bar-container')!.classList;
+        overlayContainerElement.querySelector('mat-snack-bar-container')!.classList;
 
     expect(containerClasses).toContain('one');
     expect(containerClasses).toContain('two');
@@ -522,7 +522,7 @@ describe('MatSnackBar', () => {
     snackBar.open(simpleMessage);
     flush();
 
-    expect(overlayContainerElement.querySelector('mat-mdc-snack-bar-container')!.classList)
+    expect(overlayContainerElement.querySelector('mat-snack-bar-container')!.classList)
         .toContain('custom-class', 'Expected class applied through the defaults to be applied.');
   }));
 
@@ -621,7 +621,7 @@ describe('MatSnackBar', () => {
       templateFixture.detectChanges();
 
       const containerElement =
-          overlayContainerElement.querySelector('mat-mdc-snack-bar-container')!;
+          overlayContainerElement.querySelector('mat-snack-bar-container')!;
 
       expect(containerElement.textContent).toContain('Fries');
       expect(containerElement.textContent).toContain('Pizza');
@@ -639,7 +639,7 @@ describe('MatSnackBar', () => {
       templateFixture.detectChanges();
 
       const containerElement =
-          overlayContainerElement.querySelector('mat-mdc-snack-bar-container')!;
+          overlayContainerElement.querySelector('mat-snack-bar-container')!;
 
       expect(containerElement.textContent).toContain('Oranges');
     });

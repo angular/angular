@@ -44,7 +44,7 @@ const MDC_SNACKBAR_LABEL_CLASS = 'mdc-snackbar__label';
  * @docs-private
  */
 @Component({
-  selector: 'mat-mdc-snack-bar-container',
+  selector: 'mat-snack-bar-container',
   templateUrl: 'snack-bar-container.html',
   styleUrls: ['snack-bar-container.css'],
   // In Ivy embedded views will be change detected from their declaration place, rather than
