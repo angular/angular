@@ -1258,7 +1258,7 @@ export class TestabilityRegistry {
 // @public
 export interface TrackByFunction<T> {
     // (undocumented)
-    <U extends T>(index: number, item: U): any;
+    <U extends T>(index: number, item: T & U): any;
 }
 
 // @public
