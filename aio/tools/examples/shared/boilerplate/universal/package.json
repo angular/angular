@@ -12,7 +12,7 @@
     "e2e": "ng e2e",
     "dev:ssr": "ng run angular.io-example:serve-ssr",
     "serve:ssr": "node dist/server/main.js",
-    "build:ssr": "ng build --prod && ng run angular.io-example:server:production",
+    "build:ssr": "ng build --configuration=production && ng run angular.io-example:server:production",
     "prerender": "ng run angular.io-example:prerender"
   },
   "private": true,

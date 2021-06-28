@@ -1,7 +1,7 @@
 {
   "projectType": "universal",
   "e2e": [
-    {"cmd": "yarn", "args": ["e2e", "--prod", "--protractor-config=e2e/protractor-puppeteer.conf.js", "--no-webdriver-update", "--port={PORT}"]},
+    {"cmd": "yarn", "args": ["e2e", "--configuration=production", "--protractor-config=e2e/protractor-puppeteer.conf.js", "--no-webdriver-update", "--port={PORT}"]},
     {"cmd": "yarn", "args": ["run", "build:ssr"]}
   ]
 }
