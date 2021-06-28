@@ -1086,6 +1086,78 @@ export declare class AnimationEvent {
       env.driveMain();
     });
 
+    // https://github.com/angular/angular/issues/42609
+    it('should accept NgFor iteration when trackBy is used with an `any` array', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+        import {CommonModule} from '@angular/common';
+        import {Component, NgModule} from '@angular/core';
+
+        interface ItemType {
+          id: string;
+        }
+
+        @Component({
+          selector: 'test',
+          template: '<div *ngFor="let item of anyList; trackBy: trackByBase">{{item.name}}</div>',
+        })
+        class TestCmp {
+          anyList!: any[];
+
+          trackByBase(index: number, item: ItemType): string {
+            return item.id;
+          }
+        }
+
+        @NgModule({
+          declarations: [TestCmp],
+          imports: [CommonModule],
+        })
+        class Module {}
+    `);
+
+      env.driveMain();
+    });
+
+    it('should reject NgFor iteration when trackBy is incompatible with item type', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+        import {CommonModule} from '@angular/common';
+        import {Component, NgModule} from '@angular/core';
+
+        interface ItemType {
+          id: string;
+        }
+
+        interface UnrelatedType {
+          name: string;
+        }
+
+        @Component({
+          selector: 'test',
+          template: '<div *ngFor="let item of unrelatedList; trackBy: trackByBase">{{item.name}}</div>',
+        })
+        class TestCmp {
+          unrelatedList!: UnrelatedType[];
+
+          trackByBase(index: number, item: ItemType): string {
+            return item.id;
+          }
+        }
+
+        @NgModule({
+          declarations: [TestCmp],
+          imports: [CommonModule],
+        })
+        class Module {}
+    `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText)
+          .toContain(`is not assignable to type 'TrackByFunction<UnrelatedType>'.`);
+    });
+
     it('should infer the context of NgFor', () => {
       env.tsconfig({strictTemplates: true});
       env.write('test.ts', `
