@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "pkg_npm", "ts_api_guardian_test", "ts_config", "ts_library")
+load("//tools:defaults.bzl", "api_golden_test", "pkg_npm", "ts_config", "ts_library")
 
 # Load ng_perf_flag explicitly from ng_perf.bzl as it's private API, and not exposed to other
 # consumers of @angular/bazel.
@@ -73,24 +73,24 @@ pkg_npm(
     ],
 )
 
-ts_api_guardian_test(
+api_golden_test(
     name = "error_code_api",
-    actual = "angular/packages/compiler-cli/npm_package/src/ngtsc/diagnostics/src/error_code.d.ts",
     data = [
         ":npm_package",
         "//goldens:public-api",
     ],
-    golden = "angular/goldens/public-api/compiler-cli/error_code.d.ts",
+    entry_point = "angular/packages/compiler-cli/npm_package/src/ngtsc/diagnostics/src/error_code.d.ts",
+    golden = "angular/goldens/public-api/compiler-cli/error_code.md",
 )
 
-ts_api_guardian_test(
+api_golden_test(
     name = "compiler_options_api",
-    actual = "angular/packages/compiler-cli/npm_package/src/ngtsc/core/api/src/public_options.d.ts",
     data = [
         ":npm_package",
         "//goldens:public-api",
     ],
-    golden = "angular/goldens/public-api/compiler-cli/compiler_options.d.ts",
+    entry_point = "angular/packages/compiler-cli/npm_package/src/ngtsc/core/api/src/public_options.d.ts",
+    golden = "angular/goldens/public-api/compiler-cli/compiler_options.md",
 )
 
 # Controls whether the Ivy compiler produces performance traces as part of each build
