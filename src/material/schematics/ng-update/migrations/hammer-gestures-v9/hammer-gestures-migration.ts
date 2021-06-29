@@ -116,7 +116,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
    */
   private _deletedIdentifiers: ts.Identifier[] = [];
 
-  visitTemplate(template: ResolvedResource): void {
+  override visitTemplate(template: ResolvedResource): void {
     if (!this._customEventsUsedInTemplate || !this._standardEventsUsedInTemplate) {
       const {standardEvents, customEvents} = isHammerJsUsedInTemplate(template.content);
       this._customEventsUsedInTemplate = this._customEventsUsedInTemplate || customEvents;
@@ -124,7 +124,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
     }
   }
 
-  visitNode(node: ts.Node): void {
+  override visitNode(node: ts.Node): void {
     this._checkHammerImports(node);
     this._checkForRuntimeHammerUsage(node);
     this._checkForMaterialGestureConfig(node);
@@ -132,7 +132,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
     this._checkForHammerModuleReference(node);
   }
 
-  postAnalysis(): void {
+  override postAnalysis(): void {
     // Walk through all hammer config token references and check if there
     // is a potential custom gesture config setup.
     const hasCustomGestureConfigSetup =
@@ -828,7 +828,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
    * on the analysis of the individual targets. For example: we only remove Hammer
    * from the "package.json" if it is not used in *any* project target.
    */
-  static globalPostMigration(tree: Tree, context: SchematicContext): PostMigrationAction {
+  static override globalPostMigration(tree: Tree, context: SchematicContext): PostMigrationAction {
     // Always notify the developer that the Hammer v9 migration does not migrate tests.
     context.logger.info(
         '\n⚠  General notice: The HammerJS v9 migration for Angular Components is not able to ' +

@@ -26,14 +26,14 @@ export class ClassInheritanceMigration extends Migration<UpgradeData> {
   // Only enable the migration rule if there is upgrade data.
   enabled = this.propertyNames.size !== 0;
 
-  init(): void {
+  override init(): void {
     getVersionUpgradeData(this, 'propertyNames')
         .filter(data => data.limitedTo && data.limitedTo.classes)
         .forEach(
             data => data.limitedTo.classes.forEach(name => this.propertyNames.set(name, data)));
   }
 
-  visitNode(node: ts.Node): void {
+  override visitNode(node: ts.Node): void {
     if (ts.isClassDeclaration(node)) {
       this._visitClassDeclaration(node);
     }

@@ -25,13 +25,13 @@ export class CssSelectorsMigration extends Migration<UpgradeData> {
   // Only enable the migration rule if there is upgrade data.
   enabled = this.data.length !== 0;
 
-  visitNode(node: ts.Node): void {
+  override visitNode(node: ts.Node): void {
     if (ts.isStringLiteralLike(node)) {
       this._visitStringLiteralLike(node);
     }
   }
 
-  visitTemplate(template: ResolvedResource): void {
+  override visitTemplate(template: ResolvedResource): void {
     this.data.forEach(data => {
       if (data.replaceIn && !data.replaceIn.html) {
         return;
@@ -43,7 +43,7 @@ export class CssSelectorsMigration extends Migration<UpgradeData> {
     });
   }
 
-  visitStylesheet(stylesheet: ResolvedResource): void {
+  override visitStylesheet(stylesheet: ResolvedResource): void {
     this.data.forEach(data => {
       if (data.replaceIn && !data.replaceIn.stylesheet) {
         return;

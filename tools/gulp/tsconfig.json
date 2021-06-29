@@ -8,11 +8,13 @@
     "moduleResolution": "node",
     "outDir": "../../dist/tools/gulp",
     "strictNullChecks": true,
+    "noImplicitOverride": true,
     "noImplicitReturns": true,
     "strictFunctionTypes": true,
     "noImplicitThis": true,
     "noEmitOnError": true,
     "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
     "target": "es5",
     "types": [
       "node"

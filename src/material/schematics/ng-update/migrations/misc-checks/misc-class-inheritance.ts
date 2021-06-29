@@ -19,7 +19,7 @@ export class MiscClassInheritanceMigration extends Migration<null> {
   // currently only includes migrations for V6 deprecations.
   enabled = this.targetVersion === TargetVersion.V6;
 
-  visitNode(node: ts.Node): void {
+  override visitNode(node: ts.Node): void {
     if (ts.isClassDeclaration(node)) {
       this._visitClassDeclaration(node);
     }

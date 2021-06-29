@@ -23,15 +23,15 @@ export class AttributeSelectorsMigration extends Migration<UpgradeData> {
   data = getVersionUpgradeData(this, 'attributeSelectors');
 
   // Only enable the migration rule if there is upgrade data.
-  enabled = this.data.length !== 0;
+  enabled: boolean = this.data.length !== 0;
 
-  visitNode(node: ts.Node) {
+  override visitNode(node: ts.Node) {
     if (ts.isStringLiteralLike(node)) {
       this._visitStringLiteralLike(node);
     }
   }
 
-  visitTemplate(template: ResolvedResource) {
+  override visitTemplate(template: ResolvedResource) {
     this.data.forEach(selector => {
       findAllSubstringIndices(template.content, selector.replace)
           .map(offset => template.start + offset)
@@ -39,7 +39,7 @@ export class AttributeSelectorsMigration extends Migration<UpgradeData> {
     });
   }
 
-  visitStylesheet(stylesheet: ResolvedResource): void {
+  override visitStylesheet(stylesheet: ResolvedResource): void {
     this.data.forEach(selector => {
       const currentSelector = `[${selector.replace}]`;
       const updatedSelector = `[${selector.replaceWith}]`;

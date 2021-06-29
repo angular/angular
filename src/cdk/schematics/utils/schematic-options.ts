@@ -8,6 +8,7 @@
 
 import {ProjectDefinition} from '@angular-devkit/core/src/workspace';
 import {isJsonObject, JsonObject} from '@angular-devkit/core';
+import {Schema, Style} from '@schematics/angular/component/schema';
 
 /**
  * Returns the default options for the `@schematics/angular:component` schematic which would
@@ -16,7 +17,7 @@ import {isJsonObject, JsonObject} from '@angular-devkit/core';
  * This is necessary because the Angular CLI only exposes the default values for the "--style",
  * "--inlineStyle", "--skipTests" and "--inlineTemplate" options to the "component" schematic.
  */
-export function getDefaultComponentOptions(project: ProjectDefinition) {
+export function getDefaultComponentOptions(project: ProjectDefinition): Partial<Schema> {
   // Note: Not all options which are available when running "ng new" will be stored in the
   // workspace config. List of options which will be available in the configuration:
   // angular/angular-cli/blob/master/packages/schematics/angular/application/index.ts#L109-L131
@@ -30,7 +31,7 @@ export function getDefaultComponentOptions(project: ProjectDefinition) {
   }
 
   return {
-    style: getDefaultComponentOption(project, ['style', 'styleext'], 'css'),
+    style: getDefaultComponentOption<Style>(project, ['style', 'styleext'], Style.Css),
     inlineStyle: getDefaultComponentOption(project, ['inlineStyle'], false),
     inlineTemplate: getDefaultComponentOption(project, ['inlineTemplate'], false),
     skipTests: skipTests,

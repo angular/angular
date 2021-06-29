@@ -42,7 +42,7 @@ export class RippleSpeedFactorMigration extends Migration<null> {
   // speed factor has been removed in that version.
   enabled = this.targetVersion === TargetVersion.V7;
 
-  visitNode(node: ts.Node): void {
+  override visitNode(node: ts.Node): void {
     if (ts.isBinaryExpression(node)) {
       this._visitBinaryExpression(node);
     } else if (ts.isPropertyAssignment(node)) {
@@ -50,7 +50,7 @@ export class RippleSpeedFactorMigration extends Migration<null> {
     }
   }
 
-  visitTemplate(template: ResolvedResource): void {
+  override visitTemplate(template: ResolvedResource): void {
     let match: RegExpMatchArray|null;
 
     while ((match = speedFactorNumberRegex.exec(template.content)) !== null) {

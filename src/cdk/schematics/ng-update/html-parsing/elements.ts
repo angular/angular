@@ -6,23 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DefaultTreeDocument, DefaultTreeElement, parseFragment} from 'parse5';
+import {ChildNode, Element, parseFragment} from 'parse5';
 
 /**
  * Parses a HTML fragment and traverses all AST nodes in order find elements that
  * include the specified attribute.
  */
 export function findElementsWithAttribute(html: string, attributeName: string) {
-  const document = parseFragment(html, {sourceCodeLocationInfo: true}) as DefaultTreeDocument;
-  const elements: DefaultTreeElement[] = [];
+  const document = parseFragment(html, {sourceCodeLocationInfo: true});
+  const elements: Element[] = [];
 
-  const visitNodes = nodes => {
-    nodes.forEach(node => {
+  const visitNodes = (nodes: ChildNode[]) => {
+    nodes.forEach((node: Element) => {
       if (node.childNodes) {
         visitNodes(node.childNodes);
       }
 
-      if (node.attrs && node.attrs.some(attr => attr.name === attributeName.toLowerCase())) {
+      if (node.attrs?.some(attr => attr.name === attributeName.toLowerCase())) {
         elements.push(node);
       }
     });
@@ -54,7 +54,7 @@ export function findAttributeOnElementWithAttrs(html: string, name: string, attr
 }
 
 /** Shorthand function that checks if the specified element contains the given attribute. */
-function hasElementAttribute(element: DefaultTreeElement, attributeName: string): boolean {
+function hasElementAttribute(element: Element, attributeName: string): boolean {
   return element.attrs && element.attrs.some(attr => attr.name === attributeName.toLowerCase());
 }
 

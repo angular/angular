@@ -29,7 +29,7 @@ export class InputNamesMigration extends Migration<UpgradeData> {
   // Only enable the migration rule if there is upgrade data.
   enabled = this.data.length !== 0;
 
-  visitStylesheet(stylesheet: ResolvedResource): void {
+  override visitStylesheet(stylesheet: ResolvedResource): void {
     this.data.forEach(name => {
       const currentSelector = `[${name.replace}]`;
       const updatedSelector = `[${name.replaceWith}]`;
@@ -42,7 +42,7 @@ export class InputNamesMigration extends Migration<UpgradeData> {
     });
   }
 
-  visitTemplate(template: ResolvedResource): void {
+  override visitTemplate(template: ResolvedResource): void {
     this.data.forEach(name => {
       const limitedTo = name.limitedTo;
       const relativeOffsets: number[] = [];

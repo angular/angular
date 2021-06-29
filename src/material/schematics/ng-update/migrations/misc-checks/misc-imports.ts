@@ -19,7 +19,7 @@ export class MiscImportsMigration extends Migration<null> {
   // currently only includes migrations for V6 deprecations.
   enabled = this.targetVersion === TargetVersion.V6;
 
-  visitNode(node: ts.Node): void {
+  override visitNode(node: ts.Node): void {
     if (ts.isImportDeclaration(node)) {
       this._visitImportDeclaration(node);
     }

@@ -7,12 +7,12 @@
  */
 
 import {SchematicsException} from '@angular-devkit/schematics';
-import {DefaultTreeElement} from 'parse5';
+import {Element} from 'parse5';
 
 /** Determines the indentation of child elements for the given Parse5 element. */
-export function getChildElementIndentation(element: DefaultTreeElement) {
+export function getChildElementIndentation(element: Element) {
   const childElement = element.childNodes
-    .find(node => node['tagName']) as DefaultTreeElement | null;
+    .find(node => (node as Element).tagName) as Element | null;
 
   if ((childElement && !childElement.sourceCodeLocation) || !element.sourceCodeLocation) {
     throw new SchematicsException('Cannot determine child element indentation because the ' +

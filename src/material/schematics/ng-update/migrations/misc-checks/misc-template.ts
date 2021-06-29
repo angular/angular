@@ -24,7 +24,7 @@ export class MiscTemplateMigration extends Migration<null> {
   // currently only includes migrations for V6 deprecations.
   enabled = this.targetVersion === TargetVersion.V6;
 
-  visitTemplate(template: ResolvedResource): void {
+  override visitTemplate(template: ResolvedResource): void {
 
     // Migration for: https://github.com/angular/components/pull/10398 (v6)
     findOutputsOnElementWithTag(template.content, 'selectionChange', [

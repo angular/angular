@@ -39,7 +39,7 @@ export class SecondaryEntryPointsMigration extends Migration<null> {
   // entry-point of Material has been marked as deprecated in version 8.
   enabled = this.targetVersion === TargetVersion.V8 || this.targetVersion === TargetVersion.V9;
 
-  visitNode(declaration: ts.Node): void {
+  override visitNode(declaration: ts.Node): void {
     // Only look at import declarations.
     if (!ts.isImportDeclaration(declaration) ||
         !ts.isStringLiteralLike(declaration.moduleSpecifier)) {
@@ -150,7 +150,7 @@ export class SecondaryEntryPointsMigration extends Migration<null> {
 function createStringLiteral(text: string, singleQuotes: boolean): ts.StringLiteral {
   const literal = ts.createStringLiteral(text);
   // See: https://github.com/microsoft/TypeScript/blob/master/src/compiler/utilities.ts#L584-L590
-  literal['singleQuote'] = singleQuotes;
+  (literal as any).singleQuote = singleQuotes;
   return literal;
 }
 

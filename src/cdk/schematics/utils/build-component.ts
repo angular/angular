@@ -175,8 +175,12 @@ export function buildComponent(options: ComponentOptions,
     // Add the default component option values to the options if an option is not explicitly
     // specified but a default component option is available.
     Object.keys(options)
-      .filter(optionName => options[optionName] == null && defaultComponentOptions[optionName])
-      .forEach(optionName => options[optionName] = defaultComponentOptions[optionName]);
+      .filter((optionName: keyof ComponentOptions) => {
+        return options[optionName] == null && defaultComponentOptions[optionName];
+      })
+      .forEach((optionName: keyof ComponentOptions) => {
+        (options as any)[optionName] = (defaultComponentOptions as ComponentOptions)[optionName];
+      });
 
     if (options.path === undefined) {
       // TODO(jelbourn): figure out if the need for this `as any` is a bug due to two different
@@ -214,7 +218,7 @@ export function buildComponent(options: ComponentOptions,
 
     // Key-value object that includes the specified additional files with their loaded content.
     // The resolved contents can be used inside EJS templates.
-    const resolvedFiles = {};
+    const resolvedFiles: Record<string, string> = {};
 
     for (let key in additionalFiles) {
       if (additionalFiles[key]) {

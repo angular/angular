@@ -30,12 +30,11 @@ const CUSTOM_MATERIAL_HAMMERJS_EVENS =
  */
 export function isHammerJsUsedInTemplate(html: string):
     {standardEvents: boolean, customEvents: boolean} {
-  const document =
-      parse5.parseFragment(html, {sourceCodeLocationInfo: true}) as parse5.DefaultTreeDocument;
+  const document = parse5.parseFragment(html, {sourceCodeLocationInfo: true});
   let customEvents = false;
   let standardEvents = false;
-  const visitNodes = nodes => {
-    nodes.forEach((node: parse5.DefaultTreeElement) => {
+  const visitNodes = (nodes: parse5.ChildNode[]) => {
+    nodes.forEach((node: parse5.Element) => {
       if (node.attrs) {
         for (let attr of node.attrs) {
           if (!customEvents && CUSTOM_MATERIAL_HAMMERJS_EVENS.some(e => `(${e})` === attr.name)) {

@@ -82,7 +82,7 @@ export function insertImport(source: ts.SourceFile, fileToEdit: string, symbolNa
 
   // no such import declaration exists
   const useStrict = findNodes(rootNode, ts.SyntaxKind.StringLiteral)
-    .filter((n: ts.StringLiteral) => n.text === 'use strict');
+    .filter(n => (n as ts.StringLiteral).text === 'use strict');
   let fallbackPos = 0;
   if (useStrict.length > 0) {
     fallbackPos = useStrict[0].end;
@@ -277,7 +277,7 @@ export function getDecoratorMetadata(source: ts.SourceFile, identifier: string,
                                      module: string): ts.Node[] {
   const angularImports: {[name: string]: string}
     = findNodes(source, ts.SyntaxKind.ImportDeclaration)
-    .map((node: ts.ImportDeclaration) => _angularImportsFromNode(node, source))
+    .map(node => _angularImportsFromNode(node as ts.ImportDeclaration, source))
     .reduce((acc: {[name: string]: string}, current: {[name: string]: string}) => {
       for (const key of Object.keys(current)) {
         acc[key] = current[key];
@@ -326,7 +326,8 @@ export function getMetadataField(
     .filter(prop => ts.isPropertyAssignment(prop))
     // Filter out every fields that's not "metadataField". Also handles string literals
     // (but not expressions).
-    .filter(({ name }: ts.PropertyAssignment) => {
+    .filter(node => {
+      const name = (node as ts.PropertyAssignment).name;
       return (ts.isIdentifier(name) || ts.isStringLiteral(name))
         && name.getText() === metadataField;
     });
@@ -544,10 +545,9 @@ export function findBootstrapModulePath(host: Tree, mainPath: string): string {
     .filter(imp => {
       return findNode(imp, ts.SyntaxKind.Identifier, bootstrapModule.getText());
     })
-    .map((imp: ts.ImportDeclaration) => {
-      const modulePathStringLiteral = imp.moduleSpecifier as ts.StringLiteral;
-
-      return modulePathStringLiteral.text;
+    .map(node => {
+      const modulePath = (node as ts.ImportDeclaration).moduleSpecifier as ts.StringLiteral;
+      return modulePath.text;
     })[0];
 
   return bootstrapModuleRelativePath;

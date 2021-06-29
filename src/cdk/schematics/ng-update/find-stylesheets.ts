@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {join} from '@angular-devkit/core';
+import {join, Path} from '@angular-devkit/core';
 import {Tree} from '@angular-devkit/schematics';
 
 /** Regular expression that matches stylesheet paths */
@@ -21,7 +21,7 @@ const STYLESHEET_REGEX = /.*\.(css|scss)/;
  */
 export function findStylesheetFiles(tree: Tree, startDirectory: string = '/'): string[] {
   const result: string[] = [];
-  const visitDir = dirPath => {
+  const visitDir = (dirPath: Path) => {
     const {subfiles, subdirs} = tree.getDir(dirPath);
 
     subfiles.forEach(fileName => {
@@ -38,6 +38,6 @@ export function findStylesheetFiles(tree: Tree, startDirectory: string = '/'): s
       }
     });
   };
-  visitDir(startDirectory);
+  visitDir(startDirectory as Path);
   return result;
 }

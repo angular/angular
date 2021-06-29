@@ -43,7 +43,7 @@ export class ClassNamesMigration extends Migration<UpgradeData> {
   // Only enable the migration rule if there is upgrade data.
   enabled = this.data.length !== 0;
 
-  visitNode(node: ts.Node): void {
+  override visitNode(node: ts.Node): void {
     if (ts.isIdentifier(node)) {
       this._visitIdentifier(node);
     }

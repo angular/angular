@@ -22,7 +22,7 @@ export class MiscTemplateMigration extends Migration<UpgradeData> {
   // currently only includes migrations for V6 deprecations.
   enabled = this.targetVersion === TargetVersion.V6;
 
-  visitTemplate(template: ResolvedResource): void {
+  override visitTemplate(template: ResolvedResource): void {
     // Migration for https://github.com/angular/components/pull/10325 (v6)
     findAllSubstringIndices(template.content, 'cdk-focus-trap').forEach(offset => {
       this.failures.push({

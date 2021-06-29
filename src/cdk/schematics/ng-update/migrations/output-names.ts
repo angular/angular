@@ -28,7 +28,7 @@ export class OutputNamesMigration extends Migration<UpgradeData> {
   // Only enable the migration rule if there is upgrade data.
   enabled = this.data.length !== 0;
 
-  visitTemplate(template: ResolvedResource): void {
+  override visitTemplate(template: ResolvedResource): void {
     this.data.forEach(name => {
       const limitedTo = name.limitedTo;
       const relativeOffsets: number[] = [];
