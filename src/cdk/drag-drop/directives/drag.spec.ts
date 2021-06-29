@@ -6099,7 +6099,11 @@ class DraggableInScrollableVerticalDropZone extends DraggableInDropZone {
 }
 
 @Component({
-  template: '<div class="scroll-container" cdkScrollable>' + DROP_ZONE_FIXTURE_TEMPLATE + '</div>',
+  template: `
+    <div
+      #scrollContainer
+      class="scroll-container"
+      cdkScrollable>${DROP_ZONE_FIXTURE_TEMPLATE}</div>`,
 
   // Note that it needs a margin to ensure that it's not flush against the viewport
   // edge which will cause the viewport to scroll, rather than the list.
@@ -6111,13 +6115,24 @@ class DraggableInScrollableVerticalDropZone extends DraggableInDropZone {
     }
   `]
 })
-class DraggableInScrollableParentContainer extends DraggableInDropZone {
+class DraggableInScrollableParentContainer extends DraggableInDropZone implements AfterViewInit {
+  @ViewChild('scrollContainer') scrollContainer: ElementRef<HTMLElement>;
+
   constructor(elementRef: ElementRef) {
     super(elementRef);
 
     for (let i = 0; i < 60; i++) {
       this.items.push({value: `Extra item ${i}`, height: ITEM_HEIGHT, margin: 0});
     }
+  }
+
+  override ngAfterViewInit() {
+    super.ngAfterViewInit();
+
+    // Firefox preserves the `scrollTop` value from previous similar containers. This
+    // could throw off test assertions and result in flaky results.
+    // See: https://bugzilla.mozilla.org/show_bug.cgi?id=959812.
+    this.scrollContainer.nativeElement.scrollTop = 0;
   }
 }
 
