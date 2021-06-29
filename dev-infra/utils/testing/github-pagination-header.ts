@@ -12,11 +12,10 @@
  * https://docs.github.com/en/rest/guides/traversing-with-pagination
  */
 export function buildGithubPaginationResponseHeader(
-    amountPages: number, currentPage: number, baseUrl: string) {
-  const links =
-      [`<${baseUrl}?page=1>; rel="first"`, `<${baseUrl}?page=${amountPages}>; rel="last"`];
+    totalPages: number, currentPage: number, baseUrl: string) {
+  const links = [`<${baseUrl}?page=1>; rel="first"`, `<${baseUrl}?page=${totalPages}>; rel="last"`];
 
-  if (currentPage < amountPages) {
+  if (currentPage < totalPages) {
     links.push(`<${baseUrl}?page=${currentPage + 1}>; rel="next"`);
   }
 
