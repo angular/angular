@@ -82,7 +82,7 @@ The preceding example calls a method, which is defined in the component class:
 
 <code-example path="what-is-angular/src/app/hello-world-bindings/hello-world-bindings.component.ts" region="method"></code-example>
 
-The following is an example of interpolation and bindings within an Angular template:
+The following is a combined example of Interpolation, Property Binding and Event Binding within an Angular template:
 
 <code-tabs linenums="true">
   <code-pane
