@@ -6,11 +6,11 @@ describe('What is Angular', () => {
   const paragraphs = element.all(by.css('p'));
   const buttons = element.all(by.css('button'));
   const templateButton = buttons.get(1);
-  const templateText = paragraphs.get(3);
+  const templateText = paragraphs.get(4);
   const messageButton = buttons.get(0);
   const messageText = paragraphs.get(2);
   const ngIfButton = buttons.get(2);
-  const ngIfText = paragraphs.get(4);
+  const ngIfText = paragraphs.get(5);
   const diButton = buttons.get(3);
 
   beforeEach(() => browser.get(''));
