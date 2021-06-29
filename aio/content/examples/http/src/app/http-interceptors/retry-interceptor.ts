@@ -39,7 +39,7 @@ export class RetryInterceptor implements HttpInterceptor {
         tap(null,
             () => {
               // An error has occurred, so increment this request's ERROR_COUNT.
-              req.set(ERROR_COUNT, req.get(ERROR_COUNT) + 1);
+              req.context.set(ERROR_COUNT, req.context.get(ERROR_COUNT) + 1);
             }),
         // #docregion reading-context
         // Retry the request a configurable number of times.
