@@ -25,8 +25,14 @@ const IGNORED_EXAMPLES = [];
  * Run Protractor End-to-End Tests for Doc Samples
  *
  * Flags
- *  --filter to filter/select _example app subdir names
+ *  --filter to filter/select example app subdir names
+ *    Can be used multiple times to include multiple patterns.
  *    e.g. --filter=foo  // all example apps with 'foo' in their folder names.
+ *
+ *  --exclude to exclude example app subdir names
+ *    Can be used multiple times to exclude multiple patterns.
+ *    NOTE: `--exclude` is always cosidered after `--filter`.
+ *    e.g. --exclude=bar  // Exclude all example apps with 'bar' in their folder names.
  *
  *  --setup to run yarn install, copy boilerplate and update webdriver
  *    e.g. --setup
@@ -60,7 +66,7 @@ function runE2e() {
   return Promise.resolve()
       .then(
           () => findAndRunE2eTests(
-              argv.filter, outputFile, argv.shard,
+              argv.filter, argv.exclude, outputFile, argv.shard,
               argv.cliSpecsConcurrency || DEFAULT_CLI_SPECS_CONCURRENCY, argv.retry || 1))
       .then((status) => {
         reportStatus(status, outputFile);
@@ -76,7 +82,9 @@ function runE2e() {
 
 // Finds all of the *e2e-spec.tests under the examples folder along with the corresponding apps
 // that they should run under. Then run each app/spec collection sequentially.
-function findAndRunE2eTests(filter, outputFile, shard, cliSpecsConcurrency, maxAttempts) {
+function findAndRunE2eTests(
+    includeFilter, excludeFilter, outputFile, shard, cliSpecsConcurrency, maxAttempts) {
+  const filter = {include: includeFilter, exclude: excludeFilter};
   const shardParts = shard ? shard.split('/') : [0, 1];
   const shardModulo = parseInt(shardParts[0], 10);
   const shardDivider = parseInt(shardParts[1], 10);
@@ -84,7 +92,8 @@ function findAndRunE2eTests(filter, outputFile, shard, cliSpecsConcurrency, maxA
   // create an output file with header.
   const startTime = new Date().getTime();
   let header = `Doc Sample Protractor Results on ${new Date().toLocaleString()}\n`;
-  header += `  Filter: ${filter ? filter : 'All tests'}\n\n`;
+  header += `  Include: ${filter.include || 'All tests'}\n`;
+  header += `  Exclude: ${filter.exclude || 'No tests'}\n\n`;
   fs.writeFileSync(outputFile, header);
 
   const status = {passed: [], failed: []};
@@ -378,14 +387,21 @@ function getE2eSpecs(basePath, filter) {
 // Find all e2e specs in a given example folder.
 function getE2eSpecsFor(basePath, specFile, filter) {
   // Only get spec file at the example root.
-  // The formatter doesn't understand nested template string expressions (honestly, neither do I).
-  // clang-format off
-  const e2eSpecGlob = `${filter ? `*${filter}*` : '*'}/${specFile}`;
-  // clang-format on
+  const e2eSpecGlob = [
+    `${filter.include ? filterToGlob(filter.include) : '*'}/${specFile}`,
+    `!${filter.exclude ? filterToGlob(filter.exclude) : ''}/${specFile}`,
+  ];
   return globby(e2eSpecGlob, {cwd: basePath, nodir: true})
       .then(
           paths => paths.filter(file => !IGNORED_EXAMPLES.some(ignored => file.startsWith(ignored)))
                        .map(file => path.join(basePath, file)));
+}
+
+function filterToGlob(filter) {
+  // `filter` can be either a string (if there is one occurrence of the corresponding option) or an
+  // array (if there are two or more occurrences of the corresponding option). In other words, if
+  // `filter` is an array, it will have more than one element.
+  return Array.isArray(filter) ? `*{${filter.join(',')}}*` : `*${filter}*`;
 }
 
 // Load configuration for an example. Used for SystemJS
