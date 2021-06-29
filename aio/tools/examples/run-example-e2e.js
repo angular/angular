@@ -398,6 +398,9 @@ function getE2eSpecsFor(basePath, specFile, filter) {
 }
 
 function filterToGlob(filter) {
+  // `filter` can be either a string (if there is one occurrence of the corresponding option) or an
+  // array (if there are two or more occurrences of the corresponding option). In other words, if
+  // `filter` is an array, it will have more than one element.
   return Array.isArray(filter) ? `*{${filter.join(',')}}*` : `*${filter}*`;
 }
 
