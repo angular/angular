@@ -161,10 +161,10 @@ export class SymbolBuilder {
           sourceSpanEqual(firstChild.sourceSpan, host.sourceSpan);
       if (isMicrosyntaxTemplate) {
         const firstChildDirectives = this.templateData.boundTarget.getDirectivesOfNode(firstChild);
-        if (firstChildDirectives && directives) {
+        if (firstChildDirectives !== null && directives !== null) {
           directives = directives.concat(firstChildDirectives);
         } else {
-          directives = directives || firstChildDirectives;
+          directives = directives ?? firstChildDirectives;
         }
       }
     }
@@ -595,6 +595,6 @@ function anyNodeFilter(n: ts.Node): n is ts.Node {
   return true;
 }
 
-function sourceSpanEqual(from: ParseSourceSpan, to: ParseSourceSpan) {
-  return from.start.offset === to.start.offset && from.end.offset === to.end.offset;
+function sourceSpanEqual(a: ParseSourceSpan, b: ParseSourceSpan) {
+  return a.start.offset === b.start.offset && a.end.offset === b.end.offset;
 }
