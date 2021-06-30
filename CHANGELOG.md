@@ -1,3 +1,17 @@
+<a name="12.1.1"></a>
+# 12.1.1 (2021-06-30)
+### compiler-cli
+| Commit | Description |
+| -- | -- |
+| f6b828e292 | fix(compiler-cli): add support for partially evaluating types (#41661) |
+### platform-browser
+| Commit | Description |
+| -- | -- |
+| d19ddd1a87 | fix(platform-browser): in `Meta.addTag()` do not add duplicate meta tags (#42703) |
+## Special Thanks:
+Alan Agius, Dario Piotrowicz, George Kalpakas, George Looshch, Lars Gyrup Brink Nielsen, Paul Gschwendtner, Pete Bacon Darwin, Zach Arend, codebriefcase, dario-piotrowicz, marvinbeckert, mgechev and pavlenko
+
+
 <a name="12.2.0-next.0"></a>
 # 12.2.0-next.0 (2021-06-24)
 
