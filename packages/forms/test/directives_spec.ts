@@ -319,7 +319,8 @@ class CustomValidatorDirective implements Validator {
         personControlGroupDir = new NgModelGroup(form, [], []);
         personControlGroupDir.name = 'person';
 
-        loginControlDir = new NgModel(personControlGroupDir, null!, null!, [defaultAccessor]);
+        loginControlDir =
+            new NgModel(personControlGroupDir, null!, null!, [defaultAccessor], null!);
         loginControlDir.name = 'login';
         loginControlDir.valueAccessor = new DummyControlValueAccessor();
       });
@@ -544,7 +545,7 @@ class CustomValidatorDirective implements Validator {
 
       beforeEach(() => {
         ngModel = new NgModel(
-            null!, [Validators.required], [asyncValidator('expected')], [defaultAccessor]);
+            null!, [Validators.required], [asyncValidator('expected')], [defaultAccessor], null!);
         ngModel.valueAccessor = new DummyControlValueAccessor();
         control = ngModel.control;
       });
@@ -577,7 +578,7 @@ class CustomValidatorDirective implements Validator {
       });
 
       it('should throw when no value accessor with named control', () => {
-        const namedDir = new NgModel(null!, null!, null!, null!);
+        const namedDir = new NgModel(null!, null!, null!, null!, null!);
         namedDir.name = 'one';
 
         expect(() => namedDir.ngOnChanges({}))
@@ -585,7 +586,7 @@ class CustomValidatorDirective implements Validator {
       });
 
       it('should throw when no value accessor with unnamed control', () => {
-        const unnamedDir = new NgModel(null!, null!, null!, null!);
+        const unnamedDir = new NgModel(null!, null!, null!, null!, null!);
 
         expect(() => unnamedDir.ngOnChanges({}))
             .toThrowError(
