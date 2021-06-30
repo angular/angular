@@ -949,7 +949,7 @@ describe('ngc transformer command-line', () => {
       it('should lower loadChildren in an exported variable expression', () => {
         write('mymodule.ts', `
           import {Component, NgModule} from '@angular/core';
-          import {RouterModule} from '@angular/router';
+          import {RouterModule, Routes} from '@angular/router';
 
           export function foo(): string {
             console.log('side-effect');
@@ -962,7 +962,7 @@ describe('ngc transformer command-line', () => {
           })
           export class Route {}
 
-          export const routes = [
+          export const routes: Routes = [
             {path: '', pathMatch: 'full', component: Route, loadChildren: foo()}
           ];
 
