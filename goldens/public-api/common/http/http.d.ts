@@ -1,11 +1,13 @@
 export declare const HTTP_INTERCEPTORS: InjectionToken<HttpInterceptor[]>;
 
+export declare const HTTP_PARAMETER_CODEC: InjectionToken<HttpParameterCodec>;
+
 export declare abstract class HttpBackend implements HttpHandler {
     abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
 }
 
 export declare class HttpClient {
-    constructor(handler: HttpHandler);
+    constructor(handler: HttpHandler, httpParamCodec?: HttpParameterCodec | undefined);
     delete(url: string, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];

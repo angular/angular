@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {InjectionToken} from '@angular/core';
+
 
 /**
  * A codec for encoding and decoding parameters in URLs.
@@ -20,6 +22,14 @@ export interface HttpParameterCodec {
   decodeKey(key: string): string;
   decodeValue(value: string): string;
 }
+
+/**
+ * @description
+ * Provide this token to change entire app's parameter encoding
+ *
+ * @publicApi
+ */
+export const HTTP_PARAMETER_CODEC = new InjectionToken<HttpParameterCodec>('HttpParameterCodec');
 
 /**
  * Provides encoding and decoding of URL parameter and query-string values.
