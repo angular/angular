@@ -177,6 +177,10 @@ describe('FormArray', () => {
     let a: FormArray;
 
     it('should work with nested form groups/arrays', () => {
+      const fa = new FormArray(
+          [new FormGroup({'c2': new FormControl('v2'), 'c3': new FormControl('v3')})]);
+
+
       a = new FormArray([
         new FormGroup({'c2': new FormControl('v2'), 'c3': new FormControl('v3')}),
         new FormArray([new FormControl('v4'), new FormControl('v5')])
@@ -358,8 +362,8 @@ describe('FormArray', () => {
     beforeEach(() => {
       c = new FormControl('');
       c2 = new FormControl('');
-      a = new FormArray([c, c2]);
-      a2 = new FormArray([a]);
+      a = new FormArray<any>([c, c2]);
+      a2 = new FormArray<any>([a]);
     });
 
     it('should set its own value', () => {

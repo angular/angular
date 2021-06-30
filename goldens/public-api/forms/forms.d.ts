@@ -1,4 +1,4 @@
-export declare abstract class AbstractControl {
+export declare abstract class AbstractControl<T = any> {
     get asyncValidator(): AsyncValidatorFn | null;
     set asyncValidator(asyncValidatorFn: AsyncValidatorFn | null);
     get dirty(): boolean;
@@ -6,7 +6,7 @@ export declare abstract class AbstractControl {
     get enabled(): boolean;
     readonly errors: ValidationErrors | null;
     get invalid(): boolean;
-    get parent(): FormGroup | FormArray | null;
+    get parent(): FormGroup<any> | FormArray<any> | null;
     get pending(): boolean;
     readonly pristine: boolean;
     get root(): AbstractControl;
@@ -18,8 +18,8 @@ export declare abstract class AbstractControl {
     get valid(): boolean;
     get validator(): ValidatorFn | null;
     set validator(validatorFn: ValidatorFn | null);
-    readonly value: any;
-    readonly valueChanges: Observable<any>;
+    readonly value: T | null;
+    readonly valueChanges: Observable<T | null>;
     constructor(validators: ValidatorFn | ValidatorFn[] | null, asyncValidators: AsyncValidatorFn | AsyncValidatorFn[] | null);
     clearAsyncValidators(): void;
     clearValidators(): void;
@@ -31,7 +31,7 @@ export declare abstract class AbstractControl {
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
-    get(path: Array<string | number> | string): AbstractControl | null;
+    get<T = any>(path: Array<string | number> | string): AbstractControl<T> | null;
     getError(errorCode: string, path?: Array<string | number> | string): any;
     hasError(errorCode: string, path?: Array<string | number> | string): boolean;
     markAllAsTouched(): void;
@@ -57,7 +57,7 @@ export declare abstract class AbstractControl {
     setErrors(errors: ValidationErrors | null, opts?: {
         emitEvent?: boolean;
     }): void;
-    setParent(parent: FormGroup | FormArray): void;
+    setParent(parent: FormGroup<any> | FormArray<any>): void;
     setValidators(newValidator: ValidatorFn | ValidatorFn[] | null): void;
     abstract setValue(value: any, options?: Object): void;
     updateValueAndValidity(opts?: {
@@ -156,20 +156,21 @@ export declare interface Form {
     updateModel(dir: NgControl, value: any): void;
 }
 
-export declare class FormArray extends AbstractControl {
-    controls: AbstractControl[];
-    get length(): number;
-    constructor(controls: AbstractControl[], validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
-    at(index: number): AbstractControl;
+export declare interface FormArray<T = any> extends AbstractControl<T> {
+    controls: AbstractControl<T>[];
+    length: number;
+    at(index: number): AbstractControl<T>;
     clear(options?: {
         emitEvent?: boolean;
     }): void;
-    getRawValue(): any[];
+    getRawValue(): T[];
+    insert(index: number, control: AbstractControl<T>, options?: {
+        emitEvent?: boolean;
+    }): void;
     insert(index: number, control: AbstractControl, options?: {
         emitEvent?: boolean;
     }): void;
-    patchValue(value: any[], options?: {
-        onlySelf?: boolean;
+    push(control: AbstractControl<T>, options?: {
         emitEvent?: boolean;
     }): void;
     push(control: AbstractControl, options?: {
@@ -178,18 +179,12 @@ export declare class FormArray extends AbstractControl {
     removeAt(index: number, options?: {
         emitEvent?: boolean;
     }): void;
-    reset(value?: any, options?: {
-        onlySelf?: boolean;
-        emitEvent?: boolean;
-    }): void;
-    setControl(index: number, control: AbstractControl, options?: {
-        emitEvent?: boolean;
-    }): void;
-    setValue(value: any[], options?: {
-        onlySelf?: boolean;
+    setControl(index: number, control: AbstractControl<T>, options?: {
         emitEvent?: boolean;
     }): void;
 }
+
+export declare const FormArray: FormArrayCtor;
 
 export declare class FormArrayName extends ControlContainer implements OnInit, OnDestroy {
     get control(): FormArray;
@@ -202,21 +197,24 @@ export declare class FormArrayName extends ControlContainer implements OnInit, O
 }
 
 export declare class FormBuilder {
-    array(controlsConfig: any[], validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormArray;
-    control(formState: any, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl;
+    array<Item = any>(controlsConfig: FormControlConfig<Item>[], validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormArray;
+    control<T = any>(formState: FormControlState<T>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl;
     group(controlsConfig: {
         [key: string]: any;
     }, options?: AbstractControlOptions | null): FormGroup;
-    /** @deprecated */ group(controlsConfig: {
-        [key: string]: any;
+    /** @deprecated */ group<T extends object = any>(controlsConfig: {
+        [key in keyof T]: FormControlConfig<T[key]>;
     }, options: {
         [key: string]: any;
     }): FormGroup;
 }
 
-export declare class FormControl extends AbstractControl {
-    constructor(formState?: any, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
-    patchValue(value: any, options?: {
+export declare class FormControl<T = any> extends AbstractControl<T> {
+    constructor(formState: FormControlState<T> | null, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
+    constructor(formState: FormControlState<T>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
+    constructor(formState?: T, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
+    constructor(formState?: null, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
+    patchValue(value: null | T, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
         emitModelToViewChange?: boolean;
@@ -224,17 +222,23 @@ export declare class FormControl extends AbstractControl {
     }): void;
     registerOnChange(fn: Function): void;
     registerOnDisabledChange(fn: (isDisabled: boolean) => void): void;
-    reset(formState?: any, options?: {
+    reset(formState?: FormControlState<T>, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
-    setValue(value: any, options?: {
+    setValue(value: null | T, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
         emitModelToViewChange?: boolean;
         emitViewToModelChange?: boolean;
     }): void;
 }
+
+export declare type FormControlConfig<T> = AbstractControl<T> | FormControlState<T> | [
+    FormControlState<T>,
+    (ValidatorFn | ValidatorFn[] | AbstractControlOptions)?,
+    (AsyncValidatorFn | AsyncValidatorFn[])?
+];
 
 export declare class FormControlDirective extends NgControl implements OnChanges, OnDestroy {
     get control(): FormControl;
@@ -264,42 +268,39 @@ export declare class FormControlName extends NgControl implements OnChanges, OnD
     viewToModelUpdate(newValue: any): void;
 }
 
-export declare class FormGroup extends AbstractControl {
+export declare type FormControlState<T> = null | T | {
+    value: null | T;
+    disabled: boolean;
+};
+
+export declare interface FormGroup<T extends object = any> extends AbstractControl<T> {
     controls: {
-        [key: string]: AbstractControl;
+        [key in keyof T]: AbstractControl<T[key]>;
     };
-    constructor(controls: {
-        [key: string]: AbstractControl;
-    }, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
-    addControl(name: string, control: AbstractControl, options?: {
+    addControl<K extends keyof T>(name: K, control: AbstractControl<T[K]>, options?: {
         emitEvent?: boolean;
     }): void;
-    contains(controlName: string): boolean;
-    getRawValue(): any;
-    patchValue(value: {
-        [key: string]: any;
-    }, options?: {
+    addControl<K extends string>(name: NotAKey<K, T>, control: AbstractControl<any>, options?: {
+        emitEvent?: boolean;
+    }): void;
+    contains(controlName: keyof T): boolean;
+    getRawValue(): T;
+    patchValue<K extends keyof T>(value: Partial<T>, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
-    registerControl(name: string, control: AbstractControl): AbstractControl;
-    removeControl(name: string, options?: {
+    registerControl<K extends keyof T>(name: K, control: AbstractControl<T[K]>, options?: {
+        emitEvent?: boolean;
+    }): AbstractControl;
+    removeControl(name: keyof T, options?: {
         emitEvent?: boolean;
     }): void;
-    reset(value?: any, options?: {
-        onlySelf?: boolean;
-        emitEvent?: boolean;
-    }): void;
-    setControl(name: string, control: AbstractControl, options?: {
-        emitEvent?: boolean;
-    }): void;
-    setValue(value: {
-        [key: string]: any;
-    }, options?: {
-        onlySelf?: boolean;
+    setControl<K extends keyof T>(name: K, control: AbstractControl<T[K]>, options?: {
         emitEvent?: boolean;
     }): void;
 }
+
+export declare const FormGroup: FormGroupCtor;
 
 export declare class FormGroupDirective extends ControlContainer implements Form, OnChanges, OnDestroy {
     get control(): FormGroup;

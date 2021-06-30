@@ -1464,7 +1464,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             });
 
             constructor() {
-              this._subscription = this.form.controls.name.valueChanges.subscribe(value => {
+              this._subscription = this.form.controls.name!.valueChanges.subscribe(value => {
                 if (!value) {
                   this.form.removeControl('surname');
                 }
