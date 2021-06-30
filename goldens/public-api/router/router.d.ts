@@ -459,9 +459,11 @@ export declare class RouterOutlet implements OnDestroy, OnInit, RouterOutletCont
 }
 
 export declare interface RouterOutletContract {
+    activateEvents: EventEmitter<any>;
     activatedRoute: ActivatedRoute | null;
     activatedRouteData: Data;
     component: Object | null;
+    deactivateEvents: EventEmitter<any>;
     isActivated: boolean;
     activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver | null): void;
     attach(ref: ComponentRef<unknown>, activatedRoute: ActivatedRoute): void;
