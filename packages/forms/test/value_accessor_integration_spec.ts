@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, EventEmitter, Input, Output, Type, ViewChild} from '@angular/core';
+import {ɵAnimationEngine as AnimationEngine} from '@angular/animations/browser';
+import {Component, Directive, EventEmitter, Input, NgZone, Output, RendererFactory2, Type, ViewChild} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
 import {AbstractControl, ControlValueAccessor, FormControl, FormGroup, FormsModule, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, NgForm, NgModel, ReactiveFormsModule, Validators} from '@angular/forms';
+import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
+import {BrowserAnimationsModule, ɵAnimationRendererFactory as AnimationRendererFactory} from '@angular/platform-browser/animations';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 
@@ -239,6 +242,8 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           // Option IDs start out as 0 and 1, so setting the select value to "1: Object"
           // will select the second option (NY).
           const select = fixture.debugElement.query(By.css('select'));
+          expect(select.nativeElement.value).toEqual('0: Object');
+
           select.nativeElement.value = '1: Object';
           dispatchEvent(select.nativeElement, 'change');
           fixture.detectChanges();
@@ -255,6 +260,94 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           const nyOption = fixture.debugElement.queryAll(By.css('option'))[1];
           expect(select.nativeElement.value).toEqual('3: Object');
           expect(nyOption.nativeElement.selected).toBe(true);
+        });
+
+        it('should support re-assigning the options array with compareWith and trackBy', () => {
+          if (isNode) return;
+          const fixture = initTest(FormControlSelectWithCompareTrackByFn);
+          fixture.detectChanges();
+
+          // Option IDs start out as 0 and 1, so setting the select value to "1: Object"
+          // will select the second option (NY).
+          const select = fixture.debugElement.query(By.css('select'));
+          expect(select.nativeElement.value).toEqual('0: Object');
+
+          select.nativeElement.value = '1: Object';
+          dispatchEvent(select.nativeElement, 'change');
+          fixture.detectChanges();
+
+          expect(fixture.componentInstance.form.value).toEqual({city: {id: 2, name: 'NY'}});
+
+          fixture.componentInstance.cities = [{id: 3, name: 'LA'}, {id: 4, name: 'BXL'}];
+          fixture.detectChanges();
+
+          // using trackBy, instances can be re-used, the option IDs stays the same but their
+          // (ng)value can change
+          const bxlOption = fixture.debugElement.queryAll(By.css('option'))[1];
+          expect(select.nativeElement.value)
+              .not.toEqual('1: Object', 'expected option related value to have been unset');
+          expect(bxlOption.nativeElement.selected)
+              .toBe(false, 'expected option to have been unset');
+          expect(fixture.componentInstance.form.value).toEqual({city: {id: 2, name: 'NY'}});
+        });
+
+        it('should keep current value when selected option is removed/replaced', () => {
+          if (isNode) return;
+          const fixture = initTest(FormControlSelectWithCompareFn);
+          fixture.detectChanges();
+
+          // Option IDs start out as 0 and 1, so setting the select value to "1: Object"
+          // will select the second option (NY).
+          const select = fixture.debugElement.query(By.css('select'));
+          expect(select.nativeElement.value).toEqual('0: Object');
+
+          select.nativeElement.value = '1: Object';
+          dispatchEvent(select.nativeElement, 'change');
+          fixture.detectChanges();
+
+          expect(fixture.componentInstance.form.value).toEqual({city: {id: 2, name: 'NY'}});
+
+          fixture.componentInstance.cities = [{id: 1, name: 'SF'}, {id: 3, name: 'LA'}];
+          fixture.detectChanges();
+
+          // Now that the options array has been re-assigned, new option instances will
+          // be created by ngFor. These instances will have different option IDs, subsequent
+          // to the first: 2 and 3.
+          // removing the currently selected option should not unset the formValue
+          const laOption = fixture.debugElement.queryAll(By.css('option'))[1];
+          expect(select.nativeElement.value)
+              .not.toEqual(
+                  '3: Object',
+                  'expected removal of currently selected option to unset replacement option');
+          expect(laOption.nativeElement.selected)
+              .toBe(
+                  false,
+                  'expected removal of currently selected option to unset replacement option (by index)');
+          expect(fixture.componentInstance.form.value)
+              .toEqual(
+                  {city: {id: 2, name: 'NY'}},
+                  'expected removal of currently selected option not to unset the form value');
+        });
+
+        it('should call compareWith once for each added option until a match is found', () => {
+          if (isNode) return;
+          const fixture = initTest(FormControlSelectWithComparePerfFn);
+          fixture.detectChanges();
+          // compareWith should only be called once since first city is selected
+          expect(fixture.componentInstance.compareFnCalls).toEqual(1);
+        });
+
+        it('should not call compareWith for removed options', () => {
+          if (isNode) return;
+          const fixture = initTest(FormControlSelectWithComparePerfFn);
+          fixture.detectChanges();
+
+          fixture.componentInstance.compareFnCalls = 0;
+          fixture.componentInstance.cities.splice(2, 2);
+          fixture.detectChanges();
+
+          // compareWith should only be called once since first city is still selected
+          expect(fixture.componentInstance.compareFnCalls).toBe(1);
         });
       });
 
@@ -304,6 +397,36 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              expect(buffalo.nativeElement.selected).toBe(true);
            }));
 
+        it('should not select options added after the select renders', fakeAsync(() => {
+             // see issue #14505
+             if (isNode) return;
+             const fixture = initTest(NgModelSelectForm);
+             const comp = fixture.componentInstance;
+             fixture.detectChanges();
+             tick();
+
+             comp.cities.push({name: 'Minneapolis'});
+             fixture.detectChanges();
+             tick();
+
+             const select = fixture.debugElement.query(By.css('select'));
+             expect(select.nativeElement.selectedIndex).toEqual(-1);
+             const minneapolis = fixture.debugElement.queryAll(By.css('option'))[0];
+             expect(minneapolis.nativeElement.selected).toBe(false);
+           }));
+
+        it('when there is a placeholder option', fakeAsync(() => {
+             if (isNode) return;
+             const fixture = initTest(NgModelSelectWithPlaceholderForm);
+             const comp = fixture.componentInstance;
+             comp.cities = [{'name': 'SF'}, {'name': 'NYC'}];
+             fixture.detectChanges();
+             tick();
+
+             const placeholder = fixture.debugElement.queryAll(By.css('option'))[0];
+             expect(placeholder.nativeElement.selected).toBe(true);
+           }));
+
         it('when options are removed', fakeAsync(() => {
              const fixture = initTest(NgModelSelectForm);
              const comp = fixture.componentInstance;
@@ -313,13 +436,51 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              tick();
 
              const select = fixture.debugElement.query(By.css('select'));
-             expect(select.nativeElement.value).toEqual('1: Object');
+             expect(select.nativeElement.value).toBe('1: Object');
 
              comp.cities.pop();
              fixture.detectChanges();
              tick();
 
-             expect(select.nativeElement.value).not.toEqual('1: Object');
+             // no option should be selected, since ngModel doesn't match anything in cities array
+             expect(select.nativeElement.value).not.toBe('1: Object');
+             expect(select.nativeElement.value).not.toBe('0: Object');
+           }));
+
+        it('should not select first option when options are removed and animations module is used',
+           fakeAsync(() => {
+             // this test is the same as the one above, but tested with BrowserAnimationsModule
+             // to ensure that issue #18430 isn't regressed.
+             if (isNode) return;
+             TestBed.configureTestingModule({
+               providers: [
+                 {
+                   provide: RendererFactory2,
+                   useClass: AnimationRendererFactory,
+                   deps: [DomRendererFactory2, AnimationEngine, NgZone]
+                 },
+               ],
+               imports: [BrowserAnimationsModule, FormsModule],
+               declarations: [NgModelSelectForm],
+             });
+
+             const fixture = TestBed.createComponent(NgModelSelectForm);
+             const comp = fixture.componentInstance;
+             comp.cities = [{'name': 'SF'}, {'name': 'NYC'}];
+             comp.selectedCity = comp.cities[1];
+             fixture.detectChanges();
+             tick();
+
+             const select = fixture.debugElement.query(By.css('select'));
+             expect(select.nativeElement.value).toBe('1: Object');
+
+             comp.cities.pop();
+             fixture.detectChanges();
+             tick();
+
+             // no option should be selected, since ngModel doesn't match anything in cities array
+             expect(select.nativeElement.value).not.toBe('1: Object');
+             expect(select.nativeElement.value).not.toBe('0: Object');
            }));
 
         it('when option values have same content, but different identities', fakeAsync(() => {
@@ -1181,6 +1342,46 @@ class FormControlSelectWithCompareFn {
 }
 
 @Component({
+  selector: 'form-control-select-compare-with-perf',
+  template: `
+    <div [formGroup]="form">
+      <select formControlName="city" [compareWith]="compareFn">
+        <option *ngFor="let c of cities" [ngValue]="c">{{c.name}}</option>
+      </select>
+    </div>`
+})
+class FormControlSelectWithComparePerfFn {
+  compareFnCalls = 0;
+
+  compareFn: (o1: any, o2: any) => boolean =
+      (o1: any, o2: any) => {
+        ++this.compareFnCalls;
+        return Object.is(o1, o2);
+      }
+
+  cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}, {id: 3, name: 'LA'}, {id: 4, name: 'BXL'}];
+
+  form = new FormGroup({city: new FormControl(this.cities[0])});
+}
+
+@Component({
+  selector: 'form-control-select-compare-with-track-by',
+  template: `
+    <div [formGroup]="form">
+      <select formControlName="city" [compareWith]="compareFn">
+        <option *ngFor="let c of cities; trackBy: trackByFn" [ngValue]="c">{{c.name}}</option>
+      </select>
+    </div>`
+})
+class FormControlSelectWithCompareTrackByFn {
+  compareFn:
+      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2 ? o1.id === o2.id : o1 === o2
+  trackByFn: (index: number, item: any) => any = (index: number, item: any): any => index;
+  cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
+  form = new FormGroup({city: new FormControl({id: 1, name: 'SF'})});
+}
+
+@Component({
   selector: 'form-control-select-multiple',
   template: `
     <div [formGroup]="form">
@@ -1235,6 +1436,21 @@ class FormControlSelectMultipleWithCompareFn {
 })
 class NgModelSelectForm {
   selectedCity: {[k: string]: string} = {};
+  cities: any[] = [];
+}
+
+@Component({
+  selector: 'ng-model-select-placeholder-form',
+  template: `
+    <form #f="ngForm">
+      <select name="city" ngModel>
+        <option value="" disabled>Choose a city</option>
+        <option *ngFor="let c of cities" [ngValue]="c"> {{c.name}} </option>
+      </select>
+    </form>
+  `
+})
+class NgModelSelectWithPlaceholderForm {
   cities: any[] = [];
 }
 

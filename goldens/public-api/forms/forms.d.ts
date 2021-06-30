@@ -485,9 +485,11 @@ export declare class RequiredValidator implements Validator {
     validate(control: AbstractControl): ValidationErrors | null;
 }
 
-export declare class SelectControlValueAccessor extends ɵangular_packages_forms_forms_g implements ControlValueAccessor {
+export declare class SelectControlValueAccessor extends ɵangular_packages_forms_forms_g implements ControlValueAccessor, AfterViewChecked {
     set compareWith(fn: (o1: any, o2: any) => boolean);
     value: any;
+    constructor(_renderer: Renderer2, _elementRef: ElementRef, _ngZone: NgZone);
+    ngAfterViewChecked(): void;
     registerOnChange(fn: (value: any) => any): void;
     writeValue(value: any): void;
 }
