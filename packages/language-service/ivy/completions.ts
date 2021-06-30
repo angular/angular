@@ -9,7 +9,7 @@
 import {AST, BindingPipe, EmptyExpr, ImplicitReceiver, LiteralPrimitive, MethodCall, ParseSourceSpan, PropertyRead, PropertyWrite, SafeMethodCall, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {CompletionKind, DirectiveInScope, TemplateDeclarationSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import {BoundEvent} from '@angular/compiler/src/render3/r3_ast';
+import {BoundEvent, TextAttribute} from '@angular/compiler/src/render3/r3_ast';
 import * as ts from 'typescript';
 
 import {addAttributeCompletionEntries, AttributeCompletionKind, buildAttributeCompletionTable, getAttributeCompletionSymbol} from './attribute_completions';
@@ -25,6 +25,8 @@ type ElementAttributeCompletionBuilder =
     CompletionBuilder<TmplAstElement|TmplAstBoundAttribute|TmplAstTextAttribute|TmplAstBoundEvent>;
 
 type PipeCompletionBuilder = CompletionBuilder<BindingPipe>;
+
+type StringLiteralCompletionBuilder = CompletionBuilder<LiteralPrimitive|TextAttribute>;
 
 export enum CompletionNodeContext {
   None,
@@ -72,9 +74,57 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       return this.getElementAttributeCompletions();
     } else if (this.isPipeCompletion()) {
       return this.getPipeCompletions();
+    } else if (this.isStringLiteralCompletion()) {
+      return this.getStringLiteralCompletions(options);
     } else {
       return undefined;
     }
+  }
+
+  private isStringLiteralCompletion(): this is StringLiteralCompletionBuilder {
+    return this.node instanceof LiteralPrimitive || this.node instanceof TextAttribute;
+  }
+
+  private getStringLiteralCompletions(
+      this: StringLiteralCompletionBuilder, options: ts.GetCompletionsAtPositionOptions|undefined):
+      ts.WithMetadata<ts.CompletionInfo>|undefined {
+    const location = this.compiler.getTemplateTypeChecker().getStringLiteralCompletionLocation(
+        this.node, this.component);
+    if (location === null) {
+      return undefined;
+    }
+    const tsResults =
+        this.tsLS.getCompletionsAtPosition(location.shimPath, location.positionInShimFile, options);
+    if (tsResults === undefined) {
+      return undefined;
+    }
+
+    let replacementSpan: ts.TextSpan|undefined;
+    if (this.node instanceof TextAttribute && this.node.value.length > 0 && this.node.valueSpan) {
+      replacementSpan = {
+        start: this.node.valueSpan.start.offset,
+        length: this.node.value.length,
+      };
+    }
+    if (this.node instanceof LiteralPrimitive && typeof this.node.value === 'string' &&
+        this.node.value.length > 0) {
+      replacementSpan = {
+        start: this.node.sourceSpan.start + 1,
+        length: this.node.value.length,
+      };
+    }
+
+    let ngResults: ts.CompletionEntry[] = [];
+    for (const result of tsResults.entries) {
+      ngResults.push({
+        ...result,
+        replacementSpan,
+      });
+    }
+    return {
+      ...tsResults,
+      entries: ngResults,
+    };
   }
 
   /**

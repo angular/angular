@@ -36,6 +36,18 @@ const DIR_WITH_UNION_TYPE_INPUT = {
   `
 };
 
+const DIR_WITH_STRING_LITERAL_UNION_TYPE_INPUT = {
+  'Dir': `
+    @Directive({
+      selector: '[dir]',
+      inputs: ['myInput']
+    })
+    export class Dir {
+      myInput!: 'one'|'two'
+    }
+  `
+};
+
 const DIR_WITH_OUTPUT = {
   'Dir': `
     @Directive({
@@ -747,6 +759,35 @@ describe('completions', () => {
       templateFile.moveCursorToText('{{ foo | some¦ }}');
       const completions = templateFile.getCompletionsAtPosition();
       expect(completions?.entries.length).toBe(0);
+    });
+  });
+
+  describe('string scope', () => {
+    it('should complete a string union types in square brackets binding', () => {
+      const {templateFile} =
+          setup(`<input dir [myInput]="'one'">`, '', DIR_WITH_STRING_LITERAL_UNION_TYPE_INPUT);
+      templateFile.moveCursorToText('[myInput]="\'one¦\'"');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.string, ['one', 'two']);
+      expectReplacementText(completions, templateFile.contents, 'one');
+    });
+
+    it('should complete a string union types in binding without brackets', () => {
+      const {templateFile} =
+          setup(`<input dir myInput="one">`, '', DIR_WITH_STRING_LITERAL_UNION_TYPE_INPUT);
+      templateFile.moveCursorToText('myInput="one¦"');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.string, ['one', 'two']);
+      expectReplacementText(completions, templateFile.contents, 'one');
+    });
+
+    it('should complete a string union types in event binding', () => {
+      const {templateFile} = setup(
+          `<input dir (change)="setValue('')">`, 'setValue(value: \'valueOne\'|\'valueTwo\') {}',
+          DIR_WITH_STRING_LITERAL_UNION_TYPE_INPUT);
+      templateFile.moveCursorToText('"setValue(\'¦\')"');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.string, ['valueOne', 'valueTwo']);
     });
   });
 });
