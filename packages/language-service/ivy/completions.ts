@@ -9,7 +9,7 @@
 import {AST, BindingPipe, EmptyExpr, ImplicitReceiver, LiteralPrimitive, MethodCall, ParseSourceSpan, PropertyRead, PropertyWrite, SafeMethodCall, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {CompletionKind, DirectiveInScope, TemplateDeclarationSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import {BoundEvent} from '@angular/compiler/src/render3/r3_ast';
+import {BoundEvent, TextAttribute} from '@angular/compiler/src/render3/r3_ast';
 import * as ts from 'typescript';
 
 import {addAttributeCompletionEntries, AttributeCompletionKind, buildAttributeCompletionTable, getAttributeCompletionSymbol} from './attribute_completions';
@@ -25,6 +25,8 @@ type ElementAttributeCompletionBuilder =
     CompletionBuilder<TmplAstElement|TmplAstBoundAttribute|TmplAstTextAttribute|TmplAstBoundEvent>;
 
 type PipeCompletionBuilder = CompletionBuilder<BindingPipe>;
+
+type LiteralCompletionBuilder = CompletionBuilder<LiteralPrimitive|TextAttribute>;
 
 export enum CompletionNodeContext {
   None,
@@ -72,9 +74,69 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       return this.getElementAttributeCompletions();
     } else if (this.isPipeCompletion()) {
       return this.getPipeCompletions();
+    } else if (this.isLiteralCompletion()) {
+      return this.getLiteralCompletions(options);
     } else {
       return undefined;
     }
+  }
+
+  private isLiteralCompletion(): this is LiteralCompletionBuilder {
+    return this.node instanceof LiteralPrimitive ||
+        (this.node instanceof TextAttribute &&
+         this.nodeContext === CompletionNodeContext.ElementAttributeValue);
+  }
+
+  private getLiteralCompletions(
+      this: LiteralCompletionBuilder, options: ts.GetCompletionsAtPositionOptions|undefined):
+      ts.WithMetadata<ts.CompletionInfo>|undefined {
+    const location = this.compiler.getTemplateTypeChecker().getLiteralCompletionLocation(
+        this.node, this.component);
+    if (location === null) {
+      return undefined;
+    }
+    const tsResults =
+        this.tsLS.getCompletionsAtPosition(location.shimPath, location.positionInShimFile, options);
+    if (tsResults === undefined) {
+      return undefined;
+    }
+
+    let replacementSpan: ts.TextSpan|undefined;
+    if (this.node instanceof TextAttribute && this.node.value.length > 0 && this.node.valueSpan) {
+      replacementSpan = {
+        start: this.node.valueSpan.start.offset,
+        length: this.node.value.length,
+      };
+    }
+    if (this.node instanceof LiteralPrimitive) {
+      if (typeof this.node.value === 'string' && this.node.value.length > 0) {
+        replacementSpan = {
+          // The sourceSpan of `LiteralPrimitive` includes the open quote and the completion entries
+          // don't, so skip the open quote here.
+          start: this.node.sourceSpan.start + 1,
+          length: this.node.value.length,
+        };
+      } else if (typeof this.node.value === 'number') {
+        replacementSpan = {
+          start: this.node.sourceSpan.start,
+          length: this.node.value.toString().length,
+        };
+      }
+    }
+
+    let ngResults: ts.CompletionEntry[] = [];
+    for (const result of tsResults.entries) {
+      if (this.isValidNodeContextCompletion(result)) {
+        ngResults.push({
+          ...result,
+          replacementSpan,
+        });
+      }
+    }
+    return {
+      ...tsResults,
+      entries: ngResults,
+    };
   }
 
   /**
@@ -749,6 +811,8 @@ function nodeContextFromTarget(target: TargetContext): CompletionNodeContext {
     case TargetNodeKind.AttributeInValueContext:
       if (target.node instanceof TmplAstBoundEvent) {
         return CompletionNodeContext.EventValue;
+      } else if (target.node instanceof TextAttribute) {
+        return CompletionNodeContext.ElementAttributeValue;
       } else {
         return CompletionNodeContext.None;
       }
