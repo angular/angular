@@ -1,3 +1,26 @@
+## 12.1.1 "bronze-banana" (2021-06-30)
+  
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **overlay:** use interface for test environment globals ([#23041](https://github.com/angular/components/issues/23041)) ([4624ca823d7000a4a9c039e1dab00746126d5d34](https://github.com/angular/components/commit/4624ca823d7000a4a9c039e1dab00746126d5d34)) |
+| bug fix |  **stepper:** focus management not working with shadow dom encapsulation ([#23047](https://github.com/angular/components/issues/23047)) ([7302e70f8b1f74d7f6b4f7a61d1935d80d5331c1](https://github.com/angular/components/commit/7302e70f8b1f74d7f6b4f7a61d1935d80d5331c1)) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **datepicker:** date ranges not visible in high contrast mode ([#23038](https://github.com/angular/components/issues/23038)) ([c21da30903fb42e5462e1e9a2ac3a552c64fb184](https://github.com/angular/components/commit/c21da30903fb42e5462e1e9a2ac3a552c64fb184)), closes [#23034](https://github.com/angular/components/issues/23034) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-dialog:** use same container selector as non-mdc version ([#23074](https://github.com/angular/components/issues/23074)) ([155cfea15287f02fc7721fe5ec988ddfdb58044a](https://github.com/angular/components/commit/155cfea15287f02fc7721fe5ec988ddfdb58044a)) |
+| bug fix |  **mdc-slider:** event handling fixes and cleanup ([#23063](https://github.com/angular/components/issues/23063)) ([174c99e0eb3eff6641f0165f3b311429beebf910](https://github.com/angular/components/commit/174c99e0eb3eff6641f0165f3b311429beebf910)) |
+| bug fix |  **mdc-snack-bar:** use same container selector as non-mdc version ([#23075](https://github.com/angular/components/issues/23075)) ([fe1de10b66acfaf9de0eaa26514a1c08734c287f](https://github.com/angular/components/commit/fe1de10b66acfaf9de0eaa26514a1c08734c287f)) |
+
 # 12.1.0 "stainlesssteel-sloth" (2021-06-24)
 
 ### cdk
