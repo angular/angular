@@ -732,6 +732,142 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
   }
 
   /**
+   * Wrap the `fakeAsync()` function with the `beforeEach()/afterEach()` hooks.
+   *
+   * Given `AppComponent`:
+   *
+   * @Component({...})
+   * export class AppComponent {
+   *   timerId: number;
+   *   ngOnInit() {
+   *     this.timerId = setTimeout(() => {});
+   *   }
+   *
+   *   ngOnDestroy() {
+   *     clearTimeout(this.timerId);
+   *   }
+   * }
+   *
+   * And without hook functions, we need to write test
+   * like this.
+   *
+   * describe('AppComponent test', () => {
+   *   let fixture: ComponentFixture<AppComponent>;
+   *   beforeEach(() => {
+   *     ...
+   *     fixture = TestBed.createComponent(AppComponent);
+   *   });
+   *
+   *   it('test case1', fakeAsync(() => {
+   *     fixture.detectChanges();
+   *     // do some test with fixture
+   *     fixture.destroy();
+   *   }));
+   *
+   *   it('test case2', fakeAsync(() => {
+   *     fixture.detectChanges();
+   *     // do some test with fixture
+   *     fixture.destroy();
+   *   }));
+   * });
+   *
+   * We need to call `fixture.destroy()` inside each tests, since each `it()` is in
+   * it's own `fakeAsync()` scope so we need to clean up the timerId created in that
+   * FakeAsyncZone.
+   *
+   * With the hook functions, we can write case in this way.
+   *
+   * describe('AppComponent test', () => {
+   *   let fixture: ComponentFixture<AppComponent>;
+   *
+   *   const fakeAsyncWithFixture = fakeAsync.wrap({
+   *     beforeEach: () => {
+   *       fixture = TestBed.createComponent(AppComponent);
+   *       fixture.detectChanges();
+   *     }
+   *     afterEach: () => fixture.destroy();
+   *   });
+   *
+   *   it('test case1', fakeAsyncWithFixture(() => {
+   *     // do some test with fixture
+   *   }));
+   *
+   *   it('test case2', fakeAsyncWithFixture(() => {
+   *     // do some test with fixture
+   *   }));
+   * });
+   *
+   * Also the `wrap()` function support nesting.
+   *
+   * describe('AppComponent test', () => {
+   *   let fixture: ComponentFixture<AppComponent>;
+   *
+   *   const fakeAsyncWithFixture = fakeAsync.wrap({
+   *     beforeEach: () => {
+   *       fixture = TestBed.createComponent(AppComponent);
+   *       fixture.detectChanges();
+   *     }
+   *     afterEach: () => fixture.destroy();
+   *   });
+   *
+   *   it('test case1', fakeAsyncWithFixture(() => {
+   *     // do some test with fixture
+   *   }));
+   *
+   *   it('test case2', fakeAsyncWithFixture(() => {
+   *     // do some test with fixture
+   *   }));
+   *
+   *   describe('AppComponent sub test: auth test', () => {
+   *     const fakeAsyncNested = fakeAsyncWithFixture.wrap({
+   *       beforeEach: () => fixture.componentInstance.login(),
+   *       afterEach: () => fixture.componentInstance.logout();
+   *     });
+   *
+   *     it('should show user info', () => {
+   *       // do some test with fixture with authenticated user.
+   *     });
+   *   });
+   * });
+   *
+   */
+  function wrap(this: any, hooks: {beforeEach?: () => void, afterEach?: () => void}) {
+    // Keep a hooksList in the wrapped fakeAsync function to support
+    // nested wrap
+    let hooksList = this[Zone.__symbol__('fakeAsyncHooksList')] as
+        {beforeEach?: () => void, afterEach?: () => void}[];
+    if (!hooksList) {
+      hooksList = [];
+    } else {
+      // Copy parent hooks list
+      hooksList = hooksList.slice();
+    }
+    hooksList.push(hooks);
+    const fakeAsyncWrap = function(fn: Function) {
+      const wrappedWithHooks = function(this: unknown) {
+        // Invoke beforeEach hook from parent to child order
+        for (let i = 0; i < hooksList.length; i++) {
+          const hooks = hooksList[i];
+          hooks.beforeEach && hooks.beforeEach();
+        }
+        try {
+          return fn.apply(this, arguments);
+        } finally {
+          // Invoke afterEach hook from child to parent order
+          for (let i = hooksList.length - 1; i >= 0; i--) {
+            const hooks = hooksList[i];
+            hooks.afterEach && hooks.afterEach();
+          }
+        }
+      };
+      return fakeAsync(wrappedWithHooks);
+    };
+    fakeAsyncWrap.wrap = wrap;
+    (fakeAsyncWrap as any)[Zone.__symbol__('fakeAsyncHooksList')] = hooksList;
+    return fakeAsyncWrap;
+  }
+
+  /**
    * Wraps a function to be executed in the fakeAsync zone:
    * - microtasks are manually executed by calling `flushMicrotasks()`,
    * - timers are synchronous, `tick()` simulates the asynchronous passage of time.
@@ -749,7 +885,10 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
    *
    * @experimental
    */
-  function fakeAsync(fn: Function): (...args: any[]) => any {
+  function fakeAsync(fn: Function): {
+    (fn: Function): (...args: any[]) => any;
+    wrap: (hooks: {beforeEach?: (() => void); afterEach?: (() => void)}) => typeof fakeAsync
+  } {
     // Not using an arrow function to preserve context passed from call site
     const fakeAsyncFn: any = function(this: unknown, ...args: any[]) {
       const ProxyZoneSpec = getProxyZoneSpec();
@@ -801,6 +940,8 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
     (fakeAsyncFn as any).isFakeAsync = true;
     return fakeAsyncFn;
   }
+
+  fakeAsync.wrap = wrap;
 
   function _getFakeAsyncZoneSpec(): any {
     if (_fakeAsyncTestZoneSpec == null) {

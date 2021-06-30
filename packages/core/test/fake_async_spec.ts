@@ -432,4 +432,106 @@ const ProxyZoneSpec: {assertPresent: () => void} = (Zone as any)['ProxyZoneSpec'
       expect(state).toEqual('works');
     });
   });
+
+  describe('fakeAsync with hooks', () => {
+    function mockAuth(name: string, callback: Function) {
+      let idx = 0;
+      const timerId = setInterval(() => {
+        callback(`${idx++} ${name} verified`);
+      }, 100);
+      return () => {
+        clearInterval(timerId);
+      };
+    }
+    class App {
+      cleanup: Function|null = null;
+      authToken: string|null = null;
+      data: string|null = null;
+      counter = 0;
+      constructor(public name: string) {}
+
+      doSomeWork1() {
+        this.cleanup = mockAuth(this.name, (token: string) => {
+          this.authToken = token;
+          this.data = this.authToken + ' work1 done';
+        });
+      }
+
+      doSomeWork2() {
+        this.cleanup = mockAuth(this.name, (token: string) => {
+          this.authToken = token;
+          this.data = this.authToken + ' work2 done';
+        });
+      }
+
+      increase() {
+        this.counter++;
+      }
+
+      reset() {
+        this.counter = 0;
+      }
+
+      destroy() {
+        this.cleanup && this.cleanup();
+      }
+    }
+
+    describe('should invoke hook bound with fakeAsync', () => {
+      let app: App|null;
+      let logs: string[] = [];
+      const fakeAsyncWithHook = fakeAsync.wrap({
+        beforeEach: () => {
+          app = new App('test');
+          logs = [];
+          logs.push('beforeEach');
+        },
+        afterEach: () => {
+          logs.push('afterEach');
+          const tokenBefore = app!.authToken;
+          app!.destroy();
+          tick(100);
+          const tokenAfter = app!.authToken;
+          expect(tokenAfter).toEqual(tokenBefore);
+          app = null;
+          if (logs.length === 4) {
+            expect(logs).toEqual(
+                ['beforeEach', 'beforeEach nested', 'afterEach nested', 'afterEach']);
+          } else {
+            expect(logs).toEqual(['beforeEach', 'afterEach']);
+          }
+        }
+      });
+
+      it('test App doSomeWork1', fakeAsyncWithHook(() => {
+           app!.doSomeWork1();
+           tick(100);
+           expect(app!.data).toContain('test verified work1 done');
+         }));
+
+      it('test App doSomeWork2', fakeAsyncWithHook(() => {
+           app!.doSomeWork2();
+           tick(100);
+           expect(app!.data).toContain('test verified work2 done');
+         }));
+
+      describe('should invoke nested hook bound with fakeAsync', () => {
+        const fakeAsyncWithHookNested = fakeAsyncWithHook.wrap({
+          beforeEach: () => {
+            logs.push('beforeEach nested');
+            app!.reset();
+          },
+          afterEach: () => {
+            logs.push('afterEach nested');
+            expect(logs).toEqual(['beforeEach', 'beforeEach nested', 'afterEach nested']);
+          }
+        });
+
+        it('increase should increase the counter', fakeAsyncWithHookNested(() => {
+             app!.increase();
+             expect(app!.counter).toBe(1);
+           }));
+      });
+    });
+  });
 }

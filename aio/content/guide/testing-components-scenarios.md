@@ -391,6 +391,113 @@ The `fakeAsync()` function enables a linear coding style by running the test bod
 The test body appears to be synchronous.
 There is no nested syntax (like a `Promise.then()`) to disrupt the flow of control.
 
+The `fakeAsync()` function provides a way to `wrap()` common logic such `beforeEach()`/`afterEach()` testing hooks in a reusable way.
+
+Given:
+<code-example
+  path="testing/src/app/auth/auth.component.spec.ts"
+  region="wrap">
+</code-example>
+<code-tabs>
+  <code-pane header="src/app/auth/auth.component.ts" path="testing/src/app/auth/auth.component.ts">
+  </code-pane>
+
+  <code-pane header="src/app/model/auth.service.ts" path="testing/src/app/model/auth.service.ts">
+  </code-pane>
+</code-tabs>
+
+Currently, a test of `auth.component.ts` using `fakeAsync()` would be written like so:
+
+<code-example format='.'>
+  beforeEach(() => {
+    fixture = TestBed.createComponent(AuthComponent);
+  });
+  
+  it('shouldWork1 should work correctly', fakeAsync(() => {
+    fixture.detectChanges();
+    fixture.componentInstance.doSomeWork1();
+    tick();
+    expect(fixture.componentInstance.result).toEqual('work1 done after auth with token user1 token0');
+    fixture.destroy();
+  }));
+  
+  it('shouldWork2 should work correctly', fakeAsync(() => {
+    fixture.detectChanges();
+    fixture.componentInstance.doSomeWork2();
+    tick();
+    expect(fixture.componentInstance.result).toEqual('work2 done after auth with token user1 token0');
+    fixture.destroy();
+  }));
+</code-example>
+
+Notice that we need to call `fixture.destroy()` inside of each test case, otherwise `fakeAsync()` can not clear the async tasks (such as `setTimeout`, `setInterval`) scheduled in this `fakeAsync()` function scope. Explicit teardown is wordy.
+
+`fakeAsync.wrap` offers a better solution to this problem:
+
+<code-example format='.'>
+  beforeEach(() => {
+    fixture = TestBed.createComponent(AuthComponent);
+  });
+  
+  // Wrap common setup/teardown here.
+  const fakeAsyncWithFixture = fakeAsync.wrap(
+    beforeEach: () => fixture.detectChanges(),
+    afterEach: () => fixture.destroy()
+  
+  );
+  
+  it('shouldWork1 should work correctly', withFeatureFakeAsync(() => {
+    fixture.componentInstance.doSomeWork1();
+    tick();
+    expect(fixture.componentInstance.result).toEqual('work1 done after auth with token user1 token');
+  }));
+  
+  it('shouldWork2 should work correctly', withFeatureFakeAsync(() => {
+    fixture.componentInstance.doSomeWork2();
+    tick();
+    expect(fixture.componentInstance.result).toEqual('work2 done after auth with token user1 token');
+  }));
+</code-example>
+
+Just like nesting `describe()`s, it is possible to nest `fakeAsync.wrap()` like so:
+
+<code-example format='.'>
+  beforeEach(() => {
+    fixture = TestBed.createComponent(AuthComponent);
+  });
+  
+  const fakeAsyncWithFixture = fakeAsync.wrap(
+    beforeEach: () => fixture.detectChanges(),
+    afterEach: () => fixture.destroy()
+  
+  );
+  
+  it('shouldWork1 should work correctly', fakeAsyncWithFixture(() => {
+    fixture.componentInstance.doSomeWork1();
+    tick();
+    expect(fixture.componentInstance.result).toEqual('work1 done');
+  }));
+  
+  it('shouldWork2 should work correctly', fakeAsyncWithFixture(() => {
+    fixture.componentInstance.doSomeWork2();
+    tick();
+    expect(fixture.componentInstance.result).toEqual('work2 done');
+  }));
+  
+  describe('should work with auth token', () => {
+    const fakeAsyncWithToken = fakeAsyncWithFixture.wrap({
+      beforeEach: () => fixture.componentInstance.login(),
+      afterEach: () => fixture.componentInstance.logout(),
+    });
+    it('shouldWork3 should work correctly', fakeAsyncWithToken(() => {
+      fixture.componentInstance.doSomeWork3();
+      tick();
+      expect(fixture.componentInstance.result).toEqual('work3 done after auth with token user1 token');
+    }));
+  });
+  
+</code-example>
+
 <div class="alert is-helpful">
 
 Limitation: The `fakeAsync()` function won't work if the test body makes an `XMLHttpRequest` (XHR) call.

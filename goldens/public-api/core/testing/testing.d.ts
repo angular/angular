@@ -28,7 +28,7 @@ export declare const ComponentFixtureNoNgZone: InjectionToken<boolean[]>;
 
 export declare function discardPeriodicTasks(): void;
 
-export declare function fakeAsync(fn: Function): (...args: any[]) => any;
+export declare const fakeAsync: FakeAsync;
 
 export declare function flush(maxTurns?: number): number;
 
