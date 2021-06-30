@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, CssSelector, DomElementSchemaRegistry, MethodCall, ParseError, ParseSourceSpan, parseTemplate, PropertyRead, SafeMethodCall, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
+import {AST, CssSelector, DomElementSchemaRegistry, LiteralPrimitive, MethodCall, ParseError, ParseSourceSpan, parseTemplate, PropertyRead, SafeMethodCall, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
+import {TextAttribute} from '@angular/compiler/src/render3/r3_ast';
 import * as ts from 'typescript';
 import {ErrorCode} from '../../diagnostics';
 
@@ -278,6 +279,16 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     }
     return this.perf.inPhase(
         PerfPhase.TtcAutocompletion, () => engine.getExpressionCompletionLocation(ast));
+  }
+
+  getLiteralCompletionLocation(
+      node: LiteralPrimitive|TextAttribute, component: ts.ClassDeclaration): ShimLocation|null {
+    const engine = this.getOrCreateCompletionEngine(component);
+    if (engine === null) {
+      return null;
+    }
+    return this.perf.inPhase(
+        PerfPhase.TtcAutocompletion, () => engine.getLiteralCompletionLocation(node));
   }
 
   invalidateClass(clazz: ts.ClassDeclaration): void {

@@ -7,7 +7,8 @@
  */
 
 import {TmplAstReference, TmplAstTemplate} from '@angular/compiler';
-import {AST, EmptyExpr, MethodCall, PropertyRead, PropertyWrite, SafeMethodCall, SafePropertyRead, TmplAstNode} from '@angular/compiler/src/compiler';
+import {AST, EmptyExpr, LiteralPrimitive, MethodCall, PropertyRead, PropertyWrite, SafeMethodCall, SafePropertyRead, TmplAstNode} from '@angular/compiler/src/compiler';
+import {TextAttribute} from '@angular/compiler/src/render3/r3_ast';
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
@@ -32,8 +33,9 @@ export class CompletionEngine {
   private templateContextCache =
       new Map<TmplAstTemplate|null, Map<string, ReferenceCompletion|VariableCompletion>>();
 
-  private expressionCompletionCache =
-      new Map<PropertyRead|SafePropertyRead|MethodCall|SafeMethodCall, ShimLocation>();
+  private expressionCompletionCache = new Map<
+      PropertyRead|SafePropertyRead|MethodCall|SafeMethodCall|LiteralPrimitive|TextAttribute,
+      ShimLocation>();
 
 
   constructor(private tcb: ts.Node, private data: TemplateData, private shimPath: AbsoluteFsPath) {
@@ -139,6 +141,46 @@ export class CompletionEngine {
     const res: ShimLocation = {
       shimPath: this.shimPath,
       positionInShimFile: tsExpr.name.getEnd(),
+    };
+    this.expressionCompletionCache.set(expr, res);
+    return res;
+  }
+
+  getLiteralCompletionLocation(expr: LiteralPrimitive|TextAttribute): ShimLocation|null {
+    if (this.expressionCompletionCache.has(expr)) {
+      return this.expressionCompletionCache.get(expr)!;
+    }
+
+    let tsExpr: ts.StringLiteral|ts.NumericLiteral|null = null;
+
+    if (expr instanceof TextAttribute) {
+      const strNode = findFirstMatchingNode(this.tcb, {
+        filter: ts.isParenthesizedExpression,
+        withSpan: expr.sourceSpan,
+      });
+      if (strNode !== null && ts.isStringLiteral(strNode.expression)) {
+        tsExpr = strNode.expression;
+      }
+    } else {
+      tsExpr = findFirstMatchingNode(this.tcb, {
+        filter: (n: ts.Node): n is ts.NumericLiteral | ts.StringLiteral =>
+            ts.isStringLiteral(n) || ts.isNumericLiteral(n),
+        withSpan: expr.sourceSpan,
+      });
+    }
+
+    if (tsExpr === null) {
+      return null;
+    }
+
+    let positionInShimFile = tsExpr.getEnd();
+    if (ts.isStringLiteral(tsExpr)) {
+      // In the shimFile, if `tsExpr` is a string, the position should be in the quotes.
+      positionInShimFile -= 1;
+    }
+    const res: ShimLocation = {
+      shimPath: this.shimPath,
+      positionInShimFile,
     };
     this.expressionCompletionCache.set(expr, res);
     return res;

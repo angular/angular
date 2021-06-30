@@ -749,6 +749,32 @@ describe('completions', () => {
       expect(completions?.entries.length).toBe(0);
     });
   });
+
+  describe('literal primitive scope', () => {
+    it('should complete a string union types in square brackets binding', () => {
+      const {templateFile} = setup(`<input dir [myInput]="'foo'">`, '', DIR_WITH_UNION_TYPE_INPUT);
+      templateFile.moveCursorToText(`[myInput]="'foo¦'"`);
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.string, ['foo']);
+      expectReplacementText(completions, templateFile.contents, 'foo');
+    });
+
+    it('should complete a string union types in binding without brackets', () => {
+      const {templateFile} = setup(`<input dir myInput="foo">`, '', DIR_WITH_UNION_TYPE_INPUT);
+      templateFile.moveCursorToText('myInput="foo¦"');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.string, ['foo']);
+      expectReplacementText(completions, templateFile.contents, 'foo');
+    });
+
+    it('should complete a number union types', () => {
+      const {templateFile} = setup(`<input dir [myInput]="42">`, '', DIR_WITH_UNION_TYPE_INPUT);
+      templateFile.moveCursorToText(`[myInput]="42¦"`);
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.string, ['42']);
+      expectReplacementText(completions, templateFile.contents, '42');
+    });
+  });
 });
 
 function expectContain(
