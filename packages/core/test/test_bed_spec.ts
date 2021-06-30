@@ -308,25 +308,32 @@ describe('TestBed', () => {
   });
 
   it('should be able to create a fixture if a test module is reset mid-compilation', async () => {
-    @Component({template: 'hello'})
+    const token = new InjectionToken<number>('value');
+
+    @Component({template: 'hello {{_token}}'})
     class TestComponent {
+      constructor(@Inject(token) public _token: number) {}
     }
 
     TestBed.resetTestingModule();  // Reset the state from `beforeEach`.
 
-    function compile() {
+    function compile(tokenValue: number) {
       return TestBed
-          .configureTestingModule(
-              {declarations: [TestComponent], teardown: {destroyAfterEach: true}})
+          .configureTestingModule({
+            declarations: [TestComponent],
+            providers: [{provide: token, useValue: tokenValue}],
+            teardown: {destroyAfterEach: true}
+          })
           .compileComponents();
     }
 
-    const initialCompilation = compile();
+    const initialCompilation = compile(1);
     TestBed.resetTestingModule();
     await initialCompilation;
-    await compile();
+    await compile(2);
     const fixture = TestBed.createComponent(TestComponent);
-    expect(fixture.nativeElement).toHaveText('hello');
+    fixture.detectChanges();
+    expect(fixture.nativeElement).toHaveText('hello 2');
   });
 
   describe('module overrides using TestBed.overrideModule', () => {
