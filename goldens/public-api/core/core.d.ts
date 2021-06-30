@@ -744,8 +744,8 @@ export declare class QueryList<T> implements Iterable<T> {
     [Symbol.iterator]: () => Iterator<T>;
     get changes(): Observable<any>;
     readonly dirty = true;
-    readonly first: T;
-    readonly last: T;
+    readonly first: T | undefined;
+    readonly last: T | undefined;
     readonly length: number;
     constructor(_emitDistinctChangesOnly?: boolean);
     destroy(): void;
