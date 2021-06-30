@@ -1,3 +1,21 @@
+<a name="12.2.0-next.1"></a>
+# 12.2.0-next.1 (2021-06-30)
+### compiler
+| Commit | Description |
+| -- | -- |
+| 9f5cc7c808 | feat(compiler): support number separators in templates (#42672) |
+### compiler-cli
+| Commit | Description |
+| -- | -- |
+| 37a740c659 | fix(compiler-cli): add support for partially evaluating types (#41661) |
+### platform-browser
+| Commit | Description |
+| -- | -- |
+| 234b5edcc7 | fix(platform-browser): in `Meta.addTag()` do not add duplicate meta tags (#42703) |
+## Special Thanks:
+Alan Agius, Alex Rickabaugh, Dario Piotrowicz, George Kalpakas, George Looshch, Joey Perrott, Kristiyan Kostadinov, Lars Gyrup Brink Nielsen, Paul Gschwendtner, Pete Bacon Darwin, Zach Arend, codebriefcase, dario-piotrowicz, marvinbeckert, mgechev and pavlenko
+
+
 <a name="12.1.1"></a>
 # 12.1.1 (2021-06-30)
 ### compiler-cli
