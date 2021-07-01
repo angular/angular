@@ -1,9 +1,9 @@
-// #docplaster
 // #docregion import-http
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+// #docregion props
 import { Product } from './products';
-// #enddocregion import-http
+// #enddocregion props, import-http
 
 @Injectable({
   providedIn: 'root'
