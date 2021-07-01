@@ -140,11 +140,7 @@ def _should_produce_dts_bundle(ctx):
     Returns:
       true when we should produce bundled dts.
     """
-
-    # At the moment we cannot use this with ngtsc compiler since it emits
-    # import * as ___ from local modules which is not supported
-    # see: https://github.com/Microsoft/web-build-tools/issues/1029
-    return _is_view_engine_enabled(ctx) and getattr(ctx.attr, "bundle_dts", False)
+    return getattr(ctx.attr, "bundle_dts", False)
 
 def _should_produce_r3_symbols_bundle(ctx):
     """Should we produce r3_symbols bundle.
