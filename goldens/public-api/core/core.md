@@ -269,7 +269,7 @@ export function createPlatformFactory(parentPlatformFactory: ((extraProviders?: 
 // @public
 export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
 
-// @public
+// @public (undocumented)
 export interface DebugElement extends DebugNode {
     readonly attributes: {
         [key: string]: string | null;

@@ -5,7 +5,9 @@
 ```ts
 
 // @public
-export const $localize: LocalizeFn;
+const $localize_2: LocalizeFn;
+
+export { $localize_2 as $localize }
 
 // @public (undocumented)
 export interface LocalizeFn {
