@@ -8,7 +8,7 @@ import { ChildrenOutletContexts } from '@angular/router';
 import { Compiler } from '@angular/core';
 import { ExtraOptions } from '@angular/router';
 import { Injector } from '@angular/core';
-import { Location } from '@angular/common';
+import { Location as Location_2 } from '@angular/common';
 import { ModuleWithProviders } from '@angular/core';
 import { NgModuleFactory } from '@angular/core';
 import { NgModuleFactoryLoader } from '@angular/core';
@@ -25,10 +25,10 @@ export class RouterTestingModule {
 }
 
 // @public
-export function setupTestingRouter(urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location, loader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, routes: Route[][], opts?: ExtraOptions, urlHandlingStrategy?: UrlHandlingStrategy): Router;
+export function setupTestingRouter(urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location_2, loader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, routes: Route[][], opts?: ExtraOptions, urlHandlingStrategy?: UrlHandlingStrategy): Router;
 
 // @public @deprecated
-export function setupTestingRouter(urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location, loader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, routes: Route[][], urlHandlingStrategy?: UrlHandlingStrategy): Router;
+export function setupTestingRouter(urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location_2, loader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, routes: Route[][], urlHandlingStrategy?: UrlHandlingStrategy): Router;
 
 // @public
 export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
