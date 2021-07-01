@@ -94,6 +94,15 @@ describe('MDC-based MatChipInput', () => {
       expect(inputNativeElement.getAttribute('aria-required')).toBe('true');
     });
 
+    it('should be required if the list is required', () => {
+      expect(inputNativeElement.hasAttribute('required')).toBe(false);
+
+      fixture.componentInstance.required = true;
+      fixture.detectChanges();
+
+      expect(inputNativeElement.getAttribute('required')).toBe('true');
+    });
+
     it('should allow focus to escape when tabbing forwards', fakeAsync(() => {
       const gridElement: HTMLElement = fixture.nativeElement.querySelector('mat-chip-grid');
 
