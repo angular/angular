@@ -116,7 +116,6 @@
       // Ignore test files
       "./packages/compiler-cli/test/compliance/test_cases/**/*",
       "./packages/localize/**/test_files/**/*",
-      "./tools/ts-api-guardian/test/fixtures/**/*",
       "./tools/public_api_guard/**/*.d.ts",
       "./modules/benchmarks_external/**/*",
       // Ignore zone.js directory
