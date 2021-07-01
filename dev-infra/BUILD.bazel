@@ -2,6 +2,8 @@ load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
 load("@npm//@bazel/typescript:index.bzl", "ts_library")
 load("//dev-infra:index.bzl", "ng_dev_rolled_up_generated_file")
 
+exports_files(["tsconfig.json"])
+
 ts_library(
     name = "cli",
     srcs = [
@@ -43,6 +45,9 @@ pkg_npm(
     name = "npm_package",
     srcs = [
         "index.bzl",
+        # Some tools within `dev-infra` which are shipped as Bazel rules might
+        # rely on a tsconfig file. We bring the config into the NPM package.
+        "tsconfig.json",
         "//dev-infra/bazel:files",
         "//dev-infra/benchmark:files",
     ],
