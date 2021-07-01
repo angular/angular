@@ -35,7 +35,6 @@
     "@types/babel__traverse",
     "@types/node",
     "@types/selenium-webdriver",
-    "@microsoft/api-extractor",
     "angular",
     "angular-1.5",
     "angular-1.6",
