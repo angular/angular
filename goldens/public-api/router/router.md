@@ -13,7 +13,7 @@ import { ElementRef } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { Injector } from '@angular/core';
-import { Location } from '@angular/common';
+import { Location as Location_2 } from '@angular/common';
 import { LocationStrategy } from '@angular/common';
 import { ModuleWithProviders } from '@angular/core';
 import { NgModuleFactory } from '@angular/core';
@@ -181,7 +181,9 @@ export type DeprecatedLoadChildren = string;
 export type DetachedRouteHandle = {};
 
 // @public
-export type Event = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart | ChildActivationEnd | ActivationStart | ActivationEnd | Scroll;
+type Event_2 = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart | ChildActivationEnd | ActivationStart | ActivationEnd | Scroll;
+
+export { Event_2 as Event }
 
 // @public
 export interface ExtraOptions {
@@ -465,13 +467,13 @@ export class RouteConfigLoadStart {
 
 // @public
 export class Router {
-    constructor(rootComponentType: Type<any> | null, urlSerializer: UrlSerializer, rootContexts: ChildrenOutletContexts, location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
+    constructor(rootComponentType: Type<any> | null, urlSerializer: UrlSerializer, rootContexts: ChildrenOutletContexts, location: Location_2, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
     // (undocumented)
     config: Routes;
     createUrlTree(commands: any[], navigationExtras?: UrlCreationOptions): UrlTree;
     dispose(): void;
     errorHandler: ErrorHandler;
-    readonly events: Observable<Event>;
+    readonly events: Observable<Event_2>;
     getCurrentNavigation(): Navigation | null;
     initialNavigation(): void;
     // @deprecated

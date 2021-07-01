@@ -262,7 +262,7 @@ export class KeyValuePipe implements PipeTransform {
 }
 
 // @public
-export class Location {
+class Location_2 {
     constructor(platformStrategy: LocationStrategy, platformLocation: PlatformLocation);
     back(): void;
     forward(): void;
@@ -278,8 +278,10 @@ export class Location {
     prepareExternalUrl(url: string): string;
     replaceState(path: string, query?: string, state?: any): void;
     static stripTrailingSlash: (url: string) => string;
-    subscribe(onNext: (value: PopStateEvent) => void, onThrow?: ((exception: any) => void) | null, onReturn?: (() => void) | null): SubscriptionLike;
+    subscribe(onNext: (value: PopStateEvent_2) => void, onThrow?: ((exception: any) => void) | null, onReturn?: (() => void) | null): SubscriptionLike;
 }
+
+export { Location_2 as Location }
 
 // @public
 export const LOCATION_INITIALIZED: InjectionToken<Promise<any>>;
@@ -597,7 +599,7 @@ export enum Plural {
 }
 
 // @public (undocumented)
-export interface PopStateEvent {
+interface PopStateEvent_2 {
     // (undocumented)
     pop?: boolean;
     // (undocumented)
@@ -607,6 +609,8 @@ export interface PopStateEvent {
     // (undocumented)
     url?: string;
 }
+
+export { PopStateEvent_2 as PopStateEvent }
 
 // @public
 export function registerLocaleData(data: any, localeId?: string | any, extraData?: any): void;

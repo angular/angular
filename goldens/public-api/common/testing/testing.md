@@ -5,7 +5,7 @@
 ```ts
 
 import { InjectionToken } from '@angular/core';
-import { Location } from '@angular/common';
+import { Location as Location_2 } from '@angular/common';
 import { LocationChangeListener } from '@angular/common';
 import { LocationStrategy } from '@angular/common';
 import { PlatformLocation } from '@angular/common';
@@ -97,7 +97,7 @@ export interface MockPlatformLocationConfig {
 }
 
 // @public
-export class SpyLocation implements Location {
+export class SpyLocation implements Location_2 {
     // (undocumented)
     back(): void;
     // (undocumented)

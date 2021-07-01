@@ -72,13 +72,15 @@ export interface Filesystem {
 }
 
 // @public
-export class Generator {
+class Generator_2 {
     constructor(fs: Filesystem, baseHref: string);
     // (undocumented)
     readonly fs: Filesystem;
     // (undocumented)
     process(config: Config): Promise<Object>;
     }
+
+export { Generator_2 as Generator }
 
 // @public (undocumented)
 export type Glob = string;
