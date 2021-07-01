@@ -80,8 +80,8 @@ class _Expander implements html.Visitor {
 
   visitExpansion(icu: html.Expansion, context: any): any {
     this.isExpanded = true;
-    return icu.type == 'plural' ? _expandPluralForm(icu, this.errors) :
-                                  _expandDefaultForm(icu, this.errors);
+    return icu.type === 'plural' ? _expandPluralForm(icu, this.errors) :
+                                   _expandDefaultForm(icu, this.errors);
   }
 
   visitExpansionCase(icuCase: html.ExpansionCase, context: any): any {
@@ -92,7 +92,7 @@ class _Expander implements html.Visitor {
 // Plural forms are expanded to `NgPlural` and `NgPluralCase`s
 function _expandPluralForm(ast: html.Expansion, errors: ParseError[]): html.Element {
   const children = ast.cases.map(c => {
-    if (PLURAL_CASES.indexOf(c.value) == -1 && !c.value.match(/^=\d+$/)) {
+    if (PLURAL_CASES.indexOf(c.value) === -1 && !c.value.match(/^=\d+$/)) {
       errors.push(new ExpansionError(
           c.valueSourceSpan,
           `Plural cases should be "=<number>" or one of ${PLURAL_CASES.join(', ')}`));

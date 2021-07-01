@@ -185,7 +185,7 @@ class _TreeBuilder {
       if (this._peek.type === lex.TokenType.EXPANSION_CASE_EXP_END) {
         if (lastOnStack(expansionFormStack, lex.TokenType.EXPANSION_CASE_EXP_START)) {
           expansionFormStack.pop();
-          if (expansionFormStack.length == 0) return exp;
+          if (expansionFormStack.length === 0) return exp;
 
         } else {
           this.errors.push(
@@ -216,9 +216,9 @@ class _TreeBuilder {
 
   private _consumeText(token: lex.Token) {
     let text = token.parts[0];
-    if (text.length > 0 && text[0] == '\n') {
+    if (text.length > 0 && text[0] === '\n') {
       const parent = this._getParentElement();
-      if (parent != null && parent.children.length == 0 &&
+      if (parent != null && parent.children.length === 0 &&
           this.getTagDefinition(parent.name).ignoreFirstLf) {
         text = text.substring(1);
       }
@@ -316,7 +316,7 @@ class _TreeBuilder {
     let unexpectedCloseTagDetected = false;
     for (let stackIndex = this._elementStack.length - 1; stackIndex >= 0; stackIndex--) {
       const el = this._elementStack[stackIndex];
-      if (el.name == fullName) {
+      if (el.name === fullName) {
         // Record the parse span with the element that is being closed. Any elements that are
         // removed from the element stack at this point are closed implicitly, so they won't get
         // an end source span (as there is no explicit closing element).
