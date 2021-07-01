@@ -28,16 +28,22 @@ initiates a voting process.
 
 ## Voting phase
 
-To include the community in the feature request process, we open voting for 60 days. Anyone can cast
-a vote for the request with a thumbs-up (👍) reaction. When a feature request reaches 20 or more
-upvotes, we formally consider the feature request. Alternatively, the bot closes the request.
+To include the community in the feature request process, we open voting for a fixed length of time.
+Anyone can cast a vote for the request with a thumbs-up (👍) reaction on the original issue description.
+When a feature request reaches 20 or more upvotes, we formally consider the feature request.
+Alternatively, the bot closes the request.
+
+**For issues that are 60+ days old**: The voting phase is 20 days
+
+**For new issues**: The voting phase is 60 days
 
 ## Consideration phase
 
-If the feature request receives 20 or more votes, we verify the Angular team can afford to maintain
-the feature and whether it aligns with the long-term vision of Angular. If the answers to both of
-these questions are yes, we prioritize the request, alternatively we close it with an explanation of
-our decision.
+If the feature request receives 20 or more thumbs-up (👍) votes on the original issue description
+(during the voting phase described above), we verify the Angular team can afford to maintain the
+feature and whether it aligns with the long-term vision of Angular. If the answers to both of these
+questions are yes, we prioritize the request, alternatively we close it with an explanation of our
+decision.
 
 ## Diagram
 
