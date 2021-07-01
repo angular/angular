@@ -26,7 +26,6 @@
   "exclude": [
     "testing",
     "node_modules",
-    "ts-api-guardian",
     "typings-test",
     "public_api_guard",
     "docs"
