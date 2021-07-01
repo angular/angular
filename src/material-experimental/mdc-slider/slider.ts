@@ -202,7 +202,7 @@ export class MatSliderVisualThumb implements AfterViewInit, OnDestroy {
 
   /** Handles displaying the hover ripple. */
   private _showHoverRipple(): void {
-    if (!this._slider._noopAnimations && !this._isShowingRipple(this._hoverRippleRef)) {
+    if (!this._isShowingRipple(this._hoverRippleRef)) {
       this._hoverRippleRef = this._showRipple({ enterDuration: 0, exitDuration: 0 });
       this._hoverRippleRef?.element.classList.add('mat-mdc-slider-hover-ripple');
     }
@@ -219,7 +219,7 @@ export class MatSliderVisualThumb implements AfterViewInit, OnDestroy {
 
   /** Handles displaying the active ripple. */
   private _showActiveRipple(): void {
-    if (!this._slider._noopAnimations && !this._isShowingRipple(this._activeRippleRef)) {
+    if (!this._isShowingRipple(this._activeRippleRef)) {
       this._activeRippleRef = this._showRipple({ enterDuration: 225, exitDuration: 400 });
       this._activeRippleRef?.element.classList.add('mat-mdc-slider-active-ripple');
     }
@@ -235,9 +235,11 @@ export class MatSliderVisualThumb implements AfterViewInit, OnDestroy {
     if (this.disableRipple) {
       return;
     }
-    return this._ripple.launch(
-      {animation, centered: true, persistent: true},
-    );
+    return this._ripple.launch({
+      animation: this._slider._noopAnimations ? {enterDuration: 0, exitDuration: 0} : animation,
+      centered: true,
+      persistent: true
+    });
   }
 
   /** Gets the hosts native HTML element. */
