@@ -49,7 +49,7 @@ export abstract class AnimationBuilder {
 }
 
 // @public
-export interface AnimationEvent {
+interface AnimationEvent_2 {
     disabled: boolean;
     element: any;
     fromState: string;
@@ -58,6 +58,8 @@ export interface AnimationEvent {
     totalTime: number;
     triggerName: string;
 }
+
+export { AnimationEvent_2 as AnimationEvent }
 
 // @public
 export abstract class AnimationFactory {

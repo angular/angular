@@ -5,7 +5,7 @@
 ```ts
 
 import { InjectionToken } from '@angular/core';
-import { Location } from '@angular/common';
+import { Location as Location_2 } from '@angular/common';
 import { LocationStrategy } from '@angular/common';
 import { ModuleWithProviders } from '@angular/core';
 import { PlatformLocation } from '@angular/common';
@@ -15,7 +15,7 @@ import { UpgradeModule } from '@angular/upgrade/static';
 export class $locationShim {
     $$parse(url: string): void;
     $$parseLinkUrl(url: string, relHref?: string | null): boolean;
-    constructor($injector: any, location: Location, platformLocation: PlatformLocation, urlCodec: UrlCodec, locationStrategy: LocationStrategy);
+    constructor($injector: any, location: Location_2, platformLocation: PlatformLocation, urlCodec: UrlCodec, locationStrategy: LocationStrategy);
     absUrl(): string;
     hash(): string;
     // (undocumented)
@@ -50,7 +50,7 @@ export class $locationShim {
 // @public
 export class $locationShimProvider {
     $get(): $locationShim;
-    constructor(ngUpgrade: UpgradeModule, location: Location, platformLocation: PlatformLocation, urlCodec: UrlCodec, locationStrategy: LocationStrategy);
+    constructor(ngUpgrade: UpgradeModule, location: Location_2, platformLocation: PlatformLocation, urlCodec: UrlCodec, locationStrategy: LocationStrategy);
     hashPrefix(prefix?: string): void;
     html5Mode(mode?: any): void;
     }
