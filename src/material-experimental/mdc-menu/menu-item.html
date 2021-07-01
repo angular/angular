@@ -2,7 +2,8 @@
 <span class="mdc-list-item__primary-text"><ng-content></ng-content></span>
 <div class="mat-mdc-menu-ripple" matRipple
      [matRippleDisabled]="disableRipple || disabled"
-     [matRippleTrigger]="_getHostElement()">
+     [matRippleTrigger]="_getHostElement()"
+     [matRippleAnimation]="(disableRipple || disabled || _noopAnimations) ? {} : _rippleAnimation">
 </div>
 <svg
   *ngIf="_triggersSubmenu"
