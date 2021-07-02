@@ -3,15 +3,15 @@
 ### compiler
 | Commit | Description |
 | -- | -- |
-| 9f5cc7c808 | feat(compiler): support number separators in templates (#42672) |
+| [9f5cc7c808](https://github.com/angular/angular/commit/9f5cc7c808458f312543c7c044fe7a361cdc7798) | feat(compiler): support number separators in templates ([#42672](https://github.com/angular/angular/pull/42672)) |
 ### compiler-cli
 | Commit | Description |
 | -- | -- |
-| 37a740c659 | fix(compiler-cli): add support for partially evaluating types (#41661) |
+| [37a740c659](https://github.com/angular/angular/commit/37a740c6590b7725053f8578d39e53ecba4f5727) | fix(compiler-cli): add support for partially evaluating types ([#41661](https://github.com/angular/angular/pull/41661)) |
 ### platform-browser
 | Commit | Description |
 | -- | -- |
-| 234b5edcc7 | fix(platform-browser): in `Meta.addTag()` do not add duplicate meta tags (#42703) |
+| [234b5edcc7](https://github.com/angular/angular/commit/234b5edcc7d24cfe5d418f93181844cdf12e5ec8) | fix(platform-browser): in `Meta.addTag()` do not add duplicate meta tags ([#42703](https://github.com/angular/angular/pull/42703)) |
 ## Special Thanks:
 Alan Agius, Alex Rickabaugh, Dario Piotrowicz, George Kalpakas, George Looshch, Joey Perrott, Kristiyan Kostadinov, Lars Gyrup Brink Nielsen, Paul Gschwendtner, Pete Bacon Darwin, Zach Arend, codebriefcase, dario-piotrowicz, marvinbeckert, mgechev and pavlenko
 
@@ -21,11 +21,11 @@ Alan Agius, Alex Rickabaugh, Dario Piotrowicz, George Kalpakas, George Looshch, 
 ### compiler-cli
 | Commit | Description |
 | -- | -- |
-| f6b828e292 | fix(compiler-cli): add support for partially evaluating types (#41661) |
+| [f6b828e292](https://github.com/angular/angular/commit/f6b828e292fe29108abcf8aa63c61f5677c2ef70) | fix(compiler-cli): add support for partially evaluating types ([#41661](https://github.com/angular/angular/pull/41661)) |
 ### platform-browser
 | Commit | Description |
 | -- | -- |
-| d19ddd1a87 | fix(platform-browser): in `Meta.addTag()` do not add duplicate meta tags (#42703) |
+| [d19ddd1a87](https://github.com/angular/angular/commit/d19ddd1a87127c3eaa6f5a832af3db2eb52793cd) | fix(platform-browser): in `Meta.addTag()` do not add duplicate meta tags ([#42703](https://github.com/angular/angular/pull/42703)) |
 ## Special Thanks:
 Alan Agius, Dario Piotrowicz, George Kalpakas, George Looshch, Lars Gyrup Brink Nielsen, Paul Gschwendtner, Pete Bacon Darwin, Zach Arend, codebriefcase, dario-piotrowicz, marvinbeckert, mgechev and pavlenko
 
@@ -41,33 +41,33 @@ This release contains the same set of changes as 12.1.0.
 ### compiler
 | Commit | Description |
 | -- | -- |
-| 9de65dbdce | fix(compiler): should not break a text token on a non-valid start tag (#42605) |
-| c873440ad2 | fix(compiler): do not allow unterminated interpolation to leak into later tokens (#42605) |
-| cc672f05bf | feat(compiler): add support for shorthand property declarations in templates (#42421) |
-| f52df99fe3 | fix(compiler): generate view restoration for keyed write inside template listener (#42603) |
+| [9de65dbdce](https://github.com/angular/angular/commit/9de65dbdceac3077881fbc49717f33d0f379e21d) | fix(compiler): should not break a text token on a non-valid start tag ([#42605](https://github.com/angular/angular/pull/42605)) |
+| [c873440ad2](https://github.com/angular/angular/commit/c873440ad285279edafff65645a73f5da8e5bafe) | fix(compiler): do not allow unterminated interpolation to leak into later tokens ([#42605](https://github.com/angular/angular/pull/42605)) |
+| [cc672f05bf](https://github.com/angular/angular/commit/cc672f05bf4e2f03fa415ebd2d69514594c9bc9d) | feat(compiler): add support for shorthand property declarations in templates ([#42421](https://github.com/angular/angular/pull/42421)) |
+| [f52df99fe3](https://github.com/angular/angular/commit/f52df99fe369854c4ee49e3c01afa29cf2ae7126) | fix(compiler): generate view restoration for keyed write inside template listener ([#42603](https://github.com/angular/angular/pull/42603)) |
 ### compiler-cli
 | Commit | Description |
 | -- | -- |
-| 874de59d35 | fix(compiler-cli): change default ngcc  hash algorithm to be FIPS compliant (#42582) |
-| 729eea5716 | fix(compiler-cli): transform type references in generic type parameter default (#42492) |
+| [874de59d35](https://github.com/angular/angular/commit/874de59d35e03114867611abe41e662e7bc9b138) | fix(compiler-cli): change default ngcc  hash algorithm to be FIPS compliant ([#42582](https://github.com/angular/angular/pull/42582)) |
+| [729eea5716](https://github.com/angular/angular/commit/729eea57165f8931f3d2ea7b7c09d6c094968ad4) | fix(compiler-cli): transform type references in generic type parameter default ([#42492](https://github.com/angular/angular/pull/42492)) |
 ### core
 | Commit | Description |
 | -- | -- |
-| 873229f24b | feat(core): add opt-in test module teardown configuration (#42566) |
+| [873229f24b](https://github.com/angular/angular/commit/873229f24be292ac9e909993e28c2ae2cef4033a) | feat(core): add opt-in test module teardown configuration ([#42566](https://github.com/angular/angular/pull/42566)) |
 ### router
 | Commit | Description |
 | -- | -- |
-| 07c1ddc487 | fix(router): error if module is destroyed before location is initialized (#42560) |
+| [07c1ddc487](https://github.com/angular/angular/commit/07c1ddc48775967190b9c50530bae20c97140c0f) | fix(router): error if module is destroyed before location is initialized ([#42560](https://github.com/angular/angular/pull/42560)) |
 ### service-worker
 | Commit | Description |
 | -- | -- |
-| cc30dc0713 | fix(service-worker): ensure obsolete caches are always cleaned up (#42622) |
-| 01128f5b5d | fix(service-worker): ensure caches are cleaned up when failing to load state (#42622) |
-| 73b0275dc2 | fix(service-worker): improve ServiceWorker cache names (#42622) |
-| 7507ed2e54 | fix(service-worker): use correct names when listing `CacheDatabase` tables (#42622) |
-| 53fe557da7 | feat(service-worker): include ServiceWorker version in debug info (#42622) |
-| d546501ab5 | feat(service-worker): add `openWindow`, `focusLastFocusedOrOpen` and `navigateLastFocusedOrOpen` (#42520) |
-| 9498da1038 | fix(service-worker): correctly determine client ID on navigation requests (#42607) |
+| [cc30dc0713](https://github.com/angular/angular/commit/cc30dc0713d6976426114968caa1be3e782df0d4) | fix(service-worker): ensure obsolete caches are always cleaned up ([#42622](https://github.com/angular/angular/pull/42622)) |
+| [01128f5b5d](https://github.com/angular/angular/commit/01128f5b5d7e6cbca8f4844672b51565c19ba8e7) | fix(service-worker): ensure caches are cleaned up when failing to load state ([#42622](https://github.com/angular/angular/pull/42622)) |
+| [73b0275dc2](https://github.com/angular/angular/commit/73b0275dc2dd64bbb39be3a8079b418a40e89cfd) | fix(service-worker): improve ServiceWorker cache names ([#42622](https://github.com/angular/angular/pull/42622)) |
+| [7507ed2e54](https://github.com/angular/angular/commit/7507ed2e54b0d33aeec32e63126e3212dd2d911a) | fix(service-worker): use correct names when listing `CacheDatabase` tables ([#42622](https://github.com/angular/angular/pull/42622)) |
+| [53fe557da7](https://github.com/angular/angular/commit/53fe557da743992943f520c860d2f093eecc429e) | feat(service-worker): include ServiceWorker version in debug info ([#42622](https://github.com/angular/angular/pull/42622)) |
+| [d546501ab5](https://github.com/angular/angular/commit/d546501ab5df6d738bede85ea949053513e02849) | feat(service-worker): add `openWindow`, `focusLastFocusedOrOpen` and `navigateLastFocusedOrOpen` ([#42520](https://github.com/angular/angular/pull/42520)) |
+| [9498da1038](https://github.com/angular/angular/commit/9498da1038ffa854effa672fac3a898039853375) | fix(service-worker): correctly determine client ID on navigation requests ([#42607](https://github.com/angular/angular/pull/42607)) |
 ## Special Thanks:
 Alex Rickabaugh, Dale Harris, George Kalpakas, Joey Perrott, JoostK, Kristiyan Kostadinov, Németh Tamás, Paul Gschwendtner, Pete Bacon Darwin, Renovate Bot, Umair Hafeez, codingnuclei and mgechev
 
@@ -76,24 +76,24 @@ Alex Rickabaugh, Dale Harris, George Kalpakas, Joey Perrott, JoostK, Kristiyan K
 ### compiler
 | Commit | Description |
 | -- | -- |
-| 8c1e0e6ad0 | fix(compiler): always match close tag to the nearest open element (#42554) |
+| [8c1e0e6ad0](https://github.com/angular/angular/commit/8c1e0e6ad0eba7ece827d899311cf7d25f64db1a) | fix(compiler): always match close tag to the nearest open element ([#42554](https://github.com/angular/angular/pull/42554)) |
 ### compiler-cli
 | Commit | Description |
 | -- | -- |
-| 22bda2226b | fix(compiler-cli): prevent prior compilations from being retained in watch builds (#42537) |
+| [22bda2226b](https://github.com/angular/angular/commit/22bda2226bd42d081b7314c1b11144ad79ad1c44) | fix(compiler-cli): prevent prior compilations from being retained in watch builds ([#42537](https://github.com/angular/angular/pull/42537)) |
 ### core
 | Commit | Description |
 | -- | -- |
-| 3961b3c360 | fix(core): ensure that autoRegisterModuleById registration in ɵɵdefineNgModule is not DCE-ed by closure (#42529) |
+| [3961b3c360](https://github.com/angular/angular/commit/3961b3c3606bb835e539c66d5ac8d91d2a9b0f80) | fix(core): ensure that autoRegisterModuleById registration in ɵɵdefineNgModule is not DCE-ed by closure ([#42529](https://github.com/angular/angular/pull/42529)) |
 ### forms
 | Commit | Description |
 | -- | -- |
-| 7180ec9e7c | fix(forms): changes to status not always being emitted to statusChanges observable for async validators. (#42553) |
+| [7180ec9e7c](https://github.com/angular/angular/commit/7180ec9e7c3e33c1acfba1f40190d2de804c062e) | fix(forms): changes to status not always being emitted to statusChanges observable for async validators. ([#42553](https://github.com/angular/angular/pull/42553)) |
 ### language-service
 | Commit | Description |
 | -- | -- |
-| 4001e9d808 | fix(language-service): 'go to defininition' for objects defined in template (#42559) |
-| 228beeabd1 | fix(language-service): Use last child end span for parent without close tag (#42554) |
+| [4001e9d808](https://github.com/angular/angular/commit/4001e9d80852101a30b1adb1e501438b5846c463) | fix(language-service): 'go to defininition' for objects defined in template ([#42559](https://github.com/angular/angular/pull/42559)) |
+| [228beeabd1](https://github.com/angular/angular/commit/228beeabd1542941cbfff46ad78d52c1df3d283a) | fix(language-service): Use last child end span for parent without close tag ([#42554](https://github.com/angular/angular/pull/42554)) |
 ## Special Thanks:
 Ahmed Ayed, Alan Agius, Alex Rickabaugh, Andrew Scott, Ankit Choudhary, Aristeidis Bampakos, Daniel Trevino, Dario Piotrowicz, Dylan Hunn, George Kalpakas, Igor Minar, JiaLiPassion, JoostK, Kapunahele Wong, Kristiyan Kostadinov, Marius Bethge, Mladen Jakovljević, Paul Gschwendtner, Pete Bacon Darwin, Pham Huu Hien, Renovate Bot, dario-piotrowicz and gobika21f
 
@@ -103,24 +103,24 @@ Ahmed Ayed, Alan Agius, Alex Rickabaugh, Andrew Scott, Ankit Choudhary, Aristeid
 ### compiler
 | Commit | Description |
 | -- | -- |
-| 89fc131ef8 | fix(compiler): always match close tag to the nearest open element (#42554) |
+| [89fc131ef8](https://github.com/angular/angular/commit/89fc131ef87ef0dca4c95960e2b5e3d7cf77070c) | fix(compiler): always match close tag to the nearest open element ([#42554](https://github.com/angular/angular/pull/42554)) |
 ### compiler-cli
 | Commit | Description |
 | -- | -- |
-| 60dbf017fb | fix(compiler-cli): prevent prior compilations from being retained in watch builds (#42537) |
+| [60dbf017fb](https://github.com/angular/angular/commit/60dbf017fbca5de55f9e5e95044d780740a0e4b8) | fix(compiler-cli): prevent prior compilations from being retained in watch builds ([#42537](https://github.com/angular/angular/pull/42537)) |
 ### core
 | Commit | Description |
 | -- | -- |
-| 785da0f1bf | fix(core): ensure that autoRegisterModuleById registration in ɵɵdefineNgModule is not DCE-ed by closure (#42529) |
+| [785da0f1bf](https://github.com/angular/angular/commit/785da0f1bfa163b232009b4c9123b26b545a09dc) | fix(core): ensure that autoRegisterModuleById registration in ɵɵdefineNgModule is not DCE-ed by closure ([#42529](https://github.com/angular/angular/pull/42529)) |
 ### forms
 | Commit | Description |
 | -- | -- |
-| 6f1b907b79 | fix(forms): changes to status not always being emitted to statusChanges observable for async validators. (#42553) |
+| [6f1b907b79](https://github.com/angular/angular/commit/6f1b907b79eaf386f63affc16791bf92a7fea1ab) | fix(forms): changes to status not always being emitted to statusChanges observable for async validators. ([#42553](https://github.com/angular/angular/pull/42553)) |
 ### language-service
 | Commit | Description |
 | -- | -- |
-| 8192f1e1c2 | fix(language-service): 'go to defininition' for objects defined in template (#42559) |
-| 11e0f53352 | fix(language-service): Use last child end span for parent without close tag (#42554) |
+| [8192f1e1c2](https://github.com/angular/angular/commit/8192f1e1c2283e2bd07759a6d507c0c79685a4eb) | fix(language-service): 'go to defininition' for objects defined in template ([#42559](https://github.com/angular/angular/pull/42559)) |
+| [11e0f53352](https://github.com/angular/angular/commit/11e0f533527ef89dc825a0dd73b652a4ccbdf58b) | fix(language-service): Use last child end span for parent without close tag ([#42554](https://github.com/angular/angular/pull/42554)) |
 ## Special Thanks:
 Ahmed Ayed, Alan Agius, Andrew Scott, Ankit Choudhary, Aristeidis Bampakos, Daniel Trevino, Dario Piotrowicz, Dylan Hunn, George Kalpakas, Igor Minar, JiaLiPassion, JoostK, Kapunahele Wong, Kristiyan Kostadinov, Marius Bethge, Pete Bacon Darwin, Pham Huu Hien, dario-piotrowicz and gobika21
 
@@ -130,35 +130,35 @@ Ahmed Ayed, Alan Agius, Andrew Scott, Ankit Choudhary, Aristeidis Bampakos, Dani
 ### common
 | Commit | Description |
 | -- | -- |
-| 85c7f7691e | fix(common): infer correct type when `trackBy` is used in `ngFor` (#41995) |
-| 374fa2c26f | fix(common): initialize currencyCode in currencyPipe (#40505) |
+| [85c7f7691e](https://github.com/angular/angular/commit/85c7f7691e7d4358acff2c0ab5e26cda415a8483) | fix(common): infer correct type when `trackBy` is used in `ngFor` ([#41995](https://github.com/angular/angular/pull/41995)) |
+| [374fa2c26f](https://github.com/angular/angular/commit/374fa2c26f56cd7c82b3e62a079fa785f11ac624) | fix(common): initialize currencyCode in currencyPipe ([#40505](https://github.com/angular/angular/pull/40505)) |
 ### compiler
 | Commit | Description |
 | -- | -- |
-| afd68e5674 | feat(compiler): emit diagnostic for shadow dom components with an invalid selector (#42245) |
-| ba084857ea | feat(compiler): support safe keyed read expressions (#41911) |
+| [afd68e5674](https://github.com/angular/angular/commit/afd68e5674e99a64fe5acc40e08cc8386dc6a454) | feat(compiler): emit diagnostic for shadow dom components with an invalid selector ([#42245](https://github.com/angular/angular/pull/42245)) |
+| [ba084857ea](https://github.com/angular/angular/commit/ba084857ea018a4a77cfc855f0276dcaa2a0c2fa) | feat(compiler): support safe keyed read expressions ([#41911](https://github.com/angular/angular/pull/41911)) |
 ### compiler-cli
 | Commit | Description |
 | -- | -- |
-| bd1836b999 | fix(compiler-cli): exclude type-only imports from cycle analysis (#42453) |
+| [bd1836b999](https://github.com/angular/angular/commit/bd1836b999938fdec98dd6cbfa407d3bcf828e3c) | fix(compiler-cli): exclude type-only imports from cycle analysis ([#42453](https://github.com/angular/angular/pull/42453)) |
 ### core
 | Commit | Description |
 | -- | -- |
-| 25f763cff8 | feat(core): support TypeScript 4.3 (#42022) |
+| [25f763cff8](https://github.com/angular/angular/commit/25f763cff86b4b0ef49eb0105c2093c97c58b6fe) | feat(core): support TypeScript 4.3 ([#42022](https://github.com/angular/angular/pull/42022)) |
 ### forms
 | Commit | Description |
 | -- | -- |
-| 47270d9e63 | feat(forms): add `ng-submitted` class to forms that have been submitted. (#42132) |
-| 751cd83ae3 | fix(forms): the `min` and `max` validators should work correctly with `0` as a value (#42412) |
+| [47270d9e63](https://github.com/angular/angular/commit/47270d9e638260a08c0b11f9ac8cbcd02a49ac86) | feat(forms): add `ng-submitted` class to forms that have been submitted. ([#42132](https://github.com/angular/angular/pull/42132)) |
+| [751cd83ae3](https://github.com/angular/angular/commit/751cd83ae3ee5c971f2d4b72af1aaa691305a866) | fix(forms): the `min` and `max` validators should work correctly with `0` as a value ([#42412](https://github.com/angular/angular/pull/42412)) |
 ### language-service
 | Commit | Description |
 | -- | -- |
-| a493ea9bcb | fix(language-service): fix autocomplete info display for some cases (#42472) |
-| fe22c2b0b6 | fix(language-service): Correct rename info for pipe name expressions (#41974) |
+| [a493ea9bcb](https://github.com/angular/angular/commit/a493ea9bcb2a1d94481d30e41db8b0bdf235ab42) | fix(language-service): fix autocomplete info display for some cases ([#42472](https://github.com/angular/angular/pull/42472)) |
+| [fe22c2b0b6](https://github.com/angular/angular/commit/fe22c2b0b6852a4808d8f5477ec84df2c29a5103) | fix(language-service): Correct rename info for pipe name expressions ([#41974](https://github.com/angular/angular/pull/41974)) |
 ### router
 | Commit | Description |
 | -- | -- |
-| c44ab4f6da | fix(router): fix `serializeQueryParams` logic (#42481) |
+| [c44ab4f6da](https://github.com/angular/angular/commit/c44ab4f6dad7c326df73f8f1c780810e776ad671) | fix(router): fix `serializeQueryParams` logic ([#42481](https://github.com/angular/angular/pull/42481)) |
 ## Special Thanks:
 Alex, Alex Inkin, Andrew Kushnir, Andrew Scott, Chris, David Shevitz, Dylan Hunn, George Kalpakas, Gourav102, Igor Minar, Jessica Janiuk, Joey Perrott, JoostK, Kapunahele Wong, Kristiyan Kostadinov, MarsiBarsi, MrJithil, Paul Gschwendtner, Pete Bacon Darwin, Renovate Bot, Sam Severance, Santosh Yadav, Teri Glover, Tiago Temporin, Vahid Mohammadi, anups1, cindygk, iRealNirmal, kuncevic and mgechev
 
@@ -168,24 +168,24 @@ Alex, Alex Inkin, Andrew Kushnir, Andrew Scott, Chris, David Shevitz, Dylan Hunn
 ### common
 | Commit | Description |
 | -- | -- |
-| 200cc31df4 | fix(common): infer correct type when `trackBy` is used in `ngFor` (#41995) |
-| 0dad375de7 | fix(common): initialize currencyCode in currencyPipe (#40505) |
+| [200cc31df4](https://github.com/angular/angular/commit/200cc31df4a194221694bd853265a05e870a246a) | fix(common): infer correct type when `trackBy` is used in `ngFor` ([#41995](https://github.com/angular/angular/pull/41995)) |
+| [0dad375de7](https://github.com/angular/angular/commit/0dad375de77f56991a65ace9a9aad70fa814b29f) | fix(common): initialize currencyCode in currencyPipe ([#40505](https://github.com/angular/angular/pull/40505)) |
 ### compiler-cli
 | Commit | Description |
 | -- | -- |
-| b6d6a34eef | fix(compiler-cli): exclude type-only imports from cycle analysis (#42453) |
+| [b6d6a34eef](https://github.com/angular/angular/commit/b6d6a34eef9bd3c8434cde8dcee9dcbd47e753b6) | fix(compiler-cli): exclude type-only imports from cycle analysis ([#42453](https://github.com/angular/angular/pull/42453)) |
 ### forms
 | Commit | Description |
 | -- | -- |
-| 50c87e86b6 | fix(forms): the `min` and `max` validators should work correctly with `0` as a value (#42412) |
+| [50c87e86b6](https://github.com/angular/angular/commit/50c87e86b618b0f71dbd2ec4938415beb383f08b) | fix(forms): the `min` and `max` validators should work correctly with `0` as a value ([#42412](https://github.com/angular/angular/pull/42412)) |
 ### language-service
 | Commit | Description |
 | -- | -- |
-| 34dd3c360b | fix(language-service): fix autocomplete info display for some cases (#42472) |
+| [34dd3c360b](https://github.com/angular/angular/commit/34dd3c360b9d585fd0286a5c766456470fe19dca) | fix(language-service): fix autocomplete info display for some cases ([#42472](https://github.com/angular/angular/pull/42472)) |
 ### router
 | Commit | Description |
 | -- | -- |
-| a77ec5bcab | fix(router): fix `serializeQueryParams` logic (#42481) |
+| [a77ec5bcab](https://github.com/angular/angular/commit/a77ec5bcab5307d426abc436714ea673a5880b3f) | fix(router): fix `serializeQueryParams` logic ([#42481](https://github.com/angular/angular/pull/42481)) |
 ## Special Thanks:
 Alex, Alex Inkin, Andrew Kushnir, Andrew Scott, Chris, David Shevitz, George Kalpakas, Gourav102, Igor Minar, Joey Perrott, JoostK, Kapunahele Wong, Kristiyan Kostadinov, MarsiBarsi, MrJithil, Paul Gschwendtner, Pete Bacon Darwin, Sam Severance, Santosh Yadav, Teri Glover, Tiago Temporin, Vahid Mohammadi, anups1, cindygk, iRealNirmal, kuncevic and mgechev
 
@@ -195,7 +195,7 @@ Alex, Alex Inkin, Andrew Kushnir, Andrew Scott, Chris, David Shevitz, George Kal
 ### compiler-cli
 | Commit | Description |
 | -- | -- |
-| e039075a28 | fix(compiler-cli): better detect classes that are indirectly exported (#42207) |
+| [e039075a28](https://github.com/angular/angular/commit/e039075a2837b0decf17cfbd5382d675c331bbeb) | fix(compiler-cli): better detect classes that are indirectly exported ([#42207](https://github.com/angular/angular/pull/42207)) |
 ## Special Thanks:
 AleksanderBodurri, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, David Pfeiffer, David Shevitz, Doug Parker, Dylan Hunn, George Kalpakas, Igor Minar, Joey Perrott, JoostK, Kristiyan Kostadinov, Renovate Bot, Sam Severance, Serguei Cambour, Suguru Inatomi, Teri Glover, Wagner Maciel, Zach Arend, mgechev and 不肖・高橋
 
@@ -205,7 +205,7 @@ AleksanderBodurri, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, David Pfeiffer
 ### compiler-cli
 | Commit | Description |
 | -- | -- |
-| 8bdcca1e08 | fix(compiler-cli): better detect classes that are indirectly exported (#42207) |
+| [8bdcca1e08](https://github.com/angular/angular/commit/8bdcca1e08eaeb031a940f95e8afe91081cd2482) | fix(compiler-cli): better detect classes that are indirectly exported ([#42207](https://github.com/angular/angular/pull/42207)) |
 ## Special Thanks:
 AleksanderBodurri, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, David Pfeiffer, David Shevitz, Doug Parker, Dylan Hunn, George Kalpakas, Igor Minar, Joey Perrott, JoostK, Kristiyan Kostadinov, Sam Severance, Serguei Cambour, Suguru Inatomi, Teri Glover, Wagner Maciel, Zach Arend, mgechev and 不肖・高橋
 
@@ -215,15 +215,15 @@ AleksanderBodurri, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, David Pfeiffer
 ### forms
 | Commit | Description |
 | -- | -- |
-| 19d7bf4162 | fix(forms): Add float number support for min and max validator (#42223) |
+| [19d7bf4162](https://github.com/angular/angular/commit/19d7bf4162fa111a35d0fd556c464521968881ea) | fix(forms): Add float number support for min and max validator ([#42223](https://github.com/angular/angular/pull/42223)) |
 ### migrations
 | Commit | Description |
 | -- | -- |
-| 11c7bec065 | fix(migrations): add migration to replace `/deep/` with `::ng-deep` (#42214) |
+| [11c7bec065](https://github.com/angular/angular/commit/11c7bec065f505894e99a54031e3d82b6d84b9f8) | fix(migrations): add migration to replace `/deep/` with `::ng-deep` ([#42214](https://github.com/angular/angular/pull/42214)) |
 ### platform-browser
 | Commit | Description |
 | -- | -- |
-| 84ab81c286 | fix(platform-browser): update started state on reset (#41608) |
+| [84ab81c286](https://github.com/angular/angular/commit/84ab81c2863d3b2a3a0037913748a13011eeddc1) | fix(platform-browser): update started state on reset ([#41608](https://github.com/angular/angular/pull/41608)) |
 ## Special Thanks:
 Alan Agius, Andrew Scott, David Shevitz, George Kalpakas, Igor Minar, Joey Perrott, Kapunahele Wong, Madleina Scheidegger, Paul Gschwendtner, Pete Bacon Darwin, Sam Severance, Teri Glover, Zach Arend, chenyunhsin, iRealNirmal, mgechev and twerske
 
@@ -232,15 +232,15 @@ Alan Agius, Andrew Scott, David Shevitz, George Kalpakas, Igor Minar, Joey Perro
 ### forms
 | Commit | Description |
 | -- | -- |
-| 3d9062dad7 | fix(forms): Add float number support for min and max validator (#42223) |
+| [3d9062dad7](https://github.com/angular/angular/commit/3d9062dad74c28e7c5b7849ae35dcb2e85ee7921) | fix(forms): Add float number support for min and max validator ([#42223](https://github.com/angular/angular/pull/42223)) |
 ### migrations
 | Commit | Description |
 | -- | -- |
-| 7f6213a2f4 | fix(migrations): add migration to replace `/deep/` with `::ng-deep` (#42214) |
+| [7f6213a2f4](https://github.com/angular/angular/commit/7f6213a2f48caca4207b820d355bf9feb5d4e05c) | fix(migrations): add migration to replace `/deep/` with `::ng-deep` ([#42214](https://github.com/angular/angular/pull/42214)) |
 ### platform-browser
 | Commit | Description |
 | -- | -- |
-| 3a6af8e629 | fix(platform-browser): update started state on reset (#41608) |
+| [3a6af8e629](https://github.com/angular/angular/commit/3a6af8e629ba03d1202053a0ee9150372bbeda49) | fix(platform-browser): update started state on reset ([#41608](https://github.com/angular/angular/pull/41608)) |
 ## Special Thanks:
 Alan Agius, Andrew Scott, David Shevitz, George Kalpakas, Igor Minar, Joey Perrott, Kapunahele Wong, Madleina Scheidegger, Paul Gschwendtner, Pete Bacon Darwin, Renovate Bot, Sam Severance, Teri Glover, Zach Arend, chenyunhsin, iRealNirmal, mgechev and twerske
 
@@ -250,12 +250,12 @@ Alan Agius, Andrew Scott, David Shevitz, George Kalpakas, Igor Minar, Joey Perro
 ### common
 | Commit | Description |
 | -- | -- |
-| 4bc3cf216d | feat(common): add URLSearchParams to request body (#37852) |
+| [4bc3cf216d](https://github.com/angular/angular/commit/4bc3cf216d0a4053e114157f3522c3b666788644) | feat(common): add URLSearchParams to request body ([#37852](https://github.com/angular/angular/pull/37852)) |
 ### language-service
 | Commit | Description |
 | -- | -- |
-| 1be5d659a5 | fix(language-service): fully de-duplicate reference and rename results (#40523) |
-| a86ca4fe04 | feat(language-service): Enable renaming of pipes (#40523) |
+| [1be5d659a5](https://github.com/angular/angular/commit/1be5d659a51d10b05bee50bd5d7cd06070198c4c) | fix(language-service): fully de-duplicate reference and rename results ([#40523](https://github.com/angular/angular/pull/40523)) |
+| [a86ca4fe04](https://github.com/angular/angular/commit/a86ca4fe049e68710b612a8e3323c256115a805e) | feat(language-service): Enable renaming of pipes ([#40523](https://github.com/angular/angular/pull/40523)) |
 ## Special Thanks:
 Ajit Singh, Alan Agius, Alan Cohen, Alex Rickabaugh, Amadou Sall, Andrew J Asche, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Ben Lesh, Bendik Skarpnes, Benjamin Kindle, Charles Lyding, Chau Tran, Cosmin Ababei, Daniel Díaz, David Shevitz, Dharmen Shah, Dmitrij Kuba, Dylan Hunn, Eduard Bondarenko, Emily Wenberg, Front-end developer, George Kalpakas, Georgii Dolzhykov, Gopal Jayaraman, Gourav102, Gérôme Grignon, Hugo Mejia, Igor Minar, Jesse Palmer, Jessica Janiuk, JiaLiPassion, Joey Perrott, JoostK, Julien Marcou, Kapunahele Wong, Keen Yee Liau, Kirk Larkin, Kristiyan Kostadinov, Lars Gyrup Brink Nielsen, Martin Sikora, Mathias Schäfer, Michael Hladky, Mikhail, Misko Hevery, MrJithil, Nishu Goel, Oluwole Majiyagbe, Paul Gschwendtner, Paul Muriel Biya-Bi, Pete Bacon Darwin, Pierre Portejoie, Richard Sithole, Sagar Pandita, Sam Severance, Sumit Arora, Talha Azhar, Teri Glover, Wojciech Okoński, Zach Arend, Zack DeRose, aschaap, cexbrayat, iRealNirmal, iron, jeripeierSBB, mgechev, nirmal bhagwani, pavlenko, profanis, rachid Oussanaa, sovtara, unknown, va-stefanek and wagnermaciel
 
@@ -265,19 +265,19 @@ Ajit Singh, Alan Agius, Alan Cohen, Alex Rickabaugh, Amadou Sall, Andrew J Asche
 ### benchpress
 | Commit | Description |
 | -- | -- |
-| 28ee9864a4 | fix(benchpress): update the check for start and end events (#42085) |
+| [28ee9864a4](https://github.com/angular/angular/commit/28ee9864a4e2f46fc95d4e2d7469b28f0cce0686) | fix(benchpress): update the check for start and end events ([#42085](https://github.com/angular/angular/pull/42085)) |
 ### compiler
 | Commit | Description |
 | -- | -- |
-| 52c07e403e | fix(compiler): unclear lexer error when using private identifier in expressions (#42027) |
+| [52c07e403e](https://github.com/angular/angular/commit/52c07e403ed49ac8fcedcd23fd0c4b385b614672) | fix(compiler): unclear lexer error when using private identifier in expressions ([#42027](https://github.com/angular/angular/pull/42027)) |
 ### core
 | Commit | Description |
 | -- | -- |
-| 3a46ad96ea | fix(core): global listeners not being bound on non-node host elements (#42014) |
+| [3a46ad96ea](https://github.com/angular/angular/commit/3a46ad96ea337e8b498e29d8364706e667089fde) | fix(core): global listeners not being bound on non-node host elements ([#42014](https://github.com/angular/angular/pull/42014)) |
 ### forms
 | Commit | Description |
 | -- | -- |
-| 9b90c03a9f | fix(forms): registerOnValidatorChange should be called for ngModelGroup. (#41971) |
+| [9b90c03a9f](https://github.com/angular/angular/commit/9b90c03a9f6931390d65c26a11d3cea94a9ce9d6) | fix(forms): registerOnValidatorChange should be called for ngModelGroup. ([#41971](https://github.com/angular/angular/pull/41971)) |
 ## Special Thanks:
 Alex Rickabaugh, Daniel Díaz, David Shevitz, Dylan Hunn, Front-end developer, George Kalpakas, Joey Perrott, Kristiyan Kostadinov, Lars Gyrup Brink Nielsen, MrJithil, Paul Gschwendtner, Renovate Bot, Sam Severance, Sumit Arora, iRealNirmal, iron, mgechev, rachid Oussanaa and wagnermaciel
 
