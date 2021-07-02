@@ -478,15 +478,14 @@ export class MatSelectionList extends _MatSelectionListBase implements CanDisabl
       .pipe(takeUntil(this._destroyed))
       .subscribe(origin => {
         if (origin === 'keyboard' || origin === 'program') {
-          const activeIndex = this._keyManager.activeItemIndex;
-
-          if (!activeIndex || activeIndex === -1) {
-            // If there is no active index, set focus to the first option.
-            this._keyManager.setFirstItemActive();
-          } else {
-            // Otherwise, set focus to the active option.
-            this._keyManager.setActiveItem(activeIndex);
+          let toFocus = 0;
+          for (let i = 0; i < this.options.length; i++) {
+            if (this.options.get(i)?.selected) {
+              toFocus = i;
+              break;
+            }
           }
+          this._keyManager.setActiveItem(toFocus);
         }
       });
   }

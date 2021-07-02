@@ -326,22 +326,23 @@ describe('MatSelectionList without forms', () => {
         expect(listOptions[0].componentInstance.focus).not.toHaveBeenCalled();
       })));
 
-    it('should focus the previously focused option when the list takes focus a second time', () => {
-      spyOn(listOptions[1].componentInstance, 'focus').and.callThrough();
+    it('should focus the first selected option when list receives focus', () => {
+      spyOn(listOptions[2].componentInstance, 'focus').and.callThrough();
 
       const manager = selectionList.componentInstance._keyManager;
       expect(manager.activeItemIndex).toBe(-1);
 
-      // Focus and blur the option to move the active item index. This option is now the previously
-      // focused option.
-      listOptions[1].componentInstance._handleFocus();
-      listOptions[1].componentInstance._handleBlur();
+      dispatchMouseEvent(listOptions[2].nativeElement, 'click');
+      fixture.detectChanges();
+
+      dispatchMouseEvent(listOptions[3].nativeElement, 'click');
+      fixture.detectChanges();
 
       dispatchFakeEvent(selectionList.nativeElement, 'focus');
       fixture.detectChanges();
 
-      expect(manager.activeItemIndex).toBe(1);
-      expect(listOptions[1].componentInstance.focus).toHaveBeenCalled();
+      expect(manager.activeItemIndex).toBe(2);
+      expect(listOptions[2].componentInstance.focus).toHaveBeenCalled();
     });
 
     it('should allow focus to escape when tabbing away', fakeAsync(() => {
