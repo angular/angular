@@ -33,7 +33,6 @@ import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {isUrlTree} from './utils/type_guards';
 
 
-
 /**
  * @description
  *
@@ -384,7 +383,6 @@ export const subsetMatchOptions: IsActiveMatchOptions = {
   queryParams: 'subset'
 };
 
-
 /**
  * @description
  *
@@ -419,8 +417,20 @@ export class Router {
   /**
    * The id of the currently active page in the router.
    * Updated to the transition's target id on a successful navigation.
+   *
+   * This is used to track what page the router last activated. When an attempted navigation fails,
+   * the router can then use this to compute how to restore the state back to the previously active
+   * page.
    */
   private currentPageId: number = 0;
+  /**
+   * The ɵrouterPageId of whatever page is currently active in the browser history. This is
+   * important for computing the target page id for new navigations because we need to ensure each
+   * page id in the browser history is 1 more than the previous entry.
+   */
+  private get browserPageId(): number|undefined {
+    return (this.location.getState() as RestoredState | null)?.ɵrouterPageId;
+  }
   private configLoader: RouterConfigLoader;
   private ngModule: NgModuleRef<any>;
   private console: Console;
@@ -761,7 +771,7 @@ export class Router {
 
                      filter(t => {
                        if (!t.guardsResult) {
-                         this.cancelNavigationTransition(t, '');
+                         this.cancelNavigationTransitionRestoreHistory(t, '');
                          return false;
                        }
                        return true;
@@ -786,7 +796,7 @@ export class Router {
                                      next: () => dataResolved = true,
                                      complete: () => {
                                        if (!dataResolved) {
-                                         this.cancelNavigationTransition(
+                                         this.cancelNavigationTransitionRestoreHistory(
                                              t,
                                              `At least one route resolver didn't emit any value.`);
                                        }
@@ -869,17 +879,28 @@ export class Router {
                         * event is fired when a navigation gets cancelled but not caught by other
                         * means. */
                        if (!completed && !errored) {
-                         // Must reset to current URL tree here to ensure history.state is set. On a
-                         // fresh page load, if a new navigation comes in before a successful
-                         // navigation completes, there will be nothing in
-                         // history.state.navigationId. This can cause sync problems with AngularJS
-                         // sync code which looks for a value here in order to determine whether or
-                         // not to handle a given popstate event or to leave it to the Angular
-                         // router.
-                         this.cancelNavigationTransition(
-                             t,
-                             `Navigation ID ${t.id} is not equal to the current navigation id ${
-                                 this.navigationId}`);
+                         const cancelationReason = `Navigation ID ${
+                             t.id} is not equal to the current navigation id ${this.navigationId}`;
+                         if (this.canceledNavigationResolution === 'replace') {
+                           // Must reset to current URL tree here to ensure history.state is set. On
+                           // a fresh page load, if a new navigation comes in before a successful
+                           // navigation completes, there will be nothing in
+                           // history.state.navigationId. This can cause sync problems with
+                           // AngularJS sync code which looks for a value here in order to determine
+                           // whether or not to handle a given popstate event or to leave it to the
+                           // Angular router.
+                           this.cancelNavigationTransitionRestoreHistory(t, cancelationReason);
+                         } else {
+                           // We cannot trigger a `location.historyGo` if the
+                           // cancellation was due to a new navigation before the previous could
+                           // complete. This is because `location.historyGo` triggers a `popstate`
+                           // which would also trigger another navigation. Instead, treat this as a
+                           // redirect and do not reset the state.
+                           this.cancelNavigationTransition(t, cancelationReason);
+                           // TODO(atscott): The same problem happens here with a fresh page load
+                           // and a new navigation before that completes where we won't set a page
+                           // id.
+                         }
                        }
                        // currentNavigation should always be reset to null here. If navigation was
                        // successful, lastSuccessfulTransition will have already been set. Therefore
@@ -993,9 +1014,9 @@ export class Router {
     if (!this.locationSubscription) {
       this.locationSubscription = this.location.subscribe(event => {
         const currentChange = this.extractLocationChangeInfoFromEvent(event);
+        // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
+        // hybrid apps.
         if (this.shouldScheduleNavigation(this.lastLocationChangeInfo, currentChange)) {
-          // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
-          // hybrid apps.
           setTimeout(() => {
             const {source, state, urlTree} = currentChange;
             const extras: NavigationExtras = {replaceUrl: true};
@@ -1213,15 +1234,7 @@ export class Router {
     const urlTree = isUrlTree(url) ? url : this.parseUrl(url);
     const mergedTree = this.urlHandlingStrategy.merge(urlTree, this.rawUrlTree);
 
-    let restoredState: RestoredState|null = null;
-    if (this.canceledNavigationResolution === 'computed') {
-      const isInitialPage = this.currentPageId === 0;
-      if (isInitialPage || extras.skipLocationChange || extras.replaceUrl) {
-        restoredState = this.location.getState() as RestoredState | null;
-      }
-    }
-
-    return this.scheduleNavigation(mergedTree, 'imperative', restoredState, extras);
+    return this.scheduleNavigation(mergedTree, 'imperative', null, extras);
   }
 
   /**
@@ -1345,6 +1358,7 @@ export class Router {
     if (this.disposed) {
       return Promise.resolve(false);
     }
+
     // * Imperative navigations (router.navigate) might trigger additional navigations to the same
     //   URL via a popstate event and the locationChangeListener. We should skip these duplicate
     //   navs. Duplicates may also be triggered by attempts to sync AngularJS and Angular router
@@ -1388,12 +1402,23 @@ export class Router {
     const id = ++this.navigationId;
     let targetPageId: number;
     if (this.canceledNavigationResolution === 'computed') {
+      const isInitialPage = this.currentPageId === 0;
+      if (isInitialPage) {
+        restoredState = this.location.getState() as RestoredState | null;
+      }
       // If the `ɵrouterPageId` exist in the state then `targetpageId` should have the value of
-      // `ɵrouterPageId`
+      // `ɵrouterPageId`. This is the case for something like a page refresh where we assign the
+      // target id to the previously set value for that page.
       if (restoredState && restoredState.ɵrouterPageId) {
         targetPageId = restoredState.ɵrouterPageId;
       } else {
-        targetPageId = this.currentPageId + 1;
+        // If we're replacing the URL or doing a silent navigation, we do not want to increment the
+        // page id because we aren't pushing a new entry to history.
+        if (extras.replaceUrl || extras.skipLocationChange) {
+          targetPageId = this.browserPageId ?? 0;
+        } else {
+          targetPageId = (this.browserPageId ?? 0) + 1;
+        }
       }
     } else {
       // This is unused when `canceledNavigationResolution` is not computed.
@@ -1453,7 +1478,7 @@ export class Router {
    * - triggers the `NavigationCancel` event
    * - resolves the transition promise with `false`
    */
-  private cancelNavigationTransition(t: NavigationTransition, reason: string) {
+  private cancelNavigationTransitionRestoreHistory(t: NavigationTransition, reason: string) {
     if (this.canceledNavigationResolution === 'computed') {
       // The navigator change the location before triggered the browser event,
       // so we need to go back to the current url if the navigation is canceled.
@@ -1470,6 +1495,10 @@ export class Router {
     } else {
       this.resetUrlToCurrentUrlTree();
     }
+    this.cancelNavigationTransition(t, reason);
+  }
+
+  private cancelNavigationTransition(t: NavigationTransition, reason: string) {
     const navCancel = new NavigationCancel(t.id, this.serializeUrl(t.extractedUrl), reason);
     this.triggerEvent(navCancel);
     t.resolve(false);
