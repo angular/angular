@@ -239,4 +239,8 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
       }
     });
   }
+
+  _stepIsNavigable(index: number, step: MatStep): boolean {
+    return step.completed || this.selectedIndex === index || !this.linear;
+  }
 }

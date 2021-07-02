@@ -789,6 +789,15 @@ describe('MatStepper', () => {
       expect(testComponent.oneGroup.valid).toBe(false);
       expect(stepperComponent.selectedIndex).toBe(1);
     });
+
+    it('should set aria-disabled if the user is not able to navigate to a step', () => {
+      const stepHeaders = Array.from<HTMLElement>(
+        fixture.nativeElement.querySelectorAll('.mat-vertical-stepper-header'));
+
+      expect(stepHeaders.map(step => step.getAttribute('aria-disabled')))
+        .toEqual([null, 'true', 'true', 'true']);
+    });
+
   });
 
   describe('linear stepper with a pre-defined selectedIndex', () => {
