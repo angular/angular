@@ -137,7 +137,7 @@ export interface TestElement {
   getDimensions(): Promise<ElementDimensions>;
 
   /** Gets the value of a property of an element. */
-  getProperty(name: string): Promise<any>;
+  getProperty<T = any>(name: string): Promise<T>;
 
   /** Checks whether this element matches the given selector. */
   matchesSelector(selector: string): Promise<boolean>;

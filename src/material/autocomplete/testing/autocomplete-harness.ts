@@ -38,7 +38,7 @@ export abstract class _MatAutocompleteHarnessBase<
 
   /** Gets the value of the autocomplete input. */
   async getValue(): Promise<string> {
-    return (await this.host()).getProperty('value');
+    return (await this.host()).getProperty<string>('value');
   }
 
   /** Whether the autocomplete input is disabled. */

@@ -21,13 +21,13 @@ export abstract class _MatCheckboxHarnessBase extends ComponentHarness {
 
   /** Whether the checkbox is checked. */
   async isChecked(): Promise<boolean> {
-    const checked = (await this._input()).getProperty('checked');
+    const checked = (await this._input()).getProperty<boolean>('checked');
     return coerceBooleanProperty(await checked);
   }
 
   /** Whether the checkbox is in an indeterminate state. */
   async isIndeterminate(): Promise<boolean> {
-    const indeterminate = (await this._input()).getProperty('indeterminate');
+    const indeterminate = (await this._input()).getProperty<string>('indeterminate');
     return coerceBooleanProperty(await indeterminate);
   }
 
@@ -39,7 +39,7 @@ export abstract class _MatCheckboxHarnessBase extends ComponentHarness {
 
   /** Whether the checkbox is required. */
   async isRequired(): Promise<boolean> {
-    const required = (await this._input()).getProperty('required');
+    const required = (await this._input()).getProperty<boolean>('required');
     return coerceBooleanProperty(await required);
   }
 
@@ -56,7 +56,7 @@ export abstract class _MatCheckboxHarnessBase extends ComponentHarness {
 
   /** Gets the checkbox's value. */
   async getValue(): Promise<string|null> {
-    return (await this._input()).getProperty('value');
+    return (await this._input()).getProperty<string|null>('value');
   }
 
   /** Gets the checkbox's aria-label. */

@@ -31,18 +31,18 @@ export function getInputPredicate<T extends MatDatepickerInputHarnessBase>(
 export abstract class MatDatepickerInputHarnessBase extends MatFormFieldControlHarness {
   /** Whether the input is disabled. */
   async isDisabled(): Promise<boolean> {
-    return (await this.host()).getProperty('disabled')!;
+    return (await this.host()).getProperty<boolean>('disabled');
   }
 
   /** Whether the input is required. */
   async isRequired(): Promise<boolean> {
-    return (await this.host()).getProperty('required')!;
+    return (await this.host()).getProperty<boolean>('required');
   }
 
   /** Gets the value of the input. */
   async getValue(): Promise<string> {
     // The "value" property of the native input is always defined.
-    return (await (await this.host()).getProperty('value'))!;
+    return (await (await this.host()).getProperty<string>('value'));
   }
 
   /**
@@ -65,7 +65,7 @@ export abstract class MatDatepickerInputHarnessBase extends MatFormFieldControlH
 
   /** Gets the placeholder of the input. */
   async getPlaceholder(): Promise<string> {
-    return (await (await this.host()).getProperty('placeholder'));
+    return (await (await this.host()).getProperty<string>('placeholder'));
   }
 
   /**

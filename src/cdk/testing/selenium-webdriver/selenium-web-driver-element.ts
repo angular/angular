@@ -163,7 +163,7 @@ export class SeleniumWebDriverElement implements TestElement {
   }
 
   /** Gets the value of a property of an element. */
-  async getProperty(name: string): Promise<any> {
+  async getProperty<T = any>(name: string): Promise<T> {
     await this._stabilize();
     return this._executeScript(
         (element: Element, property: keyof Element) => element[property],

@@ -38,7 +38,7 @@ export class MatSliderThumbHarness extends ComponentHarness {
 
   /** Gets the value of the thumb. */
   async getValue(): Promise<number> {
-    return (await (await this.host()).getProperty('valueAsNumber'));
+    return (await (await this.host()).getProperty<number>('valueAsNumber'));
   }
 
   /** Sets the value of the thumb. */
@@ -65,12 +65,12 @@ export class MatSliderThumbHarness extends ComponentHarness {
 
   /** Gets the maximum value of the thumb. */
   async getMaxValue(): Promise<number> {
-    return coerceNumberProperty(await (await this.host()).getProperty('max'));
+    return coerceNumberProperty(await (await this.host()).getProperty<number>('max'));
   }
 
   /** Gets the minimum value of the thumb. */
   async getMinValue(): Promise<number> {
-    return coerceNumberProperty(await (await this.host()).getProperty('min'));
+    return coerceNumberProperty(await (await this.host()).getProperty<number>('min'));
   }
 
   /** Gets the text representation of the slider's value. */
@@ -80,17 +80,17 @@ export class MatSliderThumbHarness extends ComponentHarness {
 
   /** Whether the thumb is disabled. */
   async isDisabled(): Promise<boolean> {
-    return (await this.host()).getProperty('disabled');
+    return (await this.host()).getProperty<boolean>('disabled');
   }
 
   /** Gets the name of the thumb. */
   async getName(): Promise<string> {
-    return (await (await this.host()).getProperty('name'));
+    return (await (await this.host()).getProperty<string>('name'));
   }
 
   /** Gets the id of the thumb. */
   async getId(): Promise<string> {
-    return (await (await this.host()).getProperty('id'));
+    return (await (await this.host()).getProperty<string>('id'));
   }
 
   /**

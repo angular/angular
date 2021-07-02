@@ -323,10 +323,10 @@ export function crossEnvironmentSpecs(
     it('should be able to clear', async () => {
       const input = await harness.input();
       await input.sendKeys('Yi');
-      expect(await input.getProperty('value')).toBe('Yi');
+      expect(await input.getProperty<string>('value')).toBe('Yi');
 
       await input.clear();
-      expect(await input.getProperty('value')).toBe('');
+      expect(await input.getProperty<string>('value')).toBe('');
     });
 
     it('should be able to click', async () => {
@@ -401,7 +401,7 @@ export function crossEnvironmentSpecs(
       const value = await harness.value();
       await input.sendKeys('Yi');
 
-      expect(await input.getProperty('value')).toBe('Yi');
+      expect(await input.getProperty<string>('value')).toBe('Yi');
       expect(await value.text()).toBe('Input: Yi');
     });
 
@@ -416,7 +416,7 @@ export function crossEnvironmentSpecs(
       const value = await harness.numberInputValue();
       await input.sendKeys('123.456');
 
-      expect(await input.getProperty('value')).toBe('123.456');
+      expect(await input.getProperty<string>('value')).toBe('123.456');
       expect(await value.text()).toBe('Number value: 123.456');
     });
 
@@ -453,7 +453,7 @@ export function crossEnvironmentSpecs(
       `;
       const memo = await harness.memo();
       await memo.sendKeys(memoStr);
-      expect(await memo.getProperty('value')).toBe(memoStr);
+      expect(await memo.getProperty<string>('value')).toBe(memoStr);
     });
 
     it('should be able to getCssValue', async () => {
@@ -474,14 +474,14 @@ export function crossEnvironmentSpecs(
     it('should be able to get the value of a property', async () => {
       const input = await harness.input();
       await input.sendKeys('Hello');
-      expect(await input.getProperty('value')).toBe('Hello');
+      expect(await input.getProperty<string>('value')).toBe('Hello');
     });
 
     it('should be able to set the value of an input', async () => {
       const input = await harness.input();
 
       await input.setInputValue('hello');
-      expect(await input.getProperty('value')).toBe('hello');
+      expect(await input.getProperty<string>('value')).toBe('hello');
     });
 
     it('should be able to set the value of a select in single selection mode', async () => {

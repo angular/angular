@@ -159,7 +159,7 @@ export interface TestElement {
     getAttribute(name: string): Promise<string | null>;
     getCssValue(property: string): Promise<string>;
     getDimensions(): Promise<ElementDimensions>;
-    getProperty(name: string): Promise<any>;
+    getProperty<T = any>(name: string): Promise<T>;
     hasClass(name: string): Promise<boolean>;
     hover(): Promise<void>;
     isFocused(): Promise<boolean>;

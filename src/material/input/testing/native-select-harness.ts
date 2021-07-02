@@ -31,29 +31,29 @@ export class MatNativeSelectHarness extends MatFormFieldControlHarness {
 
   /** Gets a boolean promise indicating if the select is disabled. */
   async isDisabled(): Promise<boolean> {
-    return (await this.host()).getProperty('disabled');
+    return (await this.host()).getProperty<boolean>('disabled');
   }
 
   /** Gets a boolean promise indicating if the select is required. */
   async isRequired(): Promise<boolean> {
-    return (await this.host()).getProperty('required');
+    return (await this.host()).getProperty<boolean>('required');
   }
 
   /** Gets a boolean promise indicating if the select is in multi-selection mode. */
   async isMultiple(): Promise<boolean> {
-    return (await this.host()).getProperty('multiple');
+    return (await this.host()).getProperty<boolean>('multiple');
   }
 
   /** Gets the name of the select. */
   async getName(): Promise<string> {
     // The "name" property of the native select is never undefined.
-    return (await (await this.host()).getProperty('name'))!;
+    return (await (await this.host()).getProperty<string>('name'));
   }
 
   /** Gets the id of the select. */
   async getId(): Promise<string> {
     // We're guaranteed to have an id, because the `matNativeControl` always assigns one.
-    return (await (await this.host()).getProperty('id'))!;
+    return (await (await this.host()).getProperty<string>('id'));
   }
 
   /** Focuses the select and returns a void promise that indicates when the action is complete. */

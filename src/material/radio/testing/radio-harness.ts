@@ -52,7 +52,7 @@ export abstract class _MatRadioGroupHarnessBase<
 
   /** Gets the id of the radio-group. */
   async getId(): Promise<string|null> {
-    return (await this.host()).getProperty('id');
+    return (await this.host()).getProperty<string|null>('id');
   }
 
   /** Gets the checked radio-button in a radio-group. */
@@ -185,7 +185,7 @@ export abstract class _MatRadioButtonHarnessBase extends ComponentHarness {
 
   /** Whether the radio-button is checked. */
   async isChecked(): Promise<boolean> {
-    const checked = (await this._input()).getProperty('checked');
+    const checked = (await this._input()).getProperty<boolean>('checked');
     return coerceBooleanProperty(await checked);
   }
 
@@ -208,7 +208,7 @@ export abstract class _MatRadioButtonHarnessBase extends ComponentHarness {
 
   /** Gets the radio-button's id. */
   async getId(): Promise<string|null> {
-    return (await this.host()).getProperty('id');
+    return (await this.host()).getProperty<string>('id');
   }
 
   /**

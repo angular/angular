@@ -206,7 +206,7 @@ export class ProtractorElement implements TestElement {
   }
 
   /** Gets the value of a property of an element. */
-  async getProperty(name: string): Promise<any> {
+  async getProperty<T = any>(name: string): Promise<T> {
     return browser.executeScript(`return arguments[0][arguments[1]]`, this.element, name);
   }
 

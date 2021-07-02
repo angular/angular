@@ -19,7 +19,7 @@ export abstract class _MatSlideToggleHarnessBase extends ComponentHarness {
 
   /** Whether the slide-toggle is checked. */
   async isChecked(): Promise<boolean> {
-    const checked = (await this._input()).getProperty('checked');
+    const checked = (await this._input()).getProperty<boolean>('checked');
     return coerceBooleanProperty(await checked);
   }
 
