@@ -79,7 +79,7 @@ export class AppComponent implements OnInit {
   private currentUrl: string;
 
   get isOpened() { return this.dockSideNav && this.isSideNavDoc; }
-  get mode() { return this.dockSideNav && (this.isSideNavDoc || this.showTopMenu) ? 'side' : 'over'; }
+  get mode() { return this.isOpened ? 'side' : 'over'; }
 
   // Search related properties
   showSearchResults = false;
