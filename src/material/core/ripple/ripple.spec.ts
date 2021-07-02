@@ -181,7 +181,7 @@ describe('MatRipple', () => {
 
     it('should ignore fake mouse events from screen readers', fakeAsync(() => {
       const event = createMouseEvent('mousedown');
-      Object.defineProperty(event, 'buttons', {get: () => 0});
+      Object.defineProperties(event, {offsetX: {get: () => 0}, offsetY: {get: () => 0}});
 
       dispatchEvent(rippleTarget, event);
       tick(enterDuration);

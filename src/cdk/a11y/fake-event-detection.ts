@@ -8,11 +8,12 @@
 
 /** Gets whether an event could be a faked `mousedown` event dispatched by a screen reader. */
 export function isFakeMousedownFromScreenReader(event: MouseEvent): boolean {
-  // We can typically distinguish between these faked mousedown events and real mousedown events
-  // using the "buttons" property. While real mousedowns will indicate the mouse button that was
-  // pressed (e.g. "1" for the left mouse button), faked mousedowns will usually set the property
-  // value to 0.
-  return event.buttons === 0;
+  // Some screen readers will dispatch a fake `mousedown` event when pressing enter or space on
+  // a clickable element. We can distinguish these events when both `offsetX` and `offsetY` are
+  // zero. Note that there's an edge case where the user could click the 0x0 spot of the screen
+  // themselves, but that is unlikely to contain interaction elements. Historially we used to check
+  // `event.buttons === 0`, however that no longer works on recent versions of NVDA.
+  return event.offsetX === 0 && event.offsetY === 0;
 }
 
 /** Gets whether an event could be a faked `touchstart` event dispatched by a screen reader. */

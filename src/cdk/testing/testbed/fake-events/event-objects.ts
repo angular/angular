@@ -43,9 +43,11 @@ export function createMouseEvent(
     /* button */ button,
     /* relatedTarget */ null);
 
-  // `initMouseEvent` doesn't allow us to pass the `buttons` and
-  // defaults it to 0 which looks like a fake event.
+  // `initMouseEvent` doesn't allow us to pass these properties into the constructor.
+  // Override them to 1, because they're used for fake screen reader event detection.
   defineReadonlyEventProperty(event, 'buttons', 1);
+  defineReadonlyEventProperty(event, 'offsetX', 1);
+  defineReadonlyEventProperty(event, 'offsetY', 1);
 
   // IE won't set `defaultPrevented` on synthetic events so we need to do it manually.
   event.preventDefault = function() {
