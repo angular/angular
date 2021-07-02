@@ -67,7 +67,7 @@ $calendar-weekday-table-font-size: 11px !default;
   $disabled-color: theming.get-color-from-palette($foreground, disabled-text);
 
   .mat-calendar-arrow {
-    border-top-color: theming.get-color-from-palette($foreground, icon);
+    fill: theming.get-color-from-palette($foreground, icon);
   }
 
   // The prev/next buttons need a bit more specificity to

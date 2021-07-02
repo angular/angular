@@ -5,8 +5,10 @@
             [attr.aria-describedby]="_buttonDescriptionId"
             cdkAriaLive="polite">
       <span [attr.id]="_buttonDescriptionId">{{periodButtonText}}</span>
-      <div class="mat-calendar-arrow"
-           [class.mat-calendar-invert]="calendar.currentView !== 'month'"></div>
+      <svg class="mat-calendar-arrow" [class.mat-calendar-invert]="calendar.currentView !== 'month'"
+           viewBox="0 0 10 5" focusable="false">
+           <polygon points="0,0 5,5 10,0"/>
+      </svg>
     </button>
 
     <div class="mat-calendar-spacer"></div>
