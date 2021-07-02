@@ -14,7 +14,7 @@ import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { first, map } from 'rxjs/operators';
 
 const sideNavView = 'SideNav';
-export const showTopMenuWidth = 1048;
+export const showTopMenuWidth = 1150;
 export const dockSideNavWidth = 992;
 export const showFloatingTocWidth = 800;
 
