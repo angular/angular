@@ -48,6 +48,19 @@ describe('MapMarkerClusterer', () => {
 
   afterEach(() => {
     (window.google as any) = undefined;
+    (window as any).MarkerClusterer = undefined;
+  });
+
+  it('throws an error if the clustering library has not been loaded', () => {
+    (window as any).MarkerClusterer = undefined;
+    markerClustererConstructorSpy = createMarkerClustererConstructorSpy(markerClustererSpy, false)
+        .and.callThrough();
+
+    expect(() => fixture.detectChanges())
+        .toThrow(new Error(
+          'MarkerClusterer class not found, cannot construct a marker cluster. ' +
+          'Please install the MarkerClustererPlus library: ' +
+          'https://github.com/googlemaps/js-markerclustererplus'));
   });
 
   it('initializes a Google Map Marker Clusterer', () => {

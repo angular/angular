@@ -442,13 +442,15 @@ export function createMarkerClustererSpy(): jasmine.SpyObj<MarkerClusterer> {
 
 /** Creates a jasmine.Spy to watch for the constructor of a MarkerClusterer */
 export function createMarkerClustererConstructorSpy(
-  markerClustererSpy: jasmine.SpyObj<MarkerClusterer>): jasmine.Spy {
+  markerClustererSpy: jasmine.SpyObj<MarkerClusterer>, apiLoaded = true): jasmine.Spy {
   const markerClustererConstructorSpy = jasmine.createSpy('MarkerClusterer constructor',
       () => {
     return markerClustererSpy;
   });
-  const testingWindow: TestingWindow = window;
-  testingWindow['MarkerClusterer'] = markerClustererConstructorSpy;
+  if (apiLoaded) {
+    const testingWindow: TestingWindow = window;
+    testingWindow['MarkerClusterer'] = markerClustererConstructorSpy;
+  }
   return markerClustererConstructorSpy;
 }
 
