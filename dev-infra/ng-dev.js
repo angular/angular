@@ -5462,6 +5462,20 @@ class RenderContext {
             return include;
         };
     }
+    /**
+     * Convert a commit object to a Markdown link.
+     */
+    commitToLink(commit) {
+        const url = `https://github.com/${this.data.github.owner}/${this.data.github.name}/commit/${commit.hash}`;
+        return `[${commit.shortHash}](${url})`;
+    }
+    /**
+     * Convert a pull request number to a Markdown link.
+     */
+    prToLink(prNumber) {
+        const url = `https://github.com/${this.data.github.owner}/${this.data.github.name}/pull/${prNumber}`;
+        return `[#${prNumber}](${url})`;
+    }
 }
 /**
  * Builds a date stamp for stamping in release notes.
@@ -5496,8 +5510,10 @@ _%>
 | -- | -- |
 <%_
   for (const commit of group.commits) {
+    const commitShaMarkdown = commitToLink(commit);
+    const commitHeaderMarkdown = commit.header.replace(/\\(#(\\d+)\\)$/, (_, g) => \`(\${prToLink(+g)})\`);
 _%>
-| <%- commit.shortHash %> | <%- commit.header %> |
+| <%- commitShaMarkdown %> | <%- commitHeaderMarkdown %> |
 <%_
   }
 }

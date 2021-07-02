@@ -135,6 +135,24 @@ export class RenderContext {
       return include;
     };
   }
+
+  /**
+   * Convert a commit object to a Markdown link.
+   */
+  commitToLink(commit: CommitFromGitLog): string {
+    const url = `https://github.com/${this.data.github.owner}/${this.data.github.name}/commit/${
+        commit.hash}`;
+    return `[${commit.shortHash}](${url})`;
+  }
+
+  /**
+   * Convert a pull request number to a Markdown link.
+   */
+  prToLink(prNumber: number): string {
+    const url =
+        `https://github.com/${this.data.github.owner}/${this.data.github.name}/pull/${prNumber}`;
+    return `[#${prNumber}](${url})`;
+  }
 }
 
 
