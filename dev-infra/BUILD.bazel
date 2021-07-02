@@ -55,6 +55,7 @@ pkg_npm(
         # angular/angular should not consume it's own packages, so we use
         # substitutions to replace these in the published version of dev-infra.
         "//dev-infra/": "@npm//@angular/dev-infra-private/",
+        "//dev-infra:": "@npm//@angular/dev-infra-private:",
         "//packages/benchpress": "@npm//@angular/benchpress",
         "//packages/bazel": "@npm//@angular/bazel",
         "//packages/zone.js/bundles:zone.umd.js": "@npm//zone.js",
