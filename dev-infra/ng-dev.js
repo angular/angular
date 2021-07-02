@@ -5472,9 +5472,16 @@ class RenderContext {
     /**
      * Convert a pull request number to a Markdown link.
      */
-    prToLink(prNumber) {
+    pullRequestToLink(prNumber) {
         const url = `https://github.com/${this.data.github.owner}/${this.data.github.name}/pull/${prNumber}`;
         return `[#${prNumber}](${url})`;
+    }
+    /**
+     * Transform a commit message header by replacing the parenthesized pull request reference at the
+     * end of the line (which is added by merge tooling) to a Markdown link.
+     */
+    replaceCommitHeaderPullRequestNumber(header) {
+        return header.replace(/\(#(\d+)\)$/, (_, g) => `(${this.pullRequestToLink(+g)})`);
     }
 }
 /**
@@ -5510,10 +5517,8 @@ _%>
 | -- | -- |
 <%_
   for (const commit of group.commits) {
-    const commitShaMarkdown = commitToLink(commit);
-    const commitHeaderMarkdown = commit.header.replace(/\\(#(\\d+)\\)$/, (_, g) => \`(\${prToLink(+g)})\`);
 _%>
-| <%- commitShaMarkdown %> | <%- commitHeaderMarkdown %> |
+| <%- commitToLink(commit) %> | <%- replaceCommitHeaderPullRequestNumber(commit.header) %> |
 <%_
   }
 }

@@ -20,10 +20,8 @@ _%>
 | -- | -- |
 <%_
   for (const commit of group.commits) {
-    const commitShaMarkdown = commitToLink(commit);
-    const commitHeaderMarkdown = commit.header.replace(/\\(#(\\d+)\\)$/, (_, g) => \`(\${prToLink(+g)})\`);
 _%>
-| <%- commitShaMarkdown %> | <%- commitHeaderMarkdown %> |
+| <%- commitToLink(commit) %> | <%- replaceCommitHeaderPullRequestNumber(commit.header) %> |
 <%_
   }
 }
