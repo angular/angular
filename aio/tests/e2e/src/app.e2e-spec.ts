@@ -5,7 +5,9 @@ describe('site App', () => {
   let page: SitePage;
 
   beforeEach(async () => {
-    await SitePage.setWindowWidth(1050);   // Make the window wide enough to show the SideNav side-by-side.
+    // Make the window wide enough to show the SideNav side-by-side
+    // (bigger than the app component's showTopMenuWidth).
+    await SitePage.setWindowWidth(1200);
     page = new SitePage();
   });
 

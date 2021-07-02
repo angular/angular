@@ -1,7 +1,7 @@
 @use '../../mixins';
 
 // VARIABLES
-$showTopMenuWidth: 1048px;
+$showTopMenuWidth: 1150px;
 $hideTopMenuWidth: $showTopMenuWidth - 1;
 $hamburgerShownMargin: 0 8px 0 0;
 $hamburgerHiddenMargin: 0 16px 0 -64px;
@@ -132,7 +132,10 @@ mat-toolbar.app-toolbar {
 
           .nav-link-inner {
             border-radius: 4px;
+            font-size: 1.3rem;
+            font-size: clamp(10px, 1.6rem, 20px);
             padding: 8px 16px;
+            padding: 8px clamp(5px, 0.7vw, 16px);
           }
 
           &:focus {
@@ -183,7 +186,7 @@ mat-toolbar.app-toolbar {
         }
       }
 
-      @media (max-width: 480px) {
+      @media (max-width: 515px) {
         width: 150px;
       }
     }
