@@ -59,11 +59,11 @@ import {noop} from './util/noop';
  * through DI.
  *
  * ```
- *  function initializeApp(httpClient: HttpClient): Observable<any> {
- *   return httpClient.get("https://someUrl.com/api/user")
+ *  function initializeAppFactory(httpClient: HttpClient): () => Observable<any> {
+ *   return () => httpClient.get("https://someUrl.com/api/user")
  *     .pipe(
  *        tap(user => { ... })
- *     )
+ *     );
  *  }
  *
  *  @NgModule({
@@ -72,7 +72,7 @@ import {noop} from './util/noop';
  *    bootstrap: [AppComponent],
  *    providers: [{
  *      provide: APP_INITIALIZER,
- *      useFactory: initializeApp,
+ *      useFactory: initializeAppFactory,
  *      deps: [HttpClient],
  *      multi: true
  *    }]
