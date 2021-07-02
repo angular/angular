@@ -29,7 +29,7 @@
 }
 
 .mat-mdc-extended-fab {
-  @include mdc-fab.extended_();
+  @include mdc-fab.extended_($query: mdc-helpers.$mat-base-styles-query);
 
   // stylelint-disable-next-line selector-class-pattern
   .mat-icon, .material-icons {
