@@ -1,9 +1,12 @@
+# BEGIN-INTERNAL
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
 load("@npm//@bazel/typescript:index.bzl", "ts_library")
 load("//dev-infra:index.bzl", "ng_dev_rolled_up_generated_file")
+# END-INTERNAL
 
 exports_files(["tsconfig.json"])
 
+# BEGIN-INTERNAL
 ts_library(
     name = "cli",
     srcs = [
@@ -45,6 +48,7 @@ pkg_npm(
     name = "npm_package",
     srcs = [
         "index.bzl",
+        "BUILD.bazel",
         # Some tools within `dev-infra` which are shipped as Bazel rules might
         # rely on a tsconfig file. We bring the config into the NPM package.
         "tsconfig.json",
@@ -55,6 +59,7 @@ pkg_npm(
         # angular/angular should not consume it's own packages, so we use
         # substitutions to replace these in the published version of dev-infra.
         "//dev-infra/": "@npm//@angular/dev-infra-private/",
+        "//dev-infra:": "@npm//@angular/dev-infra-private:",
         "//packages/benchpress": "@npm//@angular/benchpress",
         "//packages/bazel": "@npm//@angular/bazel",
         "//packages/zone.js/bundles:zone.umd.js": "@npm//zone.js",
@@ -106,3 +111,4 @@ ng_dev_rolled_up_generated_file(
         "//dev-infra/release/build",
     ],
 )
+# END-INTERNAL
