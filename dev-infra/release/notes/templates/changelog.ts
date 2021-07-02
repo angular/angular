@@ -21,7 +21,7 @@ _%>
 <%_
   for (const commit of group.commits) {
 _%>
-| <%- commit.shortHash %> | <%- commit.header %> |
+| <%- commitToLink(commit) %> | <%- replaceCommitHeaderPullRequestNumber(commit.header) %> |
 <%_
   }
 }
