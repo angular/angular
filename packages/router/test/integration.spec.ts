@@ -18,6 +18,7 @@ import {delay, filter, first, map, mapTo, tap} from 'rxjs/operators';
 
 import {RouterInitializer} from '../src/router_module';
 import {forEach} from '../src/utils/collection';
+import {isUrlTree} from '../src/utils/type_guards';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
 
 describe('Integration', () => {
@@ -2740,7 +2741,6 @@ describe('Integration', () => {
 
         const url = path + (query.length > 0 ? ('?' + query) : '');
         this.urlChanges.push(url);
-        this._subject.emit({'url': url, 'pop': false});
       }
 
       replaceState(path: string, query: string = '', state: any = null) {
@@ -2825,7 +2825,16 @@ describe('Integration', () => {
     @Injectable({providedIn: 'root'})
     class MyCanActivateGuard implements CanActivate {
       allow: boolean = true;
-      canActivate(): boolean {
+      redirectTo: string|null|UrlTree = null;
+
+      constructor(private router: Router) {}
+
+      canActivate(): boolean|UrlTree {
+        if (typeof this.redirectTo === 'string') {
+          this.router.navigateByUrl(this.redirectTo);
+        } else if (isUrlTree(this.redirectTo)) {
+          return this.redirectTo;
+        }
         return this.allow;
       }
     }
@@ -2879,16 +2888,23 @@ describe('Integration', () => {
           canActivate: [MyCanActivateGuard],
           resolve: [MyResolve]
         },
+        {
+          path: 'unguarded',
+          component: SimpleCmp,
+        },
         {path: 'loaded', loadChildren: () => of(LoadedModule), canLoad: ['alwaysFalse']}
       ]);
       router.navigateByUrl('/first');
       advance(fixture);
+      expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 1}));
 
       router.navigateByUrl('/second');
       advance(fixture);
+      expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
 
       router.navigateByUrl('/third');
       advance(fixture);
+      expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
 
       location.back();
       advance(fixture);
@@ -2898,30 +2914,30 @@ describe('Integration', () => {
          const location = TestBed.inject(Location);
          const router = TestBed.inject(Router);
          expect(location.path()).toEqual('/second');
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
 
          TestBed.inject(MyCanActivateGuard).allow = false;
          location.back();
          advance(fixture);
          expect(location.path()).toEqual('/second');
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
 
          TestBed.inject(MyCanActivateGuard).allow = true;
          location.back();
          advance(fixture);
          expect(location.path()).toEqual('/first');
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 1}));
 
          TestBed.inject(MyCanActivateGuard).allow = false;
          location.forward();
          advance(fixture);
          expect(location.path()).toEqual('/first');
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 1}));
 
          router.navigateByUrl('/second');
          advance(fixture);
          expect(location.path()).toEqual('/first');
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 1}));
        }));
 
 
@@ -2933,24 +2949,24 @@ describe('Integration', () => {
          location.back();
          advance(fixture);
          expect(location.path()).toEqual('/second');
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
 
          location.forward();
          advance(fixture);
          expect(location.path()).toEqual('/second');
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
 
          router.navigateByUrl('third');
          advance(fixture);
          expect(location.path()).toEqual('/second');
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
 
 
          TestBed.inject(MyCanDeactivateGuard).allow = true;
          location.forward();
          advance(fixture);
          expect(location.path()).toEqual('/third');
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 4}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
        }));
 
     it('should work when using `NavigationExtras.skipLocationChange`', fakeAsync(() => {
@@ -2958,19 +2974,19 @@ describe('Integration', () => {
          const router = TestBed.inject(Router);
 
          expect(location.path()).toEqual('/second');
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
 
          router.navigateByUrl('/first', {skipLocationChange: true});
          advance(fixture);
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
 
          router.navigateByUrl('/third');
          advance(fixture);
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 4}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
 
          location.back();
          advance(fixture);
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
        }));
 
     it('should work when using `NavigationExtras.replaceUrl`', fakeAsync(() => {
@@ -2978,11 +2994,11 @@ describe('Integration', () => {
          const router = TestBed.inject(Router);
 
          expect(location.path()).toEqual('/second');
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
 
          router.navigateByUrl('/first', {replaceUrl: true});
          advance(fixture);
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
          expect(location.path()).toEqual('/first');
        }));
 
@@ -2993,7 +3009,7 @@ describe('Integration', () => {
          router.navigateByUrl('/loaded');
          advance(fixture);
          expect(location.path()).toEqual('/second');
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
        }));
 
     it('should work when resolve empty', fakeAsync(() => {
@@ -3001,20 +3017,20 @@ describe('Integration', () => {
          const router = TestBed.inject(Router);
 
          expect(location.path()).toEqual('/second');
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
 
          TestBed.inject(MyResolve).myresolve = EMPTY;
 
          location.back();
          advance(fixture);
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
          expect(location.path()).toEqual('/second');
 
          TestBed.inject(MyResolve).myresolve = of(2);
 
          location.back();
          advance(fixture);
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 1}));
          expect(location.path()).toEqual('/first');
 
          TestBed.inject(MyResolve).myresolve = EMPTY;
@@ -3022,24 +3038,24 @@ describe('Integration', () => {
          // We should cancel the navigation to `/third` when myresolve is empty
          router.navigateByUrl('/third');
          advance(fixture);
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 1}));
          expect(location.path()).toEqual('/first');
 
          location.historyGo(2);
          advance(fixture);
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 1}));
          expect(location.path()).toEqual('/first');
 
          TestBed.inject(MyResolve).myresolve = of(2);
          location.historyGo(2);
          advance(fixture);
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 4}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
          expect(location.path()).toEqual('/third');
 
          TestBed.inject(MyResolve).myresolve = EMPTY;
          location.historyGo(-2);
          advance(fixture);
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 4}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
          expect(location.path()).toEqual('/third');
        }));
 
@@ -3049,37 +3065,96 @@ describe('Integration', () => {
          const router = TestBed.inject(Router);
 
          expect(location.path()).toEqual('/second');
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
 
 
          router.navigateByUrl('/invalid').catch(() => null);
          advance(fixture);
          expect(location.path()).toEqual('/second');
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
 
          location.back();
          advance(fixture);
          expect(location.path()).toEqual('/first');
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 1}));
        }));
 
-    it('should work when urlUpdateStrategy="eagar"', fakeAsync(() => {
+    it('should work when urlUpdateStrategy="eager"', fakeAsync(() => {
          const location = TestBed.inject(Location) as SpyLocation;
          const router = TestBed.inject(Router);
          expect(location.path()).toEqual('/second');
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
          router.urlUpdateStrategy = 'eager';
 
          TestBed.inject(MyCanActivateGuard).allow = false;
          router.navigateByUrl('/first');
          advance(fixture);
          expect(location.path()).toEqual('/second');
-         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
 
          location.back();
          advance(fixture);
          expect(location.path()).toEqual('/second');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
+       }));
+
+    it('should work when CanActivate redirects', fakeAsync(() => {
+         const location = TestBed.inject(Location);
+
+         TestBed.inject(MyCanActivateGuard).redirectTo = '/unguarded';
+         location.back();
+         advance(fixture);
+         expect(location.path()).toEqual('/unguarded');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
+
+         TestBed.inject(MyCanActivateGuard).redirectTo = null;
+
+         location.back();
+         advance(fixture);
+         expect(location.path()).toEqual('/first');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 1}));
+       }));
+
+    it('should work when CanActivate redirects and urlUpdateStrategy="eager"', fakeAsync(() => {
+         const location = TestBed.inject(Location);
+         const router = TestBed.inject(Router);
+         router.urlUpdateStrategy = 'eager';
+
+         TestBed.inject(MyCanActivateGuard).redirectTo = '/unguarded';
+         router.navigateByUrl('/third');
+         advance(fixture);
+         expect(location.path()).toEqual('/unguarded');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 4}));
+
+         TestBed.inject(MyCanActivateGuard).redirectTo = null;
+
+         location.back();
+         advance(fixture);
+         expect(location.path()).toEqual('/third');
          expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+       }));
+
+    it('should work when CanActivate redirects with UrlTree and urlUpdateStrategy="eager"',
+       fakeAsync(() => {
+         // Note that this test is different from the above case because we are able to specifically
+         // handle the `UrlTree` case as a proper redirect and set `replaceUrl: true` on the
+         // follow-up navigation.
+         const location = TestBed.inject(Location);
+         const router = TestBed.inject(Router);
+         router.urlUpdateStrategy = 'eager';
+
+         TestBed.inject(MyCanActivateGuard).redirectTo = router.createUrlTree(['unguarded']);
+         router.navigateByUrl('/third');
+         advance(fixture);
+         expect(location.path()).toEqual('/unguarded');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+
+         TestBed.inject(MyCanActivateGuard).redirectTo = null;
+
+         location.back();
+         advance(fixture);
+         expect(location.path()).toEqual('/second');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
        }));
   });
   describe('guards', () => {
