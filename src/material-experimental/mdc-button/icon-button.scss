@@ -1,4 +1,5 @@
 @use '@material/icon-button' as mdc-icon-button;
+@use '../../material/core/style/private';
 @use '../mdc-helpers/mdc-helpers';
 @use 'button-base';
 
@@ -14,6 +15,7 @@
 
   @include button-base.mat-private-button-disabled();
   @include button-base.mat-private-button-touch-target(true);
+  @include private.private-animation-noop();
 
   // MDC adds some styles to icon buttons that conflict with some of our focus indicator styles
   // and don't actually do anything. This undoes those conflicting styles.
