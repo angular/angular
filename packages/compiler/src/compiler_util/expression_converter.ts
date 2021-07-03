@@ -19,7 +19,7 @@ export interface LocalResolver {
   getLocal(name: string): o.Expression|null;
   notifyImplicitReceiverUse(): void;
   globals?: Set<string>;
-  maybeRestoreView(retrievalLevel: number, localRefLookup: boolean): void;
+  maybeRestoreView(): void;
 }
 
 export class ConvertActionBindingResult {
@@ -490,7 +490,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     const value: o.Expression = this._visit(ast.value, _Mode.Expression);
 
     if (obj === this._implicitReceiver) {
-      this._localResolver.maybeRestoreView(0, false);
+      this._localResolver.maybeRestoreView();
     }
 
     return convertToStatementIfNeeded(mode, obj.key(key).set(value));
