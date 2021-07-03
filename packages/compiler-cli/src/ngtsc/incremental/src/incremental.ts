@@ -10,11 +10,13 @@ import * as ts from 'typescript';
 
 import {absoluteFromSourceFile, AbsoluteFsPath, resolve} from '../../file_system';
 import {PerfPhase, PerfRecorder} from '../../perf';
+import {MaybeSourceFileWithOriginalFile, NgOriginalFile} from '../../program_driver';
 import {ClassRecord, TraitCompiler} from '../../transform';
 import {FileTypeCheckingData} from '../../typecheck';
 import {toUnredirectedSourceFile} from '../../util/src/typescript';
 import {IncrementalBuild} from '../api';
 import {SemanticDepGraphUpdater} from '../semantic_graph';
+
 import {FileDependencyGraph} from './dependency_tracking';
 import {AnalyzedIncrementalState, DeltaIncrementalState, IncrementalState, IncrementalStateKind} from './state';
 
@@ -134,12 +136,12 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
 
       const oldVersions = priorAnalysis.versions;
 
-      const oldFilesArray = oldProgram.getSourceFiles().map(sf => toUnredirectedSourceFile(sf));
+      const oldFilesArray = oldProgram.getSourceFiles().map(toOriginalSourceFile);
       const oldFiles = new Set(oldFilesArray);
       const deletedTsFiles = new Set(oldFilesArray.map(sf => absoluteFromSourceFile(sf)));
 
       for (const possiblyRedirectedNewFile of program.getSourceFiles()) {
-        const sf = toUnredirectedSourceFile(possiblyRedirectedNewFile);
+        const sf = toOriginalSourceFile(possiblyRedirectedNewFile);
         const sfPath = absoluteFromSourceFile(sf);
         // Since we're seeing a file in the incoming program with this name, it can't have been
         // deleted.
@@ -371,5 +373,30 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
     // successful compilation. However, as a defense-in-depth against incorrectness, we explicitly
     // check that the last emit included this file, and re-emit it otherwise.
     return this.step.priorState.emitted.has(sfPath);
+  }
+}
+
+/**
+ * To accurately detect whether a source file was affected during an incremental rebuild, the
+ * "original" source file needs to be consistently used.
+ *
+ * First, TypeScript may have created source file redirects when declaration files of the same
+ * version of a library are included multiple times. The non-redirected source file should be used
+ * to detect changes, as otherwise the redirected source files cause a mismatch when compared to
+ * a prior program.
+ *
+ * Second, the program that is used for template type checking may contain mutated source files, if
+ * inline type constructors or inline template type-check blocks had to be used. Such source files
+ * store their original, non-mutated source file from the original program in a symbol. For
+ * computing the affected files in an incremental build this original source file should be used, as
+ * the mutated source file would always be considered affected.
+ */
+function toOriginalSourceFile(sf: ts.SourceFile): ts.SourceFile {
+  const unredirectedSf = toUnredirectedSourceFile(sf);
+  const originalFile = (unredirectedSf as MaybeSourceFileWithOriginalFile)[NgOriginalFile];
+  if (originalFile !== undefined) {
+    return originalFile;
+  } else {
+    return unredirectedSf;
   }
 }

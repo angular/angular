@@ -12,7 +12,7 @@ import {AbsoluteFsPath} from '../../file_system';
 import {copyFileShimData, retagAllTsFiles, ShimReferenceTagger, untagAllTsFiles} from '../../shims';
 import {RequiredDelegations, toUnredirectedSourceFile} from '../../util/src/typescript';
 
-import {ProgramDriver, UpdateMode} from './api';
+import {FileUpdate, MaybeSourceFileWithOriginalFile, NgOriginalFile, ProgramDriver, UpdateMode} from './api';
 
 /**
  * Delegates all methods of `ts.CompilerHost` to a delegate, with the exception of
@@ -153,7 +153,7 @@ export class TsCreateProgramDriver implements ProgramDriver {
     return this.program;
   }
 
-  updateFiles(contents: Map<AbsoluteFsPath, string>, updateMode: UpdateMode): void {
+  updateFiles(contents: Map<AbsoluteFsPath, FileUpdate>, updateMode: UpdateMode): void {
     if (contents.size === 0) {
       // No changes have been requested. Is it safe to skip updating entirely?
       // If UpdateMode is Incremental, then yes. If UpdateMode is Complete, then it's safe to skip
@@ -169,8 +169,12 @@ export class TsCreateProgramDriver implements ProgramDriver {
       this.sfMap.clear();
     }
 
-    for (const [filePath, text] of contents.entries()) {
-      this.sfMap.set(filePath, ts.createSourceFile(filePath, text, ts.ScriptTarget.Latest, true));
+    for (const [filePath, {newText, originalFile}] of contents.entries()) {
+      const sf = ts.createSourceFile(filePath, newText, ts.ScriptTarget.Latest, true);
+      if (originalFile !== null) {
+        (sf as MaybeSourceFileWithOriginalFile)[NgOriginalFile] = originalFile;
+      }
+      this.sfMap.set(filePath, sf);
     }
 
     const host = new UpdatedProgramHost(
