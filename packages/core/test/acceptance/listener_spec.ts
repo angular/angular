@@ -552,4 +552,45 @@ describe('event listeners', () => {
 
     expect(fixture.componentInstance.message).toBe('hello');
   });
+
+  it('should reference the correct context object if it is swapped out', () => {
+    @Component({
+      template: `
+        <ng-template let-obj #template>
+          <button (click)="obj.value = obj.value + '!'">Change</button>
+        </ng-template>
+
+        <ng-container *ngTemplateOutlet="template; context: {$implicit: current}"></ng-container>
+      `
+    })
+    class MyComp {
+      one = {value: 'one'};
+      two = {value: 'two'};
+      current = this.one;
+    }
+
+    TestBed.configureTestingModule({declarations: [MyComp], imports: [CommonModule]});
+    const fixture = TestBed.createComponent(MyComp);
+    const instance = fixture.componentInstance;
+    fixture.detectChanges();
+    const button = fixture.nativeElement.querySelector('button');
+
+    expect(instance.one.value).toBe('one');
+    expect(instance.two.value).toBe('two');
+
+    button.click();
+    fixture.detectChanges();
+
+    expect(instance.one.value).toBe('one!');
+    expect(instance.two.value).toBe('two');
+
+    instance.current = instance.two;
+    fixture.detectChanges();
+
+    button.click();
+    fixture.detectChanges();
+
+    expect(instance.one.value).toBe('one!');
+    expect(instance.two.value).toBe('two!');
+  });
 });
