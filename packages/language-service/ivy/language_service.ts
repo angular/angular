@@ -12,7 +12,7 @@ import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {ErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics';
 import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {PerfPhase} from '@angular/compiler-cli/src/ngtsc/perf';
-import {ProgramDriver} from '@angular/compiler-cli/src/ngtsc/program_driver';
+import {FileUpdate, ProgramDriver} from '@angular/compiler-cli/src/ngtsc/program_driver';
 import {isNamedClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {TypeCheckShimGenerator} from '@angular/compiler-cli/src/ngtsc/typecheck';
 import {OptimizeFor} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
@@ -483,8 +483,8 @@ function createProgramDriver(project: ts.server.Project): ProgramDriver {
       }
       return program;
     },
-    updateFiles(contents: Map<AbsoluteFsPath, string>) {
-      for (const [fileName, newText] of contents) {
+    updateFiles(contents: Map<AbsoluteFsPath, FileUpdate>) {
+      for (const [fileName, {newText}] of contents) {
         const scriptInfo = getOrCreateTypeCheckScriptInfo(project, fileName);
         const snapshot = scriptInfo.getSnapshot();
         const length = snapshot.getLength();
