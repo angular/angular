@@ -340,8 +340,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   // LocalResolver
-  maybeRestoreView(retrievalLevel: number, localRefLookup: boolean): void {
-    this._bindingScope.maybeRestoreView(retrievalLevel, localRefLookup);
+  maybeRestoreView(): void {
+    this._bindingScope.maybeRestoreView();
   }
 
   private i18nTranslate(
@@ -1656,7 +1656,6 @@ const SHARED_CONTEXT_KEY = '$$shared_ctx$$';
 type BindingData = {
   retrievalLevel: number; lhs: o.Expression;
   declareLocalCallback?: DeclareLocalVarCallback; declare: boolean; priority: number;
-  localRef: boolean;
 };
 
 /**
@@ -1701,15 +1700,14 @@ export class BindingScope implements LocalResolver {
             lhs: value.lhs,
             declareLocalCallback: value.declareLocalCallback,
             declare: false,
-            priority: value.priority,
-            localRef: value.localRef
+            priority: value.priority
           };
 
           // Cache the value locally.
           this.map.set(name, value);
           // Possibly generate a shared context var
           this.maybeGenerateSharedContextVar(value);
-          this.maybeRestoreView(value.retrievalLevel, value.localRef);
+          this.maybeRestoreView();
         }
 
         if (value.declareLocalCallback && !value.declare) {
@@ -1754,7 +1752,6 @@ export class BindingScope implements LocalResolver {
       declare: false,
       declareLocalCallback: declareLocalCallback,
       priority: priority,
-      localRef: localRef || false
     });
     return this;
   }
@@ -1823,24 +1820,22 @@ export class BindingScope implements LocalResolver {
       },
       declare: false,
       priority: DeclarationPriority.SHARED_CONTEXT,
-      localRef: false
     });
   }
 
   getComponentProperty(name: string): o.Expression {
     const componentValue = this.map.get(SHARED_CONTEXT_KEY + 0)!;
     componentValue.declare = true;
-    this.maybeRestoreView(0, false);
+    this.maybeRestoreView();
     return componentValue.lhs.prop(name);
   }
 
-  maybeRestoreView(retrievalLevel: number, localRefLookup: boolean) {
-    // We want to restore the current view in listener fns if:
-    // 1 - we are accessing a value in a parent view, which requires walking the view tree rather
-    // than using the ctx arg. In this case, the retrieval and binding level will be different.
-    // 2 - we are looking up a local ref, which requires restoring the view where the local
-    // ref is stored
-    if (this.isListenerScope() && (retrievalLevel < this.bindingLevel || localRefLookup)) {
+  maybeRestoreView() {
+    // View restoration is required for listener instructions inside embedded views, because
+    // they only run in creation mode and they can have references to the context object.
+    // If the context object changes in update mode, the reference will be incorrect, because
+    // it was established during creation.
+    if (this.isListenerScope()) {
       if (!this.parent!.restoreViewVariable) {
         // parent saves variable to generate a shared `const $s$ = getCurrentView();` instruction
         this.parent!.restoreViewVariable = o.variable(this.parent!.freshReferenceName());
