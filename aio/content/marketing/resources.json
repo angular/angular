@@ -55,13 +55,13 @@
       "Podcasts": {
         "order": 3,
         "resources": {
-          "sdfjkdkfj": {
+          "adventures-in-angular": {
             "desc": "Adventures in Angular is a weekly podcast dedicated to the Angular platform and related technologies, tools, languages, and practices.",
             "logo": "",
             "title": "Adventures in Angular",
             "url": "https://devchat.tv/adv-in-angular/"
           },
-          "sdlkfjsldfkj": {
+          "angular-air": {
             "desc": "Weekly video podcast hosted by Jeff Whelpley with all the latest and greatest happenings in the wild world of Angular.",
             "logo": "",
             "title": "AngularAir",
@@ -73,7 +73,7 @@
             "title": "Angular Rocks",
             "url": "https://angularrocks.com"
           },
-          "sdlkfjsldfkz": {
+          "happy-angular": {
             "desc": "A weekly German podcast for Angular on the go",
             "logo": "",
             "title": "Happy Angular Podcast",
