@@ -61,6 +61,12 @@
             "title": "Adventures in Angular",
             "url": "https://devchat.tv/adv-in-angular/"
           },
+          "angular-show": {
+            "desc": "ng-conf's official all-Angular podcast.",
+            "logo": "",
+            "title": "The Angular Show",
+            "url": "https://www.spreaker.com/show/angular-show"
+          },
           "angular-air": {
             "desc": "Weekly video podcast hosted by Jeff Whelpley with all the latest and greatest happenings in the wild world of Angular.",
             "logo": "",
