@@ -126,10 +126,7 @@ export class ApplicationInitStatus {
         if (isPromise(initResult)) {
           asyncInitPromises.push(initResult);
         } else if (isObservable(initResult)) {
-          const observableAsPromise = new Promise<void>((resolve, reject) => {
-            initResult.subscribe({complete: resolve, error: reject});
-          });
-          asyncInitPromises.push(observableAsPromise);
+          asyncInitPromises.push(initResult.toPromise());
         }
       }
     }
