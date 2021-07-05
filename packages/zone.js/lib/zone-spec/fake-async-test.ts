@@ -61,7 +61,7 @@ const timers = {
   setTimeout: global.setTimeout,
   setInterval: global.setInterval,
   clearTimeout: global.clearTimeout,
-  clearInterval: global.clearInterval
+  clearInterval: global.clearInterval,
 };
 
 class Scheduler {
@@ -96,11 +96,11 @@ class Scheduler {
   }
 
   scheduleFunction(cb: Function, delay: number, options?: {
-    args?: any[],
-    isPeriodic?: boolean,
-    isRequestAnimationFrame?: boolean,
-    id?: number,
-    isRequeuePeriodic?: boolean
+    args?: any[];
+    isPeriodic?: boolean;
+    isRequestAnimationFrame?: boolean;
+    id?: number;
+    isRequeuePeriodic?: boolean;
   }): number {
     options = {
       ...{
@@ -108,9 +108,9 @@ class Scheduler {
         isPeriodic: false,
         isRequestAnimationFrame: false,
         id: -1,
-        isRequeuePeriodic: false
+        isRequeuePeriodic: false,
       },
-      ...options
+      ...options,
     };
     let currentId = options.id! < 0 ? Scheduler.nextId++ : options.id!;
     let endTime = this._currentTickTime + delay;
@@ -123,7 +123,7 @@ class Scheduler {
       args: options.args!,
       delay: delay,
       isPeriodic: options.isPeriodic!,
-      isRequestAnimationFrame: options.isRequestAnimationFrame!
+      isRequestAnimationFrame: options.isRequestAnimationFrame!,
     };
     if (options.isRequeuePeriodic!) {
       this._currentTickRequeuePeriodicEntries.push(newEntry);
@@ -157,7 +157,7 @@ class Scheduler {
   }
 
   tickToNext(step: number = 1, doTick?: (elapsed: number) => void, tickOptions?: {
-    processNewMacroTasksSynchronously: boolean
+    processNewMacroTasksSynchronously: boolean;
   }) {
     if (this._schedulerQueue.length < step) {
       return;
@@ -170,7 +170,7 @@ class Scheduler {
   }
 
   tick(millis: number = 0, doTick?: (elapsed: number) => void, tickOptions?: {
-    processNewMacroTasksSynchronously: boolean
+    processNewMacroTasksSynchronously: boolean;
   }): void {
     let finalTime = this._currentTickTime + millis;
     let lastCurrentTime = 0;
@@ -216,7 +216,7 @@ class Scheduler {
         // check is there any requeue periodic entry is added in
         // current loop, if there is, we need to add to current loop
         if (!tickOptions.processNewMacroTasksSynchronously) {
-          this._currentTickRequeuePeriodicEntries.forEach(newEntry => {
+          this._currentTickRequeuePeriodicEntries.forEach((newEntry) => {
             let i = 0;
             for (; i < schedulerQueue.length; i++) {
               const currentEntry = schedulerQueue[i];
@@ -282,7 +282,7 @@ class Scheduler {
 
       // flush only non-periodic timers.
       // If the only remaining tasks are periodic(or requestAnimationFrame), finish flushing.
-      if (this._schedulerQueue.filter(task => !task.isPeriodic && !task.isRequestAnimationFrame)
+      if (this._schedulerQueue.filter((task) => !task.isPeriodic && !task.isRequestAnimationFrame)
               .length === 0) {
         break;
       }
@@ -333,18 +333,20 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
     }
   }
 
-  private _fnAndFlush(fn: Function, completers: {onSuccess?: Function, onError?: Function}):
+  private _fnAndFlush(fn: Function, completers: {onSuccess?: Function; onError?: Function}):
       Function {
     return (...args: any[]): boolean => {
       fn.apply(global, args);
 
-      if (this._lastError === null) {  // Success
+      if (this._lastError === null) {
+        // Success
         if (completers.onSuccess != null) {
           completers.onSuccess.apply(global);
         }
         // Flush microtasks only on success.
         this.flushMicrotasks();
-      } else {  // Failure
+      } else {
+        // Failure
         if (completers.onError != null) {
           completers.onError.apply(global);
         }
@@ -371,8 +373,12 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
     return () => {
       // Requeue the timer callback if it's not been canceled.
       if (this.pendingPeriodicTimers.indexOf(id) !== -1) {
-        this._scheduler.scheduleFunction(
-            fn, interval, {args, isPeriodic: true, id, isRequeuePeriodic: true});
+        this._scheduler.scheduleFunction(fn, interval, {
+          args,
+          isPeriodic: true,
+          id,
+          isRequeuePeriodic: true,
+        });
       }
     };
   }
@@ -387,7 +393,10 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
     let removeTimerFn = this._dequeueTimer(Scheduler.nextId);
     // Queue the callback and dequeue the timer on success and error.
     let cb = this._fnAndFlush(fn, {onSuccess: removeTimerFn, onError: removeTimerFn});
-    let id = this._scheduler.scheduleFunction(cb, delay, {args, isRequestAnimationFrame: !isTimer});
+    let id = this._scheduler.scheduleFunction(cb, delay, {
+      args,
+      isRequestAnimationFrame: !isTimer,
+    });
     if (isTimer) {
       this.pendingTimers.push(id);
     }
@@ -491,7 +500,7 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
   }
 
   tickToNext(steps: number = 1, doTick?: (elapsed: number) => void, tickOptions: {
-    processNewMacroTasksSynchronously: boolean
+    processNewMacroTasksSynchronously: boolean;
   } = {processNewMacroTasksSynchronously: true}): void {
     if (steps <= 0) {
       return;
@@ -505,7 +514,7 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
   }
 
   tick(millis: number = 0, doTick?: (elapsed: number) => void, tickOptions: {
-    processNewMacroTasksSynchronously: boolean
+    processNewMacroTasksSynchronously: boolean;
   } = {processNewMacroTasksSynchronously: true}): void {
     FakeAsyncTestZoneSpec.assertInZone();
     this.flushMicrotasks();
@@ -584,7 +593,7 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
         this._microtasks.push({
           func: task.invoke,
           args: additionalArgs,
-          target: task.data && (task.data as any).target
+          target: task.data && (task.data as any).target,
         });
         break;
       case 'macroTask':
@@ -702,7 +711,7 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
 // Export the class so that new instances can be created with proper
 // constructor params.
 (Zone as any)['FakeAsyncTestZoneSpec'] = FakeAsyncTestZoneSpec;
-})(typeof window === 'object' && window || typeof self === 'object' && self || global);
+})((typeof window === 'object' && window) || (typeof self === 'object' && self) || global);
 
 Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   const FakeAsyncTestZoneSpec = Zone && (Zone as any)['FakeAsyncTestZoneSpec'];
@@ -710,7 +719,7 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
     setDelegate(delegateSpec: ZoneSpec): void; getDelegate(): ZoneSpec; resetDelegate(): void;
   };
 
-  function getProxyZoneSpec(): {get(): ProxyZoneSpecType; assertPresent: () => ProxyZoneSpecType} {
+  function getProxyZoneSpec(): {get(): ProxyZoneSpecType; assertPresent: () => ProxyZoneSpecType;} {
     return Zone && (Zone as any)['ProxyZoneSpec'];
   }
 
@@ -729,6 +738,37 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
     _fakeAsyncTestZoneSpec = null;
     // in node.js testing we may not have ProxyZoneSpec in which case there is nothing to reset.
     getProxyZoneSpec() && getProxyZoneSpec().assertPresent().resetDelegate();
+  }
+
+  function fakeAsyncAwaiter<T>(
+      thisArg: any, _arguments: any, generator: () => Generator<T|Promise<T>>): Promise<T> {
+    const gen = generator.apply(thisArg, _arguments);
+    function adopt(value: any) {
+      return value && typeof value.then === 'function' ? value : new Promise(function(resolve) {
+        resolve(value);
+      });
+    }
+
+    return new Promise(function(resolve, reject) {
+      function fulfilled(value: any) {
+        try {
+          step(gen.next(value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function rejected(value: any) {
+        try {
+          step(gen.throw(value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function step(result: any) {
+        result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+      }
+      step(gen.next());
+    });
   }
 
   /**
@@ -762,6 +802,7 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
       if (Zone.current.get('FakeAsyncTestZoneSpec')) {
         throw new Error('fakeAsync() calls can not be nested');
       }
+      const originalAwaiter = Zone.__awaiter;
       try {
         // in case jasmine.clock init a fakeAsyncTestZoneSpec
         if (!_fakeAsyncTestZoneSpec) {
@@ -776,6 +817,7 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
         const lastProxyZoneSpec = proxyZoneSpec.getDelegate();
         proxyZoneSpec.setDelegate(_fakeAsyncTestZoneSpec);
         _fakeAsyncTestZoneSpec.lockDatePatch();
+        Zone.__awaiter = fakeAsyncAwaiter;
         try {
           res = fn.apply(this, args);
           flushMicrotasks();
@@ -795,6 +837,7 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
         }
         return res;
       } finally {
+        Zone.__awaiter = originalAwaiter;
         resetFakeAsyncZone();
       }
     };
@@ -861,6 +904,12 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
   function flushMicrotasks(): void {
     _getFakeAsyncZoneSpec().flushMicrotasks();
   }
-  (Zone as any)[api.symbol('fakeAsyncTest')] =
-      {resetFakeAsyncZone, flushMicrotasks, discardPeriodicTasks, tick, flush, fakeAsync};
+  (Zone as any)[api.symbol('fakeAsyncTest')] = {
+    resetFakeAsyncZone,
+    flushMicrotasks,
+    discardPeriodicTasks,
+    tick,
+    flush,
+    fakeAsync,
+  };
 }, true);

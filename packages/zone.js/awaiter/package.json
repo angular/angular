@@ -1,0 +1,8 @@
+{
+  "name": "zone-awaiter",
+  "description": "Native async/await transform spec implemented by zone.js",
+  "main": "../fesm2017/zone.awaiter.js",
+  "module": "../fesm2017/zone.awaiter.js",
+  "es2015": "../fesm2017/zone.awaiter.js",
+  "fesm2015": "../fesm2017/zone.awaiter.js"
+}

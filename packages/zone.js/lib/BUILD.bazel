@@ -18,7 +18,10 @@ ts_library(
     name = "lib",
     srcs = glob(
         ["**/*.ts"],
-        exclude = ["zone.ts"],
+        exclude = [
+            "zone.ts",
+            "**/awaiter/*.ts",
+        ],
     ),
     module_name = "zone.js/lib",
     deps = [
@@ -28,4 +31,22 @@ ts_library(
         "@npm//rxjs",
         "@npm//tslib",
     ],
+)
+
+ts_library(
+    name = "awaiter",
+    srcs = [":awaiter/zone.native.awaiter.ts"],
+    devmode_target = "es2017",
+    module_name = "zone.js/awaiter",
+    prodmode_target = "es2017",
+    tsconfig = "//packages/zone.js:tsconfig.native.json",
+    deps = [
+        ":zone_d_ts",
+    ],
+)
+
+filegroup(
+    name = "zone.awaiter.js",
+    srcs = [":awaiter"],
+    output_group = "es5_sources",
 )

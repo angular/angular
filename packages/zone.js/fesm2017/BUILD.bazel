@@ -1,0 +1,13 @@
+genrule(
+    name = "zone_awaiter",
+    srcs = [
+        "//packages/zone.js/lib:zone.awaiter.js",
+    ],
+    outs = [
+        "zone.awaiter.js",
+    ],
+    # Since currently ts_library rule will generate the bundle with source map inline, so
+    # we need to remove it from the bundle.
+    cmd = "tail -1 $< > temp.js && if grep -q sourceMappingURL temp.js; then head -n -1 $< > $@; else cp $< $@; fi",
+    visibility = ["//visibility:public"],
+)

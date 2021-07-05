@@ -6,7 +6,9 @@ package(default_visibility = ["//visibility:public"])
 
 exports_files([
     "tsconfig.json",
+    "tsconfig.native.json",
     "rollup.config.js",
+    "rollup.config.es2017.js",
 ])
 
 genrule(
@@ -52,6 +54,7 @@ pkg_npm(
         "CHANGELOG.md",
         "README.md",
         "package.json",
+        "//packages/zone.js/awaiter:package.json",
         "//packages/zone.js/mix:package.json",
         "//packages/zone.js/node:package.json",
         "//packages/zone.js/testing:package.json",
@@ -63,6 +66,7 @@ pkg_npm(
         ":zone_externs",
         "//packages/zone.js/dist:dist_bundle_group",
         "//packages/zone.js/plugins:plugin_bundle_group",
+        "//packages/zone.js/fesm2017:zone_awaiter",
     ] + [
         "//packages/zone.js/bundles:" + b + "-es5.dist"
         for b in BUNDLES_ENTRY_POINTS.keys()
