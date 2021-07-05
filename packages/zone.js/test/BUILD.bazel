@@ -1,5 +1,6 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
 load("//packages/zone.js/test:karma_test.bzl", "karma_test")
+load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
 
 package(default_visibility = ["//:__pkg__"])
 
@@ -61,6 +62,35 @@ ts_library(
     deps = [
         ":common_spec_util",
         "//packages/zone.js/lib",
+    ],
+)
+
+ts_library(
+    name = "native_await_common_spec_srcs",
+    testonly = True,
+    srcs = [
+        "native/native-async-await.common.spec.ts",
+    ],
+    devmode_target = "es2017",
+    tsconfig = "//packages/zone.js:tsconfig.native.json",
+    deps = [
+        "//packages/zone.js/lib",
+        "//packages/zone.js/lib:awaiter",
+    ],
+)
+
+ts_library(
+    name = "native_await_spec_srcs",
+    testonly = True,
+    srcs = [
+        "native/native-async-await.spec.ts",
+    ],
+    devmode_target = "es2017",
+    tsconfig = "//packages/zone.js:tsconfig.native.json",
+    deps = [
+        ":native_await_common_spec_srcs",
+        "//packages/zone.js/lib",
+        "//packages/zone.js/lib:awaiter",
     ],
 )
 
@@ -168,6 +198,17 @@ ts_library(
 )
 
 ts_library(
+    name = "browser_native_await_transpile_entry_point",
+    testonly = True,
+    srcs = ["browser_native_await_transpile_entry_point.ts"],
+    devmode_target = "es2017",
+    deps = [
+        "//packages/zone.js/lib",
+        "//packages/zone.js/lib:awaiter",
+    ],
+)
+
+ts_library(
     name = "node_error_lazy_policy_entry_point",
     testonly = True,
     srcs = ["node_error_lazy_policy_entry_point.ts"],
@@ -230,6 +271,11 @@ jasmine_node_test(
         "//packages/zone.js:npm_package",
         "@npm//shelljs",
     ],
+)
+
+jasmine_node_test(
+    name = "test_node_native_await_transpile",
+    srcs = [":native_await_spec_srcs"],
 )
 
 env_srcs = [
@@ -346,5 +392,41 @@ karma_test(
     test_srcs = [
         "common/promise-disable-wrap-uncaught-promise-rejection.spec.ts",
         "browser_disable_wrap_uncaught_promise_rejection_entry_point.ts",
+    ],
+)
+
+rollup_bundle(
+    name = "native_env_rollup",
+    testonly = True,
+    config_file = "//packages/zone.js:rollup.config.es2017.js",
+    entry_point = "browser_native_await_transpile_entry_point.ts",
+    silent = True,
+    sourcemap = "false",
+    deps = [
+        ":browser_native_await_transpile_entry_point",
+        "@npm//rollup-plugin-commonjs",
+        "@npm//rollup-plugin-node-resolve",
+    ],
+)
+
+filegroup(
+    name = "browser.native.spec.js",
+    testonly = True,
+    srcs = [":native_await_common_spec_srcs"],
+    output_group = "es5_sources",
+)
+
+karma_web_test_suite(
+    name = "native_async_await_karma_jasmine_test",
+    srcs = [
+        "fake_entry.js",
+    ],
+    bootstrap = [
+        ":native_env_rollup.js",
+        ":browser.native.spec.js",
+    ],
+    runtime_deps = [
+        "@npm//karma-browserstack-launcher",
+        "@npm//karma-sauce-launcher",
     ],
 )

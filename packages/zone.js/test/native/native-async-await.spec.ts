@@ -1,0 +1,11 @@
+import '../../lib/zone';
+import '../../lib/common/promise';
+import '../../lib/common/to-string';
+import '../../lib/node/node';
+import '../../lib/awaiter/zone.native.awaiter';
+import '../../lib/zone-spec/proxy';
+import '../../lib/zone-spec/sync-test';
+import '../../lib/zone-spec/async-test';
+import '../../lib/jasmine/jasmine';
+import '../../lib/zone-spec/fake-async-test';
+import './native-async-await.common.spec';
