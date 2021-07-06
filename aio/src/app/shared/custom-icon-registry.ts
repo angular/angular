@@ -4,6 +4,7 @@ import { of } from 'rxjs';
 import { MatIconRegistry } from '@angular/material/icon';
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
+import { unwrapHtmlForSink } from 'safevalues';
 
 /**
  * Use SVG_ICONS (and SvgIconInfo) as "multi" providers to provide the SVG source
@@ -22,7 +23,7 @@ export const SVG_ICONS = new InjectionToken<Array<SvgIconInfo>>('SvgIcons');
 export interface SvgIconInfo {
   namespace?: string;
   name: string;
-  svgSource: string;
+  svgSource: TrustedHTML;
 }
 
 interface SvgIconMap {
@@ -75,7 +76,7 @@ export class CustomIconRegistry extends MatIconRegistry {
     const div = document.createElement('DIV');
 
     // SECURITY: the source for the SVG icons is provided in code by trusted developers
-    div.innerHTML = svgIcon.svgSource;
+    div.innerHTML = unwrapHtmlForSink(svgIcon.svgSource);
 
     const svgElement = div.querySelector('svg') as SVGElement;
     nsIconMap[svgIcon.name] = svgElement;
