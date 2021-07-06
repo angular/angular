@@ -13,6 +13,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
 import { svg } from 'app/shared/security';
+import { scriptUrl, unwrapScriptUrlForSink } from 'safevalues';
 
 import { AppComponent } from 'app/app.component';
 import { CustomIconRegistry, SVG_ICONS } from 'app/shared/custom-icon-registry';
@@ -156,7 +157,10 @@ export const svgIconProviders = [
     MatToolbarModule,
     SwUpdatesModule,
     SharedModule,
-    ServiceWorkerModule.register('/ngsw-worker.js', {enabled: environment.production}),
+    ServiceWorkerModule.register(
+        // Make sure service worker is loaded with a TrustedScriptURL
+        unwrapScriptUrlForSink(scriptUrl`/ngsw-worker.js`),
+        {enabled: environment.production}),
   ],
   declarations: [
     AppComponent,
