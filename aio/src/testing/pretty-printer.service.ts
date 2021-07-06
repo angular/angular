@@ -4,10 +4,15 @@
 // scope.
 
 import { of } from 'rxjs';
+import { unwrapHtmlForSink } from 'safevalues';
+import { htmlFromStringKnownToSatisfyTypeContract } from 'safevalues/unsafe/reviewed';
 
 export class MockPrettyPrinter {
-  formatCode(code: string, language?: string, linenums?: number | boolean) {
+  formatCode(code: TrustedHTML, language?: string, linenums?: number | boolean) {
     const linenumsStr = (linenums === undefined) ? '' : `, linenums: ${linenums}`;
-    return of(`Formatted code (language: ${language || 'auto'}${linenumsStr}): ${code}`);
+    return of(htmlFromStringKnownToSatisfyTypeContract(
+        `Formatted code (language: ${language || 'auto'}${linenumsStr}): ${
+            unwrapHtmlForSink(code)}`,
+        'safe transformation of existing TrustedHTML'));
   }
 }
