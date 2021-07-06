@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "allowJs": true
+  },
+  "include": [
+    "dev-infra/**/*",
+    "packages/**/*",
+    "modules/**/*",
+    "tools/**/*",
+    "scripts/**/*"
+  ]
+}

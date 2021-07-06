@@ -1,11 +1,19 @@
 {
   "rulesDirectory": [
-    "dist/tools/tslint",
+    "tools/tslint",
+    "dev-infra/tslint-rules",
     "node_modules/vrsource-tslint-rules/rules",
     "node_modules/tslint-eslint-rules/dist/rules",
     "node_modules/tslint-no-toplevel-property-access/rules"
   ],
   "rules": {
+    // The first rule needs to be `ts-node-loader` which sets up `ts-node` within TSLint so
+    // that rules written in TypeScript can be loaded without needing to be transpiled.
+    "ts-node-loader": true,
+    // Custom rules written in TypeScript.
+    "require-internal-with-underscore": true,
+    "no-implicit-override-abstract": true,
+
     "eofline": true,
     "file-header": [
       true,
@@ -26,7 +34,6 @@
       true,
       "object"
     ],
-    "require-internal-with-underscore": true,
     "no-toplevel-property-access": [
       true,
       "packages/animations/src/",
@@ -57,6 +64,12 @@
     ]
   },
   "jsRules": {
+    // The first rule needs to be `ts-node-loader` which sets up `ts-node` within TSLint so
+    // that rules written in TypeScript can be loaded without needing to be transpiled.
+    "ts-node-loader": true,
+    // Custom rules written in TypeScript.
+    "require-internal-with-underscore": true,
+
     "eofline": true,
     "file-header": [
       true,
@@ -71,7 +84,6 @@
     ],
     "no-duplicate-imports": true,
     "no-duplicate-variable": true,
-    "require-internal-with-underscore": true,
     "semicolon": [
       true
     ],
