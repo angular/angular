@@ -33,7 +33,7 @@ describe('CodeExampleComponent', () => {
   });
 
   it('should be able to capture the code snippet provided in content', () => {
-    expect(codeExampleComponent.aioCode.code.trim()).toBe('const foo = "bar";');
+    expect(codeExampleComponent.aioCode.code.toString().trim()).toBe('const foo = "bar";');
   });
 
   it('should clean-up the projected code snippet once captured', () => {

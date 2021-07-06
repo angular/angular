@@ -1,5 +1,6 @@
 /* eslint-disable  @angular-eslint/component-selector */
 import { Component, HostBinding, ElementRef, ViewChild, Input, AfterViewInit } from '@angular/core';
+import { fromInnerHTML } from 'app/shared/security';
 import { CodeComponent } from './code.component';
 
 /**
@@ -87,7 +88,7 @@ export class CodeExampleComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     const contentElem = this.content.nativeElement;
-    this.aioCode.code = contentElem.innerHTML;
+    this.aioCode.code = fromInnerHTML(contentElem);
     contentElem.textContent = '';  // Remove DOM nodes that are no longer needed.
   }
 }
