@@ -1,7 +1,6 @@
 # BEGIN-INTERNAL
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
-load("@npm//@bazel/typescript:index.bzl", "ts_library")
-load("//dev-infra:index.bzl", "ng_dev_rolled_up_generated_file")
+load("//dev-infra:defaults.bzl", "ng_dev_rolled_up_generated_file", "ts_library")
 # END-INTERNAL
 
 exports_files(["tsconfig.json"])
@@ -12,7 +11,6 @@ ts_library(
     srcs = [
         "cli.ts",
     ],
-    module_name = "@angular/dev-infra-private",
     deps = [
         "//dev-infra/caretaker",
         "//dev-infra/commit-message",
@@ -47,6 +45,7 @@ genrule(
 pkg_npm(
     name = "npm_package",
     srcs = [
+        # Main bazel entry-point for the shared `dev-infra` package.
         "index.bzl",
         "BUILD.bazel",
         # Some tools within `dev-infra` which are shipped as Bazel rules might
@@ -60,12 +59,13 @@ pkg_npm(
         # substitutions to replace these in the published version of dev-infra.
         "//dev-infra/": "@npm//@angular/dev-infra-private/",
         "//dev-infra:": "@npm//@angular/dev-infra-private:",
+
+        # Substitutions needed for `//dev-infra/benchmark`:
         "//packages/benchpress": "@npm//@angular/benchpress",
         "//packages/bazel": "@npm//@angular/bazel",
         "//packages/zone.js/bundles:zone.umd.js": "@npm//zone.js",
         "//packages/core": "@npm//@angular/core",
         "//packages/platform-browser": "@npm//@angular/platform-browser",
-
         # This substitution is particularly verbose because we need to make sure
         # that only things available via Angular Bazel are imported from
         # tools/defaults.bzl.

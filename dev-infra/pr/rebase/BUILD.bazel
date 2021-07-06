@@ -1,4 +1,4 @@
-load("@npm//@bazel/typescript:index.bzl", "ts_library")
+load("//dev-infra:defaults.bzl", "ts_library")
 
 ts_library(
     name = "rebase",
@@ -6,7 +6,6 @@ ts_library(
         "cli.ts",
         "index.ts",
     ],
-    module_name = "@angular/dev-infra-private/pr/rebase",
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
         "//dev-infra/commit-message",
