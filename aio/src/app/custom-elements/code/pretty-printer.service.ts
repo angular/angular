@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
+import { htmlFromStringKnownToSatisfyTypeContract } from 'safevalues/unsafe/reviewed';
 
 import { from, Observable } from 'rxjs';
 import { first, map, share } from 'rxjs/operators';
 
 import { Logger } from 'app/shared/logger.service';
 
-type PrettyPrintOne = (code: string, language?: string, linenums?: number | boolean) => string;
+type PrettyPrintOne = (code: TrustedHTML, language?: string, linenums?: number|boolean) => string;
 
 /**
  * Wrapper around the prettify.js library
@@ -46,13 +47,14 @@ export class PrettyPrinter {
    *  - number: do display but start at the given number
    * @returns Observable<string> - Observable of formatted code
    */
-  formatCode(code: string, language?: string, linenums?: number | boolean) {
+  formatCode(code: TrustedHTML, language?: string, linenums?: number|boolean) {
     return this.prettyPrintOne.pipe(
       map(ppo => {
         try {
-          return ppo(code, language, linenums);
+          return htmlFromStringKnownToSatisfyTypeContract(
+              ppo(code, language, linenums), 'prettify.js modifies already trusted HTML inline');
         } catch (err) {
-          const msg = `Could not format code that begins '${code.substr(0, 50)}...'.`;
+          const msg = `Could not format code that begins '${code.toString().substr(0, 50)}...'.`;
           console.error(msg, err);
           throw new Error(msg);
         }

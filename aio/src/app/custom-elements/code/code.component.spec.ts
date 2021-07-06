@@ -8,18 +8,18 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { CodeComponent } from './code.component';
 import { CodeModule } from './code.module';
 import { Logger } from 'app/shared/logger.service';
+import { htmlEscape } from 'safevalues';
 import { MockPrettyPrinter } from 'testing/pretty-printer.service';
 import { PrettyPrinter } from './pretty-printer.service';
 
 const oneLineCode = 'const foo = "bar";';
 
-const smallMultiLineCode =
-`&lt;hero-details&gt;
-  &lt;h2&gt;Bah Dah Bing&lt;/h2&gt;
-  &lt;hero-team&gt;
-    &lt;h3&gt;NYC Team&lt;/h3&gt;
-  &lt;/hero-team&gt;
-&lt;/hero-details&gt;`;
+const smallMultiLineCode = `<hero-details>
+  <h2>Bah Dah Bing</h2>
+  <hero-team>
+    <h3>NYC Team</h3>
+  </hero-team>
+</hero-details>`;
 
 const bigMultiLineCode = `${smallMultiLineCode}\n${smallMultiLineCode}\n${smallMultiLineCode}`;
 
@@ -73,7 +73,7 @@ describe('CodeComponent', () => {
     it('should format a small multi-line code sample without linenums by default', () => {
       hostComponent.setCode(smallMultiLineCode);
       expect(getFormattedCode()).toBe(
-          `Formatted code (language: auto, linenums: false): ${smallMultiLineCode}`);
+          `Formatted code (language: auto, linenums: false): ${htmlEscape(smallMultiLineCode)}`);
     });
 
     it('should add line numbers to a small multi-line code sample when linenums is `true`', () => {
@@ -82,7 +82,7 @@ describe('CodeComponent', () => {
       fixture.detectChanges();
 
       expect(getFormattedCode()).toBe(
-          `Formatted code (language: auto, linenums: true): ${smallMultiLineCode}`);
+          `Formatted code (language: auto, linenums: true): ${htmlEscape(smallMultiLineCode)}`);
     });
 
     it('should add line numbers to  a small multi-line code sample when linenums is `\'true\'`', () => {
@@ -91,13 +91,13 @@ describe('CodeComponent', () => {
       fixture.detectChanges();
 
       expect(getFormattedCode()).toBe(
-          `Formatted code (language: auto, linenums: true): ${smallMultiLineCode}`);
+          `Formatted code (language: auto, linenums: true): ${htmlEscape(smallMultiLineCode)}`);
     });
 
     it('should format a big multi-line code without linenums by default', () => {
       hostComponent.setCode(bigMultiLineCode);
       expect(getFormattedCode()).toBe(
-          `Formatted code (language: auto, linenums: false): ${bigMultiLineCode}`);
+          `Formatted code (language: auto, linenums: false): ${htmlEscape(bigMultiLineCode)}`);
     });
 
     it('should add line numbers to a big multi-line code sample when linenums is `true`', () => {
@@ -106,7 +106,7 @@ describe('CodeComponent', () => {
       fixture.detectChanges();
 
       expect(getFormattedCode()).toBe(
-          `Formatted code (language: auto, linenums: true): ${bigMultiLineCode}`);
+          `Formatted code (language: auto, linenums: true): ${htmlEscape(bigMultiLineCode)}`);
     });
 
     it('should add line numbers to  a big multi-line code sample when linenums is `\'true\'`', () => {
@@ -115,7 +115,7 @@ describe('CodeComponent', () => {
       fixture.detectChanges();
 
       expect(getFormattedCode()).toBe(
-          `Formatted code (language: auto, linenums: true): ${bigMultiLineCode}`);
+          `Formatted code (language: auto, linenums: true): ${htmlEscape(bigMultiLineCode)}`);
     });
 
     it('should skip prettify if language is `\'none\'`', () => {
@@ -124,7 +124,7 @@ describe('CodeComponent', () => {
 
       fixture.detectChanges();
 
-      expect(getFormattedCode()).toBe(bigMultiLineCode);
+      expect(getFormattedCode()).toBe(htmlEscape(bigMultiLineCode).toString());
     });
   });
 
@@ -247,7 +247,7 @@ describe('CodeComponent', () => {
     it('should preserve newlines in the copied code', () => {
       const clipboard = TestBed.inject(Clipboard);
       const spy = spyOn(clipboard, 'copy');
-      const expectedCode = smallMultiLineCode.trim().replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+      const expectedCode = smallMultiLineCode.trim();
       let actualCode;
 
       hostComponent.setCode(smallMultiLineCode);
@@ -314,7 +314,7 @@ class HostComponent implements AfterViewInit {
 
   /** Changes the displayed code on the code component. */
   setCode(code: string) {
-    this.codeComponent.code = code;
+    this.codeComponent.code = htmlEscape(code);
   }
 }
 
