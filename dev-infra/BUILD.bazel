@@ -78,6 +78,7 @@ pkg_npm(
         "//dev-infra/benchmark/driver-utilities",
         "//dev-infra/commit-message",
         "//dev-infra/ts-circular-dependencies",
+        "//dev-infra/tslint-rules",
     ],
 )
 

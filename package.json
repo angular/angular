@@ -29,7 +29,7 @@
     "test-fixme-ivy-aot": "bazelisk test --config=ivy --build_tag_filters=-no-ivy-aot --test_tag_filters=-no-ivy-aot",
     "list-fixme-ivy-targets": "bazelisk query --output=label 'attr(\"tags\", \"\\[.*fixme-ivy.*\\]\", //...) except kind(\"sh_binary\", //...) except kind(\"devmode_js_sources\", //...)' | sort",
     "lint": "yarn -s tslint && yarn -s ng-dev format changed --check",
-    "tslint": "tsc -p tools/tsconfig.json && tslint -c tslint.json \"+(dev-infra|packages|modules|scripts|tools)/**/*.+(js|ts)\"",
+    "tslint": "tslint -c tslint.json --project tsconfig-tslint.json",
     "public-api:check": "node goldens/public-api/manage.js test",
     "public-api:update": "node goldens/public-api/manage.js accept",
     "symbol-extractor:check": "node tools/symbol-extractor/run_all_symbols_extractor_tests.js test",
