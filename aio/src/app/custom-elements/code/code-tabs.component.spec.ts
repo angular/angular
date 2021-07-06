@@ -43,7 +43,7 @@ describe('CodeTabsComponent', () => {
     expect(tabs[0].path).toBe('path-A');
     expect(tabs[0].region).toBe('region-A');
     expect(tabs[0].header).toBe('header-A');
-    expect(tabs[0].code.trim()).toBe('Code example 1');
+    expect(tabs[0].code.toString().trim()).toBe('Code example 1');
 
     // Second code pane expectations
     expect(tabs[1].class).toBe('class-B');
@@ -53,7 +53,7 @@ describe('CodeTabsComponent', () => {
     expect(tabs[1].path).toBe('path-B');
     expect(tabs[1].region).toBe('region-B');
     expect(tabs[1].header).toBe('header-B');
-    expect(tabs[1].code.trim()).toBe('Code example 2');
+    expect(tabs[1].code.toString().trim()).toBe('Code example 2');
   });
 
   it('should create the right number of tabs with the right labels and classes', () => {
