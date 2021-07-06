@@ -1,9 +1,8 @@
-load("@npm//@bazel/typescript:index.bzl", "ts_library")
+load("//dev-infra:defaults.bzl", "ts_library")
 
 ts_library(
     name = "ts-circular-dependencies",
     srcs = glob(["*.ts"]),
-    module_name = "@angular/dev-infra-private/ts-circular-dependencies",
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
         "//dev-infra/utils",
