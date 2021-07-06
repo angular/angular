@@ -682,13 +682,13 @@ def _ng_module_impl(ctx):
         # once it is no longer needed.
     ])
 
-    if ctx.attr.module_name:
+    if ctx.attr.package_name:
         path = "/".join([p for p in [ctx.bin_dir.path, ctx.label.workspace_root, ctx.label.package] if p])
         ts_providers["providers"].append(LinkablePackageInfo(
-            package_name = ctx.attr.module_name,
+            package_name = ctx.attr.package_name,
+            package_path = ctx.attr.package_path,
             path = path,
             files = ts_providers["typescript"]["es5_sources"],
-            _tslibrary = True,
         ))
 
     return ts_providers_dict_to_struct(ts_providers)
@@ -750,6 +750,22 @@ NG_MODULE_ATTRIBUTES = {
         doc = "Private API to control production of performance metric JSON files",
     ),
     "_supports_workers": attr.bool(default = True),
+
+    # Matches the API of the `ts_library` rule from `@bazel/typescript`.
+    # https://github.com/bazelbuild/rules_nodejs/blob/398d351a3f2a9b2ebf6fc31fb5882cce7eedfd7b/packages/typescript/internal/build_defs.bzl#L435-L446.
+    "package_name": attr.string(
+        doc = """The package name that the linker will link this `ng_module` output as.
+    If `package_path` is set, the linker will link this package under `<package_path>/node_modules/<package_name>`.
+    If `package_path` is not set, the package will be linked in the top-level workspace node_modules folder.""",
+    ),
+
+    # Matches the API of the `ts_library` rule from `@bazel/typescript`.
+    # https://github.com/bazelbuild/rules_nodejs/blob/398d351a3f2a9b2ebf6fc31fb5882cce7eedfd7b/packages/typescript/internal/build_defs.bzl#L435-L446.
+    "package_path": attr.string(
+        doc = """The package path in the workspace that the linker will link this `ng_module` output to.
+    If `package_path` is set, the linker will link this package under `<package_path>/node_modules/<package_name>`.
+    If `package_path` is not set, the package will be linked in the top-level workspace node_modules folder.""",
+    ),
 }
 
 NG_MODULE_RULE_ATTRS = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
