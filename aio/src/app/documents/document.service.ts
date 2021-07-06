@@ -2,9 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { AsyncSubject, Observable, of } from 'rxjs';
-import { catchError, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { htmlEscape } from 'safevalues';
+import { htmlFromStringKnownToSatisfyTypeContract } from 'safevalues/unsafe/reviewed';
 
-import { DocumentContents } from './document-contents';
+import { DocumentContents, UnsafeDocumentContents } from './document-contents';
 export { DocumentContents } from './document-contents';
 
 import { LocationService } from 'app/shared/location.service';
@@ -15,19 +17,19 @@ export const FETCHING_ERROR_ID = 'fetching-error';
 
 export const CONTENT_URL_PREFIX = 'generated/';
 export const DOC_CONTENT_URL_PREFIX = CONTENT_URL_PREFIX + 'docs/';
-const FETCHING_ERROR_CONTENTS = (path: string) => `
+const FETCHING_ERROR_CONTENTS = (path: string) => htmlFromStringKnownToSatisfyTypeContract(`
   <div class="nf-container l-flex-wrap flex-center">
     <div class="nf-icon material-icons">error_outline</div>
     <div class="nf-response l-flex-wrap center">
       <h1 class="no-toc">Request for document failed</h1>
       <p>
-        We are unable to retrieve the "${path}" page at this time.
+        We are unable to retrieve the "${htmlEscape(path)}" page at this time.
         <br/>
         Please check your connection and try again later.
       </p>
     </div>
   </div>
-`;
+`, 'inline HTML with interpolations escaped');
 
 @Injectable()
 export class DocumentService {
@@ -58,20 +60,27 @@ export class DocumentService {
     const subject = new AsyncSubject<DocumentContents>();
 
     this.logger.log('fetching document from', requestPath);
-    this.http
-      .get<DocumentContents>(requestPath, {responseType: 'json'})
-      .pipe(
-        tap(data => {
-          if (!data || typeof data !== 'object') {
-            this.logger.log('received invalid data:', data);
-            throw Error('Invalid data');
-          }
-        }),
-        catchError((error: HttpErrorResponse) =>
-          error.status === 404 ? this.getFileNotFoundDoc(id) : this.getErrorDoc(id, error)
-        ),
-      )
-      .subscribe(subject);
+    this.http.get<UnsafeDocumentContents>(requestPath, {responseType: 'json'})
+        .pipe(
+            tap(data => {
+              if (!data || typeof data !== 'object') {
+                this.logger.log('received invalid data:', data);
+                throw Error('Invalid data');
+              }
+            }),
+            map((data: UnsafeDocumentContents) => ({
+              id: data.id,
+              contents: data.contents === null ?
+                  null :
+                  // SECURITY: HTML is authored by the documentation team and is fetched directly
+                  // from the server
+                  htmlFromStringKnownToSatisfyTypeContract(data.contents, '^')
+            })),
+            catchError((error: HttpErrorResponse) =>
+              error.status === 404 ? this.getFileNotFoundDoc(id) : this.getErrorDoc(id, error)
+            ),
+        )
+        .subscribe(subject);
 
     return subject.asObservable();
   }
@@ -84,7 +93,7 @@ export class DocumentService {
     } else {
       return of({
         id: FILE_NOT_FOUND_ID,
-        contents: 'Document not found'
+        contents: htmlEscape('Document not found')
       });
     }
   }
