@@ -7,7 +7,7 @@
  */
 
 import {TmplAstReference, TmplAstTemplate} from '@angular/compiler';
-import {AST, EmptyExpr, LiteralPrimitive, MethodCall, PropertyRead, PropertyWrite, SafeMethodCall, SafePropertyRead, TmplAstNode} from '@angular/compiler/src/compiler';
+import {AST, EmptyExpr, ImplicitReceiver, LiteralPrimitive, MethodCall, PropertyRead, PropertyWrite, SafeMethodCall, SafePropertyRead, TmplAstNode} from '@angular/compiler/src/compiler';
 import {TextAttribute} from '@angular/compiler/src/render3/r3_ast';
 import * as ts from 'typescript';
 
@@ -87,6 +87,19 @@ export class CompletionEngine {
         nodeContext = {
           shimPath: this.shimPath,
           positionInShimFile: nodeLocation.getStart(),
+        };
+      }
+    }
+
+    if (node instanceof PropertyRead && node.receiver instanceof ImplicitReceiver) {
+      const nodeLocation = findFirstMatchingNode(this.tcb, {
+        filter: ts.isPropertyAccessExpression,
+        withSpan: node.sourceSpan,
+      });
+      if (nodeLocation) {
+        nodeContext = {
+          shimPath: this.shimPath,
+          positionInShimFile: nodeLocation.parent.pos,
         };
       }
     }
