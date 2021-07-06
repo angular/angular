@@ -693,19 +693,11 @@ def _ng_module_impl(ctx):
 
     return ts_providers_dict_to_struct(ts_providers)
 
-local_deps_aspects = [node_modules_aspect, _collect_summaries_aspect]
-
-# Workaround skydoc bug which assumes DEPS_ASPECTS is a str type
-[local_deps_aspects.append(a) for a in DEPS_ASPECTS]
-
 NG_MODULE_ATTRIBUTES = {
     "srcs": attr.label_list(allow_files = [".ts"]),
-
-    # Note: DEPS_ASPECTS is already a list, we add the cast to workaround
-    # https://github.com/bazelbuild/skydoc/issues/21
     "deps": attr.label_list(
         doc = "Targets that are imported by this target",
-        aspects = local_deps_aspects,
+        aspects = [node_modules_aspect, _collect_summaries_aspect] + DEPS_ASPECTS,
     ),
     "assets": attr.label_list(
         doc = ".html and .css files needed by the Angular compiler",
