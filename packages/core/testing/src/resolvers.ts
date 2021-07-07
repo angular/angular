@@ -86,25 +86,25 @@ abstract class OverrideResolver<T> implements Resolver<T> {
 
 
 export class DirectiveResolver extends OverrideResolver<Directive> {
-  get type() {
+  override get type() {
     return Directive;
   }
 }
 
 export class ComponentResolver extends OverrideResolver<Component> {
-  get type() {
+  override get type() {
     return Component;
   }
 }
 
 export class PipeResolver extends OverrideResolver<Pipe> {
-  get type() {
+  override get type() {
     return Pipe;
   }
 }
 
 export class NgModuleResolver extends OverrideResolver<NgModule> {
-  get type() {
+  override get type() {
     return NgModule;
   }
 }

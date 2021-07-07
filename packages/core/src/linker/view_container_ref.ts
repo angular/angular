@@ -194,16 +194,16 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
     super();
   }
 
-  get element(): ElementRef {
+  override get element(): ElementRef {
     return createElementRef(this._hostTNode, this._hostLView);
   }
 
-  get injector(): Injector {
+  override get injector(): Injector {
     return new NodeInjector(this._hostTNode, this._hostLView);
   }
 
   /** @deprecated No replacement */
-  get parentInjector(): Injector {
+  override get parentInjector(): Injector {
     const parentLocation = getParentInjectorLocation(this._hostTNode, this._hostLView);
     if (hasParentInjector(parentLocation)) {
       const parentView = getParentInjectorView(parentLocation, this._hostLView);
@@ -217,29 +217,29 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
     }
   }
 
-  clear(): void {
+  override clear(): void {
     while (this.length > 0) {
       this.remove(this.length - 1);
     }
   }
 
-  get(index: number): ViewRef|null {
+  override get(index: number): ViewRef|null {
     const viewRefs = getViewRefs(this._lContainer);
     return viewRefs !== null && viewRefs[index] || null;
   }
 
-  get length(): number {
+  override get length(): number {
     return this._lContainer.length - CONTAINER_HEADER_OFFSET;
   }
 
-  createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number):
+  override createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number):
       EmbeddedViewRef<C> {
     const viewRef = templateRef.createEmbeddedView(context || <any>{});
     this.insert(viewRef, index);
     return viewRef;
   }
 
-  createComponent<C>(
+  override createComponent<C>(
       componentFactory: ComponentFactory<C>, index?: number|undefined,
       injector?: Injector|undefined, projectableNodes?: any[][]|undefined,
       ngModuleRef?: NgModuleRef<any>|undefined): ComponentRef<C> {
@@ -260,7 +260,7 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
     return componentRef;
   }
 
-  insert(viewRef: ViewRef, index?: number): ViewRef {
+  override insert(viewRef: ViewRef, index?: number): ViewRef {
     const lView = (viewRef as R3ViewRef<any>)._lView!;
     const tView = lView[TVIEW];
 
@@ -315,19 +315,19 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
     return viewRef;
   }
 
-  move(viewRef: ViewRef, newIndex: number): ViewRef {
+  override move(viewRef: ViewRef, newIndex: number): ViewRef {
     if (ngDevMode && viewRef.destroyed) {
       throw new Error('Cannot move a destroyed View in a ViewContainer!');
     }
     return this.insert(viewRef, newIndex);
   }
 
-  indexOf(viewRef: ViewRef): number {
+  override indexOf(viewRef: ViewRef): number {
     const viewRefsArr = getViewRefs(this._lContainer);
     return viewRefsArr !== null ? viewRefsArr.indexOf(viewRef) : -1;
   }
 
-  remove(index?: number): void {
+  override remove(index?: number): void {
     const adjustedIdx = this._adjustIndex(index, -1);
     const detachedView = detachView(this._lContainer, adjustedIdx);
 
@@ -343,7 +343,7 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
     }
   }
 
-  detach(index?: number): ViewRef|null {
+  override detach(index?: number): ViewRef|null {
     const adjustedIdx = this._adjustIndex(index, -1);
     const view = detachView(this._lContainer, adjustedIdx);
 

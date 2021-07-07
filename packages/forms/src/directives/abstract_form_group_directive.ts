@@ -52,7 +52,7 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    * @description
    * The `FormGroup` bound to this directive.
    */
-  get control(): FormGroup {
+  override get control(): FormGroup {
     return this.formDirective!.getFormGroup(this);
   }
 

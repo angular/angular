@@ -26,7 +26,7 @@ export class Text extends NodeWithI18n {
   constructor(public value: string, sourceSpan: ParseSourceSpan, i18n?: I18nMeta) {
     super(sourceSpan, i18n);
   }
-  visit(visitor: Visitor, context: any): any {
+  override visit(visitor: Visitor, context: any): any {
     return visitor.visitText(this, context);
   }
 }
@@ -37,7 +37,7 @@ export class Expansion extends NodeWithI18n {
       sourceSpan: ParseSourceSpan, public switchValueSourceSpan: ParseSourceSpan, i18n?: I18nMeta) {
     super(sourceSpan, i18n);
   }
-  visit(visitor: Visitor, context: any): any {
+  override visit(visitor: Visitor, context: any): any {
     return visitor.visitExpansion(this, context);
   }
 }
@@ -59,7 +59,7 @@ export class Attribute extends NodeWithI18n {
       i18n?: I18nMeta) {
     super(sourceSpan, i18n);
   }
-  visit(visitor: Visitor, context: any): any {
+  override visit(visitor: Visitor, context: any): any {
     return visitor.visitAttribute(this, context);
   }
 }
@@ -71,7 +71,7 @@ export class Element extends NodeWithI18n {
       public endSourceSpan: ParseSourceSpan|null = null, i18n?: I18nMeta) {
     super(sourceSpan, i18n);
   }
-  visit(visitor: Visitor, context: any): any {
+  override visit(visitor: Visitor, context: any): any {
     return visitor.visitElement(this, context);
   }
 }

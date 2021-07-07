@@ -22,12 +22,12 @@ export class CutLongTermSupportPatchAction extends ReleaseAction {
   /** Promise resolving an object describing long-term support branches. */
   ltsBranches = fetchLongTermSupportBranchesFromNpm(this.config);
 
-  async getDescription() {
+  override async getDescription() {
     const {active} = await this.ltsBranches;
     return `Cut a new release for an active LTS branch (${active.length} active).`;
   }
 
-  async perform() {
+  override async perform() {
     const ltsBranch = await this._promptForTargetLtsBranch();
     const newVersion = semverInc(ltsBranch.version, 'patch');
     const {pullRequest: {id}, releaseNotes} =

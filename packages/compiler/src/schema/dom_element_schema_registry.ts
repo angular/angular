@@ -291,7 +291,7 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     });
   }
 
-  hasProperty(tagName: string, propName: string, schemaMetas: SchemaMetadata[]): boolean {
+  override hasProperty(tagName: string, propName: string, schemaMetas: SchemaMetadata[]): boolean {
     if (schemaMetas.some((schema) => schema.name === NO_ERRORS_SCHEMA.name)) {
       return true;
     }
@@ -312,7 +312,7 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     return !!elementProperties[propName];
   }
 
-  hasElement(tagName: string, schemaMetas: SchemaMetadata[]): boolean {
+  override hasElement(tagName: string, schemaMetas: SchemaMetadata[]): boolean {
     if (schemaMetas.some((schema) => schema.name === NO_ERRORS_SCHEMA.name)) {
       return true;
     }
@@ -341,7 +341,8 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
    * above are assumed to have the 'NONE' security context, i.e. that they are safe inert
    * string values. Only specific well known attack vectors are assigned their appropriate context.
    */
-  securityContext(tagName: string, propName: string, isAttribute: boolean): SecurityContext {
+  override securityContext(tagName: string, propName: string, isAttribute: boolean):
+      SecurityContext {
     if (isAttribute) {
       // NB: For security purposes, use the mapped property name, not the attribute name.
       propName = this.getMappedPropName(propName);
@@ -359,15 +360,15 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     return ctx ? ctx : SecurityContext.NONE;
   }
 
-  getMappedPropName(propName: string): string {
+  override getMappedPropName(propName: string): string {
     return _ATTR_TO_PROP[propName] || propName;
   }
 
-  getDefaultComponentElementName(): string {
+  override getDefaultComponentElementName(): string {
     return 'ng-component';
   }
 
-  validateProperty(name: string): {error: boolean, msg?: string} {
+  override validateProperty(name: string): {error: boolean, msg?: string} {
     if (name.toLowerCase().startsWith('on')) {
       const msg = `Binding to event property '${name}' is disallowed for security reasons, ` +
           `please use (${name.slice(2)})=...` +
@@ -379,7 +380,7 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     }
   }
 
-  validateAttribute(name: string): {error: boolean, msg?: string} {
+  override validateAttribute(name: string): {error: boolean, msg?: string} {
     if (name.toLowerCase().startsWith('on')) {
       const msg = `Binding to event attribute '${name}' is disallowed for security reasons, ` +
           `please use (${name.slice(2)})=...`;
@@ -389,7 +390,7 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     }
   }
 
-  allKnownElementNames(): string[] {
+  override allKnownElementNames(): string[] {
     return Object.keys(this._schema);
   }
 
@@ -399,12 +400,13 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     return Object.keys(elementProperties).map(prop => _PROP_TO_ATTR[prop] ?? prop);
   }
 
-  normalizeAnimationStyleProperty(propName: string): string {
+  override normalizeAnimationStyleProperty(propName: string): string {
     return dashCaseToCamelCase(propName);
   }
 
-  normalizeAnimationStyleValue(camelCaseProp: string, userProvidedProp: string, val: string|number):
-      {error: string, value: string} {
+  override normalizeAnimationStyleValue(
+      camelCaseProp: string, userProvidedProp: string,
+      val: string|number): {error: string, value: string} {
     let unit: string = '';
     const strVal = val.toString().trim();
     let errorMsg: string = null!;

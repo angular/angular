@@ -156,7 +156,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
    * @description
    * The internal `FormGroup` instance.
    */
-  get control(): FormGroup {
+  override get control(): FormGroup {
     return this.form;
   }
 

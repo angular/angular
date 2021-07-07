@@ -176,11 +176,11 @@ export class MaxValidator extends AbstractValidatorDirective implements OnChange
    */
   @Input() max!: string|number;
   /** @internal */
-  inputName = 'max';
+  override inputName = 'max';
   /** @internal */
-  normalizeInput = (input: string): number => parseFloat(input);
+  override normalizeInput = (input: string): number => parseFloat(input);
   /** @internal */
-  createValidator = (max: number): ValidatorFn => maxValidator(max);
+  override createValidator = (max: number): ValidatorFn => maxValidator(max);
   /**
    * Declare `ngOnChanges` lifecycle hook at the main directive level (vs keeping it in base class)
    * to avoid differences in handling inheritance of lifecycle hooks between Ivy and ViewEngine in
@@ -236,11 +236,11 @@ export class MinValidator extends AbstractValidatorDirective implements OnChange
    */
   @Input() min!: string|number;
   /** @internal */
-  inputName = 'min';
+  override inputName = 'min';
   /** @internal */
-  normalizeInput = (input: string): number => parseFloat(input);
+  override normalizeInput = (input: string): number => parseFloat(input);
   /** @internal */
-  createValidator = (min: number): ValidatorFn => minValidator(min);
+  override createValidator = (min: number): ValidatorFn => minValidator(min);
   /**
    * Declare `ngOnChanges` lifecycle hook at the main directive level (vs keeping it in base class)
    * to avoid differences in handling inheritance of lifecycle hooks between Ivy and ViewEngine in

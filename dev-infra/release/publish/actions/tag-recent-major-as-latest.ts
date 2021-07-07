@@ -25,11 +25,11 @@ import {invokeSetNpmDistCommand, invokeYarnInstallCommand} from '../external-com
  * @see {CutStableAction#perform} for more details.
  */
 export class TagRecentMajorAsLatest extends ReleaseAction {
-  async getDescription() {
+  override async getDescription() {
     return `Tag recently published major v${this.active.latest.version} as "next" in NPM.`;
   }
 
-  async perform() {
+  override async perform() {
     await this.checkoutUpstreamBranch(this.active.latest.branchName);
     await invokeYarnInstallCommand(this.projectDir);
     await invokeSetNpmDistCommand('latest', this.active.latest.version);

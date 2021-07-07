@@ -23,7 +23,7 @@ export class EsmDependencyHost extends DependencyHostBase {
   // It has no relevance to capturing imports.
   private scanner = ts.createScanner(ts.ScriptTarget.Latest, /* skipTrivia */ true);
 
-  protected canSkipFile(fileContents: string): boolean {
+  protected override canSkipFile(fileContents: string): boolean {
     return !hasImportOrReexportStatements(fileContents);
   }
 
@@ -43,7 +43,7 @@ export class EsmDependencyHost extends DependencyHostBase {
    * Specifically, backticked strings are particularly challenging since it is possible
    * to recursively nest backticks and TypeScript expressions within each other.
    */
-  protected extractImports(file: AbsoluteFsPath, fileContents: string): Set<string> {
+  protected override extractImports(file: AbsoluteFsPath, fileContents: string): Set<string> {
     const imports = new Set<string>();
     const templateStack: ts.SyntaxKind[] = [];
     let lastToken: ts.SyntaxKind = ts.SyntaxKind.Unknown;

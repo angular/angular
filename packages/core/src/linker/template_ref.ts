@@ -81,7 +81,7 @@ const R3TemplateRef = class TemplateRef<T> extends ViewEngineTemplateRef<T> {
     super();
   }
 
-  createEmbeddedView(context: T): EmbeddedViewRef<T> {
+  override createEmbeddedView(context: T): EmbeddedViewRef<T> {
     const embeddedTView = this._declarationTContainer.tViews as TView;
     const embeddedLView = createLView(
         this._declarationLView, embeddedTView, context, LViewFlags.CheckAlways, null,

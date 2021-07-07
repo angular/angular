@@ -17,7 +17,7 @@ class SampleTokenExtractor extends HttpXsrfTokenExtractor {
     super();
   }
 
-  getToken(): string|null {
+  override getToken(): string|null {
     return this.token;
   }
 }

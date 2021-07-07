@@ -24,7 +24,7 @@ const FAILURE_MESSAGE = 'Query does not explicitly specify its timing. Read more
  * be applied in order to automatically migrate to the explicit query timing API.
  */
 export class Rule extends Rules.TypedRule {
-  applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
+  override applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
     const typeChecker = program.getTypeChecker();
     const queryVisitor = new NgQueryResolveVisitor(program.getTypeChecker());
     const templateVisitor = new NgComponentTemplateVisitor(typeChecker);

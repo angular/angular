@@ -135,41 +135,41 @@ export class PathLocationStrategy extends LocationStrategy implements OnDestroy 
     }
   }
 
-  onPopState(fn: LocationChangeListener): void {
+  override onPopState(fn: LocationChangeListener): void {
     this._removeListenerFns.push(
         this._platformLocation.onPopState(fn), this._platformLocation.onHashChange(fn));
   }
 
-  getBaseHref(): string {
+  override getBaseHref(): string {
     return this._baseHref;
   }
 
-  prepareExternalUrl(internal: string): string {
+  override prepareExternalUrl(internal: string): string {
     return joinWithSlash(this._baseHref, internal);
   }
 
-  path(includeHash: boolean = false): string {
+  override path(includeHash: boolean = false): string {
     const pathname =
         this._platformLocation.pathname + normalizeQueryParams(this._platformLocation.search);
     const hash = this._platformLocation.hash;
     return hash && includeHash ? `${pathname}${hash}` : pathname;
   }
 
-  pushState(state: any, title: string, url: string, queryParams: string) {
+  override pushState(state: any, title: string, url: string, queryParams: string) {
     const externalUrl = this.prepareExternalUrl(url + normalizeQueryParams(queryParams));
     this._platformLocation.pushState(state, title, externalUrl);
   }
 
-  replaceState(state: any, title: string, url: string, queryParams: string) {
+  override replaceState(state: any, title: string, url: string, queryParams: string) {
     const externalUrl = this.prepareExternalUrl(url + normalizeQueryParams(queryParams));
     this._platformLocation.replaceState(state, title, externalUrl);
   }
 
-  forward(): void {
+  override forward(): void {
     this._platformLocation.forward();
   }
 
-  back(): void {
+  override back(): void {
     this._platformLocation.back();
   }
 

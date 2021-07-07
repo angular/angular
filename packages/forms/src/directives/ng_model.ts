@@ -136,7 +136,7 @@ const resolvedPromise = (() => Promise.resolve(null))();
   exportAs: 'ngModel'
 })
 export class NgModel extends NgControl implements OnChanges, OnDestroy {
-  public readonly control: FormControl = new FormControl();
+  public override readonly control: FormControl = new FormControl();
 
   // At runtime we coerce arbitrary values assigned to the "disabled" input to a "boolean".
   // This is not reflected in the type of the property because outside of templates, consumers
@@ -258,7 +258,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    *
    * @param newValue The new value emitted by `ngModelChange`.
    */
-  viewToModelUpdate(newValue: any): void {
+  override viewToModelUpdate(newValue: any): void {
     this.viewModel = newValue;
     this.update.emit(newValue);
   }

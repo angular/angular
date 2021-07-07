@@ -19,7 +19,7 @@ import {InitialNavigationTransform} from '../initial-navigation/transform';
  * TSLint rule that updates RouterModule `forRoot` options to be in line with v10 updates.
  */
 export class Rule extends Rules.TypedRule {
-  applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
+  override applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
     const ruleName = this.ruleName;
     const typeChecker = program.getTypeChecker();
     const sourceFiles = program.getSourceFiles().filter(

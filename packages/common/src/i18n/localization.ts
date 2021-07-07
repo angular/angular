@@ -56,7 +56,7 @@ export class NgLocaleLocalization extends NgLocalization {
     super();
   }
 
-  getPluralCategory(value: any, locale?: string): string {
+  override getPluralCategory(value: any, locale?: string): string {
     const plural = getLocalePluralCase(locale || this.locale)(value);
 
     switch (plural) {

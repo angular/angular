@@ -41,7 +41,7 @@ export class JavaScriptEmitter implements OutputEmitter {
 class JsEmitterVisitor extends AbstractJsEmitterVisitor {
   importsWithPrefixes = new Map<string, string>();
 
-  visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any {
+  override visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any {
     const {name, moduleName} = ast.value;
     if (moduleName) {
       let prefix = this.importsWithPrefixes.get(moduleName);

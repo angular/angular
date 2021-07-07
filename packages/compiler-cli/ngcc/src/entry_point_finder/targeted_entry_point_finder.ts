@@ -83,7 +83,7 @@ export class TargetedEntryPointFinder extends TracingEntryPointFinder {
   /**
    * Return an array containing the `targetPath` from which to start the trace.
    */
-  protected getInitialEntryPointPaths(): AbsoluteFsPath[] {
+  protected override getInitialEntryPointPaths(): AbsoluteFsPath[] {
     return [this.targetPath];
   }
 
@@ -97,7 +97,8 @@ export class TargetedEntryPointFinder extends TracingEntryPointFinder {
    * @returns the entry-point and its dependencies or `null` if the entry-point is not compiled by
    *     Angular or cannot be determined.
    */
-  protected getEntryPointWithDeps(entryPointPath: AbsoluteFsPath): EntryPointWithDependencies|null {
+  protected override getEntryPointWithDeps(entryPointPath: AbsoluteFsPath):
+      EntryPointWithDependencies|null {
     const packagePath = this.computePackagePath(entryPointPath);
     const entryPoint =
         getEntryPointInfo(this.fs, this.config, this.logger, packagePath, entryPointPath);

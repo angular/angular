@@ -510,11 +510,11 @@ class FakeEventManagerPlugin extends EventManagerPlugin {
     super(doc);
   }
 
-  supports(eventName: string): boolean {
+  override supports(eventName: string): boolean {
     return this.supportedEvents.indexOf(eventName) > -1;
   }
 
-  addEventListener(element: any, eventName: string, handler: Function) {
+  override addEventListener(element: any, eventName: string, handler: Function) {
     this.eventHandler[eventName] = handler;
     return () => {
       delete this.eventHandler[eventName];

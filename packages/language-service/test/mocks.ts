@@ -174,7 +174,7 @@ export class DiagnosticContext {
       const pipeResolver = new PipeResolver(this.reflector);
       const elementSchemaRegistry = new DomElementSchemaRegistry();
       const resourceLoader = new class extends ResourceLoader {
-        get(url: string): Promise<string> {
+        override get(url: string): Promise<string> {
           return Promise.resolve('');
         }
       };

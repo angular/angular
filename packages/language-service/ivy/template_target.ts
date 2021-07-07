@@ -147,7 +147,7 @@ export interface TwoWayBindingContext {
  * the key or value span of a node with key/value spans.
  */
 class OutsideKeyValueMarkerAst extends e.AST {
-  visit(): null {
+  override visit(): null {
     return null;
   }
 }

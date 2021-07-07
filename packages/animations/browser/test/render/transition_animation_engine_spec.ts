@@ -693,11 +693,11 @@ class SuffixNormalizer extends AnimationStyleNormalizer {
     super();
   }
 
-  normalizePropertyName(propertyName: string, errors: string[]): string {
+  override normalizePropertyName(propertyName: string, errors: string[]): string {
     return propertyName + this._suffix;
   }
 
-  normalizeStyleValue(
+  override normalizeStyleValue(
       userProvidedProperty: string, normalizedProperty: string, value: string|number,
       errors: string[]): string {
     return value + this._suffix;
@@ -709,14 +709,14 @@ class ExactCssValueNormalizer extends AnimationStyleNormalizer {
     super();
   }
 
-  normalizePropertyName(propertyName: string, errors: string[]): string {
+  override normalizePropertyName(propertyName: string, errors: string[]): string {
     if (!this._allowedValues[propertyName]) {
       errors.push(`The CSS property \`${propertyName}\` is not allowed`);
     }
     return propertyName;
   }
 
-  normalizeStyleValue(
+  override normalizeStyleValue(
       userProvidedProperty: string, normalizedProperty: string, value: string|number,
       errors: string[]): string {
     const expectedValue = this._allowedValues[userProvidedProperty];

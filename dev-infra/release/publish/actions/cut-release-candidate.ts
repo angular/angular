@@ -17,12 +17,12 @@ import {ReleaseAction} from '../actions';
 export class CutReleaseCandidateAction extends ReleaseAction {
   private _newVersion = semverInc(this.active.releaseCandidate!.version, 'prerelease', 'rc');
 
-  async getDescription() {
+  override async getDescription() {
     const newVersion = this._newVersion;
     return `Cut a first release-candidate for the feature-freeze branch (v${newVersion}).`;
   }
 
-  async perform() {
+  override async perform() {
     const {branchName} = this.active.releaseCandidate!;
     const newVersion = this._newVersion;
 

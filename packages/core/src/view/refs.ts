@@ -58,7 +58,7 @@ class ComponentFactory_ extends ComponentFactory<any> {
     this.viewDefFactory = viewDefFactory;
   }
 
-  get inputs() {
+  override get inputs() {
     const inputsArr: {propName: string, templateName: string}[] = [];
     const inputs = this._inputs!;
     for (let propName in inputs) {
@@ -68,7 +68,7 @@ class ComponentFactory_ extends ComponentFactory<any> {
     return inputsArr;
   }
 
-  get outputs() {
+  override get outputs() {
     const outputsArr: {propName: string, templateName: string}[] = [];
     for (let propName in this._outputs) {
       const templateName = this._outputs[propName];
@@ -80,7 +80,7 @@ class ComponentFactory_ extends ComponentFactory<any> {
   /**
    * Creates a new component.
    */
-  create(
+  override create(
       injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string|any,
       ngModule?: NgModuleRef<any>): ComponentRef<any> {
     if (!ngModule) {
@@ -100,9 +100,9 @@ class ComponentFactory_ extends ComponentFactory<any> {
 }
 
 class ComponentRef_ extends ComponentRef<any> {
-  public readonly hostView: ViewRef;
-  public readonly instance: any;
-  public readonly changeDetectorRef: ChangeDetectorRef;
+  public override readonly hostView: ViewRef;
+  public override readonly instance: any;
+  public override readonly changeDetectorRef: ChangeDetectorRef;
   private _elDef: NodeDef;
   constructor(private _view: ViewData, private _viewRef: ViewRef, private _component: any) {
     super();
@@ -111,20 +111,20 @@ class ComponentRef_ extends ComponentRef<any> {
     this.changeDetectorRef = _viewRef;
     this.instance = _component;
   }
-  get location(): ElementRef {
+  override get location(): ElementRef {
     return new ElementRef(asElementData(this._view, this._elDef.nodeIndex).renderElement);
   }
-  get injector(): Injector {
+  override get injector(): Injector {
     return new Injector_(this._view, this._elDef);
   }
-  get componentType(): Type<any> {
+  override get componentType(): Type<any> {
     return <any>this._component.constructor;
   }
 
-  destroy(): void {
+  override destroy(): void {
     this._viewRef.destroy();
   }
-  onDestroy(callback: Function): void {
+  override onDestroy(callback: Function): void {
     this._viewRef.onDestroy(callback);
   }
 }
@@ -350,12 +350,12 @@ class TemplateRef_ extends TemplateRef<any> implements TemplateData {
     super();
   }
 
-  createEmbeddedView(context: any): EmbeddedViewRef<any> {
+  override createEmbeddedView(context: any): EmbeddedViewRef<any> {
     return new ViewRef_(Services.createEmbeddedView(
         this._parentView, this._def, this._def.element!.template !, context));
   }
 
-  get elementRef(): ElementRef {
+  override get elementRef(): ElementRef {
     return new ElementRef(asElementData(this._parentView, this._def.nodeIndex).renderElement);
   }
 }

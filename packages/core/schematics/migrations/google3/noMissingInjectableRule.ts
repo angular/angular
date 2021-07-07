@@ -21,7 +21,7 @@ import {MissingInjectableTransform} from '../missing-injectable/transform';
  * Angular decorator (e.g. "@Injectable").
  */
 export class Rule extends Rules.TypedRule {
-  applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
+  override applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
     const ruleName = this.ruleName;
     const typeChecker = program.getTypeChecker();
     const sourceFiles = program.getSourceFiles().filter(

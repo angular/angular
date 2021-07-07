@@ -128,48 +128,48 @@ export class BrowserPlatformLocation extends PlatformLocation {
     this._history = window.history;
   }
 
-  getBaseHrefFromDOM(): string {
+  override getBaseHrefFromDOM(): string {
     return getDOM().getBaseHref(this._doc)!;
   }
 
-  onPopState(fn: LocationChangeListener): VoidFunction {
+  override onPopState(fn: LocationChangeListener): VoidFunction {
     const window = getDOM().getGlobalEventTarget(this._doc, 'window');
     window.addEventListener('popstate', fn, false);
     return () => window.removeEventListener('popstate', fn);
   }
 
-  onHashChange(fn: LocationChangeListener): VoidFunction {
+  override onHashChange(fn: LocationChangeListener): VoidFunction {
     const window = getDOM().getGlobalEventTarget(this._doc, 'window');
     window.addEventListener('hashchange', fn, false);
     return () => window.removeEventListener('hashchange', fn);
   }
 
-  get href(): string {
+  override get href(): string {
     return this.location.href;
   }
-  get protocol(): string {
+  override get protocol(): string {
     return this.location.protocol;
   }
-  get hostname(): string {
+  override get hostname(): string {
     return this.location.hostname;
   }
-  get port(): string {
+  override get port(): string {
     return this.location.port;
   }
-  get pathname(): string {
+  override get pathname(): string {
     return this.location.pathname;
   }
-  get search(): string {
+  override get search(): string {
     return this.location.search;
   }
-  get hash(): string {
+  override get hash(): string {
     return this.location.hash;
   }
-  set pathname(newPath: string) {
+  override set pathname(newPath: string) {
     this.location.pathname = newPath;
   }
 
-  pushState(state: any, title: string, url: string): void {
+  override pushState(state: any, title: string, url: string): void {
     if (supportsState()) {
       this._history.pushState(state, title, url);
     } else {
@@ -177,7 +177,7 @@ export class BrowserPlatformLocation extends PlatformLocation {
     }
   }
 
-  replaceState(state: any, title: string, url: string): void {
+  override replaceState(state: any, title: string, url: string): void {
     if (supportsState()) {
       this._history.replaceState(state, title, url);
     } else {
@@ -185,11 +185,11 @@ export class BrowserPlatformLocation extends PlatformLocation {
     }
   }
 
-  forward(): void {
+  override forward(): void {
     this._history.forward();
   }
 
-  back(): void {
+  override back(): void {
     this._history.back();
   }
 
@@ -197,7 +197,7 @@ export class BrowserPlatformLocation extends PlatformLocation {
     this._history.go(relativePosition);
   }
 
-  getState(): unknown {
+  override getState(): unknown {
     return this._history.state;
   }
 }

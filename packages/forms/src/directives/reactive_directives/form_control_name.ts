@@ -75,7 +75,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * Tracks the `FormControl` instance bound to the directive.
    */
   // TODO(issue/24571): remove '!'.
-  readonly control!: FormControl;
+  override readonly control!: FormControl;
 
   /**
    * @description
@@ -166,7 +166,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    *
    * @param newValue The new value for the view model.
    */
-  viewToModelUpdate(newValue: any): void {
+  override viewToModelUpdate(newValue: any): void {
     this.viewModel = newValue;
     this.update.emit(newValue);
   }

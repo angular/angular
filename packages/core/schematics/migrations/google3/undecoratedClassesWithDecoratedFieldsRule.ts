@@ -16,7 +16,7 @@ import {UndecoratedClassesWithDecoratedFieldsTransform} from '../undecorated-cla
  * https://hackmd.io/vuQfavzfRG6KUCtU7oK_EA
  */
 export class Rule extends Rules.TypedRule {
-  applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
+  override applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
     const typeChecker = program.getTypeChecker();
     const ruleName = this.ruleName;
     const sourceFiles = program.getSourceFiles().filter(
