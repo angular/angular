@@ -88,6 +88,6 @@ export class CodeExampleComponent implements AfterViewInit {
   ngAfterViewInit() {
     const contentElem = this.content.nativeElement;
     this.aioCode.code = contentElem.innerHTML;
-    contentElem.innerHTML = '';  // Remove DOM nodes that are no longer needed.
+    contentElem.textContent = '';  // Remove DOM nodes that are no longer needed.
   }
 }

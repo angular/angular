@@ -100,7 +100,9 @@ export class DocViewerComponent implements OnDestroy {
 
     if (titleEl && needsToc && !embeddedToc) {
       // Add an embedded ToC if it's needed and there isn't one in the content already.
-      titleEl.insertAdjacentHTML('afterend', '<aio-toc class="embedded"></aio-toc>');
+      const toc = document.createElement('aio-toc');
+      toc.className = 'embedded';
+      titleEl.parentNode!.insertBefore(toc, titleEl.nextSibling);
     } else if (!needsToc && embeddedToc && embeddedToc.parentNode !== null) {
       // Remove the embedded Toc if it's there and not needed.
       // We cannot use ChildNode.remove() because of IE11
@@ -145,7 +147,7 @@ export class DocViewerComponent implements OnDestroy {
         catchError(err => {
           const errorMessage = `${(err instanceof Error) ? err.stack : err}`;
           this.logger.error(new Error(`[DocViewer] Error preparing document '${doc.id}': ${errorMessage}`));
-          this.nextViewContainer.innerHTML = '';
+          this.nextViewContainer.textContent = '';
           this.setNoIndex(true);
 
           // TODO(gkalpak): Remove this once gathering debug info is no longer needed.
@@ -247,7 +249,7 @@ export class DocViewerComponent implements OnDestroy {
           const prevViewContainer = this.currViewContainer;
           this.currViewContainer = this.nextViewContainer;
           this.nextViewContainer = prevViewContainer;
-          this.nextViewContainer.innerHTML = '';  // Empty to release memory.
+          this.nextViewContainer.textContent = '';  // Empty to release memory.
         }),
     );
   }
