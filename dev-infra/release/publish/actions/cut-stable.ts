@@ -20,12 +20,12 @@ import {invokeSetNpmDistCommand, invokeYarnInstallCommand} from '../external-com
 export class CutStableAction extends ReleaseAction {
   private _newVersion = this._computeNewVersion();
 
-  async getDescription() {
+  override async getDescription() {
     const newVersion = this._newVersion;
     return `Cut a stable release for the release-candidate branch (v${newVersion}).`;
   }
 
-  async perform() {
+  override async perform() {
     const {branchName} = this.active.releaseCandidate!;
     const newVersion = this._newVersion;
     const isNewMajor = this.active.releaseCandidate?.isMajor;

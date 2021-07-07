@@ -21,13 +21,13 @@ export class CutNextPrereleaseAction extends ReleaseAction {
   /** Promise resolving with the new version if a NPM next pre-release is cut. */
   private _newVersion: Promise<semver.SemVer> = this._computeNewVersion();
 
-  async getDescription() {
+  override async getDescription() {
     const {branchName} = this._getActivePrereleaseTrain();
     const newVersion = await this._newVersion;
     return `Cut a new next pre-release for the "${branchName}" branch (v${newVersion}).`;
   }
 
-  async perform() {
+  override async perform() {
     const releaseTrain = this._getActivePrereleaseTrain();
     const {branchName} = releaseTrain;
     const newVersion = await this._newVersion;

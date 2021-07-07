@@ -499,7 +499,7 @@ export abstract class AssetGroup {
  * An `AssetGroup` that prefetches all of its resources during initialization.
  */
 export class PrefetchAssetGroup extends AssetGroup {
-  async initializeFully(updateFrom?: UpdateSource): Promise<void> {
+  override async initializeFully(updateFrom?: UpdateSource): Promise<void> {
     // Open the cache which actually holds requests.
     const cache = await this.cache;
 
@@ -573,7 +573,7 @@ export class PrefetchAssetGroup extends AssetGroup {
 }
 
 export class LazyAssetGroup extends AssetGroup {
-  async initializeFully(updateFrom?: UpdateSource): Promise<void> {
+  override async initializeFully(updateFrom?: UpdateSource): Promise<void> {
     // No action necessary if no update source is available - resources managed in this group
     // are all lazily loaded, so there's nothing to initialize.
     if (updateFrom === undefined) {

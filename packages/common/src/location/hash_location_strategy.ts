@@ -52,16 +52,16 @@ export class HashLocationStrategy extends LocationStrategy implements OnDestroy 
     }
   }
 
-  onPopState(fn: LocationChangeListener): void {
+  override onPopState(fn: LocationChangeListener): void {
     this._removeListenerFns.push(
         this._platformLocation.onPopState(fn), this._platformLocation.onHashChange(fn));
   }
 
-  getBaseHref(): string {
+  override getBaseHref(): string {
     return this._baseHref;
   }
 
-  path(includeHash: boolean = false): string {
+  override path(includeHash: boolean = false): string {
     // the hash value is always prefixed with a `#`
     // and if it is empty then it will stay empty
     let path = this._platformLocation.hash;
@@ -70,12 +70,12 @@ export class HashLocationStrategy extends LocationStrategy implements OnDestroy 
     return path.length > 0 ? path.substring(1) : path;
   }
 
-  prepareExternalUrl(internal: string): string {
+  override prepareExternalUrl(internal: string): string {
     const url = joinWithSlash(this._baseHref, internal);
     return url.length > 0 ? ('#' + url) : url;
   }
 
-  pushState(state: any, title: string, path: string, queryParams: string) {
+  override pushState(state: any, title: string, path: string, queryParams: string) {
     let url: string|null = this.prepareExternalUrl(path + normalizeQueryParams(queryParams));
     if (url.length == 0) {
       url = this._platformLocation.pathname;
@@ -83,7 +83,7 @@ export class HashLocationStrategy extends LocationStrategy implements OnDestroy 
     this._platformLocation.pushState(state, title, url);
   }
 
-  replaceState(state: any, title: string, path: string, queryParams: string) {
+  override replaceState(state: any, title: string, path: string, queryParams: string) {
     let url = this.prepareExternalUrl(path + normalizeQueryParams(queryParams));
     if (url.length == 0) {
       url = this._platformLocation.pathname;
@@ -91,11 +91,11 @@ export class HashLocationStrategy extends LocationStrategy implements OnDestroy 
     this._platformLocation.replaceState(state, title, url);
   }
 
-  forward(): void {
+  override forward(): void {
     this._platformLocation.forward();
   }
 
-  back(): void {
+  override back(): void {
     this._platformLocation.back();
   }
 

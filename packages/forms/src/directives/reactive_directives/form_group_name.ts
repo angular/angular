@@ -184,7 +184,7 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
    * @description
    * The `FormArray` bound to this directive.
    */
-  get control(): FormArray {
+  override get control(): FormArray {
     return this.formDirective!.getFormArray(this);
   }
 

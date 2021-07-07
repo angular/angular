@@ -87,9 +87,9 @@ abstract class BaseTemplate implements ng.TemplateSource {
  * `template` attribute in the decorator.
  */
 export class InlineTemplate extends BaseTemplate {
-  public readonly fileName: string;
-  public readonly source: string;
-  public readonly span: ng.Span;
+  public override readonly fileName: string;
+  public override readonly source: string;
+  public override readonly span: ng.Span;
 
   constructor(
       templateNode: ts.StringLiteralLike, classDeclNode: ts.ClassDeclaration,
@@ -119,7 +119,7 @@ export class InlineTemplate extends BaseTemplate {
  * a TS file.
  */
 export class ExternalTemplate extends BaseTemplate {
-  public readonly span: ng.Span;
+  public override readonly span: ng.Span;
 
   constructor(
       public readonly source: string, public readonly fileName: string,

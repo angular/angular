@@ -31,7 +31,7 @@ export class AutosquashMergeStrategy extends MergeStrategy {
    *   specific to the pull request merge.
    * @returns A pull request failure or null in case of success.
    */
-  async merge(pullRequest: PullRequest): Promise<PullRequestFailure|null> {
+  override async merge(pullRequest: PullRequest): Promise<PullRequestFailure|null> {
     const {prNumber, targetBranches, requiredBaseSha, needsCommitMessageFixup, githubTargetBranch} =
         pullRequest;
     // In case a required base is specified for this pull request, check if the pull

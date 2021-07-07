@@ -47,7 +47,7 @@ export class ComponentFactoryResolver extends viewEngine_ComponentFactoryResolve
     super();
   }
 
-  resolveComponentFactory<T>(component: Type<T>): viewEngine_ComponentFactory<T> {
+  override resolveComponentFactory<T>(component: Type<T>): viewEngine_ComponentFactory<T> {
     ngDevMode && assertComponentType(component);
     const componentDef = getComponentDef(component)!;
     return new ComponentFactory(componentDef, this.ngModule);
@@ -103,16 +103,16 @@ function createChainedInjector(rootViewInjector: Injector, moduleInjector: Injec
  * Render3 implementation of {@link viewEngine_ComponentFactory}.
  */
 export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
-  selector: string;
-  componentType: Type<any>;
-  ngContentSelectors: string[];
+  override selector: string;
+  override componentType: Type<any>;
+  override ngContentSelectors: string[];
   isBoundToModule: boolean;
 
-  get inputs(): {propName: string; templateName: string;}[] {
+  override get inputs(): {propName: string; templateName: string;}[] {
     return toRefArray(this.componentDef.inputs);
   }
 
-  get outputs(): {propName: string; templateName: string;}[] {
+  override get outputs(): {propName: string; templateName: string;}[] {
     return toRefArray(this.componentDef.outputs);
   }
 
@@ -130,7 +130,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     this.isBoundToModule = !!ngModule;
   }
 
-  create(
+  override create(
       injector: Injector, projectableNodes?: any[][]|undefined, rootSelectorOrNode?: any,
       ngModule?: viewEngine_NgModuleRef<any>|undefined): viewEngine_ComponentRef<T> {
     ngModule = ngModule || this.ngModule;
@@ -247,10 +247,10 @@ export function injectComponentFactoryResolver(): viewEngine_ComponentFactoryRes
  *
  */
 export class ComponentRef<T> extends viewEngine_ComponentRef<T> {
-  instance: T;
-  hostView: ViewRef<T>;
-  changeDetectorRef: ViewEngine_ChangeDetectorRef;
-  componentType: Type<T>;
+  override instance: T;
+  override hostView: ViewRef<T>;
+  override changeDetectorRef: ViewEngine_ChangeDetectorRef;
+  override componentType: Type<T>;
 
   constructor(
       componentType: Type<T>, instance: T, public location: viewEngine_ElementRef,
@@ -262,15 +262,15 @@ export class ComponentRef<T> extends viewEngine_ComponentRef<T> {
     this.componentType = componentType;
   }
 
-  get injector(): Injector {
+  override get injector(): Injector {
     return new NodeInjector(this._tNode, this._rootLView);
   }
 
-  destroy(): void {
+  override destroy(): void {
     this.hostView.destroy();
   }
 
-  onDestroy(callback: () => void): void {
+  override onDestroy(callback: () => void): void {
     this.hostView.onDestroy(callback);
   }
 }

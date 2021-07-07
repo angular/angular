@@ -12,7 +12,7 @@ import {AbstractRule} from 'tslint/lib/rules';
 import * as ts from 'typescript';
 
 export class Rule extends AbstractRule {
-  public apply(sourceFile: ts.SourceFile): RuleFailure[] {
+  override apply(sourceFile: ts.SourceFile): RuleFailure[] {
     const typedefWalker = new TypedefWalker(sourceFile, this.getOptions());
     return this.applyWithWalker(typedefWalker);
   }
@@ -47,6 +47,6 @@ class TypedefWalker extends RuleWalker {
     }
     this.addFailure(this.createFailure(
         node.getStart(), node.getWidth(),
-        `module-private member ${node.name.getText()} must be annotated @internal`));
+        `module-private member ${node.name?.getText()} must be annotated @internal`));
   }
 }

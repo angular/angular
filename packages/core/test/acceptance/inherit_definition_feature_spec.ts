@@ -329,7 +329,7 @@ describe('inheritance', () => {
 
       @Component({selector: 'my-comp', template: ''})
       class MyComp extends UndecoratedBase {
-        @Input() input: any;
+        @Input() override input: any;
       }
 
       @Component({template: '<my-comp [input]="value"></my-comp>'})

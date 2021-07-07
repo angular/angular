@@ -61,7 +61,7 @@ class IvyCompilationVisitor extends Visitor {
     super();
   }
 
-  visitClassDeclaration(node: ts.ClassDeclaration):
+  override visitClassDeclaration(node: ts.ClassDeclaration):
       VisitListEntryResult<ts.Statement, ts.ClassDeclaration> {
     // Determine if this class has an Ivy field that needs to be added, and compile the field
     // to an expression if so.
@@ -87,7 +87,7 @@ class IvyTransformationVisitor extends Visitor {
     super();
   }
 
-  visitClassDeclaration(node: ts.ClassDeclaration):
+  override visitClassDeclaration(node: ts.ClassDeclaration):
       VisitListEntryResult<ts.Statement, ts.ClassDeclaration> {
     // If this class is not registered in the map, it means that it doesn't have Angular decorators,
     // thus no further processing is required.

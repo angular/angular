@@ -58,7 +58,7 @@ export class NgModuleSymbol extends SemanticSymbol {
     usedPipes: SemanticReference[]
   }[] = [];
 
-  isPublicApiAffected(previousSymbol: SemanticSymbol): boolean {
+  override isPublicApiAffected(previousSymbol: SemanticSymbol): boolean {
     if (!(previousSymbol instanceof NgModuleSymbol)) {
       return true;
     }
@@ -104,7 +104,7 @@ export class NgModuleSymbol extends SemanticSymbol {
     return false;
   }
 
-  isTypeCheckApiAffected(previousSymbol: SemanticSymbol): boolean {
+  override isTypeCheckApiAffected(previousSymbol: SemanticSymbol): boolean {
     if (!(previousSymbol instanceof NgModuleSymbol)) {
       return true;
     }

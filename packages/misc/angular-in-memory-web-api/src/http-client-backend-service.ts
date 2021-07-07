@@ -64,19 +64,19 @@ export class HttpClientBackendService extends BackendService implements HttpBack
     }
   }
 
-  protected getJsonBody(req: HttpRequest<any>): any {
+  protected override getJsonBody(req: HttpRequest<any>): any {
     return req.body;
   }
 
-  protected getRequestMethod(req: HttpRequest<any>): string {
+  protected override getRequestMethod(req: HttpRequest<any>): string {
     return (req.method || 'get').toLowerCase();
   }
 
-  protected createHeaders(headers: {[index: string]: string;}): HttpHeaders {
+  protected override createHeaders(headers: {[index: string]: string;}): HttpHeaders {
     return new HttpHeaders(headers);
   }
 
-  protected createQueryMap(search: string): Map<string, string[]> {
+  protected override createQueryMap(search: string): Map<string, string[]> {
     const map = new Map<string, string[]>();
     if (search) {
       const params = new HttpParams({fromString: search});
@@ -85,12 +85,12 @@ export class HttpClientBackendService extends BackendService implements HttpBack
     return map;
   }
 
-  protected createResponse$fromResponseOptions$(resOptions$: Observable<ResponseOptions>):
+  protected override createResponse$fromResponseOptions$(resOptions$: Observable<ResponseOptions>):
       Observable<HttpResponse<any>> {
     return resOptions$.pipe(map(opts => new HttpResponse<any>(opts)));
   }
 
-  protected createPassThruBackend() {
+  protected override createPassThruBackend() {
     try {
       return new HttpXhrBackend(this.xhrFactory);
     } catch (ex) {

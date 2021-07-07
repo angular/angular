@@ -39,7 +39,7 @@ export class BuiltinType extends Type {
   constructor(public name: BuiltinTypeName, modifiers?: TypeModifier[]) {
     super(modifiers);
   }
-  visitType(visitor: TypeVisitor, context: any): any {
+  override visitType(visitor: TypeVisitor, context: any): any {
     return visitor.visitBuiltinType(this, context);
   }
 }
@@ -49,7 +49,7 @@ export class ExpressionType extends Type {
       public value: Expression, modifiers?: TypeModifier[], public typeParams: Type[]|null = null) {
     super(modifiers);
   }
-  visitType(visitor: TypeVisitor, context: any): any {
+  override visitType(visitor: TypeVisitor, context: any): any {
     return visitor.visitExpressionType(this, context);
   }
 }
@@ -59,7 +59,7 @@ export class ArrayType extends Type {
   constructor(public of: Type, modifiers?: TypeModifier[]) {
     super(modifiers);
   }
-  visitType(visitor: TypeVisitor, context: any): any {
+  override visitType(visitor: TypeVisitor, context: any): any {
     return visitor.visitArrayType(this, context);
   }
 }
@@ -71,7 +71,7 @@ export class MapType extends Type {
     super(modifiers);
     this.valueType = valueType || null;
   }
-  visitType(visitor: TypeVisitor, context: any): any {
+  override visitType(visitor: TypeVisitor, context: any): any {
     return visitor.visitMapType(this, context);
   }
 }
@@ -286,15 +286,15 @@ export class ReadVarExpr extends Expression {
     }
   }
 
-  isEquivalent(e: Expression): boolean {
+  override isEquivalent(e: Expression): boolean {
     return e instanceof ReadVarExpr && this.name === e.name && this.builtin === e.builtin;
   }
 
-  isConstant() {
+  override isConstant() {
     return false;
   }
 
-  visitExpression(visitor: ExpressionVisitor, context: any): any {
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitReadVarExpr(this, context);
   }
 
@@ -311,15 +311,15 @@ export class TypeofExpr extends Expression {
     super(type, sourceSpan);
   }
 
-  visitExpression(visitor: ExpressionVisitor, context: any) {
+  override visitExpression(visitor: ExpressionVisitor, context: any) {
     return visitor.visitTypeofExpr(this, context);
   }
 
-  isEquivalent(e: Expression): boolean {
+  override isEquivalent(e: Expression): boolean {
     return e instanceof TypeofExpr && e.expr.isEquivalent(this.expr);
   }
 
-  isConstant(): boolean {
+  override isConstant(): boolean {
     return this.expr.isConstant();
   }
 }
@@ -329,15 +329,15 @@ export class WrappedNodeExpr<T> extends Expression {
     super(type, sourceSpan);
   }
 
-  isEquivalent(e: Expression): boolean {
+  override isEquivalent(e: Expression): boolean {
     return e instanceof WrappedNodeExpr && this.node === e.node;
   }
 
-  isConstant() {
+  override isConstant() {
     return false;
   }
 
-  visitExpression(visitor: ExpressionVisitor, context: any): any {
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitWrappedNodeExpr(this, context);
   }
 }
@@ -350,15 +350,15 @@ export class WriteVarExpr extends Expression {
     this.value = value;
   }
 
-  isEquivalent(e: Expression): boolean {
+  override isEquivalent(e: Expression): boolean {
     return e instanceof WriteVarExpr && this.name === e.name && this.value.isEquivalent(e.value);
   }
 
-  isConstant() {
+  override isConstant() {
     return false;
   }
 
-  visitExpression(visitor: ExpressionVisitor, context: any): any {
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitWriteVarExpr(this, context);
   }
 
@@ -381,16 +381,16 @@ export class WriteKeyExpr extends Expression {
     this.value = value;
   }
 
-  isEquivalent(e: Expression): boolean {
+  override isEquivalent(e: Expression): boolean {
     return e instanceof WriteKeyExpr && this.receiver.isEquivalent(e.receiver) &&
         this.index.isEquivalent(e.index) && this.value.isEquivalent(e.value);
   }
 
-  isConstant() {
+  override isConstant() {
     return false;
   }
 
-  visitExpression(visitor: ExpressionVisitor, context: any): any {
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitWriteKeyExpr(this, context);
   }
 }
@@ -405,16 +405,16 @@ export class WritePropExpr extends Expression {
     this.value = value;
   }
 
-  isEquivalent(e: Expression): boolean {
+  override isEquivalent(e: Expression): boolean {
     return e instanceof WritePropExpr && this.receiver.isEquivalent(e.receiver) &&
         this.name === e.name && this.value.isEquivalent(e.value);
   }
 
-  isConstant() {
+  override isConstant() {
     return false;
   }
 
-  visitExpression(visitor: ExpressionVisitor, context: any): any {
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitWritePropExpr(this, context);
   }
 }
@@ -441,16 +441,16 @@ export class InvokeMethodExpr extends Expression {
     }
   }
 
-  isEquivalent(e: Expression): boolean {
+  override isEquivalent(e: Expression): boolean {
     return e instanceof InvokeMethodExpr && this.receiver.isEquivalent(e.receiver) &&
         this.name === e.name && this.builtin === e.builtin && areAllEquivalent(this.args, e.args);
   }
 
-  isConstant() {
+  override isConstant() {
     return false;
   }
 
-  visitExpression(visitor: ExpressionVisitor, context: any): any {
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitInvokeMethodExpr(this, context);
   }
 }
@@ -463,16 +463,16 @@ export class InvokeFunctionExpr extends Expression {
     super(type, sourceSpan);
   }
 
-  isEquivalent(e: Expression): boolean {
+  override isEquivalent(e: Expression): boolean {
     return e instanceof InvokeFunctionExpr && this.fn.isEquivalent(e.fn) &&
         areAllEquivalent(this.args, e.args) && this.pure === e.pure;
   }
 
-  isConstant() {
+  override isConstant() {
     return false;
   }
 
-  visitExpression(visitor: ExpressionVisitor, context: any): any {
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitInvokeFunctionExpr(this, context);
   }
 }
@@ -485,18 +485,18 @@ export class TaggedTemplateExpr extends Expression {
     super(type, sourceSpan);
   }
 
-  isEquivalent(e: Expression): boolean {
+  override isEquivalent(e: Expression): boolean {
     return e instanceof TaggedTemplateExpr && this.tag.isEquivalent(e.tag) &&
         areAllEquivalentPredicate(
                this.template.elements, e.template.elements, (a, b) => a.text === b.text) &&
         areAllEquivalent(this.template.expressions, e.template.expressions);
   }
 
-  isConstant() {
+  override isConstant() {
     return false;
   }
 
-  visitExpression(visitor: ExpressionVisitor, context: any): any {
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitTaggedTemplateExpr(this, context);
   }
 }
@@ -509,16 +509,16 @@ export class InstantiateExpr extends Expression {
     super(type, sourceSpan);
   }
 
-  isEquivalent(e: Expression): boolean {
+  override isEquivalent(e: Expression): boolean {
     return e instanceof InstantiateExpr && this.classExpr.isEquivalent(e.classExpr) &&
         areAllEquivalent(this.args, e.args);
   }
 
-  isConstant() {
+  override isConstant() {
     return false;
   }
 
-  visitExpression(visitor: ExpressionVisitor, context: any): any {
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitInstantiateExpr(this, context);
   }
 }
@@ -531,15 +531,15 @@ export class LiteralExpr extends Expression {
     super(type, sourceSpan);
   }
 
-  isEquivalent(e: Expression): boolean {
+  override isEquivalent(e: Expression): boolean {
     return e instanceof LiteralExpr && this.value === e.value;
   }
 
-  isConstant() {
+  override isConstant() {
     return true;
   }
 
-  visitExpression(visitor: ExpressionVisitor, context: any): any {
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitLiteralExpr(this, context);
   }
 }
@@ -575,16 +575,16 @@ export class LocalizedString extends Expression {
     super(STRING_TYPE, sourceSpan);
   }
 
-  isEquivalent(e: Expression): boolean {
+  override isEquivalent(e: Expression): boolean {
     // return e instanceof LocalizedString && this.message === e.message;
     return false;
   }
 
-  isConstant() {
+  override isConstant() {
     return false;
   }
 
-  visitExpression(visitor: ExpressionVisitor, context: any): any {
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitLocalizedString(this, context);
   }
 
@@ -696,16 +696,16 @@ export class ExternalExpr extends Expression {
     super(type, sourceSpan);
   }
 
-  isEquivalent(e: Expression): boolean {
+  override isEquivalent(e: Expression): boolean {
     return e instanceof ExternalExpr && this.value.name === e.value.name &&
         this.value.moduleName === e.value.moduleName && this.value.runtime === e.value.runtime;
   }
 
-  isConstant() {
+  override isConstant() {
     return false;
   }
 
-  visitExpression(visitor: ExpressionVisitor, context: any): any {
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitExternalExpr(this, context);
   }
 }
@@ -726,16 +726,16 @@ export class ConditionalExpr extends Expression {
     this.trueCase = trueCase;
   }
 
-  isEquivalent(e: Expression): boolean {
+  override isEquivalent(e: Expression): boolean {
     return e instanceof ConditionalExpr && this.condition.isEquivalent(e.condition) &&
         this.trueCase.isEquivalent(e.trueCase) && nullSafeIsEquivalent(this.falseCase, e.falseCase);
   }
 
-  isConstant() {
+  override isConstant() {
     return false;
   }
 
-  visitExpression(visitor: ExpressionVisitor, context: any): any {
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitConditionalExpr(this, context);
   }
 }
@@ -746,15 +746,15 @@ export class NotExpr extends Expression {
     super(BOOL_TYPE, sourceSpan);
   }
 
-  isEquivalent(e: Expression): boolean {
+  override isEquivalent(e: Expression): boolean {
     return e instanceof NotExpr && this.condition.isEquivalent(e.condition);
   }
 
-  isConstant() {
+  override isConstant() {
     return false;
   }
 
-  visitExpression(visitor: ExpressionVisitor, context: any): any {
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitNotExpr(this, context);
   }
 }
@@ -764,15 +764,15 @@ export class AssertNotNull extends Expression {
     super(condition.type, sourceSpan);
   }
 
-  isEquivalent(e: Expression): boolean {
+  override isEquivalent(e: Expression): boolean {
     return e instanceof AssertNotNull && this.condition.isEquivalent(e.condition);
   }
 
-  isConstant() {
+  override isConstant() {
     return false;
   }
 
-  visitExpression(visitor: ExpressionVisitor, context: any): any {
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitAssertNotNullExpr(this, context);
   }
 }
@@ -782,15 +782,15 @@ export class CastExpr extends Expression {
     super(type, sourceSpan);
   }
 
-  isEquivalent(e: Expression): boolean {
+  override isEquivalent(e: Expression): boolean {
     return e instanceof CastExpr && this.value.isEquivalent(e.value);
   }
 
-  isConstant() {
+  override isConstant() {
     return false;
   }
 
-  visitExpression(visitor: ExpressionVisitor, context: any): any {
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitCastExpr(this, context);
   }
 }
@@ -812,16 +812,16 @@ export class FunctionExpr extends Expression {
     super(type, sourceSpan);
   }
 
-  isEquivalent(e: Expression): boolean {
+  override isEquivalent(e: Expression): boolean {
     return e instanceof FunctionExpr && areAllEquivalent(this.params, e.params) &&
         areAllEquivalent(this.statements, e.statements);
   }
 
-  isConstant() {
+  override isConstant() {
     return false;
   }
 
-  visitExpression(visitor: ExpressionVisitor, context: any): any {
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitFunctionExpr(this, context);
   }
 
@@ -839,16 +839,16 @@ export class UnaryOperatorExpr extends Expression {
     super(type || NUMBER_TYPE, sourceSpan);
   }
 
-  isEquivalent(e: Expression): boolean {
+  override isEquivalent(e: Expression): boolean {
     return e instanceof UnaryOperatorExpr && this.operator === e.operator &&
         this.expr.isEquivalent(e.expr);
   }
 
-  isConstant() {
+  override isConstant() {
     return false;
   }
 
-  visitExpression(visitor: ExpressionVisitor, context: any): any {
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitUnaryOperatorExpr(this, context);
   }
 }
@@ -863,16 +863,16 @@ export class BinaryOperatorExpr extends Expression {
     this.lhs = lhs;
   }
 
-  isEquivalent(e: Expression): boolean {
+  override isEquivalent(e: Expression): boolean {
     return e instanceof BinaryOperatorExpr && this.operator === e.operator &&
         this.lhs.isEquivalent(e.lhs) && this.rhs.isEquivalent(e.rhs);
   }
 
-  isConstant() {
+  override isConstant() {
     return false;
   }
 
-  visitExpression(visitor: ExpressionVisitor, context: any): any {
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitBinaryOperatorExpr(this, context);
   }
 }
@@ -885,16 +885,16 @@ export class ReadPropExpr extends Expression {
     super(type, sourceSpan);
   }
 
-  isEquivalent(e: Expression): boolean {
+  override isEquivalent(e: Expression): boolean {
     return e instanceof ReadPropExpr && this.receiver.isEquivalent(e.receiver) &&
         this.name === e.name;
   }
 
-  isConstant() {
+  override isConstant() {
     return false;
   }
 
-  visitExpression(visitor: ExpressionVisitor, context: any): any {
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitReadPropExpr(this, context);
   }
 
@@ -911,16 +911,16 @@ export class ReadKeyExpr extends Expression {
     super(type, sourceSpan);
   }
 
-  isEquivalent(e: Expression): boolean {
+  override isEquivalent(e: Expression): boolean {
     return e instanceof ReadKeyExpr && this.receiver.isEquivalent(e.receiver) &&
         this.index.isEquivalent(e.index);
   }
 
-  isConstant() {
+  override isConstant() {
     return false;
   }
 
-  visitExpression(visitor: ExpressionVisitor, context: any): any {
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitReadKeyExpr(this, context);
   }
 
@@ -937,14 +937,14 @@ export class LiteralArrayExpr extends Expression {
     this.entries = entries;
   }
 
-  isConstant() {
+  override isConstant() {
     return this.entries.every(e => e.isConstant());
   }
 
-  isEquivalent(e: Expression): boolean {
+  override isEquivalent(e: Expression): boolean {
     return e instanceof LiteralArrayExpr && areAllEquivalent(this.entries, e.entries);
   }
-  visitExpression(visitor: ExpressionVisitor, context: any): any {
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitLiteralArrayExpr(this, context);
   }
 }
@@ -966,15 +966,15 @@ export class LiteralMapExpr extends Expression {
     }
   }
 
-  isEquivalent(e: Expression): boolean {
+  override isEquivalent(e: Expression): boolean {
     return e instanceof LiteralMapExpr && areAllEquivalent(this.entries, e.entries);
   }
 
-  isConstant() {
+  override isConstant() {
     return this.entries.every(e => e.value.isConstant());
   }
 
-  visitExpression(visitor: ExpressionVisitor, context: any): any {
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitLiteralMapExpr(this, context);
   }
 }
@@ -984,15 +984,15 @@ export class CommaExpr extends Expression {
     super(parts[parts.length - 1].type, sourceSpan);
   }
 
-  isEquivalent(e: Expression): boolean {
+  override isEquivalent(e: Expression): boolean {
     return e instanceof CommaExpr && areAllEquivalent(this.parts, e.parts);
   }
 
-  isConstant() {
+  override isConstant() {
     return false;
   }
 
-  visitExpression(visitor: ExpressionVisitor, context: any): any {
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitCommaExpr(this, context);
   }
 }
@@ -1086,11 +1086,11 @@ export class DeclareVarStmt extends Statement {
     super(modifiers, sourceSpan, leadingComments);
     this.type = type || (value && value.type) || null;
   }
-  isEquivalent(stmt: Statement): boolean {
+  override isEquivalent(stmt: Statement): boolean {
     return stmt instanceof DeclareVarStmt && this.name === stmt.name &&
         (this.value ? !!stmt.value && this.value.isEquivalent(stmt.value) : !stmt.value);
   }
-  visitStatement(visitor: StatementVisitor, context: any): any {
+  override visitStatement(visitor: StatementVisitor, context: any): any {
     return visitor.visitDeclareVarStmt(this, context);
   }
 }
@@ -1104,11 +1104,11 @@ export class DeclareFunctionStmt extends Statement {
     super(modifiers, sourceSpan, leadingComments);
     this.type = type || null;
   }
-  isEquivalent(stmt: Statement): boolean {
+  override isEquivalent(stmt: Statement): boolean {
     return stmt instanceof DeclareFunctionStmt && areAllEquivalent(this.params, stmt.params) &&
         areAllEquivalent(this.statements, stmt.statements);
   }
-  visitStatement(visitor: StatementVisitor, context: any): any {
+  override visitStatement(visitor: StatementVisitor, context: any): any {
     return visitor.visitDeclareFunctionStmt(this, context);
   }
 }
@@ -1119,10 +1119,10 @@ export class ExpressionStatement extends Statement {
       leadingComments?: LeadingComment[]) {
     super([], sourceSpan, leadingComments);
   }
-  isEquivalent(stmt: Statement): boolean {
+  override isEquivalent(stmt: Statement): boolean {
     return stmt instanceof ExpressionStatement && this.expr.isEquivalent(stmt.expr);
   }
-  visitStatement(visitor: StatementVisitor, context: any): any {
+  override visitStatement(visitor: StatementVisitor, context: any): any {
     return visitor.visitExpressionStmt(this, context);
   }
 }
@@ -1134,10 +1134,10 @@ export class ReturnStatement extends Statement {
       leadingComments?: LeadingComment[]) {
     super([], sourceSpan, leadingComments);
   }
-  isEquivalent(stmt: Statement): boolean {
+  override isEquivalent(stmt: Statement): boolean {
     return stmt instanceof ReturnStatement && this.value.isEquivalent(stmt.value);
   }
-  visitStatement(visitor: StatementVisitor, context: any): any {
+  override visitStatement(visitor: StatementVisitor, context: any): any {
     return visitor.visitReturnStmt(this, context);
   }
 }
@@ -1192,7 +1192,7 @@ export class ClassStmt extends Statement {
       leadingComments?: LeadingComment[]) {
     super(modifiers, sourceSpan, leadingComments);
   }
-  isEquivalent(stmt: Statement): boolean {
+  override isEquivalent(stmt: Statement): boolean {
     return stmt instanceof ClassStmt && this.name === stmt.name &&
         nullSafeIsEquivalent(this.parent, stmt.parent) &&
         areAllEquivalent(this.fields, stmt.fields) &&
@@ -1200,7 +1200,7 @@ export class ClassStmt extends Statement {
         this.constructorMethod.isEquivalent(stmt.constructorMethod) &&
         areAllEquivalent(this.methods, stmt.methods);
   }
-  visitStatement(visitor: StatementVisitor, context: any): any {
+  override visitStatement(visitor: StatementVisitor, context: any): any {
     return visitor.visitDeclareClassStmt(this, context);
   }
 }
@@ -1213,12 +1213,12 @@ export class IfStmt extends Statement {
       leadingComments?: LeadingComment[]) {
     super([], sourceSpan, leadingComments);
   }
-  isEquivalent(stmt: Statement): boolean {
+  override isEquivalent(stmt: Statement): boolean {
     return stmt instanceof IfStmt && this.condition.isEquivalent(stmt.condition) &&
         areAllEquivalent(this.trueCase, stmt.trueCase) &&
         areAllEquivalent(this.falseCase, stmt.falseCase);
   }
-  visitStatement(visitor: StatementVisitor, context: any): any {
+  override visitStatement(visitor: StatementVisitor, context: any): any {
     return visitor.visitIfStmt(this, context);
   }
 }
@@ -1229,11 +1229,11 @@ export class TryCatchStmt extends Statement {
       sourceSpan: ParseSourceSpan|null = null, leadingComments?: LeadingComment[]) {
     super([], sourceSpan, leadingComments);
   }
-  isEquivalent(stmt: Statement): boolean {
+  override isEquivalent(stmt: Statement): boolean {
     return stmt instanceof TryCatchStmt && areAllEquivalent(this.bodyStmts, stmt.bodyStmts) &&
         areAllEquivalent(this.catchStmts, stmt.catchStmts);
   }
-  visitStatement(visitor: StatementVisitor, context: any): any {
+  override visitStatement(visitor: StatementVisitor, context: any): any {
     return visitor.visitTryCatchStmt(this, context);
   }
 }
@@ -1245,10 +1245,10 @@ export class ThrowStmt extends Statement {
       leadingComments?: LeadingComment[]) {
     super([], sourceSpan, leadingComments);
   }
-  isEquivalent(stmt: ThrowStmt): boolean {
+  override isEquivalent(stmt: ThrowStmt): boolean {
     return stmt instanceof TryCatchStmt && this.error.isEquivalent(stmt.error);
   }
-  visitStatement(visitor: StatementVisitor, context: any): any {
+  override visitStatement(visitor: StatementVisitor, context: any): any {
     return visitor.visitThrowStmt(this, context);
   }
 }

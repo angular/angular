@@ -62,7 +62,7 @@ class FixupExpression extends o.Expression {
     this.original = resolved;
   }
 
-  visitExpression(visitor: o.ExpressionVisitor, context: any): any {
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {
     if (context === KEY_CONTEXT) {
       // When producing a key we want to traverse the constant not the
       // variable used to refer to it.
@@ -72,11 +72,11 @@ class FixupExpression extends o.Expression {
     }
   }
 
-  isEquivalent(e: o.Expression): boolean {
+  override isEquivalent(e: o.Expression): boolean {
     return e instanceof FixupExpression && this.resolved.isEquivalent(e.resolved);
   }
 
-  isConstant() {
+  override isConstant() {
     return true;
   }
 

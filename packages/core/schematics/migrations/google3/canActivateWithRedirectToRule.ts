@@ -13,7 +13,7 @@ import {findLiteralsToMigrate, migrateLiteral} from '../can-activate-with-redire
 
 /** TSLint rule that removes canActivate from Route configs that also have redirectTo. */
 export class Rule extends Rules.TypedRule {
-  applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
+  override applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
     const failures: RuleFailure[] = [];
     const printer = ts.createPrinter();
     const literalsToMigrate = findLiteralsToMigrate(sourceFile);

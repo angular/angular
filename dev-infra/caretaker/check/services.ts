@@ -45,11 +45,11 @@ export const services: ServiceConfig[] = [
 ];
 
 export class ServicesModule extends BaseModule<StatusCheckResult[]> {
-  async retrieveData() {
+  override async retrieveData() {
     return Promise.all(services.map(service => this.getStatusFromStandardApi(service)));
   }
 
-  async printToTerminal() {
+  override async printToTerminal() {
     const statuses = await this.data;
     const serviceNameMinLength = Math.max(...statuses.map(service => service.name.length));
     info.group(bold('Service Statuses'));

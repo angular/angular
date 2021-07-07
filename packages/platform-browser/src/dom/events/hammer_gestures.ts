@@ -171,7 +171,7 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
     super(doc);
   }
 
-  supports(eventName: string): boolean {
+  override supports(eventName: string): boolean {
     if (!EVENT_NAMES.hasOwnProperty(eventName.toLowerCase()) && !this.isCustomEvent(eventName)) {
       return false;
     }
@@ -188,7 +188,7 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
     return true;
   }
 
-  addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
+  override addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     const zone = this.manager.getZone();
     eventName = eventName.toLowerCase();
 

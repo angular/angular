@@ -12,36 +12,36 @@ import {AbsoluteFsPath, PathSegment, PathString} from '../../src/types';
 import {MockFileSystem} from './mock_file_system';
 
 export class MockFileSystemPosix extends MockFileSystem {
-  resolve(...paths: string[]): AbsoluteFsPath {
+  override resolve(...paths: string[]): AbsoluteFsPath {
     const resolved = p.posix.resolve(this.pwd(), ...paths);
     return this.normalize(resolved) as AbsoluteFsPath;
   }
 
-  dirname<T extends string>(file: T): T {
+  override dirname<T extends string>(file: T): T {
     return this.normalize(p.posix.dirname(file)) as T;
   }
 
-  join<T extends string>(basePath: T, ...paths: string[]): T {
+  override join<T extends string>(basePath: T, ...paths: string[]): T {
     return this.normalize(p.posix.join(basePath, ...paths)) as T;
   }
 
-  relative<T extends PathString>(from: T, to: T): PathSegment|AbsoluteFsPath {
+  override relative<T extends PathString>(from: T, to: T): PathSegment|AbsoluteFsPath {
     return this.normalize(p.posix.relative(from, to)) as PathSegment | AbsoluteFsPath;
   }
 
-  basename(filePath: string, extension?: string): PathSegment {
+  override basename(filePath: string, extension?: string): PathSegment {
     return p.posix.basename(filePath, extension) as PathSegment;
   }
 
-  isRooted(path: string): boolean {
+  override isRooted(path: string): boolean {
     return path.startsWith('/');
   }
 
-  protected splitPath<T extends PathString>(path: T): string[] {
+  protected override splitPath<T extends PathString>(path: T): string[] {
     return path.split('/');
   }
 
-  normalize<T extends PathString>(path: T): T {
+  override normalize<T extends PathString>(path: T): T {
     return path.replace(/^[a-z]:\//i, '/').replace(/\\/g, '/') as T;
   }
 }
