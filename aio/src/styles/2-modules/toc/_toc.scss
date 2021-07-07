@@ -1,3 +1,4 @@
+@use 'sass:math';
 @use '../../mixins';
 
 $tocItemLineHeight: 24;
@@ -9,10 +10,10 @@ $tocMarkerSize: 6;
   border-radius: 50%;
   content: "";
   height: #{$tocMarkerSize}px;
-  left: -#{($tocMarkerSize - $tocMarkerRailSize) / 2}px;
+  left: -#{math.div($tocMarkerSize - $tocMarkerRailSize, 2)}px;
   position: absolute;
-  top: calc(#{$tocItemTopPadding}px + #{$tocItemLineHeight / 2}px - #{$tocMarkerSize / 2}px);
-  top: calc(#{$tocItemTopPadding}px + #{$tocItemLineHeight / 2 / 10}rem - #{$tocMarkerSize / 2}px);
+  top: calc(#{$tocItemTopPadding}px + #{math.div($tocItemLineHeight, 2)}px - #{math.div($tocMarkerSize, 2)}px);
+  top: calc(#{$tocItemTopPadding}px + #{math.div($tocItemLineHeight, 2 * 10)}rem - #{math.div($tocMarkerSize, 2)}px);
   width: #{$tocMarkerSize}px;
 }
 
@@ -158,13 +159,13 @@ aio-toc {
         }
 
         &:first-child:before {
-          top: calc(#{$tocItemTopPadding}px + #{$tocItemLineHeight / 2}px - #{$tocMarkerSize / 2}px);
-          top: calc(#{$tocItemTopPadding}px + #{$tocItemLineHeight / 2 / 10}rem - #{$tocMarkerSize / 2}px);
+          top: calc(#{$tocItemTopPadding}px + #{math.div($tocItemLineHeight, 2)}px - #{math.div($tocMarkerSize, 2)}px);
+          top: calc(#{$tocItemTopPadding}px + #{math.div($tocItemLineHeight, 2 * 10)}rem - #{math.div($tocMarkerSize, 2)}px);
         }
 
         &:last-child:before {
-          bottom: calc(100% - (#{$tocItemTopPadding}px + #{$tocItemLineHeight / 2}px + #{$tocMarkerSize / 2}px));
-          bottom: calc(100% - (#{$tocItemTopPadding}px + #{$tocItemLineHeight / 2 / 10}rem + #{$tocMarkerSize / 2}px));
+          bottom: calc(100% - (#{$tocItemTopPadding}px + #{math.div($tocItemLineHeight, 2)}px + #{math.div($tocMarkerSize, 2)}px));
+          bottom: calc(100% - (#{$tocItemTopPadding}px + #{math.div($tocItemLineHeight, 2 * 10)}rem + #{math.div($tocMarkerSize, 2)}px));
         }
 
         &:not(.active):hover {
