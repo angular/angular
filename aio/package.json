@@ -100,6 +100,7 @@
     "@angular/service-worker": "12.1.1",
     "@webcomponents/custom-elements": "1.5.0",
     "rxjs": "^6.6.7",
+    "safevalues": "^0.1.8",
     "tslib": "^2.2.0",
     "zone.js": "~0.11.4"
   },
@@ -117,6 +118,7 @@
     "@types/lunr": "^2.3.3",
     "@types/node": "^12.7.9",
     "@types/stemmer": "^1.0.2",
+    "@types/trusted-types": "^2.0.2",
     "@types/xregexp": "^4.3.0",
     "@typescript-eslint/eslint-plugin": "4.31.0",
     "@typescript-eslint/parser": "4.31.0",
