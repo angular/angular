@@ -61,11 +61,11 @@
     <aio-dt *ngIf="dtOn" [(doc)]="currentDocument"></aio-dt>
   </main>
 
-</mat-sidenav-container>
+  <div *ngIf="hasFloatingToc" class="toc-container no-print" [style.max-height.px]="tocMaxHeight" (wheel)="restrainScrolling($event)">
+    <aio-lazy-ce selector="aio-toc"></aio-lazy-ce>
+  </div>
 
-<div *ngIf="hasFloatingToc" class="toc-container no-print" [style.max-height.px]="tocMaxHeight" (wheel)="restrainScrolling($event)">
-  <aio-lazy-ce selector="aio-toc"></aio-lazy-ce>
-</div>
+</mat-sidenav-container>
 
 <footer class="no-print">
   <aio-footer [nodes]="footerNodes" [versionInfo]="versionInfo"></aio-footer>
