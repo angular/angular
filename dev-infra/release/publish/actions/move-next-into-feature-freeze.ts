@@ -24,13 +24,13 @@ import {changelogPath, packageJsonPath} from '../constants';
 export class MoveNextIntoFeatureFreezeAction extends ReleaseAction {
   private _newVersion = computeNewPrereleaseVersionForNext(this.active, this.config);
 
-  async getDescription() {
+  override async getDescription() {
     const {branchName} = this.active.next;
     const newVersion = await this._newVersion;
     return `Move the "${branchName}" branch into feature-freeze phase (v${newVersion}).`;
   }
 
-  async perform() {
+  override async perform() {
     const newVersion = await this._newVersion;
     const newBranch = `${newVersion.major}.${newVersion.minor}.x`;
 

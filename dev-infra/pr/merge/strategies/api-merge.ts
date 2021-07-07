@@ -44,7 +44,7 @@ export class GithubApiMergeStrategy extends MergeStrategy {
     super(git);
   }
 
-  async merge(pullRequest: PullRequest): Promise<PullRequestFailure|null> {
+  override async merge(pullRequest: PullRequest): Promise<PullRequestFailure|null> {
     const {githubTargetBranch, prNumber, targetBranches, requiredBaseSha, needsCommitMessageFixup} =
         pullRequest;
     // If the pull request does not have its base branch set to any determined target

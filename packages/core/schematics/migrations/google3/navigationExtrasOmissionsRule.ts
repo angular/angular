@@ -13,7 +13,7 @@ import {findLiteralsToMigrate, migrateLiteral} from '../../migrations/navigation
 
 /** TSLint rule that migrates `navigateByUrl` and `createUrlTree` calls to an updated signature. */
 export class Rule extends Rules.TypedRule {
-  applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
+  override applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
     const failures: RuleFailure[] = [];
     const typeChecker = program.getTypeChecker();
     const printer = ts.createPrinter();

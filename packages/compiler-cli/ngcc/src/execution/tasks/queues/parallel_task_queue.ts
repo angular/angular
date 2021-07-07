@@ -27,7 +27,7 @@ export class ParallelTaskQueue extends BaseTaskQueue {
     this.blockedTasks = getBlockedTasks(dependencies);
   }
 
-  computeNextTask(): Task|null {
+  override computeNextTask(): Task|null {
     // Look for the first available (i.e. not blocked) task.
     // (NOTE: Since tasks are sorted by priority, the first available one is the best choice.)
     const nextTaskIdx = this.tasks.findIndex(task => !this.blockedTasks.has(task));

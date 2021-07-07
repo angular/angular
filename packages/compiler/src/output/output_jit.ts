@@ -119,7 +119,7 @@ export class JitEmitterVisitor extends AbstractJsEmitterVisitor {
     return result;
   }
 
-  visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any {
+  override visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any {
     this._emitReferenceToExternal(ast, this.reflector.resolveExternalReference(ast.value), ctx);
     return null;
   }

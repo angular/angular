@@ -20,7 +20,7 @@ import {findRendererReferences} from '../renderer-to-renderer2/util';
  * https://hackmd.angular.io/UTzUZTnPRA-cSa_4mHyfYw
  */
 export class Rule extends Rules.TypedRule {
-  applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
+  override applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
     const typeChecker = program.getTypeChecker();
     const printer = ts.createPrinter();
     const failures: RuleFailure[] = [];

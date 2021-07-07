@@ -140,7 +140,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    * @description
    * Returns the `FormGroup` bound to this directive.
    */
-  get control(): FormGroup {
+  override get control(): FormGroup {
     return this.form;
   }
 

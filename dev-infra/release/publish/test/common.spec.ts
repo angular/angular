@@ -143,11 +143,11 @@ describe('common release action logic', () => {
  * release action class. This allows us to add unit tests.
  */
 class TestAction extends ReleaseAction {
-  async getDescription() {
+  override async getDescription() {
     return 'Test action';
   }
 
-  async perform() {
+  override async perform() {
     throw Error('Not implemented.');
   }
 

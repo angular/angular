@@ -13,10 +13,10 @@ const exampleData = 'this is example data' as const;
 
 /** A simple usage of the BaseModule to illustrate the workings built into the abstract class. */
 class ConcreteBaseModule extends BaseModule<typeof exampleData> {
-  async retrieveData() {
+  override async retrieveData() {
     return exampleData;
   }
-  async printToTerminal() {}
+  override async printToTerminal() {}
 }
 
 describe('BaseModule', () => {
