@@ -77,6 +77,7 @@ describe('DocumentService', () => {
       httpMock.expectOne(CONTENT_URL_PREFIX + 'doc__with__underscores.json').flush({});
       locationService.go('DOC_WITH_UNDERSCORES');
       httpMock.expectOne(CONTENT_URL_PREFIX + 'd_o_c___w_i_t_h___u_n_d_e_r_s_c_o_r_e_s_.json').flush({});
+      expect().nothing();
     });
 
     it('should emit the not-found document if the document is not found on the server', () => {
