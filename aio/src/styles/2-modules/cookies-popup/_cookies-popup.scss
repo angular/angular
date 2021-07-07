@@ -1,3 +1,4 @@
+@use 'sass:math';
 @use '~@angular/cdk' as cdk;
 @use '~@angular/material' as mat;
 
@@ -12,13 +13,13 @@ aio-cookies-popup {
     position: fixed;
     margin: 24px;
     max-width: 430px;
-    padding: $inner-spacing $inner-spacing $inner-spacing / 2;
+    padding: $inner-spacing $inner-spacing math.div($inner-spacing, 2);
     z-index: cdk.$overlay-container-z-index + 1;
 
     .actions {
       display: flex;
       justify-content: flex-end;
-      margin: $inner-spacing $inner-spacing / -2 0 0;
+      margin: $inner-spacing math.div($inner-spacing, -2) 0 0;
 
       .mat-button {
         text-transform: uppercase;
