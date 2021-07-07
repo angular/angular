@@ -203,11 +203,7 @@ mat-toolbar.app-toolbar {
   .toolbar-external-icons-container {
     a {
       @media screen and (max-width: 480px) {
-        margin: 0;
-
-        &:not(:first-child) {
-          margin-left: -8px;
-        }
+        margin: 0 -8px 0 0;
       }
 
       @media screen and (max-width: 420px) {
