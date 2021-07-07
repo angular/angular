@@ -67,7 +67,7 @@ export class CodeTabsComponent implements OnInit, AfterViewInit {
     // NOTE:
     // In IE11, doing this also empties the `<code-pane>` nodes captured in `codeExamples` ¯\_(ツ)_/¯
     // Only remove the unnecessary nodes after having captured the `<code-pane>` contents.
-    contentElem.innerHTML = '';
+    contentElem.textContent = '';
   }
 
   ngAfterViewInit() {
