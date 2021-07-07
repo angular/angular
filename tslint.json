@@ -46,7 +46,9 @@
       "packages/router/src/"
     ],
     "semicolon": [
-      true
+      true,
+      "always",
+      "ignore-bound-class-methods"
     ],
     "variable-name": [
       true,
