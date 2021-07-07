@@ -9,12 +9,13 @@
 mat-sidenav-container.sidenav-container {
   min-height: 100%;
   height: auto !important;
-  max-width: 100%;
   margin: 0;
   transform: none;
 
   &.has-floating-toc {
-    max-width: 82%;
+    .mat-sidenav-content {
+      padding-right: 18vw;
+    }
   }
 
   .sidenav-content {
