@@ -1458,8 +1458,8 @@ export class FormGroup extends AbstractControl {
    * Add a control to this group.
    *
    * If a control with a given name already exists, it would *not* be replaced with a new one.
-   * If you want to replace an existing control, use the {@link FormGroup#setControl setControl} method instead.
-   * This method also updates the value and validity of the control.
+   * If you want to replace an existing control, use the {@link FormGroup#setControl setControl}
+   * method instead. This method also updates the value and validity of the control.
    *
    * @param name The control name to add to the collection
    * @param control Provides the control for the given name
