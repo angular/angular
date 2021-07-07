@@ -2,10 +2,10 @@
   "aio": {
     "master": {
       "uncompressed": {
-        "runtime-es2017": 4619,
-        "main-es2017": 456436,
-        "polyfills-es2017": 55210,
-        "styles": 69211,
+        "runtime-es2017": 4841,
+        "main-es2017": 458609,
+        "polyfills-es2017": 55235,
+        "styles": 69213,
         "light-theme": 79025,
         "dark-theme": 78924
       }
@@ -14,10 +14,10 @@
   "aio-local": {
     "master": {
       "uncompressed": {
-        "runtime-es2017": 4619,
-        "main-es2017": 456585,
-        "polyfills-es2017": 55348,
-        "styles": 69211,
+        "runtime-es2017": 4841,
+        "main-es2017": 458748,
+        "polyfills-es2017": 55373,
+        "styles": 69213,
         "light-theme": 79025,
         "dark-theme": 78924
       }
