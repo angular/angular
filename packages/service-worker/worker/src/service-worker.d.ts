@@ -64,29 +64,24 @@ type WindowClientState = 'hidden'|'visible'|'prerender'|'unloaded';
 // Fetch API
 
 interface FetchEvent extends ExtendableEvent {
-  request: Request;
-  clientId?: string;
-  resultingClientId?: string;
-  respondWith(response: Promise<Response>|Response): Promise<Response>;
+  readonly clientId: string;
+  readonly preloadResponse: Promise<any>;
+  readonly request: Request;
+  readonly resultingClientId: string;
+  respondWith(r: Response|Promise<Response>): void;
 }
-
-interface InstallEvent extends ExtendableEvent {
-  activeWorker: ServiceWorker;
-}
-
-interface ActivateEvent extends ExtendableEvent {}
 
 // Notification API
 
 interface NotificationEvent extends ExtendableEvent {
-  action: string;
-  notification: Notification;
+  readonly action: string;
+  readonly notification: Notification;
 }
 
 // Push API
 
 interface PushEvent extends ExtendableEvent {
-  data: PushMessageData;
+  readonly data: PushMessageData|null;
 }
 
 interface PushMessageData {
@@ -99,13 +94,16 @@ interface PushMessageData {
 // Sync API
 
 interface SyncEvent extends ExtendableEvent {
-  lastChance: boolean;
-  tag: string;
+  readonly lastChance: boolean;
+  readonly tag: string;
 }
 
 interface ExtendableMessageEvent extends ExtendableEvent {
-  data: any;
-  source: Client|Object;
+  readonly data: any;
+  readonly lastEventId: string;
+  readonly origin: string;
+  readonly ports: ReadonlyArray<MessagePort>;
+  readonly source: Client|ServiceWorker|MessagePort|null;
 }
 
 // ServiceWorkerGlobalScope

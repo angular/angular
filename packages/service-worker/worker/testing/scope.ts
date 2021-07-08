@@ -13,7 +13,7 @@ import {AssetGroupConfig, Manifest} from '../src/manifest';
 import {sha1} from '../src/sha1';
 
 import {MockCacheStorage} from './cache';
-import {MockActivateEvent, MockFetchEvent, MockInstallEvent, MockMessageEvent, MockNotificationEvent, MockPushEvent} from './events';
+import {MockActivateEvent, MockExtendableMessageEvent, MockFetchEvent, MockInstallEvent, MockNotificationEvent, MockPushEvent} from './events';
 import {MockHeaders, MockRequest, MockResponse} from './fetch';
 import {MockServerState, MockServerStateBuilder} from './mock';
 import {normalizeUrl, parseUrl} from './utils';
@@ -244,12 +244,13 @@ export class SwTestHarness extends Adapter<MockCacheStorage> implements ServiceW
     if (!this.eventHandlers.has('message')) {
       throw new Error('No message handler registered');
     }
-    let event: MockMessageEvent;
+    let event: MockExtendableMessageEvent;
     if (clientId === null) {
-      event = new MockMessageEvent(data, null);
+      event = new MockExtendableMessageEvent(data, null);
     } else {
       this.clients.add(clientId);
-      event = new MockMessageEvent(data, this.clients.getMock(clientId) || null);
+      event = new MockExtendableMessageEvent(
+          data, this.clients.getMock(clientId) as unknown as Client || null);
     }
     this.eventHandlers.get('message')!.call(this, event);
     return event.ready;
