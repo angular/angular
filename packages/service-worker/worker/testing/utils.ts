@@ -10,6 +10,27 @@ import {NormalizedUrl} from '../src/api';
 
 
 /**
+ * Determine whether the current environment provides all necessary APIs to run ServiceWorker tests.
+ *
+ * @return Whether ServiceWorker tests can be run in the current environment.
+ */
+export function envIsSupported(): boolean {
+  if (typeof URL === 'function') {
+    return true;
+  }
+
+  // If we're in a browser that doesn't support URL at this point, don't go any further
+  // since browser builds use requirejs which will fail on the `require` call below.
+  if (typeof window !== 'undefined' && window) {
+    return false;
+  }
+
+  // In older Node.js versions, the `URL` global does not exist. We can use `url` instead.
+  const url = (typeof require === 'function') && require('url');
+  return url && (typeof url.parse === 'function') && (typeof url.resolve === 'function');
+}
+
+/**
  * Get a normalized representation of a URL relative to a provided base URL.
  *
  * More specifically:

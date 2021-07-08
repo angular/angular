@@ -12,11 +12,12 @@ import {IdleScheduler} from '../src/idle';
 import {MockCache} from '../testing/cache';
 import {MockRequest} from '../testing/fetch';
 import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTable, tmpManifestSingleAssetGroup} from '../testing/mock';
-import {MockExtendableEvent, SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
+import {MockExtendableEvent, SwTestHarnessBuilder} from '../testing/scope';
+import {envIsSupported} from '../testing/utils';
 
 (function() {
 // Skip environments that don't support the minimum APIs needed to run the SW tests.
-if (!SwTestHarness.envIsSupported()) {
+if (!envIsSupported()) {
   return;
 }
 
