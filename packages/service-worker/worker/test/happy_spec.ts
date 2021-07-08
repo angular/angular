@@ -2306,6 +2306,62 @@ describe('Driver', () => {
         // latest one.
         expect(driver.state).toEqual(DriverReadyState.EXISTING_CLIENTS_ONLY);
       });
+
+      it('is handled correctly even if some of the clients no longer exist', async () => {
+        const originalFiles = new MockFileSystemBuilder()
+                                  .addFile('/index.html', '<script src="foo.hash.js"></script>')
+                                  .addFile('/foo.hash.js', 'console.log("FOO");')
+                                  .build();
+
+        const updatedFiles = new MockFileSystemBuilder()
+                                 .addFile('/index.html', '<script src="bar.hash.js"></script>')
+                                 .addFile('/bar.hash.js', 'console.log("BAR");')
+                                 .build();
+
+        const {serverState: originalServer, manifest} = generateMockServerState(originalFiles);
+        const {serverState: updatedServer} = generateMockServerState(updatedFiles);
+
+        // Create initial server state and initialize the SW.
+        scope = new SwTestHarnessBuilder().withServerState(originalServer).build();
+        driver = new Driver(scope, scope, new CacheDatabase(scope));
+
+        expect(await makeRequest(scope, '/foo.hash.js', 'client-1')).toBe('console.log("FOO");');
+        expect(await makeRequest(scope, '/foo.hash.js', 'client-2')).toBe('console.log("FOO");');
+        await driver.initialized;
+
+        // Update the server state to emulate deploying a new version (where `foo.hash.js` does not
+        // exist any more). Keep the cache though.
+        scope = new SwTestHarnessBuilder()
+                    .withCacheState(scope.caches.original.dehydrate())
+                    .withServerState(updatedServer)
+                    .build();
+        driver = new Driver(scope, scope, new CacheDatabase(scope));
+
+        // The SW is still able to serve `foo.hash.js` from the cache.
+        expect(await makeRequest(scope, '/foo.hash.js', 'client-1')).toBe('console.log("FOO");');
+        expect(await makeRequest(scope, '/foo.hash.js', 'client-2')).toBe('console.log("FOO");');
+
+        // Remove `foo.hash.js` from the cache to emulate the browser evicting files from the cache.
+        await removeAssetFromCache(scope, manifest, '/foo.hash.js');
+
+        // Remove one of the clients to emulate closing a browser tab.
+        scope.clients.remove('client-1');
+
+        // Retrieve the remaining client to ensure it is notified.
+        const mockClient2 = scope.clients.getMock('client-2')!;
+        expect(mockClient2.messages).toEqual([]);
+
+        // Try to retrieve `foo.hash.js`, which is neither in the cache nor on the server.
+        // This should put the SW in an unrecoverable state and notify clients (even if some of the
+        // previously known clients no longer exist).
+        expect(await makeRequest(scope, '/foo.hash.js', 'client-2')).toBeNull();
+        expect(mockClient2.messages).toEqual([jasmine.objectContaining(
+            {type: 'UNRECOVERABLE_STATE'})]);
+
+        // This should also enter the `SW` into degraded mode, because the broken version was the
+        // latest one.
+        expect(driver.state).toEqual(DriverReadyState.EXISTING_CLIENTS_ONLY);
+      });
     });
 
     describe('backwards compatibility with v5', () => {
