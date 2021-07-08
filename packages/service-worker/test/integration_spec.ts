@@ -9,7 +9,7 @@
 import {NgswCommChannel} from '@angular/service-worker/src/low_level';
 import {SwPush} from '@angular/service-worker/src/push';
 import {SwUpdate} from '@angular/service-worker/src/update';
-import {MockServiceWorkerContainer, MockServiceWorkerRegistration} from '@angular/service-worker/testing/mock';
+import {MockServiceWorkerContainer} from '@angular/service-worker/testing/mock';
 import {CacheDatabase} from '@angular/service-worker/worker/src/db-cache';
 import {Driver} from '@angular/service-worker/worker/src/driver';
 import {Manifest} from '@angular/service-worker/worker/src/manifest';
@@ -78,7 +78,6 @@ const serverUpdate =
 describe('ngsw + companion lib', () => {
   let mock: MockServiceWorkerContainer;
   let comm: NgswCommChannel;
-  let reg: MockServiceWorkerRegistration;
   let scope: SwTestHarness;
   let driver: Driver;
 
@@ -102,7 +101,6 @@ describe('ngsw + companion lib', () => {
     });
 
     mock.setupSw();
-    reg = mock.mockRegistration!;
 
     await Promise.all(scope.handleFetch(new MockRequest('/only.txt'), 'default'));
     await driver.initialized;
@@ -117,9 +115,7 @@ describe('ngsw + companion lib', () => {
     const update = new SwUpdate(comm);
     scope.updateServerState(serverUpdate);
 
-    const gotUpdateNotice = (async () => {
-      const notice = await obsToSinglePromise(update.available);
-    })();
+    const gotUpdateNotice = (async () => await obsToSinglePromise(update.available))();
 
     await update.checkForUpdate();
     await gotUpdateNotice;
