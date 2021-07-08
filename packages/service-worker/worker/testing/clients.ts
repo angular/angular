@@ -9,35 +9,39 @@
 import {Subject} from 'rxjs';
 
 
-export class MockClient {
-  queue = new Subject<Object>();
+export class MockClient implements Client {
+  readonly messages: any[] = [];
+  readonly queue = new Subject<any>();
+  lastFocusedAt = 0;
 
-  constructor(readonly id: string) {}
+  constructor(
+      readonly id: string, readonly url: string, readonly type: ClientTypes = 'all',
+      readonly frameType: FrameType = 'top-level') {}
 
-  readonly messages: Object[] = [];
-
-  postMessage(message: Object): void {
+  postMessage(message: any): void {
     this.messages.push(message);
     this.queue.next(message);
   }
 }
 
-export class WindowClientImpl extends MockClient implements WindowClient {
-  readonly ancestorOrigins: ReadonlyArray<string> = [];
+export class MockWindowClient extends MockClient implements WindowClient {
   readonly focused: boolean = false;
-  readonly visibilityState: VisibilityState = 'hidden';
-  frameType: ClientFrameType = 'top-level';
-  url = 'http://localhost/unique';
+  readonly visibilityState: VisibilityState = 'visible';
 
-  constructor(readonly id: string) {
-    super(id);
+  constructor(id: string, url: string, frameType: FrameType = 'top-level') {
+    super(id, url, 'window', frameType);
   }
 
   async focus(): Promise<WindowClient> {
+    // This is only used for relatively ordering clients based on focus order, so we don't need to
+    // use `Adapter#time`.
+    this.lastFocusedAt = Date.now();
+    (this.focused as boolean) = true;
     return this;
   }
 
   async navigate(url: string): Promise<WindowClient|null> {
+    (this.url as string) = url;
     return this;
   }
 }
@@ -45,11 +49,20 @@ export class WindowClientImpl extends MockClient implements WindowClient {
 export class MockClients implements Clients {
   private clients = new Map<string, MockClient>();
 
-  add(clientId: string): void {
+  add(clientId: string, url: string, type: ClientTypes = 'window'): void {
     if (this.clients.has(clientId)) {
-      return;
+      const existingClient = this.clients.get(clientId)!;
+      if (existingClient.url === url) {
+        return;
+      }
+      throw new Error(
+          `Trying to add mock client with same ID (${existingClient.id}) and different URL ` +
+          `(${existingClient.url} --> ${url})`);
     }
-    this.clients.set(clientId, new MockClient(clientId));
+
+    const client = (type === 'window') ? new MockWindowClient(clientId, url) :
+                                         new MockClient(clientId, url, type);
+    this.clients.set(clientId, client);
   }
 
   remove(clientId: string): void {
@@ -66,7 +79,13 @@ export class MockClients implements Clients {
 
   async matchAll<T extends ClientQueryOptions>(options?: T):
       Promise<ReadonlyArray<T['type'] extends 'window'? WindowClient : Client>> {
-    return Array.from(this.clients.values()) as any[];
+    const type = options && options.type || 'window';
+    const allClients = Array.from(this.clients.values());
+    const matchedClients =
+        (type === 'all') ? allClients : allClients.filter(client => client.type === type);
+
+    // Order clients in most recently focused order to adhere to the spec.
+    return matchedClients.reverse().sort((a, b) => b.lastFocusedAt - a.lastFocusedAt) as any;
   }
 
   async openWindow(url: string): Promise<WindowClient|null> {
