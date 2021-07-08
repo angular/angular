@@ -70,7 +70,7 @@ export class MockClients implements Clients {
   }
 
   async get(id: string): Promise<Client> {
-    return this.clients.get(id)! as any as Client;
+    return this.clients.get(id)!;
   }
 
   getMock(id: string): MockClient|undefined {
@@ -79,13 +79,25 @@ export class MockClients implements Clients {
 
   async matchAll<T extends ClientQueryOptions>(options?: T):
       Promise<ReadonlyArray<T['type'] extends 'window'? WindowClient : Client>> {
-    const type = options && options.type || 'window';
+    const type = options?.type ?? 'window';
     const allClients = Array.from(this.clients.values());
     const matchedClients =
         (type === 'all') ? allClients : allClients.filter(client => client.type === type);
 
-    // Order clients in most recently focused order to adhere to the spec.
-    return matchedClients.reverse().sort((a, b) => b.lastFocusedAt - a.lastFocusedAt) as any;
+    // Order clients according to the [spec](https://w3c.github.io/ServiceWorker/#clients-matchall):
+    // In most recently focused then most recently created order, with windows clients before other
+    // clients.
+    return matchedClients
+               // Sort in most recently created order.
+               .reverse()
+               // Sort in most recently focused order.
+               .sort((a, b) => b.lastFocusedAt - a.lastFocusedAt)
+               // Sort windows clients before other clients (otherwise leave existing order).
+               .sort((a, b) => {
+                 const aScore = (a.type === 'window') ? 1 : 0;
+                 const bScore = (b.type === 'window') ? 1 : 0;
+                 return bScore - aScore;
+               }) as any;
   }
 
   async openWindow(url: string): Promise<WindowClient|null> {
