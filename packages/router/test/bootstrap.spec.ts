@@ -13,6 +13,8 @@ import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {NavigationEnd, Resolve, Router, RouterModule} from '@angular/router';
 
+declare var window: Window;
+
 describe('bootstrap', () => {
   if (isNode) return;
   let log: any[] = [];

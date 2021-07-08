@@ -10,7 +10,9 @@
 // This code to access the global object is mostly copied from `packages/core/src/util/global.ts`
 
 declare global {
-  var WorkerGlobalScope: any;
+  interface WorkerGlobalScope extends EventTarget, WindowOrWorkerGlobalScope {}
+
+  var WorkerGlobalScope: {prototype: WorkerGlobalScope; new (): WorkerGlobalScope;};
 }
 
 const __globalThis = typeof globalThis !== 'undefined' && globalThis;
