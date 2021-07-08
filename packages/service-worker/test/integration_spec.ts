@@ -89,7 +89,7 @@ describe('ngsw + companion lib', () => {
     scope = new SwTestHarnessBuilder().withServerState(server).build();
     driver = new Driver(scope, scope, new CacheDatabase(scope));
 
-    scope.clients.add('default');
+    scope.clients.add('default', scope.registration.scope);
     scope.clients.getMock('default')!.queue.subscribe(msg => {
       mock.sendMessage(msg);
     });
