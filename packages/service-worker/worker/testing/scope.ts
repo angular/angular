@@ -8,7 +8,7 @@
 
 import {Subject} from 'rxjs';
 
-import {Adapter, Context} from '../src/adapter';
+import {Adapter} from '../src/adapter';
 import {AssetGroupConfig, Manifest} from '../src/manifest';
 import {sha1} from '../src/sha1';
 
@@ -105,8 +105,7 @@ export class MockClients implements Clients {
   async claim(): Promise<any> {}
 }
 
-export class SwTestHarness extends Adapter<MockCacheStorage> implements Context,
-                                                                        ServiceWorkerGlobalScope {
+export class SwTestHarness extends Adapter<MockCacheStorage> implements ServiceWorkerGlobalScope {
   readonly clients = new MockClients();
   private eventHandlers = new Map<string, Function>();
   private skippedWaiting = false;
@@ -238,8 +237,6 @@ export class SwTestHarness extends Adapter<MockCacheStorage> implements Context,
   async skipWaiting(): Promise<void> {
     this.skippedWaiting = true;
   }
-
-  waitUntil(promise: Promise<void>): void {}
 
   handleFetch(req: Request, clientId = ''): [Promise<Response|undefined>, Promise<void>] {
     if (!this.eventHandlers.has('fetch')) {
@@ -376,7 +373,49 @@ export class ConfigBuilder {
   }
 }
 
-class OneTimeContext implements Context {
+class MockEvent implements Event {
+  readonly AT_TARGET = -1;
+  readonly BUBBLING_PHASE = -1;
+  readonly CAPTURING_PHASE = -1;
+  readonly NONE = -1;
+
+  readonly bubbles = false;
+  cancelBubble = false;
+  readonly cancelable = false;
+  readonly composed = false;
+  readonly currentTarget = null;
+  readonly defaultPrevented = false;
+  readonly eventPhase = -1;
+  readonly isTrusted = false;
+  returnValue = false;
+  readonly srcElement = null;
+  readonly target = null;
+  readonly timeStamp = Date.now();
+
+  constructor(readonly type: string) {}
+
+  composedPath(): EventTarget[] {
+    this.notImplemented();
+  }
+  initEvent(type: string, bubbles?: boolean, cancelable?: boolean): void {
+    this.notImplemented();
+  }
+  preventDefault(): void {
+    this.notImplemented();
+  }
+  stopImmediatePropagation(): void {
+    this.notImplemented();
+  }
+  stopPropagation(): void {
+    this.notImplemented();
+  }
+
+  private notImplemented(): never {
+    throw new Error('Method not implemented in `MockEvent`.');
+  }
+}
+
+export class MockExtendableEvent extends MockEvent implements ExtendableEvent {
   private queue: Promise<void>[] = [];
 
   waitUntil(promise: Promise<void>): void {
@@ -392,14 +431,12 @@ class OneTimeContext implements Context {
   }
 }
 
-class MockExtendableEvent extends OneTimeContext {}
-
 class MockFetchEvent extends MockExtendableEvent {
   response: Promise<Response|undefined> = Promise.resolve(undefined);
 
   constructor(
       readonly request: Request, readonly clientId: string, readonly resultingClientId: string) {
-    super();
+    super('fetch');
   }
 
   respondWith(promise: Promise<Response>): Promise<Response> {
@@ -410,13 +447,13 @@ class MockFetchEvent extends MockExtendableEvent {
 
 class MockMessageEvent extends MockExtendableEvent {
   constructor(readonly data: Object, readonly source: MockClient|null) {
-    super();
+    super('message');
   }
 }
 
 class MockPushEvent extends MockExtendableEvent {
   constructor(private _data: Object) {
-    super();
+    super('push');
   }
   data = {
     json: () => this._data,
@@ -425,11 +462,19 @@ class MockPushEvent extends MockExtendableEvent {
 
 class MockNotificationEvent extends MockExtendableEvent {
   constructor(private _notification: any, readonly action?: string) {
-    super();
+    super('notification');
   }
   readonly notification = {...this._notification, close: () => undefined};
 }
 
-class MockInstallEvent extends MockExtendableEvent {}
+class MockInstallEvent extends MockExtendableEvent {
+  constructor() {
+    super('install');
+  }
+}
 
-class MockActivateEvent extends MockExtendableEvent {}
+class MockActivateEvent extends MockExtendableEvent {
+  constructor() {
+    super('activate');
+  }
+}
