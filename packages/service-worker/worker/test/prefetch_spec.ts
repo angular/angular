@@ -10,9 +10,10 @@ import {PrefetchAssetGroup} from '../src/assets';
 import {CacheDatabase} from '../src/db-cache';
 import {IdleScheduler} from '../src/idle';
 import {MockCache} from '../testing/cache';
+import {MockExtendableEvent} from '../testing/events';
 import {MockRequest} from '../testing/fetch';
 import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTable, tmpManifestSingleAssetGroup} from '../testing/mock';
-import {MockExtendableEvent, SwTestHarnessBuilder} from '../testing/scope';
+import {SwTestHarnessBuilder} from '../testing/scope';
 import {envIsSupported} from '../testing/utils';
 
 (function() {
