@@ -454,7 +454,6 @@ export abstract class AssetGroup {
   protected async maybeUpdate(updateFrom: UpdateSource, req: Request, cache: Cache):
       Promise<boolean> {
     const url = this.adapter.normalizeUrl(req.url);
-    const meta = await this.metadata;
     // Check if this resource is hashed and already exists in the cache of a prior version.
     if (this.hashes.has(url)) {
       const hash = this.hashes.get(url)!;
@@ -467,7 +466,6 @@ export abstract class AssetGroup {
       if (res !== null) {
         // Copy to this cache.
         await cache.put(req, res);
-        await meta.write(req.url, {ts: this.adapter.time, used: false} as UrlMetadata);
 
         // No need to do anything further with this resource, it's now cached properly.
         return true;
