@@ -15,10 +15,11 @@ import {clearAllCaches, MockCache} from '../testing/cache';
 import {MockRequest, MockResponse} from '../testing/fetch';
 import {MockFileSystem, MockFileSystemBuilder, MockServerState, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock';
 import {MockClient, SwTestHarness, SwTestHarnessBuilder, WindowClientImpl} from '../testing/scope';
+import {envIsSupported} from '../testing/utils';
 
 (function() {
 // Skip environments that don't support the minimum APIs needed to run the SW tests.
-if (!SwTestHarness.envIsSupported()) {
+if (!envIsSupported()) {
   return;
 }
 

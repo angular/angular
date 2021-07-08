@@ -16,12 +16,13 @@ import {Manifest} from '@angular/service-worker/worker/src/manifest';
 import {MockRequest} from '@angular/service-worker/worker/testing/fetch';
 import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTableForFs} from '@angular/service-worker/worker/testing/mock';
 import {SwTestHarness, SwTestHarnessBuilder} from '@angular/service-worker/worker/testing/scope';
+import {envIsSupported} from '@angular/service-worker/worker/testing/utils';
 import {Observable} from 'rxjs';
 import {take} from 'rxjs/operators';
 
 (function() {
 // Skip environments that don't support the minimum APIs needed to run the SW tests.
-if (!SwTestHarness.envIsSupported()) {
+if (!envIsSupported()) {
   return;
 }
 
