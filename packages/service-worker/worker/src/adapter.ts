@@ -104,14 +104,3 @@ export class Adapter<T extends CacheStorage = CacheStorage> {
     });
   }
 }
-
-/**
- * An event context in which an operation is taking place, which allows
- * the delaying of Service Worker shutdown until certain triggers occur.
- */
-export interface Context {
-  /**
-   * Delay shutdown of the Service Worker until the given promise resolves.
-   */
-  waitUntil(fn: Promise<any>): void;
-}
