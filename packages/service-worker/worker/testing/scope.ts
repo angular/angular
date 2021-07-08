@@ -13,6 +13,7 @@ import {AssetGroupConfig, Manifest} from '../src/manifest';
 import {sha1} from '../src/sha1';
 
 import {MockCacheStorage} from './cache';
+import {MockActivateEvent, MockFetchEvent, MockInstallEvent, MockMessageEvent, MockNotificationEvent, MockPushEvent} from './events';
 import {MockHeaders, MockRequest, MockResponse} from './fetch';
 import {MockServerState, MockServerStateBuilder} from './mock';
 import {normalizeUrl, parseUrl} from './utils';
@@ -354,111 +355,5 @@ export class ConfigBuilder {
       navigationRequestStrategy: 'performance',
       hashTable,
     };
-  }
-}
-
-class MockEvent implements Event {
-  readonly AT_TARGET = -1;
-  readonly BUBBLING_PHASE = -1;
-  readonly CAPTURING_PHASE = -1;
-  readonly NONE = -1;
-
-  readonly bubbles = false;
-  cancelBubble = false;
-  readonly cancelable = false;
-  readonly composed = false;
-  readonly currentTarget = null;
-  readonly defaultPrevented = false;
-  readonly eventPhase = -1;
-  readonly isTrusted = false;
-  returnValue = false;
-  readonly srcElement = null;
-  readonly target = null;
-  readonly timeStamp = Date.now();
-
-  constructor(readonly type: string) {}
-
-  composedPath(): EventTarget[] {
-    this.notImplemented();
-  }
-  initEvent(type: string, bubbles?: boolean, cancelable?: boolean): void {
-    this.notImplemented();
-  }
-  preventDefault(): void {
-    this.notImplemented();
-  }
-  stopImmediatePropagation(): void {
-    this.notImplemented();
-  }
-  stopPropagation(): void {
-    this.notImplemented();
-  }
-
-  private notImplemented(): never {
-    throw new Error('Method not implemented in `MockEvent`.');
-  }
-}
-
-export class MockExtendableEvent extends MockEvent implements ExtendableEvent {
-  private queue: Promise<void>[] = [];
-
-  waitUntil(promise: Promise<void>): void {
-    this.queue.push(promise);
-  }
-
-  get ready(): Promise<void> {
-    return (async () => {
-      while (this.queue.length > 0) {
-        await this.queue.shift();
-      }
-    })();
-  }
-}
-
-class MockFetchEvent extends MockExtendableEvent {
-  response: Promise<Response|undefined> = Promise.resolve(undefined);
-
-  constructor(
-      readonly request: Request, readonly clientId: string, readonly resultingClientId: string) {
-    super('fetch');
-  }
-
-  respondWith(promise: Promise<Response>): Promise<Response> {
-    this.response = promise;
-    return promise;
-  }
-}
-
-class MockMessageEvent extends MockExtendableEvent {
-  constructor(readonly data: Object, readonly source: MockClient|null) {
-    super('message');
-  }
-}
-
-class MockPushEvent extends MockExtendableEvent {
-  constructor(private _data: Object) {
-    super('push');
-  }
-  data = {
-    json: () => this._data,
-  };
-}
-
-class MockNotificationEvent extends MockExtendableEvent {
-  constructor(private _notification: any, readonly action?: string) {
-    super('notification');
-  }
-  readonly notification = {...this._notification, close: () => undefined};
-}
-
-class MockInstallEvent extends MockExtendableEvent {
-  constructor() {
-    super('install');
-  }
-}
-
-class MockActivateEvent extends MockExtendableEvent {
-  constructor() {
-    super('activate');
   }
 }
