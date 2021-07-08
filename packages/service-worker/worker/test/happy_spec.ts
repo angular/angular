@@ -12,9 +12,10 @@ import {Driver, DriverReadyState} from '../src/driver';
 import {AssetGroupConfig, DataGroupConfig, Manifest} from '../src/manifest';
 import {sha1} from '../src/sha1';
 import {clearAllCaches, MockCache} from '../testing/cache';
+import {WindowClientImpl} from '../testing/clients';
 import {MockRequest, MockResponse} from '../testing/fetch';
 import {MockFileSystem, MockFileSystemBuilder, MockServerState, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock';
-import {MockClient, SwTestHarness, SwTestHarnessBuilder, WindowClientImpl} from '../testing/scope';
+import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
 import {envIsSupported} from '../testing/utils';
 
 (function() {
