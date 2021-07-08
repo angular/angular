@@ -49,7 +49,7 @@ export class MockEvent implements Event {
 }
 
 export class MockExtendableEvent extends MockEvent implements ExtendableEvent {
-  private queue: Promise<void>[] = [];
+  private queue: Promise<unknown>[] = [];
 
   get ready(): Promise<void> {
     return (async () => {
@@ -59,7 +59,7 @@ export class MockExtendableEvent extends MockEvent implements ExtendableEvent {
     })();
   }
 
-  waitUntil(promise: Promise<void>): void {
+  waitUntil(promise: Promise<unknown>): void {
     this.queue.push(promise);
   }
 }
@@ -70,7 +70,8 @@ export class MockActivateEvent extends MockExtendableEvent {
   }
 }
 
-export class MockFetchEvent extends MockExtendableEvent {
+export class MockFetchEvent extends MockExtendableEvent implements FetchEvent {
+  readonly preloadResponse = Promise.resolve();
   response: Promise<Response|undefined> = Promise.resolve(undefined);
 
   constructor(
@@ -78,9 +79,8 @@ export class MockFetchEvent extends MockExtendableEvent {
     super('fetch');
   }
 
-  respondWith(promise: Promise<Response>): Promise<Response> {
-    this.response = promise;
-    return promise;
+  respondWith(r: Response|Promise<Response>): void {
+    this.response = Promise.resolve(r);
   }
 }
 
@@ -90,27 +90,33 @@ export class MockInstallEvent extends MockExtendableEvent {
   }
 }
 
-export class MockMessageEvent extends MockExtendableEvent {
-  constructor(readonly data: Object, readonly source: MockClient|null) {
+export class MockExtendableMessageEvent extends MockExtendableEvent implements
+    ExtendableMessageEvent {
+  readonly lastEventId = '';
+  readonly origin = '';
+  readonly ports: ReadonlyArray<MessagePort> = [];
+
+  constructor(readonly data: any, readonly source: Client|MessagePort|ServiceWorker|null) {
     super('message');
   }
 }
 
-export class MockNotificationEvent extends MockExtendableEvent {
+export class MockNotificationEvent extends MockExtendableEvent implements NotificationEvent {
   readonly notification = {
     ...this._notification,
     close: () => undefined,
-  };
+  } as Notification;
 
-  constructor(private _notification: any, readonly action?: string) {
+  constructor(private _notification: Partial<Notification>, readonly action = '') {
     super('notification');
   }
 }
 
-export class MockPushEvent extends MockExtendableEvent {
-  data = {
+export class MockPushEvent extends MockExtendableEvent implements PushEvent {
+  readonly data = {
     json: () => this._data,
-  };
+    text: () => JSON.stringify(this._data),
+  } as PushMessageData;
 
   constructor(private _data: object) {
     super('push');

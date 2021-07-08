@@ -783,7 +783,7 @@ describe('Driver', () => {
       const message: any = scope.clients.getMock('default')!.messages[0];
 
       expect(message.type).toEqual('NOTIFICATION_CLICK');
-      expect(message.data.action).toBeUndefined();
+      expect(message.data.action).toBe('');
       expect(message.data.notification.title).toEqual('This is a test without action');
       expect(message.data.notification.body).toEqual('Test body without action');
     });
