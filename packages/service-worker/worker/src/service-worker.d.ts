@@ -106,23 +106,54 @@ interface ExtendableMessageEvent extends ExtendableEvent {
   readonly source: Client|ServiceWorker|MessagePort|null;
 }
 
+// WorkerGlobalScope
+
+// Explicitly omit the `caches` property to disallow accessing `CacheStorage` APIs directly. All
+// interactions with `CacheStorage` should go through a `NamedCacheStorage` instance (exposed by the
+// `Adapter`).
+interface WorkerGlobalScope extends EventTarget, Omit<WindowOrWorkerGlobalScope, 'caches'> {
+  readonly location: WorkerLocation;
+  readonly navigator: WorkerNavigator;
+  readonly self: WorkerGlobalScope & typeof globalThis;
+
+  importScripts(...urls: string[]): void;
+  addEventListener<K extends keyof WorkerGlobalScopeEventMap>(type: K, listener: (this: WorkerGlobalScope, ev: WorkerGlobalScopeEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+  addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+  removeEventListener<K extends keyof WorkerGlobalScopeEventMap>(type: K, listener: (this: WorkerGlobalScope, ev: WorkerGlobalScopeEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+  removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+}
+
+interface WorkerGlobalScopeEventMap {
+  error: ErrorEvent;
+  languagechange: Event;
+  offline: Event;
+  online: Event;
+  rejectionhandled: PromiseRejectionEvent;
+  unhandledrejection: PromiseRejectionEvent;
+}
+
 // ServiceWorkerGlobalScope
 
-interface ServiceWorkerGlobalScope {
-  // Intentionally does not include a `caches` property to disallow accessing `CacheStorage` APIs
-  // directly. All interactions with `CacheStorage` should go through a `NamedCacheStorage` instance
-  // (exposed by the `Adapter`).
-  clients: Clients;
-  registration: ServiceWorkerRegistration;
+interface ServiceWorkerGlobalScope extends WorkerGlobalScope {
+  readonly clients: Clients;
+  readonly registration: ServiceWorkerRegistration;
+  readonly serviceWorker: ServiceWorker;
 
-  addEventListener(event: 'activate', fn: (event?: ExtendableEvent) => any): void;
-  addEventListener(event: 'message', fn: (event?: ExtendableMessageEvent) => any): void;
-  addEventListener(event: 'fetch', fn: (event?: FetchEvent) => any): void;
-  addEventListener(event: 'install', fn: (event?: ExtendableEvent) => any): void;
-  addEventListener(event: 'push', fn: (event?: PushEvent) => any): void;
-  addEventListener(event: 'notificationclick', fn: (event?: NotificationEvent) => any): void;
-  addEventListener(event: 'sync', fn: (event?: SyncEvent) => any): void;
-
-  fetch(request: Request|string): Promise<Response>;
   skipWaiting(): Promise<void>;
+  addEventListener<K extends keyof ServiceWorkerGlobalScopeEventMap>(type: K, listener: (this: ServiceWorkerGlobalScope, ev: ServiceWorkerGlobalScopeEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+  addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+  removeEventListener<K extends keyof ServiceWorkerGlobalScopeEventMap>(type: K, listener: (this: ServiceWorkerGlobalScope, ev: ServiceWorkerGlobalScopeEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+  removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+}
+
+interface ServiceWorkerGlobalScopeEventMap extends WorkerGlobalScopeEventMap {
+  activate: ExtendableEvent;
+  fetch: FetchEvent;
+  install: ExtendableEvent;
+  message: ExtendableMessageEvent;
+  messageerror: MessageEvent;
+  notificationclick: NotificationEvent;
+  notificationclose: NotificationEvent;
+  push: PushEvent;
+  sync: SyncEvent;
 }

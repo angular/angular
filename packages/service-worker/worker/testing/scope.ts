@@ -37,13 +37,16 @@ export class SwTestHarnessBuilder {
   }
 
   build(): SwTestHarness {
-    return new SwTestHarness(this.server, this.caches, this.scopeUrl);
+    return new SwTestHarnessImpl(this.server, this.caches, this.scopeUrl) as SwTestHarness;
   }
 }
 
-export class SwTestHarness extends Adapter<MockCacheStorage> implements ServiceWorkerGlobalScope {
+export type SwTestHarness = SwTestHarnessImpl&ServiceWorkerGlobalScope;
+
+export class SwTestHarnessImpl extends Adapter<MockCacheStorage> implements
+    Partial<ServiceWorkerGlobalScope> {
   readonly clients = new MockClients();
-  private eventHandlers = new Map<string, Function>();
+  private eventHandlers = new Map<string, EventListener>();
   private skippedWaiting = false;
 
   private selfMessageQueue: any[] = [];
@@ -131,12 +134,26 @@ export class SwTestHarness extends Adapter<MockCacheStorage> implements ServiceW
     }
   }
 
-  addEventListener(event: string, handler: Function): void {
-    this.eventHandlers.set(event, handler);
+  addEventListener(
+      type: string, listener: EventListenerOrEventListenerObject,
+      options?: boolean|AddEventListenerOptions): void {
+    if (options !== undefined) {
+      throw new Error('Mock `addEventListener()` does not support `options`.');
+    }
+
+    const handler: EventListener =
+        (typeof listener === 'function') ? listener : evt => listener.handleEvent(evt);
+    this.eventHandlers.set(type, handler);
   }
 
-  removeEventListener(event: string, handler?: Function): void {
-    this.eventHandlers.delete(event);
+  removeEventListener(
+      type: string, listener: EventListenerOrEventListenerObject,
+      options?: boolean|AddEventListenerOptions): void {
+    if (options !== undefined) {
+      throw new Error('Mock `removeEventListener()` does not support `options`.');
+    }
+
+    this.eventHandlers.delete(type);
   }
 
   newRequest(url: string, init: Object = {}): Request {

@@ -18,7 +18,7 @@ import {NamedCacheStorage} from './named-cache-storage';
  */
 export class Adapter<T extends CacheStorage = CacheStorage> {
   readonly caches: NamedCacheStorage<T>;
-  private readonly origin: string;
+  readonly origin: string;
 
   constructor(protected readonly scopeUrl: string, caches: T) {
     const parsedScopeUrl = this.parseUrl(this.scopeUrl);
