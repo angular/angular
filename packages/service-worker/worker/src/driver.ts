@@ -673,7 +673,7 @@ export class Driver implements Debuggable, UpdateSource {
 
           const client = await this.scope.clients.get(clientId);
 
-          await this.updateClient(client);
+          await this.updateClient(client!);
           appVersion = this.lookupVersionByHash(this.latestHash, 'assignVersion');
         }
 
@@ -1050,7 +1050,7 @@ export class Driver implements Debuggable, UpdateSource {
 
     await Promise.all(affectedClients.map(async clientId => {
       const client = await this.scope.clients.get(clientId);
-      client.postMessage({type: 'UNRECOVERABLE_STATE', reason});
+      client!.postMessage({type: 'UNRECOVERABLE_STATE', reason});
     }));
   }
 

@@ -12,7 +12,7 @@ import {Driver, DriverReadyState} from '../src/driver';
 import {AssetGroupConfig, DataGroupConfig, Manifest} from '../src/manifest';
 import {sha1} from '../src/sha1';
 import {clearAllCaches, MockCache} from '../testing/cache';
-import {WindowClientImpl} from '../testing/clients';
+import {MockWindowClient} from '../testing/clients';
 import {MockRequest, MockResponse} from '../testing/fetch';
 import {MockFileSystem, MockFileSystemBuilder, MockServerState, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock';
 import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
@@ -766,7 +766,7 @@ describe('Driver', () => {
       await driver.initialized;
       await scope.handleClick(
           {title: 'This is a test with action', body: 'Test body with action'}, 'button');
-      const message: any = scope.clients.getMock('default')!.messages[0];
+      const message = scope.clients.getMock('default')!.messages[0];
 
       expect(message.type).toEqual('NOTIFICATION_CLICK');
       expect(message.data.action).toEqual('button');
@@ -781,7 +781,7 @@ describe('Driver', () => {
         title: 'This is a test without action',
         body: 'Test body without action',
       });
-      const message: any = scope.clients.getMock('default')!.messages[0];
+      const message = scope.clients.getMock('default')!.messages[0];
 
       expect(message.type).toEqual('NOTIFICATION_CLICK');
       expect(message.data.action).toBe('');
@@ -837,11 +837,13 @@ describe('Driver', () => {
       describe('`focusLastFocusedOrOpen` operation', () => {
         it('focuses last client keeping previous url', async () => {
           expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
-          const mockClient = new WindowClientImpl('fooBar');
-          spyOn(scope.clients, 'matchAll').and.returnValue(Promise.resolve([mockClient]));
-          spyOn(mockClient, 'focus');
-          spyOn(mockClient, 'navigate');
+
+          scope.clients.add('fooBar', 'http://localhost/unique', 'window');
+          const mockClient = scope.clients.getMock('fooBar') as MockWindowClient;
           const url = 'foo';
+
+          expect(mockClient.url).toBe('http://localhost/unique');
+          expect(mockClient.focused).toBeFalse();
 
           await driver.initialized;
           await scope.handleClick(
@@ -855,9 +857,8 @@ describe('Driver', () => {
                 },
               },
               'foo');
-          expect(mockClient.navigate).not.toHaveBeenCalled();
-          expect(mockClient.url).toEqual('http://localhost/unique');
-          expect(mockClient.focus).toHaveBeenCalled();
+          expect(mockClient.url).toBe('http://localhost/unique');
+          expect(mockClient.focused).toBeTrue();
         });
 
         it('falls back to openWindow at url when no last client to focus', async () => {
@@ -905,12 +906,14 @@ describe('Driver', () => {
 
       describe('`navigateLastFocusedOrOpen` operation', () => {
         it('navigates last client to `url`', async () => {
-          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
-          const mockClient = new WindowClientImpl('fooBar');
-          spyOn(scope.clients, 'matchAll').and.returnValue(Promise.resolve([mockClient]));
-          spyOn(mockClient, 'focus');
-          spyOn(mockClient, 'navigate').and.returnValue(Promise.resolve(mockClient));
+          expect(await makeRequest(scope, '/foo.txt')).toBe('this is foo');
+
+          scope.clients.add('fooBar', 'http://localhost/unique', 'window');
+          const mockClient = scope.clients.getMock('fooBar') as MockWindowClient;
           const url = 'foo';
+
+          expect(mockClient.url).toBe('http://localhost/unique');
+          expect(mockClient.focused).toBeFalse();
 
           await driver.initialized;
           await scope.handleClick(
@@ -924,16 +927,18 @@ describe('Driver', () => {
                 },
               },
               'foo');
-          expect(mockClient.navigate).toHaveBeenCalledWith(`${scope.registration.scope}${url}`);
-          expect(mockClient.focus).toHaveBeenCalled();
+          expect(mockClient.url).toBe(`${scope.registration.scope}${url}`);
+          expect(mockClient.focused).toBeTrue();
         });
 
-        it('navigates last client to `/` if no `url', async () => {
-          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
-          const mockClient = new WindowClientImpl('fooBar');
-          spyOn(scope.clients, 'matchAll').and.returnValue(Promise.resolve([mockClient]));
-          spyOn(mockClient, 'focus');
-          spyOn(mockClient, 'navigate').and.returnValue(Promise.resolve(mockClient));
+        it('navigates last client to `/` if no `url`', async () => {
+          expect(await makeRequest(scope, '/foo.txt')).toBe('this is foo');
+
+          scope.clients.add('fooBar', 'http://localhost/unique', 'window');
+          const mockClient = scope.clients.getMock('fooBar') as MockWindowClient;
+
+          expect(mockClient.url).toBe('http://localhost/unique');
+          expect(mockClient.focused).toBeFalse();
 
           await driver.initialized;
           await scope.handleClick(
@@ -947,8 +952,8 @@ describe('Driver', () => {
                 },
               },
               'foo');
-          expect(mockClient.navigate).toHaveBeenCalledWith(`${scope.registration.scope}`);
-          expect(mockClient.focus).toHaveBeenCalled();
+          expect(mockClient.url).toBe(scope.registration.scope);
+          expect(mockClient.focused).toBeTrue();
         });
 
         it('falls back to openWindow at url when no last client to focus', async () => {

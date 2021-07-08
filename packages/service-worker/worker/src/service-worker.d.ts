@@ -29,15 +29,16 @@ interface ExtendableEvent extends Event {
 // Client API
 
 declare class Client {
-  frameType: ClientFrameType;
-  id: string;
-  url: string;
-  postMessage(message: any): void;
+    readonly frameType: FrameType;
+    readonly id: string;
+    readonly type: ClientTypes;
+    readonly url: string;
+    postMessage(message: any): void;
 }
 
 interface Clients {
   claim(): Promise<void>;
-  get(id: string): Promise<Client>;
+  get(id: string): Promise<Client | undefined>;
   matchAll<T extends ClientMatchOptions>(
     options?: T
   ): Promise<ReadonlyArray<T['type'] extends 'window' ? WindowClient : Client>>;
@@ -46,20 +47,19 @@ interface Clients {
 
 interface ClientMatchOptions {
   includeUncontrolled?: boolean;
-  type?: ClientMatchTypes;
+  type?: ClientTypes;
 }
 
 interface WindowClient extends Client {
-  readonly ancestorOrigins: ReadonlyArray<string>;
   readonly focused: boolean;
   readonly visibilityState: VisibilityState;
   focus(): Promise<WindowClient>;
   navigate(url: string): Promise<WindowClient | null>;
 }
 
-type ClientFrameType = 'auxiliary'|'top-level'|'nested'|'none';
-type ClientMatchTypes = 'window'|'worker'|'sharedworker'|'all';
-type WindowClientState = 'hidden'|'visible'|'prerender'|'unloaded';
+type FrameType = 'auxiliary'|'top-level'|'nested'|'none';
+type ClientTypes = 'window'|'worker'|'sharedworker'|'all';
+type VisibilityState = 'hidden'|'visible';
 
 // Fetch API
 

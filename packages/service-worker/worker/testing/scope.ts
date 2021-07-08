@@ -164,13 +164,14 @@ export class SwTestHarness extends Adapter<MockCacheStorage> implements ServiceW
     }
 
     const isNavigation = req.mode === 'navigate';
+
+    if (clientId && !this.clients.getMock(clientId)) {
+      this.clients.add(clientId, isNavigation ? req.url : this.scopeUrl);
+    }
+
     const event = isNavigation ? new MockFetchEvent(req, '', clientId) :
                                  new MockFetchEvent(req, clientId, '');
     this.eventHandlers.get('fetch')!.call(this, event);
-
-    if (clientId) {
-      this.clients.add(clientId);
-    }
 
     return [event.response, event.ready];
   }
@@ -179,15 +180,15 @@ export class SwTestHarness extends Adapter<MockCacheStorage> implements ServiceW
     if (!this.eventHandlers.has('message')) {
       throw new Error('No message handler registered');
     }
-    let event: MockExtendableMessageEvent;
-    if (clientId === null) {
-      event = new MockExtendableMessageEvent(data, null);
-    } else {
-      this.clients.add(clientId);
-      event = new MockExtendableMessageEvent(
-          data, this.clients.getMock(clientId) as unknown as Client || null);
+
+    if (clientId && !this.clients.getMock(clientId)) {
+      this.clients.add(clientId, this.scopeUrl);
     }
+
+    const event =
+        new MockExtendableMessageEvent(data, clientId && this.clients.getMock(clientId) || null);
     this.eventHandlers.get('message')!.call(this, event);
+
     return event.ready;
   }
 
