@@ -12711,6 +12711,14 @@ tsconfig-paths@^3.9.0:
     minimist "^1.2.0"
     strip-bom "^3.0.0"
 
+tsec@^0.1.5:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/tsec/-/tsec-0.1.5.tgz#ef8fc0e06af40de43b3774806ca0b994123cc33c"
+  integrity sha512-mJ8yN/8uyJ4H0cFKshjWrfIeI3mI6Bz/TCX5pvgnuHPZvHjMCDUf2z923gFzqTpXjKMZWZO+zSdD8JoLT/o6OQ==
+  dependencies:
+    glob "^7.1.1"
+    minimatch "^3.0.3"
+
 tslib@2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.3.0.tgz#803b8cdab3e12ba581a4ca41c8839bbb0dacb09e"
