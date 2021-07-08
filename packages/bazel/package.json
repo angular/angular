@@ -25,7 +25,7 @@
   "dependencies": {
     "@microsoft/api-extractor": "7.17.1",
     "shelljs": "0.8.4",
-    "tsickle": "^0.38.0",
+    "tsickle": "^0.43.0",
     "tslib": "^2.2.0"
   },
   "peerDependencies": {
