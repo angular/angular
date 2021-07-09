@@ -1145,6 +1145,43 @@ describe('MatSelectionList without forms', () => {
       });
 
   });
+
+  describe('with single selection', () => {
+    let fixture: ComponentFixture<ListOptionWithTwoWayBinding>;
+    let optionElement: HTMLElement;
+    let option: MatListOption;
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [MatListModule],
+        declarations: [ListOptionWithTwoWayBinding],
+      }).compileComponents();
+
+      fixture = TestBed.createComponent(ListOptionWithTwoWayBinding);
+      fixture.detectChanges();
+      const optionDebug = fixture.debugElement.query(By.directive(MatListOption));
+      option = optionDebug.componentInstance;
+      optionElement = optionDebug.nativeElement;
+    }));
+
+    it('should sync the value from the view to the option', () => {
+      expect(option.selected).toBe(false);
+
+      fixture.componentInstance.selected = true;
+      fixture.detectChanges();
+
+      expect(option.selected).toBe(true);
+    });
+
+    it('should sync the value from the option to the view', () => {
+      expect(fixture.componentInstance.selected).toBe(false);
+
+      optionElement.click();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.selected).toBe(true);
+    });
+  });
 });
 
 describe('MatSelectionList with forms', () => {
@@ -1827,4 +1864,14 @@ class SelectionListWithIndirectChildOptions {
   </mat-selection-list>`
 })
 class SelectionListWithIndirectDescendantLines {
+}
+
+
+@Component({template: `
+  <mat-selection-list>
+    <mat-list-option [(selected)]="selected">Item</mat-list-option>
+  </mat-selection-list>
+`})
+class ListOptionWithTwoWayBinding {
+  selected = false;
 }

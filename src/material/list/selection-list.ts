@@ -127,6 +127,14 @@ export class MatListOption extends _MatListOptionBase implements AfterContentIni
   @ContentChild(MatListIconCssMatStyler) _icon: MatListIconCssMatStyler;
   @ContentChildren(MatLine, {descendants: true}) _lines: QueryList<MatLine>;
 
+  /**
+   * Emits when the selected state of the option has changed.
+   * Use to facilitate two-data binding to the `selected` property.
+   * @docs-private
+   */
+  @Output()
+  readonly selectedChange: EventEmitter<boolean> = new EventEmitter<boolean>();
+
   /** DOM element containing the item's text. */
   @ViewChild('text') _text: ElementRef;
 
@@ -300,6 +308,7 @@ export class MatListOption extends _MatListOptionBase implements AfterContentIni
       this.selectionList.selectedOptions.deselect(this);
     }
 
+    this.selectedChange.emit(selected);
     this._changeDetector.markForCheck();
     return true;
   }

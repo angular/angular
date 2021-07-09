@@ -15,6 +15,7 @@ import {
   Component,
   ContentChildren,
   ElementRef,
+  EventEmitter,
   Inject,
   InjectionToken,
   Input,
@@ -22,6 +23,7 @@ import {
   OnDestroy,
   OnInit,
   Optional,
+  Output,
   QueryList,
   ViewChild,
   ViewEncapsulation
@@ -95,6 +97,14 @@ export class MatListOption extends MatListItemBase implements ListOption, OnInit
    * clear the value of `selected` in the first cycle.
    */
   private _inputsInitialized = false;
+
+  /**
+   * Emits when the selected state of the option has changed.
+   * Use to facilitate two-data binding to the `selected` property.
+   * @docs-private
+   */
+  @Output()
+  readonly selectedChange: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   @ViewChild('text') _itemText: ElementRef<HTMLElement>;
 
@@ -241,6 +251,7 @@ export class MatListOption extends MatListItemBase implements ListOption, OnInit
       this._selectionList.selectedOptions.deselect(this);
     }
 
+    this.selectedChange.emit(selected);
     this._changeDetectorRef.markForCheck();
     return true;
   }

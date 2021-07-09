@@ -61,6 +61,7 @@ export declare class MatListOption extends _MatListOptionBase implements AfterCo
     set disabled(value: any);
     get selected(): boolean;
     set selected(value: boolean);
+    readonly selectedChange: EventEmitter<boolean>;
     selectionList: MatSelectionList;
     get value(): any;
     set value(newValue: any);
@@ -82,7 +83,7 @@ export declare class MatListOption extends _MatListOptionBase implements AfterCo
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_selected: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatListOption, "mat-list-option", ["matListOption"], { "disableRipple": "disableRipple"; "checkboxPosition": "checkboxPosition"; "color": "color"; "value": "value"; "disabled": "disabled"; "selected": "selected"; }, {}, ["_avatar", "_icon", "_lines"], ["*", "[mat-list-avatar], [mat-list-icon], [matListAvatar], [matListIcon]"]>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatListOption, "mat-list-option", ["matListOption"], { "disableRipple": "disableRipple"; "checkboxPosition": "checkboxPosition"; "color": "color"; "value": "value"; "disabled": "disabled"; "selected": "selected"; }, { "selectedChange": "selectedChange"; }, ["_avatar", "_icon", "_lines"], ["*", "[mat-list-avatar], [mat-list-icon], [matListAvatar], [matListIcon]"]>;
     static ɵfac: i0.ɵɵFactoryDeclaration<MatListOption, never>;
 }
 
