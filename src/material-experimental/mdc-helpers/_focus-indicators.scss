@@ -59,7 +59,8 @@
   // These components have to set `border-radius: 50%` in order to support density scaling
   // which will clip a square focus indicator so we have to turn it into a circle.
   .mat-mdc-checkbox-ripple.mat-mdc-focus-indicator::before,
-  .mat-radio-ripple.mat-mdc-focus-indicator::before {
+  .mat-radio-ripple.mat-mdc-focus-indicator::before,
+  .mat-mdc-slider .mat-mdc-focus-indicator::before {
     border-radius: 50%;
   }
 
@@ -79,6 +80,9 @@
 
   // For options, render the focus indicator when the class .mat-mdc-option-active is present.
   .mat-mdc-focus-indicator.mat-mdc-option-active::before,
+
+  // In the MDC slider the focus indicator is inside the thumb.
+  .mdc-slider__thumb--focused .mat-mdc-focus-indicator::before,
 
     // For all other components, render the focus indicator on focus.
   .mat-mdc-focus-indicator:focus::before {

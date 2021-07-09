@@ -111,6 +111,7 @@ describe('MDC-based MatSlider' , () => {
   describe('standard range slider', () => {
     let sliderInstance: MatSlider;
     let startInputInstance: MatSliderThumb;
+    let sliderElement: HTMLElement;
     let endInputInstance: MatSliderThumb;
 
     beforeEach(waitForAsync(() => {
@@ -119,6 +120,7 @@ describe('MDC-based MatSlider' , () => {
       const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
       sliderInstance = sliderDebugElement.componentInstance;
       startInputInstance = sliderInstance._getInput(Thumb.START);
+      sliderElement = sliderDebugElement.nativeElement;
       endInputInstance = sliderInstance._getInput(Thumb.END);
     }));
 
@@ -173,6 +175,12 @@ describe('MDC-based MatSlider' , () => {
       sliderInstance._setValue(50, Thumb.START);
       slideToValue(sliderInstance, 25, Thumb.END, platform.IOS);
       expect(startInputInstance.value).toBe(50);
+    });
+
+    it('should have a strong focus indicator in each of the thumbs', () => {
+      const indicators =
+        sliderElement.querySelectorAll('.mat-mdc-slider-visual-thumb .mat-mdc-focus-indicator');
+      expect(indicators.length).toBe(2);
     });
   });
 
