@@ -28,7 +28,7 @@ export interface ViewportScrollPosition {
 @Injectable({providedIn: 'root'})
 export class ViewportRuler implements OnDestroy {
   /** Cached viewport dimensions. */
-  private _viewportSize: {width: number; height: number};
+  private _viewportSize: {width: number; height: number} | null;
 
   /** Stream of viewport change events. */
   private readonly _change = new Subject<Event>();
@@ -56,9 +56,9 @@ export class ViewportRuler implements OnDestroy {
         window.addEventListener('orientationchange', this._changeListener);
       }
 
-      // We don't need to keep track of the subscription,
-      // because we complete the `change` stream on destroy.
-      this.change().subscribe(() => this._updateViewportSize());
+      // Clear the cached position so that the viewport is re-measured next time it is required.
+      // We don't need to keep track of the subscription, because it is completed on destroy.
+      this.change().subscribe(() => this._viewportSize = null);
     });
   }
 
@@ -78,7 +78,7 @@ export class ViewportRuler implements OnDestroy {
       this._updateViewportSize();
     }
 
-    const output = {width: this._viewportSize.width, height: this._viewportSize.height};
+    const output = {width: this._viewportSize!.width, height: this._viewportSize!.height};
 
     // If we're not on a browser, don't cache the size since it'll be mocked out anyway.
     if (!this._platform.isBrowser) {
