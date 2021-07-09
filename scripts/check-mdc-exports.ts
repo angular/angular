@@ -40,7 +40,9 @@ if (hasFailed) {
 
 /** Checks whether the public API of a package matches up with its MDC counterpart. */
 function checkPackage(name: string) {
-  const missingSymbols = getMissingSymbols(name, config.skippedExports[`mdc-${name}`] || []);
+  const missingSymbols = getMissingSymbols(name,
+      config.skippedExports[`mdc-${name}`] || [],
+      config.skippedSymbols || []);
 
   if (missingSymbols.length) {
     console.log(chalk.redBright(`\nMissing symbols from mdc-${name}:`));
@@ -53,7 +55,7 @@ function checkPackage(name: string) {
  * Gets the names of symbols that are present in a Material package,
  * but not its MDC counterpart.
  */
-function getMissingSymbols(name: string, skipped: string[]): string[] {
+function getMissingSymbols(name: string, skipped: string[], skippedPatterns: RegExp[]): string[] {
   const mdcExports = getExports(`material-experimental/mdc-${name}`);
   const materialExports = getExports(`material/${name}`);
 
@@ -66,7 +68,8 @@ function getMissingSymbols(name: string, skipped: string[]): string[] {
   }
 
   return materialExports.filter(exportName => {
-    return !skipped.includes(exportName) && !mdcExports.includes(exportName);
+    return !skipped.includes(exportName) && !mdcExports.includes(exportName) &&
+           !skippedPatterns.some(pattern => pattern.test(exportName));
   });
 }
 
