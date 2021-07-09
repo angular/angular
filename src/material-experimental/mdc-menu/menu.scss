@@ -63,6 +63,10 @@ mat-menu {
     // more consistent by disabling pointer events and allowing the user to click through.
     pointer-events: none;
     cursor: default;
+
+    // This is the same as `mdc-list-mixins.list-disabled-opacity` which
+    // we can't use directly, because it comes with some selectors.
+    opacity: mdc-list-variables.$content-disabled-opacity;
   }
 
   .mat-icon {
