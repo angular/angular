@@ -7,6 +7,7 @@
  */
 
 import {Observable} from 'rxjs';
+
 import {Inject, Injectable, InjectionToken, Optional} from './di';
 import {isObservable, isPromise} from './util/lang';
 import {noop} from './util/noop';
