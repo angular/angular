@@ -53,7 +53,6 @@
     "integration/bazel/WORKSPACE",
     "package.json",
     "packages/**/package.json",
-    "tools/ts-api-guardian/package.json",
     "aio/package.json"
   ],
   "packageRules": [
