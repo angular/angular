@@ -6,34 +6,32 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
-// Helper type that ignores `readonly` properties. This is used in
-// `extendStyles` to ignore the readonly properties on CSSStyleDeclaration
-// since we won't be touching those anyway.
-type Writeable<T> = { -readonly [P in keyof T]-?: T[P] };
-
 /**
  * Extended CSSStyleDeclaration that includes a couple of drag-related
  * properties that aren't in the built-in TS typings.
  */
-export interface DragCSSStyleDeclaration extends CSSStyleDeclaration {
-  webkitUserDrag: string;
-  MozUserSelect: string; // For some reason the Firefox property is in PascalCase.
+ export interface DragCSSStyleDeclaration extends CSSStyleDeclaration {
   msScrollSnapType: string;
   scrollSnapType: string;
-  msUserSelect: string;
 }
 
 /**
- * Shallow-extends a stylesheet object with another stylesheet object.
+ * Shallow-extends a stylesheet object with another stylesheet-like object.
+ * Note that the keys in `source` have to be dash-cased.
  * @docs-private
  */
-export function extendStyles(
-    dest: Writeable<CSSStyleDeclaration>,
-    source: Partial<DragCSSStyleDeclaration>) {
+export function extendStyles(dest: CSSStyleDeclaration,
+                             source: Record<string, string>,
+                             importantProperties?: Set<string>) {
   for (let key in source) {
     if (source.hasOwnProperty(key)) {
-      dest[key] = source[key]!;
+      const value = source[key];
+
+      if (value) {
+        dest.setProperty(key, value, importantProperties?.has(key) ? 'important' : '');
+      } else {
+        dest.removeProperty(key);
+      }
     }
   }
 
@@ -51,13 +49,13 @@ export function toggleNativeDragInteractions(element: HTMLElement, enable: boole
   const userSelect = enable ? '' : 'none';
 
   extendStyles(element.style, {
-    touchAction: enable ? '' : 'none',
-    webkitUserDrag: enable ? '' : 'none',
-    webkitTapHighlightColor: enable ? '' : 'transparent',
-    userSelect: userSelect,
-    msUserSelect: userSelect,
-    webkitUserSelect: userSelect,
-    MozUserSelect: userSelect
+    'touch-action': enable ? '' : 'none',
+    '-webkit-user-drag': enable ? '' : 'none',
+    '-webkit-tap-highlight-color': enable ? '' : 'transparent',
+    'user-select': userSelect,
+    '-ms-user-select': userSelect,
+    '-webkit-user-select': userSelect,
+    '-moz-user-select': userSelect
   });
 }
 
@@ -65,13 +63,18 @@ export function toggleNativeDragInteractions(element: HTMLElement, enable: boole
  * Toggles whether an element is visible while preserving its dimensions.
  * @param element Element whose visibility to toggle
  * @param enable Whether the element should be visible.
+ * @param importantProperties Properties to be set as `!important`.
  * @docs-private
  */
-export function toggleVisibility(element: HTMLElement, enable: boolean) {
-  const styles = element.style;
-  styles.position = enable ? '' : 'fixed';
-  styles.top = styles.opacity = enable ? '' : '0';
-  styles.left = enable ? '' : '-999em';
+export function toggleVisibility(element: HTMLElement,
+                                 enable: boolean,
+                                 importantProperties?: Set<string>) {
+  extendStyles(element.style, {
+    position: enable ? '' : 'fixed',
+    top: enable ? '' : '0',
+    opacity: enable ? '' : '0',
+    left: enable ? '' : '-999em'
+  }, importantProperties);
 }
 
 /**

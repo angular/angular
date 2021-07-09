@@ -88,6 +88,12 @@ export interface Point {
   y: number;
 }
 
+/** Inline styles to be set as `!important` while dragging. */
+const dragImportantProperties = new Set([
+  // Needs to be important, because some `mat-table` sets `position: sticky !important`. See #22781.
+  'position'
+]);
+
 /**
  * Possible places into which the preview of a drag item can be inserted.
  * - `global` - Preview will be inserted at the bottom of the `<body>`. The advantage is that
@@ -817,7 +823,7 @@ export class DragRef<T = any> {
       // We move the element out at the end of the body and we make it hidden, because keeping it in
       // place will throw off the consumer's `:last-child` selectors. We can't remove the element
       // from the DOM completely, because iOS will stop firing all subsequent events in the chain.
-      toggleVisibility(element, false);
+      toggleVisibility(element, false, dragImportantProperties);
       this._document.body.appendChild(parent.replaceChild(placeholder, element));
       this._getPreviewInsertionPoint(parent, shadowRoot).appendChild(this._preview);
       this.started.next({source: this}); // Emit before notifying the container.
@@ -914,7 +920,7 @@ export class DragRef<T = any> {
     // It's important that we maintain the position, because moving the element around in the DOM
     // can throw off `NgFor` which does smart diffing and re-creates elements only when necessary,
     // while moving the existing elements in all other cases.
-    toggleVisibility(this._rootElement, true);
+    toggleVisibility(this._rootElement, true, dragImportantProperties);
     this._anchor.parentNode!.replaceChild(this._rootElement, this._anchor);
 
     this._destroyPreview();
@@ -1030,14 +1036,14 @@ export class DragRef<T = any> {
     extendStyles(preview.style, {
       // It's important that we disable the pointer events on the preview, because
       // it can throw off the `document.elementFromPoint` calls in the `CdkDropList`.
-      pointerEvents: 'none',
+      'pointer-events': 'none',
       // We have to reset the margin, because it can throw off positioning relative to the viewport.
-      margin: '0',
-      position: 'fixed',
-      top: '0',
-      left: '0',
-      zIndex: `${this._config.zIndex || 1000}`
-    });
+      'margin': '0',
+      'position': 'fixed',
+      'top': '0',
+      'left': '0',
+      'z-index': `${this._config.zIndex || 1000}`
+    }, dragImportantProperties);
 
     toggleNativeDragInteractions(preview, false);
     preview.classList.add('cdk-drag-preview');

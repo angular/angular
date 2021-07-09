@@ -2129,6 +2129,8 @@ describe('CdkDrag', () => {
 
       expect(item.parentNode).toBe(document.body, 'Expected element to be moved out into the body');
       expect(item.style.position).toBe('fixed', 'Expected element to be removed from layout');
+      expect(item.style.getPropertyPriority('position'))
+          .toBe('important', 'Expect element position to be !important');
       // Use a regex here since some browsers normalize 0 to 0px, but others don't.
       expect(item.style.top).toMatch(zeroPxRegex, 'Expected element to be removed from layout');
       expect(item.style.left).toBe('-999em', 'Expected element to be removed from layout');
