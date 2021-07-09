@@ -7,7 +7,7 @@
  */
 
 import {LocationStrategy} from '@angular/common';
-import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, SimpleChanges} from '@angular/core';
+import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, SimpleChanges, ɵcoerceToBoolean as coerceToBoolean} from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
 
 import {Event, NavigationEnd} from '../events';
@@ -242,8 +242,8 @@ export class RouterLink implements OnChanges {
     }
 
     const extras = {
-      skipLocationChange: attrBoolValue(this.skipLocationChange),
-      replaceUrl: attrBoolValue(this.replaceUrl),
+      skipLocationChange: coerceToBoolean(this.skipLocationChange),
+      replaceUrl: coerceToBoolean(this.replaceUrl),
       state: this.state,
     };
     this.router.navigateByUrl(this.urlTree, extras);
@@ -261,7 +261,7 @@ export class RouterLink implements OnChanges {
       queryParams: this.queryParams,
       fragment: this.fragment,
       queryParamsHandling: this.queryParamsHandling,
-      preserveFragment: attrBoolValue(this.preserveFragment),
+      preserveFragment: coerceToBoolean(this.preserveFragment),
     });
   }
 }
@@ -406,8 +406,8 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     }
 
     const extras = {
-      skipLocationChange: attrBoolValue(this.skipLocationChange),
-      replaceUrl: attrBoolValue(this.replaceUrl),
+      skipLocationChange: coerceToBoolean(this.skipLocationChange),
+      replaceUrl: coerceToBoolean(this.replaceUrl),
       state: this.state
     };
     this.router.navigateByUrl(this.urlTree, extras);
@@ -431,11 +431,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
       queryParams: this.queryParams,
       fragment: this.fragment,
       queryParamsHandling: this.queryParamsHandling,
-      preserveFragment: attrBoolValue(this.preserveFragment),
+      preserveFragment: coerceToBoolean(this.preserveFragment),
     });
   }
-}
-
-function attrBoolValue(s: any): boolean {
-  return s === '' || !!s;
 }

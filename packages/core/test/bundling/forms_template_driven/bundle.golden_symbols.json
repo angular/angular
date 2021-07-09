@@ -624,6 +624,9 @@
     "name": "coerceToAsyncValidator"
   },
   {
+    "name": "coerceToBoolean"
+  },
+  {
     "name": "coerceToValidator"
   },
   {

@@ -7,11 +7,11 @@
  */
 
 import {Type} from '../interface/type';
+
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 import {GetterFn, MethodFn, SetterFn} from './types';
 
-export {PlatformReflectionCapabilities};
-export {GetterFn, MethodFn, SetterFn};
+export {GetterFn, MethodFn, PlatformReflectionCapabilities, SetterFn};
 
 /**
  * Provides access to reflection data about symbols. Used internally by Angular
