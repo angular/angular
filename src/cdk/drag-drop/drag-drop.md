@@ -132,7 +132,7 @@ to be applied.
 By default, the preview of a `cdkDrag` will be inserted into the `<body>` of the page in order to
 avoid issues with `z-index` and `overflow: hidden`. This may not be desireable in some cases,
 because the preview won't retain its inherited styles. You can control where the preview is inserted
-using the `cdkDrawPreviewContainer` input. The possible values are:
+using the `cdkDragPreviewContainer` input on `cdkDrag`. The possible values are:
 
 | Value             | Description             | Advantages             | Disadvantages             |
 |-------------------|-------------------------|------------------------|---------------------------|
