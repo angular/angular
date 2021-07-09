@@ -34,6 +34,7 @@ import {
   Directive,
   ElementRef,
   EmbeddedViewRef,
+  EventEmitter,
   Inject,
   Input,
   IterableChangeRecord,
@@ -42,6 +43,7 @@ import {
   OnDestroy,
   OnInit,
   Optional,
+  Output,
   QueryList,
   SkipSelf,
   TemplateRef,
@@ -455,6 +457,13 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
   }
   private _fixedLayout: boolean = false;
 
+  /**
+   * Emits when the table completes rendering a set of data rows based on the latest data from the
+   * data source, even if the set of rows is empty.
+   */
+  @Output()
+  readonly contentChanged = new EventEmitter<void>();
+
   // TODO(andrewseguin): Remove max value as the end index
   //   and instead calculate the view on init and scroll.
   /**
@@ -612,6 +621,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     const changes = this._dataDiffer.diff(this._renderRows);
     if (!changes) {
       this._updateNoDataRow();
+      this.contentChanged.next();
       return;
     }
     const viewContainer = this._rowOutlet.viewContainer;
@@ -639,6 +649,8 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
 
     this._updateNoDataRow();
     this.updateStickyColumnStyles();
+
+    this.contentChanged.next();
   }
 
   /** Adds a column definition that was not included as part of the content children. */
