@@ -1,6 +1,6 @@
 <mat-card class="demo-section">
   <h2>No inputs</h2>
-  <mat-paginator></mat-paginator>
+  <mat-paginator aria-label="Select page"></mat-paginator>
 </mat-card>
 
 <mat-card class="demo-section">
@@ -31,7 +31,8 @@
                  [showFirstLastButtons]="showFirstLastButtons"
                  [pageSizeOptions]="showPageSizeOptions ? pageSizeOptions : []"
                  [hidePageSize]="hidePageSize"
-                 [pageIndex]="pageIndex">
+                 [pageIndex]="pageIndex"
+                 aria-label="Select page">
   </mat-paginator>
 
   <div> Output event: {{pageEvent | json}} </div>
