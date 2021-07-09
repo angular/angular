@@ -13,6 +13,7 @@ load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_p
 load("//dev-infra/benchmark/ng_rollup_bundle:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
 load("//tools:ng_benchmark.bzl", _ng_benchmark = "ng_benchmark")
 load("//dev-infra/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
+load("//dev-infra/bazel:extract_js_module_output.bzl", "extract_js_module_output")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
 _INTERNAL_NG_MODULE_API_EXTRACTOR = "//packages/bazel/src/api-extractor:api_extractor"
@@ -252,6 +253,21 @@ def pkg_npm(name, **kwargs):
         "0.0.0-PLACEHOLDER": "{BUILD_SCM_VERSION}",
     })
 
+    deps = kwargs.pop("deps", [])
+
+    # The `pkg_npm` rule brings in devmode (`JSModuleInfo`) and prodmode (`JSEcmaScriptModuleInfo`)
+    # output into the the NPM package. We do not plan to ship prodmode ECMAScript `.mjs` files yet,
+    # so we only extract the `JSModuleInfo` outputs (which correspond to ES5 output) from the deps.
+    # https://github.com/bazelbuild/rules_nodejs/commit/911529fd364eb3ee1b8ecdc568a9fcf38a8b55ca.
+    # https://github.com/bazelbuild/rules_nodejs/blob/stable/packages/typescript/internal/build_defs.bzl#L334-L337.
+    extract_js_module_output(
+        name = "%s_js_module_output" % name,
+        provider = "JSModuleInfo",
+        include_declarations = True,
+        include_default_files = True,
+        deps = deps,
+    )
+
     _pkg_npm(
         name = name,
         # We never set a `package_name` for NPM packages, neither do we enable validation.
@@ -274,6 +290,7 @@ def pkg_npm(name, **kwargs):
             "//conditions:default": substitutions,
         }),
         visibility = visibility,
+        deps = [":%s_js_module_output" % name],
         **kwargs
     )
 
