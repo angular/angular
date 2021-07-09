@@ -8,7 +8,7 @@
 
 import {ALT, CONTROL, MAC_META, META, SHIFT} from '@angular/cdk/keycodes';
 import {Inject, Injectable, InjectionToken, OnDestroy, Optional, NgZone} from '@angular/core';
-import {normalizePassiveListenerOptions, Platform} from '@angular/cdk/platform';
+import {normalizePassiveListenerOptions, Platform, _getEventTarget} from '@angular/cdk/platform';
 import {DOCUMENT} from '@angular/common';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {distinctUntilChanged, skip} from 'rxjs/operators';
@@ -128,7 +128,7 @@ export class InputModalityDetector implements OnDestroy {
     if (this._options?.ignoreKeys?.some(keyCode => keyCode === event.keyCode)) { return; }
 
     this._modality.next('keyboard');
-    this._mostRecentTarget = getTarget(event);
+    this._mostRecentTarget = _getEventTarget(event);
   }
 
   /**
@@ -144,7 +144,7 @@ export class InputModalityDetector implements OnDestroy {
     // Fake mousedown events are fired by some screen readers when controls are activated by the
     // screen reader. Attribute them to keyboard input modality.
     this._modality.next(isFakeMousedownFromScreenReader(event) ? 'keyboard' : 'mouse');
-    this._mostRecentTarget = getTarget(event);
+    this._mostRecentTarget = _getEventTarget(event);
   }
 
   /**
@@ -164,7 +164,7 @@ export class InputModalityDetector implements OnDestroy {
     this._lastTouchMs = Date.now();
 
     this._modality.next('touch');
-    this._mostRecentTarget = getTarget(event);
+    this._mostRecentTarget = _getEventTarget(event);
   }
 
   constructor(
@@ -202,11 +202,4 @@ export class InputModalityDetector implements OnDestroy {
     document.removeEventListener('mousedown', this._onMousedown, modalityEventListenerOptions);
     document.removeEventListener('touchstart', this._onTouchstart, modalityEventListenerOptions);
   }
-}
-
-/** Gets the target of an event, accounting for Shadow DOM. */
-export function getTarget(event: Event): HTMLElement|null {
-  // If an event is bound outside the Shadow DOM, the `event.target` will
-  // point to the shadow root so we have to use `composedPath` instead.
-  return (event.composedPath ? event.composedPath()[0] : event.target) as HTMLElement | null;
 }

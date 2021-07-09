@@ -31,6 +31,7 @@ import {
 } from '@angular/cdk/overlay';
 import {Directionality} from '@angular/cdk/bidi';
 import {BooleanInput, coerceBooleanProperty, coerceArray} from '@angular/cdk/coercion';
+import {_getEventTarget} from '@angular/cdk/platform';
 import {DOWN_ARROW, ENTER, ESCAPE, TAB} from '@angular/cdk/keycodes';
 
 const allowedOpenActions = ['focus', 'click', 'downKey', 'toggle'];
@@ -165,7 +166,7 @@ export class CdkCombobox<T = unknown> implements OnDestroy, AfterContentInit {
   /** Given a click in the document, determines if the click was inside a combobox. */
   _attemptClose(event: MouseEvent) {
     if (this.isOpen()) {
-      let target = event.composedPath ? event.composedPath()[0] : event.target;
+      let target = _getEventTarget(event);
       while (target instanceof Element) {
         if (target.className.indexOf('cdk-combobox') !== -1) {
           return;

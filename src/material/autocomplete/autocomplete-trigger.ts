@@ -17,7 +17,7 @@ import {
   ScrollStrategy,
   ConnectedPosition,
 } from '@angular/cdk/overlay';
-import {_getShadowRoot} from '@angular/cdk/platform';
+import {_getEventTarget} from '@angular/cdk/platform';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {DOCUMENT} from '@angular/common';
@@ -125,9 +125,6 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
    * comes back.
    */
   private _canOpenOnNextFocus = true;
-
-  /** Whether the element is inside of a ShadowRoot component. */
-  private _isInsideShadowRoot: boolean;
 
   /** Stream of keyboard events that can close the panel. */
   private readonly _closeKeyEventStream = new Subject<void>();
@@ -334,9 +331,7 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
         .pipe(filter(event => {
           // If we're in the Shadow DOM, the event target will be the shadow root, so we have to
           // fall back to check the first element in the path of the click event.
-          const clickTarget =
-              (this._isInsideShadowRoot && event.composedPath ? event.composedPath()[0] :
-                                                                event.target) as HTMLElement;
+          const clickTarget = _getEventTarget<HTMLElement>(event)!;
           const formField = this._formField ? this._formField._elementRef.nativeElement : null;
           const customOrigin = this.connectedTo ? this.connectedTo.elementRef.nativeElement : null;
 
@@ -561,12 +556,6 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
   private _attachOverlay(): void {
     if (!this.autocomplete && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw getMatAutocompleteMissingPanelError();
-    }
-
-    // We want to resolve this once, as late as possible so that we can be
-    // sure that the element has been moved into its final place in the DOM.
-    if (this._isInsideShadowRoot == null) {
-      this._isInsideShadowRoot = !!_getShadowRoot(this._element.nativeElement);
     }
 
     let overlayRef = this._overlayRef;

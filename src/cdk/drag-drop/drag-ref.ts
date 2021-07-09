@@ -9,7 +9,11 @@
 import {EmbeddedViewRef, ElementRef, NgZone, ViewContainerRef, TemplateRef} from '@angular/core';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {Direction} from '@angular/cdk/bidi';
-import {normalizePassiveListenerOptions, _getShadowRoot} from '@angular/cdk/platform';
+import {
+  normalizePassiveListenerOptions,
+  _getEventTarget,
+  _getShadowRoot,
+} from '@angular/cdk/platform';
 import {coerceBooleanProperty, coerceElement} from '@angular/cdk/coercion';
 import {Subscription, Subject, Observable} from 'rxjs';
 import {DropListRefInternal as DropListRef} from './drop-list-ref';
@@ -22,7 +26,7 @@ import {
 } from './drag-styling';
 import {getTransformTransitionDurationInMs} from './transition-duration';
 import {getMutableClientRect, adjustClientRect} from './client-rect';
-import {getEventTarget, ParentPositionTracker} from './parent-position-tracker';
+import {ParentPositionTracker} from './parent-position-tracker';
 import {deepCloneNode} from './clone-node';
 
 /** Object that can be used to configure the behavior of DragRef. */
@@ -629,7 +633,7 @@ export class DragRef<T = any> {
     // Delegate the event based on whether it started from a handle or the element itself.
     if (this._handles.length) {
       const targetHandle = this._handles.find(handle => {
-        const target = getEventTarget(event);
+        const target = _getEventTarget(event);
         return !!target && (target === handle || handle.contains(target as HTMLElement));
       });
 
@@ -857,7 +861,7 @@ export class DragRef<T = any> {
     const isTouchSequence = isTouchEvent(event);
     const isAuxiliaryMouseButton = !isTouchSequence && (event as MouseEvent).button !== 0;
     const rootElement = this._rootElement;
-    const target = getEventTarget(event);
+    const target = _getEventTarget(event);
     const isSyntheticEvent = !isTouchSequence && this._lastTouchEventTime &&
       this._lastTouchEventTime + MOUSE_EVENT_IGNORE_TIME > Date.now();
 
@@ -1091,7 +1095,7 @@ export class DragRef<T = any> {
     return this._ngZone.runOutsideAngular(() => {
       return new Promise(resolve => {
         const handler = ((event: TransitionEvent) => {
-          if (!event || (getEventTarget(event) === this._preview &&
+          if (!event || (_getEventTarget(event) === this._preview &&
               event.propertyName === 'transform')) {
             this._preview.removeEventListener('transitionend', handler);
             resolve();
@@ -1387,7 +1391,7 @@ export class DragRef<T = any> {
     const scrollDifference = this._parentPositions.handleScroll(event);
 
     if (scrollDifference) {
-      const target = getEventTarget(event);
+      const target = _getEventTarget<HTMLElement|Document>(event)!;
 
       // ClientRect dimensions are based on the scroll position of the page and its parent node so
       // we have to update the cached boundary ClientRect if the user has scrolled. Check for

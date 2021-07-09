@@ -1,3 +1,5 @@
+export declare function _getEventTarget<T extends EventTarget>(event: Event): T | null;
+
 export declare function _getFocusedElementPierceShadowDom(): HTMLElement | null;
 
 export declare function _getShadowRoot(element: HTMLElement): ShadowRoot | null;

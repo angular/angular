@@ -9,7 +9,7 @@
 import {DOCUMENT} from '@angular/common';
 import {Inject, Injectable} from '@angular/core';
 import {OverlayReference} from '../overlay-reference';
-import {Platform} from '@angular/cdk/platform';
+import {Platform, _getEventTarget} from '@angular/cdk/platform';
 import {BaseOverlayDispatcher} from './base-overlay-dispatcher';
 
 /**
@@ -71,8 +71,7 @@ export class OverlayOutsideClickDispatcher extends BaseOverlayDispatcher {
 
   /** Click event listener that will be attached to the body propagate phase. */
   private _clickListener = (event: MouseEvent) => {
-    // Get the target through the `composedPath` if possible to account for shadow DOM.
-    const target = event.composedPath ? event.composedPath()[0] : event.target;
+    const target = _getEventTarget(event);
     // We copy the array because the original may be modified asynchronously if the
     // outsidePointerEvents listener decides to detach overlays resulting in index errors inside
     // the for loop.

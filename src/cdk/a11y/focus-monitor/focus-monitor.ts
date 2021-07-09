@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Platform, normalizePassiveListenerOptions, _getShadowRoot} from '@angular/cdk/platform';
+import {
+  Platform,
+  normalizePassiveListenerOptions,
+  _getShadowRoot,
+  _getEventTarget,
+} from '@angular/cdk/platform';
 import {
   Directive,
   ElementRef,
@@ -25,7 +30,6 @@ import {takeUntil} from 'rxjs/operators';
 import {coerceElement} from '@angular/cdk/coercion';
 import {DOCUMENT} from '@angular/common';
 import {
-  getTarget,
   InputModalityDetector,
   TOUCH_BUFFER_MS,
 } from '../input-modality/input-modality-detector';
@@ -159,7 +163,7 @@ export class FocusMonitor implements OnDestroy {
    * Needs to be an arrow function in order to preserve the context when it gets bound.
    */
   private _rootNodeFocusAndBlurListener = (event: Event) => {
-    const target = getTarget(event);
+    const target = _getEventTarget<HTMLElement>(event);
     const handler = event.type === 'focus' ? this._onFocus : this._onBlur;
 
     // We need to walk up the ancestor chain in order to support `checkChildren`.
@@ -410,7 +414,7 @@ export class FocusMonitor implements OnDestroy {
     // If we are not counting child-element-focus as focused, make sure that the event target is the
     // monitored element itself.
     const elementInfo = this._elementInfo.get(element);
-    const focusEventTarget = getTarget(event);
+    const focusEventTarget = _getEventTarget<HTMLElement>(event);
     if (!elementInfo || (!elementInfo.checkChildren && element !== focusEventTarget)) {
       return;
     }
