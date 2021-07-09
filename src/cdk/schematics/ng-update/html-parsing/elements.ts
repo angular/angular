@@ -17,7 +17,9 @@ export function findElementsWithAttribute(html: string, attributeName: string) {
   const elements: Element[] = [];
 
   const visitNodes = (nodes: ChildNode[]) => {
-    nodes.forEach((node: Element) => {
+    nodes.forEach(n => {
+      const node = n as Element;
+
       if (node.childNodes) {
         visitNodes(node.childNodes);
       }

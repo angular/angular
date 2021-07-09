@@ -75,7 +75,7 @@ export function createMigrationSchematicRule(
     const analyzedFiles = new Set<WorkspacePath>();
     const fileSystem = new DevkitFileSystem(tree);
     const projectNames = workspace.projects.keys();
-    const migrations: NullableDevkitMigration[] = [...cdkMigrations, ...extraMigrations];
+    const migrations = [...cdkMigrations, ...extraMigrations] as NullableDevkitMigration[];
     let hasFailures = false;
 
     for (const projectName of projectNames) {

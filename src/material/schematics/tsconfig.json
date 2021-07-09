@@ -14,6 +14,7 @@
     "skipDefaultLibCheck": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
+    "strictFunctionTypes": true,
     "skipLibCheck": true,
     "sourceMap": true,
     "declaration": true,

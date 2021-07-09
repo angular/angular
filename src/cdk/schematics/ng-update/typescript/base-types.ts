@@ -18,5 +18,5 @@ export function determineBaseTypes(node: ts.ClassDeclaration): string[]|null {
       .reduce((types, clause) => types.concat(clause.types), [] as ts.ExpressionWithTypeArguments[])
       .map(typeExpression => typeExpression.expression)
       .filter(expression => expression && ts.isIdentifier(expression))
-      .map((identifier: ts.Identifier) => identifier.text);
+      .map(identifier => (identifier as ts.Identifier).text);
 }

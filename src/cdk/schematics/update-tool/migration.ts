@@ -27,9 +27,9 @@ export type PostMigrationAction = void | {
 /** Creates a constructor type for the specified type. */
 export type Constructor<T> = (new (...args: any[]) => T);
 /** Gets a constructor type for the passed migration data. */
-export type MigrationCtor<Data, Context = never> = Constructor<Migration<Data, Context>>;
+export type MigrationCtor<Data, Context = any> = Constructor<Migration<Data, Context>>;
 
-export abstract class Migration<Data, Context = never> {
+export abstract class Migration<Data, Context = any> {
   /** List of migration failures that need to be reported. */
   failures: MigrationFailure[] = [];
 

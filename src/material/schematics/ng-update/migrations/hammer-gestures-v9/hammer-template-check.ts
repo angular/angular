@@ -34,25 +34,31 @@ export function isHammerJsUsedInTemplate(html: string):
   let customEvents = false;
   let standardEvents = false;
   const visitNodes = (nodes: parse5.ChildNode[]) => {
-    nodes.forEach((node: parse5.Element) => {
-      if (node.attrs) {
-        for (let attr of node.attrs) {
-          if (!customEvents && CUSTOM_MATERIAL_HAMMERJS_EVENS.some(e => `(${e})` === attr.name)) {
-            customEvents = true;
-          }
-          if (!standardEvents && STANDARD_HAMMERJS_EVENTS.some(e => `(${e})` === attr.name)) {
-            standardEvents = true;
-          }
+    nodes.forEach(node => {
+      if (!isElement(node)) {
+        return;
+      }
+
+      for (let attr of node.attrs) {
+        if (!customEvents && CUSTOM_MATERIAL_HAMMERJS_EVENS.some(e => `(${e})` === attr.name)) {
+          customEvents = true;
+        }
+        if (!standardEvents && STANDARD_HAMMERJS_EVENTS.some(e => `(${e})` === attr.name)) {
+          standardEvents = true;
         }
       }
 
       // Do not continue traversing the AST if both type of HammerJS
       // usages have been detected already.
-      if (node.childNodes && (!customEvents || !standardEvents)) {
+      if (!customEvents || !standardEvents) {
         visitNodes(node.childNodes);
       }
     });
   };
   visitNodes(document.childNodes);
   return {customEvents, standardEvents};
+}
+
+function isElement(node: any): node is parse5.Element {
+  return !!node.attrs;
 }

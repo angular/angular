@@ -15,6 +15,7 @@
     "noUnusedLocals": false,
     "noImplicitThis": true,
     "skipLibCheck": true,
+    "strictFunctionTypes": true,
     "sourceMap": true,
     "target": "es2015",
     "types": [

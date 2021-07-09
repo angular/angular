@@ -156,7 +156,8 @@ function indentTextContent(text: string, numSpaces: number): string {
 export function buildComponent(options: ComponentOptions,
                                additionalFiles: {[key: string]: string} = {}): Rule {
 
-  return async (host: Tree, context: FileSystemSchematicContext) => {
+  return async (host, ctx) => {
+    const context = ctx as FileSystemSchematicContext;
     const workspace = await getWorkspace(host);
     const project = getProjectFromWorkspace(workspace, options.project);
     const defaultComponentOptions = getDefaultComponentOptions(project);
@@ -175,12 +176,10 @@ export function buildComponent(options: ComponentOptions,
     // Add the default component option values to the options if an option is not explicitly
     // specified but a default component option is available.
     Object.keys(options)
-      .filter((optionName: keyof ComponentOptions) => {
-        return options[optionName] == null && defaultComponentOptions[optionName];
-      })
-      .forEach((optionName: keyof ComponentOptions) => {
-        (options as any)[optionName] = (defaultComponentOptions as ComponentOptions)[optionName];
-      });
+      .filter(key => options[key as keyof ComponentOptions] == null &&
+                     defaultComponentOptions[key as keyof ComponentOptions])
+      .forEach(key => (options as any)[key] =
+          (defaultComponentOptions as ComponentOptions)[key as keyof ComponentOptions]);
 
     if (options.path === undefined) {
       // TODO(jelbourn): figure out if the need for this `as any` is a bug due to two different
