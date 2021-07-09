@@ -5,6 +5,7 @@ filegroup(
     srcs = [
         "BUILD.bazel",
         "expand_template.bzl",
+        "extract_js_module_output.bzl",
         "//dev-infra/bazel/api-golden:files",
         "//dev-infra/bazel/browsers:files",
         "//dev-infra/bazel/remote-execution:files",
