@@ -879,9 +879,6 @@
     "name": "attachPatchData"
   },
   {
-    "name": "attrBoolValue"
-  },
-  {
     "name": "autoRegisterModuleById"
   },
   {
@@ -910,6 +907,9 @@
   },
   {
     "name": "cleanUpView"
+  },
+  {
+    "name": "coerceToBoolean"
   },
   {
     "name": "collectNativeNodes"

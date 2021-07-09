@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Directive, EventEmitter, forwardRef, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges} from '@angular/core';
+import {ChangeDetectorRef, Directive, EventEmitter, forwardRef, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, ɵcoerceToBoolean as coerceToBoolean} from '@angular/core';
 
 import {FormControl, FormHooks} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
@@ -320,8 +320,8 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
 
   private _updateDisabled(changes: SimpleChanges) {
     const disabledValue = changes['isDisabled'].currentValue;
-
-    const isDisabled = disabledValue === '' || (disabledValue && disabledValue !== 'false');
+    // checking for 0 to avoid breaking change
+    const isDisabled = disabledValue !== 0 && coerceToBoolean(disabledValue);
 
     resolvedPromise.then(() => {
       if (isDisabled && !this.control.disabled) {
