@@ -4,22 +4,29 @@
 @use '../../cdk/a11y';
 @use './list-option-trailing-avatar-compat';
 
-// The MDC-based list-option uses the MDC checkbox for the selection indicators.
-// We need to ensure that the checkbox styles are included for the list-option.
-@include mdc-checkbox.without-ripple($query: mdc-helpers.$mat-base-styles-query);
-
 // For compatibility with the non-MDC list, we support avatars that are shown at the end
 // of the list option. We create a class similar to MDC's `--trailing-icon` one.
 @include list-option-trailing-avatar-compat.core-styles($query: mdc-helpers.$mat-base-styles-query);
 
-// The internal checkbox is purely decorative, but because it's an `input`, the user can still
-// focus it by tabbing or clicking. Furthermore, `mat-list-option` has the `option` role which
-// doesn't allow a nested `input`. We use `display: none` both to remove it from the tab order
-// and to prevent focus from reaching it through the screen reader's forms mode. Ideally we'd
-// remove the `input` completely, but we can't because MDC uses a `:checked` selector to
-// toggle the selected styles.
-.mat-mdc-list-option .mdc-checkbox__native-control {
-  display: none;
+.mat-mdc-list-option {
+  // The MDC-based list-option uses the MDC checkbox for the selection indicators.
+  // We need to ensure that the checkbox styles are not included for the list-option.
+  @include mdc-checkbox.without-ripple(
+    $query: mdc-helpers.$mat-base-styles-without-animation-query);
+
+  &:not(._mat-animation-noopable) {
+    @include mdc-checkbox.without-ripple($query: animation);
+  }
+
+  // The internal checkbox is purely decorative, but because it's an `input`, the user can still
+  // focus it by tabbing or clicking. Furthermore, `mat-list-option` has the `option` role which
+  // doesn't allow a nested `input`. We use `display: none` both to remove it from the tab order
+  // and to prevent focus from reaching it through the screen reader's forms mode. Ideally we'd
+  // remove the `input` completely, but we can't because MDC uses a `:checked` selector to
+  // toggle the selected styles.
+  .mdc-checkbox__native-control {
+    display: none;
+  }
 }
 
 @include a11y.high-contrast(active, off) {
