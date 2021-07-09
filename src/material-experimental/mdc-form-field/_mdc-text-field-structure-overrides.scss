@@ -24,9 +24,16 @@
   // not work for us since we support arbitrary form field controls which don't necessarily
   // use an `input` element. We organize the vertical spacing on the infix container.
   .mdc-text-field--no-label:not(.mdc-text-field--textarea)
-  .mat-mdc-form-field-control.mdc-text-field__input,
+      .mat-mdc-form-field-control.mdc-text-field__input,
   .mat-mdc-text-field-wrapper .mat-mdc-form-field-control {
     height: auto;
+  }
+
+  // Color inputs are a special case, because setting their height to
+  // `auto` will collapse them. The height value is an arbitrary number
+  // which was extracted from the user agent styles of Chrome and Firefox.
+  .mat-mdc-text-field-wrapper .mat-mdc-form-field-control.mdc-text-field__input[type='color'] {
+    height: 23px;
   }
 
   // Root element of the mdc-text-field. As explained in the height overwrites above, MDC
