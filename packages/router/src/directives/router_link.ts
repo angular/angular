@@ -7,7 +7,7 @@
  */
 
 import {LocationStrategy} from '@angular/common';
-import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, SimpleChanges} from '@angular/core';
+import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, SimpleChanges, ɵcoerceBooleanProperty as coerceBooleanProperty} from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
 
 import {QueryParamsHandling} from '../config';
@@ -221,8 +221,8 @@ export class RouterLink implements OnChanges {
   @HostListener('click')
   onClick(): boolean {
     const extras = {
-      skipLocationChange: attrBoolValue(this.skipLocationChange),
-      replaceUrl: attrBoolValue(this.replaceUrl),
+      skipLocationChange: coerceBooleanProperty(this.skipLocationChange),
+      replaceUrl: coerceBooleanProperty(this.replaceUrl),
       state: this.state,
     };
     this.router.navigateByUrl(this.urlTree, extras);
@@ -237,7 +237,7 @@ export class RouterLink implements OnChanges {
       queryParams: this.queryParams,
       fragment: this.fragment,
       queryParamsHandling: this.queryParamsHandling,
-      preserveFragment: attrBoolValue(this.preserveFragment),
+      preserveFragment: coerceBooleanProperty(this.preserveFragment),
     });
   }
 }
@@ -383,8 +383,8 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     }
 
     const extras = {
-      skipLocationChange: attrBoolValue(this.skipLocationChange),
-      replaceUrl: attrBoolValue(this.replaceUrl),
+      skipLocationChange: coerceBooleanProperty(this.skipLocationChange),
+      replaceUrl: coerceBooleanProperty(this.replaceUrl),
       state: this.state
     };
     this.router.navigateByUrl(this.urlTree, extras);
@@ -403,11 +403,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
       queryParams: this.queryParams,
       fragment: this.fragment,
       queryParamsHandling: this.queryParamsHandling,
-      preserveFragment: attrBoolValue(this.preserveFragment),
+      preserveFragment: coerceBooleanProperty(this.preserveFragment),
     });
   }
-}
-
-function attrBoolValue(s: any): boolean {
-  return s === '' || !!s;
 }
