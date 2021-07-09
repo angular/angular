@@ -23,13 +23,15 @@ export interface RippleTarget {
   rippleDisabled: boolean;
 }
 
+
+// TODO: import these values from `@material/ripple` eventually.
 /**
  * Default ripple animation configuration for ripples without an explicit
  * animation config specified.
  */
 export const defaultRippleAnimationConfig = {
-  enterDuration: 450,
-  exitDuration: 400
+  enterDuration: 225,
+  exitDuration: 150
 };
 
 /**
