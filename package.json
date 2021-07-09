@@ -61,7 +61,7 @@
     "@bazel/runfiles": "3.7.0",
     "@bazel/terser": "3.7.0",
     "@bazel/typescript": "3.7.0",
-    "@microsoft/api-extractor": "7.17.1",
+    "@microsoft/api-extractor": "7.18.1",
     "@octokit/rest": "^18.6.2",
     "@octokit/core": "^3.5.1",
     "@octokit/plugin-rest-endpoint-methods": "^5.3.3",
