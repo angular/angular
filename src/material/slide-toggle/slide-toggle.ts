@@ -127,6 +127,9 @@ export class MatSlideToggle extends _MatSlideToggleBase implements OnDestroy, Af
   /** Used to set the aria-labelledby attribute on the underlying input element. */
   @Input('aria-labelledby') ariaLabelledby: string | null = null;
 
+  /** Used to set the aria-describedby attribute on the underlying input element. */
+  @Input('aria-describedby') ariaDescribedby: string;
+
   /** Whether the slide-toggle is required. */
   @Input()
   get required(): boolean { return this._required; }

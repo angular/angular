@@ -252,6 +252,18 @@ describe('MatSlideToggle without forms', () => {
       expect(inputElement.hasAttribute('aria-labelledby')).toBeFalsy();
     });
 
+    it('should forward the aria-describedby attribute to the input', () => {
+      testComponent.slideAriaDescribedBy = 'some-element';
+      fixture.detectChanges();
+
+      expect(inputElement.getAttribute('aria-describedby')).toBe('some-element');
+
+      testComponent.slideAriaDescribedBy = null;
+      fixture.detectChanges();
+
+      expect(inputElement.hasAttribute('aria-describedby')).toBe(false);
+    });
+
     it('should set the `for` attribute to the id of the input element', () => {
       expect(labelElement.getAttribute('for')).toBeTruthy();
       expect(inputElement.getAttribute('id')).toBeTruthy();
@@ -886,6 +898,7 @@ describe('MatSlideToggle with forms', () => {
                      [name]="slideName"
                      [aria-label]="slideLabel"
                      [aria-labelledby]="slideLabelledBy"
+                     [aria-describedby]="slideAriaDescribedBy"
                      [tabIndex]="slideTabindex"
                      [labelPosition]="labelPosition"
                      [disableRipple]="disableRipple"
@@ -906,6 +919,7 @@ class SlideToggleBasic {
   slideName: string | null;
   slideLabel: string | null;
   slideLabelledBy: string | null;
+  slideAriaDescribedBy: string | null;
   slideTabindex: number;
   lastEvent: MatSlideToggleChange;
   labelPosition: string;
