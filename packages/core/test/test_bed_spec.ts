@@ -248,6 +248,25 @@ describe('TestBed', () => {
     expect(hello.nativeElement).toHaveText('Hello World!');
   });
 
+  // https://github.com/angular/angular/issues/42734
+  it('should override a component which is declared in an NgModule which is imported as a `ModuleWithProviders`',
+     () => {
+       // This test verifies that an overridden component that is declared in an NgModule that has
+       // been imported as a `ModuleWithProviders` continues to have access to the declaration scope
+       // of the NgModule.
+       TestBed.resetTestingModule();
+
+       const moduleWithProviders:
+           ModuleWithProviders<HelloWorldModule> = {ngModule: HelloWorldModule};
+       TestBed.configureTestingModule({imports: [moduleWithProviders]});
+       TestBed.overrideComponent(
+           HelloWorld, {set: {template: 'Overridden <greeting-cmp></greeting-cmp>'}});
+
+       const hello = TestBed.createComponent(HelloWorld);
+       hello.detectChanges();
+       expect(hello.nativeElement).toHaveText('Overridden Hello World!');
+     });
+
   it('should run `APP_INITIALIZER` before accessing `LOCALE_ID` provider', () => {
     let locale: string = '';
     @NgModule({
