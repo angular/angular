@@ -538,6 +538,8 @@ export class R3TestBedCompiler {
           this.queueTypeArray(maybeUnwrapFn(def.declarations), value);
           queueTypesFromModulesArrayRecur(maybeUnwrapFn(def.imports));
           queueTypesFromModulesArrayRecur(maybeUnwrapFn(def.exports));
+        } else if (isModuleWithProviders(value)) {
+          queueTypesFromModulesArrayRecur([value.ngModule]);
         }
       }
     };
