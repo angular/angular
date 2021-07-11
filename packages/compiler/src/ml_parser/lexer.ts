@@ -8,9 +8,10 @@
 
 import * as chars from '../chars';
 import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from '../parse_util';
+import {NAMED_ENTITIES} from './entities';
 
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './interpolation_config';
-import {NAMED_ENTITIES, TagContentType, TagDefinition} from './tags';
+import {TagContentType, TagDefinition} from './tags';
 
 export enum TokenType {
   TAG_OPEN_START,
