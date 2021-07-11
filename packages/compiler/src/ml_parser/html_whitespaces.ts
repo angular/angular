@@ -7,8 +7,8 @@
  */
 
 import * as html from './ast';
+import {NGSP_UNICODE} from './entities';
 import {ParseTreeResult} from './parser';
-import {NGSP_UNICODE} from './tags';
 
 export const PRESERVE_WS_ATTR_NAME = 'ngPreserveWhitespaces';
 
