@@ -84,14 +84,14 @@ In HTML, these attributes are set using ordinary CSS styles such as color and op
 
 Use Angular's `state()` function to define different states to call at the end of each transition. This function takes two arguments: a unique name like `open` or `closed` and a `style()` function.
 
-Use the `style()` function to define a set of styles to associate with a given state name. Note that the style attributes must be in [*camelCase*](guide/glossary#case-conventions).
+Use the `style()` function to define a set of styles to associate with a given state name. Note that the style attributes containing dashed must either be written in [*camelCase*](guide/glossary#case-conventions) (e.g. `'backgroundColor'`) or denoted as strings (e.g. `'background-color'`).
 
-Let's see how Angular's `state()` function works with the `style⁣­(⁠)` function to set CSS style attributes. In this code snippet, multiple style attributes are set at the same time for the state. In the `open` state, the button has a height of 200 pixels, an opacity of 1, and a background color of yellow.
+Let's see how Angular's `state()` function works with the `style⁣­(⁠)` function to set CSS style attributes. In this code snippet, multiple style attributes are set at the same time for the state. In the `open` state, the button has a height of 200 pixels, an opacity of 1, and a yellow background color.
 
 <code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" region="state1" language="typescript">
 </code-example>
 
-In the `closed` state, shown below, the button has a height of 100 pixels, an opacity of 0.7, and a background color of blue.
+In the `closed` state, shown below, the button has a height of 100 pixels, an opacity of 0.7, and a blue background color.
 
 <code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" region="state2" language="typescript">
 </code-example>
@@ -109,9 +109,9 @@ Use the `animate()` function to define the length, delay, and easing of a transi
 
 The `animate()` function (second argument of the transition function) accepts the `timings` and `styles` input parameters.
 
-The `timings` parameter takes a string defined in three parts.
+The `timings` parameter takes either a number or a string defined in three parts.
 
->`animate ('duration delay easing')`
+>`animate (duration)` or `animate ('duration delay easing')`
 
 The first part, `duration`, is required. The duration can be expressed in milliseconds as a number without quotes, or in seconds with quotes and a time specifier. For example, a duration of a tenth of a second can be expressed as follows:
 
@@ -184,7 +184,7 @@ Animations are defined in the metadata of the component that controls the HTML e
 
 <code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" language="typescript" region="component"></code-example>
 
-When you've defined an animation trigger for a component, you can attach it to an element in that component's template by wrapping the trigger name in brackets and preceding it with an `@` symbol. Then, you can bind the trigger to a template expression using standard Angular property binding syntax as shown below, where `triggerName` is the name of the trigger, and `expression` evaluates to a defined animation state.
+When you've defined an animation trigger for a component, you can attach it to an element in that component's template by wrapping the trigger name in brackets and preceding it with an `@` symbol. Then, you can bind the trigger to a template expression using the standard Angular property binding syntax as shown below, where `triggerName` is the name of the trigger, and `expression` evaluates to a defined animation state.
 
 ```
 <div [@triggerName]="expression">...</div>;
@@ -263,7 +263,7 @@ What it does
 </tr>
 
 <tr>
-<td><code><a href="api/animations/state" class="code-anchor">state()</a></code></td>
+<td><code><a href="api/animations/state" class="code-anchor">state</a>()</code></td>
 <td>Creates a named set of CSS styles that should be applied on successful transition to a given state. The state can then be referenced by name within other animation functions.</td>
 </tr>
 
@@ -283,8 +283,8 @@ What it does
 </tr>
 
 <tr>
-<td><code><a href="api/animations/group" class="code-anchor">group()</a></code></td>
-<td>Specifies a group of animation steps (<em>inner animations</em>) to be run in parallel. Animation continues only after all inner animation steps have completed. Used within <code>sequence()</code> or <code>transition().</code></td>
+<td><code><a href="api/animations/group" class="code-anchor">group</a>()</code></td>
+<td>Specifies a group of animation steps (<em>inner animations</em>) to be run in parallel. Animation continues only after all inner animation steps have completed. Used within <code>sequence()</code> or <code>transition()</code>.</td>
 </tr>
 
 <tr>

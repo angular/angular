@@ -1,16 +1,13 @@
 <!-- #docplaster -->
 <h2>Filter/Stagger</h2>
 
-<form>
-  <label for="search">Search heroes: </label>
-  <input type="text"
-         id="search"
-         #criteria (input)="updateCriteria(criteria.value)"
-         placeholder="Search heroes">
-</form>
-
 <!-- #docregion filter-animations -->
-<ul class="heroes" [@filterAnimation]="heroTotal">
+<label for="search">Search heroes: </label>
+<input type="text" id="search" #criteria
+       (input)="updateCriteria(criteria.value)"
+       placeholder="Search heroes">
+
+<ul class="heroes" [@filterAnimation]="heroesTotal">
 <!-- #enddocregion filter-animations -->
   <li *ngFor="let hero of heroes" class="hero">
     <div class="inner">

@@ -36,7 +36,7 @@ import { Hero } from './hero';
         width: 120,
         transform: 'translateX(0)', opacity: 1
       })),
-      transition('void => *', [
+      transition(':enter', [
         style({ width: 10, transform: 'translateX(50px)', opacity: 0 }),
         group([
           animate('0.3s 0.1s ease', style({
@@ -48,7 +48,7 @@ import { Hero } from './hero';
           }))
         ])
       ]),
-      transition('* => void', [
+      transition(':leave', [
         group([
           animate('0.3s ease', style({
             transform: 'translateX(50px)',
