@@ -663,3 +663,56 @@ export function getControlAsyncValidators(control: AbstractControl): AsyncValida
     AsyncValidatorFn[]|null {
   return (control as any)._rawAsyncValidators as AsyncValidatorFn | AsyncValidatorFn[] | null;
 }
+
+/**
+ * Accepts a singleton validator, an array, or null, and returns an array type with the provided
+ * validators.
+ *
+ * @param validators A validator, validators, or null.
+ * @returns A validators array.
+ */
+export function makeValidatorsArray<T extends ValidatorFn|AsyncValidatorFn>(validators: T|T[]|
+                                                                            null): T[] {
+  if (!validators) return [];
+  return Array.isArray(validators) ? validators : [validators];
+}
+
+/**
+ * Determines whether a validator or validators array has a given validator.
+ *
+ * @param validators The validator or validators to compare against.
+ * @param validator The validator to check.
+ * @returns Whether the validator is present.
+ */
+export function hasValidator<T extends ValidatorFn|AsyncValidatorFn>(
+    validators: T|T[]|null, validator: T): boolean {
+  return Array.isArray(validators) ? validators.includes(validator) : validators === validator;
+}
+
+/**
+ * Combines two arrays of validators into one. If duplicates are provided, only one will be added.
+ *
+ * @param validators The new validators.
+ * @param currentValidators The base array of currrent validators.
+ * @returns An array of validators.
+ */
+export function addValidators<T extends ValidatorFn|AsyncValidatorFn>(
+    validators: T|T[], currentValidators: T|T[]|null): T[] {
+  const current = makeValidatorsArray(currentValidators);
+  const validatorsToAdd = makeValidatorsArray(validators);
+  validatorsToAdd.forEach((v: T) => {
+    // Note: if there are duplicate entries in the new validators array,
+    // only the first one would be added to the current list of validarors.
+    // Duplicate ones would be ignored since `hasValidator` would detect
+    // the presence of a validator function and we update the current list in place.
+    if (!hasValidator(current, v)) {
+      current.push(v);
+    }
+  });
+  return current;
+}
+
+export function removeValidators<T extends ValidatorFn|AsyncValidatorFn>(
+    validators: T|T[], currentValidators: T|T[]|null): T[] {
+  return makeValidatorsArray(currentValidators).filter(v => !hasValidator(validators, v));
+}

@@ -666,6 +666,9 @@
     "name": "addToViewTree"
   },
   {
+    "name": "addValidators"
+  },
+  {
     "name": "allocExpando"
   },
   {
@@ -1083,6 +1086,9 @@
     "name": "hasValidLength"
   },
   {
+    "name": "hasValidator"
+  },
+  {
     "name": "hostReportError"
   },
   {
@@ -1272,6 +1278,9 @@
     "name": "makeRecord"
   },
   {
+    "name": "makeValidatorsArray"
+  },
+  {
     "name": "map"
   },
   {
@@ -1429,6 +1438,9 @@
   },
   {
     "name": "removeStyle"
+  },
+  {
+    "name": "removeValidators"
   },
   {
     "name": "renderComponent"
