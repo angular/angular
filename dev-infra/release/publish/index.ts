@@ -8,7 +8,7 @@
 
 import {ListChoiceOptions, prompt} from 'inquirer';
 
-import {spawn} from '../../utils/child-process';
+import {spawnWithDebugOutput} from '../../utils/child-process';
 import {GithubConfig} from '../../utils/config';
 import {debug, error, info, log, promptConfirm, red, yellow} from '../../utils/console';
 import {AuthenticatedGitClient} from '../../utils/git/authenticated-git-client';
@@ -138,7 +138,8 @@ export class ReleaseTool {
     try {
       // Note: We do not rely on `/usr/bin/env` but rather access the `env` binary directly as it
       // should be part of the shell's `$PATH`. This is necessary for compatibility with Windows.
-      const pyVersion = await spawn('env', ['python', '--version'], {mode: 'silent'});
+      const pyVersion =
+          await spawnWithDebugOutput('env', ['python', '--version'], {mode: 'silent'});
       const version = pyVersion.stdout.trim() || pyVersion.stderr.trim();
       if (version.startsWith('Python 3.')) {
         debug(`Local python version: ${version}`);

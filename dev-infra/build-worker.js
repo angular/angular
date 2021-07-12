@@ -144,7 +144,6 @@ var GitCommandError = /** @class */ (function (_super) {
         // we sanitize the command that will be part of the error message.
         _super.call(this, "Command failed: git " + client.sanitizeConsoleOutput(args.join(' '))) || this;
         _this.args = args;
-        Object.setPrototypeOf(_this, GitCommandError.prototype);
         return _this;
     }
     return GitCommandError;

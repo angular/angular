@@ -9,6 +9,7 @@
 import {spawnSync, SpawnSyncOptions, SpawnSyncReturns} from 'child_process';
 import {Options as SemVerOptions, parse, SemVer} from 'semver';
 
+import {spawnWithDebugOutput} from '../child-process';
 import {getConfig, GithubConfig, NgDevConfig} from '../config';
 import {debug, info} from '../console';
 import {DryRunError, isDryRun} from '../dry-run';
@@ -23,7 +24,6 @@ export class GitCommandError extends Error {
     // accidentally leak the Github token that might be used in a command,
     // we sanitize the command that will be part of the error message.
     super(`Command failed: git ${client.sanitizeConsoleOutput(args.join(' '))}`);
-    Object.setPrototypeOf(this, GitCommandError.prototype);
   }
 }
 
