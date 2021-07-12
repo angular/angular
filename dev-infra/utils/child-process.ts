@@ -10,7 +10,6 @@ import {spawn as _spawn, SpawnOptions as _SpawnOptions, spawnSync as _spawnSync,
 import {debug, error} from './console';
 
 
-/** Interface describing the options for spawning a process synchronously. */
 export interface SpawnSyncOptions extends Omit<_SpawnSyncOptions, 'shell'|'stdio'> {
   /** Whether to prevent exit codes being treated as failures. */
   suppressErrorOnFailingExitCode?: boolean;
@@ -59,7 +58,7 @@ export function spawnInteractive(
  * output mode, stdout/stderr output is also printed to the console, or only on error.
  *
  * @returns a Promise resolving with captured stdout and stderr on success. The promise
- *   rejects on command failure.
+ *   rejects on command failure
  */
 export function spawn(
     command: string, args: string[], options: SpawnOptions = {}): Promise<SpawnResult> {
@@ -116,12 +115,12 @@ export function spawn(
 }
 
 /**
- * Spawns a given command with the specified arguments inside a shell synchronously.
+ * Spawns a given command with the specified arguments inside a shell syncronously.
  *
  * @returns The command's stdout and stderr.
  */
 export function spawnSync(
-    command: string, args: string[], options: SpawnSyncOptions = {}): SpawnResult {
+    command: string, args: string[], options: SpawnOptions = {}): SpawnResult {
   const commandText = `${command} ${args.join(' ')}`;
   debug(`Executing command: ${commandText}`);
 
@@ -138,14 +137,9 @@ export function spawnSync(
   throw new Error(stderr);
 }
 
-/**
- * Convert the provided exitCode and signal to a single status code.
- *
- * During `exit` node provides either a `code` or `signal`, one of which is guaranteed to be
- * non-null.
- *
- * For more details see: https://nodejs.org/api/child_process.html#child_process_event_exit
- */
+
+
+/** Convert the provided exitCode and signal to a single status code. */
 function statusFromExitCodeAndSignal(exitCode: number|null, signal: NodeJS.Signals|null) {
-  return exitCode ?? signal ?? -1;
+  return exitCode !== null ? exitCode : signal !== null ? signal : -1;
 }

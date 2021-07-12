@@ -13,10 +13,12 @@ ts_library(
         "@npm//@types/git-raw-commits",
         "@npm//@types/inquirer",
         "@npm//@types/node",
+        "@npm//@types/shelljs",
         "@npm//@types/yargs",
         "@npm//conventional-commits-parser",
         "@npm//git-raw-commits",
         "@npm//inquirer",
+        "@npm//shelljs",
         "@npm//yargs",
     ],
 )

@@ -26,14 +26,14 @@ export class ClangFormat extends Formatter {
     check: {
       commandFlags: `--Werror -n -style=file`,
       callback:
-          (_: string, code: number|NodeJS.Signals) => {
+          (_: string, code: number) => {
             return code !== 0;
           },
     },
     format: {
       commandFlags: `-i -style=file`,
       callback:
-          (file: string, code: number|NodeJS.Signals, _: string, stderr: string) => {
+          (file: string, code: number, _: string, stderr: string) => {
             if (code !== 0) {
               error(`Error running clang-format on: ${file}`);
               error(stderr);

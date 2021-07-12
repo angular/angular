@@ -10,8 +10,7 @@ import {GitClient} from '../../utils/git/git-client';
 import {FormatConfig} from '../config';
 
 // A callback to determine if the formatter run found a failure in formatting.
-export type CallbackFunc =
-    (file: string, code: number|NodeJS.Signals, stdout: string, stderr: string) => boolean;
+export type CallbackFunc = (file: string, code: number, stdout: string, stderr: string) => boolean;
 
 // The actions a formatter can take.
 export type FormatterAction = 'check'|'format';
