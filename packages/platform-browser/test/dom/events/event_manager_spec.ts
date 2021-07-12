@@ -310,6 +310,32 @@ describe('EventManager', () => {
     expect(receivedEvents).toEqual([]);
   });
 
+  it('should always run EventManager.addEventlistener inside NgZone', () => {
+    const fakeAngularZone =
+        Zone.current.fork({name: 'fakeAngular', properties: {'isAngularZone': true}});
+    const element = el('<div><div></div></div>');
+    doc.body.appendChild(element);
+    const dispatchedEvent = createMouseEvent('scroll');
+    let receivedEvent: any = null;
+    let handlerInAngularZone = false;
+    const handler = (e: any) => {
+      receivedEvent = e;
+      handlerInAngularZone = NgZone.isInAngularZone();
+    };
+    const manager = new EventManager([domEventPlugin], new FakeNgZone(fakeAngularZone));
+
+    let remover = manager.addEventListener(element, 'scroll', handler);
+    getDOM().dispatchEvent(element, dispatchedEvent);
+    expect(receivedEvent).toBe(dispatchedEvent);
+    expect(handlerInAngularZone).toBe(true);
+
+    receivedEvent = null;
+    remover && remover();
+    getDOM().dispatchEvent(element, dispatchedEvent);
+    expect(receivedEvent).toBe(null);
+  });
+
+
   it('should run unpatchedEvents handler outside of ngZone', () => {
     const Zone = (window as any)['Zone'];
     const element = el('<div><div></div></div>');
@@ -523,10 +549,15 @@ class FakeEventManagerPlugin extends EventManagerPlugin {
 }
 
 class FakeNgZone extends NgZone {
-  constructor() {
+  innerZone: Zone|undefined;
+  constructor(innerZone?: Zone) {
     super({enableLongStackTrace: false, shouldCoalesceEventChangeDetection: true});
+    this.innerZone = innerZone;
   }
   run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T {
+    if (this.innerZone) {
+      return this.innerZone.run(fn, applyThis, applyArgs);
+    }
     return fn();
   }
   runOutsideAngular(fn: Function) {

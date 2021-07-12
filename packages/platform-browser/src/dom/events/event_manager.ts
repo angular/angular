@@ -47,7 +47,16 @@ export class EventManager {
    */
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     const plugin = this._findPluginFor(eventName);
-    return plugin.addEventListener(element, eventName, handler);
+    if (NgZone.isInAngularZone()) {
+      return plugin.addEventListener(element, eventName, handler);
+    } else {
+      const zone = this.getZone();
+      return plugin.addEventListener(element, eventName, (evt: any) => {
+        return zone.runGuarded(() => {
+          return handler(evt);
+        });
+      });
+    }
   }
 
   /**
