@@ -255,7 +255,10 @@ describe('TestBed', () => {
        // been imported as a `ModuleWithProviders` continues to have access to the declaration scope
        // of the NgModule.
        TestBed.resetTestingModule();
-       TestBed.configureTestingModule({imports: [{ngModule: HelloWorldModule}]});
+
+       const moduleWithProviders:
+           ModuleWithProviders<HelloWorldModule> = {ngModule: HelloWorldModule};
+       TestBed.configureTestingModule({imports: [moduleWithProviders]});
        TestBed.overrideComponent(
            HelloWorld, {set: {template: 'Overridden <greeting-cmp></greeting-cmp>'}});
 
