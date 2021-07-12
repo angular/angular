@@ -1,3 +1,6 @@
+export interface ChipAvatarHarnessFilters extends BaseHarnessFilters {
+}
+
 export interface ChipHarnessFilters extends BaseHarnessFilters {
     selected?: boolean;
     text?: string | RegExp;
@@ -21,8 +24,9 @@ export interface ChipOptionHarnessFilters extends ChipHarnessFilters {
 export interface ChipRemoveHarnessFilters extends BaseHarnessFilters {
 }
 
-export declare class MatChipHarness extends ComponentHarness {
+export declare class MatChipHarness extends ContentContainerComponentHarness {
     deselect(): Promise<void>;
+    getAvatar(filter?: ChipAvatarHarnessFilters): Promise<MatChipAvatarHarness | null>;
     getRemoveButton(filter?: ChipRemoveHarnessFilters): Promise<MatChipRemoveHarness>;
     getText(): Promise<string>;
     isDisabled(): Promise<boolean>;

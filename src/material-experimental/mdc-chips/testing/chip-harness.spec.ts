@@ -2,6 +2,8 @@ import {HarnessLoader, parallel} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {MatIconModule} from '@angular/material/icon';
+import {MatIconHarness} from '@angular/material/icon/testing';
 import {MatChipsModule} from '../index';
 import {MatChipHarness} from './chip-harness';
 
@@ -12,7 +14,7 @@ describe('MatChipHarness', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MatChipsModule],
+      imports: [MatChipsModule, MatIconModule],
       declarations: [ChipHarnessTest],
     }).compileComponents();
 
@@ -55,13 +57,35 @@ describe('MatChipHarness', () => {
     expect(await harness.getRemoveButton()).toBeTruthy();
   });
 
+  it('should find avatar in chip', async () => {
+    const chip = await loader.getHarness(MatChipHarness.with({
+      selector: '.mat-mdc-chip-with-avatar'
+    }));
+    const avatar = await chip.getAvatar();
+    expect(avatar).toBeTruthy();
+    const avatarHost = await avatar?.host();
+    expect(await avatarHost?.getAttribute('aria-label')).toBe('Coronavirus');
+  });
+
+  it('should find icon in chip', async () => {
+    const chip = await loader.getHarness(MatChipHarness.with({
+      selector: '.mat-mdc-chip-with-icon-avatar'
+    }));
+    expect(chip).toBeTruthy();
+    const icon = await chip.getHarness(MatIconHarness);
+    expect(icon).toBeTruthy();
+    expect(await icon.getName()).toBe('coronavirus');
+  });
 });
 
 @Component({
   template: `
     <mat-basic-chip>Basic Chip</mat-basic-chip>
     <mat-chip>Chip <span matChipTrailingIcon>trailing_icon</span></mat-chip>
-    <mat-chip><mat-chip-avatar>B</mat-chip-avatar>Chip with avatar</mat-chip>
+    <mat-chip class="mat-mdc-chip-with-icon-avatar">
+      <mat-icon matChipAvatar aria-label="Coronavirus" aria-hidden="false">coronavirus</mat-icon>
+      Chip with avatar
+    </mat-chip>
     <mat-chip
       class="has-remove-button"
       disabled>Disabled Chip <span matChipRemove>remove_icon</span>

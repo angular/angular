@@ -3,8 +3,10 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {HarnessLoader, parallel, TestKey} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatChipsModule} from '@angular/material/chips';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatIconModule} from '@angular/material/icon';
+import {MatIconHarness} from '@angular/material/icon/testing';
 import {MatChipListHarness} from './chip-list-harness';
 import {MatChipHarness} from './chip-harness';
 import {MatChipInputHarness} from './chip-input-harness';
@@ -20,13 +22,15 @@ export function runHarnessTests(
     chipHarness: typeof MatChipHarness,
     chipOptionHarness: typeof MatChipOptionHarness,
     chipInputHarness: typeof MatChipInputHarness,
-    chipRemoveHarness: typeof MatChipRemoveHarness) {
+    chipRemoveHarness: typeof MatChipRemoveHarness,
+    iconModule: typeof MatIconModule,
+    iconHarness: typeof MatIconHarness) {
   let fixture: ComponentFixture<ChipsHarnessTest>;
   let loader: HarnessLoader;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [chipsModule, MatFormFieldModule, NoopAnimationsModule],
+      imports: [chipsModule, MatFormFieldModule, NoopAnimationsModule, iconModule],
       declarations: [ChipsHarnessTest],
     }).compileComponents();
 
@@ -78,7 +82,7 @@ export function runHarnessTests(
     ]);
   });
 
-  it('should get whether a chip list is in multi selection mode', async () => {
+  it('should get whether a chip list is in multi-selection mode', async () => {
     const chipLists = await loader.getAllHarnesses(chipListHarness);
 
     expect(await parallel(() => chipLists.map(list => list.isMultiple()))).toEqual([
@@ -193,7 +197,7 @@ export function runHarnessTests(
     expect(await chip.isSelected()).toBe(false);
   });
 
-  it('should get the disabled text of a chip', async () => {
+  it('should get the disabled state of a chip', async () => {
     const chips = await loader.getAllHarnesses(chipHarness);
     expect(await parallel(() => chips.map(chip => chip.isDisabled()))).toEqual([
       false,
@@ -205,7 +209,7 @@ export function runHarnessTests(
     ]);
   });
 
-  it('should get the selected text of a chip', async () => {
+  it('should get the selected state of a chip', async () => {
     const chips = await loader.getAllHarnesses(chipOptionHarness);
     expect(await parallel(() => chips.map(chip => chip.isSelected()))).toEqual([
       false,
@@ -240,14 +244,14 @@ export function runHarnessTests(
     expect(inputs.length).toBe(1);
   });
 
-  it('should get whether the input input is disabled', async () => {
+  it('should get whether the chip input is disabled', async () => {
     const input = await loader.getHarness(chipInputHarness);
     expect(await input.isDisabled()).toBe(false);
     fixture.componentInstance.inputDisabled = true;
     expect(await input.isDisabled()).toBe(true);
   });
 
-  it('should get whether the input input is required', async () => {
+  it('should get whether the chip input is required', async () => {
     const input = await loader.getHarness(chipInputHarness);
     expect(await input.isRequired()).toBe(false);
     fixture.componentInstance.inputRequired = true;
@@ -300,6 +304,25 @@ export function runHarnessTests(
     expect(fixture.componentInstance.remove).toHaveBeenCalled();
   });
 
+  it('should find avatar in chip', async () => {
+    const chip = await loader.getHarness(chipHarness.with({
+      selector: '.mat-chip-with-avatar'
+    }));
+    const avatar = await chip.getAvatar();
+    expect(avatar).toBeTruthy();
+    const avatarHost = await avatar?.host();
+    expect(await avatarHost?.getAttribute('aria-label')).toBe('Coronavirus');
+  });
+
+  it('should find icon in chip', async () => {
+    const chip = await loader.getHarness(chipHarness.with({
+      selector: '.mat-chip-with-icon-avatar'
+    }));
+    expect(chip).toBeTruthy();
+    const icon = await chip.getHarness(iconHarness);
+    expect(icon).toBeTruthy();
+    expect(await icon.getName()).toBe('coronavirus');
+  });
 }
 
 @Component({
@@ -317,7 +340,10 @@ export function runHarnessTests(
         Chip 3
         <span matChipTrailingIcon>trailing_icon</span>
       </mat-chip>
-      <mat-chip (removed)="remove()"><mat-chip-avatar>C</mat-chip-avatar>Chip 4</mat-chip>
+      <mat-chip class="mat-chip-with-icon-avatar" (removed)="remove()">
+        <mat-icon matChipAvatar aria-label="Coronavirus" aria-hidden="false">coronavirus</mat-icon>
+        Chip 4
+      </mat-chip>
     </mat-chip-list>
 
     <mat-chip-list></mat-chip-list>

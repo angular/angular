@@ -6,12 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate, TestKey} from '@angular/cdk/testing';
-import {ChipHarnessFilters, ChipRemoveHarnessFilters} from './chip-harness-filters';
+import {ContentContainerComponentHarness, HarnessPredicate, TestKey} from '@angular/cdk/testing';
+import {MatChipAvatarHarness} from './chip-avatar-harness';
+import {
+  ChipAvatarHarnessFilters,
+  ChipHarnessFilters,
+  ChipRemoveHarnessFilters
+} from './chip-harness-filters';
 import {MatChipRemoveHarness} from './chip-remove-harness';
 
 /** Harness for interacting with a standard selectable Angular Material chip in tests. */
-export class MatChipHarness extends ComponentHarness {
+export class MatChipHarness extends ContentContainerComponentHarness {
   /** The selector for the host element of a `MatChip` instance. */
   static hostSelector = '.mat-chip';
 
@@ -88,9 +93,17 @@ export class MatChipHarness extends ComponentHarness {
 
   /**
    * Gets the remove button inside of a chip.
-   * @param filter Optionally filters which chips are included.
+   * @param filter Optionally filters which remove buttons are included.
    */
   async getRemoveButton(filter: ChipRemoveHarnessFilters = {}): Promise<MatChipRemoveHarness> {
     return this.locatorFor(MatChipRemoveHarness.with(filter))();
+  }
+
+  /**
+   * Gets the avatar inside a chip.
+   * @param filter Optionally filters which avatars are included.
+   */
+  async getAvatar(filter: ChipAvatarHarnessFilters = {}): Promise<MatChipAvatarHarness | null> {
+    return this.locatorForOptional(MatChipAvatarHarness.with(filter))();
   }
 }
