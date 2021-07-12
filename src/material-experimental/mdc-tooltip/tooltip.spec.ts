@@ -12,7 +12,7 @@ import {
   dispatchKeyboardEvent,
   dispatchMouseEvent,
   patchElementFocus,
-} from '@angular/cdk/testing/private';
+} from '../../cdk/testing/private';
 import {
   ChangeDetectionStrategy,
   Component,

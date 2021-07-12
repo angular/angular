@@ -19,7 +19,6 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     assets = [":slide-toggle.css"] + glob(["**/*.html"]),
-    module_name = "@angular/material/slide-toggle",
     deps = [
         "//src/cdk/a11y",
         "//src/cdk/coercion",

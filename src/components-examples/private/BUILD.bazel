@@ -5,7 +5,6 @@ package(default_visibility = ["//visibility:public"])
 ts_library(
     name = "private",
     srcs = glob(["*.ts"]),
-    module_name = "@angular/components-examples/private",
     deps = [
         "//src/components-examples",
         "@npm//@angular/core",

@@ -13,7 +13,7 @@ import {
   dispatchMouseEvent,
   createMouseEvent,
   dispatchEvent,
-} from '@angular/cdk/testing/private';
+} from '../../cdk/testing/private';
 import {By} from '@angular/platform-browser';
 import {CdkMenu} from './menu';
 import {CdkMenuModule} from './menu-module';

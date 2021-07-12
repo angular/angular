@@ -28,7 +28,7 @@ import {
   createKeyboardEvent,
   dispatchEvent,
   dispatchMouseEvent,
-} from '@angular/cdk/testing/private';
+} from '../../cdk/testing/private';
 import {CdkMenuBar} from './menu-bar';
 import {CdkMenuModule} from './menu-module';
 import {CdkMenuItemRadio} from './menu-item-radio';

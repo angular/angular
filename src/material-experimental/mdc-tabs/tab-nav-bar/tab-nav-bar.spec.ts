@@ -5,7 +5,7 @@ import {
   RippleGlobalOptions,
 } from '@angular/material-experimental/mdc-core';
 import {By} from '@angular/platform-browser';
-import {dispatchFakeEvent, dispatchMouseEvent} from '@angular/cdk/testing/private';
+import {dispatchFakeEvent, dispatchMouseEvent} from '../../../cdk/testing/private';
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {Subject} from 'rxjs';
 import {MatTabsModule} from '../module';

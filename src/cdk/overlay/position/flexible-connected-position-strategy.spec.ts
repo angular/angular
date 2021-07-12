@@ -1,6 +1,6 @@
 import {ComponentPortal, PortalModule} from '@angular/cdk/portal';
 import {CdkScrollable, ScrollingModule, ViewportRuler} from '@angular/cdk/scrolling';
-import {dispatchFakeEvent, MockNgZone} from '@angular/cdk/testing/private';
+import {dispatchFakeEvent, MockNgZone} from '../../testing/private';
 import {Component, ElementRef, NgModule, NgZone} from '@angular/core';
 import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {Subscription} from 'rxjs';

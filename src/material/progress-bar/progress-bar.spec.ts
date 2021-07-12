@@ -1,7 +1,7 @@
 import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {Component, DebugElement, Type} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {dispatchFakeEvent} from '@angular/cdk/testing/private';
+import {dispatchFakeEvent} from '../../cdk/testing/private';
 import {MatProgressBarModule, MAT_PROGRESS_BAR_LOCATION} from './index';
 import {MatProgressBar} from './progress-bar';
 

@@ -38,7 +38,7 @@ import {
   dispatchEvent,
   patchElementFocus,
   dispatchMouseEvent
-} from '@angular/cdk/testing/private';
+} from '../../cdk/testing/private';
 import {
   MAT_DIALOG_DATA,
   MatDialog,

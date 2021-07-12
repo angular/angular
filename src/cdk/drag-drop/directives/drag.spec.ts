@@ -6,7 +6,7 @@ import {
   dispatchMouseEvent,
   dispatchTouchEvent,
   dispatchFakeEvent,
-} from '@angular/cdk/testing/private';
+} from '../../testing/private';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,

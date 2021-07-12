@@ -13,7 +13,6 @@ ng_module(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    module_name = "@angular/cdk-experimental/table-scroll-container",
     deps = [
         "//src/cdk/bidi",
         "//src/cdk/platform",

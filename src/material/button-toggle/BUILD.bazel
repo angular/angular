@@ -19,7 +19,6 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     assets = [":button-toggle.css"] + glob(["**/*.html"]),
-    module_name = "@angular/material/button-toggle",
     deps = [
         "//src:dev_mode_types",
         "//src/cdk/a11y",

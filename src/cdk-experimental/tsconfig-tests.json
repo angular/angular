@@ -1,6 +1,10 @@
 {
   "extends": "../bazel-tsconfig-build.json",
+  "references": [
+    {"path": "../cdk/tsconfig-tests.json"}
+  ],
   "compilerOptions": {
+    "composite": true,
     "baseUrl": ".",
     "outDir": "../../dist/packages/cdk-experimental",
     "rootDir": ".",
@@ -20,8 +24,7 @@
     }
   },
   "include": [
-    "**/index.ts",
-    "**/*.spec.ts",
+    "**/*.ts",
     "../dev-mode-types.d.ts"
   ],
   "exclude": [

@@ -13,7 +13,6 @@ ng_module(
     assets = [
         ":autocomplete_scss",
     ] + glob(["**/*.html"]),
-    module_name = "@angular/material-experimental/mdc-autocomplete",
     deps = [
         "//src/cdk/overlay",
         "//src/cdk/scrolling",

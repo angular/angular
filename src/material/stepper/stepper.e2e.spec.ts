@@ -1,5 +1,5 @@
 import {browser, by, element, ElementFinder, ExpectedConditions, Key} from 'protractor';
-import {expectFocusOn, expectToExist, pressKeys} from '@angular/cdk/testing/private/e2e';
+import {expectFocusOn, expectToExist, pressKeys} from '../../cdk/testing/private/e2e';
 
 describe('stepper', () => {
   beforeEach(async () => await browser.get('/stepper'));

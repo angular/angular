@@ -20,7 +20,6 @@ ng_module(
         ":snack-bar-container.css",
         ":simple-snack-bar.css",
     ] + glob(["**/*.html"]),
-    module_name = "@angular/material/snack-bar",
     deps = [
         "//src:dev_mode_types",
         "//src/cdk/a11y",

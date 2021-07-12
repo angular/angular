@@ -9,7 +9,6 @@ ng_module(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    module_name = "@angular/material-moment-adapter",
     # We need a custom tsconfig that allows synthetic default imports. This is
     # because "moment" does not have a typed default import.
     tsconfig = ":tsconfig",

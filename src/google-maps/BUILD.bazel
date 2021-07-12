@@ -10,7 +10,6 @@ ng_module(
             "**/*.spec.ts",
         ],
     ),
-    module_name = "@angular/google-maps",
     deps = [
         "//src:dev_mode_types",
         "@npm//@angular/common",

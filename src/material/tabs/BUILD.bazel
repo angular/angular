@@ -24,7 +24,6 @@ ng_module(
         ":tab-group.css",
         ":tab-nav-bar/tab-nav-bar.css",
     ] + glob(["**/*.html"]),
-    module_name = "@angular/material/tabs",
     deps = [
         "//src/cdk/a11y",
         "//src/cdk/bidi",

@@ -19,7 +19,6 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     assets = [":button.css"] + glob(["**/*.html"]),
-    module_name = "@angular/material/button",
     deps = [
         "//src/cdk/a11y",
         "//src/material/core",

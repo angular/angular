@@ -17,7 +17,6 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     assets = [":table.css"],
-    module_name = "@angular/material/table",
     deps = [
         "@npm//@angular/core",
         "@npm//rxjs",

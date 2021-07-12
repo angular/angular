@@ -9,7 +9,6 @@ ng_module(
         "**/*.html",
         "**/*.css",
     ]),
-    module_name = "@angular/components-examples/material/core",
     deps = [
         "//src/material/button",
         "//src/material/checkbox",

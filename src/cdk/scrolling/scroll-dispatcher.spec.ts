@@ -8,7 +8,7 @@ import {
 } from '@angular/core/testing';
 import {NgModule, Component, ViewChild, ElementRef} from '@angular/core';
 import {CdkScrollable, ScrollDispatcher, ScrollingModule} from './public-api';
-import {dispatchFakeEvent} from '@angular/cdk/testing/private';
+import {dispatchFakeEvent} from '../testing/private';
 
 describe('ScrollDispatcher', () => {
 

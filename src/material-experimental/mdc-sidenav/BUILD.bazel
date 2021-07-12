@@ -14,7 +14,6 @@ ng_module(
     assets = [
         # TODO: include scss assets
     ] + glob(["**/*.html"]),
-    module_name = "@angular/material-experimental/mdc-sidenav",
     deps = [
         "//src/material-experimental/mdc-core",
     ],

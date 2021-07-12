@@ -24,7 +24,6 @@ ng_module(
         ":fab_scss",
         ":icon-button_scss",
     ] + glob(["**/*.html"]),
-    module_name = "@angular/material-experimental/mdc-button",
     deps = [
         "//src/cdk/platform",
         "//src/material-experimental/mdc-core",

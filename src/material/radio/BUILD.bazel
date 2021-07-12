@@ -19,7 +19,6 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     assets = [":radio.css"] + glob(["**/*.html"]),
-    module_name = "@angular/material/radio",
     deps = [
         "//src/cdk/a11y",
         "//src/cdk/coercion",

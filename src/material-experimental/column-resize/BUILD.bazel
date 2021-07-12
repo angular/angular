@@ -9,7 +9,6 @@ ng_module(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    module_name = "@angular/material-experimental/column-resize",
     deps = [
         "//src/cdk-experimental/column-resize",
         "//src/cdk/overlay",

@@ -10,7 +10,6 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     assets = [":card_scss"] + glob(["**/*.html"]),
-    module_name = "@angular/material-experimental/mdc-card",
     deps = [
         "//src/material-experimental/mdc-core",
     ],

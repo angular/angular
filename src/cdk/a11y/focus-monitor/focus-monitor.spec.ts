@@ -6,7 +6,7 @@ import {
   patchElementFocus,
   createMouseEvent,
   dispatchEvent,
-} from '@angular/cdk/testing/private';
+} from '../../testing/private';
 import {DOCUMENT} from '@angular/common';
 import {Component, NgZone} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, inject, TestBed, tick} from '@angular/core/testing';

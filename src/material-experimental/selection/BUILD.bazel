@@ -9,7 +9,6 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     assets = [":selection_column_scss"],
-    module_name = "@angular/material-experimental/selection",
     deps = [
         "//src/cdk-experimental/selection",
         "//src/material/checkbox",

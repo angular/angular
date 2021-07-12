@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, ElementRef, Type, ViewChild, Provider} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, TestBed} from '@angular/core/testing';
-import {patchElementFocus} from '@angular/cdk/testing/private';
+import {patchElementFocus} from '../../testing/private';
 import {
   A11yModule,
   ConfigurableFocusTrapFactory,

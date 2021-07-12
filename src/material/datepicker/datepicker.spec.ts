@@ -8,7 +8,7 @@ import {
   dispatchFakeEvent,
   dispatchKeyboardEvent,
   dispatchMouseEvent,
-} from '@angular/cdk/testing/private';
+} from '../../cdk/testing/private';
 import {Component, Type, ViewChild, Provider, Directive, ViewEncapsulation} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, inject, TestBed, tick} from '@angular/core/testing';
 import {
@@ -25,7 +25,7 @@ import {
   NativeDateModule,
 } from '@angular/material/core';
 import {MatFormField, MatFormFieldModule} from '@angular/material/form-field';
-import {DEC, JAN, JUL, JUN, SEP} from '@angular/material/testing';
+import {DEC, JAN, JUL, JUN, SEP} from '../testing';
 import {By} from '@angular/platform-browser';
 import {_supportsShadowDom} from '@angular/cdk/platform';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';

@@ -13,7 +13,7 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {CdkComboboxModule} from './combobox-module';
 import {CdkCombobox} from './combobox';
-import {dispatchKeyboardEvent, dispatchMouseEvent} from '@angular/cdk/testing/private';
+import {dispatchKeyboardEvent, dispatchMouseEvent} from '../../cdk/testing/private';
 import {
   AriaHasPopupValue,
   CdkComboboxPanel} from '@angular/cdk-experimental/combobox/combobox-panel';

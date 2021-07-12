@@ -13,7 +13,6 @@ ng_module(
         "**/*.html",
         "**/*.css",
     ]),
-    module_name = "@angular/components-examples/material/datepicker",
     tsconfig = ":tsconfig",
     deps = [
         "//src/cdk/testing",

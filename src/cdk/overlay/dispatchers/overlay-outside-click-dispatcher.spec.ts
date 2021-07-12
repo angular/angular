@@ -1,6 +1,6 @@
 import {TestBed, inject, fakeAsync} from '@angular/core/testing';
 import {Component, NgModule} from '@angular/core';
-import {dispatchFakeEvent, dispatchMouseEvent} from '@angular/cdk/testing/private';
+import {dispatchFakeEvent, dispatchMouseEvent} from '../../testing/private';
 import {OverlayModule, OverlayContainer, Overlay} from '../index';
 import {OverlayOutsideClickDispatcher} from './overlay-outside-click-dispatcher';
 import {ComponentPortal} from '@angular/cdk/portal';

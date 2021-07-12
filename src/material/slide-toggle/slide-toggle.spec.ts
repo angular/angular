@@ -1,5 +1,5 @@
 import {MutationObserverFactory} from '@angular/cdk/observers';
-import {dispatchFakeEvent} from '@angular/cdk/testing/private';
+import {dispatchFakeEvent} from '../../cdk/testing/private';
 import {Component, DebugElement} from '@angular/core';
 import {
   ComponentFixture,

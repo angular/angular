@@ -19,7 +19,6 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     assets = [":progress-bar.css"] + glob(["**/*.html"]),
-    module_name = "@angular/material/progress-bar",
     deps = [
         "//src/material/core",
         "@npm//@angular/animations",

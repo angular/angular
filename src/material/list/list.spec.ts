@@ -1,7 +1,7 @@
 import {waitForAsync, TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {Component, QueryList, ViewChildren} from '@angular/core';
 import {defaultRippleAnimationConfig} from '@angular/material/core';
-import {dispatchMouseEvent} from '@angular/cdk/testing/private';
+import {dispatchMouseEvent} from '../../cdk/testing/private';
 import {By} from '@angular/platform-browser';
 import {MatListItem, MatListModule} from './index';
 

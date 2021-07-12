@@ -2,7 +2,7 @@ import {waitForAsync, ComponentFixture, fakeAsync, TestBed, tick} from '@angular
 import {Component, ViewChild, ViewChildren, QueryList} from '@angular/core';
 import {MAT_RIPPLE_GLOBAL_OPTIONS, RippleGlobalOptions} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
-import {dispatchFakeEvent, dispatchMouseEvent} from '@angular/cdk/testing/private';
+import {dispatchFakeEvent, dispatchMouseEvent} from '../../../cdk/testing/private';
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {Subject} from 'rxjs';
 import {MatTabLink, MatTabNav, MatTabsModule} from '../index';

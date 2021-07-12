@@ -6,7 +6,6 @@ ng_module(
     name = "testing",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    module_name = "@angular/material/testing",
     deps = [
         "//src/material/core",
         "@npm//@angular/core",

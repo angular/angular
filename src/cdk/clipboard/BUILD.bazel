@@ -9,7 +9,6 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     assets = glob(["**/*.html"]),
-    module_name = "@angular/cdk/clipboard",
     deps = [
         "@npm//@angular/core",
         "@npm//rxjs",

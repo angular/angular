@@ -9,7 +9,6 @@ ng_module(
         "**/*.html",
         "**/*.css",
     ]),
-    module_name = "@angular/components-examples/cdk-experimental/menu",
     deps = [
         "//src/cdk-experimental/menu",
         "@npm//@angular/forms",

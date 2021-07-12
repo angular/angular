@@ -39,7 +39,7 @@ import {
   dispatchFakeEvent,
   patchElementFocus,
   MockNgZone,
-} from '@angular/cdk/testing/private';
+} from '../../cdk/testing/private';
 import {Subject} from 'rxjs';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {FocusMonitor} from '@angular/cdk/a11y';

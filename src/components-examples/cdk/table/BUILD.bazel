@@ -9,7 +9,6 @@ ng_module(
         "**/*.html",
         "**/*.css",
     ]),
-    module_name = "@angular/components-examples/cdk/table",
     deps = [
         "//src/cdk/table",
     ],

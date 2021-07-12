@@ -9,7 +9,6 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     assets = [":dialog-container.css"] + glob(["**/*.html"]),
-    module_name = "@angular/cdk-experimental/dialog",
     deps = [
         "//src:dev_mode_types",
         "//src/cdk/a11y",

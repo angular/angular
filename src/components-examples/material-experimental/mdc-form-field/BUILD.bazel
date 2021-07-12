@@ -9,7 +9,6 @@ ng_module(
         "**/*.html",
         "**/*.css",
     ]),
-    module_name = "@angular/components-examples/material-experimental/mdc-form-field",
     deps = [
         "//src/cdk/a11y",
         "//src/cdk/coercion",

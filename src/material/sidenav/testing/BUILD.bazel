@@ -8,7 +8,6 @@ ts_library(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    module_name = "@angular/material/sidenav/testing",
     deps = [
         "//src/cdk/coercion",
         "//src/cdk/testing",

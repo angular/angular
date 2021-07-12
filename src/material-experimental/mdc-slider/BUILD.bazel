@@ -21,7 +21,6 @@ ng_module(
         ":slider_scss",
         ":slider_thumb_scss",
     ] + glob(["**/*.html"]),
-    module_name = "@angular/material-experimental/mdc-slider",
     deps = [
         "//src/cdk/bidi",
         "//src/cdk/coercion",

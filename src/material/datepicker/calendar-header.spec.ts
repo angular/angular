@@ -6,7 +6,7 @@ import {
   waitForAsync
 } from '@angular/core/testing';
 import {MatNativeDateModule, DateAdapter} from '@angular/material/core';
-import {DEC, FEB, JAN} from '@angular/material/testing';
+import {DEC, FEB, JAN} from '../testing';
 import {By} from '@angular/platform-browser';
 import {MatCalendar} from './calendar';
 import {MatDatepickerIntl} from './datepicker-intl';

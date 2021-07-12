@@ -5,7 +5,7 @@ import {
   createMouseEvent,
   dispatchMouseEvent,
   wrappedErrorMessage,
-} from '@angular/cdk/testing/private';
+} from '../../cdk/testing/private';
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {waitForAsync, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';

@@ -1,5 +1,5 @@
 import {BidiModule, Direction} from '@angular/cdk/bidi';
-import {dispatchFakeEvent} from '@angular/cdk/testing/private';
+import {dispatchFakeEvent} from '../../cdk/testing/private';
 import {Component} from '@angular/core';
 import {
   ComponentFixture,

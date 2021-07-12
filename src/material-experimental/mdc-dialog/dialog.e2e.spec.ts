@@ -4,7 +4,7 @@ import {
   expectToExist,
   pressKeys,
   waitForElement,
-} from '@angular/cdk/testing/private/e2e';
+} from '../../cdk/testing/private/e2e';
 import {browser, by, element, Key} from 'protractor';
 
 describe('MDC-based dialog', () => {

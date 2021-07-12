@@ -1,5 +1,6 @@
 # Re-export of Bazel rules with repository-wide defaults
 
+load("@build_bazel_rules_nodejs//:index.bzl", _pkg_npm = "pkg_npm")
 load("@io_bazel_rules_sass//:defs.bzl", _sass_binary = "sass_binary", _sass_library = "sass_library")
 load("@npm//@angular/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
@@ -16,6 +17,27 @@ _DEFAULT_TSCONFIG_TEST = "//src:tsconfig-test"
 
 # Re-exports to simplify build file load statements
 markdown_to_html = _markdown_to_html
+
+def _compute_module_name(testonly):
+    current_pkg = native.package_name()
+
+    # For test-only targets we do not compute any module name as
+    # those are not publicly exposed through the `@angular` scope.
+    if testonly:
+        return None
+
+    # We generate no module name for files outside of `src/<pkg>` (usually tools).
+    if not current_pkg.startswith("src/"):
+        return None
+
+    # Skip module name generation for internal apps which are not built as NPM package
+    # and not scoped under `@angular/`. This includes e2e-app, dev-app and universal-app.
+    if "-app" in current_pkg:
+        return None
+
+    # Construct module names based on the current Bazel package. e.g. if a target is
+    # defined within `src/cdk/a11y` then the module name will be `@angular/cdk/a11y`.
+    return "@angular/%s" % current_pkg[len("src/"):]
 
 def _getDefaultTsConfig(testonly):
     if testonly:
@@ -39,7 +61,16 @@ def ts_library(tsconfig = None, deps = [], testonly = False, **kwargs):
     if not tsconfig:
         tsconfig = _getDefaultTsConfig(testonly)
 
+    # Compute an AMD module name for the target.
+    module_name = _compute_module_name(testonly)
+
     _ts_library(
+        # `module_name` is used for AMD module names within emitted JavaScript files.
+        module_name = module_name,
+        # We use the module name as package name, so that the target can be resolved within
+        # NodeJS executions, by activating the Bazel NodeJS linker.
+        # See: https://github.com/bazelbuild/rules_nodejs/pull/2799.
+        package_name = module_name,
         tsconfig = tsconfig,
         testonly = testonly,
         deps = local_deps,
@@ -50,7 +81,6 @@ def ng_module(
         deps = [],
         srcs = [],
         tsconfig = None,
-        module_name = None,
         flat_module_out_file = None,
         testonly = False,
         **kwargs):
@@ -60,6 +90,9 @@ def ng_module(
     # We only generate a flat module if there is a "public-api.ts" file that
     # will be picked up by NGC or ngtsc.
     needs_flat_module = "public-api.ts" in srcs
+
+    # Compute an AMD module name for the target.
+    module_name = _compute_module_name(testonly)
 
     # Targets which have a module name and are not used for tests, should
     # have a default flat module out file named "index". This is necessary
@@ -89,7 +122,12 @@ def ng_module(
 
     _ng_module(
         srcs = srcs,
+        # `module_name` is used for AMD module names within emitted JavaScript files.
         module_name = module_name,
+        # We use the module name as package name, so that the target can be resolved within
+        # NodeJS executions, by activating the Bazel NodeJS linker.
+        # See: https://github.com/bazelbuild/rules_nodejs/pull/2799.
+        package_name = module_name,
         flat_module_out_file = flat_module_out_file,
         compilation_mode = select({
             "//tools:partial_compilation_enabled": "partial",
@@ -124,7 +162,43 @@ def ng_package(name, data = [], deps = [], globals = ROLLUP_GLOBALS, readme_md =
         # rollup bundling action can include tslib. Tslib is usually a transitive dependency of
         # entry-points passed to `ng_package`, but the rule does not collect transitive deps.
         deps = deps + ["@npm//tslib"],
+        # We never set a `package_name` for NPM packages, neither do we enable validation.
+        # This is necessary because the source targets of the NPM packages all have
+        # package names set and setting a similar `package_name` on the NPM package would
+        # result in duplicate linker mappings that will conflict. e.g. consider the following
+        # scenario: We have a `ts_library` for `@angular/cdk`. We will configure a package
+        # name for the target so that it can be resolved in NodeJS executions from `node_modules`.
+        # If we'd also set a `package_name` for the associated `pkg_npm` target, there would be
+        # two mappings for `@angular/cdk` and the linker will complain. For a better development
+        # experience, we want the mapping to resolve to the direct outputs of the `ts_library`
+        # instead of requiring tests and other targets to assemble the NPM package first.
+        # TODO(devversion): consider removing this if `rules_nodejs` allows for duplicate
+        # linker mappings where transitive-determined mappings are skipped on conflicts.
+        # https://github.com/bazelbuild/rules_nodejs/issues/2810.
+        package_name = None,
+        validate = False,
         readme_md = readme_md,
+        substitutions = VERSION_PLACEHOLDER_REPLACEMENTS,
+        **kwargs
+    )
+
+def pkg_npm(**kwargs):
+    _pkg_npm(
+        # We never set a `package_name` for NPM packages, neither do we enable validation.
+        # This is necessary because the source targets of the NPM packages all have
+        # package names set and setting a similar `package_name` on the NPM package would
+        # result in duplicate linker mappings that will conflict. e.g. consider the following
+        # scenario: We have a `ts_library` for `@angular/cdk`. We will configure a package
+        # name for the target so that it can be resolved in NodeJS executions from `node_modules`.
+        # If we'd also set a `package_name` for the associated `pkg_npm` target, there would be
+        # two mappings for `@angular/cdk` and the linker will complain. For a better development
+        # experience, we want the mapping to resolve to the direct outputs of the `ts_library`
+        # instead of requiring tests and other targets to assemble the NPM package first.
+        # TODO(devversion): consider removing this if `rules_nodejs` allows for duplicate
+        # linker mappings where transitive-determined mappings are skipped on conflicts.
+        # https://github.com/bazelbuild/rules_nodejs/issues/2810.
+        package_name = None,
+        validate = False,
         substitutions = VERSION_PLACEHOLDER_REPLACEMENTS,
         **kwargs
     )

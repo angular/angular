@@ -12,7 +12,6 @@ ts_library(
             "**/*.spec.ts",
         ],
     ),
-    module_name = "@angular/cdk/testing",
     deps = [
         "@npm//rxjs",
     ],

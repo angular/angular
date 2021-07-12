@@ -22,7 +22,6 @@ ng_module(
         ":form-field-outline.css",
         ":form-field-standard.css",
     ] + glob(["**/*.html"]),
-    module_name = "@angular/material/form-field",
     deps = [
         "//src:dev_mode_types",
         "//src/cdk/bidi",

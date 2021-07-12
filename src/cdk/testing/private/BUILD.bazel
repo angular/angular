@@ -4,11 +4,11 @@ package(default_visibility = ["//visibility:public"])
 
 ts_library(
     name = "private",
+    testonly = True,
     srcs = glob(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    module_name = "@angular/cdk/testing/private",
     deps = [
         "//src/cdk/testing/testbed",
         "@npm//@angular/core",

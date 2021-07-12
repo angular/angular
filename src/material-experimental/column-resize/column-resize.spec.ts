@@ -8,7 +8,7 @@ import {
 import {ComponentFixture, TestBed, fakeAsync, flushMicrotasks, inject} from '@angular/core/testing';
 import {BidiModule} from '@angular/cdk/bidi';
 import {DataSource} from '@angular/cdk/collections';
-import {dispatchKeyboardEvent} from '@angular/cdk/testing/private';
+import {dispatchKeyboardEvent} from '../../cdk/testing/private';
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {MatTableModule} from '@angular/material/table';

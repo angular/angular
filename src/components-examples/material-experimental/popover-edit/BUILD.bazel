@@ -9,7 +9,6 @@ ng_module(
         "**/*.html",
         "**/*.css",
     ]),
-    module_name = "@angular/components-examples/material-experimental/popover-edit",
     deps = [
         "//src/material-experimental/popover-edit",
         "//src/material/button",

@@ -8,7 +8,7 @@ import {
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {Component, DebugElement, ViewChild, Type, ChangeDetectionStrategy} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {dispatchFakeEvent} from '@angular/cdk/testing/private';
+import {dispatchFakeEvent} from '../../cdk/testing/private';
 import {
   MAT_CHECKBOX_DEFAULT_OPTIONS,
   MatCheckbox,

@@ -1,5 +1,5 @@
 import {Platform, PlatformModule} from '@angular/cdk/platform';
-import {dispatchFakeEvent, wrappedErrorMessage} from '@angular/cdk/testing/private';
+import {dispatchFakeEvent, wrappedErrorMessage} from '../../cdk/testing/private';
 import {
   ChangeDetectionStrategy,
   Component,

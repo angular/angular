@@ -9,7 +9,6 @@ ts_library(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    module_name = "@angular/material/toolbar/testing",
     deps = [
         "//src/cdk/testing",
     ],

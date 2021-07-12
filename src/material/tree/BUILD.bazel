@@ -17,7 +17,6 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     assets = [":tree.css"] + glob(["**/*.html"]),
-    module_name = "@angular/material/tree",
     deps = [
         "//src/cdk/collections",
         "//src/cdk/tree",

@@ -9,7 +9,6 @@ ng_module(
         "**/*.html",
         "**/*.css",
     ]),
-    module_name = "@angular/components-examples/cdk-experimental/popover-edit",
     deps = [
         "//src/cdk-experimental/popover-edit",
         "//src/cdk/collections",

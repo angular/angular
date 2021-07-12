@@ -18,7 +18,6 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     assets = glob(["**/*.html"]),
-    module_name = "@angular/material/input",
     deps = [
         "//src:dev_mode_types",
         "//src/cdk/coercion",

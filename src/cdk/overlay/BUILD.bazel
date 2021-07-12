@@ -18,7 +18,6 @@ ng_module(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    module_name = "@angular/cdk/overlay",
     deps = [
         "//src:dev_mode_types",
         "//src/cdk/bidi",

@@ -9,3 +9,4 @@
 export * from './test-components-module';
 export * from './test-main-component';
 export * from './test-sub-component';
+export * from './test-shadow-boundary';

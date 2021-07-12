@@ -9,7 +9,6 @@ ng_module(
         "**/*.html",
         "**/*.css",
     ]),
-    module_name = "@angular/components-examples/cdk/a11y",
     deps = [
         "//src/cdk/a11y",
         "//src/material/select",

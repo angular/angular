@@ -19,7 +19,6 @@ ng_module(
         ":menubar.css",
         ":menubar-item.css",
     ] + glob(["**/*.html"]),
-    module_name = "@angular/material-experimental/menubar",
     deps = [
         "//src/cdk-experimental/menu",
         "@npm//@angular/core",

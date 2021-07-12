@@ -17,7 +17,6 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     assets = [":card.css"] + glob(["**/*.html"]),
-    module_name = "@angular/material/card",
     deps = [
         "//src/material/core",
         "@npm//@angular/core",

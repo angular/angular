@@ -20,7 +20,7 @@ import {
   dispatchMouseEvent,
   MockNgZone,
   typeInElement,
-} from '@angular/cdk/testing/private';
+} from '../../cdk/testing/private';
 import {
   Component,
   DebugElement,

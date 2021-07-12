@@ -15,7 +15,6 @@ ng_module(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    module_name = "@angular/material/badge",
     deps = [
         "//src:dev_mode_types",
         "@npm//@angular/common",

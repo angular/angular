@@ -12,7 +12,6 @@ ng_module(
         "**/*.html",
         "**/*.css",
     ]),
-    module_name = "@angular/components-examples/material/table",
     deps = [
         "//src/cdk/drag-drop",
         "//src/cdk/table",

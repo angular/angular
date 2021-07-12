@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {clickElementAtPoint, getElement, Point} from '@angular/cdk/testing/private/e2e';
+import {clickElementAtPoint, getElement, Point} from '../../cdk/testing/private/e2e';
 import {Thumb} from '@material/slider';
 import {browser, by, element, ElementFinder} from 'protractor';
 

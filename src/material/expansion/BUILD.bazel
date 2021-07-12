@@ -22,7 +22,6 @@ ng_module(
         ":expansion-panel.css",
         ":expansion-panel-header.css",
     ],
-    module_name = "@angular/material/expansion",
     deps = [
         "//src/cdk/a11y",
         "//src/cdk/accordion",

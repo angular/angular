@@ -9,7 +9,6 @@ ng_module(
         "**/*.html",
         "**/*.css",
     ]),
-    module_name = "@angular/components-examples/material-experimental/column-resize",
     deps = [
         "//src/material-experimental/column-resize",
         "//src/material/table",

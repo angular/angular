@@ -5,11 +5,11 @@ import {
   dispatchKeyboardEvent,
   dispatchMouseEvent,
   MockNgZone,
-} from '@angular/cdk/testing/private';
+} from '../../cdk/testing/private';
 import {Component, NgZone} from '@angular/core';
 import {waitForAsync, ComponentFixture, inject, TestBed} from '@angular/core/testing';
 import {DateAdapter, MatNativeDateModule} from '@angular/material/core';
-import {DEC, FEB, JAN, JUL, NOV} from '@angular/material/testing';
+import {DEC, FEB, JAN, JUL, NOV} from '../testing';
 import {By} from '@angular/platform-browser';
 import {MatCalendar} from './calendar';
 import {MatDatepickerIntl} from './datepicker-intl';

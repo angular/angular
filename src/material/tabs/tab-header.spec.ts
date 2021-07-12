@@ -8,7 +8,7 @@ import {
   createKeyboardEvent,
   dispatchEvent,
   createMouseEvent,
-} from '@angular/cdk/testing/private';
+} from '../../cdk/testing/private';
 import {CommonModule} from '@angular/common';
 import {Component, ViewChild} from '@angular/core';
 import {

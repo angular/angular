@@ -1,4 +1,4 @@
-import {dispatchFakeEvent} from '@angular/cdk/testing/private';
+import {dispatchFakeEvent} from '../testing/private';
 import {Component, ViewChild} from '@angular/core';
 import {
   waitForAsync,

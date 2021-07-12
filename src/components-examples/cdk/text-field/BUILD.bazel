@@ -9,7 +9,6 @@ ng_module(
         "**/*.html",
         "**/*.css",
     ]),
-    module_name = "@angular/components-examples/cdk/text-field",
     deps = [
         "//src/cdk/text-field",
         "//src/material/button",

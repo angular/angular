@@ -15,7 +15,7 @@ import {ErrorStateMatcher, MatNativeDateModule} from '@angular/material/core';
 import {MatDatepickerModule} from './datepicker-module';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
-import {dispatchFakeEvent, dispatchKeyboardEvent} from '@angular/cdk/testing/private';
+import {dispatchFakeEvent, dispatchKeyboardEvent} from '../../cdk/testing/private';
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {BACKSPACE} from '@angular/cdk/keycodes';
 import {MatDateRangeInput} from './date-range-input';

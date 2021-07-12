@@ -20,7 +20,6 @@ ng_module(
     assets = [
         ":tooltip_scss",
     ] + glob(["**/*.html"]),
-    module_name = "@angular/material-experimental/mdc-tooltip",
     deps = [
         "//src/material-experimental/mdc-core",
         "//src/material/tooltip",

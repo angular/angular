@@ -2,7 +2,7 @@ import {
   dispatchKeyboardEvent,
   createKeyboardEvent,
   dispatchEvent,
-} from '@angular/cdk/testing/private';
+} from '../../cdk/testing/private';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';

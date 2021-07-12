@@ -22,7 +22,6 @@ ng_module(
         ":stepper.css",
         ":step-header.css",
     ] + glob(["**/*.html"]),
-    module_name = "@angular/material/stepper",
     deps = [
         "//src:dev_mode_types",
         "//src/cdk/a11y",

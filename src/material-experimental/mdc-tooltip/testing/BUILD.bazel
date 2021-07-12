@@ -8,7 +8,6 @@ ts_library(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    module_name = "@angular/material-experimental/mdc-tooltip/testing",
     deps = [
         "//src/cdk/testing",
         "//src/material/tooltip/testing",

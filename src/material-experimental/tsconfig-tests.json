@@ -1,5 +1,11 @@
 {
   "extends": "../bazel-tsconfig-build.json",
+  "references": [
+    {"path": "../cdk/tsconfig-tests.json"},
+    {"path": "../cdk-experimental/tsconfig-tests.json"},
+    {"path": "../material/tsconfig-tests.json"},
+  ],
+
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "../../dist/packages/material-experimental",
@@ -23,7 +29,6 @@
   },
   "include": [
     "**/*.ts",
-    "**/*.spec.ts",
     "../dev-mode-types.d.ts"
   ],
   "exclude": [

@@ -12,7 +12,7 @@ import {
   dispatchMouseEvent,
   dispatchPointerEvent,
   dispatchTouchEvent,
-} from '@angular/cdk/testing/private';
+} from '../../cdk/testing/private';
 import {Component, Provider, QueryList, Type, ViewChild, ViewChildren} from '@angular/core';
 import {
   ComponentFixture,

@@ -19,7 +19,6 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     assets = [":grid-list.css"] + glob(["**/*.html"]),
-    module_name = "@angular/material/grid-list",
     deps = [
         "//src:dev_mode_types",
         "//src/cdk/bidi",

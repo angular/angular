@@ -18,7 +18,6 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     assets = [":dialog_scss"] + glob(["**/*.html"]),
-    module_name = "@angular/material-experimental/mdc-dialog",
     deps = [
         "//src/cdk/overlay",
         "//src/cdk/portal",

@@ -20,7 +20,7 @@ import {
   dispatchKeyboardEvent,
   createKeyboardEvent,
   dispatchEvent,
-} from '@angular/cdk/testing/private';
+} from '../../cdk/testing/private';
 
 
 describe('MatExpansionPanel', () => {

@@ -17,7 +17,6 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     assets = [":divider.css"] + glob(["**/*.html"]),
-    module_name = "@angular/material/divider",
     deps = [
         "//src/cdk/coercion",
         "//src/material/core",

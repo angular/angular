@@ -24,7 +24,6 @@ ng_module(
         ":option/option.css",
         ":option/optgroup.css",
     ] + glob(["**/*.html"]),
-    module_name = "@angular/material/core",
     deps = [
         "//src:dev_mode_types",
         "//src/cdk",

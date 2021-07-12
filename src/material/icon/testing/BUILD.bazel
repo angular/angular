@@ -8,7 +8,6 @@ ng_module(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    module_name = "@angular/material/icon/testing",
     deps = [
         "//src/cdk/coercion",
         "//src/cdk/testing",

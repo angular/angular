@@ -24,7 +24,6 @@ ng_module(
         ":tab-nav-bar/tab-nav-bar.css",
         ":tab-nav-bar/tab-link.css",
     ] + glob(["**/*.html"]),
-    module_name = "@angular/material-experimental/mdc-tabs",
     deps = [
         "//src:dev_mode_types",
         "//src/cdk/a11y",

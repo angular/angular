@@ -19,7 +19,6 @@ ng_module(
         ":option/option.css",
         ":option/optgroup.css",
     ] + glob(["**/*.html"]),
-    module_name = "@angular/material-experimental/mdc-core",
     deps = [
         "//src/material/core",
         "@npm//@angular/common",

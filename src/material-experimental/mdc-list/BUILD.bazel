@@ -23,7 +23,6 @@ ng_module(
         ":list_scss",
         ":list_option_scss",
     ] + glob(["**/*.html"]),
-    module_name = "@angular/material-experimental/mdc-list",
     deps = [
         "//src:dev_mode_types",
         "//src/cdk/collections",

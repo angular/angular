@@ -7,5 +7,4 @@ exports_files(["tsconfig-e2e.json"])
 ng_e2e_test_library(
     name = "e2e",
     srcs = glob(["**/*.ts"]),
-    module_name = "@angular/cdk/testing/private/e2e",
 )

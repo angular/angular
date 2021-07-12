@@ -14,7 +14,6 @@ ng_module(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    module_name = "@angular/cdk/observers",
     deps = [
         "//src/cdk/coercion",
         "@npm//@angular/core",

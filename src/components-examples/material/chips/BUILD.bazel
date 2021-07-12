@@ -12,7 +12,6 @@ ng_module(
         "**/*.html",
         "**/*.css",
     ]),
-    module_name = "@angular/components-examples/material/chips",
     deps = [
         "//src/cdk/drag-drop",
         "//src/cdk/testing",

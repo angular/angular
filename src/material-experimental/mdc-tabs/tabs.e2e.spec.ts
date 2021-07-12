@@ -6,7 +6,7 @@ import {
   Key,
   ExpectedConditions
 } from 'protractor';
-import {pressKeys} from '@angular/cdk/testing/private/e2e';
+import {pressKeys} from '../../cdk/testing/private/e2e';
 
 describe('MDC-based tabs', () => {
   describe('basic behavior', () => {

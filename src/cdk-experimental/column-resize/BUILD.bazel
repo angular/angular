@@ -8,7 +8,6 @@ ng_module(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    module_name = "@angular/cdk-experimental/column-resize",
     deps = [
         "//src/cdk-experimental/popover-edit",
         "//src/cdk/bidi",

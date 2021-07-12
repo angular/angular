@@ -12,7 +12,6 @@ package(default_visibility = ["//visibility:public"])
 ts_library(
     name = "material",
     srcs = ["index.ts"],
-    module_name = "@angular/material",
 )
 
 filegroup(

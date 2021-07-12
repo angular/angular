@@ -1,5 +1,8 @@
 {
   "extends": "./tsconfig-build.json",
+  "references": [
+    {"path": "../material/tsconfig-tests.json"}
+  ],
   "compilerOptions": {
     // Needed for Moment.js since it doesn't have a default export.
     "allowSyntheticDefaultImports": true,

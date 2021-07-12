@@ -18,7 +18,6 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     assets = [":table_scss"] + glob(["**/*.html"]),
-    module_name = "@angular/material-experimental/mdc-table",
     deps = [
         "//src/cdk/table",
         "//src/material-experimental/mdc-core",

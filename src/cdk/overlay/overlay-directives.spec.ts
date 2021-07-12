@@ -13,7 +13,7 @@ import {
   dispatchKeyboardEvent,
   createKeyboardEvent,
   dispatchEvent,
-} from '@angular/cdk/testing/private';
+} from '../testing/private';
 import {ESCAPE, A} from '@angular/cdk/keycodes';
 import {
   Overlay,

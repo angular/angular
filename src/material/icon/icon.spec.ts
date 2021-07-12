@@ -9,7 +9,7 @@ import {Component, ErrorHandler, ViewChild} from '@angular/core';
 import {MatIconModule, MAT_ICON_LOCATION} from './index';
 import {MatIconRegistry, getMatIconNoHttpProviderError} from './icon-registry';
 import {FAKE_SVGS} from './fake-svgs';
-import {wrappedErrorMessage} from '@angular/cdk/testing/private';
+import {wrappedErrorMessage} from '../../cdk/testing/private';
 import {MatIcon} from './icon';
 
 

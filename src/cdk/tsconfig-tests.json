@@ -1,6 +1,7 @@
 {
   "extends": "../bazel-tsconfig-build.json",
   "compilerOptions": {
+    "composite": true,
     "baseUrl": ".",
     "outDir": "../../dist/packages/cdk",
     "rootDir": ".",
@@ -19,9 +20,7 @@
     }
   },
   "include": [
-    "**/index.ts",
-    "**/*.spec.ts",
-    "**/*.d.ts",
+    "**/*.ts",
     "../dev-mode-types.d.ts"
   ],
   "exclude": [

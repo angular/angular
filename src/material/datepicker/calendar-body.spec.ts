@@ -2,7 +2,7 @@ import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component} from '@angular/core';
 import {MatCalendarBody, MatCalendarCell, MatCalendarUserEvent} from './calendar-body';
 import {By} from '@angular/platform-browser';
-import {dispatchMouseEvent, dispatchFakeEvent} from '@angular/cdk/testing/private';
+import {dispatchMouseEvent, dispatchFakeEvent} from '../../cdk/testing/private';
 
 
 describe('MatCalendarBody', () => {

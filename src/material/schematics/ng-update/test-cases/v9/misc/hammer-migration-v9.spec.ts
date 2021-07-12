@@ -1,5 +1,5 @@
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
-import {dedent} from '@angular/cdk/testing/private';
+import {dedent} from '../../../../../../cdk/testing/private';
 import {addPackageToPackageJson} from '@angular/cdk/schematics/ng-add/package-config';
 import {createTestCaseSetup, resolveBazelPath} from '@angular/cdk/schematics/testing';
 import {readFileSync} from 'fs';

@@ -19,7 +19,6 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     assets = [":progress-spinner.css"] + glob(["**/*.html"]),
-    module_name = "@angular/material/progress-spinner",
     deps = [
         "//src/cdk/coercion",
         "//src/cdk/platform",

@@ -12,7 +12,6 @@ ng_module(
         "**/*.html",
         "**/*.css",
     ]),
-    module_name = "@angular/components-examples/material/button",
     deps = [
         "//src/cdk/testing",
         "//src/cdk/testing/testbed",

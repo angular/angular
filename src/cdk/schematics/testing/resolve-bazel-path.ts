@@ -19,7 +19,7 @@ export function resolveBazelPath(parent: string, relativePath: string) {
     return path.join(parent, relativePath);
   }
   // Note: We don't want to import this outside of this function as the runfile helpers are
-  // quite large we don't want to load them for every import to `@angular/cdk/testing/private`.
+  // quite large we don't want to load them for every import to `../testing/private`.
   const {runfiles} = require('@bazel/runfiles');
   const projectDirs = [
     // Workspace symlinked into `@npm//:node_modules/`.

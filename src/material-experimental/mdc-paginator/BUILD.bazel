@@ -16,7 +16,6 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     assets = [":paginator.css"] + glob(["**/*.html"]),
-    module_name = "@angular/material-experimental/mdc-paginator",
     deps = [
         "//src/material-experimental/mdc-button",
         "//src/material-experimental/mdc-select",

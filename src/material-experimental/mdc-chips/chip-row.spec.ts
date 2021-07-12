@@ -4,7 +4,7 @@ import {
   createKeyboardEvent,
   dispatchEvent,
   dispatchFakeEvent,
-} from '@angular/cdk/testing/private';
+} from '../../cdk/testing/private';
 import {Component, DebugElement, ElementRef, ViewChild} from '@angular/core';
 import {waitForAsync, ComponentFixture, TestBed, flush, fakeAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';

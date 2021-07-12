@@ -6,7 +6,7 @@ import {
   ScrollingModule
 } from '@angular/cdk/scrolling';
 import {CommonModule} from '@angular/common';
-import {dispatchFakeEvent} from '@angular/cdk/testing/private';
+import {dispatchFakeEvent} from '../testing/private';
 import {
   Component,
   NgZone,

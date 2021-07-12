@@ -17,7 +17,6 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     assets = [":slider.css"] + glob(["**/*.html"]),
-    module_name = "@angular/material/slider",
     deps = [
         "//src/cdk/a11y",
         "//src/cdk/bidi",

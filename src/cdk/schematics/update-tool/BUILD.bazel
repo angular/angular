@@ -8,7 +8,6 @@ ts_library(
     # Schematics do not need to run in browsers and can use `commonjs`
     # as format instead the default `umd` format.
     devmode_module = "commonjs",
-    module_name = "@angular/cdk/schematics/update-tool",
     prodmode_module = "commonjs",
     tsconfig = ":tsconfig.json",
     deps = [

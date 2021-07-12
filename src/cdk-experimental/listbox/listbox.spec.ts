@@ -13,7 +13,7 @@ import {
   createKeyboardEvent,
   dispatchKeyboardEvent,
   dispatchMouseEvent
-} from '@angular/cdk/testing/private';
+} from '../../cdk/testing/private';
 import {A, DOWN_ARROW, END, HOME, SPACE} from '@angular/cdk/keycodes';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CdkCombobox, CdkComboboxModule, CdkComboboxPanel} from '@angular/cdk-experimental/combobox';

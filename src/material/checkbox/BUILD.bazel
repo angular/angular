@@ -19,7 +19,6 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     assets = [":checkbox.css"] + glob(["**/*.html"]),
-    module_name = "@angular/material/checkbox",
     deps = [
         "//src/cdk/a11y",
         "//src/cdk/coercion",

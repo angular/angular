@@ -20,7 +20,6 @@ ng_module(
         ],
     ),
     assets = [":checkbox_scss"] + glob(["**/*.html"]),
-    module_name = "@angular/material-experimental/mdc-checkbox",
     deps = [
         "//src/cdk/coercion",
         "//src/material-experimental/mdc-core",

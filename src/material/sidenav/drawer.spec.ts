@@ -20,7 +20,7 @@ import {
   dispatchKeyboardEvent,
   createKeyboardEvent,
   dispatchEvent,
-} from '@angular/cdk/testing/private';
+} from '../../cdk/testing/private';
 import {CdkScrollable} from '@angular/cdk/scrolling';
 import {CommonModule} from '@angular/common';
 

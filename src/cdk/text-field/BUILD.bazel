@@ -16,7 +16,6 @@ ng_module(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    module_name = "@angular/cdk/text-field",
     deps = [
         "//src/cdk/coercion",
         "//src/cdk/platform",

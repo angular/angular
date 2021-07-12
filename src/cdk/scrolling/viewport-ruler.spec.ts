@@ -1,7 +1,7 @@
 import {TestBed, inject, fakeAsync, tick} from '@angular/core/testing';
 import {ScrollingModule} from './public-api';
 import {ViewportRuler} from './viewport-ruler';
-import {dispatchFakeEvent} from '@angular/cdk/testing/private';
+import {dispatchFakeEvent} from '../testing/private';
 import {NgZone} from '@angular/core';
 import {Subscription} from 'rxjs';
 

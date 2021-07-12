@@ -9,7 +9,6 @@ ng_module(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    module_name = "@angular/cdk-experimental/scrolling",
     deps = [
         "//src:dev_mode_types",
         "//src/cdk/coercion",

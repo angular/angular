@@ -19,7 +19,6 @@ ng_module(
         ":simple_snack_bar_scss",
         ":snack_bar_container_scss",
     ] + glob(["**/*.html"]),
-    module_name = "@angular/material-experimental/mdc-snack-bar",
     deps = [
         "//src:dev_mode_types",
         "//src/material-experimental/mdc-button",

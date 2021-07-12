@@ -69,7 +69,6 @@ ALL_EXAMPLES = [
 ng_module(
     name = "components-examples",
     srcs = glob(["*.ts"]) + [":example-module.ts"],
-    module_name = "@angular/components-examples",
     deps = ALL_EXAMPLES,
 )
 

@@ -12,7 +12,6 @@ ng_module(
         ],
     ),
     assets = [":select_scss"] + glob(["**/*.html"]),
-    module_name = "@angular/material-experimental/mdc-select",
     deps = [
         "//src/cdk/overlay",
         "//src/material-experimental/mdc-core",

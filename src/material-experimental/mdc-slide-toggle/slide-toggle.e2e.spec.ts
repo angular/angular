@@ -1,5 +1,5 @@
 import {browser, element, by, Key} from 'protractor';
-import {expectToExist} from '@angular/cdk/testing/private/e2e';
+import {expectToExist} from '../../cdk/testing/private/e2e';
 
 
 describe('MDC-based slide-toggle', () => {
