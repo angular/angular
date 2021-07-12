@@ -46,7 +46,7 @@ def api_golden_test(
         include_default_files = False,
     )
 
-    test_data = ["//dev-infra/bazel/api-golden", "//:package.json", ":%s_data_typings" % name] + kwargs.get("data", [])
+    test_data = ["//dev-infra/bazel/api-golden", "//:package.json", ":%s_data_typings" % name] + data
 
     nodejs_test(
         name = name,
