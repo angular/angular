@@ -10,9 +10,11 @@ ts_library(
         "//dev-infra/utils",
         "@npm//@types/cli-progress",
         "@npm//@types/node",
+        "@npm//@types/shelljs",
         "@npm//@types/yargs",
         "@npm//cli-progress",
         "@npm//multimatch",
+        "@npm//shelljs",
         "@npm//yargs",
     ],
 )

@@ -13,6 +13,7 @@ import {error, info} from '../../utils/console';
 import {AuthenticatedGitClient} from '../../utils/git/authenticated-git-client';
 import {GitCommandError} from '../../utils/git/git-client';
 import {getPendingPrs} from '../../utils/github';
+import {exec} from '../../utils/shelljs';
 
 
 /* Graphql schema for the response body for each pending PR. */
@@ -124,9 +125,8 @@ export async function discoverNewConflictsForPr(newPrNumber: number, updatedAfte
     } catch (err) {
       if (err instanceof GitCommandError) {
         conflicts.push(pr);
-      } else {
-        throw err;
       }
+      throw err;
     }
     // Abort any outstanding rebase attempt.
     git.runGraceful(['rebase', '--abort'], {stdio: 'ignore'});
@@ -138,7 +138,7 @@ export async function discoverNewConflictsForPr(newPrNumber: number, updatedAfte
   info();
   info(`Result:`);
 
-  git.checkout(previousBranchOrRevision, true);
+  cleanUpGitState(previousBranchOrRevision);
 
   // If no conflicts are found, exit successfully.
   if (conflicts.length === 0) {
@@ -153,4 +153,16 @@ export async function discoverNewConflictsForPr(newPrNumber: number, updatedAfte
   }
   error.groupEnd();
   process.exit(1);
+}
+
+/** Reset git back to the provided branch or revision. */
+export function cleanUpGitState(previousBranchOrRevision: string) {
+  // Ensure that any outstanding rebases are aborted.
+  exec(`git rebase --abort`);
+  // Ensure that any changes in the current repo state are cleared.
+  exec(`git reset --hard`);
+  // Checkout the original branch from before the run began.
+  exec(`git checkout ${previousBranchOrRevision}`);
+  // Delete the generated branch.
+  exec(`git branch -D ${tempWorkingBranch}`);
 }
