@@ -21,6 +21,8 @@ import { Version } from '@angular/core';
 // @public
 export abstract class AbstractControl {
     constructor(validators: ValidatorFn | ValidatorFn[] | null, asyncValidators: AsyncValidatorFn | AsyncValidatorFn[] | null);
+    addAsyncValidators(validators: AsyncValidatorFn | AsyncValidatorFn[]): void;
+    addValidators(validators: ValidatorFn | ValidatorFn[]): void;
     get asyncValidator(): AsyncValidatorFn | null;
     set asyncValidator(asyncValidatorFn: AsyncValidatorFn | null);
     clearAsyncValidators(): void;
@@ -39,7 +41,9 @@ export abstract class AbstractControl {
     readonly errors: ValidationErrors | null;
     get(path: Array<string | number> | string): AbstractControl | null;
     getError(errorCode: string, path?: Array<string | number> | string): any;
+    hasAsyncValidator(validator: AsyncValidatorFn): boolean;
     hasError(errorCode: string, path?: Array<string | number> | string): boolean;
+    hasValidator(validator: ValidatorFn): boolean;
     get invalid(): boolean;
     markAllAsTouched(): void;
     markAsDirty(opts?: {
@@ -62,15 +66,17 @@ export abstract class AbstractControl {
     abstract patchValue(value: any, options?: Object): void;
     get pending(): boolean;
     readonly pristine: boolean;
+    removeAsyncValidators(validators: AsyncValidatorFn | AsyncValidatorFn[]): void;
+    removeValidators(validators: ValidatorFn | ValidatorFn[]): void;
     abstract reset(value?: any, options?: Object): void;
     get root(): AbstractControl;
-    setAsyncValidators(newValidator: AsyncValidatorFn | AsyncValidatorFn[] | null): void;
+    setAsyncValidators(validators: AsyncValidatorFn | AsyncValidatorFn[] | null): void;
     setErrors(errors: ValidationErrors | null, opts?: {
         emitEvent?: boolean;
     }): void;
     // (undocumented)
     setParent(parent: FormGroup | FormArray): void;
-    setValidators(newValidator: ValidatorFn | ValidatorFn[] | null): void;
+    setValidators(validators: ValidatorFn | ValidatorFn[] | null): void;
     abstract setValue(value: any, options?: Object): void;
     readonly status: string;
     readonly statusChanges: Observable<any>;
