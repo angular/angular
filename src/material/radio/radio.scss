@@ -67,6 +67,8 @@ $ripple-radius: 20px;
 
 // The inner circle for the radio, shown when checked.
 .mat-radio-inner-circle {
+  $transition-duration: 280ms;
+  $base-transition: transform ease $transition-duration, background-color ease $transition-duration;
   border-radius: 50%;
   box-sizing: border-box;
   display: block;
@@ -74,7 +76,11 @@ $ripple-radius: 20px;
   left: 0;
   position: absolute;
   top: 0;
-  transition: transform ease 280ms, background-color ease 280ms;
+  // On some zoom levels the `scale(0.001)` from below can cause the circle to be shown as a 1x1
+  // dot (see #22036). Ensure that it's hidden using `opacity`. There's a slight transition with
+  // a long delay so that switching the opacity only applies after the `transform` is done.
+  opacity: 0;
+  transition: $base-transition, opacity linear 1ms $transition-duration;
   width: $size;
 
   // Note: This starts from 0.001 instead of 0, because transitioning from 0 to 0.5 causes
@@ -90,6 +96,8 @@ $ripple-radius: 20px;
 
   .mat-radio-checked & {
     transform: scale(0.5);
+    opacity: 1;
+    transition: $base-transition;
 
     @include a11y.high-contrast(active, off) {
       // Since we use a background color to render the circle, it won't be
