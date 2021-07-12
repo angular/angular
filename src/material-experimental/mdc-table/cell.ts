@@ -90,6 +90,7 @@ export class MatHeaderCell extends CdkHeaderCell {}
   selector: 'mat-footer-cell, td[mat-footer-cell]',
   host: {
     'class': 'mat-mdc-footer-cell mdc-data-table__cell',
+    'role': 'gridcell',
   },
 })
 export class MatFooterCell extends CdkFooterCell {}
@@ -99,6 +100,7 @@ export class MatFooterCell extends CdkFooterCell {}
   selector: 'mat-cell, td[mat-cell]',
   host: {
     'class': 'mat-mdc-cell mdc-data-table__cell',
+    'role': 'gridcell',
   },
 })
 export class MatCell extends CdkCell {}
