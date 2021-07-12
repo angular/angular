@@ -3,41 +3,54 @@ $header-row-height: 56px;
 $row-height: 48px;
 $row-horizontal-padding: 24px;
 
-// Only use tag name selectors here since the styles are shared between MDC and non-MDC
-@mixin private-table-flex-styles {
-  mat-table {
+@mixin private-table-flex-styles($prefix) {
+  // These styles are nested under a `:not(table)`, because
+  // they can break the non-flex table if they leak out.
+  .#{$prefix}-table:not(table) {
     display: block;
-  }
 
-  mat-header-row {
-    min-height: $header-row-height;
-  }
+    .#{$prefix}-cell, .#{$prefix}-header-cell, .#{$prefix}-footer-cell {
+      display: flex;
+    }
 
-  mat-row, mat-footer-row {
-    min-height: $row-height;
-  }
+    .#{$prefix}-row, .#{$prefix}-header-row, .#{$prefix}-footer-row {
+      display: flex;
 
-  mat-row, mat-header-row, mat-footer-row {
-    display: flex;
-    // Define a border style, but then widths default to 3px. Reset them to 0px except the bottom
-    // which should be 1px;
-    border-width: 0;
-    border-bottom-width: 1px;
-    border-style: solid;
-    align-items: center;
-    box-sizing: border-box;
-
-    // Workaround for https://goo.gl/pFmjJD in IE 11. Adds a pseudo
-    // element that will stretch the row the correct height. See:
-    // https://connect.microsoft.com/IE/feedback/details/802625
-    &::after {
-      display: inline-block;
-      min-height: inherit;
-      content: '';
+      // Workaround for https://goo.gl/pFmjJD in IE 11. Adds a pseudo
+      // element that will stretch the row the correct height. See:
+      // https://connect.microsoft.com/IE/feedback/details/802625
+      &::after {
+        display: inline-block;
+        min-height: inherit;
+        content: '';
+      }
     }
   }
 
-  mat-cell, mat-header-cell, mat-footer-cell {
+  // The remaining styles can leak to the native table without affecting it.
+  // We keep them outside to lower the specificity.
+  .#{$prefix}-header-row {
+    min-height: $header-row-height;
+  }
+
+  .#{$prefix}-row, .#{$prefix}-footer-row {
+    min-height: $row-height;
+  }
+
+  .#{$prefix}-row, .#{$prefix}-header-row, .#{$prefix}-footer-row {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    align-items: center;
+    box-sizing: border-box;
+  }
+
+  .#{$prefix}-cell, .#{$prefix}-header-cell, .#{$prefix}-footer-cell {
+    flex: 1;
+    overflow: hidden;
+    word-wrap: break-word;
+    min-height: inherit;
+    align-items: center;
+
     // Note: we use `first-of-type`/`last-of-type` here in order to prevent extra
     // elements like ripples or badges from throwing off the layout (see #11165).
     &:first-of-type {
@@ -57,14 +70,5 @@ $row-horizontal-padding: 24px;
         padding-left: $row-horizontal-padding;
       }
     }
-  }
-
-  mat-cell, mat-header-cell, mat-footer-cell {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    word-wrap: break-word;
-    min-height: inherit;
   }
 }

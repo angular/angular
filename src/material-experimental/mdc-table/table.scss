@@ -3,8 +3,8 @@
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/table/table-flex-styles';
 
+@include table-flex-styles.private-table-flex-styles('mat-mdc');
 @include mdc-data-table.core-styles($query: mdc-helpers.$mat-base-styles-without-animation-query);
-@include table-flex-styles.private-table-flex-styles();
 
 .mat-mdc-table-sticky {
   // Note that the table can either set this class or an inline style to make something sticky.
@@ -24,7 +24,7 @@
 // MDC table rows are styled with a top border, whereas our legacy flex table styles rows with
 // a bottom border. Remove the bottom border style from the rows and let MDC display its top
 // border.
-mat-row.mat-mdc-row, mat-header-row.mat-mdc-header-row, mat-footer-row.mat-mdc-footer-row {
+.mat-mdc-row, .mat-mdc-header-row, .mdc-mdc-footer-row {
   border-bottom: none;
 }
 

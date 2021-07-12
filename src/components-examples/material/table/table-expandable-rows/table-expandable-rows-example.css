@@ -4,6 +4,7 @@ table {
 
 tr.example-detail-row {
   height: 0;
+  min-height: 0;
 }
 
 tr.example-element-row:not(.example-expanded-row):hover {

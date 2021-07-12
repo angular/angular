@@ -13,13 +13,13 @@
   }
 
   .mat-table thead, .mat-table tbody, .mat-table tfoot,
-  mat-header-row, mat-row, mat-footer-row,
+  .mat-header-row, .mat-row, .mat-footer-row,
   [mat-header-row], [mat-row], [mat-footer-row],
   .mat-table-sticky {
     background: inherit;
   }
 
-  mat-row, mat-header-row, mat-footer-row,
+  .mat-row, .mat-header-row, .mat-footer-row,
   th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
     border-bottom-color: theming.get-color-from-palette($foreground, divider);
   }
