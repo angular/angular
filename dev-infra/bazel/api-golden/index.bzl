@@ -1,3 +1,4 @@
+load("//dev-infra/bazel:extract_js_module_output.bzl", "extract_js_module_output")
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary", "nodejs_test")
 
 nodejs_test_args = [
@@ -32,9 +33,24 @@ def api_golden_test(
 
     kwargs["tags"] = kwargs.get("tags", []) + ["api_guard"]
 
+    # For API golden tests not running against a NPM package, we extract all transitive
+    # declarations of the specified `data` targets. This is necessary because API extractor
+    # needs to resolve other targets that have been linked by the Bazel NodeJS rules. The
+    # linker by default only provides access to JavaScript sources, but the API extractor is
+    # specifically concerned with type definitions that we can extract manually here.
+    extract_js_module_output(
+        name = "%s_data_typings" % name,
+        deps = data,
+        provider = "JSModuleInfo",
+        include_declarations = True,
+        include_default_files = False,
+    )
+
+    test_data = ["//dev-infra/bazel/api-golden", "//:package.json", ":%s_data_typings" % name] + data
+
     nodejs_test(
         name = name,
-        data = ["//dev-infra/bazel/api-golden", "//:package.json"] + data,
+        data = test_data,
         entry_point = "//dev-infra/bazel/api-golden:index.ts",
         templated_args = nodejs_test_args + [golden, entry_point, "false", quoted_export_pattern],
         **kwargs
@@ -43,7 +59,7 @@ def api_golden_test(
     nodejs_binary(
         name = name + ".accept",
         testonly = True,
-        data = ["//dev-infra/bazel/api-golden", "//:package.json"] + data,
+        data = test_data,
         entry_point = "//dev-infra/bazel/api-golden:index.ts",
         templated_args = nodejs_test_args + [golden, entry_point, "true", quoted_export_pattern],
         **kwargs
