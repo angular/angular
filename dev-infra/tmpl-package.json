@@ -33,6 +33,7 @@
     "protractor": "<from-root>",
     "selenium-webdriver": "<from-root>",
     "semver": "<from-root>",
+    "shelljs": "<from-root>",
     "ts-node": "<from-root>",
     "tslib": "<from-root>",
     "typed-graphqlify": "<from-root>",

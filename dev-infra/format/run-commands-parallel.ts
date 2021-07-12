@@ -9,8 +9,8 @@
 import {Bar} from 'cli-progress';
 import * as multimatch from 'multimatch';
 import {cpus} from 'os';
+import {exec} from 'shelljs';
 
-import {spawn, SpawnResult} from '../utils/child-process';
 import {info} from '../utils/console';
 
 import {Formatter, FormatterAction, getActiveFormatters} from './formatters/index';
@@ -86,11 +86,12 @@ export function runFormatterInParallel(allFiles: string[], action: FormatterActi
       // Get the file and formatter for the next command.
       const {file, formatter} = nextCommand;
 
-      const [spawnCmd, ...spawnArgs] = [...formatter.commandFor(action).split(' '), file];
-      spawn(spawnCmd, spawnArgs, {suppressErrorOnFailingExitCode: true, mode: 'silent'})
-          .then(({stdout, stderr, status}: SpawnResult) => {
+      exec(
+          `${formatter.commandFor(action)} ${file}`,
+          {async: true, silent: true},
+          (code, stdout, stderr) => {
             // Run the provided callback function.
-            const failed = formatter.callbackFor(action)(file, status, stdout, stderr);
+            const failed = formatter.callbackFor(action)(file, code, stdout, stderr);
             if (failed) {
               failures.push({filePath: file, message: stderr});
             }
@@ -109,7 +110,8 @@ export function runFormatterInParallel(allFiles: string[], action: FormatterActi
               progressBar.stop();
               resolve(failures);
             }
-          });
+          },
+      );
       // Mark the thread as in use as the command execution has been started.
       threads[thread] = true;
     }
