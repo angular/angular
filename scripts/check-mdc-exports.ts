@@ -75,7 +75,6 @@ function getMissingSymbols(name: string, skipped: string[], skippedPatterns: Reg
 
 /**
  * Gets the name of the exported symbols from a particular package.
- * Based on https://github.com/angular/angular/blob/master/tools/ts-api-guardian/lib/serializer.ts
  */
 function getExports(name: string): string[] {
   const entryPoint = join(__dirname, '../src', name, 'public-api.ts');

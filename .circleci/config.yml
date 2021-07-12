@@ -220,7 +220,7 @@ jobs:
       - *slack_notify_on_failure
 
   # --------------------------------------------------------------------------------------------
-  # Job that runs ts-api-guardian against our API goldens in "tools/public_api_guard".
+  # Job that runs API golden tests in "tools/public_api_guard".
   # This job fails whenever an API has been updated but not explicitly approved through goldens.
   # --------------------------------------------------------------------------------------------
   api_golden_checks:
