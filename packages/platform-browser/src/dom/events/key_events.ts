@@ -94,13 +94,13 @@ export class KeyEventsPlugin extends EventManagerPlugin {
 
   /**
    * Registers a handler for a specific element and key event.
-   * @param element The HTML element to receive event notifications.
+   * @param element The element to receive event notifications.
    * @param eventName The name of the key event to listen for.
    * @param handler A function to call when the notification occurs. Receives the
    * event object as an argument.
    * @returns The key event that was registered.
    */
-  addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
+  addEventListener(element: Node, eventName: string, handler: Function): Function {
     const parsedEvent = KeyEventsPlugin.parseEventName(eventName)!;
 
     const outsideHandler =
