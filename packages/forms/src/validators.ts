@@ -663,3 +663,36 @@ export function getControlAsyncValidators(control: AbstractControl): AsyncValida
     AsyncValidatorFn[]|null {
   return (control as any)._rawAsyncValidators as AsyncValidatorFn | AsyncValidatorFn[] | null;
 }
+
+/**
+ * Accepts a singleton validator, an array, or null, and returns an array type with the provided
+ * validators.
+ *
+ * @param validators A validator, validators, or null.
+ * @returns A validators array.
+ */
+export function makeValidatorsArray<T extends ValidatorFn|AsyncValidatorFn>(validators: T|T[]|
+                                                                            null): T[] {
+  if (!validators) return [];
+  return Array.isArray(validators) ? validators : [validators];
+}
+
+/**
+ * Determines whether a validator or validators array has a given validator.
+ *
+ * @param validators The validator or validators to compare against.
+ * @param validator The validator to check.
+ * @returns Whether the validator is present.
+ */
+export function hasValidator<T extends ValidatorFn|AsyncValidatorFn>(
+    validators: T|T[]|null, validator: T): boolean {
+  return Array.isArray(validators) ? validators.includes(validator) : validators === validator;
+}
+
+// outside of the AbstractControl class...
+export function addValidators<T extends ValidatorFn|AsyncValidatorFn>(
+    newValidators: T|T[], currentValidators: T|T[]|null): T[] {
+  const _new = makeValidatorsArray(newValidators).filter(v => !hasValidator(currentValidators, v));
+  const _current = makeValidatorsArray(currentValidators);
+  return _current.concat(_new);
+}

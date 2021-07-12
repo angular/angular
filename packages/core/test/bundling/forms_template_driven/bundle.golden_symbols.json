@@ -654,6 +654,9 @@
     "name": "addToViewTree"
   },
   {
+    "name": "addValidators"
+  },
+  {
     "name": "allocExpando"
   },
   {
@@ -1047,6 +1050,9 @@
     "name": "hasTagAndTypeMatch"
   },
   {
+    "name": "hasValidator"
+  },
+  {
     "name": "hostReportError"
   },
   {
@@ -1231,6 +1237,9 @@
   },
   {
     "name": "makeRecord"
+  },
+  {
+    "name": "makeValidatorsArray"
   },
   {
     "name": "map"
