@@ -17,6 +17,7 @@ ng_module(
     module_name = "@angular/cdk/drag-drop",
     deps = [
         "//src:dev_mode_types",
+        "//src/cdk/a11y",
         "//src/cdk/bidi",
         "//src/cdk/coercion",
         "//src/cdk/platform",

@@ -15,6 +15,10 @@ import {
   _getShadowRoot,
 } from '@angular/cdk/platform';
 import {coerceBooleanProperty, coerceElement} from '@angular/cdk/coercion';
+import {
+  isFakeMousedownFromScreenReader,
+  isFakeTouchstartFromScreenReader,
+} from '@angular/cdk/a11y';
 import {Subscription, Subject, Observable} from 'rxjs';
 import {DropListRefInternal as DropListRef} from './drop-list-ref';
 import {DragDropRegistry} from './drag-drop-registry';
@@ -864,6 +868,8 @@ export class DragRef<T = any> {
     const target = _getEventTarget(event);
     const isSyntheticEvent = !isTouchSequence && this._lastTouchEventTime &&
       this._lastTouchEventTime + MOUSE_EVENT_IGNORE_TIME > Date.now();
+    const isFakeEvent = isTouchSequence ? isFakeTouchstartFromScreenReader(event as TouchEvent) :
+      isFakeMousedownFromScreenReader(event as MouseEvent);
 
     // If the event started from an element with the native HTML drag&drop, it'll interfere
     // with our own dragging (e.g. `img` tags do it by default). Prevent the default action
@@ -876,7 +882,7 @@ export class DragRef<T = any> {
     }
 
     // Abort if the user is already dragging or is using a mouse button other than the primary one.
-    if (isDragging || isAuxiliaryMouseButton || isSyntheticEvent) {
+    if (isDragging || isAuxiliaryMouseButton || isSyntheticEvent || isFakeEvent) {
       return;
     }
 

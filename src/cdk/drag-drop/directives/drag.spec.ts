@@ -253,6 +253,33 @@ describe('CdkDrag', () => {
         expect(mousedownEvent.preventDefault).toHaveBeenCalled();
       }));
 
+      it('should not start dragging an element with a fake mousedown event', fakeAsync(() => {
+        const fixture = createComponent(StandaloneDraggable);
+        fixture.detectChanges();
+        const dragElement = fixture.componentInstance.dragElement.nativeElement;
+        const event = createMouseEvent('mousedown', 0, 0);
+
+        Object.defineProperties(event, {
+          offsetX: {get: () => 0},
+          offsetY: {get: () => 0}
+        });
+
+        expect(dragElement.style.transform).toBeFalsy();
+
+        dispatchEvent(dragElement, event);
+        fixture.detectChanges();
+
+        dispatchMouseEvent(document, 'mousemove', 20, 100);
+        fixture.detectChanges();
+        dispatchMouseEvent(document, 'mousemove', 50, 100);
+        fixture.detectChanges();
+
+        dispatchMouseEvent(document, 'mouseup');
+        fixture.detectChanges();
+
+        expect(dragElement.style.transform).toBeFalsy();
+      }));
+
     });
 
     describe('touch dragging', () => {
@@ -349,6 +376,34 @@ describe('CdkDrag', () => {
         fixture.detectChanges();
 
         expect(touchstartEvent.preventDefault).not.toHaveBeenCalled();
+      }));
+
+      it('should not start dragging an element with a fake touchstart event', fakeAsync(() => {
+        const fixture = createComponent(StandaloneDraggable);
+        fixture.detectChanges();
+        const dragElement = fixture.componentInstance.dragElement.nativeElement;
+        const event = createTouchEvent('touchstart', 50, 50) as TouchEvent;
+
+        Object.defineProperties(event.touches[0], {
+          identifier: {get: () => -1},
+          radiusX: {get: () => null},
+          radiusY: {get: () => null}
+        });
+
+        expect(dragElement.style.transform).toBeFalsy();
+
+        dispatchEvent(dragElement, event);
+        fixture.detectChanges();
+
+        dispatchTouchEvent(document, 'touchmove', 20, 100);
+        fixture.detectChanges();
+        dispatchTouchEvent(document, 'touchmove', 50, 100);
+        fixture.detectChanges();
+
+        dispatchTouchEvent(document, 'touchend');
+        fixture.detectChanges();
+
+        expect(dragElement.style.transform).toBeFalsy();
       }));
     });
 
