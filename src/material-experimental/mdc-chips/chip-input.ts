@@ -203,6 +203,7 @@ export class MatChipInput implements MatChipTextControl, AfterContentInit, OnCha
 
   _focus() {
     this.focused = true;
+    this._focusLastChipOnBackspace = this.empty;
     this._chipGrid.stateChanges.next();
   }
 

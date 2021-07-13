@@ -542,6 +542,20 @@ describe('MDC-based MatChipGrid', () => {
           // It focuses the last chip
           expectLastCellFocused();
         });
+
+        it('should not focus the last chip when pressing BACKSPACE on a non-empty input', () => {
+          const nativeInput = fixture.nativeElement.querySelector('input');
+          nativeInput.value = 'hello';
+          nativeInput.focus();
+          fixture.detectChanges();
+
+          expectNoCellFocused();
+
+          dispatchKeyboardEvent(nativeInput, 'keydown', BACKSPACE);
+          fixture.detectChanges();
+
+          expectNoCellFocused();
+        });
       });
     });
 

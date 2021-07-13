@@ -566,6 +566,19 @@ describe('MatChipList', () => {
           expect(manager.activeItemIndex).toEqual(chips.length - 1);
         });
 
+        it('should not focus the last chip when pressing BACKSPACE on a non-empty input', () => {
+          const nativeInput = fixture.nativeElement.querySelector('input');
+          nativeInput.value = 'hello';
+          nativeInput.focus();
+          fixture.detectChanges();
+          expect(manager.activeItemIndex).toBe(-1);
+
+          dispatchKeyboardEvent(nativeInput, 'keydown', BACKSPACE);
+          fixture.detectChanges();
+
+          expect(manager.activeItemIndex).toBe(-1);
+        });
+
       });
     });
 

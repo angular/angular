@@ -189,6 +189,7 @@ export class MatChipInput implements MatChipTextControl, OnChanges, OnDestroy, A
 
   _focus() {
     this.focused = true;
+    this._focusLastChipOnBackspace = this.empty;
     this._chipList.stateChanges.next();
   }
 
