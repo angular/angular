@@ -1,12 +1,20 @@
+@use 'sass:map';
 @use '@material/tooltip/tooltip';
+@use '@material/tooltip/tooltip-theme';
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/theming/theming';
+@use '../../material/core/theming/palette';
 @use '../../material/core/typography/typography';
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-theme($config) {
     @include tooltip.core-styles($query: mdc-helpers.$mat-theme-styles-query);
+    // We are defining our own tooltip background color because of concerns
+    // surrounding the 0.6 background color opacity of the MDC tooltip styles.
+    @include tooltip-theme.fill-color(
+      map.get(palette.$light-theme-background-palette, tooltip)
+    );
   }
 }
 
