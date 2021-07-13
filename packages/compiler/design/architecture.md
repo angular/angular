@@ -296,7 +296,7 @@ Type guards require determining which directives apply to an element to determin
 
 Correctly typing an expression that includes a pipe requires determining the result type of the `transform` method of the type.
 
-Additionally, more advanced type-checking as described in [Type Checking Templates](https://goo.gl/Q3tSgP) also requires determining the types of the directives that apply to an element as well as how the attributes map to the properties of the directives.
+Additionally, more advanced type-checking also requires determining the types of the directives that apply to an element as well as how the attributes map to the properties of the directives.
 
 The types of directives can be found using a selector scope as described for reference inversion. Once a selector scope is produced, the component and directives that apply to an element can be determined from the selector scope. The `.d.ts` changes described above also includes the attribute to property maps. The `TypeGuard`s are recorded as static fields that are included in the `.d.ts` file of the directive.
 
