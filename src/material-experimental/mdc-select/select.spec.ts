@@ -2134,6 +2134,30 @@ describe('MDC-based MatSelect', () => {
         expect(panel.scrollTop).toBe(520, 'Expected scroll to be at the 16th option.');
       }));
 
+      it('should scroll to top when going to first option in top group', fakeAsync(() => {
+        fixture.destroy();
+        const groupFixture = TestBed.createComponent(SelectWithGroups);
+        groupFixture.detectChanges();
+        groupFixture.componentInstance.select.open();
+        groupFixture.detectChanges();
+        flush();
+
+        host = groupFixture.debugElement.query(By.css('mat-select'))!.nativeElement;
+        panel = overlayContainerElement.querySelector('.mat-mdc-select-panel')! as HTMLElement;
+
+        for (let i = 0; i < 5; i++) {
+          dispatchKeyboardEvent(host, 'keydown', DOWN_ARROW);
+        }
+
+        expect(panel.scrollTop).toBeGreaterThan(0);
+
+        for (let i = 0; i < 5; i++) {
+          dispatchKeyboardEvent(host, 'keydown', UP_ARROW);
+        }
+
+        expect(panel.scrollTop).toBe(0);
+      }));
+
     });
   });
 

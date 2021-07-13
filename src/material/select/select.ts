@@ -1204,12 +1204,19 @@ export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit
     const labelCount = _countGroupLabelsBeforeOption(index, this.options, this.optionGroups);
     const itemHeight = this._getItemHeight();
 
-    this.panel.nativeElement.scrollTop = _getOptionScrollPosition(
-      (index + labelCount) * itemHeight,
-      itemHeight,
-      this.panel.nativeElement.scrollTop,
-      SELECT_PANEL_MAX_HEIGHT
-    );
+    if (index === 0 && labelCount === 1) {
+      // If we've got one group label before the option and we're at the top option,
+      // scroll the list to the top. This is better UX than scrolling the list to the
+      // top of the option, because it allows the user to read the top group's label.
+      this.panel.nativeElement.scrollTop = 0;
+    } else {
+      this.panel.nativeElement.scrollTop = _getOptionScrollPosition(
+        (index + labelCount) * itemHeight,
+        itemHeight,
+        this.panel.nativeElement.scrollTop,
+        SELECT_PANEL_MAX_HEIGHT
+      );
+    }
   }
 
   protected _positioningSettled() {

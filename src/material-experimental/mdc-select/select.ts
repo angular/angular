@@ -23,6 +23,7 @@ import {
   MatOption,
   MAT_OPTGROUP,
   MAT_OPTION_PARENT_COMPONENT,
+  _countGroupLabelsBeforeOption,
   _getOptionScrollPosition,
 } from '@angular/material-experimental/mdc-core';
 import {CdkOverlayOrigin, ConnectedPosition} from '@angular/cdk/overlay';
@@ -163,14 +164,22 @@ export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit
 
     if (option) {
       const panel: HTMLElement = this.panel.nativeElement;
+      const labelCount = _countGroupLabelsBeforeOption(index, this.options, this.optionGroups);
       const element = option._getHostElement();
 
-      panel.scrollTop = _getOptionScrollPosition(
-        element.offsetTop,
-        element.offsetHeight,
-        panel.scrollTop,
-        panel.offsetHeight
-      );
+      if (index === 0 && labelCount === 1) {
+        // If we've got one group label before the option and we're at the top option,
+        // scroll the list to the top. This is better UX than scrolling the list to the
+        // top of the option, because it allows the user to read the top group's label.
+        panel.scrollTop = 0;
+      } else {
+        panel.scrollTop = _getOptionScrollPosition(
+          element.offsetTop,
+          element.offsetHeight,
+          panel.scrollTop,
+          panel.offsetHeight
+        );
+      }
     }
   }
 
