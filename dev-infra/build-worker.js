@@ -65,6 +65,7 @@ var GithubClient = /** @class */ (function () {
         this.issues = this._octokit.issues;
         this.git = this._octokit.git;
         this.rateLimit = this._octokit.rateLimit;
+        this.teams = this._octokit.teams;
         // Note: These are properties from `Octokit` that are brought in by optional plugins.
         // TypeScript requires us to provide an explicit type for these.
         this.rest = this._octokit.rest;
