@@ -1,3 +1,44 @@
+<a name="12.1.2"></a>
+# 12.1.2 (2021-07-14)
+### bazel
+| Commit | Description |
+| -- | -- |
+| [4a8ab4f149](https://github.com/angular/angular/commit/4a8ab4f1499a560bb4373b088785e43f26384e1c) | fix(bazel): enable dts bundling for Ivy packages ([#42728](https://github.com/angular/angular/pull/42728)) |
+### common
+| Commit | Description |
+| -- | -- |
+| [d654c7933a](https://github.com/angular/angular/commit/d654c7933a732c23dc1e68b17766457d2d11a4d8) | fix(common): re-sort output of `KeyValuePipe` when `compareFn` changes ([#42821](https://github.com/angular/angular/pull/42821)) |
+### compiler
+| Commit | Description |
+| -- | -- |
+| [2566cbb48c](https://github.com/angular/angular/commit/2566cbb48cddd23c4b29d01ad557bc71ac716700) | fix(compiler): add mappings for all HTML entities ([#42818](https://github.com/angular/angular/pull/42818)) |
+| [65330f03a9](https://github.com/angular/angular/commit/65330f03a92f2743719d0e0d4cedcaadbb8c5b21) | fix(compiler): incorrect context object being referenced from listener instructions inside embedded views ([#42755](https://github.com/angular/angular/pull/42755)) |
+### compiler-cli
+| Commit | Description |
+| -- | -- |
+| [17d3de25da](https://github.com/angular/angular/commit/17d3de25daf339612c267001f0c2237533d7c789) | fix(compiler-cli): properly emit literal types when recreating type parameters in a different file ([#42761](https://github.com/angular/angular/pull/42761)) |
+| [0a17e98ae2](https://github.com/angular/angular/commit/0a17e98ae2813338f03e3e01bb7cfa6024f4632b) | fix(compiler-cli): inline type checking instructions no longer prevent incremental reuse ([#42759](https://github.com/angular/angular/pull/42759)) |
+| [45116097c1](https://github.com/angular/angular/commit/45116097c1dafd902014e0f680e0d50023467883) | fix(compiler-cli): support reflecting namespace declarations ([#42728](https://github.com/angular/angular/pull/42728)) |
+| [df5cc1fbbf](https://github.com/angular/angular/commit/df5cc1fbbf1b1f02f1f45603552a2530bb59688d) | fix(compiler-cli): return directives for an element on a microsyntax template ([#42640](https://github.com/angular/angular/pull/42640)) |
+### core
+| Commit | Description |
+| -- | -- |
+| [63013546e1](https://github.com/angular/angular/commit/63013546e130d823db26ad96e1d4cb346e633a03) | fix(core): associate the NgModule scope for an overridden component ([#42817](https://github.com/angular/angular/pull/42817)) |
+| [9ebd41e39c](https://github.com/angular/angular/commit/9ebd41e39c597ef6df2de2fb63d6458337e2757d) | fix(core): allow proper type inference when `ngFor` is used with a `trackBy` function ([#42692](https://github.com/angular/angular/pull/42692)) |
+| [41c6877c01](https://github.com/angular/angular/commit/41c6877c013ba84ba5e46309b2310c097ad9e354) | fix(core): error in TestBed if module is reset mid-compilation in ViewEngine ([#42669](https://github.com/angular/angular/pull/42669)) |
+### language-service
+| Commit | Description |
+| -- | -- |
+| [97c18f4527](https://github.com/angular/angular/commit/97c18f4527187206db8b0f5730b80d2220027f9f) | fix(language-service): Do not override TS LS methods not supported by VE NgLS ([#42727](https://github.com/angular/angular/pull/42727)) |
+### service-worker
+| Commit | Description |
+| -- | -- |
+| [d87917542a](https://github.com/angular/angular/commit/d87917542a00ed6f58c7b95e3eba6aeddc5eee01) | fix(service-worker): correctly handle unrecoverable state when a client no longer exists ([#42736](https://github.com/angular/angular/pull/42736)) |
+| [f2523a8fef](https://github.com/angular/angular/commit/f2523a8fef549fab6ec480ecfc966c9d938a5423) | fix(service-worker): avoid storing redundant metadata for hashed assets ([#42606](https://github.com/angular/angular/pull/42606)) |
+## Special Thanks:
+Alan Agius, Andrew Kushnir, Andrew Scott, Arthur Ming, Bastian, Borislav Ivanov, David Gilson, David Shevitz, Gabriele Franchitto, George Kalpakas, Joey Perrott, JoostK, Kristiyan Kostadinov, Mark Goho, Meir Blumenfeld, Paul Gschwendtner, Pete Bacon Darwin, Ryan Andersen, Theoklitos Bampouris, behrooz bozorg chami, dario-piotrowicz, ivanwonder and mgechev
+
+
 <a name="12.2.0-next.1"></a>
 # 12.2.0-next.1 (2021-06-30)
 ### compiler
