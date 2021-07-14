@@ -111,20 +111,6 @@ Project-specific [TypeScript](https://www.typescriptlang.org/) configuration fil
 | `tsconfig.spec.json`   | [TypeScript](https://www.typescriptlang.org/) configuration for the application tests. See [TypeScript Configuration](guide/typescript-configuration). |
 | `tslint.json`          | Application-specific [TSLint](https://palantir.github.io/tslint/) configuration. |
 
-### End-to-end test files
-
-An `e2e/` folder at the top level contains source files for a set of end-to-end tests that correspond to the root-level application, along with test-specific configuration files.
-
-For a multi-project workspace, application-specific end-to-end tests are in the project root, under `projects/project-name/e2e/`.
-
-<code-example language="none">
-  e2e/
-     src/                 (end-to-end tests for my-app)
-        app.e2e-spec.ts
-        app.po.ts
-      protractor.conf.js  (test-tool config)
-      tsconfig.json       (TypeScript config inherits from workspace)
-</code-example>
 
 {@a multiple-projects}
 
@@ -160,9 +146,6 @@ my-workspace/
   projects/       (generated applications and libraries)
     my-first-app/ --(an explicitly generated application)
       ...         --(application-specific config)
-      e2e/        ----(corresponding e2e tests)
-         src/     ----(e2e tests source)
-         ...      ----(e2e-specific config)
       src/        --(source and support files for application)
     my-lib/       --(a generated library)
       ...         --(library-specific config)
@@ -173,7 +156,7 @@ my-workspace/
 
 When you generate a library using the CLI (with a command such as `ng generate library my-lib`), the generated files go into the `projects/` folder of the workspace. For more information about creating your own libraries, see  [Creating Libraries](guide/creating-libraries).
 
-Libraries (unlike applications and their associated e2e projects) have their own `package.json` configuration file.
+Libraries unlike applications have their own `package.json` configuration file.
 
 Under the `projects/` folder, the `my-lib` folder contains your library code.
 
