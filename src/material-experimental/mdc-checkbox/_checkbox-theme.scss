@@ -14,7 +14,7 @@
 // Mixin that includes the checkbox theme styles with a given palette.
 // By default, the MDC checkbox always uses the `secondary` palette.
 @mixin private-checkbox-styles-with-color($color) {
-  @include mdc-checkbox-theme.theme(
+  @include mdc-checkbox-theme.theme-deprecated(
     (
       density-scale: null,
       checkmark-color: mdc-theme-color.prop-value(on-#{$color}),
