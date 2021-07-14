@@ -1,3 +1,45 @@
+<a name="12.2.0-next.2"></a>
+# 12.2.0-next.2 (2021-07-14)
+### bazel
+| Commit | Description |
+| -- | -- |
+| [7e04116d15](https://github.com/angular/angular/commit/7e04116d1572b5b2b7862ba037f90ab6142a927f) | fix(bazel): enable dts bundling for Ivy packages ([#42728](https://github.com/angular/angular/pull/42728)) |
+### common
+| Commit | Description |
+| -- | -- |
+| [e42aa6c13b](https://github.com/angular/angular/commit/e42aa6c13b9f1f8f5b2e8c27e97380bf574db873) | fix(common): re-sort output of `KeyValuePipe` when `compareFn` changes ([#42821](https://github.com/angular/angular/pull/42821)) |
+### compiler
+| Commit | Description |
+| -- | -- |
+| [b33665ab2c](https://github.com/angular/angular/commit/b33665ab2c7c8c5536b5dc4f488a457100524dc3) | fix(compiler): add mappings for all HTML entities ([#42818](https://github.com/angular/angular/pull/42818)) |
+| [404c8d0d88](https://github.com/angular/angular/commit/404c8d0d88b88ae3ab5a80609d508fb2ecdf0d27) | fix(compiler): incorrect context object being referenced from listener instructions inside embedded views ([#42755](https://github.com/angular/angular/pull/42755)) |
+### compiler-cli
+| Commit | Description |
+| -- | -- |
+| [81dce5c664](https://github.com/angular/angular/commit/81dce5c6649ddc56903a37ef6a26dcd3ee37df96) | fix(compiler-cli): check split two way binding ([#42601](https://github.com/angular/angular/pull/42601)) |
+| [4c482bf3f1](https://github.com/angular/angular/commit/4c482bf3f1768a18b35e0648c91029504a8d8649) | fix(compiler-cli): properly emit literal types when recreating type parameters in a different file ([#42761](https://github.com/angular/angular/pull/42761)) |
+| [30c82cd177](https://github.com/angular/angular/commit/30c82cd17757f41d56afe71f69a90ac812a3201f) | fix(compiler-cli): inline type checking instructions no longer prevent incremental reuse ([#42759](https://github.com/angular/angular/pull/42759)) |
+| [4c78984ad2](https://github.com/angular/angular/commit/4c78984ad26825851d78d6f0339d8e4cb7bf1e54) | fix(compiler-cli): support reflecting namespace declarations ([#42728](https://github.com/angular/angular/pull/42728)) |
+| [74350a5cf1](https://github.com/angular/angular/commit/74350a5cf1035f0d33640dce845a1f78aa33f009) | fix(compiler-cli): return directives for an element on a microsyntax template ([#42640](https://github.com/angular/angular/pull/42640)) |
+### core
+| Commit | Description |
+| -- | -- |
+| [cd2d82a91a](https://github.com/angular/angular/commit/cd2d82a91a5f547ae4c3d369f7f777245324c9e5) | fix(core): associate the NgModule scope for an overridden component ([#42817](https://github.com/angular/angular/pull/42817)) |
+| [51156f3f07](https://github.com/angular/angular/commit/51156f3f0798fe5bc6f69cf38ba2f2947aab89aa) | fix(core): allow proper type inference when `ngFor` is used with a `trackBy` function ([#42692](https://github.com/angular/angular/pull/42692)) |
+| [0f23f7343e](https://github.com/angular/angular/commit/0f23f7343ec9bdcd2d40f6f474d2a4f5e38e2627) | fix(core): error in TestBed if module is reset mid-compilation in ViewEngine ([#42669](https://github.com/angular/angular/pull/42669)) |
+### language-service
+| Commit | Description |
+| -- | -- |
+| [ffeea63f43](https://github.com/angular/angular/commit/ffeea63f43e6a7fd46be4a8cd5a5d254c98dea08) | fix(language-service): Do not override TS LS methods not supported by VE NgLS ([#42727](https://github.com/angular/angular/pull/42727)) |
+### service-worker
+| Commit | Description |
+| -- | -- |
+| [cb2ca9a66e](https://github.com/angular/angular/commit/cb2ca9a66ef54d9f1b3df5ac14962dc3810b4cc1) | fix(service-worker): correctly handle unrecoverable state when a client no longer exists ([#42736](https://github.com/angular/angular/pull/42736)) |
+| [f592a12005](https://github.com/angular/angular/commit/f592a120057c3787ad6b7385b6f8e10928627e9e) | fix(service-worker): avoid storing redundant metadata for hashed assets ([#42606](https://github.com/angular/angular/pull/42606)) |
+## Special Thanks:
+Alan Agius, Andrew Kushnir, Andrew Scott, Arthur Ming, Bastian, Borislav Ivanov, Daniel Trevino, David Gilson, David Shevitz, Gabriele Franchitto, George Kalpakas, Joey Perrott, JoostK, Kristiyan Kostadinov, Mark Goho, Meir Blumenfeld, Paul Gschwendtner, Pete Bacon Darwin, Ryan Andersen, Theoklitos Bampouris, behrooz bozorg chami, dario-piotrowicz, ivanwonder and mgechev
+
+
 <a name="12.1.2"></a>
 # 12.1.2 (2021-07-14)
 ### bazel
