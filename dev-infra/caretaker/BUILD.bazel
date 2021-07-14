@@ -10,9 +10,11 @@ ts_library(
     deps = [
         "//dev-infra/release/versioning",
         "//dev-infra/utils",
+        "@npm//@types/inquirer",
         "@npm//@types/node",
         "@npm//@types/node-fetch",
         "@npm//@types/yargs",
+        "@npm//inquirer",
         "@npm//multimatch",
         "@npm//node-fetch",
         "@npm//typed-graphqlify",

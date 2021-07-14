@@ -228,6 +228,7 @@ var GithubClient = /** @class */ (function () {
         this.issues = this._octokit.issues;
         this.git = this._octokit.git;
         this.rateLimit = this._octokit.rateLimit;
+        this.teams = this._octokit.teams;
         // Note: These are properties from `Octokit` that are brought in by optional plugins.
         // TypeScript requires us to provide an explicit type for these.
         this.rest = this._octokit.rest;
@@ -1585,9 +1586,153 @@ const CheckModule = {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+/** Update the Github caretaker group, using a prompt to obtain the new caretaker group members.  */
+function updateCaretakerTeamViaPrompt() {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        /** Caretaker specific configuration. */
+        const caretakerConfig = getCaretakerConfig().caretaker;
+        if (caretakerConfig.caretakerGroup === undefined) {
+            throw Error('`caretakerGroup` is not defined in the `caretaker` config');
+        }
+        /** The list of current members in the group. */
+        const current = yield getGroupMembers(caretakerConfig.caretakerGroup);
+        /** The list of members able to be added to the group as defined by a separate roster group. */
+        const roster = yield getGroupMembers(`${caretakerConfig.caretakerGroup}-roster`);
+        const { 
+        /** The list of users selected to be members of the caretaker group. */
+        selected, 
+        /** Whether the user positively confirmed the selected made. */
+        confirm } = yield inquirer.prompt([
+            {
+                type: 'checkbox',
+                choices: roster,
+                message: 'Select 2 caretakers for the upcoming rotation:',
+                default: current,
+                name: 'selected',
+                prefix: '',
+                validate: (selected) => {
+                    if (selected.length !== 2) {
+                        return 'Please select exactly 2 caretakers for the upcoming rotation.';
+                    }
+                    return true;
+                },
+            },
+            {
+                type: 'confirm',
+                default: true,
+                prefix: '',
+                message: 'Are you sure?',
+                name: 'confirm',
+            }
+        ]);
+        if (confirm === false) {
+            info(yellow('  ⚠  Skipping caretaker group update.'));
+            return;
+        }
+        if (JSON.stringify(selected) === JSON.stringify(current)) {
+            info(green('  √  Caretaker group already up to date.'));
+            return;
+        }
+        try {
+            yield setCaretakerGroup(caretakerConfig.caretakerGroup, selected);
+        }
+        catch (_a) {
+            info(red('  ✘  Failed to update caretaker group.'));
+            return;
+        }
+        info(green('  √  Successfully updated caretaker group'));
+    });
+}
+/** Retrieve the current list of members for the provided group. */
+function getGroupMembers(group) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        /** The authenticated GitClient instance. */
+        const git = AuthenticatedGitClient.get();
+        return (yield git.github.teams.listMembersInOrg({
+            org: git.remoteConfig.owner,
+            team_slug: group,
+        }))
+            .data.filter(_ => !!_)
+            .map(member => member.login);
+    });
+}
+function setCaretakerGroup(group, members) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        /** The authenticated GitClient instance. */
+        const git = AuthenticatedGitClient.get();
+        /** The full name of the group <org>/<group name>. */
+        const fullSlug = `${git.remoteConfig.owner}/${group}`;
+        /** The list of current members of the group. */
+        const current = yield getGroupMembers(group);
+        /** The list of users to be removed from the group. */
+        const removed = current.filter(login => !members.includes(login));
+        /** Add a user to the group. */
+        const add = (username) => tslib.__awaiter(this, void 0, void 0, function* () {
+            debug(`Adding ${username} to ${fullSlug}.`);
+            yield git.github.teams.addOrUpdateMembershipForUserInOrg({
+                org: git.remoteConfig.owner,
+                team_slug: group,
+                username,
+                role: 'maintainer',
+            });
+        });
+        /** Remove a user from the group. */
+        const remove = (username) => tslib.__awaiter(this, void 0, void 0, function* () {
+            debug(`Removing ${username} from ${fullSlug}.`);
+            yield git.github.teams.removeMembershipForUserInOrg({
+                org: git.remoteConfig.owner,
+                team_slug: group,
+                username,
+            });
+        });
+        debug.group(`Caretaker Group: ${fullSlug}`);
+        debug(`Current Membership: ${current.join(', ')}`);
+        debug(`New Membership:     ${members.join(', ')}`);
+        debug(`Removed:            ${removed.join(', ')}`);
+        debug.groupEnd();
+        // Add members before removing to prevent the account performing the action from removing their
+        // permissions to change the group membership early.
+        yield Promise.all(members.map(add));
+        yield Promise.all(removed.map(remove));
+        debug(`Successfuly updated ${fullSlug}`);
+    });
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/** Builds the command. */
+function builder$1(yargs) {
+    return addGithubTokenOption(yargs);
+}
+/** Handles the command. */
+function handler$1() {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        yield updateCaretakerTeamViaPrompt();
+    });
+}
+/** yargs command module for assisting in handing off caretaker.  */
+const HandoffModule = {
+    handler: handler$1,
+    builder: builder$1,
+    command: 'handoff',
+    describe: 'Run a handoff assistant to aide in moving to the next caretaker',
+};
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 /** Build the parser for the caretaker commands. */
 function buildCaretakerParser(yargs) {
-    return yargs.command(CheckModule);
+    return yargs.command(CheckModule).command(HandoffModule);
 }
 
 /**
@@ -1666,7 +1811,7 @@ function restoreCommitMessage(filePath, source) {
  * found in the LICENSE file at https://angular.io/license
  */
 /** Builds the command. */
-function builder$1(yargs) {
+function builder$2(yargs) {
     return yargs
         .option('file-env-variable', {
         type: 'string',
@@ -1678,7 +1823,7 @@ function builder$1(yargs) {
         .positional('source', { type: 'string' });
 }
 /** Handles the command. */
-function handler$1({ fileEnvVariable, file, source }) {
+function handler$2({ fileEnvVariable, file, source }) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         // File and source are provided as command line parameters
         if (file !== undefined) {
@@ -1700,8 +1845,8 @@ function handler$1({ fileEnvVariable, file, source }) {
 }
 /** yargs command module describing the command. */
 const RestoreCommitMessageModule = {
-    handler: handler$1,
-    builder: builder$1,
+    handler: handler$2,
+    builder: builder$2,
     command: 'restore-commit-message-draft [file] [source]',
     // Description: Restore a commit message draft if one has been saved from a failed commit attempt.
     // No describe is defiend to hide the command from the --help.
@@ -2116,7 +2261,7 @@ function validateFile(filePath, isErrorMode) {
  * found in the LICENSE file at https://angular.io/license
  */
 /** Builds the command. */
-function builder$2(yargs) {
+function builder$3(yargs) {
     var _a;
     return yargs
         .option('file', {
@@ -2146,7 +2291,7 @@ function builder$2(yargs) {
     });
 }
 /** Handles the command. */
-function handler$2({ error, file, fileEnvVariable }) {
+function handler$3({ error, file, fileEnvVariable }) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const filePath = file || fileEnvVariable || '.git/COMMIT_EDITMSG';
         validateFile(filePath, error);
@@ -2154,8 +2299,8 @@ function handler$2({ error, file, fileEnvVariable }) {
 }
 /** yargs command module describing the command. */
 const ValidateFileModule = {
-    handler: handler$2,
-    builder: builder$2,
+    handler: handler$3,
+    builder: builder$3,
     command: 'pre-commit-validate',
     describe: 'Validate the most recent commit message',
 };
@@ -2240,7 +2385,7 @@ function validateCommitRange(from, to) {
  * found in the LICENSE file at https://angular.io/license
  */
 /** Builds the command. */
-function builder$3(yargs) {
+function builder$4(yargs) {
     return yargs
         .positional('startingRef', {
         description: 'The first ref in the range to select',
@@ -2254,7 +2399,7 @@ function builder$3(yargs) {
     });
 }
 /** Handles the command. */
-function handler$3({ startingRef, endingRef }) {
+function handler$4({ startingRef, endingRef }) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         // If on CI, and no pull request number is provided, assume the branch
         // being run on is an upstream branch.
@@ -2270,8 +2415,8 @@ function handler$3({ startingRef, endingRef }) {
 }
 /** yargs command module describing the command. */
 const ValidateRangeModule = {
-    handler: handler$3,
-    builder: builder$3,
+    handler: handler$4,
+    builder: builder$4,
     command: 'validate-range <starting-ref> [ending-ref]',
     describe: 'Validate a range of commit messages',
 };
@@ -2982,7 +3127,7 @@ function printTargetBranchesForPr(prNumber) {
  * found in the LICENSE file at https://angular.io/license
  */
 /** Builds the command. */
-function builder$4(yargs) {
+function builder$5(yargs) {
     return yargs.positional('pr', {
         description: 'The pull request number',
         type: 'number',
@@ -2990,15 +3135,15 @@ function builder$4(yargs) {
     });
 }
 /** Handles the command. */
-function handler$4({ pr }) {
+function handler$5({ pr }) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         yield printTargetBranchesForPr(pr);
     });
 }
 /** yargs command module describing the command.  */
 const CheckTargetBranchesModule = {
-    handler: handler$4,
-    builder: builder$4,
+    handler: handler$5,
+    builder: builder$5,
     command: 'check-target-branches <pr>',
     describe: 'Check a PR to determine what branches it is currently targeting',
 };
@@ -3203,11 +3348,11 @@ function checkOutPullRequestLocally(prNumber, githubToken, opts = {}) {
  * found in the LICENSE file at https://angular.io/license
  */
 /** Builds the checkout pull request command. */
-function builder$5(yargs) {
+function builder$6(yargs) {
     return addGithubTokenOption(yargs).positional('prNumber', { type: 'number', demandOption: true });
 }
 /** Handles the checkout pull request command. */
-function handler$5({ prNumber, githubToken }) {
+function handler$6({ prNumber, githubToken }) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const prCheckoutOptions = { allowIfMaintainerCannotModify: true, branchName: `pr-${prNumber}` };
         yield checkOutPullRequestLocally(prNumber, githubToken, prCheckoutOptions);
@@ -3215,8 +3360,8 @@ function handler$5({ prNumber, githubToken }) {
 }
 /** yargs command module for checking out a PR  */
 const CheckoutCommandModule = {
-    handler: handler$5,
-    builder: builder$5,
+    handler: handler$6,
+    builder: builder$6,
     command: 'checkout <pr-number>',
     describe: 'Checkout a PR from the upstream repo',
 };
@@ -4534,7 +4679,7 @@ function createPullRequestMergeTask(flags) {
  * found in the LICENSE file at https://angular.io/license
  */
 /** Builds the command. */
-function builder$6(yargs) {
+function builder$7(yargs) {
     return addGithubTokenOption(yargs)
         .help()
         .strict()
@@ -4550,7 +4695,7 @@ function builder$6(yargs) {
     });
 }
 /** Handles the command. */
-function handler$6(_a) {
+function handler$7(_a) {
     var pr = _a.pr, branchPrompt = _a.branchPrompt;
     return tslib.__awaiter(this, void 0, void 0, function () {
         return tslib.__generator(this, function (_b) {
@@ -4565,8 +4710,8 @@ function handler$6(_a) {
 }
 /** yargs command module describing the command. */
 var MergeCommandModule = {
-    handler: handler$6,
-    builder: builder$6,
+    handler: handler$7,
+    builder: builder$7,
     command: 'merge <pr>',
     describe: 'Merge a PR into its targeted branches.',
 };
@@ -5217,7 +5362,7 @@ function buildReleaseOutput(stampForRelease = false) {
  * found in the LICENSE file at https://angular.io/license
  */
 /** Yargs command builder for configuring the `ng-dev release build` command. */
-function builder$7(argv) {
+function builder$8(argv) {
     return argv.option('json', {
         type: 'boolean',
         description: 'Whether the built packages should be printed to stdout as JSON.',
@@ -5225,7 +5370,7 @@ function builder$7(argv) {
     });
 }
 /** Yargs command handler for building a release. */
-function handler$7(args) {
+function handler$8(args) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const { npmPackages } = getReleaseConfig();
         let builtPackages = yield buildReleaseOutput(true);
@@ -5260,8 +5405,8 @@ function handler$7(args) {
 }
 /** CLI command module for building release output. */
 const ReleaseBuildCommandModule = {
-    builder: builder$7,
-    handler: handler$7,
+    builder: builder$8,
+    handler: handler$8,
     command: 'build',
     describe: 'Builds the release output for the current branch.',
 };
@@ -5337,7 +5482,7 @@ function printActiveReleaseTrains(active, config) {
  * found in the LICENSE file at https://angular.io/license
  */
 /** Yargs command handler for printing release information. */
-function handler$8() {
+function handler$9() {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const git = GitClient.get();
         const gitRepoWithApi = Object.assign({ api: git.github }, git.remoteConfig);
@@ -5348,7 +5493,7 @@ function handler$8() {
 }
 /** CLI command module for retrieving release information. */
 const ReleaseInfoCommandModule = {
-    handler: handler$8,
+    handler: handler$9,
     command: 'info',
     describe: 'Prints active release trains to the console.',
 };
@@ -5758,7 +5903,7 @@ class ReleaseNotes {
  * found in the LICENSE file at https://angular.io/license
  */
 /** Yargs command builder for configuring the `ng-dev release build` command. */
-function builder$8(argv) {
+function builder$9(argv) {
     return argv
         .option('releaseVersion', { type: 'string', default: '0.0.0', coerce: (version) => new semver.SemVer(version) })
         .option('from', {
@@ -5784,7 +5929,7 @@ function builder$8(argv) {
     });
 }
 /** Yargs command handler for generating release notes. */
-function handler$9({ releaseVersion, from, to, outFile, type }) {
+function handler$a({ releaseVersion, from, to, outFile, type }) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         // Since `yargs` evaluates defaults even if a value as been provided, if no value is provided to
         // the handler, the latest semver tag on the branch is used.
@@ -5805,8 +5950,8 @@ function handler$9({ releaseVersion, from, to, outFile, type }) {
 }
 /** CLI command module for generating release notes. */
 const ReleaseNotesCommandModule = {
-    builder: builder$8,
-    handler: handler$9,
+    builder: builder$9,
+    handler: handler$a,
     command: 'notes',
     describe: 'Generate release notes',
 };
@@ -7367,11 +7512,11 @@ class ReleaseTool {
  * found in the LICENSE file at https://angular.io/license
  */
 /** Yargs command builder for configuring the `ng-dev release publish` command. */
-function builder$9(argv) {
+function builder$a(argv) {
     return addGithubTokenOption(argv);
 }
 /** Yargs command handler for staging a release. */
-function handler$a() {
+function handler$b() {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const git = GitClient.get();
         const config = getConfig();
@@ -7396,8 +7541,8 @@ function handler$a() {
 }
 /** CLI command module for publishing a release. */
 const ReleasePublishCommandModule = {
-    builder: builder$9,
-    handler: handler$a,
+    builder: builder$a,
+    handler: handler$b,
     command: 'publish',
     describe: 'Publish new releases and configure version branches.',
 };
@@ -7409,7 +7554,7 @@ const ReleasePublishCommandModule = {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-function builder$a(args) {
+function builder$b(args) {
     return args
         .positional('tagName', {
         type: 'string',
@@ -7423,7 +7568,7 @@ function builder$a(args) {
     });
 }
 /** Yargs command handler for building a release. */
-function handler$b(args) {
+function handler$c(args) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const { targetVersion: rawVersion, tagName } = args;
         const { npmPackages, publishRegistry } = getReleaseConfig();
@@ -7455,8 +7600,8 @@ function handler$b(args) {
 }
 /** CLI command module for setting an NPM dist tag. */
 const ReleaseSetDistTagCommand = {
-    builder: builder$a,
-    handler: handler$b,
+    builder: builder$b,
+    handler: handler$c,
     command: 'set-dist-tag <tag-name> <target-version>',
     describe: 'Sets a given NPM dist tag for all release packages.',
 };
@@ -7536,22 +7681,22 @@ function getCurrentGitUser() {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-function builder$b(args) {
+function builder$c(args) {
     return args.option('mode', {
         demandOption: true,
         description: 'Whether the env-stamp should be built for a snapshot or release',
         choices: ['snapshot', 'release']
     });
 }
-function handler$c({ mode }) {
+function handler$d({ mode }) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         buildEnvStamp(mode);
     });
 }
 /** CLI command module for building the environment stamp. */
 const BuildEnvStampCommand = {
-    builder: builder$b,
-    handler: handler$c,
+    builder: builder$c,
+    handler: handler$d,
     command: 'build-env-stamp',
     describe: 'Build the environment stamping information',
 };
@@ -7984,7 +8129,7 @@ function convertReferenceChainToString(chain) {
  * found in the LICENSE file at https://angular.io/license
  */
 /** Yargs command builder for the command. */
-function builder$c(argv) {
+function builder$d(argv) {
     return argv.positional('projectRoot', {
         type: 'string',
         normalize: true,
@@ -7993,7 +8138,7 @@ function builder$c(argv) {
     });
 }
 /** Yargs command handler for the command. */
-function handler$d({ projectRoot }) {
+function handler$e({ projectRoot }) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         try {
             if (!fs.lstatSync(projectRoot).isDirectory()) {
@@ -8020,8 +8165,8 @@ function handler$d({ projectRoot }) {
 }
 /** CLI command module. */
 const BuildAndLinkCommandModule = {
-    builder: builder$c,
-    handler: handler$d,
+    builder: builder$d,
+    handler: handler$e,
     command: 'build-and-link <projectRoot>',
     describe: 'Builds the release output, registers the outputs as linked, and links via yarn to the provided project',
 };
