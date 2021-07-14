@@ -1,14 +1,19 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
 import {prompt} from 'inquirer';
-import {params, rawString, types} from 'typed-graphqlify';
 
 import {debug, green, info, red, yellow} from '../../utils/console';
 import {AuthenticatedGitClient} from '../../utils/git/authenticated-git-client';
 import {getCaretakerConfig} from '../config';
 
-
-
-export async function updateGithubTeamViaPrompt() {
+/** Update the Github caretaker group, using a prompt to obtain the new caretaker group members.  */
+export async function updateCaretakerTeamViaPrompt() {
   /** Caretaker specific configuration. */
   const caretakerConfig = getCaretakerConfig().caretaker;
 
@@ -36,7 +41,7 @@ export async function updateGithubTeamViaPrompt() {
           prefix: '',
           validate: (selected: string[]) => {
             if (selected.length !== 2) {
-              return 'Please select exactly 2 caretakers for the upcoming rotation.'
+              return 'Please select exactly 2 caretakers for the upcoming rotation.';
             }
             return true;
           },
@@ -66,7 +71,7 @@ export async function updateGithubTeamViaPrompt() {
     info(red('  ✘  Failed to update caretaker group.'));
     return;
   }
-  info(green('  √  Successuly updated caretaker group'));
+  info(green('  √  Successfully updated caretaker group'));
 }
 
 
@@ -74,23 +79,13 @@ export async function updateGithubTeamViaPrompt() {
 async function getGroupMembers(group: string) {
   /** The authenticated GitClient instance. */
   const git = AuthenticatedGitClient.get();
-  /** Graphql query to retrive the list of members of a requested Github team (group). */
-  const query = {
-    organization: params({login: rawString(git.remoteConfig.owner)}, {
-      team: params({slug: rawString(group)}, {
-        members: {
-          nodes: [{login: types.string}],
-        }
-      }),
-    })
-  };
 
-  const result = await git.github.graphql(query);
-  if (result.organization.team === null) {
-    throw Error(`Unable to request the group membership for ${group}`);
-  }
-
-  return result.organization.team.members.nodes.map(node => node.login);
+  return (await git.github.teams.listMembersInOrg({
+           org: git.remoteConfig.owner,
+           team_slug: group,
+         }))
+      .data.filter(_ => !!_)
+      .map(member => member!.login);
 }
 
 async function setCaretakerGroup(group: string, members: string[]) {

@@ -229,8 +229,6 @@ var GithubClient = /** @class */ (function () {
         this.git = this._octokit.git;
         this.rateLimit = this._octokit.rateLimit;
         this.teams = this._octokit.teams;
-        this.users = this._octokit.users;
-        this.orgs = this._octokit.orgs;
         // Note: These are properties from `Octokit` that are brought in by optional plugins.
         // TypeScript requires us to provide an explicit type for these.
         this.rest = this._octokit.rest;
@@ -1581,7 +1579,15 @@ const CheckModule = {
     describe: 'Check the status of information the caretaker manages for the repository',
 };
 
-function updateGithubTeamViaPrompt() {
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/** Update the Github caretaker group, using a prompt to obtain the new caretaker group members.  */
+function updateCaretakerTeamViaPrompt() {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         /** Caretaker specific configuration. */
         const caretakerConfig = getCaretakerConfig().caretaker;
@@ -1609,14 +1615,14 @@ function updateGithubTeamViaPrompt() {
                         return 'Please select exactly 2 caretakers for the upcoming rotation.';
                     }
                     return true;
-                }
+                },
             },
             {
                 type: 'confirm',
                 default: true,
                 prefix: '',
                 message: 'Are you sure?',
-                name: 'confirm'
+                name: 'confirm',
             }
         ]);
         if (confirm === false) {
@@ -1634,7 +1640,7 @@ function updateGithubTeamViaPrompt() {
             info(red('  ✘  Failed to update caretaker group.'));
             return;
         }
-        info(green('  √  Successuly updated caretaker group'));
+        info(green('  √  Successfully updated caretaker group'));
     });
 }
 /** Retrieve the current list of members for the provided group. */
@@ -1642,21 +1648,12 @@ function getGroupMembers(group) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         /** The authenticated GitClient instance. */
         const git = AuthenticatedGitClient.get();
-        /** Graphql query to retrive the list of members of a requested Github team (group). */
-        const query = {
-            organization: typedGraphqlify.params({ login: typedGraphqlify.rawString(git.remoteConfig.owner) }, {
-                team: typedGraphqlify.params({ slug: typedGraphqlify.rawString(group) }, {
-                    members: {
-                        nodes: [{ login: typedGraphqlify.types.string }],
-                    }
-                }),
-            })
-        };
-        const result = yield git.github.graphql(query);
-        if (result.organization.team === null) {
-            throw Error(`Unable to request the group membership for ${group}`);
-        }
-        return result.organization.team.members.nodes.map(node => node.login);
+        return (yield git.github.teams.listMembersInOrg({
+            org: git.remoteConfig.owner,
+            team_slug: group,
+        }))
+            .data.filter(_ => !!_)
+            .map(member => member.login);
     });
 }
 function setCaretakerGroup(group, members) {
@@ -1715,10 +1712,10 @@ function builder$1(yargs) {
 /** Handles the command. */
 function handler$1() {
     return tslib.__awaiter(this, void 0, void 0, function* () {
-        yield updateGithubTeamViaPrompt();
+        yield updateCaretakerTeamViaPrompt();
     });
 }
-/** yargs command module for checking status information for the repository  */
+/** yargs command module for assisting in handing off caretaker.  */
 const HandoffModule = {
     handler: handler$1,
     builder: builder$1,

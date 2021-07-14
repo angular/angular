@@ -10,10 +10,10 @@ import {Argv, CommandModule} from 'yargs';
 
 import {addGithubTokenOption} from '../../utils/git/github-yargs';
 
-import {updateGithubTeamViaPrompt} from './update-github-team';
+import {updateCaretakerTeamViaPrompt} from './update-github-team';
 
 
-export interface CaretakerCheckOptions {
+export interface CaretakerHandoffOptions {
   githubToken: string;
 }
 
@@ -24,11 +24,11 @@ function builder(yargs: Argv) {
 
 /** Handles the command. */
 async function handler() {
-  await updateGithubTeamViaPrompt();
+  await updateCaretakerTeamViaPrompt();
 }
 
-/** yargs command module for checking status information for the repository  */
-export const HandoffModule: CommandModule<{}, CaretakerCheckOptions> = {
+/** yargs command module for assisting in handing off caretaker.  */
+export const HandoffModule: CommandModule<{}, CaretakerHandoffOptions> = {
   handler,
   builder,
   command: 'handoff',
