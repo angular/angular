@@ -4,12 +4,12 @@ import { ContributorService } from './contributor.service';
 import { LocationService } from 'app/shared/location.service';
 
 @Component({
-  selector: `aio-contributor-list`,
+  selector: 'aio-contributor-list',
   template: `
     <div class="flex-center group-buttons">
       <a *ngFor="let name of groupNames"
           class="button mat-button filter-button"
-          [class.selected]="name == selectedGroup.name"
+          [class.selected]="name === selectedGroup.name"
           (click)="selectGroup(name)"
           (keyup.enter)="selectGroup(name)">{{name}}</a>
     </div>

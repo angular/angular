@@ -33,7 +33,7 @@ describe('CodeExampleComponent', () => {
   });
 
   it('should be able to capture the code snippet provided in content', () => {
-    expect(codeExampleComponent.aioCode.code.trim()).toBe(`const foo = "bar";`);
+    expect(codeExampleComponent.aioCode.code.trim()).toBe('const foo = "bar";');
   });
 
   it('should clean-up the projected code snippet once captured', () => {
@@ -98,7 +98,7 @@ describe('CodeExampleComponent', () => {
   `
 })
 class HostComponent {
-  code = `const foo = "bar";`;
+  code = 'const foo = "bar";';
   header = 'Great Example';
   path = 'code-path';
   hidecopy: boolean | string = false;
