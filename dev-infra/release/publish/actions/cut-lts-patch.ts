@@ -30,10 +30,10 @@ export class CutLongTermSupportPatchAction extends ReleaseAction {
   override async perform() {
     const ltsBranch = await this._promptForTargetLtsBranch();
     const newVersion = semverInc(ltsBranch.version, 'patch');
-    const {pullRequest: {id}, releaseNotes} =
+    const {pullRequest, releaseNotes} =
         await this.checkoutBranchAndStageVersion(newVersion, ltsBranch.name);
 
-    await this.waitForPullRequestToBeMerged(id);
+    await this.waitForPullRequestToBeMerged(pullRequest);
     await this.buildAndPublish(releaseNotes, ltsBranch.name, ltsBranch.npmDistTag);
     await this.cherryPickChangelogIntoNextBranch(releaseNotes, ltsBranch.name);
   }
