@@ -82,7 +82,9 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
   }
 
   private isStringLiteralCompletion(): this is StringLiteralCompletionBuilder {
-    return this.node instanceof LiteralPrimitive || this.node instanceof TextAttribute;
+    return this.node instanceof LiteralPrimitive ||
+        (this.node instanceof TextAttribute &&
+         this.nodeContext === CompletionNodeContext.ElementAttributeValue);
   }
 
   private getStringLiteralCompletions(
@@ -109,6 +111,8 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     if (this.node instanceof LiteralPrimitive && typeof this.node.value === 'string' &&
         this.node.value.length > 0) {
       replacementSpan = {
+        // The sourceSpan of `LiteralPrimitive` includes the open quote and the completion entries
+        // don't, so skip the open quote here.
         start: this.node.sourceSpan.start + 1,
         length: this.node.value.length,
       };
