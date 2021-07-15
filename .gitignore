@@ -26,6 +26,8 @@ node_modules
 /.vscode/launch.json
 /*.iml
 /.vs
+*.swo
+*.swp
 
 # misc
 .DS_Store
