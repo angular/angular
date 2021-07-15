@@ -6615,7 +6615,7 @@ class ReleaseAction {
      * API is 10 seconds (to not exceed any rate limits). If the pull request is closed without
      * merge, the script will abort gracefully (considering a manual user abort).
      */
-    waitForPullRequestToBeMerged(id, interval = waitForPullRequestInterval) {
+    waitForPullRequestToBeMerged({ id }, interval = waitForPullRequestInterval) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
                 debug(`Waiting for pull request #${id} to be merged.`);
@@ -6714,13 +6714,13 @@ class ReleaseAction {
             yield this.createCommit(commitMessage, [changelogPath]);
             info(green(`  ✓   Created changelog cherry-pick commit for: "${releaseNotes.version}".`));
             // Create a cherry-pick pull request that should be merged by the caretaker.
-            const { url, id } = yield this.pushChangesToForkAndCreatePullRequest(nextBranch, `changelog-cherry-pick-${releaseNotes.version}`, commitMessage, `Cherry-picks the changelog from the "${stagingBranch}" branch to the next ` +
+            const pullRequest = yield this.pushChangesToForkAndCreatePullRequest(nextBranch, `changelog-cherry-pick-${releaseNotes.version}`, commitMessage, `Cherry-picks the changelog from the "${stagingBranch}" branch to the next ` +
                 `branch (${nextBranch}).`);
             info(green(`  ✓   Pull request for cherry-picking the changelog into "${nextBranch}" ` +
                 'has been created.'));
-            info(yellow(`      Please ask team members to review: ${url}.`));
+            info(yellow(`      Please ask team members to review: ${pullRequest.url}.`));
             // Wait for the Pull Request to be merged.
-            yield this.waitForPullRequestToBeMerged(id);
+            yield this.waitForPullRequestToBeMerged(pullRequest);
             return true;
         });
     }
@@ -6841,8 +6841,8 @@ class CutLongTermSupportPatchAction extends ReleaseAction {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             const ltsBranch = yield this._promptForTargetLtsBranch();
             const newVersion = semverInc(ltsBranch.version, 'patch');
-            const { pullRequest: { id }, releaseNotes } = yield this.checkoutBranchAndStageVersion(newVersion, ltsBranch.name);
-            yield this.waitForPullRequestToBeMerged(id);
+            const { pullRequest, releaseNotes } = yield this.checkoutBranchAndStageVersion(newVersion, ltsBranch.name);
+            yield this.waitForPullRequestToBeMerged(pullRequest);
             yield this.buildAndPublish(releaseNotes, ltsBranch.name, ltsBranch.npmDistTag);
             yield this.cherryPickChangelogIntoNextBranch(releaseNotes, ltsBranch.name);
         });
@@ -6918,8 +6918,8 @@ class CutNewPatchAction extends ReleaseAction {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             const { branchName } = this.active.latest;
             const newVersion = this._newVersion;
-            const { pullRequest: { id }, releaseNotes } = yield this.checkoutBranchAndStageVersion(newVersion, branchName);
-            yield this.waitForPullRequestToBeMerged(id);
+            const { pullRequest, releaseNotes } = yield this.checkoutBranchAndStageVersion(newVersion, branchName);
+            yield this.waitForPullRequestToBeMerged(pullRequest);
             yield this.buildAndPublish(releaseNotes, branchName, 'latest');
             yield this.cherryPickChangelogIntoNextBranch(releaseNotes, branchName);
         });
@@ -6988,8 +6988,8 @@ class CutNextPrereleaseAction extends ReleaseAction {
             const releaseTrain = this._getActivePrereleaseTrain();
             const { branchName } = releaseTrain;
             const newVersion = yield this._newVersion;
-            const { pullRequest: { id }, releaseNotes } = yield this.checkoutBranchAndStageVersion(newVersion, branchName);
-            yield this.waitForPullRequestToBeMerged(id);
+            const { pullRequest, releaseNotes } = yield this.checkoutBranchAndStageVersion(newVersion, branchName);
+            yield this.waitForPullRequestToBeMerged(pullRequest);
             yield this.buildAndPublish(releaseNotes, branchName, 'next');
             // If the pre-release has been cut from a branch that is not corresponding
             // to the next release-train, cherry-pick the changelog into the primary
@@ -7055,8 +7055,8 @@ class CutReleaseCandidateAction extends ReleaseAction {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             const { branchName } = this.active.releaseCandidate;
             const newVersion = this._newVersion;
-            const { pullRequest: { id }, releaseNotes } = yield this.checkoutBranchAndStageVersion(newVersion, branchName);
-            yield this.waitForPullRequestToBeMerged(id);
+            const { pullRequest, releaseNotes } = yield this.checkoutBranchAndStageVersion(newVersion, branchName);
+            yield this.waitForPullRequestToBeMerged(pullRequest);
             yield this.buildAndPublish(releaseNotes, branchName, 'next');
             yield this.cherryPickChangelogIntoNextBranch(releaseNotes, branchName);
         });
@@ -7099,8 +7099,8 @@ class CutStableAction extends ReleaseAction {
             const { branchName } = this.active.releaseCandidate;
             const newVersion = this._newVersion;
             const isNewMajor = (_a = this.active.releaseCandidate) === null || _a === void 0 ? void 0 : _a.isMajor;
-            const { pullRequest: { id }, releaseNotes } = yield this.checkoutBranchAndStageVersion(newVersion, branchName);
-            yield this.waitForPullRequestToBeMerged(id);
+            const { pullRequest, releaseNotes } = yield this.checkoutBranchAndStageVersion(newVersion, branchName);
+            yield this.waitForPullRequestToBeMerged(pullRequest);
             // If a new major version is published, we publish to the `next` NPM dist tag temporarily.
             // We do this because for major versions, we want all main Angular projects to have their
             // new major become available at the same time. Publishing immediately to the `latest` NPM
@@ -7179,11 +7179,11 @@ class MoveNextIntoFeatureFreezeAction extends ReleaseAction {
             // Stage the new version for the newly created branch, and push changes to a
             // fork in order to create a staging pull request. Note that we re-use the newly
             // created branch instead of re-fetching from the upstream.
-            const { pullRequest: { id }, releaseNotes } = yield this.stageVersionForBranchAndCreatePullRequest(newVersion, newBranch);
+            const { pullRequest, releaseNotes } = yield this.stageVersionForBranchAndCreatePullRequest(newVersion, newBranch);
             // Wait for the staging PR to be merged. Then build and publish the feature-freeze next
             // pre-release. Finally, cherry-pick the release notes into the next branch in combination
             // with bumping the version to the next minor too.
-            yield this.waitForPullRequestToBeMerged(id);
+            yield this.waitForPullRequestToBeMerged(pullRequest);
             yield this.buildAndPublish(releaseNotes, newBranch, 'next');
             yield this._createNextBranchUpdatePullRequest(releaseNotes, newVersion);
         });

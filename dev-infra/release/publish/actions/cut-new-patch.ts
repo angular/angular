@@ -28,10 +28,10 @@ export class CutNewPatchAction extends ReleaseAction {
     const {branchName} = this.active.latest;
     const newVersion = this._newVersion;
 
-    const {pullRequest: {id}, releaseNotes} =
+    const {pullRequest, releaseNotes} =
         await this.checkoutBranchAndStageVersion(newVersion, branchName);
 
-    await this.waitForPullRequestToBeMerged(id);
+    await this.waitForPullRequestToBeMerged(pullRequest);
     await this.buildAndPublish(releaseNotes, branchName, 'latest');
     await this.cherryPickChangelogIntoNextBranch(releaseNotes, branchName);
   }
