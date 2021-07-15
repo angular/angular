@@ -1,0 +1,15 @@
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+  <mat-text-column name="position" [headerText]="headerText"></mat-text-column>
+
+  <!-- Change the header text. -->
+  <mat-text-column name="name" headerText="Element"></mat-text-column>
+
+  <!-- Provide a data accessor for getting the cell text values. -->
+  <mat-text-column name="weight" [dataAccessor]="getWeight"></mat-text-column>
+
+  <!-- Justify the content of the cells to the cell end. -->
+  <mat-text-column name="symbol" justify="end"></mat-text-column>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>

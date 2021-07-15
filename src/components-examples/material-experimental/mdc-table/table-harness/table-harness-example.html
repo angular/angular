@@ -1,0 +1,29 @@
+<table mat-table [dataSource]="dataSource">
+  <ng-container matColumnDef="position">
+    <th mat-header-cell *matHeaderCellDef>No.</th>
+    <td mat-cell *matCellDef="let element">{{element.position}}</td>
+    <td mat-footer-cell *matFooterCellDef>Number of the element</td>
+  </ng-container>
+
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef>Name</th>
+    <td mat-cell *matCellDef="let element">{{element.name}}</td>
+    <td mat-footer-cell *matFooterCellDef>Name of the element</td>
+  </ng-container>
+
+  <ng-container matColumnDef="weight">
+    <th mat-header-cell *matHeaderCellDef>Weight</th>
+    <td mat-cell *matCellDef="let element">{{element.weight}}</td>
+    <td mat-footer-cell *matFooterCellDef>Weight of the element</td>
+  </ng-container>
+
+  <ng-container matColumnDef="symbol">
+    <th mat-header-cell *matHeaderCellDef>Symbol</th>
+    <td mat-cell *matCellDef="let element">{{element.symbol}}</td>
+    <td mat-footer-cell *matFooterCellDef>Symbol of the element</td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>

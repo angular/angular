@@ -1,171 +1,68 @@
-<h2> Basic </h2>
-<div class="example-container mat-elevation-z8">
-  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-    <!-- Position Column -->
-    <ng-container matColumnDef="position">
-      <th mat-header-cell *matHeaderCellDef> No. </th>
-      <td mat-cell *matCellDef="let element"> {{element.position}} </td>
-    </ng-container>
+<h3>Table basic</h3>
+<table-basic-example></table-basic-example>
 
-    <!-- Name Column -->
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef> Name </th>
-      <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-    </ng-container>
+<h3>Table basic with recycled rows</h3>
+<table-recycle-rows-example></table-recycle-rows-example>
 
-    <!-- Weight Column -->
-    <ng-container matColumnDef="weight">
-      <th mat-header-cell *matHeaderCellDef> Weight </th>
-      <td mat-cell *matCellDef="let element"> {{element.weight}} </td>
-    </ng-container>
+<h3>Table basic flex</h3>
+<table-flex-basic-example></table-flex-basic-example>
 
-    <!-- Symbol Column -->
-    <ng-container matColumnDef="symbol">
-      <th mat-header-cell *matHeaderCellDef> Symbol </th>
-      <td mat-cell *matCellDef="let element"> {{element.symbol}} </td>
-    </ng-container>
+<h3>Table dynamic columns</h3>
+<table-dynamic-columns-example></table-dynamic-columns-example>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-  </table>
-</div>
+<h3>Table expandable rows</h3>
+<table-expandable-rows-example></table-expandable-rows-example>
 
-<h2> Sticky Columns </h2>
-<div class="example-container mat-elevation-z8 example-sticky-columns">
-  <table mat-table [dataSource]="dataSource">
-    <!-- Name Column -->
-    <ng-container matColumnDef="name" sticky>
-      <th mat-header-cell *matHeaderCellDef> Name </th>
-      <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-    </ng-container>
+<h3>Table filtering</h3>
+<table-filtering-example></table-filtering-example>
 
-    <!-- Position Column -->
-    <ng-container matColumnDef="position">
-      <th mat-header-cell *matHeaderCellDef> No. </th>
-      <td mat-cell *matCellDef="let element"> {{element.position}} </td>
-    </ng-container>
+<h3>Table footer row</h3>
+<table-footer-row-example></table-footer-row-example>
 
-    <!-- Weight Column -->
-    <ng-container matColumnDef="weight">
-      <th mat-header-cell *matHeaderCellDef> Weight </th>
-      <td mat-cell *matCellDef="let element"> {{element.weight}} </td>
-    </ng-container>
+<h3>Table with http</h3>
+<table-http-example></table-http-example>
 
-    <!-- Symbol Column -->
-    <ng-container matColumnDef="symbol">
-      <th mat-header-cell *matHeaderCellDef> Symbol </th>
-      <td mat-cell *matCellDef="let element"> {{element.symbol}} </td>
-    </ng-container>
+<h3>Table with multiple headers and footers</h3>
+<table-multiple-header-footer-example></table-multiple-header-footer-example>
 
-    <!-- Star Column -->
-    <ng-container matColumnDef="star" stickyEnd>
-      <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let element">
-        <mat-icon>more_vert</mat-icon>
-      </td>
-    </ng-container>
+<h3>Table overview</h3>
+<table-overview-example></table-overview-example>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
-  </table>
-</div>
+<h3>Table row context</h3>
+<table-row-context-example></table-row-context-example>
 
-<h2> Sticky Header </h2>
-<div class="example-container mat-elevation-z8 example-sticky-header">
-  <table mat-table [dataSource]="dataSource">
+<h3>Table with pagination</h3>
+<table-pagination-example></table-pagination-example>
 
-    <!-- Position Column -->
-    <ng-container matColumnDef="position">
-      <th mat-header-cell *matHeaderCellDef> No. </th>
-      <td mat-cell *matCellDef="let element"> {{element.position}} </td>
-    </ng-container>
+<h3>Table with selection</h3>
+<table-selection-example></table-selection-example>
 
-    <!-- Name Column -->
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef> Name </th>
-      <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-    </ng-container>
+<h3>Table with sorting</h3>
+<table-sorting-example></table-sorting-example>
 
-    <!-- Weight Column -->
-    <ng-container matColumnDef="weight">
-      <th mat-header-cell *matHeaderCellDef> Weight </th>
-      <td mat-cell *matCellDef="let element"> {{element.weight}} </td>
-    </ng-container>
+<h3>Table with sticky columns</h3>
+<table-sticky-columns-example></table-sticky-columns-example>
 
-    <!-- Symbol Column -->
-    <ng-container matColumnDef="symbol">
-      <th mat-header-cell *matHeaderCellDef> Symbol </th>
-      <td mat-cell *matCellDef="let element"> {{element.symbol}} </td>
-    </ng-container>
+<h3>Table with sticky headers, footers and columns</h3>
+<table-sticky-complex-example></table-sticky-complex-example>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-  </table>
-</div>
+<h3>Table flex with sticky headers, footers and columns</h3>
+<table-sticky-complex-flex-example></table-sticky-complex-flex-example>
 
-<h2> Sticky Footer </h2>
-<div class="example-container mat-elevation-z8 example-sticky-footer">
-  <table mat-table [dataSource]="dataSource">
-    <!-- Position Column -->
-    <ng-container matColumnDef="position">
-      <th mat-header-cell *matHeaderCellDef> No. </th>
-      <td mat-cell *matCellDef="let element"> {{element.position}} </td>
-      <td mat-footer-cell *matFooterCellDef> number </td>
-    </ng-container>
+<h3>Table with sticky footer</h3>
+<table-sticky-footer-example></table-sticky-footer-example>
 
-    <!-- Name Column -->
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef> Name </th>
-      <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-      <td mat-footer-cell *matFooterCellDef> string </td>
-    </ng-container>
+<h3>Table with sticky header</h3>
+<table-sticky-header-example></table-sticky-header-example>
 
-    <!-- Weight Column -->
-    <ng-container matColumnDef="weight">
-      <th mat-header-cell *matHeaderCellDef> Weight </th>
-      <td mat-cell *matCellDef="let element"> {{element.weight}} </td>
-      <td mat-footer-cell *matFooterCellDef> number </td>
-    </ng-container>
+<h3>Table with mat-text-column</h3>
+<table-text-column-example></table-text-column-example>
 
-    <!-- Symbol Column -->
-    <ng-container matColumnDef="symbol">
-      <th mat-header-cell *matHeaderCellDef> Symbol </th>
-      <td mat-cell *matCellDef="let element"> {{element.symbol}} </td>
-      <td mat-footer-cell *matFooterCellDef> string </td>
-    </ng-container>
+<h3>Table with mat-text-column advanced</h3>
+<table-text-column-advanced-example></table-text-column-advanced-example>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
-  </table>
-</div>
+<h3>Table wrapped in reusable component</h3>
+<table-wrapped-example></table-wrapped-example>
 
-<h2>Basic flex table</h2>
-<mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-  <!-- Position Column -->
-  <ng-container matColumnDef="position">
-    <mat-header-cell *matHeaderCellDef> No. </mat-header-cell>
-    <mat-cell *matCellDef="let element"> {{element.position}} </mat-cell>
-  </ng-container>
-
-  <!-- Name Column -->
-  <ng-container matColumnDef="name">
-    <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
-    <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
-  </ng-container>
-
-  <!-- Weight Column -->
-  <ng-container matColumnDef="weight">
-    <mat-header-cell *matHeaderCellDef> Weight </mat-header-cell>
-    <mat-cell *matCellDef="let element"> {{element.weight}} </mat-cell>
-  </ng-container>
-
-  <!-- Symbol Column -->
-  <ng-container matColumnDef="symbol">
-    <mat-header-cell *matHeaderCellDef> Symbol </mat-header-cell>
-    <mat-cell *matCellDef="let element"> {{element.symbol}} </mat-cell>
-  </ng-container>
-
-  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-</mat-table>
+<h3>Table wrapped re-orderable columns</h3>
+<table-reorderable-example></table-reorderable-example>

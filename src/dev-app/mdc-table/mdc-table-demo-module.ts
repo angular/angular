@@ -11,11 +11,13 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatTableModule} from '@angular/material-experimental/mdc-table';
 import {RouterModule} from '@angular/router';
 import {MdcTableDemo} from './mdc-table-demo';
+import {MdcTableExamplesModule} from '@angular/components-examples/material-experimental/mdc-table';
 
 @NgModule({
   imports: [
     MatIconModule,
     MatTableModule,
+    MdcTableExamplesModule,
     RouterModule.forChild([{path: '', component: MdcTableDemo}]),
   ],
   declarations: [MdcTableDemo],

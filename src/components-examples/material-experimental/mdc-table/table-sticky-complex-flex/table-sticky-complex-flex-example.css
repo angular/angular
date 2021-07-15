@@ -1,0 +1,44 @@
+.example-container {
+  height: 400px;
+  overflow: auto;
+}
+
+.mat-mdc-table-sticky {
+  background: #59abfd;
+  opacity: 1;
+}
+
+.example-sticky-toggle-group {
+  margin: 8px;
+}
+
+.mat-column-filler {
+  padding: 0 8px;
+  font-size: 10px;
+  text-align: center;
+}
+
+.mat-mdc-header-cell, .mat-mdc-footer-cell, .mat-mdc-cell {
+  min-width: 80px;
+  box-sizing: border-box;
+}
+
+.mat-mdc-header-row, .mat-mdc-footer-row, .mat-mdc-row {
+  min-width: 1920px; /* 24 columns, 80px each */
+}
+
+.mat-mdc-table-sticky-border-elem-top {
+  border-bottom: 2px solid midnightblue;
+}
+
+.mat-mdc-table-sticky-border-elem-right {
+  border-left: 2px solid midnightblue;
+}
+
+.mat-mdc-table-sticky-border-elem-bottom {
+  border-top: 2px solid midnightblue;
+}
+
+.mat-mdc-table-sticky-border-elem-left {
+  border-right: 2px solid midnightblue;
+}

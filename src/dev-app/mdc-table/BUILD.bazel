@@ -1,4 +1,3 @@
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 load("//tools:defaults.bzl", "ng_module")
 
 package(default_visibility = ["//visibility:public"])
@@ -8,16 +7,10 @@ ng_module(
     srcs = glob(["**/*.ts"]),
     assets = [
         "mdc-table-demo.html",
-        ":mdc_table_demo_scss",
     ],
     deps = [
+        "//src/components-examples/material-experimental/mdc-table",
         "//src/material-experimental/mdc-table",
-        "//src/material/icon",
         "@npm//@angular/router",
     ],
-)
-
-sass_binary(
-    name = "mdc_table_demo_scss",
-    src = "mdc-table-demo.scss",
 )
