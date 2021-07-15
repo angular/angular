@@ -184,17 +184,6 @@ export class ReleaseTool {
    */
   private async _verifyNpmLoginState(): Promise<boolean> {
     const registry = `NPM at the ${this._config.publishRegistry ?? 'default NPM'} registry`;
-    // TODO(josephperrott): remove wombat specific block once wombot allows `npm whoami` check to
-    // check the status of the local token in the .npmrc file.
-    if (this._config.publishRegistry?.includes('wombat-dressing-room.appspot.com')) {
-      info('Unable to determine NPM login state for wombat proxy, requiring login now.');
-      try {
-        await npmLogin(this._config.publishRegistry);
-      } catch {
-        return false;
-      }
-      return true;
-    }
     if (await npmIsLoggedIn(this._config.publishRegistry)) {
       debug(`Already logged into ${registry}.`);
       return true;
