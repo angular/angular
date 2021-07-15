@@ -4,7 +4,6 @@ import { Category } from './resource.model';
 import { ResourceService } from './resource.service';
 import { LocationService } from 'app/shared/location.service';
 
-/* tslint:disable:template-accessibility-elements-content */
 @Component({
   selector: 'aio-resource-list',
   templateUrl: 'resource-list.component.html'

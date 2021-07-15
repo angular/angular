@@ -93,7 +93,7 @@ describe('DocumentService', () => {
       expect(logger.output.error).toEqual([
         [jasmine.any(Error)]
       ]);
-      expect(logger.output.error[0][0].message).toEqual(`Document file not found at 'missing/doc'`);
+      expect(logger.output.error[0][0].message).toEqual("Document file not found at 'missing/doc'");
 
       // Subsequent request for not-found document.
       logger.output.error = [];
@@ -134,7 +134,7 @@ describe('DocumentService', () => {
         [jasmine.any(Error)]
       ]);
       expect(logger.output.error[0][0].message)
-        .toEqual(`Error fetching document 'initial/doc': (Http failure response for generated/docs/initial/doc.json: 500 Server Error)`);
+        .toEqual("Error fetching document 'initial/doc': (Http failure response for generated/docs/initial/doc.json: 500 Server Error)");
 
       locationService.go('new/doc');
       httpMock.expectOne({}).flush(doc1);

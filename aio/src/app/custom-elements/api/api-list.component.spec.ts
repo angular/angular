@@ -29,7 +29,8 @@ describe('ApiListComponent', () => {
   });
 
   /**
-   * Expectation Utility: Assert that filteredSections has the expected result for this test
+   * Expectation Utility: Assert that filteredSections has the expected result for this test.
+   *
    * @param itemTest - return true if the item passes the match test
    *
    * Subscibes to `filteredSections` and performs expectation within subscription callback.
@@ -220,7 +221,6 @@ class TestApiService {
   sections = this.sectionsSubject.asObservable();
 }
 
-// tslint:disable:quotemark
 const apiSections: ApiSection[] = [
   {
     name: 'common',

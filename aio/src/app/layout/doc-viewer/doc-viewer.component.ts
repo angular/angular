@@ -62,12 +62,12 @@ export class DocViewerComponent implements OnDestroy {
   @Output() docRendered = new EventEmitter<void>();
 
   constructor(
-      elementRef: ElementRef,
-      private logger: Logger,
-      private titleService: Title,
-      private metaService: Meta,
-      private tocService: TocService,
-      private elementsLoader: ElementsLoader) {
+    elementRef: ElementRef,
+    private logger: Logger,
+    private titleService: Title,
+    private metaService: Meta,
+    private tocService: TocService,
+    private elementsLoader: ElementsLoader) {
     this.hostElement = elementRef.nativeElement;
     // Security: the initialDocViewerContent comes from the prerendered DOM and is considered to be secure
     this.hostElement.innerHTML = initialDocViewerContent;
@@ -311,7 +311,7 @@ async function printSwDebugInfo(): Promise<void> {
 
   async function getCacheEntries(
       name: string, includeValues: boolean,
-      ignoredKeys: string[] = []): Promise<{key: string, value?: object}[]> {
+      ignoredKeys: string[] = []): Promise<{key: string, value?: unknown}[]> {
     const ignoredUrls = new Set(ignoredKeys.map(key => new Request(key).url));
 
     const cache = await caches.open(name);
@@ -324,7 +324,7 @@ async function printSwDebugInfo(): Promise<void> {
     return entries;
   }
 
-  function printCacheEntries(name: string, entries: {key: string, value?: object}[]): void {
+  function printCacheEntries(name: string, entries: {key: string, value?: unknown}[]): void {
     const entriesStr = entries
         .map(({key, value}) => `  - ${key}${!value ? '' : `: ${JSON.stringify(value)}`}`)
         .join('\n');

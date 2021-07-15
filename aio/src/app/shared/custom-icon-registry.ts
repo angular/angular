@@ -59,11 +59,10 @@ export class CustomIconRegistry extends MatIconRegistry {
   }
 
   private loadSvgElement(iconName: string, namespace?: string): SVGElement | undefined {
-    const svgIcon = this.svgIcons.find(icon => {
-      return namespace
+    const svgIcon = this.svgIcons.find(icon => namespace
       ? icon.name === iconName && icon.namespace === namespace
-      : icon.name === iconName;
-    });
+      : icon.name === iconName
+    );
 
     if (!svgIcon) {
       return;

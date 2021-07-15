@@ -345,18 +345,16 @@ interface TestSafeHtml extends SafeHtml {
 
 class TestDomSanitizer {
   bypassSecurityTrustHtml = jasmine.createSpy('bypassSecurityTrustHtml')
-    .and.callFake((html: string) => {
-      return {
-        changingThisBreaksApplicationSecurity: html,
-        getTypeName: () => 'HTML',
-      } as TestSafeHtml;
-    });
+    .and.callFake((html: string) => ({
+      changingThisBreaksApplicationSecurity: html,
+      getTypeName: () => 'HTML',
+    } as TestSafeHtml));
 }
 
 class MockScrollSpyService {
   private $$lastInfo: {
-    active: Subject<ScrollItem | null>,
-    unspy: jasmine.Spy,
+    active: Subject<ScrollItem | null>;
+    unspy: jasmine.Spy;
   } | undefined;
 
   get $lastInfo() {
