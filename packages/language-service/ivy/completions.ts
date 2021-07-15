@@ -803,6 +803,8 @@ function nodeContextFromTarget(target: TargetContext): CompletionNodeContext {
     case TargetNodeKind.AttributeInValueContext:
       if (target.node instanceof TmplAstBoundEvent) {
         return CompletionNodeContext.EventValue;
+      } else if (target.node instanceof TextAttribute) {
+        return CompletionNodeContext.ElementAttributeValue;
       } else {
         return CompletionNodeContext.None;
       }
