@@ -1,3 +1,54 @@
+## 12.1.2 "porcelain-plate" (2021-07-14)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **a11y:** fake mousedown detection not working ([#23029](https://github.com/angular/components/issues/23029)) ([4de15eae05aded1037a5604496c88a10ec7eab33](https://github.com/angular/components/commit/4de15eae05aded1037a5604496c88a10ec7eab33)), closes [#22549](https://github.com/angular/components/issues/22549) |
+| bug fix |  **drag-drop:** avoid conflicts with sticky table headers ([#22864](https://github.com/angular/components/issues/22864)) ([2f90fc253d9c58b06334d44bb2873fd3dda2722b](https://github.com/angular/components/commit/2f90fc253d9c58b06334d44bb2873fd3dda2722b)), closes [#22781](https://github.com/angular/components/issues/22781) |
+| bug fix |  **drag-drop:** don't start dragging on fake screen reader events ([#23126](https://github.com/angular/components/issues/23126)) ([1463338653686d4cdfd48bab6948dc60a9c36609](https://github.com/angular/components/commit/1463338653686d4cdfd48bab6948dc60a9c36609)) |
+| bug fix |  **table:** set default role of table to 'table' ([#22491](https://github.com/angular/components/issues/22491)) ([f4b4b7f9caca0dd6cd08f7823b4528141d6a5fe0](https://github.com/angular/components/commit/f4b4b7f9caca0dd6cd08f7823b4528141d6a5fe0)) |
+| bug fix |  **testing:** strongly type return value of TestElement.getProperty ([#22918](https://github.com/angular/components/issues/22918)) ([03203daf92f1dc7ed5cfacdaded426e0b64b98b9](https://github.com/angular/components/commit/03203daf92f1dc7ed5cfacdaded426e0b64b98b9)) |
+| performance |  **scrolling:** don't re-measure viewport on resize ([#23124](https://github.com/angular/components/issues/23124)) ([dec3ab0597951e8342a64a73ca937bc2834e7944](https://github.com/angular/components/commit/dec3ab0597951e8342a64a73ca937bc2834e7944)) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **chips:** restoring focus to last chip when pressing backspace ([#23136](https://github.com/angular/components/issues/23136)) ([a62eed8fe792112009bfd4bcd9543aa6497c91d1](https://github.com/angular/components/commit/a62eed8fe792112009bfd4bcd9543aa6497c91d1)), closes [#19700](https://github.com/angular/components/issues/19700) [#23128](https://github.com/angular/components/issues/23128) |
+| bug fix |  **core:** align ripple animation parameters with spec ([#23086](https://github.com/angular/components/issues/23086)) ([083311aefaa352c387a4a5284251b548584ddeac](https://github.com/angular/components/commit/083311aefaa352c387a4a5284251b548584ddeac)) |
+| bug fix |  **core:** Focus indicator theme and color mixins should accept a basic color as well. ([#23016](https://github.com/angular/components/issues/23016)) ([#23134](https://github.com/angular/components/issues/23134)) ([140849089efc49f884dbe0cad2a450d8aa7bbad0](https://github.com/angular/components/commit/140849089efc49f884dbe0cad2a450d8aa7bbad0)) |
+| bug fix |  **datepicker:** correctly render calendar arrow in high contrast mode ([#23057](https://github.com/angular/components/issues/23057)) ([c10c257b281d9053501adb099dd48dae3c65c163](https://github.com/angular/components/commit/c10c257b281d9053501adb099dd48dae3c65c163)) |
+| bug fix |  **form-field:** missing focus indicator for outline appearance in high-contrast ([5317ceaae82164e631507623e1c10d9fc4d9c86f](https://github.com/angular/components/commit/5317ceaae82164e631507623e1c10d9fc4d9c86f)), closes [#22989](https://github.com/angular/components/issues/22989) |
+| bug fix |  **list:** set initial focus on first selected option in selection list ([#23092](https://github.com/angular/components/issues/23092)) ([e68874475cd16aad51704e093ac407318aaf9ba1](https://github.com/angular/components/commit/e68874475cd16aad51704e093ac407318aaf9ba1)), closes [#22675](https://github.com/angular/components/issues/22675) |
+| bug fix |  **radio:** hidden circle visible on some zoom levels ([#22066](https://github.com/angular/components/issues/22066)) ([281267720089c60bdd1443f6e7a50ac7d77d9288](https://github.com/angular/components/commit/281267720089c60bdd1443f6e7a50ac7d77d9288)), closes [#22036](https://github.com/angular/components/issues/22036) |
+| bug fix |  **select:** scroll to top on last option before option group ([#23147](https://github.com/angular/components/issues/23147)) ([71078ddcc046b76dd938b0c68501d44f099fff19](https://github.com/angular/components/commit/71078ddcc046b76dd938b0c68501d44f099fff19)) |
+| bug fix |  **stepper:** indicate to assistive technology when step is disabled ([#23090](https://github.com/angular/components/issues/23090)) ([6a794ab975a46de2a73caa7087ec58796db1f10e](https://github.com/angular/components/commit/6a794ab975a46de2a73caa7087ec58796db1f10e)), closes [#23088](https://github.com/angular/components/issues/23088) |
+| bug fix |  **table:** switch back to class-based styling for flex tables ([#22350](https://github.com/angular/components/issues/22350)) ([749dcbfbbe06b2c6a3f7e07d7e27a37cf0468f4c](https://github.com/angular/components/commit/749dcbfbbe06b2c6a3f7e07d7e27a37cf0468f4c)), closes [#22349](https://github.com/angular/components/issues/22349) [#22349](https://github.com/angular/components/issues/22349) |
+
+### google-maps
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  throw an error if clustering library hasn't been loaded ([#23064](https://github.com/angular/components/issues/23064)) ([a60154699f4912a5610a668c75b659222639503d](https://github.com/angular/components/commit/a60154699f4912a5610a668c75b659222639503d)), closes [#23050](https://github.com/angular/components/issues/23050) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-button:** not disabling animations under noop animations module ([#23027](https://github.com/angular/components/issues/23027)) ([ebb1c73c37f3e224134499a8f4e68342b4fc1bf8](https://github.com/angular/components/commit/ebb1c73c37f3e224134499a8f4e68342b4fc1bf8)) |
+| bug fix |  **mdc-button:** pass query param to extended mixin ([a7b0c4c4107942daaa4364219c1ee2088f77ecf8](https://github.com/angular/components/commit/a7b0c4c4107942daaa4364219c1ee2088f77ecf8)), closes [#23103](https://github.com/angular/components/issues/23103) |
+| bug fix |  **mdc-chips:** add 'required' to chips input ([#23055](https://github.com/angular/components/issues/23055)) ([1450943e3d182bd8654b7dde821e48726b29230c](https://github.com/angular/components/commit/1450943e3d182bd8654b7dde821e48726b29230c)) |
+| bug fix |  **mdc-form-field:** add stronger focus indicator in high-contrast mode ([2f050e8054d9919141bd71b79a31c0d7305e5a3e](https://github.com/angular/components/commit/2f050e8054d9919141bd71b79a31c0d7305e5a3e)) |
+| bug fix |  **mdc-form-field:** color inputs not working ([#23095](https://github.com/angular/components/issues/23095)) ([07f8c18ed7ee9d9314ed31835bd6b82e4e81d8a3](https://github.com/angular/components/commit/07f8c18ed7ee9d9314ed31835bd6b82e4e81d8a3)) |
+| bug fix |  **mdc-list:** support noop animations ([#23117](https://github.com/angular/components/issues/23117)) ([279461c90bc8abf9a184f09d2a1ac6cf6e803a46](https://github.com/angular/components/commit/279461c90bc8abf9a184f09d2a1ac6cf6e803a46)) |
+| bug fix |  **mdc-menu:** add disabled item styles ([#23112](https://github.com/angular/components/issues/23112)) ([851f13e2ee200532c542d6af4ffeb52b04b10938](https://github.com/angular/components/commit/851f13e2ee200532c542d6af4ffeb52b04b10938)) |
+| bug fix |  **mdc-menu:** align ripple timings with MDC ([#23015](https://github.com/angular/components/issues/23015)) ([124b42b1edd44b526317cc617b07f44ed917faaa](https://github.com/angular/components/commit/124b42b1edd44b526317cc617b07f44ed917faaa)) |
+| bug fix |  **mdc-slider:** add strong focus indication ([#23040](https://github.com/angular/components/issues/23040)) ([5a539531b0b77292672ef2c35021812716cb9c3f](https://github.com/angular/components/commit/5a539531b0b77292672ef2c35021812716cb9c3f)) |
+| bug fix |  **mdc-slider:** don't disable ripples for noop animations ([#23084](https://github.com/angular/components/issues/23084)) ([431e2e642934f4bf7ebd8038849e971caf58be92](https://github.com/angular/components/commit/431e2e642934f4bf7ebd8038849e971caf58be92)) |
+| bug fix |  **mdc-tooltip:** make background color opaque ([#23106](https://github.com/angular/components/issues/23106)) ([d0a204141a94101f31e9136c8cefd8dd9f149289](https://github.com/angular/components/commit/d0a204141a94101f31e9136c8cefd8dd9f149289)) |
+
+
 ## 12.1.1 "bronze-banana" (2021-06-30)
   
 ### cdk
