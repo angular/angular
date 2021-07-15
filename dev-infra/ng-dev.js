@@ -1777,7 +1777,6 @@ function saveCommitMessageDraft(basePath, commitMessage) {
  */
 function restoreCommitMessage(filePath, source) {
     if (!!source) {
-        log('Skipping commit message restoration attempt');
         if (source === 'message') {
             debug('A commit message was already provided via the command with a -m or -F flag');
         }
