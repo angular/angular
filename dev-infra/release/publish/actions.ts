@@ -291,8 +291,8 @@ export abstract class ReleaseAction {
    * API is 10 seconds (to not exceed any rate limits). If the pull request is closed without
    * merge, the script will abort gracefully (considering a manual user abort).
    */
-  protected async waitForPullRequestToBeMerged(id: number, interval = waitForPullRequestInterval):
-      Promise<void> {
+  protected async waitForPullRequestToBeMerged(
+      {id}: PullRequest, interval = waitForPullRequestInterval): Promise<void> {
     return new Promise((resolve, reject) => {
       debug(`Waiting for pull request #${id} to be merged.`);
 
@@ -399,7 +399,7 @@ export abstract class ReleaseAction {
     info(green(`  ✓   Created changelog cherry-pick commit for: "${releaseNotes.version}".`));
 
     // Create a cherry-pick pull request that should be merged by the caretaker.
-    const {url, id} = await this.pushChangesToForkAndCreatePullRequest(
+    const pullRequest = await this.pushChangesToForkAndCreatePullRequest(
         nextBranch, `changelog-cherry-pick-${releaseNotes.version}`, commitMessage,
         `Cherry-picks the changelog from the "${stagingBranch}" branch to the next ` +
             `branch (${nextBranch}).`);
@@ -407,10 +407,10 @@ export abstract class ReleaseAction {
     info(green(
         `  ✓   Pull request for cherry-picking the changelog into "${nextBranch}" ` +
         'has been created.'));
-    info(yellow(`      Please ask team members to review: ${url}.`));
+    info(yellow(`      Please ask team members to review: ${pullRequest.url}.`));
 
     // Wait for the Pull Request to be merged.
-    await this.waitForPullRequestToBeMerged(id);
+    await this.waitForPullRequestToBeMerged(pullRequest);
 
     return true;
   }

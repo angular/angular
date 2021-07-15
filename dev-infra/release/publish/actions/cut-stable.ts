@@ -30,10 +30,10 @@ export class CutStableAction extends ReleaseAction {
     const newVersion = this._newVersion;
     const isNewMajor = this.active.releaseCandidate?.isMajor;
 
-    const {pullRequest: {id}, releaseNotes} =
+    const {pullRequest, releaseNotes} =
         await this.checkoutBranchAndStageVersion(newVersion, branchName);
 
-    await this.waitForPullRequestToBeMerged(id);
+    await this.waitForPullRequestToBeMerged(pullRequest);
 
     // If a new major version is published, we publish to the `next` NPM dist tag temporarily.
     // We do this because for major versions, we want all main Angular projects to have their

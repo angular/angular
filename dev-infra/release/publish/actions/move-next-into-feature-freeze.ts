@@ -40,13 +40,13 @@ export class MoveNextIntoFeatureFreezeAction extends ReleaseAction {
     // Stage the new version for the newly created branch, and push changes to a
     // fork in order to create a staging pull request. Note that we re-use the newly
     // created branch instead of re-fetching from the upstream.
-    const {pullRequest: {id}, releaseNotes} =
+    const {pullRequest, releaseNotes} =
         await this.stageVersionForBranchAndCreatePullRequest(newVersion, newBranch);
 
     // Wait for the staging PR to be merged. Then build and publish the feature-freeze next
     // pre-release. Finally, cherry-pick the release notes into the next branch in combination
     // with bumping the version to the next minor too.
-    await this.waitForPullRequestToBeMerged(id);
+    await this.waitForPullRequestToBeMerged(pullRequest);
     await this.buildAndPublish(releaseNotes, newBranch, 'next');
     await this._createNextBranchUpdatePullRequest(releaseNotes, newVersion);
   }
