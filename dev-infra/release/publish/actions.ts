@@ -211,13 +211,13 @@ export abstract class ReleaseAction {
    * existing branches in case of a collision.
    */
   protected async createLocalBranchFromHead(branchName: string) {
-    this.git.run(['checkout', '-B', branchName]);
+    this.git.run(['checkout', '-q', '-B', branchName]);
   }
 
   /** Pushes the current Git `HEAD` to the given remote branch in the configured project. */
   protected async pushHeadToRemoteBranch(branchName: string) {
     // Push the local `HEAD` to the remote branch in the configured project.
-    this.git.run(['push', this.git.getRepoGitUrl(), `HEAD:refs/heads/${branchName}`]);
+    this.git.run(['push', '-q', this.git.getRepoGitUrl(), `HEAD:refs/heads/${branchName}`]);
   }
 
   /**
@@ -245,7 +245,7 @@ export abstract class ReleaseAction {
       pushArgs.push('--set-upstream');
     }
     // Push the local `HEAD` to the remote branch in the fork.
-    this.git.run(['push', repoGitUrl, `HEAD:refs/heads/${branchName}`, ...pushArgs]);
+    this.git.run(['push', '-q', repoGitUrl, `HEAD:refs/heads/${branchName}`, ...pushArgs]);
     return {fork, branchName};
   }
 
@@ -330,7 +330,7 @@ export abstract class ReleaseAction {
   /** Checks out an upstream branch with a detached head. */
   protected async checkoutUpstreamBranch(branchName: string) {
     this.git.run(['fetch', '-q', this.git.getRepoGitUrl(), branchName]);
-    this.git.run(['checkout', 'FETCH_HEAD', '--detach']);
+    this.git.run(['checkout', '-q', 'FETCH_HEAD', '--detach']);
   }
 
   /**
@@ -339,7 +339,7 @@ export abstract class ReleaseAction {
    * @param files List of project-relative file paths to be commited.
    */
   protected async createCommit(message: string, files: string[]) {
-    this.git.run(['commit', '--no-verify', '-m', message, ...files]);
+    this.git.run(['commit', '-q', '--no-verify', '-m', message, ...files]);
   }
 
 
