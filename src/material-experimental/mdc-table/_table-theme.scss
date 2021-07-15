@@ -54,6 +54,15 @@
       theming.get-typography-config($config-or-theme));
   @include mdc-helpers.mat-using-mdc-typography($config) {
     @include mdc-data-table.core-styles($query: mdc-helpers.$mat-typography-styles-query);
+
+    // MDC's header cell typography uses the `subtitle-2` config value. Due to legacy reasons,
+    // this value is mapped from Angular Material's `subheading-1` config value. This is not
+    // a perfect mapping because the Material spec shows the header having `font-weight: 500`
+    // instead of `subheading-1`'s default weight of 400. This override makes sure that the
+    // heading has the expected weight of 500.
+    .mat-mdc-header-cell {
+      font-weight: 500;
+    }
   }
 }
 
