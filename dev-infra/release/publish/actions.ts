@@ -80,6 +80,14 @@ export abstract class ReleaseAction {
       protected active: ActiveReleaseTrains, protected git: AuthenticatedGitClient,
       protected config: ReleaseConfig, protected projectDir: string) {}
 
+  /** Retrieves the version in the project top-level `package.json` file. */
+  private async getProjectVersion() {
+    const pkgJsonPath = join(this.projectDir, packageJsonPath);
+    const pkgJson =
+        JSON.parse(await fs.readFile(pkgJsonPath, 'utf8')) as {version: string, [key: string]: any};
+    return new semver.SemVer(pkgJson.version);
+  }
+
   /** Updates the version in the project top-level `package.json` file. */
   protected async updateProjectVersion(newVersion: semver.SemVer) {
     const pkgJsonPath = join(this.projectDir, packageJsonPath);
@@ -351,8 +359,12 @@ export abstract class ReleaseAction {
   protected async stageVersionForBranchAndCreatePullRequest(
       newVersion: semver.SemVer, pullRequestBaseBranch: string):
       Promise<{releaseNotes: ReleaseNotes, pullRequest: PullRequest}> {
-    const releaseNotes =
-        await ReleaseNotes.fromRange(newVersion, this.git.getLatestSemverTag().format(), 'HEAD');
+    /**
+     * The current version of the project for the branch from the root package.json. This must be
+     * retrieved prior to updating the project version.
+     */
+    const currentVersion = this.git.getMatchingTagForSemver(await this.getProjectVersion());
+    const releaseNotes = await ReleaseNotes.fromRange(newVersion, currentVersion, 'HEAD');
     await this.updateProjectVersion(newVersion);
     await this.prependReleaseNotesToChangelog(releaseNotes);
     await this.waitForEditsAndCreateReleaseCommit(newVersion);

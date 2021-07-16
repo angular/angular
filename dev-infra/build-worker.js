@@ -262,6 +262,16 @@ var GitClient = /** @class */ (function () {
         }
         return new semver.SemVer(latestTag, semVerOptions);
     };
+    /** Retrieves the git tag matching the provided SemVer, if it exists. */
+    GitClient.prototype.getMatchingTagForSemver = function (semver$1) {
+        var semVerOptions = { loose: true };
+        var tags = this.runGraceful(['tag', '--sort=-committerdate', '--merged']).stdout.split('\n');
+        var matchingTag = tags.find(function (tag) { var _a; return ((_a = semver.parse(tag, semVerOptions)) === null || _a === void 0 ? void 0 : _a.compare(semver$1)) === 0; });
+        if (matchingTag === undefined) {
+            throw new Error("Unable to find a tag for the version: \"" + semver$1.format() + "\"");
+        }
+        return matchingTag;
+    };
     /** Retrieve a list of all files in the repository changed since the provided shaOrRef. */
     GitClient.prototype.allChangesFilesSince = function (shaOrRef) {
         if (shaOrRef === void 0) { shaOrRef = 'HEAD'; }
