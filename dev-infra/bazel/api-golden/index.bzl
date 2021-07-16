@@ -18,6 +18,27 @@ def _escape_regex_for_arg(value):
     return "\"%s\"" % value
 
 """
+  Extracts type names from a list of NPM type targets.
+
+  For example: Consider the `@npm//@types/node` target. This function extracts `node`
+  from the label. This is needed so that the Node types can be wired up within a
+  TypeScript program using the `types` tsconfig option.
+"""
+
+def extract_type_names_from_labels(type_targets):
+    type_names = []
+    for type_target in type_targets:
+        type_package = Label(type_target).package
+
+        if (type_package.startswith("@types/")):
+            type_names.append(type_package[len("@types/"):])
+        else:
+            fail("Expected type target to match the following format: " +
+                 "`@<npm_workspace>//@types/<name>`, but got: %s" % type_target)
+
+    return type_names
+
+"""
   Builds an API report for the specified entry-point and compares it against the
   specified golden
 """
@@ -28,6 +49,7 @@ def api_golden_test(
         entry_point,
         data = [],
         strip_export_pattern = default_strip_export_pattern,
+        types = [],
         **kwargs):
     quoted_export_pattern = _escape_regex_for_arg(strip_export_pattern)
 
@@ -46,13 +68,15 @@ def api_golden_test(
         include_default_files = False,
     )
 
-    test_data = ["//dev-infra/bazel/api-golden", "//:package.json", ":%s_data_typings" % name] + data
+    test_data = ["//dev-infra/bazel/api-golden", "//:package.json", ":%s_data_typings" % name] + \
+                data + types
 
     nodejs_test(
         name = name,
         data = test_data,
         entry_point = "//dev-infra/bazel/api-golden:index.ts",
-        templated_args = nodejs_test_args + [golden, entry_point, "false", quoted_export_pattern],
+        templated_args = nodejs_test_args + [golden, entry_point, "false", quoted_export_pattern] +
+                         extract_type_names_from_labels(types),
         **kwargs
     )
 
@@ -61,7 +85,8 @@ def api_golden_test(
         testonly = True,
         data = test_data,
         entry_point = "//dev-infra/bazel/api-golden:index.ts",
-        templated_args = nodejs_test_args + [golden, entry_point, "true", quoted_export_pattern],
+        templated_args = nodejs_test_args + [golden, entry_point, "true", quoted_export_pattern] +
+                         extract_type_names_from_labels(types),
         **kwargs
     )
 
@@ -76,6 +101,7 @@ def api_golden_test_npm_package(
         npm_package,
         data = [],
         strip_export_pattern = default_strip_export_pattern,
+        types = [],
         **kwargs):
     quoted_export_pattern = _escape_regex_for_arg(strip_export_pattern)
 
@@ -83,17 +109,19 @@ def api_golden_test_npm_package(
 
     nodejs_test(
         name = name,
-        data = ["//dev-infra/bazel/api-golden"] + data,
+        data = ["//dev-infra/bazel/api-golden"] + data + types,
         entry_point = "//dev-infra/bazel/api-golden:index_npm_packages.ts",
-        templated_args = nodejs_test_args + [golden_dir, npm_package, "false", quoted_export_pattern],
+        templated_args = nodejs_test_args + [golden_dir, npm_package, "false", quoted_export_pattern] +
+                         extract_type_names_from_labels(types),
         **kwargs
     )
 
     nodejs_binary(
         name = name + ".accept",
         testonly = True,
-        data = ["//dev-infra/bazel/api-golden"] + data,
+        data = ["//dev-infra/bazel/api-golden"] + data + types,
         entry_point = "//dev-infra/bazel/api-golden:index_npm_packages.ts",
-        templated_args = nodejs_test_args + [golden_dir, npm_package, "true", quoted_export_pattern],
+        templated_args = nodejs_test_args + [golden_dir, npm_package, "true", quoted_export_pattern] +
+                         extract_type_names_from_labels(types),
         **kwargs
     )

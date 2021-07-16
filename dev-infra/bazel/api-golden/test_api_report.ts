@@ -28,13 +28,15 @@ const _origFetchAstModuleExportInfo = ExportAnalyzer.prototype.fetchAstModuleExp
  * @param approveGolden Whether the golden file should be updated.
  * @param stripExportPattern Regular Expression that can be used to filter out exports
  *   from the API report.
+ * @param typeNames Name of types which should be included for analysis of the entry-point.
+ *   Types are expected to exist within the default `node_modules/@types/` folder.
  * @param packageJsonPath Optional path to a `package.json` file that contains the entry
  *   point. Note that the `package.json` is currently only used by `api-extractor` to determine
  *   the package name displayed within the API golden.
  */
 export async function testApiGolden(
     goldenFilePath: string, indexFilePath: string, approveGolden: boolean,
-    stripExportPattern: RegExp,
+    stripExportPattern: RegExp, typeNames: string[] = [],
     packageJsonPath = resolveWorkspacePackageJsonPath()): Promise<ExtractorResult> {
   // If no `TEST_TMPDIR` is defined, then this script runs using `bazel run`. We use
   // the runfile directory as temporary directory for API extractor.
@@ -43,9 +45,10 @@ export async function testApiGolden(
   const configObject: IConfigFile = {
     compiler: {
       overrideTsconfig:
-          // We disable inclusion of all `@types` installed as this throws-off API reports
-          // and causes different goldens when the API test is run outside sandbox.
-          {files: [indexFilePath], compilerOptions: {types: [], lib: ['esnext', 'dom']}}
+          // We disable automatic `@types` resolution as this throws-off API reports
+          // when the API test is run outside sandbox. Instead we expect a list of
+          // hard-coded types that should be included. This works in non-sandbox too.
+          {files: [indexFilePath], compilerOptions: {types: typeNames, lib: ['esnext', 'dom']}}
     },
     projectFolder: dirname(packageJsonPath),
     mainEntryPointFilePath: indexFilePath,
