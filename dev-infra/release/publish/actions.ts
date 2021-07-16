@@ -139,19 +139,27 @@ export abstract class ReleaseAction {
    * confirmed, a new commit for the release point is created.
    */
   protected async waitForEditsAndCreateReleaseCommit(newVersion: semver.SemVer) {
-    info(yellow(
-        '  ⚠   Please review the changelog and ensure that the log contains only changes ' +
-        'that apply to the public API surface. Manual changes can be made. When done, please ' +
-        'proceed with the prompt below.'));
+    /** A list of files which have been modified and should be included in the commit. */
+    const modifiedFiles = [packageJsonPath];
 
-    if (!await promptConfirm('Do you want to proceed and commit the changes?')) {
-      throw new UserAbortedReleaseActionError();
+    if (!this.config.releaseNotes.noChangelogFile) {
+      // Include the modified CHANGELOG.md file.
+      modifiedFiles.push(changelogPath);
+
+      info(yellow(
+          '  ⚠   Please review the changelog and ensure that the log contains only changes ' +
+          'that apply to the public API surface. Manual changes can be made. When done, please ' +
+          'proceed with the prompt below.'));
+
+      if (!await promptConfirm('Do you want to proceed and commit the changes?')) {
+        throw new UserAbortedReleaseActionError();
+      }
     }
 
     // Commit message for the release point.
     const commitMessage = getCommitMessageForRelease(newVersion);
     // Create a release staging commit including changelog and version bump.
-    await this.createCommit(commitMessage, [packageJsonPath, changelogPath]);
+    await this.createCommit(commitMessage, modifiedFiles);
 
     info(green(`  ✓   Created release commit for: "${newVersion}".`));
   }

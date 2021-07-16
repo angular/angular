@@ -6478,16 +6478,22 @@ class ReleaseAction {
      */
     waitForEditsAndCreateReleaseCommit(newVersion) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
-            info(yellow('  ⚠   Please review the changelog and ensure that the log contains only changes ' +
-                'that apply to the public API surface. Manual changes can be made. When done, please ' +
-                'proceed with the prompt below.'));
-            if (!(yield promptConfirm('Do you want to proceed and commit the changes?'))) {
-                throw new UserAbortedReleaseActionError();
+            /** A list of files which have been modified and should be included in the commit. */
+            const modifiedFiles = [packageJsonPath];
+            if (!this.config.releaseNotes.noChangelogFile) {
+                // Include the modified CHANGELOG.md file.
+                modifiedFiles.push(changelogPath);
+                info(yellow('  ⚠   Please review the changelog and ensure that the log contains only changes ' +
+                    'that apply to the public API surface. Manual changes can be made. When done, please ' +
+                    'proceed with the prompt below.'));
+                if (!(yield promptConfirm('Do you want to proceed and commit the changes?'))) {
+                    throw new UserAbortedReleaseActionError();
+                }
             }
             // Commit message for the release point.
             const commitMessage = getCommitMessageForRelease(newVersion);
             // Create a release staging commit including changelog and version bump.
-            yield this.createCommit(commitMessage, [packageJsonPath, changelogPath]);
+            yield this.createCommit(commitMessage, modifiedFiles);
             info(green(`  ✓   Created release commit for: "${newVersion}".`));
         });
     }
