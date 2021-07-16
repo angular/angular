@@ -7556,7 +7556,7 @@ lighthouse-stack-packs@^1.5.0:
   resolved "https://registry.yarnpkg.com/lighthouse-stack-packs/-/lighthouse-stack-packs-1.5.0.tgz#c191f2b94db21602254baaebfb0bb90307a00ffa"
   integrity sha512-ntVOqFsrrTQYrNf+W+sNE9GjddW+ab5QN0WrrCikjMFsUvEQ28CvT0SXcHPZXFtcsb1lMSuVaNCmEuj7oXtYGQ==
 
-lighthouse@^8.0.0:
+lighthouse@^8.1.0:
   version "8.1.0"
   resolved "https://registry.yarnpkg.com/lighthouse/-/lighthouse-8.1.0.tgz#c3c0395dd8446fdb08452af678c4edc47a8bfa0e"
   integrity sha512-kAe06yax70VFdfX38OWIDqzQ77H313BXTXbGxqs4l1SOnhnu/ao6qF7VZ6TNz3+YGbSXPJgC3KOYif/sE79KTA==
@@ -13178,10 +13178,15 @@ ws@^6.2.1:
   dependencies:
     async-limiter "~1.0.0"
 
-ws@^7.0.0, ws@^7.2.3, ws@^7.3.1, ws@^7.4.5:
+ws@^7.0.0:
   version "7.5.3"
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.3.tgz#160835b63c7d97bfab418fc1b8a9fced2ac01a74"
   integrity sha512-kQ/dHIzuLrS6Je9+uv81ueZomEwH0qVYstcAQ4/Z93K8zeko9gtAbttJWzoC5ukqXY1PpoouV3+VSOqEAFt5wg==
+
+ws@^7.2.3, ws@^7.3.1, ws@^7.4.5:
+  version "7.5.2"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.2.tgz#09cc8fea3bec1bc5ed44ef51b42f945be36900f6"
+  integrity sha512-lkF7AWRicoB9mAgjeKbGqVUekLnSNO4VjKVnuPHpQeOxZOErX6BPXwJk70nFslRCEEA8EVW7ZjKwXaP9N+1sKQ==
 
 ws@~7.4.2:
   version "7.4.6"
