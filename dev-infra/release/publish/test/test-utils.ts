@@ -108,7 +108,7 @@ export function setupReleaseActionForTesting<T extends ReleaseAction>(
   // Create an empty changelog and a `package.json` file so that file system
   // interactions with the project directory do not cause exceptions.
   writeFileSync(join(testTmpDir, 'CHANGELOG.md'), 'Existing changelog');
-  writeFileSync(join(testTmpDir, 'package.json'), JSON.stringify({version: 'unknown'}));
+  writeFileSync(join(testTmpDir, 'package.json'), JSON.stringify({version: '0.0.0'}));
 
   // Override the default pull request wait interval to a number of milliseconds that can be
   // awaited in Jasmine tests. The default interval of 10sec is too large and causes a timeout.
