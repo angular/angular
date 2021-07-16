@@ -17,9 +17,9 @@ import {testApiGolden} from './test_api_report';
  */
 async function main(
     goldenFilePath: string, entryPointFilePath: string, approveGolden: boolean,
-    stripExportPattern: RegExp) {
-  const {succeeded, apiReportChanged} =
-      await testApiGolden(goldenFilePath, entryPointFilePath, approveGolden, stripExportPattern);
+    stripExportPattern: RegExp, typeNames: string[]) {
+  const {succeeded, apiReportChanged} = await testApiGolden(
+      goldenFilePath, entryPointFilePath, approveGolden, stripExportPattern, typeNames);
 
   if (!succeeded && apiReportChanged) {
     console.error(chalk.red(`The API signature has changed and the golden file is outdated.`));
@@ -37,9 +37,11 @@ if (require.main === module) {
   const entryPointFilePath = runfiles.resolve(args[1]);
   const approveGolden = args[2] === 'true';
   const stripExportPattern = new RegExp(args[3]);
+  const typeNames = args.slice(4);
 
-  main(goldenFilePath, entryPointFilePath, approveGolden, stripExportPattern).catch(e => {
-    console.error(e);
-    process.exit(1);
-  });
+  main(goldenFilePath, entryPointFilePath, approveGolden, stripExportPattern, typeNames)
+      .catch(e => {
+        console.error(e);
+        process.exit(1);
+      });
 }
