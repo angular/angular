@@ -37,21 +37,20 @@ interface Point {
 describe('MDC-based MatSlider' , () => {
   let platform: Platform;
 
-  beforeAll(() => {
-    platform = TestBed.inject(Platform);
-    // Mock #setPointerCapture as it throws errors on pointerdown without a real pointerId.
-    spyOn(Element.prototype, 'setPointerCapture');
-  });
-
   function createComponent<T>(
     component: Type<T>,
     providers: Provider[] = [],
-    ): ComponentFixture<T> {
+  ): ComponentFixture<T> {
     TestBed.configureTestingModule({
       imports: [FormsModule, MatSliderModule, ReactiveFormsModule, BidiModule],
       declarations: [component],
       providers: [...providers],
     }).compileComponents();
+
+    platform = TestBed.inject(Platform);
+    // Mock #setPointerCapture as it throws errors on pointerdown without a real pointerId.
+    spyOn(Element.prototype, 'setPointerCapture');
+
     return TestBed.createComponent<T>(component);
   }
 

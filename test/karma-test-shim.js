@@ -50,56 +50,8 @@ function configureTestBed() {
 
     var testBed = testing.TestBed.initTestEnvironment(
       testingBrowser.BrowserDynamicTestingModule,
-      testingBrowser.platformBrowserDynamicTesting()
+      testingBrowser.platformBrowserDynamicTesting(),
+      {teardown: {destroyAfterEach: true}}
     );
-
-    patchTestBedToDestroyFixturesAfterEveryTest(testBed);
-  });
-}
-
-/**
- * Monkey-patches TestBed.resetTestingModule such that any errors that occur during component
- * destruction are thrown instead of silently logged. Also runs TestBed.resetTestingModule after
- * each unit test.
- *
- * Without this patch, the combination of two behaviors is problematic for Angular Material:
- * - TestBed.resetTestingModule catches errors thrown on fixture destruction and logs them without
- *     the errors ever being thrown. This means that any component errors that occur in ngOnDestroy
- *     can encounter errors silently and still pass unit tests.
- * - TestBed.resetTestingModule is only called *before* a test is run, meaning that even *if* the
- *    aforementioned errors were thrown, they would be reported for the wrong test (the test that's
- *    about to start, not the test that just finished).
- */
-function patchTestBedToDestroyFixturesAfterEveryTest(testBed) {
-  // Original resetTestingModule function of the TestBed.
-  var _resetTestingModule = testBed.resetTestingModule;
-
-  // Monkey-patch the resetTestingModule to destroy fixtures outside of a try/catch block.
-  // With https://github.com/angular/angular/commit/2c5a67134198a090a24f6671dcdb7b102fea6eba
-  // errors when destroying components are no longer causing Jasmine to fail.
-  testBed.resetTestingModule = function() {
-    try {
-      const moduleRef = this._testModuleRef || this._moduleRef;
-      this._activeFixtures.forEach(function (fixture) { fixture.destroy(); });
-      // Destroy the TestBed `NgModule` reference to clear out shared styles that would
-      // otherwise remain in DOM and significantly increase memory consumption in browsers.
-      // This increased consumption then results in noticeable test instability and slow-down.
-      // See: https://github.com/angular/angular/issues/31834.
-      if (moduleRef != null) {
-        moduleRef.destroy();
-      }
-    } finally {
-      this._activeFixtures = [];
-      // Regardless of errors or not, run the original reset testing module function.
-      _resetTestingModule.call(this);
-    }
-  };
-
-  // Angular's testing package resets the testing module before each test. This doesn't work well
-  // for us because it doesn't allow developers to see what test actually failed.
-  // Fixing this by resetting the testing module after each test.
-  // https://github.com/angular/angular/blob/master/packages/core/testing/src/before_each.ts#L25
-  afterEach(function() {
-    testBed.resetTestingModule();
   });
 }
