@@ -36,7 +36,7 @@ var_4_win: &cache_key_win_fallback v4-angular-win-node-14-{{ checksum "month.txt
 
 # Cache key for the `components-repo-unit-tests` job. **Note** when updating the SHA in the
 # cache keys also update the SHA for the "COMPONENTS_REPO_COMMIT" environment variable.
-var_5: &components_repo_unit_tests_cache_key v1-angular-components-{{ checksum "month.txt" }}-7cc42f5d835b7971e9ff73e220b801cf7834d515
+var_5: &components_repo_unit_tests_cache_key v1-angular-components-{{ checksum "month.txt" }}-d090617912da8e70aa336aa5b4d804b1b535402e
 var_6: &components_repo_unit_tests_cache_key_fallback v1-angular-components-{{ checksum "month.txt" }}
 
 # Workspace initially persisted by the `setup` job, and then enhanced by `build-npm-packages` and
@@ -752,10 +752,6 @@ jobs:
             # variable. It needs to be hardcoded here, because env variables interpolation is
             # not supported.
             - '/tmp/angular-components-repo'
-      - run:
-          # TODO(devversion): remove once https://github.com/angular/components/pull/23056 is available.
-          name: Replace RBE container instance name
-          command: sed -i "s#default_instance#primary_instance#g" ${COMPONENTS_REPO_TMP_DIR}/.bazelrc
       - run:
           # Updates the `angular/components` `package.json` file to refer to the release output
           # inside the `packages-dist` directory.
