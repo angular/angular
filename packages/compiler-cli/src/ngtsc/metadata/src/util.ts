@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {Reference} from '../../imports';
+import {OwningModule, Reference} from '../../imports';
 import {ClassDeclaration, ClassMember, ClassMemberKind, isNamedClassDeclaration, ReflectionHost, reflectTypeEntityToDeclaration} from '../../reflection';
 import {nodeDebugInfo} from '../../util/src/typescript';
 
@@ -16,8 +16,8 @@ import {DirectiveMeta, DirectiveTypeCheckMeta, MetadataReader, NgModuleMeta, Pip
 import {ClassPropertyMapping, ClassPropertyName} from './property_mapping';
 
 export function extractReferencesFromType(
-    checker: ts.TypeChecker, def: ts.TypeNode, ngModuleImportedFrom: string|null,
-    resolutionContext: string): Reference<ClassDeclaration>[] {
+    checker: ts.TypeChecker, def: ts.TypeNode,
+    bestGuessOwningModule: OwningModule|null): Reference<ClassDeclaration>[] {
   if (!ts.isTupleTypeNode(def)) {
     return [];
   }
@@ -31,11 +31,15 @@ export function extractReferencesFromType(
     if (!isNamedClassDeclaration(node)) {
       throw new Error(`Expected named ClassDeclaration: ${nodeDebugInfo(node)}`);
     }
-    const specifier = (from !== null && !from.startsWith('.') ? from : ngModuleImportedFrom);
-    if (specifier !== null) {
-      return new Reference(node, {specifier, resolutionContext});
+    if (from !== null && !from.startsWith('.')) {
+      // The symbol was imported using an absolute module specifier so return a reference that
+      // uses that absolute module specifier as its best guess owning module.
+      return new Reference(
+          node, {specifier: from, resolutionContext: def.getSourceFile().fileName});
     } else {
-      return new Reference(node);
+      // For local symbols or symbols that were imported using a relative module import it is
+      // assumed that the symbol is exported from the provided best guess owning module.
+      return new Reference(node, bestGuessOwningModule);
     }
   });
 }
