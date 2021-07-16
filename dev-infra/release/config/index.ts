@@ -43,6 +43,8 @@ export interface ReleaseNotesConfig {
    * groups will appear after these groups, sorted by `Array.sort`'s default sorting order.
    */
   groupOrder?: string[];
+  /** Whether to skip adding release notes to the CHANGELOG.md file. */
+  noChangelogFile?: boolean;
 }
 
 /** Configuration for releases in the dev-infra configuration. */

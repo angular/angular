@@ -320,6 +320,10 @@ export abstract class ReleaseAction {
    * @returns A boolean indicating whether the release notes have been prepended.
    */
   protected async prependReleaseNotesToChangelog(releaseNotes: ReleaseNotes): Promise<void> {
+    if (this.config.releaseNotes.noChangelogFile) {
+      debug('Skipping prepending release notes to changelog due to config.');
+      return;
+    }
     const localChangelogPath = join(this.projectDir, changelogPath);
     const localChangelog = await fs.readFile(localChangelogPath, 'utf8');
     const releaseNotesEntry = await releaseNotes.getChangelogEntry();
@@ -386,6 +390,10 @@ export abstract class ReleaseAction {
    */
   protected async cherryPickChangelogIntoNextBranch(
       releaseNotes: ReleaseNotes, stagingBranch: string): Promise<boolean> {
+    if (this.config.releaseNotes.noChangelogFile) {
+      debug('Skipping cherry pick of changelog into next branch due to config.');
+      return true;
+    }
     const nextBranch = this.active.next.branchName;
     const commitMessage = getReleaseNoteCherryPickCommitMessage(releaseNotes.version);
 

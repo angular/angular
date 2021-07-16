@@ -6646,6 +6646,10 @@ class ReleaseAction {
      */
     prependReleaseNotesToChangelog(releaseNotes) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
+            if (this.config.releaseNotes.noChangelogFile) {
+                debug('Skipping prepending release notes to changelog due to config.');
+                return;
+            }
             const localChangelogPath = path.join(this.projectDir, changelogPath);
             const localChangelog = yield fs.promises.readFile(localChangelogPath, 'utf8');
             const releaseNotesEntry = yield releaseNotes.getChangelogEntry();
@@ -6706,6 +6710,10 @@ class ReleaseAction {
      */
     cherryPickChangelogIntoNextBranch(releaseNotes, stagingBranch) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
+            if (this.config.releaseNotes.noChangelogFile) {
+                debug('Skipping cherry pick of changelog into next branch due to config.');
+                return true;
+            }
             const nextBranch = this.active.next.branchName;
             const commitMessage = getReleaseNoteCherryPickCommitMessage(releaseNotes.version);
             // Checkout the next branch.
