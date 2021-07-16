@@ -158,4 +158,8 @@ $placeholder-arrow-space: 2 * ($arrow-size + $arrow-margin);
   content: ' ';
   white-space: pre;
   width: 1px;
+
+  // Prevents some browsers from rendering the element in high contrast mode.
+  display: inline-block;
+  opacity: 0;
 }

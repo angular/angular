@@ -72,6 +72,12 @@ $scale: 0.75 !default;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+
+    @include a11y.high-contrast(active, off) {
+      // On Chromium browsers the `currentColor` blends in with the
+      // background for SVGs so we have to fall back to `CanvasText`.
+      fill: CanvasText;
+    }
   }
 }
 
@@ -159,4 +165,8 @@ $scale: 0.75 !default;
   content: ' ';
   white-space: pre;
   width: 1px;
+
+  // Prevents some browsers from rendering the element in high contrast mode.
+  display: inline-block;
+  opacity: 0;
 }
