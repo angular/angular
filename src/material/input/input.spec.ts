@@ -905,52 +905,6 @@ describe('MatInput without forms', () => {
     expect(() => formField._animateAndLockLabel()).not.toThrow();
   }));
 
-  it('should not highlight when focusing a readonly input', fakeAsync(() => {
-    const fixture = createComponent(MatInputWithReadonlyInput);
-    fixture.detectChanges();
-
-    const input =
-        fixture.debugElement.query(By.directive(MatInput))!.injector.get<MatInput>(MatInput);
-    const container = fixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
-
-    // Call the focus handler directly to avoid flakyness where
-    // browsers don't focus elements if the window is minimized.
-    input._focusChanged(true);
-    fixture.detectChanges();
-
-    expect(input.focused).toBe(false);
-    expect(container.classList).not.toContain('mat-focused');
-  }));
-
-  it('should reset the highlight when a readonly input is blurred', fakeAsync(() => {
-    const fixture = createComponent(MatInputWithReadonlyInput);
-    fixture.detectChanges();
-
-    const inputDebugElement = fixture.debugElement.query(By.directive(MatInput))!;
-    const input = inputDebugElement.injector.get<MatInput>(MatInput);
-    const container = fixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
-
-    fixture.componentInstance.isReadonly = false;
-    fixture.detectChanges();
-
-    // Call the focus handler directly to avoid flakyness where
-    // browsers don't focus elements if the window is minimized.
-    input._focusChanged(true);
-    fixture.detectChanges();
-
-    expect(input.focused).toBe(true);
-    expect(container.classList).toContain('mat-focused');
-
-    fixture.componentInstance.isReadonly = true;
-    fixture.detectChanges();
-
-    input._focusChanged(false);
-    fixture.detectChanges();
-
-    expect(input.focused).toBe(false);
-    expect(container.classList).not.toContain('mat-focused');
-  }));
-
   it('should only show the native placeholder, when there is a label, on focus', () => {
     const fixture = createComponent(MatInputWithLabelAndPlaceholder);
     fixture.detectChanges();
@@ -2115,17 +2069,6 @@ class MatInputWithNgIf {
 })
 class MatInputOnPush {
   formControl = new FormControl('');
-}
-
-@Component({
-  template: `
-    <mat-form-field>
-      <input matInput [readonly]="isReadonly" value="Only for reading">
-    </mat-form-field>
-  `
-})
-class MatInputWithReadonlyInput {
-  isReadonly = true;
 }
 
 @Component({

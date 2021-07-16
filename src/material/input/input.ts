@@ -350,7 +350,7 @@ export class MatInput extends _MatInputBase implements MatFormFieldControl<any>,
   @HostListener('blur', ['false'])
   // tslint:enable:no-host-decorator-in-concrete
   _focusChanged(isFocused: boolean) {
-    if (isFocused !== this.focused && (!this.readonly || !isFocused)) {
+    if (isFocused !== this.focused) {
       this.focused = isFocused;
       this.stateChanges.next();
     }
