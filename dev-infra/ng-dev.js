@@ -6423,6 +6423,14 @@ class ReleaseAction {
     static isActive(_trains, _config) {
         throw Error('Not implemented.');
     }
+    /** Retrieves the version in the project top-level `package.json` file. */
+    getProjectVersion() {
+        return tslib.__awaiter(this, void 0, void 0, function* () {
+            const pkgJsonPath = path.join(this.projectDir, packageJsonPath);
+            const pkgJson = JSON.parse(yield fs.promises.readFile(pkgJsonPath, 'utf8'));
+            return pkgJson.version;
+        });
+    }
     /** Updates the version in the project top-level `package.json` file. */
     updateProjectVersion(newVersion) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
@@ -6676,7 +6684,12 @@ class ReleaseAction {
      */
     stageVersionForBranchAndCreatePullRequest(newVersion, pullRequestBaseBranch) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
-            const releaseNotes = yield ReleaseNotes.fromRange(newVersion, this.git.getLatestSemverTag().format(), 'HEAD');
+            /**
+             * The current version of the project for the branch from the root package.json. This must be
+             * retrieved prior to updating the project version.
+             */
+            const currentVersion = yield this.getProjectVersion();
+            const releaseNotes = yield ReleaseNotes.fromRange(newVersion, currentVersion, 'HEAD');
             yield this.updateProjectVersion(newVersion);
             yield this.prependReleaseNotesToChangelog(releaseNotes);
             yield this.waitForEditsAndCreateReleaseCommit(newVersion);
