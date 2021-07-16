@@ -82,6 +82,14 @@ export class VirtualGitClient extends AuthenticatedGitClient {
     return new SemVer('0.0.0');
   }
 
+  /**
+   * Override the actual GitClient getLatestSemverTag, as an actual tags cannot be checked during
+   * testing, return back the SemVer version as the tag.
+   */
+  override getMatchingTagForSemver(semver: SemVer) {
+    return semver.format();
+  }
+
   /** Override for the actual Git client command execution. */
   override runGraceful(args: string[], options: SpawnSyncOptions = {}): SpawnSyncReturns<string> {
     const [command, ...rawArgs] = args;

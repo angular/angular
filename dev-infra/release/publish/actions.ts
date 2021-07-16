@@ -85,7 +85,7 @@ export abstract class ReleaseAction {
     const pkgJsonPath = join(this.projectDir, packageJsonPath);
     const pkgJson =
         JSON.parse(await fs.readFile(pkgJsonPath, 'utf8')) as {version: string, [key: string]: any};
-    return pkgJson.version;
+    return new semver.SemVer(pkgJson.version);
   }
 
   /** Updates the version in the project top-level `package.json` file. */
@@ -363,7 +363,7 @@ export abstract class ReleaseAction {
      * The current version of the project for the branch from the root package.json. This must be
      * retrieved prior to updating the project version.
      */
-    const currentVersion = await this.getProjectVersion();
+    const currentVersion = this.git.getMatchingTagForSemver(await this.getProjectVersion());
     const releaseNotes = await ReleaseNotes.fromRange(newVersion, currentVersion, 'HEAD');
     await this.updateProjectVersion(newVersion);
     await this.prependReleaseNotesToChangelog(releaseNotes);
