@@ -19,7 +19,8 @@ import {testApiGolden} from './test_api_report';
  * against golden files within the given golden directory.
  */
 async function main(
-    goldenDir: string, npmPackageDir: string, approveGolden: boolean, stripExportPattern: RegExp) {
+    goldenDir: string, npmPackageDir: string, approveGolden: boolean, stripExportPattern: RegExp,
+    typeNames: string[]) {
   const entryPoints = findEntryPointsWithinNpmPackage(npmPackageDir);
   const outdatedGoldens: string[] = [];
   let allTestsSucceeding = true;
@@ -35,7 +36,8 @@ async function main(
     const goldenFilePath = join(goldenDir, goldenName);
 
     const {succeeded, apiReportChanged} = await testApiGolden(
-        goldenFilePath, typesEntryPointPath, approveGolden, stripExportPattern, packageJsonPath);
+        goldenFilePath, typesEntryPointPath, approveGolden, stripExportPattern, typeNames,
+        packageJsonPath);
 
     // Keep track of outdated goldens.
     if (!succeeded && apiReportChanged) {
@@ -63,8 +65,9 @@ if (require.main === module) {
   const npmPackageDir = runfiles.resolve(args[1]);
   const approveGolden = args[2] === 'true';
   const stripExportPattern = new RegExp(args[3]);
+  const typeNames = args.slice(4);
 
-  main(goldenDir, npmPackageDir, approveGolden, stripExportPattern).catch(e => {
+  main(goldenDir, npmPackageDir, approveGolden, stripExportPattern, typeNames).catch(e => {
     console.error(e);
     process.exit(1);
   });
