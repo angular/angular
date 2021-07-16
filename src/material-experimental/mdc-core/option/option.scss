@@ -65,6 +65,12 @@
     // Pointer events can be safely disabled because the ripple trigger element is the host element.
     pointer-events: none;
   }
+
+    // Needs to be overwritten explicitly, because the style can
+  // leak in from the list and cause the text to truncate.
+  .mdc-list-item__primary-text {
+    white-space: normal;
+  }
 }
 
 .mat-mdc-option-active {

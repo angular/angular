@@ -82,6 +82,12 @@ mat-menu {
     }
   }
 
+  // Needs to be overwritten explicitly, because the style can
+  // leak in from the list and cause the text to truncate.
+  .mdc-list-item__primary-text {
+    white-space: normal;
+  }
+
   @include a11y.high-contrast(active, off) {
     $outline-width: 1px;
 
