@@ -56,10 +56,40 @@ describe('ReportingErrorHandler service', () => {
       expect(onerrorSpy).toHaveBeenCalledWith(error.message, undefined, undefined, undefined, error);
     });
 
+    it('should send a non-error object to window.onerror', () => {
+      const error = {reason: 'this is an error message'};
+      handler.handleError(error);
+      expect(onerrorSpy).toHaveBeenCalledWith(JSON.stringify(error));
+    });
+
+    it('should send a non-error object with circular references to window.onerror', () => {
+      const error = {
+        reason: 'this is an error message',
+        get self() { return this; },
+        toString() { return `{reason: ${this.reason}}`; },
+      };
+      handler.handleError(error);
+      expect(onerrorSpy).toHaveBeenCalledWith('{reason: this is an error message}');
+    });
+
     it('should send an error string to window.onerror', () => {
       const error = 'this is an error message';
       handler.handleError(error);
       expect(onerrorSpy).toHaveBeenCalledWith(error);
+    });
+
+    it('should send a non-object, non-string error stringified to window.onerror', () => {
+      handler.handleError(404);
+      handler.handleError(false);
+      handler.handleError(null);
+      handler.handleError(undefined);
+
+      expect(onerrorSpy.calls.allArgs()).toEqual([
+        ['404'],
+        ['false'],
+        ['null'],
+        ['undefined'],
+      ]);
     });
   });
 });
