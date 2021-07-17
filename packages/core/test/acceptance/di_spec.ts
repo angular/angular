@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, ContentChild, Directive, ElementRef, EventEmitter, forwardRef, Host, HostBinding, Inject, Injectable, InjectionToken, INJECTOR, Injector, Input, LOCALE_ID, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Self, SkipSelf, TemplateRef, ViewChild, ViewContainerRef, ViewRef, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID} from '@angular/core';
+import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, EventEmitter, forwardRef, Host, HostBinding, Inject, Injectable, InjectionToken, INJECTOR, Injector, Input, LOCALE_ID, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Self, SkipSelf, TemplateRef, ViewChild, ViewContainerRef, ViewRef, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID} from '@angular/core';
 import {ɵINJECTOR_SCOPE} from '@angular/core/src/core';
 import {ViewRef as ViewRefInternal} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
@@ -598,6 +598,93 @@ describe('di', () => {
       TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
       expect(() => TestBed.createComponent(MyComp)).toThrowError(/No provider for DirectiveB/);
     });
+
+    it('should not have access to the directive injector in a standalone injector from within a directive-level provider factory',
+       () => {
+         // https://github.com/angular/angular/issues/42651
+         class TestA {
+           constructor(public injector: string) {}
+         }
+         class TestB {
+           constructor(public a: TestA) {}
+         }
+
+         function createTestB() {
+           // Setup a standalone injector that provides `TestA`, which is resolved from a
+           // standalone child injector that requests `TestA` as a dependency for `TestB`.
+           // Although we're inside a directive factory and therefore have access to the
+           // directive-level injector, `TestA` has to be resolved from the standalone injector.
+           const parent = Injector.create({
+             providers: [{provide: TestA, useFactory: () => new TestA('standalone'), deps: []}],
+             name: 'TestA',
+           });
+           const child = Injector.create({
+             providers: [{provide: TestB, useClass: TestB, deps: [TestA]}],
+             parent,
+             name: 'TestB',
+           });
+           return child.get(TestB);
+         }
+
+         @Component({
+           template: '',
+           providers: [
+             {provide: TestA, useFactory: () => new TestA('component'), deps: []},
+             {provide: TestB, useFactory: createTestB},
+           ],
+         })
+         class MyComp {
+           constructor(public readonly testB: TestB) {}
+         }
+
+         TestBed.configureTestingModule({declarations: [MyComp]});
+
+         const cmp = TestBed.createComponent(MyComp);
+         expect(cmp.componentInstance.testB).toBeInstanceOf(TestB);
+         expect(cmp.componentInstance.testB.a.injector).toBe('standalone');
+       });
+
+    it('should not have access to the directive injector in a standalone injector from within a directive-level provider factory',
+       () => {
+         class TestA {
+           constructor(public injector: string) {}
+         }
+         class TestB {
+           constructor(public a: TestA|null) {}
+         }
+
+         function createTestB() {
+           // Setup a standalone injector that provides `TestB` with an optional dependency of
+           // `TestA`. Since `TestA` is not provided by the standalone injector it should resolve
+           // to null; both the NgModule providers and the component-level providers should not
+           // be considered.
+           const injector = Injector.create({
+             providers: [{provide: TestB, useClass: TestB, deps: [[TestA, new Optional()]]}],
+             name: 'TestB',
+           });
+           return injector.get(TestB);
+         }
+
+         @Component({
+           template: '',
+           providers: [
+             {provide: TestA, useFactory: () => new TestA('component'), deps: []},
+             {provide: TestB, useFactory: createTestB},
+           ],
+         })
+         class MyComp {
+           constructor(public readonly testB: TestB) {}
+         }
+
+         TestBed.configureTestingModule({
+           declarations: [MyComp],
+           providers: [{provide: TestA, useFactory: () => new TestA('module'), deps: []}]
+         });
+
+         const cmp = TestBed.createComponent(MyComp);
+         expect(cmp.componentInstance.testB).toBeInstanceOf(TestB);
+         expect(cmp.componentInstance.testB.a).toBeNull();
+       });
 
     onlyInIvy('Ivy has different error message for circular dependency')
         .it('should throw if directives try to inject each other', () => {
