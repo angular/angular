@@ -17,8 +17,7 @@ export class ReportingErrorHandler extends ErrorHandler {
    * Send error info to Google Analytics, in addition to the default handling.
    * @param error Information about the error.
    */
-  handleError(error: string | Error) {
-
+  handleError(error: any) {
     try {
       super.handleError(error);
     } catch (e) {
@@ -27,12 +26,19 @@ export class ReportingErrorHandler extends ErrorHandler {
     this.reportError(error);
   }
 
-  private reportError(error: string | Error) {
+  private reportError(error: unknown) {
     if (this.window.onerror) {
-      if (typeof error === 'string') {
-        this.window.onerror(error);
-      } else {
+      if (error instanceof Error) {
         this.window.onerror(error.message, undefined, undefined, undefined, error);
+      } else {
+        if (typeof error === 'object') {
+          try {
+            error = JSON.stringify(error);
+          } catch {
+            // Ignore the error and just let it be stringified.
+          }
+        }
+        this.window.onerror(`${error}`);
       }
     }
   }
