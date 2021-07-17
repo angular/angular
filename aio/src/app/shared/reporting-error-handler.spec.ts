@@ -62,6 +62,16 @@ describe('ReportingErrorHandler service', () => {
       expect(onerrorSpy).toHaveBeenCalledWith(JSON.stringify(error));
     });
 
+    it('should send a non-error object with circular references to window.onerror', () => {
+      const error = {
+        reason: 'this is an error message',
+        get self() { return this; },
+        toString() { return `{reason: ${this.reason}}`; },
+      };
+      handler.handleError(error);
+      expect(onerrorSpy).toHaveBeenCalledWith('{reason: this is an error message}');
+    });
+
     it('should send an error string to window.onerror', () => {
       const error = 'this is an error message';
       handler.handleError(error);

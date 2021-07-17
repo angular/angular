@@ -30,9 +30,14 @@ export class ReportingErrorHandler extends ErrorHandler {
     if (this.window.onerror) {
       if (error instanceof Error) {
         this.window.onerror(error.message, undefined, undefined, undefined, error);
-      } else if (typeof error === 'object') {
-        this.window.onerror(JSON.stringify(error));
       } else {
+        if (typeof error === 'object') {
+          try {
+            error = JSON.stringify(error);
+          } catch {
+            // Ignore the error and just let it be stringified.
+          }
+        }
         this.window.onerror(`${error}`);
       }
     }
