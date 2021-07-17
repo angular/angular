@@ -1558,6 +1558,60 @@ function allTests(os: string) {
       expect(jsContents).toContain('exports: function () { return [BarModule]; }');
     });
 
+    it('should use relative import for forward references that were resolved from a relative file',
+       () => {
+         env.write('dir.ts', `
+          import {Directive, forwardRef} from '@angular/core';
+
+          export const useFoo = forwardRef(() => Foo);
+
+          @Directive({selector: 'foo'})
+          export class Foo {}
+          `);
+         env.write('test.ts', `
+          import {NgModule} from '@angular/core';
+          import {useFoo} from './dir';
+
+          @NgModule({
+            declarations: [useFoo],
+          })
+          export class FooModule {}
+        `);
+
+         env.driveMain();
+
+         const jsContents = env.getContents('test.js');
+         expect(jsContents).toContain('import * as i1 from "./dir";');
+         expect(jsContents).toContain('declarations: [i1.Foo]');
+       });
+
+    it('should use absolute import for forward references that were resolved from an absolute file',
+       () => {
+         env.write('dir.ts', `
+          import {Directive, forwardRef} from '@angular/core';
+
+          export const useFoo = forwardRef(() => Foo);
+
+          @Directive({selector: 'foo'})
+          export class Foo {}
+          `);
+         env.write('test.ts', `
+          import {forwardRef, NgModule} from '@angular/core';
+          import {useFoo} from 'dir';
+
+          @NgModule({
+            declarations: [useFoo],
+          })
+          export class FooModule {}
+        `);
+
+         env.driveMain();
+
+         const jsContents = env.getContents('test.js');
+         expect(jsContents).toContain('import * as i1 from "dir";');
+         expect(jsContents).toContain('declarations: [i1.Foo]');
+       });
+
     it('should compile Pipes without errors', () => {
       env.write('test.ts', `
         import {Pipe} from '@angular/core';
