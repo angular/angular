@@ -93,6 +93,9 @@
     "name": "injectArgs"
   },
   {
+    "name": "injectInjectorOnly"
+  },
+  {
     "name": "injectableDefOrInjectorDefFactory"
   },
   {
@@ -109,6 +112,9 @@
   },
   {
     "name": "setCurrentInjector"
+  },
+  {
+    "name": "setInjectImplementation"
   },
   {
     "name": "stringify"
