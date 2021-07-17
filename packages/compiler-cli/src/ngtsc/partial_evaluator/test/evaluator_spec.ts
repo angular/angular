@@ -646,6 +646,52 @@ runInEachFileSystem(() => {
       expect(id.text).toEqual('Target');
     });
 
+    it('should not associate an owning module when a FFR-resolved expression is within the originating source file',
+       () => {
+         const resolved = evaluate(
+             `import {forwardRef} from 'forward';
+               class Foo {}`,
+             'forwardRef(() => Foo)', [{
+               name: _('/node_modules/forward/index.d.ts'),
+               contents: `export declare function forwardRef<T>(fn: () => T): T;`,
+             }],
+             (_ref, args) => {
+               // Extracts the `Foo` from `() => Foo`.
+               return (args[0] as ts.ArrowFunction).body as ts.Expression;
+             });
+         if (!(resolved instanceof Reference)) {
+           return fail('Expected expression to resolve to a reference');
+         }
+         expect((resolved.node as ts.ClassDeclaration).name!.text).toBe('Foo');
+         expect(resolved.bestGuessOwningModule).toBeNull();
+       });
+
+    it('should associate an owning module when a FFR-resolved expression is within the foreign file',
+       () => {
+         const {expression, checker} =
+             makeExpression(`import {external} from 'external';`, `external()`, [{
+                              name: _('/node_modules/external/index.d.ts'),
+                              contents: `
+                                export declare class Foo {}
+                                export declare function external(): Foo;
+                              `
+                            }]);
+         const evaluator = makeEvaluator(checker);
+         const resolved = evaluator.evaluate(expression, (ref) => {
+           // Extract the `Foo` from the return type of the `external` function declaration.
+           return ((ref.node as ts.FunctionDeclaration).type as ts.TypeReferenceNode).typeName as
+               ts.Identifier;
+         });
+         if (!(resolved instanceof Reference)) {
+           return fail('Expected expression to resolve to a reference');
+         }
+         expect((resolved.node as ts.ClassDeclaration).name!.text).toBe('Foo');
+         expect(resolved.bestGuessOwningModule).toEqual({
+           specifier: 'external',
+           resolutionContext: expression.getSourceFile().fileName,
+         });
+       });
+
     it('should resolve functions with more than one statement to a complex function call', () => {
       const value = evaluate(`function foo(bar) { const b = bar; return b; }`, 'foo("test")');
 
