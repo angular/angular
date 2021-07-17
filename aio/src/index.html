@@ -69,7 +69,7 @@
       function formatError(msg, url, line, col, e) {
         var stack;
         msg = msg.replace(/^Error: /, '');
-        if (e) {
+        if (e && e.stack) {
           stack = e.stack
             // strip the leading "Error: " from the stack trace
             .replace(/^Error: /, '')
