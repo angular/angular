@@ -15,17 +15,11 @@ import {AnimationStyleNormalizer} from './style_normalization/animation_style_no
 
 
 
-/**
- * @publicApi
- */
 export function buildTrigger(
     name: string, ast: TriggerAst, normalizer: AnimationStyleNormalizer): AnimationTrigger {
   return new AnimationTrigger(name, ast, normalizer);
 }
 
-/**
- * @publicApi
- */
 export class AnimationTrigger {
   public transitionFactories: AnimationTransitionFactory[] = [];
   public fallbackTransition: AnimationTransitionFactory;
