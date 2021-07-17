@@ -62,3 +62,14 @@ export function firstArgFfr(
     args: ReadonlyArray<ts.Expression>): ts.Expression {
   return args[0];
 }
+
+export const arrowReturnValueFfr: ForeignFunctionResolver = (_ref, args) => {
+  // Extracts the `Foo` from `() => Foo`.
+  return (args[0] as ts.ArrowFunction).body as ts.Expression;
+};
+
+export const returnTypeFfr: ForeignFunctionResolver = (ref) => {
+  // Extract the `Foo` from the return type of the `external` function declaration.
+  return ((ref.node as ts.FunctionDeclaration).type as ts.TypeReferenceNode).typeName as
+      ts.Identifier;
+};
