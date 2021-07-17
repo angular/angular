@@ -33,7 +33,8 @@ def extract_type_names_from_labels(type_targets):
         if (type_package.startswith("@types/")):
             type_names.append(type_package[len("@types/"):])
         else:
-            fail("Unexpected type target for API report generation: %s" % type_target)
+            fail("Expected type target to match the following format: " +
+                 "`@<npm_workspace>//@types/<name>`, but got: %s" % type_target)
 
     return type_names
 
