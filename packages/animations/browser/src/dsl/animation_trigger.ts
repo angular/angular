@@ -6,10 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationMetadataType, ɵStyleData} from '@angular/animations';
-
-import {copyStyles, interpolateParams} from '../util';
-
-import {SequenceAst, StyleAst, TransitionAst, TriggerAst} from './animation_ast';
+import {SequenceAst, TransitionAst, TriggerAst} from './animation_ast';
 import {AnimationStateStyles, AnimationTransitionFactory} from './animation_transition_factory';
 import {AnimationStyleNormalizer} from './style_normalization/animation_style_normalizer';
 
