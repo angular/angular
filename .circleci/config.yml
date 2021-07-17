@@ -118,6 +118,7 @@ executors:
 
 orbs:
   cypress: cypress-io/cypress@1.28.0
+  path-filtering: circleci/path-filtering@0.0.2
 
 # Command Definitions
 # https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-commands
@@ -273,7 +274,7 @@ jobs:
           # Yarn's requests sometimes take more than 10mins to complete.
           no_output_timeout: 45m
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
-      - run: yarn --cwd devtools install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
+      # - run: yarn --cwd devtools install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
       # Make the bazel directories and add a file to them if they don't exist already so that
       # persist_to_workspace does not fail.
       - run: |
@@ -825,15 +826,15 @@ jobs:
           key: *cache_key_win
           paths:
             - ~/.cache/yarn
-  test_angular_devtools:
-    executor:
-      name: default-executor
-    steps:
-      - custom_attach_workspace
-      - init_environment
-      - install_chrome_libs
-      - run: yarn --cwd devtools test:ci
-      - run: yarn --cwd devtools build:chrome
+  # test_angular_devtools:
+  #   executor:
+  #     name: default-executor
+  #   steps:
+  #     - custom_attach_workspace
+  #     - init_environment
+  #     - install_chrome_libs
+  #     - run: yarn --cwd devtools test:ci
+  #     - run: yarn --cwd devtools build:chrome
 
 workflows:
   version: 2
@@ -913,17 +914,14 @@ workflows:
       - test_ivy_aot_win:
           requires:
             - setup
-      - test_angular_devtools:
-          requires:
-            - setup
-      - cypress/run:
-          name: 'Angular Devtools - E2E'
-          executor: node-and-browsers-executor
-          browser: chrome
-          yarn: true
-          working_directory: devtools
-          start: yarn start
-          wait-on: 'http://localhost:4200'
+      # - test_angular_devtools:
+      #     requires:
+      #       - setup
+      - path-filtering/filter:
+          base-revision: master
+          mapping: |
+            devtools/.* devtools-modified true
+          config-path: devtools/.circleci/config.yml
 
   monitoring:
     jobs:
