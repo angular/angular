@@ -20,7 +20,7 @@ const DEFAULT_NAMESPACE_ID = 'id';
 (function() {
 const driver = new MockAnimationDriver();
 
-// these tests are only mean't to be run within the DOM
+// these tests are only meant to be run within the DOM
 if (isNode) return;
 
 describe('TransitionAnimationEngine', () => {
