@@ -766,7 +766,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
 
       return (args: o.Expression[]) => callUnwrapValue(
                  expression.nodeIndex, expression.bindingIndex,
-                 nodeValueExpr.callMethod('transform', args));
+                 nodeValueExpr.prop('transform').callFn(args));
     }
   }
 

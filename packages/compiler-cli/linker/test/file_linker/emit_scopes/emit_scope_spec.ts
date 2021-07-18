@@ -32,7 +32,7 @@ describe('EmitScope', () => {
       const emitScope = new EmitScope<ts.Statement, ts.Expression>(ngImport, translator);
 
       const coreImportRef = new o.ExternalReference('@angular/core', 'foo');
-      const def = emitScope.translateDefinition(o.importExpr(coreImportRef).callMethod('bar', []));
+      const def = emitScope.translateDefinition(o.importExpr(coreImportRef).prop('bar').callFn([]));
       expect(generate(def)).toEqual('core.foo.bar()');
     });
 

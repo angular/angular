@@ -538,7 +538,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         }
       }
       if (result == null) {
-        result = receiver.prop(ast.name);
+        result = receiver.prop(ast.name, this.convertSourceSpan(ast.span));
       }
       return convertToStatementIfNeeded(mode, result);
     }
@@ -573,7 +573,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     // If no local expression could be produced, use the original receiver's
     // property as the target.
     if (varExpr === null) {
-      varExpr = receiver.prop(ast.name);
+      varExpr = receiver.prop(ast.name, this.convertSourceSpan(ast.span));
     }
     return convertToStatementIfNeeded(mode, varExpr.set(this._visit(ast.value, _Mode.Expression)));
   }
