@@ -36,6 +36,12 @@ const SWITCH_TEMPLATE_REF_FACTORY: typeof injectTemplateRef = SWITCH_TEMPLATE_RE
  * You can also use a `Query` to find a `TemplateRef` associated with
  * a component or a directive.
  *
+ * @usageNotes
+ *
+ * ### Example
+ *
+ * {@example core/ts/query/template_ref.ts region='TemplateRefQuery'}
+ *
  * @see `ViewContainerRef`
  * @see [Navigate the Component Tree with DI](guide/dependency-injection-navtree)
  *
