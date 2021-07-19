@@ -14,10 +14,10 @@ import {DependencyTracker} from '../../incremental/api';
 import {Declaration, DeclarationKind, isConcreteDeclaration, KnownDeclaration, SpecialDeclarationKind, TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {DynamicValue} from '../src/dynamic';
-import {PartialEvaluator} from '../src/interface';
+import {ForeignFunctionResolver, PartialEvaluator} from '../src/interface';
 import {EnumValue, ResolvedValue} from '../src/result';
 
-import {evaluate, firstArgFfr, makeEvaluator, makeExpression, owningModuleOf} from './utils';
+import {arrowReturnValueFfr, evaluate, firstArgFfr, makeEvaluator, makeExpression, owningModuleOf, returnTypeFfr} from './utils';
 
 runInEachFileSystem(() => {
   describe('ngtsc metadata', () => {
@@ -650,20 +650,68 @@ runInEachFileSystem(() => {
        () => {
          const resolved = evaluate(
              `import {forwardRef} from 'forward';
-               class Foo {}`,
+              class Foo {}`,
              'forwardRef(() => Foo)', [{
                name: _('/node_modules/forward/index.d.ts'),
                contents: `export declare function forwardRef<T>(fn: () => T): T;`,
              }],
-             (_ref, args) => {
-               // Extracts the `Foo` from `() => Foo`.
-               return (args[0] as ts.ArrowFunction).body as ts.Expression;
-             });
+             arrowReturnValueFfr);
          if (!(resolved instanceof Reference)) {
            return fail('Expected expression to resolve to a reference');
          }
          expect((resolved.node as ts.ClassDeclaration).name!.text).toBe('Foo');
          expect(resolved.bestGuessOwningModule).toBeNull();
+       });
+
+    it('should not associate an owning module when a FFR-resolved expression is imported using a relative import',
+       () => {
+         const resolved = evaluate(
+             `import {forwardRef} from 'forward';
+              import {Foo} from './foo';`,
+             'forwardRef(() => Foo)',
+             [
+               {
+                 name: _('/node_modules/forward/index.d.ts'),
+                 contents: `export declare function forwardRef<T>(fn: () => T): T;`,
+               },
+               {
+                 name: _('/foo.ts'),
+                 contents: `export class Foo {}`,
+               }
+             ],
+             arrowReturnValueFfr);
+         if (!(resolved instanceof Reference)) {
+           return fail('Expected expression to resolve to a reference');
+         }
+         expect((resolved.node as ts.ClassDeclaration).name!.text).toBe('Foo');
+         expect(resolved.bestGuessOwningModule).toBeNull();
+       });
+
+    it('should associate an owning module when a FFR-resolved expression is imported using an absolute import',
+       () => {
+         const {expression, checker} = makeExpression(
+             `import {forwardRef} from 'forward';
+              import {Foo} from 'external';`,
+             `forwardRef(() => Foo)`, [
+               {
+                 name: _('/node_modules/forward/index.d.ts'),
+                 contents: `export declare function forwardRef<T>(fn: () => T): T;`,
+               },
+               {
+                 name: _('/node_modules/external/index.d.ts'),
+                 contents: `export declare class Foo {}`,
+               }
+             ]);
+         const evaluator = makeEvaluator(checker);
+         const resolved = evaluator.evaluate(expression, arrowReturnValueFfr);
+         if (!(resolved instanceof Reference)) {
+           return fail('Expected expression to resolve to a reference');
+         }
+         expect((resolved.node as ts.ClassDeclaration).name!.text).toBe('Foo');
+         expect(resolved.bestGuessOwningModule).toEqual({
+           specifier: 'external',
+           resolutionContext: expression.getSourceFile().fileName,
+         });
        });
 
     it('should associate an owning module when a FFR-resolved expression is within the foreign file',
@@ -677,11 +725,7 @@ runInEachFileSystem(() => {
                               `
                             }]);
          const evaluator = makeEvaluator(checker);
-         const resolved = evaluator.evaluate(expression, (ref) => {
-           // Extract the `Foo` from the return type of the `external` function declaration.
-           return ((ref.node as ts.FunctionDeclaration).type as ts.TypeReferenceNode).typeName as
-               ts.Identifier;
-         });
+         const resolved = evaluator.evaluate(expression, returnTypeFfr);
          if (!(resolved instanceof Reference)) {
            return fail('Expected expression to resolve to a reference');
          }
