@@ -1244,7 +1244,7 @@ describe('MDC-based MatMenu', () => {
       TestBed.resetTestingModule();
 
       const newFixture = createComponent(SimpleMenu, [], [FakeIcon]);
-
+      overlayContainerElement = TestBed.inject(OverlayContainer).getContainerElement();
       newFixture.detectChanges();
       newFixture.componentInstance.trigger.openMenu();
       newFixture.detectChanges();
