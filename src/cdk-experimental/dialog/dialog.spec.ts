@@ -16,7 +16,8 @@ import {
   NgModule,
   TemplateRef,
   ViewChild,
-  ViewContainerRef
+  ViewContainerRef,
+  ViewEncapsulation
 } from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -26,11 +27,12 @@ import {Directionality} from '@angular/cdk/bidi';
 import {CdkDialogContainer} from './dialog-container';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {A, ESCAPE} from '@angular/cdk/keycodes';
+import {_supportsShadowDom} from '@angular/cdk/platform';
 import {
   dispatchKeyboardEvent,
   createKeyboardEvent,
   dispatchEvent,
-} from '../../cdk/testing/private';
+} from '@angular/cdk/testing/private';
 import {DIALOG_DATA, Dialog, DialogModule, DialogRef} from './index';
 
 describe('Dialog', () => {
@@ -935,6 +937,32 @@ describe('Dialog', () => {
       document.body.removeChild(button);
     }));
 
+    it('should re-focus trigger element inside the shadow DOM when dialog closes', fakeAsync(() => {
+      if (!_supportsShadowDom()) {
+        return;
+      }
+
+      viewContainerFixture.destroy();
+      const fixture = TestBed.createComponent(ShadowDomComponent);
+      fixture.detectChanges();
+      const button = fixture.debugElement.query(By.css('button'))!.nativeElement;
+
+      button.focus();
+
+      const dialogRef = dialog.openFromComponent(PizzaMsg);
+      flushMicrotasks();
+      fixture.detectChanges();
+      flushMicrotasks();
+
+      const spy = spyOn(button, 'focus').and.callThrough();
+      dialogRef.close();
+      flushMicrotasks();
+      fixture.detectChanges();
+      tick(500);
+
+      expect(spy).toHaveBeenCalled();
+    }));
+
     it('should not move focus if it was moved outside the dialog while animating', fakeAsync(() => {
       // Create a element that has focus before the dialog is opened.
       const button = document.createElement('button');
@@ -1220,6 +1248,12 @@ class DialogWithInjectedData {
 @Component({template: '<p>Pasta</p>'})
 class DialogWithoutFocusableElements {}
 
+@Component({
+  template: `<button>I'm a button</button>`,
+  encapsulation: ViewEncapsulation.ShadowDom
+})
+class ShadowDomComponent {}
+
 // Create a real (non-test) NgModule as a workaround for
 // https://github.com/angular/angular/issues/10760
 const TEST_DIRECTIVES = [
@@ -1230,7 +1264,8 @@ const TEST_DIRECTIVES = [
   ComponentWithOnPushViewContainer,
   ContentElementDialog,
   DialogWithInjectedData,
-  DialogWithoutFocusableElements
+  DialogWithoutFocusableElements,
+  ShadowDomComponent,
 ];
 
 @NgModule({
