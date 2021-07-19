@@ -5180,10 +5180,6 @@ function transformExpressionToJs(expression) {
  */
 // Regular expression that matches conditions for the global approval.
 const GLOBAL_APPROVAL_CONDITION_REGEX = /^"global-(docs-)?approvers" not in groups.approved$/;
-// Name of the PullApprove group that serves as fallback. This group should never capture
-// any conditions as it would always match specified files. This is not desired as we want
-// to figure out as part of this tool, whether there actually are unmatched files.
-const FALLBACK_GROUP_NAME = 'fallback';
 /** A PullApprove group to be able to test files against. */
 class PullApproveGroup {
     constructor(groupName, config, precedingGroups = []) {
@@ -5196,7 +5192,7 @@ class PullApproveGroup {
         this.reviewers = (_a = config.reviewers) !== null && _a !== void 0 ? _a : { users: [], teams: [] };
     }
     _captureConditions(config) {
-        if (config.conditions && this.groupName !== FALLBACK_GROUP_NAME) {
+        if (config.conditions) {
             return config.conditions.forEach(condition => {
                 const expression = condition.trim();
                 if (expression.match(GLOBAL_APPROVAL_CONDITION_REGEX)) {
