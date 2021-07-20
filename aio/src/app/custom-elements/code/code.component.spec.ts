@@ -290,7 +290,6 @@ describe('CodeComponent', () => {
 });
 
 //// Test helpers ////
-// tslint:disable:member-ordering
 @Component({
   selector: 'aio-host-comp',
   template: `

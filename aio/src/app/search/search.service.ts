@@ -27,7 +27,6 @@ export class SearchService {
       .pipe(
         concatMap(() => {
           // Create the worker and load the index
-          // tslint:disable-next-line: whitespace
           const worker = new Worker(new URL('./search.worker', import.meta.url), { type: 'module' });
           this.worker = WebWorkerClient.create(worker, this.zone);
           return this.worker.sendMessage<boolean>('load-index');
@@ -42,6 +41,7 @@ export class SearchService {
 
   /**
    * Search the index using the given query and emit results on the observable that is returned.
+   *
    * @param query The query to run against the index.
    * @returns an observable collection of search results
    */

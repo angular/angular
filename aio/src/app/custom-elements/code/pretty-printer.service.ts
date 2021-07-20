@@ -36,7 +36,8 @@ export class PrettyPrinter {
   }
 
   /**
-   * Format code snippet as HTML
+   * Format code snippet as HTML.
+   *
    * @param code - the code snippet to format; should already be HTML encoded
    * @param [language] - The language of the code to render (could be javascript, html, typescript, etc)
    * @param [linenums] - Whether to display line numbers:

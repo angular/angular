@@ -69,11 +69,11 @@ describe('Api pages', () => {
 
   it('should show links to github', async () => {
     await page.navigateTo('api/core/EventEmitter');
-    /* tslint:disable:max-line-length */
+    /* eslint-disable max-len */
     expect(await page.ghLinks.get(0).getAttribute('href'))
       .toMatch(/https:\/\/github\.com\/angular\/angular\/edit\/master\/packages\/core\/src\/event_emitter\.ts\?message=docs\(core\)%3A%20describe%20your%20change\.\.\.#L\d+-L\d+/);
     expect(await page.ghLinks.get(1).getAttribute('href'))
       .toMatch(/https:\/\/github\.com\/angular\/angular\/tree\/[^/]+\/packages\/core\/src\/event_emitter\.ts#L\d+-L\d+/);
-    /* tslint:enable:max-line-length */
+    /* eslint-enable max-len */
   });
 });

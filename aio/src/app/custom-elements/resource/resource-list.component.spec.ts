@@ -86,7 +86,9 @@ describe('ResourceListComponent', () => {
     categories = of(this.testCategories);
   }
 
-  interface SearchResult { [index: string]: string; }
+  interface SearchResult {
+    [index: string]: string;
+  }
 
   class TestLocationService {
     searchResult: SearchResult = {};

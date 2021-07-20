@@ -47,7 +47,7 @@ import { SwUpdatesModule } from 'app/sw-updates/sw-updates.module';
 import { environment } from '../environments/environment';
 
 // These are the hardcoded inline svg sources to be used by the `<mat-icon>` component.
-// tslint:disable: max-line-length
+/* eslint-disable max-len */
 export const svgIconProviders = [
   {
     provide: SVG_ICONS,
@@ -145,7 +145,7 @@ export const svgIconProviders = [
     multi: true,
   },
 ];
-// tslint:enable: max-line-length
+/* eslint-enable max-len */
 
 @NgModule({
   imports: [

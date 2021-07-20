@@ -30,9 +30,7 @@ export class LocationService {
 
     this.urlSubject.next(location.path(true));
 
-    this.location.subscribe(state => {
-      return this.urlSubject.next(state.url || '');
-    });
+    this.location.subscribe(state => this.urlSubject.next(state.url || ''));
   }
 
   /**
@@ -79,7 +77,7 @@ export class LocationService {
   }
 
   search() {
-    const search: { [index: string]: string|undefined; } = {};
+    const search: { [index: string]: string|undefined } = {};
     const path = this.location.path();
     const q = path.indexOf('?');
     if (q > -1) {

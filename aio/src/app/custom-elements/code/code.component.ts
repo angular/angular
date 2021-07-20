@@ -120,7 +120,7 @@ export class CodeComponent implements OnChanges {
         .pipe(tap(formattedCode => this.setCodeHtml(formattedCode)));
 
     if (linenums !== false && this.language === 'none') {
-      this.logger.warn(`Using 'linenums' with 'language: none' is currently not supported.`);
+      this.logger.warn("Using 'linenums' with 'language: none' is currently not supported.");
     }
 
     ((this.language === 'none' ? skipPrettify : prettifyCode) as Observable<unknown>)

@@ -589,7 +589,7 @@ describe('AppComponent', () => {
     });
 
     describe('restrainScrolling()', () => {
-      const preventedScrolling = (currentTarget: object, deltaY: number) => {
+      const preventedScrolling = (currentTarget: { scrollTop: number, scrollHeight?: number, clientHeight?: number }, deltaY: number) => {
         const evt = {
           deltaY,
           currentTarget,
@@ -1311,7 +1311,6 @@ class TestHttpClient {
     { title: 'v2', url: 'https://v2.angular.io' }
   ];
 
-  // tslint:disable:quotemark
   navJson = {
     TopBar: [
       {

@@ -1,4 +1,4 @@
-import { browser, by, element, ExpectedConditions } from 'protractor';
+import { browser, by, element, ElementFinder, ExpectedConditions } from 'protractor';
 
 export class SitePage {
   /** The base URL with the trailing `/` stripped off (if any). */
@@ -34,7 +34,7 @@ export class SitePage {
   async getSearchResults() {
     const results = element.all(by.css('.search-results li'));
     await browser.wait(ExpectedConditions.presenceOf(results.first()), 8000);
-    return await results.map<string>(link => link!.getText());
+    return await results.map<string>(link => (link as ElementFinder).getText());
   }
 
   /**

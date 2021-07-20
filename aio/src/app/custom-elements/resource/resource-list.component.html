@@ -8,9 +8,7 @@
   </div>
   <div class="showcase">
     <div *ngFor="let subCategory of selectedCategory?.subCategories">
-      <a id="{{subCategory.id}}"></a>
-      <h3 class="subcategory-title">{{subCategory.title}}</h3>
-
+      <h3 class="subcategory-title" id="{{subCategory.id}}">{{subCategory.title}}</h3>
       <div *ngFor="let resource of subCategory.resources">
         <div class="resource-item">
           <a class="resource-row-link" rel="noopener" target="_blank" [href]="resource.url">

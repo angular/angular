@@ -37,8 +37,7 @@ export class ContributorService {
       }),
 
       // Flatten group map into sorted group array of sorted contributors
-      map(cmap => {
-        return Object.keys(cmap).map(key => {
+      map(cmap => Object.keys(cmap).map(key => {
           const order = knownGroups.indexOf(key);
           return {
             name: key,
@@ -46,8 +45,8 @@ export class ContributorService {
             contributors: cmap[key].sort(compareContributors)
           } as ContributorGroup;
         })
-        .sort(compareGroups);
-      }),
+        .sort(compareGroups)
+      ),
 
       publishLast(),
     );

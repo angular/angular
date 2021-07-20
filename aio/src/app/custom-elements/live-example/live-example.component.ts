@@ -1,4 +1,4 @@
-/* tslint:disable component-selector */
+/* eslint-disable  @angular-eslint/component-selector */
 import { AfterContentInit, AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { Location } from '@angular/common';
 import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
@@ -136,7 +136,7 @@ export class LiveExampleComponent implements AfterContentInit {
  */
 @Component({
   selector: 'aio-embedded-stackblitz',
-  template: `<iframe #iframe frameborder="0" width="100%" height="100%"></iframe>`,
+  template: '<iframe #iframe frameborder="0" width="100%" height="100%"></iframe>',
   styles: [ 'iframe { min-height: 400px; }' ]
 })
 export class EmbeddedStackblitzComponent implements AfterViewInit {
