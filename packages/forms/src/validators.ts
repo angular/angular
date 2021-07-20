@@ -14,8 +14,13 @@ import {AsyncValidator, AsyncValidatorFn, ValidationErrors, Validator, Validator
 import {AbstractControl} from './model';
 
 function isEmptyInputValue(value: any): boolean {
-  // we don't check for string here so it also works with arrays
-  return value == null || value.length === 0;
+  /**
+   * Check if the object is a string or array before evaluating the length attribute.
+   * This avoids falsely rejecting objects that contain a custom length attribute.
+   * For example, the object {id: 1, length: 0, width: 0} should not be returned as empty.
+   */
+  return value == null || (typeof value === 'string' && value.length === 0) ||
+      (Array.isArray(value) && value.length === 0);
 }
 
 function hasValidLength(value: any): boolean {
