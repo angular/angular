@@ -543,7 +543,8 @@ groups:
           'packages/compiler-cli/src/extract_i18n.ts',
           'packages/localize/**',
           'aio/content/guide/i18n.md',
-          'aio/content/examples/i18n/**'
+          'aio/content/examples/i18n/**',
+          'aio/content/examples/i18n-runtime/**'
           ])
     reviewers:
       users:

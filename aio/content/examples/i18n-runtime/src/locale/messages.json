@@ -1,0 +1,14 @@
+{
+  "locale": "en-US",
+  "translations": {
+    "introductionHeader": " Hello i18n!\n",
+    "5206857922697139278": "I don't output any element",
+    "392942015236586892": "Angular logo",
+    "4606963464835766483": "Updated {$ICU}",
+    "2002272803511843863": "{VAR_PLURAL, plural, =0 {just now} =1 {one minute ago} other {{INTERPOLATION} minutes ago}}",
+    "3560311772637911677": "The author is {$ICU}",
+    "7670372064920373295": "{VAR_SELECT, select, male {male} female {female} other {other}}",
+    "3967965900462880190": "Updated: {$ICU}\n",
+    "2508975984005233379": "{VAR_PLURAL, plural, =0 {just now} =1 {one minute ago} other {{INTERPOLATION} minutes ago by {VAR_SELECT, select, male {male} female {female} other {other}}}}"
+  }
+}
