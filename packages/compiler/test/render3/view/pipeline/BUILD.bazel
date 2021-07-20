@@ -1,0 +1,21 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "pipeline_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    deps = [
+        "//packages:types",
+        "//packages/compiler",
+    ],
+)
+
+jasmine_node_test(
+    name = "pipeline",
+    bootstrap = ["//tools/testing:node_no_angular"],
+    deps = [
+        ":pipeline_lib",
+    ],
+)
