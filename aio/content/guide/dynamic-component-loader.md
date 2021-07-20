@@ -1,6 +1,6 @@
 # Dynamic component loader
 
-Component templates are not always fixed. An application may need to load new components at runtime.
+Component templates are not always fixed. An application might need to load new components at runtime.
 
 This cookbook shows you how to use `ComponentFactoryResolver` to add components dynamically.
 
@@ -28,7 +28,7 @@ Angular comes with its own API for loading components dynamically.
 
 ## The anchor directive
 
-Before you can add components you have to define an anchor point
+Before adding components, you have to define an anchor point
 to tell Angular where to insert components.
 
 The ad banner uses a helper directive called `AdDirective` to

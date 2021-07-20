@@ -4,17 +4,17 @@ In Angular, component CSS styles are encapsulated into the component's view and 
 affect the rest of the application.
 
 To control how this encapsulation happens on a _per
-component_ basis, you can set the _view encapsulation mode_ in the component metadata.
+component_ basis, set the _view encapsulation mode_ in the component metadata.
 Choose from the following modes:
 
-- `ShadowDom` view encapsulation uses the browser's native shadow DOM implementation (see
+- `ShadowDom` view encapsulation uses the browser's built-in shadow DOM implementation (see
   [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Shadow_DOM))
   to attach a shadow DOM to the component's host element, and then puts the component
   view inside that shadow DOM. The component's styles are included within the shadow DOM.
 
 - `Emulated` view encapsulation (the default) emulates the behavior of shadow DOM by preprocessing
   (and renaming) the CSS code to effectively scope the CSS to the component's view.
-  For details, see [Inspecting generated CSS](guide/view-encapsulation#inspect-generated-css) below.
+  For details, see [Inspecting generated CSS](guide/view-encapsulation#inspect-generated-css).
 
 - `None` means that Angular does no view encapsulation.
   Angular adds the CSS to the global styles.
@@ -25,7 +25,7 @@ To set the component's encapsulation mode, use the `encapsulation` property in t
 
 <code-example path="component-styles/src/app/quest-summary.component.ts" region="encapsulation.shadow" header="src/app/quest-summary.component.ts"></code-example>
 
-`ShadowDom` view encapsulation only works on browsers that have native support
+`ShadowDom` view encapsulation only works on browsers that have built-in support
 for shadow DOM (see [Can I use - Shadow DOM v1](https://caniuse.com/shadowdomv1)).
 The support is still limited, which is why `Emulated` view encapsulation is the default mode and recommended in most cases.
 
