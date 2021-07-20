@@ -37,11 +37,6 @@ export interface PullApproveGroupResult {
 // Regular expression that matches conditions for the global approval.
 const GLOBAL_APPROVAL_CONDITION_REGEX = /^"global-(docs-)?approvers" not in groups.approved$/;
 
-// Name of the PullApprove group that serves as fallback. This group should never capture
-// any conditions as it would always match specified files. This is not desired as we want
-// to figure out as part of this tool, whether there actually are unmatched files.
-const FALLBACK_GROUP_NAME = 'fallback';
-
 /** A PullApprove group to be able to test files against. */
 export class PullApproveGroup {
   /** List of conditions for the group. */
@@ -57,7 +52,7 @@ export class PullApproveGroup {
   }
 
   private _captureConditions(config: PullApproveGroupConfig) {
-    if (config.conditions && this.groupName !== FALLBACK_GROUP_NAME) {
+    if (config.conditions) {
       return config.conditions.forEach(condition => {
         const expression = condition.trim();
 

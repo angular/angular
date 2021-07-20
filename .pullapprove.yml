@@ -79,7 +79,10 @@ meta:
   # one are those that appear above it.
   no-groups-above-this-pending: &no-groups-above-this-pending len(groups.active.pending.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
   no-groups-above-this-rejected: &no-groups-above-this-rejected len(groups.active.rejected.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
-  no-groups-above-this-active: &no-groups-above-this-active len(groups.active.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
+
+  # Yaml anchor that represents a PullApprove expression that evaluates to `true` whenever
+  # there are no actual review groups active. Groups which are always active are excluded.
+  no-review-groups-active: &no-review-groups-active len(groups.active.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
 
   can-be-global-approved: &can-be-global-approved '"global-approvers" not in groups.approved'
   can-be-global-docs-approved: &can-be-global-docs-approved '"global-docs-approvers" not in groups.approved'
@@ -97,22 +100,23 @@ meta:
 # https://developer.github.com/v3/previews/#draft-pull-requests
 github_api_version: 'shadow-cat-preview'
 
-pullapprove_conditions:
+# https://docs.pullapprove.com/config/overrides/
+# Note that overrides are processed in order.
+overrides:
   # For PRs which are still being worked on, either still in draft mode or indicated through WIP in
   # title or label, PullApprove stays in a pending state until its ready for review.
-  - condition: "'WIP' not in title"
-    unmet_status: pending
+  - if: "draft or 'WIP' in title or 'PR state: WIP' in labels"
+    status: pending
     explanation: 'Waiting to send reviews as PR is WIP'
-  - condition: "'PR state: WIP' not in labels"
-    unmet_status: pending
-    explanation: 'Waiting to send reviews as PR is WIP'
-  - condition: 'not draft'
-    unmet_status: pending
-    explanation: 'Waiting to send reviews as PR is in draft'
   # Disable PullApprove on specific PRs by adding the `PullApprove: disable` label
-  - condition: "'PullApprove: disable' not in labels"
-    unmet_status: success
+  - if: "'PullApprove: disable' in labels"
+    status: success
     explanation: "PullApprove skipped because of 'PullApprove: disable' label"
+  # If no groups are active, report this pull request as failing. Most likely, the
+  # PR author would need to update the PullApprove config, or create new group.
+  - if: *no-review-groups-active
+    status: failure
+    explanation: 'At least one group must match this PR. Please update an existing review group, or create a new group.'
 
 groups:
   # =========================================================
@@ -1305,49 +1309,3 @@ groups:
         - atscott
         - jelbourn
         - josephperrott
-
-  # ====================================================
-  #  Catch all for if no groups match the code change
-  # ====================================================
-  fallback:
-    <<: *defaults
-    # A group is considered to be `active` for a PR if at least one of group's
-    # conditions matches the PR.
-    #
-    # The PullApprove CI check should fail if a PR has no `active` groups, as
-    # this indicates the PR is modifying a file that has no owner.
-    #
-    # This is enforced through the pullapprove verification check done
-    # as part of the CircleCI lint job.  Failures in this lint job should be
-    # fixed as part of the PR.  This can be done by updating the
-    # `.pullapprove.yml` file cover the unmatched path.
-    # The pullapprove verification script is part of the ng-dev tool and can be
-    # run locally with the command: `yarn -s ng-dev pullapprove verify`
-    #
-    # For cases in which the verification check fails to ensure coverage, this
-    # group will be active.  The expectation is that this should be remedied
-    # before merging the PR as described above.  In an emergency situation
-    # `global-approvers` can still approve PRs that match this `fallback` rule,
-    # but that should be an exception and not an expectation.
-    conditions:
-      - *no-groups-above-this-active
-      # When any of the `global-*` groups is approved, they cause other groups to deactivate.
-      # In those cases, the condition above would evaluate to `true` while in reality, only a global
-      # approval has been provided. To ensure we don't activate the fallback group in such cases,
-      # ensure that no explicit global approval has been provided.
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
-    # PullApprove uses a combination of users defined in the pullapprove configuration and the
-    # number of users who have performed reviews on Github in the recent past if the configuration
-    # does not specify it. Because, as an open source project, anyone on Github can perform a
-    # review we need to ensure that all groups, including the fallback group, have at least one user
-    # or group defined as reviewers.
-    reviewers:
-      users:
-        - josephperrott
-    reviews:
-      request: 0
-      required: 1
-      # Reviewed-for is required on fallback as it should not ever actually be reviewed, requiring
-      # Reviewed-for helps insure an accidental approval doesn't occur on the fallback group.
-      reviewed_for: required
