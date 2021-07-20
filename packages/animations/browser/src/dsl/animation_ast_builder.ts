@@ -546,6 +546,7 @@ function constructTimingAst(value: string|number|AnimateTimings, errors: any[]) 
   let timings: AnimateTimings|null = null;
   if (value.hasOwnProperty('duration')) {
     timings = value as AnimateTimings;
+    return timings;
   } else if (typeof value == 'number') {
     const duration = resolveTiming(value, errors).duration;
     return makeTimingAst(duration, 0, '');
