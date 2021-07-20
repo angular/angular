@@ -210,6 +210,32 @@
           ]
         },
         {
+          "title": "Modules",
+          "tooltip": "Encapsulate, organize and speed up your app with modules.",
+          "children": [
+            {
+              "url": "guide/ngmodules",
+              "title": "NgModules",
+              "tooltip": "An introduction to the basic concept of modules."
+            },
+            {
+              "url": "guide/feature-modules",
+              "title": "Feature modules",
+              "tooltip": "More on the re-/use of modules."
+            },
+            {
+              "url": "guide/sharing-ngmodules",
+              "title": "Sharing modules",
+              "tooltip": "Reusing functionality with shared modules."
+            },
+            {
+              "url": "guide/lazy-loading-ngmodules",
+              "title": "Lazy-loading feature modules",
+              "tooltip": "Instructions on module loading strategies (lazy vs. eager)."
+            }
+          ]
+        },
+        {
           "title": "Directives",
           "tooltip": "Control the behavior of elements and the layout of your pages with directives.",
           "children": [
