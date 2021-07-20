@@ -1964,6 +1964,28 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           expect(groupValidatorSpy).not.toHaveBeenCalled();
         });
 
+        it('should not run validation for group with "submit" update strategy on child controls input',
+           () => {
+             const validatorSpy = jasmine.createSpy('validator');
+
+             const fixture = initTest(FormGroupComp);
+             const formGroup = new FormGroup(
+                 {
+                   login: new FormControl('', {updateOn: 'change'}),
+                 },
+                 {updateOn: 'submit'});
+             fixture.componentInstance.form = formGroup;
+             fixture.detectChanges();
+
+             formGroup!.setValidators(validatorSpy);
+
+             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             dispatchEvent(input, 'input');
+             fixture.detectChanges();
+
+             expect(validatorSpy).not.toHaveBeenCalled();
+           });
+
         it('should mark as untouched properly if pending touched', () => {
           const fixture = initTest(FormGroupComp);
           const formGroup = new FormGroup({login: new FormControl('', {updateOn: 'submit'})});
