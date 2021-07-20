@@ -69,6 +69,17 @@ describe('Form Builder', () => {
     expect(g.controls['login'].asyncValidator).toBe(asyncValidator);
   });
 
+  it('should support controls with validators that are later modified', () => {
+    const g = b.group({'login': b.control(null, syncValidator, asyncValidator)});
+    expect(g.controls['login'].value).toBeNull();
+    expect(g.controls['login'].validator).toBe(syncValidator);
+    expect(g.controls['login'].asyncValidator).toBe(asyncValidator);
+    g.controls['login'].addValidators(Validators.required);
+    expect(g.controls['login'].hasValidator(Validators.required)).toBe(true);
+    g.controls['login'].removeValidators(Validators.required);
+    expect(g.controls['login'].hasValidator(Validators.required)).toBe(false);
+  });
+
   it('should support controls with no validators and whose form state is undefined', () => {
     const g = b.group({'login': b.control(undefined)});
     expect(g.controls['login'].value).toBeNull();
