@@ -32,7 +32,12 @@ describe('ErrorHandler', () => {
     expect(e).toContain('message!');
   });
 
-  it('should correctly handle `null` or `undefined`', () => {
+  it('should correctly handle primitive values', () => {
+    expect(errorToString('message')).toBe('ERROR#message');
+    expect(errorToString(404)).toBe('ERROR#404');
+    expect(errorToString(0)).toBe('ERROR#0');
+    expect(errorToString(true)).toBe('ERROR#true');
+    expect(errorToString(false)).toBe('ERROR#false');
     expect(errorToString(null)).toBe('ERROR#null');
     expect(errorToString(undefined)).toBe('ERROR#undefined');
   });
