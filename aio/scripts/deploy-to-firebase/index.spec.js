@@ -8,7 +8,9 @@ const {
   computeMajorVersion,
   getLatestCommit,
   getMostRecentMinorBranch,
-} = require('./deploy-to-firebase');
+  skipDeployment,
+  validateDeploymentsInfo,
+} = require('./index');
 
 
 describe('deploy-to-firebase:', () => {
@@ -29,6 +31,7 @@ describe('deploy-to-firebase:', () => {
     (typeof val === 'function') ? `function:${val.name}` : val;
   const getDeploymentsInfoFor = env => {
     const deploymentsInfo = computeDeploymentsInfo(computeInputVars(env));
+    validateDeploymentsInfo(deploymentsInfo);
     return JSON.parse(JSON.stringify(deploymentsInfo, jsonFunctionReplacer));
   };
 
@@ -38,7 +41,8 @@ describe('deploy-to-firebase:', () => {
       CI_REPO_NAME: 'notangular',
     })).toEqual([
       {
-        skipped: true,
+        name: 'skipped',
+        type: 'skipped',
         reason: 'Skipping deploy because this is not angular/angular.',
       },
     ]);
@@ -50,7 +54,8 @@ describe('deploy-to-firebase:', () => {
       CI_REPO_NAME: 'angular',
     })).toEqual([
       {
-        skipped: true,
+        name: 'skipped',
+        type: 'skipped',
         reason: 'Skipping deploy because this is not angular/angular.',
       },
     ]);
@@ -63,7 +68,8 @@ describe('deploy-to-firebase:', () => {
       CI_PULL_REQUEST: 'true',
     })).toEqual([
       {
-        skipped: true,
+        name: 'skipped',
+        type: 'skipped',
         reason: 'Skipping deploy because this is a PR build.',
       },
     ]);
@@ -78,6 +84,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: latestCommits.master,
     })).toEqual([
       {
+        name: 'next',
+        type: 'primary',
         deployEnv: 'next',
         projectId: 'angular-io',
         siteId: 'next-angular-io-site',
@@ -97,7 +105,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: 'DUMMY_TEST_COMMIT',
     })).toEqual([
       {
-        skipped: true,
+        name: 'skipped',
+        type: 'skipped',
         reason:
             'Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ' +
             `(${latestCommits.master}).`,
@@ -115,17 +124,31 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: latestCommits['4.3.x'],
     })).toEqual([
       {
+        name: 'stable',
+        type: 'primary',
         deployEnv: 'stable',
         projectId: 'angular-io',
-        siteId: 'v4-angular-io-site',
+        siteId: 'stable-angular-io-site',
         deployedUrl: 'https://angular.io/',
         preDeployActions: ['function:build', 'function:checkPayloadSize'],
         postDeployActions: ['function:testPwaScore'],
+      },
+      {
+        name: 'stableVersionSubdomain',
+        type: 'secondary',
+        deployEnv: 'stable',
+        projectId: 'angular-io',
+        siteId: 'v4-angular-io-site',
+        deployedUrl: 'https://v4.angular.io/',
+        preDeployActions: [],
+        postDeployActions: ['function:testRedirectToStable'],
       },
     ]);
   });
 
   it('stable - deploy success - no active RC', () => {
+    const majorVersion = computeMajorVersion(mostRecentMinorBranch);
+
     expect(getDeploymentsInfoFor({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
@@ -135,14 +158,28 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: latestCommits[mostRecentMinorBranch],
     })).toEqual([
       {
+        name: 'stable',
+        type: 'primary',
         deployEnv: 'stable',
         projectId: 'angular-io',
-        siteId: `v${computeMajorVersion(mostRecentMinorBranch)}-angular-io-site`,
+        siteId: 'stable-angular-io-site',
         deployedUrl: 'https://angular.io/',
         preDeployActions: ['function:build', 'function:checkPayloadSize'],
         postDeployActions: ['function:testPwaScore'],
       },
       {
+        name: 'stableVersionSubdomain',
+        type: 'secondary',
+        deployEnv: 'stable',
+        projectId: 'angular-io',
+        siteId: `v${majorVersion}-angular-io-site`,
+        deployedUrl: `https://v${majorVersion}.angular.io/`,
+        preDeployActions: [],
+        postDeployActions: ['function:testRedirectToStable'],
+      },
+      {
+        name: 'stableNoActiveRc',
+        type: 'secondary',
         deployEnv: 'stable',
         projectId: 'angular-io',
         siteId: 'rc-angular-io-site',
@@ -163,7 +200,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: 'DUMMY_TEST_COMMIT',
     })).toEqual([
       {
-        skipped: true,
+        name: 'skipped',
+        type: 'skipped',
         reason:
             'Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ' +
             `(${latestCommits['4.3.x']}).`,
@@ -181,6 +219,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: latestCommits['2.4.x'],
     })).toEqual([
       {
+        name: 'archive',
+        type: 'primary',
         deployEnv: 'archive',
         projectId: 'angular-io',
         siteId: 'v2-angular-io-site',
@@ -203,6 +243,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: latestCommits['9.1.x'],
     })).toEqual([
       {
+        name: 'archive',
+        type: 'primary',
         deployEnv: 'archive',
         projectId: 'angular-io',
         siteId: 'v9-angular-io-site',
@@ -223,7 +265,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: 'DUMMY_TEST_COMMIT',
     })).toEqual([
       {
-        skipped: true,
+        name: 'skipped',
+        type: 'skipped',
         reason:
             'Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ' +
             `(${latestCommits['2.4.x']}).`,
@@ -241,7 +284,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: latestCommits['2.1.x'],
     })).toEqual([
       {
-        skipped: true,
+        name: 'skipped',
+        type: 'skipped',
         reason:
             'Skipping deploy of branch "2.1.x" to Firebase.\n' +
             'There is a more recent branch with the same major version: "2.4.x"',
@@ -259,7 +303,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: latestCommits['2.1.x'],
     })).toEqual([
       {
-        skipped: true,
+        name: 'skipped',
+        type: 'skipped',
         reason:
             'Skipping deploy of branch "2.1.x" to Firebase.\n' +
             'There is a more recent branch with the same major version: "2.4.x"',
@@ -277,6 +322,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: latestCommits[mostRecentMinorBranch],
     })).toEqual([
       {
+        name: 'rc',
+        type: 'primary',
         deployEnv: 'rc',
         projectId: 'angular-io',
         siteId: 'rc-angular-io-site',
@@ -304,6 +351,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: latestCommits[mostRecentMinorBranch],
     })).toEqual([
       {
+        name: 'rc',
+        type: 'primary',
         deployEnv: 'rc',
         projectId: 'angular-io',
         siteId: 'rc-angular-io-site',
@@ -324,7 +373,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: 'DUMMY_TEST_COMMIT',
     })).toEqual([
       {
-        skipped: true,
+        name: 'skipped',
+        type: 'skipped',
         reason:
             'Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ' +
             `(${latestCommits[mostRecentMinorBranch]}).`,
@@ -342,7 +392,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: latestCommits['2.1.x'],
     })).toEqual([
       {
-        skipped: true,
+        name: 'skipped',
+        type: 'skipped',
         reason:
             'Skipping deploy of branch "2.1.x" to Firebase.\n' +
             'There is a more recent branch with the same major version: "2.4.x"',
@@ -360,7 +411,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: latestCommits['4.3.x'],
     })).toEqual([
       {
-        skipped: true,
+        name: 'skipped',
+        type: 'skipped',
         reason:
             'Skipping deploy of branch "4.3.x" to Firebase.\n' +
             'There is a more recent branch with the same major version: "4.4.x"',
@@ -378,7 +430,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: latestCommits['4.4.x'],
     })).toEqual([
       {
-        skipped: true,
+        name: 'skipped',
+        type: 'skipped',
         reason:
             'Skipping deploy of branch "4.4.x" to Firebase.\n' +
             'This branch has an equal or higher major version than the stable branch ("2.4.x") ' +
@@ -389,11 +442,11 @@ describe('deploy-to-firebase:', () => {
 
   it('integration - should run the main script without error', () => {
     // NOTE:
-    // This test executes a new instance of the `deploy-to-firebase.js` script on a separate process
+    // This test executes a new instance of the `deploy-to-firebase` script on a separate process
     // and thus does not share the `getRemoteRefs()` cache. To improve stability, we retrieve the
     // latest commit from master ignoring any cached entries.
     const latestCommitOnMaster = getLatestCommit('master', {retrieveFromCache: false});
-    const cmd = `"${process.execPath}" "${__dirname}/deploy-to-firebase" --dry-run`;
+    const cmd = `"${process.execPath}" "${__dirname}" --dry-run`;
     const env = {
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
@@ -403,12 +456,12 @@ describe('deploy-to-firebase:', () => {
     };
     const result = execSync(cmd, {encoding: 'utf8', env}).trim();
     expect(result).toBe(
-        'Total deployments: 1\n' +
+        'Deployments (1): next\n' +
         '\n' +
         '\n' +
         '\n' +
-        'Deployment 1 of 1\n' +
-        '-----------------\n' +
+        'Deployment 1 of 1: next\n' +
+        '-----------------------\n' +
         'Git branch          : master\n' +
         `Git commit          : ${latestCommitOnMaster}\n` +
         'Build/deploy mode   : next\n' +
@@ -418,5 +471,176 @@ describe('deploy-to-firebase:', () => {
         'Post-deploy actions : testPwaScore\n' +
         'Deployment URLs     : https://next.angular.io/\n' +
         '                      https://next-angular-io-site.web.app/');
+  });
+});
+
+describe('validateDeploymentsInfo()', () => {
+  const createTarget = (name, type) => ({
+    name,
+    type,
+    deployEnv: 'deployEnv',
+    projectId: 'projectId',
+    siteId: 'siteId',
+    deployedUrl: 'deployedUrl',
+    preDeployActions: [],
+    postDeployActions: [],
+  });
+
+  it('should error if there are deploy targets with unknown types', () => {
+    const targets = [
+      createTarget('target-1', 'primary'),
+      createTarget('target-2', 'tertiary'),
+      createTarget('target-3', 'secondary'),
+      createTarget(undefined, 'other'),
+    ];
+
+    expect(() => validateDeploymentsInfo(targets)).toThrowError(
+        'Expected all deploy targets to have a type of primary or secondary or skipped, but ' +
+        'found 2 targets with an unknown type: target-2 (type: tertiary), <no name> (type: other)');
+  });
+
+  it('should error if there are non-skipped targets missing required properties', () => {
+    // With target missing `name`.
+    const targets1 = [
+      createTarget('target-1', 'primary'),
+      createTarget(undefined, 'secondary'),
+    ];
+
+    expect(() => validateDeploymentsInfo(targets1)).toThrowError(
+        'Expected deploy target \'<no name>\' to have all required properties, but it is missing ' +
+        '\'name\'.');
+
+    // With target missing multiple properties.
+    const targets2 = [
+      createTarget('target-1', 'primary'),
+      {
+        ...createTarget('target-2', 'secondary'),
+        deployEnv: undefined,
+        postDeployActions: undefined,
+      },
+    ];
+
+    expect(() => validateDeploymentsInfo(targets2)).toThrowError(
+        'Expected deploy target \'target-2\' to have all required properties, but it is missing ' +
+        '\'deployEnv\', \'postDeployActions\'.');
+  });
+
+  it('should error if there are skipped targets missing required properties', () => {
+    // With target missing `name`.
+    const targets1 = [
+      createTarget('target-1', 'primary'),
+      {...skipDeployment('just because'), name: undefined},
+    ];
+
+    expect(() => validateDeploymentsInfo(targets1)).toThrowError(
+        'Expected deploy target \'<no name>\' to have all required properties, but it is missing ' +
+        '\'name\'.');
+
+    // With target missing `reason`.
+    const targets2 = [
+      createTarget('target-1', 'primary'),
+      skipDeployment(undefined),
+    ];
+
+    expect(() => validateDeploymentsInfo(targets2)).toThrowError(
+        'Expected deploy target \'skipped\' to have all required properties, but it is missing ' +
+        '\'reason\'.');
+  });
+
+  it('should error if there are both skipped and non-skipped targets', () => {
+    const targets = [
+      skipDeployment('just because'),
+      createTarget('target-2', 'secondary'),
+    ];
+
+    expect(() => validateDeploymentsInfo(targets)).toThrowError(
+        'Expected a single skipped deploy target, but found 2 targets in total: skipped, target-2');
+  });
+
+  it('should error if there are multiple skipped targets', () => {
+    const targets = [
+      skipDeployment('just because'),
+      skipDeployment('because why not'),
+    ];
+
+    expect(() => validateDeploymentsInfo(targets)).toThrowError(
+        'Expected a single skipped deploy target, but found 2 targets in total: skipped, skipped');
+  });
+
+  it('should error if there is no primary target', () => {
+    const targets = [
+      createTarget('target-1', 'secondary'),
+      createTarget('target-2', 'secondary'),
+    ];
+
+    expect(() => validateDeploymentsInfo(targets)).toThrowError(
+        'Expected exactly one primary deploy target, but found 0: -');
+  });
+
+  it('should error if there are more than one primary targets', () => {
+    const targets = [
+      createTarget('target-1', 'primary'),
+      createTarget('target-2', 'secondary'),
+      createTarget('target-3', 'primary'),
+    ];
+
+    expect(() => validateDeploymentsInfo(targets)).toThrowError(
+        'Expected exactly one primary deploy target, but found 2: target-1, target-3');
+  });
+
+  it('should error if the primary target is not the first item in the list', () => {
+    const targets = [
+      createTarget('target-1', 'secondary'),
+      createTarget('target-2', 'primary'),
+      createTarget('target-3', 'secondary'),
+    ];
+
+    expect(() => validateDeploymentsInfo(targets)).toThrowError(
+        'Expected the primary target (target-2) to be the first item in the deploy target list, ' +
+        'but it was found at index 1 (0-based): target-1, target-2, target-3');
+  });
+
+  it('should error if there are secondary targets with a different `deployEnv` than primary',
+      () => {
+        const targets = [
+          {...createTarget('target-1', 'primary'), deployEnv: 'deploy-env-1'},
+          {...createTarget('target-2', 'secondary'), deployEnv: 'deploy-env-1'},
+          {...createTarget('target-3', 'secondary'), deployEnv: 'deploy-env-2'},
+          {...createTarget('target-4', 'secondary'), deployEnv: 'deploy-env-1'},
+          {...createTarget('target-5', 'secondary'), deployEnv: 'deploy-env-2'},
+          {...createTarget('target-6', 'secondary'), deployEnv: 'deploy-env-3'},
+        ];
+
+        expect(() => validateDeploymentsInfo(targets)).toThrowError(
+            'Expected all secondary deploy targets to match the primary target\'s `deployEnv` ' +
+            '(deploy-env-1), but 3 targets do not: target-3 (deployEnv: deploy-env-2), target-5 ' +
+            '(deployEnv: deploy-env-2), target-6 (deployEnv: deploy-env-3)');
+      });
+
+  it('should succeed if with a valid skipped targets', () => {
+    const targets = [
+      skipDeployment('due to valid reasons'),
+    ];
+
+    expect(() => validateDeploymentsInfo(targets)).not.toThrow();
+  });
+
+  it('should succeed if with a valid non-skipped target', () => {
+    const targets = [
+      createTarget('target-1', 'primary'),
+    ];
+
+    expect(() => validateDeploymentsInfo(targets)).not.toThrow();
+  });
+
+  it('should succeed with multiple valid non-skipped targets', () => {
+    const targets = [
+      createTarget('target-1', 'primary'),
+      createTarget('target-2', 'secondary'),
+      createTarget('target-3', 'secondary'),
+      createTarget('target-4', 'secondary'),
+    ];
+
+    expect(() => validateDeploymentsInfo(targets)).not.toThrow();
   });
 });
