@@ -12,14 +12,16 @@ import {Observable, Subscribable, Unsubscribable} from 'rxjs';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 interface SubscriptionStrategy {
-  createSubscription(async: Subscribable<any>|Promise<any>, updateLatestValue: any): Unsubscribable
-      |Promise<any>;
+  createSubscription(
+      async: Subscribable<Object>|Promise<Object>,
+      updateLatestValue: (value: Object) => void): Unsubscribable|Promise<void>;
   dispose(subscription: Unsubscribable|Promise<any>): void;
   onDestroy(subscription: Unsubscribable|Promise<any>): void;
 }
 
 class SubscribableStrategy implements SubscriptionStrategy {
-  createSubscription(async: Subscribable<any>, updateLatestValue: any): Unsubscribable {
+  createSubscription(async: Subscribable<Object>, updateLatestValue: (value: Object) => void):
+      Unsubscribable {
     return async.subscribe({
       next: updateLatestValue,
       error: (e: any) => {
@@ -38,15 +40,16 @@ class SubscribableStrategy implements SubscriptionStrategy {
 }
 
 class PromiseStrategy implements SubscriptionStrategy {
-  createSubscription(async: Promise<any>, updateLatestValue: (v: any) => any): Promise<any> {
+  createSubscription(async: Promise<Object>, updateLatestValue: (v: Object) => void):
+      Promise<void> {
     return async.then(updateLatestValue, e => {
       throw e;
     });
   }
 
-  dispose(subscription: Promise<any>): void {}
+  dispose(subscription: Promise<Object>): void {}
 
-  onDestroy(subscription: Promise<any>): void {}
+  onDestroy(subscription: Promise<Object>): void {}
 }
 
 const _promiseStrategy = new PromiseStrategy();
