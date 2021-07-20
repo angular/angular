@@ -9,7 +9,7 @@
 import {IncrementalBuild} from '../api';
 
 export const NOOP_INCREMENTAL_BUILD: IncrementalBuild<any, any> = {
-  priorAnalysisFor: () => undefined,
+  priorAnalysisFor: () => null,
   priorTypeCheckingResultsFor: () => null,
   recordSuccessfulTypeCheck: () => {},
 };

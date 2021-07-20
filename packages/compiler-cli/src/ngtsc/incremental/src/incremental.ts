@@ -293,21 +293,21 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
     this._state.emitted.add(absoluteFromSourceFile(sf));
   }
 
-  priorAnalysisFor(sf: ts.SourceFile): ClassRecord[]|null|undefined {
+  priorAnalysisFor(sf: ts.SourceFile): ClassRecord[]|null {
     if (this.step === null) {
-      return undefined;
+      return null;
     }
 
     const sfPath = absoluteFromSourceFile(sf);
 
     // If the file has logically changed, its previous analysis cannot be reused.
     if (this.step.logicallyChangedTsFiles.has(sfPath)) {
-      return undefined;
+      return null;
     }
 
     const priorAnalysis = this.step.priorState.priorAnalysis;
     if (!priorAnalysis.has(sf)) {
-      return undefined;
+      return null;
     }
     return priorAnalysis.get(sf)!;
   }

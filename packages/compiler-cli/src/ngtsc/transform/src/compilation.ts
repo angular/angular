@@ -126,10 +126,10 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     const promises: Promise<void>[] = [];
 
     const priorWork = this.incrementalBuild.priorAnalysisFor(sf);
-    if (priorWork !== undefined) {
+    if (priorWork !== null) {
       this.perf.eventCount(PerfEvent.SourceFileReuseAnalysis);
 
-      if (priorWork !== null) {
+      if (priorWork.length > 0) {
         for (const priorRecord of priorWork) {
           this.adopt(priorRecord);
         }
@@ -151,13 +151,6 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     };
 
     visit(sf);
-
-    // If no traits have been detected in the source file, record the file as analysed without
-    // traits to allow subsequent incremental builds not to visit this source file again if it is
-    // not affected.
-    if (!this.fileToClasses.has(sf)) {
-      this.filesWithoutTraits.add(sf);
-    }
 
     if (preanalyze && promises.length > 0) {
       return Promise.all(promises).then(() => undefined as void);
@@ -185,8 +178,8 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     return records;
   }
 
-  getAnalyzedRecords(): Map<ts.SourceFile, ClassRecord[]|null> {
-    const result = new Map<ts.SourceFile, ClassRecord[]|null>();
+  getAnalyzedRecords(): Map<ts.SourceFile, ClassRecord[]> {
+    const result = new Map<ts.SourceFile, ClassRecord[]>();
     for (const [sf, classes] of this.fileToClasses) {
       const records: ClassRecord[] = [];
       for (const clazz of classes) {
@@ -195,7 +188,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
       result.set(sf, records);
     }
     for (const sf of this.filesWithoutTraits) {
-      result.set(sf, null);
+      result.set(sf, []);
     }
     return result;
   }
