@@ -123,12 +123,86 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
     // Check that the browser supports unprefixed CSS animation
     it('should handle keyframes rules', () => {
       const css = '@keyframes foo {0% {transform:translate(-50%) scaleX(0);}}';
-      expect(s(css, 'contenta')).toEqual(css);
+      const expected = '@keyframes host-a_foo {0% {transform:translate(-50%) scaleX(0);}}';
+      expect(s(css, 'host-a')).toEqual(expected);
     });
 
     it('should handle -webkit-keyframes rules', () => {
       const css = '@-webkit-keyframes foo {0% {-webkit-transform:translate(-50%) scaleX(0);}}';
-      expect(s(css, 'contenta')).toEqual(css);
+      const expected =
+          '@-webkit-keyframes host-a_foo {0% {-webkit-transform:translate(-50%) scaleX(0);}}';
+      expect(s(css, 'host-a')).toEqual(expected);
+    });
+
+    it('should scope animations using local keyframes', () => {
+      const css = `
+        button {
+          animation: foo 10s ease;
+        }
+
+        @keyframes foo {
+          0% {
+            transform: translate(-50%) scaleX(0);
+          }
+      }`;
+      const result = s(css, 'host-a');
+      expect(result).toContain('animation:host-a_foo 10s ease;');
+    });
+
+    it('should not scope animations using external keyframes', () => {
+      const css = `
+        button {
+          animation: foo 10s ease;
+        }
+      }`;
+      const result = s(css, 'host-a');
+      expect(result).toContain('animation:foo 10s ease;');
+    });
+
+    it('should scope animation-names using local keyframes', () => {
+      const css = `
+        button {
+          animation-name: foo;
+        }
+
+        @keyframes foo {
+          0% {
+            transform: translate(-50%) scaleX(0);
+          }
+      }`;
+      const result = s(css, 'host-a');
+      expect(result).toContain('animation-name:host-a_foo;');
+    });
+
+    it('should not scope animation-names using external keyframes', () => {
+      const css = `
+        button {
+          animation-name: foo;
+        }
+      }`;
+      const result = s(css, 'host-a');
+      expect(result).toContain('animation-name:foo;');
+    });
+
+    it('should handle (scope or not) multiple animation-names', () => {
+      const css = `
+        button {
+          animation-name: foo, bar , foobar;
+        }
+
+        @keyframes foo {
+          0% {
+            transform: translate(-50%) scaleX(0);
+          }
+        }
+
+        @keyframes foobar {
+          0% {
+            opacity: 0;
+          }
+      }`;
+      const result = s(css, 'host-a');
+      expect(result).toContain('animation-name:host-a_foo,bar,host-a_foobar;');
     });
 
     it('should handle complicated selectors', () => {
