@@ -1,0 +1,11 @@
+genrule(
+    name = "zone_awaiter",
+    srcs = [
+        "//packages/zone.js/lib:zone.awaiter.js",
+    ],
+    outs = [
+        "zone.awaiter.js",
+    ],
+    cmd = "tail -1 $< > temp.js && if grep -q sourceMappingURL temp.js; then head -n -1 $< > $@; else cp $< $@; fi",
+    visibility = ["//visibility:public"],
+)
