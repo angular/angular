@@ -65,7 +65,7 @@
   }
 
   .mat-slider:hover,
-  .cdk-focused {
+  .mat-slider.cdk-focused {
     .mat-slider-track-background {
       background-color: $mat-slider-off-focused-color;
     }
