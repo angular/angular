@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ClassDeclaration} from '../../reflection';
-import {RemoteScope} from './api';
+import {Reference} from '../../imports';
+import {RemoteScope, ScopeData} from './api';
 import {LocalModuleScope} from './local';
 
 /**
@@ -22,6 +23,8 @@ export interface ComponentScopeReader {
    * that component. If remote scoping is not required (the common case), returns `null`.
    */
   getRemoteScope(clazz: ClassDeclaration): RemoteScope|null;
+
+  getSelfContainedScope(deps: Reference<ClassDeclaration>[]|null): ScopeData|null;
 }
 
 /**
@@ -49,6 +52,15 @@ export class CompoundComponentScopeReader implements ComponentScopeReader {
       const remoteScope = reader.getRemoteScope(clazz);
       if (remoteScope !== null) {
         return remoteScope;
+      }
+    }
+    return null;
+  }
+  getSelfContainedScope(deps: Reference<ClassDeclaration>[]): ScopeData|null {
+    for (const reader of this.readers) {
+      const scope = reader.getSelfContainedScope(deps);
+      if (scope !== null) {
+        return scope;
       }
     }
     return null;

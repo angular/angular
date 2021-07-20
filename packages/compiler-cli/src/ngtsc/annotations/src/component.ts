@@ -21,7 +21,7 @@ import {ClassPropertyMapping, ComponentResources, DirectiveMeta, DirectiveTypeCh
 import {EnumValue, PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
-import {ComponentScopeReader, LocalModuleScopeRegistry, TypeCheckScopeRegistry} from '../../scope';
+import {ComponentScopeReader, LocalModuleScopeRegistry, ScopeData, TypeCheckScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
 import {TemplateSourceMapping, TypeCheckContext} from '../../typecheck/api';
 import {SubsetOfKeys} from '../../util/src/typescript';
@@ -86,6 +86,8 @@ export interface ComponentAnalysisData {
   inlineStyles: string[]|null;
 
   isPoisoned: boolean;
+
+  deps: Reference<ClassDeclaration>[]|null;
 }
 
 export type ComponentResolutionData = Pick<R3ComponentMetadata, ComponentMetadataResolvedFields>;
@@ -480,6 +482,20 @@ export class ComponentDecoratorHandler implements
       styles.push(...template.styles);
     }
 
+    let deps: Reference<ClassDeclaration>[]|null = null;
+    if (component.has('deps')) {
+      const depsRaw = this.evaluator.evaluate(component.get('deps')!);
+      if (Array.isArray(depsRaw) && depsRaw.every(dep => dep instanceof Reference)) {
+        deps = depsRaw as Reference<ClassDeclaration>[];
+      } else {
+        if (diagnostics === undefined) {
+          diagnostics = [];
+        }
+        diagnostics.push(makeDiagnostic(
+            ErrorCode.VALUE_HAS_WRONG_TYPE, component.get('deps')!, `Expected list of classes`));
+      }
+    }
+
     const output: AnalysisOutput<ComponentAnalysisData> = {
       analysis: {
         baseClass: readBaseClass(node, this.reflector, this.evaluator),
@@ -514,6 +530,7 @@ export class ComponentDecoratorHandler implements
           styles: styleResources,
           template: templateResource,
         },
+        deps,
         isPoisoned,
       },
       diagnostics,
@@ -600,7 +617,7 @@ export class ComponentDecoratorHandler implements
     if (meta.isPoisoned && !this.usePoisonedData) {
       return;
     }
-    const scope = this.typeCheckScopeRegistry.getTypeCheckScope(node);
+    const scope = this.typeCheckScopeRegistry.getTypeCheckScope(node, meta.deps);
     if (scope.isPoisoned && !this.usePoisonedData) {
       // Don't type-check components that had errors in their scopes, unless requested.
       return;
@@ -624,9 +641,21 @@ export class ComponentDecoratorHandler implements
     }
 
     const context = node.getSourceFile();
+
+
+    let compilationScope: ScopeData|null = null;
+    let ngModuleForRemoteScoping: ClassDeclaration|null = null;
+    if (analysis.deps === null) {
+      const scope = this.scopeReader.getScopeForComponent(node);
+      if (scope !== null) {
+        compilationScope = scope.compilation;
+        ngModuleForRemoteScoping = scope.ngModule;
+      }
+    } else {
+      compilationScope = this.scopeReader.getSelfContainedScope(analysis.deps);
+    }
     // Check whether this component was registered with an NgModule. If so, it should be compiled
     // under that module's compilation scope.
-    const scope = this.scopeReader.getScopeForComponent(node);
     let metadata = analysis.meta as Readonly<R3ComponentMetadata>;
 
     const data: ComponentResolutionData = {
@@ -635,7 +664,7 @@ export class ComponentDecoratorHandler implements
       declarationListEmitMode: DeclarationListEmitMode.Direct,
     };
 
-    if (scope !== null && (!scope.compilation.isPoisoned || this.usePoisonedData)) {
+    if (compilationScope !== null && (!compilationScope.isPoisoned || this.usePoisonedData)) {
       // Replace the empty components and directives from the analyze() step with a fully expanded
       // scope. This is possible now because during resolve() the whole compilation unit has been
       // fully analyzed.
@@ -663,13 +692,13 @@ export class ComponentDecoratorHandler implements
       type MatchedDirective = DirectiveMeta&{selector: string};
       const matcher = new SelectorMatcher<MatchedDirective>();
 
-      for (const dir of scope.compilation.directives) {
+      for (const dir of compilationScope.directives) {
         if (dir.selector !== null) {
           matcher.addSelectables(CssSelector.parse(dir.selector), dir as MatchedDirective);
         }
       }
       const pipes = new Map<string, Reference<ClassDeclaration>>();
-      for (const pipe of scope.compilation.pipes) {
+      for (const pipe of compilationScope.pipes) {
         pipes.set(pipe.name, pipe.ref);
       }
 
@@ -723,22 +752,28 @@ export class ComponentDecoratorHandler implements
                 this.semanticDepGraphUpdater!.getSemanticReference(pipe.ref.node, pipe.expression));
       }
 
-      // Scan through the directives/pipes actually used in the template and check whether any
-      // import which needs to be generated would create a cycle.
       const cyclesFromDirectives = new Map<UsedDirective, Cycle>();
-      for (const usedDirective of usedDirectives) {
-        const cycle =
-            this._checkForCyclicImport(usedDirective.importedFile, usedDirective.type, context);
-        if (cycle !== null) {
-          cyclesFromDirectives.set(usedDirective, cycle);
-        }
-      }
       const cyclesFromPipes = new Map<UsedPipe, Cycle>();
-      for (const usedPipe of usedPipes) {
-        const cycle =
-            this._checkForCyclicImport(usedPipe.importedFile, usedPipe.expression, context);
-        if (cycle !== null) {
-          cyclesFromPipes.set(usedPipe, cycle);
+
+      // Hack: cycle detection only needs to happen if remote scoping is even possible. Otherwise,
+      // there is no potential for cycles as a direct import path exists already to all consumed
+      // components/directives/pipes.
+      if (ngModuleForRemoteScoping !== null) {
+        // Scan through the directives/pipes actually used in the template and check whether any
+        // import which needs to be generated would create a cycle.
+        for (const usedDirective of usedDirectives) {
+          const cycle =
+              this._checkForCyclicImport(usedDirective.importedFile, usedDirective.type, context);
+          if (cycle !== null) {
+            cyclesFromDirectives.set(usedDirective, cycle);
+          }
+        }
+        for (const usedPipe of usedPipes) {
+          const cycle =
+              this._checkForCyclicImport(usedPipe.importedFile, usedPipe.expression, context);
+          if (cycle !== null) {
+            cyclesFromPipes.set(usedPipe, cycle);
+          }
         }
       }
 
@@ -779,11 +814,11 @@ export class ComponentDecoratorHandler implements
           // If a semantic graph is being tracked, record the fact that this component is remotely
           // scoped with the declaring NgModule symbol as the NgModule's emit becomes dependent on
           // the directive/pipe usages of this component.
-          if (this.semanticDepGraphUpdater !== null) {
-            const moduleSymbol = this.semanticDepGraphUpdater.getSymbol(scope.ngModule);
+          if (this.semanticDepGraphUpdater !== null && ngModuleForRemoteScoping !== null) {
+            const moduleSymbol = this.semanticDepGraphUpdater.getSymbol(ngModuleForRemoteScoping);
             if (!(moduleSymbol instanceof NgModuleSymbol)) {
-              throw new Error(
-                  `AssertionError: Expected ${scope.ngModule.name} to be an NgModuleSymbol.`);
+              throw new Error(`AssertionError: Expected ${
+                  ngModuleForRemoteScoping.name.text} to be an NgModuleSymbol.`);
             }
 
             moduleSymbol.addRemotelyScopedComponent(

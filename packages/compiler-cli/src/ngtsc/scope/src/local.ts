@@ -104,8 +104,9 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
   private modulesWithStructuralErrors = new Set<ClassDeclaration>();
 
   constructor(
-      private localReader: MetadataReader, private dependencyScopeReader: DtsModuleScopeResolver,
-      private refEmitter: ReferenceEmitter, private aliasingHost: AliasingHost|null) {}
+      private localReader: MetadataReader, private fullReader: MetadataReader,
+      private dependencyScopeReader: DtsModuleScopeResolver, private refEmitter: ReferenceEmitter,
+      private aliasingHost: AliasingHost|null) {}
 
   /**
    * Add an NgModule's data to the registry.
@@ -130,6 +131,54 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
         null :
         this.getScopeOfModule(this.declarationToModule.get(clazz)!.ngModule);
     return scope;
+  }
+
+  getSelfContainedScope(deps: Reference<ClassDeclaration>[]): ScopeData|null {
+    const directives = new Map<DeclarationNode, DirectiveMeta>();
+    const pipes = new Map<DeclarationNode, PipeMeta>();
+    const diagnostics: ts.Diagnostic[] = [];
+    const ngModules = new Set<ClassDeclaration>();
+    let isPoisoned = false;
+    for (const dep of deps) {
+      const importScope = this.getExportedScope(dep, diagnostics, dep.node, 'import');
+      if (importScope !== null) {
+        ngModules.add(dep.node);
+        if (importScope === 'invalid') {
+          isPoisoned = true;
+          continue;
+        }
+        isPoisoned = isPoisoned || importScope.exported.isPoisoned;
+        for (const directive of importScope.exported.directives) {
+          directives.set(directive.ref.node, directive);
+        }
+        for (const pipe of importScope.exported.pipes) {
+          pipes.set(pipe.ref.node, pipe);
+        }
+
+        continue;
+      }
+
+      const dirMeta = this.fullReader.getDirectiveMetadata(dep);
+      if (dirMeta !== null) {
+        directives.set(dirMeta.ref.node, dirMeta);
+        continue;
+      }
+
+      const pipeMeta = this.fullReader.getPipeMetadata(dep);
+      if (pipeMeta !== null) {
+        pipes.set(pipeMeta.ref.node, pipeMeta);
+        continue;
+      }
+
+      throw new Error(`Unknown dep: ${dep.debugName}`);
+    }
+
+    return {
+      ngModules: Array.from(ngModules.values()),
+      directives: Array.from(directives.values()),
+      pipes: Array.from(pipes.values()),
+      isPoisoned: false,
+    };
   }
 
   /**
@@ -284,7 +333,20 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
     for (const decl of ngModule.imports) {
       const importScope = this.getExportedScope(decl, diagnostics, ref.node, 'import');
       if (importScope === null) {
-        // An import wasn't an NgModule, so record an error.
+        // An import wasn't an NgModule. Maybe it's a directive or pipe?
+        const dirMeta = this.fullReader.getDirectiveMetadata(decl);
+        if (dirMeta !== null) {
+          compilationDirectives.set(dirMeta.ref.node, dirMeta);
+          continue;
+        }
+
+        const pipeMeta = this.fullReader.getPipeMetadata(decl);
+        if (pipeMeta !== null) {
+          compilationPipes.set(pipeMeta.ref.node, pipeMeta);
+          continue;
+        }
+
+        // If not, record an error.
         diagnostics.push(invalidRef(ref.node, decl, 'import'));
         isPoisoned = true;
         continue;

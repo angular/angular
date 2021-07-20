@@ -12,6 +12,7 @@ import * as ts from 'typescript';
 import {Reference} from '../../imports';
 import {DirectiveMeta, flattenInheritedDirectiveMetadata, MetadataReader} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
+import {ScopeData} from './api';
 
 import {ComponentScopeReader} from './component_scope';
 
@@ -69,13 +70,35 @@ export class TypeCheckScopeRegistry {
    * contains an error, then 'error' is returned. If the component is not declared in any NgModule,
    * an empty type-check scope is returned.
    */
-  getTypeCheckScope(node: ClassDeclaration): TypeCheckScope {
+  getTypeCheckScope(node: ClassDeclaration, deps: Reference<ClassDeclaration>[]|null):
+      TypeCheckScope {
     const matcher = new SelectorMatcher<DirectiveMeta>();
     const directives: DirectiveMeta[] = [];
     const pipes = new Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>();
 
-    const scope = this.scopeReader.getScopeForComponent(node);
-    if (scope === null) {
+    let compilationScope: ScopeData|null = null;
+
+    let cacheKey: ClassDeclaration|null = null;
+    let isPoisoned: boolean = false;
+    let schemas: SchemaMetadata[] = [];
+
+    if (deps === null) {
+      const scope = this.scopeReader.getScopeForComponent(node);
+      if (scope !== null) {
+        compilationScope = scope.compilation;
+        cacheKey = scope.ngModule;
+        isPoisoned = scope.compilation.isPoisoned || scope.exported.isPoisoned;
+        schemas = scope.schemas;
+      }
+    } else {
+      compilationScope = this.scopeReader.getSelfContainedScope(deps);
+      if (compilationScope !== null) {
+        cacheKey = node;
+        isPoisoned = compilationScope.isPoisoned;
+      }
+    }
+
+    if (compilationScope === null || cacheKey === null) {
       return {
         matcher,
         directives,
@@ -85,11 +108,11 @@ export class TypeCheckScopeRegistry {
       };
     }
 
-    if (this.scopeCache.has(scope.ngModule)) {
-      return this.scopeCache.get(scope.ngModule)!;
+    if (this.scopeCache.has(cacheKey)) {
+      return this.scopeCache.get(cacheKey)!;
     }
 
-    for (const meta of scope.compilation.directives) {
+    for (const meta of compilationScope.directives) {
       if (meta.selector !== null) {
         const extMeta = this.getTypeCheckDirectiveMetadata(meta.ref);
         matcher.addSelectables(CssSelector.parse(meta.selector), extMeta);
@@ -97,7 +120,7 @@ export class TypeCheckScopeRegistry {
       }
     }
 
-    for (const {name, ref} of scope.compilation.pipes) {
+    for (const {name, ref} of compilationScope.pipes) {
       if (!ts.isClassDeclaration(ref.node)) {
         throw new Error(`Unexpected non-class declaration ${
             ts.SyntaxKind[ref.node.kind]} for pipe ${ref.debugName}`);
@@ -109,10 +132,10 @@ export class TypeCheckScopeRegistry {
       matcher,
       directives,
       pipes,
-      schemas: scope.schemas,
-      isPoisoned: scope.compilation.isPoisoned || scope.exported.isPoisoned,
+      schemas,
+      isPoisoned,
     };
-    this.scopeCache.set(scope.ngModule, typeCheckScope);
+    this.scopeCache.set(cacheKey, typeCheckScope);
     return typeCheckScope;
   }
 

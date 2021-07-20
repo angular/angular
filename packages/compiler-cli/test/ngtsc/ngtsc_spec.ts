@@ -54,6 +54,116 @@ function allTests(os: string) {
       env.tsconfig();
     });
 
+    describe('standalone components', () => {
+      it('should compile a basic standalone component', () => {
+        env.write('test.ts', `
+          import {Component, Directive} from '@angular/core';
+
+          @Directive({selector: '[dir]'})
+          export class Dir {}
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div dir></div>',
+            deps: [Dir],
+          })
+          export class Cmp {}
+        `);
+        env.driveMain();
+        expect(env.getContents('test.js')).toContain('directives: [Dir]');
+      });
+
+      it('should allow deps on NgModules', () => {
+        env.write('test.ts', `
+          import {Component, Directive, NgModule} from '@angular/core';
+
+          @Directive({selector: '[dir]'})
+          export class Dir {}
+
+          @NgModule({
+            declarations: [Dir],
+            exports: [Dir],
+          })
+          export class DirModule {}
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div dir></div>',
+            deps: [DirModule],
+          })
+          export class Cmp {}
+        `);
+        env.driveMain();
+        expect(env.getContents('test.js')).toContain('directives: [Dir]');
+      });
+
+      it('should allow a normal NgModule to import a standalone component', () => {
+        env.write('test.ts', `
+          import {Component, Directive, NgModule} from '@angular/core';
+
+          @Directive({selector: '[dir]'})
+          export class Dir {}
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div dir></div>',
+            deps: [Dir],
+          })
+          export class TestCmp {}
+
+          @Component({
+            selector: 'app-cmp',
+            template: '<test-cmp></test-cmp>',
+          })
+          export class AppCmp {}
+
+          @NgModule({
+            declarations: [AppCmp],
+            imports: [TestCmp],
+          })
+          export class AppModule {}
+        `);
+        env.driveMain();
+        expect(env.getContents('test.js')).toContain('directives: [TestCmp]');
+      });
+
+      it('should allow a normal NgModule to export a standalone component', () => {
+        env.write('test.ts', `
+          import {Component, Directive, NgModule} from '@angular/core';
+
+          @Directive({selector: '[dir]'})
+          export class Dir {}
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div dir></div>',
+            deps: [Dir],
+          })
+          export class TestCmp {}
+
+          @NgModule({
+            imports: [TestCmp],
+            exports: [TestCmp],
+          })
+          export class TestModule {}
+
+          @Component({
+            selector: 'app-cmp',
+            template: '<test-cmp></test-cmp>',
+          })
+          export class AppCmp {}
+
+          @NgModule({
+            declarations: [AppCmp],
+            imports: [TestModule],
+          })
+          export class AppModule {}
+        `);
+        env.driveMain();
+        expect(env.getContents('test.js')).toContain('directives: [TestCmp]');
+      });
+    });
+
     it('should accept relative file paths as command line argument', () => {
       env.addCommandLineArgs('--rootDir', './rootDir');
       env.write('rootDir/test.html', '<p>Hello World</p>');

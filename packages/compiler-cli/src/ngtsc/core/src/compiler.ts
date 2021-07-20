@@ -961,14 +961,14 @@ export class NgCompiler {
     const localMetaRegistry = new LocalMetadataRegistry();
     const localMetaReader: MetadataReader = localMetaRegistry;
     const depScopeReader = new MetadataDtsModuleScopeResolver(dtsReader, aliasingHost);
-    const scopeRegistry =
-        new LocalModuleScopeRegistry(localMetaReader, depScopeReader, refEmitter, aliasingHost);
+    const metaReader = new CompoundMetadataReader([localMetaReader, dtsReader]);
+    const scopeRegistry = new LocalModuleScopeRegistry(
+        localMetaReader, metaReader, depScopeReader, refEmitter, aliasingHost);
     const scopeReader: ComponentScopeReader = scopeRegistry;
     const semanticDepGraphUpdater = this.incrementalCompilation.semanticDepGraphUpdater;
     const metaRegistry = new CompoundMetadataRegistry([localMetaRegistry, scopeRegistry]);
     const injectableRegistry = new InjectableClassRegistry(reflector);
 
-    const metaReader = new CompoundMetadataReader([localMetaReader, dtsReader]);
     const typeCheckScopeRegistry = new TypeCheckScopeRegistry(scopeReader, metaReader);
 
 
