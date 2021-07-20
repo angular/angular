@@ -26,7 +26,6 @@ This topic provides some guidelines for the following general categories of NgMo
 * [Domain](#domain): A domain NgModule is organized around a feature, business domain, or user experience.
 * [Routed](#routed): The top component of the NgModule acts as the destination of a [router](guide/glossary#router "Definition of router") navigation route.
 * [Routing](#routing): A routing NgModule provides the routing configuration for another NgModule.
-* [Service](#service): A service NgModule provides utility services such as data access and messaging.
 * [Widget](#widget): A widget NgModule makes a component, directive, or pipe available to other NgModules.
 * [Shared](#shared): A shared NgModule makes a set of components, directives, and pipes available to other NgModules.
 
@@ -178,16 +177,6 @@ In your routing NgModule, re-export the <code>RouterModule</code> as a convenien
 
 Don't use declarations in a routing NgModule.
 Components, directives, and pipes are the responsibility of the companion domain NgModule, not the routing NgModule.
-
-{@a service}
-
-## Service NgModules
-
-Use a service NgModule to provide a utility service such as data access or messaging.
-Ideal service NgModules consist entirely of providers and have no declarations.
-Angular's `HttpClientModule` is a good example of a service NgModule.
-
-Use only the root `AppModule` to import service NgModules.
 
 {@a widget}
 
