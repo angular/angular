@@ -4,8 +4,9 @@ import { TestBed } from '@angular/core/testing';
 import { Subscription } from 'rxjs';
 
 import { LocationService } from 'app/shared/location.service';
-import { MockLocationService } from 'testing/location.service';
 import { Logger } from 'app/shared/logger.service';
+import { htmlEscape } from 'safevalues';
+import { MockLocationService } from 'testing/location.service';
 import { MockLogger } from 'testing/logger.service';
 import { DocumentService, DocumentContents,
          FETCHING_ERROR_ID, FILE_NOT_FOUND_ID } from './document.service';
@@ -60,11 +61,13 @@ describe('DocumentService', () => {
       expect(latestDocument).toBeUndefined();
 
       httpMock.expectOne({}).flush(doc0);
-      expect(latestDocument).toEqual(doc0);
+      expect(latestDocument?.id).toBe(doc0.id);
+      expect(latestDocument?.contents?.toString()).toBe(doc0.contents);
 
       locationService.go('new/doc');
       httpMock.expectOne({}).flush(doc1);
-      expect(latestDocument).toEqual(doc1);
+      expect(latestDocument?.id).toBe(doc1.id);
+      expect(latestDocument?.contents?.toString()).toBe(doc1.contents);
     });
 
     it('should encode the request path to be case-insensitive', () => {
@@ -99,7 +102,8 @@ describe('DocumentService', () => {
       logger.output.error = [];
       httpMock.expectOne(CONTENT_URL_PREFIX + 'file-not-found.json').flush(notFoundDoc);
       expect(logger.output.error).toEqual([]); // does not report repeated errors
-      expect(currentDocument).toEqual(notFoundDoc);
+      expect(currentDocument?.id).toBe(notFoundDoc.id);
+      expect(currentDocument?.contents?.toString()).toBe(notFoundDoc.contents);
     });
 
     it('should emit a hard-coded not-found document if the not-found document is not found on the server', () => {
@@ -111,25 +115,27 @@ describe('DocumentService', () => {
       docService.currentDocument.subscribe(doc => currentDocument = doc);
 
       httpMock.expectOne({}).flush(null, {status: 404, statusText: 'NOT FOUND'});
-      expect(currentDocument).toEqual(hardCodedNotFoundDoc);
+      expect(currentDocument?.id).toBe(hardCodedNotFoundDoc.id);
+      expect(currentDocument?.contents?.toString()).toBe(hardCodedNotFoundDoc.contents);
 
       // now check that we haven't killed the currentDocument observable sequence
       locationService.go('new/doc');
       httpMock.expectOne({}).flush(nextDoc);
-      expect(currentDocument).toEqual(nextDoc);
+      expect(currentDocument?.id).toBe(nextDoc.id);
+      expect(currentDocument?.contents?.toString()).toBe(nextDoc.contents);
     });
 
     it('should use a hard-coded error doc if the request fails (but not cache it)', () => {
       let latestDocument!: DocumentContents;
-      const doc1 = { contents: 'doc 1' } as DocumentContents;
-      const doc2 = { contents: 'doc 2' } as DocumentContents;
+      const doc1 = { contents: htmlEscape('doc 1') } as DocumentContents;
+      const doc2 = { contents: htmlEscape('doc 2') } as DocumentContents;
       const { docService, locationService, logger } = getServices('initial/doc');
 
       docService.currentDocument.subscribe(doc => latestDocument = doc);
 
       httpMock.expectOne({}).flush(null, {status: 500, statusText: 'Server Error'});
-      expect(latestDocument.id).toEqual(FETCHING_ERROR_ID);
-      expect(latestDocument.contents).toContain('We are unable to retrieve the "initial/doc" page at this time.');
+      expect(latestDocument.id).toBe(FETCHING_ERROR_ID);
+      expect(latestDocument.contents?.toString()).toContain('We are unable to retrieve the "initial/doc" page at this time.');
       expect(logger.output.error).toEqual([
         [jasmine.any(Error)]
       ]);
@@ -147,7 +153,7 @@ describe('DocumentService', () => {
 
     it('should not crash the app if the response is invalid JSON', () => {
       let latestDocument!: DocumentContents;
-      const doc1 = { contents: 'doc 1' } as DocumentContents;
+      const doc1 = { contents: htmlEscape('doc 1') } as DocumentContents;
       const { docService, locationService } = getServices('initial/doc');
 
       docService.currentDocument.subscribe(doc => latestDocument = doc);
@@ -164,8 +170,8 @@ describe('DocumentService', () => {
       let latestDocument!: DocumentContents;
       let subscription: Subscription;
 
-      const doc0 = { contents: 'doc 0' } as DocumentContents;
-      const doc1 = { contents: 'doc 1' } as DocumentContents;
+      const doc0 = { contents: htmlEscape('doc 0') } as DocumentContents;
+      const doc1 = { contents: htmlEscape('doc 1') } as DocumentContents;
       const { docService, locationService } = getServices('url/0');
 
       subscription = docService.currentDocument.subscribe(doc => latestDocument = doc);

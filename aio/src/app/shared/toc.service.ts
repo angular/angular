@@ -3,6 +3,8 @@ import { Inject, Injectable } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ReplaySubject } from 'rxjs';
 import { ScrollSpyInfo, ScrollSpyService } from 'app/shared/scroll-spy.service';
+import { unwrapHtmlForSink } from 'safevalues';
+import { fromInnerHTML } from './security';
 
 
 export interface TocItem {
@@ -62,7 +64,7 @@ export class TocService {
   //   - Mark the HTML as trusted to be used with `[innerHTML]`.
   private extractHeadingSafeHtml(heading: HTMLHeadingElement) {
     const div: HTMLDivElement = this.document.createElement('div');
-    div.innerHTML = heading.innerHTML;
+    div.innerHTML = unwrapHtmlForSink(fromInnerHTML(heading));
 
     // Remove any `.github-links` or `.header-link` elements (along with their content).
     querySelectorAll(div, '.github-links, .header-link').forEach(removeNode);
