@@ -11,7 +11,8 @@ import * as ora from 'ora';
 import {join} from 'path';
 import * as semver from 'semver';
 
-import {debug, error, green, info, promptConfirm, red, warn, yellow} from '../../utils/console';
+import {debug, error, green, info, log, promptConfirm, red, warn, yellow} from '../../utils/console';
+import {isDryRun} from '../../utils/dry-run';
 import {AuthenticatedGitClient} from '../../utils/git/authenticated-git-client';
 import {getListCommitsInBranchUrl, getRepositoryGitUrl} from '../../utils/git/github-urls';
 import {BuiltPackage, ReleaseConfig} from '../config/index';
@@ -216,6 +217,10 @@ export abstract class ReleaseAction {
 
   /** Pushes the current Git `HEAD` to the given remote branch in the configured project. */
   protected async pushHeadToRemoteBranch(branchName: string) {
+    if (isDryRun()) {
+      debug('Skipping pushing HEAD to remote branch due to dryRun');
+      return;
+    }
     // Push the local `HEAD` to the remote branch in the configured project.
     this.git.run(['push', '-q', this.git.getRepoGitUrl(), `HEAD:refs/heads/${branchName}`]);
   }
@@ -244,8 +249,12 @@ export abstract class ReleaseAction {
       await this.createLocalBranchFromHead(branchName);
       pushArgs.push('--set-upstream');
     }
-    // Push the local `HEAD` to the remote branch in the fork.
-    this.git.run(['push', '-q', repoGitUrl, `HEAD:refs/heads/${branchName}`, ...pushArgs]);
+    if (isDryRun()) {
+      debug('Skipping pushing HEAD to fork due to dryRun');
+    } else {
+      // Push the local `HEAD` to the remote branch in the fork.
+      this.git.run(['push', '-q', repoGitUrl, `HEAD:refs/heads/${branchName}`, ...pushArgs]);
+    }
     return {fork, branchName};
   }
 
@@ -260,6 +269,10 @@ export abstract class ReleaseAction {
       body?: string): Promise<PullRequest> {
     const repoSlug = `${this.git.remoteParams.owner}/${this.git.remoteParams.repo}`;
     const {fork, branchName} = await this._pushHeadToFork(proposedForkBranchName, true);
+    if (isDryRun()) {
+      debug('Skipping PR creation due to dryRun');
+      return {id: -1, url: '', fork, forkBranch: branchName};
+    }
     const {data} = await this.git.github.pulls.create({
       ...this.git.remoteParams,
       head: `${fork.owner}:${branchName}`,
@@ -292,11 +305,18 @@ export abstract class ReleaseAction {
    * merge, the script will abort gracefully (considering a manual user abort).
    */
   protected async waitForPullRequestToBeMerged(
-      {id}: PullRequest, interval = waitForPullRequestInterval): Promise<void> {
+      {id, url}: PullRequest, interval = waitForPullRequestInterval): Promise<void> {
+    if (isDryRun()) {
+      debug('Skipping waiting for PR to merge as no PR was created due to dryRun');
+      return;
+    }
+
     return new Promise((resolve, reject) => {
       debug(`Waiting for pull request #${id} to be merged.`);
 
-      const spinner = ora.call(undefined).start(`Waiting for pull request #${id} to be merged.`);
+      const spinner = ora.call(undefined).start(
+          `      Please ask team members to review: ${url}.\n` +
+          `      Waiting for pull request #${id} to be merged.`);
       const intervalId = setInterval(async () => {
         const prState = await getPullRequestState(this.git, id);
         if (prState === 'merged') {
@@ -362,7 +382,6 @@ export abstract class ReleaseAction {
         `Bump version to "v${newVersion}" with changelog.`);
 
     info(green('  ✓   Release staging pull request has been created.'));
-    info(yellow(`      Please ask team members to review: ${pullRequest.url}.`));
 
     return {releaseNotes, pullRequest};
   }
@@ -407,7 +426,6 @@ export abstract class ReleaseAction {
     info(green(
         `  ✓   Pull request for cherry-picking the changelog into "${nextBranch}" ` +
         'has been created.'));
-    info(yellow(`      Please ask team members to review: ${pullRequest.url}.`));
 
     // Wait for the Pull Request to be merged.
     await this.waitForPullRequestToBeMerged(pullRequest);
@@ -421,6 +439,10 @@ export abstract class ReleaseAction {
    */
   private async _createGithubReleaseForVersion(
       releaseNotes: ReleaseNotes, versionBumpCommitSha: string, prerelease: boolean) {
+    if (isDryRun()) {
+      debug('Skipping Github tag and release due to dryRun');
+      return;
+    }
     const tagName = releaseNotes.version.format();
     await this.git.github.git.createRef({
       ...this.git.remoteParams,
@@ -455,8 +477,12 @@ export abstract class ReleaseAction {
       throw new FatalReleaseActionError();
     }
 
-    // Checkout the publish branch and build the release packages.
-    await this.checkoutUpstreamBranch(publishBranch);
+    if (isDryRun()) {
+      debug(`Skipping checkout of upstream publish branch due to dryRun`);
+    } else {
+      // Checkout the publish branch and build the release packages.
+      await this.checkoutUpstreamBranch(publishBranch);
+    }
 
     // Install the project dependencies for the publish branch, and then build the release
     // packages. Note that we do not directly call the build packages function from the release
@@ -488,7 +514,11 @@ export abstract class ReleaseAction {
     const spinner = ora.call(undefined).start(`Publishing "${pkg.name}"`);
 
     try {
-      await runNpmPublish(pkg.outputPath, npmDistTag, this.config.publishRegistry);
+      if (isDryRun()) {
+        debug(`Skipping publish to npm of ${pkg.name} due to dryRun`);
+      } else {
+        await runNpmPublish(pkg.outputPath, npmDistTag, this.config.publishRegistry);
+      }
       spinner.stop();
       info(green(`  ✓   Successfully published "${pkg.name}.`));
     } catch (e) {
@@ -501,6 +531,10 @@ export abstract class ReleaseAction {
 
   /** Checks whether the given commit represents a staging commit for the specified version. */
   private async _isCommitForVersionStaging(version: semver.SemVer, commitSha: string) {
+    if (isDryRun()) {
+      debug('Skipping checking if commit is a release commit due to dryRun');
+      return true;
+    }
     const {data} =
         await this.git.github.repos.getCommit({...this.git.remoteParams, ref: commitSha});
     return data.commit.message.startsWith(getCommitMessageForRelease(version));

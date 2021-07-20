@@ -11,6 +11,7 @@ import {ListChoiceOptions, prompt} from 'inquirer';
 import {spawnWithDebugOutput} from '../../utils/child-process';
 import {GithubConfig} from '../../utils/config';
 import {debug, error, info, log, promptConfirm, red, yellow} from '../../utils/console';
+import {isDryRun} from '../../utils/dry-run';
 import {AuthenticatedGitClient} from '../../utils/git/authenticated-git-client';
 import {ReleaseConfig} from '../config/index';
 import {ActiveReleaseTrains, fetchActiveReleaseTrains, nextBranchName} from '../versioning/active-release-trains';
@@ -171,6 +172,12 @@ export class ReleaseTool {
         await this._git.github.repos.getBranch({...this._git.remoteParams, branch: nextBranchName});
 
     if (headSha !== data.commit.sha) {
+      if (isDryRun()) {
+        info('Running release from outdated local branch');
+        const shouldContinue =
+            await promptConfirm('Since this is a dryRun, would you like to continue anyway?', true);
+        return shouldContinue;
+      }
       error(red('  ✘   Running release tool from an outdated local branch.'));
       error(red(`      Please make sure you are running from the "${nextBranchName}" branch.`));
       return false;
@@ -183,6 +190,10 @@ export class ReleaseTool {
    * @returns a boolean indicating whether the user is logged into NPM.
    */
   private async _verifyNpmLoginState(): Promise<boolean> {
+    if (isDryRun()) {
+      debug('Skipping NPM login verification due to dryRun')
+      return true;
+    }
     const registry = `NPM at the ${this._config.publishRegistry ?? 'default NPM'} registry`;
     if (await npmIsLoggedIn(this._config.publishRegistry)) {
       debug(`Already logged into ${registry}.`);

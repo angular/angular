@@ -182,6 +182,25 @@ function getUserConfig() {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+/**
+ * Add a --dry-run flag to the available options for the yargs argv object. When present, sets an
+ * environment variable noting dry run mode.
+ */
+function addDryRunFlag(args, hidden) {
+    if (hidden === void 0) { hidden = false; }
+    return args.option('dry-run', {
+        type: 'boolean',
+        hidden: hidden,
+        default: false,
+        description: 'Whether to do a dry run',
+        coerce: function (dryRun) {
+            if (dryRun) {
+                process.env['DRY_RUN'] = '1';
+            }
+            return dryRun;
+        }
+    });
+}
 /** Whether the current environment is in dry run mode. */
 function isDryRun() {
     return process.env['DRY_RUN'] !== undefined;
@@ -6553,6 +6572,10 @@ class ReleaseAction {
     /** Pushes the current Git `HEAD` to the given remote branch in the configured project. */
     pushHeadToRemoteBranch(branchName) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
+            if (isDryRun()) {
+                debug('Skipping pushing HEAD to remote branch due to dryRun');
+                return;
+            }
             // Push the local `HEAD` to the remote branch in the configured project.
             this.git.run(['push', '-q', this.git.getRepoGitUrl(), `HEAD:refs/heads/${branchName}`]);
         });
@@ -6580,8 +6603,13 @@ class ReleaseAction {
                 yield this.createLocalBranchFromHead(branchName);
                 pushArgs.push('--set-upstream');
             }
-            // Push the local `HEAD` to the remote branch in the fork.
-            this.git.run(['push', '-q', repoGitUrl, `HEAD:refs/heads/${branchName}`, ...pushArgs]);
+            if (isDryRun()) {
+                debug('Skipping pushing HEAD to fork due to dryRun');
+            }
+            else {
+                // Push the local `HEAD` to the remote branch in the fork.
+                this.git.run(['push', '-q', repoGitUrl, `HEAD:refs/heads/${branchName}`, ...pushArgs]);
+            }
             return { fork, branchName };
         });
     }
@@ -6595,6 +6623,10 @@ class ReleaseAction {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             const repoSlug = `${this.git.remoteParams.owner}/${this.git.remoteParams.repo}`;
             const { fork, branchName } = yield this._pushHeadToFork(proposedForkBranchName, true);
+            if (isDryRun()) {
+                debug('Skipping PR creation due to dryRun');
+                return { id: -1, url: '', fork, forkBranch: branchName };
+            }
             const { data } = yield this.git.github.pulls.create(Object.assign(Object.assign({}, this.git.remoteParams), { head: `${fork.owner}:${branchName}`, base: targetBranch, body,
                 title }));
             // Add labels to the newly created PR if provided in the configuration.
@@ -6615,11 +6647,16 @@ class ReleaseAction {
      * API is 10 seconds (to not exceed any rate limits). If the pull request is closed without
      * merge, the script will abort gracefully (considering a manual user abort).
      */
-    waitForPullRequestToBeMerged({ id }, interval = waitForPullRequestInterval) {
+    waitForPullRequestToBeMerged({ id, url }, interval = waitForPullRequestInterval) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
+            if (isDryRun()) {
+                debug('Skipping waiting for PR to merge as no PR was created due to dryRun');
+                return;
+            }
             return new Promise((resolve, reject) => {
                 debug(`Waiting for pull request #${id} to be merged.`);
-                const spinner = ora.call(undefined).start(`Waiting for pull request #${id} to be merged.`);
+                const spinner = ora.call(undefined).start(`      Please ask team members to review: ${url}.\n` +
+                    `      Waiting for pull request #${id} to be merged.`);
                 const intervalId = setInterval(() => tslib.__awaiter(this, void 0, void 0, function* () {
                     const prState = yield getPullRequestState(this.git, id);
                     if (prState === 'merged') {
@@ -6682,7 +6719,6 @@ class ReleaseAction {
             yield this.waitForEditsAndCreateReleaseCommit(newVersion);
             const pullRequest = yield this.pushChangesToForkAndCreatePullRequest(pullRequestBaseBranch, `release-stage-${newVersion}`, `Bump version to "v${newVersion}" with changelog.`);
             info(green('  ✓   Release staging pull request has been created.'));
-            info(yellow(`      Please ask team members to review: ${pullRequest.url}.`));
             return { releaseNotes, pullRequest };
         });
     }
@@ -6718,7 +6754,6 @@ class ReleaseAction {
                 `branch (${nextBranch}).`);
             info(green(`  ✓   Pull request for cherry-picking the changelog into "${nextBranch}" ` +
                 'has been created.'));
-            info(yellow(`      Please ask team members to review: ${pullRequest.url}.`));
             // Wait for the Pull Request to be merged.
             yield this.waitForPullRequestToBeMerged(pullRequest);
             return true;
@@ -6730,6 +6765,10 @@ class ReleaseAction {
      */
     _createGithubReleaseForVersion(releaseNotes, versionBumpCommitSha, prerelease) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
+            if (isDryRun()) {
+                debug('Skipping Github tag and release due to dryRun');
+                return;
+            }
             const tagName = releaseNotes.version.format();
             yield this.git.github.git.createRef(Object.assign(Object.assign({}, this.git.remoteParams), { ref: `refs/tags/${tagName}`, sha: versionBumpCommitSha }));
             info(green(`  ✓   Tagged v${releaseNotes.version} release upstream.`));
@@ -6751,8 +6790,13 @@ class ReleaseAction {
                 error(red('      Please make sure the staging pull request has been merged.'));
                 throw new FatalReleaseActionError();
             }
-            // Checkout the publish branch and build the release packages.
-            yield this.checkoutUpstreamBranch(publishBranch);
+            if (isDryRun()) {
+                debug(`Skipping checkout of upstream publish branch due to dryRun`);
+            }
+            else {
+                // Checkout the publish branch and build the release packages.
+                yield this.checkoutUpstreamBranch(publishBranch);
+            }
             // Install the project dependencies for the publish branch, and then build the release
             // packages. Note that we do not directly call the build packages function from the release
             // config. We only want to build and publish packages that have been configured in the given
@@ -6778,7 +6822,12 @@ class ReleaseAction {
             debug(`Starting publish of "${pkg.name}".`);
             const spinner = ora.call(undefined).start(`Publishing "${pkg.name}"`);
             try {
-                yield runNpmPublish(pkg.outputPath, npmDistTag, this.config.publishRegistry);
+                if (isDryRun()) {
+                    debug(`Skipping publish to npm of ${pkg.name} due to dryRun`);
+                }
+                else {
+                    yield runNpmPublish(pkg.outputPath, npmDistTag, this.config.publishRegistry);
+                }
                 spinner.stop();
                 info(green(`  ✓   Successfully published "${pkg.name}.`));
             }
@@ -6793,6 +6842,10 @@ class ReleaseAction {
     /** Checks whether the given commit represents a staging commit for the specified version. */
     _isCommitForVersionStaging(version, commitSha) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
+            if (isDryRun()) {
+                debug('Skipping checking if commit is a release commit due to dryRun');
+                return true;
+            }
             const { data } = yield this.git.github.repos.getCommit(Object.assign(Object.assign({}, this.git.remoteParams), { ref: commitSha }));
             return data.commit.message.startsWith(getCommitMessageForRelease(version));
         });
@@ -7455,6 +7508,11 @@ class ReleaseTool {
             const headSha = this._git.run(['rev-parse', 'HEAD']).stdout.trim();
             const { data } = yield this._git.github.repos.getBranch(Object.assign(Object.assign({}, this._git.remoteParams), { branch: nextBranchName }));
             if (headSha !== data.commit.sha) {
+                if (isDryRun()) {
+                    info('Running release from outdated local branch');
+                    const shouldContinue = yield promptConfirm('Since this is a dryRun, would you like to continue anyway?', true);
+                    return shouldContinue;
+                }
                 error(red('  ✘   Running release tool from an outdated local branch.'));
                 error(red(`      Please make sure you are running from the "${nextBranchName}" branch.`));
                 return false;
@@ -7469,6 +7527,10 @@ class ReleaseTool {
     _verifyNpmLoginState() {
         var _a;
         return tslib.__awaiter(this, void 0, void 0, function* () {
+            if (isDryRun()) {
+                debug('Skipping NPM login verification due to dryRun');
+                return true;
+            }
             const registry = `NPM at the ${(_a = this._config.publishRegistry) !== null && _a !== void 0 ? _a : 'default NPM'} registry`;
             if (yield npmIsLoggedIn(this._config.publishRegistry)) {
                 debug(`Already logged into ${registry}.`);
@@ -7500,7 +7562,7 @@ class ReleaseTool {
  */
 /** Yargs command builder for configuring the `ng-dev release publish` command. */
 function builder$a(argv) {
-    return addGithubTokenOption(argv);
+    return addDryRunFlag(addGithubTokenOption(argv), true);
 }
 /** Yargs command handler for staging a release. */
 function handler$b() {
