@@ -452,8 +452,8 @@ class TemplateParseVisitor implements html.Visitor {
 
       } else if (bindParts[KW_ON_IDX]) {
         this._bindingParser.parseEvent(
-            bindParts[IDENT_KW_IDX], value, srcSpan, attr.valueSpan || srcSpan,
-            targetMatchableAttrs, boundEvents);
+            bindParts[IDENT_KW_IDX], value, /* isAssignmentEvent */ false, srcSpan,
+            attr.valueSpan || srcSpan, targetMatchableAttrs, boundEvents);
 
       } else if (bindParts[KW_BINDON_IDX]) {
         this._bindingParser.parsePropertyBinding(
@@ -483,8 +483,8 @@ class TemplateParseVisitor implements html.Visitor {
 
       } else if (bindParts[IDENT_EVENT_IDX]) {
         this._bindingParser.parseEvent(
-            bindParts[IDENT_EVENT_IDX], value, srcSpan, attr.valueSpan || srcSpan,
-            targetMatchableAttrs, boundEvents);
+            bindParts[IDENT_EVENT_IDX], value, /* isAssignmentEvent */ false, srcSpan,
+            attr.valueSpan || srcSpan, targetMatchableAttrs, boundEvents);
       }
     } else {
       hasBinding = this._bindingParser.parsePropertyInterpolation(
@@ -532,8 +532,8 @@ class TemplateParseVisitor implements html.Visitor {
       name: string, expression: string, sourceSpan: ParseSourceSpan, valueSpan: ParseSourceSpan,
       targetMatchableAttrs: string[][], targetEvents: ParsedEvent[]) {
     this._bindingParser.parseEvent(
-        `${name}Change`, `${expression}=$event`, sourceSpan, valueSpan, targetMatchableAttrs,
-        targetEvents);
+        `${name}Change`, `${expression} =$event`, /* isAssignmentEvent */ true, sourceSpan,
+        valueSpan, targetMatchableAttrs, targetEvents);
   }
 
   private _parseDirectives(selectorMatcher: SelectorMatcher, elementCssSelector: CssSelector):

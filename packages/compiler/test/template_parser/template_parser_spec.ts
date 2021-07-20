@@ -950,6 +950,22 @@ Animation trigger is missing ("<div [ERROR ->]@></div>"): TestComp@0:5`);
            ]);
          });
 
+      it('should parse bound events and properties via [(...)] with non-null operator', () => {
+        expect(humanizeTplAst(parse('<div [(prop)]="v!">', []))).toEqual([
+          [ElementAst, 'div'],
+          [BoundElementPropertyAst, PropertyBindingType.Property, 'prop', 'v!', null],
+          [BoundEventAst, 'propChange', null, 'v = $event']
+        ]);
+      });
+
+      it('should report an error for assignments into non-null asserted expressions', () => {
+        // TODO(joost): this syntax is allowed in TypeScript. Consider changing the grammar to
+        //  allow this syntax, or improve the error message.
+        // See https://github.com/angular/angular/pull/37809
+        expect(() => parse('<div (prop)="v! = $event"></div>', []))
+            .toThrowError(/Unexpected token '=' at column 4/);
+      });
+
       it('should parse bound events and properties via bindon- and not report them as attributes',
          () => {
            expect(humanizeTplAst(parse('<div bindon-prop="v">', []))).toEqual([

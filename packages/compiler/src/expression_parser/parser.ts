@@ -29,6 +29,21 @@ export class TemplateBindingParseResult {
       public errors: ParserError[]) {}
 }
 
+export const enum ParseFlags {
+  None = 0,
+
+  /**
+   * Whether an output binding is parsed.
+   */
+  Action = 1 << 0,
+
+  /**
+   * Whether an assignment event is parsed, i.e. an expression originating from two-way-binding
+   * aka banana-in-a-box syntax.
+   */
+  AssignmentEvent = 1 << 1,
+}
+
 export class Parser {
   private errors: ParserError[] = [];
 
@@ -37,13 +52,17 @@ export class Parser {
   simpleExpressionChecker = SimpleExpressionChecker;
 
   parseAction(
-      input: string, location: string, absoluteOffset: number,
+      input: string, isAssignmentEvent: boolean, location: string, absoluteOffset: number,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
     this._checkNoInterpolation(input, location, interpolationConfig);
     const sourceToLex = this._stripComments(input);
-    const tokens = this._lexer.tokenize(this._stripComments(input));
+    const tokens = this._lexer.tokenize(sourceToLex);
+    let flags = ParseFlags.Action;
+    if (isAssignmentEvent) {
+      flags |= ParseFlags.AssignmentEvent;
+    }
     const ast = new _ParseAST(
-                    input, location, absoluteOffset, tokens, sourceToLex.length, true, this.errors,
+                    input, location, absoluteOffset, tokens, sourceToLex.length, flags, this.errors,
                     input.length - sourceToLex.length)
                     .parseChain();
     return new ASTWithSource(ast, input, location, absoluteOffset, this.errors);
@@ -93,8 +112,8 @@ export class Parser {
     const sourceToLex = this._stripComments(input);
     const tokens = this._lexer.tokenize(sourceToLex);
     return new _ParseAST(
-               input, location, absoluteOffset, tokens, sourceToLex.length, false, this.errors,
-               input.length - sourceToLex.length)
+               input, location, absoluteOffset, tokens, sourceToLex.length, ParseFlags.None,
+               this.errors, input.length - sourceToLex.length)
         .parseChain();
   }
 
@@ -142,7 +161,7 @@ export class Parser {
     const tokens = this._lexer.tokenize(templateValue);
     const parser = new _ParseAST(
         templateValue, templateUrl, absoluteValueOffset, tokens, templateValue.length,
-        false /* parseAction */, this.errors, 0 /* relative offset */);
+        ParseFlags.None, this.errors, 0 /* relative offset */);
     return parser.parseTemplateBindings({
       source: templateKey,
       span: new AbsoluteSourceSpan(absoluteKeyOffset, absoluteKeyOffset + templateKey.length),
@@ -163,7 +182,7 @@ export class Parser {
       const sourceToLex = this._stripComments(expressionText);
       const tokens = this._lexer.tokenize(sourceToLex);
       const ast = new _ParseAST(
-                      input, location, absoluteOffset, tokens, sourceToLex.length, false,
+                      input, location, absoluteOffset, tokens, sourceToLex.length, ParseFlags.None,
                       this.errors, offsets[i] + (expressionText.length - sourceToLex.length))
                       .parseChain();
       expressionNodes.push(ast);
@@ -184,7 +203,7 @@ export class Parser {
     const tokens = this._lexer.tokenize(sourceToLex);
     const ast = new _ParseAST(
                     expression, location, absoluteOffset, tokens, sourceToLex.length,
-                    /* parseAction */ false, this.errors, 0)
+                    ParseFlags.None, this.errors, 0)
                     .parseChain();
     const strings = ['', ''];  // The prefix and suffix strings are both empty
     return this.createInterpolationAst(strings, [ast], expression, location, absoluteOffset);
@@ -399,7 +418,7 @@ export class _ParseAST {
 
   constructor(
       public input: string, public location: string, public absoluteOffset: number,
-      public tokens: Token[], public inputLength: number, public parseAction: boolean,
+      public tokens: Token[], public inputLength: number, public parseFlags: ParseFlags,
       private errors: ParserError[], private offset: number) {}
 
   peek(offset: number): Token {
@@ -582,7 +601,7 @@ export class _ParseAST {
       exprs.push(expr);
 
       if (this.consumeOptionalCharacter(chars.$SEMICOLON)) {
-        if (!this.parseAction) {
+        if (!(this.parseFlags & ParseFlags.Action)) {
           this.error('Binding expression cannot contain chained expression');
         }
         while (this.consumeOptionalCharacter(chars.$SEMICOLON)) {
@@ -607,7 +626,7 @@ export class _ParseAST {
     const start = this.inputIndex;
     let result = this.parseExpression();
     if (this.consumeOptionalOperator('|')) {
-      if (this.parseAction) {
+      if (this.parseFlags & ParseFlags.Action) {
         this.error('Cannot have a pipe in an action expression');
       }
 
@@ -981,7 +1000,7 @@ export class _ParseAST {
 
     } else {
       if (isSafe) {
-        if (this.consumeOptionalOperator('=')) {
+        if (this.consumeOptionalAssignment()) {
           this.error('The \'?.\' operator cannot be used in the assignment');
           return new EmptyExpr(this.span(start), this.sourceSpan(start));
         } else {
@@ -989,8 +1008,8 @@ export class _ParseAST {
               this.span(start), this.sourceSpan(start), nameSpan, receiver, id);
         }
       } else {
-        if (this.consumeOptionalOperator('=')) {
-          if (!this.parseAction) {
+        if (this.consumeOptionalAssignment()) {
+          if (!(this.parseFlags & ParseFlags.Action)) {
             this.error('Bindings cannot contain assignments');
             return new EmptyExpr(this.span(start), this.sourceSpan(start));
           }
@@ -1003,6 +1022,22 @@ export class _ParseAST {
         }
       }
     }
+  }
+
+  private consumeOptionalAssignment(): boolean {
+    // When parsing assignment events (originating from two-way-binding aka banana-in-a-box syntax),
+    // it is valid for the primary expression to be terminated by the non-null operator. This
+    // primary expression is substituted as LHS of the assignment operator to achieve
+    // two-way-binding, such that the LHS could be the non-null operator. The grammar doesn't
+    // naturally allow for this syntax, so assignment events are parsed specially.
+    if ((this.parseFlags & ParseFlags.AssignmentEvent) && this.next.isOperator('!') &&
+        this.peek(1).isOperator('=')) {
+      this.advance();
+      this.advance();
+      return true;
+    }
+
+    return this.consumeOptionalOperator('=');
   }
 
   parseCallArguments(): BindingPipe[] {

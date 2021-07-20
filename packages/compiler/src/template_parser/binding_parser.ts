@@ -104,7 +104,8 @@ export class BindingParser {
           // function signature. This should likely be refactored in the future so that `sourceSpan`
           // isn't being used inaccurately.
           this.parseEvent(
-              propName, expression, sourceSpan, sourceSpan, [], targetEvents, sourceSpan);
+              propName, expression, /* isAssignmentEvent */ false, sourceSpan, sourceSpan, [],
+              targetEvents, sourceSpan);
         } else {
           this._reportError(
               `Value of the host listener "${
@@ -432,8 +433,9 @@ export class BindingParser {
 
   // TODO: keySpan should be required but was made optional to avoid changing VE parser.
   parseEvent(
-      name: string, expression: string, sourceSpan: ParseSourceSpan, handlerSpan: ParseSourceSpan,
-      targetMatchableAttrs: string[][], targetEvents: ParsedEvent[], keySpan?: ParseSourceSpan) {
+      name: string, expression: string, isAssignmentEvent: boolean, sourceSpan: ParseSourceSpan,
+      handlerSpan: ParseSourceSpan, targetMatchableAttrs: string[][], targetEvents: ParsedEvent[],
+      keySpan?: ParseSourceSpan) {
     if (name.length === 0) {
       this._reportError(`Event name is missing in binding`, sourceSpan);
     }
@@ -444,10 +446,12 @@ export class BindingParser {
         keySpan = moveParseSourceSpan(
             keySpan, new AbsoluteSourceSpan(keySpan.start.offset + 1, keySpan.end.offset));
       }
-      this._parseAnimationEvent(name, expression, sourceSpan, handlerSpan, targetEvents, keySpan);
+      this._parseAnimationEvent(
+          name, expression, isAssignmentEvent, sourceSpan, handlerSpan, targetEvents, keySpan);
     } else {
       this._parseRegularEvent(
-          name, expression, sourceSpan, handlerSpan, targetMatchableAttrs, targetEvents, keySpan);
+          name, expression, isAssignmentEvent, sourceSpan, handlerSpan, targetMatchableAttrs,
+          targetEvents, keySpan);
     }
   }
 
@@ -458,12 +462,12 @@ export class BindingParser {
   }
 
   private _parseAnimationEvent(
-      name: string, expression: string, sourceSpan: ParseSourceSpan, handlerSpan: ParseSourceSpan,
-      targetEvents: ParsedEvent[], keySpan?: ParseSourceSpan) {
+      name: string, expression: string, isAssignmentEvent: boolean, sourceSpan: ParseSourceSpan,
+      handlerSpan: ParseSourceSpan, targetEvents: ParsedEvent[], keySpan?: ParseSourceSpan) {
     const matches = splitAtPeriod(name, [name, '']);
     const eventName = matches[0];
     const phase = matches[1].toLowerCase();
-    const ast = this._parseAction(expression, handlerSpan);
+    const ast = this._parseAction(expression, isAssignmentEvent, handlerSpan);
     targetEvents.push(new ParsedEvent(
         eventName, phase, ParsedEventType.Animation, ast, sourceSpan, handlerSpan, keySpan));
 
@@ -486,11 +490,12 @@ export class BindingParser {
   }
 
   private _parseRegularEvent(
-      name: string, expression: string, sourceSpan: ParseSourceSpan, handlerSpan: ParseSourceSpan,
-      targetMatchableAttrs: string[][], targetEvents: ParsedEvent[], keySpan?: ParseSourceSpan) {
+      name: string, expression: string, isAssignmentEvent: boolean, sourceSpan: ParseSourceSpan,
+      handlerSpan: ParseSourceSpan, targetMatchableAttrs: string[][], targetEvents: ParsedEvent[],
+      keySpan?: ParseSourceSpan) {
     // long format: 'target: eventName'
     const [target, eventName] = splitAtColon(name, [null!, name]);
-    const ast = this._parseAction(expression, handlerSpan);
+    const ast = this._parseAction(expression, isAssignmentEvent, handlerSpan);
     targetMatchableAttrs.push([name!, ast.source!]);
     targetEvents.push(new ParsedEvent(
         eventName, target, ParsedEventType.Regular, ast, sourceSpan, handlerSpan, keySpan));
@@ -498,13 +503,14 @@ export class BindingParser {
     // so don't add the event name to the matchableAttrs
   }
 
-  private _parseAction(value: string, sourceSpan: ParseSourceSpan): ASTWithSource {
+  private _parseAction(value: string, isAssignmentEvent: boolean, sourceSpan: ParseSourceSpan):
+      ASTWithSource {
     const sourceInfo = (sourceSpan && sourceSpan.start || '(unknown').toString();
     const absoluteOffset = (sourceSpan && sourceSpan.start) ? sourceSpan.start.offset : 0;
 
     try {
       const ast = this._exprParser.parseAction(
-          value, sourceInfo, absoluteOffset, this._interpolationConfig);
+          value, isAssignmentEvent, sourceInfo, absoluteOffset, this._interpolationConfig);
       if (ast) {
         this._reportExpressionParserErrors(ast.errors, sourceSpan);
       }
