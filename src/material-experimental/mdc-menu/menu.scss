@@ -19,6 +19,14 @@ mat-menu {
 }
 
 .mat-mdc-menu-panel {
+  @include a11y.high-contrast(active, off) {
+    outline: solid 1px;
+  }
+}
+
+// We need to increase the specificity for these styles to ensure we are not overriden by MDC's
+// .mdc-menu-surface styles. This can happen if the MDC styles are loaded in after our styles.
+.mat-mdc-menu-panel.mat-mdc-menu-panel {
   // Include Material's base menu panel styling which contain the `min-width`, `max-width` and some
   // styling to make scrolling smoother. MDC doesn't include the `min-width` and `max-width`, even
   // though they're explicitly defined in spec.
@@ -26,10 +34,6 @@ mat-menu {
 
   // The CDK positioning uses flexbox to anchor the element, whereas MDC uses `position: absolute`.
   position: static;
-
-  @include a11y.high-contrast(active, off) {
-    outline: solid 1px;
-  }
 }
 
 .mat-mdc-menu-item {
