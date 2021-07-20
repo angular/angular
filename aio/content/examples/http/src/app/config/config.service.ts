@@ -63,6 +63,16 @@ export class ConfigService {
   }
   // #enddocregion getConfig_3
 
+  getConfig_4() {
+    // #docregion getConfig_4
+    // set a timeout of 2000 milliseconds
+    return this.http.get<Config>(this.configUrl, {timeout: 2000})
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  // #enddocregion getConfig_4
+
   // #docregion getConfigResponse
   getConfigResponse(): Observable<HttpResponse<Config>> {
     return this.http.get<Config>(
@@ -75,6 +85,10 @@ export class ConfigService {
     if (error.status === 0) {
       // A client-side or network error occurred. Handle it accordingly.
       console.error('An error occurred:', error.error);
+    } else if (error.status === 0 && error.statusText === 'Request timeout') {
+      // The server response was not received in time.
+      // The optional timeout parameter was passed in the request method.
+      console.error(`The request has timed out.`);
     } else {
       // The backend returned an unsuccessful response code.
       // The response body may contain clues as to what went wrong.

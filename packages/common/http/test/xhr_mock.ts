@@ -43,6 +43,7 @@ export class MockXMLHttpRequest {
   // Directly settable interface.
   withCredentials: boolean = false;
   responseType: string = 'text';
+  timeout: number = 0;
 
   // Mocked response interface.
   response: any|undefined = undefined;
@@ -58,6 +59,7 @@ export class MockXMLHttpRequest {
     abort?: () => void,
     load?: () => void,
     progress?: (event: ProgressEvent) => void,
+    timeout?: (event: ProgressEvent) => void,
     uploadProgress?: (event: ProgressEvent) => void,
   } = {};
 
@@ -118,6 +120,14 @@ export class MockXMLHttpRequest {
         loaded,
         total,
       } as any);
+    }
+  }
+
+  mockTimeoutEvent(): void {
+    const mockProgressEvent =
+        {isTrusted: true, lengthComputable: false, loaded: 0, total: 0, type: 'timeout'};
+    if (this.listeners.timeout) {
+      this.listeners.timeout(mockProgressEvent as ProgressEvent);
     }
   }
 

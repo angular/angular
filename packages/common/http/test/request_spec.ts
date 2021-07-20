@@ -61,6 +61,11 @@ const TEST_STRING = `I'm a body!`;
         const req = new HttpRequest('GET', TEST_URL, {context});
         expect(req.context).toBe(context);
       });
+      it('uses the provided request timeout if passed', () => {
+        const timeout = 2000;
+        const req = new HttpRequest('GET', TEST_URL, {timeout});
+        expect(req.timeout).toEqual(timeout);
+      });
       it('defaults to Json', () => {
         const req = new HttpRequest('GET', TEST_URL);
         expect(req.responseType).toBe('json');
@@ -77,6 +82,7 @@ const TEST_STRING = `I'm a body!`;
         reportProgress: true,
         responseType: 'text',
         withCredentials: true,
+        timeout: 2000,
       });
       it('in the base case', () => {
         const clone = req.clone();
@@ -85,6 +91,7 @@ const TEST_STRING = `I'm a body!`;
         expect(clone.url).toBe(TEST_URL);
         // Headers should be the same, as the headers are sealed.
         expect(clone.headers).toBe(headers);
+        expect(clone.timeout).toBe(2000);
         expect(clone.headers.get('Test')).toBe('Test header');
 
         expect(clone.context).toBe(context);
