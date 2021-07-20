@@ -284,7 +284,7 @@ function compileDeclarationList(
       return o.fn([], [new o.ReturnStatement(list)]);
     case DeclarationListEmitMode.ClosureResolved:
       // directives: function () { return [MyDir].map(ng.resolveForwardRef); }
-      const resolvedList = list.callMethod('map', [o.importExpr(R3.resolveForwardRef)]);
+      const resolvedList = list.prop('map').callFn([o.importExpr(R3.resolveForwardRef)]);
       return o.fn([], [new o.ReturnStatement(resolvedList)]);
   }
 }

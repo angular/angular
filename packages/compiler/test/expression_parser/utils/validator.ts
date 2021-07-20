@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, RecursiveAstVisitor, SafeKeyedRead, SafeMethodCall, SafePropertyRead, Unary} from '../../../src/expression_parser/ast';
+import {AST, Binary, BindingPipe, Call, Chain, Conditional, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, RecursiveAstVisitor, SafeKeyedRead, SafePropertyRead, Unary} from '../../../src/expression_parser/ast';
 
 import {unparse} from './unparser';
 
@@ -50,10 +50,6 @@ class ASTValidator extends RecursiveAstVisitor {
     this.validate(ast, () => super.visitConditional(ast, context));
   }
 
-  override visitFunctionCall(ast: FunctionCall, context: any): any {
-    this.validate(ast, () => super.visitFunctionCall(ast, context));
-  }
-
   override visitImplicitReceiver(ast: ImplicitReceiver, context: any): any {
     this.validate(ast, () => super.visitImplicitReceiver(ast, context));
   }
@@ -82,10 +78,6 @@ class ASTValidator extends RecursiveAstVisitor {
     this.validate(ast, () => super.visitLiteralPrimitive(ast, context));
   }
 
-  override visitMethodCall(ast: MethodCall, context: any): any {
-    this.validate(ast, () => super.visitMethodCall(ast, context));
-  }
-
   override visitPipe(ast: BindingPipe, context: any): any {
     this.validate(ast, () => super.visitPipe(ast, context));
   }
@@ -106,16 +98,16 @@ class ASTValidator extends RecursiveAstVisitor {
     this.validate(ast, () => super.visitQuote(ast, context));
   }
 
-  override visitSafeMethodCall(ast: SafeMethodCall, context: any): any {
-    this.validate(ast, () => super.visitSafeMethodCall(ast, context));
-  }
-
   override visitSafePropertyRead(ast: SafePropertyRead, context: any): any {
     this.validate(ast, () => super.visitSafePropertyRead(ast, context));
   }
 
   override visitSafeKeyedRead(ast: SafeKeyedRead, context: any): any {
     this.validate(ast, () => super.visitSafeKeyedRead(ast, context));
+  }
+
+  override visitCall(ast: Call, context: any): any {
+    this.validate(ast, () => super.visitCall(ast, context));
   }
 }
 

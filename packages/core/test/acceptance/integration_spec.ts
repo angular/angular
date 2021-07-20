@@ -2074,6 +2074,23 @@ describe('acceptance integration tests', () => {
     expect(fixture.nativeElement.textContent).toBe('Balance: $5000000');
   });
 
+  it('should handle calls to a safe access in templates', () => {
+    @Component({
+      template: `
+      <span>Hello, {{ (person?.getName() || 'unknown') }}!</span>
+    `
+    })
+    class App {
+      person = null;
+    }
+
+    TestBed.configureTestingModule({declarations: [App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Hello, unknown!');
+  });
+
   describe('tView.firstUpdatePass', () => {
     function isFirstUpdatePass() {
       const lView = getLView();

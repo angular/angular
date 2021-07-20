@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, BindingType, BoundTarget, DYNAMIC_TYPE, ImplicitReceiver, MethodCall, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, BindingPipe, BindingType, BoundTarget, Call, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {SafePropertyRead} from '@angular/compiler/src/compiler';
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -1704,15 +1705,15 @@ class TcbExpressionTranslator {
     } else if (ast instanceof ImplicitReceiver) {
       // AST instances representing variables and references look very similar to property reads
       // or method calls from the component context: both have the shape
-      // PropertyRead(ImplicitReceiver, 'propName') or MethodCall(ImplicitReceiver, 'methodName').
+      // PropertyRead(ImplicitReceiver, 'propName') or Call(ImplicitReceiver, 'methodName').
       //
-      // `translate` will first try to `resolve` the outer PropertyRead/MethodCall. If this works,
+      // `translate` will first try to `resolve` the outer PropertyRead/Call. If this works,
       // it's because the `BoundTarget` found an expression target for the whole expression, and
       // therefore `translate` will never attempt to `resolve` the ImplicitReceiver of that
-      // PropertyRead/MethodCall.
+      // PropertyRead/Call.
       //
       // Therefore if `resolve` is called on an `ImplicitReceiver`, it's because no outer
-      // PropertyRead/MethodCall resolved to a variable or reference, and therefore this is a
+      // PropertyRead/Call resolved to a variable or reference, and therefore this is a
       // property read or method call on the component context itself.
       return ts.createIdentifier('ctx');
     } else if (ast instanceof BindingPipe) {
@@ -1745,11 +1746,12 @@ class TcbExpressionTranslator {
       addParseSpanInfo(result, ast.sourceSpan);
       return result;
     } else if (
-        ast instanceof MethodCall && ast.receiver instanceof ImplicitReceiver &&
-        !(ast.receiver instanceof ThisReceiver)) {
+        ast instanceof Call &&
+        (ast.receiver instanceof PropertyRead || ast.receiver instanceof SafePropertyRead) &&
+        !(ast.receiver.receiver instanceof ThisReceiver)) {
       // Resolve the special `$any(expr)` syntax to insert a cast of the argument to type `any`.
       // `$any(expr)` -> `expr as any`
-      if (ast.name === '$any' && ast.args.length === 1) {
+      if (ast.receiver.name === '$any' && ast.args.length === 1) {
         const expr = this.translate(ast.args[0]);
         const exprAsAny =
             ts.createAsExpression(expr, ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
@@ -1768,7 +1770,7 @@ class TcbExpressionTranslator {
       }
 
       const method = wrapForDiagnostics(receiver);
-      addParseSpanInfo(method, ast.nameSpan);
+      addParseSpanInfo(method, ast.receiver.nameSpan);
       const args = ast.args.map(arg => this.translate(arg));
       const node = ts.createCall(method, undefined, args);
       addParseSpanInfo(node, ast.sourceSpan);

@@ -277,7 +277,7 @@ runInEachFileSystem(() => {
       });
     });
 
-    describe('generates identifiers for MethodCalls', () => {
+    describe('generates identifiers for method calls', () => {
       it('should discover component method calls', () => {
         const template = '{{foo()}}';
         const refs = getTemplateIdentifiers(bind(template));
@@ -286,7 +286,7 @@ runInEachFileSystem(() => {
         const [ref] = Array.from(refs);
         expect(ref).toEqual({
           name: 'foo',
-          kind: IdentifierKind.Method,
+          kind: IdentifierKind.Property,
           span: new AbsoluteSourceSpan(2, 5),
           target: null,
         });
@@ -299,7 +299,7 @@ runInEachFileSystem(() => {
         const refArr = Array.from(refs);
         expect(refArr).toContain({
           name: 'foo',
-          kind: IdentifierKind.Method,
+          kind: IdentifierKind.Property,
           span: new AbsoluteSourceSpan(13, 16),
           target: null,
         });
@@ -321,7 +321,7 @@ runInEachFileSystem(() => {
         const refArr = Array.from(refs);
         expect(refArr).toContain({
           name: 'bar',
-          kind: IdentifierKind.Method,
+          kind: IdentifierKind.Property,
           span: new AbsoluteSourceSpan(12, 15),
           target: null,
         });
@@ -334,7 +334,7 @@ runInEachFileSystem(() => {
         const refArr = Array.from(refs);
         expect(refArr).toContain({
           name: 'foos',
-          kind: IdentifierKind.Method,
+          kind: IdentifierKind.Property,
           span: new AbsoluteSourceSpan(24, 28),
           target: null,
         });

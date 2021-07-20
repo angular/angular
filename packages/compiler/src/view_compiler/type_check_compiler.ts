@@ -354,7 +354,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
               const pipeExpr = this.options.fullTemplateTypeCheck ?
                   o.variable(this.pipeOutputVar(name)) :
                   o.variable(this.getOutputVar(o.BuiltinTypeName.Dynamic));
-              return pipeExpr.callMethod('transform', args);
+              return pipeExpr.prop('transform').callFn(args);
             },
           },
           expression.value)

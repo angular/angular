@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AST, ASTWithSource, BoundTarget, ImplicitReceiver, MethodCall, ParseSourceSpan, PropertyRead, PropertyWrite, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
-import {AbsoluteSourceSpan, AttributeIdentifier, ElementIdentifier, IdentifierKind, MethodIdentifier, PropertyIdentifier, ReferenceIdentifier, TemplateNodeIdentifier, TopLevelIdentifier, VariableIdentifier} from './api';
+import {AST, ASTWithSource, BoundTarget, ImplicitReceiver, ParseSourceSpan, PropertyRead, PropertyWrite, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
+import {AbsoluteSourceSpan, AttributeIdentifier, ElementIdentifier, IdentifierKind, PropertyIdentifier, ReferenceIdentifier, TemplateNodeIdentifier, TopLevelIdentifier, VariableIdentifier} from './api';
 import {ComponentMeta} from './context';
 
 /**
@@ -18,7 +18,7 @@ interface HTMLNode extends TmplAstNode {
   name?: string;
 }
 
-type ExpressionIdentifier = PropertyIdentifier|MethodIdentifier;
+type ExpressionIdentifier = PropertyIdentifier;
 type TmplTarget = TmplAstReference|TmplAstVariable;
 type TargetIdentifier = ReferenceIdentifier|VariableIdentifier;
 type TargetIdentifierMap = Map<TmplTarget, TargetIdentifier>;
@@ -64,11 +64,6 @@ class ExpressionVisitor extends RecursiveAstVisitor {
 
   override visit(ast: AST) {
     ast.visit(this);
-  }
-
-  override visitMethodCall(ast: MethodCall, context: {}) {
-    this.visitIdentifier(ast, IdentifierKind.Method);
-    super.visitMethodCall(ast, context);
   }
 
   override visitPropertyRead(ast: PropertyRead, context: {}) {

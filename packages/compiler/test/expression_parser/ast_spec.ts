@@ -7,7 +7,7 @@
  */
 
 import {AST, Lexer, Parser, RecursiveAstVisitor} from '@angular/compiler';
-import {ImplicitReceiver, MethodCall, PropertyRead} from '@angular/compiler/src/compiler';
+import {Call, ImplicitReceiver, PropertyRead} from '@angular/compiler/src/compiler';
 
 describe('RecursiveAstVisitor', () => {
   it('should visit every node', () => {
@@ -18,14 +18,15 @@ describe('RecursiveAstVisitor', () => {
     visitor.visit(ast.ast, path);
     // If the visitor method of RecursiveAstVisitor is implemented correctly,
     // then we should have collected the full path from root to leaf.
-    expect(path.length).toBe(3);
-    const [methodCall, propertyRead, implicitReceiver] = path;
-    expectType(methodCall, MethodCall);
-    expectType(propertyRead, PropertyRead);
+    expect(path.length).toBe(4);
+    const [call, yRead, xRead, implicitReceiver] = path;
+    expectType(call, Call);
+    expectType(yRead, PropertyRead);
+    expectType(xRead, PropertyRead);
     expectType(implicitReceiver, ImplicitReceiver);
-    expect(methodCall.name).toBe('y');
-    expect(methodCall.args).toEqual([]);
-    expect(propertyRead.name).toBe('x');
+    expect(xRead.name).toBe('x');
+    expect(yRead.name).toBe('y');
+    expect(call.args).toEqual([]);
   });
 });
 

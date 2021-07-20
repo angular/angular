@@ -204,5 +204,5 @@ function delegateToFactory(
 function createFactoryFunction(type: o.Expression): o.FunctionExpr {
   return o.fn(
       [new o.FnParam('t', o.DYNAMIC_TYPE)],
-      [new o.ReturnStatement(type.callMethod('ɵfac', [o.variable('t')]))]);
+      [new o.ReturnStatement(type.prop('ɵfac').callFn([o.variable('t')]))]);
 }

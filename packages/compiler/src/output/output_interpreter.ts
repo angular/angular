@@ -188,13 +188,17 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
   }
   visitInvokeFunctionExpr(stmt: o.InvokeFunctionExpr, ctx: _ExecutionContext): any {
     const args = this.visitAllExpressions(stmt.args, ctx);
-    const fnExpr = stmt.fn;
+    const fnExpr = stmt.fn as (o.Expression & {receiver: o.Expression | undefined});
     if (fnExpr instanceof o.ReadVarExpr && fnExpr.builtin === o.BuiltinVar.Super) {
       ctx.instance!.constructor.prototype.constructor.apply(ctx.instance, args);
       return null;
     } else {
-      const fn = stmt.fn.visitExpression(this, ctx);
-      return fn.apply(null, args);
+      const fn = fnExpr.visitExpression(this, ctx);
+      let context: any = null;
+      if (fnExpr.receiver) {
+        context = fnExpr.receiver.visitExpression(this, ctx);
+      }
+      return fn.apply(context, args);
     }
   }
   visitTaggedTemplateExpr(expr: o.TaggedTemplateExpr, ctx: _ExecutionContext): any {

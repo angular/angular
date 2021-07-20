@@ -71,7 +71,7 @@ const externalModuleIdentifier = new o.ExternalReference(anotherModuleUrl, 'some
 
     it('should invoke functions and methods and constructors', () => {
       expect(emitStmt(o.variable('someFn').callFn([o.literal(1)]).toStmt())).toEqual('someFn(1);');
-      expect(emitStmt(o.variable('someObj').callMethod('someMethod', [o.literal(1)]).toStmt()))
+      expect(emitStmt(o.variable('someObj').prop('someMethod').callFn([o.literal(1)]).toStmt()))
           .toEqual('someObj.someMethod(1);');
       expect(emitStmt(o.variable('SomeClass').instantiate([o.literal(1)]).toStmt()))
           .toEqual('new SomeClass(1);');
@@ -275,7 +275,7 @@ const externalModuleIdentifier = new o.ExternalReference(anotherModuleUrl, 'some
       let callSomeMethod: o.Statement;
 
       beforeEach(() => {
-        callSomeMethod = o.THIS_EXPR.callMethod('someMethod', []).toStmt();
+        callSomeMethod = o.THIS_EXPR.prop('someMethod').callFn([]).toStmt();
       });
 
       it('should support declaring classes', () => {
