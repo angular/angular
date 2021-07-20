@@ -56,7 +56,7 @@ export interface AnalyzedIncrementalState {
    * The analysis data from a prior compilation. This stores the trait information for all source
    * files that was present in a prior compilation.
    */
-  priorAnalysis: Map<ts.SourceFile, ClassRecord[]>;
+  priorAnalysis: Map<ts.SourceFile, ClassRecord[]|null>;
 
   /**
    * All generated template type-checking files produced as part of this compilation, or `null` if
