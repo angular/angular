@@ -5,7 +5,7 @@ The lifecycle continues with change detection, as Angular checks to see when dat
 The lifecycle ends when Angular destroys the component instance and removes its rendered template from the DOM.
 Directives have a similar lifecycle, as Angular creates, updates, and destroys instances in the course of execution.
 
-Your application can use [lifecycle hook methods](guide/glossary#lifecycle-hook "Definition of lifecycle hook") to tap into key events in the lifecycle of a component or directive in order to initialize new instances, initiate change detection when needed, respond to updates during change detection, and clean up before deletion of instances.
+Your application can use [lifecycle hook methods](guide/glossary#lifecycle-hook "Definition of lifecycle hook") to tap into key events in the lifecycle of a component or directive to initialize new instances, initiate change detection when needed, respond to updates during change detection, and clean up before deletion of instances.
 
 ## Prerequisites
 
@@ -18,7 +18,7 @@ Before working with lifecycle hooks, you should have a basic understanding of th
 
 ## Responding to lifecycle events
 
-You can respond to events in the lifecycle of a component or directive by implementing one or more of the *lifecycle hook* interfaces in the Angular `core` library.
+Respond to events in the lifecycle of a component or directive by implementing one or more of the *lifecycle hook* interfaces in the Angular `core` library.
 The hooks give you the opportunity to act on a component or directive instance at the appropriate moment, as Angular creates, updates, or destroys that instance.
 
 Each interface defines the prototype for a single hook method, whose name is the interface name prefixed with `ng`.
@@ -34,7 +34,7 @@ You don't have to implement all (or any) of the lifecycle hooks, just the ones y
 
 After your application instantiates a component or directive by calling its constructor, Angular calls the hook methods you have implemented at the appropriate point in the lifecycle of that instance.
 
-Angular executes hook methods in the following sequence. You can use them to perform the following kinds of operations.
+Angular executes hook methods in the following sequence. Use them to perform the following kinds of operations.
 
 <table width="100%">
   <col width="20%"></col>
@@ -225,7 +225,7 @@ The sample code is also used to illustrate specific tasks in the following secti
     </td>
     <td>
 
-      Shows how you can use lifecycle hooks with a custom directive.
+      Shows how to use lifecycle hooks with a custom directive.
       The `SpyDirective` implements the `ngOnInit()` and `ngOnDestroy()` hooks,
       and uses them to watch and report when an element goes in or out of the current view.
 
@@ -372,8 +372,8 @@ Notice that these three hooks fire *often*, so it is important to keep their log
 
 ### Use directives to watch the DOM
 
-The `Spy` example demonstrates how you can use hook method for directives as well as components.
-The `SpyDirective` implements two hooks, `ngOnInit()` and `ngOnDestroy()`, in order to discover when a watched element is in the current view.
+The `Spy` example demonstrates how to use the hook method for directives as well as components.
+The `SpyDirective` implements two hooks, `ngOnInit()` and `ngOnDestroy()`, to discover when a watched element is in the current view.
 
 This template applies the `SpyDirective` to a `<div>` in the `ngFor` *hero* repeater managed by the parent `SpyComponent`.
 
@@ -381,7 +381,7 @@ The example does not perform any initialization or clean-up.
 It just tracks the appearance and disappearance of an element in the view by recording when the directive itself is instantiated and destroyed.
 
 A spy directive like this can provide insight into a DOM object that you cannot change directly.
-You can't touch the implementation of a native `<div>`, or modify a third party component.
+You can't touch the implementation of a built-in `<div>`, or modify a third party component.
 You can, however watch these elements with a directive.
 
 The directive defines `ngOnInit()` and `ngOnDestroy()` hooks
@@ -389,7 +389,7 @@ that log messages to the parent using an injected `LoggerService`.
 
 <code-example path="lifecycle-hooks/src/app/spy.directive.ts" region="spy-directive" header="src/app/spy.directive.ts"></code-example>
 
-You can apply the spy to any native or component element, and see that it is initialized and destroyed
+Apply the spy to any built-in or component element, and see that it is initialized and destroyed
 at the same time as that element.
 Here it is attached to the repeated hero `<div>`:
 
@@ -407,7 +407,7 @@ The spy's `ngOnDestroy()` method reports its last moments.
 
 In this example, a `CounterComponent` uses the `ngOnChanges()` method to log a change every time the parent component increments its input `counter` property.
 
-This example applies the `SpyDirective` from the previous example to the `CounterComponent` log, in order to watch the creation and destruction of log entries.
+This example applies the `SpyDirective` from the previous example to the `CounterComponent` log, to watch the creation and destruction of log entries.
 
 {@a onchanges}
 
@@ -477,7 +477,7 @@ In this example, the `doSomething()` method updates the screen when the hero nam
 
 <code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="do-something" header="AfterViewComponent (doSomething)"></code-example>
 
-Both the `AfterViewInit()` and `AfterViewChecked()` hooks fire after the component's view has been composed.
+Both the `AfterViewInit()` and `AfterViewChecked()` hooks fire after the component's view is composed.
 If you modify the code so that the hook updates the component's data-bound `comment` property immediately, you can see that Angular throws an error.
 
 The `LoggerService.tick_then()` statement postpones the log update
@@ -503,7 +503,7 @@ Be very careful about how much logic or computation you put into one of these me
 
 *Content projection* is a way to import HTML content from outside the component and insert that content
 into the component's template in a designated spot.
-You can identify content projection in a template by looking for the following constructs.
+Identify content projection in a template by looking for the following constructs.
 
   * HTML between component element tags.
   * The presence of `<ng-content>` tags in the component's template.
@@ -568,7 +568,7 @@ There's no need to [delay the update to ensure proper rendering](#wait-a-tick "D
 
 Angular calls both *AfterContent* hooks before calling either of the *AfterView* hooks.
 Angular completes composition of the projected content *before* finishing the composition of this component's view.
-There is a small window between the `AfterContent...` and `AfterView...` hooks that allows you to modify the host view.
+There is a small window between the `AfterContent...` and `AfterView...` hooks that lets you modify the host view.
 
 </div>
 
@@ -576,8 +576,8 @@ There is a small window between the `AfterContent...` and `AfterView...` hooks t
 
 ## Defining custom change detection
 
-To monitor changes that occur where `ngOnChanges()` won't catch them, you can implement your own change check, as shown in the *DoCheck* example.
-This example shows how you can use the `ngDoCheck()` hook to detect and act upon changes that Angular doesn't catch on its own.
+To monitor changes that occur where `ngOnChanges()` won't catch them, implement your own change check, as shown in the *DoCheck* example.
+This example shows how to use the `ngDoCheck()` hook to detect and act upon changes that Angular doesn't catch on its own.
 
 The *DoCheck* sample extends the *OnChanges* sample with the following `ngDoCheck()` hook:
 

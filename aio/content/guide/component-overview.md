@@ -21,11 +21,11 @@ To create a component, verify that you have met the following prerequisites:
 
 1. [Install the Angular CLI.](guide/setup-local#install-the-angular-cli)
 1. [Create an Angular workspace](guide/setup-local#create-a-workspace-and-initial-application) with initial application.
-   If you don't have a project, you can create one using `ng new <project-name>`, where `<project-name>` is the name of your Angular application.
+   If you don't have a project, create one using `ng new <project-name>`, where `<project-name>` is the name of your Angular application.
 
 ## Creating a component
 
-The easiest way to create a component is with the Angular CLI. You can also create a component manually.
+The best way to create a component is with the Angular CLI. You can also create a component manually.
 
 ### Creating a component using the Angular CLI
 
@@ -53,7 +53,7 @@ For more information, see [ng generate component](cli/generate#component-command
 
 ### Creating a component manually
 
-Although the Angular CLI is the easiest way to create an Angular component, you can also create a component manually.
+Although the Angular CLI is the best way to create an Angular component, you can also create a component manually.
 This section describes how to create the core component file within an existing Angular project.
 
 To create a new component manually:
@@ -122,7 +122,7 @@ Specify a component's selector by adding a `selector` statement to the `@Compone
 ## Defining a component's template
 
 A template is a block of HTML that tells Angular how to render the component in your application.
-You can define a template for your component in one of two ways: by referencing an external file, or directly within the component.
+Define a template for your component in one of two ways: by referencing an external file, or directly within the component.
 
 To define a template as an external file, add a `templateUrl` property to the `@Component` decorator.
 
@@ -138,7 +138,7 @@ To define a template within the component, add a `template` property to the `@Co
     region="template">
 </code-example>
 
-If you want your template to span multiple lines, you can use backticks (<code> ` </code>).
+If you want your template to span multiple lines, use backticks (<code> ` </code>).
 For example:
 
 <code-example
@@ -154,7 +154,7 @@ An Angular component requires a template defined using `template` or `templateUr
 
 ## Declaring a component's styles
 
-You can declare component styles uses for its template in one of two ways: by referencing an external file, or directly within the component.
+Declare component styles uses for its template in one of two ways: by referencing an external file, or directly within the component.
 
 To declare the styles for a component in a separate file, add a `styleUrls` property to the `@Component` decorator.
 
@@ -176,7 +176,7 @@ The `styles` property takes an array of strings that contain the CSS rule declar
 ## Next steps
 
 * For an architectural overview of components, see [Introduction to components and templates](guide/architecture-components).
-* For additional options you can use when creating a component, see [Component](api/core/Component) in the API Reference.
+* For additional options to use when creating a component, see [Component](api/core/Component) in the API Reference.
 * For more information on styling components, see [Component styles](guide/component-styles).
 * For more information on templates, see [Template syntax](guide/template-syntax).
 
