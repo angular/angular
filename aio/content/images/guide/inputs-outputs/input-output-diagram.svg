@@ -1,1 +1,246 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg width="100%" height="100%" viewBox="0 0 800 333" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"><g id="Input-and-Output-Diagram" serif:id="Input and Output Diagram"><g transform="matrix(1.18142,0,0,1.18142,6.5,138.629)"><text x="0px" y="10.592px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:14.787px;">&lt;app-input-output [</text><text x="124.552px" y="10.592px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:14.787px;fill:#df002d;">item</text><text x="152.488px" y="10.592px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:14.787px;">]=&quot;</text><text x="170.481px" y="10.592px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:14.787px;fill:#3345cc;">currentItem</text><text x="245.263px" y="10.592px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:14.787px;">&quot; (</text><text x="259.545px" y="10.592px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:14.787px;fill:#df002d;">deleteRequest</text><text x="354.913px" y="10.592px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:14.787px;">)=&quot;</text><text x="373.722px" y="10.592px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:14.787px;fill:#3345cc;">crossOf<tspan x="424.395px 428.503px " y="10.592px 10.592px ">fI</tspan>tem($event)</text><text x="511.509px" y="10.592px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:14.787px;">&quot;&gt;&lt;/app-input-output&gt;</text></g><path d="M175.345,220.489l-10.085,-0.151l0.612,-40.853l-9.364,-0.141l14.622,-14.191l14.192,14.623l-9.365,-0.14l-0.612,40.853Z" style="fill:#df002d;"/><path d="M379.426,215.483l-10.251,0.016l-0.053,-35.115l-9.519,0.015l14.622,-14.666l14.666,14.621l-9.519,0.015l0.054,35.114Z" style="fill:#df002d;"/><path d="M519.758,82.024l10.25,-0.078l0.267,35.114l9.518,-0.072l-14.532,14.754l-14.754,-14.532l9.518,-0.072l-0.267,-35.114Z" style="fill:#3345cc;"/><path d="M255.001,83.973l10.251,0.023l-0.077,35.114l9.519,0.021l-14.676,14.612l-14.612,-14.676l9.519,0.021l0.076,-35.115Z" style="fill:#3345cc;"/><path d="M91.445,112.213l4.304,0l0,12.588l3.996,0l-6.148,6.148l-6.148,-6.148l3.996,0l0,-12.588Z"/><g transform="matrix(1,0,0,1,14,-198)"><text x="60.505px" y="279px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">child</text><text x="47.501px" y="300.23px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">selector</text></g><path d="M243,223.06c0,-1.137 -0.923,-2.06 -2.06,-2.06l-133.88,0c-1.137,0 -2.06,0.923 -2.06,2.06l0,81.88c0,1.137 0.923,2.06 2.06,2.06l133.88,0c1.137,0 2.06,-0.923 2.06,-2.06l0,-81.88Z" style="fill:#fff;stroke:#df002d;stroke-width:1px;"/><path d="M593.648,40.883c0,-0.846 -0.687,-1.534 -1.533,-1.534l-134.934,0c-0.846,0 -1.533,0.688 -1.533,1.534l0,60.933c0,0.846 0.687,1.533 1.533,1.533l134.934,0c0.846,0 1.533,-0.687 1.533,-1.533l0,-60.933Z" style="fill:#fff;stroke:#3345cc;stroke-width:1px;"/><path d="M328.287,41.263c0,-0.833 -0.676,-1.51 -1.509,-1.51l-133.982,0c-0.833,0 -1.509,0.677 -1.509,1.51l0,59.981c0,0.833 0.676,1.509 1.509,1.509l133.982,0c0.833,0 1.509,-0.676 1.509,-1.509l0,-59.981Z" style="fill:#fff;stroke:#3345cc;stroke-width:1px;"/><path d="M446.641,223.679c0,-1.137 -0.923,-2.061 -2.06,-2.061l-133.879,0c-1.137,0 -2.061,0.924 -2.061,2.061l0,81.879c0,1.137 0.924,2.06 2.061,2.06l133.879,0c1.137,0 2.06,-0.923 2.06,-2.06l0,-81.879Z" style="fill:#fff;stroke:#df002d;stroke-width:1px;"/><g><rect x="135.42" y="198.938" width="74" height="33" style="fill:#fff;stroke:#df002d;stroke-width:1px;"/><text x="147.535px" y="221.534px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:20px;">target</text></g><g><rect x="341.42" y="199.938" width="74" height="33" style="fill:#fff;stroke:#df002d;stroke-width:1px;"/><text x="353.535px" y="222.534px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:20px;">target</text></g><g><rect x="486.42" y="14.938" width="74" height="33" style="fill:#fff;stroke:#3345cc;stroke-width:1px;"/><text x="493.535px" y="37.534px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:20px;">source</text></g><g id="source"><rect x="226.42" y="14.938" width="74" height="33" style="fill:#fff;stroke:#3345cc;stroke-width:1px;"/><text x="233.535px" y="37.534px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:20px;">source</text></g><g transform="matrix(1,0,0,1,93.8495,-23.5102)"><text x="39.962px" y="279px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:20px;">@Input()</text><text x="19.552px" y="300.23px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:20px;">property from</text><text x="58.448px" y="321.46px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:20px;">child</text></g><g transform="matrix(1,0,0,1,297.243,-23.6136)"><text x="32.184px" y="279px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:20px;">@Output()</text><text x="31.773px" y="300.23px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:20px;">event from</text><text x="58.448px" y="321.46px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:20px;">child</text></g><g transform="matrix(1,0,0,1,445.42,-208.691)"><text x="22.882px" y="279px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:20px;">method from</text><text x="50.66px" y="300.23px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:20px;">parent</text></g><g transform="matrix(1,0,0,1,180.035,-208.181)"><text x="19.552px" y="279px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:20px;">property from</text><text x="50.66px" y="300.23px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:20px;">parent</text></g></g></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="100%"
+   height="100%"
+   viewBox="0 0 800 333"
+   version="1.1"
+   xml:space="preserve"
+   style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"
+   id="svg100"
+   sodipodi:docname="input-output-diagram-update.svg"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"><metadata
+     id="metadata106"><rdf:RDF><cc:Work
+         rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+     id="defs104" /><sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1528"
+     inkscape:window-height="836"
+     id="namedview102"
+     showgrid="false"
+     inkscape:zoom="1.125"
+     inkscape:cx="400"
+     inkscape:cy="166.5"
+     inkscape:window-x="72"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg100" /><g
+     id="g22"
+     transform="matrix(1.18142,0,0,1.18142,6.5,138.629)"><text
+       id="text2"
+       style="font-size:14.7869997px;font-family:ArialMT, Arial, sans-serif"
+       y="10.592"
+       x="0">&lt;app-input-output [</text>
+<text
+       id="text4"
+       style="font-size:14.7869997px;font-family:ArialMT, Arial, sans-serif;fill:#df002d"
+       y="10.592"
+       x="124.552">item</text>
+<text
+       id="text6"
+       style="font-size:14.7869997px;font-family:ArialMT, Arial, sans-serif"
+       y="10.592"
+       x="152.48801">]=&quot;</text>
+<text
+       id="text8"
+       style="font-size:14.7869997px;font-family:ArialMT, Arial, sans-serif;fill:#3345cc"
+       y="10.592"
+       x="170.481">currentItem</text>
+<text
+       id="text10"
+       style="font-size:14.7869997px;font-family:ArialMT, Arial, sans-serif"
+       y="10.592"
+       x="245.263">&quot; (</text>
+<text
+       id="text12"
+       style="font-size:14.7869997px;font-family:ArialMT, Arial, sans-serif;fill:#df002d"
+       y="10.592"
+       x="259.54501">deleteRequest</text>
+<text
+       id="text14"
+       style="font-size:14.7869997px;font-family:ArialMT, Arial, sans-serif"
+       y="10.592"
+       x="354.91299">)=&quot;</text>
+<text
+       id="text18"
+       style="font-size:14.7869997px;font-family:ArialMT, Arial, sans-serif;fill:#3345cc"
+       y="10.592"
+       x="373.72198">crossOf<tspan
+   id="tspan16"
+   y="10.592 10.592"
+   x="424.39499 428.50299">fI</tspan>tem($event)</text>
+<text
+       id="text20"
+       style="font-size:14.7869997px;font-family:ArialMT, Arial, sans-serif"
+       y="10.592"
+       x="511.509">&quot;&gt;&lt;/app-input-output&gt;</text>
+</g><path
+     inkscape:connector-curvature="0"
+     id="path24"
+     style="fill:#df002d"
+     d="m 175.345,220.489 -10.085,-0.151 0.612,-40.853 -9.364,-0.141 14.622,-14.191 14.192,14.623 -9.365,-0.14 z" /><path
+     inkscape:connector-curvature="0"
+     id="path26"
+     style="fill:#df002d"
+     d="m 379.426,215.483 -10.251,0.016 -0.053,-35.115 -9.519,0.015 14.622,-14.666 14.666,14.621 -9.519,0.015 z" /><path
+     inkscape:connector-curvature="0"
+     id="path30"
+     style="fill:#3345cc"
+     d="m 255.001,83.973 10.251,0.023 -0.077,35.114 9.519,0.021 -14.676,14.612 -14.612,-14.676 9.519,0.021 z" /><path
+     inkscape:connector-curvature="0"
+     id="path32"
+     d="m 91.445,112.213 h 4.304 v 12.588 h 3.996 l -6.148,6.148 -6.148,-6.148 h 3.996 z" /><g
+     id="g38"
+     transform="translate(14,-198)"><text
+       id="text34"
+       style="font-size:18px;font-family:ArialMT, Arial, sans-serif"
+       y="279"
+       x="60.505001">child</text>
+<text
+       id="text36"
+       style="font-size:18px;font-family:ArialMT, Arial, sans-serif"
+       y="300.23001"
+       x="47.500999">selector</text>
+</g><path
+     inkscape:connector-curvature="0"
+     id="path40"
+     style="fill:#ffffff;stroke:#df002d;stroke-width:1px"
+     d="m 243,223.06 c 0,-1.137 -0.923,-2.06 -2.06,-2.06 H 107.06 c -1.137,0 -2.06,0.923 -2.06,2.06 v 81.88 c 0,1.137 0.923,2.06 2.06,2.06 h 133.88 c 1.137,0 2.06,-0.923 2.06,-2.06 z" /><path
+     inkscape:connector-curvature="0"
+     id="path44"
+     style="fill:#ffffff;stroke:#3345cc;stroke-width:1px"
+     d="m 328.287,41.263 c 0,-0.833 -0.676,-1.51 -1.509,-1.51 H 192.796 c -0.833,0 -1.509,0.677 -1.509,1.51 v 59.981 c 0,0.833 0.676,1.509 1.509,1.509 h 133.982 c 0.833,0 1.509,-0.676 1.509,-1.509 z" /><g
+     id="g52"><rect
+       id="rect48"
+       style="fill:#ffffff;stroke:#df002d;stroke-width:1px"
+       height="33"
+       width="74"
+       y="198.938"
+       x="135.42" /><text
+       id="text50"
+       style="font-size:20px;font-family:ArialMT, Arial, sans-serif"
+       y="221.534"
+       x="147.535">target</text>
+</g><g
+     id="source"><rect
+       id="rect66"
+       style="fill:#ffffff;stroke:#3345cc;stroke-width:1px"
+       height="33"
+       width="74"
+       y="14.938"
+       x="226.42" /><text
+       id="text68"
+       style="font-size:20px;font-family:ArialMT, Arial, sans-serif"
+       y="37.534"
+       x="233.535">source</text>
+</g><g
+     id="g77"
+     transform="translate(93.8495,-23.5102)"><text
+       id="text71"
+       style="font-size:20px;font-family:ArialMT, Arial, sans-serif"
+       y="279"
+       x="39.962002">@Input()</text>
+<text
+       id="text73"
+       style="font-size:20px;font-family:ArialMT, Arial, sans-serif"
+       y="300.23001"
+       x="19.552">property from</text>
+<text
+       id="text75"
+       style="font-size:20px;font-family:ArialMT, Arial, sans-serif"
+       y="321.45999"
+       x="58.448002">child</text>
+</g><g
+     id="g4695"><path
+       d="m 446.641,223.679 c 0,-1.137 -0.923,-2.061 -2.06,-2.061 H 310.702 c -1.137,0 -2.061,0.924 -2.061,2.061 v 81.879 c 0,1.137 0.924,2.06 2.061,2.06 h 133.879 c 1.137,0 2.06,-0.923 2.06,-2.06 z"
+       style="fill:#ffffff;stroke:#df002d;stroke-width:1px"
+       id="path46"
+       inkscape:connector-curvature="0" /><g
+       id="g4675"><rect
+         x="341.42001"
+         y="199.938"
+         width="74"
+         height="33"
+         style="fill:#ffffff;stroke:#df002d;stroke-width:1px"
+         id="rect54" /><text
+         x="349.09058"
+         y="222.534"
+         style="font-size:20px;font-family:ArialMT, Arial, sans-serif"
+         id="text56">source</text>
+</g><g
+       transform="translate(297.243,-23.6136)"
+       id="g85"><text
+         x="32.183998"
+         y="279"
+         style="font-size:20px;font-family:ArialMT, Arial, sans-serif"
+         id="text79">@Output()</text>
+<text
+         x="31.773001"
+         y="300.23001"
+         style="font-size:20px;font-family:ArialMT, Arial, sans-serif"
+         id="text81">event from</text>
+<text
+         x="58.448002"
+         y="321.45999"
+         style="font-size:20px;font-family:ArialMT, Arial, sans-serif"
+         id="text83">child</text>
+</g></g><g
+     id="g4685"><path
+       d="m 519.758,82.024 10.25,-0.078 0.267,35.114 9.518,-0.072 -14.532,14.754 -14.754,-14.532 9.518,-0.072 z"
+       style="fill:#3345cc"
+       id="path28"
+       inkscape:connector-curvature="0" /><path
+       d="m 593.648,40.883 c 0,-0.846 -0.687,-1.534 -1.533,-1.534 H 457.181 c -0.846,0 -1.533,0.688 -1.533,1.534 v 60.933 c 0,0.846 0.687,1.533 1.533,1.533 h 134.934 c 0.846,0 1.533,-0.687 1.533,-1.533 z"
+       style="fill:#ffffff;stroke:#3345cc;stroke-width:1px"
+       id="path42"
+       inkscape:connector-curvature="0" /><g
+       id="g4671"><rect
+         x="486.42001"
+         y="14.938"
+         width="74"
+         height="33"
+         style="fill:#ffffff;stroke:#3345cc;stroke-width:1px"
+         id="rect60" /><text
+         x="497.09055"
+         y="36.645111"
+         style="font-size:20px;font-family:ArialMT, Arial, sans-serif"
+         id="text62">target</text>
+</g><g
+       transform="translate(445.42,-208.691)"
+       id="g91"><text
+         x="22.882"
+         y="279"
+         style="font-size:20px;font-family:ArialMT, Arial, sans-serif"
+         id="text87">method from</text>
+<text
+         x="50.66"
+         y="300.23001"
+         style="font-size:20px;font-family:ArialMT, Arial, sans-serif"
+         id="text89">parent</text>
+</g></g><g
+     id="g97"
+     transform="translate(180.035,-208.181)"><text
+       id="text93"
+       style="font-size:20px;font-family:ArialMT, Arial, sans-serif"
+       y="279"
+       x="19.552">property from</text>
+<text
+       id="text95"
+       style="font-size:20px;font-family:ArialMT, Arial, sans-serif"
+       y="300.23001"
+       x="50.66">parent</text>
+</g></svg>
