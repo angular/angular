@@ -1206,8 +1206,8 @@ describe('TestBed', () => {
              fixture = TestBed.createComponent(RootCmp);
              fixture.detectChanges();
 
-             childCmpInstance = fixture.debugElement.query(By.directive(ChildCmp));
-             expect(childCmpInstance).toBeNull();
+             expect(() => fixture.debugElement.query(By.directive(ChildCmp)))
+                 .toThrowError('No elements found.');
              expect(fixture.nativeElement.textContent).toBe('');
 
              TestBed.resetTestingModule();
@@ -1221,8 +1221,8 @@ describe('TestBed', () => {
              fixture = TestBed.createComponent(RootCmp);
              fixture.detectChanges();
 
-             childCmpInstance = fixture.debugElement.query(By.directive(ChildCmp));
-             expect(childCmpInstance).toBeNull();
+             expect(() => fixture.debugElement.query(By.directive(ChildCmp)))
+                 .toThrowError('No elements found.');
              expect(fixture.nativeElement.textContent).toBe('');
            });
 

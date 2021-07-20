@@ -194,12 +194,12 @@ describe('LiveExampleComponent', () => {
   describe('when embedded', () => {
 
     function getDownloadAnchor() {
-      const anchor = liveExampleDe.query(By.css('p > a'));
+      const anchor = liveExampleDe.queryAll(By.css('p > a'))[0] ?? null;
       return anchor && anchor.nativeElement as HTMLAnchorElement;
     }
 
     function getEmbeddedStackblitzComponent() {
-      const compDe = liveExampleDe.query(By.directive(EmbeddedStackblitzComponent));
+      const compDe = liveExampleDe.queryAll(By.directive(EmbeddedStackblitzComponent))[0] ?? null;
       return compDe && compDe.componentInstance as EmbeddedStackblitzComponent;
     }
 
