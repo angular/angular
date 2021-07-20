@@ -174,6 +174,15 @@ import {HttpParams} from '@angular/common/http/src/params';
       });
     });
 
+    describe('encoding', () => {
+      it('should encode parameters', () => {
+        const body = new HttpParams({fromString: 'a=standard_chars'});
+        expect(body.toString()).toEqual('a=standard_chars');
+        const body2 = new HttpParams({fromString: 'a=1 2 3&b=mail@test&c=3_^[]$&d=eq=1'});
+        expect(body2.toString()).toEqual('a=1%202%203&b=mail@test&c=3_%5E%5B%5D$&d=eq=1');
+      });
+    });
+
     describe('toString', () => {
       it('should stringify string params', () => {
         const body = new HttpParams({fromObject: {a: '', b: '2', c: '3'}});
