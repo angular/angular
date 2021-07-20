@@ -3,7 +3,7 @@ import {
   transition, animate, style, query
 } from '@angular/animations';
 
-export const transAnimation = animation([
+export const transitionAnimation = animation([
   style({
     height: '{{ height }}',
     opacity: '{{ opacity }}',

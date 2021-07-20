@@ -21,7 +21,7 @@ import { trigger, transition, state, animate, style, AnimationEvent } from '@ang
       state('closed', style({
         height: '100px',
         opacity: 0.8,
-        backgroundColor: '#c6ecff'
+        backgroundColor: 'blue'
       })),
 // #enddocregion state2, trigger-wildcard1
 // #docregion transition1
@@ -78,7 +78,7 @@ export class OpenCloseComponent {
 
 // #enddocregion component
 // #docregion events1, events
-  onAnimationEvent( event: AnimationEvent ) {
+  onAnimationEvent(event: AnimationEvent) {
 // #enddocregion events1, events
     if (!this.logging) {
       return;
@@ -87,16 +87,16 @@ export class OpenCloseComponent {
     // openClose is trigger name in this example
     console.warn(`Animation Trigger: ${event.triggerName}`);
 
-    // phaseName is start or done
+    // phaseName is "start" or "done"
     console.warn(`Phase: ${event.phaseName}`);
 
-    // in our example, totalTime is 1000 or 1 second
+    // in our example, totalTime is 1000 (number of milliseconds in a second)
     console.warn(`Total time: ${event.totalTime}`);
 
-    // in our example, fromState is either open or closed
+    // in our example, fromState is either "open" or "closed"
     console.warn(`From: ${event.fromState}`);
 
-    // in our example, toState either open or closed
+    // in our example, toState either "open" or "closed"
     console.warn(`To: ${event.toState}`);
 
     // the HTML element itself, the button in this case

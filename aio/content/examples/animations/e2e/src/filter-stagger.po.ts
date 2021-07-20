@@ -14,7 +14,7 @@ export function getHeroesList() {
   return getComponentContainer().all(by.css('li'));
 }
 
-export function getFormInput() {
-  const formInput = () => by.css('form > input');
-  return locate(getPage(), formInput());
+export function getInput() {
+  const input = () => by.css('input');
+  return locate(getPage(), input());
 }
