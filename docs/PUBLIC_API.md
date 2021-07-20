@@ -41,6 +41,14 @@ We explicitly don't consider the following to be our public API surface:
 
 Our peer dependencies (such as TypeScript, Zone.js, or RxJS) are not considered part of our API surface, but they are included in our SemVer policies. We might update the required version of any of these dependencies in minor releases if the update doesn't cause breaking changes for Angular applications. Peer dependency updates that result in non-trivial breaking changes must be deferred to major Angular releases.
 
+<a name="final-classes"></a>
+
+## Extending Angular classes
+
+All classes in Angular's public API are `final` (they should not be extended) unless explicitly stated in the API documentation.
+
+Extending such `final` classes is not supported, since protected members and internal implementation may change outside of major releases.
+
 <a name="golden-files"></a>
 
 ## Golden files

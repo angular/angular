@@ -8,8 +8,16 @@
     &.api-status-label {
       background-color: constants.$mediumgray;
 
-      &.deprecated, &.security, &.impure-pipe {
+      &.deprecated,
+      &.security,
+      &.impure-pipe {
         background-color: constants.$brightred;
+      }
+
+      a {
+        color: inherit;
+        line-height: inherit;
+        font-size: inherit;
       }
     }
 

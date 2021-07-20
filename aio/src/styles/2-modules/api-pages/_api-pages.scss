@@ -97,7 +97,6 @@
 
         .github-links {
           a {
-
             .material-icons:hover {
               background: none;
             }
@@ -165,6 +164,10 @@
 
   .short-description {
     margin-top: 8px;
+  }
+
+  .final-message {
+    font-style: italic;
   }
 
   .api-heading {

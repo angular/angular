@@ -26,6 +26,9 @@
     {% if doc.deprecated !== undefined %}<label class="api-status-label deprecated">deprecated</label>{% endif %}
     {% if doc.security !== undefined %}<label class="api-status-label security">security</label>{% endif %}
     {% if doc.pipeOptions.pure === 'false' %}<label class="api-status-label impure-pipe">impure</label>{% endif %}
+    {% if doc.docType === 'class' and doc.extensible !== true and not doc.isAbstract %}<label class="github-links api-status-label final" title="This class should not be extended.">
+      <a href="{$ github.githubVersionedUrl(versionInfo) $}/docs/PUBLIC_API.md#final-classes">final</a>
+    </label>{% endif %}
   </header>
   {% endblock %}
   <aio-toc class="embedded"></aio-toc>

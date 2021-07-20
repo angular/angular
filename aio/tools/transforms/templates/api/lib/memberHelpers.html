@@ -95,6 +95,14 @@
     {% if method.shortDescription %}<tr>
       <td class="short-description">
         {$ method.shortDescription | marked $}
+
+        {% if method.containerDoc.docType === 'class' and method.name === 'constructor' and not method.containerDoc.isAbstract and method.containerDoc.extensible !== true %}
+        <p class="final-message">
+          This class is "final" and should not be extended.
+          See the <a href="{$ github.githubVersionedUrl(versionInfo) $}/docs/PUBLIC_API.md#final-classes">public API notes</a>.
+        </p>
+        {% endif %}
+
         {%- if method.see.length %}
         <p>See also:</p>
         <ul>
