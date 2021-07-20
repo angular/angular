@@ -426,6 +426,10 @@ export abstract class _MatTooltipBase<T extends _TooltipComponentBase> implement
       .pipe(takeUntil(this._destroyed))
       .subscribe(() => this._detach());
 
+    this._overlayRef.outsidePointerEvents()
+      .pipe(takeUntil(this._destroyed))
+      .subscribe(() => this._tooltipInstance?._handleBodyInteraction());
+
     return this._overlayRef;
   }
 
@@ -892,8 +896,6 @@ export abstract class _TooltipComponentBase implements OnDestroy {
     // Forces the element to have a layout in IE and Edge. This fixes issues where the element
     // won't be rendered if the animations are disabled or there is no web animations polyfill.
     '[style.zoom]': '_visibility === "visible" ? 1 : null',
-    '(body:click)': 'this._handleBodyInteraction()',
-    '(body:auxclick)': 'this._handleBodyInteraction()',
     'aria-hidden': 'true',
   }
 })

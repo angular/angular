@@ -109,8 +109,6 @@ export class MatTooltip extends _MatTooltipBase<TooltipComponent> {
     // Forces the element to have a layout in IE and Edge. This fixes issues where the element
     // won't be rendered if the animations are disabled or there is no web animations polyfill.
     '[style.zoom]': '_visibility === "visible" ? 1 : null',
-    '(body:click)': 'this._handleBodyInteraction()',
-    '(body:auxclick)': 'this._handleBodyInteraction()',
     'aria-hidden': 'true',
   }
 })
