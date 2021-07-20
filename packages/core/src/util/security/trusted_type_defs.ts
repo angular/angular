@@ -41,6 +41,9 @@ export declare interface TrustedTypePolicyFactory {
     createScript?: (input: string) => string,
     createScriptURL?: (input: string) => string,
   }): TrustedTypePolicy;
+  isHTML(value: unknown): value is TrustedHTML;
+  isScript(value: unknown): value is TrustedScript;
+  isScriptURL(value: unknown): value is TrustedScriptURL;
   getAttributeType(tagName: string, attribute: string): string|null;
 }
 

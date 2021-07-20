@@ -11,7 +11,7 @@ import {SANITIZER} from '../render3/interfaces/view';
 import {getLView} from '../render3/state';
 import {renderStringify} from '../render3/util/stringify_utils';
 import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../util/security/trusted_type_defs';
-import {trustedHTMLFromString, trustedScriptURLFromString} from '../util/security/trusted_types';
+import {isTrustedHTML, isTrustedScript, isTrustedScriptURL, trustedHTMLFromString, trustedScriptURLFromString} from '../util/security/trusted_types';
 import {trustedHTMLFromStringBypass, trustedScriptFromStringBypass, trustedScriptURLFromStringBypass} from '../util/security/trusted_types_bypass';
 
 import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './bypass';
@@ -38,6 +38,11 @@ import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
  * @codeGenApi
  */
 export function ɵɵsanitizeHtml(unsafeHtml: any): TrustedHTML|string {
+  if (isTrustedHTML(unsafeHtml)) {
+    // Value has been blessed by a Trusted Types policy, and thus does not need
+    // sanitization.
+    return unsafeHtml;
+  }
   const sanitizer = getSanitizer();
   if (sanitizer) {
     return trustedHTMLFromStringBypass(sanitizer.sanitize(SecurityContext.HTML, unsafeHtml) || '');
@@ -109,6 +114,11 @@ export function ɵɵsanitizeUrl(unsafeUrl: any): string {
  * @codeGenApi
  */
 export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): TrustedScriptURL|string {
+  if (isTrustedScriptURL(unsafeResourceUrl)) {
+    // Value has been blessed by a Trusted Types policy, and thus does not need
+    // sanitization.
+    return unsafeResourceUrl;
+  }
   const sanitizer = getSanitizer();
   if (sanitizer) {
     return trustedScriptURLFromStringBypass(
@@ -133,6 +143,11 @@ export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): TrustedScriptUR
  * @codeGenApi
  */
 export function ɵɵsanitizeScript(unsafeScript: any): TrustedScript|string {
+  if (isTrustedScript(unsafeScript)) {
+    // Value has been blessed by a Trusted Types policy, and thus does not need
+    // sanitization.
+    return unsafeScript;
+  }
   const sanitizer = getSanitizer();
   if (sanitizer) {
     return trustedScriptFromStringBypass(
