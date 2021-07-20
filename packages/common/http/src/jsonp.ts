@@ -125,15 +125,17 @@ export class JsonpClientBackend implements HttpBackend {
       // cleanup() is a utility closure that removes the <script> from the page and
       // the response callback from the window. This logic is used in both the
       // success, error, and cancellation paths, so it's extracted out for convenience.
-      const cleanup = () => {
+      const cleanup = (removeCallback = true) => {
         // Remove the <script> tag if it's still on the page.
         if (node.parentNode) {
           node.parentNode.removeChild(node);
         }
 
-        // Remove the response callback from the callbackMap (window object in the
-        // browser).
-        delete this.callbackMap[callback];
+        if (removeCallback) {
+          // Remove the response callback from the callbackMap (window object in the
+          // browser).
+          delete this.callbackMap[callback];
+        }
       };
 
       // onLoad() is the success callback which runs after the response callback
@@ -218,7 +220,9 @@ export class JsonpClientBackend implements HttpBackend {
         node.removeEventListener('error', onError);
 
         // And finally, clean up the page.
-        cleanup();
+        // Unsubscription won't remove the callback handler because there's no way to stop
+        // loading <script> once it has been added to DOM.
+        cleanup(false);
       };
     });
   }
