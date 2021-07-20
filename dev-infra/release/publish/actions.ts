@@ -508,13 +508,20 @@ export abstract class ReleaseAction {
 
   /** Verify the version of each generated package exact matches the specified version. */
   private async _verifyPackageVersions(version: semver.SemVer, packages: BuiltPackage[]) {
+    /** Experimental equivalent version for packages created with the provided version. */
+    const experimentalVersion =
+        new semver.SemVer(`0.${version.major * 100 + version.minor}.${version.patch}`);
     for (const pkg of packages) {
       const {version: packageJsonVersion} =
           JSON.parse(await fs.readFile(join(pkg.outputPath, 'package.json'), 'utf8')) as
           {version: string, [key: string]: any};
-      if (version.compare(packageJsonVersion) !== 0) {
+
+      const mismatchesVersion = version.compare(packageJsonVersion) !== 0;
+      const mismatchesExperimental = experimentalVersion.compare(packageJsonVersion) !== 0;
+
+      if (mismatchesExperimental && mismatchesVersion) {
         error(red('The built package version does not match the version being released.'));
-        error(`  Release Version:   ${version.version}`);
+        error(`  Release Version:   ${version.version} (${experimentalVersion.version})`);
         error(`  Generated Version: ${packageJsonVersion}`);
         throw new FatalReleaseActionError();
       }
