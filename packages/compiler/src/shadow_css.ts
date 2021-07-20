@@ -130,6 +130,31 @@
   Note the use of @polyfill in the comment above a ShadowDOM specific style
   declaration. This is a directive to the styling shim to use the selector
   in comments in lieu of the next selector when running under polyfill.
+
+  * ::slotted: ShadowDOM allows styling of the immediate projected element(s),
+  but not elements nested inside that/those (essentially ng-content > *).
+  https://developer.mozilla.org/en-US/docs/Web/CSS/::slotted
+  This is emulated by targeting projected elements with the child selector,
+  in combination with scope selectors. Invalid configurations will be replaced
+  with -invalidslotted, which should not match anything.
+  For example (assuming [x-host] as the host scope and [x-foo] the elements scope):
+
+    ::slotted(*) {
+      font-weight: bold;
+    }
+    p ::slotted(.x) {
+      font-size: large;
+    }
+
+  becomes:
+
+    [x-host] > *:not([x-foo]), [x-foo] > *:not([x-foo]) {
+      font-weight: bold;
+    }
+    p[x-foo] [x-foo] > .x:not([x-foo]), p[x-foo] > .x:not([x-foo]) {
+      font-size: large;
+    }
+
 */
 
 export class ShadowCss {
@@ -423,7 +448,10 @@ export class ShadowCss {
               return shallowPart;
             }
           };
-          return [applyScope(shallowPart), ...otherParts].join(' ');
+          return otherParts.length || !/::slotted/.test(shallowPart) ?
+              [applyScope(shallowPart), ...otherParts].join(' ') :
+              this._applySlottedSelector(
+                  shallowPart.trim(), applyScope, scopeSelector, hostSelector);
         })
         .join(', ');
   }
@@ -541,6 +569,82 @@ export class ShadowCss {
     return safeContent.restore(scopedSelector);
   }
 
+  // ::slotted selectors should be converted to target the immediate child of
+  // content projection. This either means the child or children of the host
+  // or the scoped elements, which do not have the scoped selector.
+  // `::slotted(*)` is transformed to
+  // `[x-host] > *:not([x-foo]), [x-foo] > *:not([x-foo])`
+  // `p ::slotted(.x)` is transformed to
+  // `p[x-foo] [x-foo] > .x:not([x-foo]), p[x-foo] > .x:not([x-foo])`
+  private _applySlottedSelector(
+      selector: string, applyScope: (shallowPart: string) => string, scopeSelector: string,
+      hostSelector: string) {
+    const [preSlottedSelector, combinator, slottedSelector] =
+        this._separateSlottedParts(selector, applyScope);
+    const applySlotted = (...parts: string[]) =>
+        parts.map(s => `${s} ${combinator || '>'} ${slottedSelector}:not([${scopeSelector}])`)
+            .join(', ');
+    if (combinator) {
+      return applySlotted(`${preSlottedSelector}`);
+    } else if (preSlottedSelector) {
+      return applySlotted(`${preSlottedSelector} [${scopeSelector}]`, preSlottedSelector);
+    } else {
+      return applySlotted(`[${hostSelector}]`, `[${scopeSelector}]`);
+    }
+  }
+
+  // Separate the ::slotted selector into the part before the selector, the combinator before
+  // the selector and the part inside it.
+  // e.g.
+  // `::slotted(*)` is split into `'', '', '*'`
+  // `p::slotted(*)` is split into `'p[x-foo]', '', '-invalidslotted'`
+  // `p ::slotted(*)` is split into `'p[x-foo]', '', '*'`
+  // `p>::slotted(*)` is split into `'p[x-foo]', '>', '*'`
+  // For selectors trying to escape the host, -invalidslotted is returned
+  // e.g. `:host+::slotted(*)` is split into `'[x-host]', '+', '-invalidslotted'`
+  private _separateSlottedParts(selector: string, applyScope: (shallowPart: string) => string) {
+    const [preSelectorPart, slottedPart] = selector.split(_slottedSelector);
+    if (!preSelectorPart.trim()) {
+      return ['', '', this._extractSlottedCompoundSelector(slottedPart)];
+    }
+
+    const match = preSelectorPart.trim().match(/^([\w\W]*)(>|\+|~(?!=))$/);
+    if (!match) {
+      const slottedSelector = /\s$/.test(preSelectorPart) ?
+          this._extractSlottedCompoundSelector(slottedPart) :
+          _invalidSlottedSelector;
+      return [applyScope(preSelectorPart), '', slottedSelector];
+    } else {
+      const slottedSelector = this._isValidHostSelector(match[1], match[2]) ?
+          this._extractSlottedCompoundSelector(slottedPart) :
+          _invalidSlottedSelector;
+      return [applyScope(match[1]), match[2], slottedSelector];
+    }
+  }
+
+  private _isValidHostSelector(selector: string, combinator: string) {
+    if (!selector.trim() || combinator === '>') {
+      return true;
+    }
+
+    const safeSelector = new SafeSelector(selector.trim());
+    const lastSelector = safeSelector.content().split(_selectorSeparatorsRe).reverse()[0];
+    return lastSelector.indexOf(_polyfillHost) === -1;
+  }
+
+  // If the given selector is not a valid compound selector (i.e. contains a separator)
+  // a selector (-invalidslotted) is returned that should not match anything.
+  private _extractSlottedCompoundSelector(selector: string) {
+    selector = selector.trim();
+    if (selector[0] !== '(' || selector[selector.length - 1] !== ')') {
+      return _invalidSlottedSelector;
+    }
+
+    selector = selector.substring(1, selector.length - 1).trim();
+    const safeSelector = new SafeSelector(selector);
+    return _selectorSeparatorsRe.test(safeSelector.content()) ? _invalidSlottedSelector : selector;
+  }
+
   private _insertPolyfillHostInCssText(selector: string): string {
     return selector.replace(_colonHostContextRe, _polyfillHostContext)
         .replace(_colonHostRe, _polyfillHost);
@@ -624,11 +728,14 @@ const _shadowDOMSelectorsRe = [
 // Support for `>>>`, `deep`, `::ng-deep` is then also deprecated and will be removed in the future.
 // see https://github.com/angular/angular/pull/17677
 const _shadowDeepSelectors = /(?:>>>)|(?:\/deep\/)|(?:::ng-deep)/g;
+const _slottedSelector = /(?:::slotted)/g;
+const _invalidSlottedSelector = '-invalidslotted';
 const _selectorReSuffix = '([>\\s~+\[.,{:][\\s\\S]*)?$';
 const _polyfillHostRe = /-shadowcsshost/gim;
 const _colonHostRe = /:host/gim;
 const _colonHostContextRe = /:host-context/gim;
 
+const _selectorSeparatorsRe = /( |>|\+|~(?!=))\s*/;
 const _commentRe = /\/\*\s*[\s\S]*?\*\//g;
 
 function stripComments(input: string): string {
