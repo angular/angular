@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Octokit} from '@octokit/rest';
 import {GitClient} from '../../utils/git/git-client';
 
 /** Thirty seconds in milliseconds. */
@@ -39,9 +38,8 @@ export async function getPullRequestState(api: GitClient, id: number): Promise<P
  * shows the PR as closed. See for example: https://github.com/angular/angular/pull/37918.
  */
 async function isPullRequestClosedWithAssociatedCommit(api: GitClient, id: number) {
-  const request =
-      api.github.issues.listEvents.endpoint.merge({...api.remoteParams, issue_number: id});
-  const events: Octokit.IssuesListEventsResponse = await api.github.paginate(request);
+  const events = await api.github.paginate(
+      api.github.issues.listEvents, {...api.remoteParams, issue_number: id});
   // Iterate through the events of the pull request in reverse. We want to find the most
   // recent events and check if the PR has been closed with a commit associated with it.
   // If the PR has been closed through a commit, we assume that the PR has been merged

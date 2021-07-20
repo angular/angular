@@ -22,11 +22,11 @@ export class FirefoxDriverExtension extends WebDriverExtension {
     this._profilerStarted = false;
   }
 
-  gc() {
+  override gc() {
     return this._driver.executeScript('window.forceGC()');
   }
 
-  timeBegin(name: string): Promise<any> {
+  override timeBegin(name: string): Promise<any> {
     if (!this._profilerStarted) {
       this._profilerStarted = true;
       this._driver.executeScript('window.startProfiler();');
@@ -34,7 +34,7 @@ export class FirefoxDriverExtension extends WebDriverExtension {
     return this._driver.executeScript('window.markStart("' + name + '");');
   }
 
-  timeEnd(name: string, restartName: string|null = null): Promise<any> {
+  override timeEnd(name: string, restartName: string|null = null): Promise<any> {
     let script = 'window.markEnd("' + name + '");';
     if (restartName != null) {
       script += 'window.markStart("' + restartName + '");';
@@ -42,15 +42,15 @@ export class FirefoxDriverExtension extends WebDriverExtension {
     return this._driver.executeScript(script);
   }
 
-  readPerfLog(): Promise<PerfLogEvent[]> {
+  override readPerfLog(): Promise<PerfLogEvent[]> {
     return this._driver.executeAsyncScript('var cb = arguments[0]; window.getProfile(cb);');
   }
 
-  perfLogFeatures(): PerfLogFeatures {
+  override perfLogFeatures(): PerfLogFeatures {
     return new PerfLogFeatures({render: true, gc: true});
   }
 
-  supports(capabilities: {[key: string]: any}): boolean {
+  override supports(capabilities: {[key: string]: any}): boolean {
     return capabilities['browserName'].toLowerCase() === 'firefox';
   }
 }

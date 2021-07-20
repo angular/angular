@@ -77,23 +77,23 @@ export class MockAnimationPlayer extends NoopAnimationPlayer {
   }
 
   /* @internal */
-  init() {
+  override init() {
     super.init();
     this._onInitFns.forEach(fn => fn());
     this._onInitFns = [];
   }
 
-  reset() {
+  override reset() {
     super.reset();
     this.__started = false;
   }
 
-  finish(): void {
+  override finish(): void {
     super.finish();
     this.__finished = true;
   }
 
-  destroy(): void {
+  override destroy(): void {
     super.destroy();
     this.__finished = true;
   }
@@ -101,12 +101,12 @@ export class MockAnimationPlayer extends NoopAnimationPlayer {
   /* @internal */
   triggerMicrotask() {}
 
-  play(): void {
+  override play(): void {
     super.play();
     this.__started = true;
   }
 
-  hasStarted() {
+  override hasStarted() {
     return this.__started;
   }
 

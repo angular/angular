@@ -45,7 +45,7 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
  * {
  *   "notification": {
  *     "actions": NotificationAction[],
- *     "badge": USVString
+ *     "badge": USVString,
  *     "body": DOMString,
  *     "data": any,
  *     "dir": "auto"|"ltr"|"rtl",

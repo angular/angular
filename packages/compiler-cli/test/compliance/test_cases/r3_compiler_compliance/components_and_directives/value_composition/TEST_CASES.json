@@ -272,6 +272,20 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should support number literals with separators",
+      "inputFiles": [
+        "number_separator.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid number literal",
+          "files": [
+            "number_separator.js"
+          ]
+        }
+      ]
     }
   ]
 }

@@ -323,7 +323,8 @@ class TestHandler implements DecoratorHandler<unknown, unknown, null, unknown> {
 }
 
 class AlwaysDetectHandler extends TestHandler {
-  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<unknown>|undefined {
+  override detect(node: ClassDeclaration, decorators: Decorator[]|null):
+      DetectResult<unknown>|undefined {
     super.detect(node, decorators);
     const decorator = decorators !== null ? decorators[0] : null;
     return {trigger: node, decorator, metadata: {}};
@@ -331,11 +332,12 @@ class AlwaysDetectHandler extends TestHandler {
 }
 
 class DetectDecoratorHandler extends TestHandler {
-  constructor(private decorator: string, readonly precedence: HandlerPrecedence) {
+  constructor(private decorator: string, override readonly precedence: HandlerPrecedence) {
     super(decorator, []);
   }
 
-  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<unknown>|undefined {
+  override detect(node: ClassDeclaration, decorators: Decorator[]|null):
+      DetectResult<unknown>|undefined {
     super.detect(node, decorators);
     if (decorators === null) {
       return undefined;
@@ -349,7 +351,7 @@ class DetectDecoratorHandler extends TestHandler {
 }
 
 class DiagnosticProducingHandler extends AlwaysDetectHandler {
-  analyze(node: ClassDeclaration): AnalysisOutput<any> {
+  override analyze(node: ClassDeclaration): AnalysisOutput<any> {
     super.analyze(node);
     return {diagnostics: [makeDiagnostic(9999, node, 'test diagnostic')]};
   }

@@ -30,7 +30,7 @@ const _UNIT_TAG = 'unit';
 
 // https://docs.oasis-open.org/xliff/xliff-core/v2.0/os/xliff-core-v2.0-os.html
 export class Xliff2 extends Serializer {
-  write(messages: i18n.Message[], locale: string|null): string {
+  override write(messages: i18n.Message[], locale: string|null): string {
     const visitor = new _WriteVisitor();
     const units: xml.Node[] = [];
 
@@ -85,7 +85,7 @@ export class Xliff2 extends Serializer {
     ]);
   }
 
-  load(content: string, url: string):
+  override load(content: string, url: string):
       {locale: string, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
     // xliff to xml nodes
     const xliff2Parser = new Xliff2Parser();
@@ -108,7 +108,7 @@ export class Xliff2 extends Serializer {
     return {locale: locale!, i18nNodesByMsgId};
   }
 
-  digest(message: i18n.Message): string {
+  override digest(message: i18n.Message): string {
     return decimalDigest(message);
   }
 }

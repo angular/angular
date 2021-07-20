@@ -17,11 +17,11 @@ import {Formatter} from './base-formatter';
  * Formatter for running prettier against Typescript and Javascript files.
  */
 export class Prettier extends Formatter {
-  name = 'prettier';
+  override name = 'prettier';
 
-  binaryFilePath = join(this.git.baseDir, 'node_modules/.bin/prettier');
+  override binaryFilePath = join(this.git.baseDir, 'node_modules/.bin/prettier');
 
-  defaultFileMatcher = ['**/*.{t,j}s'];
+  override defaultFileMatcher = ['**/*.{t,j}s'];
 
   /**
    * The configuration path of the prettier config, obtained during construction to prevent needing
@@ -30,7 +30,7 @@ export class Prettier extends Formatter {
   private configPath =
       this.config['prettier'] ? exec(`${this.binaryFilePath} --find-config-path .`).trim() : '';
 
-  actions = {
+  override actions = {
     check: {
       commandFlags: `--config ${this.configPath} --check`,
       callback:

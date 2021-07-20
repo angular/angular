@@ -26,7 +26,8 @@ export class NgccSourcesCompilerHost extends NgtscCompilerHost {
     super(fs, options);
   }
 
-  getSourceFile(fileName: string, languageVersion: ts.ScriptTarget): ts.SourceFile|undefined {
+  override getSourceFile(fileName: string, languageVersion: ts.ScriptTarget): ts.SourceFile
+      |undefined {
     return this.cache.getCachedSourceFile(fileName, languageVersion);
   }
 
@@ -78,7 +79,8 @@ export class NgccDtsCompilerHost extends NgtscCompilerHost {
     super(fs, options);
   }
 
-  getSourceFile(fileName: string, languageVersion: ts.ScriptTarget): ts.SourceFile|undefined {
+  override getSourceFile(fileName: string, languageVersion: ts.ScriptTarget): ts.SourceFile
+      |undefined {
     return this.cache.getCachedSourceFile(fileName, languageVersion);
   }
 

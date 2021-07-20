@@ -13,7 +13,7 @@ import {share} from 'rxjs/operators';
 
 import {ApplicationInitStatus} from './application_init';
 import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
-import {getCompilerFacade} from './compiler/compiler_facade';
+import {getCompilerFacade, JitCompilerUsage} from './compiler/compiler_facade';
 import {Console} from './console';
 import {Injectable} from './di/injectable';
 import {InjectionToken} from './di/injection_token';
@@ -94,7 +94,11 @@ export function compileNgModuleFactory__POST_R3__<M>(
     return Promise.resolve(moduleFactory);
   }
 
-  const compiler = getCompilerFacade();
+  const compiler = getCompilerFacade({
+    usage: JitCompilerUsage.Decorator,
+    kind: 'NgModule',
+    type: moduleType,
+  });
   const compilerInjector = Injector.create({providers: compilerProviders});
   const resourceLoader = compilerInjector.get(compiler.ResourceLoader);
   // The resource loader can also return a string while the "resolveComponentResources"

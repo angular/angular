@@ -114,7 +114,7 @@ class EventEmitter_ extends Subject<any> {
     super.next(value);
   }
 
-  subscribe(observerOrNext?: any, error?: any, complete?: any): Subscription {
+  override subscribe(observerOrNext?: any, error?: any, complete?: any): Subscription {
     let nextFn = observerOrNext;
     let errorFn = error || (() => null);
     let completeFn = complete;

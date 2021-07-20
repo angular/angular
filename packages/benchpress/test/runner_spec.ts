@@ -106,10 +106,10 @@ import {Injector, Metric, Options, Runner, SampleDescription, Sampler, SampleSta
 }
 
 class MockWebDriverAdapter extends WebDriverAdapter {
-  executeScript(script: string): Promise<string> {
+  override executeScript(script: string): Promise<string> {
     return Promise.resolve('someUserAgent');
   }
-  capabilities(): Promise<Map<string, any>> {
+  override capabilities(): Promise<Map<string, any>> {
     return null!;
   }
 }
@@ -118,7 +118,7 @@ class MockValidator extends Validator {
   constructor() {
     super();
   }
-  describe() {
+  override describe() {
     return {'v': 11};
   }
 }
@@ -127,7 +127,7 @@ class MockMetric extends Metric {
   constructor() {
     super();
   }
-  describe() {
+  override describe() {
     return {'m1': 'some metric'};
   }
 }
@@ -136,7 +136,7 @@ class MockSampler extends Sampler {
   constructor() {
     super(null!, null!, null!, null!, null!, null!, null!);
   }
-  sample(): Promise<SampleState> {
+  override sample(): Promise<SampleState> {
     return Promise.resolve(new SampleState([], []));
   }
 }

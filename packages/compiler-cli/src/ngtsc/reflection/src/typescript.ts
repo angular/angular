@@ -548,6 +548,8 @@ export function reflectTypeEntityToDeclaration(
         throw new Error(`Module specifier is not a string`);
       }
       return {node, from: importDecl.moduleSpecifier.text};
+    } else if (ts.isModuleDeclaration(decl)) {
+      return {node, from: null};
     } else {
       throw new Error(`Unknown import type?`);
     }

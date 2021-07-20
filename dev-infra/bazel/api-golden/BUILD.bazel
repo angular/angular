@@ -1,0 +1,35 @@
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "index.ts",
+    "index_npm_packages.ts",
+])
+
+ts_library(
+    name = "api-golden",
+    srcs = [
+        "find_entry_points.ts",
+        "index.ts",
+        "index_npm_packages.ts",
+        "test_api_report.ts",
+    ],
+    # A tsconfig needs to be specified as otherwise `ts_library` will look for the config
+    # in `//:package.json` and this breaks when the BUILD file is copied to `@npm//`.
+    tsconfig = "//dev-infra:tsconfig.json",
+    deps = [
+        "@npm//@bazel/runfiles",
+        "@npm//@microsoft/api-extractor",
+        "@npm//@types/node",
+        "@npm//chalk",
+        "@npm//tslib",
+        "@npm//typescript",
+    ],
+)
+
+# Expose the sources in the dev-infra NPM package.
+filegroup(
+    name = "files",
+    srcs = glob(["*"]),
+)

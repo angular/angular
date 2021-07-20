@@ -64,7 +64,7 @@ class NgModuleFactory_ extends NgModuleFactory<any> {
     super();
   }
 
-  create(parentInjector: Injector|null): NgModuleRef<any> {
+  override create(parentInjector: Injector|null): NgModuleRef<any> {
     initServicesIfNeeded();
     // Clone the NgModuleDefinition so that any tree shakeable provider definition
     // added to this instance of the NgModuleRef doesn't affect the cached copy.

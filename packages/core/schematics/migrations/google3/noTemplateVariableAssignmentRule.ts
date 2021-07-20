@@ -20,7 +20,7 @@ const FAILURE_MESSAGE = 'Found assignment to template variable. This does not wo
  * Rule that reports if an Angular template contains property assignments to template variables.
  */
 export class Rule extends Rules.TypedRule {
-  applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
+  override applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
     const typeChecker = program.getTypeChecker();
     const templateVisitor = new NgComponentTemplateVisitor(typeChecker);
     const failures: RuleFailure[] = [];

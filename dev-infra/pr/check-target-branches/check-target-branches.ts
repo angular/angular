@@ -27,7 +27,11 @@ export async function getTargetBranchesForPr(prNumber: number) {
   /** The current state of the pull request from Github. */
   const prData = (await git.github.pulls.get({owner, repo, pull_number: prNumber})).data;
   /** The list of labels on the PR as strings. */
-  const labels = prData.labels.map(l => l.name);
+  // Note: The `name` property of labels is always set but the Github OpenAPI spec is incorrect
+  // here.
+  // TODO(devversion): Remove the non-null cast once
+  // https://github.com/github/rest-api-description/issues/169 is fixed.
+  const labels = prData.labels.map(l => l.name!);
   /** The branch targetted via the Github UI. */
   const githubTargetBranch = prData.base.ref;
   /** The active label which is being used for targetting the PR. */

@@ -45,7 +45,7 @@ export class ProgramBasedEntryPointFinder extends TracingEntryPointFinder {
    * Return an array containing the external import paths that were extracted from the source-files
    * of the program defined by the tsconfig.json.
    */
-  protected getInitialEntryPointPaths(): AbsoluteFsPath[] {
+  protected override getInitialEntryPointPaths(): AbsoluteFsPath[] {
     const moduleResolver = new ModuleResolver(this.fs, this.pathMappings, ['', '.ts', '/index.ts']);
     const host = new EsmDependencyHost(this.fs, moduleResolver);
     const dependencies = createDependencyInfo();
@@ -71,7 +71,8 @@ export class ProgramBasedEntryPointFinder extends TracingEntryPointFinder {
    * @returns the entry-point and its dependencies or `null` if the entry-point is not compiled by
    *     Angular or cannot be determined.
    */
-  protected getEntryPointWithDeps(entryPointPath: AbsoluteFsPath): EntryPointWithDependencies|null {
+  protected override getEntryPointWithDeps(entryPointPath: AbsoluteFsPath):
+      EntryPointWithDependencies|null {
     const entryPoints = this.findOrLoadEntryPoints();
     if (!entryPoints.has(entryPointPath)) {
       return null;

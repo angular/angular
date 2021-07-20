@@ -23,7 +23,7 @@ export class NotificationComponent implements OnInit {
   @Input() dismissOnContentClick: boolean;
   @Input() notificationId: string;
   @Input() expirationDate: string;
-  @Output() dismissed = new EventEmitter();
+  @Output() dismissed = new EventEmitter<void>();
 
   @HostBinding('@hideAnimation')
   showNotification: 'show'|'hide';

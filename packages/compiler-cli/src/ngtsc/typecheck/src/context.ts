@@ -13,6 +13,7 @@ import * as ts from 'typescript';
 import {absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system';
 import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
 import {PerfEvent, PerfRecorder} from '../../perf';
+import {FileUpdate} from '../../program_driver';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
 import {TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckContext, TypeCheckingConfig, TypeCtorMetadata} from '../api';
@@ -376,13 +377,16 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     return code;
   }
 
-  finalize(): Map<AbsoluteFsPath, string> {
+  finalize(): Map<AbsoluteFsPath, FileUpdate> {
     // First, build the map of updates to source files.
-    const updates = new Map<AbsoluteFsPath, string>();
+    const updates = new Map<AbsoluteFsPath, FileUpdate>();
     for (const originalSf of this.opMap.keys()) {
       const newText = this.transform(originalSf);
       if (newText !== null) {
-        updates.set(absoluteFromSourceFile(originalSf), newText);
+        updates.set(absoluteFromSourceFile(originalSf), {
+          newText,
+          originalFile: originalSf,
+        });
       }
     }
 
@@ -399,8 +403,13 @@ export class TypeCheckContextImpl implements TypeCheckContext {
           path: pendingShimData.file.fileName,
           templates: pendingShimData.templates,
         });
-        updates.set(
-            pendingShimData.file.fileName, pendingShimData.file.render(false /* removeComments */));
+        const sfText = pendingShimData.file.render(false /* removeComments */);
+        updates.set(pendingShimData.file.fileName, {
+          newText: sfText,
+
+          // Shim files do not have an associated original file.
+          originalFile: null,
+        });
       }
     }
 

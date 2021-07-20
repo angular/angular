@@ -34,6 +34,11 @@ Before creating a route, you should be familiar with the following:
     <p>Add more routing features to the Tour of Heroes tutorial.</p>
     <p class="card-footer">Routing Tour of Heroes</p>
   </a>
+  <a href="guide/routing-with-urlmatcher" class="docs-card" title="Creating custom route matches tutorial">
+    <section>Creating custom route matches tutorial</section>
+    <p>A tutorial that covers how to use custom matching strategy patterns with Angular routing.</p>
+    <p class="card-footer">Custom route matches tutorial</p>
+  </a>
   <a href="guide/router-reference" class="docs-card" title="Router reference">
     <section>Router reference</section>
     <p>Describes some core router API concepts.</p>

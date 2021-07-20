@@ -44,17 +44,17 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/interpolation_co
 }
 
 class _TestSerializer extends Serializer {
-  write(messages: i18n.Message[]): string {
+  override write(messages: i18n.Message[]): string {
     return messages.map(msg => `${serializeNodes(msg.nodes)} (${msg.meaning}|${msg.description})`)
         .join('//');
   }
 
-  load(content: string, url: string):
+  override load(content: string, url: string):
       {locale: string|null, i18nNodesByMsgId: {[id: string]: i18n.Node[]}} {
     return {locale: null, i18nNodesByMsgId: {}};
   }
 
-  digest(msg: i18n.Message): string {
+  override digest(msg: i18n.Message): string {
     return msg.id || `default`;
   }
 }

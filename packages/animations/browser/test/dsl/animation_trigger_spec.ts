@@ -72,7 +72,6 @@ import {makeTrigger} from '../shared';
           transition('off => on', animate(1000))
         ]);
 
-
         expect(result.states['on'].buildStyles({}, [])).toEqual({width: 50});
         expect(result.states['off'].buildStyles({}, [])).toEqual({width: 50});
       });

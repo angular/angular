@@ -166,11 +166,11 @@ export class Meta {
       HTMLMetaElement {
     if (!forceCreation) {
       const selector: string = this._parseSelector(meta);
-      const elem: HTMLMetaElement = this.getTag(selector)!;
       // It's allowed to have multiple elements with the same name so it's not enough to
       // just check that element with the same name already present on the page. We also need to
       // check if element has tag attributes
-      if (elem && this._containsAttributes(meta, elem)) return elem;
+      const elem = this.getTags(selector).filter(elem => this._containsAttributes(meta, elem))[0];
+      if (elem !== undefined) return elem;
     }
     const element: HTMLMetaElement = this._dom.createElement('meta') as HTMLMetaElement;
     this._setMetaElementAttributes(meta, element);

@@ -106,7 +106,7 @@ export class Xliff1TranslationParser implements TranslationParser<XmlTranslation
 }
 
 class XliffFileElementVisitor extends BaseVisitor {
-  visitElement(fileElement: Element): any {
+  override visitElement(fileElement: Element): any {
     if (fileElement.name === 'file') {
       return {fileElement, locale: getAttribute(fileElement, 'target-language')};
     }
@@ -114,7 +114,7 @@ class XliffFileElementVisitor extends BaseVisitor {
 }
 
 class XliffTranslationVisitor extends BaseVisitor {
-  visitElement(element: Element, bundle: ParsedTranslationBundle): void {
+  override visitElement(element: Element, bundle: ParsedTranslationBundle): void {
     if (element.name === 'trans-unit') {
       this.visitTransUnitElement(element, bundle);
     } else {

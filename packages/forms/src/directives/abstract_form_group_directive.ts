@@ -52,7 +52,7 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    * @description
    * The `FormGroup` bound to this directive.
    */
-  get control(): FormGroup {
+  override get control(): FormGroup {
     return this.formDirective!.getFormGroup(this);
   }
 
@@ -60,7 +60,7 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    * @description
    * The path to this group from the top-level directive.
    */
-  get path(): string[] {
+  override get path(): string[] {
     return controlPath(this.name == null ? this.name : this.name.toString(), this._parent);
   }
 
@@ -68,7 +68,7 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    * @description
    * The top-level directive for this group if present, otherwise null.
    */
-  get formDirective(): Form|null {
+  override get formDirective(): Form|null {
     return this._parent ? this._parent.formDirective : null;
   }
 

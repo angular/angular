@@ -22,18 +22,18 @@ export class CutLongTermSupportPatchAction extends ReleaseAction {
   /** Promise resolving an object describing long-term support branches. */
   ltsBranches = fetchLongTermSupportBranchesFromNpm(this.config);
 
-  async getDescription() {
+  override async getDescription() {
     const {active} = await this.ltsBranches;
     return `Cut a new release for an active LTS branch (${active.length} active).`;
   }
 
-  async perform() {
+  override async perform() {
     const ltsBranch = await this._promptForTargetLtsBranch();
     const newVersion = semverInc(ltsBranch.version, 'patch');
-    const {pullRequest: {id}, releaseNotes} =
+    const {pullRequest, releaseNotes} =
         await this.checkoutBranchAndStageVersion(newVersion, ltsBranch.name);
 
-    await this.waitForPullRequestToBeMerged(id);
+    await this.waitForPullRequestToBeMerged(pullRequest);
     await this.buildAndPublish(releaseNotes, ltsBranch.name, ltsBranch.npmDistTag);
     await this.cherryPickChangelogIntoNextBranch(releaseNotes, ltsBranch.name);
   }
@@ -74,7 +74,7 @@ export class CutLongTermSupportPatchAction extends ReleaseAction {
     return {name: `v${branch.version.major} (from ${branch.name})`, value: branch};
   }
 
-  static async isActive(active: ActiveReleaseTrains) {
+  static override async isActive(active: ActiveReleaseTrains) {
     // LTS patch versions can be only cut if there are release trains in LTS phase.
     // This action is always selectable as we support publishing of old LTS branches,
     // and have prompt for selecting an LTS branch when the action performs.

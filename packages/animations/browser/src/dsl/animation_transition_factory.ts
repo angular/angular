@@ -16,6 +16,7 @@ import {buildAnimationTimelines} from './animation_timeline_builder';
 import {TransitionMatcherFn} from './animation_transition_expr';
 import {AnimationTransitionInstruction, createTransitionInstruction} from './animation_transition_instruction';
 import {ElementInstructionMap} from './element_instruction_map';
+import {AnimationStyleNormalizer} from './style_normalization/animation_style_normalizer';
 
 const EMPTY_OBJECT = {};
 
@@ -99,7 +100,9 @@ function oneOrMoreTransitionsMatch(
 }
 
 export class AnimationStateStyles {
-  constructor(private styles: StyleAst, private defaultParams: {[key: string]: any}) {}
+  constructor(
+      private styles: StyleAst, private defaultParams: {[key: string]: any},
+      private normalizer: AnimationStyleNormalizer) {}
 
   buildStyles(params: {[key: string]: any}, errors: string[]): ɵStyleData {
     const finalStyles: ɵStyleData = {};
@@ -118,7 +121,9 @@ export class AnimationStateStyles {
           if (val.length > 1) {
             val = interpolateParams(val, combinedParams, errors);
           }
-          finalStyles[prop] = val;
+          const normalizedProp = this.normalizer.normalizePropertyName(prop, errors);
+          val = this.normalizer.normalizeStyleValue(prop, normalizedProp, val, errors);
+          finalStyles[normalizedProp] = val;
         });
       }
     });

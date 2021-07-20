@@ -59,7 +59,7 @@ export class RouterState extends Tree<ActivatedRoute> {
     setRouterState(<RouterState>this, root);
   }
 
-  toString(): string {
+  override toString(): string {
     return this.snapshot.toString();
   }
 }
@@ -421,7 +421,7 @@ export class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
     setRouterState(<RouterStateSnapshot>this, root);
   }
 
-  toString(): string {
+  override toString(): string {
     return serializeNode(this._root);
   }
 }

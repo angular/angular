@@ -694,4 +694,5 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   requiresInlineTcb(): void {}
   requiresInlineTypeConstructors(): void {}
   suboptimalTypeInference(): void {}
+  splitTwoWayBinding(): void {}
 }

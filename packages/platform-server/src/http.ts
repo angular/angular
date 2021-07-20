@@ -124,7 +124,7 @@ export class ZoneClientBackend extends
     return this.wrap(request);
   }
 
-  protected delegate(request: HttpRequest<any>): Observable<HttpEvent<any>> {
+  protected override delegate(request: HttpRequest<any>): Observable<HttpEvent<any>> {
     return this.backend.handle(request);
   }
 }

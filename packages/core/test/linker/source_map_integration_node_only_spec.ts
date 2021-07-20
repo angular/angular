@@ -477,7 +477,7 @@ describe('jit source mapping', () => {
   class MockJitEvaluator extends JitEvaluator {
     sources: string[] = [];
 
-    executeFunction(fn: Function, args: any[]) {
+    override executeFunction(fn: Function, args: any[]) {
       // Capture the source that has been generated.
       this.sources.push(fn.toString());
       // Then execute it anyway.

@@ -303,12 +303,24 @@ class _Scanner {
   }
 
   scanNumber(start: number): Token {
-    let simple: boolean = (this.index === start);
+    let simple = (this.index === start);
+    let hasSeparators = false;
     this.advance();  // Skip initial digit.
     while (true) {
       if (chars.isDigit(this.peek)) {
         // Do nothing.
-      } else if (this.peek == chars.$PERIOD) {
+      } else if (this.peek === chars.$_) {
+        // Separators are only valid when they're surrounded by digits. E.g. `1_0_1` is
+        // valid while `_101` and `101_` are not. The separator can't be next to the decimal
+        // point or another separator either. Note that it's unlikely that we'll hit a case where
+        // the underscore is at the start, because that's a valid identifier and it will be picked
+        // up earlier in the parsing. We validate for it anyway just in case.
+        if (!chars.isDigit(this.input.charCodeAt(this.index - 1)) ||
+            !chars.isDigit(this.input.charCodeAt(this.index + 1))) {
+          return this.error('Invalid numeric separator', 0);
+        }
+        hasSeparators = true;
+      } else if (this.peek === chars.$PERIOD) {
         simple = false;
       } else if (isExponentStart(this.peek)) {
         this.advance();
@@ -320,8 +332,12 @@ class _Scanner {
       }
       this.advance();
     }
-    const str: string = this.input.substring(start, this.index);
-    const value: number = simple ? parseIntAutoRadix(str) : parseFloat(str);
+
+    let str = this.input.substring(start, this.index);
+    if (hasSeparators) {
+      str = str.replace(/_/g, '');
+    }
+    const value = simple ? parseIntAutoRadix(str) : parseFloat(str);
     return newNumberToken(start, this.index, value);
   }
 

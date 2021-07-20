@@ -55,7 +55,7 @@ export class NgModelGroup extends AbstractFormGroupDirective implements OnInit, 
    * to a key in the parent `NgForm`.
    */
   // TODO(issue/24571): remove '!'.
-  @Input('ngModelGroup') name!: string;
+  @Input('ngModelGroup') override name!: string;
 
   constructor(
       @Host() @SkipSelf() parent: ControlContainer,
@@ -69,7 +69,7 @@ export class NgModelGroup extends AbstractFormGroupDirective implements OnInit, 
   }
 
   /** @internal */
-  _checkParentType(): void {
+  override _checkParentType(): void {
     if (!(this._parent instanceof NgModelGroup) && !(this._parent instanceof NgForm) &&
         (typeof ngDevMode === 'undefined' || ngDevMode)) {
       TemplateDrivenErrors.modelGroupParentException();

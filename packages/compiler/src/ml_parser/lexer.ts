@@ -8,9 +8,10 @@
 
 import * as chars from '../chars';
 import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from '../parse_util';
+import {NAMED_ENTITIES} from './entities';
 
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './interpolation_config';
-import {NAMED_ENTITIES, TagContentType, TagDefinition} from './tags';
+import {TagContentType, TagDefinition} from './tags';
 
 export enum TokenType {
   TAG_OPEN_START,
@@ -1006,22 +1007,22 @@ class EscapedCharacterCursor extends PlainCharacterCursor {
     }
   }
 
-  advance(): void {
+  override advance(): void {
     this.state = this.internalState;
     super.advance();
     this.processEscapeSequence();
   }
 
-  init(): void {
+  override init(): void {
     super.init();
     this.processEscapeSequence();
   }
 
-  clone(): EscapedCharacterCursor {
+  override clone(): EscapedCharacterCursor {
     return new EscapedCharacterCursor(this);
   }
 
-  getChars(start: this): string {
+  override getChars(start: this): string {
     const cursor = start.clone();
     let chars = '';
     while (cursor.internalState.offset < this.internalState.offset) {

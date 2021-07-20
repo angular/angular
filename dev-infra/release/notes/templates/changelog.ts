@@ -21,7 +21,7 @@ _%>
 <%_
   for (const commit of group.commits) {
 _%>
-| <%- commit.shortHash %> | <%- commit.header %> |
+| <%- commitToLink(commit) %> | <%- replaceCommitHeaderPullRequestNumber(commit.header) %> |
 <%_
   }
 }
@@ -70,7 +70,12 @@ _%>
 _%>
 
 <%_
-const authors = commits.filter(unique('author')).map(c => c.author).sort();
+const botsAuthorName = ['dependabot[bot]', 'Renovate Bot'];
+const authors = commits
+  .filter(unique('author'))
+  .map(c => c.author)
+  .filter(a => !botsAuthorName.includes(a))
+  .sort();
 if (authors.length === 1) {
 _%>
 ## Special Thanks:

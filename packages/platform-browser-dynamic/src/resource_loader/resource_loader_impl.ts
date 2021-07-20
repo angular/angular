@@ -11,7 +11,7 @@ import {Injectable} from '@angular/core';
 
 @Injectable()
 export class ResourceLoaderImpl extends ResourceLoader {
-  get(url: string): Promise<string> {
+  override get(url: string): Promise<string> {
     let resolve: (result: any) => void;
     let reject: (error: any) => void;
     const promise = new Promise<string>((res, rej) => {

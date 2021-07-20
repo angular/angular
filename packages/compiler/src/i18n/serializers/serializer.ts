@@ -63,21 +63,21 @@ export class SimplePlaceholderMapper extends i18n.RecurseVisitor implements Plac
                                                               null;
   }
 
-  visitText(text: i18n.Text, context?: any): any {
+  override visitText(text: i18n.Text, context?: any): any {
     return null;
   }
 
-  visitTagPlaceholder(ph: i18n.TagPlaceholder, context?: any): any {
+  override visitTagPlaceholder(ph: i18n.TagPlaceholder, context?: any): any {
     this.visitPlaceholderName(ph.startName);
     super.visitTagPlaceholder(ph, context);
     this.visitPlaceholderName(ph.closeName);
   }
 
-  visitPlaceholder(ph: i18n.Placeholder, context?: any): any {
+  override visitPlaceholder(ph: i18n.Placeholder, context?: any): any {
     this.visitPlaceholderName(ph.name);
   }
 
-  visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): any {
+  override visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): any {
     this.visitPlaceholderName(ph.name);
   }
 

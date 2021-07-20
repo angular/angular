@@ -258,28 +258,28 @@ function findParentOfBinding(
       }
     }
 
-    visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
+    override visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
       return this.visitChildren(context, visit => {
         visit(ast.directives);
         visit(ast.children);
       });
     }
 
-    visitElement(ast: ElementAst, context: any): any {
+    override visitElement(ast: ElementAst, context: any): any {
       return this.visitChildren(context, visit => {
         visit(ast.directives);
         visit(ast.children);
       });
     }
 
-    visitDirective(ast: DirectiveAst) {
+    override visitDirective(ast: DirectiveAst) {
       const result = this.visitChildren(ast, visit => {
         visit(ast.inputs);
       });
       return result;
     }
 
-    visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: DirectiveAst) {
+    override visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: DirectiveAst) {
       if (ast === binding) {
         res = context;
       }

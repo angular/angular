@@ -99,7 +99,6 @@ export class MockHeaders implements Headers {
 export class MockRequest extends MockBody implements Request {
   readonly isHistoryNavigation: boolean = false;
   readonly isReloadNavigation: boolean = false;
-  readonly body!: ReadableStream;
   readonly cache: RequestCache = 'default';
   readonly credentials: RequestCredentials = 'omit';
   readonly destination: RequestDestination = 'document';

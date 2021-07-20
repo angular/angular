@@ -140,11 +140,7 @@ def _should_produce_dts_bundle(ctx):
     Returns:
       true when we should produce bundled dts.
     """
-
-    # At the moment we cannot use this with ngtsc compiler since it emits
-    # import * as ___ from local modules which is not supported
-    # see: https://github.com/Microsoft/web-build-tools/issues/1029
-    return _is_view_engine_enabled(ctx) and getattr(ctx.attr, "bundle_dts", False)
+    return getattr(ctx.attr, "bundle_dts", False)
 
 def _should_produce_r3_symbols_bundle(ctx):
     """Should we produce r3_symbols bundle.
@@ -686,30 +682,22 @@ def _ng_module_impl(ctx):
         # once it is no longer needed.
     ])
 
-    if ctx.attr.module_name:
+    if ctx.attr.package_name:
         path = "/".join([p for p in [ctx.bin_dir.path, ctx.label.workspace_root, ctx.label.package] if p])
         ts_providers["providers"].append(LinkablePackageInfo(
-            package_name = ctx.attr.module_name,
+            package_name = ctx.attr.package_name,
+            package_path = ctx.attr.package_path,
             path = path,
             files = ts_providers["typescript"]["es5_sources"],
-            _tslibrary = True,
         ))
 
     return ts_providers_dict_to_struct(ts_providers)
 
-local_deps_aspects = [node_modules_aspect, _collect_summaries_aspect]
-
-# Workaround skydoc bug which assumes DEPS_ASPECTS is a str type
-[local_deps_aspects.append(a) for a in DEPS_ASPECTS]
-
 NG_MODULE_ATTRIBUTES = {
     "srcs": attr.label_list(allow_files = [".ts"]),
-
-    # Note: DEPS_ASPECTS is already a list, we add the cast to workaround
-    # https://github.com/bazelbuild/skydoc/issues/21
     "deps": attr.label_list(
         doc = "Targets that are imported by this target",
-        aspects = local_deps_aspects,
+        aspects = [node_modules_aspect, _collect_summaries_aspect] + DEPS_ASPECTS,
     ),
     "assets": attr.label_list(
         doc = ".html and .css files needed by the Angular compiler",
@@ -762,6 +750,22 @@ NG_MODULE_ATTRIBUTES = {
         doc = "Private API to control production of performance metric JSON files",
     ),
     "_supports_workers": attr.bool(default = True),
+
+    # Matches the API of the `ts_library` rule from `@bazel/typescript`.
+    # https://github.com/bazelbuild/rules_nodejs/blob/398d351a3f2a9b2ebf6fc31fb5882cce7eedfd7b/packages/typescript/internal/build_defs.bzl#L435-L446.
+    "package_name": attr.string(
+        doc = """The package name that the linker will link this `ng_module` output as.
+    If `package_path` is set, the linker will link this package under `<package_path>/node_modules/<package_name>`.
+    If `package_path` is not set, the package will be linked in the top-level workspace node_modules folder.""",
+    ),
+
+    # Matches the API of the `ts_library` rule from `@bazel/typescript`.
+    # https://github.com/bazelbuild/rules_nodejs/blob/398d351a3f2a9b2ebf6fc31fb5882cce7eedfd7b/packages/typescript/internal/build_defs.bzl#L435-L446.
+    "package_path": attr.string(
+        doc = """The package path in the workspace that the linker will link this `ng_module` output to.
+    If `package_path` is set, the linker will link this package under `<package_path>/node_modules/<package_name>`.
+    If `package_path` is not set, the package will be linked in the top-level workspace node_modules folder.""",
+    ),
 }
 
 NG_MODULE_RULE_ATTRS = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{

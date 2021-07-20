@@ -27,7 +27,7 @@ export class ParallelTaskQueue extends BaseTaskQueue {
     this.blockedTasks = getBlockedTasks(dependencies);
   }
 
-  computeNextTask(): Task|null {
+  override computeNextTask(): Task|null {
     // Look for the first available (i.e. not blocked) task.
     // (NOTE: Since tasks are sorted by priority, the first available one is the best choice.)
     const nextTaskIdx = this.tasks.findIndex(task => !this.blockedTasks.has(task));
@@ -41,7 +41,7 @@ export class ParallelTaskQueue extends BaseTaskQueue {
     return nextTask;
   }
 
-  markAsCompleted(task: Task): void {
+  override markAsCompleted(task: Task): void {
     super.markAsCompleted(task);
 
     if (!this.dependencies.has(task)) {
@@ -62,7 +62,7 @@ export class ParallelTaskQueue extends BaseTaskQueue {
     }
   }
 
-  toString(): string {
+  override toString(): string {
     return `${super.toString()}\n` +
         `  Blocked tasks (${this.blockedTasks.size}): ${this.stringifyBlockedTasks('    ')}`;
   }

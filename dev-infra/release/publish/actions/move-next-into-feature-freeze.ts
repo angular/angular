@@ -24,13 +24,13 @@ import {changelogPath, packageJsonPath} from '../constants';
 export class MoveNextIntoFeatureFreezeAction extends ReleaseAction {
   private _newVersion = computeNewPrereleaseVersionForNext(this.active, this.config);
 
-  async getDescription() {
+  override async getDescription() {
     const {branchName} = this.active.next;
     const newVersion = await this._newVersion;
     return `Move the "${branchName}" branch into feature-freeze phase (v${newVersion}).`;
   }
 
-  async perform() {
+  override async perform() {
     const newVersion = await this._newVersion;
     const newBranch = `${newVersion.major}.${newVersion.minor}.x`;
 
@@ -40,13 +40,13 @@ export class MoveNextIntoFeatureFreezeAction extends ReleaseAction {
     // Stage the new version for the newly created branch, and push changes to a
     // fork in order to create a staging pull request. Note that we re-use the newly
     // created branch instead of re-fetching from the upstream.
-    const {pullRequest: {id}, releaseNotes} =
+    const {pullRequest, releaseNotes} =
         await this.stageVersionForBranchAndCreatePullRequest(newVersion, newBranch);
 
     // Wait for the staging PR to be merged. Then build and publish the feature-freeze next
     // pre-release. Finally, cherry-pick the release notes into the next branch in combination
     // with bumping the version to the next minor too.
-    await this.waitForPullRequestToBeMerged(id);
+    await this.waitForPullRequestToBeMerged(pullRequest);
     await this.buildAndPublish(releaseNotes, newBranch, 'next');
     await this._createNextBranchUpdatePullRequest(releaseNotes, newVersion);
   }
@@ -100,7 +100,7 @@ export class MoveNextIntoFeatureFreezeAction extends ReleaseAction {
     info(yellow(`      Please ask team members to review: ${nextUpdatePullRequest.url}.`));
   }
 
-  static async isActive(active: ActiveReleaseTrains) {
+  static override async isActive(active: ActiveReleaseTrains) {
     // A new feature-freeze/release-candidate branch can only be created if there
     // is no active release-train in feature-freeze/release-candidate phase.
     return active.releaseCandidate === null;

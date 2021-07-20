@@ -54,11 +54,11 @@ describe('change detection for transplanted views', () => {
       template: insertCompTemplate,
     })
     class InsertForOnPushDeclareComp extends InsertComp {
-      constructor(public changeDetectorRef: ChangeDetectorRef) {
+      constructor(changeDetectorRef: ChangeDetectorRef) {
         super(changeDetectorRef);
         insertForOnPushDeclareComp = this;
       }
-      get template(): TemplateRef<any> {
+      override get template(): TemplateRef<any> {
         return onPushDeclareComp.myTmpl;
       }
     }
@@ -105,7 +105,7 @@ describe('change detection for transplanted views', () => {
       changeDetection: ChangeDetectionStrategy.OnPush
     })
     class OnPushDeclareComp extends DeclareComp {
-      constructor(readonly changeDetector: ChangeDetectorRef) {
+      constructor(changeDetector: ChangeDetectorRef) {
         super(changeDetector);
         onPushDeclareComp = this;
       }

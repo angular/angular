@@ -17,6 +17,7 @@ import {EMPTY_ARRAY} from '../util/empty';
 import {stringify} from '../util/stringify';
 
 import {resolveForwardRef} from './forward_ref';
+import {setInjectImplementation} from './inject_switch';
 import {InjectionToken} from './injection_token';
 import {Injector} from './injector';
 import {catchInjectorError, injectArgs, NG_TEMP_TOKEN_PATH, setCurrentInjector, THROW_IF_NOT_FOUND, USE_VALUE, ɵɵinject} from './injector_compatibility';
@@ -186,6 +187,7 @@ export class R3Injector {
     this.assertNotDestroyed();
     // Set the injection context.
     const previousInjector = setCurrentInjector(this);
+    const previousInjectImplementation = setInjectImplementation(undefined);
     try {
       // Check for the SkipSelf flag.
       if (!(flags & InjectFlags.SkipSelf)) {
@@ -234,7 +236,8 @@ export class R3Injector {
         throw e;
       }
     } finally {
-      // Lastly, clean up the state by restoring the previous injector.
+      // Lastly, restore the previous injection context.
+      setInjectImplementation(previousInjectImplementation);
       setCurrentInjector(previousInjector);
     }
   }

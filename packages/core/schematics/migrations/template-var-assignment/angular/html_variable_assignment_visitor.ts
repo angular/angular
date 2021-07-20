@@ -26,12 +26,12 @@ export class HtmlVariableAssignmentVisitor extends NullVisitor {
   private expressionAstVisitor =
       new ExpressionAstVisitor(this.variableAssignments, this.currentVariables);
 
-  visitElement(element: Element): void {
+  override visitElement(element: Element): void {
     visitAll(this, element.outputs);
     visitAll(this, element.children);
   }
 
-  visitTemplate(template: Template): void {
+  override visitTemplate(template: Template): void {
     // Keep track of the template variables which can be accessed by the template
     // child nodes through the implicit receiver.
     this.currentVariables.push(...template.variables);
@@ -52,7 +52,7 @@ export class HtmlVariableAssignmentVisitor extends NullVisitor {
     });
   }
 
-  visitBoundEvent(node: BoundEvent) {
+  override visitBoundEvent(node: BoundEvent) {
     node.handler.visit(this.expressionAstVisitor, node.handlerSpan);
   }
 }
@@ -65,7 +65,7 @@ class ExpressionAstVisitor extends RecursiveAstVisitor {
     super();
   }
 
-  visitPropertyWrite(node: PropertyWrite, span: ParseSourceSpan) {
+  override visitPropertyWrite(node: PropertyWrite, span: ParseSourceSpan) {
     if (node.receiver instanceof ImplicitReceiver &&
         this.currentVariables.some(v => v.name === node.name)) {
       this.variableAssignments.push({

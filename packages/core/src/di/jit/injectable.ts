@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getCompilerFacade, R3InjectableMetadataFacade} from '../../compiler/compiler_facade';
+import {getCompilerFacade, JitCompilerUsage, R3InjectableMetadataFacade} from '../../compiler/compiler_facade';
 import {Type} from '../../interface/type';
 import {NG_FACTORY_DEF} from '../../render3/fields';
 import {getClosureSafeProperty} from '../../util/property';
@@ -33,7 +33,9 @@ export function compileInjectable(type: Type<any>, meta?: Injectable): void {
     Object.defineProperty(type, NG_PROV_DEF, {
       get: () => {
         if (ngInjectableDef === null) {
-          ngInjectableDef = getCompilerFacade().compileInjectable(
+          const compiler =
+              getCompilerFacade({usage: JitCompilerUsage.Decorator, kind: 'injectable', type});
+          ngInjectableDef = compiler.compileInjectable(
               angularCoreDiEnv, `ng:///${type.name}/ɵprov.js`, getInjectableMetadata(type, meta));
         }
         return ngInjectableDef;
@@ -46,7 +48,8 @@ export function compileInjectable(type: Type<any>, meta?: Injectable): void {
     Object.defineProperty(type, NG_FACTORY_DEF, {
       get: () => {
         if (ngFactoryDef === null) {
-          const compiler = getCompilerFacade();
+          const compiler =
+              getCompilerFacade({usage: JitCompilerUsage.Decorator, kind: 'injectable', type});
           ngFactoryDef = compiler.compileFactory(angularCoreDiEnv, `ng:///${type.name}/ɵfac.js`, {
             name: type.name,
             type,

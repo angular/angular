@@ -17,16 +17,12 @@ import {initNgDevMode} from '../util/ng_dev_mode';
 import {stringify} from '../util/stringify';
 import {NG_COMP_DEF, NG_DIR_DEF, NG_LOC_ID_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
 import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeTypesOrFactory, ViewQueriesFunction} from './interfaces/definition';
-import {AttributeMarker, TAttributes, TConstantsOrFactory} from './interfaces/node';
-import {CssSelectorList, SelectorFlags} from './interfaces/projection';
+import {TAttributes, TConstantsOrFactory} from './interfaces/node';
+import {CssSelectorList} from './interfaces/projection';
 
 
 let _renderCompCount = 0;
 
-// While these types are unused here, they are required so that types don't
-// get resolved lazily. see: https://github.com/Microsoft/web-build-tools/issues/1050
-type _web_build_tools_issue_1050_SelectorFlags = SelectorFlags;
-type _web_build_tools_issue_1050_AttributeMarker = AttributeMarker;
 
 /**
  * Create a component definition object.

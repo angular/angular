@@ -31,11 +31,12 @@ export class MultiReporter extends Reporter {
     super();
   }
 
-  reportMeasureValues(values: MeasureValues): Promise<any[]> {
+  override reportMeasureValues(values: MeasureValues): Promise<any[]> {
     return Promise.all(this._reporters.map(reporter => reporter.reportMeasureValues(values)));
   }
 
-  reportSample(completeSample: MeasureValues[], validSample: MeasureValues[]): Promise<any[]> {
+  override reportSample(completeSample: MeasureValues[], validSample: MeasureValues[]):
+      Promise<any[]> {
     return Promise.all(
         this._reporters.map(reporter => reporter.reportSample(completeSample, validSample)));
   }

@@ -52,7 +52,7 @@ class DependingClass {
 }
 
 class ChildClass extends DependingClass {
-  static ɵfac =
+  static override ɵfac =
       ɵɵngDeclareFactory({type: ChildClass, deps: null, target: ɵɵFactoryTarget.Injectable});
 }
 

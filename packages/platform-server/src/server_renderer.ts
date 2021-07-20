@@ -267,7 +267,7 @@ class EmulatedEncapsulationServerRenderer2 extends DefaultServerRenderer2 {
     super.setAttribute(element, this.hostAttr, '');
   }
 
-  createElement(parent: any, name: string): Element {
+  override createElement(parent: any, name: string): Element {
     const el = super.createElement(parent, name, this.document);
     super.setAttribute(el, this.contentAttr, '');
     return el;

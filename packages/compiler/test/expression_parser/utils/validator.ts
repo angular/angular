@@ -13,7 +13,7 @@ import {unparse} from './unparser';
 class ASTValidator extends RecursiveAstVisitor {
   private parentSpan: ParseSpan|undefined;
 
-  visit(ast: AST) {
+  override visit(ast: AST) {
     this.parentSpan = undefined;
     ast.visit(this);
   }
@@ -34,87 +34,87 @@ class ASTValidator extends RecursiveAstVisitor {
     this.parentSpan = oldParent;
   }
 
-  visitUnary(ast: Unary, context: any): any {
+  override visitUnary(ast: Unary, context: any): any {
     this.validate(ast, () => super.visitUnary(ast, context));
   }
 
-  visitBinary(ast: Binary, context: any): any {
+  override visitBinary(ast: Binary, context: any): any {
     this.validate(ast, () => super.visitBinary(ast, context));
   }
 
-  visitChain(ast: Chain, context: any): any {
+  override visitChain(ast: Chain, context: any): any {
     this.validate(ast, () => super.visitChain(ast, context));
   }
 
-  visitConditional(ast: Conditional, context: any): any {
+  override visitConditional(ast: Conditional, context: any): any {
     this.validate(ast, () => super.visitConditional(ast, context));
   }
 
-  visitFunctionCall(ast: FunctionCall, context: any): any {
+  override visitFunctionCall(ast: FunctionCall, context: any): any {
     this.validate(ast, () => super.visitFunctionCall(ast, context));
   }
 
-  visitImplicitReceiver(ast: ImplicitReceiver, context: any): any {
+  override visitImplicitReceiver(ast: ImplicitReceiver, context: any): any {
     this.validate(ast, () => super.visitImplicitReceiver(ast, context));
   }
 
-  visitInterpolation(ast: Interpolation, context: any): any {
+  override visitInterpolation(ast: Interpolation, context: any): any {
     this.validate(ast, () => super.visitInterpolation(ast, context));
   }
 
-  visitKeyedRead(ast: KeyedRead, context: any): any {
+  override visitKeyedRead(ast: KeyedRead, context: any): any {
     this.validate(ast, () => super.visitKeyedRead(ast, context));
   }
 
-  visitKeyedWrite(ast: KeyedWrite, context: any): any {
+  override visitKeyedWrite(ast: KeyedWrite, context: any): any {
     this.validate(ast, () => super.visitKeyedWrite(ast, context));
   }
 
-  visitLiteralArray(ast: LiteralArray, context: any): any {
+  override visitLiteralArray(ast: LiteralArray, context: any): any {
     this.validate(ast, () => super.visitLiteralArray(ast, context));
   }
 
-  visitLiteralMap(ast: LiteralMap, context: any): any {
+  override visitLiteralMap(ast: LiteralMap, context: any): any {
     this.validate(ast, () => super.visitLiteralMap(ast, context));
   }
 
-  visitLiteralPrimitive(ast: LiteralPrimitive, context: any): any {
+  override visitLiteralPrimitive(ast: LiteralPrimitive, context: any): any {
     this.validate(ast, () => super.visitLiteralPrimitive(ast, context));
   }
 
-  visitMethodCall(ast: MethodCall, context: any): any {
+  override visitMethodCall(ast: MethodCall, context: any): any {
     this.validate(ast, () => super.visitMethodCall(ast, context));
   }
 
-  visitPipe(ast: BindingPipe, context: any): any {
+  override visitPipe(ast: BindingPipe, context: any): any {
     this.validate(ast, () => super.visitPipe(ast, context));
   }
 
-  visitPrefixNot(ast: PrefixNot, context: any): any {
+  override visitPrefixNot(ast: PrefixNot, context: any): any {
     this.validate(ast, () => super.visitPrefixNot(ast, context));
   }
 
-  visitPropertyRead(ast: PropertyRead, context: any): any {
+  override visitPropertyRead(ast: PropertyRead, context: any): any {
     this.validate(ast, () => super.visitPropertyRead(ast, context));
   }
 
-  visitPropertyWrite(ast: PropertyWrite, context: any): any {
+  override visitPropertyWrite(ast: PropertyWrite, context: any): any {
     this.validate(ast, () => super.visitPropertyWrite(ast, context));
   }
 
-  visitQuote(ast: Quote, context: any): any {
+  override visitQuote(ast: Quote, context: any): any {
     this.validate(ast, () => super.visitQuote(ast, context));
   }
 
-  visitSafeMethodCall(ast: SafeMethodCall, context: any): any {
+  override visitSafeMethodCall(ast: SafeMethodCall, context: any): any {
     this.validate(ast, () => super.visitSafeMethodCall(ast, context));
   }
 
-  visitSafePropertyRead(ast: SafePropertyRead, context: any): any {
+  override visitSafePropertyRead(ast: SafePropertyRead, context: any): any {
     this.validate(ast, () => super.visitSafePropertyRead(ast, context));
   }
 
-  visitSafeKeyedRead(ast: SafeKeyedRead, context: any): any {
+  override visitSafeKeyedRead(ast: SafeKeyedRead, context: any): any {
     this.validate(ast, () => super.visitSafeKeyedRead(ast, context));
   }
 }

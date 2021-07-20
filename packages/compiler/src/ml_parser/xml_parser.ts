@@ -17,7 +17,7 @@ export class XmlParser extends Parser {
     super(getXmlTagDefinition);
   }
 
-  parse(source: string, url: string, options?: TokenizeOptions): ParseTreeResult {
+  override parse(source: string, url: string, options?: TokenizeOptions): ParseTreeResult {
     return super.parse(source, url, options);
   }
 }

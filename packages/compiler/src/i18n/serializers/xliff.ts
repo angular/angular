@@ -34,7 +34,7 @@ const _CONTEXT_TAG = 'context';
 // https://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html
 // https://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html
 export class Xliff extends Serializer {
-  write(messages: i18n.Message[], locale: string|null): string {
+  override write(messages: i18n.Message[], locale: string|null): string {
     const visitor = new _WriteVisitor();
     const transUnits: xml.Node[] = [];
 
@@ -92,7 +92,7 @@ export class Xliff extends Serializer {
     ]);
   }
 
-  load(content: string, url: string):
+  override load(content: string, url: string):
       {locale: string, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
     // xliff to xml nodes
     const xliffParser = new XliffParser();
@@ -115,7 +115,7 @@ export class Xliff extends Serializer {
     return {locale: locale!, i18nNodesByMsgId};
   }
 
-  digest(message: i18n.Message): string {
+  override digest(message: i18n.Message): string {
     return digest(message);
   }
 }

@@ -1314,9 +1314,6 @@
     "name": "getData"
   },
   {
-    "name": "getDebugContext"
-  },
-  {
     "name": "getDeclarationTNode"
   },
   {

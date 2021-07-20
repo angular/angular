@@ -7,6 +7,6 @@ exports_files([
 filegroup(
     name = "public-api",
     srcs = glob([
-        "public-api/**/*.d.ts",
+        "public-api/**/*.md",
     ]),
 )

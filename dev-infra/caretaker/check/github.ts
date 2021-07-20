@@ -45,7 +45,7 @@ type GithubQueryResult = {
 const MAX_RETURNED_ISSUES = 20;
 
 export class GithubQueriesModule extends BaseModule<GithubQueryResults|void> {
-  async retrieveData() {
+  override async retrieveData() {
     // Non-null assertion is used here as the check for undefined immediately follows to confirm the
     // assertion.  Typescript's type filtering does not seem to work as needed to understand
     // whether githubQueries is undefined or not.
@@ -95,7 +95,7 @@ export class GithubQueriesModule extends BaseModule<GithubQueryResults|void> {
     return graphqlQuery;
   }
 
-  async printToTerminal() {
+  override async printToTerminal() {
     const queryResults = await this.data;
     if (!queryResults) {
       return;

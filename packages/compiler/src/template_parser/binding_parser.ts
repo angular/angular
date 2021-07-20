@@ -568,7 +568,7 @@ export class BindingParser {
 
 export class PipeCollector extends RecursiveAstVisitor {
   pipes = new Map<string, BindingPipe>();
-  visitPipe(ast: BindingPipe, context: any): any {
+  override visitPipe(ast: BindingPipe, context: any): any {
     this.pipes.set(ast.name, ast);
     ast.exp.visit(this);
     this.visitAll(ast.args, context);

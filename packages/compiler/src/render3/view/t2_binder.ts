@@ -51,7 +51,7 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
     // Finally, run the TemplateBinder to bind references, variables, and other entities within the
     // template. This extracts all the metadata that doesn't depend on directive matching.
     const {expressions, symbols, nestingLevel, usedPipes} =
-        TemplateBinder.apply(target.template, scope);
+        TemplateBinder.applyWithScope(target.template, scope);
     return new R3BoundTarget(
         target, directives, bindings, references, expressions, symbols, nestingLevel,
         templateEntities, usedPipes);
@@ -347,7 +347,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   // This method is defined to reconcile the type of TemplateBinder since both
   // RecursiveAstVisitor and Visitor define the visit() method in their
   // interfaces.
-  visit(node: AST|Node, context?: any) {
+  override visit(node: AST|Node, context?: any) {
     if (node instanceof AST) {
       node.visit(this, context);
     } else {
@@ -367,7 +367,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
    * nesting level (how many levels deep within the template structure the `Template` is), starting
    * at 1.
    */
-  static apply(template: Node[], scope: Scope): {
+  static applyWithScope(template: Node[], scope: Scope): {
     expressions: Map<AST, Reference|Variable>,
     symbols: Map<Variable|Reference, Template>,
     nestingLevel: Map<Template, number>,
@@ -461,7 +461,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   visitBoundText(text: BoundText) {
     text.value.visit(this);
   }
-  visitPipe(ast: BindingPipe, context: any): any {
+  override visitPipe(ast: BindingPipe, context: any): any {
     this.usedPipes.add(ast.name);
     return super.visitPipe(ast, context);
   }
@@ -469,27 +469,27 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   // These five types of AST expressions can refer to expression roots, which could be variables
   // or references in the current scope.
 
-  visitPropertyRead(ast: PropertyRead, context: any): any {
+  override visitPropertyRead(ast: PropertyRead, context: any): any {
     this.maybeMap(context, ast, ast.name);
     return super.visitPropertyRead(ast, context);
   }
 
-  visitSafePropertyRead(ast: SafePropertyRead, context: any): any {
+  override visitSafePropertyRead(ast: SafePropertyRead, context: any): any {
     this.maybeMap(context, ast, ast.name);
     return super.visitSafePropertyRead(ast, context);
   }
 
-  visitPropertyWrite(ast: PropertyWrite, context: any): any {
+  override visitPropertyWrite(ast: PropertyWrite, context: any): any {
     this.maybeMap(context, ast, ast.name);
     return super.visitPropertyWrite(ast, context);
   }
 
-  visitMethodCall(ast: MethodCall, context: any): any {
+  override visitMethodCall(ast: MethodCall, context: any): any {
     this.maybeMap(context, ast, ast.name);
     return super.visitMethodCall(ast, context);
   }
 
-  visitSafeMethodCall(ast: SafeMethodCall, context: any): any {
+  override visitSafeMethodCall(ast: SafeMethodCall, context: any): any {
     this.maybeMap(context, ast, ast.name);
     return super.visitSafeMethodCall(ast, context);
   }

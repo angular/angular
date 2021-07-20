@@ -23,7 +23,7 @@ export interface G3StatsData {
 }
 
 export class G3Module extends BaseModule<G3StatsData|void> {
-  async retrieveData() {
+  override async retrieveData() {
     const toCopyToG3 = this.getG3FileIncludeAndExcludeLists();
     const latestSha = this.getLatestShas();
 
@@ -35,7 +35,7 @@ export class G3Module extends BaseModule<G3StatsData|void> {
         latestSha.g3, latestSha.master, toCopyToG3.include, toCopyToG3.exclude);
   }
 
-  async printToTerminal() {
+  override async printToTerminal() {
     const stats = await this.data;
     if (!stats) {
       return;

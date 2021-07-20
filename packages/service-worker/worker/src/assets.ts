@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Adapter, Context} from './adapter';
+import {Adapter} from './adapter';
 import {CacheState, NormalizedUrl, UpdateCacheStatus, UpdateSource, UrlMetadata} from './api';
 import {Database, Table} from './database';
 import {CacheTable} from './db-cache';
@@ -114,7 +114,7 @@ export abstract class AssetGroup {
   /**
    * Process a request for a given resource and return it, or return null if it's not available.
    */
-  async handleFetch(req: Request, ctx: Context): Promise<Response|null> {
+  async handleFetch(req: Request, _event: ExtendableEvent): Promise<Response|null> {
     const url = this.adapter.normalizeUrl(req.url);
     // Either the request matches one of the known resource URLs, one of the patterns for
     // dynamically matched URLs, or neither. Determine which is the case for this request in
@@ -454,7 +454,6 @@ export abstract class AssetGroup {
   protected async maybeUpdate(updateFrom: UpdateSource, req: Request, cache: Cache):
       Promise<boolean> {
     const url = this.adapter.normalizeUrl(req.url);
-    const meta = await this.metadata;
     // Check if this resource is hashed and already exists in the cache of a prior version.
     if (this.hashes.has(url)) {
       const hash = this.hashes.get(url)!;
@@ -467,7 +466,6 @@ export abstract class AssetGroup {
       if (res !== null) {
         // Copy to this cache.
         await cache.put(req, res);
-        await meta.write(req.url, {ts: this.adapter.time, used: false} as UrlMetadata);
 
         // No need to do anything further with this resource, it's now cached properly.
         return true;
@@ -501,7 +499,7 @@ export abstract class AssetGroup {
  * An `AssetGroup` that prefetches all of its resources during initialization.
  */
 export class PrefetchAssetGroup extends AssetGroup {
-  async initializeFully(updateFrom?: UpdateSource): Promise<void> {
+  override async initializeFully(updateFrom?: UpdateSource): Promise<void> {
     // Open the cache which actually holds requests.
     const cache = await this.cache;
 
@@ -575,7 +573,7 @@ export class PrefetchAssetGroup extends AssetGroup {
 }
 
 export class LazyAssetGroup extends AssetGroup {
-  async initializeFully(updateFrom?: UpdateSource): Promise<void> {
+  override async initializeFully(updateFrom?: UpdateSource): Promise<void> {
     // No action necessary if no update source is available - resources managed in this group
     // are all lazily loaded, so there's nothing to initialize.
     if (updateFrom === undefined) {

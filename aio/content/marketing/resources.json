@@ -55,13 +55,19 @@
       "Podcasts": {
         "order": 3,
         "resources": {
-          "sdfjkdkfj": {
+          "adventures-in-angular": {
             "desc": "Adventures in Angular is a weekly podcast dedicated to the Angular platform and related technologies, tools, languages, and practices.",
             "logo": "",
             "title": "Adventures in Angular",
             "url": "https://devchat.tv/adv-in-angular/"
           },
-          "sdlkfjsldfkj": {
+          "angular-show": {
+            "desc": "ng-conf's official all-Angular podcast.",
+            "logo": "",
+            "title": "The Angular Show",
+            "url": "https://www.spreaker.com/show/angular-show"
+          },
+          "angular-air": {
             "desc": "Weekly video podcast hosted by Jeff Whelpley with all the latest and greatest happenings in the wild world of Angular.",
             "logo": "",
             "title": "AngularAir",
@@ -73,10 +79,10 @@
             "title": "Angular Rocks",
             "url": "https://angularrocks.com"
           },
-          "sdlkfjsldfkz": {
+          "happy-angular": {
             "desc": "A weekly German podcast for Angular on the go",
             "logo": "",
-            "title": "Happy Angular Podcast",
+            "title": "Happy Angular",
             "url": "https://happy-angular.de/"
           },
           "ngruair": {
@@ -84,12 +90,6 @@
             "logo": "",
             "title": "NgRuAir",
             "url": "https://github.com/ngRuAir/ngruair"
-          },
-          "the-deep-dive": {
-            "desc": "The advanced web development podcast about Angular, RxJS, TypeScript and other technologies. English, audio only.",
-            "logo": "https://i.imgur.com/mmE5Feq.jpg",
-            "title": "The Deep Dive",
-            "url": "https://thedeepdive.simplecast.com"
           }
         }
       }

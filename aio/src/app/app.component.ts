@@ -14,7 +14,7 @@ import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { first, map } from 'rxjs/operators';
 
 const sideNavView = 'SideNav';
-export const showTopMenuWidth = 1048;
+export const showTopMenuWidth = 1150;
 export const dockSideNavWidth = 992;
 export const showFloatingTocWidth = 800;
 
@@ -79,7 +79,7 @@ export class AppComponent implements OnInit {
   private currentUrl: string;
 
   get isOpened() { return this.dockSideNav && this.isSideNavDoc; }
-  get mode() { return this.dockSideNav && (this.isSideNavDoc || this.showTopMenu) ? 'side' : 'over'; }
+  get mode() { return this.isOpened ? 'side' : 'over'; }
 
   // Search related properties
   showSearchResults = false;

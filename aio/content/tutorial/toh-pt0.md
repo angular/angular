@@ -22,7 +22,7 @@ To set up your development environment, follow the instructions in [Local Enviro
 
 ## Create a new workspace and an initial application
 
-You develop applications in the context of an Angular [workspace](guide/glossary#workspace). A workspace contains the files for one or more [projects](guide/glossary#project). A project is the set of files that comprise an app, a library, or end-to-end (e2e) tests. For this tutorial, you will create a new workspace.
+You develop applications in the context of an Angular [workspace](guide/glossary#workspace). A workspace contains the files for one or more [projects](guide/glossary#project). A project is the set of files that comprise an application or a library. For this tutorial, you will create a new workspace.
 
 To create a new workspace and an initial application project:
 

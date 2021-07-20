@@ -175,7 +175,8 @@ export class EntryPointManifest {
  * is called.
  */
 export class InvalidatingEntryPointManifest extends EntryPointManifest {
-  readEntryPointsUsingManifest(_basePath: AbsoluteFsPath): EntryPointWithDependencies[]|null {
+  override readEntryPointsUsingManifest(_basePath: AbsoluteFsPath):
+      EntryPointWithDependencies[]|null {
     return null;
   }
 }

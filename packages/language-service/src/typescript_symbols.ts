@@ -351,7 +351,7 @@ class TypeWrapper implements Symbol {
 // If stringIndexType a primitive type(e.g. 'string'), the Symbol is undefined;
 // and in AstType.resolvePropertyRead method, the Symbol.type should get the right type.
 class StringIndexTypeWrapper extends TypeWrapper {
-  public readonly type = new TypeWrapper(this.tsType, this.context);
+  public override readonly type = new TypeWrapper(this.tsType, this.context);
 }
 
 class SymbolWrapper implements Symbol {

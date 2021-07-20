@@ -49,6 +49,7 @@ const plugins = [
     // https://github.com/angular/angular-cli/blob/1a1ceb609b9a87c4021cce3a6f0fc6d167cd09d2/packages/ngtools/webpack/src/angular_compiler_plugin.ts#L918-L920
     mainFields: ivyEnabled ? ['module_ivy_ngcc', 'main_ivy_ngcc', 'module', 'main'] :
                              ['module', 'main'],
+    preferBuiltins: true,
   }),
   commonjs({ignoreGlobal: true}),
   sourcemaps(),
@@ -62,12 +63,25 @@ if (useBuildOptimizer) {
 
 module.exports = {
   plugins,
+  onwarn: customWarningHandler,
   external: [TMPL_external],
   output: {
     globals: {TMPL_globals},
     banner: extractBannerIfConfigured(),
   }
 };
+
+/** Custom warning handler for Rollup. */
+function customWarningHandler(warning, defaultHandler) {
+  // If rollup is unable to resolve an import, we want to throw an error
+  // instead of silently treating the import as external dependency.
+  // https://rollupjs.org/guide/en/#warning-treating-module-as-external-dependency
+  if (warning.code === 'UNRESOLVED_IMPORT') {
+    throw Error(`Unresolved import: ${warning.message}`);
+  }
+
+  defaultHandler(warning);
+}
 
 /** Extracts the top-level bundle banner if specified. */
 function extractBannerIfConfigured() {

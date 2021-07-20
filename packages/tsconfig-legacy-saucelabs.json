@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // The project uses Bazel for TypeScript compilation. Unlike with Bazel, we build all
+    // sources as part of a single TypeScript compilation. This results in `@internal`
+    // declarations not being omitted between the logical as defined per the Bazel targets.
+    // This can cause issues where the `override` keyword is needed for the legacy TS
+    // compilation, but not within Bazel where the overridden member has `@internal`.
+    "noImplicitOverride": false,
+  }
+}

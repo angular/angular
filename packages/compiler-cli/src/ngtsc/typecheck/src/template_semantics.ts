@@ -22,7 +22,7 @@ export class ExpressionSemanticVisitor extends RecursiveAstVisitor {
     super();
   }
 
-  visitPropertyWrite(ast: PropertyWrite, context: any): void {
+  override visitPropertyWrite(ast: PropertyWrite, context: any): void {
     super.visitPropertyWrite(ast, context);
 
     if (!(ast.receiver instanceof ImplicitReceiver)) {

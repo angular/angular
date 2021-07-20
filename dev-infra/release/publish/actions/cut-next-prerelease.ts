@@ -21,21 +21,21 @@ export class CutNextPrereleaseAction extends ReleaseAction {
   /** Promise resolving with the new version if a NPM next pre-release is cut. */
   private _newVersion: Promise<semver.SemVer> = this._computeNewVersion();
 
-  async getDescription() {
+  override async getDescription() {
     const {branchName} = this._getActivePrereleaseTrain();
     const newVersion = await this._newVersion;
     return `Cut a new next pre-release for the "${branchName}" branch (v${newVersion}).`;
   }
 
-  async perform() {
+  override async perform() {
     const releaseTrain = this._getActivePrereleaseTrain();
     const {branchName} = releaseTrain;
     const newVersion = await this._newVersion;
 
-    const {pullRequest: {id}, releaseNotes} =
+    const {pullRequest, releaseNotes} =
         await this.checkoutBranchAndStageVersion(newVersion, branchName);
 
-    await this.waitForPullRequestToBeMerged(id);
+    await this.waitForPullRequestToBeMerged(pullRequest);
     await this.buildAndPublish(releaseNotes, branchName, 'next');
 
     // If the pre-release has been cut from a branch that is not corresponding
@@ -64,7 +64,7 @@ export class CutNextPrereleaseAction extends ReleaseAction {
     }
   }
 
-  static async isActive() {
+  static override async isActive() {
     // Pre-releases for the `next` NPM dist tag can always be cut. Depending on whether
     // there is a feature-freeze/release-candidate branch, the next pre-releases are either
     // cut from such a branch, or from the actual `next` release-train branch (i.e. master).

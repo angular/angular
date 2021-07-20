@@ -45,7 +45,7 @@ def create_upgrade_example_targets(name, srcs, e2e_srcs, entry_module, assets = 
         additional_root_paths = ["angular/packages/examples"],
         bootstrap = [
             "//packages/zone.js/bundles:zone.umd.js",
-            "@npm//:node_modules/angular/angular.js",
+            "@npm//:node_modules/angular-1.8/angular.js",
             "@npm//:node_modules/reflect-metadata/Reflect.js",
         ],
         static_files = [

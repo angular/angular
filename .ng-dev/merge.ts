@@ -25,6 +25,9 @@ export const merge: DevInfraMergeConfig['merge'] = async api => {
       'master': '5aeb9a4124922d8ac08eb73b8f322905a32b0b3a',
       '10.0.x': '27b95ba64a5d99757f4042073fd1860e20e3ed24',
     },
-    targetLabelExemptScopes: ['dev-infra', 'docs-infra']
+    // `dev-infra` and `docs-infra` are not affecting the public NPM packages. Similarly,
+    // the `bazel` package is not considered part of the public API so that features
+    // can land in patch branches.
+    targetLabelExemptScopes: ['dev-infra', 'docs-infra', 'bazel']
   };
 };

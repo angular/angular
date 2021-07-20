@@ -6,33 +6,27 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationMetadataType, ɵStyleData} from '@angular/animations';
-
-import {copyStyles, interpolateParams} from '../util';
-
-import {SequenceAst, StyleAst, TransitionAst, TriggerAst} from './animation_ast';
+import {SequenceAst, TransitionAst, TriggerAst} from './animation_ast';
 import {AnimationStateStyles, AnimationTransitionFactory} from './animation_transition_factory';
+import {AnimationStyleNormalizer} from './style_normalization/animation_style_normalizer';
 
 
 
-/**
- * @publicApi
- */
-export function buildTrigger(name: string, ast: TriggerAst): AnimationTrigger {
-  return new AnimationTrigger(name, ast);
+export function buildTrigger(
+    name: string, ast: TriggerAst, normalizer: AnimationStyleNormalizer): AnimationTrigger {
+  return new AnimationTrigger(name, ast, normalizer);
 }
 
-/**
- * @publicApi
- */
 export class AnimationTrigger {
   public transitionFactories: AnimationTransitionFactory[] = [];
   public fallbackTransition: AnimationTransitionFactory;
   public states: {[stateName: string]: AnimationStateStyles} = {};
 
-  constructor(public name: string, public ast: TriggerAst) {
+  constructor(
+      public name: string, public ast: TriggerAst, private _normalizer: AnimationStyleNormalizer) {
     ast.states.forEach(ast => {
       const defaultParams = (ast.options && ast.options.params) || {};
-      this.states[ast.name] = new AnimationStateStyles(ast.style, defaultParams);
+      this.states[ast.name] = new AnimationStateStyles(ast.style, defaultParams, _normalizer);
     });
 
     balanceProperties(this.states, 'true', '1');
@@ -42,7 +36,7 @@ export class AnimationTrigger {
       this.transitionFactories.push(new AnimationTransitionFactory(name, ast, this.states));
     });
 
-    this.fallbackTransition = createFallbackTransition(name, this.states);
+    this.fallbackTransition = createFallbackTransition(name, this.states, this._normalizer);
   }
 
   get containsQueries() {
@@ -62,8 +56,8 @@ export class AnimationTrigger {
 }
 
 function createFallbackTransition(
-    triggerName: string,
-    states: {[stateName: string]: AnimationStateStyles}): AnimationTransitionFactory {
+    triggerName: string, states: {[stateName: string]: AnimationStateStyles},
+    normalizer: AnimationStyleNormalizer): AnimationTransitionFactory {
   const matchers = [(fromState: any, toState: any) => true];
   const animation: SequenceAst = {type: AnimationMetadataType.Sequence, steps: [], options: null};
   const transition: TransitionAst = {

@@ -89,7 +89,8 @@ class MapPlaceholderNames extends i18n.CloneVisitor {
     return mapper ? nodes.map(n => n.visit(this, mapper)) : nodes;
   }
 
-  visitTagPlaceholder(ph: i18n.TagPlaceholder, mapper: PlaceholderMapper): i18n.TagPlaceholder {
+  override visitTagPlaceholder(ph: i18n.TagPlaceholder, mapper: PlaceholderMapper):
+      i18n.TagPlaceholder {
     const startName = mapper.toPublicName(ph.startName)!;
     const closeName = ph.closeName ? mapper.toPublicName(ph.closeName)! : ph.closeName;
     const children = ph.children.map(n => n.visit(this, mapper));
@@ -98,11 +99,12 @@ class MapPlaceholderNames extends i18n.CloneVisitor {
         ph.startSourceSpan, ph.endSourceSpan);
   }
 
-  visitPlaceholder(ph: i18n.Placeholder, mapper: PlaceholderMapper): i18n.Placeholder {
+  override visitPlaceholder(ph: i18n.Placeholder, mapper: PlaceholderMapper): i18n.Placeholder {
     return new i18n.Placeholder(ph.value, mapper.toPublicName(ph.name)!, ph.sourceSpan);
   }
 
-  visitIcuPlaceholder(ph: i18n.IcuPlaceholder, mapper: PlaceholderMapper): i18n.IcuPlaceholder {
+  override visitIcuPlaceholder(ph: i18n.IcuPlaceholder, mapper: PlaceholderMapper):
+      i18n.IcuPlaceholder {
     return new i18n.IcuPlaceholder(ph.value, mapper.toPublicName(ph.name)!, ph.sourceSpan);
   }
 }

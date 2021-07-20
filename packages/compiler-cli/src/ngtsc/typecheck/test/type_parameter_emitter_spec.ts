@@ -86,6 +86,28 @@ runInEachFileSystem(() => {
           .toEqual('<T extends {\n    [key: string]: boolean;\n}>');
     });
 
+    it('can emit literal types', () => {
+      expect(emit(createEmitter(`export class TestClass<T extends 'a"a'> {}`)))
+          .toEqual(`<T extends "a\\"a">`);
+      expect(emit(createEmitter(`export class TestClass<T extends "b\\\"b"> {}`)))
+          .toEqual(`<T extends "b\\"b">`);
+      expect(emit(createEmitter(`export class TestClass<T extends \`c\\\`c\`> {}`)))
+          .toEqual(`<T extends \`c\\\`c\`>`);
+      expect(emit(createEmitter(`export class TestClass<T extends -1> {}`)))
+          .toEqual(`<T extends -1>`);
+      expect(emit(createEmitter(`export class TestClass<T extends 1> {}`)))
+          .toEqual(`<T extends 1>`);
+      expect(emit(createEmitter(`export class TestClass<T extends 1n> {}`)))
+          .toEqual(`<T extends 1n>`);
+    });
+
+    it('cannot emit import types', () => {
+      const emitter = createEmitter(`export class TestClass<T extends import('module')> {}`);
+
+      expect(emitter.canEmit()).toBe(false);
+      expect(() => emit(emitter)).toThrowError('Unable to emit import type');
+    });
+
     it('can emit references into external modules', () => {
       const emitter = createEmitter(`
           import {NgIterable} from '@angular/core';

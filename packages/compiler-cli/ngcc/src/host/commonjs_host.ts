@@ -35,7 +35,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     this.compilerHost = src.host;
   }
 
-  getImportOfIdentifier(id: ts.Identifier): Import|null {
+  override getImportOfIdentifier(id: ts.Identifier): Import|null {
     const requireCall = this.findCommonJsImport(id);
     if (requireCall === null) {
       return null;
@@ -43,11 +43,11 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     return {from: requireCall.arguments[0].text, name: id.text};
   }
 
-  getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
+  override getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
     return this.getCommonJsModuleDeclaration(id) || super.getDeclarationOfIdentifier(id);
   }
 
-  getExportsOfModule(module: ts.Node): Map<string, Declaration>|null {
+  override getExportsOfModule(module: ts.Node): Map<string, Declaration>|null {
     return super.getExportsOfModule(module) || this.commonJsExports.get(module.getSourceFile());
   }
 
@@ -64,7 +64,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
    * in.
    * @returns an array of nodes of calls to the helper with the given name.
    */
-  protected getHelperCallsForClass(classSymbol: NgccClassSymbol, helperNames: string[]):
+  protected override getHelperCallsForClass(classSymbol: NgccClassSymbol, helperNames: string[]):
       ts.CallExpression[] {
     const esm5HelperCalls = super.getHelperCallsForClass(classSymbol, helperNames);
     if (esm5HelperCalls.length > 0) {
@@ -221,7 +221,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
    * If this is an IFE then try to grab the outer and inner classes otherwise fallback on the super
    * class.
    */
-  protected getDeclarationOfExpression(expression: ts.Expression): Declaration|null {
+  protected override getDeclarationOfExpression(expression: ts.Expression): Declaration|null {
     const inner = getInnerClassDeclaration(expression);
     if (inner !== null) {
       const outer = getOuterNodeFromInnerDeclaration(inner);

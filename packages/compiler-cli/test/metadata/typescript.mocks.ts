@@ -149,9 +149,6 @@ export class MockNode implements ts.Node {
 export class MockIdentifier extends MockNode implements ts.Identifier {
   originalKeywordKind?: ts.SyntaxKind;
   isInJSDocNamespace?: boolean;
-  decorators?: ts.NodeArray<ts.Decorator>;
-  modifiers?: ts.NodeArray<ts.Modifier>;
-  parent!: ts.Node;
   public text: string;
   // TODO(issue/24571): remove '!'.
   public escapedText!: ts.__String;
@@ -167,7 +164,8 @@ export class MockIdentifier extends MockNode implements ts.Identifier {
   // tslint:enable
 
   constructor(
-      public name: string, public kind: ts.SyntaxKind.Identifier = ts.SyntaxKind.Identifier,
+      public name: string,
+      public override kind: ts.SyntaxKind.Identifier = ts.SyntaxKind.Identifier,
       flags: ts.NodeFlags = 0, pos: number = 0, end: number = 0) {
     super(kind, flags, pos, end);
     this.text = name;
@@ -175,18 +173,16 @@ export class MockIdentifier extends MockNode implements ts.Identifier {
 }
 
 export class MockVariableDeclaration extends MockNode implements ts.VariableDeclaration {
-  parent!: ts.VariableDeclarationList|ts.CatchClause;
+  override parent!: ts.VariableDeclarationList|ts.CatchClause;
   exclamationToken?: ts.Token<ts.SyntaxKind.ExclamationToken>;
   type?: ts.TypeNode;
   initializer?: ts.Expression;
-  decorators?: ts.NodeArray<ts.Decorator>;
-  modifiers?: ts.NodeArray<ts.Modifier>;
   // tslint:disable-next-line
   public _declarationBrand: any;
 
   constructor(
       public name: ts.Identifier,
-      public kind: ts.SyntaxKind.VariableDeclaration = ts.SyntaxKind.VariableDeclaration,
+      public override kind: ts.SyntaxKind.VariableDeclaration = ts.SyntaxKind.VariableDeclaration,
       flags: ts.NodeFlags = 0, pos: number = 0, end: number = 0) {
     super(kind, flags, pos, end);
   }

@@ -69,7 +69,7 @@ export class PerflogMetric extends Metric {
     }
   }
 
-  describe(): {[key: string]: string} {
+  override describe(): {[key: string]: string} {
     const res: {[key: string]: any} = {
       'scriptTime': 'script execution time in ms, including gc and render',
       'pureScriptTime': 'script execution time in ms, without gc nor render'
@@ -113,7 +113,7 @@ export class PerflogMetric extends Metric {
     return res;
   }
 
-  beginMeasure(): Promise<any> {
+  override beginMeasure(): Promise<any> {
     let resultPromise = Promise.resolve(null);
     if (this._forceGc) {
       resultPromise = resultPromise.then((_) => this._driverExtension.gc());
@@ -121,7 +121,7 @@ export class PerflogMetric extends Metric {
     return resultPromise.then((_) => this._beginMeasure());
   }
 
-  endMeasure(restart: boolean): Promise<{[key: string]: number}> {
+  override endMeasure(restart: boolean): Promise<{[key: string]: number}> {
     if (this._forceGc) {
       return this._endPlainMeasureAndMeasureForceGc(restart);
     } else {

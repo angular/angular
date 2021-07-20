@@ -6,6 +6,7 @@ ng_rollup_bundle(
     entry_point = "//packages/language-service:src/ts_plugin.ts",
     format = "amd",
     globals = {
+        "os": "os",
         "fs": "fs",
         "path": "path",
         "typescript": "ts",
@@ -26,6 +27,7 @@ ng_rollup_bundle(
     entry_point = "//packages/language-service/ivy:ts_plugin.ts",
     format = "amd",
     globals = {
+        "os": "os",
         "fs": "fs",
         "path": "path",
         "typescript": "ts",

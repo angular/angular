@@ -64,7 +64,7 @@ export class RangeValueAccessor extends BuiltInControlValueAccessor implements
    * Registers a function called when the control value changes.
    * @nodoc
    */
-  registerOnChange(fn: (_: number|null) => void): void {
+  override registerOnChange(fn: (_: number|null) => void): void {
     this.onChange = (value) => {
       fn(value == '' ? null : parseFloat(value));
     };

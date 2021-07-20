@@ -10,7 +10,18 @@
 // This code to access the global object is mostly copied from `packages/core/src/util/global.ts`
 
 declare global {
-  var WorkerGlobalScope: any;
+  // The definition of `WorkerGlobalScope` must be compatible with the one in `lib.webworker.d.ts`,
+  // because all files under `packages/` are compiled together as part of the
+  // [legacy-unit-tests-saucelabs][1] CI job, including the `lib.webworker.d.ts` typings brought in
+  // by [service-worker/worker/src/service-worker.d.ts][2].
+  //
+  // [1]:
+  // https://github.com/angular/angular/blob/ffeea63f43e6a7fd46be4a8cd5a5d254c98dea08/.circleci/config.yml#L681
+  // [2]:
+  // https://github.com/angular/angular/blob/316dc2f12ce8931f5ff66fa5f8da21c0d251a337/packages/service-worker/worker/src/service-worker.d.ts#L9
+  interface WorkerGlobalScope extends EventTarget, WindowOrWorkerGlobalScope {}
+
+  var WorkerGlobalScope: {prototype: WorkerGlobalScope; new (): WorkerGlobalScope;};
 }
 
 const __globalThis = typeof globalThis !== 'undefined' && globalThis;

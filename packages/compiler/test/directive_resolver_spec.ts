@@ -227,7 +227,7 @@ class SomeDirectiveWithoutMetadata {}
         }
 
         class Child extends Parent {
-          @Input('p22') p2: any;
+          @Input('p22') override p2: any;
           @Input() p3: any;
         }
 
@@ -282,7 +282,7 @@ class SomeDirectiveWithoutMetadata {}
         }
 
         class Child extends Parent {
-          @Output('p22') p2: any;
+          @Output('p22') override p2: any;
           @Output() p3: any;
         }
 
@@ -328,7 +328,7 @@ class SomeDirectiveWithoutMetadata {}
         }
 
         class Child extends Parent {
-          @HostBinding('p22') p2: any;
+          @HostBinding('p22') override p2: any;
           @HostBinding() p3: any;
         }
 
@@ -350,7 +350,7 @@ class SomeDirectiveWithoutMetadata {}
 
         class Child extends Parent {
           @HostListener('p22')
-          p2() {
+          override p2() {
           }
           @HostListener('p3')
           p3() {
@@ -375,10 +375,10 @@ class SomeDirectiveWithoutMetadata {}
 
         class Child extends Parent {
           @HostListener('c1')
-          p1() {
+          override p1() {
           }
 
-          @HostBinding('c2') p2: any;
+          @HostBinding('c2') override p2: any;
         }
 
         const directiveMetadata = resolver.resolve(Child);
@@ -426,7 +426,7 @@ class SomeDirectiveWithoutMetadata {}
         }
 
         class Child extends Parent {
-          @ContentChild('p22') p2: any;
+          @ContentChild('p22') override p2: any;
           @ContentChild('p3') p3: any;
         }
 

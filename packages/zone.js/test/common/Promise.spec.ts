@@ -122,7 +122,7 @@ describe(
             super(fn);
           }
 
-          static get[Symbol.species]() {
+          static override get[Symbol.species]() {
             return MyPromise;
           }
         }

@@ -11,6 +11,7 @@ import {trigger} from '@angular/animations';
 import {TriggerAst} from '../src/dsl/animation_ast';
 import {buildAnimationAst} from '../src/dsl/animation_ast_builder';
 import {AnimationTrigger, buildTrigger} from '../src/dsl/animation_trigger';
+import {NoopAnimationStyleNormalizer} from '../src/dsl/style_normalization/animation_style_normalizer';
 import {MockAnimationDriver} from '../testing/src/mock_animation_driver';
 
 export function makeTrigger(
@@ -24,5 +25,5 @@ export function makeTrigger(
     throw new Error(`Animation parsing for the ${name} trigger have failed:${LINE_START}${
         errors.join(LINE_START)}`);
   }
-  return buildTrigger(name, triggerAst);
+  return buildTrigger(name, triggerAst, new NoopAnimationStyleNormalizer());
 }

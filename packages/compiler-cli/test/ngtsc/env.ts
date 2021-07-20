@@ -329,7 +329,7 @@ class MultiCompileHostExt extends AugmentedCompilerHost implements Partial<ts.Co
   private cache = new Map<string, ts.SourceFile>();
   private writtenFiles = new Set<string>();
 
-  getSourceFile(
+  override getSourceFile(
       fileName: string, languageVersion: ts.ScriptTarget, onError?: (message: string) => void,
       shouldCreateNewSourceFile?: boolean): ts.SourceFile|undefined {
     if (this.cache.has(fileName)) {
@@ -346,7 +346,7 @@ class MultiCompileHostExt extends AugmentedCompilerHost implements Partial<ts.Co
     this.writtenFiles.clear();
   }
 
-  writeFile(
+  override writeFile(
       fileName: string, data: string, writeByteOrderMark: boolean,
       onError: ((message: string) => void)|undefined,
       sourceFiles?: ReadonlyArray<ts.SourceFile>): void {

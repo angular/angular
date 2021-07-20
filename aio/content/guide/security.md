@@ -59,6 +59,8 @@ To systematically block XSS bugs, Angular treats all values as untrusted by defa
 
 Unlike values to be used for rendering, Angular templates are considered trusted by default, and should be treated as executable code. Never generate templates by concatenating user input and template syntax. Doing this would enable attackers to [inject arbitrary code](https://en.wikipedia.org/wiki/Code_injection) into your application. To prevent these vulnerabilities, always use the default [AOT template compiler](/guide/security#offline-template-compiler) in production deployments.
 
+An additional layer of protection can be provided through the use of Content security policy and Trusted Types. These web platform features operate at the DOM level which is the most effective place to prevent XSS issues because they can't be bypassed using other, lower-level APIs. For this reason, we strongly encourage developers to take advantage of these features by configuring the [content security policy](#content-security-policy) for their application and enabling [trusted types enforcement](#trusted-types).
+
 ### Sanitization and security contexts
 
 _Sanitization_ is the inspection of an untrusted value, turning it into a value that's safe to insert into
@@ -100,7 +102,7 @@ Angular recognizes the value as unsafe and automatically sanitizes it, which rem
 
 ### Direct use of the DOM APIs and explicit sanitization calls
 
-Built-in browser DOM APIs don't automatically protect you from security vulnerabilities.
+Unless you enforce Trusted Types, the built-in browser DOM APIs don't automatically protect you from security vulnerabilities.
 For example, `document`, the node available through `ElementRef`, and many third-party APIs
 contain unsafe methods. In the same way, if you interact with other libraries that manipulate
 the DOM, you likely won't have the same automatic sanitization as with Angular interpolations.
@@ -168,6 +170,59 @@ technique to prevent XSS. To enable CSP, configure your web server to return an 
 `Content-Security-Policy` HTTP header. Read more about content security policy at the 
 [Web Fundamentals guide](https://developers.google.com/web/fundamentals/security/csp) on the
 Google Developers website.
+
+{@a trusted-types}
+### Enforcing Trusted Types
+
+We recommend the use of [Trusted Types](https://w3c.github.io/webappsec-trusted-types/dist/spec/) as a way to help secure your applications from cross-site scripting attacks. Trusted Types is a [web platform](https://en.wikipedia.org/wiki/Web_platform)
+feature that can help you prevent cross-site scripting attacks by enforcing
+safer coding practices. Trusted Types can also help simplify the auditing of application code.
+
+<div class="callout is-helpful">
+
+Trusted Types might not yet be available in all browsers your application targets. In the case your Trusted-Types-enabled application runs in a browser that doesn't support Trusted Types, the functionality of the application will be preserved, and your application will be guarded against XSS by way of Angular's DomSanitizer. See [caniuse.com/trusted-types](https://caniuse.com/trusted-types) for the current browser support.
+
+</div>
+
+To enforce Trusted Types for your application, you must configure your application's web server to emit HTTP headers with one of the following Angular policies:
+
+* `angular` - This policy is used in security-reviewed code that is internal to Angular, and is required for Angular to function when Trusted Types are enforced. Any inline template values or content sanitized by Angular is treated as safe by this policy.
+* `angular#unsafe-bypass` - This policy is used for applications that use any of the methods in Angular's [DomSanitizer](api/platform-browser/DomSanitizer) that bypass security, such as `bypassSecurityTrustHtml`. Any application that uses these methods must enable this policy.
+* `angular#unsafe-jit` - This policy is used by the [JIT compiler](api/core/Compiler). You must enable this policy if your application interacts directly with the JIT compiler or is running in JIT mode using the [platform browser dynamic](api/platform-browser-dynamic/platformBrowserDynamic).
+
+You should configure the HTTP headers for Trusted Types in the following locations:
+
+* Production serving infrastructure
+* Angular CLI (`ng serve`), using the `headers` property in the `angular.json` file, for local development and end-to-end testing
+* Karma (`ng test`), using the `customHeaders` property in the `karma.config.js` file, for unit testing
+
+The following is an example of a header specifically configured for Trusted Types and Angular:
+
+<code-example language="html">
+Content-Security-Policy: trusted-types angular; require-trusted-types-for 'script';
+</code-example>
+
+The following is an example of a header specifically configured for Trusted Types and Angular applications that use any of the methods in Angular's [DomSanitizer](api/platform-browser/DomSanitizer) that bypasses security.
+
+<code-example language="html">
+Content-Security-Policy: trusted-types angular angular#unsafe-bypass; require-trusted-types-for 'script';
+</code-example>
+
+The following is an example of a header specifically configured for Trusted Types and Angular applications using JIT:
+
+<code-example language="html">
+Content-Security-Policy: trusted-types angular angular#unsafe-jit; require-trusted-types-for 'script';
+</code-example>
+
+<div class="callout is-helpful">
+
+<header>Community contributions</header>
+
+To learn more about troubleshooting Trusted Type configurations, the following resource might be helpful:
+
+[Prevent DOM-based cross-site scripting vulnerabilities with Trusted Types](https://web.dev/trusted-types/#how-to-use-trusted-types)
+
+</div>
 
 {@a offline-template-compiler}
 

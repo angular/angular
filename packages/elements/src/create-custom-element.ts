@@ -139,7 +139,7 @@ export function createCustomElement<P>(
     // field externs. So using quoted access to explicitly prevent renaming.
     static readonly['observedAttributes'] = Object.keys(attributeToPropertyInputs);
 
-    protected get ngElementStrategy(): NgElementStrategy {
+    protected override get ngElementStrategy(): NgElementStrategy {
       // NOTE:
       // Some polyfills (e.g. `document-register-element`) do not call the constructor, therefore
       // it is not safe to set `ngElementStrategy` in the constructor and assume it will be
@@ -175,13 +175,13 @@ export function createCustomElement<P>(
       super();
     }
 
-    attributeChangedCallback(
+    override attributeChangedCallback(
         attrName: string, oldValue: string|null, newValue: string, namespace?: string): void {
       const propName = attributeToPropertyInputs[attrName]!;
       this.ngElementStrategy.setInputValue(propName, newValue);
     }
 
-    connectedCallback(): void {
+    override connectedCallback(): void {
       // For historical reasons, some strategies may not have initialized the `events` property
       // until after `connect()` is run. Subscribe to `events` if it is available before running
       // `connect()` (in order to capture events emitted suring inittialization), otherwise
@@ -208,7 +208,7 @@ export function createCustomElement<P>(
       }
     }
 
-    disconnectedCallback(): void {
+    override disconnectedCallback(): void {
       // Not using `this.ngElementStrategy` to avoid unnecessarily creating the `NgElementStrategy`.
       if (this._ngElementStrategy) {
         this._ngElementStrategy.disconnect();

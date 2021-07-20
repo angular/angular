@@ -510,11 +510,11 @@ class FakeEventManagerPlugin extends EventManagerPlugin {
     super(doc);
   }
 
-  supports(eventName: string): boolean {
+  override supports(eventName: string): boolean {
     return this.supportedEvents.indexOf(eventName) > -1;
   }
 
-  addEventListener(element: any, eventName: string, handler: Function) {
+  override addEventListener(element: any, eventName: string, handler: Function) {
     this.eventHandler[eventName] = handler;
     return () => {
       delete this.eventHandler[eventName];
@@ -526,10 +526,10 @@ class FakeNgZone extends NgZone {
   constructor() {
     super({enableLongStackTrace: false, shouldCoalesceEventChangeDetection: true});
   }
-  run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T {
+  override run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T {
     return fn();
   }
-  runOutsideAngular(fn: Function) {
+  override runOutsideAngular(fn: Function) {
     return fn();
   }
 }

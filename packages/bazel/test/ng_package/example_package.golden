@@ -86,7 +86,6 @@ License: MIT
  */
 
 
-
 export declare class A11yModule {
 }
 
@@ -601,7 +600,6 @@ export const a = 1;
  */
 
 
-
 export declare class MyModule {
 }
 
@@ -805,7 +803,6 @@ export { MyModule };
  * License: MIT
  */
 
-
 export declare class MyService {
     secondService: ɵangular_packages_bazel_test_ng_package_example_imports_imports_a;
     constructor(secondService: ɵangular_packages_bazel_test_ng_package_example_imports_imports_a);
@@ -886,7 +883,6 @@ export * from './imports/imports';
  * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
-
 
 export declare const a = 1;
 

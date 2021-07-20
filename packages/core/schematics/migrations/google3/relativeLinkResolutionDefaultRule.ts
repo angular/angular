@@ -14,7 +14,7 @@ import {TslintUpdateRecorder} from '../relative-link-resolution/google3/tslint_u
 import {RelativeLinkResolutionTransform} from '../relative-link-resolution/transform';
 
 export class Rule extends Rules.TypedRule {
-  applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
+  override applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
     const typeChecker = program.getTypeChecker();
     const ruleName = this.ruleName;
     const sourceFiles = program.getSourceFiles().filter(

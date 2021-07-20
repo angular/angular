@@ -248,6 +248,25 @@ describe('TestBed', () => {
     expect(hello.nativeElement).toHaveText('Hello World!');
   });
 
+  // https://github.com/angular/angular/issues/42734
+  it('should override a component which is declared in an NgModule which is imported as a `ModuleWithProviders`',
+     () => {
+       // This test verifies that an overridden component that is declared in an NgModule that has
+       // been imported as a `ModuleWithProviders` continues to have access to the declaration scope
+       // of the NgModule.
+       TestBed.resetTestingModule();
+
+       const moduleWithProviders:
+           ModuleWithProviders<HelloWorldModule> = {ngModule: HelloWorldModule};
+       TestBed.configureTestingModule({imports: [moduleWithProviders]});
+       TestBed.overrideComponent(
+           HelloWorld, {set: {template: 'Overridden <greeting-cmp></greeting-cmp>'}});
+
+       const hello = TestBed.createComponent(HelloWorld);
+       hello.detectChanges();
+       expect(hello.nativeElement).toHaveText('Overridden Hello World!');
+     });
+
   it('should run `APP_INITIALIZER` before accessing `LOCALE_ID` provider', () => {
     let locale: string = '';
     @NgModule({
@@ -305,6 +324,35 @@ describe('TestBed', () => {
 
     // verify that original `ngOnDestroy` was not called
     expect(SimpleService.ngOnDestroyCalls).toBe(0);
+  });
+
+  it('should be able to create a fixture if a test module is reset mid-compilation', async () => {
+    const token = new InjectionToken<number>('value');
+
+    @Component({template: 'hello {{_token}}'})
+    class TestComponent {
+      constructor(@Inject(token) public _token: number) {}
+    }
+
+    TestBed.resetTestingModule();  // Reset the state from `beforeEach`.
+
+    function compile(tokenValue: number) {
+      return TestBed
+          .configureTestingModule({
+            declarations: [TestComponent],
+            providers: [{provide: token, useValue: tokenValue}],
+            teardown: {destroyAfterEach: true}
+          })
+          .compileComponents();
+    }
+
+    const initialCompilation = compile(1);
+    TestBed.resetTestingModule();
+    await initialCompilation;
+    await compile(2);
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement).toHaveText('hello 2');
   });
 
   describe('module overrides using TestBed.overrideModule', () => {

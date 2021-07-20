@@ -2061,6 +2061,19 @@ describe('acceptance integration tests', () => {
     expect(fixture.componentInstance.directive.value).toEqual({a: 1, b: 2, someProp: 3});
   });
 
+  it('should handle numeric separators in templates', () => {
+    @Component({template: 'Balance: ${{ 1_000_000 * multiplier }}'})
+    class App {
+      multiplier = 5;
+    }
+
+    TestBed.configureTestingModule({declarations: [App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('Balance: $5000000');
+  });
+
   describe('tView.firstUpdatePass', () => {
     function isFirstUpdatePass() {
       const lView = getLView();

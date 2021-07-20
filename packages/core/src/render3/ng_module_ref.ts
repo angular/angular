@@ -28,8 +28,8 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
   _bootstrapComponents: Type<any>[] = [];
   // tslint:disable-next-line:require-internal-with-underscore
   _r3Injector: R3Injector;
-  injector: Injector = this;
-  instance: T;
+  override injector: Injector = this;
+  override instance: T;
   destroyCbs: (() => void)[]|null = [];
 
   // When bootstrapping a module we have a dependency graph that looks like this:
@@ -38,7 +38,8 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
   // circular dependency which will result in a runtime error, because the injector doesn't
   // exist yet. We work around the issue by creating the ComponentFactoryResolver ourselves
   // and providing it, rather than letting the injector resolve it.
-  readonly componentFactoryResolver: ComponentFactoryResolver = new ComponentFactoryResolver(this);
+  override readonly componentFactoryResolver: ComponentFactoryResolver =
+      new ComponentFactoryResolver(this);
 
   constructor(ngModuleType: Type<T>, public _parent: Injector|null) {
     super();
@@ -76,14 +77,14 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
     return this._r3Injector.get(token, notFoundValue, injectFlags);
   }
 
-  destroy(): void {
+  override destroy(): void {
     ngDevMode && assertDefined(this.destroyCbs, 'NgModule already destroyed');
     const injector = this._r3Injector;
     !injector.destroyed && injector.destroy();
     this.destroyCbs!.forEach(fn => fn());
     this.destroyCbs = null;
   }
-  onDestroy(callback: () => void): void {
+  override onDestroy(callback: () => void): void {
     ngDevMode && assertDefined(this.destroyCbs, 'NgModule already destroyed');
     this.destroyCbs!.push(callback);
   }
@@ -122,7 +123,7 @@ export class NgModuleFactory<T> extends viewEngine_NgModuleFactory<T> {
     }
   }
 
-  create(parentInjector: Injector|null): viewEngine_NgModuleRef<T> {
+  override create(parentInjector: Injector|null): viewEngine_NgModuleRef<T> {
     return new NgModuleRef(this.moduleType, parentInjector);
   }
 }

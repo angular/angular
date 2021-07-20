@@ -32,7 +32,7 @@ export class TemplateUsageVisitor extends NullVisitor {
     return !this.hasQueryTemplateReference && this.expressionAstVisitor.hasQueryPropertyRead;
   }
 
-  visitElement(element: Element): void {
+  override visitElement(element: Element): void {
     // In case there is a template references variable that matches the query property
     // name, we can finish this visitor as such a template variable can be used in the
     // entire template and the query therefore can't be accessed from the template.
@@ -47,7 +47,7 @@ export class TemplateUsageVisitor extends NullVisitor {
     visitAll(this, element.children);
   }
 
-  visitTemplate(template: Template): void {
+  override visitTemplate(template: Template): void {
     visitAll(this, template.attributes);
     visitAll(this, template.inputs);
     visitAll(this, template.outputs);
@@ -57,15 +57,15 @@ export class TemplateUsageVisitor extends NullVisitor {
     // lifecycle hook at the earliest.
   }
 
-  visitBoundAttribute(attribute: BoundAttribute) {
+  override visitBoundAttribute(attribute: BoundAttribute) {
     attribute.value.visit(this.expressionAstVisitor, attribute.sourceSpan);
   }
 
-  visitBoundText(text: BoundText) {
+  override visitBoundText(text: BoundText) {
     text.value.visit(this.expressionAstVisitor, text.sourceSpan);
   }
 
-  visitBoundEvent(node: BoundEvent) {
+  override visitBoundEvent(node: BoundEvent) {
     node.handler.visit(this.expressionAstVisitor, node.handlerSpan);
   }
 }
@@ -81,7 +81,7 @@ class ExpressionAstVisitor extends RecursiveAstVisitor {
     super();
   }
 
-  visitPropertyRead(node: PropertyRead, span: ParseSourceSpan): any {
+  override visitPropertyRead(node: PropertyRead, span: ParseSourceSpan): any {
     // The receiver of the property read needs to be "implicit" as queries are accessed
     // from the component instance and not from other objects.
     if (node.receiver instanceof ImplicitReceiver && node.name === this.queryPropertyName) {

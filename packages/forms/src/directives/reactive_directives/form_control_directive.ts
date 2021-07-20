@@ -149,7 +149,7 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
    * Returns an array that represents the path from the top-level form to this control.
    * Each index is the string name of the control on that level.
    */
-  get path(): string[] {
+  override get path(): string[] {
     return [];
   }
 
@@ -157,7 +157,7 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
    * @description
    * The `FormControl` bound to this directive.
    */
-  get control(): FormControl {
+  override get control(): FormControl {
     return this.form;
   }
 
@@ -167,7 +167,7 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
    *
    * @param newValue The new value for the view model.
    */
-  viewToModelUpdate(newValue: any): void {
+  override viewToModelUpdate(newValue: any): void {
     this.viewModel = newValue;
     this.update.emit(newValue);
   }

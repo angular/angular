@@ -123,7 +123,8 @@ export class ComponentSymbol extends DirectiveSymbol {
   usedPipes: SemanticReference[] = [];
   isRemotelyScoped = false;
 
-  isEmitAffected(previousSymbol: SemanticSymbol, publicApiAffected: Set<SemanticSymbol>): boolean {
+  override isEmitAffected(previousSymbol: SemanticSymbol, publicApiAffected: Set<SemanticSymbol>):
+      boolean {
     if (!(previousSymbol instanceof ComponentSymbol)) {
       return true;
     }
@@ -146,7 +147,7 @@ export class ComponentSymbol extends DirectiveSymbol {
         !isArrayEqual(this.usedPipes, previousSymbol.usedPipes, isSymbolUnaffected);
   }
 
-  isTypeCheckBlockAffected(
+  override isTypeCheckBlockAffected(
       previousSymbol: SemanticSymbol, typeCheckApiAffected: Set<SemanticSymbol>): boolean {
     if (!(previousSymbol instanceof ComponentSymbol)) {
       return true;

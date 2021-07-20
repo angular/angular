@@ -40,7 +40,7 @@ describe('Ivy CopyDefinitionFeature', () => {
             }
 
             class ChildComponent extends BaseComponent {
-              static ɵcmp = defineComponent({
+              static override ɵcmp = defineComponent({
                 type: ChildComponent,
                 selectors: [['some-cmp']],
                 features: [InheritDefinitionFeature, CopyDefinitionFeature],
@@ -49,7 +49,7 @@ describe('Ivy CopyDefinitionFeature', () => {
                 template: function ChildComponent_Template(rf, ctx) {},
                 encapsulation: 2
               });
-              static ɵfac = function ChildComponent_Factory(t: any) {
+              static override ɵfac = function ChildComponent_Factory(t: any) {
                 return new (t || ChildComponent)();
               };
             }

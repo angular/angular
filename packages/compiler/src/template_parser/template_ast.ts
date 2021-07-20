@@ -328,7 +328,7 @@ export class RecursiveTemplateAstVisitor extends NullTemplateVisitor implements 
   }
 
   // Nodes with children
-  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
+  override visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
     return this.visitChildren(context, visit => {
       visit(ast.attrs);
       visit(ast.references);
@@ -339,7 +339,7 @@ export class RecursiveTemplateAstVisitor extends NullTemplateVisitor implements 
     });
   }
 
-  visitElement(ast: ElementAst, context: any): any {
+  override visitElement(ast: ElementAst, context: any): any {
     return this.visitChildren(context, visit => {
       visit(ast.attrs);
       visit(ast.inputs);
@@ -351,7 +351,7 @@ export class RecursiveTemplateAstVisitor extends NullTemplateVisitor implements 
     });
   }
 
-  visitDirective(ast: DirectiveAst, context: any): any {
+  override visitDirective(ast: DirectiveAst, context: any): any {
     return this.visitChildren(context, visit => {
       visit(ast.inputs);
       visit(ast.hostProperties);

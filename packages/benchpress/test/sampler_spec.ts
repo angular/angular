@@ -225,7 +225,7 @@ class MockDriverAdapter extends WebDriverAdapter {
   constructor(private _log: any[] = [], private _waitFor: Function|null = null) {
     super();
   }
-  waitFor(callback: Function): Promise<any> {
+  override waitFor(callback: Function): Promise<any> {
     if (this._waitFor != null) {
       return this._waitFor(callback);
     } else {
@@ -239,7 +239,7 @@ class MockValidator extends Validator {
   constructor(private _log: any[] = [], private _validate: Function|null = null) {
     super();
   }
-  validate(completeSample: MeasureValues[]): MeasureValues[] {
+  override validate(completeSample: MeasureValues[]): MeasureValues[] {
     const stableSample = this._validate != null ? this._validate(completeSample) : completeSample;
     this._log.push(['validate', completeSample, stableSample]);
     return stableSample;
@@ -250,11 +250,11 @@ class MockMetric extends Metric {
   constructor(private _log: any[] = [], private _endMeasure: Function|null = null) {
     super();
   }
-  beginMeasure() {
+  override beginMeasure() {
     this._log.push(['beginMeasure']);
     return Promise.resolve(null);
   }
-  endMeasure(restart: boolean) {
+  override endMeasure(restart: boolean) {
     const measureValues = this._endMeasure != null ? this._endMeasure() : {};
     this._log.push(['endMeasure', restart, measureValues]);
     return Promise.resolve(measureValues);
@@ -265,11 +265,12 @@ class MockReporter extends Reporter {
   constructor(private _log: any[] = []) {
     super();
   }
-  reportMeasureValues(values: MeasureValues): Promise<any> {
+  override reportMeasureValues(values: MeasureValues): Promise<any> {
     this._log.push(['reportMeasureValues', values]);
     return Promise.resolve(null);
   }
-  reportSample(completeSample: MeasureValues[], validSample: MeasureValues[]): Promise<any> {
+  override reportSample(completeSample: MeasureValues[], validSample: MeasureValues[]):
+      Promise<any> {
     this._log.push(['reportSample', completeSample, validSample]);
     return Promise.resolve(null);
   }

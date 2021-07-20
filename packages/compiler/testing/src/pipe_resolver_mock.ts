@@ -28,7 +28,7 @@ export class MockPipeResolver extends PipeResolver {
    * default
    * `PipeResolver`, see `setPipe`.
    */
-  resolve(type: core.Type, throwIfNotFound = true): core.Pipe {
+  override resolve(type: core.Type, throwIfNotFound = true): core.Pipe {
     let metadata = this._pipes.get(type);
     if (!metadata) {
       metadata = super.resolve(type, throwIfNotFound)!;

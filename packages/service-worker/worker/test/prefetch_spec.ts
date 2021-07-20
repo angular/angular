@@ -10,13 +10,15 @@ import {PrefetchAssetGroup} from '../src/assets';
 import {CacheDatabase} from '../src/db-cache';
 import {IdleScheduler} from '../src/idle';
 import {MockCache} from '../testing/cache';
+import {MockExtendableEvent} from '../testing/events';
 import {MockRequest} from '../testing/fetch';
 import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTable, tmpManifestSingleAssetGroup} from '../testing/mock';
-import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
+import {SwTestHarnessBuilder} from '../testing/scope';
+import {envIsSupported} from '../testing/utils';
 
 (function() {
 // Skip environments that don't support the minimum APIs needed to run the SW tests.
-if (!SwTestHarness.envIsSupported()) {
+if (!envIsSupported()) {
   return;
 }
 
@@ -32,6 +34,8 @@ const server = new MockServerStateBuilder().withStaticFiles(dist).withManifest(m
 const scope = new SwTestHarnessBuilder().withServerState(server).build();
 
 const db = new CacheDatabase(scope);
+
+const testEvent = new MockExtendableEvent('test');
 
 
 describe('prefetch assets', () => {
@@ -50,8 +54,8 @@ describe('prefetch assets', () => {
   it('fully caches the two files', async () => {
     await group.initializeFully();
     scope.updateServerState();
-    const res1 = await group.handleFetch(scope.newRequest('/foo.txt'), scope);
-    const res2 = await group.handleFetch(scope.newRequest('/bar.txt'), scope);
+    const res1 = await group.handleFetch(scope.newRequest('/foo.txt'), testEvent);
+    const res2 = await group.handleFetch(scope.newRequest('/bar.txt'), testEvent);
     expect(await res1!.text()).toEqual('this is foo');
     expect(await res2!.text()).toEqual('this is bar');
   });
@@ -63,14 +67,14 @@ describe('prefetch assets', () => {
         freshScope, freshScope, idle, manifest.assetGroups![0], tmpHashTable(manifest),
         new CacheDatabase(freshScope), 'test');
     await group.initializeFully();
-    const res1 = await group.handleFetch(scope.newRequest('/foo.txt'), scope);
-    const res2 = await group.handleFetch(scope.newRequest('/bar.txt'), scope);
+    const res1 = await group.handleFetch(scope.newRequest('/foo.txt'), testEvent);
+    const res2 = await group.handleFetch(scope.newRequest('/bar.txt'), testEvent);
     expect(await res1!.text()).toEqual('this is foo');
     expect(await res2!.text()).toEqual('this is bar');
   });
   it('caches properly if resources are requested before initialization', async () => {
-    const res1 = await group.handleFetch(scope.newRequest('/foo.txt'), scope);
-    const res2 = await group.handleFetch(scope.newRequest('/bar.txt'), scope);
+    const res1 = await group.handleFetch(scope.newRequest('/foo.txt'), testEvent);
+    const res2 = await group.handleFetch(scope.newRequest('/bar.txt'), testEvent);
     expect(await res1!.text()).toEqual('this is foo');
     expect(await res2!.text()).toEqual('this is bar');
     scope.updateServerState();
@@ -90,7 +94,7 @@ describe('prefetch assets', () => {
   it('CacheQueryOptions are passed through', async () => {
     await group.initializeFully();
     const matchSpy = spyOn(MockCache.prototype, 'match').and.callThrough();
-    await group.handleFetch(scope.newRequest('/foo.txt'), scope);
+    await group.handleFetch(scope.newRequest('/foo.txt'), testEvent);
     expect(matchSpy).toHaveBeenCalledWith(new MockRequest('/foo.txt'), {ignoreVary: true});
   });
 });

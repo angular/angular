@@ -24,19 +24,19 @@ version: 2.1
 # **NOTE 2 **: If you change the cache key prefix, also sync the cache_key_fallback to match.
 # **NOTE 3 **: Keep the static part of the cache key as prefix to enable correct fallbacks.
 # See https://circleci.com/docs/2.0/caching/#restoring-cache for how prefixes work in CircleCI.
-var_3: &cache_key v4-angular-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-{{ checksum "aio/yarn.lock" }}
+var_3: &cache_key v4-angular-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "aio/yarn.lock" }}
 # We invalidate the cache if the Bazel version changes because otherwise the `bazelisk` cache
 # folder will contain all previously used versions and ultimately cause the cache restoring to
 # be slower due to its growing size.
 var_4: &cache_key_fallback v4-angular-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}
 
 # Windows needs its own cache key because binaries in node_modules are different.
-var_3_win: &cache_key_win v4-angular-win-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-{{ checksum "aio/yarn.lock" }}
+var_3_win: &cache_key_win v4-angular-win-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "aio/yarn.lock" }}
 var_4_win: &cache_key_win_fallback v4-angular-win-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}
 
 # Cache key for the `components-repo-unit-tests` job. **Note** when updating the SHA in the
 # cache keys also update the SHA for the "COMPONENTS_REPO_COMMIT" environment variable.
-var_5: &components_repo_unit_tests_cache_key v1-angular-components-{{ checksum "month.txt" }}-7cc42f5d835b7971e9ff73e220b801cf7834d515
+var_5: &components_repo_unit_tests_cache_key v1-angular-components-{{ checksum "month.txt" }}-d090617912da8e70aa336aa5b4d804b1b535402e
 var_6: &components_repo_unit_tests_cache_key_fallback v1-angular-components-{{ checksum "month.txt" }}
 
 # Workspace initially persisted by the `setup` job, and then enhanced by `build-npm-packages` and
@@ -441,6 +441,9 @@ jobs:
       - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
         # Check the bundle sizes.
       - run: yarn --cwd aio payload-size aio-local
+        # Run tests with RxJS v7.
+      - run: yarn --cwd aio add rxjs@7.1.0
+      - run: yarn --cwd aio test --progress=false --watch=false
 
   test_aio_tools:
     executor: default-executor
@@ -469,6 +472,10 @@ jobs:
         # Since the parallelism is set to "5", there will be five parallel CircleCI containers.
         # with either "0", "1", etc as node index. This can be passed to the "--shard" argument.
       - run: yarn --cwd aio example-e2e --setup --local --cliSpecsConcurrency=5 --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL}
+        # Run tests with RxJS v7.
+        # (Exclude some examples that are not yet compatible with v7.)
+      - run: yarn --cwd aio/tools/examples/shared add rxjs@7.1.0 && yarn --cwd aio boilerplate:add
+      - run: yarn --cwd aio example-e2e --cliSpecsConcurrency=5 --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL} --exclude=practical-observable-usage --exclude=upgrade-module --exclude=upgrade-phonecat
 
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   aio_preview:
@@ -669,11 +676,6 @@ jobs:
           name: Starting Saucelabs tunnel service
           command: ./tools/saucelabs/sauce-service.sh run
           background: true
-      # add module umd tsc compile option so the test can work
-      # properly in the legacy browsers
-      - run: yarn tsc -p packages --module UMD
-      - run: yarn tsc -p modules --module UMD
-      - run: yarn bazel build //packages/zone.js:npm_package
       # Build test fixtures for a test that rely on Bazel-generated fixtures. Note that disabling
       # specific tests which are reliant on such generated fixtures is not an option as SystemJS
       # in the Saucelabs legacy job always fetches referenced files, even if the imports would be
@@ -682,10 +684,26 @@ jobs:
       - run:
           name: Preparing Bazel-generated fixtures required in legacy tests
           command: |
-            yarn bazel build //packages/core/test:downleveled_es5_fixture
+            yarn bazel build \
+                //packages/core/test:downleveled_es5_fixture \
+                //packages/common/locales
+
             # Needed for the ES5 downlevel reflector test in `packages/core/test/reflection`.
+            mkdir -p dist/all/@angular/core/test/reflection/
             cp dist/bin/packages/core/test/reflection/es5_downleveled_inheritance_fixture.js \
               dist/all/@angular/core/test/reflection/es5_downleveled_inheritance_fixture.js
+            # Locale files are needed for i18n tests running within Saucelabs. These are added
+            # directly as sources so that the TypeScript compilation of `/packages/tsconfig.json`
+            # can succeed. Note that the base locale and currencies files are checked-in, so
+            # we do not need to re-generate those through Bazel.
+            mkdir -p packages/common/locales/extra
+            cp dist/bin/packages/common/locales/*.ts packages/common/locales
+            cp dist/bin/packages/common/locales/extra/*.ts packages/common/locales/extra
+      # add module umd tsc compile option so the test can work
+      # properly in the legacy browsers
+      - run: yarn tsc -p packages/tsconfig-legacy-saucelabs.json --module UMD
+      - run: yarn tsc -p modules --module UMD
+      - run: yarn bazel build //packages/zone.js:npm_package
       - run:
           # Waiting on ready ensures that we don't run tests too early without Saucelabs not being ready.
           name: Waiting for Saucelabs tunnel to connect
@@ -734,10 +752,6 @@ jobs:
             # variable. It needs to be hardcoded here, because env variables interpolation is
             # not supported.
             - '/tmp/angular-components-repo'
-      - run:
-          # TODO(devversion): remove once https://github.com/angular/components/pull/23056 is available.
-          name: Replace RBE container instance name
-          command: sed -i "s#default_instance#primary_instance#g" ${COMPONENTS_REPO_TMP_DIR}/.bazelrc
       - run:
           # Updates the `angular/components` `package.json` file to refer to the release output
           # inside the `packages-dist` directory.

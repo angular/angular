@@ -174,13 +174,13 @@ export class DiagnosticContext {
       const pipeResolver = new PipeResolver(this.reflector);
       const elementSchemaRegistry = new DomElementSchemaRegistry();
       const resourceLoader = new class extends ResourceLoader {
-        get(url: string): Promise<string> {
+        override get(url: string): Promise<string> {
           return Promise.resolve('');
         }
       };
       const urlResolver = createOfflineCompileUrlResolver();
       const htmlParser = new class extends HtmlParser {
-        parse(): ParseTreeResult {
+        override parse(): ParseTreeResult {
           return new ParseTreeResult([], []);
         }
       };

@@ -50,7 +50,7 @@ export class UmdRenderingFormatter extends Esm5RenderingFormatter {
    *
    * (See that the `z` import is not being used by the factory function.)
    */
-  addImports(output: MagicString, imports: Import[], file: ts.SourceFile): void {
+  override addImports(output: MagicString, imports: Import[], file: ts.SourceFile): void {
     if (imports.length === 0) {
       return;
     }
@@ -73,7 +73,7 @@ export class UmdRenderingFormatter extends Esm5RenderingFormatter {
   /**
    * Add the exports to the bottom of the UMD module factory function.
    */
-  addExports(
+  override addExports(
       output: MagicString, entryPointBasePath: string, exports: ExportInfo[],
       importManager: ImportManager, file: ts.SourceFile): void {
     const umdModule = this.umdHost.getUmdModule(file);
@@ -97,7 +97,7 @@ export class UmdRenderingFormatter extends Esm5RenderingFormatter {
     });
   }
 
-  addDirectExports(
+  override addDirectExports(
       output: MagicString, exports: Reexport[], importManager: ImportManager,
       file: ts.SourceFile): void {
     const umdModule = this.umdHost.getUmdModule(file);
@@ -120,7 +120,7 @@ export class UmdRenderingFormatter extends Esm5RenderingFormatter {
   /**
    * Add the constants to the top of the UMD factory function.
    */
-  addConstants(output: MagicString, constants: string, file: ts.SourceFile): void {
+  override addConstants(output: MagicString, constants: string, file: ts.SourceFile): void {
     if (constants === '') {
       return;
     }

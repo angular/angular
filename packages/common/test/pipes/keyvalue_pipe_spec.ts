@@ -51,6 +51,15 @@ describe('KeyValuePipe', () => {
         {key: 'a', value: 1}, {key: 'b', value: 1}
       ]);
     });
+    it('should reorder when compareFn changes', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      const input = {'b': 1, 'a': 2};
+      pipe.transform<string, number>(input);
+      expect(pipe.transform<string, number>(input, (a, b) => a.value - b.value)).toEqual([
+        {key: 'b', value: 1},
+        {key: 'a', value: 2},
+      ]);
+    });
     it('should return the same ref if nothing changes', () => {
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
       const transform1 = pipe.transform({1: 2});
@@ -113,6 +122,15 @@ describe('KeyValuePipe', () => {
             {key: {id: 0}, value: 1},
             {key: {id: 1}, value: 1},
           ]);
+    });
+    it('should reorder when compareFn changes', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      const input = new Map([['b', 1], ['a', 2]]);
+      pipe.transform<string, number>(input);
+      expect(pipe.transform<string, number>(input, (a, b) => a.value - b.value)).toEqual([
+        {key: 'b', value: 1},
+        {key: 'a', value: 2},
+      ]);
     });
     it('should return the same ref if nothing changes', () => {
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);

@@ -49,7 +49,7 @@ def partial_compliance_golden(filePath):
         stdout = "%s/this_file_should_not_be_committed" % path,
         link_workspace_root = True,
         visibility = [":__pkg__"],
-        data = data,
+        data = [],
     )
 
     generated_file_test(

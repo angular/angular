@@ -1,5 +1,4 @@
-load("@npm//@bazel/typescript:index.bzl", "ts_library")
-load("//tools:defaults.bzl", "jasmine_node_test")
+load("//dev-infra:defaults.bzl", "jasmine_node_test", "ts_library")
 
 exports_files([
     "build-worker.ts",
@@ -13,7 +12,6 @@ ts_library(
         ],
         exclude = ["*.spec.ts"],
     ),
-    module_name = "@angular/dev-infra-private/release/build",
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
         "//dev-infra/release/config",

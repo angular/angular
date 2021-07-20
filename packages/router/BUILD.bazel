@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_module", "ng_package", "ts_api_guardian_test_npm_package")
+load("//tools:defaults.bzl", "api_golden_test_npm_package", "ng_module", "ng_package")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -44,12 +44,12 @@ ng_package(
     ],
 )
 
-ts_api_guardian_test_npm_package(
+api_golden_test_npm_package(
     name = "router_api",
-    actualDir = "angular/packages/router/npm_package",
     data = [
         ":npm_package",
         "//goldens:public-api",
     ],
-    goldenDir = "angular/goldens/public-api/router",
+    golden_dir = "angular/goldens/public-api/router",
+    npm_package = "angular/packages/router/npm_package",
 )

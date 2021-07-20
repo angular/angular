@@ -57,7 +57,7 @@ class InterceptorC extends TestInterceptor {
     super('C');
   }
 
-  intercept(req: HttpRequest<any>, delegate: HttpHandler): Observable<HttpEvent<any>> {
+  override intercept(req: HttpRequest<any>, delegate: HttpHandler): Observable<HttpEvent<any>> {
     if (req.context.get(IS_INTERCEPTOR_C_ENABLED) === true) {
       return super.intercept(req, delegate);
     }

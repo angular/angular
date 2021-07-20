@@ -47,7 +47,7 @@ class MockExtension extends WebDriverExtension {
     super();
   }
 
-  supports(capabilities: {[key: string]: any}): boolean {
+  override supports(capabilities: {[key: string]: any}): boolean {
     return capabilities['browser'] === this.id;
   }
 }

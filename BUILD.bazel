@@ -36,18 +36,18 @@ filegroup(
     srcs = [
         # We also declare the unminified AngularJS files since these can be used for
         # local debugging (e.g. see: packages/upgrade/test/common/test_helpers.ts)
-        "@npm//:node_modules/angular/angular.js",
-        "@npm//:node_modules/angular/angular.min.js",
         "@npm//:node_modules/angular-1.5/angular.js",
         "@npm//:node_modules/angular-1.5/angular.min.js",
         "@npm//:node_modules/angular-1.6/angular.js",
         "@npm//:node_modules/angular-1.6/angular.min.js",
         "@npm//:node_modules/angular-1.7/angular.js",
         "@npm//:node_modules/angular-1.7/angular.min.js",
-        "@npm//:node_modules/angular-mocks/angular-mocks.js",
         "@npm//:node_modules/angular-mocks-1.5/angular-mocks.js",
         "@npm//:node_modules/angular-mocks-1.6/angular-mocks.js",
         "@npm//:node_modules/angular-mocks-1.7/angular-mocks.js",
+        "@npm//:node_modules/angular-mocks-1.8/angular-mocks.js",
+        "@npm//:node_modules/angular-1.8/angular.js",
+        "@npm//:node_modules/angular-1.8/angular.min.js",
     ],
 )
 

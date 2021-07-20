@@ -88,7 +88,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
    * @param eventName The event name to query.
    * @return True if the named key event is supported.
    */
-  supports(eventName: string): boolean {
+  override supports(eventName: string): boolean {
     return KeyEventsPlugin.parseEventName(eventName) != null;
   }
 
@@ -100,7 +100,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
    * event object as an argument.
    * @returns The key event that was registered.
    */
-  addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
+  override addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     const parsedEvent = KeyEventsPlugin.parseEventName(eventName)!;
 
     const outsideHandler =

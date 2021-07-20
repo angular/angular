@@ -70,27 +70,27 @@ abstract class SafeValueImpl implements SafeValue {
 }
 
 class SafeHtmlImpl extends SafeValueImpl implements SafeHtml {
-  getTypeName() {
+  override getTypeName() {
     return BypassType.Html;
   }
 }
 class SafeStyleImpl extends SafeValueImpl implements SafeStyle {
-  getTypeName() {
+  override getTypeName() {
     return BypassType.Style;
   }
 }
 class SafeScriptImpl extends SafeValueImpl implements SafeScript {
-  getTypeName() {
+  override getTypeName() {
     return BypassType.Script;
   }
 }
 class SafeUrlImpl extends SafeValueImpl implements SafeUrl {
-  getTypeName() {
+  override getTypeName() {
     return BypassType.Url;
   }
 }
 class SafeResourceUrlImpl extends SafeValueImpl implements SafeResourceUrl {
-  getTypeName() {
+  override getTypeName() {
     return BypassType.ResourceUrl;
   }
 }

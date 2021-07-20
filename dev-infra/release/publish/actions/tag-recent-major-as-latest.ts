@@ -25,17 +25,17 @@ import {invokeSetNpmDistCommand, invokeYarnInstallCommand} from '../external-com
  * @see {CutStableAction#perform} for more details.
  */
 export class TagRecentMajorAsLatest extends ReleaseAction {
-  async getDescription() {
+  override async getDescription() {
     return `Tag recently published major v${this.active.latest.version} as "next" in NPM.`;
   }
 
-  async perform() {
+  override async perform() {
     await this.checkoutUpstreamBranch(this.active.latest.branchName);
     await invokeYarnInstallCommand(this.projectDir);
     await invokeSetNpmDistCommand('latest', this.active.latest.version);
   }
 
-  static async isActive({latest}: ActiveReleaseTrains, config: ReleaseConfig) {
+  static override async isActive({latest}: ActiveReleaseTrains, config: ReleaseConfig) {
     // If the latest release-train does currently not have a major version as version. e.g.
     // the latest branch is `10.0.x` with the version being `10.0.2`. In such cases, a major
     // has not been released recently, and this action should never become active.

@@ -82,7 +82,7 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
    * to indices when iterating over groups in a `FormArray`.
    */
   // TODO(issue/24571): remove '!'.
-  @Input('formGroupName') name!: string|number|null;
+  @Input('formGroupName') override name!: string|number|null;
 
   constructor(
       @Optional() @Host() @SkipSelf() parent: ControlContainer,
@@ -96,7 +96,7 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
   }
 
   /** @internal */
-  _checkParentType(): void {
+  override _checkParentType(): void {
     if (_hasInvalidParent(this._parent) && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       ReactiveErrors.groupParentException();
     }
@@ -147,7 +147,7 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
    * to indices when iterating over arrays in a `FormArray`.
    */
   // TODO(issue/24571): remove '!'.
-  @Input('formArrayName') name!: string|number|null;
+  @Input('formArrayName') override name!: string|number|null;
 
   constructor(
       @Optional() @Host() @SkipSelf() parent: ControlContainer,
@@ -184,7 +184,7 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
    * @description
    * The `FormArray` bound to this directive.
    */
-  get control(): FormArray {
+  override get control(): FormArray {
     return this.formDirective!.getFormArray(this);
   }
 
@@ -192,7 +192,7 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
    * @description
    * The top-level directive for this group if present, otherwise null.
    */
-  get formDirective(): FormGroupDirective|null {
+  override get formDirective(): FormGroupDirective|null {
     return this._parent ? <FormGroupDirective>this._parent.formDirective : null;
   }
 
@@ -201,7 +201,7 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
    * Returns an array that represents the path from the top-level form to this control.
    * Each index is the string name of the control on that level.
    */
-  get path(): string[] {
+  override get path(): string[] {
     return controlPath(this.name == null ? this.name : this.name.toString(), this._parent);
   }
 

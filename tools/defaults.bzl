@@ -12,7 +12,8 @@ load("@npm//typescript:index.bzl", "tsc")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("//dev-infra/benchmark/ng_rollup_bundle:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
 load("//tools:ng_benchmark.bzl", _ng_benchmark = "ng_benchmark")
-load("//tools/ts-api-guardian:index.bzl", _ts_api_guardian_test = "ts_api_guardian_test", _ts_api_guardian_test_npm_package = "ts_api_guardian_test_npm_package")
+load("//dev-infra/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
+load("//dev-infra/bazel:extract_js_module_output.bzl", "extract_js_module_output")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
 _INTERNAL_NG_MODULE_API_EXTRACTOR = "//packages/bazel/src/api-extractor:api_extractor"
@@ -94,7 +95,7 @@ def ts_devserver(**kwargs):
 
 ts_config = _ts_config
 
-def ts_library(name, tsconfig = None, testonly = False, deps = [], module_name = None, **kwargs):
+def ts_library(name, tsconfig = None, testonly = False, deps = [], module_name = None, package_name = None, **kwargs):
     """Default values for ts_library"""
     deps = deps + ["@npm//tslib"]
     if testonly:
@@ -108,12 +109,22 @@ def ts_library(name, tsconfig = None, testonly = False, deps = [], module_name =
     if not module_name:
         module_name = _default_module_name(testonly)
 
+    # If no `package_name` is explicitly set, we use the default module name as package
+    # name, so that the target can be resolved within NodeJS executions, by activating
+    # the Bazel NodeJS linker. See: https://github.com/bazelbuild/rules_nodejs/pull/2799.
+    if not package_name:
+        package_name = _default_module_name(testonly)
+
     _ts_library(
         name = name,
         tsconfig = tsconfig,
         testonly = testonly,
         deps = deps,
+        # `module_name` is used for AMD module names within emitted JavaScript files.
         module_name = module_name,
+        # `package_name` can be set to allow for the Bazel NodeJS linker to run. This
+        # allows for resolution of the given target within the `node_modules/`.
+        package_name = package_name,
         **kwargs
     )
 
@@ -128,7 +139,7 @@ def ts_library(name, tsconfig = None, testonly = False, deps = [], module_name =
         output_group = "es5_sources",
     )
 
-def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps = [], module_name = None, bundle_dts = True, **kwargs):
+def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps = [], module_name = None, package_name = None, bundle_dts = True, **kwargs):
     """Default values for ng_module"""
     deps = deps + ["@npm//tslib"]
     if testonly:
@@ -141,6 +152,13 @@ def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps 
 
     if not module_name:
         module_name = _default_module_name(testonly)
+
+    # If no `package_name` is explicitly set, we use the default module name as package
+    # name, so that the target can be resolved within NodeJS executions, by activating
+    # the Bazel NodeJS linker. See: https://github.com/bazelbuild/rules_nodejs/pull/2799.
+    if not package_name:
+        package_name = _default_module_name(testonly)
+
     if not entry_point:
         entry_point = "public_api.ts"
     _ng_module(
@@ -154,7 +172,11 @@ def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps 
         compiler = _INTERNAL_NG_MODULE_COMPILER,
         api_extractor = _INTERNAL_NG_MODULE_API_EXTRACTOR,
         ng_xi18n = _INTERNAL_NG_MODULE_XI18N,
+        # `module_name` is used for AMD module names within emitted JavaScript files.
         module_name = module_name,
+        # `package_name` can be set to allow for the Bazel NodeJS linker to run. This
+        # allows for resolution of the given target within the `node_modules/`.
+        package_name = package_name,
         perf_flag = "//packages/compiler-cli:ng_perf",
         **kwargs
     )
@@ -181,6 +203,21 @@ def ng_package(name, readme_md = None, license_banner = None, deps = [], **kwarg
     _ng_package(
         name = name,
         deps = deps,
+        # We never set a `package_name` for NPM packages, neither do we enable validation.
+        # This is necessary because the source targets of the NPM packages all have
+        # package names set and setting a similar `package_name` on the NPM package would
+        # result in duplicate linker mappings that will conflict. e.g. consider the following
+        # scenario: We have a `ts_library` for `@angular/core`. We will configure a package
+        # name for the target so that it can be resolved in NodeJS executions from `node_modules`.
+        # If we'd also set a `package_name` for the associated `pkg_npm` target, there would be
+        # two mappings for `@angular/core` and the linker will complain. For a better development
+        # experience, we want the mapping to resolve to the direct outputs of the `ts_library`
+        # instead of requiring tests and other targets to assemble the NPM package first.
+        # TODO(devversion): consider removing this if `rules_nodejs` allows for duplicate
+        # linker mappings where transitive-determined mappings are skipped on conflicts.
+        # https://github.com/bazelbuild/rules_nodejs/issues/2810.
+        package_name = None,
+        validate = False,
         readme_md = readme_md,
         license_banner = license_banner,
         substitutions = select({
@@ -216,13 +253,44 @@ def pkg_npm(name, **kwargs):
         "0.0.0-PLACEHOLDER": "{BUILD_SCM_VERSION}",
     })
 
+    deps = kwargs.pop("deps", [])
+
+    # The `pkg_npm` rule brings in devmode (`JSModuleInfo`) and prodmode (`JSEcmaScriptModuleInfo`)
+    # output into the the NPM package. We do not plan to ship prodmode ECMAScript `.mjs` files yet,
+    # so we only extract the `JSModuleInfo` outputs (which correspond to ES5 output) from the deps.
+    # https://github.com/bazelbuild/rules_nodejs/commit/911529fd364eb3ee1b8ecdc568a9fcf38a8b55ca.
+    # https://github.com/bazelbuild/rules_nodejs/blob/stable/packages/typescript/internal/build_defs.bzl#L334-L337.
+    extract_js_module_output(
+        name = "%s_js_module_output" % name,
+        provider = "JSModuleInfo",
+        include_declarations = True,
+        include_default_files = True,
+        deps = deps,
+    )
+
     _pkg_npm(
         name = name,
+        # We never set a `package_name` for NPM packages, neither do we enable validation.
+        # This is necessary because the source targets of the NPM packages all have
+        # package names set and setting a similar `package_name` on the NPM package would
+        # result in duplicate linker mappings that will conflict. e.g. consider the following
+        # scenario: We have a `ts_library` for `@angular/core`. We will configure a package
+        # name for the target so that it can be resolved in NodeJS executions from `node_modules`.
+        # If we'd also set a `package_name` for the associated `pkg_npm` target, there would be
+        # two mappings for `@angular/core` and the linker will complain. For a better development
+        # experience, we want the mapping to resolve to the direct outputs of the `ts_library`
+        # instead of requiring tests and other targets to assemble the NPM package first.
+        # TODO(devversion): consider removing this if `rules_nodejs` allows for duplicate
+        # linker mappings where transitive-determined mappings are skipped on conflicts.
+        # https://github.com/bazelbuild/rules_nodejs/issues/2810.
+        package_name = None,
+        validate = False,
         substitutions = select({
             "//:stamp": stamped_substitutions,
             "//conditions:default": substitutions,
         }),
         visibility = visibility,
+        deps = [":%s_js_module_output" % name],
         **kwargs
     )
 
@@ -495,16 +563,16 @@ def rollup_bundle(name, testonly = False, sourcemap = "true", **kwargs):
     terser_minified(name = name + ".min.es5umd", testonly = testonly, src = name + ".es5umd", **common_terser_args)
     native.filegroup(name = name + ".min.es5umd.js", testonly = testonly, srcs = [name + ".min.es5umd"])
 
-def ts_api_guardian_test(**kwargs):
-    _ts_api_guardian_test(
+def api_golden_test(**kwargs):
+    _api_golden_test(
         tags = [
             "fixme-ivy-aot",
         ],
         **kwargs
     )
 
-def ts_api_guardian_test_npm_package(**kwargs):
-    _ts_api_guardian_test_npm_package(
+def api_golden_test_npm_package(**kwargs):
+    _api_golden_test_npm_package(
         tags = [
             "fixme-ivy-aot",
         ],

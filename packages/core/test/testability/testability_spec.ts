@@ -26,10 +26,10 @@ function microTask(fn: Function): void {
 @Injectable()
 class MockNgZone extends NgZone {
   /** @internal */
-  onUnstable: EventEmitter<any>;
+  override onUnstable: EventEmitter<any>;
 
   /** @internal */
-  onStable: EventEmitter<any>;
+  override onStable: EventEmitter<any>;
 
   constructor() {
     super({enableLongStackTrace: false});

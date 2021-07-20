@@ -366,9 +366,6 @@
     "name": "getCurrentTNodePlaceholderOk"
   },
   {
-    "name": "getDebugContext"
-  },
-  {
     "name": "getDeclarationTNode"
   },
   {

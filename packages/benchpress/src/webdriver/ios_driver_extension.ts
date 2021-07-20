@@ -19,15 +19,15 @@ export class IOsDriverExtension extends WebDriverExtension {
     super();
   }
 
-  gc(): Promise<any> {
+  override gc(): Promise<any> {
     throw new Error('Force GC is not supported on iOS');
   }
 
-  timeBegin(name: string): Promise<any> {
+  override timeBegin(name: string): Promise<any> {
     return this._driver.executeScript(`console.time('${name}');`);
   }
 
-  timeEnd(name: string, restartName: string|null = null): Promise<any> {
+  override timeEnd(name: string, restartName: string|null = null): Promise<any> {
     let script = `console.timeEnd('${name}');`;
     if (restartName != null) {
       script += `console.time('${restartName}');`;
@@ -36,7 +36,7 @@ export class IOsDriverExtension extends WebDriverExtension {
   }
 
   // See https://github.com/WebKit/webkit/tree/master/Source/WebInspectorUI/Versions
-  readPerfLog() {
+  override readPerfLog() {
     // TODO(tbosch): Bug in IOsDriver: Need to execute at least one command
     // so that the browser logs can be read out!
     return this._driver.executeScript('1+1')
@@ -91,11 +91,11 @@ export class IOsDriverExtension extends WebDriverExtension {
     return events;
   }
 
-  perfLogFeatures(): PerfLogFeatures {
+  override perfLogFeatures(): PerfLogFeatures {
     return new PerfLogFeatures({render: true});
   }
 
-  supports(capabilities: {[key: string]: any}): boolean {
+  override supports(capabilities: {[key: string]: any}): boolean {
     return capabilities['browserName'].toLowerCase() === 'safari';
   }
 }

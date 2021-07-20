@@ -151,7 +151,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    *     `null` if either no decorators were present or if the declaration is not of a decoratable
    *     type.
    */
-  getDecoratorsOfDeclaration(declaration: DeclarationNode): Decorator[]|null {
+  override getDecoratorsOfDeclaration(declaration: DeclarationNode): Decorator[]|null {
     const symbol = this.getClassSymbol(declaration);
     if (!symbol) {
       return null;
@@ -169,7 +169,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    *
    * @throws if `declaration` does not resolve to a class declaration.
    */
-  getMembersOfClass(clazz: ClassDeclaration): ClassMember[] {
+  override getMembersOfClass(clazz: ClassDeclaration): ClassMember[] {
     const classSymbol = this.getClassSymbol(clazz);
     if (!classSymbol) {
       throw new Error(`Attempted to get members of a non-class: "${clazz.getText()}"`);
@@ -192,7 +192,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    *
    * @throws if `declaration` does not resolve to a class declaration.
    */
-  getConstructorParameters(clazz: ClassDeclaration): CtorParameter[]|null {
+  override getConstructorParameters(clazz: ClassDeclaration): CtorParameter[]|null {
     const classSymbol = this.getClassSymbol(clazz);
     if (!classSymbol) {
       throw new Error(
@@ -205,7 +205,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     return null;
   }
 
-  getBaseClassExpression(clazz: ClassDeclaration): ts.Expression|null {
+  override getBaseClassExpression(clazz: ClassDeclaration): ts.Expression|null {
     // First try getting the base class from an ES2015 class declaration
     const superBaseClassIdentifier = super.getBaseClassExpression(clazz);
     if (superBaseClassIdentifier) {
@@ -221,7 +221,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     return super.getBaseClassExpression(classSymbol.implementation.valueDeclaration);
   }
 
-  getInternalNameOfClass(clazz: ClassDeclaration): ts.Identifier {
+  override getInternalNameOfClass(clazz: ClassDeclaration): ts.Identifier {
     const classSymbol = this.getClassSymbol(clazz);
     if (classSymbol === undefined) {
       throw new Error(`getInternalNameOfClass() called on a non-class: expected ${
@@ -231,7 +231,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
         classSymbol, classSymbol.implementation.valueDeclaration);
   }
 
-  getAdjacentNameOfClass(clazz: ClassDeclaration): ts.Identifier {
+  override getAdjacentNameOfClass(clazz: ClassDeclaration): ts.Identifier {
     const classSymbol = this.getClassSymbol(clazz);
     if (classSymbol === undefined) {
       throw new Error(`getAdjacentNameOfClass() called on a non-class: expected ${
@@ -259,7 +259,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   /**
    * Check whether the given node actually represents a class.
    */
-  isClass(node: ts.Node): node is ClassDeclaration {
+  override isClass(node: ts.Node): node is ClassDeclaration {
     return super.isClass(node) || this.getClassSymbol(node) !== undefined;
   }
 
@@ -279,7 +279,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns metadata about the `Declaration` if the original declaration is found, or `null`
    * otherwise.
    */
-  getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
+  override getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
     const superDeclaration = super.getDeclarationOfIdentifier(id);
 
     // If no declaration was found, return.
@@ -355,7 +355,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
         [];
   }
 
-  getVariableValue(declaration: ts.VariableDeclaration): ts.Expression|null {
+  override getVariableValue(declaration: ts.VariableDeclaration): ts.Expression|null {
     const value = super.getVariableValue(declaration);
     if (value) {
       return value;
@@ -434,7 +434,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns the number of type parameters of the class, if known, or `null` if the declaration
    * is not a class or has an unknown number of type parameters.
    */
-  getGenericArityOfClass(clazz: ClassDeclaration): number|null {
+  override getGenericArityOfClass(clazz: ClassDeclaration): number|null {
     const dtsDeclaration = this.getDtsDeclaration(clazz);
     if (dtsDeclaration && ts.isClassDeclaration(dtsDeclaration)) {
       return dtsDeclaration.typeParameters ? dtsDeclaration.typeParameters.length : 0;
@@ -454,7 +454,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * Note that the `ts.ClassDeclaration` returned from this function may not be from the same
    * `ts.Program` as the input declaration.
    */
-  getDtsDeclaration(declaration: DeclarationNode): ts.Declaration|null {
+  override getDtsDeclaration(declaration: DeclarationNode): ts.Declaration|null {
     if (this.dts === null) {
       return null;
     }
@@ -769,8 +769,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * Resolve a `ts.Symbol` to its declaration and detect whether it corresponds with a known
    * declaration.
    */
-  protected getDeclarationOfSymbol(symbol: ts.Symbol, originalId: ts.Identifier|null): Declaration
-      |null {
+  protected override getDeclarationOfSymbol(symbol: ts.Symbol, originalId: ts.Identifier|null):
+      Declaration|null {
     const declaration = super.getDeclarationOfSymbol(symbol, originalId);
     if (declaration === null) {
       return null;

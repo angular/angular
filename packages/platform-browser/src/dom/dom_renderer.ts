@@ -304,7 +304,7 @@ class EmulatedEncapsulationDomRenderer2 extends DefaultDomRenderer2 {
     super.setAttribute(element, this.hostAttr, '');
   }
 
-  createElement(parent: any, name: string): Element {
+  override createElement(parent: any, name: string): Element {
     const el = super.createElement(parent, name);
     super.setAttribute(el, this.contentAttr, '');
     return el;
@@ -332,20 +332,20 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     return node === this.hostEl ? this.shadowRoot : node;
   }
 
-  destroy() {
+  override destroy() {
     this.sharedStylesHost.removeHost(this.shadowRoot);
   }
 
-  appendChild(parent: any, newChild: any): void {
+  override appendChild(parent: any, newChild: any): void {
     return super.appendChild(this.nodeOrShadowRoot(parent), newChild);
   }
-  insertBefore(parent: any, newChild: any, refChild: any): void {
+  override insertBefore(parent: any, newChild: any, refChild: any): void {
     return super.insertBefore(this.nodeOrShadowRoot(parent), newChild, refChild);
   }
-  removeChild(parent: any, oldChild: any): void {
+  override removeChild(parent: any, oldChild: any): void {
     return super.removeChild(this.nodeOrShadowRoot(parent), oldChild);
   }
-  parentNode(node: any): any {
+  override parentNode(node: any): any {
     return this.nodeOrShadowRoot(super.parentNode(this.nodeOrShadowRoot(node)));
   }
 }

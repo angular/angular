@@ -281,6 +281,23 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should reference correct context in listener inside embedded view",
+      "inputFiles": [
+        "embedded_view_listener_context.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "embedded_view_listener_context_template.js",
+              "generated": "embedded_view_listener_context.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }

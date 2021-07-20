@@ -59,7 +59,7 @@ export async function fetchActiveReleaseTrains(repo: GithubRepoWithApi):
 
   // Collect all version-branches that should be considered for the latest version-branch,
   // or the feature-freeze/release-candidate.
-  const branches = (await getBranchesForMajorVersions(repo, majorVersionsToConsider));
+  const branches = await getBranchesForMajorVersions(repo, majorVersionsToConsider);
   const {latest, releaseCandidate} = await findActiveReleaseTrainsFromVersionBranches(
       repo, nextVersion, branches, expectedReleaseCandidateMajor);
 

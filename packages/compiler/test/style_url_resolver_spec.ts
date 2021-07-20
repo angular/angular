@@ -138,7 +138,7 @@ class FakeUrlResolver extends UrlResolver {
     super();
   }
 
-  resolve(baseUrl: string, url: string): string {
+  override resolve(baseUrl: string, url: string): string {
     return 'fake_resolved_url';
   }
 }

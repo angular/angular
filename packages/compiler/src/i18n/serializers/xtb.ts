@@ -19,11 +19,11 @@ const _TRANSLATION_TAG = 'translation';
 const _PLACEHOLDER_TAG = 'ph';
 
 export class Xtb extends Serializer {
-  write(messages: i18n.Message[], locale: string|null): string {
+  override write(messages: i18n.Message[], locale: string|null): string {
     throw new Error('Unsupported');
   }
 
-  load(content: string, url: string):
+  override load(content: string, url: string):
       {locale: string, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
     // xtb to xml nodes
     const xtbParser = new XtbParser();
@@ -54,11 +54,11 @@ export class Xtb extends Serializer {
     return {locale: locale!, i18nNodesByMsgId};
   }
 
-  digest(message: i18n.Message): string {
+  override digest(message: i18n.Message): string {
     return digest(message);
   }
 
-  createNameMapper(message: i18n.Message): PlaceholderMapper {
+  override createNameMapper(message: i18n.Message): PlaceholderMapper {
     return new SimplePlaceholderMapper(message, toPublicName);
   }
 }

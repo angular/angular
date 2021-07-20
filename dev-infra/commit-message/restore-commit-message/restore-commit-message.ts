@@ -21,7 +21,6 @@ import {CommitMsgSource} from './commit-message-source';
  */
 export function restoreCommitMessage(filePath: string, source?: CommitMsgSource) {
   if (!!source) {
-    log('Skipping commit message restoration attempt');
     if (source === 'message') {
       debug('A commit message was already provided via the command with a -m or -F flag');
     }

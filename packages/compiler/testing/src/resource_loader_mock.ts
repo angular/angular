@@ -17,7 +17,7 @@ export class MockResourceLoader extends ResourceLoader {
   private _definitions = new Map<string, string>();
   private _requests: _PendingRequest[] = [];
 
-  get(url: string): Promise<string> {
+  override get(url: string): Promise<string> {
     const request = new _PendingRequest(url);
     this._requests.push(request);
     return request.getPromise();

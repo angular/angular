@@ -46,12 +46,18 @@ export function canEmitType(type: ts.TypeNode, resolver: TypeReferenceResolver):
   }
 
   // To determine whether a type can be emitted, we have to recursively look through all type nodes.
-  // If a type reference node is found at any position within the type and that type reference
-  // cannot be emitted, then the `INELIGIBLE` constant is returned to stop the recursive walk as
-  // the type as a whole cannot be emitted in that case. Otherwise, the result of visiting all child
-  // nodes determines the result. If no ineligible type reference node is found then the walk
-  // returns `undefined`, indicating that no type node was visited that could not be emitted.
+  // If an unsupported type node is found at any position within the type, then the `INELIGIBLE`
+  // constant is returned to stop the recursive walk as the type as a whole cannot be emitted in
+  // that case. Otherwise, the result of visiting all child nodes determines the result. If no
+  // ineligible type reference node is found then the walk returns `undefined`, indicating that
+  // no type node was visited that could not be emitted.
   function visitNode(node: ts.Node): INELIGIBLE|undefined {
+    // `import('module')` type nodes are not supported, as it may require rewriting the module
+    // specifier which is currently not done.
+    if (ts.isImportTypeNode(node)) {
+      return INELIGIBLE;
+    }
+
     // Emitting a type reference node in a different context requires that an import for the type
     // can be created. If a type reference node cannot be emitted, `INELIGIBLE` is returned to stop
     // the walk.
@@ -130,8 +136,22 @@ export class TypeEmitter {
   emitType(type: ts.TypeNode): ts.TypeNode {
     const typeReferenceTransformer: ts.TransformerFactory<ts.TypeNode> = context => {
       const visitNode = (node: ts.Node): ts.Node => {
+        if (ts.isImportTypeNode(node)) {
+          throw new Error('Unable to emit import type');
+        }
+
         if (ts.isTypeReferenceNode(node)) {
           return this.emitTypeReference(node);
+        } else if (ts.isLiteralExpression(node)) {
+          // TypeScript would typically take the emit text for a literal expression from the source
+          // file itself. As the type node is being emitted into a different file, however,
+          // TypeScript would extract the literal text from the wrong source file. To mitigate this
+          // issue the literal is cloned and explicitly marked as synthesized by setting its text
+          // range to a negative range, forcing TypeScript to determine the node's literal text from
+          // the synthesized node's text instead of the incorrect source file.
+          const clone = ts.getMutableClone(node);
+          ts.setTextRange(clone, {pos: -1, end: -1});
+          return clone;
         } else {
           return ts.visitEachChild(node, visitNode, context);
         }

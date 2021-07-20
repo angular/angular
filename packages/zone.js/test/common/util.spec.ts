@@ -91,7 +91,7 @@ describe('utils', function() {
         }
       }
       class ChildType extends Type {
-        method(..._args: any[]) {
+        override method(..._args: any[]) {
           childArgs = _args;
           childSelf = this;
           return 'ChildOK';

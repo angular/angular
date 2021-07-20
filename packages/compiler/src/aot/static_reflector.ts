@@ -1056,7 +1056,7 @@ class PopulatedScope extends BindingScope {
     super();
   }
 
-  resolve(name: string): any {
+  override resolve(name: string): any {
     return this.bindings.has(name) ? this.bindings.get(name) : BindingScope.missing;
   }
 }

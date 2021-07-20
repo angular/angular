@@ -71,6 +71,10 @@ def ng_rollup_bundle(
         silent = True,
         format = format,
         sourcemap = "true",
+        # TODO(devversion): consider removing when View Engine is removed. View Engine
+        # uses Bazel manifest path imports in generated factory files.
+        # e.g. `import "<workspace_root>/<..>/some_file";`
+        link_workspace_root = True,
         **kwargs
     )
 

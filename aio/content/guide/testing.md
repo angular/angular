@@ -344,6 +344,6 @@ After you've set up your application for testing, you may find the following tes
 * [Basics of testing components](guide/testing-components-basics)&mdash;discover the basics of testing Angular components.
 * [Component testing scenarios](guide/testing-components-scenarios)&mdash;read about the various kinds of component testing scenarios and use cases.
 * [Testing attribute directives](guide/testing-attribute-directives)&mdash;learn about how to test your attribute directives.
-* [Testing pipes](guide/testing-pipes)&mdash;find out how to test attribute directives.
+* [Testing pipes](guide/testing-pipes)&mdash;find out how to test pipes.
 * [Debugging tests](guide/test-debugging)&mdash;uncover common testing bugs.
 * [Testing utility APIs](guide/testing-utility-apis)&mdash;get familiar with Angular testing features.

@@ -21,11 +21,11 @@ export class SimpleDomEventsPlugin extends EventManagerPlugin {
     super(doc);
   }
 
-  supports(eventName: string): boolean {
+  override supports(eventName: string): boolean {
     return true;
   }
 
-  addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
+  override addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     let callback: EventListener = handler as EventListener;
     element.addEventListener(eventName, callback, false);
     return () => this.removeEventListener(element, eventName, callback);

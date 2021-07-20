@@ -19,7 +19,7 @@ export class AssignHelperFn extends ObjectAssignBuiltinFn {}
 
 // Used for both `__spread()` and `__spreadArrays()` TypeScript helper functions.
 export class SpreadHelperFn extends KnownFn {
-  evaluate(node: ts.Node, args: ResolvedValueArray): ResolvedValueArray {
+  override evaluate(node: ts.Node, args: ResolvedValueArray): ResolvedValueArray {
     const result: ResolvedValueArray = [];
 
     for (const arg of args) {
@@ -38,7 +38,7 @@ export class SpreadHelperFn extends KnownFn {
 
 // Used for `__spreadArray` TypeScript helper function.
 export class SpreadArrayHelperFn extends KnownFn {
-  evaluate(node: ts.Node, args: ResolvedValueArray): ResolvedValue {
+  override evaluate(node: ts.Node, args: ResolvedValueArray): ResolvedValue {
     if (args.length !== 2) {
       return DynamicValue.fromUnknown(node);
     }
@@ -62,7 +62,7 @@ export class SpreadArrayHelperFn extends KnownFn {
 
 // Used for `__read` TypeScript helper function.
 export class ReadHelperFn extends KnownFn {
-  evaluate(node: ts.Node, args: ResolvedValueArray): ResolvedValue {
+  override evaluate(node: ts.Node, args: ResolvedValueArray): ResolvedValue {
     if (args.length !== 1) {
       // The `__read` helper accepts a second argument `n` but that case is not supported.
       return DynamicValue.fromUnknown(node);

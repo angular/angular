@@ -1036,7 +1036,7 @@ runInEachFileSystem(() => {
   });
 
   class DownleveledEnumReflectionHost extends TypeScriptReflectionHost {
-    getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
+    override getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
       const declaration = super.getDeclarationOfIdentifier(id);
       if (declaration !== null && isConcreteDeclaration(declaration)) {
         const enumMembers = [
@@ -1055,7 +1055,7 @@ runInEachFileSystem(() => {
    * TypeScript host, as only ngcc's ES5 hosts will have special powers to recognize such functions.
    */
   class TsLibAwareReflectionHost extends TypeScriptReflectionHost {
-    getExportsOfModule(node: ts.Node): Map<string, Declaration>|null {
+    override getExportsOfModule(node: ts.Node): Map<string, Declaration>|null {
       const map = super.getExportsOfModule(node);
 
       if (map !== null) {
@@ -1065,7 +1065,7 @@ runInEachFileSystem(() => {
       return map;
     }
 
-    getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
+    override getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
       const superDeclaration = super.getDeclarationOfIdentifier(id);
 
       if (superDeclaration === null || superDeclaration.node === null) {

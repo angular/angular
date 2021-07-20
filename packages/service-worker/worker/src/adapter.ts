@@ -18,7 +18,7 @@ import {NamedCacheStorage} from './named-cache-storage';
  */
 export class Adapter<T extends CacheStorage = CacheStorage> {
   readonly caches: NamedCacheStorage<T>;
-  private readonly origin: string;
+  readonly origin: string;
 
   constructor(protected readonly scopeUrl: string, caches: T) {
     const parsedScopeUrl = this.parseUrl(this.scopeUrl);
@@ -103,15 +103,4 @@ export class Adapter<T extends CacheStorage = CacheStorage> {
       setTimeout(() => resolve(), ms);
     });
   }
-}
-
-/**
- * An event context in which an operation is taking place, which allows
- * the delaying of Service Worker shutdown until certain triggers occur.
- */
-export interface Context {
-  /**
-   * Delay shutdown of the Service Worker until the given promise resolves.
-   */
-  waitUntil(fn: Promise<any>): void;
 }

@@ -93,7 +93,7 @@ export function serializeNodes(nodes: i18n.Node[]): string[] {
  * @internal
  */
 class _SerializerIgnoreIcuExpVisitor extends _SerializerVisitor {
-  visitIcu(icu: i18n.Icu, context: any): any {
+  override visitIcu(icu: i18n.Icu, context: any): any {
     let strCases = Object.keys(icu.cases).map((k: string) => `${k} {${icu.cases[k].visit(this)}}`);
     // Do not take the expression into account
     return `{${icu.type}, ${strCases.join(', ')}}`;

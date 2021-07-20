@@ -16,23 +16,23 @@ import {ReleaseNotes} from '../../../notes/release-notes';
  * returning versioned entry strings.
  */
 class MockReleaseNotes extends ReleaseNotes {
-  static async fromRange(version: semver.SemVer, startingRef: string, endingRef: string) {
+  static override async fromRange(version: semver.SemVer, startingRef: string, endingRef: string) {
     return new MockReleaseNotes(version, startingRef, endingRef);
   }
 
-  async getChangelogEntry() {
+  override async getChangelogEntry() {
     return `Changelog Entry for ${this.version}`;
   }
 
-  async getGithubReleaseEntry() {
+  override async getGithubReleaseEntry() {
     return `Github Release Entry for ${this.version}`;
   }
 
   // Overrides of utility functions which call out to other tools and are unused in this mock.
-  protected async getCommitsInRange(from: string, to?: string) {
+  protected override async getCommitsInRange(from: string, to?: string) {
     return [];
   }
-  protected getReleaseConfig(config?: Partial<DevInfraReleaseConfig>) {
+  protected override getReleaseConfig(config?: Partial<DevInfraReleaseConfig>) {
     return {} as ReleaseConfig;
   }
 }

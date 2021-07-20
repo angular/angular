@@ -93,7 +93,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     }
   }
 
-  visitLiteralExpr(ast: o.LiteralExpr, ctx: EmitterVisitorContext): any {
+  override visitLiteralExpr(ast: o.LiteralExpr, ctx: EmitterVisitorContext): any {
     const value = ast.value;
     if (value == null && ast.type != o.INFERRED_TYPE) {
       ctx.print(ast, `(${value} as any)`);
@@ -107,7 +107,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   // In SNC mode, [] have the type never[], so we cast here to any[].
   // TODO: narrow the cast to a more explicit type, or use a pattern that does not
   // start with [].concat. see https://github.com/angular/angular/pull/11846
-  visitLiteralArrayExpr(ast: o.LiteralArrayExpr, ctx: EmitterVisitorContext): any {
+  override visitLiteralArrayExpr(ast: o.LiteralArrayExpr, ctx: EmitterVisitorContext): any {
     if (ast.entries.length === 0) {
       ctx.print(ast, '(');
     }
@@ -118,18 +118,18 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     return result;
   }
 
-  visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any {
+  override visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any {
     this._visitIdentifier(ast.value, ast.typeParams, ctx);
     return null;
   }
 
-  visitAssertNotNullExpr(ast: o.AssertNotNull, ctx: EmitterVisitorContext): any {
+  override visitAssertNotNullExpr(ast: o.AssertNotNull, ctx: EmitterVisitorContext): any {
     const result = super.visitAssertNotNullExpr(ast, ctx);
     ctx.print(ast, '!');
     return result;
   }
 
-  visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any {
+  override visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any {
     if (stmt.hasModifier(o.StmtModifier.Exported) && stmt.value instanceof o.ExternalExpr &&
         !stmt.type) {
       // check for a reexport
@@ -162,11 +162,11 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     return null;
   }
 
-  visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): never {
+  override visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): never {
     throw new Error('Cannot visit a WrappedNodeExpr when outputting Typescript.');
   }
 
-  visitCastExpr(ast: o.CastExpr, ctx: EmitterVisitorContext): any {
+  override visitCastExpr(ast: o.CastExpr, ctx: EmitterVisitorContext): any {
     ctx.print(ast, `(<`);
     ast.type!.visitType(this, ctx);
     ctx.print(ast, `>`);
@@ -175,7 +175,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     return null;
   }
 
-  visitInstantiateExpr(ast: o.InstantiateExpr, ctx: EmitterVisitorContext): any {
+  override visitInstantiateExpr(ast: o.InstantiateExpr, ctx: EmitterVisitorContext): any {
     ctx.print(ast, `new `);
     this.typeExpression++;
     ast.classExpr.visitExpression(this, ctx);
@@ -186,7 +186,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     return null;
   }
 
-  visitDeclareClassStmt(stmt: o.ClassStmt, ctx: EmitterVisitorContext): any {
+  override visitDeclareClassStmt(stmt: o.ClassStmt, ctx: EmitterVisitorContext): any {
     ctx.pushClass(stmt);
     if (stmt.hasModifier(o.StmtModifier.Exported)) {
       ctx.print(stmt, `export `);
@@ -267,7 +267,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.println(null, `}`);
   }
 
-  visitFunctionExpr(ast: o.FunctionExpr, ctx: EmitterVisitorContext): any {
+  override visitFunctionExpr(ast: o.FunctionExpr, ctx: EmitterVisitorContext): any {
     if (ast.name) {
       ctx.print(ast, 'function ');
       ctx.print(ast, ast.name);
@@ -288,7 +288,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     return null;
   }
 
-  visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, ctx: EmitterVisitorContext): any {
+  override visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, ctx: EmitterVisitorContext): any {
     if (stmt.hasModifier(o.StmtModifier.Exported)) {
       ctx.print(stmt, `export `);
     }
@@ -304,7 +304,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     return null;
   }
 
-  visitTryCatchStmt(stmt: o.TryCatchStmt, ctx: EmitterVisitorContext): any {
+  override visitTryCatchStmt(stmt: o.TryCatchStmt, ctx: EmitterVisitorContext): any {
     ctx.println(stmt, `try {`);
     ctx.incIndent();
     this.visitAllStatements(stmt.bodyStmts, ctx);
@@ -375,7 +375,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     return null;
   }
 
-  getBuiltinMethodName(method: o.BuiltinMethod): string {
+  override getBuiltinMethodName(method: o.BuiltinMethod): string {
     let name: string;
     switch (method) {
       case o.BuiltinMethod.ConcatArray:

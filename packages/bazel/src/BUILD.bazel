@@ -1,3 +1,5 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+
 # BEGIN-DEV-ONLY
 package(default_visibility = ["//packages/bazel:__subpackages__"])
 
@@ -5,11 +7,6 @@ filegroup(
     name = "package_assets",
     srcs = glob(["*"]),
 )
-
-# For generating skydoc
-exports_files(glob(["*.bzl"]))
-
-load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 
 nodejs_binary(
     name = "modify_tsconfig",

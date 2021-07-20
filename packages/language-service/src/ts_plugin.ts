@@ -119,30 +119,6 @@ export function create(info: tss.server.PluginCreateInfo): NgLanguageService {
     return ngLS.getDefinitionAndBoundSpan(fileName, position);
   }
 
-  function getTypeDefinitionAtPosition(fileName: string, position: number) {
-    // Not implemented in VE Language Service
-    return undefined;
-  }
-
-  function getReferencesAtPosition(fileName: string, position: number) {
-    // Not implemented in VE Language Service
-    return undefined;
-  }
-
-  function findRenameLocations(
-      fileName: string, position: number, findInStrings: boolean, findInComments: boolean,
-      providePrefixAndSuffixTextForRename?: boolean): readonly ts.RenameLocation[]|undefined {
-    // not implemented in VE Language Service
-    return undefined;
-  }
-
-  function getSignatureHelpItems(
-      fileName: string, position: number,
-      options: ts.SignatureHelpItemsOptions|undefined): ts.SignatureHelpItems|undefined {
-    // not implemented in VE Language Service
-    return undefined;
-  }
-
   function getTcb(fileName: string, position: number) {
     // Not implemented in VE Language Service
     return undefined;
@@ -162,10 +138,6 @@ export function create(info: tss.server.PluginCreateInfo): NgLanguageService {
     getSemanticDiagnostics,
     getDefinitionAtPosition,
     getDefinitionAndBoundSpan,
-    getTypeDefinitionAtPosition,
-    getReferencesAtPosition,
-    getSignatureHelpItems,
-    findRenameLocations,
     getTcb,
     getComponentLocationsForTemplate,
   };

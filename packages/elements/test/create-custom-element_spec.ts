@@ -125,9 +125,9 @@ if (browserDetection.supportsCustomElements) {
     it('should not break if `NgElementStrategy#events` is not available before calling `NgElementStrategy#connect()`',
        () => {
          class TestStrategyWithLateEvents extends TestStrategy {
-           events: Subject<NgElementStrategyEvent> = undefined!;
+           override events: Subject<NgElementStrategyEvent> = undefined!;
 
-           connect(element: HTMLElement): void {
+           override connect(element: HTMLElement): void {
              this.connectedElement = element;
              this.events = new Subject<NgElementStrategyEvent>();
              this.events.next({name: 'strategy-event', value: 'connect'});

@@ -39,7 +39,7 @@ const _DOCTYPE = `<!ELEMENT messagebundle (msg)*>
 <!ELEMENT ex (#PCDATA)>`;
 
 export class Xmb extends Serializer {
-  write(messages: i18n.Message[], locale: string|null): string {
+  override write(messages: i18n.Message[], locale: string|null): string {
     const exampleVisitor = new ExampleVisitor();
     const visitor = new _Visitor();
     let rootNode = new xml.Tag(_MESSAGES_TAG);
@@ -80,17 +80,17 @@ export class Xmb extends Serializer {
     ]);
   }
 
-  load(content: string, url: string):
+  override load(content: string, url: string):
       {locale: string, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
     throw new Error('Unsupported');
   }
 
-  digest(message: i18n.Message): string {
+  override digest(message: i18n.Message): string {
     return digest(message);
   }
 
 
-  createNameMapper(message: i18n.Message): PlaceholderMapper {
+  override createNameMapper(message: i18n.Message): PlaceholderMapper {
     return new SimplePlaceholderMapper(message, toPublicName);
   }
 }

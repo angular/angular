@@ -64,7 +64,7 @@ describe('user metric', () => {
 class MockDriverAdapter extends WebDriverAdapter {
   data: any = {};
 
-  executeScript(script: string): any {
+  override executeScript(script: string): any {
     // Just handles `return window.propName` ignores `delete window.propName`.
     if (script.indexOf('return window.') == 0) {
       const metricName = script.substring('return window.'.length);

@@ -25,7 +25,7 @@ type CiData = {
 }[];
 
 export class CiModule extends BaseModule<CiData> {
-  async retrieveData() {
+  override async retrieveData() {
     const gitRepoWithApi = {api: this.git.github, ...this.git.remoteConfig};
     const releaseTrains = await fetchActiveReleaseTrains(gitRepoWithApi);
 
@@ -52,7 +52,7 @@ export class CiModule extends BaseModule<CiData> {
     return await Promise.all(ciResultPromises);
   }
 
-  async printToTerminal() {
+  override async printToTerminal() {
     const data = await this.data;
     const minLabelLength = Math.max(...data.map(result => result.label.length));
     info.group(bold(`CI`));

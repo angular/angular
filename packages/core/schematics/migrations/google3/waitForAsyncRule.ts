@@ -21,7 +21,7 @@ const newFunction = 'waitForAsync';
 
 /** TSLint rule that migrates from `async` to `waitForAsync`. */
 export class Rule extends Rules.TypedRule {
-  applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
+  override applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
     const failures: RuleFailure[] = [];
     const asyncImportSpecifier =
         getImportSpecifier(sourceFile, '@angular/core/testing', deprecatedFunction);

@@ -1,0 +1,84 @@
+name: Bug Report
+description: Report a bug in the Angular Framework
+
+body:
+  - type: dropdown
+    id: affected-packages
+    attributes:
+      label: Which @angular/* package(s) are the source of the bug?
+      options:
+        - animations
+        - bazel
+        - common
+        - compiler-cli
+        - compiler
+        - elements
+        - forms
+        - language-service
+        - localize
+        - platform-browser-dynamic
+        - platform-browser
+        - platform-server
+        - router
+        - service-worker
+        - upgrade
+        - Don't known / other
+      multiple: true
+    validations:
+      required: true
+
+  - type: dropdown
+    id: is-regression
+    attributes:
+      label: Is this a regression?
+      options:
+        - 'Yes'
+        - 'No'
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+    validations:
+      required: true
+
+  - type: input
+    id: reproduction
+    attributes:
+      label: Please provide a link to a minimal reproduction of the bug
+
+  - type: textarea
+    id: exception-or-error
+    attributes:
+      label: Please provide the exception or error you saw
+      render: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Please provide the environment you discovered this bug in
+      render: true
+      placeholder: |
+        Angular CLI: 12.0.5
+        Node: 14.17.0
+        Package Manager: yarn 1.22.10
+        OS: linux x64
+
+        Angular: 12.0.5
+        ... animations, cli, common, compiler, compiler-cli, core, forms
+        ... platform-browser, platform-browser-dynamic, router
+
+        Package                         Version
+        ---------------------------------------------------------
+        @angular-devkit/architect       0.1200.5
+        @angular-devkit/build-angular   12.0.5
+        @angular-devkit/core            12.0.5
+        rxjs                            6.6.7
+        typescript                      4.2.4
+
+  - type: textarea
+    id: other
+    attributes:
+      label: Anything else?

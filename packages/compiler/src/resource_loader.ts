@@ -7,11 +7,12 @@
  */
 
 /**
- * An interface for retrieving documents by URL that the compiler uses
- * to load templates.
+ * An interface for retrieving documents by URL that the compiler uses to
+ * load templates.
+ *
+ * This is an abstract class, rather than an interface, so that it can be used
+ * as injection token.
  */
-export class ResourceLoader {
-  get(url: string): Promise<string>|string {
-    return '';
-  }
+export abstract class ResourceLoader {
+  abstract get(url: string): Promise<string>|string;
 }

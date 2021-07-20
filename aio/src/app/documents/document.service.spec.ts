@@ -70,13 +70,16 @@ describe('DocumentService', () => {
     it('should encode the request path to be case-insensitive', () => {
       const { docService, locationService } = getServices('initial/Doc');
       docService.currentDocument.subscribe();
-      httpMock.expectOne(CONTENT_URL_PREFIX + 'initial/d_oc.json').flush({});
-      locationService.go('NEW/Doc');
-      httpMock.expectOne(CONTENT_URL_PREFIX + 'n_e_w_/d_oc.json').flush({});
-      locationService.go('doc_with_underscores');
-      httpMock.expectOne(CONTENT_URL_PREFIX + 'doc__with__underscores.json').flush({});
-      locationService.go('DOC_WITH_UNDERSCORES');
-      httpMock.expectOne(CONTENT_URL_PREFIX + 'd_o_c___w_i_t_h___u_n_d_e_r_s_c_o_r_e_s_.json').flush({});
+
+      expect(() => {
+        httpMock.expectOne(CONTENT_URL_PREFIX + 'initial/d_oc.json').flush({});
+        locationService.go('NEW/Doc');
+        httpMock.expectOne(CONTENT_URL_PREFIX + 'n_e_w_/d_oc.json').flush({});
+        locationService.go('doc_with_underscores');
+        httpMock.expectOne(CONTENT_URL_PREFIX + 'doc__with__underscores.json').flush({});
+        locationService.go('DOC_WITH_UNDERSCORES');
+        httpMock.expectOne(CONTENT_URL_PREFIX + 'd_o_c___w_i_t_h___u_n_d_e_r_s_c_o_r_e_s_.json').flush({});
+      }).not.toThrow();
     });
 
     it('should emit the not-found document if the document is not found on the server', () => {

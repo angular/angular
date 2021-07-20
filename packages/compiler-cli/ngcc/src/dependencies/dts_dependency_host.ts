@@ -23,7 +23,7 @@ export class DtsDependencyHost extends EsmDependencyHost {
   /**
    * Attempts to process the `importPath` directly and also inside `@types/...`.
    */
-  protected processImport(
+  protected override processImport(
       importPath: string, file: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath>,
       missing: Set<string>, deepImports: Set<string>, alreadySeen: Set<AbsoluteFsPath>): boolean {
     return super.processImport(importPath, file, dependencies, missing, deepImports, alreadySeen) ||

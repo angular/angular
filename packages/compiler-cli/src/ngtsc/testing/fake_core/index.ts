@@ -116,5 +116,5 @@ export interface OnDestroy {
 }
 
 export interface TrackByFunction<T> {
-  <U extends T>(index: number, item: U): any;
+  <U extends T>(index: number, item: T&U): any;
 }

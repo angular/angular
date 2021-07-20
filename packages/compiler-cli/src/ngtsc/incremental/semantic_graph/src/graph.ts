@@ -35,11 +35,11 @@ export interface SemanticDependencyResult {
  * compilation.
  */
 class OpaqueSymbol extends SemanticSymbol {
-  isPublicApiAffected(): false {
+  override isPublicApiAffected(): false {
     return false;
   }
 
-  isTypeCheckApiAffected(): false {
+  override isTypeCheckApiAffected(): false {
     return false;
   }
 }

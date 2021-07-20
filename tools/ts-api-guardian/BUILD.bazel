@@ -31,6 +31,7 @@ genrule(
 
 pkg_npm(
     name = "ts-api-guardian",
+    package_name = "ts-api-guardian",
     srcs = [
         "BUILD.bazel",
         "README.md",

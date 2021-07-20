@@ -12,36 +12,36 @@ import {AbsoluteFsPath, PathSegment, PathString} from '../../src/types';
 import {MockFileSystem} from './mock_file_system';
 
 export class MockFileSystemWindows extends MockFileSystem {
-  resolve(...paths: string[]): AbsoluteFsPath {
+  override resolve(...paths: string[]): AbsoluteFsPath {
     const resolved = p.win32.resolve(this.pwd(), ...paths);
     return this.normalize(resolved as AbsoluteFsPath);
   }
 
-  dirname<T extends string>(path: T): T {
+  override dirname<T extends string>(path: T): T {
     return this.normalize(p.win32.dirname(path) as T);
   }
 
-  join<T extends string>(basePath: T, ...paths: string[]): T {
+  override join<T extends string>(basePath: T, ...paths: string[]): T {
     return this.normalize(p.win32.join(basePath, ...paths)) as T;
   }
 
-  relative<T extends PathString>(from: T, to: T): PathSegment|AbsoluteFsPath {
+  override relative<T extends PathString>(from: T, to: T): PathSegment|AbsoluteFsPath {
     return this.normalize(p.win32.relative(from, to)) as PathSegment | AbsoluteFsPath;
   }
 
-  basename(filePath: string, extension?: string): PathSegment {
+  override basename(filePath: string, extension?: string): PathSegment {
     return p.win32.basename(filePath, extension) as PathSegment;
   }
 
-  isRooted(path: string): boolean {
+  override isRooted(path: string): boolean {
     return /^([A-Z]:)?([\\\/]|$)/i.test(path);
   }
 
-  protected splitPath<T extends PathString>(path: T): string[] {
+  protected override splitPath<T extends PathString>(path: T): string[] {
     return path.split(/[\\\/]/);
   }
 
-  normalize<T extends PathString>(path: T): T {
+  override normalize<T extends PathString>(path: T): T {
     return path.replace(/^[\/\\]/i, 'C:/').replace(/\\/g, '/') as T;
   }
 }

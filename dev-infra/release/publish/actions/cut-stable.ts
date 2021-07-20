@@ -20,20 +20,20 @@ import {invokeSetNpmDistCommand, invokeYarnInstallCommand} from '../external-com
 export class CutStableAction extends ReleaseAction {
   private _newVersion = this._computeNewVersion();
 
-  async getDescription() {
+  override async getDescription() {
     const newVersion = this._newVersion;
     return `Cut a stable release for the release-candidate branch (v${newVersion}).`;
   }
 
-  async perform() {
+  override async perform() {
     const {branchName} = this.active.releaseCandidate!;
     const newVersion = this._newVersion;
     const isNewMajor = this.active.releaseCandidate?.isMajor;
 
-    const {pullRequest: {id}, releaseNotes} =
+    const {pullRequest, releaseNotes} =
         await this.checkoutBranchAndStageVersion(newVersion, branchName);
 
-    await this.waitForPullRequestToBeMerged(id);
+    await this.waitForPullRequestToBeMerged(pullRequest);
 
     // If a new major version is published, we publish to the `next` NPM dist tag temporarily.
     // We do this because for major versions, we want all main Angular projects to have their
@@ -73,7 +73,7 @@ export class CutStableAction extends ReleaseAction {
     return semver.parse(`${version.major}.${version.minor}.${version.patch}`)!;
   }
 
-  static async isActive(active: ActiveReleaseTrains) {
+  static override async isActive(active: ActiveReleaseTrains) {
     // A stable version can be cut for an active release-train currently in the
     // release-candidate phase. Note: It is not possible to directly release from
     // feature-freeze phase into a stable version.

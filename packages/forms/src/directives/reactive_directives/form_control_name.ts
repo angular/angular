@@ -75,7 +75,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * Tracks the `FormControl` instance bound to the directive.
    */
   // TODO(issue/24571): remove '!'.
-  readonly control!: FormControl;
+  override readonly control!: FormControl;
 
   /**
    * @description
@@ -87,7 +87,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * to indices when iterating over controls in a `FormArray`.
    */
   // TODO(issue/24571): remove '!'.
-  @Input('formControlName') name!: string|number|null;
+  @Input('formControlName') override name!: string|number|null;
 
   /**
    * @description
@@ -166,7 +166,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    *
    * @param newValue The new value for the view model.
    */
-  viewToModelUpdate(newValue: any): void {
+  override viewToModelUpdate(newValue: any): void {
     this.viewModel = newValue;
     this.update.emit(newValue);
   }
@@ -176,7 +176,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * Returns an array that represents the path from the top-level form to this control.
    * Each index is the string name of the control on that level.
    */
-  get path(): string[] {
+  override get path(): string[] {
     return controlPath(this.name == null ? this.name : this.name.toString(), this._parent!);
   }
 

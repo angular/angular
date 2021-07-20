@@ -470,11 +470,11 @@ describe('RouterPreloader', () => {
          });
 
          class BrokenModuleFactory extends NgModuleFactory<any> {
-           moduleType: Type<any> = LoadedModule1;
+           override moduleType: Type<any> = LoadedModule1;
            constructor() {
              super();
            }
-           create(_parentInjector: Injector|null): NgModuleRef<any> {
+           override create(_parentInjector: Injector|null): NgModuleRef<any> {
              throw 'Error: Broken module';
            }
          }

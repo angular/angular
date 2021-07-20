@@ -21,13 +21,13 @@ import {packageJsonPath} from '../constants';
 export class ConfigureNextAsMajorAction extends ReleaseAction {
   private _newVersion = semver.parse(`${this.active.next.version.major + 1}.0.0-next.0`)!;
 
-  async getDescription() {
+  override async getDescription() {
     const {branchName} = this.active.next;
     const newVersion = this._newVersion;
     return `Configure the "${branchName}" branch to be released as major (v${newVersion}).`;
   }
 
-  async perform() {
+  override async perform() {
     const {branchName} = this.active.next;
     const newVersion = this._newVersion;
 
@@ -44,7 +44,7 @@ export class ConfigureNextAsMajorAction extends ReleaseAction {
     info(yellow(`      Please ask team members to review: ${pullRequest.url}.`));
   }
 
-  static async isActive(active: ActiveReleaseTrains) {
+  static override async isActive(active: ActiveReleaseTrains) {
     // The `next` branch can always be switched to a major version, unless it already
     // is targeting a new major. A major can contain minor changes, so we can always
     // change the target from a minor to a major.

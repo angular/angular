@@ -16,7 +16,7 @@ ts_library(
 
 ts_devserver(
     name = "devserver",
-    bootstrap = ["@npm//:node_modules/angular/angular.js"],
+    bootstrap = ["@npm//:node_modules/angular-1.8/angular.js"],
     entry_module = "angular/modules/benchmarks/src/tree/ng1/index",
     port = 4200,
     static_files = ["index.html"],

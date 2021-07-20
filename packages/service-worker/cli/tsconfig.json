@@ -9,6 +9,7 @@
     "strictPropertyInitialization": true,
     "outDir": "../../../dist/all/@angular/service-worker/cli-custom",
     "noImplicitAny": true,
+    "noImplicitOverride": true,
     "noFallthroughCasesInSwitch": true,
     "rootDir": ".",
     "paths": {

@@ -42,11 +42,11 @@ function getReferences(info: ng.DiagnosticTemplateInfo): SymbolDeclaration[] {
   }
 
   const visitor = new class extends RecursiveTemplateAstVisitor {
-    visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
+    override visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
       super.visitEmbeddedTemplate(ast, context);
       processReferences(ast.references);
     }
-    visitElement(ast: ElementAst, context: any): any {
+    override visitElement(ast: ElementAst, context: any): any {
       super.visitElement(ast, context);
       processReferences(ast.references);
     }
@@ -257,38 +257,38 @@ class ExpressionDiagnosticsVisitor extends RecursiveTemplateAstVisitor {
     this.path = new AstPath<TemplateAst>([]);
   }
 
-  visitDirective(ast: DirectiveAst, context: any): any {
+  override visitDirective(ast: DirectiveAst, context: any): any {
     // Override the default child visitor to ignore the host properties of a directive.
     if (ast.inputs && ast.inputs.length) {
       templateVisitAll(this, ast.inputs, context);
     }
   }
 
-  visitBoundText(ast: BoundTextAst): void {
+  override visitBoundText(ast: BoundTextAst): void {
     this.push(ast);
     this.diagnoseExpression(ast.value, ast.sourceSpan.start.offset, false);
     this.pop();
   }
 
-  visitDirectiveProperty(ast: BoundDirectivePropertyAst): void {
+  override visitDirectiveProperty(ast: BoundDirectivePropertyAst): void {
     this.push(ast);
     this.diagnoseExpression(ast.value, this.attributeValueLocation(ast), false);
     this.pop();
   }
 
-  visitElementProperty(ast: BoundElementPropertyAst): void {
+  override visitElementProperty(ast: BoundElementPropertyAst): void {
     this.push(ast);
     this.diagnoseExpression(ast.value, this.attributeValueLocation(ast), false);
     this.pop();
   }
 
-  visitEvent(ast: BoundEventAst): void {
+  override visitEvent(ast: BoundEventAst): void {
     this.push(ast);
     this.diagnoseExpression(ast.handler, this.attributeValueLocation(ast), true);
     this.pop();
   }
 
-  visitVariable(ast: VariableAst): void {
+  override visitVariable(ast: VariableAst): void {
     const directive = this.directiveSummary;
     if (directive && ast.value) {
       const context = this.info.query.getTemplateContext(directive.type.reference)!;
@@ -304,13 +304,13 @@ class ExpressionDiagnosticsVisitor extends RecursiveTemplateAstVisitor {
     }
   }
 
-  visitElement(ast: ElementAst, context: any): void {
+  override visitElement(ast: ElementAst, context: any): void {
     this.push(ast);
     super.visitElement(ast, context);
     this.pop();
   }
 
-  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
+  override visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
     const previousDirectiveSummary = this.directiveSummary;
 
     this.push(ast);

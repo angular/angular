@@ -11,7 +11,7 @@ import {join} from 'path';
 import {SemVer} from 'semver';
 import {Arguments, Argv, CommandModule} from 'yargs';
 
-import {debug, info} from '../../utils/console';
+import {info} from '../../utils/console';
 import {GitClient} from '../../utils/git/git-client';
 
 import {ReleaseNotes} from './release-notes';

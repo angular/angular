@@ -63,7 +63,9 @@ export interface CompilerFacade {
   createParseSourceSpan(kind: string, typeName: string, sourceUrl: string): ParseSourceSpan;
 
   FactoryTarget: typeof FactoryTarget;
-  ResourceLoader: {new(): ResourceLoader};
+  // Note that we do not use `{new(): ResourceLoader}` here because
+  // the resource loader class is abstract and not constructable.
+  ResourceLoader: Function&{prototype: ResourceLoader};
 }
 
 export interface CoreEnvironment {

@@ -50,5 +50,5 @@ export class PopupComponent {
   private _message = '';
 
   @Output()
-  closed = new EventEmitter();
+  closed = new EventEmitter<void>();
 }
