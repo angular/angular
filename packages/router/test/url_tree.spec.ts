@@ -26,6 +26,11 @@ describe('UrlTree', () => {
         'k/(a;b)': 'c',
       });
     });
+
+    it('should allow question marks in query param values', () => {
+      const tree = serializer.parse('/path/to?first=http://foo/bar?baz=true&second=123');
+      expect(tree.queryParams).toEqual({'first': 'http://foo/bar?baz=true', 'second': '123'});
+    });
   });
 
   describe('containsTree', () => {

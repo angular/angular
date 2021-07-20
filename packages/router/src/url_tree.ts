@@ -523,7 +523,7 @@ function matchQueryParams(str: string): string {
   return match ? match[0] : '';
 }
 
-const QUERY_PARAM_VALUE_RE = /^[^?&#]+/;
+const QUERY_PARAM_VALUE_RE = /^[^&#]+/;
 // Return the value of the query param at the start of the string or an empty string
 function matchUrlQueryParamValue(str: string): string {
   const match = str.match(QUERY_PARAM_VALUE_RE);
