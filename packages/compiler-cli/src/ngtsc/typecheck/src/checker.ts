@@ -7,6 +7,8 @@
  */
 
 import {AST, CssSelector, DomElementSchemaRegistry, MethodCall, ParseError, parseTemplate, PropertyRead, SafeMethodCall, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
+import {LiteralPrimitive} from '@angular/compiler/src/compiler';
+import {TextAttribute} from '@angular/compiler/src/render3/r3_ast';
 import * as ts from 'typescript';
 
 import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
@@ -277,6 +279,16 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     }
     return this.perf.inPhase(
         PerfPhase.TtcAutocompletion, () => engine.getExpressionCompletionLocation(ast));
+  }
+
+  getStringLiteralCompletionLocation(
+      node: LiteralPrimitive|TextAttribute, component: ts.ClassDeclaration): ShimLocation|null {
+    const engine = this.getOrCreateCompletionEngine(component);
+    if (engine === null) {
+      return null;
+    }
+    return this.perf.inPhase(
+        PerfPhase.TtcAutocompletion, () => engine.getStringLiteralCompletionLocation(node));
   }
 
   invalidateClass(clazz: ts.ClassDeclaration): void {
