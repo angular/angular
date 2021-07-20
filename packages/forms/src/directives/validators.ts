@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, forwardRef, Input, OnChanges, SimpleChanges, StaticProvider} from '@angular/core';
+import {Directive, forwardRef, Input, OnChanges, SimpleChanges, StaticProvider, ɵBooleanInput as BooleanInput, ɵcoerceBooleanProperty as coerceBooleanProperty} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {AbstractControl} from '../model';
@@ -349,12 +349,12 @@ export class RequiredValidator implements Validator {
    * Tracks changes to the required attribute bound to this directive.
    */
   @Input()
-  get required(): boolean|string {
+  get required(): BooleanInput {
     return this._required;
   }
 
-  set required(value: boolean|string) {
-    this._required = value != null && value !== false && `${value}` !== 'false';
+  set required(value: BooleanInput) {
+    this._required = coerceBooleanProperty(value);
     if (this._onChange) this._onChange();
   }
 
@@ -461,8 +461,8 @@ export class EmailValidator implements Validator {
    * Tracks changes to the email attribute bound to this directive.
    */
   @Input()
-  set email(value: boolean|string) {
-    this._enabled = value === '' || value === true || value === 'true';
+  set email(value: BooleanInput) {
+    this._enabled = coerceBooleanProperty(value);
     if (this._onChange) this._onChange();
   }
 
