@@ -464,27 +464,27 @@ runInEachFileSystem((os) => {
              // $localize expressions
              expectMapping(mappings, {
                sourceUrl: '../test.ts',
-               source: 'pre-p\n  ',
+               source: '\n  pre-p\n  ',
                generated: '` pre-p ${',
              });
              expectMapping(mappings, {
                sourceUrl: '../test.ts',
-               source: '<p>\n    ',
+               source: '<p>',
                generated: '"\\uFFFD#2\\uFFFD"',
              });
              expectMapping(mappings, {
                sourceUrl: '../test.ts',
-               source: 'in-p\n  ',
+               source: '\n    in-p\n  ',
                generated: '}:START_PARAGRAPH: in-p ${',
              });
              expectMapping(mappings, {
                sourceUrl: '../test.ts',
-               source: '</p>\n  ',
+               source: '</p>',
                generated: '"\\uFFFD/#2\\uFFFD"',
              });
              expectMapping(mappings, {
                sourceUrl: '../test.ts',
-               source: 'post-p\n',
+               source: '\n  post-p\n',
                generated: '}:CLOSE_PARAGRAPH: post-p\n`',
              });
              // ivy instructions

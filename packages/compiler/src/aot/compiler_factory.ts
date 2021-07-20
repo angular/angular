@@ -19,12 +19,12 @@ import {HtmlParser} from '../ml_parser/html_parser';
 import {NgModuleCompiler} from '../ng_module_compiler';
 import {NgModuleResolver} from '../ng_module_resolver';
 import {TypeScriptEmitter} from '../output/ts_emitter';
+import {syntaxError} from '../parse_util';
 import {PipeResolver} from '../pipe_resolver';
 import {DomElementSchemaRegistry} from '../schema/dom_element_schema_registry';
 import {StyleCompiler} from '../style_compiler';
 import {TemplateParser} from '../template_parser/template_parser';
 import {UrlResolver} from '../url_resolver';
-import {syntaxError} from '../util';
 import {TypeCheckCompiler} from '../view_compiler/type_check_compiler';
 import {ViewCompiler} from '../view_compiler/view_compiler';
 

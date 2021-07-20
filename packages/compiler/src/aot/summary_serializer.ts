@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileNgModuleMetadata, CompileNgModuleSummary, CompilePipeMetadata, CompileProviderMetadata, CompileSummaryKind, CompileTypeMetadata, CompileTypeSummary} from '../compile_metadata';
+import {OutputContext} from '../constant_pool';
 import * as o from '../output/output_ast';
 import {Summary, SummaryResolver} from '../summary_resolver';
-import {OutputContext, ValueTransformer, ValueVisitor, visitValue} from '../util';
+import {ValueTransformer, ValueVisitor, visitValue} from '../util';
 
 import {StaticSymbol, StaticSymbolCache} from './static_symbol';
 import {ResolvedStaticSymbol, StaticSymbolResolver, unwrapResolvedMetadata} from './static_symbol_resolver';

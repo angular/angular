@@ -7,6 +7,7 @@
  */
 
 import * as html from '../../src/ml_parser/ast';
+import {NGSP_UNICODE} from '../../src/ml_parser/entities';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
 import {PRESERVE_WS_ATTR_NAME, removeWhitespaces} from '../../src/ml_parser/html_whitespaces';
 import {TokenizeOptions} from '../../src/ml_parser/lexer';
@@ -52,48 +53,86 @@ import {humanizeDom} from './ast_spec_utils';
       expect(parseAndRemoveWS('<div><span>foo</span>&ngsp;<span>bar</span></div>')).toEqual([
         [html.Element, 'div', 0],
         [html.Element, 'span', 1],
-        [html.Text, 'foo', 2],
-        [html.Text, ' ', 1],
+        [html.Text, 'foo', 2, ['foo']],
+        [html.Text, ' ', 1, [''], [NGSP_UNICODE, '&ngsp;'], ['']],
         [html.Element, 'span', 1],
-        [html.Text, 'bar', 2],
+        [html.Text, 'bar', 2, ['bar']],
       ]);
     });
 
     it('should replace multiple whitespaces with one space', () => {
-      expect(parseAndRemoveWS('\n\n\nfoo\t\t\t')).toEqual([[html.Text, ' foo ', 0]]);
-      expect(parseAndRemoveWS('   \n foo  \t ')).toEqual([[html.Text, ' foo ', 0]]);
+      expect(parseAndRemoveWS('\n\n\nfoo\t\t\t')).toEqual([[html.Text, ' foo ', 0, [' foo ']]]);
+      expect(parseAndRemoveWS('   \n foo  \t ')).toEqual([[html.Text, ' foo ', 0, [' foo ']]]);
     });
 
     it('should not replace &nbsp;', () => {
-      expect(parseAndRemoveWS('&nbsp;')).toEqual([[html.Text, '\u00a0', 0]]);
+      expect(parseAndRemoveWS('&nbsp;')).toEqual([
+        [html.Text, '\u00a0', 0, [''], ['\u00a0', '&nbsp;'], ['']]
+      ]);
     });
 
     it('should not replace sequences of &nbsp;', () => {
-      expect(parseAndRemoveWS('&nbsp;&nbsp;foo&nbsp;&nbsp;')).toEqual([
-        [html.Text, '\u00a0\u00a0foo\u00a0\u00a0', 0]
-      ]);
+      expect(parseAndRemoveWS('&nbsp;&nbsp;foo&nbsp;&nbsp;')).toEqual([[
+        html.Text,
+        '\u00a0\u00a0foo\u00a0\u00a0',
+        0,
+        [''],
+        ['\u00a0', '&nbsp;'],
+        [''],
+        ['\u00a0', '&nbsp;'],
+        ['foo'],
+        ['\u00a0', '&nbsp;'],
+        [''],
+        ['\u00a0', '&nbsp;'],
+        [''],
+      ]]);
     });
 
     it('should not replace single tab and newline with spaces', () => {
-      expect(parseAndRemoveWS('\nfoo')).toEqual([[html.Text, '\nfoo', 0]]);
-      expect(parseAndRemoveWS('\tfoo')).toEqual([[html.Text, '\tfoo', 0]]);
+      expect(parseAndRemoveWS('\nfoo')).toEqual([[html.Text, '\nfoo', 0, ['\nfoo']]]);
+      expect(parseAndRemoveWS('\tfoo')).toEqual([[html.Text, '\tfoo', 0, ['\tfoo']]]);
     });
 
     it('should preserve single whitespaces between interpolations', () => {
-      expect(parseAndRemoveWS(`{{fooExp}} {{barExp}}`)).toEqual([
-        [html.Text, '{{fooExp}} {{barExp}}', 0],
-      ]);
+      expect(parseAndRemoveWS(`{{fooExp}} {{barExp}}`)).toEqual([[
+        html.Text,
+        '{{fooExp}} {{barExp}}',
+        0,
+        [''],
+        ['{{', 'fooExp', '}}'],
+        [' '],
+        ['{{', 'barExp', '}}'],
+        [''],
+      ]]);
       expect(parseAndRemoveWS(`{{fooExp}}\t{{barExp}}`)).toEqual([
-        [html.Text, '{{fooExp}}\t{{barExp}}', 0],
+        [
+          html.Text,
+          '{{fooExp}}\t{{barExp}}',
+          0,
+          [''],
+          ['{{', 'fooExp', '}}'],
+          ['\t'],
+          ['{{', 'barExp', '}}'],
+          [''],
+        ],
       ]);
       expect(parseAndRemoveWS(`{{fooExp}}\n{{barExp}}`)).toEqual([
-        [html.Text, '{{fooExp}}\n{{barExp}}', 0],
+        [
+          html.Text,
+          '{{fooExp}}\n{{barExp}}',
+          0,
+          [''],
+          ['{{', 'fooExp', '}}'],
+          ['\n'],
+          ['{{', 'barExp', '}}'],
+          [''],
+        ],
       ]);
     });
 
     it('should preserve whitespaces around interpolations', () => {
       expect(parseAndRemoveWS(` {{exp}} `)).toEqual([
-        [html.Text, ' {{exp}} ', 0],
+        [html.Text, ' {{exp}} ', 0, [' '], ['{{', 'exp', '}}'], [' ']]
       ]);
     });
 
@@ -101,10 +140,10 @@ import {humanizeDom} from './ast_spec_utils';
       expect(parseAndRemoveWS(`<span> {a, b, =4 {c}} </span>`, {tokenizeExpansionForms: true}))
           .toEqual([
             [html.Element, 'span', 0],
-            [html.Text, ' ', 1],
+            [html.Text, ' ', 1, [' ']],
             [html.Expansion, 'a', 'b', 1],
             [html.ExpansionCase, '=4', 2],
-            [html.Text, ' ', 1],
+            [html.Text, ' ', 1, [' ']],
           ]);
     });
 
@@ -112,17 +151,17 @@ import {humanizeDom} from './ast_spec_utils';
       expect(parseAndRemoveWS(`<pre><strong>foo</strong>\n<strong>bar</strong></pre>`)).toEqual([
         [html.Element, 'pre', 0],
         [html.Element, 'strong', 1],
-        [html.Text, 'foo', 2],
-        [html.Text, '\n', 1],
+        [html.Text, 'foo', 2, ['foo']],
+        [html.Text, '\n', 1, ['\n']],
         [html.Element, 'strong', 1],
-        [html.Text, 'bar', 2],
+        [html.Text, 'bar', 2, ['bar']],
       ]);
     });
 
     it('should skip whitespace trimming in <textarea>', () => {
       expect(parseAndRemoveWS(`<textarea>foo\n\n  bar</textarea>`)).toEqual([
         [html.Element, 'textarea', 0],
-        [html.Text, 'foo\n\n  bar', 1],
+        [html.Text, 'foo\n\n  bar', 1, ['foo\n\n  bar']],
       ]);
     });
 
@@ -131,7 +170,7 @@ import {humanizeDom} from './ast_spec_utils';
          expect(parseAndRemoveWS(`<div ${PRESERVE_WS_ATTR_NAME}><img> <img></div>`)).toEqual([
            [html.Element, 'div', 0],
            [html.Element, 'img', 1],
-           [html.Text, ' ', 1],
+           [html.Text, ' ', 1, [' ']],
            [html.Element, 'img', 1],
          ]);
        });

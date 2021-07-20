@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileNgModuleMetadata, CompileProviderMetadata, identifierName} from './compile_metadata';
+import {CompileNgModuleMetadata, CompileProviderMetadata} from './compile_metadata';
 import {CompileReflector} from './compile_reflector';
+import {OutputContext} from './constant_pool';
 import {NodeFlags} from './core';
 import {Identifiers} from './identifiers';
 import * as o from './output/output_ast';
-import {typeSourceSpan} from './parse_util';
+import {identifierName, typeSourceSpan} from './parse_util';
 import {NgModuleProviderAnalyzer} from './provider_analyzer';
-import {OutputContext} from './util';
 import {componentFactoryResolverProviderDef, depDef, providerDef} from './view_compiler/provider_compiler';
 
 export class NgModuleCompileResult {

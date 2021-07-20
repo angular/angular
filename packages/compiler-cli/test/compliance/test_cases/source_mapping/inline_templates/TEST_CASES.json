@@ -750,6 +750,40 @@
       }
     },
     {
+      "description": "should handle encoded entities in i18n message source-mappings (full compile)",
+      "inputFiles": [
+        "i18n_message_placeholder_entities.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should handle encoded entities in i18n message source-mappings (partial compile)",
+      "inputFiles": [
+        "i18n_message_placeholder_entities.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "i18n_message_placeholder_entities.js",
+              "expected": "i18n_message_placeholder_entities_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
       "description": "should correctly handle collapsed whitespace in interpolation placeholder i18n message source-mappings (full compile)",
       "inputFiles": [
         "i18n_message_interpolation_whitespace.ts"

@@ -29,9 +29,9 @@ import {humanizeNodes} from './ast_spec_utils';
         [html.Attribute, '[ngPlural]', 'messages.length'],
         [html.Element, 'ng-template', 1],
         [html.Attribute, 'ngPluralCase', '=0'],
-        [html.Text, 'zero', 2],
+        [html.Text, 'zero', 2, ['zero']],
         [html.Element, 'b', 2],
-        [html.Text, 'bold', 3],
+        [html.Text, 'bold', 3, ['bold']],
       ]);
     });
 
@@ -47,8 +47,8 @@ import {humanizeNodes} from './ast_spec_utils';
         [html.Attribute, '[ngSwitch]', 'p.gender'],
         [html.Element, 'ng-template', 3],
         [html.Attribute, 'ngSwitchCase', 'male'],
-        [html.Text, 'm', 4],
-        [html.Text, ' ', 2],
+        [html.Text, 'm', 4, ['m']],
+        [html.Text, ' ', 2, [' ']],
       ]);
     });
 
@@ -88,10 +88,10 @@ import {humanizeNodes} from './ast_spec_utils';
         [html.Attribute, '[ngSwitch]', 'person.gender'],
         [html.Element, 'ng-template', 1],
         [html.Attribute, 'ngSwitchCase', 'male'],
-        [html.Text, 'm', 2],
+        [html.Text, 'm', 2, ['m']],
         [html.Element, 'ng-template', 1],
         [html.Attribute, 'ngSwitchDefault', ''],
-        [html.Text, 'default', 2],
+        [html.Text, 'default', 2, ['default']],
       ]);
     });
 
@@ -105,7 +105,7 @@ import {humanizeNodes} from './ast_spec_utils';
         [html.Attribute, '[ngSwitch]', 'a'],
         [html.Element, 'ng-template', 3],
         [html.Attribute, 'ngSwitchCase', '=4'],
-        [html.Text, 'c', 4],
+        [html.Text, 'c', 4, ['c']],
       ]);
     });
 

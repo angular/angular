@@ -6,21 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeSummary, CompileProviderMetadata, CompileStylesheetMetadata, CompileTypeSummary, identifierName, ngModuleJitUrl, ProviderMeta, ProxyClass, sharedStylesheetJitUrl, templateJitUrl, templateSourceUrl} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileNgModuleMetadata, CompilePipeSummary, CompileProviderMetadata, CompileTypeSummary, ngModuleJitUrl, ProxyClass, sharedStylesheetJitUrl, templateJitUrl, templateSourceUrl} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
 import {CompilerConfig} from '../config';
-import {ConstantPool} from '../constant_pool';
+import {ConstantPool, OutputContext} from '../constant_pool';
 import {Type} from '../core';
 import {CompileMetadataResolver} from '../metadata_resolver';
 import {NgModuleCompiler} from '../ng_module_compiler';
 import * as ir from '../output/output_ast';
 import {interpretStatements} from '../output/output_interpreter';
 import {JitEvaluator} from '../output/output_jit';
+import {CompileIdentifierMetadata, identifierName} from '../parse_util';
 import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
 import {SummaryResolver} from '../summary_resolver';
 import {TemplateAst} from '../template_parser/template_ast';
 import {TemplateParser} from '../template_parser/template_parser';
-import {Console, OutputContext, stringify, SyncAsync} from '../util';
+import {Console, stringify, SyncAsync} from '../util';
 import {ViewCompiler} from '../view_compiler/view_compiler';
 
 export interface ModuleWithComponentFactories {
