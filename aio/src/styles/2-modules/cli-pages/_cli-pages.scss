@@ -1,7 +1,7 @@
 .cli-name {
   font-weight: bold;
 
-  .kwd { color: initial }  /* override code format */
+  .kwd { color: inherit; }  /* override code format */
 }
 
 .cli-option-syntax {
