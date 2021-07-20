@@ -23,13 +23,18 @@ function errorToString(error: any) {
   const errorHandler = new ErrorHandler();
   (errorHandler as any)._console = logger as any;
   errorHandler.handleError(error);
-  return logger.res.map(line => line.join('#')).join('\n');
+  return logger.res.map(line => line.map(x => `${x}`).join('#')).join('\n');
 }
 
 describe('ErrorHandler', () => {
   it('should output exception', () => {
     const e = errorToString(new Error('message!'));
     expect(e).toContain('message!');
+  });
+
+  it('should correctly handle `null` or `undefined`', () => {
+    expect(errorToString(null)).toBe('ERROR#null');
+    expect(errorToString(undefined)).toBe('ERROR#undefined');
   });
 
   describe('context', () => {
