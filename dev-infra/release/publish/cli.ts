@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Arguments, Argv, CommandModule} from 'yargs';
+import {Argv, CommandModule} from 'yargs';
 
 import {getConfig} from '../../utils/config';
 import {error, green, info, red, yellow} from '../../utils/console';
+import {addDryRunFlag} from '../../utils/dry-run';
 import {GitClient} from '../../utils/git/git-client';
 import {addGithubTokenOption} from '../../utils/git/github-yargs';
 import {getReleaseConfig} from '../config/index';
@@ -23,7 +24,7 @@ export interface ReleasePublishOptions {
 
 /** Yargs command builder for configuring the `ng-dev release publish` command. */
 function builder(argv: Argv): Argv<ReleasePublishOptions> {
-  return addGithubTokenOption(argv);
+  return addDryRunFlag(addGithubTokenOption(argv), true);
 }
 
 /** Yargs command handler for staging a release. */
