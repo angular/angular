@@ -388,4 +388,15 @@ export interface MiscOptions {
    * Disable TypeScript Version Check.
    */
   disableTypeScriptVersionCheck?: boolean;
+
+  /**
+   * Transform async-await functions into Zone.js compatible generator functions.
+   *
+   * Native async-await functions cannot be hooked by Zone.js, which can lead to missing change
+   * detection notifications.
+   *
+   * If set to true, this option adds an additional transform to the TypeScript compilation, which
+   * converts such code into a form that is compatible with Zone.js.
+   */
+  transformAsyncAwaitForZoneJS?: boolean;
 }

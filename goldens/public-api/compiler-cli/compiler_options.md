@@ -35,6 +35,7 @@ export interface LegacyNgcOptions {
 export interface MiscOptions {
     compileNonExportedClasses?: boolean;
     disableTypeScriptVersionCheck?: boolean;
+    transformAsyncAwaitForZoneJS?: boolean;
 }
 
 // @public

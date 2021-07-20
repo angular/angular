@@ -9,6 +9,7 @@
 import * as ts from 'typescript';
 
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, NoopReferencesRegistry, PipeDecoratorHandler, ReferencesRegistry} from '../../annotations';
+import {createAsyncTransform} from '../../async_transform';
 import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../cycles';
 import {COMPILER_ERRORS_WITH_GUIDES, ERROR_DETAILS_PAGE_BASE_URL, ErrorCode, ngErrorCode} from '../../diagnostics';
 import {checkForPrivateExports, ReferenceGraph} from '../../entry_point';
@@ -642,6 +643,9 @@ export class NgCompiler {
       aliasTransformFactory(compilation.traitCompiler.exportStatements),
       defaultImportTracker.importPreservingTransformer(),
     ];
+    if (this.options.transformAsyncAwaitForZoneJS) {
+      before.push(createAsyncTransform());
+    }
 
     const afterDeclarations: ts.TransformerFactory<ts.SourceFile>[] = [];
     if (compilation.dtsTransforms !== null) {

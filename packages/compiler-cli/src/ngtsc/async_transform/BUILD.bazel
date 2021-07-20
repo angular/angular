@@ -1,0 +1,14 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "async_transform",
+    srcs = ["index.ts"] + glob([
+        "src/**/*.ts",
+    ]),
+    module_name = "@angular/compiler-cli/src/ngtsc/async_transform",
+    deps = [
+        "@npm//typescript",
+    ],
+)
