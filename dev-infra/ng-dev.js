@@ -434,6 +434,16 @@ var GitClient = /** @class */ (function () {
         }
         return new semver.SemVer(latestTag, semVerOptions);
     };
+    /** Retrieves the git tag matching the provided SemVer, if it exists. */
+    GitClient.prototype.getMatchingTagForSemver = function (semver$1) {
+        var semVerOptions = { loose: true };
+        var tags = this.runGraceful(['tag', '--sort=-committerdate', '--merged']).stdout.split('\n');
+        var matchingTag = tags.find(function (tag) { var _a; return ((_a = semver.parse(tag, semVerOptions)) === null || _a === void 0 ? void 0 : _a.compare(semver$1)) === 0; });
+        if (matchingTag === undefined) {
+            throw new Error("Unable to find a tag for the version: \"" + semver$1.format() + "\"");
+        }
+        return matchingTag;
+    };
     /** Retrieve a list of all files in the repository changed since the provided shaOrRef. */
     GitClient.prototype.allChangesFilesSince = function (shaOrRef) {
         if (shaOrRef === void 0) { shaOrRef = 'HEAD'; }
@@ -6423,6 +6433,14 @@ class ReleaseAction {
     static isActive(_trains, _config) {
         throw Error('Not implemented.');
     }
+    /** Retrieves the version in the project top-level `package.json` file. */
+    getProjectVersion() {
+        return tslib.__awaiter(this, void 0, void 0, function* () {
+            const pkgJsonPath = path.join(this.projectDir, packageJsonPath);
+            const pkgJson = JSON.parse(yield fs.promises.readFile(pkgJsonPath, 'utf8'));
+            return new semver.SemVer(pkgJson.version);
+        });
+    }
     /** Updates the version in the project top-level `package.json` file. */
     updateProjectVersion(newVersion) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
@@ -6676,7 +6694,12 @@ class ReleaseAction {
      */
     stageVersionForBranchAndCreatePullRequest(newVersion, pullRequestBaseBranch) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
-            const releaseNotes = yield ReleaseNotes.fromRange(newVersion, this.git.getLatestSemverTag().format(), 'HEAD');
+            /**
+             * The current version of the project for the branch from the root package.json. This must be
+             * retrieved prior to updating the project version.
+             */
+            const currentVersion = this.git.getMatchingTagForSemver(yield this.getProjectVersion());
+            const releaseNotes = yield ReleaseNotes.fromRange(newVersion, currentVersion, 'HEAD');
             yield this.updateProjectVersion(newVersion);
             yield this.prependReleaseNotesToChangelog(releaseNotes);
             yield this.waitForEditsAndCreateReleaseCommit(newVersion);

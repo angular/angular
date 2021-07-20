@@ -162,6 +162,19 @@ export class GitClient {
     return new SemVer(latestTag, semVerOptions);
   }
 
+  /** Retrieves the git tag matching the provided SemVer, if it exists. */
+  getMatchingTagForSemver(semver: SemVer): string {
+    const semVerOptions: SemVerOptions = {loose: true};
+    const tags = this.runGraceful(['tag', '--sort=-committerdate', '--merged']).stdout.split('\n');
+    const matchingTag =
+        tags.find((tag: string) => parse(tag, semVerOptions)?.compare(semver) === 0);
+
+    if (matchingTag === undefined) {
+      throw new Error(`Unable to find a tag for the version: "${semver.format()}"`);
+    }
+    return matchingTag;
+  }
+
   /** Retrieve a list of all files in the repository changed since the provided shaOrRef. */
   allChangesFilesSince(shaOrRef = 'HEAD'): string[] {
     return Array.from(new Set([
