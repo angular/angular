@@ -463,13 +463,14 @@ export class StaticInterpreter {
             node, DynamicValue.fromExternalReference(node.expression, lhs));
       }
 
-      // If the function is declared in a different file, resolve the foreign function expression
-      // using the absolute module name of that file (if any).
-      if (lhs.bestGuessOwningModule !== null) {
+      // If the foreign expression occurs in a different file, then assume that the owning module
+      // of the call expression should also be used for the resolved foreign expression.
+      if (expr.getSourceFile() !== node.expression.getSourceFile() &&
+          lhs.bestGuessOwningModule !== null) {
         context = {
           ...context,
           absoluteModuleName: lhs.bestGuessOwningModule.specifier,
-          resolutionContext: node.getSourceFile().fileName,
+          resolutionContext: lhs.bestGuessOwningModule.resolutionContext,
         };
       }
 
