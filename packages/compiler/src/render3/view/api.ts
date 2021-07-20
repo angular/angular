@@ -10,6 +10,7 @@ import {ChangeDetectionStrategy, ViewEncapsulation} from '../../core';
 import {InterpolationConfig} from '../../ml_parser/interpolation_config';
 import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
+import {CssSelectors} from '../../selector';
 import * as t from '../r3_ast';
 import {R3DependencyMetadata} from '../r3_factory';
 import {R3Reference} from '../util';
@@ -54,9 +55,9 @@ export interface R3DirectiveMetadata {
   deps: R3DependencyMetadata[]|'invalid'|null;
 
   /**
-   * Unparsed selector of the directive, or `null` if there was no selector.
+   * Selector of the directive, or `null` if there was no selector.
    */
-  selector: string|null;
+  selector: CssSelectors|null;
 
   /**
    * Information about the content queries made by the directive.
@@ -261,7 +262,7 @@ export interface R3UsedDirectiveMetadata {
   /**
    * The selector of the directive.
    */
-  selector: string;
+  selector: CssSelectors;
 
   /**
    * The binding property names of the inputs of the directive.

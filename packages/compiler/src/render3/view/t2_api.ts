@@ -7,6 +7,7 @@
  */
 
 import {AST} from '../../expression_parser/ast';
+import {CssSelectors} from '../../selector';
 import {BoundAttribute, BoundEvent, Element, Node, Reference, Template, TextAttribute, Variable} from '../r3_ast';
 
 
@@ -47,7 +48,7 @@ export interface DirectiveMeta {
   name: string;
 
   /** The selector for the directive or `null` if there isn't one. */
-  selector: string|null;
+  selector: CssSelectors|null;
 
   /**
    * Whether the directive is a component.

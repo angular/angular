@@ -92,7 +92,7 @@ export class TypeCheckScopeRegistry {
     for (const meta of scope.compilation.directives) {
       if (meta.selector !== null) {
         const extMeta = this.getTypeCheckDirectiveMetadata(meta.ref);
-        matcher.addSelectables(CssSelector.parse(meta.selector), extMeta);
+        matcher.addSelectables(meta.selector.selectors, extMeta);
         directives.push(extMeta);
       }
     }

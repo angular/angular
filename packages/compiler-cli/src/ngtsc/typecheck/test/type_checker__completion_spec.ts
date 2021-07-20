@@ -107,7 +107,7 @@ runInEachFileSystem(() => {
 
       const directives = templateTypeChecker.getDirectivesInScope(SomeCmp) ?? [];
       const pipes = templateTypeChecker.getPipesInScope(SomeCmp) ?? [];
-      expect(directives.map(dir => dir.selector)).toEqual(['other-dir']);
+      expect(directives.map(dir => dir.selector.text)).toEqual(['other-dir']);
       expect(pipes.map(pipe => pipe.name)).toEqual(['otherPipe']);
     });
   });

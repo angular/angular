@@ -258,7 +258,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
       usedDirectives: new Set(usedDirectives.map(dir => {
         return {
           node: dir.ref.node,
-          selector: dir.selector,
+          selector: dir.selector !== null ? dir.selector.text : null,
         };
       })),
       // cast b/c pre-TypeScript 3.5 unions aren't well discriminated

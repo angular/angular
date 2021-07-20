@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {CssSelectors} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {makeDiagnostic} from '../../../src/ngtsc/diagnostics';
@@ -76,7 +77,8 @@ runInEachFileSystem(() => {
         const entryPoint =
             makeTestEntryPointBundle('test', 'esm2015', false, [_('/node_modules/test/index.js')]);
         const {host, compiler} = createMigrationHost({entryPoint, handlers: [handler]});
-        const decorator = createComponentDecorator(mockClazz, {selector: 'comp', exportAs: null});
+        const decorator = createComponentDecorator(
+            mockClazz, {selector: CssSelectors.parse('comp'), exportAs: null});
         host.injectSyntheticDecorator(mockClazz, decorator);
 
         const record = compiler.recordFor(mockClazz)!;

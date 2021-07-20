@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BoundTarget, CssSelector, parseTemplate, ParseTemplateOptions, R3TargetBinder, SelectorMatcher} from '@angular/compiler';
+import {BoundTarget, CssSelector, CssSelectors, parseTemplate, ParseTemplateOptions, R3TargetBinder, SelectorMatcher} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath} from '../../file_system';
@@ -48,7 +48,7 @@ export function getBoundTemplate(
   components.forEach(({selector, declaration}) => {
     matcher.addSelectables(CssSelector.parse(selector), {
       ref: new Reference(declaration),
-      selector,
+      selector: CssSelectors.parse(selector),
       name: declaration.name.getText(),
       isComponent: true,
       inputs: ClassPropertyMapping.fromMappedObject({}),

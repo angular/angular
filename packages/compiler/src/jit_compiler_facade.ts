@@ -26,6 +26,7 @@ import {compileComponentFromMetadata, compileDirectiveFromMetadata, ParsedHostBi
 import {makeBindingParser, parseTemplate} from './render3/view/template';
 import {ResourceLoader} from './resource_loader';
 import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
+import {CssSelectors} from './selector';
 
 export class CompilerFacadeImpl implements CompilerFacade {
   FactoryTarget = FactoryTarget as any;
@@ -180,13 +181,17 @@ export class CompilerFacadeImpl implements CompilerFacade {
     const {template, interpolation} = parseJitTemplate(
         facade.template, facade.name, sourceMapUrl, facade.preserveWhitespaces,
         facade.interpolation);
+    const selectorText =
+        facade.selector || this.elementSchemaRegistry.getDefaultComponentElementName();
 
     // Compile the component metadata, including template, into an expression.
     const meta: R3ComponentMetadata = {
       ...facade as R3ComponentMetadataFacadeNoPropAndWhitespace,
       ...convertDirectiveFacadeToMetadata(facade),
-      selector: facade.selector || this.elementSchemaRegistry.getDefaultComponentElementName(),
+      selector: CssSelectors.parse(selectorText),
       template,
+      directives:
+          facade.directives.map(dir => ({...dir, selector: CssSelectors.parse(dir.selector)})),
       declarationListEmitMode: DeclarationListEmitMode.Direct,
       styles: [...facade.styles, ...template.styles],
       encapsulation: facade.encapsulation as any,
@@ -340,6 +345,7 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
     type: wrapReference(facade.type),
     internalType: new WrappedNodeExpr(facade.type),
     deps: null,
+    selector: CssSelectors.parse(facade.selector),
     host: extractHostBindings(facade.propMetadata, facade.typeSourceSpan, facade.host),
     inputs: {...inputsFromMetadata, ...inputsFromType},
     outputs: {...outputsFromMetadata, ...outputsFromType},
@@ -357,7 +363,7 @@ function convertDeclareDirectiveFacadeToMetadata(
     type: wrapReference(declaration.type),
     typeSourceSpan,
     internalType: new WrappedNodeExpr(declaration.type),
-    selector: declaration.selector ?? null,
+    selector: CssSelectors.parse(declaration.selector ?? null),
     inputs: declaration.inputs ?? {},
     outputs: declaration.outputs ?? {},
     host: convertHostDeclarationToMetadata(declaration.host),
@@ -428,7 +434,7 @@ function convertDeclareComponentFacadeToMetadata(
 function convertUsedDirectiveDeclarationToMetadata(declaration: R3DeclareUsedDirectiveFacade):
     R3UsedDirectiveMetadata {
   return {
-    selector: declaration.selector,
+    selector: CssSelectors.parse(declaration.selector),
     type: new WrappedNodeExpr(declaration.type),
     inputs: declaration.inputs ?? [],
     outputs: declaration.outputs ?? [],

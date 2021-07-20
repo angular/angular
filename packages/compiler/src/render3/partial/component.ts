@@ -171,7 +171,7 @@ function compileUsedDirectiveMetadata(
   return toOptionalLiteralArray(directives, directive => {
     const dirMeta = new DefinitionMap<R3DeclareUsedDirectiveMetadata>();
     dirMeta.set('type', wrapType(directive.type));
-    dirMeta.set('selector', o.literal(directive.selector));
+    dirMeta.set('selector', o.literal(directive.selector.text));
     dirMeta.set('inputs', toOptionalLiteralArray(directive.inputs, o.literal));
     dirMeta.set('outputs', toOptionalLiteralArray(directive.outputs, o.literal));
     dirMeta.set('exportAs', toOptionalLiteralArray(directive.exportAs, o.literal));

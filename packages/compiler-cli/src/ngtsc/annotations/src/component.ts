@@ -525,10 +525,11 @@ export class ComponentDecoratorHandler implements
   }
 
   symbol(node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>): ComponentSymbol {
+    const selector = analysis.meta.selector !== null ? analysis.meta.selector.text : null;
     const typeParameters = extractSemanticTypeParameters(node);
 
     return new ComponentSymbol(
-        node, analysis.meta.selector, analysis.inputs, analysis.outputs, analysis.meta.exportAs,
+        node, selector, analysis.inputs, analysis.outputs, analysis.meta.exportAs,
         analysis.typeCheckMeta, typeParameters);
   }
 
@@ -573,7 +574,7 @@ export class ComponentDecoratorHandler implements
 
       for (const directive of scope.compilation.directives) {
         if (directive.selector !== null) {
-          matcher.addSelectables(CssSelector.parse(directive.selector), directive);
+          matcher.addSelectables(directive.selector.selectors, directive);
         }
       }
     }
@@ -582,7 +583,7 @@ export class ComponentDecoratorHandler implements
 
     context.addComponent({
       declaration: node,
-      selector,
+      selector: selector !== null ? selector.text : null,
       boundTemplate,
       templateMeta: {
         isInline: analysis.template.declaration.isInline,
@@ -665,7 +666,7 @@ export class ComponentDecoratorHandler implements
 
       for (const dir of scope.compilation.directives) {
         if (dir.selector !== null) {
-          matcher.addSelectables(CssSelector.parse(dir.selector), dir as MatchedDirective);
+          matcher.addSelectables(dir.selector.selectors, dir as MatchedDirective);
         }
       }
       const pipes = new Map<string, Reference<ClassDeclaration>>();

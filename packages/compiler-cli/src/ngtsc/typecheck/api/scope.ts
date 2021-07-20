@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {CssSelectors} from '@angular/compiler';
 import * as ts from 'typescript';
+
 import {ClassDeclaration} from '../../reflection';
 import {SymbolWithValueDeclaration} from '../../util/src/typescript';
 
@@ -27,7 +29,7 @@ export interface DirectiveInScope {
   /**
    * The selector for the directive or component.
    */
-  selector: string;
+  selector: CssSelectors;
 
   /**
    * `true` if this directive is a component.
