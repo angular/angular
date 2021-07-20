@@ -21,8 +21,8 @@ export function getOriginalError(error: Error): Error {
   return (error as any)[ERROR_ORIGINAL_ERROR];
 }
 
-export function getErrorLogger(error: Error): (console: Console, ...values: any[]) => void {
-  return (error as any)[ERROR_LOGGER] || defaultErrorLogger;
+export function getErrorLogger(error: unknown): (console: Console, ...values: any[]) => void {
+  return error && (error as any)[ERROR_LOGGER] || defaultErrorLogger;
 }
 
 
