@@ -8,6 +8,7 @@ dist
 aio/content
 aio/node_modules
 aio/tools/examples/shared/node_modules
+devtools/node_modules
 packages/bazel/node_modules
 integration/bazel/bazel-bazel
 integration/bazel/bazel-bin

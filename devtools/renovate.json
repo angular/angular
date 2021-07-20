@@ -1,0 +1,39 @@
+{
+  "extends": ["schedule:nonOfficeHours"],
+  "automerge": false,
+  "masterIssue": true,
+  "semanticCommits": true,
+  "semanticCommitType": "build",
+  "separateMajorMinor": false,
+  "prHourlyLimit": 2,
+  "timezone": "America/Tijuana",
+  "packageRules": [
+    {
+      "managers": ["npm"],
+      "updateTypes": ["digest"],
+      "enabled": true
+    },
+    {
+      "packagePatterns": ["^@angular/"],
+      "excludePackagePatterns": ["^@angular-devkit/", "^@angular/cli$", "^@angular/cdk$", "^@angular/material"],
+      "groupName": "angular-framework"
+    },
+    {
+      "packagePatterns": ["^@angular-devkit/", "^@angular/cli$"],
+      "groupName": "angular-cli"
+    },
+    {
+      "packagePatterns": ["^@angular/cdk$", "^@angular/material"],
+      "groupName": "angular-components"
+    },
+    {
+      "packageNames": ["typescript"],
+      "separateMinorPatch": true
+    },
+    {
+      "packageNames": ["typescript"],
+      "updateTypes": ["minor", "major"],
+      "masterIssueApproval": true
+    }
+  ]
+}

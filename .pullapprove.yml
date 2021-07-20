@@ -1003,6 +1003,23 @@ groups:
         - twerske
 
   # =========================================================
+  #  Angular DevTools
+  # =========================================================
+  angular-devtools:
+    <<: *defaults
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - >
+        contains_any_globs(files, [
+          'angular-devtools/**',
+          ])
+    reviewers:
+      users:
+        - mgechev
+        - twerske
+
+  # =========================================================
   #  Tooling: Compiler API shared with Angular CLI
   #
   #  Changing this API might break Angular CLI, so we require

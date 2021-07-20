@@ -1,0 +1,127 @@
+:host {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.hidden {
+  display: none;
+}
+
+.tab-content {
+  height: calc(100% - 31px);
+}
+
+#nav-buttons {
+  display: flex;
+}
+
+.inspector-active {
+  color: #1a73e8 !important;
+}
+
+#app-angular-version {
+  align-self: center;
+  margin-left: auto;
+  margin-right: 8px;
+  font-size: 0.8em;
+  font-weight: bold;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+#version-number {
+  color: #1b1aa5;
+  cursor: text;
+  -moz-user-select: text;
+  -khtml-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+button.mat-icon-button {
+  height: 30px;
+  width: 30px;
+  line-height: 30px;
+  margin-right: 0px;
+}
+
+mat-icon {
+  font-size: 16px;
+}
+
+.mat-tab-link {
+  min-width: unset;
+  line-height: 30px;
+  height: 30px;
+  font-size: 13px;
+  padding: 0px 10px;
+  opacity: 1;
+  font-weight: 400;
+}
+
+::ng-deep {
+  .options-menu {
+    padding: 1rem 1.25rem;
+  }
+
+  .info-menu {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .info-menu mat-icon {
+    height: unset;
+    width: unset;
+  }
+
+  body.dark-theme .menu-toggle-button {
+    color: white;
+  }
+
+  .menu-toggle-button {
+    mat-icon {
+      position: relative;
+      top: -1px;
+      margin-right: 5px;
+    }
+  }
+}
+
+.menu-toggle-button {
+  font-size: 0.7em;
+  font-weight: 500;
+  color: #777;
+}
+
+:host-context(.dark-theme) {
+  #version-number {
+    color: #5caace;
+  }
+
+  .inspector-active {
+    color: #4688f1 !important;
+  }
+}
+
+:host-context(.light-theme) {
+  mat-icon {
+    color: rgba(0, 0, 0, 0.87);
+  }
+}
+
+@media only screen and (max-width: 700px) {
+  #app-angular-version {
+    max-width: 135px;
+  }
+}
+
+@media only screen and (max-width: 420px) {
+  #app-angular-version {
+    display: none;
+  }
+}

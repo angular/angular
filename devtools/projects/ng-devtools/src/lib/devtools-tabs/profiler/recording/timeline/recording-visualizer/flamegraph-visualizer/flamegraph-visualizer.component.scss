@@ -1,0 +1,46 @@
+:host {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+
+  .level-profile-wrapper {
+    height: 100%;
+    width: 100%;
+    cursor: pointer;
+    overflow-y: auto;
+  }
+
+  ::ng-deep {
+    .ngx-fg-label {
+      color: #000000de;
+      font-weight: 500;
+      font-size: 1em;
+    }
+  }
+
+  :host-context(.dark-theme) {
+    .entry-statistics {
+      span {
+        color: #54c9bd;
+      }
+    }
+
+    ::ng-deep {
+      .ngx-fg-rect {
+        stroke: #303030;
+        transition: none;
+      }
+
+      .ngx-fg-label {
+        color: #bcc5ce;
+      }
+
+      .ngx-fg-svg-g {
+        transition: none;
+      }
+    }
+  }
+}

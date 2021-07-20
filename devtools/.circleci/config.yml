@@ -1,0 +1,46 @@
+version: 2.1
+
+orbs:
+  cypress: cypress-io/cypress@1.28.0
+
+parameters:
+  devtools-modified:
+    type: boolean
+    default: false
+
+executors:
+  node-and-browsers:
+    docker:
+      - image: cypress/browsers:node14.16.0-chrome89-ff86
+    environment:
+      - CHROME_BIN: /usr/bin/google-chrome
+
+workflows:
+  test-and-build:
+    when: << pipeline.parameters.devtools-modified >>
+    jobs:
+      - cypress/install:
+          name: Setup
+          yarn: true
+          executor: node-and-browsers
+          post-steps:
+            - run:
+                name: Run Linting
+                command: yarn lint
+            - run:
+                name: Run Unit Tests
+                command: yarn test:ci
+      - cypress/run:
+          name: 'E2E Tests - Chrome'
+          browser: chrome
+          executor: node-and-browsers
+          yarn: true
+          start: yarn start
+          wait-on: 'http://localhost:4200'
+          requires:
+            - Setup
+          post-steps:
+            - run:
+                name: Test Chrome Build
+                command: yarn build:chrome
+

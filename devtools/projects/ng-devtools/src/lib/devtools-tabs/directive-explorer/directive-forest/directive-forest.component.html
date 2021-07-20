@@ -1,0 +1,39 @@
+<ng-filter
+  [hasMatched]="hasMatched"
+  (filter)="handleFilter($event)"
+  (nextMatched)="nextMatched()"
+  (prevMatched)="prevMatched()"
+>
+</ng-filter>
+<cdk-virtual-scroll-viewport class="tree-wrapper" [itemSize]="itemHeight">
+  <ng-container *cdkVirtualFor="let node of dataSource; let idx = index">
+    <div
+      [ngClass]="{
+        matched: isMatched(node),
+        selected: isSelected(node),
+        highlighted: isHighlighted(node),
+        'new-node': node.newItem
+      }"
+      class="tree-node"
+      (click)="selectAndEnsureVisible(node)"
+      (dblclick)="handleSelectDomElement(node)"
+      (mouseenter)="highlightNode(node.position)"
+      (mouseleave)="removeHighlight()"
+      [style.padding-left]="15 + 15 * node.level + 'px'"
+    >
+      <button
+        [style.left]="15 * node.level + 'px'"
+        *ngIf="node.expandable"
+        (click)="treeControl.toggle(node)"
+        [attr.aria-label]="'toggle ' + node.name"
+      >
+        <mat-icon class="mat-icon-rtl-mirror">
+          {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+        </mat-icon>
+      </button>
+      <span class="element-name" [class.angular-element]="isElement(node)">{{ node.name }}</span>
+      <span *ngIf="node.directives" class="dir-names">[{{ node.directives }}]</span>
+      <span class="console-reference" *ngIf="isSelected(node)"> == $ng0 </span>
+    </div>
+  </ng-container>
+</cdk-virtual-scroll-viewport>

@@ -1,0 +1,78 @@
+.visual-controls {
+  display: flex;
+  flex-direction: column;
+  height: 80px;
+  justify-content: space-around;
+  margin-right: 25px;
+  width: 180px;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.controls {
+  display: flex;
+  white-space: nowrap;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 15px 5px 5px;
+
+  button {
+    height: 50px;
+    width: 75px;
+    white-space: normal;
+    line-height: 18px;
+  }
+
+  mat-form-field {
+    flex: 0 1 60px;
+    margin-left: 15px;
+    margin-right: 15px;
+  }
+
+  ::ng-deep .details {
+    flex: 1 1 150px;
+    display: flex;
+    flex-direction: column;
+    font-weight: 500;
+    -moz-user-select: text;
+    -khtml-user-select: text;
+    -webkit-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      &.warning-label {
+        color: #d83c34;
+      }
+    }
+
+    .value {
+      color: #8a1882;
+    }
+  }
+
+  .bar-details {
+    min-height: 60px;
+  }
+
+  .flame-details {
+    min-height: 85px;
+  }
+}
+
+:host-context(.dark-theme) {
+  .details .value {
+    color: #5cadd3;
+  }
+
+  .warning-label {
+    color: #ff625a;
+  }
+}
