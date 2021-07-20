@@ -6800,7 +6800,7 @@ class ReleaseAction {
     /** Verify the version of each generated package exact matches the specified version. */
     _verifyPackageVersions(version, packages) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
-            /*** Experimental equivilent version for packages created with the provided version. */
+            /** Experimental equivalent version for packages created with the provided version. */
             const experimentalVersion = new semver.SemVer(`0.${version.major * 100 + version.minor}.${version.patch}`);
             for (const pkg of packages) {
                 const { version: packageJsonVersion } = JSON.parse(yield fs.promises.readFile(path.join(pkg.outputPath, 'package.json'), 'utf8'));

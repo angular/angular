@@ -508,7 +508,7 @@ export abstract class ReleaseAction {
 
   /** Verify the version of each generated package exact matches the specified version. */
   private async _verifyPackageVersions(version: semver.SemVer, packages: BuiltPackage[]) {
-    /*** Experimental equivilent version for packages created with the provided version. */
+    /** Experimental equivalent version for packages created with the provided version. */
     const experimentalVersion =
         new semver.SemVer(`0.${version.major * 100 + version.minor}.${version.patch}`);
     for (const pkg of packages) {
