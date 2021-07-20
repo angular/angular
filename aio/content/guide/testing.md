@@ -347,3 +347,4 @@ After you've set up your application for testing, you may find the following tes
 * [Testing pipes](guide/testing-pipes)&mdash;find out how to test pipes.
 * [Debugging tests](guide/test-debugging)&mdash;uncover common testing bugs.
 * [Testing utility APIs](guide/testing-utility-apis)&mdash;get familiar with Angular testing features.
+* [Testing utility APIs](guide/testing-as-pure-js-application)&mdash;unit testing angular application as pure JS application.

@@ -8,12 +8,13 @@ import { Hero } from '../model/hero';
 describe('HeroDetailComponent - no TestBed', () => {
   let comp: HeroDetailComponent;
   let expectedHero: Hero;
+  let activatedRoute: ActivatedRouteStub;
   let hds: any;
   let router: any;
 
   beforeEach((done: DoneFn) => {
-    expectedHero = {id: 42, name: 'Bubba' };
-    const activatedRoute = new ActivatedRouteStub({ id: expectedHero.id });
+    expectedHero = { id: 42, name: 'Bubba' };
+    activatedRoute = new ActivatedRouteStub({ id: expectedHero.id });
     router = jasmine.createSpyObj('router', ['navigate']);
 
     hds = jasmine.createSpyObj('HeroDetailService', ['getHero', 'saveHero']);
@@ -45,11 +46,9 @@ describe('HeroDetailComponent - no TestBed', () => {
   it('should navigate when click save resolves', (done: DoneFn) => {
     comp.save();
     // waits for async save to complete before navigating
-    hds.saveHero.calls.first().returnValue
-    .subscribe(() => {
+    hds.saveHero.calls.first().returnValue.subscribe(() => {
       expect(router.navigate.calls.any()).toBe(true, 'router.navigate called');
       done();
     });
   });
-
 });
