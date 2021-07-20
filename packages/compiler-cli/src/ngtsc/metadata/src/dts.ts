@@ -30,7 +30,7 @@ export class DtsMetadataReader implements MetadataReader {
    */
   getNgModuleMetadata(ref: Reference<ClassDeclaration>): NgModuleMeta|null {
     const clazz = ref.node;
-    const resolutionContext = clazz.getSourceFile().fileName;
+
     // This operation is explicitly not memoized, as it depends on `ref.ownedByModuleGuess`.
     // TODO(alxhub): investigate caching of .d.ts module metadata.
     const ngModuleDef = this.reflector.getMembersOfClass(clazz).find(
@@ -49,12 +49,10 @@ export class DtsMetadataReader implements MetadataReader {
     const [_, declarationMetadata, importMetadata, exportMetadata] = ngModuleDef.type.typeArguments;
     return {
       ref,
-      declarations: extractReferencesFromType(
-          this.checker, declarationMetadata, ref.ownedByModuleGuess, resolutionContext),
-      exports: extractReferencesFromType(
-          this.checker, exportMetadata, ref.ownedByModuleGuess, resolutionContext),
-      imports: extractReferencesFromType(
-          this.checker, importMetadata, ref.ownedByModuleGuess, resolutionContext),
+      declarations:
+          extractReferencesFromType(this.checker, declarationMetadata, ref.bestGuessOwningModule),
+      exports: extractReferencesFromType(this.checker, exportMetadata, ref.bestGuessOwningModule),
+      imports: extractReferencesFromType(this.checker, importMetadata, ref.bestGuessOwningModule),
       schemas: [],
       rawDeclarations: null,
     };
