@@ -17,3 +17,11 @@ export function semverInc(
   const clone = new semver.SemVer(version.version);
   return clone.inc(release, identifier);
 }
+
+/** Creates the equivalent experimental version for a provided SemVer. */
+export function createExperimentalSemver(version: semver.SemVer): semver.SemVer {
+  const experimentalVersion = new semver.SemVer(version.format());
+  experimentalVersion.major = 0;
+  experimentalVersion.minor = version.major * 100 + version.minor;
+  return new semver.SemVer(experimentalVersion.format());
+}

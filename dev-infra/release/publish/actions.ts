@@ -18,6 +18,7 @@ import {BuiltPackage, ReleaseConfig} from '../config/index';
 import {ReleaseNotes} from '../notes/release-notes';
 import {NpmDistTag} from '../versioning';
 import {ActiveReleaseTrains} from '../versioning/active-release-trains';
+import {createExperimentalSemver} from '../versioning/inc-semver';
 import {runNpmPublish} from '../versioning/npm-publish';
 
 import {FatalReleaseActionError, UserAbortedReleaseActionError} from './actions-error';
@@ -521,8 +522,8 @@ export abstract class ReleaseAction {
   /** Verify the version of each generated package exact matches the specified version. */
   private async _verifyPackageVersions(version: semver.SemVer, packages: BuiltPackage[]) {
     /** Experimental equivalent version for packages created with the provided version. */
-    const experimentalVersion =
-        new semver.SemVer(`0.${version.major * 100 + version.minor}.${version.patch}`);
+    const experimentalVersion = createExperimentalSemver(version);
+
     for (const pkg of packages) {
       const {version: packageJsonVersion} =
           JSON.parse(await fs.readFile(join(pkg.outputPath, 'package.json'), 'utf8')) as
