@@ -267,6 +267,29 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
           ]);
         });
 
+        it('should parse attributes containing unquoted interpolation', () => {
+          expect(humanizeDom(parser.parse('<div foo={{message}}></div>', 'TestComp'))).toEqual([
+            [html.Element, 'div', 0], [html.Attribute, 'foo', '{{message}}']
+          ]);
+        });
+
+        it('should parse bound inputs with expressions containing newlines', () => {
+          expect(humanizeDom(parser.parse(
+                     `<app-component
+                        [attr]="[
+                        {text: 'some text',url:'//www.google.com'},
+                        {text:'other text',url:'//www.google.com'}]"></app-component>`,
+                     'TestComp')))
+              .toEqual([
+                [html.Element, 'app-component', 0],
+                [
+                  html.Attribute, '[attr]', `[
+                        {text: 'some text',url:'//www.google.com'},
+                        {text:'other text',url:'//www.google.com'}]`
+                ],
+              ]);
+        });
+
         it('should normalize line endings within attribute values', () => {
           const result =
               parser.parse('<div key="  \r\n line 1 \r\n   line 2  "></div>', 'TestComp');

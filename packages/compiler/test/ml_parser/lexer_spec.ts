@@ -362,6 +362,27 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         ]);
       });
 
+      it('should parse bound inputs with expressions containing newlines', () => {
+        expect(tokenizeAndHumanizeParts(`<app-component
+        [attr]="[
+        {text: 'some text',url:'//www.google.com'},
+        {text:'other text',url:'//www.google.com'}]">`))
+            .toEqual([
+              [lex.TokenType.TAG_OPEN_START, '', 'app-component'],
+              [lex.TokenType.ATTR_NAME, '', '[attr]'],
+              [lex.TokenType.ATTR_QUOTE, '"'],
+              [
+                lex.TokenType.ATTR_VALUE,
+                '[\n' +
+                    '        {text: \'some text\',url:\'//www.google.com\'},\n' +
+                    '        {text:\'other text\',url:\'//www.google.com\'}]'
+              ],
+              [lex.TokenType.ATTR_QUOTE, '"'],
+              [lex.TokenType.TAG_OPEN_END],
+              [lex.TokenType.EOF],
+            ]);
+      });
+
       it('should allow whitespace', () => {
         expect(tokenizeAndHumanizeParts('<t a = b >')).toEqual([
           [lex.TokenType.TAG_OPEN_START, '', 't'],
