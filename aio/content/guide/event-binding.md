@@ -1,6 +1,6 @@
 # Event binding
 
-Event binding allows you to listen for and respond to user actions such as keystrokes, mouse movements, clicks, and touches.
+Event binding lets you listen for and respond to user actions such as keystrokes, mouse movements, clicks, and touches.
 
 <div class="alert is-helpful">
 
@@ -26,7 +26,7 @@ The event binding listens for the button's click events and calls the component'
 
 ## Binding to passive events
 
-Angular also supports passive event listeners. For example, you can use the following steps to make a scroll event passive.
+Angular also supports passive event listeners. For example, use the following steps to make a scroll event passive.
 
 1. Create a file `zone-flags.ts` under `src` directory.
 2. Add the following line into this file.

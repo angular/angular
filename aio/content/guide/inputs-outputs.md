@@ -1,7 +1,7 @@
 # Sharing data between child and parent directives and components
 
 A common pattern in Angular is sharing data between a parent component and one or more child components.
-You can implement this pattern by using the `@Input()` and `@Output()` directives.
+To implement this pattern use the `@Input()` and `@Output()` directives.
 
 <div class="alert is-helpful">
 
@@ -21,8 +21,8 @@ Consider the following hierarchy:
 The `<parent-component>` serves as the context for the `<child-component>`.
 
 `@Input()` and `@Output()` give a child component a way to communicate with its parent component.
-`@Input()` allows a parent component to update data in the child component.
-Conversely, `@Output()` allows the child to send data to a parent component.
+`@Input()` lets a parent component update data in the child component.
+Conversely, `@Output()` lets the child send data to a parent component.
 
 
 {@a input}
@@ -80,14 +80,14 @@ The binding source, the part to the right of the equal sign, is the data that th
 
 ### Watching for `@Input()` changes
 
-To watch for changes on an `@Input()` property, you can use `OnChanges`, one of Angular's [lifecycle hooks](guide/lifecycle-hooks).
+To watch for changes on an `@Input()` property, use `OnChanges`, one of Angular's [lifecycle hooks](guide/lifecycle-hooks).
 See the [`OnChanges`](guide/lifecycle-hooks#onchanges) section of the [Lifecycle Hooks](guide/lifecycle-hooks) guide for more details and examples.
 
 {@a output}
 
 ## Sending data to a parent component
 
-The `@Output()` decorator in a child component or directive allows data to flow from the child to the parent.
+The `@Output()` decorator in a child component or directive lets data flow from the child to the parent.
 
 <div class="lightbox">
   <img src="generated/images/guide/inputs-outputs/output.svg" alt="Output diagram of the data flow going from child to parent">
@@ -118,7 +118,7 @@ The following example features an `<input>` where a user can enter a value and c
 
   <code-example path="inputs-outputs/src/app/item-output/item-output.component.ts" region="item-output" header="src/app/item-output/item-output.component.ts"></code-example>
 
-  The different parts of the above declaration are as follows:
+  The different parts of the preceding declaration are as follows:
 
     * `@Output()`&mdash;a decorator function marking the property as a way for data to go from the child to the parent
     * `newItemEvent`&mdash;the name of the `@Output()`
@@ -166,7 +166,7 @@ The `addItem()` method takes an argument in the form of a string and then adds t
 
   The `$event` contains the data that the user types into the `<input>` in the child template UI.
 
-  To see the `@Output()` working, you can add the following to the parent's template:
+  To see the `@Output()` working, add the following to the parent's template:
 
   ```html
     <ul>
@@ -180,7 +180,7 @@ The `addItem()` method takes an argument in the form of a string and then adds t
 
 ## Using `@Input()` and `@Output()` together
 
-You can use `@Input()` and `@Output()` on the same child component as follows:
+Use `@Input()` and `@Output()` on the same child component as follows:
 
 <code-example path="inputs-outputs/src/app/app.component.html" region="together" header="src/app/app.component.html"></code-example>
 
