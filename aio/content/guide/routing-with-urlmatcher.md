@@ -1,6 +1,6 @@
 # Tutorial: Creating custom route matches
 
-The Angular Router supports a powerful matching strategy that you can use to help users navigate your application. This matching strategy supports static routes, variable routes with parameters, wildcard routes, and so on. You can also build your own custom pattern matching for situations in which the URLs are more complicated.
+The Angular Router supports a powerful matching strategy that you can use to help users navigate your application. This matching strategy supports static routes, variable routes with parameters, wildcard routes, and so on. Also, build your own custom pattern matching for situations in which the URLs are more complicated.
 
 In this tutorial, you'll build a custom route matcher using Angular's `UrlMatcher`. This matcher looks for a Twitter handle in the URL.
 
@@ -19,7 +19,7 @@ To complete this tutorial, you should have a basic understanding of the followin
 * CSS
 * [Angular CLI](/cli)
 
-If you are unfamiliar with how Angular's router works, we recommend you review [Using Angular routes in a single-page application](guide/router-tutorial).
+If you are unfamiliar with how Angular's router works, review [Using Angular routes in a single-page application](guide/router-tutorial).
 
 ## Create a sample application
 
@@ -82,7 +82,7 @@ This custom matcher is a function that performs the following tasks:
 
 <div class="is-helpful">
 
-A custom URL matcher behaves like any other route definition. You can define child routes or lazy loaded routes as you would with any other route.
+A custom URL matcher behaves like any other route definition. Define child routes or lazy loaded routes as you would with any other route.
 
 </div>
 

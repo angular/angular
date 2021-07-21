@@ -39,7 +39,7 @@ Pass it to the `RouterModule.forRoot()` method in the module `imports` to config
 
 Each `Route` maps a URL `path` to a component.
 There are no leading slashes in the path.
-The router parses and builds the final URL for you, which allows you to use both relative and absolute paths when navigating between application views.
+The router parses and builds the final URL for you, which lets you use both relative and absolute paths when navigating between application views.
 
 The `:id` in the second route is a token for a route parameter.
 In a URL such as `/hero/42`, "42" is the value of the `id` parameter.
@@ -48,7 +48,7 @@ The corresponding `HeroDetailComponent` uses that value to find and present the 
 The `data` property in the third route is a place to store arbitrary data associated with
 this specific route.
 The data property is accessible within each activated route. Use it to store items such as page titles, breadcrumb text, and other read-only, static data.
-You can use the [resolve guard](guide/router-tutorial-toh#resolve-guard) to retrieve dynamic data.
+Use the [resolve guard](guide/router-tutorial-toh#resolve-guard) to retrieve dynamic data.
 
 The empty path in the fourth route represents the default path for the application&mdash;the place to go when the path in the URL is empty, as it typically is at the start.
 This default route redirects to the route for the `/heroes` URL and, therefore, displays the `HeroesListComponent`.
@@ -72,7 +72,7 @@ display the components for that outlet.
 
 </code-example>
 
-Given the configuration above, when the browser URL for this application becomes `/heroes`, the router matches that URL to the route path `/heroes` and displays the `HeroListComponent` as a sibling element to the `RouterOutlet` that you've placed in the host component's template.
+Given the preceding configuration, when the browser URL for this application becomes `/heroes`, the router matches that URL to the route path `/heroes` and displays the `HeroListComponent` as a sibling element to the `RouterOutlet` that you've placed in the host component's template.
 
 {@a basics-router-links}
 
@@ -104,7 +104,7 @@ The template expression to the right of the equal sign, `=`, contains a space-de
 You set the `RouterLinkActive` directive to a string of classes such as `routerLinkActive="active fluffy"` or bind it to a component property that returns such a string (for example, `[routerLinkActive]="someStringProperty"`).
 
 Active route links cascade down through each level of the route tree, so parent and child router links can be active at the same time.
-To override this behavior, you can bind to the `[routerLinkActiveOptions]` input binding with the `{ exact: true }` expression. By using `{ exact: true }`, a given `RouterLink` will only be active if its URL is an exact match to the current URL.
+To override this behavior, bind to the `[routerLinkActiveOptions]` input binding with the `{ exact: true }` expression. By using `{ exact: true }`, a given `RouterLink` is only active if its URL is an exact match to the current URL.
 
 {@a basics-router-state}
 
@@ -249,7 +249,7 @@ It has a great deal of useful information including:
 
 <div class="alert is-helpful">
 
-Two older properties are still available; however, their replacements are preferable as they may be deprecated in a future Angular version.
+Two older properties are still available; however, their replacements are preferable as they might be deprecated in a future Angular version.
 
 * `params`: An `Observable` that contains the required and [optional parameters](guide/router-tutorial-toh#optional-route-parameters) specific to the route. Use `paramMap` instead.
 
@@ -261,7 +261,7 @@ Use `queryParamMap` instead.
 ### Router events
 
 During each navigation, the `Router` emits navigation events through the `Router.events` property.
-These events range from when the navigation starts and ends to many points in between. The full list of navigation events is displayed in the table below.
+These events range from when the navigation starts and ends to many points in between. The full list of navigation events is displayed in the following table.
 
 <table>
   <tr>
