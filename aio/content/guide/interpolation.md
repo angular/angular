@@ -1,7 +1,7 @@
 # Text interpolation
 
-Text interpolation allows you to incorporate dynamic string values into your HTML templates.
-With interpolation, you can dynamically change what appears in an application view, such as displaying a custom greeting that includes the user's name.
+Text interpolation lets you incorporate dynamic string values into your HTML templates.
+Use interpolation to dynamically change what appears in an application view, such as displaying a custom greeting that includes the user's name.
 
 <div class="alert is-helpful">
 
@@ -18,7 +18,7 @@ To illustrate how interpolation works, consider an Angular component that contai
 
 <code-example path="interpolation/src/app/app.component.ts" region="customer" header="src/app/app.component.ts"></code-example>
 
-You can use interpolation to display the value of this variable in the corresponding component template:
+Use interpolation to display the value of this variable in the corresponding component template:
 
 <code-example path="interpolation/src/app/app.component.html" region="interpolation-example1" header="src/app/app.component.html"></code-example>
 
@@ -55,7 +55,7 @@ With interpolation, Angular performs the following tasks:
 
 <div class="alert is-helpful">
 
-You can configure the interpolation delimiter with the [interpolation](api/core/Component#interpolation) option in the `@Component()` metadata.
+Configure the interpolation delimiter with the [interpolation](api/core/Component#interpolation) option in the `@Component()` metadata.
 
 </div>
 
@@ -131,7 +131,7 @@ When using template expressions, follow these best practices:
 * **Use short expressions**
 
   Use property names or method calls whenever possible.
-  Keep application and business logic in the component, where it is easier to develop and test.
+  Keep application and business logic in the component, where it is accessible to develop and test.
 
 * **Quick execution**
 
