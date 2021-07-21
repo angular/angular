@@ -6199,6 +6199,13 @@ function semverInc(version, release, identifier) {
     const clone = new semver.SemVer(version.version);
     return clone.inc(release, identifier);
 }
+/** Creates the equivalent experimental version for a provided SemVer. */
+function createExperimentalSemver(version) {
+    const experimentalVersion = new semver.SemVer(version.format());
+    experimentalVersion.major = 0;
+    experimentalVersion.minor = version.major * 100 + version.minor;
+    return new semver.SemVer(experimentalVersion.format());
+}
 
 /**
  * @license
@@ -6843,7 +6850,7 @@ class ReleaseAction {
     _verifyPackageVersions(version, packages) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             /** Experimental equivalent version for packages created with the provided version. */
-            const experimentalVersion = new semver.SemVer(`0.${version.major * 100 + version.minor}.${version.patch}`);
+            const experimentalVersion = createExperimentalSemver(version);
             for (const pkg of packages) {
                 const { version: packageJsonVersion } = JSON.parse(yield fs.promises.readFile(path.join(pkg.outputPath, 'package.json'), 'utf8'));
                 const mismatchesVersion = version.compare(packageJsonVersion) !== 0;
