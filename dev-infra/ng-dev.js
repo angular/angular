@@ -6196,12 +6196,12 @@ class FatalReleaseActionError extends Error {
  * the version is cloned to not modify the original version instance.
  */
 function semverInc(version, release, identifier) {
-    const clone = new semver.SemVer(version.version);
+    var clone = new semver.SemVer(version.version);
     return clone.inc(release, identifier);
 }
 /** Creates the equivalent experimental version for a provided SemVer. */
 function createExperimentalSemver(version) {
-    const experimentalVersion = new semver.SemVer(version.format());
+    var experimentalVersion = new semver.SemVer(version.format());
     experimentalVersion.major = 0;
     experimentalVersion.minor = version.major * 100 + version.minor;
     return new semver.SemVer(experimentalVersion.format());

@@ -8,8 +8,8 @@
 
 import {ListChoiceOptions, prompt} from 'inquirer';
 
+import {semverInc} from '../../../utils/semver';
 import {ActiveReleaseTrains} from '../../versioning/active-release-trains';
-import {semverInc} from '../../versioning/inc-semver';
 import {fetchLongTermSupportBranchesFromNpm, LtsBranch} from '../../versioning/long-term-support';
 import {ReleaseAction} from '../actions';
 
