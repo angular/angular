@@ -38,7 +38,7 @@ For example, if the `@Input()` property is `size`, the `@Output()` property must
 
 The following `sizerComponent` has a `size` value property and a `sizeChange` event.
 The `size` property is an `@Input()`, so data can flow into the `sizerComponent`.
-The `sizeChange` event is an `@Output()`, which allows data to flow out of the `sizerComponent` to the parent component.
+The `sizeChange` event is an `@Output()`, which lets data flow out of the `sizerComponent` to the parent component.
 
 Next, there are two methods, `dec()` to decrease the font size and `inc()` to increase the font size.
 These two methods use `resize()` to change the value of the `size` property within min/max value constraints, and to emit an event that conveys the new `size` value.
@@ -75,7 +75,7 @@ Angular assigns the `$event` value to the `AppComponent.fontSizePx` when the use
 
   <header>Two-way binding in forms</header>
 
-  Because no native HTML element follows the `x` value and `xChange` event pattern, two-way binding with form elements requires `NgModel`.
+  Because no built-in HTML element follows the `x` value and `xChange` event pattern, two-way binding with form elements requires `NgModel`.
   For more information on how to use two-way binding in forms, see Angular [NgModel](guide/built-in-directives#ngModel).
 
 </div>

@@ -1,7 +1,7 @@
 # Template variables
 
 Template variables help you use data from one part of a template in another part of the template.
-With template variables, you can perform tasks such as respond to user input or finely tune your application's forms.
+Use template variables to perform tasks such as respond to user input or finely tune your application's forms.
 
 A template variable can refer to the following:
 
@@ -24,7 +24,7 @@ The following template variable, `#phone`, declares a `phone` variable on an `<i
 
 <code-example path="template-reference-variables/src/app/app.component.html" region="ref-var" header="src/app/app.component.html"></code-example>
 
-You can refer to a template variable anywhere in the component's template.
+Refer to a template variable anywhere in the component's template.
 Here, a `<button>` further down the template refers to the `phone` variable.
 
 <code-example path="template-reference-variables/src/app/app.component.html" region="ref-phone" header="src/app/app.component.html"></code-example>
@@ -59,12 +59,12 @@ There is, however, a difference between a `Component` and a `Directive` in that 
 With `NgForm`, `itemForm` is a reference to the [NgForm](api/forms/NgForm "API: NgForm") directive with the ability to track the value and validity of every control in the form.
 
 Unlike the native `<form>` element, the `NgForm` directive has a `form` property.
-The `NgForm` `form` property allows you to disable the submit button if the `itemForm.form.valid` is invalid.
+The `NgForm` `form` property lets you disable the submit button if the `itemForm.form.valid` is invalid.
 
 
 ## Template variable scope
 
-You can refer to a template variable anywhere within its surrounding template.
+Refer to a template variable anywhere within its surrounding template.
 [Structural directives](guide/built-in-directives), such as `*ngIf` and `*ngFor`, or `<ng-template>` act as a template boundary.
 You cannot access template variables outside of these boundaries.
 
@@ -85,7 +85,7 @@ In the following example, changing the text in the `<input>` changes the value i
 In this case, there is an implied `<ng-template>` around the `<span>` and the definition of the variable is outside of it.
 Accessing a template variable from the parent template works because the child template inherits the context from the parent template.
 
-Rewriting the above code in a more verbose form explicitly shows the `<ng-template>`.
+Rewriting the preceding code in a more verbose form explicitly shows the `<ng-template>`.
 
 ```html
 
@@ -93,7 +93,7 @@ Rewriting the above code in a more verbose form explicitly shows the `<ng-templa
 
 <!-- New template -->
 <ng-template [ngIf]="true">
-  <!-- Since the context is inherited, the value is available to the new template -->
+  <!-- Because the context is inherited, the value is available to the new template -->
   <span>Value: {{ ref1.value }}</span>
 </ng-template>
 
@@ -157,13 +157,13 @@ __proto__: Function
 {@a template-input-variables}
 ## Template input variable
 
-A _template input variable_ is a variable you can reference within a single instance of the template.
+A _template input variable_ is a variable to reference within a single instance of the template.
 You declare a template input variable using the `let` keyword as in `let hero`.
 
 There are several such variables in this example: `hero`, `i`, and `odd`.
 
 The variable's scope is limited to a single instance of the repeated template.
-You can use the same variable name again in the definition of other structural directives.
+Use the same variable name again in the definition of other structural directives.
 
 In contrast, you declare a template variable by prefixing the variable name with `#`, as in `#var`.
 A template variable refers to its attached element, component, or directive.
