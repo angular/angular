@@ -92,7 +92,7 @@ The following is the default `AppModule` using the CLI with the `--routing` flag
 
   1. Add your routes to your application.
 
-  Now that you have defined your routes, you can add them to your application.
+  Now that you have defined your routes, add them to your application.
   First, add links to the two components.
   Assign the anchor tag that you want to add the route to the `routerLink` attribute.
   Set the value of the attribute to the component to show when a user clicks on each link.
@@ -119,7 +119,7 @@ Each item in the list has a unique `id`.
 To edit an item, users click an Edit button, which opens an `EditGroceryItem` component.
 You want that component to retrieve the `id` for the grocery item so it can display the right information to the user.
 
-You can use a route to pass this type of information to your application components.
+Use a route to pass this type of information to your application components.
 To do so, you use the [ActivatedRoute](api/router/ActivatedRoute) interface.
 
 To get information from a route:
@@ -208,7 +208,7 @@ For more details on `pathMatch` see [Spotlight on `pathMatch`](guide/router-tuto
 
 ## Nesting routes
 
-As your application grows more complex, you may want to create routes that are relative to a component other than your root component.
+As your application grows more complex, you might want to create routes that are relative to a component other than your root component.
 These types of nested routes are called child routes.
 This means you're adding a second `<router-outlet>` to your app, because it is in addition to the `<router-outlet>` in `AppComponent`.
 
@@ -230,16 +230,16 @@ The one difference is that you place child routes in a `children` array within t
 
 ## Using relative paths
 
-Relative paths allow you to define paths that are relative to the current URL segment.
+Relative paths let you define paths that are relative to the current URL segment.
 The following example shows a relative route to another component, `second-component`.
 `FirstComponent` and `SecondComponent` are at the same level in the tree, however, the link to `SecondComponent` is situated within the `FirstComponent`, meaning that the router has to go up a level and then into the second directory to find the `SecondComponent`.
-Rather than writing out the whole path to get to `SecondComponent`, you can use the `../` notation to go up a level.
+Rather than writing out the whole path to get to `SecondComponent`, use the `../` notation to go up a level.
 
 <code-example path="router/src/app/app.component.8.html" region="relative-route" header="In the template">
 
 </code-example>
 
-In addition to `../`, you can use `./` or no leading slash to specify the current level.
+In addition to `../`, use `./` or no leading slash to specify the current level.
 
 ### Specifying a relative route
 
@@ -336,7 +336,7 @@ Inject `ActivatedRoute` and `Router` in the constructor of the component class s
 ## Lazy loading
 
 You can configure your routes to lazy load modules, which means that Angular only loads modules as needed, rather than loading all modules when the application launches.
-Additionally, you can preload parts of your application in the background to improve the user experience.
+Additionally, preload parts of your application in the background to improve the user experience.
 
 For more information on lazy loading and preloading see the dedicated guide [Lazy loading NgModules](guide/lazy-loading-ngmodules).
 
@@ -393,7 +393,7 @@ A link parameters array holds the following ingredients for router navigation:
 * The path of the route to the destination component.
 * Required and optional route parameters that go into the route URL.
 
-You can bind the `RouterLink` directive to such an array like this:
+Bind the `RouterLink` directive to such an array like this:
 
 <code-example path="router/src/app/app.component.3.ts" header="src/app/app.component.ts (h-anchor)" region="h-anchor"></code-example>
 
@@ -401,7 +401,7 @@ The following is a two-element array when specifying a route parameter:
 
 <code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" header="src/app/heroes/hero-list/hero-list.component.html (nav-to-detail)" region="nav-to-detail"></code-example>
 
-You can provide optional route parameters in an object, as in `{ foo: 'foo' }`:
+Provide optional route parameters in an object, as in `{ foo: 'foo' }`:
 
 <code-example path="router/src/app/app.component.3.ts" header="src/app/app.component.ts (cc-query-params)" region="cc-query-params"></code-example>
 
@@ -493,7 +493,7 @@ This option is only available if application URLs look like normal web URLs with
 ## `<base href>`
 
 The router uses the browser's <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="HTML5 browser history push-state">history.pushState</a> for navigation.
-`pushState` allows you to customize in-application URL paths; for example, `localhost:4200/crisis-center`.
+`pushState` lets you customize in-application URL paths; for example, `localhost:4200/crisis-center`.
 The in-application URLs can be indistinguishable from server URLs.
 
 Modern HTML5 browsers were the first to support `pushState` which is why many people refer to these URLs as "HTML5 style" URLs.
@@ -531,12 +531,12 @@ The preferred way to configure the strategy is to add a <a href="https://develop
 
 <code-example path="router/src/index.html" header="src/index.html (base-href)" region="base-href"></code-example>
 
-Without that tag, the browser may not be able to load resources
+Without that tag, the browser might not be able to load resources
 (images, CSS, scripts) when "deep linking" into the application.
 
-Some developers may not be able to add the `<base>` element, perhaps because they don't have access to `<head>` or the `index.html`.
+Some developers might not be able to add the `<base>` element, perhaps because they don't have access to `<head>` or the `index.html`.
 
-Those developers may still use HTML5 URLs by taking the following two steps:
+Those developers can still use HTML5 URLs by taking the following two steps:
 
 1. Provide the router with an appropriate `APP_BASE_HREF` value.
 1. Use root URLs (URLs with an `authority`) for all web resources: CSS, images, scripts, and template HTML files.
@@ -553,6 +553,6 @@ For more complete information on how `<base href>` is used to construct target U
 
 ### `HashLocationStrategy`
 
-You can use `HashLocationStrategy` by providing the `useHash: true` in an object as the second argument of the `RouterModule.forRoot()` in the `AppModule`.
+Use `HashLocationStrategy` by providing the `useHash: true` in an object as the second argument of the `RouterModule.forRoot()` in the `AppModule`.
 
 <code-example path="router/src/app/app.module.6.ts" header="src/app/app.module.ts (hash URL strategy)"></code-example>
