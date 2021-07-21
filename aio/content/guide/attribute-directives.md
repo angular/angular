@@ -1,6 +1,6 @@
 # Attribute directives
 
-With attribute directives, you can change the appearance or behavior of DOM elements and Angular components.
+Change the appearance or behavior of DOM elements and Angular components with attribute directives.
 
 <div class="alert is-helpful">
 
@@ -66,7 +66,7 @@ This section shows you how to detect when a user mouses into or out of the eleme
 
   <code-example path="attribute-directives/src/app/highlight.directive.2.ts" header="src/app/highlight.directive.ts (mouse-methods)" region="mouse-methods"></code-example>
 
-  With the `@HostListener()` decorator, you can subscribe to events of the DOM element that hosts an attribute directive, the `<p>` in this case.
+Subscribe to events of the DOM element that hosts an attribute directive, the `<p>` in this case, with the `@HostListener()` decorator.
 
   The handlers delegate to a helper method, `highlight()`, that sets the color on the host DOM element, `el`.
 
@@ -166,7 +166,7 @@ In the following example, the expression `{{ 1 + 1 }}` renders just as it does i
 <code-example path="attribute-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html" region="ngNonBindable"></code-example>
 
 Applying `ngNonBindable` to an element stops binding for that element's child elements.
-However, `ngNonBindable` still allows directives to work on the element where you apply `ngNonBindable`.
+However, `ngNonBindable` still lets directives work on the element where you apply `ngNonBindable`.
 In the following example, the `appHighlight` directive is still active but Angular does not evaluate the expression `{{ 1 + 1 }}`.
 
 <code-example path="attribute-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html" region="ngNonBindable-with-directive"></code-example>
