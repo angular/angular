@@ -1,3 +1,30 @@
+## 12.1.3 "ruby-racecar" (2021-07-21)
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **input:** show focus indication for readonly inputs ([#22847](https://github.com/angular/components/issues/22847)) ([afa943101f3757a66b76e8475da9468b49295123](https://github.com/angular/components/commit/afa943101f3757a66b76e8475da9468b49295123)), closes [#22783](https://github.com/angular/components/issues/22783) |
+| bug fix |  **radio:** hidden circle visible on some zoom levels ([#23154](https://github.com/angular/components/issues/23154)) ([c26264ff4dff9417808236105e648f36a4e7200f](https://github.com/angular/components/commit/c26264ff4dff9417808236105e648f36a4e7200f)), closes [#22036](https://github.com/angular/components/issues/22036) |
+| bug fix |  **slider:** Style should only be applied when slider is focused. ([#23184](https://github.com/angular/components/issues/23184)) ([ecac3b5c21cc51985f5dc8c2aebece192f9ad7e0](https://github.com/angular/components/commit/ecac3b5c21cc51985f5dc8c2aebece192f9ad7e0)) |
+
+### cdk-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **dialog:** focus restoration not working inside shadow dom ([#23194](https://github.com/angular/components/issues/23194)) ([93459129096b142925bb42306253497bbf10fc35](https://github.com/angular/components/commit/93459129096b142925bb42306253497bbf10fc35)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-menu:** increase specificity of menu panel styles ([#23178](https://github.com/angular/components/issues/23178)) ([881b0137cabfa4e70586f97fb1b08c182a654f5d](https://github.com/angular/components/commit/881b0137cabfa4e70586f97fb1b08c182a654f5d)) |
+| bug fix |  **mdc-select:** resolve a couple of visual issues in high contrast mode ([#23007](https://github.com/angular/components/issues/23007)) ([d112acbc484ce40fcc29f410d3c9ba4d1d3b79c2](https://github.com/angular/components/commit/d112acbc484ce40fcc29f410d3c9ba4d1d3b79c2)) |
+| bug fix |  **mdc-table:** apply 500 font weight to headers ([#23169](https://github.com/angular/components/issues/23169)) ([0884cc9ed4c10edd16d8e850f97c87ab28423ea1](https://github.com/angular/components/commit/0884cc9ed4c10edd16d8e850f97c87ab28423ea1)) |
+| bug fix |  **mdc-table:** match legacy examples ([#23159](https://github.com/angular/components/issues/23159)) ([aa470effbde88b0110f2143e01e8b808e1de1d02](https://github.com/angular/components/commit/aa470effbde88b0110f2143e01e8b808e1de1d02)) |
+| bug fix |  **multiple:** inconsistent item text truncation when used together with MDC list ([#23138](https://github.com/angular/components/issues/23138)) ([48739eb0962188a1adbb3ac9bef6b00d44f6c2a8](https://github.com/angular/components/commit/48739eb0962188a1adbb3ac9bef6b00d44f6c2a8)) |
+
+
 ## 12.1.2 "porcelain-plate" (2021-07-14)
 
 ### cdk
