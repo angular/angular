@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {semverInc} from '../../../utils/semver';
 import {ActiveReleaseTrains} from '../../versioning/active-release-trains';
-import {semverInc} from '../../versioning/inc-semver';
 import {ReleaseAction} from '../actions';
 
 /**

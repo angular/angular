@@ -8,7 +8,7 @@
 
 import * as semver from 'semver';
 
-import {semverInc} from '../../versioning/inc-semver';
+import {semverInc} from '../../../utils/semver';
 import {computeNewPrereleaseVersionForNext} from '../../versioning/next-prerelease-version';
 import {ReleaseTrain} from '../../versioning/release-trains';
 import {ReleaseAction} from '../actions';
