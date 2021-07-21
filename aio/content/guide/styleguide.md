@@ -53,7 +53,7 @@ The guideline uses the shortcut `hero.component.ts|html|css|spec` to represent t
 ## Single responsibility
 
 Apply the
-<a href="https://wikipedia.org/wiki/Single_responsibility_principle"><i>single responsibility principle</i> (SRP)</a>
+<a href="https://wikipedia.org/wiki/Single_responsibility_principle"><i>single responsibility principle (SRP)</i></a>
 to all components, services, and other symbols.
 This helps make the application cleaner, easier to read and maintain, and more testable.
 
