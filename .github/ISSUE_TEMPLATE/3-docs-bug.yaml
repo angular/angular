@@ -38,5 +38,5 @@ body:
   - type: textarea
     id: browser-info
     attributes:
-      label: Is this a browser specific issue? If so, please specify the device, browser, and version.
+      label: Is this a browser-specific issue? If so, please specify the device, browser, and version.
       render: true
