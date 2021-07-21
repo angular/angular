@@ -14,11 +14,11 @@ import * as semver from 'semver';
 import {debug, error, green, info, promptConfirm, red, warn, yellow} from '../../utils/console';
 import {AuthenticatedGitClient} from '../../utils/git/authenticated-git-client';
 import {getListCommitsInBranchUrl, getRepositoryGitUrl} from '../../utils/git/github-urls';
+import {createExperimentalSemver} from '../../utils/semver';
 import {BuiltPackage, ReleaseConfig} from '../config/index';
 import {ReleaseNotes} from '../notes/release-notes';
 import {NpmDistTag} from '../versioning';
 import {ActiveReleaseTrains} from '../versioning/active-release-trains';
-import {createExperimentalSemver} from '../versioning/inc-semver';
 import {runNpmPublish} from '../versioning/npm-publish';
 
 import {FatalReleaseActionError, UserAbortedReleaseActionError} from './actions-error';

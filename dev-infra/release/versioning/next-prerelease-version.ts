@@ -8,10 +8,10 @@
 
 import * as semver from 'semver';
 
+import {semverInc} from '../../utils/semver';
 import {ReleaseConfig} from '../config/index';
 
 import {ActiveReleaseTrains} from './active-release-trains';
-import {semverInc} from './inc-semver';
 import {isVersionPublishedToNpm} from './npm-registry';
 
 /** Computes the new pre-release version for the next release-train. */
