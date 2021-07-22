@@ -39,7 +39,7 @@
     "test-a11y-score-localhost": "run-p --race \"~~light-server -s dist -p 4200 --quiet\" \"test-a11y-score http://localhost:4200\" --",
     "test-pwa-score": "run-s \"~~audit-web-app {1} all:0,pwa:{2} {3}\" --",
     "test-pwa-score-localhost": "run-p --race \"~~light-server -s dist -p 4200 --quiet\" \"test-pwa-score http://localhost:4200 {1} {2}\" --",
-    "example-e2e": "yarn example-check-local && node ./tools/examples/run-example-e2e",
+    "example-e2e": "yarn example-check-local && node ./tools/examples/run-example-e2e.mjs",
     "example-lint": "tslint --config \"content/examples/tslint.json\" \"content/examples/**/*.ts\" --exclude \"content/examples/styleguide/**/*.avoid.ts\"",
     "example-use-local": "node tools/ng-packages-installer overwrite ./tools/examples/shared --debug --force",
     "example-use-npm": "node tools/ng-packages-installer restore ./tools/examples/shared",
