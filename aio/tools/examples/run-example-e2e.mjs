@@ -1,16 +1,22 @@
-const path = require('canonical-path');
-const fs = require('fs-extra');
-const argv = require('yargs').argv;
-const globby = require('globby');
-const xSpawn = require('cross-spawn');
-const treeKill = require('tree-kill');
-const shelljs = require('shelljs');
-const findFreePort = require('find-free-port');
+import path from 'canonical-path';
+import {spawn} from 'cross-spawn';
+import findFreePort from 'find-free-port';
+import fs from 'fs-extra';
+import globby from 'globby';
+import puppeteer from 'puppeteer';
+import shelljs from 'shelljs';
+import treeKill from 'tree-kill';
+import {fileURLToPath} from 'url';
+import yargs from 'yargs';
+import {hideBin} from 'yargs/helpers'
 
 shelljs.set('-e');
 
 // Set `CHROME_BIN` as an environment variable for Karma to pick up in unit tests.
-process.env.CHROME_BIN = require('puppeteer').executablePath();
+process.env.CHROME_BIN = puppeteer.executablePath();
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const {argv} = yargs(hideBin(process.argv));
 
 const AIO_PATH = path.join(__dirname, '../../');
 const EXAMPLES_PATH = path.join(AIO_PATH, './content/examples/');
@@ -340,7 +346,7 @@ function spawnExt(
     let processOutput = '';
     printMessage(`running: ${descr}\n`);
     try {
-      proc = xSpawn.spawn(command, args, options);
+      proc = spawn(command, args, options);
     } catch (e) {
       console.log(e);
       reject(e);
