@@ -2,7 +2,7 @@ import path from 'canonical-path';
 import {spawn} from 'cross-spawn';
 import findFreePort from 'find-free-port';
 import fs from 'fs-extra';
-import globby from 'globby';
+import {globby} from 'globby';
 import puppeteer from 'puppeteer';
 import shelljs from 'shelljs';
 import treeKill from 'tree-kill';
