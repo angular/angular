@@ -27,12 +27,14 @@ export type NavigationTrigger = 'imperative'|'popstate'|'hashchange';
  * The following code shows how a class subscribes to router events.
  *
  * ```ts
+ * import {Event, RouterEvent, Router} from '@angular/router';
+ *
  * class MyService {
- *   constructor(public router: Router, logger: Logger) {
+ *   constructor(public router: Router) {
  *     router.events.pipe(
  *        filter((e: Event): e is RouterEvent => e instanceof RouterEvent)
  *     ).subscribe((e: RouterEvent) => {
- *       logger.log(e.id, e.url);
+ *       // Do something
  *     });
  *   }
  * }
