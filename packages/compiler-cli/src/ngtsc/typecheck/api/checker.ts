@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, MethodCall, ParseError, PropertyRead, SafeMethodCall, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstTemplate} from '@angular/compiler';
+import {AST, MethodCall, ParseError, ParseSourceSpan, PropertyRead, SafeMethodCall, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstTemplate} from '@angular/compiler';
 import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import * as ts from 'typescript';
+import {ErrorCode} from '../../diagnostics';
 
 import {FullTemplateMapping, TypeCheckableDirectiveMeta} from './api';
 import {GlobalCompletion} from './completion';
@@ -154,6 +155,18 @@ export interface TemplateTypeChecker {
    * the next request.
    */
   invalidateClass(clazz: ts.ClassDeclaration): void;
+
+  /**
+   * Constructs a `ts.Diagnostic` for a given `ParseSourceSpan` within a template.
+   */
+  makeTemplateDiagnostic(
+      clazz: ts.ClassDeclaration, sourceSpan: ParseSourceSpan, category: ts.DiagnosticCategory,
+      errorCode: ErrorCode, message: string, relatedInformation?: {
+        text: string,
+        start: number,
+        end: number,
+        sourceFile: ts.SourceFile,
+      }[]): ts.Diagnostic;
 }
 
 /**
