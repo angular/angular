@@ -7,7 +7,9 @@
  */
 
 import {join} from 'path';
+import {SemVer} from 'semver';
 import {GitClient} from '../../utils/git/git-client';
+import {createExperimentalSemver} from '../../utils/semver';
 
 export type EnvStampMode = 'snapshot'|'release';
 
@@ -27,7 +29,9 @@ export function buildEnvStamp(mode: EnvStampMode) {
   console.info(`BUILD_SCM_HASH ${getCurrentBranchOrRevision()}`);
   console.info(`BUILD_SCM_LOCAL_CHANGES ${hasLocalChanges()}`);
   console.info(`BUILD_SCM_USER ${getCurrentGitUser()}`);
-  console.info(`BUILD_SCM_VERSION ${getSCMVersion(mode)}`);
+  const {version, experimentalVersion} = getSCMVersions(mode);
+  console.info(`BUILD_SCM_VERSION ${version}`);
+  console.info(`BUILD_SCM_EXPERIMENTAL_VERSION ${experimentalVersion}`);
   process.exit();
 }
 
@@ -38,26 +42,32 @@ function hasLocalChanges() {
 }
 
 /**
- * Get the version for generated packages.
+ * Get the versions for generated packages.
  *
  * In snapshot mode, the version is based on the most recent semver tag.
  * In release mode, the version is based on the base package.json version.
  */
-function getSCMVersion(mode: EnvStampMode) {
+function getSCMVersions(mode: EnvStampMode): {version: string, experimentalVersion: string} {
   const git = GitClient.get();
   if (mode === 'release') {
     const packageJsonPath = join(git.baseDir, 'package.json');
-    const {version} = require(packageJsonPath);
-    return version;
+    const {version} = new SemVer(require(packageJsonPath).version);
+    const {version: experimentalVersion} = createExperimentalSemver(new SemVer(version));
+    return {version, experimentalVersion};
   }
   if (mode === 'snapshot') {
-    const version =
-        git.run(['describe', '--match', '[0-9]*.[0-9]*.[0-9]*', '--abbrev=7', '--tags', 'HEAD'])
-            .stdout.trim();
-    return `${version.replace(/-([0-9]+)-g/, '+$1.sha-')}${
-        (hasLocalChanges() ? '.with-local-changes' : '')}`;
+    const localChanges = hasLocalChanges() ? '.with-local-changes' : '';
+    const {stdout: rawVersion} = git.run(
+        ['describe', '--match', '*[0-9]*.[0-9]*.[0-9]*', '--abbrev=7', '--tags', 'HEAD~100']);
+    const {version} = new SemVer(rawVersion);
+    const {version: experimentalVersion} = createExperimentalSemver(version);
+    return {
+      version: `${version.replace(/-([0-9]+)-g/, '+$1.sha-')}${localChanges}`,
+      experimentalVersion:
+          `${experimentalVersion.replace(/-([0-9]+)-g/, '+$1.sha-')}${localChanges}`,
+    };
   }
-  return '0.0.0';
+  throw Error('No environment stamp mode was provided.');
 }
 
 /** Get the current branch or revision of HEAD. */
