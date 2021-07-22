@@ -80,10 +80,6 @@ meta:
   no-groups-above-this-pending: &no-groups-above-this-pending len(groups.active.pending.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
   no-groups-above-this-rejected: &no-groups-above-this-rejected len(groups.active.rejected.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
 
-  # Yaml anchor that represents a PullApprove expression that evaluates to `true` whenever
-  # there are no actual review groups active. Groups which are always active are excluded.
-  no-review-groups-active: &no-review-groups-active len(groups.active.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
-
   can-be-global-approved: &can-be-global-approved '"global-approvers" not in groups.approved'
   can-be-global-docs-approved: &can-be-global-docs-approved '"global-docs-approvers" not in groups.approved'
   defaults: &defaults
@@ -112,9 +108,9 @@ overrides:
   - if: "'PullApprove: disable' in labels"
     status: success
     explanation: "PullApprove skipped because of 'PullApprove: disable' label"
-  # If no groups are active, report this pull request as failing. Most likely, the
-  # PR author would need to update the PullApprove config, or create new group.
-  - if: *no-review-groups-active
+  # If no file matching based groups are active, report this pull request as failing. Most likely,
+  # the PR author would need to update the PullApprove config, or create new group.
+  - if: len(groups.active.exclude("required-minimum-review").exclude("global-*")) == 0 and len(groups.approved.include("global-*")) == 0
     status: failure
     explanation: 'At least one group must match this PR. Please update an existing review group, or create a new group.'
 
