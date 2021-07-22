@@ -1,9 +1,10 @@
 """Implementation of the `browser_archive` rule."""
 
 def _browser_archive_impl(ctx):
-    ctx.report_progress("Downloading browser archive from: %s" % ctx.attr.url)
     ctx.download_and_extract(
-        url = ctx.attr.url,
+        # Bazel automatically handles multiple URLs here and implements the fallback mechanism.
+        # https://docs.bazel.build/versions/main/skylark/lib/repository_ctx.html#download_and_extract.
+        url = ctx.attr.urls,
         sha256 = ctx.attr.sha256,
     )
 
@@ -51,8 +52,8 @@ browser_configure(
 browser_archive = repository_rule(
     implementation = _browser_archive_impl,
     attrs = {
-        "url": attr.string(
-            doc = "Browser archive to download and extract.",
+        "urls": attr.string_list(
+            doc = "URLs used for downloading the archive. Multiple URLs can be serve as fallback.",
             mandatory = True,
         ),
         "sha256": attr.string(
