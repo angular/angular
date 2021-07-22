@@ -3,7 +3,7 @@
 Many forms, such as questionaires, can be very similar to one another in format and intent.
 To make it faster and easier to generate different versions of such a form,
 you can create a *dynamic form template* based on metadata that describes the business object model.
-You can then use the template to generate new forms automatically, according to changes in the data model.
+Then, use the template to generate new forms automatically, according to changes in the data model.
 
 The technique is particularly useful when you have a type of form whose content must
 change frequently to meet rapidly changing business and regulatory requirements.
@@ -11,7 +11,7 @@ A typical use case is a questionaire. You might need to get input from users in 
 The format and style of the forms a user sees should remain constant, while the actual questions you need to ask vary with the context.
 
 In this tutorial you will build a dynamic form that presents a basic questionaire.
-You will build an online application for heroes seeking employment.
+You build an online application for heroes seeking employment.
 The agency is constantly tinkering with the application process, but by using the dynamic form
 you can create the new forms on the fly without changing the application code.
 
@@ -81,14 +81,14 @@ The following `QuestionBase` is a base class for a set of controls that can repr
 
 From this base, the example derives two new classes, `TextboxQuestion` and `DropdownQuestion`,
 that represent different control types.
-When you create the form template in the next step, you will instantiate these specific question types in order to render the appropriate controls dynamically.
+When you create the form template in the next step, you instantiate these specific question types in order to render the appropriate controls dynamically.
 
-* The `TextboxQuestion` control type presents a question and allows users to enter input.
+* The `TextboxQuestion` control type presents a question and lets users enter input.
 
    <code-example path="dynamic-form/src/app/question-textbox.ts" header="src/app/question-textbox.ts"></code-example>
 
-   The `TextboxQuestion` control type will be represented in a form template using an `<input>` element.
-   The `type` attribute of the element will be defined based on the `type` field specified in the `options` argument (for example `text`, `email`, `url`).
+   The `TextboxQuestion` control type is represented in a form template using an `<input>` element.
+   The `type` attribute of the element is defined based on the `type` field specified in the `options` argument (for example `text`, `email`, `url`).
 
 * The `DropdownQuestion` control presents a list of choices in a select box.
 
@@ -105,7 +105,7 @@ The following `QuestionControlService` collects a set of `FormGroup` instances t
 
 ## Compose dynamic form contents
 
-The dynamic form itself will be represented by a container component, which you will add in a later step.
+The dynamic form itself is represented by a container component, which you add in a later step.
 Each question is represented in the form component's template by an `<app-question>` tag, which matches an instance of `DynamicFormQuestionComponent`.
 
 The `DynamicFormQuestionComponent` is responsible for rendering the details of an individual question based on values in the data-bound question object.
@@ -134,7 +134,7 @@ The switch uses directives with the [`formControlName`](api/forms/FormControlNam
 ### Supply data
 
 Another service is needed to supply a specific set of questions from which to build an individual form.
-For this exercise you will create the `QuestionService` to supply this array of questions from the hard-coded sample data.
+For this exercise you create the `QuestionService` to supply this array of questions from the hard-coded sample data.
 In a real-world app, the service might fetch data from a backend system.
 The key point, however, is that you control the hero job-application questions entirely through the objects returned from `QuestionService`.
 To maintain the questionnaire as requirements change, you only need to add, update, and remove objects from the `questions` array.
@@ -177,7 +177,7 @@ To display an instance of the dynamic form, the `AppComponent` shell template pa
 
 The example provides a model for a job application for heroes, but there are
 no references to any specific hero question other than the objects returned by `QuestionService`.
-This separation of model and data allows you to repurpose the components for any type of survey
+This separation of model and data lets you repurpose the components for any type of survey
 as long as it's compatible with the *question* object model.
 
 ### Ensuring valid data
@@ -187,7 +187,7 @@ without making any hardcoded assumptions about specific questions.
 It adds both control metadata and validation criteria dynamically.
 
 To ensure valid input, the *Save* button is disabled until the form is in a valid state.
-When the form is valid, you can click *Save* and the application renders the current form values as JSON.
+When the form is valid, click *Save* and the application renders the current form values as JSON.
 
 The following figure shows the final form.
 

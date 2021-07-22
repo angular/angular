@@ -22,11 +22,11 @@ Reactive forms and template-driven forms process and manage form data differentl
 
 * **Reactive forms** provide direct, explicit access to the underlying forms object model. Compared to template-driven forms, they are more robust: they're more scalable, reusable, and testable. If forms are a key part of your application, or you're already using reactive patterns for building your application, use reactive forms.
 
-* **Template-driven forms** rely on directives in the template to create and manipulate the underlying object model. They are useful for adding a simple form to an app, such as an email list signup form. They're easy to add to an app, but they don't scale as well as reactive forms. If you have very basic form requirements and logic that can be managed solely in the template, template-driven forms could be a good fit.
+* **Template-driven forms** rely on directives in the template to create and manipulate the underlying object model. They are useful for adding a simple form to an app, such as an email list signup form. They're straightforward to add to an app, but they don't scale as well as reactive forms. If you have very basic form requirements and logic that can be managed solely in the template, template-driven forms could be a good fit.
 
 ### Key differences
 
-The table below summarizes the key differences between reactive and template-driven forms.
+The following table summarizes the key differences between reactive and template-driven forms.
 
 <style>
   table {width: 100%};
@@ -69,7 +69,7 @@ Both reactive and template-driven forms are built on the following base classes.
 
 * `FormArray` tracks the same values and status for an array of form controls.
 
-* `ControlValueAccessor` creates a bridge between Angular `FormControl` instances and native DOM elements.
+* `ControlValueAccessor` creates a bridge between Angular `FormControl` instances and built-in DOM elements.
 
 {@a setup-the-form-model}
 
@@ -225,7 +225,7 @@ The following examples demonstrate the process of testing forms with reactive an
 
 ### Testing reactive forms
 
-Reactive forms provide a relatively easy testing strategy because they provide synchronous access to the form and data models, and they can be tested without rendering the UI.
+Reactive forms provide a relatively straightforward testing strategy because they provide synchronous access to the form and data models, and they can be tested without rendering the UI.
 In these tests, status and data are queried and manipulated through the control without interacting with the change detection cycle.
 
 The following tests use the favorite-color components from previous examples to verify the view-to-model and model-to-view data flows for a reactive form.

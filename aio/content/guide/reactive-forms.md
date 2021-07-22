@@ -26,7 +26,7 @@ Reactive forms also provide a straightforward path to testing because you are as
 
 Reactive forms differ from [template-driven forms](guide/forms "Template-driven forms guide") in distinct ways. Reactive forms provide synchronous access to the data model, immutability with observable operators, and change tracking through observable streams.
 
-Template-driven forms allow direct access to modify data in your template, but are less explicit than reactive forms because they rely on directives embedded in the template, along with mutable data to track changes asynchronously. See the [Forms Overview](guide/forms-overview "Overview of Angular forms.") for detailed comparisons between the two paradigms.
+Template-driven forms let direct access modify data in your template, but are less explicit than reactive forms because they rely on directives embedded in the template, along with mutable data to track changes asynchronously. See the [Forms Overview](guide/forms-overview "Overview of Angular forms.") for detailed comparisons between the two paradigms.
 
 ## Adding a basic form control
 
@@ -70,7 +70,7 @@ After you create the control in the component class, you must associate it with 
 
 <div class="alert is-helpful">
 
-* For a summary of the classes and directives provided by `ReactiveFormsModule`, see the [Reactive forms API](#reactive-forms-api "API summary.") section below.
+* For a summary of the classes and directives provided by `ReactiveFormsModule`, see the following [Reactive forms API](#reactive-forms-api "API summary.") section.
 
 * For complete syntax details of these classes and directives, see the API reference documentation for the [Forms package](api/forms "API reference.").
 
@@ -140,7 +140,7 @@ The form model is the source of truth for the control, so when you click the but
 Forms typically contain several related controls. Reactive forms provide two ways of grouping multiple related controls into a single input form.
 
 * A form *group* defines a form with a fixed set of controls that you can manage together. Form group basics are discussed in this section. You can also [nest form groups](#nested-groups "See more about nesting groups.") to create more complex forms.
-* A form *array* defines a dynamic form, where you can add and remove controls at run time. You can also nest form arrays to create more complex forms. For more about this option, see [Creating dynamic forms](#dynamic-forms "See more about form arrays.") below.
+* A form *array* defines a dynamic form, where you can add and remove controls at run time. You can also nest form arrays to create more complex forms. For more about this option, see [Creating dynamic forms](#dynamic-forms "See more about form arrays.").
 
 Just as a form control instance gives you control over a single input field, a form group instance tracks the form state of a group of form control instances (for example, a form). Each control in a form group instance is tracked by name when creating the form group. The following example shows how to manage multiple form control instances in a single group.
 
@@ -196,7 +196,7 @@ The `onSubmit()` method in the `ProfileEditor` component captures the current va
 
 </code-example>
 
-The `submit` event is emitted by the `form` tag using the native DOM event. You trigger the event by clicking a button with `submit` type. This allows the user to press the **Enter** key to submit the completed form.
+The `submit` event is emitted by the `form` tag using the built-in DOM event. You trigger the event by clicking a button with `submit` type. This lets the user press the **Enter** key to submit the completed form.
 
 Use a `button` element to add a button to the bottom of the form to trigger the form submission.
 
@@ -204,7 +204,7 @@ Use a `button` element to add a button to the bottom of the form to trigger the 
 
 <div class="alert is-helpful">
 
-**Note:** The button in the snippet above also has a `disabled` binding attached to it to disable the button when `profileForm` is invalid. You aren't performing any validation yet, so the button is always enabled. Basic form validation is covered in the [Validating form input](#basic-form-validation "Basic form validation.") section.
+**Note:** The button in the preceding snippet also has a `disabled` binding attached to it to disable the button when `profileForm` is invalid. You aren't performing any validation yet, so the button is always enabled. Basic form validation is covered in the [Validating form input](#basic-form-validation "Basic form validation.") section.
 
 </div>
 
@@ -214,7 +214,7 @@ To display the `ProfileEditor` component that contains the form, add it to a com
 
 <code-example path="reactive-forms/src/app/app.component.1.html" region="app-profile-editor" header="src/app/app.component.html (profile editor)"></code-example>
 
-`ProfileEditor` allows you to manage the form control instances for the `firstName` and `lastName` controls within the form group instance.
+`ProfileEditor` lets you manage the form control instances for the `firstName` and `lastName` controls within the form group instance.
 
 <div class="lightbox">
   <img src="generated/images/guide/reactive-forms/profile-editor-1.gif" alt="Profile Editor with labels and inputs for first and last name as well as a submit button">
@@ -226,7 +226,7 @@ To display the `ProfileEditor` component that contains the form, add it to a com
 
 Form groups can accept both individual form control instances and other form group instances as children. This makes composing complex form models easier to maintain and logically group together.
 
-When building complex forms, managing the different areas of information is easier in smaller sections. Using a nested form group instance allows you to break large forms groups into smaller, more manageable ones.
+When building complex forms, managing the different areas of information is easier in smaller sections. Using a nested form group instance lets you break large forms groups into smaller, more manageable ones.
 
 To make more complex forms, use the following steps.
 
@@ -265,7 +265,7 @@ The `ProfileEditor` form is displayed as one group, but the model is broken down
 
 ### Updating parts of the data model
 
-When updating the value for a form group instance that contains multiple controls, you may only want to update parts of the model. This section covers how to update specific parts of a form control data model.
+When updating the value for a form group instance that contains multiple controls, you might only want to update parts of the model. This section covers how to update specific parts of a form control data model.
 
 There are two ways to update the model value:
 
@@ -275,7 +275,7 @@ There are two ways to update the model value:
 
 The strict checks of the `setValue()` method help catch nesting errors in complex forms, while `patchValue()` fails silently on those errors.
 
-In `ProfileEditorComponent`, use the `updateProfile` method with the example below to update the first name and street address for the user.
+In `ProfileEditorComponent`, use the `updateProfile` method with the following example to update the first name and street address for the user.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="patch-value" header="src/app/profile-editor/profile-editor.component.ts (patch value)">
 
@@ -325,7 +325,7 @@ Use the `group` method to create the `profileForm` controls.
 
 </code-example>
 
-In the example above, you use the `group()` method with the same object to define the properties in the model. The value for each control name is an array containing the initial value as the first item in the array.
+In the preceding example, you use the `group()` method with the same object to define the properties in the model. The value for each control name is an array containing the initial value as the first item in the array.
 
 <div class="alert is-helpful">
 
@@ -432,7 +432,7 @@ The aliases control in the form group instance is now populated with a single co
 
 **Access the FormArray control**
 
-A getter provides easy access to the aliases in the form array instance compared to repeating the `profileForm.get()` method to get each instance. The form array instance represents an undefined number of controls in an array. It's convenient to access a control through a getter, and this approach is easy to repeat for additional controls.
+A getter provides access to the aliases in the form array instance compared to repeating the `profileForm.get()` method to get each instance. The form array instance represents an undefined number of controls in an array. It's convenient to access a control through a getter, and this approach is straightforward to repeat for additional controls.
 
 Use the getter syntax to create an `aliases` class property to retrieve the alias's form array control from the parent form group.
 
@@ -459,7 +459,7 @@ In the template, each control is displayed as a separate input field.
 
 To attach the aliases from your form model, you must add it to the template. Similar to the `formGroupName` input provided by `FormGroupNameDirective`, `formArrayName` binds communication from the form array instance to the template with `FormArrayNameDirective`.
 
-Add the template HTML below after the `<div>` closing the `formGroupName` element.
+Add the following template HTML after the `<div>` closing the `formGroupName` element.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="formarrayname" header="src/app/profile-editor/profile-editor.component.html (aliases form array template)"></code-example>
 
@@ -469,7 +469,7 @@ The `*ngFor` directive iterates over each form control instance provided by the 
   <img src="generated/images/guide/reactive-forms/profile-editor-4.png" alt="Profile Editor with aliases section, which includes an alias label, input, and button for adding another alias text input">
 </div>
 
-Each time a new alias instance is added, the new form array instance is provided its control based on the index. This allows you to track each individual control when calculating the status and value of the root control.
+Each time a new alias instance is added, the new form array instance is provided its control based on the index. This lets you track each individual control when calculating the status and value of the root control.
 
 **Add an alias**
 
