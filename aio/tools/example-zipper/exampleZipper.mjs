@@ -1,16 +1,16 @@
-'use strict';
-
 // Canonical path provides a consistent path (i.e. always forward slashes) across different OSes
-const path = require('canonical-path');
-const archiver = require('archiver');
-const fs = require('fs-extra');
-const globby = require('globby');
+import archiver from 'archiver';
+import path from 'canonical-path';
+import fs from 'fs-extra';
+import globby from 'globby';
+import {fileURLToPath} from 'url';
 
-const regionExtractor = require('../transforms/examples-package/services/region-parser');
+import regionExtractor from '../transforms/examples-package/services/region-parser.js';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const EXAMPLE_CONFIG_NAME = 'example-config.json';
 
-class ExampleZipper {
+export class ExampleZipper {
   constructor(sourceDirName, outputDirName) {
     this.examplesPackageJson = path.join(__dirname, '../examples/shared/package.json');
     this.examplesSystemjsConfig = path.join(__dirname, '../examples/shared/boilerplate/systemjs/src/systemjs.config.js');
@@ -46,10 +46,14 @@ class ExampleZipper {
   _getExampleType(sourceFolder) {
     const filePath = path.join(sourceFolder, EXAMPLE_CONFIG_NAME);
     try {
-      return require(filePath, 'utf-8').projectType || 'cli';
+      return this._loadJson(filePath).projectType || 'cli';
     } catch (err) { // empty file, so it is cli
       return 'cli';
     }
+  }
+
+  _loadJson(filePath) {
+    return JSON.parse(fs.readFileSync(filePath, 'utf8'));
   }
 
   // rename a custom main.ts or index.html file
@@ -66,7 +70,7 @@ class ExampleZipper {
   }
 
   _zipExample(configFileName, sourceDirName, outputDirName) {
-    let json = require(configFileName, 'utf-8');
+    let json = this._loadJson(configFileName);
     const basePath = json.basePath || '';
     const jsonFileName = configFileName.replace(/^.*[\\\/]/, '');
     let relativeDirName = path.dirname(path.relative(sourceDirName, configFileName));
@@ -176,5 +180,3 @@ class ExampleZipper {
     zip.finalize();
   }
 }
-
-module.exports = ExampleZipper;
