@@ -1,7 +1,7 @@
 // Canonical path provides a consistent path (i.e. always forward slashes) across different OSes
 import path from 'canonical-path';
 import fs from 'fs-extra';
-import globby from 'globby';
+import {globbySync} from 'globby';
 import jsdom from 'jsdom';
 import json5 from 'json5';
 import {fileURLToPath} from 'url';
@@ -25,7 +25,7 @@ export class StackblitzBuilder {
     // When testing it sometimes helps to look a just one example directory like so:
     // const stackblitzPaths = path.join(this.basePath, '**/testing/*stackblitz.json');
     const stackblitzPaths = path.join(this.basePath, '**/*stackblitz.json');
-    const fileNames = globby.sync(stackblitzPaths, { ignore: ['**/node_modules/**'] });
+    const fileNames = globbySync(stackblitzPaths, { ignore: ['**/node_modules/**'] });
     let failed = false;
     fileNames.forEach((configFileName) => {
       try {
@@ -126,7 +126,7 @@ export class StackblitzBuilder {
   _checkForOutdatedConfig() {
     // Ensure that nobody is trying to use the old config filenames (i.e. `plnkr.json`).
     const plunkerPaths = path.join(this.basePath, '**/*plnkr.json');
-    const fileNames = globby.sync(plunkerPaths, { ignore: ['**/node_modules/**'] });
+    const fileNames = globbySync(plunkerPaths, { ignore: ['**/node_modules/**'] });
 
     if (fileNames.length) {
       const readmePath = path.join(__dirname, 'README.md');
@@ -328,7 +328,7 @@ export class StackblitzBuilder {
 
     gpaths.push(...defaultExcludes);
 
-    config.fileNames = globby.sync(gpaths, { ignore: ['**/node_modules/**'] });
+    config.fileNames = globbySync(gpaths, { ignore: ['**/node_modules/**'] });
 
     return config;
   }
