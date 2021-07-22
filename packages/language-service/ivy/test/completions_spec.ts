@@ -240,6 +240,18 @@ describe('completions', () => {
          expectContain(completions, ts.ScriptElementKind.variableElement, ['undefined']);
          expectDoesNotContain(completions, ts.ScriptElementKind.parameterElement, ['ctx']);
        });
+
+    it('should return completions of string literals, number literals, `true`, `false`, `null` and `undefined` when the user tries to modify the symbol',
+       () => {
+         const {templateFile} = setup(`<input dir [myInput]="a">`, '', DIR_WITH_UNION_TYPE_INPUT);
+         templateFile.moveCursorToText('dir [myInput]="a¦">');
+
+         const completions = templateFile.getCompletionsAtPosition();
+         expectContain(completions, ts.ScriptElementKind.string, [`'foo'`, '42']);
+         expectContain(completions, ts.ScriptElementKind.keyword, ['null']);
+         expectContain(completions, ts.ScriptElementKind.variableElement, ['undefined']);
+         expectDoesNotContain(completions, ts.ScriptElementKind.parameterElement, ['ctx']);
+       });
   });
 
   describe('in an expression scope', () => {
