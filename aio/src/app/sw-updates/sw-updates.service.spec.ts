@@ -1,4 +1,4 @@
-import { ApplicationRef, Injector } from '@angular/core';
+import { ApplicationRef, ErrorHandler, Injector } from '@angular/core';
 import { discardPeriodicTasks, fakeAsync, tick } from '@angular/core/testing';
 import { SwUpdate } from '@angular/service-worker';
 import { Subject } from 'rxjs';
@@ -13,6 +13,7 @@ import { SwUpdatesService } from './sw-updates.service';
 describe('SwUpdatesService', () => {
   let injector: Injector;
   let appRef: MockApplicationRef;
+  let errorHandler: ErrorHandler;
   let location: MockLocationService;
   let service: SwUpdatesService;
   let swu: MockSwUpdate;
@@ -27,13 +28,15 @@ describe('SwUpdatesService', () => {
   const setup = (isSwUpdateEnabled: boolean) => {
     injector = Injector.create({providers: [
       { provide: ApplicationRef, useClass: MockApplicationRef, deps: [] },
+      { provide: ErrorHandler, useValue: {handleError: jasmine.createSpy('handlerError')} },
       { provide: LocationService, useFactory: () => new MockLocationService(''), deps: [] },
       { provide: Logger, useClass: MockLogger, deps: [] },
       { provide: SwUpdate, useFactory: () => new MockSwUpdate(isSwUpdateEnabled), deps: [] },
-      { provide: SwUpdatesService, deps: [ApplicationRef, LocationService, Logger, SwUpdate] }
+      { provide: SwUpdatesService, deps: [ApplicationRef, ErrorHandler, LocationService, Logger, SwUpdate] }
     ]});
 
     appRef = injector.get(ApplicationRef) as unknown as MockApplicationRef;
+    errorHandler = injector.get(ErrorHandler);
     location = injector.get(LocationService) as unknown as MockLocationService;
     service = injector.get(SwUpdatesService);
     swu = injector.get(SwUpdate) as unknown as MockSwUpdate;
@@ -129,6 +132,24 @@ describe('SwUpdatesService', () => {
     expect(location.reloadPage).toHaveBeenCalledTimes(2);
   }));
 
+  it('should notify the `ErrorHandler` when an unrecoverable state has been detected', run(() => {
+    expect(errorHandler.handleError).not.toHaveBeenCalled();
+
+    swu.$$unrecoverableSubj.next({reason: 'Something bad happened'});
+    expect(errorHandler.handleError).toHaveBeenCalledBefore(location.reloadPage);
+    expect(errorHandler.handleError)
+        .toHaveBeenCalledWith('Unrecoverable state: Something bad happened');
+
+    (errorHandler.handleError as jasmine.Spy).calls.reset();
+    location.reloadPage.calls.reset();
+
+    swu.$$unrecoverableSubj.next({reason: 'Something worse happened'});
+    expect(errorHandler.handleError).toHaveBeenCalledBefore(location.reloadPage);
+    expect(errorHandler.handleError)
+        .toHaveBeenCalledWith('Unrecoverable state: Something worse happened');
+
+  }));
+
   describe('when `SwUpdate` is not enabled', () => {
     const runDeactivated = (specFn: VoidFunction) => run(specFn, false);
 
@@ -165,6 +186,7 @@ describe('SwUpdatesService', () => {
       swu.$$unrecoverableSubj.next({reason: 'Something bad happened'});
       swu.$$unrecoverableSubj.next({reason: 'Something worse happened'});
 
+      expect(errorHandler.handleError).not.toHaveBeenCalled();
       expect(location.reloadPage).not.toHaveBeenCalled();
     }));
   });
@@ -221,12 +243,15 @@ describe('SwUpdatesService', () => {
 
     it('should stop requesting page reloads when unrecoverable states are detected', run(() => {
       swu.$$unrecoverableSubj.next({reason: 'Something bad happened'});
+      expect(errorHandler.handleError).toHaveBeenCalledTimes(1);
       expect(location.reloadPage).toHaveBeenCalledTimes(1);
 
       service.ngOnDestroy();
+      (errorHandler.handleError as jasmine.Spy).calls.reset();
       location.reloadPage.calls.reset();
 
       swu.$$unrecoverableSubj.next({reason: 'Something worse happened'});
+      expect(errorHandler.handleError).not.toHaveBeenCalled();
       expect(location.reloadPage).not.toHaveBeenCalled();
     }));
   });
