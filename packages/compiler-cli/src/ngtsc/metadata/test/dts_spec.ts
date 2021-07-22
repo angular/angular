@@ -142,19 +142,19 @@ runInEachFileSystem(() => {
       const dtsReader =
           new DtsMetadataReader(typeChecker, new TypeScriptReflectionHost(typeChecker));
 
-      const withoutModule = dtsReader.getNgModuleMetadata(new Reference(clazz))!;
-      expect(withoutModule.exports.length).toBe(2);
+      const withoutOwningModule = dtsReader.getNgModuleMetadata(new Reference(clazz))!;
+      expect(withoutOwningModule.exports.length).toBe(2);
 
       // `AbsoluteDir` was imported from an absolute module so the export Reference should have
       // a corresponding best guess owning module.
-      expect(withoutModule.exports[0].bestGuessOwningModule).toEqual({
+      expect(withoutOwningModule.exports[0].bestGuessOwningModule).toEqual({
         specifier: 'absolute',
         resolutionContext: externalSf.fileName,
       });
 
       // `RelativeDir` was imported from a relative module specifier so the original reference's
       // best guess owning module should have been retained, which was null.
-      expect(withoutModule.exports[1].bestGuessOwningModule).toBeNull();
+      expect(withoutOwningModule.exports[1].bestGuessOwningModule).toBeNull();
 
       const owningModule: OwningModule = {
         specifier: 'module',
