@@ -959,7 +959,10 @@ describe('Zone', function() {
            button.dispatchEvent(clickEvent);
 
            expect(logs.length).toBe(2);
-           expect(logs).toEqual(['click', 'once click']);
+           // Browsers emit the events in different order. i.e. Chromium fires
+           // the capture event listener first.
+           expect(logs).toContain('click');
+           expect(logs).toContain('once click');
            logs = [];
 
            button.dispatchEvent(clickEvent);
