@@ -2,7 +2,7 @@
 import archiver from 'archiver';
 import path from 'canonical-path';
 import fs from 'fs-extra';
-import globby from 'globby';
+import {globbySync} from 'globby';
 import {fileURLToPath} from 'url';
 
 import regionExtractor from '../transforms/examples-package/services/region-parser.js';
@@ -19,7 +19,7 @@ export class ExampleZipper {
 
     let gpathStackblitz = path.join(sourceDirName, '**/*stackblitz.json');
     let gpathZipper = path.join(sourceDirName, '**/zipper.json');
-    let configFileNames = globby.sync([gpathStackblitz, gpathZipper], { ignore: ['**/node_modules/**'] });
+    let configFileNames = globbySync([gpathStackblitz, gpathZipper], { ignore: ['**/node_modules/**'] });
     configFileNames.forEach((configFileName) => {
       this._zipExample(configFileName, sourceDirName, outputDirName);
     });
@@ -153,7 +153,7 @@ export class ExampleZipper {
 
     gpaths.push(...alwaysExcludes);
 
-    let fileNames = globby.sync(gpaths, { ignore: ['**/node_modules/**'] });
+    let fileNames = globbySync(gpaths, { ignore: ['**/node_modules/**'] });
 
     let zip = this._createZipArchive(outputFileName);
     fileNames.forEach((fileName) => {
