@@ -2823,6 +2823,20 @@ describe('Integration', () => {
     }
 
     @Injectable({providedIn: 'root'})
+    class ThrowingCanActivateGuard implements CanActivate {
+      throw = false;
+
+      constructor(private router: Router) {}
+
+      canActivate(): boolean {
+        if (this.throw) {
+          throw new Error('error in guard');
+        }
+        return true;
+      }
+    }
+
+    @Injectable({providedIn: 'root'})
     class MyCanActivateGuard implements CanActivate {
       allow: boolean = true;
       redirectTo: string|null|UrlTree = null;
@@ -2865,32 +2879,36 @@ describe('Integration', () => {
       const router = TestBed.inject(Router);
       (router as any).canceledNavigationResolution = 'computed';
       const location = TestBed.inject(Location);
-      fixture = createRoot(router, SimpleCmp);
+      fixture = createRoot(router, RootCmp);
       router.resetConfig([
         {
           path: 'first',
           component: SimpleCmp,
           canDeactivate: [MyCanDeactivateGuard],
-          canActivate: [MyCanActivateGuard],
+          canActivate: [MyCanActivateGuard, ThrowingCanActivateGuard],
           resolve: [MyResolve]
         },
         {
           path: 'second',
           component: SimpleCmp,
           canDeactivate: [MyCanDeactivateGuard],
-          canActivate: [MyCanActivateGuard],
+          canActivate: [MyCanActivateGuard, ThrowingCanActivateGuard],
           resolve: [MyResolve]
         },
         {
           path: 'third',
           component: SimpleCmp,
           canDeactivate: [MyCanDeactivateGuard],
-          canActivate: [MyCanActivateGuard],
+          canActivate: [MyCanActivateGuard, ThrowingCanActivateGuard],
           resolve: [MyResolve]
         },
         {
           path: 'unguarded',
           component: SimpleCmp,
+        },
+        {
+          path: 'throwing',
+          component: ThrowingCmp,
         },
         {path: 'loaded', loadChildren: () => of(LoadedModule), canLoad: ['alwaysFalse']}
       ]);
@@ -3155,6 +3173,81 @@ describe('Integration', () => {
          advance(fixture);
          expect(location.path()).toEqual('/second');
          expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
+       }));
+
+    for (const urlUpdateSrategy of ['deferred', 'eager'] as const) {
+      it(`restores history correctly when an error is thrown in guard with urlUpdateStrategy ${
+             urlUpdateSrategy}`,
+         fakeAsync(() => {
+           const location = TestBed.inject(Location);
+           const router = TestBed.inject(Router);
+           router.urlUpdateStrategy = urlUpdateSrategy;
+
+           TestBed.inject(ThrowingCanActivateGuard).throw = true;
+
+           expect(() => {
+             location.back();
+             advance(fixture);
+           }).toThrow();
+           expect(location.path()).toEqual('/second');
+           expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
+
+           TestBed.inject(ThrowingCanActivateGuard).throw = false;
+           location.back();
+           advance(fixture);
+           expect(location.path()).toEqual('/first');
+           expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 1}));
+         }));
+
+      it(`restores history correctly when component throws error in constructor with urlUpdateStrategy ${
+             urlUpdateSrategy}`,
+         fakeAsync(() => {
+           const location = TestBed.inject(Location);
+           const router = TestBed.inject(Router);
+           router.urlUpdateStrategy = urlUpdateSrategy;
+
+           router.navigateByUrl('/throwing').catch(() => null);
+           advance(fixture);
+           expect(location.path()).toEqual('/second');
+           expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
+
+           location.back();
+           advance(fixture);
+           expect(location.path()).toEqual('/first');
+           expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 1}));
+         }));
+    }
+
+    it('restores history correctly when component throws error in constructor and replaceUrl=true',
+       fakeAsync(() => {
+         const location = TestBed.inject(Location);
+         const router = TestBed.inject(Router);
+
+         router.navigateByUrl('/throwing', {replaceUrl: true}).catch(() => null);
+         advance(fixture);
+         expect(location.path()).toEqual('/second');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
+
+         location.back();
+         advance(fixture);
+         expect(location.path()).toEqual('/first');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 1}));
+       }));
+
+    it('restores history correctly when component throws error in constructor and skipLocationChange=true',
+       fakeAsync(() => {
+         const location = TestBed.inject(Location);
+         const router = TestBed.inject(Router);
+
+         router.navigateByUrl('/throwing', {skipLocationChange: true}).catch(() => null);
+         advance(fixture);
+         expect(location.path()).toEqual('/second');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
+
+         location.back();
+         advance(fixture);
+         expect(location.path()).toEqual('/first');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 1}));
        }));
   });
   describe('guards', () => {
