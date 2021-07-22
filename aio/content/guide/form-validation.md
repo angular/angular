@@ -78,11 +78,10 @@ Angular then calls these functions whenever the value of the control changes.
 
 Validator functions can be either synchronous or asynchronous.
 
-* **Sync validators**: Synchronous functions that take a control instance and immediately return either a set of validation errors or `null`. You can pass these in as the second argument when you instantiate a `FormControl`.
+* **Sync validators**: Synchronous functions that take a control instance and immediately return either a set of validation errors or `null`. Pass these in as the second argument when you instantiate a `FormControl`.
 
 * **Async validators**: Asynchronous functions that take a control instance and return a Promise
-or Observable that later emits a set of validation errors or `null`. You can
-pass these in as the third argument when you instantiate a `FormControl`.
+or Observable that later emits a set of validation errors or `null`. Pass these in as the third argument when you instantiate a `FormControl`.
 
 For performance reasons, Angular only runs async validators if all sync validators pass. Each must complete before errors are set.
 
@@ -93,14 +92,14 @@ You can choose to [write your own validator functions](#custom-validators), or y
 The same built-in validators that are available as attributes in template-driven forms, such as `required` and `minlength`, are all available to use as functions from the `Validators` class.
 For a full list of built-in validators, see the [Validators](api/forms/Validators) API reference.
 
-To update the hero form to be a reactive form, you can use some of the same
+To update the hero form to be a reactive form, use some of the same
 built-in validators&mdash;this time, in function form, as in the following example.
 
 {@a reactive-component-class}
 
 <code-example path="form-validation/src/app/reactive/hero-form-reactive.component.1.ts" region="form-group" header="reactive/hero-form-reactive.component.ts (validator functions)"></code-example>
 
-In this example, the `name` control sets up two built-in validators&mdash;`Validators.required` and `Validators.minLength(4)`&mdash;and one custom validator, `forbiddenNameValidator`. (For more details see [custom validators](#custom-validators) below.)
+In this example, the `name` control sets up two built-in validators&mdash;`Validators.required` and `Validators.minLength(4)`&mdash;and one custom validator, `forbiddenNameValidator`. (For more details see [custom validators](#custom-validators).)
 
 All of these validators are synchronous, so they are passed as the second argument. Notice that you can support multiple validators by passing the functions in as an array.
 
@@ -127,7 +126,7 @@ Here's what the definition of that function looks like.
 
 The function is a factory that takes a regular expression to detect a _specific_ forbidden name and returns a validator function.
 
-In this sample, the forbidden name is "bob", so the validator will reject any hero name containing "bob".
+In this sample, the forbidden name is "bob", so the validator rejects any hero name containing "bob".
 Elsewhere it could reject "alice" or any name that the configuring regular expression matches.
 
 The `forbiddenNameValidator` factory returns the configured validator function.
@@ -185,7 +184,7 @@ If you were to replace `useExisting` with `useClass`, then you’d be registerin
 
 ## Control status CSS classes
 
-Angular automatically mirrors many control properties onto the form control element as CSS classes. You can use these classes to style form control elements according to the state of the form.
+Angular automatically mirrors many control properties onto the form control element as CSS classes. Use these classes to style form control elements according to the state of the form.
 The following classes are currently supported.
 
 * `.ng-valid`
@@ -258,7 +257,7 @@ To provide better user experience, the template shows an appropriate error messa
 
 <code-example path="form-validation/src/app/reactive/hero-form-reactive.component.html" region="cross-validation-error-message" header="reactive/hero-form-template.component.html"></code-example>
 
-This `*ngIf` displays the error if the `FormGroup` has the cross validation error returned by the `identityRevealed` validator, but only if the user has finished [interacting with the form](#dirty-or-touched).
+This `*ngIf` displays the error if the `FormGroup` has the cross validation error returned by the `identityRevealed` validator, but only if the user finished [interacting with the form](#dirty-or-touched).
 
 ### Adding cross-validation to template-driven forms
 
@@ -272,7 +271,7 @@ Because the validator must be registered at the highest level in the form, the f
 
 <code-example path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation-register-validator" header="template/hero-form-template.component.html"></code-example>
 
-To provide better user experience, we show an appropriate error message when the form is invalid.
+To provide better user experience, an appropriate error message appears when the form is invalid.
 
 <code-example path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation-error-message" header="template/hero-form-template.component.html"></code-example>
 
@@ -288,9 +287,9 @@ These are very similar to their synchronous counterparts, with the following dif
 To convert an infinite observable into a finite one, pipe the observable through a filtering operator such as `first`, `last`, `take`, or `takeUntil`.
 
 Asynchronous validation happens after the synchronous validation, and is performed only if the synchronous validation is successful.
-This check allows forms to avoid potentially expensive async validation processes (such as an HTTP request) if the more basic validation methods have already found invalid input.
+This check lets forms avoid potentially expensive async validation processes (such as an HTTP request) if the more basic validation methods have already found invalid input.
 
-After asynchronous validation begins, the form control enters a `pending` state. You can inspect the control's `pending` property and use it to give visual feedback about the ongoing validation operation.
+After asynchronous validation begins, the form control enters a `pending` state. Inspect the control's `pending` property and use it to give visual feedback about the ongoing validation operation.
 
 A common UI pattern is to show a spinner while the async validation is being performed. The following example shows how to achieve this in a template-driven form.
 
