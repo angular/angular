@@ -1,4 +1,4 @@
-import { ApplicationRef, Injectable, OnDestroy } from '@angular/core';
+import { ApplicationRef, ErrorHandler, Injectable, OnDestroy } from '@angular/core';
 import { SwUpdate } from '@angular/service-worker';
 import { concat, interval, Subject } from 'rxjs';
 import { first, takeUntil, tap } from 'rxjs/operators';
@@ -21,8 +21,8 @@ export class SwUpdatesService implements OnDestroy {
   private onDestroy = new Subject<void>();
 
   constructor(
-      appRef: ApplicationRef, location: LocationService, private logger: Logger,
-      private swu: SwUpdate) {
+      appRef: ApplicationRef, errorHandler: ErrorHandler, location: LocationService,
+      private logger: Logger, private swu: SwUpdate) {
     if (!swu.isEnabled) {
       return;
     }
@@ -55,7 +55,11 @@ export class SwUpdatesService implements OnDestroy {
     // Request an immediate page reload once an unrecoverable state has been detected.
     this.swu.unrecoverable
         .pipe(
-            tap(evt => this.log(`Unrecoverable state: ${evt.reason}\nReloading...`)),
+            tap(evt => {
+              const errorMsg = `Unrecoverable state: ${evt.reason}`;
+              errorHandler.handleError(errorMsg);
+              this.log(`${errorMsg}\nReloading...`);
+            }),
             takeUntil(this.onDestroy),
         )
         .subscribe(() => location.reloadPage());
