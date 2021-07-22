@@ -14,32 +14,40 @@ The process of updating the Chrome or Firefox version is not straightforward, bu
 
 ## Updating Chromium
 
-1. Visit https://chromium.woolyss.com/ and note the version (commit position) of the latest stable version.
+1. Run `yarn ts-node dev-infra/bazel/browsers/chromium/find-stable-revision-for-all-platforms.ts`
 
-    For example, "Google Chrome 83.0.4103.97 (756066) • Wednesday, 3 Jun 2020".
-    Alternatively, you can look in https://omahaproxy.appspot.com/.
+2. Inspect the console output which looks like the followed:
 
-2. Find the closest commit position number available for each platform in chromium-browser-snapshots: https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html
+```
+Release Info: https://storage.googleapis.com/chromium-find-releases-static/index.html#r885453
+Click on the link above to determine the Chromium version number.
 
-    For example:
-    * https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Linux_x64/756066/
-    * https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Mac/756053/
-    * https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Win/756065/
+MAC:       https://storage.googleapis.com/chromium-browser-snapshots/Mac/885453/chrome-mac.zip
+                0c7ed37b2128c992d5563a5b54d2c2790ce4872d2004b298ca073c7db4cc3f58
+           https://storage.googleapis.com/chromium-browser-snapshots/Mac/885453/chromedriver_mac64.zip
+                fc5150742c045b12ec0a138365b87be3d4216a52bf6b65c914325e941a3c8af7
 
-    You can download Chromium for your local platform and double check that the `--version` matches up with what you expect.
+WINDOWS:   https://storage.googleapis.com/chromium-browser-snapshots/Win/885453/chrome-win.zip
+                2a78bc9331a9fd7d1153e9e87cad85948853d4e37427d053dc88887ac9774a69
+           https://storage.googleapis.com/chromium-browser-snapshots/Win/885453/chromedriver_win32.zip
+                bdde7e7aa6349dd0e6e185c07c2fdef4a8f60739eacd79ee49c175390231be20
 
-    For example:
-    ``` bash
-    $ ~/Downloads/chrome-mac/Chromium.app/Contents/MacOS/Chromium --version
-    Chromium 83.0.4103.0
-    ```
+LINUX:     https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/885453/chrome-linux.zip
+                ac5d11ff66698cb29ece33f8a38de011d2384c609123f421b771aafeea87f679
+           https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/885453/chromedriver_linux64.zip
+                aa38374059252bb7896d79ac7bb4b3ee3eca84cfa5641f432e05bba5f04c01a2
 
-3. Update the chrome & chrome driver build numbers in `dev-infra/bazel/browsers/chromium/chromium.bzl` and either run `bazel query @org_chromium_chromium_amd64//...` to prompt Bazel to calculate the new `sha256` for each platform binary or determine the new `sha256` values manually.
+```
 
-    Here is an example with `curl` & `shasum`:
-    ``` bash
-    curl -L https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/756066/chrome-linux.zip | shasum -a 256
-    ```
+3. Click on the `Release Info` URL and update version number comments in the `chromium.bzl` file so
+   that it is easier to figure out which version of Chromium is configured.
+
+4. Update the `chromium` and `chromedriver` repository URLs for all platforms to use the
+   new URLs printed out by the tool. Also make sure to update the SHA256 checksums. The tool prints the
+   new checksums for convenient copy & paste.
+
+5. [Upload artifacts to our Google Cloud Storage mirror.](#uploading-mirror-artifacts)
+
 
 ## Puppeteer
 
@@ -85,6 +93,9 @@ platform_http_file(
     curl -L <BROWSER_URL> | shasum -a 256
     ```
 
+3. [Upload artifacts to our Google Cloud Storage mirror.](#uploading-mirror-artifacts)
+
+
 In the same file, you can also update the version of gecko driver (the WebDriver implementation for Firefox browsers).
 
 1. Go to https://firefox-source-docs.mozilla.org/testing/geckodriver/Support.html and find a version that is compatible with the used version of Firefox.
@@ -108,3 +119,21 @@ In the same file, you can also update the version of gecko driver (the WebDriver
     ```sh
     curl -L <DRIVER_URL> | shasum -a 256
     ```
+
+4. [Upload artifacts to our Google Cloud Storage mirror.](#uploading-mirror-artifacts)
+   
+
+## Uploading mirror artifacts
+
+1. Download all the artifacts you want to mirror, and upload the artifacts to the
+   `dev-infra-mirror` cloud storage bucket (which serves as a fallback mirror to help with reducing flakiness).
+
+   Note: The `dev-infra-mirror` bucket is part of the team-internal `internal-200822` GCP instance. If you do not
+   have permission to update, please contact a member of the Angular dev-infra team
+
+2. Update the permissions for all uploaded artifacts so that they can be accessed publicly. This can be
+   done by clicking on an uploaded file, then going to `Edit Permissions`. Within the permission dialog
+   you can then add another entity for `Public` with the `allUsers` name, and `Reader` access.  
+
+3. Update the fallback `dev-infra-mirror` URLs for your browser archives to point to the newly
+   uploaded files. 
