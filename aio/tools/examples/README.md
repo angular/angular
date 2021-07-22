@@ -135,9 +135,9 @@ It will remove all files that are not tracked by git, **including any new files 
 So, be sure to commit your work before removing the boilerplate.
 
 
-### `run-example-e2e.js`
+### `run-example-e2e.mjs`
 
-The [run-example-e2e.js](./run-example-e2e.js) script will find and run the e2e tests for all examples.
+The [run-example-e2e.mjs](./run-example-e2e.mjs) script will find and run the e2e tests for all examples.
 Although it only runs e2e tests by default, it can be configured to run any test command (for CLI-based examples) by using the `tests` property of the [example-config.json](#example-config) file.
 It is named `*-e2e` for historical reasons, but it is not limited to running e2e tests.
 
