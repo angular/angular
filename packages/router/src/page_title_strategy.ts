@@ -52,21 +52,9 @@ export class NoopPageTitleStrategy implements PageTitleStrategy {
  */
 @Injectable()
 export abstract class BasePageTitleStrategy implements PageTitleStrategy {
-  /** The string used to join titles from various each `Route`. */
-  static joinString = ' ';
-
   constructor(@Inject(DOCUMENT) protected readonly document: Document) {}
 
-  /**
-   * Collects and joins `pageTitle` data and assigns to the `document.title`.
-   */
-  setTitle(route: RouterStateSnapshot) {
-    const pageTitles = this.collectPageTitles(route);
-    if (pageTitles.length > 0) {
-      const title = pageTitles.join(BasePageTitleStrategy.joinString);
-      this.document.title = title;
-    }
-  }
+  abstract setTitle(route: RouterStateSnapshot): void;
 
   /**
    * Collects occurrences `pageTitle` in `data` of the `RouterStateSnapshot` tree.
@@ -95,4 +83,17 @@ export abstract class BasePageTitleStrategy implements PageTitleStrategy {
 
 @Injectable()
 export class DocumentPageTitleStrategy extends BasePageTitleStrategy {
+  /** The string used to join titles from various each `Route`. */
+  static joinString = ' ';
+
+  /**
+   * Collects and joins `pageTitle` data and assigns to the `document.title`.
+   */
+  setTitle(route: RouterStateSnapshot) {
+    const pageTitles = this.collectPageTitles(route);
+    if (pageTitles.length > 0) {
+      const title = pageTitles.join(DocumentPageTitleStrategy.joinString);
+      this.document.title = title;
+    }
+  }
 }
