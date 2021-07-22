@@ -915,6 +915,13 @@ export class Router {
                        // reflect the current state of the whole transition because some operations
                        // return a new object rather than modifying the one in the outermost
                        // `switchMap`.
+                       //  The fix can likely be to:
+                       //  1. Rename the outer `t` variable so it's not shadowed all the time and
+                       //  confusing
+                       //  2. Keep reassigning to the outer variable after each stage to ensure it
+                       //  gets updated. Or change the implementations to not return a copy.
+                       // Not changed yet because it affects existing code and would need to be
+                       // tested more thoroughly.
                        errored = true;
                        /* This error type is issued during Redirect, and is handled as a
                         * cancellation rather than an error. */
