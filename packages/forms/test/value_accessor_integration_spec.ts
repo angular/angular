@@ -131,7 +131,8 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
 
       it('when value is cleared in the UI', () => {
         const fixture = initTest(FormControlNumberInput);
-        const control = new FormControl(10, Validators.required);
+        // TODO: `number` at init time vs `null` later on via `setValue`. Adding `<any>` for now.
+        const control = new FormControl<any>(10, Validators.required);
         fixture.componentInstance.control = control;
         fixture.detectChanges();
 
@@ -168,7 +169,8 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
 
       it('when value is cleared programmatically', () => {
         const fixture = initTest(FormControlNumberInput);
-        const control = new FormControl(10);
+        // TODO: `number` at init time vs `null` later on via `setValue`. Adding `<any>` for now.
+        const control = new FormControl<any>(10);
         fixture.componentInstance.control = control;
         fixture.detectChanges();
 
@@ -611,7 +613,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           fixture.componentInstance.form = form;
           fixture.detectChanges();
 
-          form.reset();
+          form.reset({'food': '', 'drink': ''});
           fixture.detectChanges();
 
           const inputs = fixture.debugElement.queryAll(By.css('input'));
@@ -635,7 +637,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           form.get('food')!.setValue('chicken');
           fixture.detectChanges();
 
-          form.get('food')!.setValue(undefined);
+          form.get('food')!.setValue(undefined as unknown as null);  // Forcibly set to undefined.
           fixture.detectChanges();
           expect(inputs[0].nativeElement.checked).toEqual(false);
         });
@@ -675,13 +677,16 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
         it('should support removing controls from <type=radio>', () => {
           const fixture = initTest(FormControlRadioButtons);
           const showRadio = new FormControl('yes');
-          const form =
-              new FormGroup({'food': new FormControl('fish'), 'drink': new FormControl('sprite')});
+          const form = new FormGroup<{food?: FormControl<string>, drink: FormControl<string>}>({
+            'food': new FormControl('fish', undefined, undefined, ''),
+            'drink': new FormControl('sprite', undefined, undefined, '')
+          });
           fixture.componentInstance.form = form;
           fixture.componentInstance.showRadio = showRadio;
           showRadio.valueChanges.subscribe((change) => {
-            (change === 'yes') ? form.addControl('food', new FormControl('fish')) :
-                                 form.removeControl('food');
+            (change === 'yes') ?
+                form.addControl('food', new FormControl('fish', undefined, undefined, '')) :
+                form.removeControl('food');
           });
           fixture.detectChanges();
 
@@ -953,7 +958,8 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
 
         it('when value is cleared in the UI', () => {
           const fixture = initTest(FormControlNumberInput);
-          const control = new FormControl(10, Validators.required);
+          // TODO: `number` at init time vs `null` later on via `setValue`. Adding `<any>` for now.
+          const control = new FormControl<any>(10, Validators.required);
           fixture.componentInstance.control = control;
           fixture.detectChanges();
 
@@ -973,7 +979,8 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
 
         it('when value is cleared programmatically', () => {
           const fixture = initTest(FormControlNumberInput);
-          const control = new FormControl(10);
+          // TODO: `number` at init time vs `null` later on via `setValue`. Adding `<any>` for now.
+          const control = new FormControl<any>(10);
           fixture.componentInstance.control = control;
           fixture.detectChanges();
 

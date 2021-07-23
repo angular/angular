@@ -59,7 +59,8 @@ describe('FormControl', () => {
     });
 
     it('should not treat objects as boxed values if they have more than two props', () => {
-      const c = new FormControl({value: '', disabled: true, test: 'test'}, null!, null!);
+      // TODO: figure out if we should add code to do an **exact** match with FormState.
+      const c = new FormControl<any>({value: '', disabled: true, test: 'test'}, null!, null!);
       expect(c.value).toEqual({value: '', disabled: true, test: 'test'});
       expect(c.disabled).toBe(false);
     });
@@ -160,7 +161,9 @@ describe('FormControl', () => {
     });
 
     it('should rerun the validator when the value changes', () => {
-      const c = new FormControl('value', Validators.required);
+      // TODO: setting `null` in this test looks like a typing issue,
+      // correctly caught by the strict typings. Added `<any>` for now.
+      const c = new FormControl<string|null>('value', Validators.required);
       c.setValue(null);
       expect(c.valid).toEqual(false);
     });
@@ -175,7 +178,9 @@ describe('FormControl', () => {
     });
 
     it('should support single validator from options obj', () => {
-      const c = new FormControl(null, {validators: Validators.required});
+      // TODO: setting `null` in this test looks like a typing issue,
+      // correctly caught by the strict typings. Added `<any>` for now.
+      const c = new FormControl<string|null>(null, {validators: Validators.required});
       expect(c.valid).toEqual(false);
       expect(c.errors).toEqual({required: true});
 
@@ -184,7 +189,10 @@ describe('FormControl', () => {
     });
 
     it('should support multiple validators from options obj', () => {
-      const c = new FormControl(null, {validators: [Validators.required, Validators.minLength(3)]});
+      // TODO: setting `null` in this test looks like a typing issue,
+      // correctly caught by the strict typings. Added `<any>` for now.
+      const c = new FormControl<string|null>(
+          null, {validators: [Validators.required, Validators.minLength(3)]});
       expect(c.valid).toEqual(false);
       expect(c.errors).toEqual({required: true});
 
@@ -212,7 +220,9 @@ describe('FormControl', () => {
     });
 
     it('should set single validator', () => {
-      const c = new FormControl(null);
+      // TODO: setting `null` in this test looks like a typing issue,
+      // correctly caught by the strict typings. Added `<any>` for now.
+      const c = new FormControl<string|null>(null);
       expect(c.valid).toEqual(true);
 
       c.setValidators(Validators.required);
@@ -780,9 +790,16 @@ describe('FormControl', () => {
 
   describe('reset()', () => {
     let c: FormControl;
-
     beforeEach(() => {
       c = new FormControl('initial value');
+    });
+
+    it('should reset to null by default', () => {
+      c.setValue('new value');
+      expect(c.value).toBe('new value');
+
+      c.reset();
+      expect(c.value).toBe(null);
     });
 
     it('should reset to a specific value if passed', () => {
@@ -805,6 +822,11 @@ describe('FormControl', () => {
 
       c.reset({value: 'initial value', disabled: false});
       expect(c.value).toBe('initial value');
+    });
+
+    it('should reset a typed control if passed a FormState', () => {
+      const tc = new FormControl('foo');
+      tc.reset({value: 'bar', disabled: false});
     });
 
     it('should clear the control value if no value is passed', () => {

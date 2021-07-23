@@ -521,8 +521,9 @@ export class EmailValidator implements Validator {
  *
  * @publicApi
  */
+// TODO: Consider adding a type parameter.
 export interface ValidatorFn {
-  (control: AbstractControl): ValidationErrors|null;
+  (control: AbstractControl<any>): ValidationErrors|null;
 }
 
 /**
@@ -532,8 +533,9 @@ export interface ValidatorFn {
  *
  * @publicApi
  */
+// TODO: Consider adding a type parameter.
 export interface AsyncValidatorFn {
-  (control: AbstractControl): Promise<ValidationErrors|null>|Observable<ValidationErrors|null>;
+  (control: AbstractControl<any>): Promise<ValidationErrors|null>|Observable<ValidationErrors|null>;
 }
 
 /**

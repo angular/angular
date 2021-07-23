@@ -17,7 +17,6 @@
  * explicitly.
  */
 
-
 export {ɵInternalFormsSharedModule} from './directives';
 export {AbstractControlDirective} from './directives/abstract_control_directive';
 export {AbstractFormGroupDirective} from './directives/abstract_form_group_directive';

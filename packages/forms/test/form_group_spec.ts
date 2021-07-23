@@ -69,7 +69,7 @@ describe('FormGroup', () => {
       const formGroup: FormGroup = new FormGroup({
         'c1': new FormControl('v1'),
         'group': new FormGroup({'c2': new FormControl('v2'), 'c3': new FormControl('v3')}),
-        'array': new FormArray([
+        'array': new FormArray<any>([
           new FormControl('v4'), new FormControl('v5'), new FormGroup({'c4': new FormControl('v4')})
         ])
       });
@@ -132,7 +132,11 @@ describe('FormGroup', () => {
     });
 
     it('should update value and validity when control is added', () => {
-      const g = new FormGroup({'one': new FormControl('1')});
+      // TODO: in this test we have {one: ...} as a shape of T, but we are trying to add more
+      // controls later (via `addControl` call). Figure out if this is too restrictive (adding
+      // `<any>` for now).
+      const g = new FormGroup<{one: FormControl<string|null>, two?: FormControl<string|null>}>(
+          {'one': new FormControl('1')});
       expect(g.value).toEqual({'one': '1'});
       expect(g.valid).toBe(true);
 
@@ -143,8 +147,10 @@ describe('FormGroup', () => {
     });
 
     it('should update value and validity when control is removed', () => {
-      const g = new FormGroup(
-          {'one': new FormControl('1'), 'two': new FormControl('2', Validators.minLength(10))});
+      const g = new FormGroup<{one: FormControl<string>, two?: FormControl<string>}>({
+        'one': new FormControl('1', undefined, undefined, ''),
+        'two': new FormControl('2', Validators.minLength(10), undefined, '')
+      });
       expect(g.value).toEqual({'one': '1', 'two': '2'});
       expect(g.valid).toBe(false);
 
@@ -156,7 +162,11 @@ describe('FormGroup', () => {
 
     it('should not emit events when `FormGroup.addControl` is called with `emitEvent: false`',
        () => {
-         const g = new FormGroup({'one': new FormControl('1')});
+         // TODO: in this test we have {one: ...} as a shape of T, but we are trying to add more
+         // controls later (via `addControl` call). Figure out if this is too restrictive (adding
+         // `<any>` for now).
+         const g = new FormGroup<{one: FormControl<string|null>, two?: FormControl<string|null>}>(
+             {'one': new FormControl('1')});
          expect(g.value).toEqual({'one': '1'});
 
          g.valueChanges.subscribe(() => logger.push('value change'));
@@ -170,7 +180,7 @@ describe('FormGroup', () => {
 
     it('should not emit events when `FormGroup.removeControl` is called with `emitEvent: false`',
        () => {
-         const g = new FormGroup(
+         const g = new FormGroup<{one: FormControl<string|null>, two?: FormControl<string|null>}>(
              {'one': new FormControl('1'), 'two': new FormControl('2', Validators.minLength(10))});
          expect(g.value).toEqual({'one': '1', 'two': '2'});
          expect(g.valid).toBe(false);
@@ -190,7 +200,8 @@ describe('FormGroup', () => {
          const validatorFn = (value: any) =>
              value.controls.invalidCtrl ? {invalidCtrl: true} : null;
          const asyncValidatorFn = (value: any) => of(validatorFn(value));
-         const g = new FormGroup({}, validatorFn, asyncValidatorFn);
+         const g = new FormGroup<{invalidCtrl?: FormControl<string|null>}>(
+             {}, validatorFn, asyncValidatorFn);
          expect(g.valid).toBe(true);
 
          g.statusChanges.subscribe(() => logger.push('status change'));
@@ -485,7 +496,8 @@ describe('FormGroup', () => {
          () => {
            const logEvent = () => logger.push('valueChanges event');
 
-           const [formArrayControl1, formArrayControl2] = (g2.controls.array as FormArray).controls;
+           const formArrayControl1 = (g2.controls.array as FormArray<any>).controls[0];
+           const formArrayControl2 = (g2.controls.array as FormArray<any>).controls[1];
            const formGroupControl = (g2.controls.group as FormGroup).controls.one;
 
            formArrayControl1.valueChanges.subscribe(logEvent);
@@ -939,7 +951,9 @@ describe('FormGroup', () => {
     }
 
     it('should run a single validator when the value changes', () => {
-      const c = new FormControl(null);
+      // TODO: setting `null` at init and trying to set value with the `string` type later on.
+      // Adding `<any>` for now.
+      const c = new FormControl<string|null>(null);
       const g = new FormGroup({'one': c}, simpleValidator);
 
       c.setValue('correct');
@@ -1158,8 +1172,8 @@ describe('FormGroup', () => {
          const c2 =
              new FormControl('fcVal', null!, simpleAsyncValidator({timeout: 0, shouldFail: false}));
 
-         const a =
-             new FormArray([g, c2], null!, simpleAsyncValidator({timeout: 0, shouldFail: true}));
+         const a = new FormArray<any>(
+             [g, c2], null!, simpleAsyncValidator({timeout: 0, shouldFail: true}));
 
          expect(currentStateOf([a, a.at(0)!, a.at(1)!])).toEqual([
            {errors: {async: true}, pending: false, status: 'INVALID'},  // Array
@@ -1266,8 +1280,8 @@ describe('FormGroup', () => {
          const c2 =
              new FormControl('fcVal', null!, simpleAsyncValidator({timeout: 3, shouldFail: false}));
 
-         const a =
-             new FormArray([g, c2], null!, simpleAsyncValidator({timeout: 4, shouldFail: false}));
+         const a = new FormArray<any>(
+             [g, c2], null!, simpleAsyncValidator({timeout: 4, shouldFail: false}));
 
          // Initially, the form array and the tested form group and form control c2 are in pending
          // state
@@ -1314,8 +1328,8 @@ describe('FormGroup', () => {
          const c2 =
              new FormControl('fcVal', null!, simpleAsyncValidator({timeout: 3, shouldFail: false}));
 
-         const a =
-             new FormArray([g, c2], null!, simpleAsyncValidator({timeout: 4, shouldFail: true}));
+         const a = new FormArray<any>(
+             [g, c2], null!, simpleAsyncValidator({timeout: 4, shouldFail: true}));
 
          // Initially, the form array and the tested form group and form control c2 are in pending
          // state
@@ -1658,7 +1672,8 @@ describe('FormGroup', () => {
     });
 
     it('should update its value when disabled with disabled children', () => {
-      const g = new FormGroup(
+      const g = new FormGroup<
+          {nested: FormGroup<{one: FormControl<string|null>, two?: FormControl<string|null>}>}>(
           {nested: new FormGroup({one: new FormControl('one'), two: new FormControl('two')})});
 
       g.get('nested.two')!.disable();
@@ -1672,7 +1687,8 @@ describe('FormGroup', () => {
     });
 
     it('should update its value when enabled with disabled children', () => {
-      const g = new FormGroup(
+      const g = new FormGroup<
+          {nested: FormGroup<{one: FormControl<string|null>, two?: FormControl<string|null>}>}>(
           {nested: new FormGroup({one: new FormControl('one'), two: new FormControl('two')})});
 
       g.get('nested.two')!.disable();
@@ -1711,7 +1727,8 @@ describe('FormGroup', () => {
     });
 
     it('should keep empty, disabled groups disabled when updating validity', () => {
-      const group = new FormGroup({});
+      const group =
+          new FormGroup<{one?: FormControl<string|null>, two?: FormControl<string|null>}>({});
       expect(group.status).toEqual('VALID');
 
       group.disable();
@@ -1764,7 +1781,11 @@ describe('FormGroup', () => {
       });
 
       it('should re-populate group errors when enabled from a child', () => {
-        const g = new FormGroup({'one': new FormControl()}, () => ({'expected': true}));
+        // TODO: in this test we have {one: ...} as a shape of T, but we are trying to add more
+        // controls later (via `addControl` call). Figure out if this is too restrictive (adding
+        // `<any>` for now).
+        const g = new FormGroup<{one: FormControl<null>, two?: FormControl<null>}>(
+            {'one': new FormControl()}, () => ({'expected': true}));
         g.disable();
         expect(g.errors).toEqual(null);
 
@@ -1786,7 +1807,12 @@ describe('FormGroup', () => {
          }));
 
       it('should re-populate async group errors when enabled from a child', fakeAsync(() => {
-           const g = new FormGroup({'one': new FormControl()}, null!, asyncValidator('expected'));
+           // TODO: in this test we have {one: ...} as a shape of T, but we are trying to add more
+           // controls later (via `addControl` call). Figure out if this is too restrictive
+           // (adding
+           // `<any>` for now).
+           const g = new FormGroup<{one: FormControl<null>, two?: FormControl<null>}>(
+               {'one': new FormControl()}, null!, asyncValidator('expected'));
            tick();
            expect(g.errors).toEqual({'async': true});
 
@@ -1965,7 +1991,8 @@ describe('FormGroup', () => {
            // synchronous manner. Because of this there is no `PENDING` state as seen in the
            // `logs`.
            expect(logs).toEqual([
-             'status: INVALID',  // status change emitted as a result of initial async validator run
+             'status: INVALID',  // status change emitted as a result of initial async validator
+                                 // run
              'value: "new!"',    // value change emitted by `setValue`
              'status: INVALID'   // async validator run after `setValue` call
            ]);
@@ -1987,7 +2014,8 @@ describe('FormGroup', () => {
            tick(1);
 
            expect(logs).toEqual([
-             'status: INVALID',  // status change emitted as a result of initial async validator run
+             'status: INVALID',  // status change emitted as a result of initial async validator
+                                 // run
              'value: "new!"',    // value change emitted by `setValue`
              'status: PENDING',  // status change emitted by `setValue`
              'status: VALID'     // async validator run after `setValue` call
@@ -2011,7 +2039,8 @@ describe('FormGroup', () => {
            tick(1);
 
            expect(logs).toEqual([
-             'status: INVALID',  // status change emitted as a result of initial async validator run
+             'status: INVALID',  // status change emitted as a result of initial async validator
+                                 // run
              'value: "new!"',    // value change emitted by `setValue`
              'status: PENDING',  // status change emitted by `setValue`
              'status: INVALID'   // async validator run after `setValue` call
@@ -2032,8 +2061,8 @@ describe('FormGroup', () => {
            tick(1);
 
            // The `setValue` call invoked synchronously cancels the initial run of the
-           // `asyncValidator` (which would cause the control status to be changed to `INVALID`), so
-           // the log contains only events after calling `setValue`.
+           // `asyncValidator` (which would cause the control status to be changed to `INVALID`),
+           // so the log contains only events after calling `setValue`.
            expect(logs).toEqual([
              'value: "new!"',    // value change emitted by `setValue`
              'status: PENDING',  // status change emitted by `setValue`
@@ -2056,8 +2085,8 @@ describe('FormGroup', () => {
            tick(1);
 
            // The `setValue` call invoked synchronously cancels the initial run of the
-           // `asyncValidator` (which would cause the control status to be changed to `INVALID`), so
-           // the log contains only events after calling `setValue`.
+           // `asyncValidator` (which would cause the control status to be changed to `INVALID`),
+           // so the log contains only events after calling `setValue`.
            expect(logs).toEqual([
              'value: "new!"',    // value change emitted by `setValue`
              'status: PENDING',  // status change emitted by `setValue`

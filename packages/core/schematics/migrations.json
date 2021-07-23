@@ -9,6 +9,11 @@
       "version": "13.0.0-beta",
       "description": "In Angular version 13, the `teardown` flag in `TestBed` will be enabled by default. This migration automatically opts out existing apps from the new teardown behavior.",
       "factory": "./migrations/testbed-teardown/index"
+    },
+    "migration-v14-typed-forms": {
+      "version": "14.0.0-beta",
+      "description": "This migration modifies existing uses of Forms classes to make them fowards-compatible with Typed Forms.",
+      "factory": "./migrations/typed-forms/index"
     }
   }
 }

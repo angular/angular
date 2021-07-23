@@ -261,7 +261,13 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
       it('should strip named controls that are not found', () => {
         const fixture = initTest(NestedFormGroupNameComp, LoginIsEmptyValidator);
-        const form = new FormGroup({
+        // TODO: in this test we have {signin: ...} as a shape of T, but we are trying to add more
+        // controls later (via `addControl` call). Figure out if this is too restrictive (adding
+        // `<any>` for now).
+        const form = new FormGroup<{
+          signin: FormGroup<{login: FormControl<string|null>, password: FormControl<string|null>}>,
+          email?: FormControl<string|null>
+        }>({
           'signin': new FormGroup({'login': new FormControl(''), 'password': new FormControl('')})
         });
         fixture.componentInstance.form = form;
@@ -311,7 +317,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
       describe('nested control rebinding', () => {
         it('should attach dir to control when leaf control changes', () => {
-          const form = new FormGroup({'login': new FormControl('oldValue')});
+          const form = new FormGroup<{login?: FormControl<string|null>}>(
+              {'login': new FormControl('oldValue')});
           const fixture = initTest(FormGroupComp);
           fixture.componentInstance.form = form;
           fixture.detectChanges();
@@ -336,10 +343,12 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
         it('should attach dirs to all child controls when group control changes', () => {
           const fixture = initTest(NestedFormGroupNameComp, LoginIsEmptyValidator);
-          const form = new FormGroup({
-            signin: new FormGroup(
-                {login: new FormControl('oldLogin'), password: new FormControl('oldPassword')})
-          });
+          const innerFg = new FormGroup(
+              {login: new FormControl('oldLogin'), password: new FormControl('oldPassword')});
+          const form = new FormGroup<{
+            signin?:
+                FormGroup<{login: FormControl<string|null>, password: FormControl<string|null>}>
+          }>({signin: innerFg});
           fixture.componentInstance.form = form;
           fixture.detectChanges();
 
@@ -369,7 +378,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         it('should attach dirs to all present child controls when array control changes', () => {
           const fixture = initTest(FormArrayComp);
           const cityArray = new FormArray([new FormControl('SF'), new FormControl('NY')]);
-          const form = new FormGroup({cities: cityArray});
+          const form =
+              new FormGroup<{cities?: FormArray<FormControl<string|null>[]>}>({cities: cityArray});
           fixture.componentInstance.form = form;
           fixture.componentInstance.cityArray = cityArray;
           fixture.detectChanges();
@@ -917,7 +927,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         const loginEl = fixture.debugElement.query(By.css('input')).nativeElement;
         expect(loginEl.value).toBe('some value');
 
-        form.reset();
+        form.reset({login: ''});
         expect(loginEl.value).toBe('');
       });
     });
@@ -957,7 +967,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
              expect(login.pristine).toBe(true);
            });
 
-           form.reset();
+           form.reset({login: ''});
          });
     });
 
@@ -1423,7 +1433,10 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
         it('should reset properly', () => {
           const fixture = initTest(FormControlComp);
-          const control = new FormControl('', {validators: Validators.required, updateOn: 'blur'});
+          // TODO: init with a string, but calling `reset` with no value + asserting that the value
+          // is `null` later. Adding `<any>` for now.
+          const control =
+              new FormControl<string|null>('', {validators: Validators.required, updateOn: 'blur'});
           fixture.componentInstance.control = control;
           fixture.detectChanges();
 
@@ -1458,9 +1471,10 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           class App implements OnDestroy {
             private _subscription: Subscription;
 
-            form = new FormGroup({
+            form = new FormGroup<
+                {name: FormControl<string|null>, surname?: FormControl<string|null|undefined>}>({
               name: new FormControl('Frodo'),
-              surname: new FormControl('Baggins'),
+              surname: new FormControl<string|undefined>('Baggins'),
             });
 
             constructor() {
@@ -1481,16 +1495,18 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           expect(fixture.componentInstance.form.value).toEqual({name: 'Frodo', surname: 'Baggins'});
 
           expect(() => {
-            fixture.componentInstance.form.reset();
+            (fixture.componentInstance.form as FormGroup<any>)
+                .reset({name: '', surname: undefined});
             fixture.detectChanges();
           }).not.toThrow();
 
-          expect(fixture.componentInstance.form.value).toEqual({name: null});
+          expect(fixture.componentInstance.form.value).toEqual({name: ''});
         });
 
         it('should not emit valueChanges or statusChanges until blur', () => {
           const fixture = initTest(FormControlComp);
-          const control = new FormControl('', {validators: Validators.required, updateOn: 'blur'});
+          const control = new FormControl(
+              '', {validators: Validators.required, updateOn: 'blur'}, undefined, '');
           fixture.componentInstance.control = control;
           fixture.detectChanges();
           const values: string[] = [];
@@ -1516,7 +1532,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
         it('should not emit valueChanges or statusChanges on blur if value unchanged', () => {
           const fixture = initTest(FormControlComp);
-          const control = new FormControl('', {validators: Validators.required, updateOn: 'blur'});
+          const control = new FormControl(
+              '', {validators: Validators.required, updateOn: 'blur'}, undefined, '');
           fixture.componentInstance.control = control;
           fixture.detectChanges();
           const values: string[] = [];
@@ -1814,6 +1831,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
         it('should reset properly', () => {
           const fixture = initTest(FormGroupComp);
+          // TODO: formGroup.login is initialized as a string, but the `reset()` sets the value as
+          // `null`. Check how `reset` can be more smart about this situation.
           const formGroup = new FormGroup(
               {login: new FormControl('', {validators: Validators.required, updateOn: 'submit'})});
           fixture.componentInstance.form = formGroup;
@@ -1827,11 +1846,11 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           dispatchEvent(input, 'blur');
           fixture.detectChanges();
 
-          formGroup.reset();
+          formGroup.reset({login: ''});
           fixture.detectChanges();
 
           expect(input.value).toEqual('', 'Expected view value to reset.');
-          expect(formGroup.value).toEqual({login: null}, 'Expected form value to reset');
+          expect(formGroup.value).toEqual({login: ''}, 'Expected form value to reset');
           expect(formGroup.dirty).toBe(false, 'Expected dirty to stay false on reset.');
           expect(formGroup.touched).toBe(false, 'Expected touched to stay false on reset.');
 
@@ -1840,7 +1859,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           fixture.detectChanges();
 
           expect(formGroup.value)
-              .toEqual({login: null}, 'Expected form value to stay empty on submit');
+              .toEqual({login: ''}, 'Expected form value to stay empty on submit');
           expect(formGroup.dirty).toBe(false, 'Expected dirty to stay false on submit.');
           expect(formGroup.touched).toBe(false, 'Expected touched to stay false on submit.');
         });
@@ -1884,8 +1903,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
         it('should not emit valueChanges or statusChanges on submit if value unchanged', () => {
           const fixture = initTest(FormGroupComp);
-          const control =
-              new FormControl('', {validators: Validators.required, updateOn: 'submit'});
+          const control = new FormControl(
+              '', {validators: Validators.required, updateOn: 'submit'}, undefined, '');
           const formGroup = new FormGroup({login: control});
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
@@ -3735,7 +3754,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
                initTest(NgForFormControlWithValidators, ViewValidatorA, AsyncViewValidatorA);
            fixture.detectChanges();
 
-           const newControl = new FormControl('b')!;
+           const newControl = new FormControl('b');
            const oldControl = fixture.componentInstance.form.get('login')!;
 
            const validatorSpy = validatorSpyOn(ViewValidatorA);
@@ -5322,7 +5341,7 @@ class FormControlWithAsyncValidatorFn {
   `
 })
 class FormControlWithValidators {
-  form = new FormGroup({login: new FormControl('INITIAL')});
+  form = new FormGroup<{login?: FormControl<string|null>}>({login: new FormControl('INITIAL')});
 }
 
 @Component({
@@ -5353,7 +5372,7 @@ class MultipleFormControls {
   `
 })
 class NgForFormControlWithValidators {
-  form = new FormGroup({login: new FormControl('a')});
+  form = new FormGroup<{login?: FormControl<string|null>}>({login: new FormControl('a')});
   logins = ['a', 'b', 'c'];
 }
 

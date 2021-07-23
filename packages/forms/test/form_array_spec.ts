@@ -10,17 +10,18 @@ import {fakeAsync, tick} from '@angular/core/testing';
 import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn} from '@angular/forms';
 import {Validators} from '@angular/forms/src/validators';
 import {of} from 'rxjs';
+
 import {asyncValidator} from './util';
 
 (function() {
 describe('FormArray', () => {
   describe('adding/removing', () => {
-    let a: FormArray;
-    let c1: FormControl, c2: FormControl, c3: FormControl;
+    let a: FormArray<Array<FormControl<number|null>>>;
+    let c1: FormControl<number|null>, c2: FormControl<number|null>, c3: FormControl<number|null>;
     let logger: string[];
 
     beforeEach(() => {
-      a = new FormArray([]);
+      a = new FormArray<Array<FormControl<number|null>>>([]);
       c1 = new FormControl(1);
       c2 = new FormControl(2);
       c3 = new FormControl(3);
@@ -62,6 +63,8 @@ describe('FormArray', () => {
       a.push(c3);
 
       a.insert(1, c2);
+
+      const controls = a.controls;
 
       expect(a.controls).toEqual([c1, c2, c3]);
     });
@@ -137,7 +140,8 @@ describe('FormArray', () => {
          // becomes invalid.
          const validatorFn = (value: any) => value.controls.length > 0 ? {controls: true} : null;
          const asyncValidatorFn = (value: any) => of(validatorFn(value));
-         const arr = new FormArray([], validatorFn, asyncValidatorFn);
+         const arr =
+             new FormArray<Array<FormControl<number|null>>>([], validatorFn, asyncValidatorFn);
          expect(arr.valid).toBe(true);
 
          arr.statusChanges.subscribe(() => logger.push('status change'));
@@ -177,7 +181,7 @@ describe('FormArray', () => {
     let a: FormArray;
 
     it('should work with nested form groups/arrays', () => {
-      a = new FormArray([
+      a = new FormArray<any[]>([
         new FormGroup({'c2': new FormControl('v2'), 'c3': new FormControl('v3')}),
         new FormArray([new FormControl('v4'), new FormControl('v5')])
       ]);
@@ -190,7 +194,7 @@ describe('FormArray', () => {
 
   describe('markAllAsTouched', () => {
     it('should mark all descendants as touched', () => {
-      const formArray: FormArray = new FormArray([
+      const formArray: FormArray = new FormArray<any>([
         new FormControl('v1'), new FormControl('v2'), new FormGroup({'c1': new FormControl('v1')}),
         new FormArray([new FormGroup({'c2': new FormControl('v2')})])
       ]);
@@ -306,7 +310,7 @@ describe('FormArray', () => {
     });
 
     it('should throw if no controls are set yet', () => {
-      const empty = new FormArray([]);
+      const empty = new FormArray<Array<FormControl<string>>>([]);
       expect(() => empty.setValue(['one']))
           .toThrowError(new RegExp(`no form controls registered with this array`));
     });
@@ -353,7 +357,9 @@ describe('FormArray', () => {
   });
 
   describe('patchValue', () => {
-    let c: FormControl, c2: FormControl, a: FormArray, a2: FormArray;
+    let c: FormControl<string|null>, c2: FormControl<string|null>,
+        a: FormArray<Array<FormControl<string|null>>>,
+        a2: FormArray<Array<FormArray<Array<FormControl<string|null>>>>>;
 
     beforeEach(() => {
       c = new FormControl('');
@@ -403,7 +409,7 @@ describe('FormArray', () => {
     });
 
     it('should ignore fields that are missing from supplied value (subset)', () => {
-      a.patchValue([, 'two']);
+      (a as FormArray<any[]>).patchValue([, 'two']);
       expect(a.value).toEqual(['', 'two']);
     });
 
@@ -413,17 +419,19 @@ describe('FormArray', () => {
     });
 
     it('should ignore any value provided for a missing control (superset)', () => {
-      a.patchValue([, , 'three']);
+      (a as FormArray<any[]>).patchValue([, , 'three']);
       expect(a.value).toEqual(['', '']);
     });
 
     it('should ignore a array if `null` or `undefined` are used as values', () => {
       const INITIAL_STATE = [['', '']];
 
-      a2.patchValue([null]);
+      // TODO: this cast is needed because this test operation is very incompatible with the
+      // declared type
+      (a2 as FormArray<any>).patchValue([null]);
       expect(a2.value).toEqual(INITIAL_STATE);
 
-      a2.patchValue([undefined]);
+      (a2 as FormArray<any>).patchValue([undefined]);
       expect(a2.value).toEqual(INITIAL_STATE);
     });
 
@@ -460,13 +468,16 @@ describe('FormArray', () => {
          () => {
            const logEvent = () => logger.push('valueChanges event');
 
-           const [formArrayControl1, formArrayControl2] = (a2.controls as FormArray[])[0].controls;
+           const [formArrayControl1, formArrayControl2] =
+               (a2.controls as FormArray<FormControl<string>[]>[])[0].controls;
 
            formArrayControl1.valueChanges.subscribe(logEvent);
            formArrayControl2.valueChanges.subscribe(logEvent);
 
-           a2.patchValue([null]);
-           a2.patchValue([undefined]);
+           // TODO: this cast is needed because this test operation is very incompatible with the
+           // declared type
+           (a2 as FormArray<any>).patchValue([null]);
+           (a2 as FormArray<any>).patchValue([undefined]);
 
            // No events are expected in `valueChanges` since
            // all controls were skipped in `patchValue`.
@@ -730,7 +741,7 @@ describe('FormArray', () => {
       const simpleValidator = (c: FormArray) =>
           c.controls[0].value != 'correct' ? {'broken': true} : null;
 
-      const c = new FormControl(null);
+      const c = new FormControl<string|null>(null);
       const g = new FormArray([c], simpleValidator as ValidatorFn);
 
       c.setValue('correct');
@@ -929,13 +940,12 @@ describe('FormArray', () => {
 
     it('should return a child of a control group', () => {
       const g = new FormGroup({
-        'one': new FormControl('111'),
-        'nested': new FormGroup({'two': new FormControl('222')})
+        'one': new FormControl('111', undefined, undefined, ''),
+        'nested': new FormGroup({'two': new FormControl('222', undefined, undefined, '')})
       });
-
-      expect(g.get(['one'])!.value).toEqual('111');
+      expect(g.get(['one'] as const)!.value).toEqual('111');
       expect(g.get('one')!.value).toEqual('111');
-      expect(g.get(['nested', 'two'])!.value).toEqual('222');
+      expect(g.get(['nested', 'two'] as const)!.value).toEqual('222');
       expect(g.get('nested.two')!.value).toEqual('222');
     });
 
@@ -1174,7 +1184,7 @@ describe('FormArray', () => {
     });
 
     it('should keep empty, disabled arrays disabled when updating validity', () => {
-      const arr = new FormArray([]);
+      const arr = new FormArray<Array<FormControl<string>>>([]);
       expect(arr.status).toEqual('VALID');
 
       arr.disable();
@@ -1183,7 +1193,7 @@ describe('FormArray', () => {
       arr.updateValueAndValidity();
       expect(arr.status).toEqual('DISABLED');
 
-      arr.push(new FormControl({value: '', disabled: true}));
+      arr.push(new FormControl({value: '', disabled: true}, undefined, undefined, ''));
       expect(arr.status).toEqual('DISABLED');
 
       arr.push(new FormControl());
