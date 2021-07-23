@@ -4,9 +4,9 @@ This guide explores common component testing use cases.
 
 <div class="alert is-helpful">
 
-  For a hands-on experience you can <live-example name="testing" stackblitz="specs" noDownload>run tests and explore the test code</live-example> in your browser as your read this guide.
+  For a hands-on experience, <live-example name="testing" stackblitz="specs" noDownload>run tests and explore the test code</live-example> in your browser as your read this guide.
 
-  If you'd like to experiment with the application that this guide describes, you can <live-example name="testing" noDownload>run it in your browser</live-example> or <live-example name="testing" downloadOnly>download and run it locally</live-example>.
+  If you'd like to experiment with the application that this guide describes, <live-example name="testing" noDownload>run it in your browser</live-example> or <live-example name="testing" downloadOnly>download and run it locally</live-example>.
 
 </div>
 
@@ -127,7 +127,7 @@ There is no harm in calling `detectChanges()` more often than is strictly necess
 {@a dispatch-event}
 #### Change an input value with _dispatchEvent()_
 
-To simulate user input, you can find the input element and set its `value` property.
+To simulate user input, find the input element and set its `value` property.
 
 You will call `fixture.detectChanges()` to trigger Angular's change detection.
 But there is an essential, intermediate step.
@@ -142,7 +142,7 @@ The following example demonstrates the proper sequence.
 
 ## Component with external files
 
-The `BannerComponent` above is defined with an _inline template_ and _inline css_, specified in the `@Component.template` and `@Component.styles` properties respectively.
+The preceding `BannerComponent` is defined with an _inline template_ and _inline css_, specified in the `@Component.template` and `@Component.styles` properties respectively.
 
 Many components specify _external templates_ and _external css_ with the
 `@Component.templateUrl` and `@Component.styleUrls` properties respectively,
@@ -159,7 +159,7 @@ That's not a problem when you run the CLI `ng test` command because it
 _compiles the application before running the tests_.
 
 However, if you run the tests in a **non-CLI environment**,
-tests of this component may fail.
+tests of this component might fail.
 For example, if you run the `BannerComponent` tests in a web coding environment such as [plunker](https://plnkr.co/), you'll see a message like this one:
 
 <code-example language="sh" hideCopy>
@@ -171,7 +171,7 @@ Please call "TestBed.compileComponents" before your test.
 You get this test failure message when the runtime environment
 compiles the source code _during the tests themselves_.
 
-To correct the problem, call `compileComponents()` as explained [below](#compile-components).
+To correct the problem, call `compileComponents()` as explained in the following [Calling compileComponents](#compile-components) section.
 
 {@a component-with-dependency}
 
@@ -239,7 +239,7 @@ The component injector is a property of the fixture's `DebugElement`.
 
 #### _TestBed.inject()_
 
-You _may_ also be able to get the service from the root injector using `TestBed.inject()`.
+You _might_ also be able to get the service from the root injector using `TestBed.inject()`.
 This is easier to remember and less verbose.
 But it only works when Angular injects the component with the service instance in the test's root injector.
 
@@ -394,7 +394,7 @@ There is no nested syntax (like a `Promise.then()`) to disrupt the flow of contr
 <div class="alert is-helpful">
 
 Limitation: The `fakeAsync()` function won't work if the test body makes an `XMLHttpRequest` (XHR) call.
-XHR calls within a test are rare, but if you need to call XHR, see [`waitForAsync()`](#waitForAsync), below.
+XHR calls within a test are rare, but if you need to call XHR, see the [`waitForAsync()`](#waitForAsync) section.
 
 </div>
 
@@ -424,18 +424,18 @@ It's a companion to `fakeAsync()` and you can only call it within a `fakeAsync()
   region="fake-async-test-tick-new-macro-task-sync">
 </code-example>
 
-In this example, we have a new macro task (nested setTimeout), by default, when we `tick`, the setTimeout `outside` and `nested` will both be triggered.
+In this example, you have a new macro task (nested setTimeout), by default, when the `tick` is setTimeout `outside` and `nested` will both be triggered.
 
 <code-example
   path="testing/src/app/demo/async-helper.spec.ts"
   region="fake-async-test-tick-new-macro-task-async">
 </code-example>
 
-And in some case, we don't want to trigger the new macro task when ticking, we can use `tick(milliseconds, {processNewMacroTasksSynchronously: false})` to not invoke new macro task.
+And in some case, you don't want to trigger the new macro task when ticking, you can use `tick(milliseconds, {processNewMacroTasksSynchronously: false})` to not invoke new macro task.
 
 #### Comparing dates inside fakeAsync()
 
-`fakeAsync()` simulates passage of time, which allows you to calculate the difference between dates inside `fakeAsync()`.
+`fakeAsync()` simulates passage of time, which lets you calculate the difference between dates inside `fakeAsync()`.
 
 <code-example
   path="testing/src/app/demo/async-helper.spec.ts"
@@ -479,7 +479,7 @@ By default, `fakeAsync()` supports the following macro tasks.
 - `webkitRequestAnimationFrame`
 - `mozRequestAnimationFrame`
 
-If you run other macro tasks such as `HTMLCanvasElement.toBlob()`, an _"Unknown macroTask scheduled in fake async test"_ error will be thrown.
+If you run other macro tasks such as `HTMLCanvasElement.toBlob()`, an _"Unknown macroTask scheduled in fake async test"_ error is thrown.
 
 <code-tabs>
   <code-pane
@@ -532,7 +532,7 @@ from the `getQuote()` spy like this.
 #### Async observable helpers
 
 The async observable was produced by an `asyncData` helper.
-The `asyncData` helper is a utility function that you'll have to write yourself, or you can copy this one from the sample code.
+The `asyncData` helper is a utility function that you'll have to write yourself, or copy this one from the sample code.
 
 <code-example
   path="testing/src/testing/async-observable-helpers.ts"
@@ -663,7 +663,7 @@ from the `TwainService` with the `asyncData` and `asyncError` utilities.
 These are short, simple functions that you can write yourself.
 Unfortunately, they're too simple for many common scenarios.
 An observable often emits multiple times, perhaps after a significant delay.
-A component may coordinate multiple observables
+A component might coordinate multiple observables
 with overlapping sequences of values and errors.
 
 **RxJS marble testing** is a great way to test observable scenarios,
@@ -792,7 +792,7 @@ Here's the component's full definition:
   header="app/dashboard/dashboard-hero.component.ts (component)"></code-example>
 
 While testing a component this simple has little intrinsic value, it's worth knowing how.
-You can use one of these approaches:
+Use one of these approaches:
 
 - Test it as used by `DashboardComponent`.
 - Test it as a stand-alone component.
@@ -811,7 +811,7 @@ The router seems particularly challenging.
 
 <div class="alert is-helpful">
 
-The [discussion below](#routing-component) covers testing components that require the router.
+The [following discussion](#routing-component) covers testing components that require the router.
 
 </div>
 
@@ -919,15 +919,15 @@ which is perfectly fine for _this component_.
 
 Clicking a button, an anchor, or an arbitrary HTML element is a common test task.
 
-Make that consistent and easy by encapsulating the _click-triggering_ process
-in a helper such as the `click()` function below:
+Make that consistent and straightforward by encapsulating the _click-triggering_ process
+in a helper such as the following `click()` function:
 
 <code-example
   path="testing/src/testing/index.ts"
   region="click-event"
   header="testing/index.ts (click helper)"></code-example>
 
-The first parameter is the _element-to-click_. If you want, you can pass a
+The first parameter is the _element-to-click_. If you want, pass a
 custom event object as the second parameter. The default is a (partial)
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button">left-button mouse event object</a>
 accepted by many handlers including the `RouterLink` directive.
@@ -978,7 +978,7 @@ The test host sets the component's `hero` input property with its test hero.
 It binds the component's `selected` event with its `onSelected` handler,
 which records the emitted hero in its `selectedHero` property.
 
-Later, the tests will be able to easily check `selectedHero` to verify that the
+Later, the tests will be able to check `selectedHero` to verify that the
 `DashboardHeroComponent.selected` event emitted the expected hero.
 
 The setup for the _test-host_ tests is similar to the setup for the stand-alone tests:
@@ -1135,7 +1135,7 @@ Here's a test demonstrating the component's behavior when the observed `id` refe
 
 <div class="alert is-helpful">
 
-The `createComponent()` method and `page` object are discussed [below](#page-object).
+In the following section, the `createComponent()` method and `page` object are discussed.
 Rely on your intuition for now.
 
 </div>
@@ -1162,7 +1162,7 @@ New heroes have `id=0` and a blank `name`. This test confirms that the component
 ## Nested component tests
 
 Component templates often have nested components, whose templates
-may contain more components.
+might contain more components.
 
 The component tree can be very deep and, most of the time, the nested components
 play no role in testing the component at the top of the tree.
@@ -1174,8 +1174,8 @@ The `AppComponent`, for example, displays a navigation bar with anchors and thei
   header="app/app.component.html"></code-example>
 
 While the `AppComponent` _class_ is empty,
-you may want to write unit tests to confirm that the links are wired properly
-to the `RouterLink` directives, perhaps for the reasons [explained below](#why-stubbed-routerlink-tests).
+you might want to write unit tests to confirm that the links are wired properly
+to the `RouterLink` directives, perhaps for the reasons as explained in the [following section](#why-stubbed-routerlink-tests).
 
 To validate the links, you don't need the `Router` to navigate and you don't
 need the `<router-outlet>` to mark where the `Router` inserts _routed components_.
@@ -1183,7 +1183,7 @@ need the `<router-outlet>` to mark where the `Router` inserts _routed components
 The `BannerComponent` and `WelcomeComponent`
 (indicated by `<app-banner>` and `<app-welcome>`) are also irrelevant.
 
-Yet any test that creates the `AppComponent` in the DOM will also create instances of
+Yet any test that creates the `AppComponent` in the DOM also creates instances of
 these three components and, if you let that happen,
 you'll have to configure the `TestBed` to create them.
 
@@ -1242,7 +1242,7 @@ In the second approach, add `NO_ERRORS_SCHEMA` to the `TestBed.schemas` metadata
 
 The `NO_ERRORS_SCHEMA` tells the Angular compiler to ignore unrecognized elements and attributes.
 
-The compiler will recognize the `<app-root>` element and the `routerLink` attribute
+The compiler recognizes the `<app-root>` element and the `routerLink` attribute
 because you declared a corresponding `AppComponent` and `RouterLinkDirectiveStub`
 in the `TestBed` configuration.
 
@@ -1327,7 +1327,7 @@ A little more setup triggers the initial data binding and gets references to the
 
 Three points of special interest:
 
-1.  You can locate the anchor elements with an attached directive using `By.directive`.
+1.  Locate the anchor elements with an attached directive using `By.directive`.
 
 1.  The query returns `DebugElement` wrappers around the matching elements.
 
@@ -1357,7 +1357,7 @@ This is a common failing of directive stubs.
 It has a legitimate purpose in this guide.
 It demonstrates how to find a `RouterLink` element, click it, and inspect a result,
 without engaging the full router machinery.
-This is a skill you may need to test a more sophisticated component, one that changes the display,
+This is a skill you might need to test a more sophisticated component, one that changes the display,
 re-calculates parameters, or re-arranges navigation options when the user clicks the link.
 
 </div>
@@ -1381,7 +1381,7 @@ in the presence of conditions that influence guards such as whether the user is 
 
 <div class="alert is-helpful">
 
-A future guide update will explain how to write such
+A future guide update explains how to write such
 tests with the `RouterTestingModule`.
 
 </div>
@@ -1445,12 +1445,12 @@ Here are a few more `HeroDetailComponent` tests to reinforce the point.
 
 <div class="alert is-helpful">
 
-You can ignore this section if you _only_ run tests with the CLI `ng test` command
+Ignore this section if you _only_ run tests with the CLI `ng test` command
 because the CLI compiles the application before running the tests.
 
 </div>
 
-If you run tests in a **non-CLI environment**, the tests may fail with a message like this one:
+If you run tests in a **non-CLI environment**, the tests might fail with a message like this one:
 
 <code-example language="sh" hideCopy>
 Error: This test module uses the component BannerComponent
@@ -1494,7 +1494,7 @@ You must call `compileComponents()` within an asynchronous test function.
 <div class="alert is-critical">
 
 If you neglect to make the test function async
-(for example, forget to use `waitForAsync()` as described below),
+(for example, forget to use `waitForAsync()` as described),
 you'll see this error message
 
 <code-example language="sh" hideCopy>
@@ -1522,7 +1522,7 @@ calls to other `TestBed` static methods such as `compileComponents()`.
 
 In this example, the `BannerComponent` is the only component to compile.
 Other examples configure the testing module with multiple components
-and may import application modules that hold yet more components.
+and might import application modules that hold yet more components.
 Any of them could require external files.
 
 The `TestBed.compileComponents` method asynchronously compiles all components configured in the testing module.
@@ -1550,7 +1550,7 @@ which include creating the component and querying for elements to inspect.
   region="sync-before-each"
   header="app/banner/banner-external.component.spec.ts (synchronous beforeEach)"></code-example>
 
-You can count on the test runner to wait for the first asynchronous `beforeEach` to finish before calling the second.
+Count on the test runner to wait for the first asynchronous `beforeEach` to finish before calling the second.
 
 #### Consolidated setup
 
@@ -1613,7 +1613,7 @@ One approach is to configure the testing module from the individual pieces as in
 Notice that the `beforeEach()` is asynchronous and calls `TestBed.compileComponents`
 because the `HeroDetailComponent` has an external template and css file.
 
-As explained in [_Calling compileComponents()_](#compile-components) above,
+As explained in [_Calling compileComponents()_](#compile-components),
 these tests could be run in a non-CLI environment
 where Angular would have to compile them in the browser.
 
@@ -1651,7 +1651,7 @@ created by the `TestBed`.
 
 <div class="alert is-helpful">
 
-Importing the component's feature module can be the easiest way to configure tests
+Importing the component's feature module can be the best way to configure tests
 when there are many mutual dependencies within the module and
 the module is small, as feature modules tend to be.
 
@@ -1673,7 +1673,7 @@ It registers the component's providers (the `HeroDetailService` in this case) wi
 A test cannot get to child injector services from the fixture injector.
 And `TestBed.configureTestingModule` can't configure them either.
 
-Angular has been creating new instances of the real `HeroDetailService` all along!
+Angular has created new instances of the real `HeroDetailService` all along!
 
 <div class="alert is-helpful">
 

@@ -5,14 +5,14 @@ To check that your services are working as you intend, you can write tests speci
 
 <div class="alert is-helpful">
 
-  For a hands-on experience, you can <live-example name="testing" stackblitz="specs" noDownload>run tests and explore the test code</live-example> in your browser as you read this guide.
+  For a hands-on experience, <live-example name="testing" stackblitz="specs" noDownload>run tests and explore the test code</live-example> in your browser as you read this guide.
 
-  If you'd like to experiment with the application that this guide describes, you can <live-example name="testing" noDownload>run it in your browser</live-example> or <live-example name="testing" downloadOnly>download and run it locally</live-example>.
+  If you'd like to experiment with the application that this guide describes, <live-example name="testing" noDownload>run it in your browser</live-example> or <live-example name="testing" downloadOnly>download and run it locally</live-example>.
 
 </div>
 
 
-Services are often the easiest files to unit test.
+Services are often the smoothest files to unit test.
 Here are some synchronous and asynchronous unit tests of the `ValueService`
 written without assistance from Angular testing utilities.
 
@@ -23,7 +23,7 @@ written without assistance from Angular testing utilities.
 ## Services with dependencies
 
 Services often depend on other services that Angular injects into the constructor.
-In many cases, it's easy to create and _inject_ these dependencies by hand while
+In many cases, you can create and _inject_ these dependencies by hand while
 calling the service's constructor.
 
 The `MasterService` is a simple example:
@@ -40,13 +40,13 @@ The first test creates a `ValueService` with `new` and passes it to the `MasterS
 
 However, injecting the real service rarely works well as most dependent services are difficult to create and control.
 
-Instead you can mock the dependency, use a dummy value, or create a
+Instead, mock the dependency, use a dummy value, or create a
 [spy](https://jasmine.github.io/tutorials/your_first_suite#section-Spies)
 on the pertinent service method.
 
 <div class="alert is-helpful">
 
-Prefer spies as they are usually the easiest way to mock services.
+Prefer spies as they are usually the best way to mock services.
 
 </div>
 
@@ -54,7 +54,7 @@ These standard testing techniques are great for unit testing services in isolati
 
 However, you almost always inject services into application classes using Angular
 dependency injection and you should have tests that reflect that usage pattern.
-Angular testing utilities make it easy to investigate how injected services behave.
+Angular testing utilities make it straightforward to investigate how injected services behave.
 
 ## Testing services with the _TestBed_
 
