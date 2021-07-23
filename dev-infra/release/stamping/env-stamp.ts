@@ -29,7 +29,7 @@ export function buildEnvStamp(mode: EnvStampMode) {
   console.info(`BUILD_SCM_HASH ${getCurrentBranchOrRevision()}`);
   console.info(`BUILD_SCM_LOCAL_CHANGES ${hasLocalChanges()}`);
   console.info(`BUILD_SCM_USER ${getCurrentGitUser()}`);
-  const [version, experimentalVersion] = getSCMVersions(mode);
+  const {version, experimentalVersion} = getSCMVersions(mode);
   console.info(`BUILD_SCM_VERSION ${version}`);
   console.info(`BUILD_SCM_EXPERIMENTAL_VERSION ${experimentalVersion}`);
   process.exit();
@@ -47,13 +47,13 @@ function hasLocalChanges() {
  * In snapshot mode, the version is based on the most recent semver tag.
  * In release mode, the version is based on the base package.json version.
  */
-function getSCMVersions(mode: EnvStampMode) {
+function getSCMVersions(mode: EnvStampMode): {version: string, experimentalVersion: string} {
   const git = GitClient.get();
   if (mode === 'release') {
     const packageJsonPath = join(git.baseDir, 'package.json');
     const {version} = new SemVer(require(packageJsonPath).version);
     const {version: experimentalVersion} = createExperimentalSemver(new SemVer(version));
-    return [version, experimentalVersion];
+    return {version, experimentalVersion};
   }
   if (mode === 'snapshot') {
     const localChanges = hasLocalChanges() ? '.with-local-changes' : '';
@@ -61,9 +61,11 @@ function getSCMVersions(mode: EnvStampMode) {
         ['describe', '--match', '*[0-9]*.[0-9]*.[0-9]*', '--abbrev=7', '--tags', 'HEAD~100']);
     const {version} = new SemVer(rawVersion);
     const {version: experimentalVersion} = createExperimentalSemver(version);
-    return [version, experimentalVersion].map(v => {
-      return `${v.replace(/-([0-9]+)-g/, '+$1.sha-')}${localChanges}`;
-    });
+    return {
+      version: `${version.replace(/-([0-9]+)-g/, '+$1.sha-')}${localChanges}`,
+      experimentalVersion:
+          `${experimentalVersion.replace(/-([0-9]+)-g/, '+$1.sha-')}${localChanges}`,
+    };
   }
   throw Error('No environment stamp mode was provided.');
 }

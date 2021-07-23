@@ -7682,7 +7682,7 @@ function buildEnvStamp(mode) {
     console.info(`BUILD_SCM_HASH ${getCurrentBranchOrRevision()}`);
     console.info(`BUILD_SCM_LOCAL_CHANGES ${hasLocalChanges()}`);
     console.info(`BUILD_SCM_USER ${getCurrentGitUser()}`);
-    const [version, experimentalVersion] = getSCMVersions(mode);
+    const { version, experimentalVersion } = getSCMVersions(mode);
     console.info(`BUILD_SCM_VERSION ${version}`);
     console.info(`BUILD_SCM_EXPERIMENTAL_VERSION ${experimentalVersion}`);
     process.exit();
@@ -7704,16 +7704,17 @@ function getSCMVersions(mode) {
         const packageJsonPath = path.join(git.baseDir, 'package.json');
         const { version } = new semver.SemVer(require(packageJsonPath).version);
         const { version: experimentalVersion } = createExperimentalSemver(new semver.SemVer(version));
-        return [version, experimentalVersion];
+        return { version, experimentalVersion };
     }
     if (mode === 'snapshot') {
         const localChanges = hasLocalChanges() ? '.with-local-changes' : '';
         const { stdout: rawVersion } = git.run(['describe', '--match', '*[0-9]*.[0-9]*.[0-9]*', '--abbrev=7', '--tags', 'HEAD~100']);
         const { version } = new semver.SemVer(rawVersion);
         const { version: experimentalVersion } = createExperimentalSemver(version);
-        return [version, experimentalVersion].map(v => {
-            return `${v.replace(/-([0-9]+)-g/, '+$1.sha-')}${localChanges}`;
-        });
+        return {
+            version: `${version.replace(/-([0-9]+)-g/, '+$1.sha-')}${localChanges}`,
+            experimentalVersion: `${experimentalVersion.replace(/-([0-9]+)-g/, '+$1.sha-')}${localChanges}`,
+        };
     }
     throw Error('No environment stamp mode was provided.');
 }
