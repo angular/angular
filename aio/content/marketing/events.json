@@ -9,6 +9,15 @@
     }
   },
   {
+    "name": "The Angular Walkabout",
+    "location": "Online",
+    "linkUrl": "https://www.telerik.com/the-angular-walkabout",
+    "date": {
+      "start": "2021-07-29",
+      "end": "2021-07-29"
+    }
+  },
+  {
     "name": "ng-conf",
     "location": "Online",
     "linkUrl": "https://www.2021.ng-conf.org/",
