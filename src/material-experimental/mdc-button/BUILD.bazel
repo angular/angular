@@ -20,6 +20,7 @@ ng_module(
         ],
     ),
     assets = [
+        ":button_high_contrast_scss",
         ":button_scss",
         ":fab_scss",
         ":icon-button_scss",
@@ -53,10 +54,16 @@ sass_binary(
     ],
     deps = [
         ":button_base_scss_lib",
-        "//src/cdk/a11y:a11y_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
     ],
+)
+
+sass_binary(
+    name = "button_high_contrast_scss",
+    src = "button-high-contrast.scss",
+    include_paths = ["external/npm/node_modules"],
+    deps = ["//src/cdk/a11y:a11y_scss_lib"],
 )
 
 sass_binary(

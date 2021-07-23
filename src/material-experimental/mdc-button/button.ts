@@ -42,7 +42,7 @@ import {
     button[mat-stroked-button]
   `,
   templateUrl: 'button.html',
-  styleUrls: ['button.css'],
+  styleUrls: ['button.css', 'button-high-contrast.css'],
   inputs: MAT_BUTTON_INPUTS,
   host: MAT_BUTTON_HOST,
   exportAs: 'matButton',
@@ -73,7 +73,7 @@ export class MatButton extends MatButtonBase {
   host: MAT_ANCHOR_HOST,
   inputs: MAT_ANCHOR_INPUTS,
   templateUrl: 'button.html',
-  styleUrls: ['button.css'],
+  styleUrls: ['button.css', 'button-high-contrast.css'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

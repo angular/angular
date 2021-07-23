@@ -35,7 +35,7 @@ import {
 @Component({
   selector: `button[mat-icon-button]`,
   templateUrl: 'button.html',
-  styleUrls: ['icon-button.css'],
+  styleUrls: ['icon-button.css', 'button-high-contrast.css'],
   inputs: MAT_BUTTON_INPUTS,
   host: MAT_BUTTON_HOST,
   exportAs: 'matButton',
@@ -61,7 +61,7 @@ export class MatIconButton extends MatButtonBase {
 @Component({
   selector: `a[mat-icon-button]`,
   templateUrl: 'button.html',
-  styleUrls: ['icon-button.css'],
+  styleUrls: ['icon-button.css', 'button-high-contrast.css'],
   inputs: MAT_ANCHOR_INPUTS,
   host: MAT_ANCHOR_HOST,
   exportAs: 'matButton, matAnchor',
