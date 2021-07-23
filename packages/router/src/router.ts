@@ -892,8 +892,7 @@ export class Router {
                            // whether or not to handle a given popstate event or to leave it to the
                            // Angular router.
                            this.restoreHistory(t);
-                           this.cancelNavigationTransition(
-                               t, `At least one route resolver didn't emit any value.`);
+                           this.cancelNavigationTransition(t, cancelationReason);
                          } else {
                            // We cannot trigger a `location.historyGo` if the
                            // cancellation was due to a new navigation before the previous could
@@ -928,7 +927,7 @@ export class Router {
                            // This is only applicable with initial navigation, so setting
                            // `navigated` only when not redirecting resolves this scenario.
                            this.navigated = true;
-                           this.resetStateAndUrl(t);
+                           this.restoreHistory(t, true);
                          }
                          const navCancel = new NavigationCancel(
                              t.id, this.serializeUrl(t.extractedUrl), e.message);
@@ -960,7 +959,7 @@ export class Router {
                          /* All other errors should reset to the router's internal URL reference to
                           * the pre-error state. */
                        } else {
-                         this.resetStateAndUrl(t);
+                         this.restoreHistory(t, true);
                          const navError =
                              new NavigationError(t.id, this.serializeUrl(t.extractedUrl), e);
                          eventsSubject.next(navError);
@@ -1466,26 +1465,11 @@ export class Router {
     }
   }
 
-  private resetStateAndUrl(t: NavigationTransition): void {
-    if (this.canceledNavigationResolution === 'replace') {
-      (this as {routerState: RouterState}).routerState = t.currentRouterState;
-      this.currentUrlTree = t.currentUrlTree;
-      this.rawUrlTree = this.urlHandlingStrategy.merge(this.currentUrlTree, t.rawUrl);
-    }
-    this.restoreHistory(t);
-  }
-
-  private resetUrlToCurrentUrlTree(): void {
-    this.location.replaceState(
-        this.urlSerializer.serialize(this.rawUrlTree), '',
-        this.generateNgRouterState(this.lastSuccessfulId, this.currentPageId));
-  }
-
   /**
    * Performs the necessary rollback action to restore the browser URL to the
    * state before the transition.
    */
-  private restoreHistory(t: NavigationTransition) {
+  private restoreHistory(t: NavigationTransition, restoringFromCaughtError = false) {
     if (this.canceledNavigationResolution === 'computed') {
       const targetPagePosition = this.currentPageId - t.targetPageId;
       // The navigator change the location before triggered the browser event,
@@ -1500,24 +1484,40 @@ export class Router {
         this.location.historyGo(targetPagePosition);
       } else if (
           this.currentUrlTree === this.currentNavigation?.finalUrl && targetPagePosition === 0) {
-        // We got to the activation stage, but we weren't moving anywhere in history
-        // (skipLocationChange or replaceUrl). We still need to reset the router state back to what
-        // it was when the navigation started.
-        // TODO(atscott): this restore logic is duplicated here and for the `'replace'` resolution
-        // in `resetStateAndUrl`. Investigate moving all of this logic to this function only and
-        // removing `resetStateAndUrl` completely.
-        (this as {routerState: RouterState}).routerState = t.currentRouterState;
-        this.currentUrlTree = t.currentUrlTree;
-        this.rawUrlTree = this.urlHandlingStrategy.merge(this.currentUrlTree, t.rawUrl);
+        // We got to the activation stage (where currentUrlTree is set to the navigation's
+        // finalUrl), but we weren't moving anywhere in history (skipLocationChange or replaceUrl).
+        // We still need to reset the router state back to what it was when the navigation started.
+        this.resetState(t);
+        // TODO(atscott): resetting the `browserUrlTree` should really be done in `resetState`.
+        // Investigate if this can be done by running TGP.
         this.browserUrlTree = t.currentUrlTree;
         this.resetUrlToCurrentUrlTree();
       } else {
         // The browser URL and router state was not updated before the navigation cancelled so
         // there's no restoration needed.
       }
-    } else {
+    } else if (this.canceledNavigationResolution === 'replace') {
+      // TODO(atscott): It seems like we should _always_ reset the state here. It would be a no-op
+      // for `deferred` navigations that haven't change the internal state yet because guards
+      // reject. For 'eager' navigations, it seems like we also really should reset the state
+      // because the navigation was cancelled. Investigate if this can be done by running TGP.
+      if (restoringFromCaughtError) {
+        this.resetState(t);
+      }
       this.resetUrlToCurrentUrlTree();
     }
+  }
+
+  private resetState(t: NavigationTransition): void {
+    (this as {routerState: RouterState}).routerState = t.currentRouterState;
+    this.currentUrlTree = t.currentUrlTree;
+    this.rawUrlTree = this.urlHandlingStrategy.merge(this.currentUrlTree, t.rawUrl);
+  }
+
+  private resetUrlToCurrentUrlTree(): void {
+    this.location.replaceState(
+        this.urlSerializer.serialize(this.rawUrlTree), '',
+        this.generateNgRouterState(this.lastSuccessfulId, this.currentPageId));
   }
 
   private cancelNavigationTransition(t: NavigationTransition, reason: string) {
