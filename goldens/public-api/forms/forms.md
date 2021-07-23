@@ -78,8 +78,8 @@ export abstract class AbstractControl {
     setParent(parent: FormGroup | FormArray): void;
     setValidators(validators: ValidatorFn | ValidatorFn[] | null): void;
     abstract setValue(value: any, options?: Object): void;
-    readonly status: string;
-    readonly statusChanges: Observable<any>;
+    readonly status: FormControlStatus;
+    readonly statusChanges: Observable<FormControlStatus>;
     readonly touched: boolean;
     get untouched(): boolean;
     get updateOn(): FormHooks;
