@@ -9,15 +9,15 @@ Such tests require creating the component's host element in the browser DOM,
 as Angular does, and investigating the component class's interaction with
 the DOM as described by its template.
 
-The Angular `TestBed` facilitates this kind of testing as you'll see in the sections below.
+The Angular `TestBed` facilitates this kind of testing as you'll see in the following sections.
 But in many cases, _testing the component class alone_, without DOM involvement,
-can validate much of the component's behavior in an easier, more obvious way.
+can validate much of the component's behavior in an straightforward, more obvious way.
 
 <div class="alert is-helpful">
 
-  For a hands-on experience you can <live-example name="testing" stackblitz="specs" noDownload>run tests and explore the test code</live-example> in your browser as your read this guide.
+  For a hands-on experience, <live-example name="testing" stackblitz="specs" noDownload>run tests and explore the test code</live-example> in your browser as your read this guide.
 
-  If you'd like to experiment with the application that this guide describes, you can <live-example name="testing" noDownload>run it in your browser</live-example> or <live-example name="testing" downloadOnly>download and run it locally</live-example>.
+  If you'd like to experiment with the application that this guide describes, <live-example name="testing" noDownload>run it in your browser</live-example> or <live-example name="testing" downloadOnly>download and run it locally</live-example>.
 
 </div>
 
@@ -74,7 +74,7 @@ or its parent component.
   region="class-only"
   header="app/dashboard/dashboard-hero.component.spec.ts (class tests)"></code-example>
 
-When a component has dependencies, you may want to use the `TestBed` to both
+When a component has dependencies, you might want to use the `TestBed` to both
 create the component and its dependencies.
 
 The following `WelcomeComponent` depends on the `UserService` to know the name of the user to greet.
@@ -107,7 +107,7 @@ Then exercise the component class, remembering to call the [lifecycle hook metho
 
 ## Component DOM testing
 
-Testing the component _class_ is as easy as [testing a service](guide/testing-services).
+Testing the component _class_ is as straightforward as [testing a service](guide/testing-services).
 
 But a component is more than just its class.
 A component interacts with the DOM and with other components.
@@ -115,7 +115,7 @@ The _class-only_ tests can tell you about class behavior.
 They cannot tell you if the component is going to render properly,
 respond to user input and gestures, or integrate with its parent and child components.
 
-None of the _class-only_ tests above can answer key questions about how the
+None of the preceding _class-only_ tests can answer key questions about how the
 components actually behave on screen.
 
 - Is `Lightswitch.clicked()` bound to anything such that the user can invoke it?
@@ -124,7 +124,7 @@ components actually behave on screen.
 - Is the hero name displayed as expected (i.e, in uppercase)?
 - Is the welcome message displayed by the template of `WelcomeComponent`?
 
-These may not be troubling questions for the simple components illustrated above.
+These might not be troubling questions for the preceding simple components illustrated.
 But many components have complex interactions with the DOM elements
 described in their templates, causing HTML to appear and disappear as
 the component state changes.
@@ -173,7 +173,7 @@ and all they do is assert that Angular can create the component.
 
 The rest of the file is boilerplate setup code anticipating more advanced tests that _might_ become necessary if the component evolves into something substantial.
 
-You'll learn about these advanced test features below.
+You'll learn about these advanced test features in the following sections.
 For now, you can radically reduce this test file to a more manageable size:
 
 <code-example
@@ -272,13 +272,13 @@ Angular can't know at compile time what kind of HTML element the `nativeElement`
 if it even is an HTML element.
 The application might be running on a _non-browser platform_, such as the server or a
 [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API),
-where the element may have a diminished API or not exist at all.
+where the element might have a diminished API or not exist at all.
 
 The tests in this guide are designed to run in a browser so a
 `nativeElement` value will always be an `HTMLElement` or
 one of its derived classes.
 
-Knowing that it is an `HTMLElement` of some sort, you can use
+Knowing that it is an `HTMLElement` of some sort, use
 the standard HTML `querySelector` to dive deeper into the element tree.
 
 Here's another test that calls `HTMLElement.querySelector` to get the paragraph element and look for the banner text:
@@ -372,8 +372,8 @@ Some noteworthy observations:
 - The query returns a `DebugElement` for the paragraph.
 - You must unwrap that result to get the paragraph element.
 
-When you're filtering by CSS selector and only testing properties of a browser's _native element_, the `By.css` approach may be overkill.
+When you're filtering by CSS selector and only testing properties of a browser's _native element_, the `By.css` approach might be overkill.
 
-It's often easier and more clear to filter with a standard `HTMLElement` method
+It's often straightforward and more clear to filter with a standard `HTMLElement` method
 such as `querySelector()` or `querySelectorAll()`.
 
