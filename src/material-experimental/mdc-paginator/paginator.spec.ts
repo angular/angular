@@ -73,11 +73,16 @@ describe('MDC-based MatPaginator', () => {
 
     it('should show right aria-labels for select and buttons', () => {
       const fixture = createComponent(MatPaginatorApp);
-      const select = fixture.nativeElement.querySelector('.mat-mdc-select');
-      expect(select.getAttribute('aria-label')).toBe('Items per page:');
 
       expect(getPreviousButton(fixture).getAttribute('aria-label')).toBe('Previous page');
       expect(getNextButton(fixture).getAttribute('aria-label')).toBe('Next page');
+
+      const select = fixture.nativeElement.querySelector('.mat-mdc-select');
+      const selectLabelIds = select.getAttribute('aria-labelledby')?.split(/\s/g) as string[];
+      const selectLabelTexts = selectLabelIds?.map(labelId => {
+        return fixture.nativeElement.querySelector(`#${labelId}`)?.textContent?.trim();
+      });
+      expect(selectLabelTexts).toContain('Items per page:');
     });
 
     it('should re-render when the i18n labels change', () => {

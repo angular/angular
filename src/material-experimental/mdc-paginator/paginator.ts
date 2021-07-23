@@ -44,6 +44,8 @@ export interface MatPaginatorDefaultOptions {
 export const MAT_PAGINATOR_DEFAULT_OPTIONS =
     new InjectionToken<MatPaginatorDefaultOptions>('MAT_PAGINATOR_DEFAULT_OPTIONS');
 
+let nextUniqueId = 0;
+
 /**
  * Component to provide navigation between paged information. Displays the size of the current
  * page, user-selectable options to change that size, what items are being shown, and
@@ -65,6 +67,10 @@ export const MAT_PAGINATOR_DEFAULT_OPTIONS =
 export class MatPaginator extends _MatPaginatorBase<MatPaginatorDefaultOptions> {
   /** If set, styles the "page size" form field with the designated style. */
   _formFieldAppearance?: MatFormFieldAppearance;
+
+  /** ID for the DOM node containing the pagiators's items per page label. */
+  readonly _pageSizeLabelId = `mat-paginator-page-size-label-${nextUniqueId++}`;
+
 
   constructor(intl: MatPaginatorIntl,
     changeDetectorRef: ChangeDetectorRef,
