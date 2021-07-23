@@ -6,6 +6,7 @@ import {
   materialExperimentalPackage,
   materialPackage,
   momentAdapterPackage,
+  luxonAdapterPackage,
   youTubePlayerPackage
 } from './packages';
 
@@ -15,6 +16,7 @@ createPackageBuildTasks(cdkExperimentalPackage);
 createPackageBuildTasks(materialPackage);
 createPackageBuildTasks(materialExperimentalPackage);
 createPackageBuildTasks(momentAdapterPackage);
+createPackageBuildTasks(luxonAdapterPackage);
 createPackageBuildTasks(youTubePlayerPackage);
 createPackageBuildTasks(googleMapsPackage);
 

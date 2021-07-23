@@ -325,6 +325,29 @@ The easiest way to ensure this is to import one of the provided date modules:
   </tbody>
 </table>
 
+`MatLuxonDateModule` (installed via `@angular/material-luxon-adapter`)
+
+<table>
+  <tbody>
+  <tr>
+    <th align="left" scope="row">Date type</th>
+    <td><code>DateTime</code></td>
+  </tr>
+  <tr>
+    <th align="left" scope="row">Supported locales</th>
+    <td><a href="https://moment.github.io/luxon/">See project for details</a></td>
+  </tr>
+  <tr>
+    <th align="left" scope="row">Dependencies</th>
+    <td><a href="https://momentjs.com/">Luxon</a></td>
+  </tr>
+  <tr>
+    <th align="left" scope="row">Import from</th>
+    <td><code>@angular/material-luxon-adapter</code></td>
+  </tr>
+  </tbody>
+</table>
+
 `MatMomentDateModule` (installed via `@angular/material-moment-adapter`)
 
 <table>

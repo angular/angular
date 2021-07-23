@@ -37,6 +37,7 @@
     "node_modules/@angular/material/**",
     "node_modules/@angular/material-experimental/**",
     "node_modules/@angular/material-moment-adapter/**",
+    "node_modules/@angular/material-luxon-adapter/**",
     "node_modules/@angular/youtube-player/**"
   ]
 }

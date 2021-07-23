@@ -31,6 +31,7 @@ var nodeModulesPath = '$NODE_MODULES_BASE_PATH';
 var pathMapping = {
   'tslib': 'node:tslib/tslib.js',
   'moment': 'node:moment/min/moment-with-locales.min.js',
+  'luxon': 'node:luxon/build/amd/luxon.js',
   'moment/locale': 'node:moment/locale',
   'kagekiri': 'node:kagekiri/dist/kagekiri.umd.min.js',
 
@@ -153,6 +154,7 @@ function setupLocalReleasePackages() {
   configureEntryPoint('material');
   configureEntryPoint('material-experimental');
   configureEntryPoint('material-moment-adapter');
+  configureEntryPoint('material-luxon-adapter');
   configureEntryPoint('google-maps');
   configureEntryPoint('youtube-player');
 

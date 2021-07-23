@@ -88,8 +88,9 @@
 /src/cdk/text-field/**                             @mmalerba
 /src/cdk/tree/**                                   @jelbourn @andrewseguin
 
-# Moment adapter package
+# Date adapters
 /src/material-moment-adapter/**                    @mmalerba
+/src/material-luxon-adapter/**                     @crisbeto
 
 # Material experimental package
 /src/material-experimental/*                       @jelbourn

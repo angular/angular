@@ -14,6 +14,7 @@
       "@angular/cdk-experimental/*": ["../cdk-experimental/*"],
       "@angular/cdk-experimental": ["../cdk-experimental"],
       "@angular/material-moment-adapter": ["../material-moment-adapter/public-api.ts"],
+      "@angular/material-luxon-adapter": ["../material-luxon-adapter/public-api.ts"],
       "@angular/google-maps": ["../google-maps"],
       "@angular/components-examples": ["../components-examples"],
       "@angular/components-examples/*": ["../components-examples/*"],

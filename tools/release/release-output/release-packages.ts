@@ -7,4 +7,5 @@ export const releasePackages = [
   'cdk-experimental',
   'material-experimental',
   'material-moment-adapter',
+  'material-luxon-adapter',
 ];
