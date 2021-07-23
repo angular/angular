@@ -521,7 +521,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
       @Optional() @SkipSelf() @Inject(STICKY_POSITIONING_LISTENER)
         protected readonly _stickyPositioningListener: StickyPositioningListener) {
     if (!role) {
-      this._elementRef.nativeElement.setAttribute('role', 'grid');
+      this._elementRef.nativeElement.setAttribute('role', 'table');
     }
 
     this._document = _document;
