@@ -183,7 +183,8 @@ export class ProtractorElement implements TestElement {
     if (options?.exclude) {
       return browser.executeScript(_getTextWithExcludedElements, this.element, options.exclude);
     }
-    return this.element.getText();
+    // We don't go through Protractor's `getText`, because it excludes text from hidden elements.
+    return browser.executeScript(`return (arguments[0].textContent || '').trim()`, this.element);
   }
 
   /** Gets the value for the given attribute from the element. */

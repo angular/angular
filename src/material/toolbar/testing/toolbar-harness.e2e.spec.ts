@@ -16,7 +16,7 @@ describe('toolbar harness', () => {
     const toolbar = await loader.getHarness(MatToolbarHarness);
 
     expect(await toolbar.getRowsAsText())
-      .toEqual(['Custom Toolbar', 'Second Line\nverified_user', 'Third Line\nfavorite\ndelete']);
+      .toEqual(['Custom Toolbar', 'Second Lineverified_user', 'Third Linefavoritedelete']);
   });
 
   it('should have multiple rows', async () => {

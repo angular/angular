@@ -103,6 +103,7 @@ export class MainComponentHarness extends ComponentHarness {
   readonly hoverTest = this.locatorFor('#hover-box');
   readonly customEventBasic = this.locatorFor('#custom-event-basic');
   readonly customEventObject = this.locatorFor('#custom-event-object');
+  readonly hidden = this.locatorFor('.hidden-element');
 
   private _testTools = this.locatorFor(SubComponentHarness);
 

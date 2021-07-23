@@ -617,6 +617,12 @@ export function crossEnvironmentSpecs(
       await button.blur();
       expect(await button.isFocused()).toBe(false);
     });
+
+    it('should be able to get the text of a hidden element', async () => {
+      const hiddenElement = await harness.hidden();
+      expect(await hiddenElement.text()).toBe('Hello');
+    });
+
   });
 }
 

@@ -14,15 +14,11 @@ describe('card harness', () => {
 
   it('should get card text', async () => {
     const card = await loader.getHarness(MatCardHarness);
-    expect(await card.getText()).toBe([
-      'Shiba Inu',
-      'Dog Breed',
-      'The Shiba Inu is the smallest of the six original and distinct spitz breeds of dog from' +
-      ' Japan. A small, agile dog that copes very well with mountainous terrain, the Shiba Inu' +
-      ' was originally bred for hunting.',
-      'LIKE',
-      'SHARE'
-    ].join('\n'));
+    expect(await card.getText()).toBe('Shiba InuDog Breed The Shiba Inu is the smallest of ' +
+                                      'the six original and distinct spitz breeds of dog from ' +
+                                      'Japan. A small, agile dog that copes very well with ' +
+                                      'mountainous terrain, the Shiba Inu was originally bred ' +
+                                      'for hunting. LIKESHARE');
   });
 
   it('should get title text', async () => {
