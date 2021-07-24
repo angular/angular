@@ -32,8 +32,8 @@ describe('AppComponent (initial CLI version)', () => {
   it('should render title', waitForAsync(() => {
        const fixture = TestBed.createComponent(AppComponent);
        fixture.detectChanges();
-       const compiled = fixture.nativeElement;
-       expect(compiled.querySelector('h1').textContent).toContain('Welcome to app!');
+       const compiled = fixture.nativeElement as HTMLElement;
+       expect(compiled.querySelector('h1')?.textContent).toContain('Welcome to app!');
      }));
 });
 // #enddocregion

@@ -2,7 +2,7 @@
   "projectType": "service-worker",
   "tests": [
     {"cmd": "yarn", "args": ["e2e", "--protractor-config=e2e/protractor-puppeteer.conf.js", "--no-webdriver-update", "--port={PORT}"]},
-    {"cmd": "yarn", "args": ["build", "--prod"]},
+    {"cmd": "yarn", "args": ["build"]},
     {"cmd": "node", "args": ["--eval", "assert(fs.existsSync('./dist/ngsw.json'), 'ngsw.json is missing')"]},
     {"cmd": "node", "args": ["--eval", "assert(fs.existsSync('./dist/ngsw-worker.js'), 'ngsw-worker.js is missing')"]},
     {"cmd": "node", "args": ["--eval", "assert(require('./package.json').dependencies['@angular/service-worker'], '@angular/service-worker is missing')"]}
