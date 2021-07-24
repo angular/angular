@@ -86,7 +86,7 @@ The file is expected to contain a JSON object with zero or more of the following
       "cmd": "yarn",
       "args": [
         "e2e",
-        "--prod",
+        "--configuration=production",
         "--protractor-config=e2e/protractor-puppeteer.conf.js",
         "--no-webdriver-update",
         "--port={PORT}"

@@ -266,7 +266,7 @@ function runE2eTestsCLI(appDir, outputFile, bufferOutput, port) {
                          cmd: 'yarn',
                          args: [
                            'e2e',
-                           '--prod',
+                           '--configuration=production',
                            '--protractor-config=e2e/protractor-puppeteer.conf.js',
                            '--no-webdriver-update',
                            '--port={PORT}',
