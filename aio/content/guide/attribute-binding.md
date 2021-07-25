@@ -86,6 +86,19 @@ To create a single class binding, use the prefix `class` followed by a dot and t
 Angular adds the class when the bound expression, `onSale` is truthy, and it removes the class when the expression is falsy&mdash;with the exception of `undefined`.
 See [styling delegation](guide/style-precedence#styling-delegation) for more information.
 
+<div class="alert is-helpful">
+
+You can write a class property name in either [dash-case](guide/glossary#dash-case), or
+[camelCase](guide/glossary#camelcase).
+
+<code-example language="html">
+  &lt;nav [class.my-class]="expression"&gt;&lt;/nav&gt;
+
+  &lt;nav [class.myClass]="expression"&gt;&lt;/nav&gt;
+</code-example>
+
+</div>
+
 ### Binding to multiple CSS classes
 
 To bind to multiple classes, use `[class]` set to an expression&mdash;for example, `[class]="classExpression"`.
