@@ -51,7 +51,7 @@ task('test:single-run', series(':test:build', done => {
     } else {
       // Immediately exit the process if Karma reported errors, because due to
       // potential still running tunnel-browsers gulp won't exit properly.
-      done(`Karma exited with code ${exitCode}.`);
+      done(new Error(`Karma exited with code ${exitCode}.`));
       process.exit(exitCode);
     }
   }).start();
