@@ -95,6 +95,6 @@
     "tslint": "~5.20.0",
     "typescript": "~4.2.3",
     "wait-on": "^6.0.0",
-    "webpack": "5.41.1"
+    "webpack": "5.46.0"
   }
 }
