@@ -336,8 +336,8 @@ Here are the most important static methods, in order of likely utility.
       The testing shims (`karma-test-shim`, `browser-test-shim`) call it for you
       so there is rarely a reason for you to call it yourself.
 
-      You may call this method _exactly once_. If you must change
-      this default in the middle of your test run, call `resetTestEnvironment` first.
+      Call this method _exactly once_. To change
+      this default in the middle of a test run, call `resetTestEnvironment` first.
 
       Specify the Angular compiler factory, a `PlatformRef`, and a default Angular testing module.
       Alternatives for non-browser platforms are available in the general form
