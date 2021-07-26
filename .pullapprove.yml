@@ -246,8 +246,9 @@ groups:
           ])
     reviewers:
       users:
-        - alxhub
         - AndrewKushnir
+        - alxhub
+        - atscott
         - JoostK
 
   # =========================================================
