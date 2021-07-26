@@ -136,7 +136,9 @@ export class SeleniumWebDriverElement implements TestElement {
     if (options?.exclude) {
       return this._executeScript(_getTextWithExcludedElements, this.element(), options.exclude);
     }
-    return this.element().getText();
+    // We don't go through the WebDriver `getText`, because it excludes text from hidden elements.
+    return this._executeScript(
+      (element: Element) => (element.textContent || '').trim(), this.element());
   }
 
   /** Gets the value for the given attribute from the element. */
