@@ -88,8 +88,8 @@ See [styling delegation](guide/style-precedence#styling-delegation) for more inf
 
 <div class="alert is-helpful">
 
-You can write a class property name in either [dash-case](guide/glossary#dash-case), or
-[camelCase](guide/glossary#camelcase).
+Single class binding syntax supports classes that are written in any case, either [dash-case](guide/glossary#dash-case), or
+[camelCase](guide/glossary#camelcase), as long as it can match the class name exactly. For example, the `my-class` and `myClass` names below must match with existing CSS classes:
 
 <code-example language="html">
   &lt;nav [class.my-class]="expression"&gt;&lt;/nav&gt;
