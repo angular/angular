@@ -173,6 +173,16 @@ export enum ErrorCode {
   SPLIT_TWO_WAY_BINDING = 8007,
 
   /**
+   * A two way binding in a template has an incorrect syntax,
+   * parentheses outside brackets. For example:
+   *
+   * ```
+   * <div ([foo])="bar" />
+   * ```
+   */
+  INVALID_BANANA_IN_BOX = 8101,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */
