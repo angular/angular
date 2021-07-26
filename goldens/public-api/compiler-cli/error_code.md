@@ -34,6 +34,7 @@ export enum ErrorCode {
     INJECTABLE_DUPLICATE_PROV = 9001,
     INLINE_TCB_REQUIRED = 8900,
     INLINE_TYPE_CTOR_REQUIRED = 8901,
+    INVALID_BANANA_IN_BOX = 8101,
     MISSING_PIPE = 8004,
     MISSING_REFERENCE_TARGET = 8003,
     NGMODULE_DECLARATION_NOT_UNIQUE = 6007,
@@ -66,7 +67,6 @@ export enum ErrorCode {
     VALUE_NOT_LITERAL = 1011,
     WRITE_TO_READ_ONLY_VARIABLE = 8005
 }
-
 
 // (No @packageDocumentation comment for this package)
 
