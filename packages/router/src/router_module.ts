@@ -13,7 +13,7 @@ import {of, Subject} from 'rxjs';
 
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
-import {RouterOutlet, EmptyOutletComponent} from './directives/router_outlet';
+import {EmptyOutletComponent, RouterOutlet} from './directives/router_outlet';
 import {Event, stringifyEvent} from './events';
 import {Route, Routes} from './models';
 import {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';

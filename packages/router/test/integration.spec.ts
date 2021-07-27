@@ -5480,7 +5480,7 @@ describe('Integration', () => {
          expect(fixture.nativeElement)
              .toHaveText('team 22 [ user john, right: [right outlet component: simple] ]');
          expect(loadSpy.calls.count()).toEqual(1);
-        }));
+       }));
 
     it('should return activated component instead of EmptyOutletComponent', fakeAsync(() => {
          @Component({selector: 'lazy', template: 'lazy-loaded'})
@@ -5515,7 +5515,6 @@ describe('Integration', () => {
          TestBed.configureTestingModule({declarations: [Container]});
 
          const router: Router = TestBed.get(Router);
-
          const fixture = createRoot(router, Container);
          const cmp = fixture.componentInstance;
 

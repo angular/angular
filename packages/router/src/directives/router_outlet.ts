@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, EnvironmentInjector, EventEmitter, Injector, OnDestroy, OnInit, Output, ViewChild, ViewContainerRef,} from '@angular/core';
-import { Subject, Subscription } from 'rxjs';
+import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, EnvironmentInjector, EventEmitter, Injector, OnDestroy, OnInit, Optional, Output, ViewContainerRef,} from '@angular/core';
+import {Subject, Subscription} from 'rxjs';
 
 import {Data} from '../models';
 import {ChildrenOutletContexts} from '../router_outlet_context';
@@ -177,7 +177,14 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
   constructor(
       private parentContexts: ChildrenOutletContexts, private location: ViewContainerRef,
       @Attribute('name') name: string, private changeDetector: ChangeDetectorRef,
-      private environmentInjector: EnvironmentInjector) {
+      private environmentInjector: EnvironmentInjector,
+      @Optional() parentEmptyOutlet?: ɵEmptyOutletComponent|null) {
+    if (parentEmptyOutlet) {
+      // Note that `EmptyOutletComponent.outlet` really wants to just be `@ViewChild(RouterOutlet)`
+      // but we wanted to avoid the bundle size cost of including the ViewChild feature in the
+      // router.
+      parentEmptyOutlet.outlet = this;
+    }
     this.name = name || PRIMARY_OUTLET;
     parentContexts.onChildOutletCreated(this.name, this);
   }
@@ -243,8 +250,14 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     const cmp = this.activated;
     this.activated = null;
     this._activatedRoute = null;
-    this.detachEvents.emit(cmp.instance);
-    return cmp;
+    if (cmp.instance instanceof ɵEmptyOutletComponent) {
+      // For the `EmptyOutletComponent` instances, the `detachEvents` are subscribed to and
+      // emitted in the `activateWith` function.
+      return cmp.instance.outlet?.activated ?? cmp;
+    } else {
+      this.detachEvents.emit(cmp.instance);
+      return cmp;
+    }
   }
 
   /**
@@ -254,7 +267,11 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     this.activated = ref;
     this._activatedRoute = activatedRoute;
     this.location.insert(ref.hostView);
-    this.attachEvents.emit(ref.instance);
+    // For the `EmptyOutletComponent` instances, the `attachEvents` are subscribed to and
+    // emitted in the `activateWith` function.
+    if (!(ref.instance instanceof ɵEmptyOutletComponent)) {
+      this.attachEvents.emit(ref.instance);
+    }
   }
 
   deactivate(): void {
@@ -303,6 +320,8 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
       const sink = new Subscription();
       sink.add(c.activateEvents.subscribe((ev: any) => this.activateEvents.emit(ev)));
       sink.add(c.deactivateEvents.subscribe((ev: any) => this.deactivateEvents.emit(ev)));
+      sink.add(c.attachEvents.subscribe((ev: any) => this.attachEvents.emit(ev)));
+      sink.add(c.detachEvents.subscribe((ev: any) => this.detachEvents.emit(ev)));
       c.destroy$.subscribe(() => sink.unsubscribe());
     } else {
       this.activateEvents.emit(this.activated.instance);
@@ -343,16 +362,22 @@ function isComponentFactoryResolver(item: any): item is ComponentFactoryResolver
  * In order to avoid circular references this component was moved from its own file and placed here.
  */
 @Component({
-  template:
-      `<router-outlet (activate)="activate($event)" (deactivate)="deactivate($event)"></router-outlet>`
+  template: `<router-outlet 
+          (activate)="activate($event)"
+          (deactivate)="deactivate($event)"
+          (attach)="attach($event)"
+          (detach)="detach($event)">
+      </router-outlet>`
 })
 export class ɵEmptyOutletComponent {
   @Output('activate') activateEvents = new EventEmitter<any>();
   @Output('deactivate') deactivateEvents = new EventEmitter<any>();
+  @Output('attach') attachEvents = new EventEmitter<unknown>();
+  @Output('detach') detachEvents = new EventEmitter<unknown>();
 
-  @ViewChild(RouterOutlet) outlet!: RouterOutlet;
+  outlet?: RouterOutlet;
 
-  public destroy$ = new Subject();
+  public destroy$ = new EventEmitter<void>();
 
   get component(): Object {
     if (!this.outlet) {
@@ -381,6 +406,14 @@ export class ɵEmptyOutletComponent {
 
   deactivate(ev: any) {
     this.deactivateEvents.emit(ev);
+  }
+
+  attach(ev: any) {
+    this.attachEvents.emit(ev);
+  }
+
+  detach(ev: any) {
+    this.detachEvents.emit(ev);
   }
 
   ngOnDestroy(): void {
