@@ -49,24 +49,7 @@ sass_binary(
     ],
     deps = [
         ":form_field_partials",
-        ":mdc_form_field_scss",
         "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
-        "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
-    ],
-)
-
-# TODO(devversion): Import all of the individual Sass mixins once feature targeting is available
-# for MDC text-field, notched-outline, floating-label and line-ripple.
-sass_library(
-    name = "mdc_form_field_scss",
-    srcs = [
-        "@npm//:node_modules/@material/floating-label/mdc-floating-label.scss",
-        "@npm//:node_modules/@material/line-ripple/mdc-line-ripple.scss",
-        "@npm//:node_modules/@material/notched-outline/mdc-notched-outline.scss",
-        "@npm//:node_modules/@material/ripple/common.scss",
-        "@npm//:node_modules/@material/textfield/mdc-text-field.scss",
-    ],
-    deps = [
         "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
     ],
 )

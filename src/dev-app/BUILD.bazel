@@ -1,7 +1,8 @@
+load("@npm//@angular/dev-infra-private/bazel:extract_js_module_output.bzl", "extract_js_module_output")
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
+load("//:packages.bzl", "MDC_PACKAGE_UMD_BUNDLES")
 load("//tools:create-system-config.bzl", "create_system_config")
 load("//tools:defaults.bzl", "ng_module", "sass_binary")
-load("//tools:es5-module-output.bzl", "es5_module_output")
 load("//tools/dev-server:index.bzl", "dev_server")
 
 package(default_visibility = ["//visibility:public"])
@@ -142,45 +143,13 @@ filegroup(
         ":variables",
         "//src/dev-app/icon:icon_demo_assets",
         "//tools:system-rxjs-operators.js",
-        "@npm//:node_modules/@material/animation/dist/mdc.animation.js",
-        "@npm//:node_modules/@material/auto-init/dist/mdc.autoInit.js",
-        "@npm//:node_modules/@material/base/dist/mdc.base.js",
-        "@npm//:node_modules/@material/checkbox/dist/mdc.checkbox.js",
-        "@npm//:node_modules/@material/chips/dist/mdc.chips.js",
-        "@npm//:node_modules/@material/circular-progress/dist/mdc.circularProgress.js",
-        "@npm//:node_modules/@material/data-table/dist/mdc.dataTable.js",
-        "@npm//:node_modules/@material/dialog/dist/mdc.dialog.js",
-        "@npm//:node_modules/@material/dom/dist/mdc.dom.js",
-        "@npm//:node_modules/@material/drawer/dist/mdc.drawer.js",
-        "@npm//:node_modules/@material/floating-label/dist/mdc.floatingLabel.js",
-        "@npm//:node_modules/@material/form-field/dist/mdc.formField.js",
-        "@npm//:node_modules/@material/icon-button/dist/mdc.iconButton.js",
-        "@npm//:node_modules/@material/line-ripple/dist/mdc.lineRipple.js",
-        "@npm//:node_modules/@material/linear-progress/dist/mdc.linearProgress.js",
-        "@npm//:node_modules/@material/list/dist/mdc.list.js",
-        "@npm//:node_modules/@material/menu-surface/dist/mdc.menuSurface.js",
-        "@npm//:node_modules/@material/menu/dist/mdc.menu.js",
-        "@npm//:node_modules/@material/notched-outline/dist/mdc.notchedOutline.js",
-        "@npm//:node_modules/@material/radio/dist/mdc.radio.js",
-        "@npm//:node_modules/@material/ripple/dist/mdc.ripple.js",
-        "@npm//:node_modules/@material/select/dist/mdc.select.js",
-        "@npm//:node_modules/@material/slider/dist/mdc.slider.js",
-        "@npm//:node_modules/@material/snackbar/dist/mdc.snackbar.js",
-        "@npm//:node_modules/@material/switch/dist/mdc.switch.js",
-        "@npm//:node_modules/@material/tab-bar/dist/mdc.tabBar.js",
-        "@npm//:node_modules/@material/tab-indicator/dist/mdc.tabIndicator.js",
-        "@npm//:node_modules/@material/tab-scroller/dist/mdc.tabScroller.js",
-        "@npm//:node_modules/@material/tab/dist/mdc.tab.js",
-        "@npm//:node_modules/@material/textfield/dist/mdc.textfield.js",
-        "@npm//:node_modules/@material/tooltip/dist/mdc.tooltip.js",
-        "@npm//:node_modules/@material/top-app-bar/dist/mdc.topAppBar.js",
         "@npm//:node_modules/core-js-bundle/index.js",
         "@npm//:node_modules/moment/min/moment-with-locales.min.js",
         "@npm//:node_modules/rxjs/bundles/rxjs.umd.min.js",
         "@npm//:node_modules/systemjs/dist/system.js",
         "@npm//:node_modules/tslib/tslib.js",
         "@npm//:node_modules/zone.js/dist/zone.js",
-    ],
+    ] + MDC_PACKAGE_UMD_BUNDLES.values(),
 )
 
 dev_server(
@@ -200,8 +169,15 @@ dev_server(
 
 # Collects all ES5 JavaScript files which are required to serve the dev-app. By default,
 # ts_library and ng_module targets only expose the type definition files as outputs.
-es5_module_output(
+extract_js_module_output(
     name = "dev_app_js_sources",
+    include_declarations = False,
+    include_default_files = True,
+    # `JSModuleInfo` resolves to the ES5 sources from TypeScript targets. See:
+    # https://github.com/bazelbuild/rules_nodejs/blob/stable/packages/typescript/internal/build_defs.bzl#L334-L337
+    # Note: We cannot use the named JS module provider because not all dependencies are
+    # necessarily captured as named module. See: https://github.com/angular/components/commit/94289397cac94ca86a292b2cd64945df52bbb7fb.
+    provider = "JSModuleInfo",
     tags = ["manual"],
     deps = [":dev-app"],
 )

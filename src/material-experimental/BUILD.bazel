@@ -8,8 +8,6 @@ load("//tools:defaults.bzl", "ng_package", "sass_library", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
-exports_files(["mdc_require_config.js"])
-
 ts_library(
     name = "material-experimental",
     srcs = glob(

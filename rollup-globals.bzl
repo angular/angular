@@ -6,6 +6,7 @@ load(
     "MATERIAL_EXPERIMENTAL_ENTRYPOINTS",
     "MATERIAL_EXPERIMENTAL_TESTING_ENTRYPOINTS",
 )
+load("//:packages.bzl", "MDC_PACKAGE_UMD_BUNDLES")
 
 # Base rollup globals for everything in the repo. Note that we want to disable
 # sorting of the globals as we manually group dict entries.
@@ -37,42 +38,9 @@ ROLLUP_GLOBALS = {
     "@angular/material-luxon-adapter": "ng.materialLuxonAdapter",
     "@angular/youtube-player": "ng.youtubePlayer",
 
-    # MDC Web
-    "@material/animation": "mdc.animation",
-    "@material/auto-init": "mdc.autoInit",
-    "@material/base": "mdc.base",
     # This UMD module name would not match with anything that MDC provides, but we just
     # add this to make the linter happy. This module resolves to a type-only file anyways.
     "@material/base/types": "mdc.base.types",
-    "@material/checkbox": "mdc.checkbox",
-    "@material/circular-progress": "mdc.circularProgress",
-    "@material/chips": "mdc.chips",
-    "@material/dialog": "mdc.dialog",
-    "@material/dom": "mdc.dom",
-    "@material/drawer": "mdc.drawer",
-    "@material/floating-label": "mdc.floatingLabel",
-    "@material/form-field": "mdc.formField",
-    "@material/grid-list": "mdc.gridList",
-    "@material/icon-button": "mdc.iconButton",
-    "@material/line-ripple": "mdc.lineRipple",
-    "@material/linear-progress": "mdc.linearProgress",
-    "@material/list": "mdc.list",
-    "@material/menu": "mdc.menu",
-    "@material/menu-surface": "mdc.menuSurface",
-    "@material/notched-outline": "mdc.notchedOutline",
-    "@material/radio": "mdc.radio",
-    "@material/ripple": "mdc.ripple",
-    "@material/select": "mdc.select",
-    "@material/slider": "mdc.slider",
-    "@material/snackbar": "mdc.snackbar",
-    "@material/switch": "mdc.switch",
-    "@material/tab": "mdc.tab",
-    "@material/tab-bar": "mdc.tabBar",
-    "@material/tab-indicator": "mdc.tabIndicator",
-    "@material/tab-scroller": "mdc.tabScroller",
-    "@material/textfield": "mdc.textfield",
-    "@material/tooltip": "mdc.tooltip",
-    "@material/top-app-bar": "mdc.topAppBar",
 
     # Third-party libraries.
     "kagekiri": "kagekiri",
@@ -87,15 +55,23 @@ ROLLUP_GLOBALS = {
 }
 
 # Converts a string from dash-case to lower camel case.
-def to_camel_case(input):
+def to_lower_camel_case(input):
     segments = input.split("-")
     return segments[0] + "".join([x.title() for x in segments[1:]])
+
+# Configures the rollup globals for all MDC packages.
+def setup_mdc_globals():
+    for pkg_name in MDC_PACKAGE_UMD_BUNDLES:
+        entry_point_name = pkg_name[len("@material/"):]
+        pkg_umd_name = "mdc.%s" % to_lower_camel_case(entry_point_name)
+
+        ROLLUP_GLOBALS.update({pkg_name: pkg_umd_name})
 
 # Converts an entry-point name to a UMD module name.
 # e.g. "snack-bar/testing" will become "snackBar.testing".
 def to_umd_name(name):
     segments = name.split("/")
-    return ".".join([to_camel_case(x) for x in segments])
+    return ".".join([to_lower_camel_case(x) for x in segments])
 
 # Creates globals for a given package and its entry-points.
 def create_globals(packageName, entryPoints):
@@ -103,6 +79,8 @@ def create_globals(packageName, entryPoints):
         "@angular/%s/%s" % (packageName, ep): "ng.%s.%s" % (to_umd_name(packageName), to_umd_name(ep))
         for ep in entryPoints
     })
+
+setup_mdc_globals()
 
 create_globals("cdk", CDK_ENTRYPOINTS)
 create_globals("cdk-experimental", CDK_EXPERIMENTAL_ENTRYPOINTS)

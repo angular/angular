@@ -7,7 +7,7 @@ load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@npm//@bazel/concatjs:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
 load("@npm//@bazel/protractor:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("@npm//@bazel/typescript:index.bzl", _ts_library = "ts_library")
-load("//:packages.bzl", "VERSION_PLACEHOLDER_REPLACEMENTS", "getAngularUmdTargets")
+load("//:packages.bzl", "MDC_PACKAGE_UMD_BUNDLES", "VERSION_PLACEHOLDER_REPLACEMENTS", "getAngularUmdTargets")
 load("//:rollup-globals.bzl", "ROLLUP_GLOBALS")
 load("//tools/markdown-to-html:index.bzl", _markdown_to_html = "markdown_to_html")
 load("//tools/linker-process:index.bzl", "linker_process")
@@ -238,7 +238,13 @@ def karma_web_test_suite(name, **kwargs):
     web_test_args = {}
     test_deps = ["//tools/rxjs:rxjs_umd_modules"] + kwargs.get("deps", [])
 
-    kwargs["srcs"] = ["@npm//:node_modules/tslib/tslib.js"] + getAngularUmdTargets() + kwargs.get("srcs", [])
+    # Note: Ideally we would not add all Angular and MDC UMD files to a test because
+    # some might be unused. This would require some custom tooling to resolve the
+    # correct named AMD files from transitive dependencies and is not worth the effort
+    # given the UMD files being small and most of the packages being used anyway.
+    # TODO(devversion): reconsider this if `rules_nodejs` can recognize named AMD files.
+    kwargs["srcs"] = ["@npm//:node_modules/tslib/tslib.js"] + getAngularUmdTargets() + \
+                     MDC_PACKAGE_UMD_BUNDLES.values() + kwargs.get("srcs", [])
     kwargs["tags"] = ["partial-compilation-integration"] + kwargs.get("tags", [])
     kwargs["deps"] = select({
         # Based on whether partial compilation is enabled, use the linker processed dependencies.

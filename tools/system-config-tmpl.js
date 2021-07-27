@@ -18,8 +18,11 @@ var MATERIAL_EXPERIMENTAL_PACKAGES = $MATERIAL_EXPERIMENTAL_ENTRYPOINTS_TMPL;
 /** Map of Angular framework packages and their bundle names. */
 var frameworkPackages = $ANGULAR_PACKAGE_BUNDLES;
 
+/** Map of MDC packages and their corresponding UMD bundles. */
+var mdcPackageUmdBundles = $MDC_PACKAGE_UMD_BUNDLES;
+
 /** Whether Ivy is enabled. */
-var isRunningWithIvy = '$ANGULAR_IVY_ENABLED_TMPL'.toString() === 'True';
+var isRunningWithIvy = 'TMPL_angular_ivy_enabled'.toString() === 'True';
 
 /** Path that relatively resolves to the directory that contains all packages. */
 var packagesPath = '$PACKAGES_DIR';
@@ -37,39 +40,6 @@ var pathMapping = {
 
   'rxjs': 'node:rxjs/bundles/rxjs.umd.min.js',
   'rxjs/operators': 'tools/system-rxjs-operators.js',
-
-  // MDC Web
-  '@material/animation': 'node:@material/animation/dist/mdc.animation.js',
-  '@material/auto-init': 'node:@material/auto-init/dist/mdc.autoInit.js',
-  '@material/base': 'node:@material/base/dist/mdc.base.js',
-  '@material/checkbox': 'node:@material/checkbox/dist/mdc.checkbox.js',
-  '@material/chips': 'node:@material/chips/dist/mdc.chips.js',
-  '@material/circular-progress': 'node:@material/circular-progress/dist/mdc.circularProgress.js',
-  '@material/dialog': 'node:@material/dialog/dist/mdc.dialog.js',
-  '@material/dom': 'node:@material/dom/dist/mdc.dom.js',
-  '@material/drawer': 'node:@material/drawer/dist/mdc.drawer.js',
-  '@material/floating-label': 'node:@material/floating-label/dist/mdc.floatingLabel.js',
-  '@material/form-field': 'node:@material/form-field/dist/mdc.formField.js',
-  '@material/icon-button': 'node:@material/icon-button/dist/mdc.iconButton.js',
-  '@material/line-ripple': 'node:@material/line-ripple/dist/mdc.lineRipple.js',
-  '@material/linear-progress': 'node:@material/linear-progress/dist/mdc.linearProgress.js',
-  '@material/list': 'node:@material/list/dist/mdc.list.js',
-  '@material/menu': 'node:@material/menu/dist/mdc.menu.js',
-  '@material/menu-surface': 'node:@material/menu-surface/dist/mdc.menuSurface.js',
-  '@material/notched-outline': 'node:@material/notched-outline/dist/mdc.notchedOutline.js',
-  '@material/radio': 'node:@material/radio/dist/mdc.radio.js',
-  '@material/ripple': 'node:@material/ripple/dist/mdc.ripple.js',
-  '@material/select': 'node:@material/select/dist/mdc.select.js',
-  '@material/slider': 'node:@material/slider/dist/mdc.slider.js',
-  '@material/snackbar': 'node:@material/snackbar/dist/mdc.snackbar.js',
-  '@material/switch': 'node:@material/switch/dist/mdc.switch.js',
-  '@material/tab': 'node:@material/tab/dist/mdc.tab.js',
-  '@material/tab-bar': 'node:@material/tab-bar/dist/mdc.tabBar.js',
-  '@material/tab-indicator': 'node:@material/tab-indicator/dist/mdc.tabIndicator.js',
-  '@material/tab-scroller': 'node:@material/tab-scroller/dist/mdc.tabScroller.js',
-  '@material/textfield': 'node:@material/textfield/dist/mdc.textfield.js',
-  '@material/tooltip': 'node:@material/tooltip/dist/mdc.tooltip.js',
-  '@material/top-app-bar': 'node:@material/top-app-bar/dist/mdc.topAppBar.js'
 };
 
 /** Package configurations that will be used in SystemJS. */
@@ -88,6 +58,9 @@ MATERIAL_PACKAGES.push('testing');
 
 // Configure framework packages.
 setupFrameworkPackages();
+
+// Configure the MDC packages.
+setupMdcPackages();
 
 // Configure Angular components packages/entry-points.
 setupLocalReleasePackages();
@@ -174,6 +147,14 @@ function setupLocalReleasePackages() {
 
   // Private secondary entry-points.
   configureEntryPoint('components-examples', 'private');
+}
+
+/** Sets up the MDC packages by linking to their UMD bundles. */
+function setupMdcPackages() {
+  Object.keys(mdcPackageUmdBundles).forEach(pkgName => {
+    // Replace the `@npm//:node_modules/` Bazel target prefix with the `node:*` SystemJS alias.
+    pathMapping[pkgName] = mdcPackageUmdBundles[pkgName].replace('@npm//:node_modules/', 'node:')
+  });
 }
 
 /** Configures the specified package, its entry-point and its examples. */

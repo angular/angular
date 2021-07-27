@@ -84,10 +84,8 @@ ng_test_library(
 
 ng_web_test_suite(
     name = "unit_tests",
-    static_files = ["@npm//:node_modules/@material/slider/dist/mdc.slider.js"],
     deps = [
         ":slider_tests_lib",
-        "//src/material-experimental:mdc_require_config.js",
     ],
 )
 

@@ -1,9 +1,9 @@
+load("@npm//@angular/dev-infra-private/bazel:expand_template.bzl", "expand_template")
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary", "nodejs_test")
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
 load("@npm//@bazel/terser:index.bzl", "terser_minified")
 load("//tools:defaults.bzl", "ng_module")
-load("//tools:expand_template.bzl", "expand_template")
 
 """
   Performs size measurements for the specified file. The file will be built as part

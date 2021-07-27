@@ -27,16 +27,7 @@ ng_test_library(
 
 ng_web_test_suite(
     name = "unit_tests",
-    static_files = [
-        "@npm//:node_modules/@material/textfield/dist/mdc.textfield.js",
-        "@npm//:node_modules/@material/line-ripple/dist/mdc.lineRipple.js",
-        "@npm//:node_modules/@material/notched-outline/dist/mdc.notchedOutline.js",
-        "@npm//:node_modules/@material/tooltip/dist/mdc.tooltip.js",
-        "@npm//:node_modules/@material/ripple/dist/mdc.ripple.js",
-        "@npm//:node_modules/@material/dom/dist/mdc.dom.js",
-    ],
     deps = [
         ":unit_tests_lib",
-        "//src/material-experimental:mdc_require_config.js",
     ],
 )

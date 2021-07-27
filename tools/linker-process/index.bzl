@@ -82,7 +82,7 @@ def _linker_process(ctx):
 """
   Rule definition for the "linker_process" rule that can process a list of targets
   with the Angular linker. The processed files can be retrieved through the default
-  files provider, or through the `JSNamedModuleInfo` provider.
+  files provider.
 """
 linker_process = rule(
     implementation = _linker_process,
