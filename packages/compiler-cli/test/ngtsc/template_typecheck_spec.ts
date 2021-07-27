@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {absoluteFrom as _, getFileSystem, getSourceFileOrError} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
-import {expectCompleteReuse, loadStandardTestFiles} from '../../src/ngtsc/testing';
+import {expectCompleteReuse, getSourceCodeForDiagnostic, loadStandardTestFiles} from '../../src/ngtsc/testing';
 
 import {NgtscTestEnvironment} from './env';
 
@@ -2506,8 +2506,3 @@ export declare class AnimationEvent {
     });
   });
 });
-
-function getSourceCodeForDiagnostic(diag: ts.Diagnostic): string {
-  const text = diag.file!.text;
-  return text.substr(diag.start!, diag.length!);
-}
