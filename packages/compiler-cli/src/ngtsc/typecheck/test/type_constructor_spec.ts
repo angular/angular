@@ -19,7 +19,7 @@ import {InliningMode, PendingFileTypeCheckingData, TypeCheckContextImpl, TypeChe
 import {TemplateSourceManager} from '../src/source';
 import {TypeCheckFile} from '../src/type_check_file';
 
-import {ALL_ENABLED_CONFIG} from './test_utils';
+import {ALL_ENABLED_CONFIG} from '../testing';
 
 runInEachFileSystem(() => {
   describe('ngtsc typechecking', () => {

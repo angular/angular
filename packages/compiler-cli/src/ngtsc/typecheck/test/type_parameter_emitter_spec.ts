@@ -13,7 +13,7 @@ import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflectio
 import {getDeclaration, makeProgram} from '../../testing';
 import {TypeParameterEmitter} from '../src/type_parameter_emitter';
 
-import {angularCoreDts} from './test_utils';
+import {angularCoreDts} from '../testing';
 
 
 runInEachFileSystem(() => {

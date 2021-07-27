@@ -15,7 +15,7 @@ import {sfExtensionData, ShimReferenceTagger} from '../../shims';
 import {expectCompleteReuse, makeProgram} from '../../testing';
 import {OptimizeFor} from '../api';
 
-import {setup} from './test_utils';
+import {setup} from '../testing';
 
 runInEachFileSystem(() => {
   describe('template type-checking program', () => {
