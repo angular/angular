@@ -298,98 +298,8 @@ export function compile({
   };
 
   const ngHost = ng.createCompilerHost({options: compilerOpts, tsHost: bazelHost});
-  const fileNameToModuleNameCache = new Map<string, string>();
-  ngHost.fileNameToModuleName = (importedFilePath: string, containingFilePath?: string) => {
-    const cacheKey = `${importedFilePath}:${containingFilePath}`;
-    // Memoize this lookup to avoid expensive re-parses of the same file
-    // When run as a worker, the actual ts.SourceFile is cached
-    // but when we don't run as a worker, there is no cache.
-    // For one example target in g3, we saw a cache hit rate of 7590/7695
-    if (fileNameToModuleNameCache.has(cacheKey)) {
-      return fileNameToModuleNameCache.get(cacheKey);
-    }
-    const result = doFileNameToModuleName(importedFilePath, containingFilePath);
-    fileNameToModuleNameCache.set(cacheKey, result);
-    return result;
-  };
-
-  function doFileNameToModuleName(importedFilePath: string, containingFilePath?: string): string {
-    const relativeTargetPath =
-        relativeToRootDirs(importedFilePath, compilerOpts.rootDirs).replace(EXT, '');
-    const manifestTargetPath = `${bazelOpts.workspaceName}/${relativeTargetPath}`;
-    if (useManifestPathsAsModuleName === true) {
-      return manifestTargetPath;
-    }
-
-    // Unless manifest paths are explicitly enforced, we initially check if a module name is
-    // set for the given source file. The compiler host from `@bazel/typescript` sets source
-    // file module names if the compilation targets either UMD or AMD. To ensure that the AMD
-    // module names match, we first consider those.
-    try {
-      const sourceFile = ngHost.getSourceFile(importedFilePath, ts.ScriptTarget.Latest);
-      if (sourceFile && sourceFile.moduleName) {
-        return sourceFile.moduleName;
-      }
-    } catch (err) {
-      // File does not exist or parse error. Ignore this case and continue onto the
-      // other methods of resolving the module below.
-    }
-
-    // It can happen that the ViewEngine compiler needs to write an import in a factory file,
-    // and is using an ngsummary file to get the symbols.
-    // The ngsummary comes from an upstream ng_module rule.
-    // The upstream rule based its imports on ngsummary file which was generated from a
-    // metadata.json file that was published to npm in an Angular library.
-    // However, the ngsummary doesn't propagate the 'importAs' from the original metadata.json
-    // so we would normally not be able to supply the correct module name for it.
-    // For example, if the rootDir-relative filePath is
-    //  node_modules/@angular/material/toolbar/typings/index
-    // we would supply a module name
-    //  @angular/material/toolbar/typings/index
-    // but there is no JavaScript file to load at this path.
-    // This is a workaround for https://github.com/angular/angular/issues/29454
-    if (importedFilePath.indexOf('node_modules') >= 0) {
-      const maybeMetadataFile = importedFilePath.replace(EXT, '') + '.metadata.json';
-      if (fs.existsSync(maybeMetadataFile)) {
-        const moduleName = (JSON.parse(fs.readFileSync(maybeMetadataFile, {encoding: 'utf-8'})) as {
-                             importAs: string
-                           }).importAs;
-        if (moduleName) {
-          return moduleName;
-        }
-      }
-    }
-
-    if ((compilerOpts.module === ts.ModuleKind.UMD || compilerOpts.module === ts.ModuleKind.AMD) &&
-        ngHost.amdModuleName) {
-      return ngHost.amdModuleName({fileName: importedFilePath} as ts.SourceFile);
-    }
-
-    // If no AMD module name has been set for the source file by the `@bazel/typescript` compiler
-    // host, and the target file is not part of a flat module node module package, we use the
-    // following rules (in order):
-    //    1. If target file is part of `node_modules/`, we use the package module name.
-    //    2. If no containing file is specified, or the target file is part of a different
-    //       compilation unit, we use a Bazel manifest path. Relative paths are not possible
-    //       since we don't have a containing file, and the target file could be located in the
-    //       output directory, or in an external Bazel repository.
-    //    3. If both rules above didn't match, we compute a relative path between the source files
-    //       since they are part of the same compilation unit.
-    // Note that we don't want to always use (2) because it could mean that compilation outputs
-    // are always leaking Bazel-specific paths, and the output is not self-contained. This could
-    // break `esm2015` or `esm5` output for Angular package release output
-    // Omit the `node_modules` prefix if the module name of an NPM package is requested.
-    if (relativeTargetPath.startsWith(NODE_MODULES)) {
-      return relativeTargetPath.substr(NODE_MODULES.length);
-    } else if (
-        containingFilePath == null || !bazelOpts.compilationTargetSrc.includes(importedFilePath)) {
-      return manifestTargetPath;
-    }
-    const containingFileDir =
-        path.dirname(relativeToRootDirs(containingFilePath, compilerOpts.rootDirs));
-    const relativeImportPath = path.posix.relative(containingFileDir, relativeTargetPath);
-    return relativeImportPath.startsWith('.') ? relativeImportPath : `./${relativeImportPath}`;
-  }
+  patchNgHostWithFileNameToModuleName(
+      ngHost, compilerOpts, bazelOpts, useManifestPathsAsModuleName);
 
   ngHost.toSummaryFileName = (fileName: string, referringSrcFileName: string) => path.posix.join(
       bazelOpts.workspaceName,
@@ -552,4 +462,109 @@ function gatherDiagnosticsForInputsOnly(
 
 if (require.main === module) {
   process.exitCode = main(process.argv.slice(2));
+}
+
+/**
+ * Adds support for the optional `fileNameToModuleName` operation to a given `ng.CompilerHost`.
+ *
+ * This is used within `ngc-wrapped` and the Bazel compilation flow, but is exported here to allow
+ * for other consumers of the compiler to access this same logic. For example, the xi18n operation
+ * in g3 configures its own `ng.CompilerHost` which also requires `fileNameToModuleName` to work
+ * correctly.
+ */
+export function patchNgHostWithFileNameToModuleName(
+    ngHost: ng.CompilerHost, compilerOpts: ng.CompilerOptions, bazelOpts: BazelOptions,
+    useManifestPathsAsModuleName: boolean): void {
+  const fileNameToModuleNameCache = new Map<string, string>();
+  ngHost.fileNameToModuleName = (importedFilePath: string, containingFilePath?: string) => {
+    const cacheKey = `${importedFilePath}:${containingFilePath}`;
+    // Memoize this lookup to avoid expensive re-parses of the same file
+    // When run as a worker, the actual ts.SourceFile is cached
+    // but when we don't run as a worker, there is no cache.
+    // For one example target in g3, we saw a cache hit rate of 7590/7695
+    if (fileNameToModuleNameCache.has(cacheKey)) {
+      return fileNameToModuleNameCache.get(cacheKey);
+    }
+    const result = doFileNameToModuleName(importedFilePath, containingFilePath);
+    fileNameToModuleNameCache.set(cacheKey, result);
+    return result;
+  };
+
+  function doFileNameToModuleName(importedFilePath: string, containingFilePath?: string): string {
+    const relativeTargetPath =
+        relativeToRootDirs(importedFilePath, compilerOpts.rootDirs).replace(EXT, '');
+    const manifestTargetPath = `${bazelOpts.workspaceName}/${relativeTargetPath}`;
+    if (useManifestPathsAsModuleName === true) {
+      return manifestTargetPath;
+    }
+
+    // Unless manifest paths are explicitly enforced, we initially check if a module name is
+    // set for the given source file. The compiler host from `@bazel/typescript` sets source
+    // file module names if the compilation targets either UMD or AMD. To ensure that the AMD
+    // module names match, we first consider those.
+    try {
+      const sourceFile = ngHost.getSourceFile(importedFilePath, ts.ScriptTarget.Latest);
+      if (sourceFile && sourceFile.moduleName) {
+        return sourceFile.moduleName;
+      }
+    } catch (err) {
+      // File does not exist or parse error. Ignore this case and continue onto the
+      // other methods of resolving the module below.
+    }
+
+    // It can happen that the ViewEngine compiler needs to write an import in a factory file,
+    // and is using an ngsummary file to get the symbols.
+    // The ngsummary comes from an upstream ng_module rule.
+    // The upstream rule based its imports on ngsummary file which was generated from a
+    // metadata.json file that was published to npm in an Angular library.
+    // However, the ngsummary doesn't propagate the 'importAs' from the original metadata.json
+    // so we would normally not be able to supply the correct module name for it.
+    // For example, if the rootDir-relative filePath is
+    //  node_modules/@angular/material/toolbar/typings/index
+    // we would supply a module name
+    //  @angular/material/toolbar/typings/index
+    // but there is no JavaScript file to load at this path.
+    // This is a workaround for https://github.com/angular/angular/issues/29454
+    if (importedFilePath.indexOf('node_modules') >= 0) {
+      const maybeMetadataFile = importedFilePath.replace(EXT, '') + '.metadata.json';
+      if (fs.existsSync(maybeMetadataFile)) {
+        const moduleName = (JSON.parse(fs.readFileSync(maybeMetadataFile, {encoding: 'utf-8'})) as {
+                             importAs: string
+                           }).importAs;
+        if (moduleName) {
+          return moduleName;
+        }
+      }
+    }
+
+    if ((compilerOpts.module === ts.ModuleKind.UMD || compilerOpts.module === ts.ModuleKind.AMD) &&
+        ngHost.amdModuleName) {
+      return ngHost.amdModuleName({fileName: importedFilePath} as ts.SourceFile);
+    }
+
+    // If no AMD module name has been set for the source file by the `@bazel/typescript` compiler
+    // host, and the target file is not part of a flat module node module package, we use the
+    // following rules (in order):
+    //    1. If target file is part of `node_modules/`, we use the package module name.
+    //    2. If no containing file is specified, or the target file is part of a different
+    //       compilation unit, we use a Bazel manifest path. Relative paths are not possible
+    //       since we don't have a containing file, and the target file could be located in the
+    //       output directory, or in an external Bazel repository.
+    //    3. If both rules above didn't match, we compute a relative path between the source files
+    //       since they are part of the same compilation unit.
+    // Note that we don't want to always use (2) because it could mean that compilation outputs
+    // are always leaking Bazel-specific paths, and the output is not self-contained. This could
+    // break `esm2015` or `esm5` output for Angular package release output
+    // Omit the `node_modules` prefix if the module name of an NPM package is requested.
+    if (relativeTargetPath.startsWith(NODE_MODULES)) {
+      return relativeTargetPath.substr(NODE_MODULES.length);
+    } else if (
+        containingFilePath == null || !bazelOpts.compilationTargetSrc.includes(importedFilePath)) {
+      return manifestTargetPath;
+    }
+    const containingFileDir =
+        path.dirname(relativeToRootDirs(containingFilePath, compilerOpts.rootDirs));
+    const relativeImportPath = path.posix.relative(containingFileDir, relativeTargetPath);
+    return relativeImportPath.startsWith('.') ? relativeImportPath : `./${relativeImportPath}`;
+  }
 }
