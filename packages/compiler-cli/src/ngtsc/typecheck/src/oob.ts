@@ -133,10 +133,12 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     }
     this._diagnostics.push(makeTemplateDiagnostic(
         templateId, mapping, sourceSpan, ts.DiagnosticCategory.Error,
-        ngErrorCode(ErrorCode.WRITE_TO_READ_ONLY_VARIABLE), errorMsg, {
+        ngErrorCode(ErrorCode.WRITE_TO_READ_ONLY_VARIABLE), errorMsg, [{
           text: `The variable ${assignment.name} is declared here.`,
-          span: target.valueSpan || target.sourceSpan,
-        }));
+          start: target.valueSpan?.start.offset || target.sourceSpan.start.offset,
+          end: target.valueSpan?.end.offset || target.sourceSpan.end.offset,
+          sourceFile: mapping.node.getSourceFile(),
+        }]));
   }
 
   duplicateTemplateVar(
@@ -152,10 +154,12 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     // TODO(alxhub): allocate to a tighter span once one is available.
     this._diagnostics.push(makeTemplateDiagnostic(
         templateId, mapping, variable.sourceSpan, ts.DiagnosticCategory.Error,
-        ngErrorCode(ErrorCode.DUPLICATE_VARIABLE_DECLARATION), errorMsg, {
+        ngErrorCode(ErrorCode.DUPLICATE_VARIABLE_DECLARATION), errorMsg, [{
           text: `The variable '${firstDecl.name}' was first declared here.`,
-          span: firstDecl.sourceSpan,
-        }));
+          start: firstDecl.sourceSpan.start.offset,
+          end: firstDecl.sourceSpan.end.offset,
+          sourceFile: mapping.node.getSourceFile(),
+        }]));
   }
 
   requiresInlineTcb(templateId: TemplateId, node: ClassDeclaration): void {
