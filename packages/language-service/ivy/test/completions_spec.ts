@@ -116,6 +116,19 @@ const SOME_PIPE = {
    `
 };
 
+const UNION_TYPE_PIPE = {
+  'UnionTypePipe': `
+    @Pipe({
+      name: 'unionTypePipe',
+    })
+    export class UnionTypePipe {
+      transform(value: string, config: 'foo' | 'bar'): string {
+        return value;
+      }
+    }
+   `
+};
+
 describe('completions', () => {
   beforeEach(() => {
     initMockFileSystem('Native');
@@ -765,6 +778,24 @@ describe('completions', () => {
       const completions = templateFile.getCompletionsAtPosition();
       expectContain(completions, ts.ScriptElementKind.string, ['foo']);
       expectReplacementText(completions, templateFile.contents, 'foo');
+    });
+
+    it('should complete a string union types in binding without brackets when the cursor at the start of the string',
+       () => {
+         const {templateFile} = setup(`<input dir myInput="foo">`, '', DIR_WITH_UNION_TYPE_INPUT);
+         templateFile.moveCursorToText('myInput="¦foo"');
+         const completions = templateFile.getCompletionsAtPosition();
+         expectContain(completions, ts.ScriptElementKind.string, ['foo']);
+         expectReplacementText(completions, templateFile.contents, 'foo');
+       });
+
+    it('should complete a string union types in pipe', () => {
+      const {templateFile} =
+          setup(`<input dir [myInput]="'foo'|unionTypePipe:'bar'">`, '', UNION_TYPE_PIPE);
+      templateFile.moveCursorToText(`[myInput]="'foo'|unionTypePipe:'bar¦'"`);
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.string, ['bar']);
+      expectReplacementText(completions, templateFile.contents, 'bar');
     });
 
     it('should complete a number union types', () => {
