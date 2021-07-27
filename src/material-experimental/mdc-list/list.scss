@@ -69,3 +69,14 @@
 .mat-mdc-list-item.mdc-list-item--with-trailing-meta > .mdc-list-item__end:empty {
   display: none;
 }
+
+// Unset MDC's styles for wrapping secondary text in three-line lists. MDC implements three-line
+// lists in a way where they assume that the second list line should wrap into the third line.
+// This is different to the three-line list variant we want to support. We support a dedicated
+// third line that can be controlled by consumers using a third `matLine` span.
+// https://github.com/material-components/material-components-web/blob/master/packages/mdc-list/_evolution-mixins.scss#L199.
+// TODO: Consider removing once MDC supports the various three-line list variants.
+.mat-mdc-list-item.mdc-list-item--with-three-lines .mdc-list-item__secondary-text {
+  white-space: nowrap;
+  line-height: normal;
+}
