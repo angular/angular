@@ -11,9 +11,10 @@ import {ReleaseActionConstructor} from '../actions';
 import {CutLongTermSupportPatchAction} from './cut-lts-patch';
 import {CutNewPatchAction} from './cut-new-patch';
 import {CutNextPrereleaseAction} from './cut-next-prerelease';
-import {CutReleaseCandidateAction} from './cut-release-candidate';
+import {CutReleaseCandidateForFeatureFreezeAction} from './cut-release-candidate-for-feature-freeze';
 import {CutStableAction} from './cut-stable';
 import {MoveNextIntoFeatureFreezeAction} from './move-next-into-feature-freeze';
+import {MoveNextIntoReleaseCandidateAction} from './move-next-into-release-candidate';
 import {TagRecentMajorAsLatest} from './tag-recent-major-as-latest';
 
 /**
@@ -23,9 +24,10 @@ import {TagRecentMajorAsLatest} from './tag-recent-major-as-latest';
 export const actions: ReleaseActionConstructor[] = [
   TagRecentMajorAsLatest,
   CutStableAction,
-  CutReleaseCandidateAction,
+  CutReleaseCandidateForFeatureFreezeAction,
   CutNewPatchAction,
   CutNextPrereleaseAction,
   MoveNextIntoFeatureFreezeAction,
+  MoveNextIntoReleaseCandidateAction,
   CutLongTermSupportPatchAction,
 ];

@@ -14,7 +14,7 @@ import {ReleaseAction} from '../actions';
  * Cuts the first release candidate for a release-train currently in the
  * feature-freeze phase. The version is bumped from `next` to `rc.0`.
  */
-export class CutReleaseCandidateAction extends ReleaseAction {
+export class CutReleaseCandidateForFeatureFreezeAction extends ReleaseAction {
   private _newVersion = semverInc(this.active.releaseCandidate!.version, 'prerelease', 'rc');
 
   override async getDescription() {

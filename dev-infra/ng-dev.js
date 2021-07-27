@@ -7073,7 +7073,7 @@ class CutNextPrereleaseAction extends ReleaseAction {
  * Cuts the first release candidate for a release-train currently in the
  * feature-freeze phase. The version is bumped from `next` to `rc.0`.
  */
-class CutReleaseCandidateAction extends ReleaseAction {
+class CutReleaseCandidateForFeatureFreezeAction extends ReleaseAction {
     constructor() {
         super(...arguments);
         this._newVersion = semverInc(this.active.releaseCandidate.version, 'prerelease', 'rc');
@@ -7187,27 +7187,23 @@ class CutStableAction extends ReleaseAction {
  * found in the LICENSE file at https://angular.io/license
  */
 /**
- * Release action that moves the next release-train into the feature-freeze phase. This means
- * that a new version branch is created from the next branch, and a new next pre-release is
- * cut indicating the started feature-freeze.
+ * Base action that can be used to move the next release-train into the feature-freeze or
+ * release-candidate phase. This means that a new version branch is created from the next
+ * branch, and a new pre-release (either RC or another `next`) is cut indicating the new phase.
  */
-class MoveNextIntoFeatureFreezeAction extends ReleaseAction {
-    constructor() {
-        super(...arguments);
-        this._newVersion = computeNewPrereleaseVersionForNext(this.active, this.config);
-    }
+class BranchOffNextBranchBaseAction extends ReleaseAction {
     getDescription() {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             const { branchName } = this.active.next;
-            const newVersion = yield this._newVersion;
-            return `Move the "${branchName}" branch into feature-freeze phase (v${newVersion}).`;
+            const newVersion = yield this._computeNewVersion();
+            return `Move the "${branchName}" branch into ${this.newPhaseName} phase (v${newVersion}).`;
         });
     }
     perform() {
         return tslib.__awaiter(this, void 0, void 0, function* () {
-            const newVersion = yield this._newVersion;
+            const newVersion = yield this._computeNewVersion();
             const newBranch = `${newVersion.major}.${newVersion.minor}.x`;
-            // Branch-off the next branch into a feature-freeze branch.
+            // Branch-off the next branch into a new version branch.
             yield this._createNewVersionBranchFromNext(newBranch);
             // Stage the new version for the newly created branch, and push changes to a
             // fork in order to create a staging pull request. Note that we re-use the newly
@@ -7219,6 +7215,17 @@ class MoveNextIntoFeatureFreezeAction extends ReleaseAction {
             yield this.waitForPullRequestToBeMerged(pullRequest);
             yield this.buildAndPublish(releaseNotes, newBranch, 'next');
             yield this._createNextBranchUpdatePullRequest(releaseNotes, newVersion);
+        });
+    }
+    /** Computes the new version for the release-train being branched-off. */
+    _computeNewVersion() {
+        return tslib.__awaiter(this, void 0, void 0, function* () {
+            if (this.newPhaseName === 'feature-freeze') {
+                return computeNewPrereleaseVersionForNext(this.active, this.config);
+            }
+            else {
+                return semverInc(this.active.next.version, 'prerelease', 'rc');
+            }
         });
     }
     /** Creates a new version branch from the next branch. */
@@ -7234,7 +7241,8 @@ class MoveNextIntoFeatureFreezeAction extends ReleaseAction {
     }
     /**
      * Creates a pull request for the next branch that bumps the version to the next
-     * minor, and cherry-picks the changelog for the newly branched-off feature-freeze version.
+     * minor, and cherry-picks the changelog for the newly branched-off release-candidate
+     * or feature-freeze version.
      */
     _createNextBranchUpdatePullRequest(releaseNotes, newVersion) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
@@ -7252,7 +7260,7 @@ class MoveNextIntoFeatureFreezeAction extends ReleaseAction {
             const commitMessage = getReleaseNoteCherryPickCommitMessage(releaseNotes.version);
             yield this.createCommit(commitMessage, [changelogPath]);
             let nextPullRequestMessage = `The previous "next" release-train has moved into the ` +
-                `release-candidate phase. This PR updates the next branch to the subsequent ` +
+                `${this.newPhaseName} phase. This PR updates the next branch to the subsequent ` +
                 `release-train.\n\nAlso this PR cherry-picks the changelog for ` +
                 `v${newVersion} into the ${nextBranch} branch so that the changelog is up to date.`;
             const nextUpdatePullRequest = yield this.pushChangesToForkAndCreatePullRequest(nextBranch, `next-release-train-${newNextVersion}`, `Update next branch to reflect new release-train "v${newNextVersion}".`, nextPullRequestMessage);
@@ -7260,11 +7268,59 @@ class MoveNextIntoFeatureFreezeAction extends ReleaseAction {
             info(yellow(`      Please ask team members to review: ${nextUpdatePullRequest.url}.`));
         });
     }
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/**
+ * Release action that moves the next release-train into the feature-freeze phase. This means
+ * that a new version branch is created from the next branch, and a new next pre-release is
+ * cut indicating the started feature-freeze.
+ */
+class MoveNextIntoFeatureFreezeAction extends BranchOffNextBranchBaseAction {
+    constructor() {
+        super(...arguments);
+        this.newPhaseName = 'feature-freeze';
+    }
     static isActive(active) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
-            // A new feature-freeze/release-candidate branch can only be created if there
-            // is no active release-train in feature-freeze/release-candidate phase.
-            return active.releaseCandidate === null;
+            // A new feature-freeze branch can only be created if there is no active
+            // release-train in feature-freeze/release-candidate phase and the version
+            // currently in the `next` branch is for a major. The feature-freeze phase
+            // is not foreseen for minor versions.
+            return active.releaseCandidate === null && active.next.isMajor;
+        });
+    }
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/**
+ * Release action that moves the next release-train into the release-candidate phase. This means
+ * that a new version branch is created from the next branch, and the first release candidate
+ * version is cut indicating the new phase.
+ */
+class MoveNextIntoReleaseCandidateAction extends BranchOffNextBranchBaseAction {
+    constructor() {
+        super(...arguments);
+        this.newPhaseName = 'release-candidate';
+    }
+    static isActive(active) {
+        return tslib.__awaiter(this, void 0, void 0, function* () {
+            // Directly switching a next release-train into the `release-candidate`
+            // phase is only allowed for minor releases. Major version always need to
+            // go through the `feature-freeze` phase.
+            return active.releaseCandidate === null && !active.next.isMajor;
         });
     }
 }
@@ -7331,10 +7387,11 @@ class TagRecentMajorAsLatest extends ReleaseAction {
 const actions = [
     TagRecentMajorAsLatest,
     CutStableAction,
-    CutReleaseCandidateAction,
+    CutReleaseCandidateForFeatureFreezeAction,
     CutNewPatchAction,
     CutNextPrereleaseAction,
     MoveNextIntoFeatureFreezeAction,
+    MoveNextIntoReleaseCandidateAction,
     CutLongTermSupportPatchAction,
 ];
 
