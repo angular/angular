@@ -1,23 +1,12 @@
 {
-  "ChromeHeadlessCI": {
-    "base": "ChromeHeadless",
-    "flags": [
-      "--window-size=1024,768",
-      "--no-sandbox"
-    ]
-  },
-  "ChromeLocalDebug": {
-    "base": "Chrome",
-    "flags": [
-      "--window-size=1024,768"
-    ]
-  },
-  "SAUCELABS_IOS13": {
+  "SAUCELABS_IOS14": {
     "base": "SauceLabs",
+    "appiumVersion": "1.20.1",
+    "deviceOrientation": "portrait",
     "browserName": "Safari",
-    "platformVersion": "13.2",
+    "platformVersion": "14.3",
     "platformName": "iOS",
-    "deviceName": "iPhone XS Simulator"
+    "deviceName": "iPhone 12 Pro Simulator"
   },
   "BROWSERSTACK_EDGE87": {
     "base": "BrowserStack",

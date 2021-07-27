@@ -11,7 +11,9 @@ import * as chalk from 'chalk';
 export function tsCompile(binary: 'tsc' | 'ngc', flags: string[]) {
   return new Promise<void>((resolve, reject) => {
     const binaryPath = resolvePath(`./node_modules/typescript/bin/${binary}`);
-    const childProcess = spawn(binaryPath, flags, {shell: true});
+    // Use `node` for spawning the TypeScript compiler. On Windows, the shell is
+    // not necessarily able to detect that the `tsc` files relies on Node.
+    const childProcess = spawn('node', [binaryPath, ...flags], {shell: true});
 
     // Pipe stdout and stderr from the child process.
     childProcess.stdout.on('data', (data: string|Buffer) => console.log(`${data}`));

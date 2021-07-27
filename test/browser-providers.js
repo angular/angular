@@ -8,7 +8,7 @@
  */
 const browserConfig = {
   'Edge87':            {unitTest: {target: 'browserstack'}},
-  'iOS13':             {unitTest: {target: 'saucelabs'}},
+  'iOS14':             {unitTest: {target: 'saucelabs'}},
   'Safari13':          {unitTest: {target: 'browserstack'}},
 };
 

@@ -7,9 +7,10 @@ module.exports = config => {
     frameworks: ['jasmine'],
     middleware: ['fake-url'],
     plugins: [
-      require('karma-jasmine'), require('karma-browserstack-launcher'),
-      require('karma-sauce-launcher'), require('karma-chrome-launcher'),
-      require('karma-firefox-launcher'), require('karma-sourcemap-loader'), {
+      require('karma-jasmine'),
+      require('karma-browserstack-launcher'),
+      require('karma-sauce-launcher'),
+      require('karma-sourcemap-loader'), {
         'middleware:fake-url': [
           'factory',
           function() {
@@ -107,7 +108,7 @@ module.exports = config => {
     browserDisconnectTolerance: 1,
     browserNoActivityTimeout: 300000,
 
-    browsers: ['ChromeLocalDebug'],
+    browsers: [],
     singleRun: false,
 
     // Try Websocket for a faster transmission first. Fallback to polling if necessary.

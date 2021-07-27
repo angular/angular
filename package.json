@@ -193,7 +193,7 @@
     "karma-jasmine": "^4.0.1",
     "karma-parallel": "^0.3.0",
     "karma-requirejs": "^1.1.0",
-    "karma-sauce-launcher": "^2.0.2",
+    "karma-sauce-launcher": "^4.3.6",
     "karma-sourcemap-loader": "^0.3.7",
     "madge": "^4.0.0",
     "marked": "^2.0.0",
@@ -231,6 +231,7 @@
   },
   "resolutions": {
     "browser-sync-client": "2.26.13",
-    "dgeni-packages/typescript": "4.3.2"
+    "dgeni-packages/typescript": "4.3.2",
+    "**/https-proxy-agent": "5.0.0"
   }
 }
