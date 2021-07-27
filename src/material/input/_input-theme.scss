@@ -74,7 +74,7 @@
   // <input> elements seem to have their height set slightly too large on Safari causing the text to
   // be misaligned w.r.t. the placeholder. Adding this margin corrects it.
   input.mat-input-element {
-    margin-top: -$line-spacing * 1em;
+    margin-top: typography-utils.private-coerce-unitless-to-em(-$line-spacing);
   }
 }
 

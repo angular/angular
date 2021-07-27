@@ -85,7 +85,9 @@ $legacy-dedupe: 0;
   // of the text itself, not the edge of the line; therefore we subtract off the line spacing.
   $infix-padding: 0.5em - $line-spacing;
   // The margin applied to the form-field-infix to reserve space for the floating label.
-  $infix-margin-top: 1em * $line-height * $subscript-font-scale;
+  // If the line-height is given as a unitless number, coerce it to `em`.
+  $infix-margin-top:
+      $subscript-font-scale * typography-utils.private-coerce-unitless-to-em($line-height);
   // The space between the bottom of the .mat-form-field-flex area and the subscript wrapper.
   // Mocks show half of the text size, but this margin is applied to an element with the subscript
   // text font size, so we need to divide by the scale factor to make it half of the original text

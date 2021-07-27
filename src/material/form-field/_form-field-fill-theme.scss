@@ -72,7 +72,8 @@ $fill-dedupe: 0;
   // The padding below the infix.
   $infix-padding-bottom: 0.75em;
   // The margin applied to the form-field-infix to reserve space for the floating label.
-  $infix-margin-top: 1em * $line-height * $subscript-font-scale;
+  $infix-margin-top:
+      $subscript-font-scale * typography-utils.private-coerce-unitless-to-em($line-height);
   // The amount we offset the label from the input text in the fill appearance.
   $fill-appearance-label-offset: -0.5em;
 

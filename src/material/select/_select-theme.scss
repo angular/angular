@@ -75,7 +75,7 @@
   }
 
   .mat-select-trigger {
-    height: $line-height * 1em;
+    height: typography-utils.private-coerce-unitless-to-em($line-height);
   }
 }
 

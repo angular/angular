@@ -146,7 +146,9 @@ $dedupe: 0;
   // The padding on the infix. Mocks show half of the text size.
   $infix-padding: 0.5em;
   // The margin applied to the form-field-infix to reserve space for the floating label.
-  $infix-margin-top: 1em * $line-height * $subscript-font-scale;
+  // If the line-height is given as a unitless number, coerce it to `em`.
+  $infix-margin-top: $subscript-font-scale *
+      typography-utils.private-coerce-unitless-to-em($line-height);
   // Font size to use for the label and subscript text.
   $subscript-font-size: $subscript-font-scale * 100%;
   // Font size to use for the for the prefix and suffix icons.
@@ -183,7 +185,7 @@ $dedupe: 0;
       width: $prefix-suffix-icon-font-scale * 1em;
 
       .mat-icon {
-        height: $line-height * 1em;
+        height: typography-utils.private-coerce-unitless-to-em($line-height);
         line-height: $line-height;
       }
     }

@@ -1,5 +1,6 @@
 @use 'sass:list';
 @use 'sass:map';
+@use 'sass:math';
 @use 'sass:meta';
 @use 'sass:string';
 @use '../style/private';
@@ -95,4 +96,10 @@
 
   @include font-shorthand($font-size, $font-weight, $line-height, $font-family);
   letter-spacing: letter-spacing($config, $level);
+}
+
+/// Coerce a value to `em` if it is a unitless number, otherwise returns
+/// the value provided.
+@function private-coerce-unitless-to-em($value) {
+  @return if(math.is-unitless($value), 1em * $value, $value);
 }
