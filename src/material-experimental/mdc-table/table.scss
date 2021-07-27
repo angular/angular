@@ -13,12 +13,16 @@
   @include vendor-prefixes.position-sticky($important: true);
 }
 
-// MDC Table applies `table-layout: fixed`, but this is a backwards incompatible
-// change since the table did not previously apply it.
-// TODO: Add a mixin to MDC to set the layout instead of including this override,
-// see this issue: https://github.com/material-components/material-components-web/issues/6412
 .mat-mdc-table {
+  // MDC Table applies `table-layout: fixed`, but this is a backwards incompatible
+  // change since the table did not previously apply it.
+  // TODO: Add a mixin to MDC to set the layout instead of including this override,
+  // see this issue: https://github.com/material-components/material-components-web/issues/6412
   table-layout: auto;
+
+  // The MDC table does not allow text to wrap within the cell. This allows for text to
+  // wrap when the cell reaches its maximum width.
+  white-space: normal;
 }
 
 // MDC table rows are styled with a top border, whereas our legacy flex table styles rows with
