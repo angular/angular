@@ -459,6 +459,13 @@
     "groups": ["Angular"],
     "lead": "igorminar"
   },
+  "josmar-crwdstffng": {
+    "name": "Joe Martin",
+    "picture": "josephmmartin.jpg",
+    "bio": "Joe is a technical writer working on the Angular docs.",
+    "groups": ["Angular"],
+    "lead": "aikidave"
+  },
   "jschwarty": {
     "name": "Justin Schwartzenberger",
     "picture": "justinschwartzenberger.jpg",
