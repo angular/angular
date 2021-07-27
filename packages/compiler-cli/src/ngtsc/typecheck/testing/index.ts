@@ -35,58 +35,58 @@ export function typescriptLibDts(): TestFile {
   return {
     name: absoluteFrom('/lib.d.ts'),
     contents: `
-      type Partial<T> = { [P in keyof T]?: T[P]; };
-      type Pick<T, K extends keyof T> = { [P in K]: T[P]; };
-      type NonNullable<T> = T extends null | undefined ? never : T;
-
-      // The following native type declarations are required for proper type inference
-      declare interface Function {
-        call(...args: any[]): any;
-      }
-      declare interface Array<T> {
-        [index: number]: T;
-        length: number;
-      }
-      declare interface String {
-        length: number;
-      }
-
-      declare interface Event {
-        preventDefault(): void;
-      }
-      declare interface MouseEvent extends Event {
-        readonly x: number;
-        readonly y: number;
-      }
-
-      declare interface HTMLElementEventMap {
-        "click": MouseEvent;
-      }
-      declare interface HTMLElement {
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any): void;
-        addEventListener(type: string, listener: (evt: Event): void;): void;
-      }
-      declare interface HTMLDivElement extends HTMLElement {}
-      declare interface HTMLImageElement extends HTMLElement {
-        src: string;
-        alt: string;
-        width: number;
-        height: number;
-      }
-      declare interface HTMLQuoteElement extends HTMLElement {
-        cite: string;
-      }
-      declare interface HTMLElementTagNameMap {
-        "blockquote": HTMLQuoteElement;
-        "div": HTMLDivElement;
-        "img": HTMLImageElement;
-      }
-      declare interface Document {
-        createElement<K extends keyof HTMLElementTagNameMap>(tagName: K): HTMLElementTagNameMap[K];
-        createElement(tagName: string): HTMLElement;
-      }
-      declare const document: Document;
-  `
+       type Partial<T> = { [P in keyof T]?: T[P]; };
+       type Pick<T, K extends keyof T> = { [P in K]: T[P]; };
+       type NonNullable<T> = T extends null | undefined ? never : T;
+ 
+       // The following native type declarations are required for proper type inference
+       declare interface Function {
+         call(...args: any[]): any;
+       }
+       declare interface Array<T> {
+         [index: number]: T;
+         length: number;
+       }
+       declare interface String {
+         length: number;
+       }
+ 
+       declare interface Event {
+         preventDefault(): void;
+       }
+       declare interface MouseEvent extends Event {
+         readonly x: number;
+         readonly y: number;
+       }
+ 
+       declare interface HTMLElementEventMap {
+         "click": MouseEvent;
+       }
+       declare interface HTMLElement {
+         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any): void;
+         addEventListener(type: string, listener: (evt: Event): void;): void;
+       }
+       declare interface HTMLDivElement extends HTMLElement {}
+       declare interface HTMLImageElement extends HTMLElement {
+         src: string;
+         alt: string;
+         width: number;
+         height: number;
+       }
+       declare interface HTMLQuoteElement extends HTMLElement {
+         cite: string;
+       }
+       declare interface HTMLElementTagNameMap {
+         "blockquote": HTMLQuoteElement;
+         "div": HTMLDivElement;
+         "img": HTMLImageElement;
+       }
+       declare interface Document {
+         createElement<K extends keyof HTMLElementTagNameMap>(tagName: K): HTMLElementTagNameMap[K];
+         createElement(tagName: string): HTMLElement;
+       }
+       declare const document: Document;
+   `
   };
 }
 
@@ -94,18 +94,18 @@ export function angularCoreDts(): TestFile {
   return {
     name: absoluteFrom('/node_modules/@angular/core/index.d.ts'),
     contents: `
-    export declare class TemplateRef<C> {
-      abstract readonly elementRef: unknown;
-      abstract createEmbeddedView(context: C): unknown;
-    }
-
-    export declare class EventEmitter<T> {
-      subscribe(next?: (value: T) => void, error?: (error: any) => void, complete?: () => void): unknown;
-      subscribe(observerOrNext?: any, error?: any, complete?: any): unknown;
-    }
-
-    export declare type NgIterable<T> = Array<T> | Iterable<T>;
-  `
+     export declare class TemplateRef<C> {
+       abstract readonly elementRef: unknown;
+       abstract createEmbeddedView(context: C): unknown;
+     }
+ 
+     export declare class EventEmitter<T> {
+       subscribe(next?: (value: T) => void, error?: (error: any) => void, complete?: () => void): unknown;
+       subscribe(observerOrNext?: any, error?: any, complete?: any): unknown;
+     }
+ 
+     export declare type NgIterable<T> = Array<T> | Iterable<T>;
+   `
   };
 }
 
@@ -113,10 +113,10 @@ export function angularAnimationsDts(): TestFile {
   return {
     name: absoluteFrom('/node_modules/@angular/animations/index.d.ts'),
     contents: `
-    export declare class AnimationEvent {
-      element: any;
-    }
-  `
+     export declare class AnimationEvent {
+       element: any;
+     }
+   `
   };
 }
 
@@ -136,25 +136,25 @@ export function ngForDts(): TestFile {
   return {
     name: absoluteFrom('/ngfor.d.ts'),
     contents: `
-    export declare class NgForOf<T> {
-      ngForOf: T[];
-      ngForTrackBy: TrackByFunction<T>;
-      static ngTemplateContextGuard<T>(dir: NgForOf<T>, ctx: any): ctx is NgForOfContext<T>;
-    }
-
-    export interface TrackByFunction<T> {
-      (index: number, item: T): any;
-    }
-
-    export declare class NgForOfContext<T> {
-      $implicit: T;
-      index: number;
-      count: number;
-      readonly odd: boolean;
-      readonly even: boolean;
-      readonly first: boolean;
-      readonly last: boolean;
-    }`,
+     export declare class NgForOf<T> {
+       ngForOf: T[];
+       ngForTrackBy: TrackByFunction<T>;
+       static ngTemplateContextGuard<T>(dir: NgForOf<T>, ctx: any): ctx is NgForOfContext<T>;
+     }
+ 
+     export interface TrackByFunction<T> {
+       (index: number, item: T): any;
+     }
+ 
+     export declare class NgForOfContext<T> {
+       $implicit: T;
+       index: number;
+       count: number;
+       readonly odd: boolean;
+       readonly even: boolean;
+       readonly first: boolean;
+       readonly last: boolean;
+     }`,
   };
 }
 

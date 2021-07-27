@@ -9,7 +9,7 @@
 import {initMockFileSystem} from '../../file_system/testing';
 import {TypeCheckingConfig} from '../api';
 
-import {ALL_ENABLED_CONFIG, tcb, TestDeclaration, TestDirective} from './test_utils';
+import {ALL_ENABLED_CONFIG, tcb, TestDeclaration, TestDirective} from '../testing';
 
 
 describe('type check blocks', () => {

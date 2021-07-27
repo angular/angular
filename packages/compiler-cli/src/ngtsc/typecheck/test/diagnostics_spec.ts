@@ -12,7 +12,7 @@ import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem, TestFile} from '../../file_system/testing';
 import {OptimizeFor, TypeCheckingConfig} from '../api';
 
-import {ngForDeclaration, ngForDts, setup, TestDeclaration} from './test_utils';
+import {ngForDeclaration, ngForDts, setup, TestDeclaration} from '../testing';
 
 runInEachFileSystem(() => {
   describe('template diagnostics', () => {
