@@ -13,6 +13,7 @@ import {
   Inject,
   ElementRef,
   Optional,
+  ChangeDetectorRef,
 } from '@angular/core';
 import {
   MAT_RIPPLE_GLOBAL_OPTIONS,
@@ -62,8 +63,9 @@ export class MatMenuItem extends BaseMatMenuItem {
     @Inject(MAT_MENU_PANEL) @Optional() parentMenu?: MatMenuPanel<unknown>,
     @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS)
       globalRippleOptions?: RippleGlobalOptions,
-    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
-    super(elementRef, document, focusMonitor, parentMenu);
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
+    changeDetectorRef?: ChangeDetectorRef) {
+    super(elementRef, document, focusMonitor, parentMenu, changeDetectorRef);
 
     this._noopAnimations = animationMode === 'NoopAnimations';
     this._rippleAnimation = globalRippleOptions?.animation || {

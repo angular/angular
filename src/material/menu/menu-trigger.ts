@@ -380,7 +380,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
     this._menuOpen ? this.menuOpened.emit() : this.menuClosed.emit();
 
     if (this.triggersSubmenu()) {
-      this._menuItemInstance._highlighted = isOpen;
+      this._menuItemInstance._setHighlighted(isOpen);
     }
   }
 

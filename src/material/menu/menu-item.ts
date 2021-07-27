@@ -19,6 +19,7 @@ import {
   Input,
   HostListener,
   AfterViewInit,
+  ChangeDetectorRef,
 } from '@angular/core';
 import {
   CanDisable,
@@ -81,7 +82,12 @@ export class MatMenuItem extends _MatMenuItemBase
      */
     @Inject(DOCUMENT) _document?: any,
     private _focusMonitor?: FocusMonitor,
-    @Inject(MAT_MENU_PANEL) @Optional() public _parentMenu?: MatMenuPanel<MatMenuItem>) {
+    @Inject(MAT_MENU_PANEL) @Optional() public _parentMenu?: MatMenuPanel<MatMenuItem>,
+    /**
+     * @deprecated `_changeDetectorRef` to become a required parameter.
+     * @breaking-change 14.0.0
+     */
+    private _changeDetectorRef?: ChangeDetectorRef) {
 
     // @breaking-change 8.0.0 make `_focusMonitor` and `document` required params.
     super();
@@ -171,6 +177,15 @@ export class MatMenuItem extends _MatMenuItemBase
     }
 
     return clone.textContent?.trim() || '';
+  }
+
+  _setHighlighted(isHighlighted: boolean) {
+    // We need to mark this for check for the case where the content is coming from a
+    // `matMenuContent` whose change detection tree is at the declaration position,
+    // not the insertion position. See #23175.
+    // @breaking-change 14.0.0 Remove null check for `_changeDetectorRef`.
+    this._highlighted = isHighlighted;
+    this._changeDetectorRef?.markForCheck();
   }
 
   static ngAcceptInputType_disabled: BooleanInput;

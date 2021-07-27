@@ -198,7 +198,8 @@ export class _MatMenuDirectivesModule {
 // @public
 export class MatMenuItem extends _MatMenuItemBase implements FocusableOption, CanDisable, CanDisableRipple, AfterViewInit, OnDestroy {
     constructor(_elementRef: ElementRef<HTMLElement>,
-    _document?: any, _focusMonitor?: FocusMonitor | undefined, _parentMenu?: MatMenuPanel<MatMenuItem> | undefined);
+    _document?: any, _focusMonitor?: FocusMonitor | undefined, _parentMenu?: MatMenuPanel<MatMenuItem> | undefined,
+    _changeDetectorRef?: ChangeDetectorRef | undefined);
     _checkDisabled(event: Event): void;
     focus(origin?: FocusOrigin, options?: FocusOptions): void;
     readonly _focused: Subject<MatMenuItem>;
@@ -219,11 +220,13 @@ export class MatMenuItem extends _MatMenuItemBase implements FocusableOption, Ca
     // (undocumented)
     _parentMenu?: MatMenuPanel<MatMenuItem> | undefined;
     role: 'menuitem' | 'menuitemradio' | 'menuitemcheckbox';
+    // (undocumented)
+    _setHighlighted(isHighlighted: boolean): void;
     _triggersSubmenu: boolean;
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatMenuItem, "[mat-menu-item]", ["matMenuItem"], { "disabled": "disabled"; "disableRipple": "disableRipple"; "role": "role"; }, {}, never, ["*"]>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatMenuItem, [null, null, null, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatMenuItem, [null, null, null, { optional: true; }, null]>;
 }
 
 // @public (undocumented)
