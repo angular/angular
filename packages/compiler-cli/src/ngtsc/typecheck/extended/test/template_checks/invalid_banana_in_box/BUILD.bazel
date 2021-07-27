@@ -1,0 +1,26 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = ["spec.ts"],
+    deps = [
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli/src/ngtsc/testing",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/src/template_checks/invalid_banana_in_box",
+        "//packages/compiler-cli/src/ngtsc/typecheck/testing",
+        "@npm//typescript",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["//tools/testing:node_no_angular_es5"],
+    deps = [
+        ":test_lib",
+    ],
+)
