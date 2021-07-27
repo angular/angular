@@ -201,6 +201,11 @@ describe('MatExpansionPanel', () => {
     fixture.detectChanges();
     tick(250);
 
+    // Enforce a style recalculation as otherwise browsers like Safari on iOS 14 require
+    // us to wait until the next tick using actual async/await. Not retrieving the computed
+    // styles would result in the `visibility: hidden` on the expansion content to not apply.
+    getComputedStyle(button).getPropertyValue('visibility');
+
     button.focus();
     expect(document.activeElement).not.toBe(button, 'Expected button to no longer be focusable.');
   }));
