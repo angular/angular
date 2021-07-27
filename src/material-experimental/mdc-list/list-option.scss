@@ -1,5 +1,5 @@
 @use '@material/checkbox' as mdc-checkbox;
-@use '@material/list' as mdc-list;
+@use '@material/list/evolution-variables' as mdc-list-variables;
 @use '../mdc-helpers/mdc-helpers';
 @use '../../cdk/a11y';
 @use './list-option-trailing-avatar-compat';
@@ -33,12 +33,12 @@
   // In single selection mode, the selected option is indicated by changing its
   // background color, but that doesn't work in high contrast mode. We add an
   // alternate indication by rendering out a circle.
-  .mat-mdc-list-option.mdc-deprecated-list-item--selected::after {
+  .mat-mdc-list-option.mdc-list-item--selected::after {
     $size: 10px;
     content: '';
     position: absolute;
     top: 50%;
-    right: mdc-list.$deprecated-side-padding;
+    right: mdc-list-variables.$side-padding;
     transform: translateY(-50%);
     width: $size;
     height: 0;
@@ -46,8 +46,8 @@
     border-radius: $size;
   }
 
-  [dir='rtl'] .mat-mdc-list-option.mdc-deprecated-list-item--selected::after {
+  [dir='rtl'] .mat-mdc-list-option.mdc-list-item--selected::after {
     right: auto;
-    left: mdc-list.$deprecated-side-padding;
+    left: mdc-list-variables.$side-padding;
   }
 }
