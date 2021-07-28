@@ -1,0 +1,366 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should handle TypeScript baseline reference test",
+      "inputFiles": [
+        "asyncFunctionsAcrossFiles/a.ts",
+        "asyncFunctionsAcrossFiles/b.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect async function transformation"
+        }
+      ],
+      "compilerOptions": {
+        "target": "es2017"
+      },
+      "angularCompilerOptions": {
+        "transformAsyncAwaitForZoneJS": true
+      }
+    },
+    {
+      "description": "should handle TypeScript baseline reference test",
+      "inputFiles": [
+        "asyncMultiFile/a.ts",
+        "asyncMultiFile/b.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect async function transformation"
+        }
+      ],
+      "compilerOptions": {
+        "target": "es2017"
+      },
+      "angularCompilerOptions": {
+        "transformAsyncAwaitForZoneJS": true
+      }
+    },
+    {
+      "description": "should handle TypeScript baseline reference test",
+      "inputFiles": [
+        "asyncAliasReturnType_es6.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect async function transformation"
+        }
+      ],
+      "compilerOptions": {
+        "target": "es2017"
+      },
+      "angularCompilerOptions": {
+        "transformAsyncAwaitForZoneJS": true
+      }
+    },
+    {
+      "description": "should handle TypeScript baseline reference test",
+      "inputFiles": [
+        "asyncArrowFunction1_es6.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect async function transformation"
+        }
+      ],
+      "compilerOptions": {
+        "target": "es2017"
+      },
+      "angularCompilerOptions": {
+        "transformAsyncAwaitForZoneJS": true
+      }
+    },
+    {
+      "description": "should handle TypeScript baseline reference test",
+      "inputFiles": [
+        "asyncArrowFunction2_es6.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect async function transformation"
+        }
+      ],
+      "compilerOptions": {
+        "target": "es2017"
+      },
+      "angularCompilerOptions": {
+        "transformAsyncAwaitForZoneJS": true
+      }
+    },
+    {
+      "description": "should handle TypeScript baseline reference test",
+      "inputFiles": [
+        "asyncArrowFunction4_es6.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect async function transformation"
+        }
+      ],
+      "compilerOptions": {
+        "target": "es2017"
+      },
+      "angularCompilerOptions": {
+        "transformAsyncAwaitForZoneJS": true
+      }
+    },
+    {
+      "description": "should handle TypeScript baseline reference test",
+      "inputFiles": [
+        "asyncArrowFunctionCapturesArguments_es6.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect async function transformation"
+        }
+      ],
+      "compilerOptions": {
+        "target": "es2017"
+      },
+      "angularCompilerOptions": {
+        "transformAsyncAwaitForZoneJS": true
+      }
+    },
+    {
+      "description": "should handle TypeScript baseline reference test",
+      "inputFiles": [
+        "asyncArrowFunctionCapturesThis_es6.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect async function transformation"
+        }
+      ],
+      "compilerOptions": {
+        "target": "es2017"
+      },
+      "angularCompilerOptions": {
+        "transformAsyncAwaitForZoneJS": true
+      }
+    },
+    {
+      "description": "should handle TypeScript baseline reference test",
+      "inputFiles": [
+        "asyncAwait_es6.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect async function transformation"
+        }
+      ],
+      "compilerOptions": {
+        "target": "es2017"
+      },
+      "angularCompilerOptions": {
+        "transformAsyncAwaitForZoneJS": true
+      }
+    },
+    {
+      "description": "should handle TypeScript baseline reference test",
+      "inputFiles": [
+        "asyncFunctionDeclaration1_es6.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect async function transformation"
+        }
+      ],
+      "compilerOptions": {
+        "target": "es2017"
+      },
+      "angularCompilerOptions": {
+        "transformAsyncAwaitForZoneJS": true
+      }
+    },
+    {
+      "description": "should handle TypeScript baseline reference test",
+      "inputFiles": [
+        "asyncFunctionDeclaration2_es6.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect async function transformation"
+        }
+      ],
+      "compilerOptions": {
+        "target": "es2017"
+      },
+      "angularCompilerOptions": {
+        "transformAsyncAwaitForZoneJS": true
+      }
+    },
+    {
+      "description": "should handle TypeScript baseline reference test",
+      "inputFiles": [
+        "asyncFunctionDeclaration4_es6.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect async function transformation"
+        }
+      ],
+      "compilerOptions": {
+        "target": "es2017"
+      },
+      "angularCompilerOptions": {
+        "transformAsyncAwaitForZoneJS": true
+      }
+    },
+    {
+      "description": "should handle TypeScript baseline reference test",
+      "inputFiles": [
+        "asyncFunctionDeclaration11_es6.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect async function transformation"
+        }
+      ],
+      "compilerOptions": {
+        "target": "es2017"
+      },
+      "angularCompilerOptions": {
+        "transformAsyncAwaitForZoneJS": true
+      }
+    },
+    {
+      "description": "should handle TypeScript baseline reference test",
+      "inputFiles": [
+        "asyncFunctionDeclaration14_es6.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect async function transformation"
+        }
+      ],
+      "compilerOptions": {
+        "target": "es2017"
+      },
+      "angularCompilerOptions": {
+        "transformAsyncAwaitForZoneJS": true
+      }
+    },
+    {
+      "description": "should handle TypeScript baseline reference test",
+      "inputFiles": [
+        "asyncFunctionDeclaration15_es6.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect async function transformation"
+        }
+      ],
+      "compilerOptions": {
+        "target": "es2017"
+      },
+      "angularCompilerOptions": {
+        "transformAsyncAwaitForZoneJS": true
+      }
+    },
+    {
+      "description": "should handle TypeScript baseline reference test",
+      "inputFiles": [
+        "asyncFunctionReturnType.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect async function transformation"
+        }
+      ],
+      "compilerOptions": {
+        "target": "es2017"
+      },
+      "angularCompilerOptions": {
+        "transformAsyncAwaitForZoneJS": true
+      }
+    },
+    {
+      "description": "should handle TypeScript baseline reference test",
+      "inputFiles": [
+        "asyncIIFE.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect async function transformation"
+        }
+      ],
+      "compilerOptions": {
+        "target": "es2017"
+      },
+      "angularCompilerOptions": {
+        "transformAsyncAwaitForZoneJS": true
+      }
+    },
+    {
+      "description": "should handle TypeScript baseline reference test",
+      "inputFiles": [
+        "asyncMethodWithSuper_es6.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect async function transformation"
+        }
+      ],
+      "compilerOptions": {
+        "target": "es2018"
+      },
+      "angularCompilerOptions": {
+        "transformAsyncAwaitForZoneJS": true
+      }
+    },
+    {
+      "description": "should handle TypeScript baseline reference test",
+      "inputFiles": [
+        "asyncUnParenthesizedArrowFunction_es6.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect async function transformation"
+        }
+      ],
+      "compilerOptions": {
+        "noImplicitAny": false,
+        "target": "es2017"
+      },
+      "angularCompilerOptions": {
+        "transformAsyncAwaitForZoneJS": true
+      }
+    },
+    {
+      "description": "should handle TypeScript baseline reference test",
+      "inputFiles": [
+        "asyncUseStrict_es6.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect async function transformation"
+        }
+      ],
+      "compilerOptions": {
+        "target": "es2017"
+      },
+      "angularCompilerOptions": {
+        "transformAsyncAwaitForZoneJS": true
+      }
+    },
+    {
+      "description": "should handle TypeScript baseline reference test",
+      "inputFiles": [
+        "asyncWithVarShadowing_es6.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect async function transformation"
+        }
+      ],
+      "compilerOptions": {
+        "noImplicitAny": false,
+        "target": "es2017"
+      },
+      "angularCompilerOptions": {
+        "transformAsyncAwaitForZoneJS": true
+      }
+    }
+  ]
+}

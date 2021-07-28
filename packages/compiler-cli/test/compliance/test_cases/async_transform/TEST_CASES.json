@@ -1,0 +1,56 @@
+{
+  "$schema": "../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should convert async functions to generator functions when `transformAsyncAwaitForZoneJS` is true",
+      "inputFiles": [
+        "async_functions_transformed.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect async function transformation"
+        }
+      ],
+      "compilerOptions": {
+        "target": "es2017"
+      },
+      "angularCompilerOptions": {
+        "transformAsyncAwaitForZoneJS": true
+      }
+    },
+    {
+      "description": "should not convert async functions to generator functions when `transformAsyncAwaitForZoneJS` is false, and target is ES2017",
+      "inputFiles": [
+        "async_functions_es2017.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Unexpected TS transformation"
+        }
+      ],
+      "compilerOptions": {
+        "target": "es2017"
+      },
+      "angularCompilerOptions": {
+        "transformAsyncAwaitForZoneJS": false
+      }
+    },
+    {
+      "description": "should convert complex parameters for async functions to generator functions",
+      "inputFiles": [
+        "complex_params.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect async function transformation"
+        }
+      ],
+      "compilerOptions": {
+        "target": "es2017"
+      },
+      "angularCompilerOptions": {
+        "transformAsyncAwaitForZoneJS": true
+      }
+    }
+  ]
+}

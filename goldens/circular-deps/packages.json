@@ -42,6 +42,10 @@
     "packages/compiler-cli/src/ngtsc/scope/src/local.ts"
   ],
   [
+    "packages/compiler-cli/test/compliance/test_cases/async_transform/typescript_baselines/asyncFunctionsAcrossFiles/a.ts",
+    "packages/compiler-cli/test/compliance/test_cases/async_transform/typescript_baselines/asyncFunctionsAcrossFiles/b.ts"
+  ],
+  [
     "packages/compiler/src/output/output_ast.ts",
     "packages/compiler/src/render3/view/i18n/meta.ts"
   ],

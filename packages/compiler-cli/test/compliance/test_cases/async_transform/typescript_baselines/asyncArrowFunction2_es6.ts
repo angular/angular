@@ -1,0 +1,1 @@
+var f = (await: any) => {}
