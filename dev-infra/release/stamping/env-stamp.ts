@@ -37,8 +37,12 @@ export function buildEnvStamp(mode: EnvStampMode) {
 
 /** Whether the repo has local changes. */
 function hasLocalChanges() {
-  const git = GitClient.get();
-  return git.hasUncommittedChanges();
+  try {
+    const git = GitClient.get();
+    return git.hasUncommittedChanges();
+  } catch {
+    return true;
+  }
 }
 
 /**
@@ -48,44 +52,61 @@ function hasLocalChanges() {
  * In release mode, the version is based on the base package.json version.
  */
 function getSCMVersions(mode: EnvStampMode): {version: string, experimentalVersion: string} {
-  const git = GitClient.get();
-  if (mode === 'release') {
-    const packageJsonPath = join(git.baseDir, 'package.json');
-    const {version} = new SemVer(require(packageJsonPath).version);
-    const {version: experimentalVersion} = createExperimentalSemver(new SemVer(version));
-    return {version, experimentalVersion};
-  }
-  if (mode === 'snapshot') {
-    const localChanges = hasLocalChanges() ? '.with-local-changes' : '';
-    const {stdout: rawVersion} = git.run(
-        ['describe', '--match', '*[0-9]*.[0-9]*.[0-9]*', '--abbrev=7', '--tags', 'HEAD~100']);
-    const {version} = new SemVer(rawVersion);
-    const {version: experimentalVersion} = createExperimentalSemver(version);
+  try {
+    const git = GitClient.get();
+    if (mode === 'snapshot') {
+      const localChanges = hasLocalChanges() ? '.with-local-changes' : '';
+      const {stdout: rawVersion} = git.run(
+          ['describe', '--match', '*[0-9]*.[0-9]*.[0-9]*', '--abbrev=7', '--tags', 'HEAD~100']);
+      const {version} = new SemVer(rawVersion);
+      const {version: experimentalVersion} = createExperimentalSemver(version);
+      return {
+        version: `${version.replace(/-([0-9]+)-g/, '+$1.sha-')}${localChanges}`,
+        experimentalVersion:
+            `${experimentalVersion.replace(/-([0-9]+)-g/, '+$1.sha-')}${localChanges}`,
+      };
+    } else {
+      const packageJsonPath = join(git.baseDir, 'package.json');
+      const {version} = new SemVer(require(packageJsonPath).version);
+      const {version: experimentalVersion} = createExperimentalSemver(new SemVer(version));
+      return {version, experimentalVersion};
+    }
+  } catch {
     return {
-      version: `${version.replace(/-([0-9]+)-g/, '+$1.sha-')}${localChanges}`,
-      experimentalVersion:
-          `${experimentalVersion.replace(/-([0-9]+)-g/, '+$1.sha-')}${localChanges}`,
+      version: '',
+      experimentalVersion: '',
     };
   }
-  throw Error('No environment stamp mode was provided.');
 }
 
 /** Get the current branch or revision of HEAD. */
 function getCurrentBranchOrRevision() {
-  const git = GitClient.get();
-  return git.getCurrentBranchOrRevision();
+  try {
+    const git = GitClient.get();
+    return git.getCurrentBranchOrRevision();
+  } catch {
+    return '';
+  }
 }
 
 /** Get the currently checked out branch. */
 function getCurrentBranch() {
-  const git = GitClient.get();
-  return git.run(['symbolic-ref', '--short', 'HEAD']).stdout.trim();
+  try {
+    const git = GitClient.get();
+    return git.run(['symbolic-ref', '--short', 'HEAD']).stdout.trim();
+  } catch {
+    return '';
+  }
 }
 
 /** Get the current git user based on the git config. */
 function getCurrentGitUser() {
-  const git = GitClient.get();
-  let userName = git.runGraceful(['config', 'user.name']).stdout.trim() || 'Unknown User';
-  let userEmail = git.runGraceful(['config', 'user.email']).stdout.trim() || 'unknown_email';
-  return `${userName} <${userEmail}>`;
+  try {
+    const git = GitClient.get();
+    let userName = git.runGraceful(['config', 'user.name']).stdout.trim() || 'Unknown User';
+    let userEmail = git.runGraceful(['config', 'user.email']).stdout.trim() || 'unknown_email';
+    return `${userName} <${userEmail}>`;
+  } catch {
+    return '';
+  }
 }
