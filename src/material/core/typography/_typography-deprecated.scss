@@ -35,5 +35,5 @@
 ) {
   @return typography.define-typography-config($font-family, $display-4, $display-3, $display-2,
     $display-1, $headline, $title, $subheading-2, $subheading-1, $body-2,
-    $body-1, $caption, $button);
+    $body-1, $caption, $button, $input);
 }
