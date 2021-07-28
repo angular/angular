@@ -1,3 +1,33 @@
+## 12.1.4 "tallow-wire" (2021-07-28)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **drag-drop:** element not draggable when has initial transform … ([#22458](https://github.com/angular/components/issues/22458)) ([b8b89196c7c46acc44fccef72d28b73792b90e83](https://github.com/angular/components/commit/b8b89196c7c46acc44fccef72d28b73792b90e83)) |
+| bug fix |  **testing:** extract hidden text in web driver element ([#23239](https://github.com/angular/components/issues/23239)) ([51b7cbaba2a4d3ea51deb18398de14e484b53815](https://github.com/angular/components/commit/51b7cbaba2a4d3ea51deb18398de14e484b53815)) |
+| bug fix |  **testing:** protractor element not extracting hidden text ([#21540](https://github.com/angular/components/issues/21540)) ([90f6726282577dd3764ba6e6c1c8e6d15c3c0134](https://github.com/angular/components/commit/90f6726282577dd3764ba6e6c1c8e6d15c3c0134)) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **form-field:** safely coerce line-height to em ([#23215](https://github.com/angular/components/issues/23215)) ([9aaa4c699a9b5137544cdffde56dff4811d499a2](https://github.com/angular/components/commit/9aaa4c699a9b5137544cdffde56dff4811d499a2)) |
+| bug fix |  **menu:** item highlighted state not updating in time when using lazy content ([#23185](https://github.com/angular/components/issues/23185)) ([6a3230e457b9841a6e06cbf39e2322b964c35541](https://github.com/angular/components/commit/6a3230e457b9841a6e06cbf39e2322b964c35541)), closes [#23175](https://github.com/angular/components/issues/23175) |
+| bug fix |  **tabs:** avoid interrupting click event when scrolling the header ([#21911](https://github.com/angular/components/issues/21911)) ([af20bfc1d1836c5a1c95616365eb284d2bfcdd88](https://github.com/angular/components/commit/af20bfc1d1836c5a1c95616365eb284d2bfcdd88)), closes [#21898](https://github.com/angular/components/issues/21898) |
+| bug fix |  **theming:** correctly configure input typography level ([#23217](https://github.com/angular/components/issues/23217)) ([b055ac7c09ae7517dda8a89823f2b9bb78868473](https://github.com/angular/components/commit/b055ac7c09ae7517dda8a89823f2b9bb78868473)), closes [#23216](https://github.com/angular/components/issues/23216) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-button:** high contrast outline for solitary ([#22987](https://github.com/angular/components/issues/22987)) ([762140a2ba56a2bf5a7bc1679a4b537a7d18cab4](https://github.com/angular/components/commit/762140a2ba56a2bf5a7bc1679a4b537a7d18cab4)) |
+| bug fix |  **mdc-list:** fix secondary line accidentally wrapping text ([#23236](https://github.com/angular/components/issues/23236)) ([6a6a953048652ef760fbb4e8b20ff16f92c741a0](https://github.com/angular/components/commit/6a6a953048652ef760fbb4e8b20ff16f92c741a0)) |
+| bug fix |  **mdc-list:** fix selected indication in high contrast mode ([#23242](https://github.com/angular/components/issues/23242)) ([fd5f3da525059ff9115319df9abc9c8fbe88a59f](https://github.com/angular/components/commit/fd5f3da525059ff9115319df9abc9c8fbe88a59f)) |
+| bug fix |  **mdc-paginator:** target page size label with `aria-labelledby` ([#23172](https://github.com/angular/components/issues/23172)) ([53ba5a749e7764d43a55cde99f27c7c61d4e904f](https://github.com/angular/components/commit/53ba5a749e7764d43a55cde99f27c7c61d4e904f)) |
+| bug fix |  **mdc-table:** allow text to wrap ([#23222](https://github.com/angular/components/issues/23222)) ([9416832ebe74a7709b6ded63b4a526e5e986f70b](https://github.com/angular/components/commit/9416832ebe74a7709b6ded63b4a526e5e986f70b)) |
+
+
 ## 12.1.3 "ruby-racecar" (2021-07-21)
 
 ### material
