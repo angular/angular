@@ -2005,6 +2005,92 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              verifyValidatorAttrValues({minlength: null, maxlength: null});
              verifyFormState({isValid: true});
            }));
+
+        it('should not include the min and max validators for null', fakeAsync(() => {
+             @Component({
+               template:
+                   '<form><input type="number" name="minmaxinput" ngModel [min]="minlen" [max]="maxlen"></form>'
+             })
+             class MinLengthMaxLengthComponent {
+               minlen: number|null = null;
+               maxlen: number|null = null;
+               control!: FormControl;
+             }
+
+             const fixture = initTest(MinLengthMaxLengthComponent);
+             fixture.detectChanges();
+             tick();
+             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+
+             const form = fixture.debugElement.children[0].injector.get(NgForm);
+             const control =
+                 fixture.debugElement.children[0].injector.get(NgForm).control.get('minmaxinput')!;
+
+             interface minmax {
+               min: number|null;
+               max: number|null;
+             }
+
+             interface state {
+               isValid: boolean;
+               failedValidator?: string;
+             }
+
+             const setInputValue = (value: number) => {
+               input.value = value;
+               dispatchEvent(input, 'input');
+               fixture.detectChanges();
+             };
+             const verifyValidatorAttrValues = (values: {min: any, max: any}) => {
+               expect(input.getAttribute('min')).toBe(values.min);
+               expect(input.getAttribute('max')).toBe(values.max);
+             };
+             const setValidatorValues = (values: minmax) => {
+               fixture.componentInstance.minlen = values.min;
+               fixture.componentInstance.maxlen = values.max;
+               fixture.detectChanges();
+             };
+             const verifyFormState = (state: state) => {
+               expect(form.valid).toBe(state.isValid);
+               if (state.failedValidator) {
+                 expect(control!.hasError('min')).toEqual(state.failedValidator === 'min');
+                 expect(control!.hasError('max')).toEqual(state.failedValidator === 'max');
+               }
+             };
+
+             ////////// Actual test scenarios start below //////////
+             // 1. Verify that validators are disabled when input is `null`.
+             verifyValidatorAttrValues({min: null, max: null});
+             verifyValidatorAttrValues({min: null, max: null});
+
+             // 2. Verify that setting validator inputs (to a value different from `null`) activate
+             // validators.
+             setInputValue(12345);
+             setValidatorValues({min: 2, max: 4});
+             verifyValidatorAttrValues({min: '2', max: '4'});
+             verifyFormState({isValid: false, failedValidator: 'max'});
+
+             // 3. Changing value to the valid range should make the form valid.
+             setInputValue(3);
+             verifyFormState({isValid: true});
+
+             // 4. Changing value to trigger `minlength` validator.
+             setInputValue(1);
+             verifyFormState({isValid: false, failedValidator: 'min'});
+
+             // 5. Changing validator inputs to verify that attribute values are updated (and the
+             // form is now valid).
+             setInputValue(1);
+             setValidatorValues({min: 1, max: 5});
+             verifyValidatorAttrValues({min: '1', max: '5'});
+             verifyFormState({isValid: true});
+
+             // 6. Reset validator inputs back to `null` should deactivate validators.
+             setInputValue(123);
+             setValidatorValues({min: null, max: null});
+             verifyValidatorAttrValues({min: null, max: null});
+             verifyFormState({isValid: true});
+           }));
       });
 
       ['number', 'string'].forEach((inputType: string) => {
