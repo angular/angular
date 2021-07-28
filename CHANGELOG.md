@@ -1,3 +1,36 @@
+# 12.2.0-rc.0 "schmaltz-waltz" (2021-07-28)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| feature |  **scrolling:** add input to enable append-only mode in virtual scroll viewport ([#22986](https://github.com/angular/components/issues/22986)) ([8f052ccca2b6ca28083c7d550be1952060c0cd92](https://github.com/angular/components/commit/8f052ccca2b6ca28083c7d550be1952060c0cd92)) |
+| feature |  **table:** add event that emits after rendering ([#22750](https://github.com/angular/components/issues/22750)) ([62bbffaae642d39e4b87ac6a33b02853720a4c2f](https://github.com/angular/components/commit/62bbffaae642d39e4b87ac6a33b02853720a4c2f)) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **menu:** submenu icon not working in high contrast mode ([#23012](https://github.com/angular/components/issues/23012)) ([ad2baa642c8f9592bfd190579cb62642c27ca87f](https://github.com/angular/components/commit/ad2baa642c8f9592bfd190579cb62642c27ca87f)), closes [#22944](https://github.com/angular/components/issues/22944) |
+| bug fix |  **multiple:** incosistent item text truncation when used together with MDC list ([#23138](https://github.com/angular/components/issues/23138)) ([6e1cede6d76ff7e54668d0647b875453fe6c3ded](https://github.com/angular/components/commit/6e1cede6d76ff7e54668d0647b875453fe6c3ded)) |
+| bug fix |  **schematics:** don't migrate commented code in theming API migration ([#23004](https://github.com/angular/components/issues/23004)) ([0b65df0c56bccfebe43bf6f6f641f68908a74997](https://github.com/angular/components/commit/0b65df0c56bccfebe43bf6f6f641f68908a74997)) |
+| feature |  **list:** support two-data binding on list option selected ([#23125](https://github.com/angular/components/issues/23125)) ([298da1cbc3b2d91d47e4d0a433ee0bd0f8439863](https://github.com/angular/components/commit/298da1cbc3b2d91d47e4d0a433ee0bd0f8439863)), closes [#23122](https://github.com/angular/components/issues/23122) |
+| feature |  **slide-toggle:** add aria-describedby input ([#23104](https://github.com/angular/components/issues/23104)) ([6b553ec79f1a7369bf34d958cd0fd3e928b9f6e0](https://github.com/angular/components/commit/6b553ec79f1a7369bf34d958cd0fd3e928b9f6e0)), closes [#23094](https://github.com/angular/components/issues/23094) |
+| feature |  **testing:** MatChipHarness getAvatar ([#22348](https://github.com/angular/components/issues/22348)) ([d733ee2799d97c5711302964f6450c729bf1146e](https://github.com/angular/components/commit/d733ee2799d97c5711302964f6450c729bf1146e)) |
+
+### google-maps
+
+|            |                       |
+| ---------- | --------------------- |
+| feature |  add event emitter for gm_authFailure callback ([#22953](https://github.com/angular/components/issues/22953)) ([224de73bb440e131e687cc493bc52765b3821a0a](https://github.com/angular/components/commit/224de73bb440e131e687cc493bc52765b3821a0a)) |
+
+### material-luxon-adapter
+
+|            |                       |
+| ---------- | --------------------- |
+| feature |  add luxon date adapter ([#23167](https://github.com/angular/components/issues/23167)) ([492268a06e189accfb06354b586416a3b7a2d644](https://github.com/angular/components/commit/492268a06e189accfb06354b586416a3b7a2d644)) |
+
+
 ## 12.1.4 "tallow-wire" (2021-07-28)
 
 ### cdk
