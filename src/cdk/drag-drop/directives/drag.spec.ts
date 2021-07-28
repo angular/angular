@@ -407,6 +407,18 @@ describe('CdkDrag', () => {
       }));
     });
 
+    describe('mouse dragging when initial transform is none', () => {
+      it('should drag an element freely to a particular position', fakeAsync(() => {
+        const fixture = createComponent(StandaloneDraggable);
+        fixture.detectChanges();
+        const dragElement = fixture.componentInstance.dragElement.nativeElement;
+        dragElement.style.transform = 'none';
+
+        dragElementViaMouse(fixture, dragElement, 50, 100);
+        expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)');
+      }));
+    });
+
     it('should dispatch an event when the user has started dragging', fakeAsync(() => {
       const fixture = createComponent(StandaloneDraggable);
       fixture.detectChanges();

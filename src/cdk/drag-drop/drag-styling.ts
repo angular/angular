@@ -82,5 +82,7 @@ export function toggleVisibility(element: HTMLElement,
  * that exited before the base transform was applied.
  */
 export function combineTransforms(transform: string, initialTransform?: string): string {
-  return initialTransform ? (transform + ' ' + initialTransform) : transform;
+  return initialTransform && initialTransform != 'none' ?
+      (transform + ' ' + initialTransform) :
+      transform;
 }
