@@ -22,7 +22,7 @@ For example, a transition of `open => *` applies when the element's state change
 The following is another code sample using the wildcard state together with the previous example using the `open` and `closed` states.
 Instead of defining each state-to-state transition pair, any transition to `closed` takes 1 second, and any transition to `open` takes 0.5 seconds.
 
-This allows us to add new states without having to include separate transitions for each one.
+This lets us add new states without having to include separate transitions for each one.
 
 <code-example header="src/app/open-close.component.ts" path="animations/src/app/open-close.component.ts" region="trigger-wildcard1" language="typescript"></code-example>
 
@@ -58,12 +58,12 @@ Use the wildcard `*` with a style to tell the animation to use whatever the curr
 
 ### Void state
 
-You can use the `void` state to configure transitions for an element that is entering or leaving a page. See [Animating entering and leaving a view](#enter-leave-view).
+Use the `void` state to configure transitions for an element that is entering or leaving a page. See [Animating entering and leaving a view](#enter-leave-view).
 
 
 ### Combining wildcard and void states
 
-You can combine wildcard and void states in a transition to trigger animations that enter and leave the page:
+Combine wildcard and void states in a transition to trigger animations that enter and leave the page:
 
 * A transition of `* => void` applies when the element leaves a view, regardless of what state it was in before it left.
 
@@ -88,7 +88,7 @@ Now add a new behavior:
 
 <code-example path="animations/src/app/hero-list-enter-leave.component.ts" header="src/app/hero-list-enter-leave.component.ts" region="animationdef" language="typescript"></code-example>
 
-In the above code, you applied the `void` state when the HTML element isn't attached to a view.
+In the preceding code, you applied the `void` state when the HTML element isn't attached to a view.
 
 
 {@a enter-leave-view}
@@ -140,7 +140,7 @@ If a trigger contains a boolean value as a binding value, then this value can be
 <code-example path="animations/src/app/open-close.component.2.html" header="src/app/open-close.component.html" region="trigger-boolean">
 </code-example>
 
-In the code snippet above, the HTML template binds a `<div>` element to a trigger named `openClose` with a status expression of `isOpen`, and with possible values of `true` and `false`. This is an alternative to the practice of creating two named states of `open` and `close`.
+In the preceding code snippet, the HTML template binds a `<div>` element to a trigger named `openClose` with a status expression of `isOpen`, and with possible values of `true` and `false`. This is an alternative to the practice of creating two named states of `open` and `close`.
 
 In the component code, in the `@Component` metadata under the `animations:` property, when the state evaluates to `true` (meaning "open" here), the associated HTML element's height is a wildcard style or default. In this case, use whatever height the element already had before the animation started. When the element is "closed," the element animates to a height of 0, which makes it invisible.
 
@@ -149,17 +149,17 @@ In the component code, in the `@Component` metadata under the `animations:` prop
 
 ## Multiple animation triggers
 
-You can define more than one animation trigger for a component. You can attach animation triggers to different elements, and the parent-child relationships among the elements affect how and when the animations run.
+You can define more than one animation trigger for a component. Attach animation triggers to different elements, and the parent-child relationships among the elements affect how and when the animations run.
 
 ### Parent-child animations
 
-Each time an animation is triggered in Angular, the parent animation always get priority and child animations are blocked. In order for a child animation to run, the parent animation must query each of the elements containing child animations and then allow the animations to run using the [`animateChild()`](api/animations/animateChild) function.
+Each time an animation is triggered in Angular, the parent animation always gets priority and child animations are blocked. For a child animation to run, the parent animation must query each of the elements containing child animations and then let the animations run using the [`animateChild()`](api/animations/animateChild) function.
 
 #### Disabling an animation on an HTML element
 
 A special animation control binding called `@.disabled` can be placed on an HTML element to disable animations on that element, as well as any nested elements. When true, the `@.disabled` binding prevents all animations from rendering.
 
-The code sample below shows how to use this feature.
+The following code sample shows how to use this feature.
 
 <code-tabs>
 
@@ -196,7 +196,7 @@ To disable all animations for an Angular app, place the `@.disabled` host bindin
 
 ## Animation callbacks
 
-The animation `trigger()` function emits *callbacks* when it starts and when it finishes. The example below features a component that contains an `openClose` trigger.
+The animation `trigger()` function emits *callbacks* when it starts and when it finishes. The following example features a component that contains an `openClose` trigger.
 
 <code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" region="events1" language="typescript"></code-example>
 
@@ -245,7 +245,7 @@ Offsets are relative measures from zero to one, marking the beginning and end of
 Defining offsets for keyframes is optional.
 If you omit them, evenly spaced offsets are automatically assigned.
 For example, three keyframes without predefined offsets receive offsets of 0, 0.5, and 1.
-Specifying an offset of 0.8 for the middle transition in the above example might look like this.
+Specifying an offset of 0.8 for the middle transition in the preceding example might look like this.
 
 <div class="lightbox">
   <img src="generated/images/guide/animations/keyframes-offset-500.png" alt="keyframes with offset">
@@ -305,11 +305,11 @@ The animation takes whatever height the element has before it leaves, and animat
 
 ### Keyframes summary
 
-The `keyframes()` function in Angular allows you to specify multiple interim styles within a single transition, with an optional offset to define the point in the animation where each style change occurs.
+The `keyframes()` function in Angular lets you specify multiple interim styles within a single transition, with an optional offset to define the point in the animation where each style change occurs.
 
 ## More on Angular animations
 
-You may also be interested in the following:
+You might also be interested in the following:
 
 * [Introduction to Angular animations](guide/animations)
 * [Complex animation sequences](guide/complex-animation-sequences)
