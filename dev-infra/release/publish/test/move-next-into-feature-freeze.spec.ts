@@ -30,10 +30,18 @@ describe('move next into feature-freeze action', () => {
     })).toBe(false);
   });
 
+  it('should not activate if the next release-train is for a minor', async () => {
+    expect(await MoveNextIntoFeatureFreezeAction.isActive({
+      releaseCandidate: null,
+      next: new ReleaseTrain('master', parse('10.1.0-next.2')),
+      latest: new ReleaseTrain('10.0.x', parse('10.0.3')),
+    })).toBe(false);
+  });
+
   it('should activate if no FF/RC release-train is active', async () => {
     expect(await MoveNextIntoFeatureFreezeAction.isActive({
       releaseCandidate: null,
-      next: new ReleaseTrain('master', parse('10.1.0-next.0')),
+      next: new ReleaseTrain('master', parse('11.0.0-next.0')),
       latest: new ReleaseTrain('10.0.x', parse('10.0.3')),
     })).toBe(true);
   });

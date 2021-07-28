@@ -20,7 +20,9 @@ export class MoveNextIntoFeatureFreezeAction extends BranchOffNextBranchBaseActi
 
   static override async isActive(active: ActiveReleaseTrains) {
     // A new feature-freeze branch can only be created if there is no active
-    // release-train in feature-freeze/release-candidate phase.
-    return active.releaseCandidate === null;
+    // release-train in feature-freeze/release-candidate phase and the version
+    // currently in the `next` branch is for a major. The feature-freeze phase
+    // is not foreseen for minor versions.
+    return active.releaseCandidate === null && active.next.isMajor;
   }
 }
