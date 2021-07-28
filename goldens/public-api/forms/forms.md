@@ -415,7 +415,7 @@ export class MaxLengthValidator implements Validator, OnChanges {
 
 // @public
 export class MaxValidator extends AbstractValidatorDirective implements OnChanges {
-    max: string | number;
+    max: string | number | null;
     ngOnChanges(changes: SimpleChanges): void;
 }
 
@@ -432,7 +432,7 @@ export class MinLengthValidator implements Validator, OnChanges {
 
 // @public
 export class MinValidator extends AbstractValidatorDirective implements OnChanges {
-    min: string | number;
+    min: string | number | null;
     ngOnChanges(changes: SimpleChanges): void;
 }
 
