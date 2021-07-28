@@ -282,10 +282,17 @@ export class NgtscProgram implements api.Program {
 
       const customTransforms = opts && opts.customTransformers;
       const beforeTransforms = transformers.before || [];
+      const afterTransforms = transformers.after || [];
       const afterDeclarationsTransforms = transformers.afterDeclarations;
 
-      if (customTransforms !== undefined && customTransforms.beforeTs !== undefined) {
-        beforeTransforms.push(...customTransforms.beforeTs);
+      if (customTransforms !== undefined) {
+        if (customTransforms.beforeTs !== undefined) {
+          beforeTransforms.push(...customTransforms.beforeTs);
+        }
+
+        if (customTransforms.afterTs !== undefined) {
+          afterTransforms.push(...customTransforms.afterTs);
+        }
       }
 
       const emitResults: ts.EmitResult[] = [];
@@ -311,7 +318,7 @@ export class NgtscProgram implements api.Program {
           writeFile,
           customTransformers: {
             before: beforeTransforms,
-            after: customTransforms && customTransforms.afterTs,
+            after: afterTransforms,
             afterDeclarations: afterDeclarationsTransforms,
           } as any,
         }));

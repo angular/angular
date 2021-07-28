@@ -9,6 +9,7 @@
 import * as ts from 'typescript';
 
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, NoopReferencesRegistry, PipeDecoratorHandler, ReferencesRegistry} from '../../annotations';
+import {createAsyncTransform} from '../../async_transform';
 import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../cycles';
 import {COMPILER_ERRORS_WITH_GUIDES, ERROR_DETAILS_PAGE_BASE_URL, ErrorCode, ngErrorCode} from '../../diagnostics';
 import {checkForPrivateExports, ReferenceGraph} from '../../entry_point';
@@ -692,7 +693,16 @@ export class NgCompiler {
     }
     before.push(ivySwitchTransform);
 
-    return {transformers: {before, afterDeclarations} as ts.CustomTransformers};
+    const after: ts.TransformerFactory<ts.SourceFile>[] = [];
+    if (this.options.transformAsyncAwaitForZoneJS) {
+      if (this.options.target && this.options.target < ts.ScriptTarget.ES2017) {
+        throw new Error(
+            'The Angular compiler option "transformAsyncAwaitForZoneJS" has no effect if the "target" is below ES2017.');
+      }
+      after.push(createAsyncTransform());
+    }
+
+    return {transformers: {before, after, afterDeclarations} as ts.CustomTransformers};
   }
 
   /**
