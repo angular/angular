@@ -1,11 +1,27 @@
 """Implementation of the `browser_archive` rule."""
 
 def _browser_archive_impl(ctx):
-    ctx.report_progress("Downloading browser archive from: %s" % ctx.attr.url)
-    ctx.download_and_extract(
-        url = ctx.attr.url,
-        sha256 = ctx.attr.sha256,
-    )
+    url = ctx.attr.url
+    sha256 = ctx.attr.sha256
+
+    # If the URL resolves to a `.dmg` file, then we need to convert the file
+    # to a zip so that we can extract the actual binaries. We use the `convert_dmg`
+    # script provided by the webtesting Bazel rules.
+    if url.endswith(".dmg"):
+        download_file_name = "_download_file_%s.dmg" % ctx.attr.name
+        result_zip_name = "_converted_file_%s.zip" % ctx.attr.name
+
+        ctx.download(url, download_file_name, sha256)
+        ctx.execute([ctx.path(Label("@io_bazel_rules_webtesting//web/internal:convert_dmg.sh")), download_file_name, result_zip_name])
+        ctx.extract(result_zip_name)
+
+        ctx.delete(result_zip_name)
+        ctx.delete(download_file_name)
+    else:
+        ctx.download_and_extract(
+            url = url,
+            sha256 = sha256,
+        )
 
     # The browser archive has been downloaded and extracted. We now generate a repository
     # `BUILD.bazel` file that exposes the archive files, together with the specified
