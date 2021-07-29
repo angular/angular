@@ -469,15 +469,11 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
 
   /** Toggles a single CSS class or an array of classes on an element. */
   private _toggleClasses(element: HTMLElement, cssClasses: string | string[], isAdd: boolean) {
-    const classList = element.classList;
+    const classes = coerceArray(cssClasses || []).filter(c => !!c);
 
-    coerceArray(cssClasses).forEach(cssClass => {
-      // We can't do a spread here, because IE doesn't support setting multiple classes.
-      // Also trying to add an empty string to a DOMTokenList will throw.
-      if (cssClass) {
-        isAdd ? classList.add(cssClass) : classList.remove(cssClass);
-      }
-    });
+    if (classes.length) {
+      isAdd ? element.classList.add(...classes) : element.classList.remove(...classes);
+    }
   }
 
   /** Detaches the overlay content next time the zone stabilizes. */

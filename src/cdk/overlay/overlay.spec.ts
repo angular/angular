@@ -451,8 +451,17 @@ describe('Overlay', () => {
     const overlayRef = overlay.create();
     overlayRef.attach(componentPortal);
 
+    // Empty string
     expect(() => overlayRef.addPanelClass('')).not.toThrow();
     expect(() => overlayRef.removePanelClass('')).not.toThrow();
+
+    // Empty array
+    expect(() => overlayRef.addPanelClass([])).not.toThrow();
+    expect(() => overlayRef.removePanelClass([])).not.toThrow();
+
+    // Array containing only the empty string
+    expect(() => overlayRef.addPanelClass([''])).not.toThrow();
+    expect(() => overlayRef.removePanelClass([''])).not.toThrow();
   });
 
   describe('positioning', () => {

@@ -106,11 +106,7 @@ export class ConnectedOverlayDemo {
     const box = document.querySelector<HTMLElement>('.cdk-overlay-connected-position-bounding-box');
 
     if (box) {
-      if (showBoundingBox) {
-        box.classList.add('demo-bounding-box-visible');
-      } else {
-        box.classList.remove('demo-bounding-box-visible');
-      }
+      box.classList.toggle('demo-bounding-box-visible', showBoundingBox);
     }
   }
 }
