@@ -6,36 +6,37 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  Component,
-  ComponentRef,
-  EmbeddedViewRef,
-  ViewChild,
-  OnDestroy,
-  ElementRef,
-  ChangeDetectionStrategy,
-  ViewEncapsulation,
-  ChangeDetectorRef,
-  EventEmitter,
-  Inject,
-  Optional,
-  NgZone,
-} from '@angular/core';
 import {AnimationEvent} from '@angular/animations';
+import {FocusTrap, FocusTrapFactory, InteractivityChecker} from '@angular/cdk/a11y';
+import {coerceArray} from '@angular/cdk/coercion';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
+import {_getFocusedElementPierceShadowDom} from '@angular/cdk/platform';
 import {
   BasePortalOutlet,
-  ComponentPortal,
-  TemplatePortal,
   CdkPortalOutlet,
+  ComponentPortal,
   DomPortal,
+  TemplatePortal,
 } from '@angular/cdk/portal';
-import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
-import {MatBottomSheetConfig} from './bottom-sheet-config';
-import {matBottomSheetAnimations} from './bottom-sheet-animations';
-import {Subscription} from 'rxjs';
 import {DOCUMENT} from '@angular/common';
-import {FocusTrap, FocusTrapFactory, InteractivityChecker} from '@angular/cdk/a11y';
-import {_getFocusedElementPierceShadowDom} from '@angular/cdk/platform';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ComponentRef,
+  ElementRef,
+  EmbeddedViewRef,
+  EventEmitter,
+  Inject,
+  NgZone,
+  OnDestroy,
+  Optional,
+  ViewChild,
+  ViewEncapsulation,
+} from '@angular/core';
+import {Subscription} from 'rxjs';
+import {matBottomSheetAnimations} from './bottom-sheet-animations';
+import {MatBottomSheetConfig} from './bottom-sheet-config';
 
 // TODO(crisbeto): consolidate some logic between this, MatDialog and MatSnackBar
 
@@ -178,8 +179,7 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
   }
 
   private _toggleClass(cssClass: string, add: boolean) {
-    const classList = this._elementRef.nativeElement.classList;
-    add ? classList.add(cssClass) : classList.remove(cssClass);
+    this._elementRef.nativeElement.classList.toggle(cssClass, add);
   }
 
   private _validatePortalAttached() {
@@ -190,14 +190,7 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
 
   private _setPanelClass() {
     const element: HTMLElement = this._elementRef.nativeElement;
-    const panelClass = this.bottomSheetConfig.panelClass;
-
-    if (Array.isArray(panelClass)) {
-      // Note that we can't use a spread here, because IE doesn't support multiple arguments.
-      panelClass.forEach(cssClass => element.classList.add(cssClass));
-    } else if (panelClass) {
-      element.classList.add(panelClass);
-    }
+    element.classList.add(...coerceArray(this.bottomSheetConfig.panelClass || []));
   }
 
   /**

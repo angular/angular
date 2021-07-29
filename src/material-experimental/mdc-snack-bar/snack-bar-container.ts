@@ -204,8 +204,7 @@ export class MatSnackBarContainer extends BasePortalOutlet
   }
 
   private _setClass(cssClass: string, active: boolean) {
-    const classList = this._elementRef.nativeElement.classList;
-    active ? classList.add(cssClass) : classList.remove(cssClass);
+    this._elementRef.nativeElement.classList.toggle(cssClass, active);
   }
 
   /** Applies the user-configured CSS classes to the snack bar. */
