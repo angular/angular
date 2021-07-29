@@ -47,3 +47,20 @@ mat-row.mat-mdc-row, mat-header-row.mat-mdc-header-row, mat-footer-row.mat-mdc-f
 .mat-mdc-table .mat-mdc-footer-row:hover {
   background-color: inherit;
 }
+
+// Flex rows should not set a definite height, but instead stretch to the height of their
+// children. Otherwise, the cells grow larger than the row and the layout breaks.
+.mat-mdc-table mat-header-row.mat-mdc-header-row,
+.mat-mdc-table mat-row.mat-mdc-row,
+.mat-mdc-table mat-footer-row.mat-mdc-footer-cell {
+  height: unset;
+}
+
+// Flex cells should stretch to the height of their parent. This was okay for the legacy
+// table since the cells were centered and the borders displayed on the rows, but the MDC
+// version displays borders on the cells and do not correctly line up with the row bottom.
+mat-header-cell.mat-mdc-header-cell,
+mat-cell.mat-mdc-cell,
+mat-footer-cell.mat-mdc-footer-cell {
+  align-self: stretch;
+}

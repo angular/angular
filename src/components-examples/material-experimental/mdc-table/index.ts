@@ -55,6 +55,7 @@ import {
 import {
   TableGeneratedColumnsExample
 } from './table-generated-columns/table-generated-columns-example';
+import {TableFlexLargeRowExample} from './table-flex-large-row/table-flex-large-row-example';
 
 export {
   TableBasicExample,
@@ -65,6 +66,7 @@ export {
   TableExpandableRowsExample,
   TableFilteringExample,
   TableFlexBasicExample,
+  TableFlexLargeRowExample,
   TableFooterRowExample,
   TableGeneratedColumnsExample,
   TableHarnessExample,
@@ -99,6 +101,7 @@ const EXAMPLES = [
   TableExpandableRowsExample,
   TableFilteringExample,
   TableFlexBasicExample,
+  TableFlexLargeRowExample,
   TableFooterRowExample,
   TableGeneratedColumnsExample,
   TableHarnessExample,
