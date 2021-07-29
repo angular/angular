@@ -133,7 +133,6 @@
     "setters-after-getters": true,
     "ng-on-changes-property-access": true,
     "require-breaking-change-version": true,
-    "class-list-signatures": true,
     "no-nested-ternary": true,
     "prefer-const-enum": true,
     "no-lifecycle-invocation": [true, "**/!(*.spec).ts"],
