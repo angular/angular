@@ -201,8 +201,7 @@ export class MatSnackBar implements OnDestroy {
     this._breakpointObserver.observe(Breakpoints.HandsetPortrait).pipe(
         takeUntil(overlayRef.detachments())
     ).subscribe(state => {
-      const classList = overlayRef.overlayElement.classList;
-      state.matches ? classList.add(this.handsetCssClass) : classList.remove(this.handsetCssClass);
+      overlayRef.overlayElement.classList.toggle(this.handsetCssClass, state.matches);
     });
 
     if (config.announcementMessage) {
