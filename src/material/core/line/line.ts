@@ -50,8 +50,7 @@ export function setLines(lines: QueryList<unknown>, element: ElementRef<HTMLElem
 
 /** Adds or removes a class from an element. */
 function setClass(element: ElementRef<HTMLElement>, className: string, isAdd: boolean): void {
-  const classList = element.nativeElement.classList;
-  isAdd ? classList.add(className) : classList.remove(className);
+  element.nativeElement.classList.toggle(className, isAdd);
 }
 
 @NgModule({
