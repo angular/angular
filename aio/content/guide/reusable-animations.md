@@ -15,7 +15,7 @@ To create a reusable animation, use the [`animation()`](api/animations/animation
 
 <code-example path="animations/src/app/animations.1.ts" header="src/app/animations.ts" region="animation-const" language="typescript"></code-example>
 
-In the above code snippet, `transAnimation` is made reusable by declaring it as an export variable.
+In the preceding code snippet, `transAnimation` is made reusable by declaring it as an export variable.
 
 <div class="alert is-helpful">
 
@@ -32,7 +32,7 @@ From this point, you can import resuable animation variables in your component c
 
 ## More on Angular animations
 
-You may also be interested in the following:
+You might also be interested in the following:
 
 * [Introduction to Angular animations](guide/animations)
 * [Transition and triggers](guide/transition-and-triggers)

@@ -21,7 +21,7 @@ To enable routing transition animation, do the following:
 3. Define the animation.
 
 
-Let's illustrate a router transition animation by navigating between two routes, *Home* and *About* associated with the `HomeComponent` and `AboutComponent` views respectively. Both of these component views are children of the top-most view, hosted by `AppComponent`. We'll implement a router transition animation that slides in the new view to the right and slides out the old view when the user navigates between the two routes.
+Illustrate a router transition animation by navigating between two routes, *Home* and *About* associated with the `HomeComponent` and `AboutComponent` views respectively. Both of these component views are children of the top-most view, hosted by `AppComponent`. We'll implement a router transition animation that slides in the new view to the right and slides out the old view when the user navigates between the two routes.
 
 </br>
 
@@ -51,15 +51,15 @@ In addition to `path` and `component`, the `data` property of each route defines
 
 <div class="alert is-helpful">
 
-**Note:** The `data` property names that you use can be arbitrary. For example, the name *animation* used in the example above is an arbitrary choice.
+**Note:** The `data` property names that you use can be arbitrary. For example, the name *animation* used in the preceding example is an arbitrary choice.
 
 </div>
 
 ## Router outlet
 
-After configuring the routes, tell the Angular router where to render the views when matched with a route. You can set a router outlet by inserting a `<router-outlet>` container inside the root `AppComponent` template.
+After configuring the routes, tell the Angular router where to render the views when matched with a route. Set a router outlet by inserting a `<router-outlet>` container inside the root `AppComponent` template.
 
-The `<router-outlet>` container has an attribute directive that contains data about active routes and their states, based on the `data` property that we set in the route configuration.
+The `<router-outlet>` container has an attribute directive that contains data about active routes and their states, based on the `data` property that you set in the route configuration.
 
 <code-example path="animations/src/app/app.component.html" header="src/app/app.component.html" region="route-animations-outlet"></code-example>
 
@@ -67,11 +67,11 @@ The `<router-outlet>` container has an attribute directive that contains data ab
 
 <code-example path="animations/src/app/app.component.ts" header="src/app/app.component.ts" region="prepare-router-outlet" language="typescript"></code-example>
 
-Here, the `prepareRoute()` method takes the value of the outlet directive (established through `#outlet="outlet"`) and returns a string value representing the state of the animation based on the custom data of the current active route. You can use this data to control which transition to execute for each route.
+Here, the `prepareRoute()` method takes the value of the outlet directive (established through `#outlet="outlet"`) and returns a string value representing the state of the animation based on the custom data of the current active route. Use this data to control which transition to execute for each route.
 
 ## Animation definition
 
-Animations can be defined directly inside your components. For this example we are defining the animations in a separate file, which allows us to re-use the animations.
+Animations can be defined directly inside your components. For this example you are defining the animations in a separate file, which lets us re-use the animations.
 
 The following code snippet defines a reusable animation named `slideInAnimation`.
 
@@ -105,7 +105,7 @@ During a transition, a new view is inserted directly after the old one and both 
 
 Use the `query()` method to find and animate elements within the current host component. The `query(":enter")` statement returns the view that is being inserted, and `query(":leave")` returns the view that is being removed.
 
-Let's assume that we are routing from the *Home => About*.
+Assume that you are routing from the *Home => About*.
 
 <code-example path="animations/src/app/animations.ts" header="src/app/animations.ts (Continuation from above)" region="query" language="typescript"></code-example>
 
@@ -124,7 +124,7 @@ You now have a basic routable animation that animates routing from one view to a
 
 ## More on Angular animations
 
-You may also be interested in the following:
+You might also be interested in the following:
 
 * [Introduction to Angular animations](guide/animations)
 * [Transition and triggers](guide/transition-and-triggers)
