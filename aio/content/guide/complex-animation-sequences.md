@@ -22,9 +22,9 @@ Functions that control complex animation sequences are as follows:
 
 ## Animate multiple elements using query() and stagger() functions
 
-The `query()` function allows you to find inner elements within the element that is being animated. This function targets specific HTML elements within a parent component and applies animations to each element individually. Angular intelligently handles setup, teardown, and cleanup as it coordinates the elements across the page.
+The `query()` function lets you find inner elements within the element that is being animated. This function targets specific HTML elements within a parent component and applies animations to each element individually. Angular intelligently handles setup, teardown, and cleanup as it coordinates the elements across the page.
 
-The `stagger()` function allows you to define a timing gap between each queried item that is animated and thus animates elements with a delay between them.
+The `stagger()` function lets you define a timing gap between each queried item that is animated and thus animates elements with a delay between them.
 
 The Filter/Stagger tab in the live example shows a list of heroes with an introductory sequence. The entire list of heroes cascades in, with a slight delay from top to bottom.
 
@@ -42,7 +42,7 @@ The following example demonstrates how to use `query()` and `stagger()` function
 
 ## Parallel animation using group() function
 
-You've seen how to add a delay between each successive animation. But you may also want to configure animations that happen in parallel. For example, you may want to animate two CSS properties of the same element but use a different `easing` function for each one. For this, you can use the animation [`group()`](api/animations/group) function.
+You've seen how to add a delay between each successive animation. But you might also want to configure animations that happen in parallel. For example, you might want to animate two CSS properties of the same element but use a different `easing` function for each one. For this, you can use the animation [`group()`](api/animations/group) function.
 
 <div class="alert is-helpful">
 
@@ -55,7 +55,7 @@ In the following example, using groups on both `:enter` and `:leave` allow for t
 
 ## Sequential vs. parallel animations
 
-Complex animations can have many things happening at once. But what if you want to create an animation involving several animations happening one after the other? Earlier we used [`group()`](api/animations/group) to run multiple animations all at the same time, in parallel.
+Complex animations can have many things happening at once. But what if you want to create an animation involving several animations happening one after the other? Earlier you used [`group()`](api/animations/group) to run multiple animations all at the same time, in parallel.
 
 A second function called `sequence()` lets you run those same animations one after the other. Within `sequence()`, the animation steps consist of either `style()` or `animate()` function calls.
 
@@ -64,7 +64,7 @@ A second function called `sequence()` lets you run those same animations one aft
 
 ## Filter animation example
 
-Let's take a look at another animation on the live example page. Under the Filter/Stagger tab, enter some text into the **Search Heroes** text box, such as `Magnet` or `tornado`.
+Take a look at another animation on the live example page. Under the Filter/Stagger tab, enter some text into the **Search Heroes** text box, such as `Magnet` or `tornado`.
 
 The filter works in real time as you type. Elements leave the page as you type each new letter and the filter gets progressively stricter. The heroes list gradually re-enters the page as you delete each letter in the filter box.
 
@@ -92,11 +92,11 @@ For each match:
 
 ## Animation sequence summary
 
-Angular functions for animating multiple elements start with `query()` to find inner elements, for example gathering all images within a `<div>`. The remaining functions, `stagger()`, [`group()`](api/animations/group), and `sequence()`, apply cascades or allow you to control how multiple animation steps are applied.
+Angular functions for animating multiple elements start with `query()` to find inner elements, for example gathering all images within a `<div>`. The remaining functions, `stagger()`, [`group()`](api/animations/group), and `sequence()`, apply cascades or lets you control how multiple animation steps are applied.
 
 ## More on Angular animations
 
-You may also be interested in the following:
+You might also be interested in the following:
 
 * [Introduction to Angular animations](guide/animations)
 * [Transition and triggers](guide/transition-and-triggers)
