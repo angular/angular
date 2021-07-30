@@ -9,3 +9,5 @@ export const materialExperimentalPackage = new BuildPackage('material-experiment
     [cdkPackage, cdkExperimentalPackage, materialPackage]);
 export const momentAdapterPackage = new BuildPackage('material-moment-adapter', [materialPackage]);
 export const luxonAdapterPackage = new BuildPackage('material-luxon-adapter', [materialPackage]);
+export const dateFnsAdapterPackage =
+    new BuildPackage('material-date-fns-adapter', [materialPackage]);

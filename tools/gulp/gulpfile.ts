@@ -7,6 +7,7 @@ import {
   materialPackage,
   momentAdapterPackage,
   luxonAdapterPackage,
+  dateFnsAdapterPackage,
   youTubePlayerPackage
 } from './packages';
 
@@ -17,6 +18,7 @@ createPackageBuildTasks(materialPackage);
 createPackageBuildTasks(materialExperimentalPackage);
 createPackageBuildTasks(momentAdapterPackage);
 createPackageBuildTasks(luxonAdapterPackage);
+createPackageBuildTasks(dateFnsAdapterPackage);
 createPackageBuildTasks(youTubePlayerPackage);
 createPackageBuildTasks(googleMapsPackage);
 

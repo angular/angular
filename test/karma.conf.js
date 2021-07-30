@@ -58,6 +58,10 @@ module.exports = config => {
       {pattern: 'dist/karma-system-config.js', included: true, watched: false},
       {pattern: 'test/karma-test-shim.js', included: true, watched: false},
 
+      // We transpile the date-fns bundles to AMD manually since they only ship esm bundles.
+      {pattern: 'dist/amd_date_fns.js', included: false, watched: false},
+      {pattern: 'dist/amd_date_fns_locales.js', included: false, watched: false},
+
       // Needed for exposing the RxJS operators through the RxJS UMD bundle. This
       // is done for performance reasons since fetching individual files is slow.
       {pattern: 'tools/system-rxjs-operators.js', included: false, watched: false},

@@ -91,6 +91,7 @@
 # Date adapters
 /src/material-moment-adapter/**                    @mmalerba
 /src/material-luxon-adapter/**                     @crisbeto
+/src/material-date-fns-adapter/**                  @crisbeto
 
 # Material experimental package
 /src/material-experimental/*                       @jelbourn

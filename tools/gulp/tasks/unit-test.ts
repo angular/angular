@@ -19,6 +19,22 @@ task(':test:build-system-config', done => {
   done();
 });
 
+/** Compiles the esm bundles from date-fns to AMD so that we can load them in Karma. */
+task(':test:build-date-fns', done => {
+  shelljs.cd(buildConfig.projectDir);
+  const bazelGenfilesDir = shelljs.exec('yarn -s bazel info bazel-genfiles').stdout.trim();
+
+  ['amd_date_fns', 'amd_date_fns_locales'].forEach(target => {
+    const outputPath = join(buildConfig.outputDir, `${target}.js`);
+    const bundlePath = join(bazelGenfilesDir, `src/material-date-fns-adapter/${target}_bundle.js`);
+    shelljs.exec(`yarn -s bazel build //src/material-date-fns-adapter:${target}`);
+    shelljs.cp(bundlePath, outputPath);
+    shelljs.chmod('u+w', outputPath);
+  });
+
+  done();
+});
+
 /** Builds everything that is necessary for karma. */
 task(':test:build', series(
   'clean',
@@ -29,7 +45,9 @@ task(':test:build', series(
   'youtube-player:build-no-bundles',
   'material-moment-adapter:build-no-bundles',
   'material-luxon-adapter:build-no-bundles',
+  'material-date-fns-adapter:build-no-bundles',
   'google-maps:build-no-bundles',
+  ':test:build-date-fns',
   ':test:build-system-config'
 ));
 

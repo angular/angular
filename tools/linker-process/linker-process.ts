@@ -1,5 +1,5 @@
 import {readFileSync, writeFileSync} from 'fs';
-import {join} from 'path';
+import {join, extname} from 'path';
 
 // These imports to `@angular/compiler-cli` need to explicitly specify the `.js` extension as
 // otherwise the Bazel NodeJS module resolution would end up resolving the ESM2015 `.mjs` files.
@@ -81,6 +81,14 @@ function generateAmdModuleMappingFile(mappings: Map<string, string>): string {
 
 /** Processes the given file with the Angular linker plugin. */
 function processFileWithLinker(diskFilePath: string, fileContent: string): string {
+  const fileExtension = extname(diskFilePath);
+
+  // If the input file is not a JavaScript file, do not process it with the linker
+  // Babel plugin and return the original file content.
+  if (fileExtension !== '.js' && fileExtension !== '.mjs') {
+    return fileContent;
+  }
+
   // We run the linker with JIT mode so that the processed Angular declarations could be
   // run within unit tests that rely on JIT information to be available.
   const linkerPlugin = createEs2015LinkerPlugin({fileSystem, logger, linkerJitMode: true});

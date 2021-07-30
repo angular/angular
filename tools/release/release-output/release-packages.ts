@@ -8,4 +8,5 @@ export const releasePackages = [
   'material-experimental',
   'material-moment-adapter',
   'material-luxon-adapter',
+  'material-date-fns-adapter',
 ];

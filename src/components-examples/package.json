@@ -26,7 +26,8 @@
     "@angular/material": "0.0.0-PLACEHOLDER",
     "@angular/material-experimental": "0.0.0-PLACEHOLDER",
     "@angular/material-moment-adapter": "0.0.0-PLACEHOLDER",
-    "@angular/material-luxon-adapter": "0.0.0-PLACEHOLDER"
+    "@angular/material-luxon-adapter": "0.0.0-PLACEHOLDER",
+    "@angular/material-date-fns-adapter": "0.0.0-PLACEHOLDER"
   },
   "dependencies": {
     "tslib": "0.0.0-TSLIB"

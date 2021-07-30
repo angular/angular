@@ -1,0 +1,64 @@
+load("//tools:defaults.bzl", "ng_module", "ng_package", "ng_test_library", "ng_web_test_suite")
+load(":esbuild-amd.bzl", "esbuild_amd")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "material-date-fns-adapter",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    deps = [
+        "//src:dev_mode_types",
+        "//src/material/core",
+        "@npm//@angular/core",
+        "@npm//date-fns",
+    ],
+)
+
+ng_test_library(
+    name = "unit_test_sources",
+    srcs = glob(
+        ["**/*.spec.ts"],
+        exclude = ["**/*.e2e.spec.ts"],
+    ),
+    deps = [
+        ":material-date-fns-adapter",
+        "//src/material/core",
+        "@npm//date-fns",
+    ],
+)
+
+ng_web_test_suite(
+    name = "unit_tests",
+    deps = [
+        ":amd_date_fns",
+        ":amd_date_fns_locales",
+        ":unit_test_sources",
+    ],
+)
+
+esbuild_amd(
+    name = "amd_date_fns",
+    testonly = True,
+    entry_point = "@npm//:node_modules/date-fns/esm/index.js",
+    module_name = "date-fns",
+    deps = ["@npm//date-fns"],
+)
+
+esbuild_amd(
+    name = "amd_date_fns_locales",
+    testonly = True,
+    entry_point = "@npm//:node_modules/date-fns/esm/locale/index.js",
+    module_name = "date-fns/locale",
+    deps = ["@npm//date-fns"],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = ["package.json"],
+    entry_point = ":public-api.ts",
+    tags = ["release-package"],
+    deps = [":material-date-fns-adapter"],
+)

@@ -96,3 +96,7 @@ load(
 )
 
 _dev_infra_browser_repositories()
+
+load("@npm//@bazel/esbuild:esbuild_repositories.bzl", "esbuild_repositories")
+
+esbuild_repositories()

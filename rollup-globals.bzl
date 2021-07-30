@@ -36,6 +36,7 @@ ROLLUP_GLOBALS = {
     "@angular/material-experimental": "ng.materialExperimental",
     "@angular/material-moment-adapter": "ng.materialMomentAdapter",
     "@angular/material-luxon-adapter": "ng.materialLuxonAdapter",
+    "@angular/material-date-fns-adapter": "ng.materialDateFnsAdapter",
     "@angular/youtube-player": "ng.youtubePlayer",
 
     # This UMD module name would not match with anything that MDC provides, but we just
@@ -48,6 +49,7 @@ ROLLUP_GLOBALS = {
     "moment/locale/fr": "moment.locale.fr",
     "moment/locale/ja": "moment.locale.ja",
     "luxon": "luxon",
+    "date-fns": "dateFns",
     "protractor": "protractor",
     "rxjs": "rxjs",
     "rxjs/operators": "rxjs.operators",

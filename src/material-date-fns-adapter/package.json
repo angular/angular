@@ -1,47 +1,33 @@
 {
-  "name": "@angular/material",
+  "name": "@angular/material-date-fns-adapter",
   "version": "0.0.0-PLACEHOLDER",
-  "description": "Angular Material",
+  "description": "Angular Material date-fns Adapter",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/components.git"
   },
-  "keywords": [
-    "angular",
-    "material",
-    "material design",
-    "components"
-  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/angular/components/issues"
   },
   "homepage": "https://github.com/angular/components#readme",
   "peerDependencies": {
-    "@angular/animations": "0.0.0-NG",
-    "@angular/cdk": "0.0.0-PLACEHOLDER",
+    "@angular/material": "0.0.0-PLACEHOLDER",
     "@angular/core": "0.0.0-NG",
-    "@angular/common": "0.0.0-NG",
-    "@angular/forms": "0.0.0-NG",
-    "rxjs": "0.0.0-RXJS"
+    "date-fns": "^2.23.0"
   },
   "dependencies": {
     "tslib": "0.0.0-TSLIB"
   },
-  "schematics": "./schematics/collection.json",
   "ng-update": {
-    "migrations": "./schematics/migration.json",
     "packageGroup": [
       "@angular/material",
       "@angular/cdk",
-      "@angular/material-moment-adapter",
-      "@angular/material-luxon-adapter",
       "@angular/material-date-fns-adapter"
     ]
   },
   "sideEffects": false,
-  "publishConfig":{
+  "publishConfig": {
     "registry":"https://wombat-dressing-room.appspot.com"
   }
 }
-

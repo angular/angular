@@ -23,6 +23,7 @@ PACKAGES=(
   material-experimental
   material-moment-adapter
   # material-luxon-adapter TODO(crisbeto): enable this once we have a builds repo
+  # material-date-fns-adapter TODO(crisbeto): enable this once we have a builds repo
   google-maps
   youtube-player
 )

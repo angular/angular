@@ -325,6 +325,29 @@ The easiest way to ensure this is to import one of the provided date modules:
   </tbody>
 </table>
 
+`MatDateFnsModule` (installed via `@angular/material-date-fns-adapter`)
+
+<table>
+  <tbody>
+  <tr>
+    <th align="left" scope="row">Date type</th>
+    <td><code>Date</code></td>
+  </tr>
+  <tr>
+    <th align="left" scope="row">Supported locales</th>
+    <td><a href="https://github.com/date-fns/date-fns/tree/master/src/locale/">See project for details</a></td>
+  </tr>
+  <tr>
+    <th align="left" scope="row">Dependencies</th>
+    <td><a href="https://date-fns.org/">date-fns</a></td>
+  </tr>
+  <tr>
+    <th align="left" scope="row">Import from</th>
+    <td><code>@angular/material-date-fns-adapter</code></td>
+  </tr>
+  </tbody>
+</table>
+
 `MatLuxonDateModule` (installed via `@angular/material-luxon-adapter`)
 
 <table>

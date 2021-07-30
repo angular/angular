@@ -95,7 +95,7 @@ export type CanUpdateErrorStateCtor = Constructor<CanUpdateErrorState> & Abstrac
 export function _countGroupLabelsBeforeOption(optionIndex: number, options: QueryList<MatOption>, optionGroups: QueryList<MatOptgroup>): number;
 
 // @public
-export abstract class DateAdapter<D> {
+export abstract class DateAdapter<D, L = any> {
     abstract addCalendarDays(date: D, days: number): D;
     abstract addCalendarMonths(date: D, months: number): D;
     abstract addCalendarYears(date: D, years: number): D;
@@ -119,13 +119,13 @@ export abstract class DateAdapter<D> {
     abstract invalid(): D;
     abstract isDateInstance(obj: any): boolean;
     abstract isValid(date: D): boolean;
-    protected locale: any;
+    protected locale: L;
     readonly localeChanges: Observable<void>;
     // (undocumented)
     protected readonly _localeChanges: Subject<void>;
     abstract parse(value: any, parseFormat: any): D | null;
     sameDate(first: D | null, second: D | null): boolean;
-    setLocale(locale: any): void;
+    setLocale(locale: L): void;
     abstract today(): D;
     abstract toIso8601(date: D): string;
 }
@@ -181,10 +181,10 @@ export type HasTabIndexCtor = Constructor<HasTabIndex> & AbstractConstructor<Has
 export const MAT_DATE_FORMATS: InjectionToken<MatDateFormats>;
 
 // @public
-export const MAT_DATE_LOCALE: InjectionToken<string>;
+export const MAT_DATE_LOCALE: InjectionToken<{}>;
 
 // @public
-export function MAT_DATE_LOCALE_FACTORY(): string;
+export function MAT_DATE_LOCALE_FACTORY(): {};
 
 // @public (undocumented)
 export const MAT_NATIVE_DATE_FORMATS: MatDateFormats;
