@@ -19,7 +19,6 @@ const desiredCapabilities = {
   /*ios84: {browserName: 'iphone', platform: 'OS X 10.10', version: '8.4'},*/
   ios10: {browserName: 'iphone', platform: 'OS X 10.10', version: '10.3'},
   ios11: {browserName: 'iphone', platform: 'OS X 10.12', version: '11.2'},
-  ie11: {browserName: 'internet explorer', platform: 'Windows 10', version: '11'},
   // andriod44: {browserName: 'android', platform: 'Linux', version: '4.4'},
   android51: {browserName: 'android', platform: 'Linux', version: '5.1'},
 };

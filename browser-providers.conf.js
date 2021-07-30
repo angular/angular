@@ -27,7 +27,6 @@ var CIconfiguration = {
   // Currently deactivated due to https://github.com/angular/angular/issues/7560
   'FirefoxBeta': {unitTest: {target: null, required: true}, e2e: {target: null, required: false}},
   'FirefoxDev': {unitTest: {target: null, required: true}, e2e: {target: null, required: true}},
-  'IE11': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Edge': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'Android7': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Android8': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
@@ -88,8 +87,6 @@ var customLaunchers = {
     version: '13.0',
     device: 'iPhone 11 Simulator'
   },
-  'SL_IE11':
-      {base: 'SauceLabs', browserName: 'internet explorer', platform: 'Windows 8.1', version: '11'},
   'SL_EDGE': {
     base: 'SauceLabs',
     browserName: 'MicrosoftEdge',
@@ -127,13 +124,6 @@ var customLaunchers = {
   'BS_CHROME': {base: 'BrowserStack', browser: 'chrome', os: 'OS X', os_version: 'Yosemite'},
   'BS_FIREFOX': {base: 'BrowserStack', browser: 'firefox', os: 'Windows', os_version: '10'},
   'BS_SAFARI10': {base: 'BrowserStack', browser: 'safari', os: 'OS X', os_version: 'Sierra'},
-  'BS_IE11': {
-    base: 'BrowserStack',
-    browser: 'ie',
-    browser_version: '11.0',
-    os: 'Windows',
-    os_version: '10'
-  },
   'BS_EDGE': {base: 'BrowserStack', browser: 'edge', os: 'Windows', os_version: '10'},
   'BS_WINDOWSPHONE':
       {base: 'BrowserStack', device: 'Nokia Lumia 930', os: 'winphone', os_version: '8.1'},
@@ -144,13 +134,10 @@ var sauceAliases = {
   'ALL': Object.keys(customLaunchers).filter(function(item) {
     return customLaunchers[item].base == 'SauceLabs';
   }),
-  'DESKTOP': [
-    'SL_CHROME', 'SL_FIREFOX', 'SL_IE11', 'SL_EDGE', 'SL_SAFARI12', 'SL_SAFARI13', 'SL_FIREFOXESR'
-  ],
+  'DESKTOP': ['SL_CHROME', 'SL_FIREFOX', 'SL_EDGE', 'SL_SAFARI12', 'SL_SAFARI13', 'SL_FIREFOXESR'],
   'MOBILE': ['SL_ANDROID7', 'SL_ANDROID8', 'SL_ANDROID9', 'SL_ANDROID10', 'SL_IOS12', 'SL_IOS13'],
   'ANDROID': ['SL_ANDROID7', 'SL_ANDROID8', 'SL_ANDROID9', 'SL_ANDROID10'],
   'FIREFOX': ['SL_FIREFOXESR'],
-  'IE': ['SL_IE11'],
   'IOS': ['SL_IOS12', 'SL_IOS13'],
   'SAFARI': ['SL_SAFARI12', 'SL_SAFARI13'],
   'BETA': ['SL_CHROMEBETA', 'SL_FIREFOXBETA'],
@@ -166,12 +153,10 @@ var browserstackAliases = {
   'DESKTOP': [
     'BS_CHROME',
     'BS_FIREFOX',
-    'BS_IE11',
     'BS_EDGE',
   ],
   'MOBILE': ['BS_ANDROID7', 'BS_WINDOWSPHONE'],
   'ANDROID': ['BS_ANDROID7'],
-  'IE': ['BS_IE11'],
   'IOS': [],
   'SAFARI': [],
   'CI_REQUIRED': buildConfiguration('unitTest', 'BS', true),
