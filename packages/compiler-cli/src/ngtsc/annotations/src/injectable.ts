@@ -280,10 +280,10 @@ function getDep(dep: ts.Expression, reflector: ReflectionHost): R3DependencyMeta
   };
 
   function maybeUpdateDecorator(
-      dec: ts.Identifier, reflector: ReflectionHost, token?: ts.Expression): void {
+      dec: ts.Identifier, reflector: ReflectionHost, token?: ts.Expression): boolean {
     const source = reflector.getImportOfIdentifier(dec);
     if (source === null || source.from !== '@angular/core') {
-      return;
+      return false;
     }
     switch (source.name) {
       case 'Inject':
@@ -300,16 +300,23 @@ function getDep(dep: ts.Expression, reflector: ReflectionHost): R3DependencyMeta
       case 'Self':
         meta.self = true;
         break;
+      default:
+        return false;
     }
+    return true;
   }
 
   if (ts.isArrayLiteralExpression(dep)) {
     dep.elements.forEach(el => {
+      let isDecorator = false;
       if (ts.isIdentifier(el)) {
-        maybeUpdateDecorator(el, reflector);
+        isDecorator = maybeUpdateDecorator(el, reflector);
       } else if (ts.isNewExpression(el) && ts.isIdentifier(el.expression)) {
         const token = el.arguments && el.arguments.length > 0 && el.arguments[0] || undefined;
-        maybeUpdateDecorator(el.expression, reflector, token);
+        isDecorator = maybeUpdateDecorator(el.expression, reflector, token);
+      }
+      if (!isDecorator) {
+        meta.token = new WrappedNodeExpr(el);
       }
     });
   }

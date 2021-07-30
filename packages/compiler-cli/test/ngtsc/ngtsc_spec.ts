@@ -202,6 +202,40 @@ function allTests(os: string) {
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;');
     });
 
+    it('should compile Injectables with providedIn and factory with deps with array literal tokens',
+       () => {
+         env.write('test.ts', `
+        import {Injectable, Optional, Self} from '@angular/core';
+
+        @Injectable()
+        export class Dep {}
+
+        @Injectable({
+          providedIn: 'root',
+          useFactory: (dep: Dep) => new Service(dep),
+          deps: [[new Optional(), new Self(), Dep]],
+        })
+        export class Service {
+          constructor(dep: Dep) {}
+        }
+    `);
+
+         env.driveMain();
+
+         const jsContents = env.getContents('test.js');
+         expect(jsContents).toContain('Service.ɵprov =');
+         expect(jsContents)
+             .toContain('factory: function Service_Factory(t) { var r = null; if (t) {');
+         expect(jsContents).toContain('return new (t || Service)(i0.ɵɵinject(Dep));');
+         expect(jsContents)
+             .toContain('r = (function (dep) { return new Service(dep); })(i0.ɵɵinject(Dep, 10));');
+         expect(jsContents).toContain(`return r; }, providedIn: 'root' });`);
+         expect(jsContents).not.toContain('__decorate');
+         const dtsContents = env.getContents('test.d.ts');
+         expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Service>;');
+         expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;');
+       });
+
     it('should compile Injectables with providedIn using forwardRef without errors', () => {
       env.write('test.ts', `
         import {Injectable, NgModule, forwardRef} from '@angular/core';
