@@ -818,7 +818,40 @@ describe('completions', () => {
       expectReplacementText(completions, templateFile.contents, '42');
     });
   });
+
+  describe('auto-apply optional chaining', () => {
+    it('should be able to complete on nullable symbol', () => {
+      const {templateFile} = setup('{{article.title}}', `article?: { title: string };`);
+      templateFile.moveCursorToText('{{article.title¦}}');
+      const completions = templateFile.getCompletionsAtPosition({
+        includeCompletionsWithInsertText: true,
+        includeAutomaticOptionalChainCompletions: true,
+      });
+      expectContainInsertText(completions, ts.ScriptElementKind.memberVariableElement, ['?.title']);
+      expectReplacementText(completions, templateFile.contents, '.title');
+    });
+
+    it('should be able to complete on NonNullable symbol', () => {
+      const {templateFile} = setup('{{article.title}}', `article: { title: string };`);
+      templateFile.moveCursorToText('{{article.title¦}}');
+      const completions = templateFile.getCompletionsAtPosition({
+        includeCompletionsWithInsertText: true,
+        includeAutomaticOptionalChainCompletions: true,
+      });
+      expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title']);
+      expectReplacementText(completions, templateFile.contents, 'title');
+    });
+  });
 });
+
+function expectContainInsertText(
+    completions: ts.CompletionInfo|undefined, kind: ts.ScriptElementKind|DisplayInfoKind,
+    insertTexts: string[]) {
+  expect(completions).toBeDefined();
+  for (const insertText of insertTexts) {
+    expect(completions!.entries).toContain(jasmine.objectContaining({insertText, kind} as any));
+  }
+}
 
 function expectContain(
     completions: ts.CompletionInfo|undefined, kind: ts.ScriptElementKind|DisplayInfoKind,
