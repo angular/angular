@@ -50,7 +50,7 @@ module.exports = function(config) {
 
       // Including systemjs because it defines `__eval`, which produces correct stack traces.
       'test-events.js',
-      'third_party/shims_for_IE.js',
+      'third_party/shims_for_internal_tests.js',
       'node_modules/systemjs/dist/system.src.js',
 
       // Serve polyfills necessary for testing the `elements` package.

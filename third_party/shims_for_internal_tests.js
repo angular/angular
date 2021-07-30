@@ -1,4 +1,4 @@
-// This file is used for internal testing with Karma only, it should not be used in real applications.
+// IMPORTANT: this file is used for internal testing with Karma only, it **must not** be used in real applications.
 
 // Intl (all Safari, all Android)
 /*! @source https://github.com/andyearnshaw/Intl.js */

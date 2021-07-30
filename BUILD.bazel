@@ -24,7 +24,7 @@ filegroup(
         "//packages/zone.js/bundles:zone-testing.umd.js",
         "//packages/zone.js/bundles:task-tracking.umd.js",
         "//:test-events.js",
-        "//:third_party/shims_for_IE.js",
+        "//:third_party/shims_for_internal_tests.js",
         # Including systemjs because it defines `__eval`, which produces correct stack traces.
         "@npm//:node_modules/systemjs/dist/system.src.js",
         "@npm//:node_modules/reflect-metadata/Reflect.js",
