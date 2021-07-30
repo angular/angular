@@ -7,7 +7,13 @@
  */
 
 import {AnimationEvent} from '@angular/animations';
-import {FocusMonitor, FocusOrigin, FocusTrap, FocusTrapFactory} from '@angular/cdk/a11y';
+import {
+  FocusMonitor,
+  FocusOrigin,
+  FocusTrap,
+  FocusTrapFactory,
+  InteractivityChecker
+} from '@angular/cdk/a11y';
 import {_getFocusedElementPierceShadowDom} from '@angular/cdk/platform';
 import {
   BasePortalOutlet,
@@ -27,6 +33,7 @@ import {
   EmbeddedViewRef,
   EventEmitter,
   Inject,
+  NgZone,
   Optional,
   ViewChild,
   ViewEncapsulation,
@@ -89,6 +96,8 @@ export abstract class _MatDialogContainerBase extends BasePortalOutlet {
     @Optional() @Inject(DOCUMENT) _document: any,
     /** The dialog configuration. */
     public _config: MatDialogConfig,
+    private readonly _interactivityChecker: InteractivityChecker,
+    private readonly _ngZone: NgZone,
     private _focusMonitor?: FocusMonitor) {
 
     super();
@@ -151,28 +160,72 @@ export abstract class _MatDialogContainerBase extends BasePortalOutlet {
   /** Moves focus back into the dialog if it was moved out. */
   _recaptureFocus() {
     if (!this._containsFocus()) {
-      const focusContainer = !this._config.autoFocus || !this._focusTrap.focusInitialElement();
-
-      if (focusContainer) {
-        this._elementRef.nativeElement.focus();
-      }
+      this._trapFocus();
     }
   }
 
-  /** Moves the focus inside the focus trap. */
+  /**
+   * Focuses the provided element. If the element is not focusable, it will add a tabIndex
+   * attribute to forcefully focus it. The attribute is removed after focus is moved.
+   * @param element The element to focus.
+   */
+  private _forceFocus(element: HTMLElement, options?: FocusOptions) {
+    if (!this._interactivityChecker.isFocusable(element)) {
+      element.tabIndex = -1;
+      // The tabindex attribute should be removed to avoid navigating to that element again
+      this._ngZone.runOutsideAngular(() => {
+        element.addEventListener('blur', () => element.removeAttribute('tabindex'));
+        element.addEventListener('mousedown', () => element.removeAttribute('tabindex'));
+      });
+    }
+    element.focus(options);
+  }
+
+  /**
+   * Focuses the first element that matches the given selector within the focus trap.
+   * @param selector The CSS selector for the element to set focus to.
+   */
+  private _focusByCssSelector(selector: string, options?: FocusOptions) {
+    let elementToFocus =
+      this._elementRef.nativeElement.querySelector(selector) as HTMLElement | null;
+    if (elementToFocus) {
+      this._forceFocus(elementToFocus, options);
+    }
+  }
+
+  /**
+   * Moves the focus inside the focus trap. When autoFocus is not set to 'dialog', if focus
+   * cannot be moved then focus will go to the dialog container.
+   */
   protected _trapFocus() {
-    // If we were to attempt to focus immediately, then the content of the dialog would not yet be
+    const element = this._elementRef.nativeElement;
+    // If were to attempt to focus immediately, then the content of the dialog would not yet be
     // ready in instances where change detection has to run first. To deal with this, we simply
-    // wait for the microtask queue to be empty.
-    if (this._config.autoFocus) {
-      this._focusTrap.focusInitialElementWhenReady();
-    } else if (!this._containsFocus()) {
-      // Otherwise ensure that focus is on the dialog container. It's possible that a different
-      // component tried to move focus while the open animation was running. See:
-      // https://github.com/angular/components/issues/16215. Note that we only want to do this
-      // if the focus isn't inside the dialog already, because it's possible that the consumer
-      // turned off `autoFocus` in order to move focus themselves.
-      this._elementRef.nativeElement.focus();
+    // wait for the microtask queue to be empty when setting focus when autoFocus isn't set to
+    // dialog. If the element inside the dialog can't be focused, then the container is focused
+    // so the user can't tab into other elements behind it.
+    switch (this._config.autoFocus) {
+      case false:
+      case 'dialog':
+        // Ensure that focus is on the dialog container. It's possible that a different
+        // component tried to move focus while the open animation was running. See:
+        // https://github.com/angular/components/issues/16215. Note that we only want to do this
+        // if the focus isn't inside the dialog already, because it's possible that the consumer
+        // turned off `autoFocus` in order to move focus themselves.
+        if (!this._containsFocus()) {
+          element.focus();
+        }
+        break;
+      case true:
+      case 'first-tabbable':
+        this._focusTrap.focusInitialElementWhenReady();
+        break;
+      case 'first-heading':
+        this._focusByCssSelector('h1, h2, h3, h4, h5, h6, [role="heading"]');
+        break;
+      default:
+        this._focusByCssSelector(this._config.autoFocus!);
+        break;
     }
   }
 

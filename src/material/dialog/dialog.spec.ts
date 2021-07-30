@@ -998,7 +998,8 @@ describe('MatDialog', () => {
       expect(overlayContainerElement.querySelector('mat-dialog-container')).toBeFalsy();
     }));
 
-    it('should recapture focus when clicking on the backdrop', fakeAsync(() => {
+    it('should recapture focus to the first tabbable element when clicking on the backdrop with ' +
+      'autoFocus set to "first-tabbable" (the default)', fakeAsync(() => {
       dialog.open(PizzaMsg, {
         disableClose: true,
         viewContainerRef: testViewContainerRef
@@ -1022,11 +1023,11 @@ describe('MatDialog', () => {
     }));
 
     it('should recapture focus to the container when clicking on the backdrop with ' +
-      'autoFocus disabled', fakeAsync(() => {
+      'autoFocus set to "dialog"', fakeAsync(() => {
         dialog.open(PizzaMsg, {
           disableClose: true,
           viewContainerRef: testViewContainerRef,
-          autoFocus: false
+          autoFocus: 'dialog'
         });
 
         viewContainerFixture.detectChanges();
@@ -1048,6 +1049,61 @@ describe('MatDialog', () => {
             .toBe(container, 'Expected container to stay focused after click');
       }));
 
+      it('should recapture focus to the first header when clicking on the backdrop with ' +
+      'autoFocus set to "first-heading"', fakeAsync(() => {
+        dialog.open(ContentElementDialog, {
+          disableClose: true,
+          viewContainerRef: testViewContainerRef,
+          autoFocus: 'first-heading'
+        });
+
+        viewContainerFixture.detectChanges();
+        flushMicrotasks();
+
+        let backdrop =
+          overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+        let firstHeader = overlayContainerElement
+          .querySelector('.mat-dialog-title[tabindex="-1"]') as HTMLInputElement;
+
+        expect(document.activeElement)
+          .toBe(firstHeader, 'Expected first header to be focused on open');
+
+        firstHeader.blur(); // Programmatic clicks might not move focus so we simulate it.
+        backdrop.click();
+        viewContainerFixture.detectChanges();
+        flush();
+
+        expect(document.activeElement)
+            .toBe(firstHeader, 'Expected first header to stay focused after click');
+      }));
+
+      it('should recapture focus to the first element that matches the css selector when ' +
+      'clicking on the backdrop with autoFocus set to a css selector', fakeAsync(() => {
+        dialog.open(ContentElementDialog, {
+          disableClose: true,
+          viewContainerRef: testViewContainerRef,
+          autoFocus: 'button'
+        });
+
+        viewContainerFixture.detectChanges();
+        flushMicrotasks();
+
+        let backdrop =
+          overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+        let firstButton =
+          overlayContainerElement.querySelector('[mat-dialog-close]') as HTMLInputElement;
+
+        expect(document.activeElement)
+          .toBe(firstButton, 'Expected first button to be focused on open');
+
+        firstButton.blur(); // Programmatic clicks might not move focus so we simulate it.
+        backdrop.click();
+        viewContainerFixture.detectChanges();
+        flush();
+
+        expect(document.activeElement)
+            .toBe(firstButton, 'Expected first button to stay focused after click');
+      }));
   });
 
   describe('hasBackdrop option', () => {
@@ -1116,7 +1172,8 @@ describe('MatDialog', () => {
     beforeEach(() => document.body.appendChild(overlayContainerElement));
     afterEach(() => document.body.removeChild(overlayContainerElement));
 
-    it('should focus the first tabbable element of the dialog on open', fakeAsync(() => {
+    it('should focus the first tabbable element of the dialog on open (the default)',
+      fakeAsync(() => {
       dialog.open(PizzaMsg, {
         viewContainerRef: testViewContainerRef
       });
@@ -1128,16 +1185,52 @@ describe('MatDialog', () => {
           .toBe('INPUT', 'Expected first tabbable element (input) in the dialog to be focused.');
     }));
 
-    it('should allow disabling focus of the first tabbable element', fakeAsync(() => {
+    it('should focus the dialog element on open', fakeAsync(() => {
       dialog.open(PizzaMsg, {
         viewContainerRef: testViewContainerRef,
-        autoFocus: false
+        autoFocus: 'dialog'
       });
 
       viewContainerFixture.detectChanges();
       flushMicrotasks();
 
-      expect(document.activeElement!.tagName).not.toBe('INPUT');
+      let container =
+        overlayContainerElement.querySelector('.mat-dialog-container') as HTMLInputElement;
+
+      expect(document.activeElement).toBe(container, 'Expected container to be focused on open');
+    }));
+
+    it('should focus the first header element on open', fakeAsync(() => {
+      dialog.open(ContentElementDialog, {
+        viewContainerRef: testViewContainerRef,
+        autoFocus: 'first-heading'
+      });
+
+      viewContainerFixture.detectChanges();
+      flushMicrotasks();
+
+      let firstHeader =
+        overlayContainerElement.querySelector('h1[tabindex="-1"]') as HTMLInputElement;
+
+      expect(document.activeElement)
+        .toBe(firstHeader, 'Expected first header to be focused on open');
+    }));
+
+    it('should focus the first element that matches the css selector from autoFocus on open',
+      fakeAsync(() => {
+      dialog.open(PizzaMsg, {
+        viewContainerRef: testViewContainerRef,
+        autoFocus: 'p'
+      });
+
+      viewContainerFixture.detectChanges();
+      flushMicrotasks();
+
+      let firstParagraph =
+        overlayContainerElement.querySelector('p[tabindex="-1"]') as HTMLInputElement;
+
+      expect(document.activeElement)
+        .toBe(firstParagraph, 'Expected first paragraph to be focused on open');
     }));
 
     it('should attach the focus trap even if automatic focus is disabled', fakeAsync(() => {

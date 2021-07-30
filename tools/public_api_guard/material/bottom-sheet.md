@@ -25,6 +25,8 @@ import * as i3 from '@angular/material/core';
 import * as i4 from '@angular/cdk/portal';
 import { InjectionToken } from '@angular/core';
 import { Injector } from '@angular/core';
+import { InteractivityChecker } from '@angular/cdk/a11y';
+import { NgZone } from '@angular/core';
 import { Observable } from 'rxjs';
 import { OnDestroy } from '@angular/core';
 import { Overlay } from '@angular/cdk/overlay';
@@ -33,6 +35,9 @@ import { ScrollStrategy } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { TemplateRef } from '@angular/core';
 import { ViewContainerRef } from '@angular/core';
+
+// @public
+export type AutoFocusTarget = 'dialog' | 'first-tabbable' | 'first-heading';
 
 // @public
 export const MAT_BOTTOM_SHEET_DATA: InjectionToken<any>;
@@ -64,7 +69,7 @@ export const matBottomSheetAnimations: {
 // @public
 export class MatBottomSheetConfig<D = any> {
     ariaLabel?: string | null;
-    autoFocus?: boolean;
+    autoFocus?: AutoFocusTarget | string | boolean;
     backdropClass?: string;
     closeOnNavigation?: boolean;
     data?: D | null;
@@ -79,7 +84,7 @@ export class MatBottomSheetConfig<D = any> {
 
 // @public
 export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestroy {
-    constructor(_elementRef: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, _focusTrapFactory: FocusTrapFactory, breakpointObserver: BreakpointObserver, document: any,
+    constructor(_elementRef: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, _focusTrapFactory: FocusTrapFactory, _interactivityChecker: InteractivityChecker, _ngZone: NgZone, breakpointObserver: BreakpointObserver, document: any,
     bottomSheetConfig: MatBottomSheetConfig);
     _animationState: 'void' | 'visible' | 'hidden';
     _animationStateChanged: EventEmitter<AnimationEvent_2>;
@@ -100,7 +105,7 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatBottomSheetContainer, "mat-bottom-sheet-container", never, {}, {}, never, never>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatBottomSheetContainer, [null, null, null, null, { optional: true; }, null]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatBottomSheetContainer, [null, null, null, null, null, null, { optional: true; }, null]>;
 }
 
 // @public (undocumented)

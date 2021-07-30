@@ -19,6 +19,7 @@ import {
   EventEmitter,
   Inject,
   Optional,
+  NgZone,
 } from '@angular/core';
 import {AnimationEvent} from '@angular/animations';
 import {
@@ -33,7 +34,7 @@ import {MatBottomSheetConfig} from './bottom-sheet-config';
 import {matBottomSheetAnimations} from './bottom-sheet-animations';
 import {Subscription} from 'rxjs';
 import {DOCUMENT} from '@angular/common';
-import {FocusTrap, FocusTrapFactory} from '@angular/cdk/a11y';
+import {FocusTrap, FocusTrapFactory, InteractivityChecker} from '@angular/cdk/a11y';
 import {_getFocusedElementPierceShadowDom} from '@angular/cdk/platform';
 
 // TODO(crisbeto): consolidate some logic between this, MatDialog and MatSnackBar
@@ -92,6 +93,8 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
     private _elementRef: ElementRef<HTMLElement>,
     private _changeDetectorRef: ChangeDetectorRef,
     private _focusTrapFactory: FocusTrapFactory,
+    private readonly _interactivityChecker: InteractivityChecker,
+    private readonly _ngZone: NgZone,
     breakpointObserver: BreakpointObserver,
     @Optional() @Inject(DOCUMENT) document: any,
     /** The bottom sheet configuration. */
@@ -197,7 +200,39 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
     }
   }
 
-  /** Moves the focus inside the focus trap. */
+  /**
+   * Focuses the provided element. If the element is not focusable, it will add a tabIndex
+   * attribute to forcefully focus it. The attribute is removed after focus is moved.
+   * @param element The element to focus.
+   */
+  private _forceFocus(element: HTMLElement, options?: FocusOptions) {
+    if (!this._interactivityChecker.isFocusable(element)) {
+      element.tabIndex = -1;
+      // The tabindex attribute should be removed to avoid navigating to that element again
+      this._ngZone.runOutsideAngular(() => {
+        element.addEventListener('blur', () => element.removeAttribute('tabindex'));
+        element.addEventListener('mousedown', () => element.removeAttribute('tabindex'));
+      });
+    }
+    element.focus(options);
+  }
+
+  /**
+   * Focuses the first element that matches the given selector within the focus trap.
+   * @param selector The CSS selector for the element to set focus to.
+   */
+  private _focusByCssSelector(selector: string, options?: FocusOptions) {
+    let elementToFocus =
+      this._elementRef.nativeElement.querySelector(selector) as HTMLElement | null;
+    if (elementToFocus) {
+      this._forceFocus(elementToFocus, options);
+    }
+  }
+
+  /**
+   * Moves the focus inside the focus trap. When autoFocus is not set to 'bottom-sheet',
+   * if focus cannot be moved then focus will go to the bottom sheet container.
+   */
   private _trapFocus() {
     const element = this._elementRef.nativeElement;
 
@@ -205,19 +240,34 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
       this._focusTrap = this._focusTrapFactory.create(element);
     }
 
-    if (this.bottomSheetConfig.autoFocus) {
-      this._focusTrap.focusInitialElementWhenReady();
-    } else {
-      const activeElement = _getFocusedElementPierceShadowDom();
-
-      // Otherwise ensure that focus is on the container. It's possible that a different
-      // component tried to move focus while the open animation was running. See:
-      // https://github.com/angular/components/issues/16215. Note that we only want to do this
-      // if the focus isn't inside the bottom sheet already, because it's possible that the
-      // consumer turned off `autoFocus` in order to move focus themselves.
-      if (activeElement !== element && !element.contains(activeElement)) {
-        element.focus();
-      }
+    // If were to attempt to focus immediately, then the content of the bottom sheet would not
+    // yet be ready in instances where change detection has to run first. To deal with this,
+    // we simply wait for the microtask queue to be empty when setting focus when autoFocus
+    // isn't set to bottom sheet. If the element inside the bottom sheet can't be focused,
+    // then the container is focused so the user can't tab into other elements behind it.
+    switch (this.bottomSheetConfig.autoFocus) {
+      case false:
+      case 'dialog':
+        const activeElement = _getFocusedElementPierceShadowDom();
+        // Ensure that focus is on the bottom sheet container. It's possible that a different
+        // component tried to move focus while the open animation was running. See:
+        // https://github.com/angular/components/issues/16215. Note that we only want to do this
+        // if the focus isn't inside the bottom sheet already, because it's possible that the
+        // consumer specified `autoFocus` in order to move focus themselves.
+        if (activeElement !== element && !element.contains(activeElement)) {
+          element.focus();
+        }
+        break;
+      case true:
+      case 'first-tabbable':
+        this._focusTrap.focusInitialElementWhenReady();
+        break;
+      case 'first-heading':
+        this._focusByCssSelector('h1, h2, h3, h4, h5, h6, [role="heading"]');
+        break;
+      default:
+        this._focusByCssSelector(this.bottomSheetConfig.autoFocus!);
+        break;
     }
   }
 

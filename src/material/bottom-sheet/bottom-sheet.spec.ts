@@ -610,7 +610,7 @@ describe('MatBottomSheet', () => {
     it('should create a focus trap if autoFocus is disabled', fakeAsync(() => {
       bottomSheet.open(PizzaMsg, {
         viewContainerRef: testViewContainerRef,
-        autoFocus: false
+        autoFocus: false,
       });
 
       viewContainerFixture.detectChanges();
@@ -622,29 +622,66 @@ describe('MatBottomSheet', () => {
     }));
 
     it('should focus the first tabbable element of the bottom sheet on open when' +
-      'autoFocus is enabled', fakeAsync(() => {
-        bottomSheet.open(PizzaMsg, {
-          viewContainerRef: testViewContainerRef,
-          autoFocus: true
-        });
-
-        viewContainerFixture.detectChanges();
-        flushMicrotasks();
-
-        expect(document.activeElement!.tagName).toBe('INPUT',
-            'Expected first tabbable element (input) in the sheet to be focused.');
-      }));
-
-    it('should allow disabling focus of the first tabbable element', fakeAsync(() => {
+      'autoFocus is set to "first-tabbable"', fakeAsync(() => {
       bottomSheet.open(PizzaMsg, {
         viewContainerRef: testViewContainerRef,
-        autoFocus: false
+        autoFocus: 'first-tabbable'
       });
 
       viewContainerFixture.detectChanges();
       flushMicrotasks();
 
-      expect(document.activeElement!.tagName).not.toBe('INPUT');
+      expect(document.activeElement!.tagName)
+        .toBe('INPUT', 'Expected first tabbable element (input) in the dialog to be focused.');
+    }));
+
+    it('should focus the bottom sheet element on open when autoFocus is set to ' +
+      '"dialog" (the default)', fakeAsync(() => {
+      bottomSheet.open(PizzaMsg, {
+        viewContainerRef: testViewContainerRef,
+      });
+
+      viewContainerFixture.detectChanges();
+      flushMicrotasks();
+
+      let container =
+        overlayContainerElement.querySelector('.mat-bottom-sheet-container') as HTMLInputElement;
+
+      expect(document.activeElement).toBe(container, 'Expected container to be focused on open');
+    }));
+
+    it('should focus the bottom sheet element on open when autoFocus is set to ' +
+      '"first-heading"', fakeAsync(() => {
+      bottomSheet.open(ContentElementDialog, {
+        viewContainerRef: testViewContainerRef,
+        autoFocus: 'first-heading'
+      });
+
+      viewContainerFixture.detectChanges();
+      flushMicrotasks();
+
+      let firstHeader =
+        overlayContainerElement.querySelector('h1[tabindex="-1"]') as HTMLInputElement;
+
+      expect(document.activeElement)
+        .toBe(firstHeader, 'Expected first header to be focused on open');
+    }));
+
+    it('should focus the first element that matches the css selector on open when ' +
+      'autoFocus is set to a css selector', fakeAsync(() => {
+      bottomSheet.open(ContentElementDialog, {
+        viewContainerRef: testViewContainerRef,
+        autoFocus: 'p'
+      });
+
+      viewContainerFixture.detectChanges();
+      flushMicrotasks();
+
+      let firstParagraph =
+      overlayContainerElement.querySelector('p[tabindex="-1"]') as HTMLInputElement;
+
+      expect(document.activeElement)
+        .toBe(firstParagraph, 'Expected first paragraph to be focused on open');
     }));
 
     it('should re-focus trigger element when bottom sheet closes', fakeAsync(() => {
@@ -867,7 +904,7 @@ describe('MatBottomSheet with default options', () => {
     const defaultConfig: MatBottomSheetConfig = {
       hasBackdrop: false,
       disableClose: true,
-      autoFocus: false
+      autoFocus: 'dialog'
     };
 
     TestBed.configureTestingModule({
@@ -974,6 +1011,14 @@ class PizzaMsg {
 class TacoMsg {}
 
 @Component({
+  template: `
+    <h1>This is the title</h1>
+    <p>This is the paragraph</p>
+  `
+})
+class ContentElementDialog {}
+
+@Component({
   template: '',
   providers: [MatBottomSheet]
 })
@@ -997,6 +1042,7 @@ class ShadowDomComponent {}
 const TEST_DIRECTIVES = [
   ComponentWithChildViewContainer,
   ComponentWithTemplateRef,
+  ContentElementDialog,
   PizzaMsg,
   TacoMsg,
   DirectiveWithViewContainer,
@@ -1011,6 +1057,7 @@ const TEST_DIRECTIVES = [
   entryComponents: [
     ComponentWithChildViewContainer,
     ComponentWithTemplateRef,
+    ContentElementDialog,
     PizzaMsg,
     TacoMsg,
     BottomSheetWithInjectedData,

@@ -10,6 +10,9 @@ import {Direction} from '@angular/cdk/bidi';
 import {ComponentType} from '@angular/cdk/overlay';
 import {CdkDialogContainer} from './dialog-container';
 
+/** Options for where to set focus to automatically on dialog open */
+export type AutoFocusTarget = 'dialog' | 'first-tabbable' | 'first-heading';
+
 /** Valid ARIA roles for a dialog element. */
 export type DialogRole = 'dialog' | 'alertdialog';
 
@@ -84,8 +87,12 @@ export class DialogConfig<D = any> {
   /** Aria label to assign to the dialog element */
   ariaLabel?: string | null = null;
 
-  /** Whether the dialog should focus the first focusable element on open. */
-  autoFocus?: boolean = true;
+  /**
+   * Where the dialog should focus on open.
+   * @breaking-change 14.0.0 Remove boolean option from autoFocus. Use string or
+   * AutoFocusTarget instead.
+   */
+  autoFocus?: AutoFocusTarget | string | boolean = 'first-tabbable';
 
   /** Duration of the enter animation. Has to be a valid CSS value (e.g. 100ms). */
   enterAnimationDuration?: string = '225ms';

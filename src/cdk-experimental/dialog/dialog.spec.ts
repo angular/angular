@@ -882,7 +882,8 @@ describe('Dialog', () => {
     beforeEach(() => document.body.appendChild(overlayContainerElement));
     afterEach(() => document.body.removeChild(overlayContainerElement));
 
-    it('should focus the first tabbable element of the dialog on open', fakeAsync(() => {
+    it('should focus the first tabbable element of the dialog on open (the default)',
+      fakeAsync(() => {
       dialog.openFromComponent(PizzaMsg, {
         viewContainerRef: testViewContainerRef
       });
@@ -894,16 +895,52 @@ describe('Dialog', () => {
           .toBe('INPUT', 'Expected first tabbable element (input) in the dialog to be focused.');
     }));
 
-    it('should allow disabling focus of the first tabbable element', fakeAsync(() => {
+    it('should focus the dialog element on open', fakeAsync(() => {
       dialog.openFromComponent(PizzaMsg, {
         viewContainerRef: testViewContainerRef,
-        autoFocus: false
+        autoFocus: 'dialog'
       });
 
       viewContainerFixture.detectChanges();
       flushMicrotasks();
 
-      expect(document.activeElement!.tagName).not.toBe('INPUT');
+      let container =
+        overlayContainerElement.querySelector('cdk-dialog-container') as HTMLInputElement;
+
+      expect(document.activeElement).toBe(container, 'Expected container to be focused on open');
+    }));
+
+    it('should focus the first header element on open', fakeAsync(() => {
+      dialog.openFromComponent(ContentElementDialog, {
+        viewContainerRef: testViewContainerRef,
+        autoFocus: 'first-heading'
+      });
+
+      viewContainerFixture.detectChanges();
+      flushMicrotasks();
+
+      let firstHeader =
+        overlayContainerElement.querySelector('h1[tabindex="-1"]') as HTMLInputElement;
+
+      expect(document.activeElement)
+        .toBe(firstHeader, 'Expected first header to be focused on open');
+    }));
+
+    it('should focus the first element that matches the css selector from autoFocus on open',
+      fakeAsync(() => {
+      dialog.openFromComponent(PizzaMsg, {
+        viewContainerRef: testViewContainerRef,
+        autoFocus: 'p'
+      });
+
+      viewContainerFixture.detectChanges();
+      flushMicrotasks();
+
+      let firstParagraph =
+        overlayContainerElement.querySelector('p[tabindex="-1"]') as HTMLInputElement;
+
+      expect(document.activeElement)
+        .toBe(firstParagraph, 'Expected first paragraph to be focused on open');
     }));
 
     it('should re-focus trigger element when dialog closes', fakeAsync(() => {

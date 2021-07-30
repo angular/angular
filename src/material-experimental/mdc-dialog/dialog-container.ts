@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FocusMonitor, FocusTrapFactory} from '@angular/cdk/a11y';
+import {FocusMonitor, FocusTrapFactory, InteractivityChecker} from '@angular/cdk/a11y';
 import {DOCUMENT} from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -16,7 +16,8 @@ import {
   Inject,
   OnDestroy,
   Optional,
-  ViewEncapsulation
+  ViewEncapsulation,
+  NgZone
 } from '@angular/core';
 import {MatDialogConfig, _MatDialogContainerBase} from '@angular/material/dialog';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
@@ -65,9 +66,21 @@ export class MatDialogContainer extends _MatDialogContainerBase implements OnDes
       changeDetectorRef: ChangeDetectorRef,
       @Optional() @Inject(DOCUMENT) document: any,
       config: MatDialogConfig,
+      checker: InteractivityChecker,
+      ngZone: NgZone,
       @Optional() @Inject(ANIMATION_MODULE_TYPE) private _animationMode?: string,
-      focusMonitor?: FocusMonitor) {
-    super(elementRef, focusTrapFactory, changeDetectorRef, document, config, focusMonitor);
+      focusMonitor?: FocusMonitor
+      ) {
+    super(
+      elementRef,
+      focusTrapFactory,
+      changeDetectorRef,
+      document,
+      config,
+      checker,
+      ngZone,
+      focusMonitor
+    );
   }
 
   override _initializeWithAttachedContent() {

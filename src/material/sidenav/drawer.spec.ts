@@ -582,8 +582,9 @@ describe('MatDrawer', () => {
       expect(document.activeElement).toBe(lastFocusableElement);
     }));
 
-    it('should auto-focus when opened in "side" mode when enabled explicitly', fakeAsync(() => {
-      drawer.autoFocus = true;
+    it('should auto-focus to first tabbable element when opened in "side" mode' +
+      'when enabled explicitly', fakeAsync(() => {
+      drawer.autoFocus = 'first-tabbable';
       testComponent.mode = 'side';
       fixture.detectChanges();
       lastFocusableElement.focus();
@@ -610,7 +611,7 @@ describe('MatDrawer', () => {
     }));
 
     it('should be able to disable auto focus', fakeAsync(() => {
-      drawer.autoFocus = false;
+      drawer.autoFocus = 'dialog';
       testComponent.mode = 'push';
       fixture.detectChanges();
       lastFocusableElement.focus();

@@ -13,6 +13,7 @@ export * from './dialog-container';
 export * from './module';
 
 export {
+  AutoFocusTarget,
   MatDialogState,
   MatDialogConfig,
   matDialogAnimations,

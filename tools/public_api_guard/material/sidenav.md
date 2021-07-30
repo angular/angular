@@ -24,6 +24,7 @@ import * as i4 from '@angular/material/core';
 import * as i5 from '@angular/cdk/platform';
 import * as i6 from '@angular/cdk/scrolling';
 import { InjectionToken } from '@angular/core';
+import { InteractivityChecker } from '@angular/cdk/a11y';
 import { NgZone } from '@angular/core';
 import { NumberInput } from '@angular/cdk/coercion';
 import { Observable } from 'rxjs';
@@ -33,6 +34,9 @@ import { QueryList } from '@angular/core';
 import { ScrollDispatcher } from '@angular/cdk/scrolling';
 import { Subject } from 'rxjs';
 import { ViewportRuler } from '@angular/cdk/scrolling';
+
+// @public
+type AutoFocusTarget = 'dialog' | 'first-tabbable' | 'first-heading';
 
 // @public
 const MAT_DRAWER_CONTAINER: InjectionToken<unknown>;
@@ -45,7 +49,7 @@ export function MAT_DRAWER_DEFAULT_AUTOSIZE_FACTORY(): boolean;
 
 // @public
 export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestroy {
-    constructor(_elementRef: ElementRef<HTMLElement>, _focusTrapFactory: FocusTrapFactory, _focusMonitor: FocusMonitor, _platform: Platform, _ngZone: NgZone, _doc: any, _container?: MatDrawerContainer | undefined);
+    constructor(_elementRef: ElementRef<HTMLElement>, _focusTrapFactory: FocusTrapFactory, _focusMonitor: FocusMonitor, _platform: Platform, _ngZone: NgZone, _interactivityChecker: InteractivityChecker, _doc: any, _container?: MatDrawerContainer | undefined);
     // (undocumented)
     _animationDoneListener(event: AnimationEvent_2): void;
     readonly _animationEnd: Subject<AnimationEvent_2>;
@@ -53,8 +57,8 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
     // (undocumented)
     _animationStartListener(event: AnimationEvent_2): void;
     _animationState: 'open-instant' | 'open' | 'void';
-    get autoFocus(): boolean;
-    set autoFocus(value: boolean);
+    get autoFocus(): AutoFocusTarget | string | boolean;
+    set autoFocus(value: AutoFocusTarget | string | boolean);
     close(): Promise<MatDrawerToggleResult>;
     readonly closedStart: Observable<void>;
     readonly _closedStream: Observable<void>;
@@ -69,7 +73,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
     set mode(value: MatDrawerMode);
     readonly _modeChanged: Subject<void>;
     // (undocumented)
-    static ngAcceptInputType_autoFocus: BooleanInput;
+    static ngAcceptInputType_autoFocus: AutoFocusTarget | string | BooleanInput;
     // (undocumented)
     static ngAcceptInputType_disableClose: BooleanInput;
     // (undocumented)
@@ -93,7 +97,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatDrawer, "mat-drawer", ["matDrawer"], { "position": "position"; "mode": "mode"; "disableClose": "disableClose"; "autoFocus": "autoFocus"; "opened": "opened"; }, { "openedChange": "openedChange"; "_openedStream": "opened"; "openedStart": "openedStart"; "_closedStream": "closed"; "closedStart": "closedStart"; "onPositionChanged": "positionChanged"; }, never, ["*"]>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatDrawer, [null, null, null, null, null, { optional: true; }, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatDrawer, [null, null, null, null, null, null, { optional: true; }, { optional: true; }]>;
 }
 
 // @public

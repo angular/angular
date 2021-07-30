@@ -27,7 +27,9 @@ import * as i4 from '@angular/cdk/portal';
 import * as i5 from '@angular/material/core';
 import { InjectionToken } from '@angular/core';
 import { Injector } from '@angular/core';
+import { InteractivityChecker } from '@angular/cdk/a11y';
 import { Location as Location_2 } from '@angular/common';
+import { NgZone } from '@angular/core';
 import { Observable } from 'rxjs';
 import { OnChanges } from '@angular/core';
 import { OnDestroy } from '@angular/core';
@@ -42,6 +44,9 @@ import { TemplatePortal } from '@angular/cdk/portal';
 import { TemplateRef } from '@angular/core';
 import { Type } from '@angular/core';
 import { ViewContainerRef } from '@angular/core';
+
+// @public
+export type AutoFocusTarget = 'dialog' | 'first-tabbable' | 'first-heading';
 
 // @public
 export function _closeDialogVia<R>(ref: MatDialogRef<R>, interactionType: FocusOrigin, result?: R): void;
@@ -152,7 +157,7 @@ export class MatDialogConfig<D = any> {
     ariaDescribedBy?: string | null;
     ariaLabel?: string | null;
     ariaLabelledBy?: string | null;
-    autoFocus?: boolean;
+    autoFocus?: AutoFocusTarget | string | boolean;
     backdropClass?: string | string[];
     closeOnNavigation?: boolean;
     componentFactoryResolver?: ComponentFactoryResolver;
@@ -190,7 +195,7 @@ export class MatDialogContainer extends _MatDialogContainerBase {
 // @public
 export abstract class _MatDialogContainerBase extends BasePortalOutlet {
     constructor(_elementRef: ElementRef, _focusTrapFactory: FocusTrapFactory, _changeDetectorRef: ChangeDetectorRef, _document: any,
-    _config: MatDialogConfig, _focusMonitor?: FocusMonitor | undefined);
+    _config: MatDialogConfig, _interactivityChecker: InteractivityChecker, _ngZone: NgZone, _focusMonitor?: FocusMonitor | undefined);
     _animationStateChanged: EventEmitter<DialogAnimationEvent>;
     _ariaLabelledBy: string | null;
     attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T>;
@@ -217,7 +222,7 @@ export abstract class _MatDialogContainerBase extends BasePortalOutlet {
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<_MatDialogContainerBase, never, never, {}, {}, never>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<_MatDialogContainerBase, [null, null, null, { optional: true; }, null, null]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<_MatDialogContainerBase, [null, null, null, { optional: true; }, null, null, null, null]>;
 }
 
 // @public
