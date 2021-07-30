@@ -182,7 +182,7 @@
     "gulp": "^4.0.2",
     "gulp-cli": "^2.3.0",
     "gulp-dart-sass": "^1.0.2",
-    "highlight.js": "^10.4.0",
+    "highlight.js": "^10.7.0",
     "husky": "^7.0.1",
     "inquirer": "^8.0.0",
     "jasmine": "^3.6.0",
