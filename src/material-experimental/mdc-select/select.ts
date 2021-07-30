@@ -13,6 +13,7 @@ import {
   ContentChild,
   ContentChildren,
   Directive,
+  ElementRef,
   OnInit,
   QueryList,
   ViewEncapsulation,
@@ -109,7 +110,7 @@ export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit
   ];
 
   /** Ideal origin for the overlay panel. */
-  _preferredOverlayOrigin: CdkOverlayOrigin | undefined;
+  _preferredOverlayOrigin: CdkOverlayOrigin | ElementRef | undefined;
 
   /** Width of the overlay panel. */
   _overlayWidth: number;
@@ -134,14 +135,7 @@ export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit
     // Note that it's important that we read this in `ngAfterViewInit`, because
     // reading it earlier will cause the form field to return a different element.
     if (this._parentFormField) {
-      // TODO(crisbeto): currently the MDC select is based on the standard one which uses the
-      // connected overlay directive for its panel. In order to keep the logic as similar as
-      // possible, we have to use the directive here which only accepts a `CdkOverlayOrigin` as
-      // its origin. For now we fake an origin directive by constructing an object that looks
-      // like it, although eventually we should switch to creating the OverlayRef here directly.
-      this._preferredOverlayOrigin = {
-        elementRef: this._parentFormField.getConnectedOverlayOrigin()
-      };
+      this._preferredOverlayOrigin = this._parentFormField.getConnectedOverlayOrigin();
     }
   }
 
@@ -193,7 +187,9 @@ export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit
 
   /** Gets how wide the overlay panel should be. */
   private _getOverlayWidth() {
-    const refToMeasure = (this._preferredOverlayOrigin?.elementRef || this._elementRef);
+    const refToMeasure = this._preferredOverlayOrigin instanceof CdkOverlayOrigin ?
+        this._preferredOverlayOrigin.elementRef :
+        this._preferredOverlayOrigin || this._elementRef;
     return refToMeasure.nativeElement.getBoundingClientRect().width;
   }
 }

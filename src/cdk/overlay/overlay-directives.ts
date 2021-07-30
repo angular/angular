@@ -34,6 +34,7 @@ import {ConnectedOverlayPositionChange} from './position/connected-position';
 import {
   ConnectedPosition,
   FlexibleConnectedPositionStrategy,
+  FlexibleConnectedPositionStrategyOrigin,
 } from './position/flexible-connected-position-strategy';
 import {
   RepositionScrollStrategy,
@@ -114,7 +115,8 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   private _scrollStrategyFactory: () => ScrollStrategy;
 
   /** Origin for the connected overlay. */
-  @Input('cdkConnectedOverlayOrigin') origin: CdkOverlayOrigin;
+  @Input('cdkConnectedOverlayOrigin')
+  origin: CdkOverlayOrigin|FlexibleConnectedPositionStrategyOrigin;
 
   /** Registered connected position pairs. */
   @Input('cdkConnectedOverlayPositions') positions: ConnectedPosition[];
@@ -352,22 +354,30 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
       panelClass: currentPosition.panelClass || undefined,
     }));
 
-    return positionStrategy
-      .setOrigin(this.origin.elementRef)
-      .withPositions(positions)
-      .withFlexibleDimensions(this.flexibleDimensions)
-      .withPush(this.push)
-      .withGrowAfterOpen(this.growAfterOpen)
-      .withViewportMargin(this.viewportMargin)
-      .withLockedPosition(this.lockPosition)
-      .withTransformOriginOn(this.transformOriginSelector);
+    return positionStrategy.setOrigin(this._getFlexibleConnectedPositionStrategyOrigin())
+        .withPositions(positions)
+        .withFlexibleDimensions(this.flexibleDimensions)
+        .withPush(this.push)
+        .withGrowAfterOpen(this.growAfterOpen)
+        .withViewportMargin(this.viewportMargin)
+        .withLockedPosition(this.lockPosition)
+        .withTransformOriginOn(this.transformOriginSelector);
   }
 
   /** Returns the position strategy of the overlay to be set on the overlay config */
   private _createPositionStrategy(): FlexibleConnectedPositionStrategy {
-    const strategy = this._overlay.position().flexibleConnectedTo(this.origin.elementRef);
+    const strategy = this._overlay.position().flexibleConnectedTo(
+        this._getFlexibleConnectedPositionStrategyOrigin());
     this._updatePositionStrategy(strategy);
     return strategy;
+  }
+
+  private _getFlexibleConnectedPositionStrategyOrigin(): FlexibleConnectedPositionStrategyOrigin {
+    if (this.origin instanceof CdkOverlayOrigin) {
+      return this.origin.elementRef;
+    } else {
+      return this.origin;
+    }
   }
 
   /** Attaches the overlay and subscribes to backdrop clicks if backdrop exists */
@@ -424,7 +434,6 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   static ngAcceptInputType_growAfterOpen: BooleanInput;
   static ngAcceptInputType_push: BooleanInput;
 }
-
 
 /** @docs-private */
 export function CDK_CONNECTED_OVERLAY_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay):

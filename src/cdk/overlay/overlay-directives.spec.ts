@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, ElementRef, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {
   ComponentFixture,
@@ -28,7 +28,10 @@ import {
   ConnectedOverlayPositionChange,
   ConnectionPositionPair,
 } from './position/connected-position';
-import {FlexibleConnectedPositionStrategy} from './position/flexible-connected-position-strategy';
+import {
+  FlexibleConnectedPositionStrategy,
+  FlexibleConnectedPositionStrategyOrigin,
+} from './position/flexible-connected-position-strategy';
 import {Subject} from 'rxjs';
 
 
@@ -408,6 +411,21 @@ describe('Overlay directives', () => {
       expect(Math.floor(triggerRect.bottom)).toBe(Math.floor(overlayRect.top));
     });
 
+    it('should be able to use non-directive origin', () => {
+      const testComponent = fixture.componentInstance;
+
+      testComponent.triggerOverride = testComponent.nonDirectiveTrigger;
+      testComponent.isOpen = true;
+      fixture.detectChanges();
+
+      const triggerRect =
+          fixture.nativeElement.querySelector('#nonDirectiveTrigger').getBoundingClientRect();
+      const overlayRect = getPaneElement().getBoundingClientRect();
+
+      expect(Math.floor(triggerRect.left)).toBe(Math.floor(overlayRect.left));
+      expect(Math.floor(triggerRect.bottom)).toBe(Math.floor(overlayRect.top));
+    });
+
     it('should update the positions if they change after init', () => {
       const trigger = fixture.nativeElement.querySelector('#trigger');
 
@@ -674,6 +692,7 @@ describe('Overlay directives', () => {
   template: `
   <button cdk-overlay-origin id="trigger" #trigger="cdkOverlayOrigin">Toggle menu</button>
   <button cdk-overlay-origin id="otherTrigger" #otherTrigger="cdkOverlayOrigin">Toggle menu</button>
+  <button id="nonDirectiveTrigger" #nonDirectiveTrigger>Toggle menu</button>
 
   <ng-template cdk-connected-overlay
             [cdkConnectedOverlayOpen]="isOpen"
@@ -708,6 +727,7 @@ class ConnectedOverlayDirectiveTest {
   @ViewChild(CdkConnectedOverlay) connectedOverlayDirective: CdkConnectedOverlay;
   @ViewChild('trigger') trigger: CdkOverlayOrigin;
   @ViewChild('otherTrigger') otherTrigger: CdkOverlayOrigin;
+  @ViewChild('nonDirectiveTrigger') nonDirectiveTrigger: ElementRef<HTMLElement>;
 
   isOpen = false;
   width: number | string;
@@ -717,7 +737,7 @@ class ConnectedOverlayDirectiveTest {
   minHeight: number | string;
   offsetX: number;
   offsetY: number;
-  triggerOverride: CdkOverlayOrigin;
+  triggerOverride: CdkOverlayOrigin|FlexibleConnectedPositionStrategyOrigin;
   hasBackdrop: boolean;
   disableClose: boolean;
   viewportMargin: number;

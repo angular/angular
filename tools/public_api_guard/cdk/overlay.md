@@ -97,7 +97,7 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
     get offsetY(): number;
     set offsetY(offsetY: number);
     open: boolean;
-    origin: CdkOverlayOrigin;
+    origin: CdkOverlayOrigin | FlexibleConnectedPositionStrategyOrigin;
     readonly overlayKeydown: EventEmitter<KeyboardEvent>;
     readonly overlayOutsideClick: EventEmitter<MouseEvent>;
     get overlayRef(): OverlayRef;
