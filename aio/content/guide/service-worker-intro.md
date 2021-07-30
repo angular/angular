@@ -1,6 +1,6 @@
 # Angular service worker introduction
 
-Service workers augment the traditional web deployment model and empower applications to deliver a user experience with the reliability and performance on par with natively-installed code. Adding a service worker to an Angular application is one of the steps for turning an application into a [Progressive Web App](https://developers.google.com/web/progressive-web-apps/) (also known as a PWA).
+Service workers augment the traditional web deployment model and empower applications to deliver a user experience with the reliability and performance on par with code that is written to run on your operating system and hardware. Adding a service worker to an Angular application is one of the steps for turning an application into a [Progressive Web App](https://developers.google.com/web/progressive-web-apps/) (also known as a PWA).
 
 At its simplest, a service worker is a script that runs in the web browser and manages caching for an application.
 
@@ -27,17 +27,17 @@ To achieve this, the Angular service worker follows these guidelines:
 
 To support these behaviors, the Angular service worker loads a *manifest* file from the server. The file, called `ngsw.json` (not to be confused with the [web app manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest)), describes the resources to cache and includes hashes of every file's contents. When an update to the application is deployed, the contents of the manifest change, informing the service worker that a new version of the application should be downloaded and cached. This manifest is generated from a CLI-generated configuration file called `ngsw-config.json`.
 
-Installing the Angular service worker is as easy as including an `NgModule`. In addition to registering the Angular service worker with the browser, this also makes a few services available for injection which interact with the service worker and can be used to control it. For example, an application can ask to be notified when a new update becomes available, or an application can ask the service worker to check the server for available updates.
+Installing the Angular service worker is as straightforward as including an `NgModule`. In addition to registering the Angular service worker with the browser, this also makes a few services available for injection which interact with the service worker and can be used to control it. For example, an application can ask to be notified when a new update becomes available, or an application can ask the service worker to check the server for available updates.
 
 ## Prerequisites
 
 To make use of all the features of Angular service workers, use the latest versions of Angular and the Angular CLI.
 
-In order for service workers to be registered, the application must be accessed over HTTPS, not HTTP.
+For service workers to be registered, the application must be accessed over HTTPS, not HTTP.
 Browsers ignore service workers on pages that are served over an insecure connection.
 The reason is that service workers are quite powerful, so extra care is needed to ensure the service worker script has not been tampered with.
 
-There is one exception to this rule: to make local development easier, browsers do _not_ require a secure connection when accessing an application on `localhost`.
+There is one exception to this rule: to make local development more straightforward, browsers do _not_ require a secure connection when accessing an application on `localhost`.
 
 ### Browser support
 
@@ -53,9 +53,9 @@ More specifically:
 * The observable events of related services, such as `SwUpdate.available`, are not triggered.
 
 It is highly recommended that you ensure that your application works even without service worker support in the browser.
-Although an unsupported browser ignores service worker caching, it will still report errors if the application attempts to interact with the service worker.
-For example, calling `SwUpdate.checkForUpdate()` will return rejected promises.
-To avoid such an error, you can check whether the Angular service worker is enabled using `SwUpdate.isEnabled`.
+Although an unsupported browser ignores service worker caching, it still reports errors if the application attempts to interact with the service worker.
+For example, calling `SwUpdate.checkForUpdate()` returns rejected promises.
+To avoid such an error, check whether the Angular service worker is enabled using `SwUpdate.isEnabled`.
 
 To learn more about other browsers that are service worker ready, see the [Can I Use](https://caniuse.com/#feat=serviceworkers) page and [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API).
 

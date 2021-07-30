@@ -7,7 +7,7 @@ The Angular service worker enables the display of push notifications and the han
 <div class="alert is-helpful">
 
   When using the Angular service worker, push notification interactions are handled using the `SwPush` service.
-  To learn more about the native APIs involved see [Push API](https://developer.mozilla.org/en-US/docs/Web/API/Push_API) and [Using the Notifications API](https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API/Using_the_Notifications_API).
+  To learn more about the browser APIs involved see [Push API](https://developer.mozilla.org/en-US/docs/Web/API/Push_API) and [Using the Notifications API](https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API/Using_the_Notifications_API).
 
 </div>
 
@@ -101,6 +101,6 @@ In addition, using the `onActionClick` property on the `data` object, you can ti
 
 ## More on Angular service workers
 
-You may also be interested in the following:
+You might also be interested in the following:
 
 - [Service Worker in Production](guide/service-worker-devops).

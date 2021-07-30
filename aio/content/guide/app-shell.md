@@ -9,7 +9,7 @@ Learn more in [The App Shell Model](https://developers.google.com/web/fundamenta
 
 ## Step 1: Prepare the application
 
-You can do this with the following CLI command:
+Do this with the following CLI command:
 <code-example language="bash">
 ng new my-app --routing
 </code-example>
@@ -26,7 +26,7 @@ ng generate app-shell
 
 For more information about this command see [App shell command](cli/generate#app-shell-command). 
 
-After running this command you will notice that the `angular.json` configuration file has been updated to add two new targets, with a few other changes.
+After running this command you can see that the `angular.json` configuration file has been updated to add two new targets, with a few other changes.
 
 <code-example language="json">
 "server": {
