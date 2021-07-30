@@ -17,7 +17,7 @@ with setting up the necessary support files.
 ng add @angular/pwa --project *project-name*
 ```
 
-The above command completes the following actions:
+The preceding command completes the following actions:
 
 1. Adds the `@angular/service-worker` package to your project.
 2. Enables service worker build support in the CLI.
@@ -45,7 +45,7 @@ using an example application.
 
 ### Serving with `http-server`
 
-Because `ng serve` does not work with service workers, you must use a separate HTTP server to test your project locally. You can use any HTTP server. The example below uses the [http-server](https://www.npmjs.com/package/http-server) package from npm. To reduce the possibility of conflicts and avoid serving stale content, test on a dedicated port and disable caching.
+Because `ng serve` does not work with service workers, you must use a separate HTTP server to test your project locally. Use any HTTP server. The following example uses the [http-server](https://www.npmjs.com/package/http-server) package from npm. To reduce the possibility of conflicts and avoid serving stale content, test on a dedicated port and disable caching.
 
 To serve the directory containing your web files with `http-server`, run the following command:
 
@@ -55,7 +55,7 @@ http-server -p 8080 -c-1 dist/<project-name>
 
 ### Initial load
 
-With the server running, you can point your browser at [http://localhost:8080](http://localhost:8080). Your application should load normally.
+With the server running, point your browser at http://localhost:8080/. Your application should load normally.
 
 <div class="alert is-helpful">
 
@@ -90,7 +90,7 @@ For applications that do not use the Angular service worker, refreshing now woul
 
 With the addition of an Angular service worker, the application behavior changes. On a refresh, the page loads normally.
 
-If you look at the Network tab, you can verify that the service worker is active.
+Look at the Network tab to verify that the service worker is active.
 
 <div class="lightbox">
   <img src="generated/images/guide/service-worker/sw-active.png" alt="Requests are marked as from ServiceWorker">
@@ -121,9 +121,9 @@ Pay attention to two key points:
 ### Making changes to your application
 
 Now that you've seen how service workers cache your application, the
-next step is understanding how updates work. Let's make a change to the application, and watch the service worker install the update:
+next step is understanding how updates work. Make a change to the application, and watch the service worker install the update:
 
-1. If you're testing in an incognito window, open a second blank tab. This will keep the incognito and the cache state alive during your test.
+1. If you're testing in an incognito window, open a second blank tab. This keeps the incognito and the cache state alive during your test.
 
 1. Close the application tab, but not the window. This should also close the Developer Tools.
 
@@ -152,7 +152,7 @@ Now look at how the browser and service worker handle the updated application.
 
   What went wrong? Nothing, actually. The Angular service worker is doing its job and serving the version of the application that it has **installed**, even though there is an update available. In the interest of speed, the service worker doesn't wait to check for updates before it serves the application that it has cached.
 
-  If you look at the `http-server` logs, you can see the service worker requesting `/ngsw.json`. This is how the service worker checks for updates.
+  Look at the `http-server` logs to see the service worker requesting `/ngsw.json`. This is how the service worker checks for updates.
 
 1. Refresh the page.
 
@@ -164,6 +164,6 @@ Now look at how the browser and service worker handle the updated application.
 
 ## More on Angular service workers
 
-You may also be interested in the following:
+You might also be interested in the following:
 * [App Shell](guide/app-shell).
 * [Communicating with service workers](guide/service-worker-communications).
