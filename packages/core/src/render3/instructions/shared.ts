@@ -336,6 +336,7 @@ export function renderView<T>(tView: TView, lView: LView, context: T): void {
     // an error, mark the view as corrupted so we can try to recover.
     if (tView.firstCreatePass) {
       tView.incompleteFirstPass = true;
+      tView.firstCreatePass = false;
     }
 
     throw error;
