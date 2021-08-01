@@ -7,11 +7,10 @@ export class FirebaseRedirect {
   destination: string;
 
   constructor(readonly rawConfig: FirebaseRedirectConfig) {
-    const {source, regex, destination} = rawConfig;
-    this.source = (typeof source === 'string') ?
-      FirebaseRedirectSource.fromGlobPattern(source) :
-      FirebaseRedirectSource.fromRegexPattern(regex!);
-    this.destination = destination;
+    this.source = (rawConfig.regex === undefined) ?
+      FirebaseRedirectSource.fromGlobPattern(rawConfig.source) :
+      FirebaseRedirectSource.fromRegexPattern(rawConfig.regex);
+    this.destination = rawConfig.destination;
   }
 
   replace(url: string): string | undefined {

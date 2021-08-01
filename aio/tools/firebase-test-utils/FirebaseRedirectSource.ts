@@ -40,7 +40,7 @@ export class FirebaseRedirectSource {
             restNamedGroups.push(groupName);
             return `(?:${leadingSlash}(?<${groupName}>.🐷))?`;
           })
-          .replace(namedParam, `$1(?<$2>[^/]+)`)
+          .replace(namedParam, '$1(?<$2>[^/]+)')
           .replace(doubleStar, '$1.🐷$2')                 // use the pig to avoid replacing ** in next rule
           .replace(star, '[^/]*')                         // match a single segment
           .replace(possiblyEmptyInitialSegments, '(?:.*)')// deal with **/ special cases
@@ -89,6 +89,7 @@ export class FirebaseRedirectSource {
 
     const result: { [key: string]: string } = {};
     const names = this.regex.xregexp.captureNames || [];
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     names.forEach(name => result[name] = match.groups![name]);
     return result;
   }
