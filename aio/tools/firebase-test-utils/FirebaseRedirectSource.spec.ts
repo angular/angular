@@ -344,21 +344,21 @@ function testSource(source: FirebaseRedirectSource, matches: string[], nonMatche
 function testGlobMatch(
     pattern: string,
     captures: { named?: string[], rest?: string[] },
-    matches: { [url: string]: object|undefined }) {
+    matches: { [url: string]: unknown|undefined }) {
   return testSourceMatch(FirebaseRedirectSource.fromGlobPattern(pattern), captures, matches);
 }
 
 function testRegexMatch(
     pattern: string,
     captures: { named?: string[], rest?: string[] },
-    matches: { [url: string]: object|undefined }) {
+    matches: { [url: string]: unknown|undefined }) {
   return testSourceMatch(FirebaseRedirectSource.fromRegexPattern(pattern), captures, matches);
 }
 
 function testSourceMatch(
     source: FirebaseRedirectSource,
     captures: { named?: string[], rest?: string[] },
-    matches: { [url: string]: object|undefined }) {
+    matches: { [url: string]: unknown|undefined }) {
   expect(source.namedGroups).toEqual(captures.named || []);
   expect(source.restNamedGroups).toEqual(captures.rest || []);
   Object.keys(matches).forEach(url => expect(source.match(url)).toEqual(matches[url]));
