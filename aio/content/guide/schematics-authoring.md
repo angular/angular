@@ -197,8 +197,7 @@ By using the long form, the schematic can provide more explicit formatting of th
         "css",
         "scss",
         "sass",
-        "less",
-        "styl"
+        "less"
       ],
       "x-prompt": {
         "message": "Which stylesheet format would you like to use?",
@@ -207,8 +206,7 @@ By using the long form, the schematic can provide more explicit formatting of th
           { "value": "css",  "label": "CSS" },
           { "value": "scss", "label": "SCSS   [ https://sass-lang.com/documentation/syntax#scss                ]" },
           { "value": "sass", "label": "Sass   [ https://sass-lang.com/documentation/syntax#the-indented-syntax ]" },
-          { "value": "less", "label": "Less   [ http://lesscss.org/                                            ]" },
-          { "value": "styl", "label": "Stylus [ https://stylus-lang.com/                                       ]" }
+          { "value": "less", "label": "Less   [ http://lesscss.org/                                            ]" }
         ]
       },
     },
