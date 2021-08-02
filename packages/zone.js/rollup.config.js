@@ -7,7 +7,7 @@ if (bazel_version_file) {
   const versionTag = require('fs')
                          .readFileSync(bazel_version_file, {encoding: 'utf-8'})
                          .split('\n')
-                         .find(s => s.startsWith('BUILD_SCM_VERSION'));
+                         .find((s) => s.startsWith('BUILD_SCM_VERSION'));
   // Don't assume BUILD_SCM_VERSION exists
   if (versionTag) {
     version = versionTag.split(' ')[1].trim();
@@ -24,9 +24,11 @@ if (bazel_version_file) {
 // `this` should be `undefined` but is assigned with `Window` instead.
 const banner = `'use strict';
 /**
- * @license Angular v${version}
- * (c) 2010-2021 Google LLC. https://angular.io/
- * License: MIT
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
  */`;
 
 module.exports = {
@@ -36,7 +38,7 @@ module.exports = {
     }),
     commonjs(),
   ],
-  external: id => {
+  external: (id) => {
     if (/build-esm/.test(id)) {
       return false;
     }
@@ -51,8 +53,8 @@ module.exports = {
       'rxjs/Scheduler': 'Rx.Scheduler',
       'rxjs/scheduler/asap': 'Rx.Scheduler',
       'rxjs/scheduler/async': 'Rx.Scheduler',
-      'rxjs/symbol/rxSubscriber': 'Rx.Symbol'
+      'rxjs/symbol/rxSubscriber': 'Rx.Symbol',
     },
-    banner
+    banner,
   },
-}
+};
