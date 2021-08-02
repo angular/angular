@@ -188,7 +188,7 @@ $my-theme: mat.define-light-theme((
  )
 ));
 
-// Emit theme-dependent styles for common features used across multiple components. 
+// Emit theme-dependent styles for common features used across multiple components.
 @include mat.core-theme($my-theme);
 
 // Emit styles for MatButton based on `$my-theme`. Because the configuration
@@ -235,10 +235,10 @@ You can use one of these pre-built themes if you don't want to define a custom t
 
 | Theme                  | Light or dark? | Palettes (primary, accent, warn) |
 |------------------------|----------------|----------------------------------|
-| `deeppurple-amber.css` | Dark           | deep-purple, amber, red          |
+| `deeppurple-amber.css` | Light          | deep-purple, amber, red          |
 | `indigo-pink.css`      | Light          | indigo, pink, red                |
 | `pink-bluegray.css`    | Dark           | pink, bluegray, red              |
-| `purple-green.css`     | Light          | purple, green, red               |
+| `purple-green.css`     | Dark           | purple, green, red               |
 
 These files include the CSS for every component in the library. To include only the CSS for a subset
 of components, you must use the Sass API detailed in [Defining a theme](#defining-a-theme) above.
