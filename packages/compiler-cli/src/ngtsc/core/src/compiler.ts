@@ -30,6 +30,8 @@ import {ivySwitchTransform} from '../../switch';
 import {aliasTransformFactory, CompilationMode, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
 import {TemplateTypeCheckerImpl} from '../../typecheck';
 import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig} from '../../typecheck/api';
+import {ExtendedTemplateCheckerImpl} from '../../typecheck/extended';
+import {InvalidBananaInBoxCheck} from '../../typecheck/extended/src/template_checks/invalid_banana_in_box';
 import {getSourceFileOrNull, isDtsPath, resolveModuleName, toUnredirectedSourceFile} from '../../util/src/typescript';
 import {Xi18nContext} from '../../xi18n';
 import {LazyRoute, NgCompilerAdapter, NgCompilerOptions} from '../api';
@@ -316,6 +318,12 @@ export class NgCompiler {
       readonly usePoisonedData: boolean,
       private livePerfRecorder: ActivePerfRecorder,
   ) {
+    if (this.options._extendedTemplateDiagnostics === true &&
+        this.options.strictTemplates === false) {
+      throw new Error(
+          'The \'_extendedTemplateDiagnostics\' option requires \'strictTemplates\' to also be enabled.');
+    }
+
     this.constructionDiagnostics.push(...this.adapter.constructionDiagnostics);
     const incompatibleTypeCheckOptionsDiagnostic = verifyCompatibleTypeCheckOptions(this.options);
     if (incompatibleTypeCheckOptionsDiagnostic !== null) {
@@ -425,8 +433,12 @@ export class NgCompiler {
    * Get all Angular-related diagnostics for this compilation.
    */
   getDiagnostics(): ts.Diagnostic[] {
-    return this.addMessageTextDetails(
-        [...this.getNonTemplateDiagnostics(), ...this.getTemplateDiagnostics()]);
+    const diagnostics: ts.Diagnostic[] = [];
+    diagnostics.push(...this.getNonTemplateDiagnostics(), ...this.getTemplateDiagnostics());
+    if (this.options._extendedTemplateDiagnostics) {
+      diagnostics.push(...this.getExtendedTemplateDiagnostics());
+    }
+    return this.addMessageTextDetails(diagnostics);
   }
 
   /**
@@ -435,10 +447,14 @@ export class NgCompiler {
    * If a `ts.SourceFile` is passed, only diagnostics related to that file are returned.
    */
   getDiagnosticsForFile(file: ts.SourceFile, optimizeFor: OptimizeFor): ts.Diagnostic[] {
-    return this.addMessageTextDetails([
-      ...this.getNonTemplateDiagnostics().filter(diag => diag.file === file),
-      ...this.getTemplateDiagnosticsForFile(file, optimizeFor)
-    ]);
+    const diagnostics: ts.Diagnostic[] = [];
+    diagnostics.push(
+        ...this.getNonTemplateDiagnostics().filter(diag => diag.file === file),
+        ...this.getTemplateDiagnosticsForFile(file, optimizeFor));
+    if (this.options._extendedTemplateDiagnostics) {
+      diagnostics.push(...this.getExtendedTemplateDiagnostics(file));
+    }
+    return this.addMessageTextDetails(diagnostics);
   }
 
   /**
@@ -890,6 +906,30 @@ export class NgCompiler {
       }
     }
     return this.nonTemplateDiagnostics;
+  }
+
+  /**
+   * Calls the `extendedTemplateCheck` phase of the trait compiler
+   * @param sf optional parameter to get diagnostics for a certain file
+   *     or all files in the program if `sf` is undefined
+   * @returns generated extended template diagnostics
+   */
+  private getExtendedTemplateDiagnostics(sf?: ts.SourceFile): ts.Diagnostic[] {
+    const diagnostics: ts.Diagnostic[] = [];
+    const compilation = this.ensureAnalyzed();
+    const typeChecker = this.inputProgram.getTypeChecker();
+    const templateChecks = [new InvalidBananaInBoxCheck()];
+    const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        compilation.templateTypeChecker, typeChecker, templateChecks);
+    if (sf !== undefined) {
+      return compilation.traitCompiler.extendedTemplateCheck(sf, extendedTemplateChecker);
+    }
+    for (const sf of this.inputProgram.getSourceFiles()) {
+      diagnostics.push(
+          ...compilation.traitCompiler.extendedTemplateCheck(sf, extendedTemplateChecker));
+    }
+
+    return diagnostics;
   }
 
   private makeCompilation(): LazyCompilationState {
