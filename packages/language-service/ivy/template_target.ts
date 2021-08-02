@@ -49,7 +49,7 @@ export interface TemplateTarget {
 export type TargetContext = SingleNodeTarget|MultiNodeTarget;
 
 /** Contexts which logically target only a single node in the template AST. */
-export type SingleNodeTarget = RawExpression|MethodCallExpressionInArgContext|RawTemplateNode|
+export type SingleNodeTarget = RawExpression|CallExpressionInArgContext|RawTemplateNode|
     ElementInBodyContext|ElementInTagContext|AttributeInKeyContext|AttributeInValueContext;
 
 /**
@@ -65,7 +65,7 @@ export type MultiNodeTarget = TwoWayBindingContext;
  */
 export enum TargetNodeKind {
   RawExpression,
-  MethodCallExpressionInArgContext,
+  CallExpressionInArgContext,
   RawTemplateNode,
   ElementInTagContext,
   ElementInBodyContext,
@@ -84,17 +84,16 @@ export interface RawExpression {
 }
 
 /**
- * An `e.MethodCall` or `e.SafeMethodCall` expression with the cursor in a position where an
- * argument could appear.
+ * An `e.Call` expression with the cursor in a position where an argument could appear.
  *
  * This is returned when the only matching node is the method call expression, but the cursor is
  * within the method call parentheses. For example, in the expression `foo(|)` there is no argument
  * expression that the cursor could be targeting, but the cursor is in a position where one could
  * appear.
  */
-export interface MethodCallExpressionInArgContext {
-  kind: TargetNodeKind.MethodCallExpressionInArgContext;
-  node: e.MethodCall|e.SafeMethodCall;
+export interface CallExpressionInArgContext {
+  kind: TargetNodeKind.CallExpressionInArgContext;
+  node: e.Call;
 }
 
 /**
@@ -185,10 +184,9 @@ export function getTargetAtPosition(template: t.Node[], position: number): Templ
 
   // Given the candidate node, determine the full targeted context.
   let nodeInContext: TargetContext;
-  if ((candidate instanceof e.MethodCall || candidate instanceof e.SafeMethodCall) &&
-      isWithin(position, candidate.argumentSpan)) {
+  if (candidate instanceof e.Call && isWithin(position, candidate.argumentSpan)) {
     nodeInContext = {
-      kind: TargetNodeKind.MethodCallExpressionInArgContext,
+      kind: TargetNodeKind.CallExpressionInArgContext,
       node: candidate,
     };
   } else if (candidate instanceof e.AST) {

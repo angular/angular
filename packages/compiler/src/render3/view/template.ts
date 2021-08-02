@@ -10,7 +10,7 @@ import {flatten} from '../../compile_metadata';
 import {BindingForm, BuiltinFunctionCall, convertActionBinding, convertPropertyBinding, convertUpdateArguments, LocalResolver} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
-import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, FunctionCall, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, ParsedEventType, PropertyRead, ThisReceiver} from '../../expression_parser/ast';
+import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, Call, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, ParsedEventType, PropertyRead} from '../../expression_parser/ast';
 import {Lexer} from '../../expression_parser/lexer';
 import {IvyParser} from '../../expression_parser/parser';
 import * as i18n from '../../i18n/i18n_ast';
@@ -1484,7 +1484,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 }
 
 export class ValueConverter extends AstMemoryEfficientTransformer {
-  private _pipeBindExprs: FunctionCall[] = [];
+  private _pipeBindExprs: Call[] = [];
 
   constructor(
       private constantPool: ConstantPool, private allocateSlot: () => number,
@@ -1511,17 +1511,20 @@ export class ValueConverter extends AstMemoryEfficientTransformer {
         this.visitAll([new LiteralArray(pipe.span, pipe.sourceSpan, args)]) :
         this.visitAll(args);
 
-    const pipeBindExpr = new FunctionCall(pipe.span, pipe.sourceSpan, target, [
-      new LiteralPrimitive(pipe.span, pipe.sourceSpan, slot),
-      new LiteralPrimitive(pipe.span, pipe.sourceSpan, pureFunctionSlot),
-      ...convertedArgs,
-    ]);
+    const pipeBindExpr = new Call(
+        pipe.span, pipe.sourceSpan, target,
+        [
+          new LiteralPrimitive(pipe.span, pipe.sourceSpan, slot),
+          new LiteralPrimitive(pipe.span, pipe.sourceSpan, pureFunctionSlot),
+          ...convertedArgs,
+        ],
+        null!);
     this._pipeBindExprs.push(pipeBindExpr);
     return pipeBindExpr;
   }
 
   updatePipeSlotOffsets(bindingSlots: number) {
-    this._pipeBindExprs.forEach((pipe: FunctionCall) => {
+    this._pipeBindExprs.forEach((pipe: Call) => {
       // update the slot offset arg (index 1) to account for binding slots
       const slotOffset = pipe.args[1] as LiteralPrimitive;
       (slotOffset.value as number) += bindingSlots;

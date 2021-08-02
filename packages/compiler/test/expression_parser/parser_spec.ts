@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteSourceSpan, ASTWithSource, BindingPipe, EmptyExpr, Interpolation, MethodCall, ParserError, TemplateBinding, VariableBinding} from '@angular/compiler/src/expression_parser/ast';
+import {AbsoluteSourceSpan, ASTWithSource, BindingPipe, Call, EmptyExpr, Interpolation, ParserError, TemplateBinding, VariableBinding} from '@angular/compiler/src/expression_parser/ast';
 import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
 import {IvyParser, Parser, SplitInterpolation} from '@angular/compiler/src/expression_parser/parser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -208,25 +208,20 @@ describe('parser', () => {
       });
     });
 
-    describe('method calls', () => {
-      it('should parse method calls', () => {
+    describe('calls', () => {
+      it('should parse calls', () => {
         checkAction('fn()');
         checkAction('add(1, 2)');
         checkAction('a.add(1, 2)');
         checkAction('fn().add(1, 2)');
+        checkAction('fn()(1, 2)');
       });
 
       it('should parse an EmptyExpr with a correct span for a trailing empty argument', () => {
-        const ast = parseAction('fn(1, )').ast as MethodCall;
+        const ast = parseAction('fn(1, )').ast as Call;
         expect(ast.args[1]).toBeAnInstanceOf(EmptyExpr);
         const sourceSpan = (ast.args[1] as EmptyExpr).sourceSpan;
         expect([sourceSpan.start, sourceSpan.end]).toEqual([5, 6]);
-      });
-    });
-
-    describe('functional calls', () => {
-      it('should parse function calls', () => {
-        checkAction('fn()(1, 2)');
       });
     });
 
@@ -389,27 +384,22 @@ describe('parser', () => {
       expect(unparseWithSpan(ast)).toContain(['foo?.bar', '[nameSpan] bar']);
     });
 
-    it('should record method call span', () => {
+    it('should record call span', () => {
       const ast = parseAction('foo()');
       expect(unparseWithSpan(ast)).toContain(['foo()', 'foo()']);
-      expect(unparseWithSpan(ast)).toContain(['foo()', '[nameSpan] foo']);
+      expect(unparseWithSpan(ast)).toContain(['foo()', '[argumentSpan] ']);
+      expect(unparseWithSpan(ast)).toContain(['foo', '[nameSpan] foo']);
     });
 
-    it('should record method call argument span', () => {
+    it('should record call argument span', () => {
       const ast = parseAction('foo(1 + 2)');
       expect(unparseWithSpan(ast)).toContain(['foo(1 + 2)', '[argumentSpan] 1 + 2']);
     });
 
-    it('should record accessed method call span', () => {
+    it('should record accessed call span', () => {
       const ast = parseAction('foo.bar()');
       expect(unparseWithSpan(ast)).toContain(['foo.bar()', 'foo.bar()']);
-      expect(unparseWithSpan(ast)).toContain(['foo.bar()', '[nameSpan] bar']);
-    });
-
-    it('should record safe method call span', () => {
-      const ast = parseAction('foo?.bar()');
-      expect(unparseWithSpan(ast)).toContain(['foo?.bar()', 'foo?.bar()']);
-      expect(unparseWithSpan(ast)).toContain(['foo?.bar()', '[nameSpan] bar']);
+      expect(unparseWithSpan(ast)).toContain(['foo.bar', '[nameSpan] bar']);
     });
 
     it('should record property write span', () => {
@@ -1087,19 +1077,19 @@ describe('parser', () => {
             'Host binding expression cannot contain pipes');
       });
 
-      it('should throw if a pipe is used inside a function call', () => {
+      it('should throw if a pipe is used inside a call', () => {
         expectError(
             validate(parseSimpleBindingIvy('getId(true, id | myPipe)')),
             'Host binding expression cannot contain pipes');
       });
 
-      it('should throw if a pipe is used inside a method call', () => {
+      it('should throw if a pipe is used inside a call to a property access', () => {
         expectError(
             validate(parseSimpleBindingIvy('idService.getId(true, id | myPipe)')),
             'Host binding expression cannot contain pipes');
       });
 
-      it('should throw if a pipe is used inside a safe method call', () => {
+      it('should throw if a pipe is used inside a call to a safe property access', () => {
         expectError(
             validate(parseSimpleBindingIvy('idService?.getId(true, id | myPipe)')),
             'Host binding expression cannot contain pipes');

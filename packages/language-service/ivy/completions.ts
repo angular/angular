@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, EmptyExpr, ImplicitReceiver, LiteralPrimitive, MethodCall, ParseSourceSpan, PropertyRead, PropertyWrite, SafeMethodCall, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, BindingPipe, Call, EmptyExpr, ImplicitReceiver, LiteralPrimitive, ParseSourceSpan, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {CompletionKind, DirectiveInScope, SymbolKind, TemplateDeclarationSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import {BoundEvent, TextAttribute} from '@angular/compiler/src/render3/r3_ast';
@@ -18,8 +18,7 @@ import {TargetContext, TargetNodeKind, TemplateTarget} from './template_target';
 import {filterAliasImports} from './utils';
 
 type PropertyExpressionCompletionBuilder =
-    CompletionBuilder<PropertyRead|PropertyWrite|MethodCall|EmptyExpr|SafePropertyRead|
-                      SafeMethodCall|TmplAstBoundEvent>;
+    CompletionBuilder<PropertyRead|PropertyWrite|EmptyExpr|SafePropertyRead|TmplAstBoundEvent>;
 
 type ElementAttributeCompletionBuilder =
     CompletionBuilder<TmplAstElement|TmplAstBoundAttribute|TmplAstTextAttribute|TmplAstBoundEvent>;
@@ -180,8 +179,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
    */
   private isPropertyExpressionCompletion(this: CompletionBuilder<TmplAstNode|AST>):
       this is PropertyExpressionCompletionBuilder {
-    return this.node instanceof PropertyRead || this.node instanceof MethodCall ||
-        this.node instanceof SafePropertyRead || this.node instanceof SafeMethodCall ||
+    return this.node instanceof PropertyRead || this.node instanceof SafePropertyRead ||
         this.node instanceof PropertyWrite || this.node instanceof EmptyExpr ||
         // BoundEvent nodes only count as property completions if in an EventValue context.
         (this.node instanceof BoundEvent && this.nodeContext === CompletionNodeContext.EventValue);
@@ -774,9 +772,8 @@ function makeReplacementSpanFromParseSourceSpan(span: ParseSourceSpan): ts.TextS
   };
 }
 
-function makeReplacementSpanFromAst(node: PropertyRead|PropertyWrite|MethodCall|SafePropertyRead|
-                                    SafeMethodCall|BindingPipe|EmptyExpr|LiteralPrimitive|
-                                    BoundEvent): ts.TextSpan|undefined {
+function makeReplacementSpanFromAst(node: PropertyRead|PropertyWrite|SafePropertyRead|BindingPipe|
+                                    EmptyExpr|LiteralPrimitive|BoundEvent): ts.TextSpan|undefined {
   if ((node instanceof EmptyExpr || node instanceof LiteralPrimitive ||
        node instanceof BoundEvent)) {
     // empty nodes do not replace any existing text

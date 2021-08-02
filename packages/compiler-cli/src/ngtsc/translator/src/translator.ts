@@ -153,16 +153,6 @@ export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.E
     return this.factory.createAssignment(target, expr.value.visitExpression(this, context));
   }
 
-  visitInvokeMethodExpr(ast: o.InvokeMethodExpr, context: Context): TExpression {
-    const target = ast.receiver.visitExpression(this, context);
-    return this.setSourceMapRange(
-        this.factory.createCallExpression(
-            ast.name !== null ? this.factory.createPropertyAccess(target, ast.name) : target,
-            ast.args.map(arg => arg.visitExpression(this, context)),
-            /* pure */ false),
-        ast.sourceSpan);
-  }
-
   visitInvokeFunctionExpr(ast: o.InvokeFunctionExpr, context: Context): TExpression {
     return this.setSourceMapRange(
         this.factory.createCallExpression(

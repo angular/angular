@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AST, ImplicitReceiver, MethodCall, ThisReceiver, TmplAstBoundAttribute, TmplAstNode, TmplAstTextAttribute} from '@angular/compiler';
+import {AST, Call, ImplicitReceiver, PropertyRead, ThisReceiver, TmplAstBoundAttribute, TmplAstNode, TmplAstTextAttribute} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, InputBindingSymbol, OutputBindingSymbol, PipeSymbol, ReferenceSymbol, ShimLocation, Symbol, SymbolKind, VariableSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript';
@@ -18,16 +18,25 @@ export class QuickInfoBuilder {
 
   constructor(
       private readonly tsLS: ts.LanguageService, private readonly compiler: NgCompiler,
-      private readonly component: ts.ClassDeclaration, private node: TmplAstNode|AST) {}
+      private readonly component: ts.ClassDeclaration, private node: TmplAstNode|AST,
+      private parent: TmplAstNode|AST|null) {}
 
   get(): ts.QuickInfo|undefined {
     const symbol =
         this.compiler.getTemplateTypeChecker().getSymbolOfNode(this.node, this.component);
-    if (symbol === null) {
-      return isDollarAny(this.node) ? createDollarAnyQuickInfo(this.node) : undefined;
+    if (symbol !== null) {
+      return this.getQuickInfoForSymbol(symbol);
     }
 
-    return this.getQuickInfoForSymbol(symbol);
+    if (isDollarAny(this.node)) {
+      return createDollarAnyQuickInfo(this.node);
+    }
+
+    // If the cursor lands on the receiver of a method call, we have to look
+    // at the entire call in order to figure out if it's a call to `$any`.
+    if (this.parent !== null && isDollarAny(this.parent) && this.parent.receiver === this.node) {
+      return createDollarAnyQuickInfo(this.parent);
+    }
   }
 
   private getQuickInfoForSymbol(symbol: Symbol): ts.QuickInfo|undefined {
@@ -185,16 +194,18 @@ function displayPartsEqual(a: {text: string, kind: string}, b: {text: string, ki
   return a.text === b.text && a.kind === b.kind;
 }
 
-function isDollarAny(node: TmplAstNode|AST): node is MethodCall {
-  return node instanceof MethodCall && node.receiver instanceof ImplicitReceiver &&
-      !(node.receiver instanceof ThisReceiver) && node.name === '$any' && node.args.length === 1;
+function isDollarAny(node: TmplAstNode|AST): node is Call {
+  return node instanceof Call && node.receiver instanceof PropertyRead &&
+      node.receiver.receiver instanceof ImplicitReceiver &&
+      !(node.receiver.receiver instanceof ThisReceiver) && node.receiver.name === '$any' &&
+      node.args.length === 1;
 }
 
-function createDollarAnyQuickInfo(node: MethodCall): ts.QuickInfo {
+function createDollarAnyQuickInfo(node: Call): ts.QuickInfo {
   return createQuickInfo(
       '$any',
       DisplayInfoKind.METHOD,
-      getTextSpanOfNode(node),
+      getTextSpanOfNode(node.receiver),
       /** containerName */ undefined,
       'any',
       [{
