@@ -22,7 +22,7 @@ import {Subscribable, Unsubscribable} from 'rxjs';
       // the implementation does not rely on other methods:
       const wrapSubscribable = <T>(input: Subscribable<T>): Subscribable<T> => ({
         subscribe(...args: any): Unsubscribable {
-          const subscription = input.subscribe(...args);
+          const subscription = input.subscribe.apply(input, args);
           return {
             unsubscribe() {
               subscription.unsubscribe();
