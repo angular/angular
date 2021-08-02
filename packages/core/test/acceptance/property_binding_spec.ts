@@ -187,7 +187,7 @@ describe('property bindings', () => {
     })
     class OtherDir {
       @Input() id: number|undefined;
-      @Output('click') clickStream = new EventEmitter();
+      @Output('click') clickStream = new EventEmitter<void>();
     }
 
     @Directive({
