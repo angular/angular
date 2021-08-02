@@ -319,21 +319,6 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     }
     return null;
   }
-  visitInvokeMethodExpr(expr: o.InvokeMethodExpr, ctx: EmitterVisitorContext): any {
-    expr.receiver.visitExpression(this, ctx);
-    let name = expr.name;
-    if (expr.builtin != null) {
-      name = this.getBuiltinMethodName(expr.builtin);
-      if (name == null) {
-        // some builtins just mean to skip the call.
-        return null;
-      }
-    }
-    ctx.print(expr, `.${name}(`);
-    this.visitAllExpressions(expr.args, ctx, `,`);
-    ctx.print(expr, `)`);
-    return null;
-  }
 
   abstract getBuiltinMethodName(method: o.BuiltinMethod): string;
 

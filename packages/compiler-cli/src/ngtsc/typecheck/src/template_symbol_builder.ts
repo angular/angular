@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, BindingPipe, MethodCall, ParseSourceSpan, PropertyRead, PropertyWrite, SafeMethodCall, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, ASTWithSource, BindingPipe, Call, ParseSourceSpan, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
@@ -493,11 +493,15 @@ export class SymbolBuilder {
       return this.getSymbol(expressionTarget);
     }
 
-    // The `name` part of a `PropertyWrite` and `MethodCall` does not have its own
+    let withSpan = expression.sourceSpan;
+
+    // The `name` part of a `PropertyWrite` and a non-safe `Call` does not have its own
     // AST so there is no way to retrieve a `Symbol` for just the `name` via a specific node.
-    const withSpan = (expression instanceof PropertyWrite || expression instanceof MethodCall) ?
-        expression.nameSpan :
-        expression.sourceSpan;
+    if (expression instanceof PropertyWrite) {
+      withSpan = expression.nameSpan;
+    } else if (expression instanceof Call && expression.receiver instanceof PropertyRead) {
+      withSpan = expression.receiver.nameSpan;
+    }
 
     let node: ts.Node|null = null;
 
@@ -526,10 +530,10 @@ export class SymbolBuilder {
     // - If our expression is a pipe binding ("a | test:b:c"), we want the Symbol for the
     // `transform` on the pipe.
     // - Otherwise, we retrieve the symbol for the node itself with no special considerations
-    if ((expression instanceof SafePropertyRead || expression instanceof SafeMethodCall) &&
+    if ((expression instanceof SafePropertyRead ||
+         (expression instanceof Call && expression.receiver instanceof SafePropertyRead)) &&
         ts.isConditionalExpression(node)) {
-      const whenTrueSymbol =
-          (expression instanceof SafeMethodCall && ts.isCallExpression(node.whenTrue)) ?
+      const whenTrueSymbol = (expression instanceof Call && ts.isCallExpression(node.whenTrue)) ?
           this.getSymbolOfTsNode(node.whenTrue.expression) :
           this.getSymbolOfTsNode(node.whenTrue);
       if (whenTrueSymbol === null) {

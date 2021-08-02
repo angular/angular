@@ -176,11 +176,6 @@ export abstract class Expression {
     return new ReadKeyExpr(this, index, type, sourceSpan);
   }
 
-  callMethod(name: string|BuiltinMethod, params: Expression[], sourceSpan?: ParseSourceSpan|null):
-      InvokeMethodExpr {
-    return new InvokeMethodExpr(this, name, params, null, sourceSpan);
-  }
-
   callFn(params: Expression[], sourceSpan?: ParseSourceSpan|null, pure?: boolean):
       InvokeFunctionExpr {
     return new InvokeFunctionExpr(this, params, null, sourceSpan, pure);
@@ -423,37 +418,6 @@ export enum BuiltinMethod {
   SubscribeObservable,
   Bind
 }
-
-export class InvokeMethodExpr extends Expression {
-  public name: string|null;
-  public builtin: BuiltinMethod|null;
-  constructor(
-      public receiver: Expression, method: string|BuiltinMethod, public args: Expression[],
-      type?: Type|null, sourceSpan?: ParseSourceSpan|null) {
-    super(type, sourceSpan);
-    if (typeof method === 'string') {
-      this.name = method;
-      this.builtin = null;
-    } else {
-      this.name = null;
-      this.builtin = <BuiltinMethod>method;
-    }
-  }
-
-  override isEquivalent(e: Expression): boolean {
-    return e instanceof InvokeMethodExpr && this.receiver.isEquivalent(e.receiver) &&
-        this.name === e.name && this.builtin === e.builtin && areAllEquivalent(this.args, e.args);
-  }
-
-  override isConstant() {
-    return false;
-  }
-
-  override visitExpression(visitor: ExpressionVisitor, context: any): any {
-    return visitor.visitInvokeMethodExpr(this, context);
-  }
-}
-
 
 export class InvokeFunctionExpr extends Expression {
   constructor(
@@ -1001,7 +965,6 @@ export interface ExpressionVisitor {
   visitWriteVarExpr(expr: WriteVarExpr, context: any): any;
   visitWriteKeyExpr(expr: WriteKeyExpr, context: any): any;
   visitWritePropExpr(expr: WritePropExpr, context: any): any;
-  visitInvokeMethodExpr(ast: InvokeMethodExpr, context: any): any;
   visitInvokeFunctionExpr(ast: InvokeFunctionExpr, context: any): any;
   visitTaggedTemplateExpr(ast: TaggedTemplateExpr, context: any): any;
   visitInstantiateExpr(ast: InstantiateExpr, context: any): any;
@@ -1309,15 +1272,6 @@ export class AstTransformer implements StatementVisitor, ExpressionVisitor {
         context);
   }
 
-  visitInvokeMethodExpr(ast: InvokeMethodExpr, context: any): any {
-    const method = ast.builtin || ast.name;
-    return this.transformExpr(
-        new InvokeMethodExpr(
-            ast.receiver.visitExpression(this, context), method!,
-            this.visitAllExpressions(ast.args, context), ast.type, ast.sourceSpan),
-        context);
-  }
-
   visitInvokeFunctionExpr(ast: InvokeFunctionExpr, context: any): any {
     return this.transformExpr(
         new InvokeFunctionExpr(
@@ -1574,11 +1528,6 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
   visitWritePropExpr(ast: WritePropExpr, context: any): any {
     ast.receiver.visitExpression(this, context);
     ast.value.visitExpression(this, context);
-    return this.visitExpression(ast, context);
-  }
-  visitInvokeMethodExpr(ast: InvokeMethodExpr, context: any): any {
-    ast.receiver.visitExpression(this, context);
-    this.visitAllExpressions(ast.args, context);
     return this.visitExpression(ast, context);
   }
   visitInvokeFunctionExpr(ast: InvokeFunctionExpr, context: any): any {

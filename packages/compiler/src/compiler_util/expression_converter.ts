@@ -432,18 +432,6 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         `Illegal state: Pipes should have been converted into functions. Pipe: ${ast.name}`);
   }
 
-  visitFunctionCall(ast: cdAst.FunctionCall, mode: _Mode): any {
-    const convertedArgs = this.visitAll(ast.args, _Mode.Expression);
-    let fnResult: o.Expression;
-    if (ast instanceof BuiltinFunctionCall) {
-      fnResult = ast.converter(convertedArgs);
-    } else {
-      fnResult = this._visit(ast.target!, _Mode.Expression)
-                     .callFn(convertedArgs, this.convertSourceSpan(ast.span));
-    }
-    return convertToStatementIfNeeded(mode, fnResult);
-  }
-
   visitImplicitReceiver(ast: cdAst.ImplicitReceiver, mode: _Mode): any {
     ensureExpressionMode(mode, ast);
     this.usesImplicitReceiver = true;
@@ -523,42 +511,6 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     return this._localResolver.getLocal(name);
   }
 
-  visitMethodCall(ast: cdAst.MethodCall, mode: _Mode): any {
-    if (ast.receiver instanceof cdAst.ImplicitReceiver &&
-        !(ast.receiver instanceof cdAst.ThisReceiver) && ast.name === '$any') {
-      const args = this.visitAll(ast.args, _Mode.Expression) as any[];
-      if (args.length != 1) {
-        throw new Error(
-            `Invalid call to $any, expected 1 argument but received ${args.length || 'none'}`);
-      }
-      return (args[0] as o.Expression).cast(o.DYNAMIC_TYPE, this.convertSourceSpan(ast.span));
-    }
-
-    const leftMostSafe = this.leftMostSafeNode(ast);
-    if (leftMostSafe) {
-      return this.convertSafeAccess(ast, leftMostSafe, mode);
-    } else {
-      const args = this.visitAll(ast.args, _Mode.Expression);
-      const prevUsesImplicitReceiver = this.usesImplicitReceiver;
-      let result: any = null;
-      const receiver = this._visit(ast.receiver, _Mode.Expression);
-      if (receiver === this._implicitReceiver) {
-        const varExpr = this._getLocal(ast.name, ast.receiver);
-        if (varExpr) {
-          // Restore the previous "usesImplicitReceiver" state since the implicit
-          // receiver has been replaced with a resolved local expression.
-          this.usesImplicitReceiver = prevUsesImplicitReceiver;
-          result = varExpr.callFn(args);
-          this.addImplicitReceiverAccess(ast.name);
-        }
-      }
-      if (result == null) {
-        result = receiver.callMethod(ast.name, args, this.convertSourceSpan(ast.span));
-      }
-      return convertToStatementIfNeeded(mode, result);
-    }
-  }
-
   visitPrefixNot(ast: cdAst.PrefixNot, mode: _Mode): any {
     return convertToStatementIfNeeded(mode, o.not(this._visit(ast.expression, _Mode.Expression)));
   }
@@ -586,7 +538,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         }
       }
       if (result == null) {
-        result = receiver.prop(ast.name);
+        result = receiver.prop(ast.name, this.convertSourceSpan(ast.span));
       }
       return convertToStatementIfNeeded(mode, result);
     }
@@ -621,16 +573,12 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     // If no local expression could be produced, use the original receiver's
     // property as the target.
     if (varExpr === null) {
-      varExpr = receiver.prop(ast.name);
+      varExpr = receiver.prop(ast.name, this.convertSourceSpan(ast.span));
     }
     return convertToStatementIfNeeded(mode, varExpr.set(this._visit(ast.value, _Mode.Expression)));
   }
 
   visitSafePropertyRead(ast: cdAst.SafePropertyRead, mode: _Mode): any {
-    return this.convertSafeAccess(ast, this.leftMostSafeNode(ast), mode);
-  }
-
-  visitSafeMethodCall(ast: cdAst.SafeMethodCall, mode: _Mode): any {
     return this.convertSafeAccess(ast, this.leftMostSafeNode(ast), mode);
   }
 
@@ -647,6 +595,35 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         Statement: ${ast.uninterpretedExpression} located at ${ast.location}`);
   }
 
+  visitCall(ast: cdAst.Call, mode: _Mode): any {
+    const convertedArgs = this.visitAll(ast.args, _Mode.Expression);
+
+    if (ast instanceof BuiltinFunctionCall) {
+      return convertToStatementIfNeeded(mode, ast.converter(convertedArgs));
+    }
+
+    const receiver = ast.receiver;
+    if (receiver instanceof cdAst.PropertyRead &&
+        receiver.receiver instanceof cdAst.ImplicitReceiver &&
+        !(receiver.receiver instanceof cdAst.ThisReceiver) && receiver.name === '$any') {
+      if (convertedArgs.length !== 1) {
+        throw new Error(`Invalid call to $any, expected 1 argument but received ${
+            convertedArgs.length || 'none'}`);
+      }
+      return (convertedArgs[0] as o.Expression)
+          .cast(o.DYNAMIC_TYPE, this.convertSourceSpan(ast.span));
+    }
+
+    const leftMostSafe = this.leftMostSafeNode(ast);
+    if (leftMostSafe) {
+      return this.convertSafeAccess(ast, leftMostSafe, mode);
+    }
+
+    const call = this._visit(receiver, _Mode.Expression)
+                     .callFn(convertedArgs, this.convertSourceSpan(ast.span));
+    return convertToStatementIfNeeded(mode, call);
+  }
+
   private _visit(ast: cdAst.AST, mode: _Mode): any {
     const result = this._resultMap.get(ast);
     if (result) return result;
@@ -654,8 +631,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   }
 
   private convertSafeAccess(
-      ast: cdAst.AST, leftMostSafe: cdAst.SafeMethodCall|cdAst.SafePropertyRead|cdAst.SafeKeyedRead,
-      mode: _Mode): any {
+      ast: cdAst.AST, leftMostSafe: cdAst.SafePropertyRead|cdAst.SafeKeyedRead, mode: _Mode): any {
     // If the expression contains a safe access node on the left it needs to be converted to
     // an expression that guards the access to the member by checking the receiver for blank. As
     // execution proceeds from left to right, the left most part of the expression must be guarded
@@ -712,14 +688,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
 
     // Convert the ast to an unguarded access to the receiver's member. The map will substitute
     // leftMostNode with its unguarded version in the call to `this.visit()`.
-    if (leftMostSafe instanceof cdAst.SafeMethodCall) {
-      this._nodeMap.set(
-          leftMostSafe,
-          new cdAst.MethodCall(
-              leftMostSafe.span, leftMostSafe.sourceSpan, leftMostSafe.nameSpan,
-              leftMostSafe.receiver, leftMostSafe.name, leftMostSafe.args,
-              leftMostSafe.argumentSpan));
-    } else if (leftMostSafe instanceof cdAst.SafeKeyedRead) {
+    if (leftMostSafe instanceof cdAst.SafeKeyedRead) {
       this._nodeMap.set(
           leftMostSafe,
           new cdAst.KeyedRead(
@@ -773,8 +742,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   //   a == null ? null : a.c.b.c?.d.e
   // then to:
   //   a == null ? null : a.b.c == null ? null : a.b.c.d.e
-  private leftMostSafeNode(ast: cdAst.AST): cdAst.SafePropertyRead|cdAst.SafeMethodCall
-      |cdAst.SafeKeyedRead {
+  private leftMostSafeNode(ast: cdAst.AST): cdAst.SafePropertyRead|cdAst.SafeKeyedRead {
     const visit = (visitor: cdAst.AstVisitor, ast: cdAst.AST): any => {
       return (this._nodeMap.get(ast) || ast).visit(visitor);
     };
@@ -791,8 +759,8 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       visitConditional(ast: cdAst.Conditional) {
         return null;
       },
-      visitFunctionCall(ast: cdAst.FunctionCall) {
-        return null;
+      visitCall(ast: cdAst.Call) {
+        return visit(this, ast.receiver);
       },
       visitImplicitReceiver(ast: cdAst.ImplicitReceiver) {
         return null;
@@ -818,9 +786,6 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       visitLiteralPrimitive(ast: cdAst.LiteralPrimitive) {
         return null;
       },
-      visitMethodCall(ast: cdAst.MethodCall) {
-        return visit(this, ast.receiver);
-      },
       visitPipe(ast: cdAst.BindingPipe) {
         return null;
       },
@@ -838,9 +803,6 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       },
       visitQuote(ast: cdAst.Quote) {
         return null;
-      },
-      visitSafeMethodCall(ast: cdAst.SafeMethodCall) {
-        return visit(this, ast.receiver) || ast;
       },
       visitSafePropertyRead(ast: cdAst.SafePropertyRead) {
         return visit(this, ast.receiver) || ast;
@@ -874,7 +836,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       visitConditional(ast: cdAst.Conditional): boolean {
         return visit(this, ast.condition) || visit(this, ast.trueExp) || visit(this, ast.falseExp);
       },
-      visitFunctionCall(ast: cdAst.FunctionCall) {
+      visitCall(ast: cdAst.Call) {
         return true;
       },
       visitImplicitReceiver(ast: cdAst.ImplicitReceiver) {
@@ -901,9 +863,6 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       visitLiteralPrimitive(ast: cdAst.LiteralPrimitive) {
         return false;
       },
-      visitMethodCall(ast: cdAst.MethodCall) {
-        return true;
-      },
       visitPipe(ast: cdAst.BindingPipe) {
         return true;
       },
@@ -921,9 +880,6 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       },
       visitQuote(ast: cdAst.Quote) {
         return false;
-      },
-      visitSafeMethodCall(ast: cdAst.SafeMethodCall) {
-        return true;
       },
       visitSafePropertyRead(ast: cdAst.SafePropertyRead) {
         return false;
@@ -1014,10 +970,10 @@ function convertStmtIntoExpression(stmt: o.Statement): o.Expression|null {
   return null;
 }
 
-export class BuiltinFunctionCall extends cdAst.FunctionCall {
+export class BuiltinFunctionCall extends cdAst.Call {
   constructor(
       span: cdAst.ParseSpan, sourceSpan: cdAst.AbsoluteSourceSpan, args: cdAst.AST[],
       public converter: BuiltinConverter) {
-    super(span, sourceSpan, null, args);
+    super(span, sourceSpan, new cdAst.EmptyExpr(span, sourceSpan), args, null!);
   }
 }

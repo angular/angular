@@ -324,7 +324,6 @@ class KeyVisitor implements o.ExpressionVisitor {
   visitWriteVarExpr = invalid;
   visitWriteKeyExpr = invalid;
   visitWritePropExpr = invalid;
-  visitInvokeMethodExpr = invalid;
   visitInvokeFunctionExpr = invalid;
   visitTaggedTemplateExpr = invalid;
   visitInstantiateExpr = invalid;

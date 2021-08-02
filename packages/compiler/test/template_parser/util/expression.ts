@@ -46,10 +46,6 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Templ
     this.recordAst(ast);
     super.visitConditional(ast, null);
   }
-  override visitFunctionCall(ast: e.FunctionCall) {
-    this.recordAst(ast);
-    super.visitFunctionCall(ast, null);
-  }
   override visitImplicitReceiver(ast: e.ImplicitReceiver) {
     this.recordAst(ast);
     super.visitImplicitReceiver(ast, null);
@@ -78,10 +74,6 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Templ
     this.recordAst(ast);
     super.visitLiteralMap(ast, null);
   }
-  override visitMethodCall(ast: e.MethodCall) {
-    this.recordAst(ast);
-    super.visitMethodCall(ast, null);
-  }
   override visitNonNullAssert(ast: e.NonNullAssert) {
     this.recordAst(ast);
     super.visitNonNullAssert(ast, null);
@@ -102,10 +94,6 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Templ
     this.recordAst(ast);
     super.visitPropertyWrite(ast, null);
   }
-  override visitSafeMethodCall(ast: e.SafeMethodCall) {
-    this.recordAst(ast);
-    super.visitSafeMethodCall(ast, null);
-  }
   override visitSafePropertyRead(ast: e.SafePropertyRead) {
     this.recordAst(ast);
     super.visitSafePropertyRead(ast, null);
@@ -117,6 +105,10 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Templ
   override visitSafeKeyedRead(ast: e.SafeKeyedRead) {
     this.recordAst(ast);
     super.visitSafeKeyedRead(ast, null);
+  }
+  override visitCall(ast: e.Call) {
+    this.recordAst(ast);
+    super.visitCall(ast, null);
   }
 
   visitNgContent(ast: t.NgContentAst) {}
