@@ -171,8 +171,6 @@
   @return $config;
 }
 
-// stylelint-disable material/theme-mixin-api
-
 /// Emits baseline typographic styles based on a given config.
 /// @param {Map} $config-or-theme A typography config for an entire theme.
 /// @param {String} $selector Ancestor selector under which native elements, such as h1, will
@@ -263,5 +261,3 @@
     margin: 0 0 64px;
   }
 }
-
-// stylelint-enable material/theme-mixin-api

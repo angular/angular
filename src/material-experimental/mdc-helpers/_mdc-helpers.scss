@@ -96,7 +96,6 @@ $mat-typography-mdc-level-mappings: (
 
 // Configures MDC's global variables to reflect the given theme, applies the given styles,
 // then resets the global variables to prevent unintended side effects.
-// stylelint-disable-next-line material/theme-mixin-api
 @mixin mat-using-mdc-theme($config) {
   $primary: theming.get-color-from-palette(map.get($config, primary));
   $accent: theming.get-color-from-palette(map.get($config, accent));
@@ -187,7 +186,6 @@ $mat-typography-mdc-level-mappings: (
 
 // Configures MDC's global variables to reflect the given typography config,
 // applies the given styles, then resets the global variables to prevent unintended side effects.
-// stylelint-disable-next-line material/theme-mixin-api
 @mixin mat-using-mdc-typography($config) {
   // Save the original values.
   $orig-mdc-typography-styles: mdc-typography.$styles;

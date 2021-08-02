@@ -7,10 +7,8 @@ $drawer-side-drawer-z-index: 2;
 $drawer-backdrop-z-index: 3;
 $drawer-over-drawer-z-index: 4;
 
-// stylelint-disable max-line-length
 // Mixin that creates a new stacking context.
 // see https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context
-// stylelint-enable
 @mixin drawer-stacking-context($z-index: 1) {
   position: relative;
 
