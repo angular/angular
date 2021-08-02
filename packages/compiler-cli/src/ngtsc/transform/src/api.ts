@@ -15,6 +15,7 @@ import {IndexingContext} from '../../indexer';
 import {ClassDeclaration, Decorator} from '../../reflection';
 import {ImportManager} from '../../translator';
 import {TypeCheckContext} from '../../typecheck/api';
+import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
 import {Xi18nContext} from '../../xi18n';
 
 /**
@@ -186,6 +187,10 @@ export interface DecoratorHandler<D, A, S extends SemanticSymbol|null, R> {
   typeCheck?
       (ctx: TypeCheckContext, node: ClassDeclaration, analysis: Readonly<A>,
        resolution: Readonly<R>): void;
+
+  extendedTemplateCheck?
+      (component: ts.ClassDeclaration, extendedTemplateChecker: ExtendedTemplateChecker):
+          ts.Diagnostic[];
 
   /**
    * Generate a description of the field which should be added to the class, including any

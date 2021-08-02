@@ -24,6 +24,7 @@ import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost, reflectObj
 import {ComponentScopeReader, LocalModuleScopeRegistry, TypeCheckScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
 import {TemplateSourceMapping, TypeCheckContext} from '../../typecheck/api';
+import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
 import {SubsetOfKeys} from '../../util/src/typescript';
 import {Xi18nContext} from '../../xi18n';
 
@@ -611,6 +612,12 @@ export class ComponentDecoratorHandler implements
     ctx.addTemplate(
         new Reference(node), binder, meta.template.diagNodes, scope.pipes, scope.schemas,
         meta.template.sourceMapping, meta.template.file, meta.template.errors);
+  }
+
+  extendedTemplateCheck(
+      component: ts.ClassDeclaration,
+      extendedTemplateChecker: ExtendedTemplateChecker): ts.Diagnostic[] {
+    return extendedTemplateChecker.getExtendedTemplateDiagnosticsForComponent(component);
   }
 
   resolve(
