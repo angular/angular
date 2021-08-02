@@ -40,20 +40,7 @@ function isAngularDecorator(decorator: Decorator, isCore: boolean): boolean {
  #####################################################################
 */
 
-/**
- * Creates the AST for the decorator field type annotation, which has the form
- *     { type: Function, args?: any[] }[]
- */
-function createDecoratorInvocationType(): ts.TypeNode {
-  const typeElements: ts.TypeElement[] = [];
-  typeElements.push(ts.createPropertySignature(
-      undefined, 'type', undefined,
-      ts.createTypeReferenceNode(ts.createIdentifier('Function'), undefined), undefined));
-  typeElements.push(ts.createPropertySignature(
-      undefined, 'args', ts.createToken(ts.SyntaxKind.QuestionToken),
-      ts.createArrayTypeNode(ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)), undefined));
-  return ts.createArrayTypeNode(ts.createTypeLiteralNode(typeElements));
-}
+const DECORATOR_INVOCATION_JSDOC_TYPE = '!Array<{type: !Function, args: (undefined|!Array<?>)}>';
 
 /**
  * Extracts the type of the decorator (the function or expression invoked), as well as all the
@@ -101,68 +88,6 @@ function extractMetadataFromSingleDecorator(
 }
 
 /**
- * Takes a list of decorator metadata object ASTs and produces an AST for a
- * static class property of an array of those metadata objects.
- */
-function createDecoratorClassProperty(decoratorList: ts.ObjectLiteralExpression[]) {
-  const modifier = ts.createToken(ts.SyntaxKind.StaticKeyword);
-  const type = createDecoratorInvocationType();
-  const initializer = ts.createArrayLiteral(decoratorList, true);
-  // NB: the .decorators property does not get a @nocollapse property. There is
-  // no good reason why - it means .decorators is not runtime accessible if you
-  // compile with collapse properties, whereas propDecorators is, which doesn't
-  // follow any stringent logic. However this has been the case previously, and
-  // adding it back in leads to substantial code size increases as Closure fails
-  // to tree shake these props without @nocollapse.
-  return ts.createProperty(undefined, [modifier], 'decorators', undefined, type, initializer);
-}
-
-/**
- * Creates the AST for the 'ctorParameters' field type annotation:
- *   () => ({ type: any, decorators?: {type: Function, args?: any[]}[] }|null)[]
- */
-function createCtorParametersClassPropertyType(): ts.TypeNode {
-  // Sorry about this. Try reading just the string literals below.
-  const typeElements: ts.TypeElement[] = [];
-  typeElements.push(ts.createPropertySignature(
-      undefined, 'type', undefined,
-      ts.createTypeReferenceNode(ts.createIdentifier('any'), undefined), undefined));
-  typeElements.push(ts.createPropertySignature(
-      undefined, 'decorators', ts.createToken(ts.SyntaxKind.QuestionToken),
-      ts.createArrayTypeNode(ts.createTypeLiteralNode([
-        ts.createPropertySignature(
-            undefined, 'type', undefined,
-            ts.createTypeReferenceNode(ts.createIdentifier('Function'), undefined), undefined),
-        ts.createPropertySignature(
-            undefined, 'args', ts.createToken(ts.SyntaxKind.QuestionToken),
-            ts.createArrayTypeNode(
-                ts.createTypeReferenceNode(ts.createIdentifier('any'), undefined)),
-            undefined),
-      ])),
-      undefined));
-
-  return ts.createFunctionTypeNode(undefined, [], ts.createArrayTypeNode(ts.createUnionTypeNode([
-    ts.createTypeLiteralNode(typeElements),
-    ts.createLiteralTypeNode(ts.createNull()),
-  ])));
-}
-
-/**
- * Sets a Closure \@nocollapse synthetic comment on the given node. This prevents Closure Compiler
- * from collapsing the apparently static property, which would make it impossible to find for code
- * trying to detect it at runtime.
- */
-function addNoCollapseComment(n: ts.Node) {
-  ts.setSyntheticLeadingComments(n, [{
-                                   kind: ts.SyntaxKind.MultiLineCommentTrivia,
-                                   text: '* @nocollapse ',
-                                   pos: -1,
-                                   end: -1,
-                                   hasTrailingNewLine: true
-                                 }]);
-}
-
-/**
  * createCtorParametersClassProperty creates a static 'ctorParameters' property containing
  * downleveled decorator information.
  *
@@ -207,44 +132,29 @@ function createCtorParametersClassProperty(
   const initializer = ts.createArrowFunction(
       undefined, undefined, [], undefined, ts.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
       ts.createArrayLiteral(params, true));
-  const type = createCtorParametersClassPropertyType();
   const ctorProp = ts.createProperty(
-      undefined, [ts.createToken(ts.SyntaxKind.StaticKeyword)], 'ctorParameters', undefined, type,
-      initializer);
+      undefined, [ts.createToken(ts.SyntaxKind.StaticKeyword)], 'ctorParameters', undefined,
+      undefined, initializer);
   if (isClosureCompilerEnabled) {
-    addNoCollapseComment(ctorProp);
+    ts.setSyntheticLeadingComments(ctorProp, [
+      {
+        kind: ts.SyntaxKind.MultiLineCommentTrivia,
+        text: [
+          `*`,
+          ` * @type {function(): !Array<(null|{`,
+          ` *   type: ?,`,
+          ` *   decorators: (undefined|${DECORATOR_INVOCATION_JSDOC_TYPE}),`,
+          ` * })>}`,
+          ` * @nocollapse`,
+          ` `,
+        ].join('\n'),
+        pos: -1,
+        end: -1,
+        hasTrailingNewLine: true,
+      },
+    ]);
   }
   return ctorProp;
-}
-
-/**
- * createPropDecoratorsClassProperty creates a static 'propDecorators' property containing type
- * information for every property that has a decorator applied.
- *
- *     static propDecorators: {[key: string]: {type: Function, args?: any[]}[]} = {
- *       propA: [{type: MyDecorator, args: [1, 2]}, ...],
- *       ...
- *     };
- */
-function createPropDecoratorsClassProperty(
-    diagnostics: ts.Diagnostic[], properties: Map<string, ts.Decorator[]>): ts.PropertyDeclaration {
-  //  `static propDecorators: {[key: string]: ` + {type: Function, args?: any[]}[] + `} = {\n`);
-  const entries: ts.ObjectLiteralElementLike[] = [];
-  for (const [name, decorators] of properties.entries()) {
-    entries.push(ts.createPropertyAssignment(
-        name,
-        ts.createArrayLiteral(
-            decorators.map(deco => extractMetadataFromSingleDecorator(deco, diagnostics)))));
-  }
-  const initializer = ts.createObjectLiteral(entries, true);
-  const type = ts.createTypeLiteralNode([ts.createIndexSignature(
-      undefined, undefined, [ts.createParameter(
-                                undefined, undefined, undefined, 'key', undefined,
-                                ts.createTypeReferenceNode('string', undefined), undefined)],
-      createDecoratorInvocationType())]);
-  return ts.createProperty(
-      undefined, [ts.createToken(ts.SyntaxKind.StaticKeyword)], 'propDecorators', undefined, type,
-      initializer);
 }
 
 /**
@@ -346,6 +256,72 @@ export function getDownlevelDecoratorsTransform(
     typeChecker: ts.TypeChecker, host: ReflectionHost, diagnostics: ts.Diagnostic[],
     isCore: boolean, isClosureCompilerEnabled: boolean,
     skipClassDecorators: boolean): ts.TransformerFactory<ts.SourceFile> {
+  function addJSDocTypeAnnotation(node: ts.Node, jsdocType: string): void {
+    if (!isClosureCompilerEnabled) {
+      return;
+    }
+
+    ts.setSyntheticLeadingComments(node, [
+      {
+        kind: ts.SyntaxKind.MultiLineCommentTrivia,
+        text: `* @type {${jsdocType}} `,
+        pos: -1,
+        end: -1,
+        hasTrailingNewLine: true,
+      },
+    ]);
+  }
+
+  /**
+   * Takes a list of decorator metadata object ASTs and produces an AST for a
+   * static class property of an array of those metadata objects.
+   */
+  function createDecoratorClassProperty(decoratorList: ts.ObjectLiteralExpression[]) {
+    const modifier = ts.createToken(ts.SyntaxKind.StaticKeyword);
+    const initializer = ts.createArrayLiteral(decoratorList, true);
+    // NB: the .decorators property does not get a @nocollapse property. There
+    // is no good reason why - it means .decorators is not runtime accessible
+    // if you compile with collapse properties, whereas propDecorators is,
+    // which doesn't follow any stringent logic. However this has been the
+    // case previously, and adding it back in leads to substantial code size
+    // increases as Closure fails to tree shake these props
+    // without @nocollapse.
+    const prop =
+        ts.createProperty(undefined, [modifier], 'decorators', undefined, undefined, initializer);
+    addJSDocTypeAnnotation(prop, DECORATOR_INVOCATION_JSDOC_TYPE);
+    return prop;
+  }
+
+  /**
+   * createPropDecoratorsClassProperty creates a static 'propDecorators'
+   * property containing type information for every property that has a
+   * decorator applied.
+   *
+   *     static propDecorators: {[key: string]: {type: Function, args?:
+   * any[]}[]} = { propA: [{type: MyDecorator, args: [1, 2]}, ...],
+   *       ...
+   *     };
+   */
+  function createPropDecoratorsClassProperty(
+      diagnostics: ts.Diagnostic[],
+      properties: Map<string, ts.Decorator[]>): ts.PropertyDeclaration {
+    //  `static propDecorators: {[key: string]: ` + {type: Function, args?:
+    //  any[]}[] + `} = {\n`);
+    const entries: ts.ObjectLiteralElementLike[] = [];
+    for (const [name, decorators] of properties.entries()) {
+      entries.push(ts.createPropertyAssignment(
+          name,
+          ts.createArrayLiteral(
+              decorators.map(deco => extractMetadataFromSingleDecorator(deco, diagnostics)))));
+    }
+    const initializer = ts.createObjectLiteral(entries, true);
+    const prop = ts.createProperty(
+        undefined, [ts.createToken(ts.SyntaxKind.StaticKeyword)], 'propDecorators', undefined,
+        undefined, initializer);
+    addJSDocTypeAnnotation(prop, `!Object<string, ${DECORATOR_INVOCATION_JSDOC_TYPE}>`);
+    return prop;
+  }
+
   return (context: ts.TransformationContext) => {
     // Ensure that referenced type symbols are not elided by TypeScript. Imports for
     // such parameter type symbols previously could be type-only, but now might be also

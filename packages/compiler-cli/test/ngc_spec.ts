@@ -715,7 +715,7 @@ describe('ngc transformer command-line', () => {
         const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
         expect(mymoduleSource).toContain('@fileoverview added by tsickle');
         expect(mymoduleSource).toContain('@param {?} p');
-        expect(mymoduleSource).toMatch(/\/\*\* @nocollapse \*\/\s+MyComp\.ctorParameters = /);
+        expect(mymoduleSource).toContain('@nocollapse');
       });
     });
 

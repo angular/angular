@@ -424,11 +424,18 @@ describe('downlevel decorator transform', () => {
 
     expect(diagnostics.length).toBe(0);
     expect(output).toContain(dedent`
+      /** @type {!Array<{type: !Function, args: (undefined|!Array<?>)}>} */
       MyDir.decorators = [
         { type: core_1.Directive }
       ];
-      /** @nocollapse */
-      MyDir.ctorParameters = () => [
+      /**
+       * @type {function(): !Array<(null|{
+       *   type: ?,
+       *   decorators: (undefined|!Array<{type: !Function, args: (undefined|!Array<?>)}>),
+       * })>}
+       * @nocollapse
+       */
+       MyDir.ctorParameters = () => [
         { type: ClassInject }
       ];
     `);
