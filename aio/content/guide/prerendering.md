@@ -1,6 +1,6 @@
 # Prerendering static pages
 
-Angular Universal allows you to prerender the pages of your application. Prerendering is the process where a dynamic page is processed at build time generating static HTML.
+Angular Universal lets you prerender the pages of your application. Prerendering is the process where a dynamic page is processed at build time generating static HTML.
 
 ## How to prerender a page
 
@@ -43,7 +43,7 @@ ng run &lt;app-name&gt;:prerender --routes /product/1 /product/2
 
 #### Providing additonal routes using a file
 
-You can provide routes using a file to generate static pages. This method is useful if you have a large number of routes to generate, such as product details for an e-commerce application, which may come from an external source (Database or CMS).
+You can provide routes using a file to generate static pages. This method is useful if you have a large number of routes to generate, such as product details for an e-commerce application, which might come from an external source (Database or CMS).
 
 To provide routes using a file, use the `--routes-file` option with the name of a `.txt` file containing the routes.
 
