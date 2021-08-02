@@ -673,8 +673,6 @@ interface EventTask extends Task {
 
 /** @internal */
 type AmbientZone = Zone;
-/** @internal */
-type AmbientZoneDelegate = ZoneDelegate;
 
 const Zone: ZoneType = (function(global: any) {
   const performance: {mark(name: string): void; measure(name: string, label: string): void;} =
@@ -774,14 +772,14 @@ const Zone: ZoneType = (function(global: any) {
     private _parent: Zone|null;
     private _name: string;
     private _properties: {[key: string]: any};
-    private _zoneDelegate: ZoneDelegate;
+    private _zoneDelegate: _ZoneDelegate;
 
     constructor(parent: Zone|null, zoneSpec: ZoneSpec|null) {
       this._parent = parent;
       this._name = zoneSpec ? zoneSpec.name || 'unnamed' : '<root>';
       this._properties = zoneSpec && zoneSpec.properties || {};
       this._zoneDelegate =
-          new ZoneDelegate(this, this._parent && this._parent._zoneDelegate, zoneSpec);
+          new _ZoneDelegate(this, this._parent && this._parent._zoneDelegate, zoneSpec);
     }
 
     public get(key: string): any {
@@ -909,7 +907,7 @@ const Zone: ZoneType = (function(global: any) {
         }
       }
       (task as any as ZoneTask<any>)._transitionTo(scheduling, notScheduled);
-      const zoneDelegates: ZoneDelegate[] = [];
+      const zoneDelegates: _ZoneDelegate[] = [];
       (task as any as ZoneTask<any>)._zoneDelegates = zoneDelegates;
       (task as any as ZoneTask<any>)._zone = this;
       try {
@@ -987,20 +985,18 @@ const Zone: ZoneType = (function(global: any) {
   const DELEGATE_ZS: ZoneSpec = {
     name: '',
     onHasTask:
-        (delegate: AmbientZoneDelegate, _: AmbientZone, target: AmbientZone,
-         hasTaskState: HasTaskState): void => delegate.hasTask(target, hasTaskState),
-    onScheduleTask:
-        (delegate: AmbientZoneDelegate, _: AmbientZone, target: AmbientZone, task: Task): Task =>
-            delegate.scheduleTask(target, task),
+        (delegate: ZoneDelegate, _: AmbientZone, target: AmbientZone, hasTaskState: HasTaskState):
+            void => delegate.hasTask(target, hasTaskState),
+    onScheduleTask: (delegate: ZoneDelegate, _: AmbientZone, target: AmbientZone, task: Task):
+        Task => delegate.scheduleTask(target, task),
     onInvokeTask:
-        (delegate: AmbientZoneDelegate, _: AmbientZone, target: AmbientZone, task: Task,
-         applyThis: any, applyArgs: any): any =>
-            delegate.invokeTask(target, task, applyThis, applyArgs),
-    onCancelTask: (delegate: AmbientZoneDelegate, _: AmbientZone, target: AmbientZone, task: Task):
-        any => delegate.cancelTask(target, task)
+        (delegate: ZoneDelegate, _: AmbientZone, target: AmbientZone, task: Task, applyThis: any,
+         applyArgs: any): any => delegate.invokeTask(target, task, applyThis, applyArgs),
+    onCancelTask: (delegate: ZoneDelegate, _: AmbientZone, target: AmbientZone, task: Task): any =>
+        delegate.cancelTask(target, task)
   };
 
-  class ZoneDelegate implements AmbientZoneDelegate {
+  class _ZoneDelegate implements ZoneDelegate {
     public zone: Zone;
 
     private _taskCounts:
@@ -1008,42 +1004,42 @@ const Zone: ZoneType = (function(global: any) {
          macroTask: number,
          eventTask: number} = {'microTask': 0, 'macroTask': 0, 'eventTask': 0};
 
-    private _parentDelegate: ZoneDelegate|null;
+    private _parentDelegate: _ZoneDelegate|null;
 
-    private _forkDlgt: ZoneDelegate|null;
+    private _forkDlgt: _ZoneDelegate|null;
     private _forkZS: ZoneSpec|null;
     private _forkCurrZone: Zone|null;
 
-    private _interceptDlgt: ZoneDelegate|null;
+    private _interceptDlgt: _ZoneDelegate|null;
     private _interceptZS: ZoneSpec|null;
     private _interceptCurrZone: Zone|null;
 
-    private _invokeDlgt: ZoneDelegate|null;
+    private _invokeDlgt: _ZoneDelegate|null;
     private _invokeZS: ZoneSpec|null;
     private _invokeCurrZone: Zone|null;
 
-    private _handleErrorDlgt: ZoneDelegate|null;
+    private _handleErrorDlgt: _ZoneDelegate|null;
     private _handleErrorZS: ZoneSpec|null;
     private _handleErrorCurrZone: Zone|null;
 
-    private _scheduleTaskDlgt: ZoneDelegate|null;
+    private _scheduleTaskDlgt: _ZoneDelegate|null;
     private _scheduleTaskZS: ZoneSpec|null;
     private _scheduleTaskCurrZone: Zone|null;
 
-    private _invokeTaskDlgt: ZoneDelegate|null;
+    private _invokeTaskDlgt: _ZoneDelegate|null;
     private _invokeTaskZS: ZoneSpec|null;
     private _invokeTaskCurrZone: Zone|null;
 
-    private _cancelTaskDlgt: ZoneDelegate|null;
+    private _cancelTaskDlgt: _ZoneDelegate|null;
     private _cancelTaskZS: ZoneSpec|null;
     private _cancelTaskCurrZone: Zone|null;
 
-    private _hasTaskDlgt: ZoneDelegate|null;
-    private _hasTaskDlgtOwner: ZoneDelegate|null;
+    private _hasTaskDlgt: _ZoneDelegate|null;
+    private _hasTaskDlgtOwner: _ZoneDelegate|null;
     private _hasTaskZS: ZoneSpec|null;
     private _hasTaskCurrZone: Zone|null;
 
-    constructor(zone: Zone, parentDelegate: ZoneDelegate|null, zoneSpec: ZoneSpec|null) {
+    constructor(zone: Zone, parentDelegate: _ZoneDelegate|null, zoneSpec: ZoneSpec|null) {
       this.zone = zone;
       this._parentDelegate = parentDelegate;
 
@@ -1241,7 +1237,7 @@ const Zone: ZoneType = (function(global: any) {
     _zone: Zone|null = null;
     public runCount: number = 0;
     // tslint:disable-next-line:require-internal-with-underscore
-    _zoneDelegates: ZoneDelegate[]|null = null;
+    _zoneDelegates: _ZoneDelegate[]|null = null;
     // tslint:disable-next-line:require-internal-with-underscore
     _state: TaskState = 'notScheduled';
 
