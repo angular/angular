@@ -407,27 +407,6 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         ]);
       });
 
-      it('should parse bound inputs with expressions containing newlines', () => {
-        expect(tokenizeAndHumanizeParts(`<app-component
-        [attr]="[
-        {text: 'some text',url:'//www.google.com'},
-        {text:'other text',url:'//www.google.com'}]">`))
-            .toEqual([
-              [TokenType.TAG_OPEN_START, '', 'app-component'],
-              [TokenType.ATTR_NAME, '', '[attr]'],
-              [TokenType.ATTR_QUOTE, '"'],
-              [
-                TokenType.ATTR_VALUE_TEXT,
-                '[\n' +
-                    '        {text: \'some text\',url:\'//www.google.com\'},\n' +
-                    '        {text:\'other text\',url:\'//www.google.com\'}]'
-              ],
-              [TokenType.ATTR_QUOTE, '"'],
-              [TokenType.TAG_OPEN_END],
-              [TokenType.EOF],
-            ]);
-      });
-
       it('should parse attributes with empty quoted value', () => {
         expect(tokenizeAndHumanizeParts('<t a="">')).toEqual([
           [TokenType.TAG_OPEN_START, '', 't'],
