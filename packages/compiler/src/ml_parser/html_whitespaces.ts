@@ -8,7 +8,6 @@
 
 import * as html from './ast';
 import {NGSP_UNICODE} from './entities';
-import {Token, TokenType} from './lexer';
 import {ParseTreeResult} from './parser';
 
 export const PRESERVE_WS_ATTR_NAME = 'ngPreserveWhitespaces';
@@ -75,13 +74,8 @@ export class WhitespaceVisitor implements html.Visitor {
         (context.prev instanceof html.Expansion || context.next instanceof html.Expansion);
 
     if (isNotBlank || hasExpansionSibling) {
-      // Process the whitespace in the tokens of this Text node
-      const tokens = text.tokens.map(
-          token => token.type === TokenType.TEXT ? createTextTokenAfterWhitespaceProcessing(token) :
-                                                   token);
-      // Process the whitespace of the value of this Text node
-      const value = processWhitespace(text.value);
-      return new html.Text(value, text.sourceSpan, tokens, text.i18n);
+      return new html.Text(
+          replaceNgsp(text.value).replace(WS_REPLACE_REGEXP, ' '), text.sourceSpan, text.i18n);
     }
 
     return null;
@@ -98,14 +92,6 @@ export class WhitespaceVisitor implements html.Visitor {
   visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any {
     return expansionCase;
   }
-}
-
-function createTextTokenAfterWhitespaceProcessing(token: Token): Token {
-  return new Token(token.type, [processWhitespace(token.parts[0])], token.sourceSpan);
-}
-
-function processWhitespace(text: string): string {
-  return replaceNgsp(text).replace(WS_REPLACE_REGEXP, ' ');
 }
 
 export function removeWhitespaces(htmlAstWithErrors: ParseTreeResult): ParseTreeResult {
