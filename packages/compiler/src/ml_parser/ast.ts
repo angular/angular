@@ -9,7 +9,7 @@
 import {AstPath} from '../ast_path';
 import {I18nMeta} from '../i18n/i18n_ast';
 import {ParseSourceSpan} from '../parse_util';
-import {InterpolatedAttributeToken, InterpolatedTextToken} from './tokens';
+import {Token} from './lexer';
 
 interface BaseNode {
   sourceSpan: ParseSourceSpan;
@@ -25,8 +25,7 @@ export abstract class NodeWithI18n implements BaseNode {
 
 export class Text extends NodeWithI18n {
   constructor(
-      public value: string, sourceSpan: ParseSourceSpan, public tokens: InterpolatedTextToken[],
-      i18n?: I18nMeta) {
+      public value: string, sourceSpan: ParseSourceSpan, public tokens: Token[], i18n?: I18nMeta) {
     super(sourceSpan, i18n);
   }
   override visit(visitor: Visitor, context: any): any {
@@ -59,7 +58,7 @@ export class Attribute extends NodeWithI18n {
   constructor(
       public name: string, public value: string, sourceSpan: ParseSourceSpan,
       readonly keySpan: ParseSourceSpan|undefined, public valueSpan: ParseSourceSpan|undefined,
-      public valueTokens: InterpolatedAttributeToken[]|undefined, i18n: I18nMeta|undefined) {
+      public valueTokens: Token[]|undefined, i18n: I18nMeta|undefined) {
     super(sourceSpan, i18n);
   }
   override visit(visitor: Visitor, context: any): any {
