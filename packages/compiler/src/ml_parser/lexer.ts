@@ -23,7 +23,6 @@ export enum TokenType {
   ESCAPABLE_RAW_TEXT,
   RAW_TEXT,
   INTERPOLATION,
-  ENCODED_ENTITY,
   COMMENT_START,
   COMMENT_END,
   CDATA_START,
@@ -396,16 +395,19 @@ class _Tokenizer {
     }
   }
 
-  private _readChar(): string {
-    // Don't rely upon reading directly from `_input` as the actual char value
-    // may have been generated from an escape sequence.
-    const char = String.fromCodePoint(this._cursor.peek());
-    this._cursor.advance();
-    return char;
+  private _readChar(decodeEntities: boolean): string {
+    if (decodeEntities && this._cursor.peek() === chars.$AMPERSAND) {
+      return this._decodeEntity();
+    } else {
+      // Don't rely upon reading directly from `_input` as the actual char value
+      // may have been generated from an escape sequence.
+      const char = String.fromCodePoint(this._cursor.peek());
+      this._cursor.advance();
+      return char;
+    }
   }
 
-  private _consumeEntity(textTokenType: TokenType): void {
-    this._beginToken(TokenType.ENCODED_ENTITY);
+  private _decodeEntity(): string {
     const start = this._cursor.clone();
     this._cursor.advance();
     if (this._attemptCharCode(chars.$HASH)) {
@@ -425,7 +427,7 @@ class _Tokenizer {
       this._cursor.advance();
       try {
         const charCode = parseInt(strNum, isHex ? 16 : 10);
-        this._endToken([String.fromCharCode(charCode), this._cursor.getChars(start)]);
+        return String.fromCharCode(charCode);
       } catch {
         throw this._createError(
             _unknownEntityErrorMsg(this._cursor.getChars(start)), this._cursor.getSpan());
@@ -434,25 +436,21 @@ class _Tokenizer {
       const nameStart = this._cursor.clone();
       this._attemptCharCodeUntilFn(isNamedEntityEnd);
       if (this._cursor.peek() != chars.$SEMICOLON) {
-        // No semicolon was found so abort the encoded entity token that was in progress, and treat
-        // this as a text token
-        this._beginToken(textTokenType, start);
         this._cursor = nameStart;
-        this._endToken(['&']);
-      } else {
-        const name = this._cursor.getChars(nameStart);
-        this._cursor.advance();
-        const char = NAMED_ENTITIES[name];
-        if (!char) {
-          throw this._createError(_unknownEntityErrorMsg(name), this._cursor.getSpan(start));
-        }
-        this._endToken([char, `&${name};`]);
+        return '&';
       }
+      const name = this._cursor.getChars(nameStart);
+      this._cursor.advance();
+      const char = NAMED_ENTITIES[name];
+      if (!char) {
+        throw this._createError(_unknownEntityErrorMsg(name), this._cursor.getSpan(start));
+      }
+      return char;
     }
   }
 
-  private _consumeRawText(consumeEntities: boolean, endMarkerPredicate: () => boolean): void {
-    this._beginToken(consumeEntities ? TokenType.ESCAPABLE_RAW_TEXT : TokenType.RAW_TEXT);
+  private _consumeRawText(decodeEntities: boolean, endMarkerPredicate: () => boolean): Token {
+    this._beginToken(decodeEntities ? TokenType.ESCAPABLE_RAW_TEXT : TokenType.RAW_TEXT);
     const parts: string[] = [];
     while (true) {
       const tagCloseStart = this._cursor.clone();
@@ -461,16 +459,9 @@ class _Tokenizer {
       if (foundEndMarker) {
         break;
       }
-      if (consumeEntities && this._cursor.peek() === chars.$AMPERSAND) {
-        this._endToken([this._processCarriageReturns(parts.join(''))]);
-        parts.length = 0;
-        this._consumeEntity(TokenType.ESCAPABLE_RAW_TEXT);
-        this._beginToken(TokenType.ESCAPABLE_RAW_TEXT);
-      } else {
-        parts.push(this._readChar());
-      }
+      parts.push(this._readChar(decodeEntities));
     }
-    this._endToken([this._processCarriageReturns(parts.join(''))]);
+    return this._endToken([this._processCarriageReturns(parts.join(''))]);
   }
 
   private _consumeComment(start: CharacterCursor) {
@@ -572,8 +563,8 @@ class _Tokenizer {
     }
   }
 
-  private _consumeRawTextWithTagClose(prefix: string, tagName: string, consumeEntities: boolean) {
-    this._consumeRawText(consumeEntities, () => {
+  private _consumeRawTextWithTagClose(prefix: string, tagName: string, decodeEntities: boolean) {
+    this._consumeRawText(decodeEntities, () => {
       if (!this._attemptCharCode(chars.$LT)) return false;
       if (!this._attemptCharCode(chars.$SLASH)) return false;
       this._attemptCharCodeUntilFn(isNotWhitespace);
@@ -721,16 +712,11 @@ class _Tokenizer {
       const current = this._cursor.clone();
       if (this._interpolationConfig && this._attemptStr(this._interpolationConfig.start)) {
         this._endToken([this._processCarriageReturns(parts.join(''))], current);
-        parts.length = 0;
         this._consumeInterpolation(interpolationTokenType, current);
-        this._beginToken(textTokenType);
-      } else if (this._cursor.peek() === chars.$AMPERSAND) {
-        this._endToken([this._processCarriageReturns(parts.join(''))]);
         parts.length = 0;
-        this._consumeEntity(textTokenType);
         this._beginToken(textTokenType);
       } else {
-        parts.push(this._readChar());
+        parts.push(this._readChar(true));
       }
     }
 
@@ -909,9 +895,7 @@ function mergeTextTokens(srcTokens: Token[]): Token[] {
   let lastDstToken: Token|undefined = undefined;
   for (let i = 0; i < srcTokens.length; i++) {
     const token = srcTokens[i];
-    if ((lastDstToken && lastDstToken.type == TokenType.TEXT && token.type == TokenType.TEXT) ||
-        (lastDstToken && lastDstToken.type == TokenType.ATTR_VALUE_TEXT &&
-         token.type == TokenType.ATTR_VALUE_TEXT)) {
+    if (lastDstToken && lastDstToken.type == TokenType.TEXT && token.type == TokenType.TEXT) {
       lastDstToken.parts[0]! += token.parts[0];
       lastDstToken.sourceSpan.end = token.sourceSpan.end;
     } else {
