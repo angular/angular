@@ -9,7 +9,6 @@
 import {ParseError, ParseSourceSpan} from '../parse_util';
 
 import * as html from './ast';
-import {NAMED_ENTITIES} from './entities';
 import * as lex from './lexer';
 import {getNsPrefix, mergeNsAndName, splitNsName, TagDefinition} from './tags';
 
@@ -216,7 +215,6 @@ class _TreeBuilder {
   }
 
   private _consumeText(token: lex.Token) {
-    const startSpan = token.sourceSpan;
     let text = token.parts[0];
     if (text.length > 0 && text[0] == '\n') {
       const parent = this._getParentElement();
@@ -226,29 +224,8 @@ class _TreeBuilder {
       }
     }
 
-    // For now recombine text and interpolation tokens
-    if (this._peek.type === lex.TokenType.INTERPOLATION) {
-      while (this._peek.type === lex.TokenType.INTERPOLATION ||
-             this._peek.type === lex.TokenType.TEXT) {
-        token = this._advance();
-        if (token.type === lex.TokenType.INTERPOLATION) {
-          // For backward compatibility we decode HTML entities that appear in interpolation
-          // expressions. This is arguably a bug, but it could be a considerable breaking change to
-          // fix it. It should be addressed in a larger project to refactor the entire parser/lexer
-          // chain after View Engine has been removed.
-          text += token.parts.join('').replace(/&([^;]+);/g, decodeEntity);
-        } else {
-          text += token.parts.join('');
-        }
-      }
-    }
-
     if (text.length > 0) {
-      const endSpan = token.sourceSpan;
-      this._addToParent(new html.Text(
-          text,
-          new ParseSourceSpan(
-              startSpan.start, endSpan.end, startSpan.fullStart, startSpan.details)));
+      this._addToParent(new html.Text(text, token.sourceSpan));
     }
   }
 
@@ -417,22 +394,4 @@ class _TreeBuilder {
 
 function lastOnStack(stack: any[], element: any): boolean {
   return stack.length > 0 && stack[stack.length - 1] === element;
-}
-
-/**
- * Decode the `entity` string, which we believe is the contents of an HTML entity.
- *
- * If the string is not actually a valid/known entity then just return the original `match` string.
- */
-function decodeEntity(match: string, entity: string): string {
-  if (NAMED_ENTITIES[entity] !== undefined) {
-    return NAMED_ENTITIES[entity] || match;
-  }
-  if (/^#x[a-f0-9]+$/i.test(entity)) {
-    return String.fromCodePoint(parseInt(entity.slice(2), 16));
-  }
-  if (/^#\d+$/.test(entity)) {
-    return String.fromCodePoint(parseInt(entity.slice(1), 10));
-  }
-  return match;
 }
