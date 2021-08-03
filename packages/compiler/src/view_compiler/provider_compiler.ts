@@ -8,13 +8,13 @@
 
 import {CompileDiDependencyMetadata, CompileEntryComponentMetadata, CompileProviderMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
-import {OutputContext} from '../constant_pool';
 import {DepFlags, NodeFlags} from '../core';
 import {createTokenForExternalReference, Identifiers} from '../identifiers';
 import {LifecycleHooks} from '../lifecycle_reflector';
 import * as o from '../output/output_ast';
 import {convertValueToOutputAst} from '../output/value_util';
 import {ProviderAst, ProviderAstType} from '../template_parser/template_ast';
+import {OutputContext} from '../util';
 
 export function providerDef(ctx: OutputContext, providerAst: ProviderAst): {
   providerExpr: o.Expression,

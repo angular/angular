@@ -10,14 +10,56 @@ import {StaticSymbol} from './aot/static_symbol';
 import {ChangeDetectionStrategy, SchemaMetadata, Type, ViewEncapsulation} from './core';
 import {LifecycleHooks} from './lifecycle_reflector';
 import {ParseTreeResult as HtmlParseTreeResult} from './ml_parser/parser';
-import {CompileIdentifierMetadata, identifierName, sanitizeIdentifier} from './parse_util';
-import {splitAtColon} from './util';
+import {splitAtColon, stringify} from './util';
 
 // group 0: "[prop] or (event) or @trigger"
 // group 1: "prop" from "[prop]"
 // group 2: "event" from "(event)"
 // group 3: "@trigger" from "@trigger"
 const HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))|(\@[-\w]+)$/;
+
+export function sanitizeIdentifier(name: string): string {
+  return name.replace(/\W/g, '_');
+}
+
+let _anonymousTypeIndex = 0;
+
+export function identifierName(compileIdentifier: CompileIdentifierMetadata|null|undefined): string|
+    null {
+  if (!compileIdentifier || !compileIdentifier.reference) {
+    return null;
+  }
+  const ref = compileIdentifier.reference;
+  if (ref instanceof StaticSymbol) {
+    return ref.name;
+  }
+  if (ref['__anonymousType']) {
+    return ref['__anonymousType'];
+  }
+  if (ref['__forward_ref__']) {
+    // We do not want to try to stringify a `forwardRef()` function because that would cause the
+    // inner function to be evaluated too early, defeating the whole point of the `forwardRef`.
+    return '__forward_ref__';
+  }
+  let identifier = stringify(ref);
+  if (identifier.indexOf('(') >= 0) {
+    // case: anonymous functions!
+    identifier = `anonymous_${_anonymousTypeIndex++}`;
+    ref['__anonymousType'] = identifier;
+  } else {
+    identifier = sanitizeIdentifier(identifier);
+  }
+  return identifier;
+}
+
+export function identifierModuleUrl(compileIdentifier: CompileIdentifierMetadata): string {
+  const ref = compileIdentifier.reference;
+  if (ref instanceof StaticSymbol) {
+    return ref.filePath;
+  }
+  // Runtime type
+  return `./${stringify(ref)}`;
+}
 
 export function viewClassName(compType: any, embeddedTemplateIndex: number): string {
   return `View_${identifierName({reference: compType})}_${embeddedTemplateIndex}`;
@@ -37,6 +79,10 @@ export function componentFactoryName(compType: any): string {
 
 export interface ProxyClass {
   setDelegate(delegate: any): void;
+}
+
+export interface CompileIdentifierMetadata {
+  reference: any;
 }
 
 export enum CompileSummaryKind {
