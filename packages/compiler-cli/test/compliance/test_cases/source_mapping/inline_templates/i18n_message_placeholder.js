@@ -1,9 +1,9 @@
-`Hello, ${ // SOURCE: "/i18n_message_placeholder.ts" "Hello, "
+`Hello, ${ // SOURCE: "/i18n_message_placeholder.ts" Hello, 
 …
-"\uFFFD0\uFFFD" // SOURCE: "/i18n_message_placeholder.ts" "{{name}}"
+"\uFFFD0\uFFFD" // SOURCE: "/i18n_message_placeholder.ts" {{name}}
 …
-}:INTERPOLATION:!` // SOURCE: "/i18n_message_placeholder.ts" "!"
+}:INTERPOLATION:!` // SOURCE: "/i18n_message_placeholder.ts" !
 …
-i0.ɵɵelementStart(0, "div") // SOURCE: "/i18n_message_placeholder.ts" "<div i18n>"
+i0.ɵɵelementStart(0, "div") // SOURCE: "/i18n_message_placeholder.ts" <div i18n>
 …
-i0.ɵɵelementEnd() // SOURCE: "/i18n_message_placeholder.ts" "</div>"
+i0.ɵɵelementEnd() // SOURCE: "/i18n_message_placeholder.ts" </div>

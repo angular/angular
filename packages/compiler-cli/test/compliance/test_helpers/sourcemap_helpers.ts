@@ -17,7 +17,7 @@ import {SourceFileLoader} from '../../../src/ngtsc/sourcemaps';
  * comment that has the following syntax:
  *
  * ```
- * <generated code> // SOURCE: "</path/to/original>" "<original source>"
+ * <generated code> // SOURCE: "</path/to/original>" <original source>
  * ```
  *
  * The `path/to/original` path will be absolute within the mock file-system, where the root is the
@@ -81,7 +81,7 @@ function extractMappings(
   const mappings: SegmentMapping[] = [];
   // capture and remove source mapping info
   expected = expected.replace(
-      /^(.*?) \/\/ SOURCE: "([^"]*?)" "(.*?)"$/gm,
+      /^(.*?) \/\/ SOURCE: "([^"]*?)" (.*?)$/gm,
       (_, rawGenerated: string, rawSourceUrl: string, rawSource: string) => {
         // Since segments need to appear on a single line in the expected file, any newlines in the
         // segment being checked must be escaped in the expected file and then unescaped here before
@@ -97,8 +97,8 @@ function extractMappings(
 }
 
 function unescape(str: string): string {
-  const replacements: Record<any, string> = {'\\n': '\n', '\\r': '\r', '\\\\': '\\', '\\"': '\"'};
-  return str.replace(/\\[rn"\\]/g, match => replacements[match]);
+  const replacements: Record<any, string> = {'\\n': '\n', '\\r': '\r', '\\\\': '\\'};
+  return str.replace(/\\[rn\\]/g, match => replacements[match]);
 }
 
 /**
