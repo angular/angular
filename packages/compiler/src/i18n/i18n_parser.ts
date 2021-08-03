@@ -11,7 +11,7 @@ import {Parser as ExpressionParser} from '../expression_parser/parser';
 import * as html from '../ml_parser/ast';
 import {getHtmlTagDefinition} from '../ml_parser/html_tags';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
-import {InterpolatedAttributeToken, InterpolatedTextToken, TokenType} from '../ml_parser/tokens';
+import {Token, TokenType} from '../ml_parser/lexer';
 import {ParseSourceSpan} from '../parse_util';
 
 import * as i18n from './i18n_ast';
@@ -163,16 +163,16 @@ class _I18nVisitor implements html.Visitor {
   }
 
   /**
-   * Convert, text and interpolated tokens up into text and placeholder pieces.
+   * Split the, potentially interpolated, text up into text and placeholder pieces.
    *
-   * @param tokens The text and interpolated tokens.
+   * @param text The potentially interpolated string to be split.
    * @param sourceSpan The span of the whole of the `text` string.
    * @param context The current context of the visitor, used to compute and store placeholders.
    * @param previousI18n Any i18n metadata associated with this `text` from a previous pass.
    */
   private _visitTextWithInterpolation(
-      tokens: (InterpolatedTextToken|InterpolatedAttributeToken)[], sourceSpan: ParseSourceSpan,
-      context: I18nMessageVisitorContext, previousI18n: i18n.I18nMeta|undefined): i18n.Node {
+      tokens: Token[], sourceSpan: ParseSourceSpan, context: I18nMessageVisitorContext,
+      previousI18n: i18n.I18nMeta|undefined): i18n.Node {
     // Return a sequence of `Text` and `Placeholder` nodes grouped in a `Container`.
     const nodes: i18n.Node[] = [];
     for (const token of tokens) {
