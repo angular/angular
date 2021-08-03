@@ -1,13 +1,13 @@
-`Hello, ${ // SOURCE: "/i18n_message_container_tag.ts" "Hello, "
+`Hello, ${ // SOURCE: "/i18n_message_container_tag.ts" Hello, 
 …
-"\uFFFD#2\uFFFD" // SOURCE: "/i18n_message_container_tag.ts" "<b>"
+"\uFFFD#2\uFFFD" // SOURCE: "/i18n_message_container_tag.ts" <b>
 …
-}:START_BOLD_TEXT:World${ // SOURCE: "/i18n_message_container_tag.ts" "World"
+}:START_BOLD_TEXT:World${ // SOURCE: "/i18n_message_container_tag.ts" World
 …
-"\uFFFD/#2\uFFFD" // SOURCE: "/i18n_message_container_tag.ts" "</b>"
+"\uFFFD/#2\uFFFD" // SOURCE: "/i18n_message_container_tag.ts" </b>
 …
-}:CLOSE_BOLD_TEXT:!` // SOURCE: "/i18n_message_container_tag.ts" "!"
+}:CLOSE_BOLD_TEXT:!` // SOURCE: "/i18n_message_container_tag.ts" !
 …
-i0.ɵɵelementStart(0, "div") // SOURCE: "/i18n_message_container_tag.ts" "<div i18n>"
+i0.ɵɵelementStart(0, "div") // SOURCE: "/i18n_message_container_tag.ts" <div i18n>
 …
-i0.ɵɵelementEnd() // SOURCE: "/i18n_message_container_tag.ts" "</div>"
+i0.ɵɵelementEnd() // SOURCE: "/i18n_message_container_tag.ts" </div>
