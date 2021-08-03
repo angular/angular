@@ -26,12 +26,12 @@ philosophy](https://www.google.com/about/appsecurity/).
 <header>Best practices</header>
 
 * **Keep current with the latest Angular library releases.**
-We regularly update the Angular libraries, and these updates may fix security defects discovered in
+We regularly update the Angular libraries, and these updates might fix security defects discovered in
 previous versions. Check the Angular [change
 log](https://github.com/angular/angular/blob/master/CHANGELOG.md) for security-related updates.
 
 * **Don't modify your copy of Angular.**
-Private, customized versions of Angular tend to fall behind the current version and may not include
+Private, customized versions of Angular tend to fall behind the current version and might not include
 important security fixes and enhancements. Instead, share your Angular improvements with the
 community and make a pull request.
 
@@ -55,7 +55,7 @@ attacker-controlled data enters the DOM, expect security vulnerabilities.
 
 ### Angular’s cross-site scripting security model
 
-To systematically block XSS bugs, Angular treats all values as untrusted by default. When a value is inserted into the DOM from a template binding, or interpolation, Angular sanitizes and escapes untrusted values. If a value was already sanitized outside of Angular and is considered safe, you can communicate this to Angular by marking the [value as trusted](#bypass-security-apis).
+To systematically block XSS bugs, Angular treats all values as untrusted by default. When a value is inserted into the DOM from a template binding, or interpolation, Angular sanitizes and escapes untrusted values. If a value was already sanitized outside of Angular and is considered safe, communicate this to Angular by marking the [value as trusted](#bypass-security-apis).
 
 Unlike values to be used for rendering, Angular templates are considered trusted by default, and should be treated as executable code. Never generate templates by concatenating user input and template syntax. Doing this would enable attackers to [inject arbitrary code](https://en.wikipedia.org/wiki/Code_injection) into your application. To prevent these vulnerabilities, always use the default [AOT template compiler](/guide/security#offline-template-compiler) in production deployments.
 
@@ -72,7 +72,7 @@ Angular defines the following security contexts:
 * **HTML** is used when interpreting a value as HTML, for example, when binding to `innerHtml`.
 * **Style** is used when binding CSS into the `style` property.
 * **URL** is used for URL properties, such as `<a href>`.
-* **Resource URL** is a URL that will be loaded and executed as code, for example, in `<script src>`.
+* **Resource URL** is a URL that is loaded and executed as code, for example, in `<script src>`.
 
 Angular sanitizes untrusted values for HTML, styles, and URLs; sanitizing resource URLs isn't
 possible because they contain arbitrary code. In development mode, Angular prints a console warning
@@ -120,7 +120,7 @@ as [described below](#bypass-security-apis).
 
 Sometimes applications genuinely need to include executable code, display an `<iframe>` from some
 URL, or construct potentially dangerous URLs. To prevent automatic sanitization in any of these
-situations, you can tell Angular that you inspected a value, checked how it was generated, and made
+situations, tell Angular that you inspected a value, checked how it was generated, and made
 sure it will always be secure. But *be careful*. If you trust a value that might be malicious, you
 are introducing a security vulnerability into your application. If in doubt, find a professional
 security reviewer.
@@ -151,11 +151,11 @@ this, mark the URL value as a trusted URL using the `bypassSecurityTrustUrl` cal
 </div>
 
 If you need to convert user input into a trusted value, use a
-component method. The following template allows users to enter a YouTube video ID and load the
+component method. The following template lets users enter a YouTube video ID and load the
 corresponding video in an `<iframe>`. The `<iframe src>` attribute is a resource URL security
 context, because an untrusted source can, for example, smuggle in file downloads that unsuspecting users
 could execute. So call a method on the component to construct a trusted video URL, which causes
-Angular to allow binding into `<iframe src>`:
+Angular to let binding into `<iframe src>`:
 
 
 <code-example path="security/src/app/bypass-security.component.html" header="src/app/bypass-security.component.html (iframe)" region="iframe"></code-example>
@@ -283,14 +283,14 @@ For information about CSRF at the Open Web Application Security Project (OWASP),
 The Stanford University paper
 [Robust Defenses for Cross-Site Request Forgery](https://seclab.stanford.edu/websec/csrf/csrf.pdf) is a rich source of detail.
 
-See also Dave Smith's easy-to-understand
+See also Dave Smith's 
 [talk on XSRF at AngularConnect 2016](https://www.youtube.com/watch?v=9inczw6qtpY "Cross Site Request Funkery Securing Your Angular Apps From Evil Doers").
 
 {@a xssi}
 ### Cross-site script inclusion (XSSI)
 
 Cross-site script inclusion, also known as JSON vulnerability, can allow an attacker's website to
-read data from a JSON API. The attack works on older browsers by overriding native JavaScript
+read data from a JSON API. The attack works on older browsers by overriding built-in JavaScript
 object constructors, and then including an API URL using a `<script>` tag.
 
 This attack is only successful if the returned JSON is executable as JavaScript. Servers can

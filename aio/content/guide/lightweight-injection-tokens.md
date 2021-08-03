@@ -122,7 +122,7 @@ class LibCardComponent {
 ```
 
 In this example, the `LibCardComponent` implementation no longer refers to `LibHeaderComponent` in either the type position or the value position.
-This allows full tree shaking of `LibHeaderComponent` to take place.
+This lets full tree shaking of `LibHeaderComponent` take place.
 The `LibHeaderToken` is retained, but it is only a class declaration, with no concrete implementation. It is small and does not materially impact the application size when retained after compilation.
 
 Instead, `LibHeaderComponent` itself implements the abstract `LibHeaderToken` class. You can safely use that token as the provider in the component definition, allowing Angular to correctly inject the concrete type.
@@ -139,10 +139,10 @@ To summarize, the lightweight injection token pattern consists of the following.
 A component that injects a lightweight injection token might need to invoke a method in the injected class.
 Because the token is now an abstract class, and the injectable component implements that class, you must also declare an abstract method in the abstract lightweight injection token class.
 The implementation of the method (with all of its code overhead) resides in the injectable component that can be tree-shaken.
-This allows the parent to communicate with the child (if it is present) in a type-safe manner.
+This lets the parent communicate with the child (if it is present) in a type-safe manner.
 
 For example, the `LibCardComponent` now queries `LibHeaderToken` rather than `LibHeaderComponent`.
-The following example shows how the pattern allows `LibCardComponent` to communicate with the `LibHeaderComponent` without actually referring to `LibHeaderComponent`.
+The following example shows how the pattern lets `LibCardComponent` communicate with the `LibHeaderComponent` without actually referring to `LibHeaderComponent`.
 
 ```
 abstract class LibHeaderToken {
