@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseError, ParseLocation, ParseSourceSpan} from '../parse_util';
+import {ParseError, ParseSourceSpan} from '../parse_util';
 
 import * as html from './ast';
 import {NAMED_ENTITIES} from './entities';
@@ -362,49 +362,27 @@ class _TreeBuilder {
 
   private _consumeAttr(attrName: lex.Token): html.Attribute {
     const fullName = mergeNsAndName(attrName.parts[0], attrName.parts[1]);
-    let attrEnd = attrName.sourceSpan.end;
-
-    // Consume any quote
+    let end = attrName.sourceSpan.end;
+    let value = '';
+    let valueSpan: ParseSourceSpan = undefined!;
     if (this._peek.type === lex.TokenType.ATTR_QUOTE) {
       this._advance();
     }
-
-    // Consume the value
-    let value = '';
-    let valueStartSpan: ParseSourceSpan|undefined = undefined;
-    let valueEnd: ParseLocation|undefined = undefined;
-    if (this._peek.type === lex.TokenType.ATTR_VALUE_TEXT) {
-      valueStartSpan = this._peek.sourceSpan;
-      valueEnd = this._peek.sourceSpan.end;
-      // For now we are recombining text and interpolation tokens
-      while (this._peek.type === lex.TokenType.ATTR_VALUE_TEXT ||
-             this._peek.type === lex.TokenType.ATTR_VALUE_INTERPOLATION) {
-        let valueToken = this._advance();
-        if (valueToken.type === lex.TokenType.ATTR_VALUE_INTERPOLATION) {
-          // For backward compatibility we decode HTML entities that appear in interpolation
-          // expressions. This is arguably a bug, but it could be a considerable breaking change to
-          // fix it. It should be addressed in a larger project to refactor the entire parser/lexer
-          // chain after View Engine has been removed.
-          value += valueToken.parts.join('').replace(/&([^;]+);/g, decodeEntity);
-        } else {
-          value += valueToken.parts.join('');
-        }
-        valueEnd = attrEnd = valueToken.sourceSpan.end;
-      }
+    if (this._peek.type === lex.TokenType.ATTR_VALUE) {
+      const valueToken = this._advance();
+      value = valueToken.parts[0];
+      end = valueToken.sourceSpan.end;
+      valueSpan = valueToken.sourceSpan;
     }
-
-    // Consume any quote
     if (this._peek.type === lex.TokenType.ATTR_QUOTE) {
       const quoteToken = this._advance();
-      attrEnd = quoteToken.sourceSpan.end;
+      end = quoteToken.sourceSpan.end;
     }
-
-    const valueSpan = valueStartSpan && valueEnd &&
-        new ParseSourceSpan(valueStartSpan.start, valueEnd, valueStartSpan.fullStart);
+    const keySpan = new ParseSourceSpan(attrName.sourceSpan.start, attrName.sourceSpan.end);
     return new html.Attribute(
         fullName, value,
-        new ParseSourceSpan(attrName.sourceSpan.start, attrEnd, attrName.sourceSpan.fullStart),
-        attrName.sourceSpan, valueSpan);
+        new ParseSourceSpan(attrName.sourceSpan.start, end, attrName.sourceSpan.fullStart), keySpan,
+        valueSpan);
   }
 
   private _getParentElement(): html.Element|null {
