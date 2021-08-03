@@ -131,7 +131,7 @@ are intelligently matched to check whether they are equivalent.
 To check a mapping, add a `// SOURCE:` comment to the end of a line in an expectation file:
 
 ```
-<generated code> // SOURCE: "<source-url>" "<source code>"
+<generated code> // SOURCE: "<source-url>" <source code>
 ```
 
 The generated code, stripped of the `// SOURCE: ` comment, will still be checked as normal by the
@@ -144,7 +144,6 @@ Note:
   to be `/`.
 * Whitespace is important and will be included when comparing the segments.
 * There is a single space character between each part of the line.
-* Double quotes in the mapping must be escaped.
 * Newlines within a mapping must be escaped since the mapping and comment must all appear on a
   single line of this file.
 
