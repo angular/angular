@@ -436,6 +436,10 @@ function isExponentSign(code: number): boolean {
   return code == chars.$MINUS || code == chars.$PLUS;
 }
 
+export function isQuote(code: number): boolean {
+  return code === chars.$SQ || code === chars.$DQ || code === chars.$BT;
+}
+
 function unescape(code: number): number {
   switch (code) {
     case chars.$n:
