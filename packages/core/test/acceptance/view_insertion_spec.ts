@@ -888,7 +888,7 @@ describe('view insertion', () => {
     });
 
     it('should consistently report errors raised by createEmbeddedView', () => {
-      // Intentionally hasn't been added to `providers`.
+      // Intentionally hasn't been added to `providers` so that it throws a DI error.
       @Injectable()
       class DoesNotExist {
       }
@@ -917,17 +917,15 @@ describe('view insertion', () => {
 
       TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
+      const tryRender = () => {
+        fixture.componentInstance.insertTemplate();
+        fixture.detectChanges();
+      };
       fixture.detectChanges();
 
-      expect(() => {
-        fixture.componentInstance.insertTemplate();
-        fixture.detectChanges();
-      }).toThrowError(/No provider for DoesNotExist/);
-
-      expect(() => {
-        fixture.componentInstance.insertTemplate();
-        fixture.detectChanges();
-      }).toThrowError(/No provider for DoesNotExist/);
+      // We try to render the same template twice to ensure that we get consistent error messages.
+      expect(tryRender).toThrowError(/No provider for DoesNotExist/);
+      expect(tryRender).toThrowError(/No provider for DoesNotExist/);
     });
   });
 });
