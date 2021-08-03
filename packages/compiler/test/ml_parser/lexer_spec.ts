@@ -316,32 +316,6 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         ]);
       });
 
-      it('should end interpolation on an unescaped matching quote', () => {
-        expect(tokenizeAndHumanizeParts('<t a="{{ a \\" \' b ">')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 't'],
-          [lex.TokenType.ATTR_NAME, '', 'a'],
-          [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_VALUE_TEXT, ''],
-          [lex.TokenType.ATTR_VALUE_INTERPOLATION, '{{', ' a \\" \' b '],
-          [lex.TokenType.ATTR_VALUE_TEXT, ''],
-          [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.EOF],
-        ]);
-
-        expect(tokenizeAndHumanizeParts('<t a=\'{{ a " \\\' b \'>')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 't'],
-          [lex.TokenType.ATTR_NAME, '', 'a'],
-          [lex.TokenType.ATTR_QUOTE, '\''],
-          [lex.TokenType.ATTR_VALUE_TEXT, ''],
-          [lex.TokenType.ATTR_VALUE_INTERPOLATION, '{{', ' a " \\\' b '],
-          [lex.TokenType.ATTR_VALUE_TEXT, ''],
-          [lex.TokenType.ATTR_QUOTE, '\''],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.EOF],
-        ]);
-      });
-
       it('should parse attributes with prefix', () => {
         expect(tokenizeAndHumanizeParts('<t ns1:a>')).toEqual([
           [lex.TokenType.TAG_OPEN_START, '', 't'],
@@ -619,15 +593,14 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
       });
 
       it('should parse interpolation', () => {
-        expect(tokenizeAndHumanizeParts(
-                   '{{ a }}b{{ c // comment }}d{{ e "}} \' " f }}g{{ h // " i }}'))
+        expect(tokenizeAndHumanizeParts('{{ a }}b{{ c // comment }}d{{ e "}}" f }}g{{ h // " i }}'))
             .toEqual([
               [lex.TokenType.TEXT, ''],
               [lex.TokenType.INTERPOLATION, '{{', ' a ', '}}'],
               [lex.TokenType.TEXT, 'b'],
               [lex.TokenType.INTERPOLATION, '{{', ' c // comment ', '}}'],
               [lex.TokenType.TEXT, 'd'],
-              [lex.TokenType.INTERPOLATION, '{{', ' e "}} \' " f ', '}}'],
+              [lex.TokenType.INTERPOLATION, '{{', ' e "}}" f ', '}}'],
               [lex.TokenType.TEXT, 'g'],
               [lex.TokenType.INTERPOLATION, '{{', ' h // " i ', '}}'],
               [lex.TokenType.TEXT, ''],
@@ -758,18 +731,6 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
           [lex.TokenType.RAW_TEXT, ''],
           [lex.TokenType.COMMENT_END],
           [lex.TokenType.TEXT, '}'],
-          [lex.TokenType.EOF],
-        ]);
-      });
-
-      it('should end interpolation on a valid closing tag', () => {
-        expect(tokenizeAndHumanizeParts('<p>{{ a </p>')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 'p'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.INTERPOLATION, '{{', ' a '],
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.TAG_CLOSE, '', 'p'],
           [lex.TokenType.EOF],
         ]);
       });
