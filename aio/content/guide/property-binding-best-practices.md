@@ -34,7 +34,7 @@ In the following example, the `childItem` property of the `ItemDetailComponent` 
 
 <code-example path="property-binding/src/app/app.component.html" region="model-property-binding" header="src/app/app.component.html"></code-example>
 
-You can confirm this expectation by looking in the `ItemDetailComponent` where the `@Input()` type is `string`:
+Confirm this expectation by looking in the `ItemDetailComponent` where the `@Input()` type is `string`:
 
 <code-example path="property-binding/src/app/item-detail/item-detail.component.ts" region="input-type" header="src/app/item-detail/item-detail.component.ts (setting the @Input() type)"></code-example>
 
