@@ -22,7 +22,6 @@ export enum TokenType {
   TEXT,
   ESCAPABLE_RAW_TEXT,
   RAW_TEXT,
-  INTERPOLATION,
   COMMENT_START,
   COMMENT_END,
   CDATA_START,
@@ -286,7 +285,7 @@ class _Tokenizer {
     }
     const token = new Token(
         this._currentTokenType, parts,
-        (end ?? this._cursor).getSpan(this._currentTokenStart, this._leadingTriviaCodePoints));
+        this._cursor.getSpan(this._currentTokenStart, this._leadingTriviaCodePoints));
     this.tokens.push(token);
     this._currentTokenStart = null;
     this._currentTokenType = null;
@@ -697,16 +696,19 @@ class _Tokenizer {
   }
 
   private _consumeText() {
-    this._beginToken(TokenType.TEXT);
+    const start = this._cursor.clone();
+    this._beginToken(TokenType.TEXT, start);
     const parts: string[] = [];
 
     do {
-      const current = this._cursor.clone();
       if (this._interpolationConfig && this._attemptStr(this._interpolationConfig.start)) {
-        this._endToken([this._processCarriageReturns(parts.join(''))], current);
-        this._consumeInterpolation(current);
-        parts.length = 0;
-        this._beginToken(TokenType.TEXT);
+        parts.push(this._interpolationConfig.start);
+        this._inInterpolation = true;
+      } else if (
+          this._interpolationConfig && this._inInterpolation &&
+          this._attemptStr(this._interpolationConfig.end)) {
+        parts.push(this._interpolationConfig.end);
+        this._inInterpolation = false;
       } else {
         parts.push(this._readChar(true));
       }
@@ -717,61 +719,6 @@ class _Tokenizer {
     this._inInterpolation = false;
 
     this._endToken([this._processCarriageReturns(parts.join(''))]);
-  }
-
-  private _consumeInterpolation(interpolationStart: CharacterCursor) {
-    const parts: string[] = [];
-    this._beginToken(TokenType.INTERPOLATION, interpolationStart);
-    parts.push(this._interpolationConfig.start);
-
-    // Find the end of the interpolation, ignoring content inside quotes.
-    const expressionStart = this._cursor.clone();
-    let inQuote: string|null = null;
-    let inComment = false;
-    while (this._cursor.peek() !== chars.$EOF) {
-      const current = this._cursor.clone();
-
-      if (this._isTagStart()) {
-        // We are starting what looks like an HTML element in the middle of this interpolation.
-        // Reset the cursor to before the `<` character and end the interpolation token.
-        // (This is actually wrong but here for backward compatibility).
-        this._cursor = current;
-        parts.push(this._getProcessedChars(expressionStart, current));
-        return this._endToken(parts);
-      }
-
-      if (inQuote === null) {
-        if (this._attemptStr(this._interpolationConfig.end)) {
-          // We are not in a string, and we hit the end interpolation marker
-          parts.push(this._getProcessedChars(expressionStart, current));
-          parts.push(this._interpolationConfig.end);
-          return this._endToken(parts);
-        } else if (this._attemptStr('//')) {
-          // Once we are in a comment we ignore any quotes
-          inComment = true;
-        }
-      }
-
-      const char = this._readChar(true);
-      if (char === '\\') {
-        // Skip the next character because it was escaped.
-        this._readChar(true);
-      } else if (char === inQuote) {
-        // Exiting the current quoted string
-        inQuote = null;
-      } else if (!inComment && /['"`]/.test(char)) {
-        // Entering a new quoted string
-        inQuote = char;
-      }
-    }
-
-    // We hit EOF without finding a closing interpolation marker
-    parts.push(this._getProcessedChars(expressionStart, this._cursor));
-    return this._endToken(parts);
-  }
-
-  private _getProcessedChars(start: CharacterCursor, end: CharacterCursor): string {
-    return this._processCarriageReturns(end.getChars(start))
   }
 
   private _isTextEnd(): boolean {
