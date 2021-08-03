@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {StaticSymbol} from '@angular/compiler/src/aot/static_symbol';
+import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
 import {JavaScriptEmitter} from '@angular/compiler/src/output/js_emitter';
 import * as o from '@angular/compiler/src/output/output_ast';
 import {SourceMap} from '@angular/compiler/src/output/source_map';

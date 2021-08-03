@@ -19,12 +19,11 @@ import {Identifiers} from './identifiers';
 import {getAllLifecycleHooks} from './lifecycle_reflector';
 import {HtmlParser} from './ml_parser/html_parser';
 import {NgModuleResolver} from './ng_module_resolver';
-import {CompileIdentifierMetadata, identifierName, syntaxError} from './parse_util';
 import {PipeResolver} from './pipe_resolver';
 import {ElementSchemaRegistry} from './schema/element_schema_registry';
 import {CssSelector} from './selector';
 import {SummaryResolver} from './summary_resolver';
-import {Console, isPromise, noUndefined, resolveForwardRef, stringify, SyncAsync, ValueTransformer, visitValue} from './util';
+import {Console, isPromise, noUndefined, resolveForwardRef, stringify, SyncAsync, syntaxError, ValueTransformer, visitValue} from './util';
 
 export type ErrorCollector = (error: any, type?: any) => void;
 
@@ -131,7 +130,7 @@ export class CompileMetadataResolver {
   }
 
   getHostComponentType(dirType: any): StaticSymbol|cpl.ProxyClass {
-    const name = `${identifierName({reference: dirType})}_Host`;
+    const name = `${cpl.identifierName({reference: dirType})}_Host`;
     if (dirType instanceof StaticSymbol) {
       return this._staticSymbolCache.get(dirType.filePath, name);
     }
@@ -534,14 +533,14 @@ export class CompileMetadataResolver {
     if (!meta) {
       return null;
     }
-    const declaredDirectives: CompileIdentifierMetadata[] = [];
-    const exportedNonModuleIdentifiers: CompileIdentifierMetadata[] = [];
-    const declaredPipes: CompileIdentifierMetadata[] = [];
+    const declaredDirectives: cpl.CompileIdentifierMetadata[] = [];
+    const exportedNonModuleIdentifiers: cpl.CompileIdentifierMetadata[] = [];
+    const declaredPipes: cpl.CompileIdentifierMetadata[] = [];
     const importedModules: cpl.CompileNgModuleSummary[] = [];
     const exportedModules: cpl.CompileNgModuleSummary[] = [];
     const providers: cpl.CompileProviderMetadata[] = [];
     const entryComponents: cpl.CompileEntryComponentMetadata[] = [];
-    const bootstrapComponents: CompileIdentifierMetadata[] = [];
+    const bootstrapComponents: cpl.CompileIdentifierMetadata[] = [];
     const schemas: SchemaMetadata[] = [];
 
     if (meta.imports) {
@@ -673,8 +672,8 @@ export class CompileMetadataResolver {
       });
     }
 
-    const exportedDirectives: CompileIdentifierMetadata[] = [];
-    const exportedPipes: CompileIdentifierMetadata[] = [];
+    const exportedDirectives: cpl.CompileIdentifierMetadata[] = [];
+    const exportedPipes: cpl.CompileIdentifierMetadata[] = [];
     exportedNonModuleIdentifiers.forEach((exportedId) => {
       if (transitiveModule.directivesSet.has(exportedId.reference)) {
         exportedDirectives.push(exportedId);
@@ -837,7 +836,7 @@ export class CompileMetadataResolver {
     return result;
   }
 
-  private _getIdentifierMetadata(type: Type): CompileIdentifierMetadata {
+  private _getIdentifierMetadata(type: Type): cpl.CompileIdentifierMetadata {
     type = resolveForwardRef(type);
     return {reference: type};
   }
@@ -1094,7 +1093,7 @@ export class CompileMetadataResolver {
   private _getEntryComponentsFromProvider(provider: cpl.ProviderMeta, type?: any):
       cpl.CompileEntryComponentMetadata[] {
     const components: cpl.CompileEntryComponentMetadata[] = [];
-    const collectedIdentifiers: CompileIdentifierMetadata[] = [];
+    const collectedIdentifiers: cpl.CompileIdentifierMetadata[] = [];
 
     if (provider.useFactory || provider.useExisting || provider.useClass) {
       this._reportError(
@@ -1264,12 +1263,12 @@ function isValidType(value: any): boolean {
   return (value instanceof StaticSymbol) || (value instanceof Type);
 }
 
-function extractIdentifiers(value: any, targetIdentifiers: CompileIdentifierMetadata[]) {
+function extractIdentifiers(value: any, targetIdentifiers: cpl.CompileIdentifierMetadata[]) {
   visitValue(value, new _CompileValueConverter(), targetIdentifiers);
 }
 
 class _CompileValueConverter extends ValueTransformer {
-  override visitOther(value: any, targetIdentifiers: CompileIdentifierMetadata[]): any {
+  override visitOther(value: any, targetIdentifiers: cpl.CompileIdentifierMetadata[]): any {
     targetIdentifiers.push({reference: value});
   }
 }

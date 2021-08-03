@@ -7,15 +7,14 @@
  */
 
 import {StaticSymbol} from './aot/static_symbol';
-import {CompileInjectableMetadata} from './compile_metadata';
+import {CompileInjectableMetadata, identifierName} from './compile_metadata';
 import {CompileReflector} from './compile_reflector';
-import {OutputContext} from './constant_pool';
 import {InjectFlags} from './core';
 import {Identifiers} from './identifiers';
 import * as o from './output/output_ast';
 import {convertValueToOutputAst} from './output/value_util';
-import {identifierName} from './parse_util';
 import {Identifiers as R3} from './render3/r3_identifiers';
+import {OutputContext} from './util';
 
 type MapEntry = {
   key: string,
