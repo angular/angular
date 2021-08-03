@@ -29,8 +29,7 @@ export enum TokenType {
   CDATA_END,
   ATTR_NAME,
   ATTR_QUOTE,
-  ATTR_VALUE_TEXT,
-  ATTR_VALUE_INTERPOLATION,
+  ATTR_VALUE,
   DOC_TYPE,
   EXPANSION_FORM_START,
   EXPANSION_CASE_VALUE,
@@ -229,8 +228,7 @@ class _Tokenizer {
             this._consumeTagOpen(start);
           }
         } else if (!(this._tokenizeIcu && this._tokenizeExpansionForm())) {
-          this._consumeWithInterpolation(
-              TokenType.TEXT, TokenType.INTERPOLATION, () => this._isTextEnd());
+          this._consumeText();
         }
       } catch (e) {
         this.handleError(e);
@@ -597,23 +595,27 @@ class _Tokenizer {
   private _consumeAttributeValue() {
     let value: string;
     if (this._cursor.peek() === chars.$SQ || this._cursor.peek() === chars.$DQ) {
+      this._beginToken(TokenType.ATTR_QUOTE);
       const quoteChar = this._cursor.peek();
-      this._consumeQuote(quoteChar);
-      this._consumeWithInterpolation(
-          TokenType.ATTR_VALUE_TEXT, TokenType.ATTR_VALUE_INTERPOLATION,
-          () => this._cursor.peek() === quoteChar);
-      this._consumeQuote(quoteChar);
+      this._cursor.advance();
+      this._endToken([String.fromCodePoint(quoteChar)]);
+      this._beginToken(TokenType.ATTR_VALUE);
+      const parts: string[] = [];
+      while (this._cursor.peek() !== quoteChar) {
+        parts.push(this._readChar(true));
+      }
+      value = parts.join('');
+      this._endToken([this._processCarriageReturns(value)]);
+      this._beginToken(TokenType.ATTR_QUOTE);
+      this._cursor.advance();
+      this._endToken([String.fromCodePoint(quoteChar)]);
     } else {
-      const endPredicate = () => isNameEnd(this._cursor.peek());
-      this._consumeWithInterpolation(
-          TokenType.ATTR_VALUE_TEXT, TokenType.ATTR_VALUE_INTERPOLATION, endPredicate);
+      this._beginToken(TokenType.ATTR_VALUE);
+      const valueStart = this._cursor.clone();
+      this._requireCharCodeUntilFn(isNameEnd, 1);
+      value = this._cursor.getChars(valueStart);
+      this._endToken([this._processCarriageReturns(value)]);
     }
-  }
-
-  private _consumeQuote(quoteChar: number) {
-    this._beginToken(TokenType.ATTR_QUOTE);
-    this._requireCharCode(quoteChar);
-    this._endToken([String.fromCodePoint(quoteChar)]);
   }
 
   private _consumeTagOpenEnd() {
@@ -694,31 +696,21 @@ class _Tokenizer {
     this._expansionCaseStack.pop();
   }
 
-  /**
-   * Consume a string that may contain interpolation expressions.
-   * The first token consumed will be of `tokenType` and then there will be alternating
-   * `interpolationTokenType` and `tokenType` tokens until the `endPredicate()` returns true.
-   *
-   * @param textTokenType the kind of tokens to interleave around interpolation tokens.
-   * @param interpolationTokenType the kind of tokens that contain interpolation.
-   * @param endPredicate a function that should return true when we should stop consuming.
-   */
-  private _consumeWithInterpolation(
-      textTokenType: TokenType, interpolationTokenType: TokenType, endPredicate: () => boolean) {
-    this._beginToken(textTokenType);
+  private _consumeText() {
+    this._beginToken(TokenType.TEXT);
     const parts: string[] = [];
 
-    while (!endPredicate()) {
+    do {
       const current = this._cursor.clone();
       if (this._interpolationConfig && this._attemptStr(this._interpolationConfig.start)) {
         this._endToken([this._processCarriageReturns(parts.join(''))], current);
-        this._consumeInterpolation(interpolationTokenType, current);
+        this._consumeInterpolation(current);
         parts.length = 0;
-        this._beginToken(textTokenType);
+        this._beginToken(TokenType.TEXT);
       } else {
         parts.push(this._readChar(true));
       }
-    }
+    } while (!this._isTextEnd());
 
     // It is possible that an interpolation was started but not ended inside this text token.
     // Make sure that we reset the state of the lexer correctly.
@@ -727,15 +719,14 @@ class _Tokenizer {
     this._endToken([this._processCarriageReturns(parts.join(''))]);
   }
 
-  private _consumeInterpolation(
-      interpolationTokenType: TokenType, interpolationStart: CharacterCursor) {
+  private _consumeInterpolation(interpolationStart: CharacterCursor) {
     const parts: string[] = [];
-    this._beginToken(interpolationTokenType, interpolationStart);
+    this._beginToken(TokenType.INTERPOLATION, interpolationStart);
     parts.push(this._interpolationConfig.start);
 
     // Find the end of the interpolation, ignoring content inside quotes.
     const expressionStart = this._cursor.clone();
-    let inQuote: number|null = null;
+    let inQuote: string|null = null;
     let inComment = false;
     while (this._cursor.peek() !== chars.$EOF) {
       const current = this._cursor.clone();
@@ -761,15 +752,14 @@ class _Tokenizer {
         }
       }
 
-      const char = this._cursor.peek();
-      this._cursor.advance();
-      if (char === chars.$BACKSLASH) {
+      const char = this._readChar(true);
+      if (char === '\\') {
         // Skip the next character because it was escaped.
-        this._cursor.advance();
+        this._readChar(true);
       } else if (char === inQuote) {
         // Exiting the current quoted string
         inQuote = null;
-      } else if (!inComment && chars.isQuote(char)) {
+      } else if (!inComment && /['"`]/.test(char)) {
         // Entering a new quoted string
         inQuote = char;
       }
