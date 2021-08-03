@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {identifierName} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
-import {identifierName} from '../parse_util';
 
 import {EmitterVisitorContext} from './abstract_emitter';
 import {AbstractJsEmitterVisitor} from './abstract_js_emitter';

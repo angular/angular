@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {syntaxError} from '../parse_util';
+import {syntaxError} from '../util';
 
 export interface Position {
   fileName: string;

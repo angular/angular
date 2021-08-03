@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileTokenMetadata, CompileTypeMetadata} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileTokenMetadata, CompileTypeMetadata, identifierName} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
 import {CompilerConfig} from '../config';
 import {SchemaMetadata} from '../core';
@@ -19,12 +19,12 @@ import {removeWhitespaces, replaceNgsp} from '../ml_parser/html_whitespaces';
 import {expandNodes} from '../ml_parser/icu_ast_expander';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {isNgTemplate, splitNsName} from '../ml_parser/tags';
-import {identifierName, ParseError, ParseErrorLevel, ParseSourceSpan, syntaxError} from '../parse_util';
+import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
 import {ProviderElementContext, ProviderViewContext} from '../provider_analyzer';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {CssSelector, SelectorMatcher} from '../selector';
 import {isStyleUrlResolvable} from '../style_url_resolver';
-import {Console, newArray} from '../util';
+import {Console, newArray, syntaxError} from '../util';
 
 import {BindingParser} from './binding_parser';
 import * as t from './template_ast';
