@@ -87,10 +87,6 @@ class _Humanizer implements html.Visitor {
   private _appendContext(ast: html.Node, input: any[]): any[] {
     if (!this.includeSourceSpan) return input;
     input.push(ast.sourceSpan.toString());
-    if (ast.sourceSpan.fullStart.offset !== ast.sourceSpan.start.offset) {
-      input.push(ast.sourceSpan.fullStart.file.content.substring(
-          ast.sourceSpan.fullStart.offset, ast.sourceSpan.end.offset));
-    }
     return input;
   }
 }
