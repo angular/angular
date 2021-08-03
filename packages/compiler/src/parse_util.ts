@@ -5,9 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {StaticSymbol} from './aot/static_symbol';
 import * as chars from './chars';
-import {stringify} from './util';
+import {CompileIdentifierMetadata, identifierModuleUrl, identifierName} from './compile_metadata';
 
 export class ParseLocation {
   constructor(
@@ -178,69 +177,4 @@ export function r3JitTypeSourceSpan(
   const sourceFile = new ParseSourceFile('', sourceFileName);
   return new ParseSourceSpan(
       new ParseLocation(sourceFile, -1, -1, -1), new ParseLocation(sourceFile, -1, -1, -1));
-}
-
-export function syntaxError(msg: string, parseErrors?: ParseError[]): Error {
-  const error = Error(msg);
-  (error as any)[ERROR_SYNTAX_ERROR] = true;
-  if (parseErrors) (error as any)[ERROR_PARSE_ERRORS] = parseErrors;
-  return error;
-}
-
-const ERROR_SYNTAX_ERROR = 'ngSyntaxError';
-const ERROR_PARSE_ERRORS = 'ngParseErrors';
-
-export function isSyntaxError(error: Error): boolean {
-  return (error as any)[ERROR_SYNTAX_ERROR];
-}
-
-export function getParseErrors(error: Error): ParseError[] {
-  return (error as any)[ERROR_PARSE_ERRORS] || [];
-}
-
-let _anonymousTypeIndex = 0;
-
-export function identifierName(compileIdentifier: CompileIdentifierMetadata|null|undefined): string|
-    null {
-  if (!compileIdentifier || !compileIdentifier.reference) {
-    return null;
-  }
-  const ref = compileIdentifier.reference;
-  if (ref instanceof StaticSymbol) {
-    return ref.name;
-  }
-  if (ref['__anonymousType']) {
-    return ref['__anonymousType'];
-  }
-  if (ref['__forward_ref__']) {
-    // We do not want to try to stringify a `forwardRef()` function because that would cause the
-    // inner function to be evaluated too early, defeating the whole point of the `forwardRef`.
-    return '__forward_ref__';
-  }
-  let identifier = stringify(ref);
-  if (identifier.indexOf('(') >= 0) {
-    // case: anonymous functions!
-    identifier = `anonymous_${_anonymousTypeIndex++}`;
-    ref['__anonymousType'] = identifier;
-  } else {
-    identifier = sanitizeIdentifier(identifier);
-  }
-  return identifier;
-}
-
-export function identifierModuleUrl(compileIdentifier: CompileIdentifierMetadata): string {
-  const ref = compileIdentifier.reference;
-  if (ref instanceof StaticSymbol) {
-    return ref.filePath;
-  }
-  // Runtime type
-  return `./${stringify(ref)}`;
-}
-
-export interface CompileIdentifierMetadata {
-  reference: any;
-}
-
-export function sanitizeIdentifier(name: string): string {
-  return name.replace(/\W/g, '_');
 }

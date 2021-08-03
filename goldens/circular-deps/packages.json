@@ -42,6 +42,55 @@
     "packages/compiler-cli/src/ngtsc/scope/src/local.ts"
   ],
   [
+    "packages/compiler/src/compile_metadata.ts",
+    "packages/compiler/src/lifecycle_reflector.ts",
+    "packages/compiler/src/compile_reflector.ts",
+    "packages/compiler/src/output/output_ast.ts",
+    "packages/compiler/src/parse_util.ts"
+  ],
+  [
+    "packages/compiler/src/compile_metadata.ts",
+    "packages/compiler/src/ml_parser/parser.ts",
+    "packages/compiler/src/ml_parser/ast.ts",
+    "packages/compiler/src/i18n/i18n_ast.ts",
+    "packages/compiler/src/parse_util.ts"
+  ],
+  [
+    "packages/compiler/src/compile_metadata.ts",
+    "packages/compiler/src/ml_parser/parser.ts",
+    "packages/compiler/src/ml_parser/ast.ts",
+    "packages/compiler/src/parse_util.ts"
+  ],
+  [
+    "packages/compiler/src/compile_metadata.ts",
+    "packages/compiler/src/ml_parser/parser.ts",
+    "packages/compiler/src/ml_parser/lexer.ts",
+    "packages/compiler/src/parse_util.ts"
+  ],
+  [
+    "packages/compiler/src/compile_metadata.ts",
+    "packages/compiler/src/ml_parser/parser.ts",
+    "packages/compiler/src/parse_util.ts"
+  ],
+  [
+    "packages/compiler/src/compile_metadata.ts",
+    "packages/compiler/src/util.ts",
+    "packages/compiler/src/constant_pool.ts",
+    "packages/compiler/src/output/output_ast.ts",
+    "packages/compiler/src/parse_util.ts"
+  ],
+  [
+    "packages/compiler/src/compile_metadata.ts",
+    "packages/compiler/src/util.ts",
+    "packages/compiler/src/output/output_ast.ts",
+    "packages/compiler/src/parse_util.ts"
+  ],
+  [
+    "packages/compiler/src/compile_metadata.ts",
+    "packages/compiler/src/util.ts",
+    "packages/compiler/src/parse_util.ts"
+  ],
+  [
     "packages/compiler/src/output/output_ast.ts",
     "packages/compiler/src/render3/view/i18n/meta.ts"
   ],
@@ -49,6 +98,11 @@
     "packages/compiler/src/output/output_ast.ts",
     "packages/compiler/src/render3/view/i18n/meta.ts",
     "packages/compiler/src/render3/view/i18n/util.ts"
+  ],
+  [
+    "packages/compiler/src/render3/r3_factory.ts",
+    "packages/compiler/src/render3/view/util.ts",
+    "packages/compiler/src/render3/view/api.ts"
   ],
   [
     "packages/compiler/src/render3/view/styling_builder.ts",

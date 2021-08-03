@@ -7,8 +7,7 @@
  */
 
 
-import {OutputContext} from '../constant_pool';
-import {ValueTransformer, visitValue} from '../util';
+import {OutputContext, ValueTransformer, visitValue} from '../util';
 
 import * as o from './output_ast';
 
