@@ -549,65 +549,24 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
       });
 
       it('should parse interpolation', () => {
-        expect(tokenizeAndHumanizeParts('{{ a }}b{{ c // comment }}d{{ e "}}" f }}g{{ h // " i }}'))
-            .toEqual([
-              [lex.TokenType.TEXT, ''],
-              [lex.TokenType.INTERPOLATION, '{{', ' a ', '}}'],
-              [lex.TokenType.TEXT, 'b'],
-              [lex.TokenType.INTERPOLATION, '{{', ' c // comment ', '}}'],
-              [lex.TokenType.TEXT, 'd'],
-              [lex.TokenType.INTERPOLATION, '{{', ' e "}}" f ', '}}'],
-              [lex.TokenType.TEXT, 'g'],
-              [lex.TokenType.INTERPOLATION, '{{', ' h // " i ', '}}'],
-              [lex.TokenType.TEXT, ''],
-              [lex.TokenType.EOF],
-            ]);
-
-        expect(tokenizeAndHumanizeSourceSpans('{{ a }}b{{ c // comment }}')).toEqual([
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.INTERPOLATION, '{{ a }}'],
-          [lex.TokenType.TEXT, 'b'],
-          [lex.TokenType.INTERPOLATION, '{{ c // comment }}'],
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.EOF, ''],
+        expect(tokenizeAndHumanizeParts('{{ a }}b{{ c // comment }}')).toEqual([
+          [lex.TokenType.TEXT, '{{ a }}b{{ c // comment }}'],
+          [lex.TokenType.EOF],
         ]);
       });
 
       it('should parse interpolation with custom markers', () => {
         expect(tokenizeAndHumanizeParts('{% a %}', {interpolationConfig: {start: '{%', end: '%}'}}))
             .toEqual([
-              [lex.TokenType.TEXT, ''],
-              [lex.TokenType.INTERPOLATION, '{%', ' a ', '%}'],
-              [lex.TokenType.TEXT, ''],
+              [lex.TokenType.TEXT, '{% a %}'],
               [lex.TokenType.EOF],
             ]);
       });
 
-      it('should handle CR & LF in text', () => {
+      it('should handle CR & LF', () => {
         expect(tokenizeAndHumanizeParts('t\ne\rs\r\nt')).toEqual([
           [lex.TokenType.TEXT, 't\ne\ns\nt'],
           [lex.TokenType.EOF],
-        ]);
-
-        expect(tokenizeAndHumanizeSourceSpans('t\ne\rs\r\nt')).toEqual([
-          [lex.TokenType.TEXT, 't\ne\rs\r\nt'],
-          [lex.TokenType.EOF, ''],
-        ]);
-      });
-
-      it('should handle CR & LF in interpolation', () => {
-        expect(tokenizeAndHumanizeParts('{{t\ne\rs\r\nt}}')).toEqual([
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.INTERPOLATION, '{{', 't\ne\ns\nt', '}}'],
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.EOF],
-        ]);
-
-        expect(tokenizeAndHumanizeSourceSpans('{{t\ne\rs\r\nt}}')).toEqual([
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.INTERPOLATION, '{{t\ne\rs\r\nt}}'],
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.EOF, ''],
         ]);
       });
 
@@ -615,11 +574,6 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeParts('a&amp;b')).toEqual([
           [lex.TokenType.TEXT, 'a&b'],
           [lex.TokenType.EOF],
-        ]);
-
-        expect(tokenizeAndHumanizeSourceSpans('a&amp;b')).toEqual([
-          [lex.TokenType.TEXT, 'a&amp;b'],
-          [lex.TokenType.EOF, ''],
         ]);
       });
 
@@ -639,9 +593,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
 
       it('should allow "<" in text nodes', () => {
         expect(tokenizeAndHumanizeParts('{{ a < b ? c : d }}')).toEqual([
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.INTERPOLATION, '{{', ' a < b ? c : d ', '}}'],
-          [lex.TokenType.TEXT, ''],
+          [lex.TokenType.TEXT, '{{ a < b ? c : d }}'],
           [lex.TokenType.EOF],
         ]);
 
@@ -662,9 +614,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
 
       it('should break out of interpolation in text token on valid start tag', () => {
         expect(tokenizeAndHumanizeParts('{{ a <b && c > d }}')).toEqual([
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.INTERPOLATION, '{{', ' a '],
-          [lex.TokenType.TEXT, ''],
+          [lex.TokenType.TEXT, '{{ a '],
           [lex.TokenType.TAG_OPEN_START, '', 'b'],
           [lex.TokenType.ATTR_NAME, '', '&&'],
           [lex.TokenType.ATTR_NAME, '', 'c'],
@@ -676,9 +626,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
 
       it('should break out of interpolation in text token on valid comment', () => {
         expect(tokenizeAndHumanizeParts('{{ a }<!---->}')).toEqual([
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.INTERPOLATION, '{{', ' a }'],
-          [lex.TokenType.TEXT, ''],
+          [lex.TokenType.TEXT, '{{ a }'],
           [lex.TokenType.COMMENT_START],
           [lex.TokenType.RAW_TEXT, ''],
           [lex.TokenType.COMMENT_END],
@@ -689,9 +637,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
 
       it('should break out of interpolation in text token on valid CDATA', () => {
         expect(tokenizeAndHumanizeParts('{{ a }<![CDATA[]]>}')).toEqual([
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.INTERPOLATION, '{{', ' a }'],
-          [lex.TokenType.TEXT, ''],
+          [lex.TokenType.TEXT, '{{ a }'],
           [lex.TokenType.CDATA_START],
           [lex.TokenType.RAW_TEXT, ''],
           [lex.TokenType.CDATA_END],
@@ -707,13 +653,12 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
             .toEqual([
               [lex.TokenType.TAG_OPEN_START, '', 'code'],
               [lex.TokenType.TAG_OPEN_END],
-              [lex.TokenType.TEXT, ''],
-              [lex.TokenType.INTERPOLATION, '{{', '\'<={\'', '}}'],
-              [lex.TokenType.TEXT, ''],
+              [lex.TokenType.TEXT, '{{\'<={\'}}'],
               [lex.TokenType.TAG_CLOSE, '', 'code'],
               [lex.TokenType.EOF],
             ]);
       });
+
 
       it('should parse start tags quotes in place of an attribute name as text', () => {
         expect(tokenizeAndHumanizeParts('<t ">')).toEqual([
@@ -758,31 +703,17 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
 
       it('should be able to escape {', () => {
         expect(tokenizeAndHumanizeParts('{{ "{" }}')).toEqual([
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.INTERPOLATION, '{{', ' "{" ', '}}'],
-          [lex.TokenType.TEXT, ''],
+          [lex.TokenType.TEXT, '{{ "{" }}'],
           [lex.TokenType.EOF],
         ]);
       });
 
       it('should be able to escape {{', () => {
         expect(tokenizeAndHumanizeParts('{{ "{{" }}')).toEqual([
-          [lex.TokenType.TEXT, ''],
-          [lex.TokenType.INTERPOLATION, '{{', ' "{{" ', '}}'],
-          [lex.TokenType.TEXT, ''],
+          [lex.TokenType.TEXT, '{{ "{{" }}'],
           [lex.TokenType.EOF],
         ]);
       });
-
-      it('should capture everything up to the end of file in the interpolation expression part if there are mismatched quotes',
-         () => {
-           expect(tokenizeAndHumanizeParts('{{ "{{a}}\' }}')).toEqual([
-             [lex.TokenType.TEXT, ''],
-             [lex.TokenType.INTERPOLATION, '{{', ' "{{a}}\' }}'],
-             [lex.TokenType.TEXT, ''],
-             [lex.TokenType.EOF],
-           ]);
-         });
 
       it('should treat expansion form as text when they are not parsed', () => {
         expect(tokenizeAndHumanizeParts(
@@ -1045,9 +976,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
               [lex.TokenType.RAW_TEXT, 'three'],
               [lex.TokenType.EXPANSION_CASE_VALUE, '=4'],
               [lex.TokenType.EXPANSION_CASE_EXP_START],
-              [lex.TokenType.TEXT, 'four '],
-              [lex.TokenType.INTERPOLATION, '{{', 'a', '}}'],
-              [lex.TokenType.TEXT, ''],
+              [lex.TokenType.TEXT, 'four {{a}}'],
               [lex.TokenType.EXPANSION_CASE_EXP_END],
               [lex.TokenType.EXPANSION_FORM_END],
               [lex.TokenType.EOF],
@@ -1104,9 +1033,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
                  [lex.TokenType.EXPANSION_CASE_EXP_END],
                  [lex.TokenType.EXPANSION_CASE_VALUE, '=1'],
                  [lex.TokenType.EXPANSION_CASE_EXP_START],
-                 [lex.TokenType.TEXT, 'One '],
-                 [lex.TokenType.INTERPOLATION, '{{', 'message', '}}'],
-                 [lex.TokenType.TEXT, ''],
+                 [lex.TokenType.TEXT, 'One {{message}}'],
                  [lex.TokenType.EXPANSION_CASE_EXP_END],
                  [lex.TokenType.EXPANSION_FORM_END],
                  [lex.TokenType.TEXT, '\n'],
@@ -1136,9 +1063,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
                  [lex.TokenType.EXPANSION_CASE_EXP_END],
                  [lex.TokenType.EXPANSION_CASE_VALUE, '=1'],
                  [lex.TokenType.EXPANSION_CASE_EXP_START],
-                 [lex.TokenType.TEXT, 'One '],
-                 [lex.TokenType.INTERPOLATION, '{{', 'message', '}}'],
-                 [lex.TokenType.TEXT, ''],
+                 [lex.TokenType.TEXT, 'One {{message}}'],
                  [lex.TokenType.EXPANSION_CASE_EXP_END],
                  [lex.TokenType.EXPANSION_FORM_END],
                  [lex.TokenType.TEXT, '\n'],
@@ -1219,9 +1144,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
                  [lex.TokenType.EXPANSION_CASE_EXP_END],
                  [lex.TokenType.EXPANSION_CASE_VALUE, '=1'],
                  [lex.TokenType.EXPANSION_CASE_EXP_START],
-                 [lex.TokenType.TEXT, 'One '],
-                 [lex.TokenType.INTERPOLATION, '{{', 'message', '}}'],
-                 [lex.TokenType.TEXT, ''],
+                 [lex.TokenType.TEXT, 'One {{message}}'],
                  [lex.TokenType.EXPANSION_CASE_EXP_END],
                  [lex.TokenType.EXPANSION_FORM_END],
                  [lex.TokenType.TEXT, '\n'],
@@ -1251,9 +1174,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
                  [lex.TokenType.EXPANSION_CASE_EXP_END],
                  [lex.TokenType.EXPANSION_CASE_VALUE, '=1'],
                  [lex.TokenType.EXPANSION_CASE_EXP_START],
-                 [lex.TokenType.TEXT, 'One '],
-                 [lex.TokenType.INTERPOLATION, '{{', 'message', '}}'],
-                 [lex.TokenType.TEXT, ''],
+                 [lex.TokenType.TEXT, 'One {{message}}'],
                  [lex.TokenType.EXPANSION_CASE_EXP_END],
                  [lex.TokenType.EXPANSION_FORM_END],
                  [lex.TokenType.TEXT, '\n'],
@@ -1380,11 +1301,8 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
           [lex.TokenType.TEXT, '\n \n \n'],
           [lex.TokenType.EOF],
         ]);
-        expect(tokenizeAndHumanizeParts('\\r{{\\r}}\\r', {escapedString: true})).toEqual([
-          // post processing converts `\r` to `\n`
-          [lex.TokenType.TEXT, '\n'],
-          [lex.TokenType.INTERPOLATION, '{{', '\n', '}}'],
-          [lex.TokenType.TEXT, '\n'],
+        expect(tokenizeAndHumanizeParts('\\r \\r \\r', {escapedString: true})).toEqual([
+          [lex.TokenType.TEXT, '\n \n \n'],  // post processing converts `\r` to `\n`
           [lex.TokenType.EOF],
         ]);
         expect(tokenizeAndHumanizeParts('\\v \\v \\v', {escapedString: true})).toEqual([
