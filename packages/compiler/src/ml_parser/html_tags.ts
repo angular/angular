@@ -54,7 +54,7 @@ export class HtmlTagDefinition implements TagDefinition {
 
   getContentType(prefix?: string): TagContentType {
     if (typeof this.contentType === 'object') {
-      const overrideType = prefix === undefined ? undefined : this.contentType[prefix];
+      const overrideType = prefix == null ? undefined : this.contentType[prefix];
       return overrideType ?? this.contentType.default;
     }
     return this.contentType;
