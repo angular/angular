@@ -203,11 +203,15 @@ export class NullVisitor implements Visitor<void> {
 export class RecursiveVisitor implements Visitor<void> {
   visitElement(element: Element): void {
     visitAll(this, element.attributes);
+    visitAll(this, element.inputs);
+    visitAll(this, element.outputs);
     visitAll(this, element.children);
     visitAll(this, element.references);
   }
   visitTemplate(template: Template): void {
     visitAll(this, template.attributes);
+    visitAll(this, template.inputs);
+    visitAll(this, template.outputs);
     visitAll(this, template.children);
     visitAll(this, template.references);
     visitAll(this, template.variables);
