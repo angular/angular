@@ -226,21 +226,20 @@ class _TreeBuilder {
       }
     }
 
-    // For now recombine text, interpolation and entity tokens
-    while (this._peek.type === lex.TokenType.INTERPOLATION ||
-           this._peek.type === lex.TokenType.TEXT ||
-           this._peek.type === lex.TokenType.ENCODED_ENTITY) {
-      token = this._advance();
-      if (token.type === lex.TokenType.INTERPOLATION) {
-        // For backward compatibility we decode HTML entities that appear in interpolation
-        // expressions. This is arguably a bug, but it could be a considerable breaking change to
-        // fix it. It should be addressed in a larger project to refactor the entire parser/lexer
-        // chain after View Engine has been removed.
-        text += token.parts.join('').replace(/&([^;]+);/g, decodeEntity);
-      } else if (token.type === lex.TokenType.ENCODED_ENTITY) {
-        text += token.parts[0];
-      } else {
-        text += token.parts.join('');
+    // For now recombine text and interpolation tokens
+    if (this._peek.type === lex.TokenType.INTERPOLATION) {
+      while (this._peek.type === lex.TokenType.INTERPOLATION ||
+             this._peek.type === lex.TokenType.TEXT) {
+        token = this._advance();
+        if (token.type === lex.TokenType.INTERPOLATION) {
+          // For backward compatibility we decode HTML entities that appear in interpolation
+          // expressions. This is arguably a bug, but it could be a considerable breaking change to
+          // fix it. It should be addressed in a larger project to refactor the entire parser/lexer
+          // chain after View Engine has been removed.
+          text += token.parts.join('').replace(/&([^;]+);/g, decodeEntity);
+        } else {
+          text += token.parts.join('');
+        }
       }
     }
 
@@ -370,17 +369,16 @@ class _TreeBuilder {
       this._advance();
     }
 
-    // Consume the attribute value
+    // Consume the value
     let value = '';
     let valueStartSpan: ParseSourceSpan|undefined = undefined;
     let valueEnd: ParseLocation|undefined = undefined;
     if (this._peek.type === lex.TokenType.ATTR_VALUE_TEXT) {
       valueStartSpan = this._peek.sourceSpan;
       valueEnd = this._peek.sourceSpan.end;
-      // For now recombine text, interpolation and entity tokens
+      // For now we are recombining text and interpolation tokens
       while (this._peek.type === lex.TokenType.ATTR_VALUE_TEXT ||
-             this._peek.type === lex.TokenType.ATTR_VALUE_INTERPOLATION ||
-             this._peek.type === lex.TokenType.ENCODED_ENTITY) {
+             this._peek.type === lex.TokenType.ATTR_VALUE_INTERPOLATION) {
         let valueToken = this._advance();
         if (valueToken.type === lex.TokenType.ATTR_VALUE_INTERPOLATION) {
           // For backward compatibility we decode HTML entities that appear in interpolation
@@ -388,8 +386,6 @@ class _TreeBuilder {
           // fix it. It should be addressed in a larger project to refactor the entire parser/lexer
           // chain after View Engine has been removed.
           value += valueToken.parts.join('').replace(/&([^;]+);/g, decodeEntity);
-        } else if (valueToken.type === lex.TokenType.ENCODED_ENTITY) {
-          value += valueToken.parts[0];
         } else {
           value += valueToken.parts.join('');
         }
