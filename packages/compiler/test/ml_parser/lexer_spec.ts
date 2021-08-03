@@ -257,7 +257,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
             [lex.TokenType.INCOMPLETE_TAG_OPEN, '<div'],
             [lex.TokenType.ATTR_NAME, 'class'],
             [lex.TokenType.ATTR_QUOTE, '"'],
-            [lex.TokenType.ATTR_VALUE_TEXT, 'hi'],
+            [lex.TokenType.ATTR_VALUE, 'hi'],
             [lex.TokenType.ATTR_QUOTE, '"'],
             [lex.TokenType.ATTR_NAME, 'sty'],
             [lex.TokenType.TAG_OPEN_START, '<span'],
@@ -295,21 +295,15 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
           [lex.TokenType.TAG_OPEN_START, '', 't'],
           [lex.TokenType.ATTR_NAME, '', 'a'],
           [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_VALUE_TEXT, ''],
-          [lex.TokenType.ATTR_VALUE_INTERPOLATION, '{{', 'v', '}}'],
-          [lex.TokenType.ATTR_VALUE_TEXT, ''],
+          [lex.TokenType.ATTR_VALUE, '{{v}}'],
           [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.ATTR_NAME, '', 'b'],
           [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 's'],
-          [lex.TokenType.ATTR_VALUE_INTERPOLATION, '{{', 'm', '}}'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 'e'],
+          [lex.TokenType.ATTR_VALUE, 's{{m}}e'],
           [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.ATTR_NAME, '', 'c'],
           [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 's'],
-          [lex.TokenType.ATTR_VALUE_INTERPOLATION, '{{', 'm//c', '}}'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 'e'],
+          [lex.TokenType.ATTR_VALUE, 's{{m//c}}e'],
           [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.TAG_OPEN_END],
           [lex.TokenType.EOF],
@@ -339,7 +333,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
           [lex.TokenType.TAG_OPEN_START, '', 't'],
           [lex.TokenType.ATTR_NAME, '', 'a'],
           [lex.TokenType.ATTR_QUOTE, '\''],
-          [lex.TokenType.ATTR_VALUE_TEXT, 'b'],
+          [lex.TokenType.ATTR_VALUE, 'b'],
           [lex.TokenType.ATTR_QUOTE, '\''],
           [lex.TokenType.TAG_OPEN_END],
           [lex.TokenType.EOF],
@@ -351,7 +345,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
           [lex.TokenType.TAG_OPEN_START, '', 't'],
           [lex.TokenType.ATTR_NAME, '', 'a'],
           [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 'b'],
+          [lex.TokenType.ATTR_VALUE, 'b'],
           [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.TAG_OPEN_END],
           [lex.TokenType.EOF],
@@ -362,31 +356,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeParts('<t a=b>')).toEqual([
           [lex.TokenType.TAG_OPEN_START, '', 't'],
           [lex.TokenType.ATTR_NAME, '', 'a'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 'b'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.EOF],
-        ]);
-      });
-
-      it('should parse attributes with unquoted interpolation value', () => {
-        expect(tokenizeAndHumanizeParts('<a a={{link.text}}>')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 'a'],
-          [lex.TokenType.ATTR_NAME, '', 'a'],
-          [lex.TokenType.ATTR_VALUE_TEXT, ''],
-          [lex.TokenType.ATTR_VALUE_INTERPOLATION, '{{', 'link.text', '}}'],
-          [lex.TokenType.ATTR_VALUE_TEXT, ''],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.EOF],
-        ]);
-      });
-
-      it('should parse attributes with empty quoted value', () => {
-        expect(tokenizeAndHumanizeParts('<t a="">')).toEqual([
-          [lex.TokenType.TAG_OPEN_START, '', 't'],
-          [lex.TokenType.ATTR_NAME, '', 'a'],
-          [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_VALUE_TEXT, ''],
-          [lex.TokenType.ATTR_QUOTE, '"'],
+          [lex.TokenType.ATTR_VALUE, 'b'],
           [lex.TokenType.TAG_OPEN_END],
           [lex.TokenType.EOF],
         ]);
@@ -396,7 +366,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeParts('<t a = b >')).toEqual([
           [lex.TokenType.TAG_OPEN_START, '', 't'],
           [lex.TokenType.ATTR_NAME, '', 'a'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 'b'],
+          [lex.TokenType.ATTR_VALUE, 'b'],
           [lex.TokenType.TAG_OPEN_END],
           [lex.TokenType.EOF],
         ]);
@@ -407,7 +377,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
           [lex.TokenType.TAG_OPEN_START, '', 't'],
           [lex.TokenType.ATTR_NAME, '', 'a'],
           [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 'AA'],
+          [lex.TokenType.ATTR_VALUE, 'AA'],
           [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.TAG_OPEN_END],
           [lex.TokenType.EOF],
@@ -419,11 +389,11 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
           [lex.TokenType.TAG_OPEN_START, '', 't'],
           [lex.TokenType.ATTR_NAME, '', 'a'],
           [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_VALUE_TEXT, '&amp'],
+          [lex.TokenType.ATTR_VALUE, '&amp'],
           [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.ATTR_NAME, '', 'b'],
           [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 'c&&d'],
+          [lex.TokenType.ATTR_VALUE, 'c&&d'],
           [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.TAG_OPEN_END],
           [lex.TokenType.EOF],
@@ -435,7 +405,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
           [lex.TokenType.TAG_OPEN_START, '', 't'],
           [lex.TokenType.ATTR_NAME, '', 'a'],
           [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 'b && c &'],
+          [lex.TokenType.ATTR_VALUE, 'b && c &'],
           [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.TAG_OPEN_END],
           [lex.TokenType.EOF],
@@ -447,7 +417,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
           [lex.TokenType.TAG_OPEN_START, '', 't'],
           [lex.TokenType.ATTR_NAME, '', 'a'],
           [lex.TokenType.ATTR_QUOTE, '\''],
-          [lex.TokenType.ATTR_VALUE_TEXT, 't\ne\ns\nt'],
+          [lex.TokenType.ATTR_VALUE, 't\ne\ns\nt'],
           [lex.TokenType.ATTR_QUOTE, '\''],
           [lex.TokenType.TAG_OPEN_END],
           [lex.TokenType.EOF],
@@ -458,7 +428,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeSourceSpans('<t a=b>')).toEqual([
           [lex.TokenType.TAG_OPEN_START, '<t'],
           [lex.TokenType.ATTR_NAME, 'a'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 'b'],
+          [lex.TokenType.ATTR_VALUE, 'b'],
           [lex.TokenType.TAG_OPEN_END, '>'],
           [lex.TokenType.EOF, ''],
         ]);
@@ -466,13 +436,13 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
 
       it('should report missing closing single quote', () => {
         expect(tokenizeAndHumanizeErrors('<t a=\'b>')).toEqual([
-          [lex.TokenType.ATTR_VALUE_TEXT, 'Unexpected character "EOF"', '0:8'],
+          [lex.TokenType.ATTR_VALUE, 'Unexpected character "EOF"', '0:8'],
         ]);
       });
 
       it('should report missing closing double quote', () => {
         expect(tokenizeAndHumanizeErrors('<t a="b>')).toEqual([
-          [lex.TokenType.ATTR_VALUE_TEXT, 'Unexpected character "EOF"', '0:8'],
+          [lex.TokenType.ATTR_VALUE, 'Unexpected character "EOF"', '0:8'],
         ]);
       });
     });
@@ -765,7 +735,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
              [lex.TokenType.INCOMPLETE_TAG_OPEN, '', 't'],
              [lex.TokenType.ATTR_NAME, '', 'a'],
              [lex.TokenType.ATTR_QUOTE, '"'],
-             [lex.TokenType.ATTR_VALUE_TEXT, 'b'],
+             [lex.TokenType.ATTR_VALUE, 'b'],
              [lex.TokenType.ATTR_QUOTE, '"'],
              // TODO(ayazhafiz): the " symbol should be a synthetic attribute,
              // allowing us to complete the opening tag correctly.
@@ -777,7 +747,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
              [lex.TokenType.INCOMPLETE_TAG_OPEN, '', 't'],
              [lex.TokenType.ATTR_NAME, '', 'a'],
              [lex.TokenType.ATTR_QUOTE, '\''],
-             [lex.TokenType.ATTR_VALUE_TEXT, 'b'],
+             [lex.TokenType.ATTR_VALUE, 'b'],
              [lex.TokenType.ATTR_QUOTE, '\''],
              // TODO(ayazhafiz): the ' symbol should be a synthetic attribute,
              // allowing us to complete the opening tag correctly.
@@ -1568,11 +1538,11 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
               [lex.TokenType.TAG_OPEN_START, '', 't'],
               [lex.TokenType.ATTR_NAME, '', 'a'],
               [lex.TokenType.ATTR_QUOTE, '"'],
-              [lex.TokenType.ATTR_VALUE_TEXT, 'b'],
+              [lex.TokenType.ATTR_VALUE, 'b'],
               [lex.TokenType.ATTR_QUOTE, '"'],
               [lex.TokenType.ATTR_NAME, '', 'c'],
               [lex.TokenType.ATTR_QUOTE, '\''],
-              [lex.TokenType.ATTR_VALUE_TEXT, 'd'],
+              [lex.TokenType.ATTR_VALUE, 'd'],
               [lex.TokenType.ATTR_QUOTE, '\''],
               [lex.TokenType.TAG_OPEN_END],
               [lex.TokenType.EOF],
@@ -1621,7 +1591,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
           [lex.TokenType.TAG_OPEN_START, '', 't'],
           [lex.TokenType.ATTR_NAME, '', 'd'],
           [lex.TokenType.ATTR_QUOTE, '"'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 'e'],
+          [lex.TokenType.ATTR_VALUE, 'e'],
           [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.TAG_OPEN_END],
           [lex.TokenType.TAG_CLOSE, '', 't'],
@@ -1634,7 +1604,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeParts(text, {escapedString: true})).toEqual([
           [lex.TokenType.TAG_OPEN_START, '', 't'],
           [lex.TokenType.ATTR_NAME, '', 'a'],
-          [lex.TokenType.ATTR_VALUE_TEXT, 'b'],
+          [lex.TokenType.ATTR_VALUE, 'b'],
           [lex.TokenType.TAG_OPEN_END],
           [lex.TokenType.TAG_CLOSE, '', 't'],
           [lex.TokenType.EOF],
