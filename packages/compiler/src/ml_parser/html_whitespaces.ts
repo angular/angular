@@ -8,8 +8,8 @@
 
 import * as html from './ast';
 import {NGSP_UNICODE} from './entities';
+import {Token, TokenType} from './lexer';
 import {ParseTreeResult} from './parser';
-import {TextToken, TokenType} from './tokens';
 
 export const PRESERVE_WS_ATTR_NAME = 'ngPreserveWhitespaces';
 
@@ -77,8 +77,8 @@ export class WhitespaceVisitor implements html.Visitor {
     if (isNotBlank || hasExpansionSibling) {
       // Process the whitespace in the tokens of this Text node
       const tokens = text.tokens.map(
-          token =>
-              token.type === TokenType.TEXT ? createWhitespaceProcessedTextToken(token) : token);
+          token => token.type === TokenType.TEXT ? createTextTokenAfterWhitespaceProcessing(token) :
+                                                   token);
       // Process the whitespace of the value of this Text node
       const value = processWhitespace(text.value);
       return new html.Text(value, text.sourceSpan, tokens, text.i18n);
@@ -100,8 +100,8 @@ export class WhitespaceVisitor implements html.Visitor {
   }
 }
 
-function createWhitespaceProcessedTextToken({type, parts, sourceSpan}: TextToken): TextToken {
-  return {type, parts: [processWhitespace(parts[0])], sourceSpan};
+function createTextTokenAfterWhitespaceProcessing(token: Token): Token {
+  return new Token(token.type, [processWhitespace(token.parts[0])], token.sourceSpan);
 }
 
 function processWhitespace(text: string): string {
