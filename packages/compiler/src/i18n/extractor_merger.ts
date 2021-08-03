@@ -396,12 +396,12 @@ class _Visitor implements html.Visitor {
           if (nodes.length == 0) {
             translatedAttributes.push(new html.Attribute(
                 attr.name, '', attr.sourceSpan, undefined /* keySpan */, undefined /* valueSpan */,
-                undefined /* valueTokens */, undefined /* i18n */));
+                undefined /* i18n */));
           } else if (nodes[0] instanceof html.Text) {
             const value = (nodes[0] as html.Text).value;
             translatedAttributes.push(new html.Attribute(
                 attr.name, value, attr.sourceSpan, undefined /* keySpan */,
-                undefined /* valueSpan */, undefined /* valueTokens */, undefined /* i18n */));
+                undefined /* valueSpan */, undefined /* i18n */));
           } else {
             this._reportError(
                 el,
