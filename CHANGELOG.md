@@ -1,22 +1,35 @@
-# 12.2.0-rc.0 "schmaltz-waltz" (2021-07-28)
+# 12.2.0 "corduroy-aardvark" (2021-08-04)
 
 ### cdk
 
 |            |                       |
 | ---------- | --------------------- |
+| bug fix |  **overlay:** expand `OverlayReference` interface to cover more properties ([#23254](https://github.com/angular/components/issues/23254)) ([efa9e92a789e6647f7428c58ad720104007becfc](https://github.com/angular/components/commit/efa9e92a789e6647f7428c58ad720104007becfc)), closes [#23234](https://github.com/angular/components/issues/23234) |
+| bug fix |  **text-field:** avoid page jump on firefox ([#23296](https://github.com/angular/components/issues/23296)) ([ef18df02d20f69c092503ca6a164afd3e81dfbc8](https://github.com/angular/components/commit/ef18df02d20f69c092503ca6a164afd3e81dfbc8)), closes [#23233](https://github.com/angular/components/issues/23233) |
+| performance |  **drag-drop:** avoid excessive change detections with zone-patch-rxjs ([#23272](https://github.com/angular/components/issues/23272)) ([7d29bc301e7dd21fe601ea1c291872abfa3fc939](https://github.com/angular/components/commit/7d29bc301e7dd21fe601ea1c291872abfa3fc939)), closes [#23248](https://github.com/angular/components/issues/23248) |
 | feature |  **scrolling:** add input to enable append-only mode in virtual scroll viewport ([#22986](https://github.com/angular/components/issues/22986)) ([8f052ccca2b6ca28083c7d550be1952060c0cd92](https://github.com/angular/components/commit/8f052ccca2b6ca28083c7d550be1952060c0cd92)) |
 | feature |  **table:** add event that emits after rendering ([#22750](https://github.com/angular/components/issues/22750)) ([62bbffaae642d39e4b87ac6a33b02853720a4c2f](https://github.com/angular/components/commit/62bbffaae642d39e4b87ac6a33b02853720a4c2f)) |
+
 
 ### material
 
 |            |                       |
 | ---------- | --------------------- |
+| bug fix |  **core:** handle hues inferred as numbers ([#23237](https://github.com/angular/components/issues/23237)) ([a752641ffff853864f87ff81c5fc40192120b62a](https://github.com/angular/components/commit/a752641ffff853864f87ff81c5fc40192120b62a)), closes [#23230](https://github.com/angular/components/issues/23230) |
 | bug fix |  **menu:** submenu icon not working in high contrast mode ([#23012](https://github.com/angular/components/issues/23012)) ([ad2baa642c8f9592bfd190579cb62642c27ca87f](https://github.com/angular/components/commit/ad2baa642c8f9592bfd190579cb62642c27ca87f)), closes [#22944](https://github.com/angular/components/issues/22944) |
 | bug fix |  **multiple:** incosistent item text truncation when used together with MDC list ([#23138](https://github.com/angular/components/issues/23138)) ([6e1cede6d76ff7e54668d0647b875453fe6c3ded](https://github.com/angular/components/commit/6e1cede6d76ff7e54668d0647b875453fe6c3ded)) |
 | bug fix |  **schematics:** don't migrate commented code in theming API migration ([#23004](https://github.com/angular/components/issues/23004)) ([0b65df0c56bccfebe43bf6f6f641f68908a74997](https://github.com/angular/components/commit/0b65df0c56bccfebe43bf6f6f641f68908a74997)) |
 | feature |  **list:** support two-data binding on list option selected ([#23125](https://github.com/angular/components/issues/23125)) ([298da1cbc3b2d91d47e4d0a433ee0bd0f8439863](https://github.com/angular/components/commit/298da1cbc3b2d91d47e4d0a433ee0bd0f8439863)), closes [#23122](https://github.com/angular/components/issues/23122) |
 | feature |  **slide-toggle:** add aria-describedby input ([#23104](https://github.com/angular/components/issues/23104)) ([6b553ec79f1a7369bf34d958cd0fd3e928b9f6e0](https://github.com/angular/components/commit/6b553ec79f1a7369bf34d958cd0fd3e928b9f6e0)), closes [#23094](https://github.com/angular/components/issues/23094) |
 | feature |  **testing:** MatChipHarness getAvatar ([#22348](https://github.com/angular/components/issues/22348)) ([d733ee2799d97c5711302964f6450c729bf1146e](https://github.com/angular/components/commit/d733ee2799d97c5711302964f6450c729bf1146e)) |
+
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-paginator:** add screen reader announcement for current range when navigating between pages ([#23285](https://github.com/angular/components/issues/23285)) ([8d4f4e245d62ae85ab9e71cc9c8010db318a98e8](https://github.com/angular/components/commit/8d4f4e245d62ae85ab9e71cc9c8010db318a98e8)) |
+| bug fix |  **mdc-table:** flex tables should stretch cells ([#23259](https://github.com/angular/components/issues/23259)) ([47a9c532d73b29d0d6488c0e9187eb0a8d27580a](https://github.com/angular/components/commit/47a9c532d73b29d0d6488c0e9187eb0a8d27580a)) |
 
 ### google-maps
 
@@ -29,7 +42,6 @@
 |            |                       |
 | ---------- | --------------------- |
 | feature |  add luxon date adapter ([#23167](https://github.com/angular/components/issues/23167)) ([492268a06e189accfb06354b586416a3b7a2d644](https://github.com/angular/components/commit/492268a06e189accfb06354b586416a3b7a2d644)) |
-
 
 ## 12.1.4 "tallow-wire" (2021-07-28)
 
