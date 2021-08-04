@@ -439,7 +439,6 @@ describe('MDC-based MatMenu', () => {
 
     const panel = overlayContainerElement.querySelector('.mat-mdc-menu-panel')!;
     const event = createKeyboardEvent('keydown', ESCAPE);
-    spyOn(event, 'stopPropagation').and.callThrough();
 
     dispatchEvent(panel, event);
     fixture.detectChanges();
@@ -447,7 +446,6 @@ describe('MDC-based MatMenu', () => {
 
     expect(overlayContainerElement.textContent).toBe('');
     expect(event.defaultPrevented).toBe(true);
-    expect(event.stopPropagation).toHaveBeenCalled();
   }));
 
   it('should not close the menu when pressing ESCAPE with a modifier', fakeAsync(() => {
