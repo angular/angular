@@ -1,7 +1,7 @@
 # Angular CLI builders
 
 A number of Angular CLI commands run a complex process on your code, such as linting, building, or testing.
-The commands use an internal tool called Architect to run *CLI builders*, which apply another tool to accomplish the desired task.
+The commands use an internal tool called Architect to run *CLI builders*, which apply another tool to accomplish the wanted task.
 
 With Angular version 8, the CLI Builder API is stable and available to developers who want to customize the Angular CLI by adding or modifying commands. For example, you could supply a builder to perform an entirely new task, or to change which third-party tool is used by an existing command.
 
@@ -9,7 +9,7 @@ This document explains how CLI builders integrate with the workspace configurati
 
 <div class="alert is-helpful">
 
-   You can find the code from the examples used here in [this GitHub repository](https://github.com/mgechev/cli-builders-demo).
+   Find the code from the examples used here in [this GitHub repository](https://github.com/mgechev/cli-builders-demo).
 
 </div>
 
@@ -30,7 +30,7 @@ This object contains a Boolean `success` field and an optional `error` field tha
 
 Angular provides some builders that are used by the CLI for commands such as `ng build` and `ng test`.
 Default target configurations for these and other built-in CLI builders can be found (and customized) in the "architect" section of the [workspace configuration file](guide/workspace-config), `angular.json`.
-You can also extend and customize Angular by creating your own builders, which you can run using the [`ng run` CLI command](cli/run).
+Also, extend and customize Angular by creating your own builders, which you can run using the [`ng run` CLI command](cli/run).
 
 ### Builder project structure
 
@@ -46,7 +46,7 @@ For example, your `myBuilder` folder could contain the following files.
 | `package.json`           | Dependencies. See https://docs.npmjs.com/files/package.json. |
 | `tsconfig.json`          | [TypeScript configuration](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html). |
 
-You can publish the builder to `npm` (see [Publishing your Library](guide/creating-libraries#publishing-your-library)). If you publish it as `@example/my-builder`, you can install it using the following command.
+Publish the builder to `npm` (see [Publishing your Library](guide/creating-libraries#publishing-your-library)). If you publish it as `@example/my-builder`, install it using the following command.
 
 <code-example language="sh">
 
@@ -56,7 +56,7 @@ npm install @example/my-builder
 
 ## Creating a builder
 
-As an example, let's create a builder that copies a file.
+As an example, create a builder that copies a file.
 To create a builder, use the `createBuilder()` CLI Builder function, and return a `Promise<BuilderOutput>` object.
 
 <code-example
@@ -66,7 +66,7 @@ To create a builder, use the `createBuilder()` CLI Builder function, and return 
 </code-example>
 
 Now let’s add some logic to it. The following code retrieves the source and destination file paths
-from user options and copies the file from the source to the destination (leveraging the
+from user options and copies the file from the source to the destination (using the
 [Promise version of the built-in NodeJS `copyFile()` function](https://nodejs.org/api/fs.html#fs_fspromises_copyfile_src_dest_mode)).
 If the copy operation fails, it returns an error with a message about the underlying problem.
 
@@ -79,12 +79,12 @@ If the copy operation fails, it returns an error with a message about the underl
 ### Handling output
 
 By default, `copyFile()` does not print anything to the process standard output or error. If an
-error occurs, it may be difficult to understand exactly what the builder was trying to do when the
-problem occurred. We can add some additional context by logging additional information using the
-`Logger` API. This also allows the builder itself to be executed in a separate process, even if the
+error occurs, it might be difficult to understand exactly what the builder was trying to do when the
+problem occurred. Add some additional context by logging additional information using the
+`Logger` API. This also lets the builder itself be executed in a separate process, even if the
 standard output and error are deactivated (as in an [Electron app](https://electronjs.org/)).
 
-We can retrieve a `Logger` instance from the context.
+You can retrieve a `Logger` instance from the context.
 
 <code-example
   path="cli-builder/src/my-builder.ts"
@@ -102,7 +102,7 @@ The status string is unmodified unless you pass in a new string value.
 
 You can see an [example](https://github.com/angular/angular-cli/blob/ba21c855c0c8b778005df01d4851b5a2176edc6f/packages/angular_devkit/build_angular/src/tslint/index.ts#L107) of how the `tslint` builder reports progress.
 
-In our example, the copy operation either finishes or is still executing, so there’s no need for a progress report, but we can report status so that a parent builder that called our builder would know what’s going on.
+In our example, the copy operation either finishes or is still executing, so there’s no need for a progress report, but you can report status so that a parent builder that called our builder would know what’s going on.
 Use the `context.reportStatus()` method to generate a status string of any length.
 (Note that there’s no guarantee that a long string will be shown entirely; it could be cut to fit the UI that displays it.)
 Pass an empty string to remove the status.
@@ -116,7 +116,7 @@ Pass an empty string to remove the status.
 ## Builder input
 
 You can invoke a builder indirectly through a CLI command, or directly with the Angular CLI `ng run` command.
-In either case, you must provide required inputs, but can allow other inputs to default to values that are pre-configured for a specific [*target*](guide/glossary#target), provide a pre-defined, named override configuration, and provide further override option values on the command line.
+In either case, you must provide required inputs, but can let other inputs default to values that are pre-configured for a specific [*target*](guide/glossary#target), provide a pre-defined, named override configuration, and provide further override option values on the command line.
 
 ### Input validation
 
@@ -124,10 +124,10 @@ You define builder inputs in a JSON schema associated with that builder.
 The Architect tool collects the resolved input values into an `options` object, and validates their types against the schema before passing them to the builder function.
 (The Schematics library does the same kind of validation of user input.)
 
-For our example builder, we expect the `options` value to be a `JsonObject` with two keys: a
+For our example builder, you expect the `options` value to be a `JsonObject` with two keys: a
 `source` and a `destination`, each of which are a string.
 
-We can provide the following schema for type validation of these values.
+You can provide the following schema for type validation of these values.
 
 <code-example language="json" header="src/schema.json">
 {
@@ -152,7 +152,7 @@ For more information, see the [JSON schemas website](http://json-schema.org/).
 
 </div>
 
-To link our builder implementation with its schema and name, we need to create a *builder definition* file, which we can point to in `package.json`.
+To link our builder implementation with its schema and name, you need to create a *builder definition* file, which you can point to in `package.json`.
 
 Create a file named `builders.json` that looks like this:
 
@@ -190,7 +190,7 @@ In the `package.json` file, add a `builders` key that tells the Architect tool w
 The official name of our builder is now ` @example/copy-file:copy`.
 The first part of this is the package name (resolved using node resolution), and the second part is the builder name (resolved using the `builders.json` file).
 
-Using one of our `options` is very straightforward, we did this in the previous section when we accessed `options.source` and `options.destination`.
+Using one of our `options` is very straightforward. You did this in the previous section when you accessed `options.source` and `options.destination`.
 
 <code-example
   path="cli-builder/src/my-builder.ts"
@@ -241,7 +241,7 @@ By default, for example, the `build` command runs the builder  `@angular-devkit/
 
 The command passes the builder the set of default options specified in the "options" section.
 If you pass the `--configuration=production` flag, it uses the override values specified in the `production` alternative configuration.
-You can specify further option overrides individually on the command line.
+Specify further option overrides individually on the command line.
 You might also add more alternative configurations to the `build` target, to define other environments such as `stage` or `qa`.
 
 #### Target strings
@@ -254,8 +254,8 @@ The generic `ng run` CLI command takes as its first argument a target string of 
 
 * *configuration*: (optional) The name of a specific configuration override for the given target, as defined in the `angular.json` file.
 
-If your builder calls another builder, it may need to read a passed target string.
-You can parse this string into an object by using the `targetFromTargetString()` utility function from `@angular-devkit/architect`.
+If your builder calls another builder, it might need to read a passed target string.
+Parse this string into an object by using the `targetFromTargetString()` utility function from `@angular-devkit/architect`.
 
 ## Schedule and run
 
@@ -286,7 +286,7 @@ For more information see [Workspace Configuration](guide/workspace-config).
 
 Let’s create a simple `angular.json` file that puts target configurations into context.
 
-We can publish the builder to npm (see [Publishing your Library](guide/creating-libraries#publishing-your-library)), and install it using the following command:
+You can publish the builder to npm (see [Publishing your Library](guide/creating-libraries#publishing-your-library)), and install it using the following command:
 
 <code-example language="sh">
 
@@ -294,7 +294,7 @@ npm install @example/copy-file
 
 </code-example>
 
-If we create a new project with `ng new builder-test`, the generated `angular.json` file looks something like this, with only default builder configurations.
+If you create a new project with `ng new builder-test`, the generated `angular.json` file looks something like this, with only default builder configurations.
 
 <code-example language="json" header="angular.json">
 
@@ -335,16 +335,16 @@ If we create a new project with `ng new builder-test`, the generated `angular.js
 
 ### Adding a target
 
-Let's add a new target that will run our builder to copy a file.
-This target will tell the builder to copy the `package.json` file.
+Add a new target that will run our builder to copy a file.
+This target tells the builder to copy the `package.json` file.
 
-We need to update the `angular.json` file to add a target for this builder to the "architect" section of our new project.
+You need to update the `angular.json` file to add a target for this builder to the "architect" section of our new project.
 
 * We'll add a new target section to the "architect" object for our project.
 
-* The target named "copy-package" uses our builder, which we published to `@example/copy-file`. (See [Publishing your Library](guide/creating-libraries#publishing-your-library))
+* The target named "copy-package" uses our builder, which you published to `@example/copy-file`. (See [Publishing your Library](guide/creating-libraries#publishing-your-library))
 
-* The options object provides default values for the two inputs that we defined; `source`, which is the existing file we are copying, and `destination`, the path we want to copy to.
+* The options object provides default values for the two inputs that you defined; `source`, which is the existing file you are copying, and `destination`, the path you want to copy to.
 
 * The `configurations` key is optional, we'll leave it out for now.
 
@@ -401,9 +401,9 @@ ng run builder-test:copy-package
 
 </code-example>
 
-This will copy the `package.json` file to `package-copy.json`.
+This copies the `package.json` file to `package-copy.json`.
 
-You can use command-line arguments to override the configured defaults.
+Use command-line arguments to override the configured defaults.
 For example, to run with a different `destination` value, use the following CLI command.
 
 <code-example language="sh">
@@ -412,14 +412,14 @@ ng run builder-test:copy-package --destination=package-other.json
 
 </code-example>
 
-This will copy the file to `package-other.json` instead of `package-copy.json`.
-Because we did not override the *source* option, it will copy from the `package.json` file (the default value provided for the target).
+This copies the file to `package-other.json` instead of `package-copy.json`.
+Because you did not override the *source* option, it will copy from the `package.json` file (the default value provided for the target).
 
 ## Testing a builder
 
 Use integration testing for your builder, so that you can use the Architect scheduler to create a context, as in this [example](https://github.com/mgechev/cli-builders-demo).
 
-* In the builder source directory, we have created a new test file `my-builder.spec.ts`. The code creates new instances of `JsonSchemaRegistry` (for schema validation), `TestingArchitectHost` (an in-memory implementation of `ArchitectHost`), and `Architect`.
+* In the builder source directory, you have created a new test file `my-builder.spec.ts`. The code creates new instances of `JsonSchemaRegistry` (for schema validation), `TestingArchitectHost` (an in-memory implementation of `ArchitectHost`), and `Architect`.
 
 * We've added a `builders.json` file next to the builder's `package.json` file, and modified the package file to point to it.
 
@@ -469,6 +469,6 @@ The CLI Builder API provides a new way of changing the behavior of the Angular C
 
 * Builders have option defaults specified in the `angular.json` configuration file, which can be overwritten by an alternate configuration for the target, and further overwritten by command line flags.
 
-* We recommend that you use integration tests to test Architect builders. You can use unit tests to validate the logic that the builder executes.
+* We recommend that you use integration tests to test Architect builders. Use unit tests to validate the logic that the builder executes.
 
 * If your builder returns an Observable, it should clean up in the teardown logic of that Observable.
