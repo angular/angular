@@ -70,7 +70,7 @@ export async function discoverNewConflictsForPr(newPrNumber: number, updatedAfte
   const conflicts: Array<PullRequest> = [];
 
   info(`Requesting pending PRs from Github`);
-  /** List of PRs from github currently known as mergable. */
+  /** List of PRs from github currently known as mergeable. */
   const allPendingPRs = (await getPendingPrs(PR_SCHEMA, git)).map(processPr);
   /** The PR which is being checked against. */
   const requestedPr = allPendingPRs.find(pr => pr.number === newPrNumber);
@@ -85,7 +85,7 @@ export async function discoverNewConflictsForPr(newPrNumber: number, updatedAfte
     return (
         // PRs being merged into the same target branch as the requested PR
         pr.baseRef.name === requestedPr.baseRef.name &&
-        // PRs which either have not been processed or are determined as mergable by Github
+        // PRs which either have not been processed or are determined as mergeable by Github
         pr.mergeable !== 'CONFLICTING' &&
         // PRs updated after the provided date
         pr.updatedAt >= updatedAfter);
