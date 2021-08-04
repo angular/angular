@@ -77,7 +77,9 @@ $_emitted-density: () !default;
     @return get-color-from-palette($palette, default, $hue);
   }
 
-  $color: map.get($palette, $hue);
+  // We cast the $hue to a string, because some hues starting with a number, like `700-contrast`,
+  // might be inferred as numbers by Sass. Casting them to string fixes the map lookup.
+  $color: if(map.has-key($palette, $hue), map.get($palette, $hue), map.get($palette, $hue + ''));
 
   @if (meta.type-of($color) != color) {
     // If the $color resolved to something different from a color (e.g. a CSS variable),
