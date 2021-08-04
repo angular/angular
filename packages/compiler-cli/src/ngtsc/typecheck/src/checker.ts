@@ -309,9 +309,9 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     this.isComplete = false;
   }
 
-  makeTemplateDiagnostic(
+  makeTemplateDiagnostic<T extends ErrorCode>(
       clazz: ts.ClassDeclaration, sourceSpan: ParseSourceSpan, category: ts.DiagnosticCategory,
-      errorCode: ErrorCode, message: string, relatedInformation?: {
+      errorCode: T, message: string, relatedInformation?: {
         text: string,
         start: number,
         end: number,
