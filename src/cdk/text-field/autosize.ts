@@ -105,8 +105,7 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
   /** Used to reference correct document/window */
   protected _document?: Document;
 
-  /** Class that should be applied to the textarea while it's being measured. */
-  private _measuringClass: string;
+  private _hasFocus: boolean;
 
   private _isViewInited = false;
 
@@ -118,9 +117,6 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
     this._document = document;
 
     this._textareaElement = this._elementRef.nativeElement as HTMLTextAreaElement;
-    this._measuringClass = _platform.FIREFOX ?
-      'cdk-textarea-autosize-measuring-firefox' :
-      'cdk-textarea-autosize-measuring';
   }
 
   /** Sets the minimum height of the textarea as determined by minRows. */
@@ -147,7 +143,6 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
     if (this._platform.isBrowser) {
       // Remember the height which we started with in case autosizing is disabled
       this._initialHeight = this._textareaElement.style.height;
-
       this.resizeToFitContent();
 
       this._ngZone.runOutsideAngular(() => {
@@ -156,6 +151,9 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
         fromEvent(window, 'resize')
           .pipe(auditTime(16), takeUntil(this._destroyed))
           .subscribe(() => this.resizeToFitContent(true));
+
+        this._textareaElement.addEventListener('focus', this._handleFocusEvent);
+        this._textareaElement.addEventListener('blur', this._handleFocusEvent);
       });
 
       this._isViewInited = true;
@@ -164,6 +162,8 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
   }
 
   ngOnDestroy() {
+    this._textareaElement.removeEventListener('focus', this._handleFocusEvent);
+    this._textareaElement.removeEventListener('blur', this._handleFocusEvent);
     this._destroyed.next();
     this._destroyed.complete();
   }
@@ -212,13 +212,32 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
   }
 
   private _measureScrollHeight(): number {
+    const element = this._textareaElement;
+    const previousMargin = element.style.marginBottom || '';
+    const isFirefox = this._platform.FIREFOX;
+    const needsMarginFiller = isFirefox && this._hasFocus;
+    const measuringClass = isFirefox ?
+      'cdk-textarea-autosize-measuring-firefox' :
+      'cdk-textarea-autosize-measuring';
+
+    // In some cases the page might move around while we're measuring the `textarea` on Firefox. We
+    // work around it by assigning a temporary margin with the same height as the `textarea` so that
+    // it occupies the same amount of space. See #23233.
+    if (needsMarginFiller) {
+      element.style.marginBottom = `${element.clientHeight}px`;
+    }
+
     // Reset the textarea height to auto in order to shrink back to its default size.
     // Also temporarily force overflow:hidden, so scroll bars do not interfere with calculations.
-    this._textareaElement.classList.add(this._measuringClass);
+    element.classList.add(measuringClass);
     // The measuring class includes a 2px padding to workaround an issue with Chrome,
     // so we account for that extra space here by subtracting 4 (2px top + 2px bottom).
-    const scrollHeight = this._textareaElement.scrollHeight - 4;
-    this._textareaElement.classList.remove(this._measuringClass);
+    const scrollHeight = element.scrollHeight - 4;
+    element.classList.remove(measuringClass);
+
+    if (needsMarginFiller) {
+      element.style.marginBottom = previousMargin;
+    }
 
     return scrollHeight;
   }
@@ -237,6 +256,11 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
     this._textareaElement.value = this._textareaElement.placeholder;
     this._cachedPlaceholderHeight = this._measureScrollHeight();
     this._textareaElement.value = value;
+  }
+
+  /** Handles `focus` and `blur` events. */
+  private _handleFocusEvent = (event: FocusEvent) => {
+    this._hasFocus = event.type === 'focus';
   }
 
   ngDoCheck() {
@@ -329,7 +353,6 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
    */
   private _scrollToCaretPosition(textarea: HTMLTextAreaElement) {
     const {selectionStart, selectionEnd} = textarea;
-    const document = this._getDocument();
 
     // IE will throw an "Unspecified error" if we try to set the selection range after the
     // element has been removed from the DOM. Assert that the directive hasn't been destroyed
@@ -337,7 +360,7 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
     // Also note that we have to assert that the textarea is focused before we set the
     // selection range. Setting the selection range on a non-focused textarea will cause
     // it to receive focus on IE and Edge.
-    if (!this._destroyed.isStopped && document.activeElement === textarea) {
+    if (!this._destroyed.isStopped && this._hasFocus) {
       textarea.setSelectionRange(selectionStart, selectionEnd);
     }
   }
