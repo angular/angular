@@ -113,7 +113,7 @@ export interface VariableIdentifier extends TemplateIdentifier {
  * they were discovered in.
  */
 export type TopLevelIdentifier = PropertyIdentifier|ElementIdentifier|TemplateNodeIdentifier|
-    ReferenceIdentifier|VariableIdentifier;
+    ReferenceIdentifier|VariableIdentifier|MethodIdentifier;
 
 /**
  * Describes the absolute byte offsets of a text anchor in a source code.

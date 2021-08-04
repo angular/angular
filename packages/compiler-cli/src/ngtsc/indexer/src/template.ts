@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AST, ASTWithSource, BoundTarget, ImplicitReceiver, ParseSourceSpan, PropertyRead, PropertyWrite, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
-import {AbsoluteSourceSpan, AttributeIdentifier, ElementIdentifier, IdentifierKind, PropertyIdentifier, ReferenceIdentifier, TemplateNodeIdentifier, TopLevelIdentifier, VariableIdentifier} from './api';
+import {AbsoluteSourceSpan, AttributeIdentifier, ElementIdentifier, IdentifierKind, MethodIdentifier, PropertyIdentifier, ReferenceIdentifier, TemplateNodeIdentifier, TopLevelIdentifier, VariableIdentifier} from './api';
 import {ComponentMeta} from './context';
 
 /**
@@ -18,6 +18,7 @@ interface HTMLNode extends TmplAstNode {
   name?: string;
 }
 
+type ExpressionIdentifier = PropertyIdentifier|MethodIdentifier;
 type TmplTarget = TmplAstReference|TmplAstVariable;
 type TargetIdentifier = ReferenceIdentifier|VariableIdentifier;
 type TargetIdentifierMap = Map<TmplTarget, TargetIdentifier>;
@@ -32,7 +33,7 @@ type TargetIdentifierMap = Map<TmplTarget, TargetIdentifier>;
  * `[TopLevelIdentifier {name: 'prop', span: {start: 7, end: 11}}]`.
  */
 class ExpressionVisitor extends RecursiveAstVisitor {
-  readonly identifiers: PropertyIdentifier[] = [];
+  readonly identifiers: ExpressionIdentifier[] = [];
 
   private constructor(
       private readonly expressionStr: string, private readonly absoluteOffset: number,
@@ -82,7 +83,7 @@ class ExpressionVisitor extends RecursiveAstVisitor {
    * @param kind identifier kind
    */
   private visitIdentifier(
-      ast: AST&{name: string, receiver: AST}, kind: PropertyIdentifier['kind']) {
+      ast: AST&{name: string, receiver: AST}, kind: ExpressionIdentifier['kind']) {
     // The definition of a non-top-level property such as `bar` in `{{foo.bar}}` is currently
     // impossible to determine by an indexer and unsupported by the indexing module.
     // The indexing module also does not currently support references to identifiers declared in the
@@ -110,7 +111,7 @@ class ExpressionVisitor extends RecursiveAstVisitor {
       span,
       kind,
       target,
-    } as PropertyIdentifier;
+    } as ExpressionIdentifier;
 
     this.identifiers.push(identifier);
   }
