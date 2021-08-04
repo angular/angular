@@ -590,7 +590,7 @@ The safest bet for ensuring compatibility is using the
 [component API](https://docs.angularjs.org/api/ng/type/angular.Module)
 introduced in AngularJS 1.5.
 
-An example of an upgradable component is one that just has a template
+An example of an upgradeable component is one that just has a template
 and a controller:
 
 <code-example path="upgrade-module/src/app/upgrade-static/hero-detail.component.ts" region="hero-detail" header="hero-detail.component.ts">

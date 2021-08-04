@@ -203,7 +203,7 @@ The important bit in the `server.ts` file is the `ngExpressEngine()` function.
 The `ngExpressEngine()` function is a wrapper around Universal's `renderModule()` function which turns a client's
 requests into server-rendered HTML pages. It accepts an object with the following properties:
 
-* `bootstrap`: The root `NgModule` or `NgModule` factory to use for bootstraping the application when rendering on the server. For the example app, it is `AppServerModule`. It's the bridge between the Universal server-side renderer and the Angular application.
+* `bootstrap`: The root `NgModule` or `NgModule` factory to use for bootstrapping the application when rendering on the server. For the example app, it is `AppServerModule`. It's the bridge between the Universal server-side renderer and the Angular application.
 * `extraProviders`: This is optional and lets you specify dependency providers that apply only when rendering the application on the server. You can do this when your application needs information that can only be determined by the currently running server instance.
 
 The `ngExpressEngine()` function returns a `Promise` callback that resolves to the rendered page.

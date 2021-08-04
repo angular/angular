@@ -3427,7 +3427,7 @@ function checkOutPullRequestLocally(prNumber, githubToken, opts = {}) {
         // never accidentally override upstream changes that have been pushed in the meanwhile.
         // See:
         // https://git-scm.com/docs/git-push#Documentation/git-push.txt---force-with-leaseltrefnamegtltexpectgt
-        /** Flag for a force push with leage back to upstream. */
+        /** Flag for a force push with lease back to upstream. */
         const forceWithLeaseFlag = `--force-with-lease=${headRefName}:${pr.headRefOid}`;
         // If the PR does not allow maintainers to modify it, exit as the rebased PR cannot
         // be pushed up.
@@ -3541,7 +3541,7 @@ function discoverNewConflictsForPr(newPrNumber, updatedAfter) {
         /* PRs which were found to be conflicting. */
         const conflicts = [];
         info(`Requesting pending PRs from Github`);
-        /** List of PRs from github currently known as mergable. */
+        /** List of PRs from github currently known as mergeable. */
         const allPendingPRs = (yield getPendingPrs(PR_SCHEMA$1, git)).map(processPr);
         /** The PR which is being checked against. */
         const requestedPr = allPendingPRs.find(pr => pr.number === newPrNumber);
@@ -3554,7 +3554,7 @@ function discoverNewConflictsForPr(newPrNumber, updatedAfter) {
             return (
             // PRs being merged into the same target branch as the requested PR
             pr.baseRef.name === requestedPr.baseRef.name &&
-                // PRs which either have not been processed or are determined as mergable by Github
+                // PRs which either have not been processed or are determined as mergeable by Github
                 pr.mergeable !== 'CONFLICTING' &&
                 // PRs updated after the provided date
                 pr.updatedAt >= updatedAfter);
