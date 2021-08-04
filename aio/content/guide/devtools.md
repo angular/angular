@@ -1,6 +1,6 @@
 # DevTools Overview
 
-Angular DevTools is a Chrome extension that provides debugging and profiling capabilities for Angular applications. Angular DevTools supports Angular v9 and above, with Ivy enabled.
+Angular DevTools is a Chrome extension that provides debugging and profiling capabilities for Angular applications. Angular DevTools supports Angular v9 and later, with Ivy enabled.
 
 <div class="video-container">
   <iframe
@@ -12,7 +12,7 @@ Angular DevTools is a Chrome extension that provides debugging and profiling cap
 
 You can find Angular DevTools in the [Chrome Web Store](https://chrome.google.com/webstore/detail/angular-developer-tools/ienfalfjdbdpebioblfackkekamfmbnh).
 
-After installing Angular DevTools, you can find the extension under the Angular tab in Chrome DevTools.
+After installing Angular DevTools, find the extension under the Angular tab in Chrome DevTools.
 
 <div class="lightbox">
   <img src="generated/images/guide/devtools/devtools.png" alt="devtools">
@@ -32,7 +32,7 @@ In the top-right corner of Angular DevTools you'll find which version of Angular
 
 ## Bug reports
 
-You can report issues and feature requests on [GitHub](https://github.com/rangle/angular-devtools/issues).
+Report issues and feature requests on [GitHub](https://github.com/rangle/angular-devtools/issues).
 
 To report an issue with the Profiler, export the Profiler recording by clicking the **Save Profile** button, and then attaching that export as a file in the issue.
 
@@ -42,7 +42,7 @@ To report an issue with the Profiler, export the Profiler recording by clicking 
 
 ## Debug your application
 
-The **Components** tab lets you explore the structure of your application. You can visualize and inspect the component and directive instances and preview or modify their state. In the next couple of sections we'll look into how you can use this tab effectively to debug your application.
+The **Components** tab lets you explore the structure of your application. You can visualize and inspect the component and directive instances and preview or modify their state. In the next couple of sections we'll look into how to use this tab effectively to debug your application.
 
 ### Explore the application structure
 
@@ -58,7 +58,7 @@ The component tree displays a hierarchical relationship of the *components and d
 
 Click the individual components or directives in the component explorer to select them and preview their properties. Angular DevTools displays their properties and metadata on the right-hand side of the component tree.
 
-You can navigate in the component tree using the mouse or the following keyboard shortcuts:
+Navigate in the component tree using the mouse or the following keyboard shortcuts:
 
 - Up and down arrows select the previous and next nodes.
 - Left and right arrows collapse and expand a node.
@@ -83,7 +83,7 @@ For components, Angular DevTools also lets you navigate to the component definit
 
 ### Update property value
 
-Like Chrome DevTools, the properties view allows you to edit the value of an input, output, or another property. Right-click on the property value. If edit functionality is available for this value type, you'll see a text input. Type the new value and press `Enter`.
+Like Chrome DevTools, the properties view lets you edit the value of an input, output, or another property. Right-click on the property value. If edit functionality is available for this value type, you'll see a text input. Type the new value and press `Enter`.
 
 <div class="lightbox">
   <img src="generated/images/guide/devtools/update-property.png" alt="update property">
@@ -123,7 +123,7 @@ You can also import an existing recording. Read more about this feature in the [
 
 ### Understand your application's execution
 
-In the following screenshot, you can find the default view of the Profiler after you complete recording.
+In the following screenshot, find the default view of the Profiler after you complete recording.
 
 <div class="lightbox">
   <img src="generated/images/guide/devtools/default-profiler-view.png" alt="default profiler view">
@@ -135,7 +135,7 @@ Near the top of the view you can see a sequence of bars, each one of them symbol
   <img src="generated/images/guide/devtools/profiler-selected-bar.png" alt="profiler selected bar">
 </div>
 
-Above the change detection timeline, you can find how much time Angular spent in this cycle. Angular DevTools attempts to estimate the frame drop at this point to indicate when the execution of your application might impact the user experience.
+Earlier on the change detection timeline, you can find how much time Angular spent in this cycle. Angular DevTools attempts to estimate the frame drop at this point to indicate when the execution of your application might impact the user experience.
 
 Angular DevTools also indicates what triggered the change detection (that is, the change detection's source).
 
@@ -156,9 +156,9 @@ Figure shows the total time spent by NgforOf directive and which method was call
 
 You can also preview the change detection execution in a flame graph-like view. Each tile in the graph represents an element on the screen at a specific position in the render tree.
 
-For example, if during one change detection cycle at a specific position in the component tree we had `ComponentA`, this component was removed and in its place Angular rendered `ComponentB`, you'll see both components at the same tile.
+For example, if during one change detection cycle at a specific position in the component tree you had `ComponentA`, this component was removed and in its place Angular rendered `ComponentB`, you'll see both components at the same tile.
 
-Each tile is colored depending on how much time Angular has spent there. DevTools determines the intensity of the color by the time spent relative to the tile where we've spent the most time in change detection.
+Each tile is colored depending on how much time Angular spent there. DevTools determines the intensity of the color by the time spent relative to the tile where we've spent the most time in change detection.
 
 When you click on a certain tile, you'll see details about it in the panel on the right. Double-clicking the tile zooms it in so you can preview the nested children.
 
@@ -166,7 +166,7 @@ When you click on a certain tile, you'll see details about it in the panel on th
 
 To preview the components in which Angular did change detection, select the **Change detection** checkbox at the top, above the flame graph.
 
-This view will color all the tiles in which Angular performed change detection in green, and the rest in gray:
+This view colors all the tiles in which Angular performed change detection in green, and the rest in gray:
 
 <div class="lightbox">
   <img src="generated/images/guide/devtools/debugging-onpush.png" alt="debugging onpush">
@@ -174,7 +174,7 @@ This view will color all the tiles in which Angular performed change detection i
 
 ### Import recording
 
-Click the **Save Profile** button at the top-left of a recorded profiling session to export it as a JSON file and save it to the disk. Then, you can import the file in the initial view of the profiler by clicking the **Choose file** input:
+Click the **Save Profile** button at the top-left of a recorded profiling session to export it as a JSON file and save it to the disk. Then, import the file in the initial view of the profiler by clicking the **Choose file** input:
 
 <div class="lightbox">
   <img src="generated/images/guide/devtools/save-profile.png" alt="save profile">
