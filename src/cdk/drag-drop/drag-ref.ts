@@ -715,12 +715,6 @@ export class DragRef<T = any> {
           constrainedPointerPosition.y - this._pickupPositionOnPage.y + this._passiveTransform.y;
 
       this._applyRootElementTransform(activeTransform.x, activeTransform.y);
-
-      // Apply transform as attribute if dragging and svg element to work for IE
-      if (typeof SVGElement !== 'undefined' && this._rootElement instanceof SVGElement) {
-        const appliedTransform = `translate(${activeTransform.x} ${activeTransform.y})`;
-        this._rootElement.setAttribute('transform', appliedTransform);
-      }
     }
 
     // Since this event gets fired for every pixel while dragging, we only
@@ -1274,21 +1268,20 @@ export class DragRef<T = any> {
    */
   private _applyRootElementTransform(x: number, y: number) {
     const transform = getTransform(x, y);
+    const styles = this._rootElement.style;
 
     // Cache the previous transform amount only after the first drag sequence, because
     // we don't want our own transforms to stack on top of each other.
     // Should be excluded none because none + translate3d(x, y, x) is invalid css
     if (this._initialTransform == null) {
-      this._initialTransform = this._rootElement.style.transform
-                               && this._rootElement.style.transform != 'none'
-                               ? this._rootElement.style.transform
-                               : '';
+      this._initialTransform =
+        styles.transform && styles.transform != 'none' ? styles.transform : '';
     }
 
     // Preserve the previous `transform` value, if there was one. Note that we apply our own
     // transform before the user's, because things like rotation can affect which direction
     // the element will be translated towards.
-    this._rootElement.style.transform = combineTransforms(transform, this._initialTransform);
+    styles.transform = combineTransforms(transform, this._initialTransform);
   }
 
   /**
@@ -1403,11 +1396,9 @@ export class DragRef<T = any> {
     if (scrollDifference) {
       const target = _getEventTarget<HTMLElement|Document>(event)!;
 
-      // ClientRect dimensions are based on the scroll position of the page and its parent node so
-      // we have to update the cached boundary ClientRect if the user has scrolled. Check for
-      // the `document` specifically since IE doesn't support `contains` on it.
-      if (this._boundaryRect && (target === this._document ||
-          (target !== this._boundaryElement && target.contains(this._boundaryElement)))) {
+      // ClientRect dimensions are based on the scroll position of the page and its parent
+      // node so we have to update the cached boundary ClientRect if the user has scrolled.
+      if (this._boundaryRect && target.contains(this._boundaryElement)) {
         adjustClientRect(this._boundaryRect, scrollDifference.top, scrollDifference.left);
       }
 

@@ -355,7 +355,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
   private _updateRootElement() {
     const element = this.element.nativeElement;
     const rootElement = this.rootElementSelector ?
-        getClosestMatchingAncestor(element, this.rootElementSelector) : element;
+      element.closest<HTMLElement>(this.rootElementSelector) : element;
 
     if (rootElement && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       assertElementNode(rootElement, 'cdkDrag');
@@ -373,7 +373,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
     }
 
     if (typeof boundary === 'string') {
-      return getClosestMatchingAncestor(this.element.nativeElement, boundary);
+      return this.element.nativeElement.closest<HTMLElement>(boundary);
     }
 
     const element = coerceElement(boundary);
@@ -434,8 +434,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
       // the item was projected into another item by something like `ngTemplateOutlet`.
       let parent = this.element.nativeElement.parentElement;
       while (parent) {
-        // `classList` needs to be null checked, because IE doesn't have it on some elements.
-        if (parent.classList?.contains(DRAG_HOST_CLASS)) {
+        if (parent.classList.contains(DRAG_HOST_CLASS)) {
           ref.withParent(CdkDrag._dragInstances.find(drag => {
             return drag.element.nativeElement === parent;
           })?._dragRef || null);
@@ -538,21 +537,3 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
 
   static ngAcceptInputType_disabled: BooleanInput;
 }
-
-/** Gets the closest ancestor of an element that matches a selector. */
-function getClosestMatchingAncestor(element: HTMLElement, selector: string) {
-  let currentElement = element.parentElement as HTMLElement | null;
-
-  while (currentElement) {
-    // IE doesn't support `matches` so we have to fall back to `msMatchesSelector`.
-    if (currentElement.matches ? currentElement.matches(selector) :
-        (currentElement as any).msMatchesSelector(selector)) {
-      return currentElement;
-    }
-
-    currentElement = currentElement.parentElement;
-  }
-
-  return null;
-}
-

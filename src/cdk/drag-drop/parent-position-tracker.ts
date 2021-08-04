@@ -55,10 +55,6 @@ export class ParentPositionTracker {
       return null;
     }
 
-    // Used when figuring out whether an element is inside the scroll parent. If the scrolled
-    // parent is the `document`, we use the `documentElement`, because IE doesn't support
-    // `contains` on the `document`.
-    const scrolledParentNode = target === this._document ? target.documentElement : target;
     const scrollPosition = cachedPosition.scrollPosition;
     let newTop: number;
     let newLeft: number;
@@ -78,7 +74,7 @@ export class ParentPositionTracker {
     // Go through and update the cached positions of the scroll
     // parents that are inside the element that was scrolled.
     this.positions.forEach((position, node) => {
-      if (position.clientRect && target !== node && scrolledParentNode.contains(node)) {
+      if (position.clientRect && target !== node && target.contains(node)) {
         adjustClientRect(position.clientRect, topDifference, leftDifference);
       }
     });

@@ -434,7 +434,7 @@ export class DropListRef<T = any> {
     const items = this._orientation === 'horizontal' && this._direction === 'rtl' ?
         this._itemPositions.slice().reverse() : this._itemPositions;
 
-    return findIndex(items, currentItem => currentItem.drag === item);
+    return items.findIndex(currentItem => currentItem.drag === item);
   }
 
   /**
@@ -468,7 +468,7 @@ export class DropListRef<T = any> {
     }
 
     const isHorizontal = this._orientation === 'horizontal';
-    const currentIndex = findIndex(siblings, currentItem => currentItem.drag === item);
+    const currentIndex = siblings.findIndex(currentItem => currentItem.drag === item);
     const siblingAtNewPosition = siblings[newIndex];
     const currentPosition = siblings[currentIndex].clientRect;
     const newPosition = siblingAtNewPosition.clientRect;
@@ -754,7 +754,7 @@ export class DropListRef<T = any> {
   private _getItemIndexFromPointerPosition(item: DragRef, pointerX: number, pointerY: number,
                                            delta?: {x: number, y: number}): number {
     const isHorizontal = this._orientation === 'horizontal';
-    const index = findIndex(this._itemPositions, ({drag, clientRect}, _, array) => {
+    const index = this._itemPositions.findIndex(({drag, clientRect}, _, array) => {
       if (drag === item) {
         // If there's only one item left in the container, it must be
         // the dragged item itself so we use it as a reference.
@@ -801,15 +801,15 @@ export class DropListRef<T = any> {
         const scrollStep = this.autoScrollStep;
 
         if (this._verticalScrollDirection === AutoScrollVerticalDirection.UP) {
-          incrementVerticalScroll(node, -scrollStep);
+          node.scrollBy(0, -scrollStep);
         } else if (this._verticalScrollDirection === AutoScrollVerticalDirection.DOWN) {
-          incrementVerticalScroll(node, scrollStep);
+          node.scrollBy(0, scrollStep);
         }
 
         if (this._horizontalScrollDirection === AutoScrollHorizontalDirection.LEFT) {
-          incrementHorizontalScroll(node, -scrollStep);
+          node.scrollBy(-scrollStep, 0);
         } else if (this._horizontalScrollDirection === AutoScrollHorizontalDirection.RIGHT) {
-          incrementHorizontalScroll(node, scrollStep);
+          node.scrollBy(scrollStep, 0);
         }
       });
   }
@@ -952,52 +952,6 @@ export class DropListRef<T = any> {
   }
 }
 
-
-/**
- * Finds the index of an item that matches a predicate function. Used as an equivalent
- * of `Array.prototype.findIndex` which isn't part of the standard Google typings.
- * @param array Array in which to look for matches.
- * @param predicate Function used to determine whether an item is a match.
- */
-function findIndex<T>(array: T[],
-                      predicate: (value: T, index: number, obj: T[]) => boolean): number {
-
-  for (let i = 0; i < array.length; i++) {
-    if (predicate(array[i], i, array)) {
-      return i;
-    }
-  }
-
-  return -1;
-}
-
-/**
- * Increments the vertical scroll position of a node.
- * @param node Node whose scroll position should change.
- * @param amount Amount of pixels that the `node` should be scrolled.
- */
-function incrementVerticalScroll(node: HTMLElement | Window, amount: number) {
-  if (node === window) {
-    (node as Window).scrollBy(0, amount);
-  } else {
-    // Ideally we could use `Element.scrollBy` here as well, but IE and Edge don't support it.
-    (node as HTMLElement).scrollTop += amount;
-  }
-}
-
-/**
- * Increments the horizontal scroll position of a node.
- * @param node Node whose scroll position should change.
- * @param amount Amount of pixels that the `node` should be scrolled.
- */
-function incrementHorizontalScroll(node: HTMLElement | Window, amount: number) {
-  if (node === window) {
-    (node as Window).scrollBy(amount, 0);
-  } else {
-    // Ideally we could use `Element.scrollBy` here as well, but IE and Edge don't support it.
-    (node as HTMLElement).scrollLeft += amount;
-  }
-}
 
 /**
  * Gets whether the vertical auto-scroll direction of a node.
