@@ -1,3 +1,17 @@
+<a name="12.2.0"></a>
+# 12.2.0 (2021-08-04)
+### core
+| Commit | Description |
+| -- | -- |
+| [bd7f0d8b70](https://github.com/angular/angular/commit/bd7f0d8b70150a7e4e7550f4380a2e731cf2b942) | fix(core): incorrect error reported when trying to re-create view which had an error during creation ([#43005](https://github.com/angular/angular/pull/43005)) |
+### language-service
+| Commit | Description |
+| -- | -- |
+| [aace1e71d8](https://github.com/angular/angular/commit/aace1e71d8fb5e1e52fcd86e2a26892d1016c43e) | fix(language-service): global autocomplete doesn't work when the user tries to modify the symbol ([#42923](https://github.com/angular/angular/pull/42923)) |
+## Special Thanks:
+Alex Rickabaugh, Joe Martin, Joey Perrott, Kristiyan Kostadinov, Nichola Alkhouri, Paul Gschwendtner, Pete Bacon Darwin, atscott, dario-piotrowicz and ivanwonder
+
+
 <a name="12.1.5"></a>
 # 12.1.5 (2021-08-04)
 This release contains various API docs improvements.
