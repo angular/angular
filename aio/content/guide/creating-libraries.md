@@ -1,6 +1,6 @@
 ﻿# Creating libraries
 
-This page provides a conceptual overview of how you can create and publish new libraries to extend Angular functionality.
+This page provides a conceptual overview of how to create and publish new libraries to extend Angular functionality.
 
 If you find that you need to solve the same problem in more than one application (or want to share your solution with other developers), you have a candidate for a library.
 A simple example might be a button that sends users to your company website, that would be included in all applications that your company builds.
@@ -31,7 +31,7 @@ The `ng generate` command creates the `projects/my-lib` folder in your workspace
 
      For more details on how a library project is structured, refer to the [Library project files](guide/file-structure#library-project-files) section of the [Project File Structure guide](guide/file-structure).
 
-     You can use the monorepo model to use the same workspace for multiple projects.
+     Use the monorepo model to use the same workspace for multiple projects.
      See [Setting up for a multi-project workspace](guide/file-structure#multiple-projects).
 
 </div>
@@ -52,7 +52,7 @@ When you generate a new library, the workspace configuration file, `angular.json
         ...
 </code-example>
 
-You can build, test, and lint the project with CLI commands:
+Build, test, and lint the project with CLI commands:
 
 <code-example language="bash">
  ng build my-lib --configuration development
@@ -89,7 +89,7 @@ Here are some things to consider in migrating application functionality to a lib
 
 * Consider how you provide services to client applications.
 
-   * Services should declare their own providers, rather than declaring providers in the NgModule or a component. Declaring a provider makes that service *tree-shakable*. This practice allows the compiler to leave the service out of the bundle if it never gets injected into the application that imports the library. For more about this, see [Tree-shakable providers](guide/architecture-services#providing-services).
+   * Services should declare their own providers, rather than declaring providers in the NgModule or a component. Declaring a provider makes that service *tree-shakable*. This practice lets the compiler leave the service out of the bundle if it never gets injected into the application that imports the library. For more about this, see [Tree-shakable providers](guide/architecture-services#providing-services).
 
    * If you register global service providers or share providers across multiple NgModules, use the [`forRoot()` and `forChild()` design patterns](guide/singleton-services) provided by the [RouterModule](api/router/RouterModule).
 
@@ -105,7 +105,7 @@ This package can also include [schematics](guide/glossary#schematic) that provid
 A schematic that is packaged with a library can, for example, provide the Angular CLI with the information it needs to generate a component that configures and uses a particular feature, or set of features, defined in that library.
 One example of this is [Angular Material's navigation schematic](https://material.angular.io/guide/schematics#navigation-schematic) which configures the CDK's [BreakpointObserver](https://material.angular.io/cdk/layout/overview#breakpointobserver) and uses it with Material's [MatSideNav](https://material.angular.io/components/sidenav/overview) and [MatToolbar](https://material.angular.io/components/toolbar/overview) components.
 
-You can create and include the following kinds of schematics:
+Create and include the following kinds of schematics:
 
 * Include an installation schematic so that `ng add` can add your library to a project.
 
@@ -118,7 +118,7 @@ For example, you could define a schematic to create a dropdown that is pre-popul
 If you want a dropdown that would contain different passed-in values each time, your library could define a schematic to create it with a given configuration. Developers could then use `ng generate` to configure an instance for their own application.
 
 Suppose you want to read a configuration file and then generate a form based on that configuration.
-If that form will need additional customization by the developer who is using your library, it might work best as a schematic.
+If that form needs additional customization by the developer who is using your library, it might work best as a schematic.
 However, if the form will always be the same and not need much customization by developers, then you could create a dynamic component that takes the configuration and generates the form.
 In general, the more complex the customization, the more useful the schematic approach.
 
@@ -150,7 +150,7 @@ npm publish
 ## Managing assets in a library
 
 Starting with version 9.x of the [ng-packagr](https://github.com/ng-packagr/ng-packagr/blob/master/README.md) tool, you can configure the tool to automatically copy assets into your library package as part of the build process.
-You can use this feature when your library needs to publish optional theming files, Sass mixins, or documentation (like a changelog).
+Use this feature when your library needs to publish optional theming files, Sass mixins, or documentation (like a changelog).
 
 * Learn how to [copy assets into your library as part of the build](https://github.com/ng-packagr/ng-packagr/blob/master/docs/copy-assets.md).
 
@@ -158,7 +158,7 @@ You can use this feature when your library needs to publish optional theming fil
 
 ## Linked libraries
 
-While working on a published library, you can use [npm link](https://docs.npmjs.com/cli/link) to avoid reinstalling the library on every build.
+While working on a published library, use [npm link](https://docs.npmjs.com/cli/link) to avoid reinstalling the library on every build.
 
 The library must be rebuilt on every change.
 When linking a library, make sure that the build step runs in watch mode, and that the library's `package.json` configuration points at the correct entry points.
@@ -171,10 +171,10 @@ This ensures that when modules ask for Angular, they all get the exact same modu
 If a library lists `@angular/core` in `dependencies` instead of `peerDependencies`, it might get a different Angular module instead, which would cause your application to break.
 
 While developing a library, you must install all peer dependencies through `devDependencies` to ensure that the library compiles properly.
-A linked library will then have its own set of Angular libraries that it uses for building, located in its `node_modules` folder.
+A linked library then has its own set of Angular libraries that it uses for building, located in its `node_modules` folder.
 However, this can cause problems while building or running your application.
 
-To get around this problem you can use TypeScript path mapping to tell TypeScript that it should load some modules from a specific location.
+To get around this problem use TypeScript path mapping to tell TypeScript that it should load some modules from a specific location.
 List all the peer dependencies that your library uses in the workspace TypeScript configuration file `./tsconfig.json`, and point them at the local copy in the application's `node_modules` folder.
 
 ```
@@ -196,7 +196,7 @@ This mapping ensures that your library always loads the local copies of the modu
 
 ## Using your own library in apps
 
-You don't have to publish your library to the npm package manager in order to use it in your own applications, but you do have to build it first.
+You don't have to publish your library to the npm package manager to use it in your own applications, but you do have to build it first.
 
 To use your own library in an app:
 
@@ -213,7 +213,7 @@ To use your own library in an app:
 ### Building and rebuilding your library
 
 The build step is important if you haven't published your library as an npm package and then installed the package back into your application from npm.
-For instance, if you clone your git repository and run `npm install`, your editor will show the `my-lib` imports as missing if you haven't yet built your library.
+For instance, if you clone your git repository and run `npm install`, your editor shows the `my-lib` imports as missing if you haven't yet built your library.
 
 <div class="alert is-helpful">
 
@@ -256,7 +256,7 @@ TypeScript path mappings should *not* point to the library source `.ts` files.
 
 ## Building libraries with Ivy
 
-There are three distribution formats that you can use when publishing a library:
+There are three distribution formats to use when publishing a library:
 
 * View Engine _(deprecated)_&mdash;legacy format, slated for removal in Angular version 13.
   Only use this format if you must support View Engine applications.
@@ -296,7 +296,7 @@ Enable partial-Ivy compilation by replacing `"enableIvy": false` with `"compilat
 
 For publishing to npm use the partial-Ivy format as it is stable between patch versions of Angular.
 
-Avoid compiling libraries with full-Ivy code if you are publishing to npm because the generated Ivy instructions are not part of Angular's public API, and so may change between patch versions.
+Avoid compiling libraries with full-Ivy code if you are publishing to npm because the generated Ivy instructions are not part of Angular's public API, and so might change between patch versions.
 
 Partial-Ivy code is not backward compatible with View Engine.
 If you use the library in a View Engine application, you must compile the library into the View Engine format by setting `"enableIvy": false` in the `tsconfig.json` file.
@@ -335,11 +335,11 @@ If you've never published a package in npm before, you must create a user accoun
 
 An application installs many Angular libraries from npm into its `node_modules` directory.
 However, the code in these libraries cannot be bundled directly along with the built application as it is not fully compiled.
-To finish compilation, you can use the Angular linker.
+To finish compilation, use the Angular linker.
 
 For applications that don't use the Angular CLI, the linker is available as a Babel plugin.
-You can use the Babel plugin using the module `@angular/compiler-cli/linker/babel` to incorporate into your builds.
-For example, you can integrate the plugin into a custom Webpack build by registering the linker as a plugin for `babel-loader`.
+Use the Babel plugin using the module `@angular/compiler-cli/linker/babel` to incorporate into your builds.
+For example, integrate the plugin into a custom Webpack build by registering the linker as a plugin for `babel-loader`.
 
 Previously, if you ran `yarn install` or `npm install` you had to re-run `ngcc`.
 Now, libraries only need to be processed by the linker a single time, regardless of other npm operations.
