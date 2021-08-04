@@ -128,7 +128,6 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
   private _diameter = BASE_SIZE;
   private _value = 0;
   private _strokeWidth: number;
-  private _fallbackAnimation = false;
 
   /**
    * Element to which we should add the generated style tags for the indeterminate animation.
@@ -159,7 +158,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
     this._spinnerAnimationLabel = this._getSpinnerAnimationLabel();
 
     // If this is set before `ngOnInit`, the style root may not have been resolved yet.
-    if (!this._fallbackAnimation && this._styleRoot) {
+    if (this._styleRoot) {
       this._attachStyleNode();
     }
   }
@@ -186,7 +185,11 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
   }
 
   constructor(elementRef: ElementRef<HTMLElement>,
-              platform: Platform,
+              /**
+               * @deprecated `_platform` parameter no longer being used.
+               * @breaking-change 14.0.0
+               */
+              _platform: Platform,
               @Optional() @Inject(DOCUMENT) private _document: any,
               @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode: string,
               @Inject(MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS)
@@ -203,7 +206,6 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
       trackedDiameters.set(_document.head, new Set<number>([BASE_SIZE]));
     }
 
-    this._fallbackAnimation = platform.EDGE || platform.TRIDENT;
     this._noopAnimations = animationMode === 'NoopAnimations' &&
         (!!defaults && !defaults._forceAnimations);
 
@@ -226,13 +228,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
     // node is inside an `ngIf` and a ShadowDom-encapsulated component.
     this._styleRoot = _getShadowRoot(element) || this._document.head;
     this._attachStyleNode();
-
-    // On IE and Edge, we can't animate the `stroke-dashoffset`
-    // reliably so we fall back to a non-spec animation.
-    const animationClass =
-      `mat-progress-spinner-indeterminate${this._fallbackAnimation ? '-fallback' : ''}-animation`;
-
-    element.classList.add(animationClass);
+    element.classList.add('mat-progress-spinner-indeterminate-animation');
   }
 
   /** The radius of the spinner, adjusted for stroke width. */
@@ -255,11 +251,6 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
   _getStrokeDashOffset() {
     if (this.mode === 'determinate') {
       return this._getStrokeCircumference() * (100 - this._value) / 100;
-    }
-
-    // In fallback mode set the circle to 80% and rotate it with CSS.
-    if (this._fallbackAnimation && this.mode === 'indeterminate') {
-      return this._getStrokeCircumference() * 0.2;
     }
 
     return null;

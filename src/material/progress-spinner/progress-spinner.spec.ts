@@ -1,7 +1,7 @@
-import {TestBed, waitForAsync, inject} from '@angular/core/testing';
+import {TestBed, waitForAsync} from '@angular/core/testing';
 import {Component, ViewEncapsulation, ViewChild, ElementRef} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {Platform, _getShadowRoot, _supportsShadowDom} from '@angular/cdk/platform';
+import {_getShadowRoot, _supportsShadowDom} from '@angular/cdk/platform';
 import {CommonModule} from '@angular/common';
 import {
   MatProgressSpinnerModule,
@@ -158,13 +158,7 @@ describe('MatProgressSpinner', () => {
   });
 
   it('should add a style tag with the indeterminate animation to the document head when using a ' +
-    'non-default diameter', inject([Platform], (platform: Platform) => {
-      // On Edge and IE we use a fallback animation because the
-      // browser doesn't support animating SVG correctly.
-      if (platform.EDGE || platform.TRIDENT) {
-        return;
-      }
-
+    'non-default diameter', () => {
       const fixture = TestBed.createComponent(ProgressSpinnerCustomDiameter);
       fixture.componentInstance.diameter = 32;
       fixture.detectChanges();
@@ -184,7 +178,7 @@ describe('MatProgressSpinner', () => {
 
       expect(document.head.querySelectorAll('style[mat-spinner-animation="32"]').length).toBe(1);
       expect(document.head.querySelectorAll('style[mat-spinner-animation="64"]').length).toBe(1);
-  }));
+  });
 
   it('should allow floating point values for custom diameter', () => {
       const fixture = TestBed.createComponent(ProgressSpinnerCustomDiameter);
@@ -207,26 +201,19 @@ describe('MatProgressSpinner', () => {
         .toBe('0 0 25.75 25.75', 'Expected the custom diameter to be applied to the svg viewBox.');
   });
 
-  it('should handle creating animation style tags based on a floating point diameter',
-    inject([Platform], (platform: Platform) => {
-      // On Edge and IE we use a fallback animation because the
-      // browser doesn't support animating SVG correctly.
-      if (platform.EDGE || platform.TRIDENT) {
-        return;
-      }
+  it('should handle creating animation style tags based on a floating point diameter', () => {
+    const fixture = TestBed.createComponent(IndeterminateSpinnerCustomDiameter);
 
-      const fixture = TestBed.createComponent(IndeterminateSpinnerCustomDiameter);
+    fixture.componentInstance.diameter = 32.5;
+    fixture.detectChanges();
 
-      fixture.componentInstance.diameter = 32.5;
-      fixture.detectChanges();
+    const circleElement = fixture.nativeElement.querySelector('circle');
 
-      const circleElement = fixture.nativeElement.querySelector('circle');
-
-      expect(circleElement.style.animationName).toBe('mat-progress-spinner-stroke-rotate-32_5',
-      'Expected the spinner circle element to have an animation name based on the custom diameter');
-      expect(document.head.querySelectorAll('style[mat-spinner-animation="32_5"]').length).toBe(1,
-      'Expected a style tag with the indeterminate animation to be attached to the document head');
-  }));
+    expect(circleElement.style.animationName).toBe('mat-progress-spinner-stroke-rotate-32_5',
+    'Expected the spinner circle element to have an animation name based on the custom diameter');
+    expect(document.head.querySelectorAll('style[mat-spinner-animation="32_5"]').length).toBe(1,
+    'Expected a style tag with the indeterminate animation to be attached to the document head');
+  });
 
   it('should allow a custom stroke width', () => {
     const fixture = TestBed.createComponent(ProgressSpinnerCustomStrokeWidth);

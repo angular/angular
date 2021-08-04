@@ -24,7 +24,8 @@ export function MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY(): MatProgressSpinn
 
 // @public
 export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnInit, CanColor {
-    constructor(elementRef: ElementRef<HTMLElement>, platform: Platform, _document: any, animationMode: string, defaults?: MatProgressSpinnerDefaultOptions);
+    constructor(elementRef: ElementRef<HTMLElement>,
+    _platform: Platform, _document: any, animationMode: string, defaults?: MatProgressSpinnerDefaultOptions);
     get diameter(): number;
     set diameter(size: number);
     _getCircleRadius(): number;

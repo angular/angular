@@ -3,10 +3,6 @@
 @use '../../cdk/a11y';
 
 
-// Animation config
-$stroke-rotate-fallback-duration: 10 * 1000ms !default;
-$stroke-rotate-fallback-ease: cubic-bezier(0.87, 0.03, 0.33, 1) !default;
-
 $_default-radius: 45px;
 $_default-circumference: variables.$pi * $_default-radius * 2;
 
@@ -35,10 +31,9 @@ $_default-circumference: variables.$pi * $_default-radius * 2;
 
     @include a11y.high-contrast(active, off) {
       // SVG colors aren't inverted automatically in high contrast mode. Set the
-      // stroke to currentColor in order to respect the user's color settings.
-      stroke: currentColor;
-      // currentColor blends in with the background in Chromium-based browsers
-      // so we have to fall back to `CanvasText` which isn't supported on IE.
+      // stroke to `CanvasText` in order to respect the user's color settings.
+      // Note that we use `CanvasText` instead of `currentColor`, because
+      // the latter blends in with the background on Chromium browsers.
       stroke: CanvasText;
     }
   }
@@ -59,21 +54,6 @@ $_default-circumference: variables.$pi * $_default-radius * 2;
       animation-iteration-count: infinite;
     }
   }
-
-  &.mat-progress-spinner-indeterminate-fallback-animation[mode='indeterminate'] {
-    svg {
-      @include private.private-animation-noop();
-      animation: mat-progress-spinner-stroke-rotate-fallback
-                 $stroke-rotate-fallback-duration
-                 $stroke-rotate-fallback-ease
-                 infinite;
-    }
-
-    circle {
-      @include private.private-animation-noop();
-      transition-property: stroke;
-    }
-  }
 }
 
 
@@ -86,7 +66,6 @@ $_default-circumference: variables.$pi * $_default-radius * 2;
 @at-root {
   $start: (1 - 0.05) * $_default-circumference; // start the animation at 5%
   $end: (1 - 0.8) * $_default-circumference; // end the animation at 80%
-  $fallback-iterations: 4;
 
   @keyframes mat-progress-spinner-stroke-rotate-100 {
     // stylelint-disable declaration-block-single-line-max-declarations
@@ -118,16 +97,5 @@ $_default-circumference: variables.$pi * $_default-radius * 2;
     87.5001%  { stroke-dashoffset: $end;    transform: rotateX(180deg) rotate(341.5deg); }
     100%      { stroke-dashoffset: $start;  transform: rotateX(180deg) rotate(341.5deg); }
     // stylelint-enable
-  }
-
-  // For IE11 and Edge, we fall back to simply rotating the spinner because
-  // animating stroke-dashoffset is not supported. The fallback uses multiple
-  // iterations to vary where the spin "lands".
-  @keyframes mat-progress-spinner-stroke-rotate-fallback {
-    @for $i from 0 through $fallback-iterations {
-      $percent: private.private-div(100, $fallback-iterations) * $i;
-      $offset: private.private-div(360, $fallback-iterations);
-      #{$percent}% { transform: rotate(#{$i * (360 * 3 + $offset)}deg); }
-    }
   }
 }
