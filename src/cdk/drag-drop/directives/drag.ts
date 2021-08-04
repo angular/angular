@@ -274,51 +274,24 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   ngAfterViewInit() {
-    // We need to wait for the zone to stabilize, in order for the reference
-    // element to be in the proper place in the DOM. This is mostly relevant
-    // for draggable elements inside portals since they get stamped out in
-    // their original DOM position and then they get transferred to the portal.
-    this._ngZone.onStable
-      .pipe(take(1), takeUntil(this._destroyed))
-      .subscribe(() => {
-        this._updateRootElement();
+    // Normally this isn't in the zone, but it can cause major performance regressions for apps
+    // using `zone-patch-rxjs` because it'll trigger a change detection when it unsubscribes.
+    this._ngZone.runOutsideAngular(() => {
+      // We need to wait for the zone to stabilize, in order for the reference
+      // element to be in the proper place in the DOM. This is mostly relevant
+      // for draggable elements inside portals since they get stamped out in
+      // their original DOM position and then they get transferred to the portal.
+      this._ngZone.onStable
+        .pipe(take(1), takeUntil(this._destroyed))
+        .subscribe(() => {
+          this._updateRootElement();
+          this._setupHandlesListener();
 
-        // Listen for any newly-added handles.
-        this._handles.changes.pipe(
-          startWith(this._handles),
-          // Sync the new handles with the DragRef.
-          tap((handles: QueryList<CdkDragHandle>) => {
-            const childHandleElements = handles
-              .filter(handle => handle._parentDrag === this)
-              .map(handle => handle.element);
-
-            // Usually handles are only allowed to be a descendant of the drag element, but if
-            // the consumer defined a different drag root, we should allow the drag element
-            // itself to be a handle too.
-            if (this._selfHandle && this.rootElementSelector) {
-              childHandleElements.push(this.element);
-            }
-
-            this._dragRef.withHandles(childHandleElements);
-          }),
-          // Listen if the state of any of the handles changes.
-          switchMap((handles: QueryList<CdkDragHandle>) => {
-            return merge(...handles.map(item => {
-              return item._stateChanges.pipe(startWith(item));
-            })) as Observable<CdkDragHandle>;
-          }),
-          takeUntil(this._destroyed)
-        ).subscribe(handleInstance => {
-          // Enabled/disable the handle that changed in the DragRef.
-          const dragRef = this._dragRef;
-          const handle = handleInstance.element.nativeElement;
-          handleInstance.disabled ? dragRef.disableHandle(handle) : dragRef.enableHandle(handle);
+          if (this.freeDragPosition) {
+            this._dragRef.setFreeDragPosition(this.freeDragPosition);
+          }
         });
-
-        if (this.freeDragPosition) {
-          this._dragRef.setFreeDragPosition(this.freeDragPosition);
-        }
-      });
+    });
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -346,9 +319,13 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
     if (index > -1) {
       CdkDrag._dragInstances.splice(index, 1);
     }
-    this._destroyed.next();
-    this._destroyed.complete();
-    this._dragRef.dispose();
+
+    // Unnecessary in most cases, but used to avoid extra change detections with `zone-paths-rxjs`.
+    this._ngZone.runOutsideAngular(() => {
+      this._destroyed.next();
+      this._destroyed.complete();
+      this._dragRef.dispose();
+    });
   }
 
   /** Syncs the root element with the `DragRef`. */
@@ -533,6 +510,41 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
     if (previewContainer) {
       this.previewContainer = previewContainer;
     }
+  }
+
+  /** Sets up the listener that syncs the handles with the drag ref. */
+  private _setupHandlesListener() {
+    // Listen for any newly-added handles.
+    this._handles.changes.pipe(
+      startWith(this._handles),
+      // Sync the new handles with the DragRef.
+      tap((handles: QueryList<CdkDragHandle>) => {
+        const childHandleElements = handles
+          .filter(handle => handle._parentDrag === this)
+          .map(handle => handle.element);
+
+        // Usually handles are only allowed to be a descendant of the drag element, but if
+        // the consumer defined a different drag root, we should allow the drag element
+        // itself to be a handle too.
+        if (this._selfHandle && this.rootElementSelector) {
+          childHandleElements.push(this.element);
+        }
+
+        this._dragRef.withHandles(childHandleElements);
+      }),
+      // Listen if the state of any of the handles changes.
+      switchMap((handles: QueryList<CdkDragHandle>) => {
+        return merge(...handles.map(item => {
+          return item._stateChanges.pipe(startWith(item));
+        })) as Observable<CdkDragHandle>;
+      }),
+      takeUntil(this._destroyed)
+    ).subscribe(handleInstance => {
+      // Enabled/disable the handle that changed in the DragRef.
+      const dragRef = this._dragRef;
+      const handle = handleInstance.element.nativeElement;
+      handleInstance.disabled ? dragRef.disableHandle(handle) : dragRef.enableHandle(handle);
+    });
   }
 
   static ngAcceptInputType_disabled: BooleanInput;
