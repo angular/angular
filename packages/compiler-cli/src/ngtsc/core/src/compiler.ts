@@ -34,8 +34,6 @@ import {getSourceFileOrNull, isDtsPath, resolveModuleName, toUnredirectedSourceF
 import {Xi18nContext} from '../../xi18n';
 import {LazyRoute, NgCompilerAdapter, NgCompilerOptions} from '../api';
 
-import {compileUndecoratedClassesWithAngularFeatures} from './config';
-
 /**
  * State information about a compilation which is only generated once some data is requested from
  * the `NgCompiler` (for example, by calling `getDiagnostics`).
@@ -1021,7 +1019,7 @@ export class NgCompiler {
         new DirectiveDecoratorHandler(
             reflector, evaluator, metaRegistry, scopeRegistry, metaReader,
             injectableRegistry, isCore, semanticDepGraphUpdater,
-          this.closureCompilerEnabled, compileUndecoratedClassesWithAngularFeatures,
+          this.closureCompilerEnabled, /** compileUndecoratedClassesWithAngularFeatures */ false,
           this.delegatingPerfRecorder,
         ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null,unknown>>,
       // clang-format on
