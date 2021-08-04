@@ -99,7 +99,7 @@ export class AppComponent {
 
 ## Configure target-specific file replacements
 
-The main CLI configuration file, `angular.json`, contains a `fileReplacements` section in the configuration for each build target, which allows you to replace any file in the TypeScript program with a target-specific version of that file.
+The main CLI configuration file, `angular.json`, contains a `fileReplacements` section in the configuration for each build target, which lets you replace any file in the TypeScript program with a target-specific version of that file.
 This is useful for including target-specific code or variables in a build that targets a specific environment, such as production or staging.
 
 By default no files are replaced.
@@ -170,7 +170,7 @@ You can also configure the `serve` command to use the targeted build configurati
 ## Configuring size budgets
 
 As applications grow in functionality, they also grow in size.
-The CLI allows you to set size thresholds in your configuration to ensure that parts of your application stay within size boundaries that you define.
+The CLI lets you set size thresholds in your configuration to ensure that parts of your application stay within size boundaries that you define.
 
 Define your size boundaries in the CLI configuration file, `angular.json`, in a `budgets` section for each [configured environment](#app-environments).
 
@@ -276,7 +276,7 @@ For more information, see [How CommonJS is making your bundles larger](https://w
 </div>
 
 The Angular CLI outputs warnings if it detects that your browser application depends on CommonJS modules.
-To disable these warnings, you can add the CommonJS module name to `allowedCommonJsDependencies` option in the `build` options located in `angular.json` file.
+To disable these warnings, add the CommonJS module name to `allowedCommonJsDependencies` option in the `build` options located in `angular.json` file.
 
 <code-example lang="json">
 "build": {
@@ -296,13 +296,13 @@ To disable these warnings, you can add the CommonJS module name to `allowedCommo
 ## Configuring browser compatibility
 
 The CLI uses [Autoprefixer](https://github.com/postcss/autoprefixer) to ensure compatibility with different browser and browser versions.
-You may find it necessary to target specific browsers or exclude certain browser versions from your build.
+You might find it necessary to target specific browsers or exclude certain browser versions from your build.
 
 Internally, Autoprefixer relies on a library called [Browserslist](https://github.com/browserslist/browserslist) to figure out which browsers to support with prefixing.
 Browserlist looks for configuration options in a `browserslist` property of the package configuration file, or in a configuration file named `.browserslistrc`.
 Autoprefixer looks for the `browserslist` configuration when it prefixes your CSS.
 
-* You can tell Autoprefixer what browsers to target by adding a browserslist property to the package configuration file, `package.json`:
+* Tell Autoprefixer what browsers to target by adding a browserslist property to the package configuration file, `package.json`:
 ```
  "browserslist": [
    "> 1%",
@@ -352,7 +352,7 @@ For more information, see [Autoprefixer documentation](https://autoprefixer.gith
 
 ## Proxying to a backend server
 
-You can use the [proxying support](https://webpack.js.org/configuration/dev-server/#devserverproxy) in the `webpack` development server to divert certain URLs to a backend server, by passing a file to the `--proxy-config` build option.
+Use the [proxying support](https://webpack.js.org/configuration/dev-server/#devserverproxy) in the `webpack` development server to divert certain URLs to a backend server, by passing a file to the `--proxy-config` build option.
 For example, to divert all calls for `http://localhost:4200/api` to a server running on `http://localhost:3000/api`, take the following steps.
 
 1. Create a file `proxy.conf.json` in your project's `src/` folder.
@@ -382,7 +382,7 @@ For example, to divert all calls for `http://localhost:4200/api` to a server run
 
 1. To run the development server with this proxy configuration, call `ng serve`.
 
-You can edit the proxy configuration file to add configuration options; some examples are given below.
+Edit the proxy configuration file to add configuration options; following are some examples.
 For a description of all options, see [webpack DevServer documentation](https://webpack.js.org/configuration/dev-server/#devserverproxy).
 
 Note that if you edit the proxy configuration file, you must relaunch the `ng serve` process to make your changes effective.
@@ -390,7 +390,7 @@ Note that if you edit the proxy configuration file, you must relaunch the `ng se
 ### Rewrite the URL path
 
 The `pathRewrite` proxy configuration option lets you rewrite the URL path at run time.
-For example, you can specify the following `pathRewrite` value to the proxy configuration to remove "api" from the end of a path.
+For example, specify the following `pathRewrite` value to the proxy configuration to remove "api" from the end of a path.
 
 ```
 {

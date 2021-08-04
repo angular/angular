@@ -6,7 +6,7 @@ Schematics are packaged into [collections](guide/glossary#collection) and instal
 
 The schematic collection can be a powerful tool for creating, modifying, and maintaining any software project, but is particularly useful for customizing Angular projects to suit the particular needs of your own organization.
 You might use schematics, for example, to generate commonly-used UI patterns or specific components, using predefined templates or layouts.
-You can use schematics to enforce architectural rules and conventions, making your projects consistent and inter-operative.
+Use schematics to enforce architectural rules and conventions, making your projects consistent and inter-operative.
 
 ## Schematics for the Angular CLI
 
@@ -15,7 +15,7 @@ You can modify these schematics, and define new ones to do things like update yo
 
 Schematics that are included in the `@schematics/angular` collection are run by default by the commands `ng generate` and `ng add`.
 The package contains named schematics that configure the options that are available to the CLI for `ng generate` sub-commands, such as `ng generate component` and `ng generate service`.
-The subcommands for `ng generate` are shorthand for the corresponding schematic. You can specify a particular schematic (or collection of schematics) to generate, using the long form:
+The subcommands for `ng generate` are shorthand for the corresponding schematic. To specify a particular schematic (or collection of schematics) to generate, using the long form:
 
 <code-example language="bash">
 ng generate my-schematic-collection:my-schematic-name
@@ -31,7 +31,7 @@ ng generate my-schematic-name --collection collection-name
 
 A JSON schema associated with a schematic tells the Angular CLI what options are available to commands and subcommands, and determines the defaults.
 These defaults can be overridden by providing a different value for an option on the command line.
-See [Workspace Configuration](guide/workspace-config) for information about how you can change the generation option defaults for your workspace.
+See [Workspace Configuration](guide/workspace-config) for information about how to change the generation option defaults for your workspace.
 
 The JSON schemas for the default schematics used by the CLI to generate projects and parts of projects are collected in the package [`@schematics/angular`](https://github.com/angular/angular-cli/tree/master/packages/schematics/angular).
 The schema describes the options available to the CLI for each of the `ng generate` sub-commands, as shown in the `--help` output.
@@ -40,7 +40,7 @@ The schema describes the options available to the CLI for each of the `ng genera
 
 As a library developer, you can create your own collections of custom schematics to integrate your library with the Angular CLI.
 
-* An *add schematic* allows developers to install your library in an Angular workspace using `ng add`.
+* An *add schematic* lets developers install your library in an Angular workspace using `ng add`.
 
 * *Generation schematics* can tell the `ng generate` subcommands how to modify projects, add configurations and scripts, and scaffold artifacts that are defined in your library.
 
@@ -56,7 +56,7 @@ An add schematic is typically supplied with a library, so that the library can b
 The `add` command uses your package manager to download new dependencies, and invokes an installation script that is implemented as a schematic.
 
 For example, the [`@angular/material`](https://material.angular.io/guide/schematics) schematic tells the `add` command to install and set up Angular Material and theming, and register new starter components that can be created with `ng generate`.
-You can look at this one as an example and model for your own add schematic.
+Look at this one as an example and model for your own add schematic.
 
 Partner and third party libraries also support the Angular CLI with add schematics.
 For example, `@ng-bootstrap/schematics` adds [ng-bootstrap](https://ng-bootstrap.github.io/)  to an app, and  `@clr/angular` installs and sets up [Clarity from VMWare](https://vmware.github.io/clarity/documentation/v1.0/get-started).

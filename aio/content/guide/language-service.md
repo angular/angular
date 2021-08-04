@@ -37,7 +37,7 @@ Language services include:
 Autocompletion can speed up your development time by providing you with
 contextual possibilities and hints as you type.
 This example shows autocomplete in an interpolation. As you type it out,
-you can hit tab to complete.
+you can press tab to complete.
 
 <div class="lightbox">
   <img src="generated/images/guide/language-service/language-completion.gif" alt="autocompletion">
@@ -57,7 +57,7 @@ In this example, Angular doesn't know what `orders` is or where it comes from.
 
 ### Quick info and navigation
 
-The quick-info feature allows you to hover to see where components, directives, and modules come from.
+The quick-info feature lets you hover to see where components, directives, and modules come from.
 You can then click "Go to definition" or press F12 to go directly to the definition.
 
 <div class="lightbox">
@@ -72,13 +72,13 @@ Angular Language Service is currently available as an extension for [Visual Stud
 
 ### Visual Studio Code
 
-In [Visual Studio Code](https://code.visualstudio.com/), install the extension from the [Extensions: Marketplace](https://marketplace.visualstudio.com/items?itemName=Angular.ng-template). You can open the marketplace from the editor using the Extensions icon on the left menu pane, or use VS Quick Open (⌘+P on Mac, CTRL+P on Windows) and type "? ext". In the marketplace, search for Angular Language Service extension, and click the **Install** button.
+In [Visual Studio Code](https://code.visualstudio.com/), install the extension from the [Extensions: Marketplace](https://marketplace.visualstudio.com/items?itemName=Angular.ng-template). Open the marketplace from the editor using the Extensions icon on the left menu pane, or use VS Quick Open (⌘+P on Mac, CTRL+P on Windows) and type "? ext". In the marketplace, search for Angular Language Service extension, and click the **Install** button.
 
 The Visual Studio Code integration with the Angular language service is maintained and distributed by the Angular team.
 
 ### Visual Studio
 
-In [Visual Studio](https://visualstudio.microsoft.com/), install the extension from the [Extensions: Marketplace](https://marketplace.visualstudio.com/items?itemName=TypeScriptTeam.AngularLanguageService). You can open the marketplace from the editor selecting Extensions on the top menu pane, and then selecting Manage Extensions. In the marketplace, search for Angular Language Service extension, and click the **Install** button.
+In [Visual Studio](https://visualstudio.microsoft.com/), install the extension from the [Extensions: Marketplace](https://marketplace.visualstudio.com/items?itemName=TypeScriptTeam.AngularLanguageService). Open the marketplace from the editor selecting Extensions on the top menu pane, and then selecting Manage Extensions. In the marketplace, search for Angular Language Service extension, and click the **Install** button.
 
 The Visual Studio integration with the Angular language service is maintained and distributed by Microsoft with help from the Angular team. Check out the project [here](https://github.com/microsoft/vs-ng-language-service)
 
@@ -121,7 +121,7 @@ npm install --save-dev @angular/language-service
 "typescript-tsdk": "<path to your folder>/node_modules/typescript/lib"
 </code-example>
 
-This allows the Angular Language Service to provide diagnostics and completions in `.ts` files.
+This lets the Angular Language Service provide diagnostics and completions in `.ts` files.
 
 ### Eclipse IDE
 
