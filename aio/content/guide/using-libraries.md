@@ -6,7 +6,7 @@ See the [Angular Resources](resources) page for links to the most popular ones.
 ## Installing libraries
 
 Libraries are published as [npm packages](guide/npm-packages), usually together with schematics that integrate them with the Angular CLI.
-To integrate reusable library code into an application, you need to install the package and import the provided functionality where you will use it. For most published Angular libraries, you can use the Angular CLI `ng add <lib_name>` command.
+To integrate reusable library code into an application, you need to install the package and import the provided functionality where you will use it. For most published Angular libraries, use the Angular CLI `ng add <lib_name>` command.
 
 The `ng add` command uses a package manager such as [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/) to install the library package, and invokes schematics that are included in the package to other scaffolding within the project code, such as adding import statements, fonts, and themes.
 
@@ -15,7 +15,7 @@ For an example, see the [Angular Material](https://material.angular.io/) documen
 
 ### Library typings
 
-Library packages often include typings in `.d.ts` files; see examples in `node_modules/@angular/material`. If your library's package does not include typings and your IDE complains, you may need to install the library's associated `@types/<lib_name>` package.
+Library packages often include typings in `.d.ts` files; see examples in `node_modules/@angular/material`. If your library's package does not include typings and your IDE complains, you might need to install the library's associated `@types/<lib_name>` package.
 
 For example, suppose you have a library named `d3`:
 

@@ -32,6 +32,6 @@ This complexity can pay off, however, when the library is being used in multiple
 <div class="alert is-helpful">
 
 Note that libraries are intended to be used by Angular applications.
-To add Angular functionality to non-Angular web applications, you can use [Angular custom elements](guide/elements).
+To add Angular functionality to non-Angular web applications, use [Angular custom elements](guide/elements).
 
 </div>
