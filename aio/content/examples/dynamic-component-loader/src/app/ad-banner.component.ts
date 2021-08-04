@@ -21,7 +21,7 @@ export class AdBannerComponent implements OnInit, OnDestroy {
   @Input() ads: AdItem[] = [];
   currentAdIndex = -1;
   @ViewChild(AdDirective, {static: true}) adHost!: AdDirective;
-  interval: any;
+  interval: number | undefined;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
 
