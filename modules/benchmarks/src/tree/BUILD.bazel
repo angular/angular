@@ -15,7 +15,7 @@ ts_library(
     srcs = ["test_utils.ts"],
     tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
     deps = [
-        "//dev-infra/benchmark/driver-utilities",
+        "@npm//@angular/dev-infra-private/bazel/benchmark/driver-utilities",
         "@npm//protractor",
     ],
 )

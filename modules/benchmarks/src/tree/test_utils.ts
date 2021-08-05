@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {openBrowser, runBenchmark} from '@angular/dev-infra-private/bazel/benchmark/driver-utilities';
 import {browser} from 'protractor';
-
-import {openBrowser, runBenchmark} from '../../../../dev-infra/benchmark/driver-utilities';
 
 export function runTreeBenchmark({id, prepare, setup, work}: {
   id: string; prepare ? () : void; setup ? () : void; work(): void;

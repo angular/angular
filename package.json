@@ -35,9 +35,7 @@
     "symbol-extractor:check": "node tools/symbol-extractor/run_all_symbols_extractor_tests.js test",
     "symbol-extractor:update": "node tools/symbol-extractor/run_all_symbols_extractor_tests.js accept",
     "ts-circular-deps:check": "yarn -s ng-dev ts-circular-deps check --config ./packages/circular-deps-test.conf.js",
-    "ts-circular-deps:approve": "yarn -s ng-dev ts-circular-deps approve --config ./packages/circular-deps-test.conf.js",
-    "ng-dev": "node dev-infra/ng-dev",
-    "ng-dev:dev": "ts-node --transpile-only -- dev-infra/cli.ts"
+    "ts-circular-deps:approve": "yarn -s ng-dev ts-circular-deps approve --config ./packages/circular-deps-test.conf.js"
   },
   "// 1": "dependencies are used locally and by bazel",
   "dependencies": {
@@ -163,6 +161,7 @@
   },
   "// 2": "devDependencies are not used under Bazel. Many can be removed after test.sh is deleted.",
   "devDependencies": {
+    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#a3bc7727bbceb6418e7b220900ea8b396cb82580",
     "@bazel/bazelisk": "^1.7.5",
     "@bazel/buildifier": "^4.0.1",
     "@bazel/ibazel": "^0.15.8",

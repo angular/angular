@@ -1,5 +1,5 @@
-import {DevInfraMergeConfig} from '../dev-infra/pr/merge/config';
-import {getDefaultTargetLabelConfiguration} from '../dev-infra/pr/merge/defaults';
+import {DevInfraMergeConfig} from '@angular/dev-infra-private/ng-dev/pr/merge/config';
+import {getDefaultTargetLabelConfiguration} from '@angular/dev-infra-private/ng-dev/pr/merge/defaults';
 import {github} from './github';
 import {release} from './release';
 
