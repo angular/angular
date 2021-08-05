@@ -248,8 +248,7 @@ Any line of the commit message cannot be longer than 100 characters.
   │       └─⫸ Commit Scope: animations|bazel|benchpress|common|compiler|compiler-cli|core|
   │                          elements|forms|http|language-service|localize|platform-browser|
   │                          platform-browser-dynamic|platform-server|router|service-worker|
-  │                          upgrade|zone.js|packaging|changelog|dev-infra|docs-infra|migrations|
-  │                          ngcc|ve
+  │                          upgrade|zone.js|packaging|changelog|docs-infra|migrations|ngcc|ve
   │
   └─⫸ Commit Type: build|ci|docs|feat|fix|perf|refactor|test
 ```
@@ -302,7 +301,7 @@ There are currently a few exceptions to the "use package name" rule:
 
 * `changelog`: used for updating the release notes in CHANGELOG.md
 
-* `dev-infra`: used for dev-infra related changes within the directories /scripts, /tools and /dev-infra
+* `dev-infra`: used for dev-infra related changes within the directories /scripts and /tools
 
 * `docs-infra`: used for docs-app (angular.io) related changes within the /aio directory of the repo
 

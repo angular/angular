@@ -1,4 +1,4 @@
-import {FormatConfig} from '../dev-infra/format/config';
+import {FormatConfig} from '@angular/dev-infra-private/ng-dev/format/config';
 
 /**
  * Configuration for the `ng-dev format` command.

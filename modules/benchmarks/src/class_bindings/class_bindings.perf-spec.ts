@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {runBenchmark} from '@angular/dev-infra-private/bazel/benchmark/driver-utilities';
 import {$, browser} from 'protractor';
-import {runBenchmark} from '../../../../dev-infra/benchmark/driver-utilities';
 
 describe('class bindings perf', () => {
   it('should work for update', async () => {

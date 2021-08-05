@@ -1,5 +1,5 @@
+import {ReleaseConfig} from '@angular/dev-infra-private/ng-dev/release/config';
 import {join} from 'path';
-import {ReleaseConfig} from '../dev-infra/release/config';
 
 /** Configuration for the `ng-dev release` command. */
 export const release: ReleaseConfig = {

@@ -1,5 +1,5 @@
 load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle", "ts_devserver")
-load("//dev-infra/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
+load("@npm//@angular/dev-infra-private/bazel/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
 load("//modules/benchmarks:e2e_test.bzl", "e2e_test")
 
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])

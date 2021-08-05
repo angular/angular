@@ -31,5 +31,5 @@
     "no-unused-expression": true,
     "no-unused-variable": true
   },
-  "include": ["../../dev-infra/benchmark/driver-utilities/"]
+  "include": ["../../node_modules/@angular/dev-infra-private/bazel/benchmark/driver-utilities/"]
 }

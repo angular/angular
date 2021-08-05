@@ -10,10 +10,10 @@ load("@npm//@bazel/typescript:index.bzl", _ts_config = "ts_config", _ts_library 
 load("@npm//@bazel/protractor:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("@npm//typescript:index.bzl", "tsc")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
-load("//dev-infra/benchmark/ng_rollup_bundle:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
+load("@npm//@angular/dev-infra-private/bazel/benchmark/ng_rollup_bundle:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
 load("//tools:ng_benchmark.bzl", _ng_benchmark = "ng_benchmark")
-load("//dev-infra/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
-load("//dev-infra/bazel:extract_js_module_output.bzl", "extract_js_module_output")
+load("@npm//@angular/dev-infra-private/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
+load("@npm//@angular/dev-infra-private/bazel:extract_js_module_output.bzl", "extract_js_module_output")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
 _INTERNAL_NG_MODULE_API_EXTRACTOR = "//packages/bazel/src/api-extractor:api_extractor"
@@ -335,8 +335,8 @@ def karma_web_test_suite(name, **kwargs):
         bootstrap = bootstrap,
         deps = deps,
         browsers = [
-            "//dev-infra/bazel/browsers/chromium:chromium",
-            "//dev-infra/bazel/browsers/firefox:firefox",
+            "@npm//@angular/dev-infra-private/bazel/browsers/chromium:chromium",
+            "@npm//@angular/dev-infra-private/bazel/browsers/firefox:firefox",
         ],
         data = data,
         tags = tags,
@@ -374,7 +374,7 @@ def protractor_web_test_suite(**kwargs):
     """Default values for protractor_web_test_suite"""
 
     _protractor_web_test_suite(
-        browsers = ["//dev-infra/bazel/browsers/chromium:chromium"],
+        browsers = ["@npm//@angular/dev-infra-private/bazel/browsers/chromium:chromium"],
         **kwargs
     )
 
