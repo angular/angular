@@ -311,15 +311,6 @@ Learn more in [Dependency Injection in Angular](guide/dependency-injection).
 
 A lookup token associated with a dependency [provider](#provider), for use with the [dependency injection](#di) system.
 
-{@a differential-loading}
-
-## differential loading
-
-A build technique that creates two bundles for an application. One smaller bundle is for modern browsers. A second, larger bundle allows the application to run correctly in older browsers (such as IE11) that do not support all modern browser APIs.
-
-For more information, see the [Deployment](guide/deployment#differential-loading) guide.
-
-
 {@a directive}
 {@a directives}
 

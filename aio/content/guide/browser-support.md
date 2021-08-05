@@ -57,15 +57,6 @@ Note that polyfills cannot magically transform an old, slow browser into a moder
 
 </div>
 
-In Angular CLI version 8 and higher, applications are built using *differential loading*, a strategy where the CLI builds two separate bundles as part of your deployed application.
-
-* The first bundle contains modern ES2015 syntax, takes advantage of built-in support in modern browsers, ships less polyfills, and results in a smaller bundle size.
-
-* The second bundle contains code in the old ES5 syntax, along with all necessary polyfills. This results in a larger bundle size, but supports older browsers.
-
-This strategy allows you to continue to build your web application to support multiple browsers, but only load the necessary code that the browser needs.
-For more information about how this works, see [Differential Loading](guide/deployment#differential-loading) in the [Deployment guide](guide/deployment).
-
 ## Enabling polyfills with CLI projects
 
 The [Angular CLI](cli) provides support for polyfills.
