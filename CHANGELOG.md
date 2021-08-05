@@ -37,12 +37,6 @@
 | ---------- | --------------------- |
 | feature |  add event emitter for gm_authFailure callback ([#22953](https://github.com/angular/components/issues/22953)) ([224de73bb440e131e687cc493bc52765b3821a0a](https://github.com/angular/components/commit/224de73bb440e131e687cc493bc52765b3821a0a)) |
 
-### material-luxon-adapter
-
-|            |                       |
-| ---------- | --------------------- |
-| feature |  add luxon date adapter ([#23167](https://github.com/angular/components/issues/23167)) ([492268a06e189accfb06354b586416a3b7a2d644](https://github.com/angular/components/commit/492268a06e189accfb06354b586416a3b7a2d644)) |
-
 ## 12.1.4 "tallow-wire" (2021-07-28)
 
 ### cdk
