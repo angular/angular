@@ -38,7 +38,6 @@ merge:
       - 'modules/benchmarks/**'
       - 'modules/system.d.ts'
       - 'packages/**'
-      - 'dev-infra/benchmark/driver-utilities/**'
     # list of patterns to ignore for the files changed by the PR
     exclude:
       - 'packages/*'

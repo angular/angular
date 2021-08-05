@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {runBenchmark} from '@angular/dev-infra-private/bazel/benchmark/driver-utilities';
 import {$, browser} from 'protractor';
-import {runBenchmark} from '../../../../dev-infra/benchmark/driver-utilities';
 
 describe('benchmarks', () => {
   it('should work for create', async () => {

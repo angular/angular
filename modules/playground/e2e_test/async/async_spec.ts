@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {verifyNoBrowserErrors} from '@angular/dev-infra-private/bazel/benchmark/driver-utilities';
 import {$, browser} from 'protractor';
 import {promise} from 'selenium-webdriver';
-
-import {verifyNoBrowserErrors} from '../../../../dev-infra/benchmark/driver-utilities';
 
 describe('async', () => {
   const URL = '/';

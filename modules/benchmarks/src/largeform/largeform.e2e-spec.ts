@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {openBrowser, verifyNoBrowserErrors} from '@angular/dev-infra-private/bazel/benchmark/driver-utilities';
 import {$, By, element} from 'protractor';
-
-import {openBrowser, verifyNoBrowserErrors} from '../../../../dev-infra/benchmark/driver-utilities';
 
 describe('largeform benchmark', () => {
   afterEach(verifyNoBrowserErrors);
