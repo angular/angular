@@ -106,8 +106,7 @@ Fixes #<issue number>
 #   │       └─⫸ Commit Scope: animations|bazel|benchpress|common|compiler|compiler-cli|core|
 #   │                          elements|forms|http|language-service|localize|platform-browser|
 #   │                          platform-browser-dynamic|platform-server|router|service-worker|
-#   │                          upgrade|zone.js|packaging|changelog|dev-infra|docs-infra|migrations|
-#   │                          ngcc|ve
+#   │                          upgrade|zone.js|packaging|changelog|docs-infra|migrations|ngcc|ve
 #   │                          https://github.com/angular/angular/blob/master/CONTRIBUTING.md#scope
 #   │
 #   └─⫸ Commit Type: build|ci|docs|feat|fix|perf|refactor|style|test

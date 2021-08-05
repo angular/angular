@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {openBrowser, runBenchmark, verifyNoBrowserErrors} from '@angular/dev-infra-private/bazel/benchmark/driver-utilities';
 import {$, by, element} from 'protractor';
-import {openBrowser, runBenchmark, verifyNoBrowserErrors} from '../../../../dev-infra/benchmark/driver-utilities';
 
 /** List of possible scenarios that should be tested.  */
 const SCENARIOS = [
