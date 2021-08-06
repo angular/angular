@@ -90,13 +90,21 @@ export class MatCommonModule {
     return typeof win === 'object' && win ? win : null;
   }
 
-  /** Whether any sanity checks are enabled. */
-  private _checksAreEnabled(): boolean {
+  /** Gets whether a specific sanity check is enabled. */
+  private _checkIsEnabled(name: keyof GranularSanityChecks): boolean {
     // TODO(crisbeto): we can't use `ngDevMode` here yet, because ViewEngine apps might not support
     // it. Since these checks can have performance implications and they aren't tree shakeable
     // in their current form, we can leave the `isDevMode` check in for now.
     // tslint:disable-next-line:ban
-    return isDevMode() && !this._isTestEnv();
+    if (!isDevMode() || this._isTestEnv()) {
+      return false;
+    }
+
+    if (typeof this._sanityChecks === 'boolean') {
+      return this._sanityChecks;
+    }
+
+    return !!this._sanityChecks[name];
   }
 
   /** Whether the code is running in tests. */
@@ -106,10 +114,7 @@ export class MatCommonModule {
   }
 
   private _checkDoctypeIsDefined(): void {
-    const isEnabled = this._checksAreEnabled() &&
-      (this._sanityChecks === true || (this._sanityChecks as GranularSanityChecks).doctype);
-
-    if (isEnabled && !this._document.doctype) {
+    if (this._checkIsEnabled('doctype') && !this._document.doctype) {
       console.warn(
         'Current document does not have a doctype. This may cause ' +
         'some Angular Material components not to behave as expected.'
@@ -120,10 +125,8 @@ export class MatCommonModule {
   private _checkThemeIsPresent(): void {
     // We need to assert that the `body` is defined, because these checks run very early
     // and the `body` won't be defined if the consumer put their scripts in the `head`.
-    const isDisabled = !this._checksAreEnabled() ||
-      (this._sanityChecks === false || !(this._sanityChecks as GranularSanityChecks).theme);
-
-    if (isDisabled || !this._document.body || typeof getComputedStyle !== 'function') {
+    if (!this._checkIsEnabled('theme') || !this._document.body ||
+        typeof getComputedStyle !== 'function') {
       return;
     }
 
@@ -150,10 +153,7 @@ export class MatCommonModule {
 
   /** Checks whether the material version matches the cdk version */
   private _checkCdkVersionMatch(): void {
-    const isEnabled = this._checksAreEnabled() &&
-      (this._sanityChecks === true || (this._sanityChecks as GranularSanityChecks).version);
-
-    if (isEnabled && VERSION.full !== CDK_VERSION.full) {
+    if (this._checkIsEnabled('version') && VERSION.full !== CDK_VERSION.full) {
       console.warn(
           'The Angular Material version (' + VERSION.full + ') does not match ' +
           'the Angular CDK version (' + CDK_VERSION.full + ').\n' +
