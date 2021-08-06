@@ -46,7 +46,7 @@ of the code in this cookbook
  * @publicApi
  */
 export abstract class ComponentFactoryResolver {
-  static NULL: ComponentFactoryResolver = new _NullComponentFactoryResolver();
+  static NULL: ComponentFactoryResolver = /* @__PURE__ */ new _NullComponentFactoryResolver();
   /**
    * Retrieves the factory object that creates a component of the given type.
    * @param component The component type.
