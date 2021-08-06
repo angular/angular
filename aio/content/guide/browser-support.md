@@ -64,12 +64,12 @@ You can enable the IE11 support by following the instructions in the `.browsersl
 Angular is built on the latest standards of the web platform.
 Targeting such a wide range of browsers is challenging because they do not support all features of modern browsers.
 You compensate by loading polyfill scripts ("polyfills") for the browsers that you must support.
-The [table below](#polyfill-libs) identifies most of the polyfills you might need.
+The [following table](#polyfill-libs) identifies most of the polyfills you might need.
 
 <div class="alert is-important">
 
 The suggested polyfills are the ones that run full Angular applications.
-You may need additional polyfills to support features not covered by this list.
+You might need additional polyfills to support features not covered by this list.
 Note that polyfills cannot magically transform an old, slow browser into a modern, fast one.
 
 </div>
@@ -102,7 +102,7 @@ For example, if you need the optional [web animations polyfill](https://caniuse.
   npm install --save web-animations-js
 </code-example>
 
-You can then add the import statement in the `src/polyfills.ts` file.
+Then add the import statement in the `src/polyfills.ts` file.
 For many polyfills, you can un-comment the corresponding `import` statement in the file, as in the following example.
 
 <code-example header="src/polyfills.ts">
@@ -120,7 +120,7 @@ If the polyfill you want is not already in `polyfills.ts` file, add the `import`
 
 ### Optional browser features to polyfill
 
-Some features of Angular may require additional polyfills.
+Some features of Angular might require additional polyfills.
 
 <table>
   <tr style="vertical-align: top">
