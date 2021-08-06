@@ -2,9 +2,9 @@
 
 <p class="roadmap-last-updated">Last updated: 2021-05-19</p>
 
-Angular receives a large number of feature requests, both from inside Google and from the broader open-source community. At the same time, our list of projects contains plenty of maintenance tasks, code refactorings, and potential performance improvements. We bring together representatives from developer relations, product management, and engineering to prioritize this list. As new projects come into the queue, we regularly position them based on relative priority to other projects. As work gets done, projects will move up in the queue.
+Angular receives a large number of feature requests, both from inside Google and from the broader open-source community. At the same time, our list of projects contains plenty of maintenance tasks, code refactorings, and potential performance improvements. We bring together representatives from developer relations, product management, and engineering to prioritize this list. As new projects come into the queue, we regularly position them based on relative priority to other projects. As work gets done, projects move up in the queue.
 
-The projects below are not associated with a particular Angular version. We'll release them on completion, and they will be part of a specific version based on our release schedule, following semantic versioning. For example, features are released in the next minor after they are complete, or the next major if they include breaking changes.
+The following projects are not associated with a particular Angular version. We'll release them on completion, and they will be part of a specific version based on our release schedule, following semantic versioning. For example, features are released in the next minor after they are complete, or the next major if they include breaking changes.
 
 ## In progress
 
@@ -18,7 +18,7 @@ IE11 has been preventing Angular from taking advantage of some of the modern fea
 
 ### Leverage ES2017+ as the default output language
 
-Supporting modern browsers will allow us to leverage the more compact, expressive, and performant new syntax of JavaScript. As part of this project we’ll investigate what are the blockers to move forward with this effort and take the steps forward to enable it.
+Supporting modern browsers lets us take advantage of the more compact, expressive, and performant new syntax of JavaScript. As part of this project we’ll investigate what are the blockers to move forward with this effort and take the steps forward to enable it.
 
 ### Revamp performance dashboards to detect regressions
 
@@ -26,7 +26,7 @@ We have a set of benchmarks that we run against every code change to ensure Angu
 
 ### Enhanced Angular Material components by integrating [MDC Web](https://material.io/develop/web/)
 
-MDC Web is a library created by Google's Material Design team that provides reusable primitives for building Material Design components. The Angular team is incorporating these primitives into Angular Material. Using MDC Web will align Angular Material more closely with the Material Design specification, expand accessibility, improve component quality, and improve our team's velocity.
+MDC Web is a library created by Google's Material Design team that provides reusable primitives for building Material Design components. The Angular team is incorporating these primitives into Angular Material. Using MDC Web aligns Angular Material more closely with the Material Design specification, expand accessibility, improve component quality, and improve our team's velocity.
 
 ### Angular component accessibility
 
@@ -54,7 +54,7 @@ We want to ensure Angular developers are taking advantage of the latest capabili
 
 ### Simplified Angular mental model with optional NgModules
 
-To simplify the Angular mental model and learning journey, we’ll be working on making NgModules optional. This work will allow developers to develop standalone components and implement an alternative API for declaring the component’s compilation scope.
+To simplify the Angular mental model and learning journey, we’ll be working on making NgModules optional. This work lets developers develop standalone components and implement an alternative API for declaring the component’s compilation scope.
 
 ## Future
 
@@ -64,11 +64,11 @@ Look into independent deployability and development of large-scale applications 
 
 ### Better developer ergonomics with strict typing for `@angular/forms`
 
-We will work on implementing stricter type checking for reactive forms. This way, we will allow developers to catch more issues during development time, enable better text editor and IDE support, and improve the type checking for reactive forms.
+We will work on implementing stricter type checking for reactive forms. This way, we let developers catch more issues during development time, enable better text editor and IDE support, and improve the type checking for reactive forms.
 
 ### Leverage full framework capabilities with Zone.js opt-out
 
-We are going to design and implement a plan to make Zone.js optional from Angular applications. This way, we will simplify the framework, improve debugging, and reduce application bundle size. Additionally, this will allow us to take advantage of native async/await syntax, which currently Zone.js does not support.
+We are going to design and implement a plan to make Zone.js optional from Angular applications. This way, we simplify the framework, improve debugging, and reduce application bundle size. Additionally, this lets us take advantage of built-in async/await syntax, which currently Zone.js does not support.
 
 ### Improved build performance with ngc as a tsc plugin distribution
 
@@ -76,7 +76,7 @@ Distributing the Angular compiler as a plugin of the TypeScript compiler will su
 
 ### Support adding directives to host elements
 
-A long-standing feature request is to add the ability to add directives to host elements. The feature will allow developers to augment their own components with additional behaviors without using inheritance. The project will require substantial effort in terms of the definition of APIs, semantics, and implementation.
+A long-standing feature request is to add the ability to add directives to host elements. The feature lets developers augment their own components with additional behaviors without using inheritance. The project requires substantial effort in terms of the definition of APIs, semantics, and implementation.
 
 ### Ergonomic component level code-splitting APIs
 
@@ -97,13 +97,13 @@ A common problem with web applications is their slow initial load time. A way to
 
 _Completed Q2 2021_
 
-We are working on development tooling for Angular that will provide utilities for debugging and performance profiling. This project aims to help developers understand the component structure and the change detection in an Angular application.
+We are working on development tooling for Angular that provides utilities for debugging and performance profiling. This project aims to help developers understand the component structure and the change detection in an Angular application.
 
 ### Streamline releases with consolidated Angular versioning & branching
 
 _Completed Q2 2021_
 
-We want to consolidate release management tooling between Angular's multiple GitHub repositories ([angular/angular](https://github.com/angular/angular), [angular/angular-cli](https://github.com/angular/angular-cli), and [angular/components](https://github.com/angular/components)). This effort will allow us to reuse infrastructure, unify and simplify processes, and improve our release process's reliability.
+We want to consolidate release management tooling between Angular's multiple GitHub repositories ([angular/angular](https://github.com/angular/angular), [angular/angular-cli](https://github.com/angular/angular-cli), and [angular/components](https://github.com/angular/components)). This effort lets us reuse infrastructure, unify and simplify processes, and improve our release process's reliability.
 
 ### Higher developer consistency with commit message standardization
 
@@ -115,13 +115,13 @@ We want to unify commit message requirements and conformance across Angular repo
 
 _Completed Q2 2021_
 
-The goal of this project is to improve the experience and remove legacy dependency by transitioning the language service to Ivy. Today the language service still uses the View Engine compiler and type checking, even for Ivy applications. We want to use the Ivy template parser and improved type checking for the Angular Language service to match application behavior. This migration will also be a step towards unblocking the removal of View Engine, which will simplify Angular, reduce the npm package size, and improve the framework's maintainability.
+The goal of this project is to improve the experience and remove legacy dependency by transitioning the language service to Ivy. Today the language service still uses the View Engine compiler and type checking, even for Ivy applications. We want to use the Ivy template parser and improved type checking for the Angular Language service to match application behavior. This migration is also a step towards unblocking the removal of View Engine, which will simplify Angular, reduce the npm package size, and improve the framework's maintainability.
 
 ### Increased security with native [Trusted Types](https://web.dev/trusted-types/) in Angular
 
 _Completed Q2 2021_
 
-In collaboration with Google's security team, we're adding support for the new Trusted Types API. This web platform API will help developers build more secure web applications.
+In collaboration with Google's security team, we're adding support for the new Trusted Types API. This web platform API helps developers build more secure web applications.
 
 ### Optimized build speed and bundle sizes with Angular CLI webpack 5
 
@@ -151,7 +151,7 @@ We will redefine the user learning journeys and refresh the introductory documen
 
 _Completed Q1 2021_
 
-Angular CDK introduced the concept of [component test harnesses](https://material.angular.io/cdk/test-harnesses) to Angular in version 9. Test harnesses allow component authors to create supported APIs for testing component interactions. We're continuing to improve this harness infrastructure and clarifying the best practices around using harnesses. We're also working to drive more harness adoption inside of Google.
+Angular CDK introduced the concept of [component test harnesses](https://material.angular.io/cdk/test-harnesses) to Angular in version 9. Test harnesses let component authors create supported APIs for testing component interactions. We're continuing to improve this harness infrastructure and clarifying the best practices around using harnesses. We're also working to drive more harness adoption inside of Google.
 
 ### Author a guide for content projection
 
@@ -165,7 +165,7 @@ _Completed Q4 2020_
 
 With the deprecation of TSLint we will be moving to ESLint. As part of the process, we will work on ensuring backward compatibility with our current recommended TSLint configuration, implement a migration strategy for existing Angular applications and introduce new tooling to the Angular CLI toolchain.
 
-### Operation Bye Bye Backlog (aka Operation Byelog)
+### Operation Bye Bye Backlog (also known as Operation Byelog)
 
 _Completed Q4 2020_
 
