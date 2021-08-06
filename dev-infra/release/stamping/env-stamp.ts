@@ -56,8 +56,8 @@ function getSCMVersions(mode: EnvStampMode): {version: string, experimentalVersi
     const git = GitClient.get();
     if (mode === 'snapshot') {
       const localChanges = hasLocalChanges() ? '.with-local-changes' : '';
-      const {stdout: rawVersion} = git.run(
-          ['describe', '--match', '*[0-9]*.[0-9]*.[0-9]*', '--abbrev=7', '--tags', 'HEAD~100']);
+      const {stdout: rawVersion} =
+          git.run(['describe', '--match', '*[0-9]*.[0-9]*.[0-9]*', '--abbrev=7', '--tags', 'HEAD']);
       const {version} = new SemVer(rawVersion);
       const {version: experimentalVersion} = createExperimentalSemver(version);
       return {
