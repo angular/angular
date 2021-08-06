@@ -54,13 +54,13 @@ export interface CdkDragExit<T = any, I = T> {
 
 
 /** Event emitted when the user drops a draggable item inside a drop container. */
-export interface CdkDragDrop<T, O = T> {
+export interface CdkDragDrop<T, O = T, I = any> {
   /** Index of the item when it was picked up. */
   previousIndex: number;
   /** Current index of the item. */
   currentIndex: number;
   /** Item that is being dropped. */
-  item: CdkDrag;
+  item: CdkDrag<I>;
   /** Container in which the item was dropped. */
   container: CdkDropList<T>;
   /** Container from which the item was picked up. Can be the same as the `container`. */

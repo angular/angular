@@ -103,7 +103,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
 }
 
 // @public
-export interface CdkDragDrop<T, O = T> {
+export interface CdkDragDrop<T, O = T, I = any> {
     container: CdkDropList<T>;
     currentIndex: number;
     distance: {
@@ -115,7 +115,7 @@ export interface CdkDragDrop<T, O = T> {
         y: number;
     };
     isPointerOverContainer: boolean;
-    item: CdkDrag;
+    item: CdkDrag<I>;
     previousContainer: CdkDropList<O>;
     previousIndex: number;
 }
