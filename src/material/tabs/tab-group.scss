@@ -7,6 +7,9 @@
   display: flex;
   flex-direction: column;
 
+  // Fixes pagination issues inside flex containers (see #23157).
+  max-width: 100%;
+
   &.mat-tab-group-inverted-header {
     flex-direction: column-reverse;
   }
