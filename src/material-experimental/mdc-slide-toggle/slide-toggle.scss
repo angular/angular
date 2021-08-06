@@ -1,5 +1,6 @@
 @use 'sass:map';
-@use '@material/switch/deprecated' as mdc-switch with ($deprecated-suffix: '');
+@use '@material/switch/switch' as mdc-switch;
+@use '@material/switch/switch-theme' as mdc-switch-theme;
 @use '@material/form-field' as mdc-form-field;
 @use '@material/ripple' as mdc-ripple;
 @use '../mdc-helpers/mdc-helpers';
@@ -7,8 +8,8 @@
 @use '../../material/core/style/private';
 @use '../../cdk/a11y';
 
-@include mdc-switch.without-ripple($query: mdc-helpers.$mat-base-styles-query);
 @include mdc-form-field.core-styles($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-switch.static-styles-without-ripple;
 
 .mat-mdc-slide-toggle {
   display: inline-block;
@@ -16,8 +17,14 @@
   // Remove the native outline since we use the ripple for focus indication.
   outline: 0;
 
+  .mdc-switch {
+    // MDC theme styles also include structural styles so we have to include the theme at least
+    // once here. The values will be overwritten by our own theme file afterwards.
+    @include mdc-switch-theme.theme-styles(mdc-switch-theme.$light-theme);
+  }
+
   // The ripple needs extra specificity so the base ripple styling doesn't override its `position`.
-  .mat-mdc-slide-toggle-ripple, .mdc-switch__thumb-underlay::after {
+  .mat-mdc-slide-toggle-ripple, #{mdc-switch.$ripple-target}::after {
     @include layout-common.fill;
     border-radius: 50%;
     // Disable pointer events for the ripple container so that it doesn't eat the mouse events meant
@@ -31,32 +38,18 @@
     }
   }
 
-  // The thumb-underlay element has `mat-mdc-focus-indicator` which sets
-  // a relative position. This element must have absolute positioning. This
-  // has increased specificity than the style set in MDC to guarantee that
-  // it will be absolutely positioned.
-  .mdc-switch__thumb-underlay {
-    position: absolute;
-  }
-
-  // The MDC switch styles related to the hover state are intertwined with the MDC ripple styles.
-  // We currently don't use the MDC ripple due to size concerns, therefore we need to add some
-  // additional styles to restore the hover state.
-  // We use `::after`, rather than `::before`, because `::before` is used by the
-  // generic strong focus indication styles.
-  .mdc-switch__thumb-underlay::after {
-    border-radius: 50%;
+  #{mdc-switch.$ripple-target}::after {
     content: '';
     opacity: 0;
   }
 
-  .mdc-switch:hover .mdc-switch__thumb-underlay::after {
+  .mdc-switch:hover #{mdc-switch.$ripple-target}::after {
     opacity: map.get(mdc-ripple.$dark-ink-opacities, hover);
     transition: mdc-switch-transition-enter(opacity, 0, 75ms);
   }
 
   // Needs a little more specificity so the :hover styles don't override it.
-  &.mat-mdc-slide-toggle-focused .mdc-switch .mdc-switch__thumb-underlay::after {
+  &.mat-mdc-slide-toggle-focused .mdc-switch #{mdc-switch.$ripple-target}::after {
     opacity: map.get(mdc-ripple.$dark-ink-opacities, focus);
   }
 
@@ -65,33 +58,14 @@
   .mat-ripple-element {
     opacity: map.get(mdc-ripple.$dark-ink-opacities, press);
   }
-
-  .mat-ripple {
-    border-radius: 50%;
-  }
-
-  // Angular Material supports disabling all animations when NoopAnimationsModule is imported.
-  // TODO(mmalerba): Look into using MDC's Sass queries to separate the animation styles and
-  //  conditionally add them. Consider the size cost when deciding whether to switch.
-  &._mat-animation-noopable {
-    .mdc-switch__thumb-underlay,
-    .mdc-switch__thumb-underlay::after {
-      transition: none;
-    }
-  }
 }
 
 
 @include a11y.high-contrast(active, off) {
-  // Bump the opacity on the disable slide toggle to make it easier to see.
-  .mat-mdc-slide-toggle .mdc-switch--disabled {
-    opacity: 0.75;
-  }
-
   .mat-mdc-slide-toggle-focused .mdc-switch__track {
     // Usually 1px would be enough, but MDC reduces the opacity on the
     // element so we need to make this a bit more prominent.
     outline: solid 2px;
-    outline-offset: private.private-div(mdc-switch.$track-height, 2);
+    outline-offset: private.private-div(map.get(mdc-switch-theme.$light-theme, track-height), 2);
   }
 }

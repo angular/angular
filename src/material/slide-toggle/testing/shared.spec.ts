@@ -144,7 +144,7 @@ export function runHarnessTests(
 
   it('should not toggle disabled slide-toggle', async () => {
     if (platform.FIREFOX) {
-      // do run this test on firefox as click events on the label of the underlying
+      // do not run this test on firefox as click events on the label of the underlying
       // input checkbox cause the value to be changed. Read more in the bug report:
       // https://bugzilla.mozilla.org/show_bug.cgi?id=1540995
       return;

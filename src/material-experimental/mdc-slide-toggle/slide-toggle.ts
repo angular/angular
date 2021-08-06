@@ -109,7 +109,7 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
     setNativeControlChecked: checked => this._checked = checked,
     setNativeControlDisabled: disabled => this._disabled = disabled,
     setNativeControlAttr: (name, value) => {
-      this._inputElement.nativeElement.setAttribute(name, value);
+      this._switchElement.nativeElement.setAttribute(name, value);
     }
   };
 
@@ -122,13 +122,16 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
   /** Whether noop animations are enabled. */
   _noopAnimations: boolean;
 
+  /** Unique ID for the label element. */
+  _labelId = `mat-mdc-slide-toggle-label-${++nextUniqueId}`;
+
   /** The color palette  for this slide toggle. */
   @Input() color: ThemePalette;
 
-  /** Name value will be applied to the input element if present. */
+  /** Name value will be applied to the button element if present. */
   @Input() name: string | null = null;
 
-  /** A unique id for the slide-toggle input. If none is supplied, it will be auto-generated. */
+  /** A unique id for the slide-toggle button. If none is supplied, it will be auto-generated. */
   @Input() id: string = this._uniqueId;
 
   /** Tabindex for the input element. */
@@ -142,13 +145,13 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
   /** Whether the label should appear after or before the slide-toggle. Defaults to 'after'. */
   @Input() labelPosition: 'before' | 'after' = 'after';
 
-  /** Used to set the aria-label attribute on the underlying input element. */
+  /** Used to set the aria-label attribute on the underlying button element. */
   @Input('aria-label') ariaLabel: string | null = null;
 
-  /** Used to set the aria-labelledby attribute on the underlying input element. */
+  /** Used to set the aria-labelledby attribute on the underlying button element. */
   @Input('aria-labelledby') ariaLabelledby: string | null = null;
 
-  /** Used to set the aria-describedby attribute on the underlying input element. */
+  /** Used to set the aria-describedby attribute on the underlying button element. */
   @Input('aria-describedby') ariaDescribedby: string;
 
   /** Whether the slide-toggle is required. */
@@ -198,11 +201,8 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
   /** Event will be dispatched each time the slide-toggle input is toggled. */
   @Output() readonly toggleChange: EventEmitter<void> = new EventEmitter<void>();
 
-  /** Returns the unique id for the visual hidden input. */
-  get inputId(): string { return `${this.id || this._uniqueId}-input`; }
-
-  /** Reference to the underlying input element. */
-  @ViewChild('input') _inputElement: ElementRef<HTMLInputElement>;
+  /** Returns the unique id for the visual hidden button. */
+  get buttonId(): string { return `${this.id || this._uniqueId}-button`; }
 
   /** Reference to the MDC switch element. */
   @ViewChild('switch') _switchElement: ElementRef<HTMLElement>;
@@ -234,7 +234,7 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
         // 1. It can prevent clicks from landing in Chrome (see #18269).
         // 2. They're already handled by the wrapping `label` element.
         if (focusOrigin === 'keyboard' || focusOrigin === 'program') {
-          this._inputElement.nativeElement.focus();
+          this._switchElement.nativeElement.focus();
           this._focused = true;
         } else if (!focusOrigin) {
           // When a focused element becomes disabled, the browser *immediately* fires a blur event.
@@ -253,48 +253,19 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
 
   ngOnDestroy() {
     this._focusMonitor.stopMonitoring(this._elementRef);
-
-    if (this._foundation) {
-      this._foundation.destroy();
-    }
+    this._foundation?.destroy();
   }
 
-  /** Method being called whenever the underlying input emits a change event. */
-  _onChangeEvent(event: Event) {
-    // We always have to stop propagation on the change event.
-    // Otherwise the change event, from the input element, will bubble up and
-    // emit its event object to the component's `change` output.
-    event.stopPropagation();
+  /** Method being called whenever the underlying button is clicked. */
+  _handleClick(event: Event) {
     this.toggleChange.emit();
     this._foundation.handleChange(event);
 
-    // When the slide toggle's config disabled toggle change event by setting
-    // `disableToggleValue: true`, the slide toggle's value does not change,
-    // and the checked state of the underlying input needs to be changed back.
-    if (this.defaults.disableToggleValue) {
-      this._inputElement.nativeElement.checked = this.checked;
-      return;
+    if (!this.defaults.disableToggleValue) {
+      this.checked = !this.checked;
+      this._onChange(this.checked);
+      this.change.emit(new MatSlideToggleChange(this, this.checked));
     }
-
-    // Sync the value from the underlying input element with the component instance.
-    this.checked = this._inputElement.nativeElement.checked;
-
-    // Emit our custom change event only if the underlying input emitted one. This ensures that
-    // there is no change event, when the checked state changes programmatically.
-    this._onChange(this.checked);
-    this.change.emit(new MatSlideToggleChange(this, this.checked));
-  }
-
-  /** Method being called whenever the slide-toggle has been clicked. */
-  _onInputClick(event: Event) {
-    // We have to stop propagation for click events on the visual hidden input element.
-    // By default, when a user clicks on a label element, a generated click event will be
-    // dispatched on the associated input element. Since we are using a label element as our
-    // root container, the click event on the `slide-toggle` will be executed twice.
-    // The real click event will bubble up, and the generated click event also tries to bubble up.
-    // This will lead to multiple click events.
-    // Preventing bubbling for the second event will solve that issue.
-    event.stopPropagation();
   }
 
   /** Implemented as part of ControlValueAccessor. */
@@ -321,13 +292,23 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
 
   /** Focuses the slide-toggle. */
   focus(): void {
-    this._inputElement.nativeElement.focus();
+    this._switchElement.nativeElement.focus();
   }
 
   /** Toggles the checked state of the slide-toggle. */
   toggle(): void {
     this.checked = !this.checked;
     this._onChange(this.checked);
+  }
+
+  _getAriaLabelledBy() {
+    if (this.ariaLabelledby) {
+      return this.ariaLabelledby;
+    }
+
+    // Even though we have a `label` element with a `for` pointing to the button, we need the
+    // `aria-labelledby`, because the button gets flagged as not having a label by tools like axe.
+    return this.ariaLabel ? null : this._labelId;
   }
 
   static ngAcceptInputType_tabIndex: NumberInput;

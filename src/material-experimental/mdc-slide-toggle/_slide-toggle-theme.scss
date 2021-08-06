@@ -1,103 +1,121 @@
-@use '@material/theme/theme-color' as mdc-theme-color;
-@use '@material/switch/deprecated' as mdc-switch with ($deprecated-suffix: '');
-@use '@material/form-field' as mdc-form-field;
 @use 'sass:map';
+@use 'sass:color';
+@use '@material/switch/switch-theme' as mdc-switch-theme;
+@use '@material/theme/color-palette' as mdc-color-palette;
+@use '@material/form-field' as mdc-form-field;
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/typography/typography';
 @use '../../material/core/theming/theming';
+@use '../../material/core/theming/palette';
 
+// Generates all color mapping for the properties that only change based on the theme.
+@function _get-theme-base-map($is-dark) {
+  $on-surface: if($is-dark, mdc-color-palette.$grey-100, mdc-color-palette.$grey-800);
+  $hairline: if($is-dark, mdc-color-palette.$grey-500, mdc-color-palette.$grey-300);
+  $on-surface-variant: if($is-dark, mdc-color-palette.$grey-200, mdc-color-palette.$grey-700);
+  $on-surface-state-content: if($is-dark, mdc-color-palette.$grey-50, mdc-color-palette.$grey-900);
+  $disabled-handle-color: mdc-color-palette.$grey-800;
+  $selected-icon-color: mdc-color-palette.$grey-100;
+  $icon-color: if($is-dark, mdc-color-palette.$grey-800, mdc-color-palette.$grey-100);
+
+  @return (
+    disabled-selected-handle-color: $disabled-handle-color,
+    disabled-unselected-handle-color: $disabled-handle-color,
+
+    disabled-selected-track-color: $on-surface,
+    disabled-unselected-track-color: $on-surface,
+    unselected-focus-state-layer-color: $on-surface,
+    unselected-pressed-state-layer-color: $on-surface,
+    unselected-hover-state-layer-color: $on-surface,
+
+    unselected-focus-track-color: $hairline,
+    unselected-hover-track-color: $hairline,
+    unselected-pressed-track-color: $hairline,
+    unselected-track-color: $hairline,
+
+    unselected-focus-handle-color: $on-surface-state-content,
+    unselected-hover-handle-color: $on-surface-state-content,
+    unselected-pressed-handle-color: $on-surface-state-content,
+
+    handle-surface-color: surface,
+    unselected-handle-color: $on-surface-variant,
+
+    selected-icon-color: $selected-icon-color,
+    disabled-selected-icon-color: $icon-color,
+    disabled-unselected-icon-color: $icon-color,
+    unselected-icon-color: $icon-color,
+  );
+}
+
+// Generates the mapping for the properties that change based on the slide toggle color.
+@function _get-theme-color-map($color-palette) {
+  $state-content: color.scale($color-palette, $blackness: 50%);
+  $inverse: color.scale($color-palette, $lightness: 75%);
+
+  @return (
+    selected-focus-state-layer-color: $color-palette,
+    selected-handle-color: $color-palette,
+    selected-hover-state-layer-color: $color-palette,
+    selected-pressed-state-layer-color: $color-palette,
+
+    selected-focus-handle-color: $state-content,
+    selected-hover-handle-color: $state-content,
+    selected-pressed-handle-color: $state-content,
+
+    selected-focus-track-color: $inverse,
+    selected-hover-track-color: $inverse,
+    selected-pressed-track-color: $inverse,
+    selected-track-color: $inverse,
+  );
+}
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   $primary: theming.get-color-from-palette(map.get($config, primary));
   $accent: theming.get-color-from-palette(map.get($config, accent));
   $warn: theming.get-color-from-palette(map.get($config, warn));
-
-  // Save original values of MDC global variables. We need to save these so we can restore the
-  // variables to their original values and prevent unintended side effects from using this mixin.
-  $orig-baseline-theme-color: mdc-switch.$baseline-theme-color;
-  $orig-toggled-off-thumb-color: mdc-switch.$toggled-off-thumb-color;
-  $orig-toggled-off-track-color: mdc-switch.$toggled-off-track-color;
-  $orig-disabled-thumb-color: mdc-switch.$disabled-thumb-color;
-  $orig-disabled-track-color: mdc-switch.$disabled-track-color;
+  $is-dark: map.get($config, is-dark);
 
   @include mdc-helpers.mat-using-mdc-theme($config) {
-    mdc-switch.$baseline-theme-color: primary;
-    mdc-switch.$toggled-off-thumb-color: mdc-theme-color.prop-value(surface);
-    mdc-switch.$toggled-off-track-color: mdc-theme-color.prop-value(on-surface);
-    mdc-switch.$disabled-thumb-color: mdc-theme-color.prop-value(surface);
-    mdc-switch.$disabled-track-color: mdc-theme-color.prop-value(on-surface);
-
     // MDC's switch doesn't support a `color` property. We add support
     // for it by adding a CSS class for accent and warn style.
     .mat-mdc-slide-toggle {
       @include mdc-form-field.core-styles($query: mdc-helpers.$mat-theme-styles-query);
-
-      .mdc-switch__thumb-underlay::after, .mat-ripple-element {
-        background: mdc-switch.$toggled-off-ripple-color;
-      }
+      @include mdc-switch-theme.theme(_get-theme-base-map($is-dark));
 
       &.mat-primary {
-        @include mdc-switch.without-ripple($query: mdc-helpers.$mat-theme-styles-query);
+        @include mdc-switch-theme.theme(_get-theme-color-map($primary));
       }
 
       &.mat-accent {
-        mdc-switch.$baseline-theme-color: secondary;
-        @include mdc-switch.without-ripple($query: mdc-helpers.$mat-theme-styles-query);
+        @include mdc-switch-theme.theme(_get-theme-color-map($accent));
       }
 
       &.mat-warn {
-        mdc-switch.$baseline-theme-color: error;
-        @include mdc-switch.without-ripple($query: mdc-helpers.$mat-theme-styles-query);
-      }
-    }
-
-    // The ripple color matches the palette only when it's checked.
-    .mat-mdc-slide-toggle-checked {
-      .mdc-switch__thumb-underlay::after, .mat-ripple-element {
-        background: $primary;
-      }
-
-      &.mat-accent {
-        .mdc-switch__thumb-underlay::after, .mat-ripple-element {
-          background: $accent;
-        }
-      }
-
-      &.mat-warn {
-        .mdc-switch__thumb-underlay::after, .mat-ripple-element {
-          background: $warn;
-        }
+        @include mdc-switch-theme.theme(_get-theme-color-map($warn));
       }
     }
   }
-
-  // Restore original values of MDC global variables.
-  mdc-switch.$baseline-theme-color: $orig-baseline-theme-color;
-  mdc-switch.$toggled-off-thumb-color: $orig-toggled-off-thumb-color;
-  mdc-switch.$toggled-off-track-color: $orig-toggled-off-track-color;
-  mdc-switch.$disabled-thumb-color: $orig-disabled-thumb-color;
-  mdc-switch.$disabled-track-color: $orig-disabled-track-color;
 }
 
 @mixin typography($config-or-theme) {
   $config: typography.private-typography-to-2018-config(
       theming.get-typography-config($config-or-theme));
   @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-switch.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
     @include mdc-form-field.core-styles($query: mdc-helpers.$mat-typography-styles-query);
   }
 }
 
 @mixin density($config-or-theme) {
   $density-scale: theming.get-density-config($config-or-theme);
-  .mat-mdc-slide-toggle .mdc-switch {
-    @include mdc-switch.density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
+  .mat-mdc-slide-toggle {
+    @include mdc-switch-theme.theme(mdc-switch-theme.density($density-scale));
   }
 }
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
+
   @include theming.private-check-duplicate-theme-styles($theme, 'mat-mdc-slide-toggle') {
     $color: theming.get-color-config($theme);
     $density: theming.get-density-config($theme);

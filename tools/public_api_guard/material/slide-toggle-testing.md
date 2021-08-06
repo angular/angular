@@ -13,6 +13,9 @@ import { TestElement } from '@angular/cdk/testing';
 // @public
 export class MatSlideToggleHarness extends _MatSlideToggleHarnessBase {
     static hostSelector: string;
+    isChecked(): Promise<boolean>;
+    // (undocumented)
+    protected _nativeElement: AsyncFactoryFn<TestElement>;
     toggle(): Promise<void>;
     static with(options?: SlideToggleHarnessFilters): HarnessPredicate<MatSlideToggleHarness>;
 }
@@ -26,13 +29,13 @@ export abstract class _MatSlideToggleHarnessBase extends ComponentHarness {
     getAriaLabelledby(): Promise<string | null>;
     getLabelText(): Promise<string>;
     getName(): Promise<string | null>;
-    // (undocumented)
-    protected _input: AsyncFactoryFn<TestElement>;
-    isChecked(): Promise<boolean>;
+    abstract isChecked(): Promise<boolean>;
     isDisabled(): Promise<boolean>;
     isFocused(): Promise<boolean>;
     isRequired(): Promise<boolean>;
     isValid(): Promise<boolean>;
+    // (undocumented)
+    protected abstract _nativeElement: AsyncFactoryFn<TestElement>;
     abstract toggle(): Promise<void>;
     uncheck(): Promise<void>;
 }

@@ -3,7 +3,7 @@ import {expectToExist} from '../../cdk/testing/private/e2e';
 
 
 describe('MDC-based slide-toggle', () => {
-  const getInput = () => element(by.css('#normal-slide-toggle input'));
+  const getButton = () => element(by.css('#normal-slide-toggle button'));
   const getNormalToggle = () => element(by.css('#normal-slide-toggle'));
 
   beforeEach(async () => await browser.get('mdc-slide-toggle'));
@@ -13,44 +13,44 @@ describe('MDC-based slide-toggle', () => {
   });
 
   it('should change the checked state on click', async () => {
-    const inputEl = getInput();
+    const buttonEl = getButton();
 
-    expect(await inputEl.getAttribute('checked'))
-      .toBeFalsy('Expect slide-toggle to be unchecked');
+    expect(await buttonEl.getAttribute('aria-checked'))
+      .toBe('false', 'Expect slide-toggle to be unchecked');
 
     await getNormalToggle().click();
 
-    expect(await inputEl.getAttribute('checked'))
-      .toBeTruthy('Expect slide-toggle to be checked');
+    expect(await buttonEl.getAttribute('aria-checked'))
+      .toBe('true', 'Expect slide-toggle to be checked');
   });
 
   it('should change the checked state on click', async () => {
-    const inputEl = getInput();
+    const buttonEl = getButton();
 
-    expect(await inputEl.getAttribute('checked'))
-      .toBeFalsy('Expect slide-toggle to be unchecked');
+    expect(await buttonEl.getAttribute('aria-checked'))
+      .toBe('false', 'Expect slide-toggle to be unchecked');
 
     await getNormalToggle().click();
 
-    expect(await inputEl.getAttribute('checked'))
-      .toBeTruthy('Expect slide-toggle to be checked');
+    expect(await buttonEl.getAttribute('aria-checked'))
+      .toBe('true', 'Expect slide-toggle to be checked');
   });
 
   it('should not change the checked state on click when disabled', async () => {
-    const inputEl = getInput();
+    const buttonEl = getButton();
 
-    expect(await inputEl.getAttribute('checked'))
-      .toBeFalsy('Expect slide-toggle to be unchecked');
+    expect(await buttonEl.getAttribute('aria-checked'))
+      .toBe('false', 'Expect slide-toggle to be unchecked');
 
     await element(by.css('#disabled-slide-toggle')).click();
 
-    expect(await inputEl.getAttribute('checked'))
-      .toBeFalsy('Expect slide-toggle to be unchecked');
+    expect(await buttonEl.getAttribute('aria-checked'))
+      .toBe('false', 'Expect slide-toggle to be unchecked');
   });
 
   it('should move the thumb on state change', async () => {
     const slideToggleEl = getNormalToggle();
-    const thumbEl = element(by.css('#normal-slide-toggle .mdc-switch__thumb-underlay'));
+    const thumbEl = element(by.css('#normal-slide-toggle .mdc-switch__handle'));
     const previousPosition = await thumbEl.getLocation();
 
     await slideToggleEl.click();
@@ -61,15 +61,15 @@ describe('MDC-based slide-toggle', () => {
   });
 
   it('should toggle the slide-toggle on space key', async () => {
-    const inputEl = getInput();
+    const buttonEl = getButton();
 
-    expect(await inputEl.getAttribute('checked'))
-      .toBeFalsy('Expect slide-toggle to be unchecked');
+    expect(await buttonEl.getAttribute('aria-checked'))
+      .toBe('false', 'Expect slide-toggle to be unchecked');
 
-    await inputEl.sendKeys(Key.SPACE);
+    await buttonEl.sendKeys(Key.SPACE);
 
-    expect(await inputEl.getAttribute('checked'))
-      .toBeTruthy('Expect slide-toggle to be checked');
+    expect(await buttonEl.getAttribute('aria-checked'))
+      .toBe('true', 'Expect slide-toggle to be checked');
   });
 
 });

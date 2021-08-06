@@ -180,7 +180,7 @@ describe('MatSlideToggle without forms', () => {
       expect(testComponent.onSlideChange).not.toHaveBeenCalled();
     }));
 
-    it('should add a suffix to the inputs id', () => {
+    it('should add a suffix to the element id', () => {
       testComponent.slideId = 'myId';
       fixture.detectChanges();
 
@@ -200,7 +200,7 @@ describe('MatSlideToggle without forms', () => {
       expect(inputElement.id).toMatch(/mat-slide-toggle-\d+-input/);
     });
 
-    it('should forward the tabIndex to the underlying input', () => {
+    it('should forward the tabIndex to the underlying element', () => {
       fixture.detectChanges();
 
       expect(inputElement.tabIndex).toBe(0);
@@ -211,7 +211,7 @@ describe('MatSlideToggle without forms', () => {
       expect(inputElement.tabIndex).toBe(4);
     });
 
-    it('should forward the specified name to the input', () => {
+    it('should forward the specified name to the element', () => {
       testComponent.slideName = 'myName';
       fixture.detectChanges();
 
@@ -228,7 +228,7 @@ describe('MatSlideToggle without forms', () => {
       expect(inputElement.name).toBe('');
     });
 
-    it('should forward the aria-label attribute to the input', () => {
+    it('should forward the aria-label attribute to the element', () => {
       testComponent.slideLabel = 'ariaLabel';
       fixture.detectChanges();
 
@@ -240,7 +240,7 @@ describe('MatSlideToggle without forms', () => {
       expect(inputElement.hasAttribute('aria-label')).toBeFalsy();
     });
 
-    it('should forward the aria-labelledby attribute to the input', () => {
+    it('should forward the aria-labelledby attribute to the element', () => {
       testComponent.slideLabelledBy = 'ariaLabelledBy';
       fixture.detectChanges();
 
@@ -252,7 +252,7 @@ describe('MatSlideToggle without forms', () => {
       expect(inputElement.hasAttribute('aria-labelledby')).toBeFalsy();
     });
 
-    it('should forward the aria-describedby attribute to the input', () => {
+    it('should forward the aria-describedby attribute to the element', () => {
       testComponent.slideAriaDescribedBy = 'some-element';
       fixture.detectChanges();
 
@@ -264,7 +264,7 @@ describe('MatSlideToggle without forms', () => {
       expect(inputElement.hasAttribute('aria-describedby')).toBe(false);
     });
 
-    it('should set the `for` attribute to the id of the input element', () => {
+    it('should set the `for` attribute to the id of the element', () => {
       expect(labelElement.getAttribute('for')).toBeTruthy();
       expect(inputElement.getAttribute('id')).toBeTruthy();
       expect(labelElement.getAttribute('for')).toBe(inputElement.getAttribute('id'));
@@ -305,7 +305,7 @@ describe('MatSlideToggle without forms', () => {
       expect(inputElement.required).toBe(false);
     });
 
-    it('should focus on underlying input element when focus() is called', () => {
+    it('should focus on underlying element when focus() is called', () => {
       expect(document.activeElement).not.toBe(inputElement);
 
       slideToggle.focus();
@@ -314,7 +314,7 @@ describe('MatSlideToggle without forms', () => {
       expect(document.activeElement).toBe(inputElement);
     });
 
-    it('should focus on underlying input element when the host is focused', () => {
+    it('should focus on underlying element when the host is focused', () => {
       expect(document.activeElement).not.toBe(inputElement);
 
       slideToggleElement.focus();
@@ -323,7 +323,7 @@ describe('MatSlideToggle without forms', () => {
       expect(document.activeElement).toBe(inputElement);
     });
 
-    it('should not manually move focus to underlying input when focus comes from mouse or touch',
+    it('should not manually move focus to underlying when focus comes from mouse or touch',
       inject([FocusMonitor], (focusMonitor: FocusMonitor) => {
         expect(document.activeElement).not.toBe(inputElement);
 

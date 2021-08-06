@@ -60,7 +60,8 @@
   // which will clip a square focus indicator so we have to turn it into a circle.
   .mat-mdc-checkbox-ripple.mat-mdc-focus-indicator::before,
   .mat-radio-ripple.mat-mdc-focus-indicator::before,
-  .mat-mdc-slider .mat-mdc-focus-indicator::before {
+  .mat-mdc-slider .mat-mdc-focus-indicator::before,
+  .mat-mdc-slide-toggle .mat-mdc-focus-indicator::before {
     border-radius: 50%;
   }
 

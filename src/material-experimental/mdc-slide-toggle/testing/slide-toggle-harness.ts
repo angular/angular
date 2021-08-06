@@ -7,6 +7,7 @@
  */
 
 import {HarnessPredicate} from '@angular/cdk/testing';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
   _MatSlideToggleHarnessBase,
   SlideToggleHarnessFilters
@@ -15,6 +16,7 @@ import {
 
 /** Harness for interacting with a MDC-based mat-slide-toggle in tests. */
 export class MatSlideToggleHarness extends _MatSlideToggleHarnessBase {
+  protected _nativeElement = this.locatorFor('button');
   static hostSelector = '.mat-mdc-slide-toggle';
 
   /**
@@ -34,10 +36,17 @@ export class MatSlideToggleHarness extends _MatSlideToggleHarnessBase {
         .addOption('name', options.name, async (harness, name) => await harness.getName() === name);
   }
 
-  private _inputContainer = this.locatorFor('.mdc-switch');
-
   async toggle(): Promise<void> {
-    const elToClick = await this.isDisabled() ? this._inputContainer() : this._input();
-    return (await elToClick).click();
+    return (await this._nativeElement()).click();
+  }
+
+  override async isRequired(): Promise<boolean> {
+    const ariaRequired = await (await this._nativeElement()).getAttribute('aria-required');
+    return ariaRequired === 'true';
+  }
+
+  async isChecked(): Promise<boolean> {
+    const checked = (await this._nativeElement()).getAttribute('aria-checked');
+    return coerceBooleanProperty(await checked);
   }
 }
