@@ -2,7 +2,7 @@
 
 We recognize that you need stability from the Angular framework. Stability ensures that reusable components and libraries, tutorials, tools, and learned practices don't become obsolete unexpectedly. Stability is essential for the ecosystem around Angular to thrive.
 
-We also share with you the desire for Angular to keep evolving. We strive to ensure that the foundation on top of which you are building is continuously improving and enabling you to stay up-to-date with the rest of the web ecosystem and your user needs.
+We also share with you the need for Angular to keep evolving. We strive to ensure that the foundation on top of which you are building is continuously improving and enabling you to stay up-to-date with the rest of the web ecosystem and your user needs.
 
 This document contains the practices that we follow to provide you with a leading-edge application development platform, balanced with stability. We strive to ensure that future changes are always introduced in a predictable way. We want everyone who depends on Angular to know when and how new features are added, and to be well-prepared when obsolete ones are removed.
 
@@ -23,7 +23,7 @@ Angular version numbers have three parts: `major.minor.patch`. For example, vers
 
 The version number is incremented based on the level of change included in the release.
 
-* **Major releases** contain significant new features, some but minimal developer assistance is expected during the update. When updating to a new major release, you may need to run update scripts, refactor code, run additional tests, and learn new APIs.
+* **Major releases** contain significant new features, some but minimal developer assistance is expected during the update. When updating to a new major release, you might need to run update scripts, refactor code, run additional tests, and learn new APIs.
 
 
 * **Minor releases** contain new smaller features. Minor releases are fully backward-compatible; no developer assistance is expected during update, but you can optionally modify your applications and libraries to begin using new APIs, features, and capabilities that were added in the release. We update peer dependencies in minor versions by expanding the supported versions, but we do not require projects to update these dependencies.
@@ -40,7 +40,7 @@ The version number is incremented based on the level of change included in the r
 {@a updating}
 ### Supported update paths
 
-In alignment with the versioning scheme described above, we commit to support the following update paths:
+In alignment with the preceding versioning scheme as described, we commit to support the following update paths:
 
 * If you are updating within the **same major version,** then you can skip any intermediate versions and update directly to the targeted version. For example, you can update directly from 7.0.0 to 7.2.11.
 
@@ -74,7 +74,7 @@ Dates are offered as general guidance and are subject to change.
 
 </div>
 
-In general, you can expect the following release cycle:
+In general, expect the following release cycle:
 
 * A major release every 6 months
 
@@ -126,7 +126,7 @@ As a general rule, a fix is considered for an LTS version if it resolves one of:
 
 Sometimes &quot;breaking changes&quot;, such as the removal of support for select APIs and features, are necessary to innovate and stay current with new best practices, changing dependencies, or changes in the (web) platform itself.
 
-To make these transitions as easy as possible, we make these commitments to you:
+To make these transitions as straightforward as possible, we make these commitments to you:
 
 * We work hard to minimize the number of breaking changes and to provide migration tools when possible.
 
@@ -137,7 +137,7 @@ To help ensure that you have sufficient time and a clear path to update, this is
 * **Announcement:** We announce deprecated APIs and features in the [change log](https://github.com/angular/angular/blob/master/CHANGELOG.md "Angular change log"). Deprecated APIs appear in the [documentation](api?status=deprecated) with ~~strikethrough.~~ When we announce a deprecation, we also announce a recommended update path. For convenience,  [Deprecations](guide/deprecations) contains a summary of deprecated APIs and features.
 
 
-* **Deprecation period:** When an API or a feature is deprecated, it will still be present in the next two major releases. After that, deprecated APIs and features will be candidates for removal. A deprecation can be announced in any release, but the removal of a deprecated API or feature will happen only in major release. Until a deprecated API or feature is removed, it will be maintained according to the LTS support policy, meaning that only critical and security issues will be fixed.
+* **Deprecation period:** When an API or a feature is deprecated, it is still present in the next two major releases. After that, deprecated APIs and features are candidates for removal. A deprecation can be announced in any release, but the removal of a deprecated API or feature happens only in major release. Until a deprecated API or feature is removed, it is maintained according to the LTS support policy, meaning that only critical and security issues are fixed.
 
 
 * **npm dependencies:** We only make npm dependency updates that require changes to your applications in a major release.
@@ -151,7 +151,7 @@ In minor releases, we update peer dependencies by expanding the supported versio
 
 Angular is a collection of many packages, sub-projects, and tools. To prevent accidental use of private APIs&mdash;and so that you can clearly understand what is covered by the practices described here&mdash;we document what is and is not considered our public API surface. For details, see [Supported Public API Surface of Angular](https://github.com/angular/angular/blob/master/docs/PUBLIC_API.md "Supported Public API Surface of Angular").
 
-Any changes to the public API surface will be done using the versioning, support, and depreciation policies describe above.
+Any changes to the public API surface are done using the versioning, support, and depreciation policies previously described.
 
 {@a labs}
 ## Angular Labs
