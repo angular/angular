@@ -453,6 +453,9 @@
     "name": "Observable"
   },
   {
+    "name": "OnPushNgZone"
+  },
+  {
     "name": "Optional"
   },
   {

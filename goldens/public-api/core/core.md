@@ -874,6 +874,7 @@ export class NgZone {
     // (undocumented)
     static isInAngularZone(): boolean;
     readonly isStable: boolean;
+    readonly markForCheck?: () => void;
     readonly onError: EventEmitter<any>;
     readonly onMicrotaskEmpty: EventEmitter<any>;
     readonly onStable: EventEmitter<any>;

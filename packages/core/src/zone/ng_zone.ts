@@ -153,16 +153,19 @@ export class NgZone {
   }
 
   static isInAngularZone(): boolean {
+    if ((globalThis as any)['Zone'] == null) return false;
     return Zone.current.get('isAngularZone') === true;
   }
 
   static assertInAngularZone(): void {
+    if ((globalThis as any)['Zone'] == null) return;
     if (!NgZone.isInAngularZone()) {
       throw new Error('Expected to be in Angular Zone, but it is not!');
     }
   }
 
   static assertNotInAngularZone(): void {
+    if ((globalThis as any)['Zone'] == null) return;
     if (NgZone.isInAngularZone()) {
       throw new Error('Expected to not be in Angular Zone, but it is!');
     }
@@ -230,6 +233,13 @@ export class NgZone {
   runOutsideAngular<T>(fn: (...args: any[]) => T): T {
     return (this as any as NgZonePrivate)._outer.run(fn);
   }
+
+  /**
+   * Ensures that change detection is scheduled.
+   *
+   * Called when something in the application is marked for change detection.
+   */
+  readonly markForCheck?: () => void;
 }
 
 const EMPTY_PAYLOAD = {};
@@ -485,5 +495,80 @@ export class NoopNgZone implements NgZone {
 
   runTask<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any, name?: string): T {
     return fn.apply(applyThis, applyArgs);
+  }
+}
+
+/**
+ * Provides a simple version of NgZone that only works if the application
+ * consistently uses OnPush.
+ */
+export class OnPushNgZone implements NgZone {
+  hasPendingMicrotasks: boolean = false;
+  readonly hasPendingMacrotasks: boolean = false;
+  isStable: boolean = true;
+  readonly onUnstable: EventEmitter<any> = new EventEmitter();
+  readonly onMicrotaskEmpty: EventEmitter<any> = new EventEmitter();
+  readonly onStable: EventEmitter<any> = new EventEmitter();
+  readonly onError: EventEmitter<any> = new EventEmitter();
+
+  private performingChangeDetection = false;
+  private changeDetectionScheduled = false;
+
+  run(fn: (...args: any[]) => any, applyThis?: any, applyArgs?: any): any {
+    this.markForCheck();
+    return fn.apply(applyThis, applyArgs);
+  }
+
+  runGuarded(fn: (...args: any[]) => any, applyThis?: any, applyArgs?: any): any {
+    this.markForCheck();
+    let value: any = null;
+    try {
+      value = fn.apply(applyThis, applyArgs);
+    } catch (exception) {
+      this.onError.emit(exception);
+    }
+    return value;
+  }
+
+  runOutsideAngular(fn: (...args: any[]) => any): any {
+    return fn();
+  }
+
+  runTask(fn: (...args: any[]) => any, applyThis?: any, applyArgs?: any, name?: string): any {
+    this.markForCheck();
+    return fn.apply(applyThis, applyArgs);
+  }
+
+  markForCheck() {
+    if (this.performingChangeDetection) return;
+    if (this.isStable) this.onUnstable.emit(true);
+    this.isStable = false;
+    this.hasPendingMicrotasks = true;
+    if (this.changeDetectionScheduled) return;
+    this.changeDetectionScheduled = true;
+    const nextTick = requestAnimationFrame || setTimeout;
+    nextTick(() => {
+      this.performingChangeDetection = true;
+      this.hasPendingMicrotasks = false;
+      this.withoutFail(() => {
+        this.onMicrotaskEmpty.emit(true);
+      });
+
+      this.isStable = true;
+      this.withoutFail(() => {
+        this.onStable.emit(true);
+      });
+
+      this.changeDetectionScheduled = false;
+      this.performingChangeDetection = false;
+    });
+  }
+
+  private withoutFail(fn: () => void) {
+    try {
+      fn();
+    } catch (exception) {
+      this.onError.emit(exception);
+    }
   }
 }

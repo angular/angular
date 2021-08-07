@@ -17,6 +17,7 @@ import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory
 import {RendererFactory2} from '../render/api';
 import {Sanitizer} from '../sanitization/sanitizer';
 import {VERSION} from '../version';
+import {NgZone} from '../zone';
 
 import {assertComponentType} from './assert';
 import {ChainedInjector} from './chained_injector';
@@ -28,7 +29,7 @@ import {ComponentDef} from './interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode} from './interfaces/node';
 import {domRendererFactory3, RendererFactory3} from './interfaces/renderer';
 import {RNode} from './interfaces/renderer_dom';
-import {HEADER_OFFSET, LView, LViewFlags, TViewType} from './interfaces/view';
+import {HEADER_OFFSET, LView, LViewFlags, MARK_DIRTY, TViewType} from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
 import {createElementNode, writeDirectClass} from './node_manipulation';
 import {extractAttrsAndClassesFromSelector, stringifyCSSSelectorList} from './node_selector_matcher';
@@ -140,6 +141,12 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     const rootLView = createLView(
         null, rootTView, rootContext, rootFlags, null, null, rendererFactory, hostRenderer,
         sanitizer, rootViewInjector);
+    const ngZone = rootViewInjector.get(NgZone, {});
+    if (ngZone.markForCheck) {
+      rootLView[MARK_DIRTY] = () => {
+        ngZone.markForCheck?.();
+      };
+    }
 
     // rootView is the parent when bootstrapping
     // TODO(misko): it looks like we are entering view here but we don't really need to as

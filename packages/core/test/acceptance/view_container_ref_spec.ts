@@ -8,7 +8,7 @@
 
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {computeMsgId} from '@angular/compiler';
-import {Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, InjectionToken, Injector, Input, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, OnDestroy, OnInit, Pipe, PipeTransform, QueryList, RendererFactory2, RendererType2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ɵsetDocument} from '@angular/core';
+import {Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, InjectionToken, Injector, Input, NgModule, NgModuleRef, NgZone, NO_ERRORS_SCHEMA, OnDestroy, OnInit, Pipe, PipeTransform, QueryList, RendererFactory2, RendererType2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ɵsetDocument} from '@angular/core';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {ComponentFixture, TestBed, TestComponentRenderer} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
@@ -1181,6 +1181,7 @@ describe('ViewContainerRef', () => {
           {provide: String, useValue: 'root_module'},
           // We need to provide the following tokens because otherwise view engine
           // will throw when creating a component factory in debug mode.
+          {provide: NgZone, useValue: TestBed.inject(NgZone)},
           {provide: Sanitizer, useValue: TestBed.inject(DomSanitizer)},
           {provide: ErrorHandler, useValue: TestBed.inject(ErrorHandler)},
           {provide: RendererFactory2, useValue: TestBed.inject(RendererFactory2)},
