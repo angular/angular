@@ -70,7 +70,7 @@ import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_refle
 }
 
 class TestLocalization extends NgLocalization {
-  getPluralCategory(value: number): string {
+  override getPluralCategory(value: number): string {
     return value > 1 && value < 6 ? 'many' : 'other';
   }
 }
