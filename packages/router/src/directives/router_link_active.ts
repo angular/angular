@@ -168,7 +168,8 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   }
 
   private isLinkActive(router: Router): (link: (RouterLink|RouterLinkWithHref)) => boolean {
-    const options = 'paths' in this.routerLinkActiveOptions ?
+    const options: boolean|IsActiveMatchOptions =
+        isActiveMatchOptions(this.routerLinkActiveOptions) ?
         this.routerLinkActiveOptions :
         // While the types should disallow `undefined` here, it's possible without strict inputs
         (this.routerLinkActiveOptions.exact || false);
@@ -181,4 +182,12 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
         this.linkWithHref && isActiveCheckFn(this.linkWithHref) ||
         this.links.some(isActiveCheckFn) || this.linksWithHrefs.some(isActiveCheckFn);
   }
+}
+
+/**
+ * Use instead of `'paths' in options` to be compatible with property renaming
+ */
+function isActiveMatchOptions(options: {exact: boolean}|
+                              IsActiveMatchOptions): options is IsActiveMatchOptions {
+  return !!(options as IsActiveMatchOptions).paths;
 }
