@@ -90,7 +90,7 @@ export async function checkOutPullRequestLocally(
   // never accidentally override upstream changes that have been pushed in the meanwhile.
   // See:
   // https://git-scm.com/docs/git-push#Documentation/git-push.txt---force-with-leaseltrefnamegtltexpectgt
-  /** Flag for a force push with leage back to upstream. */
+  /** Flag for a force push with lease back to upstream. */
   const forceWithLeaseFlag = `--force-with-lease=${headRefName}:${pr.headRefOid}`;
 
   // If the PR does not allow maintainers to modify it, exit as the rebased PR cannot
