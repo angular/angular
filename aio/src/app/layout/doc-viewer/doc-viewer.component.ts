@@ -149,7 +149,7 @@ export class DocViewerComponent implements OnDestroy {
           this.setNoIndex(true);
 
           // TODO(gkalpak): Remove this once gathering debug info is no longer needed.
-          if (/loading chunk \d+ failed/i.test(errorMessage)) {
+          if (/loading chunk \S+ failed/i.test(errorMessage)) {
             // Print some info to help with debugging.
             // (There is no reason to wait for this async call to complete before continuing.)
             printSwDebugInfo();
