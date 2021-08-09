@@ -107,17 +107,17 @@ describe('MatAutocomplete', () => {
 
     it('should open the panel when the input is focused', () => {
       expect(fixture.componentInstance.trigger.panelOpen)
-          .toBe(false, `Expected panel state to start out closed.`);
+        .withContext(`Expected panel state to start out closed.`).toBe(false);
 
       dispatchFakeEvent(input, 'focusin');
       fixture.detectChanges();
 
       expect(fixture.componentInstance.trigger.panelOpen)
-          .toBe(true, `Expected panel state to read open when input is focused.`);
+        .withContext(`Expected panel state to read open when input is focused.`).toBe(true);
       expect(overlayContainerElement.textContent)
-          .toContain('Alabama', `Expected panel to display when input is focused.`);
+        .withContext(`Expected panel to display when input is focused.`).toContain('Alabama');
       expect(overlayContainerElement.textContent)
-          .toContain('California', `Expected panel to display when input is focused.`);
+        .withContext(`Expected panel to display when input is focused.`).toContain('California');
     });
 
     it('should not open the panel on focus if the input is readonly', fakeAsync(() => {
@@ -125,12 +125,14 @@ describe('MatAutocomplete', () => {
       input.readOnly = true;
       fixture.detectChanges();
 
-      expect(trigger.panelOpen).toBe(false, 'Expected panel state to start out closed.');
+      expect(trigger.panelOpen)
+        .withContext('Expected panel state to start out closed.').toBe(false);
       dispatchFakeEvent(input, 'focusin');
       flush();
 
       fixture.detectChanges();
-      expect(trigger.panelOpen).toBe(false, 'Expected panel to stay closed.');
+      expect(trigger.panelOpen)
+        .withContext('Expected panel to stay closed.').toBe(false);
     }));
 
     it('should not open using the arrow keys when the input is readonly', fakeAsync(() => {
@@ -138,27 +140,31 @@ describe('MatAutocomplete', () => {
       input.readOnly = true;
       fixture.detectChanges();
 
-      expect(trigger.panelOpen).toBe(false, 'Expected panel state to start out closed.');
+      expect(trigger.panelOpen)
+        .withContext('Expected panel state to start out closed.').toBe(false);
       dispatchKeyboardEvent(input, 'keydown', DOWN_ARROW);
       flush();
 
       fixture.detectChanges();
-      expect(trigger.panelOpen).toBe(false, 'Expected panel to stay closed.');
+      expect(trigger.panelOpen)
+        .withContext('Expected panel to stay closed.').toBe(false);
     }));
 
     it('should open the panel programmatically', () => {
       expect(fixture.componentInstance.trigger.panelOpen)
-          .toBe(false, `Expected panel state to start out closed.`);
+        .withContext(`Expected panel state to start out closed.`).toBe(false);
 
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
 
       expect(fixture.componentInstance.trigger.panelOpen)
-          .toBe(true, `Expected panel state to read open when opened programmatically.`);
+        .withContext(`Expected panel state to read open when opened programmatically.`).toBe(true);
       expect(overlayContainerElement.textContent)
-          .toContain('Alabama', `Expected panel to display when opened programmatically.`);
+        .withContext(`Expected panel to display when opened programmatically.`)
+        .toContain('Alabama');
       expect(overlayContainerElement.textContent)
-          .toContain('California', `Expected panel to display when opened programmatically.`);
+        .withContext(`Expected panel to display when opened programmatically.`)
+        .toContain('California');
     });
 
     it('should show the panel when the first open is after the initial zone stabilization',
@@ -171,7 +177,7 @@ describe('MatAutocomplete', () => {
 
           Promise.resolve().then(() => {
             expect(fixture.componentInstance.panel.showPanel)
-                .toBe(true, `Expected panel to be visible.`);
+              .withContext(`Expected panel to be visible.`).toBe(true);
           });
         });
       }));
@@ -183,9 +189,9 @@ describe('MatAutocomplete', () => {
       dispatchFakeEvent(document, 'click');
 
       expect(fixture.componentInstance.trigger.panelOpen)
-          .toBe(false, `Expected clicking outside the panel to set its state to closed.`);
+        .withContext(`Expected clicking outside the panel to set its state to closed.`).toBe(false);
       expect(overlayContainerElement.textContent)
-          .toEqual('', `Expected clicking outside the panel to close the panel.`);
+        .withContext(`Expected clicking outside the panel to close the panel.`).toEqual('');
     }));
 
     it('should close the panel when the user clicks away via auxilliary button', fakeAsync(() => {
@@ -195,9 +201,9 @@ describe('MatAutocomplete', () => {
       dispatchFakeEvent(document, 'auxclick');
 
       expect(fixture.componentInstance.trigger.panelOpen)
-          .toBe(false, `Expected clicking outside the panel to set its state to closed.`);
+        .withContext(`Expected clicking outside the panel to set its state to closed.`).toBe(false);
       expect(overlayContainerElement.textContent)
-          .toEqual('', `Expected clicking outside the panel to close the panel.`);
+        .withContext(`Expected clicking outside the panel to close the panel.`).toEqual('');
     }));
 
     it('should close the panel when the user taps away on a touch device', fakeAsync(() => {
@@ -207,9 +213,9 @@ describe('MatAutocomplete', () => {
       dispatchFakeEvent(document, 'touchend');
 
       expect(fixture.componentInstance.trigger.panelOpen)
-          .toBe(false, `Expected tapping outside the panel to set its state to closed.`);
+        .withContext(`Expected tapping outside the panel to set its state to closed.`).toBe(false);
       expect(overlayContainerElement.textContent)
-          .toEqual('', `Expected tapping outside the panel to close the panel.`);
+        .withContext(`Expected tapping outside the panel to close the panel.`).toEqual('');
     }));
 
     it('should close the panel when an option is clicked', fakeAsync(() => {
@@ -222,9 +228,9 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.trigger.panelOpen)
-          .toBe(false, `Expected clicking an option to set the panel state to closed.`);
+        .withContext(`Expected clicking an option to set the panel state to closed.`).toBe(false);
       expect(overlayContainerElement.textContent)
-          .toEqual('', `Expected clicking an option to close the panel.`);
+        .withContext(`Expected clicking an option to close the panel.`).toEqual('');
     }));
 
     it('should close the panel when a newly created option is clicked', fakeAsync(() => {
@@ -254,9 +260,10 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.trigger.panelOpen)
-          .toBe(false, `Expected clicking a new option to set the panel state to closed.`);
+        .withContext(`Expected clicking a new option to set the panel state to closed.`)
+        .toBe(false);
       expect(overlayContainerElement.textContent)
-          .toEqual('', `Expected clicking a new option to close the panel.`);
+        .withContext(`Expected clicking a new option to close the panel.`).toEqual('');
     }));
 
     it('should close the panel programmatically', () => {
@@ -267,9 +274,10 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.trigger.panelOpen)
-          .toBe(false, `Expected closing programmatically to set the panel state to closed.`);
+        .withContext(`Expected closing programmatically to set the panel state to closed.`)
+        .toBe(false);
       expect(overlayContainerElement.textContent)
-          .toEqual('', `Expected closing programmatically to close the panel.`);
+        .withContext(`Expected closing programmatically to close the panel.`).toEqual('');
     });
 
     it('should not throw when attempting to close the panel of a destroyed autocomplete', () => {
@@ -289,7 +297,7 @@ describe('MatAutocomplete', () => {
       const panel = overlayContainerElement.querySelector('.mat-autocomplete-panel') as HTMLElement;
 
       expect(panel.classList)
-          .toContain('mat-autocomplete-visible', `Expected panel to start out visible.`);
+        .withContext(`Expected panel to start out visible.`).toContain('mat-autocomplete-visible');
 
       // Filter down the option list such that no options match the value
       typeInElement(input, 'af');
@@ -298,13 +306,14 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(panel.classList)
-          .toContain('mat-autocomplete-hidden', `Expected panel to hide itself when empty.`);
+        .withContext(`Expected panel to hide itself when empty.`)
+        .toContain('mat-autocomplete-hidden');
     }));
 
     it('should keep the label floating until the panel closes', fakeAsync(() => {
       fixture.componentInstance.trigger.openPanel();
       expect(fixture.componentInstance.formField.floatLabel)
-          .toEqual('always', 'Expected label to float as soon as panel opens.');
+        .withContext('Expected label to float as soon as panel opens.').toEqual('always');
 
       zone.simulateZoneExit();
       fixture.detectChanges();
@@ -315,19 +324,19 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.formField.floatLabel)
-          .toEqual('auto', 'Expected label to return to auto state after panel closes.');
+        .withContext('Expected label to return to auto state after panel closes.').toEqual('auto');
     }));
 
     it('should not open the panel when the `input` event is invoked on a non-focused input', () => {
       expect(fixture.componentInstance.trigger.panelOpen)
-          .toBe(false, `Expected panel state to start out closed.`);
+        .withContext(`Expected panel state to start out closed.`).toBe(false);
 
       input.value = 'Alabama';
       dispatchFakeEvent(input, 'input');
       fixture.detectChanges();
 
       expect(fixture.componentInstance.trigger.panelOpen)
-          .toBe(false, `Expected panel state to stay closed.`);
+        .withContext(`Expected panel state to stay closed.`).toBe(false);
     });
 
    it('should not mess with label placement if set to never', fakeAsync(() => {
@@ -336,7 +345,7 @@ describe('MatAutocomplete', () => {
 
       fixture.componentInstance.trigger.openPanel();
       expect(fixture.componentInstance.formField.floatLabel)
-          .toEqual('never', 'Expected label to stay static.');
+        .withContext('Expected label to stay static.').toEqual('never');
       flush();
       fixture.detectChanges();
 
@@ -346,7 +355,7 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.formField.floatLabel)
-          .toEqual('never', 'Expected label to stay in static state after close.');
+        .withContext('Expected label to stay in static state after close.').toEqual('never');
     }));
 
     it('should not mess with label placement if set to always', fakeAsync(() => {
@@ -355,7 +364,7 @@ describe('MatAutocomplete', () => {
 
       fixture.componentInstance.trigger.openPanel();
       expect(fixture.componentInstance.formField.floatLabel)
-          .toEqual('always', 'Expected label to stay elevated on open.');
+        .withContext('Expected label to stay elevated on open.').toEqual('always');
       flush();
       fixture.detectChanges();
 
@@ -365,7 +374,7 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.formField.floatLabel)
-          .toEqual('always', 'Expected label to stay elevated after close.');
+        .withContext('Expected label to stay elevated after close.').toEqual('always');
     }));
 
     it('should toggle the visibility when typing and closing the panel', fakeAsync(() => {
@@ -374,7 +383,7 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(overlayContainerElement.querySelector('.mat-autocomplete-panel')!.classList)
-          .toContain('mat-autocomplete-visible', 'Expected panel to be visible.');
+        .withContext('Expected panel to be visible.').toContain('mat-autocomplete-visible');
 
       typeInElement(input, 'x');
       fixture.detectChanges();
@@ -382,7 +391,7 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(overlayContainerElement.querySelector('.mat-autocomplete-panel')!.classList)
-          .toContain('mat-autocomplete-hidden', 'Expected panel to be hidden.');
+        .withContext('Expected panel to be hidden.').toContain('mat-autocomplete-hidden');
 
       fixture.componentInstance.trigger.closePanel();
       fixture.detectChanges();
@@ -397,7 +406,7 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(overlayContainerElement.querySelector('.mat-autocomplete-panel')!.classList)
-          .toContain('mat-autocomplete-visible', 'Expected panel to be visible.');
+        .withContext('Expected panel to be visible.').toContain('mat-autocomplete-visible');
     }));
 
     it('should animate the label when the input is focused', () => {
@@ -497,7 +506,7 @@ describe('MatAutocomplete', () => {
 
     it('should not be able to open the panel if the autocomplete is disabled', () => {
       expect(fixture.componentInstance.trigger.panelOpen)
-          .toBe(false, `Expected panel state to start out closed.`);
+        .withContext(`Expected panel state to start out closed.`).toBe(false);
 
       fixture.componentInstance.autocompleteDisabled = true;
       fixture.detectChanges();
@@ -506,7 +515,7 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.trigger.panelOpen)
-          .toBe(false, `Expected panel to remain closed.`);
+        .withContext(`Expected panel to remain closed.`).toBe(false);
     });
 
     it('should continue to update the model if the autocomplete is disabled', () => {
@@ -540,13 +549,13 @@ describe('MatAutocomplete', () => {
        zone.simulateZoneExit();
 
        expect(fixture.componentInstance.trigger.panelOpen)
-           .toBe(true, 'Expected panel to be opened on focus.');
+        .withContext('Expected panel to be opened on focus.').toBe(true);
 
        input.click();
        fixture.detectChanges();
 
        expect(fixture.componentInstance.trigger.panelOpen)
-           .toBe(true, 'Expected panel to remain opened after clicking on the input.');
+        .withContext('Expected panel to remain opened after clicking on the input.').toBe(true);
      }));
 
   it('should not close the panel when clicking on the input inside shadow DOM', fakeAsync(() => {
@@ -564,13 +573,13 @@ describe('MatAutocomplete', () => {
        zone.simulateZoneExit();
 
        expect(fixture.componentInstance.trigger.panelOpen)
-           .toBe(true, 'Expected panel to be opened on focus.');
+        .withContext('Expected panel to be opened on focus.').toBe(true);
 
        input.click();
        fixture.detectChanges();
 
        expect(fixture.componentInstance.trigger.panelOpen)
-           .toBe(true, 'Expected panel to remain opened after clicking on the input.');
+        .withContext('Expected panel to remain opened after clicking on the input.').toBe(true);
      }));
 
   it('should have the correct text direction in RTL', () => {
@@ -652,13 +661,13 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.stateCtrl.value)
-          .toEqual('a', 'Expected control value to be updated as user types.');
+        .withContext('Expected control value to be updated as user types.').toEqual('a');
 
       typeInElement(input, 'l');
       fixture.detectChanges();
 
       expect(fixture.componentInstance.stateCtrl.value)
-          .toEqual('al', 'Expected control value to be updated as user types.');
+        .withContext('Expected control value to be updated as user types.').toEqual('al');
     });
 
     it('should update control value when autofilling', () => {
@@ -670,7 +679,7 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.stateCtrl.value)
-          .toBe('Alabama', 'Expected value to be propagated to the form control.');
+        .withContext('Expected value to be propagated to the form control.').toBe('Alabama');
     });
 
     it('should update control value when option is selected with option value', fakeAsync(() => {
@@ -684,8 +693,8 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.stateCtrl.value)
-          .toEqual({code: 'CA', name: 'California'},
-              'Expected control value to equal the selected option value.');
+        .withContext('Expected control value to equal the selected option value.')
+        .toEqual({ code: 'CA', name: 'California' });
     }));
 
     it('should update the control back to a string if user types after an option is selected',
@@ -705,7 +714,7 @@ describe('MatAutocomplete', () => {
         tick();
 
         expect(fixture.componentInstance.stateCtrl.value)
-            .toEqual('Californi', 'Expected control value to revert back to string.');
+          .withContext('Expected control value to revert back to string.').toEqual('Californi');
       }));
 
     it('should fill the text field with display value when an option is selected', fakeAsync(() => {
@@ -719,7 +728,7 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(input.value)
-          .toContain('California', `Expected text field to fill with selected value.`);
+        .withContext(`Expected text field to fill with selected value.`).toContain('California');
     }));
 
     it('should fill the text field with value if displayWith is not set', fakeAsync(() => {
@@ -737,7 +746,8 @@ describe('MatAutocomplete', () => {
 
       fixture.detectChanges();
       expect(input.value)
-          .toContain('test value', `Expected input to fall back to selected option's value.`);
+        .withContext(`Expected input to fall back to selected option's value.`)
+        .toContain('test value');
     }));
 
     it('should fill the text field correctly if value is set to obj programmatically',
@@ -748,7 +758,8 @@ describe('MatAutocomplete', () => {
         fixture.detectChanges();
 
         expect(input.value)
-            .toContain('Alabama', `Expected input to fill with matching option's viewValue.`);
+          .withContext(`Expected input to fill with matching option's viewValue.`)
+          .toContain('Alabama');
       }));
 
     it('should clear the text field if value is reset programmatically', fakeAsync(() => {
@@ -762,7 +773,8 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
       tick();
 
-      expect(input.value).toEqual('', `Expected input value to be empty after reset.`);
+      expect(input.value)
+        .withContext(`Expected input value to be empty after reset.`).toEqual('');
     }));
 
     it('should disable input in view when disabled programmatically', () => {
@@ -770,33 +782,35 @@ describe('MatAutocomplete', () => {
           fixture.debugElement.query(By.css('.mat-form-field'))!.nativeElement;
 
       expect(input.disabled)
-          .toBe(false, `Expected input to start out enabled in view.`);
+        .withContext(`Expected input to start out enabled in view.`).toBe(false);
       expect(formFieldElement.classList.contains('mat-form-field-disabled'))
-          .toBe(false, `Expected input underline to start out with normal styles.`);
+        .withContext(`Expected input underline to start out with normal styles.`).toBe(false);
 
       fixture.componentInstance.stateCtrl.disable();
       fixture.detectChanges();
 
       expect(input.disabled)
-          .toBe(true, `Expected input to be disabled in view when disabled programmatically.`);
+        .withContext(`Expected input to be disabled in view when disabled programmatically.`)
+        .toBe(true);
       expect(formFieldElement.classList.contains('mat-form-field-disabled'))
-          .toBe(true, `Expected input underline to display disabled styles.`);
+        .withContext(`Expected input underline to display disabled styles.`).toBe(true);
     });
 
     it('should mark the autocomplete control as dirty as user types', () => {
       expect(fixture.componentInstance.stateCtrl.dirty)
-          .toBe(false, `Expected control to start out pristine.`);
+        .withContext(`Expected control to start out pristine.`).toBe(false);
 
       typeInElement(input, 'a');
       fixture.detectChanges();
 
       expect(fixture.componentInstance.stateCtrl.dirty)
-          .toBe(true, `Expected control to become dirty when the user types into the input.`);
+        .withContext(`Expected control to become dirty when the user types into the input.`)
+        .toBe(true);
     });
 
     it('should mark the autocomplete control as dirty when an option is selected', fakeAsync(() => {
       expect(fixture.componentInstance.stateCtrl.dirty)
-          .toBe(false, `Expected control to start out pristine.`);
+        .withContext(`Expected control to start out pristine.`).toBe(false);
 
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
@@ -808,31 +822,32 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.stateCtrl.dirty)
-          .toBe(true, `Expected control to become dirty when an option was selected.`);
+        .withContext(`Expected control to become dirty when an option was selected.`).toBe(true);
     }));
 
     it('should not mark the control dirty when the value is set programmatically', () => {
       expect(fixture.componentInstance.stateCtrl.dirty)
-          .toBe(false, `Expected control to start out pristine.`);
+        .withContext(`Expected control to start out pristine.`).toBe(false);
 
       fixture.componentInstance.stateCtrl.setValue('AL');
       fixture.detectChanges();
 
       expect(fixture.componentInstance.stateCtrl.dirty)
-          .toBe(false, `Expected control to stay pristine if value is set programmatically.`);
+        .withContext(`Expected control to stay pristine if value is set programmatically.`)
+        .toBe(false);
     });
 
     it('should mark the autocomplete control as touched on blur', () => {
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
       expect(fixture.componentInstance.stateCtrl.touched)
-          .toBe(false, `Expected control to start out untouched.`);
+        .withContext(`Expected control to start out untouched.`).toBe(false);
 
       dispatchFakeEvent(input, 'blur');
       fixture.detectChanges();
 
       expect(fixture.componentInstance.stateCtrl.touched)
-          .toBe(true, `Expected control to become touched on blur.`);
+        .withContext(`Expected control to become touched on blur.`).toBe(true);
     });
 
     it('should disable the input when used with a value accessor and without `matInput`', () => {
@@ -886,11 +901,13 @@ describe('MatAutocomplete', () => {
       fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
 
       expect(fixture.componentInstance.trigger.panelOpen)
-          .toBe(true, `Expected panel state to stay open when DOWN key is pressed.`);
+        .withContext(`Expected panel state to stay open when DOWN key is pressed.`).toBe(true);
       expect(overlayContainerElement.textContent)
-          .toContain('Alabama', `Expected panel to keep displaying when DOWN key is pressed.`);
+        .withContext(`Expected panel to keep displaying when DOWN key is pressed.`)
+        .toContain('Alabama');
       expect(overlayContainerElement.textContent)
-          .toContain('California', `Expected panel to keep displaying when DOWN key is pressed.`);
+        .withContext(`Expected panel to keep displaying when DOWN key is pressed.`)
+        .toContain('California');
     });
 
     it('should set the active item to the first option when DOWN key is pressed', () => {
@@ -899,13 +916,13 @@ describe('MatAutocomplete', () => {
           overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
 
       expect(componentInstance.trigger.panelOpen)
-          .toBe(true, 'Expected first down press to open the pane.');
+        .withContext('Expected first down press to open the pane.').toBe(true);
 
       componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
       fixture.detectChanges();
 
       expect(componentInstance.trigger.activeOption === componentInstance.options.first)
-          .toBe(true, 'Expected first option to be active.');
+        .withContext('Expected first option to be active.').toBe(true);
       expect(optionEls[0].classList).toContain('mat-active');
       expect(optionEls[1].classList).not.toContain('mat-active');
 
@@ -913,7 +930,7 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(componentInstance.trigger.activeOption === componentInstance.options.toArray()[1])
-          .toBe(true, 'Expected second option to be active.');
+        .withContext('Expected second option to be active.').toBe(true);
       expect(optionEls[0].classList).not.toContain('mat-active');
       expect(optionEls[1].classList).toContain('mat-active');
     });
@@ -924,13 +941,13 @@ describe('MatAutocomplete', () => {
           overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
 
       expect(componentInstance.trigger.panelOpen)
-          .toBe(true, 'Expected first up press to open the pane.');
+        .withContext('Expected first up press to open the pane.').toBe(true);
 
       componentInstance.trigger._handleKeydown(UP_ARROW_EVENT);
       fixture.detectChanges();
 
       expect(componentInstance.trigger.activeOption === componentInstance.options.last)
-          .toBe(true, 'Expected last option to be active.');
+        .withContext('Expected last option to be active.').toBe(true);
       expect(optionEls[10].classList).toContain('mat-active');
       expect(optionEls[0].classList).not.toContain('mat-active');
 
@@ -938,7 +955,7 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(componentInstance.trigger.activeOption === componentInstance.options.first)
-          .toBe(true, 'Expected first option to be active.');
+        .withContext('Expected first option to be active.').toBe(true);
       expect(optionEls[0].classList).toContain('mat-active');
     });
 
@@ -963,7 +980,7 @@ describe('MatAutocomplete', () => {
           overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
 
       expect(componentInstance.trigger.activeOption === componentInstance.options.first)
-          .toBe(true, 'Expected first option to be active.');
+        .withContext('Expected first option to be active.').toBe(true);
       expect(optionEls[0].classList).toContain('mat-active');
       expect(optionEls[1].classList).not.toContain('mat-active');
     });
@@ -976,7 +993,8 @@ describe('MatAutocomplete', () => {
       fixture.componentInstance.trigger._handleKeydown(ENTER_EVENT);
       fixture.detectChanges();
       expect(input.value)
-          .toContain('Alabama', `Expected text field to fill with selected value on ENTER.`);
+        .withContext(`Expected text field to fill with selected value on ENTER.`)
+        .toContain('Alabama');
     }));
 
     it('should prevent the default enter key action', fakeAsync(() => {
@@ -986,7 +1004,7 @@ describe('MatAutocomplete', () => {
       fixture.componentInstance.trigger._handleKeydown(ENTER_EVENT);
 
       expect(ENTER_EVENT.defaultPrevented)
-          .toBe(true, 'Expected the default action to have been prevented.');
+        .withContext('Expected the default action to have been prevented.').toBe(true);
     }));
 
     it('should not prevent the default enter action for a closed panel after a user action', () => {
@@ -997,7 +1015,8 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
       fixture.componentInstance.trigger._handleKeydown(ENTER_EVENT);
 
-      expect(ENTER_EVENT.defaultPrevented).toBe(false, 'Default action should not be prevented.');
+      expect(ENTER_EVENT.defaultPrevented)
+        .withContext('Default action should not be prevented.').toBe(false);
     });
 
     it('should fill the text field, not select an option, when SPACE is entered', () => {
@@ -1016,7 +1035,7 @@ describe('MatAutocomplete', () => {
 
     it('should mark the control dirty when selecting an option from the keyboard', fakeAsync(() => {
       expect(fixture.componentInstance.stateCtrl.dirty)
-          .toBe(false, `Expected control to start out pristine.`);
+        .withContext(`Expected control to start out pristine.`).toBe(false);
 
       fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
       flush();
@@ -1024,7 +1043,8 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.stateCtrl.dirty)
-          .toBe(true, `Expected control to become dirty when option was selected by ENTER.`);
+        .withContext(`Expected control to become dirty when option was selected by ENTER.`)
+        .toBe(true);
     }));
 
     it('should open the panel again when typing after making a selection', fakeAsync(() => {
@@ -1034,9 +1054,9 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.trigger.panelOpen)
-          .toBe(false, `Expected panel state to read closed after ENTER key.`);
+        .withContext(`Expected panel state to read closed after ENTER key.`).toBe(false);
       expect(overlayContainerElement.textContent)
-          .toEqual('', `Expected panel to close after ENTER key.`);
+        .withContext(`Expected panel to close after ENTER key.`).toEqual('');
 
       dispatchFakeEvent(input, 'focusin');
       clearElement(input);
@@ -1045,9 +1065,9 @@ describe('MatAutocomplete', () => {
       tick();
 
       expect(fixture.componentInstance.trigger.panelOpen)
-          .toBe(true, `Expected panel state to read open when typing in input.`);
+        .withContext(`Expected panel state to read open when typing in input.`).toBe(true);
       expect(overlayContainerElement.textContent)
-          .toContain('Alabama', `Expected panel to display when typing in input.`);
+        .withContext(`Expected panel to display when typing in input.`).toContain('Alabama');
     }));
 
     it('should not open the panel if the `input` event was dispatched with changing the value',
@@ -1059,12 +1079,14 @@ describe('MatAutocomplete', () => {
         fixture.detectChanges();
         tick();
 
-        expect(trigger.panelOpen).toBe(true, 'Expected panel to be open.');
+        expect(trigger.panelOpen)
+          .withContext('Expected panel to be open.').toBe(true);
 
         trigger.closePanel();
         fixture.detectChanges();
 
-        expect(trigger.panelOpen).toBe(false, 'Expected panel to be closed.');
+        expect(trigger.panelOpen)
+          .withContext('Expected panel to be closed.').toBe(false);
 
         // Dispatch the event without actually changing the value
         // to simulate what happen in some cases on IE.
@@ -1072,7 +1094,8 @@ describe('MatAutocomplete', () => {
         fixture.detectChanges();
         tick();
 
-        expect(trigger.panelOpen).toBe(false, 'Expected panel to stay closed.');
+        expect(trigger.panelOpen)
+          .withContext('Expected panel to stay closed.').toBe(false);
       }));
 
     it('should scroll to active options below the fold', () => {
@@ -1082,14 +1105,16 @@ describe('MatAutocomplete', () => {
 
       trigger._handleKeydown(DOWN_ARROW_EVENT);
       fixture.detectChanges();
-      expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to scroll.`);
+      expect(scrollContainer.scrollTop)
+        .withContext(`Expected panel not to scroll.`).toEqual(0);
 
       // These down arrows will set the 6th option active, below the fold.
       [1, 2, 3, 4, 5].forEach(() => trigger._handleKeydown(DOWN_ARROW_EVENT));
 
       // Expect option bottom minus the panel height (288 - 256 = 32)
-      expect(scrollContainer.scrollTop)
-          .toEqual(32, `Expected panel to reveal the sixth option.`);
+      // Expect option bottom minus the panel height (288 - 256 = 32)
+expect(scrollContainer.scrollTop)
+  .withContext(`Expected panel to reveal the sixth option.`).toEqual(32);
     });
 
     it('should scroll to active options below if the option height is variable', () => {
@@ -1107,14 +1132,16 @@ describe('MatAutocomplete', () => {
 
       trigger._handleKeydown(DOWN_ARROW_EVENT);
       fixture.detectChanges();
-      expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to scroll.`);
+      expect(scrollContainer.scrollTop)
+        .withContext(`Expected panel not to scroll.`).toEqual(0);
 
       // These down arrows will set the 6th option active, below the fold.
       [1, 2, 3, 4, 5].forEach(() => trigger._handleKeydown(DOWN_ARROW_EVENT));
 
       // Expect option bottom minus the panel height (336 - 256 = 80)
+      // Expect option bottom minus the panel height (336 - 256 = 80)
       expect(scrollContainer.scrollTop)
-          .toEqual(80, `Expected panel to reveal the sixth option.`);
+        .withContext(`Expected panel to reveal the sixth option.`).toEqual(80);
     });
 
     it('should scroll to active options on UP arrow', () => {
@@ -1124,7 +1151,9 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       // Expect option bottom minus the panel height (528 - 256 = 272)
-      expect(scrollContainer.scrollTop).toEqual(272, `Expected panel to reveal last option.`);
+      // Expect option bottom minus the panel height (528 - 256 = 272)
+      expect(scrollContainer.scrollTop)
+        .withContext(`Expected panel to reveal last option.`).toEqual(272);
     });
 
     it('should not scroll to active options that are fully in the panel', () => {
@@ -1134,21 +1163,25 @@ describe('MatAutocomplete', () => {
       trigger._handleKeydown(DOWN_ARROW_EVENT);
       fixture.detectChanges();
 
-      expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to scroll.`);
+      expect(scrollContainer.scrollTop)
+        .withContext(`Expected panel not to scroll.`).toEqual(0);
 
       // These down arrows will set the 6th option active, below the fold.
       [1, 2, 3, 4, 5].forEach(() => trigger._handleKeydown(DOWN_ARROW_EVENT));
 
       // Expect option bottom minus the panel height (288 - 256 = 32)
+      // Expect option bottom minus the panel height (288 - 256 = 32)
       expect(scrollContainer.scrollTop)
-          .toEqual(32, `Expected panel to reveal the sixth option.`);
+        .withContext(`Expected panel to reveal the sixth option.`).toEqual(32);
 
       // These up arrows will set the 2nd option active
       [4, 3, 2, 1].forEach(() => trigger._handleKeydown(UP_ARROW_EVENT));
 
       // Expect no scrolling to have occurred. Still showing bottom of 6th option.
+      // Expect no scrolling to have occurred. Still showing bottom of 6th option.
       expect(scrollContainer.scrollTop)
-          .toEqual(32, `Expected panel not to scroll up since sixth option still fully visible.`);
+        .withContext(`Expected panel not to scroll up since sixth option still fully visible.`)
+        .toEqual(32);
     });
 
     it('should scroll to active options that are above the panel', () => {
@@ -1158,7 +1191,8 @@ describe('MatAutocomplete', () => {
       trigger._handleKeydown(DOWN_ARROW_EVENT);
       fixture.detectChanges();
 
-      expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to scroll.`);
+      expect(scrollContainer.scrollTop)
+        .withContext(`Expected panel not to scroll.`).toEqual(0);
 
       // These down arrows will set the 7th option active, below the fold.
       [1, 2, 3, 4, 5, 6].forEach(() => trigger._handleKeydown(DOWN_ARROW_EVENT));
@@ -1167,8 +1201,9 @@ describe('MatAutocomplete', () => {
       [5, 4, 3, 2, 1].forEach(() => trigger._handleKeydown(UP_ARROW_EVENT));
 
       // Expect to show the top of the 2nd option at the top of the panel
+      // Expect to show the top of the 2nd option at the top of the panel
       expect(scrollContainer.scrollTop)
-          .toEqual(48, `Expected panel to scroll up when option is above panel.`);
+        .withContext(`Expected panel to scroll up when option is above panel.`).toEqual(48);
     });
 
     it('should close the panel when pressing escape', fakeAsync(() => {
@@ -1178,14 +1213,18 @@ describe('MatAutocomplete', () => {
       flush();
       fixture.detectChanges();
 
-      expect(document.activeElement).toBe(input, 'Expected input to be focused.');
-      expect(trigger.panelOpen).toBe(true, 'Expected panel to be open.');
+      expect(document.activeElement)
+        .withContext('Expected input to be focused.').toBe(input);
+      expect(trigger.panelOpen)
+        .withContext('Expected panel to be open.').toBe(true);
 
       dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
       fixture.detectChanges();
 
-      expect(document.activeElement).toBe(input, 'Expected input to continue to be focused.');
-      expect(trigger.panelOpen).toBe(false, 'Expected panel to be closed.');
+      expect(document.activeElement)
+        .withContext('Expected input to continue to be focused.').toBe(input);
+      expect(trigger.panelOpen)
+        .withContext('Expected panel to be closed.').toBe(false);
     }));
 
     it('should prevent the default action when pressing escape', fakeAsync(() => {
@@ -1202,15 +1241,20 @@ describe('MatAutocomplete', () => {
       flush();
       fixture.detectChanges();
 
-      expect(document.activeElement).toBe(input, 'Expected input to be focused.');
-      expect(trigger.panelOpen).toBe(true, 'Expected panel to be open.');
+      expect(document.activeElement)
+        .withContext('Expected input to be focused.').toBe(input);
+      expect(trigger.panelOpen)
+        .withContext('Expected panel to be open.').toBe(true);
 
       const event = dispatchKeyboardEvent(document.body, 'keydown', ESCAPE, undefined, {alt: true});
       fixture.detectChanges();
 
-      expect(document.activeElement).toBe(input, 'Expected input to continue to be focused.');
-      expect(trigger.panelOpen).toBe(true, 'Expected panel to stay open.');
-      expect(event.defaultPrevented).toBe(false, 'Expected default action not to be prevented.');
+      expect(document.activeElement)
+        .withContext('Expected input to continue to be focused.').toBe(input);
+      expect(trigger.panelOpen)
+        .withContext('Expected panel to stay open.').toBe(true);
+      expect(event.defaultPrevented)
+        .withContext('Expected default action not to be prevented.').toBe(false);
     }));
 
     it('should close the panel when pressing ALT + UP_ARROW', fakeAsync(() => {
@@ -1222,14 +1266,18 @@ describe('MatAutocomplete', () => {
       flush();
       fixture.detectChanges();
 
-      expect(document.activeElement).toBe(input, 'Expected input to be focused.');
-      expect(trigger.panelOpen).toBe(true, 'Expected panel to be open.');
+      expect(document.activeElement)
+        .withContext('Expected input to be focused.').toBe(input);
+      expect(trigger.panelOpen)
+        .withContext('Expected panel to be open.').toBe(true);
 
       dispatchEvent(document.body, upArrowEvent);
       fixture.detectChanges();
 
-      expect(document.activeElement).toBe(input, 'Expected input to continue to be focused.');
-      expect(trigger.panelOpen).toBe(false, 'Expected panel to be closed.');
+      expect(document.activeElement)
+        .withContext('Expected input to continue to be focused.').toBe(input);
+      expect(trigger.panelOpen)
+        .withContext('Expected panel to be closed.').toBe(false);
       expect(upArrowEvent.stopPropagation).toHaveBeenCalled();
     }));
 
@@ -1241,13 +1289,15 @@ describe('MatAutocomplete', () => {
       flush();
 
       expect(overlayContainerElement.querySelector('.mat-autocomplete-panel'))
-          .toBeTruthy('Expected panel to be rendered.');
+        .withContext('Expected panel to be rendered.')
+        .toBeTruthy();
 
       dispatchKeyboardEvent(input, 'keydown', TAB);
       fixture.detectChanges();
 
       expect(overlayContainerElement.querySelector('.mat-autocomplete-panel'))
-          .toBeFalsy('Expected panel to be removed.');
+        .withContext('Expected panel to be removed.')
+        .toBeFalsy();
     }));
 
     it('should reset the active option when closing with the escape key', fakeAsync(() => {
@@ -1257,8 +1307,10 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
       tick();
 
-      expect(trigger.panelOpen).toBe(true, 'Expected panel to be open.');
-      expect(!!trigger.activeOption).toBe(false, 'Expected no active option.');
+      expect(trigger.panelOpen)
+        .withContext('Expected panel to be open.').toBe(true);
+      expect(!!trigger.activeOption)
+        .withContext('Expected no active option.').toBe(false);
 
       // Press the down arrow a few times.
       [1, 2, 3].forEach(() => {
@@ -1269,12 +1321,16 @@ describe('MatAutocomplete', () => {
 
       // Note that this casts to a boolean, in order to prevent Jasmine
       // from crashing when trying to stringify the option if the test fails.
-      expect(!!trigger.activeOption).toBe(true, 'Expected to find an active option.');
+      // Note that this casts to a boolean, in order to prevent Jasmine
+      // from crashing when trying to stringify the option if the test fails.
+      expect(!!trigger.activeOption)
+        .withContext('Expected to find an active option.').toBe(true);
 
       dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
       tick();
 
-      expect(!!trigger.activeOption).toBe(false, 'Expected no active options.');
+      expect(!!trigger.activeOption)
+        .withContext('Expected no active options.').toBe(false);
     }));
 
     it('should reset the active option when closing by selecting with enter', fakeAsync(() => {
@@ -1284,8 +1340,10 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
       tick();
 
-      expect(trigger.panelOpen).toBe(true, 'Expected panel to be open.');
-      expect(!!trigger.activeOption).toBe(false, 'Expected no active option.');
+      expect(trigger.panelOpen)
+        .withContext('Expected panel to be open.').toBe(true);
+      expect(!!trigger.activeOption)
+        .withContext('Expected no active option.').toBe(false);
 
       // Press the down arrow a few times.
       [1, 2, 3].forEach(() => {
@@ -1296,12 +1354,16 @@ describe('MatAutocomplete', () => {
 
       // Note that this casts to a boolean, in order to prevent Jasmine
       // from crashing when trying to stringify the option if the test fails.
-      expect(!!trigger.activeOption).toBe(true, 'Expected to find an active option.');
+      // Note that this casts to a boolean, in order to prevent Jasmine
+      // from crashing when trying to stringify the option if the test fails.
+      expect(!!trigger.activeOption)
+        .withContext('Expected to find an active option.').toBe(true);
 
       trigger._handleKeydown(ENTER_EVENT);
       tick();
 
-      expect(!!trigger.activeOption).toBe(false, 'Expected no active options.');
+      expect(!!trigger.activeOption)
+        .withContext('Expected no active options.').toBe(false);
     }));
 
   });
@@ -1328,7 +1390,8 @@ describe('MatAutocomplete', () => {
       fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
       tick();
       fixture.detectChanges();
-      expect(container.scrollTop).toBe(0, 'Expected the panel not to scroll.');
+      expect(container.scrollTop)
+        .withContext('Expected the panel not to scroll.').toBe(0);
 
       // Press the down arrow five times.
       [1, 2, 3, 4, 5].forEach(() => {
@@ -1338,8 +1401,10 @@ describe('MatAutocomplete', () => {
 
       // <option bottom> - <panel height> + <2x group labels> = 128
       // 288 - 256 + 96 = 128
-      expect(container.scrollTop)
-          .toBe(128, 'Expected panel to reveal the sixth option.');
+      // <option bottom> - <panel height> + <2x group labels> = 128
+// 288 - 256 + 96 = 128
+expect(container.scrollTop)
+  .withContext('Expected panel to reveal the sixth option.').toBe(128);
     }));
 
     it('should scroll to active options on UP arrow', fakeAsync(() => {
@@ -1358,7 +1423,10 @@ describe('MatAutocomplete', () => {
 
       // <option bottom> - <panel height> + <3x group label> = 464
       // 576 - 256 + 144 = 464
-      expect(container.scrollTop).toBe(464, 'Expected panel to reveal last option.');
+      // <option bottom> - <panel height> + <3x group label> = 464
+      // 576 - 256 + 144 = 464
+      expect(container.scrollTop)
+        .withContext('Expected panel to reveal last option.').toBe(464);
     }));
 
     it('should scroll to active options that are above the panel', fakeAsync(() => {
@@ -1374,7 +1442,8 @@ describe('MatAutocomplete', () => {
       fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
       tick();
       fixture.detectChanges();
-      expect(container.scrollTop).toBe(0, 'Expected panel not to scroll.');
+      expect(container.scrollTop)
+        .withContext('Expected panel not to scroll.').toBe(0);
 
       // These down arrows will set the 7th option active, below the fold.
       [1, 2, 3, 4, 5, 6].forEach(() => {
@@ -1390,8 +1459,10 @@ describe('MatAutocomplete', () => {
 
       // Expect to show the top of the 2nd option at the top of the panel.
       // It is offset by 48, because there's a group label above it.
-      expect(container.scrollTop)
-          .toBe(96, 'Expected panel to scroll up when option is above panel.');
+      // Expect to show the top of the 2nd option at the top of the panel.
+// It is offset by 48, because there's a group label above it.
+expect(container.scrollTop)
+  .withContext('Expected panel to scroll up when option is above panel.').toBe(96);
     }));
 
     it('should scroll back to the top when reaching the first option with preceding group label',
@@ -1408,7 +1479,8 @@ describe('MatAutocomplete', () => {
         fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
         tick();
         fixture.detectChanges();
-        expect(container.scrollTop).toBe(0, 'Expected the panel not to scroll.');
+        expect(container.scrollTop)
+          .withContext('Expected the panel not to scroll.').toBe(0);
 
         // Press the down arrow five times.
         [1, 2, 3, 4, 5].forEach(() => {
@@ -1422,7 +1494,8 @@ describe('MatAutocomplete', () => {
           tick();
         });
 
-        expect(container.scrollTop).toBe(0, 'Expected panel to be scrolled to the top.');
+        expect(container.scrollTop)
+          .withContext('Expected panel to be scrolled to the top.').toBe(0);
       }));
 
       it('should scroll to active option when group is indirect descendant', fakeAsync(() => {
@@ -1438,7 +1511,8 @@ describe('MatAutocomplete', () => {
         fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
         tick();
         fixture.detectChanges();
-        expect(container.scrollTop).toBe(0, 'Expected the panel not to scroll.');
+        expect(container.scrollTop)
+          .withContext('Expected the panel not to scroll.').toBe(0);
 
         // Press the down arrow five times.
         [1, 2, 3, 4, 5].forEach(() => {
@@ -1448,8 +1522,10 @@ describe('MatAutocomplete', () => {
 
         // <option bottom> - <panel height> + <2x group labels> = 128
         // 288 - 256 + 96 = 128
-        expect(container.scrollTop)
-            .toBe(128, 'Expected panel to reveal the sixth option.');
+        // <option bottom> - <panel height> + <2x group labels> = 128
+// 288 - 256 + 96 = 128
+expect(container.scrollTop)
+  .withContext('Expected panel to reveal the sixth option.').toBe(128);
       }));
   });
 
@@ -1466,7 +1542,7 @@ describe('MatAutocomplete', () => {
 
     it('should set role of input to combobox', () => {
       expect(input.getAttribute('role'))
-          .toEqual('combobox', 'Expected role of input to be combobox.');
+        .withContext('Expected role of input to be combobox.').toEqual('combobox');
     });
 
     it('should set role of autocomplete panel to listbox', () => {
@@ -1476,7 +1552,7 @@ describe('MatAutocomplete', () => {
       const panel = fixture.debugElement.query(By.css('.mat-autocomplete-panel'))!.nativeElement;
 
       expect(panel.getAttribute('role'))
-          .toEqual('listbox', 'Expected role of the panel to be listbox.');
+        .withContext('Expected role of the panel to be listbox.').toEqual('listbox');
     });
 
     it('should point the aria-labelledby of the panel to the field label', () => {
@@ -1544,7 +1620,7 @@ describe('MatAutocomplete', () => {
 
     it('should set aria-autocomplete to list', () => {
       expect(input.getAttribute('aria-autocomplete'))
-          .toEqual('list', 'Expected aria-autocomplete attribute to equal list.');
+        .withContext('Expected aria-autocomplete attribute to equal list.').toEqual('list');
     });
 
     it('should set aria-activedescendant based on the active option', fakeAsync(() => {
@@ -1552,7 +1628,7 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(input.hasAttribute('aria-activedescendant'))
-          .toBe(false, 'Expected aria-activedescendant to be absent if no active item.');
+        .withContext('Expected aria-activedescendant to be absent if no active item.').toBe(false);
 
       const DOWN_ARROW_EVENT = createKeyboardEvent('keydown', DOWN_ARROW);
 
@@ -1561,40 +1637,40 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(input.getAttribute('aria-activedescendant'))
-          .toEqual(fixture.componentInstance.options.first.id,
-              'Expected aria-activedescendant to match the active item after 1 down arrow.');
+        .withContext('Expected aria-activedescendant to match the active item after 1 down arrow.')
+        .toEqual(fixture.componentInstance.options.first.id);
 
       fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
       tick();
       fixture.detectChanges();
 
       expect(input.getAttribute('aria-activedescendant'))
-          .toEqual(fixture.componentInstance.options.toArray()[1].id,
-              'Expected aria-activedescendant to match the active item after 2 down arrows.');
+        .withContext('Expected aria-activedescendant to match the active item after 2 down arrows.')
+        .toEqual(fixture.componentInstance.options.toArray()[1].id);
     }));
 
     it('should set aria-expanded based on whether the panel is open', () => {
       expect(input.getAttribute('aria-expanded'))
-          .toBe('false', 'Expected aria-expanded to be false while panel is closed.');
+        .withContext('Expected aria-expanded to be false while panel is closed.').toBe('false');
 
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
 
       expect(input.getAttribute('aria-expanded'))
-          .toBe('true', 'Expected aria-expanded to be true while panel is open.');
+        .withContext('Expected aria-expanded to be true while panel is open.').toBe('true');
 
       fixture.componentInstance.trigger.closePanel();
       fixture.detectChanges();
 
       expect(input.getAttribute('aria-expanded'))
-          .toBe('false', 'Expected aria-expanded to be false when panel closes again.');
+        .withContext('Expected aria-expanded to be false when panel closes again.').toBe('false');
     });
 
     it('should set aria-expanded properly when the panel is hidden', fakeAsync(() => {
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
       expect(input.getAttribute('aria-expanded'))
-          .toBe('true', 'Expected aria-expanded to be true while panel is open.');
+        .withContext('Expected aria-expanded to be true while panel is open.').toBe('true');
 
       typeInElement(input, 'zz');
       fixture.detectChanges();
@@ -1602,7 +1678,7 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(input.getAttribute('aria-expanded'))
-          .toBe('false', 'Expected aria-expanded to be false when panel hides itself.');
+        .withContext('Expected aria-expanded to be false when panel hides itself.').toBe('false');
     }));
 
     it('should set aria-owns based on the attached autocomplete', () => {
@@ -1612,7 +1688,8 @@ describe('MatAutocomplete', () => {
       const panel = fixture.debugElement.query(By.css('.mat-autocomplete-panel'))!.nativeElement;
 
       expect(input.getAttribute('aria-owns'))
-          .toBe(panel.getAttribute('id'), 'Expected aria-owns to match attached autocomplete.');
+        .withContext('Expected aria-owns to match attached autocomplete.')
+        .toBe(panel.getAttribute('id'));
     });
 
     it('should not set aria-owns while the autocomplete is closed', () => {
@@ -1636,7 +1713,8 @@ describe('MatAutocomplete', () => {
       option.click();
       fixture.detectChanges();
 
-      expect(document.activeElement).toBe(input, 'Expected focus to be restored to the input.');
+      expect(document.activeElement)
+        .withContext('Expected focus to be restored to the input.').toBe(input);
     }));
 
     it('should remove autocomplete-specific aria attributes when autocomplete is disabled', () => {
@@ -1668,7 +1746,8 @@ describe('MatAutocomplete', () => {
       const panelTop = panel.getBoundingClientRect().top;
 
       expect(Math.floor(inputBottom))
-          .toEqual(Math.floor(panelTop), `Expected panel top to match input bottom by default.`);
+        .withContext(`Expected panel top to match input bottom by default.`)
+        .toEqual(Math.floor(panelTop));
       expect(panel.classList).not.toContain('mat-autocomplete-panel-above');
     }));
 
@@ -1698,8 +1777,9 @@ describe('MatAutocomplete', () => {
       const panel = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
       const panelTop = panel.getBoundingClientRect().top;
 
-      expect(Math.floor(inputBottom)).toEqual(Math.floor(panelTop),
-          'Expected panel top to match input bottom after scrolling.');
+      expect(Math.floor(inputBottom))
+        .withContext('Expected panel top to match input bottom after scrolling.')
+        .toEqual(Math.floor(panelTop));
 
       document.body.removeChild(spacer);
       window.scroll(0, 0);
@@ -1725,7 +1805,8 @@ describe('MatAutocomplete', () => {
       const panelBottom = panel.getBoundingClientRect().bottom;
 
       expect(Math.floor(inputTop))
-          .toEqual(Math.floor(panelBottom), `Expected panel to fall back to above position.`);
+        .withContext(`Expected panel to fall back to above position.`)
+        .toEqual(Math.floor(panelBottom));
 
       expect(panel.classList).toContain('mat-autocomplete-panel-above');
     }));
@@ -1797,7 +1878,8 @@ describe('MatAutocomplete', () => {
       const panelBottom = panel.getBoundingClientRect().bottom;
 
       expect(Math.floor(inputTop))
-          .toEqual(Math.floor(panelBottom), `Expected panel to stay aligned after filtering.`);
+        .withContext(`Expected panel to stay aligned after filtering.`)
+        .toEqual(Math.floor(panelBottom));
     }));
 
     it('should fall back to above position when requested if options are added while ' +
@@ -1825,8 +1907,8 @@ describe('MatAutocomplete', () => {
       let panelRect = panel.getBoundingClientRect();
 
       expect(Math.floor(panelRect.top))
-        .toBe(Math.floor(inputRect.bottom),
-          `Expected panel top to be below input before repositioning.`);
+        .withContext(`Expected panel top to be below input before repositioning.`)
+        .toBe(Math.floor(inputRect.bottom));
 
       for (let i = 0; i < 20; i++) {
         fixture.componentInstance.filteredStates.push({code: 'FK', name: 'Fake State'});
@@ -1840,8 +1922,8 @@ describe('MatAutocomplete', () => {
       panelRect = panel.getBoundingClientRect();
 
       expect(Math.floor(panelRect.bottom))
-        .toBe(Math.floor(inputRect.top),
-          `Expected panel to fall back to above position after repositioning.`);
+        .withContext(`Expected panel to fall back to above position after repositioning.`)
+        .toBe(Math.floor(inputRect.top));
       tick();
     }));
 
@@ -1873,7 +1955,7 @@ describe('MatAutocomplete', () => {
       const panelTop = panel.getBoundingClientRect().top;
 
       expect(Math.floor(inputBottom))
-          .toEqual(Math.floor(panelTop), 'Expected panel to be below the input.');
+        .withContext('Expected panel to be below the input.').toEqual(Math.floor(panelTop));
 
       expect(panel.classList).not.toContain('mat-autocomplete-panel-above');
     }));
@@ -1899,7 +1981,7 @@ describe('MatAutocomplete', () => {
       const panelBottom = panel.getBoundingClientRect().bottom;
 
       expect(Math.floor(inputTop))
-          .toEqual(Math.floor(panelBottom), 'Expected panel to be above the input.');
+        .withContext('Expected panel to be above the input.').toEqual(Math.floor(panelBottom));
 
       expect(panel.classList).toContain('mat-autocomplete-panel-above');
     }));
@@ -1926,7 +2008,7 @@ describe('MatAutocomplete', () => {
       let panelRect = panel.getBoundingClientRect();
 
       expect(Math.floor(inputRect.top))
-          .toEqual(Math.floor(panelRect.bottom), 'Expected panel to be above the input.');
+        .withContext('Expected panel to be above the input.').toEqual(Math.floor(panelRect.bottom));
       expect(panel.classList).toContain('mat-autocomplete-panel-above');
 
       fixture.componentInstance.trigger.closePanel();
@@ -1941,7 +2023,7 @@ describe('MatAutocomplete', () => {
       panelRect = panel.getBoundingClientRect();
 
       expect(Math.floor(inputRect.bottom))
-          .toEqual(Math.floor(panelRect.top), 'Expected panel to be below the input.');
+        .withContext('Expected panel to be below the input.').toEqual(Math.floor(panelRect.top));
       expect(panel.classList).not.toContain('mat-autocomplete-panel-above');
     }));
 
@@ -1968,7 +2050,7 @@ describe('MatAutocomplete', () => {
 
       const componentOptions = fixture.componentInstance.options.toArray();
       expect(componentOptions[0].selected)
-          .toBe(true, `Clicked option should be selected.`);
+        .withContext(`Clicked option should be selected.`).toBe(true);
 
       options =
           overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
@@ -1976,9 +2058,9 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(componentOptions[0].selected)
-          .toBe(false, `Previous option should not be selected.`);
+        .withContext(`Previous option should not be selected.`).toBe(false);
       expect(componentOptions[1].selected)
-          .toBe(true, `New Clicked option should be selected.`);
+        .withContext(`New Clicked option should be selected.`).toBe(true);
     }));
 
     it('should call deselect only on the previous selected option', fakeAsync(() => {
@@ -1996,7 +2078,7 @@ describe('MatAutocomplete', () => {
       componentOptions.forEach(option => spyOn(option, 'deselect'));
 
       expect(componentOptions[0].selected)
-          .toBe(true, `Clicked option should be selected.`);
+        .withContext(`Clicked option should be selected.`).toBe(true);
 
       options =
           overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
@@ -2015,7 +2097,7 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(overlayContainerElement.querySelectorAll('mat-option')[0].classList)
-          .toContain('mat-active', 'Expected first option to be highlighted.');
+        .withContext('Expected first option to be highlighted.').toContain('mat-active');
     }));
 
     it('should skip to the next enabled option if the first one is disabled ' +
@@ -2030,7 +2112,7 @@ describe('MatAutocomplete', () => {
         fixture.detectChanges();
 
         expect(overlayContainerElement.querySelectorAll('mat-option')[2].classList)
-            .toContain('mat-active', 'Expected third option to be highlighted.');
+          .withContext('Expected third option to be highlighted.').toContain('mat-active');
       }));
 
     it('should remove aria-activedescendant when panel is closed with autoActiveFirstOption',
@@ -2038,7 +2120,7 @@ describe('MatAutocomplete', () => {
         const input: HTMLElement = fixture.nativeElement.querySelector('input');
 
         expect(input.hasAttribute('aria-activedescendant'))
-            .toBe(false, 'Expected no active descendant on init.');
+          .withContext('Expected no active descendant on init.').toBe(false);
 
         fixture.componentInstance.trigger.autocomplete.autoActiveFirstOption = true;
         fixture.componentInstance.trigger.openPanel();
@@ -2047,13 +2129,14 @@ describe('MatAutocomplete', () => {
         fixture.detectChanges();
 
         expect(input.getAttribute('aria-activedescendant'))
-            .toBeTruthy('Expected active descendant while open.');
+          .withContext('Expected active descendant while open.')
+          .toBeTruthy();
 
         fixture.componentInstance.trigger.closePanel();
         fixture.detectChanges();
 
         expect(input.hasAttribute('aria-activedescendant'))
-            .toBe(false, 'Expected no active descendant when closed.');
+          .withContext('Expected no active descendant when closed.').toBe(false);
       }));
 
     it('should be able to configure preselecting the first option globally', fakeAsync(() => {
@@ -2071,7 +2154,7 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(overlayContainerElement.querySelectorAll('mat-option')[0].classList)
-          .toContain('mat-active', 'Expected first option to be highlighted.');
+        .withContext('Expected first option to be highlighted.').toContain('mat-active');
     }));
 
     it('should handle `optionSelections` being accessed too early', fakeAsync(() => {
@@ -2120,8 +2203,9 @@ describe('MatAutocomplete', () => {
       const panel = overlayContainerElement.querySelector('.mat-autocomplete-panel')!;
       const panelTop = panel.getBoundingClientRect().top;
 
-      expect(Math.floor(inputBottom)).toBe(Math.floor(panelTop),
-          `Expected panel top to match input bottom when there is only one option.`);
+      expect(Math.floor(inputBottom))
+        .withContext(`Expected panel top to match input bottom when there is only one option.`)
+        .toBe(Math.floor(panelTop));
 
       clearElement(input);
       fixture.detectChanges();
@@ -2131,8 +2215,9 @@ describe('MatAutocomplete', () => {
       const inputTop = inputReference.getBoundingClientRect().top;
       const panelBottom = panel.getBoundingClientRect().bottom;
 
-      expect(Math.floor(inputTop)).toBe(Math.floor(panelBottom),
-          `Expected panel switch to the above position if the options no longer fit.`);
+      expect(Math.floor(inputTop))
+        .withContext(`Expected panel switch to the above position if the options no longer fit.`)
+        .toBe(Math.floor(panelBottom));
     }));
 
   });
@@ -2302,11 +2387,11 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.trigger.panelOpen)
-          .toBe(true, `Expected panel state to read open when input is focused.`);
+        .withContext(`Expected panel state to read open when input is focused.`).toBe(true);
       expect(overlayContainerElement.textContent)
-          .toContain('One', `Expected panel to display when input is focused.`);
+        .withContext(`Expected panel to display when input is focused.`).toContain('One');
       expect(overlayContainerElement.textContent)
-          .toContain('Two', `Expected panel to display when input is focused.`);
+        .withContext(`Expected panel to display when input is focused.`).toContain('Two');
     });
 
     it('should filter properly with ngIf after setting the active item', () => {
@@ -2424,12 +2509,14 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
       zone.simulateZoneExit();
 
-      expect(trigger.panelOpen).toBe(true, 'Expected panel to be open.');
+      expect(trigger.panelOpen)
+        .withContext('Expected panel to be open.').toBe(true);
 
       scrolledSubject.next();
       fixture.detectChanges();
 
-      expect(trigger.panelOpen).toBe(false, 'Expected panel to be closed.');
+      expect(trigger.panelOpen)
+        .withContext('Expected panel to be closed.').toBe(false);
     }));
 
     it('should handle autocomplete being attached to number inputs', fakeAsync(() => {
@@ -2519,12 +2606,14 @@ describe('MatAutocomplete', () => {
     input.focus();
     fixture.detectChanges();
 
-    expect(trigger.panelOpen).toBe(true, 'Expected panel to be open.');
+    expect(trigger.panelOpen)
+      .withContext('Expected panel to be open.').toBe(true);
 
     trigger.closePanel();
     fixture.detectChanges();
 
-    expect(trigger.panelOpen).toBe(false, 'Expected panel to be closed.');
+    expect(trigger.panelOpen)
+      .withContext('Expected panel to be closed.').toBe(false);
 
     // Simulate the user going to a different tab.
     dispatchFakeEvent(window, 'blur');
@@ -2536,7 +2625,8 @@ describe('MatAutocomplete', () => {
     input.focus();
     fixture.detectChanges();
 
-    expect(trigger.panelOpen).toBe(false, 'Expected panel to remain closed.');
+    expect(trigger.panelOpen)
+      .withContext('Expected panel to remain closed.').toBe(false);
   });
 
   it('should update the panel width if the window is resized', fakeAsync(() => {
@@ -2622,7 +2712,8 @@ describe('MatAutocomplete', () => {
         const visibleClass = 'mat-autocomplete-visible';
 
         fixture.detectChanges();
-        expect(panel.classList).toContain(visibleClass, `Expected panel to be visible.`);
+        expect(panel.classList)
+          .withContext(`Expected panel to be visible.`).toContain(visibleClass);
       });
     }));
 
@@ -2721,8 +2812,9 @@ describe('MatAutocomplete', () => {
         overlayContainerElement.querySelector('.cdk-overlay-pane')!.getBoundingClientRect();
     const originRect = fixture.nativeElement.querySelector('.origin').getBoundingClientRect();
 
-    expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.bottom),
-        'Expected autocomplete panel to align with the bottom of the new origin.');
+    expect(Math.floor(overlayRect.top))
+      .withContext('Expected autocomplete panel to align with the bottom of the new origin.')
+      .toBe(Math.floor(originRect.bottom));
   });
 
   it('should be able to change the origin after the panel has been opened', () => {
@@ -2747,8 +2839,9 @@ describe('MatAutocomplete', () => {
         overlayContainerElement.querySelector('.cdk-overlay-pane')!.getBoundingClientRect();
     const originRect = fixture.nativeElement.querySelector('.origin').getBoundingClientRect();
 
-    expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.bottom),
-        'Expected autocomplete panel to align with the bottom of the new origin.');
+    expect(Math.floor(overlayRect.top))
+      .withContext('Expected autocomplete panel to align with the bottom of the new origin.')
+      .toBe(Math.floor(originRect.bottom));
   });
 
   it('should be able to re-type the same value when it is reset while open', fakeAsync(() => {
@@ -2762,19 +2855,22 @@ describe('MatAutocomplete', () => {
     tick();
     fixture.detectChanges();
 
-    expect(formControl.value).toBe('Cal', 'Expected initial value to be propagated to model');
+    expect(formControl.value)
+      .withContext('Expected initial value to be propagated to model').toBe('Cal');
 
     formControl.setValue('');
     fixture.detectChanges();
 
-    expect(input.value).toBe('', 'Expected input value to reset when model is reset');
+    expect(input.value)
+      .withContext('Expected input value to reset when model is reset').toBe('');
 
     typeInElement(input, 'Cal');
     fixture.detectChanges();
     tick();
     fixture.detectChanges();
 
-    expect(formControl.value).toBe('Cal', 'Expected new value to be propagated to model');
+    expect(formControl.value)
+      .withContext('Expected new value to be propagated to model').toBe('Cal');
   }));
 
   it('should not close when clicking inside alternate origin', () => {

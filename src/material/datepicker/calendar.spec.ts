@@ -360,13 +360,13 @@ describe('MatCalendar', () => {
       let prevButton =
           calendarElement.querySelector('.mat-calendar-previous-button') as HTMLButtonElement;
 
-      expect(prevButton.disabled).toBe(false, 'previous button should not be disabled');
+      expect(prevButton.disabled).withContext('previous button should not be disabled').toBe(false);
       expect(calendarInstance.activeDate).toEqual(new Date(2016, FEB, 1));
 
       prevButton.click();
       fixture.detectChanges();
 
-      expect(prevButton.disabled).toBe(true, 'previous button should be disabled');
+      expect(prevButton.disabled).withContext('previous button should be disabled').toBe(true);
       expect(calendarInstance.activeDate).toEqual(new Date(2016, JAN, 1));
 
       prevButton.click();
@@ -382,13 +382,13 @@ describe('MatCalendar', () => {
       let nextButton =
           calendarElement.querySelector('.mat-calendar-next-button') as HTMLButtonElement;
 
-      expect(nextButton.disabled).toBe(false, 'next button should not be disabled');
+      expect(nextButton.disabled).withContext('next button should not be disabled').toBe(false);
       expect(calendarInstance.activeDate).toEqual(new Date(2017, DEC, 1));
 
       nextButton.click();
       fixture.detectChanges();
 
-      expect(nextButton.disabled).toBe(true, 'next button should be disabled');
+      expect(nextButton.disabled).withContext('next button should be disabled').toBe(true);
       expect(calendarInstance.activeDate).toEqual(new Date(2018, JAN, 1));
 
       nextButton.click();
@@ -497,20 +497,20 @@ describe('MatCalendar', () => {
       let cells = Array.from(calendarElement.querySelectorAll('.mat-calendar-body-cell'));
 
       expect(cells.slice(0, 9).every(c => c.classList.contains(disabledClass)))
-          .toBe(true, 'Expected dates up to the 10th to be disabled.');
+        .withContext('Expected dates up to the 10th to be disabled.').toBe(true);
 
       expect(cells.slice(9).every(c => c.classList.contains(disabledClass)))
-          .toBe(false, 'Expected dates after the 10th to be enabled.');
+        .withContext('Expected dates after the 10th to be enabled.').toBe(false);
 
       (cells[14] as HTMLElement).click();
       dynamicFixture.detectChanges();
       cells = Array.from(calendarElement.querySelectorAll('.mat-calendar-body-cell'));
 
       expect(cells.slice(0, 14).every(c => c.classList.contains(disabledClass)))
-          .toBe(true, 'Expected dates up to the 14th to be disabled.');
+        .withContext('Expected dates up to the 14th to be disabled.').toBe(true);
 
       expect(cells.slice(14).every(c => c.classList.contains(disabledClass)))
-          .toBe(false, 'Expected dates after the 14th to be enabled.');
+        .withContext('Expected dates after the 14th to be enabled.').toBe(false);
     });
 
   });

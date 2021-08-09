@@ -49,8 +49,9 @@ describe('FocusTrap', () => {
       const result = focusTrapInstance.focusFirstTabbableElement();
 
       expect(getActiveElement().nodeName.toLowerCase())
-          .toBe('input', 'Expected input element to be focused');
-      expect(result).toBe(true, 'Expected return value to be true if focus was shifted.');
+        .withContext('Expected input element to be focused').toBe('input');
+      expect(result)
+        .withContext('Expected return value to be true if focus was shifted.').toBe(true);
     });
 
     it('should wrap focus from start to end', () => {
@@ -63,9 +64,10 @@ describe('FocusTrap', () => {
       const lastElement = platform.IOS ? 'input' : 'button';
 
       expect(getActiveElement().nodeName.toLowerCase())
-          .toBe(lastElement, `Expected ${lastElement} element to be focused`);
+        .withContext(`Expected ${lastElement} element to be focused`).toBe(lastElement);
 
-      expect(result).toBe(true, 'Expected return value to be true if focus was shifted.');
+      expect(result)
+        .withContext('Expected return value to be true if focus was shifted.').toBe(true);
     });
 
     it('should return false if it did not manage to find a focusable element', () => {
@@ -303,18 +305,18 @@ describe('FocusTrap', () => {
     const outlet: HTMLElement = fixture.nativeElement.querySelector('.portal-outlet');
 
     expect(outlet.querySelectorAll('button').length)
-      .toBe(0, 'Expected no buttons inside the outlet on init.');
+      .withContext('Expected no buttons inside the outlet on init.').toBe(0);
     expect(outlet.querySelectorAll('.cdk-focus-trap-anchor').length)
-      .toBe(0, 'Expected no focus trap anchors inside the outlet on init.');
+      .withContext('Expected no focus trap anchors inside the outlet on init.').toBe(0);
 
     const portal = new TemplatePortal(instance.template, instance.viewContainerRef);
     instance.portalOutlet.attachTemplatePortal(portal);
     fixture.detectChanges();
 
     expect(outlet.querySelectorAll('button').length)
-      .toBe(1, 'Expected one button inside the outlet after attaching.');
+      .withContext('Expected one button inside the outlet after attaching.').toBe(1);
     expect(outlet.querySelectorAll('.cdk-focus-trap-anchor').length)
-      .toBe(2, 'Expected two focus trap anchors in the outlet after attaching.');
+      .withContext('Expected two focus trap anchors in the outlet after attaching.').toBe(2);
   });
 });
 

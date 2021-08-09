@@ -254,9 +254,9 @@ describe('MatRipple', () => {
 
       expect(rippleElement).toBeTruthy();
       expect(parseFloat(rippleElement.style.left as string))
-          .toBeCloseTo(TARGET_WIDTH / 2 - radius, 1);
+        .toBeCloseTo(TARGET_WIDTH / 2 - radius, 1);
       expect(parseFloat(rippleElement.style.top as string))
-          .toBeCloseTo(TARGET_HEIGHT / 2 - radius, 1);
+        .toBeCloseTo(TARGET_HEIGHT / 2 - radius, 1);
     });
 
     it('cleans up the event handlers when the container gets destroyed', () => {
@@ -416,7 +416,7 @@ describe('MatRipple', () => {
       tick(exitDuration);
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
-        .toBe(0, 'Expected no ripples to be active after calling fadeOutAll.');
+        .withContext('Expected no ripples to be active after calling fadeOutAll.').toBe(0);
     }));
 
    it('should properly set ripple states', fakeAsync(() => {

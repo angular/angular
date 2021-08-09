@@ -148,7 +148,7 @@ describe('LuxonDateAdapter', () => {
 
   it("should get today's date", () => {
     expect(adapter.sameDate(adapter.today(), DateTime.local()))
-        .toBe(true, "should be equal to today's date");
+      .withContext("should be equal to today's date").toBe(true);
   });
 
   it('should parse string according to given format', () => {
@@ -195,7 +195,7 @@ describe('LuxonDateAdapter', () => {
     expect(d).not.toBeNull();
     expect(adapter.isDateInstance(d)).toBe(true);
     expect(adapter.isValid(d as DateTime))
-        .toBe(false, 'Expected to parse as "invalid date" object');
+      .withContext('Expected to parse as "invalid date" object').toBe(false);
   });
 
   it('should format date according to given format', () => {
@@ -478,8 +478,8 @@ function stripDirectionalityCharacters(str: string) {
 }
 
 function assertValidDate(adapter: DateAdapter<DateTime>, d: DateTime | null, valid: boolean) {
-  expect(adapter.isDateInstance(d)).not.toBeNull(`Expected ${d} to be a date instance`);
-  expect(adapter.isValid(d!)).toBe(valid,
-      `Expected ${d} to be ${valid ? 'valid' : 'invalid'},` +
-      ` but was ${valid ? 'invalid' : 'valid'}`);
+  expect(adapter.isDateInstance(d)).not
+    .withContext(`Expected ${d} to be a date instance`).toBeNull();
+  expect(adapter.isValid(d!)).withContext(`Expected ${d} to be ${valid ? 'valid' : 'invalid'},` +
+    ` but was ${valid ? 'invalid' : 'valid'}`).toBe(valid);
 }

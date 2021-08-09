@@ -10,10 +10,12 @@ function expectOverlapping(el1: ElementRef<Element>, el2: ElementRef<Element>, e
       r1.left < r2.right && r1.right > r2.left && r1.top < r2.bottom && r1.bottom > r2.top;
   if (expected) {
     expect(actual)
-        .toBe(expected, `${JSON.stringify(r1)} should overlap with ${JSON.stringify(r2)}`);
+      .withContext(`${JSON.stringify(r1)} should overlap with ${JSON.stringify(r2)}`)
+      .toBe(expected);
   } else {
     expect(actual)
-        .toBe(expected, `${JSON.stringify(r1)} should not overlap with ${JSON.stringify(r2)}`);
+      .withContext(`${JSON.stringify(r1)} should not overlap with ${JSON.stringify(r2)}`)
+      .toBe(expected);
   }
 }
 

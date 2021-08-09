@@ -135,19 +135,23 @@ describe('MDC-based MatPaginator', () => {
   it('should be able to show the first/last buttons', () => {
     const fixture = createComponent(MatPaginatorApp);
     expect(getFirstButton(fixture))
-        .toBeNull('Expected first button to not exist.');
+      .withContext('Expected first button to not exist.')
+      .toBeNull();
 
     expect(getLastButton(fixture))
-        .toBeNull('Expected last button to not exist.');
+      .withContext('Expected last button to not exist.')
+      .toBeNull();
 
     fixture.componentInstance.showFirstLastButtons = true;
     fixture.detectChanges();
 
     expect(getFirstButton(fixture))
-        .toBeTruthy('Expected first button to be rendered.');
+      .withContext('Expected first button to be rendered.')
+      .toBeTruthy();
 
     expect(getLastButton(fixture))
-        .toBeTruthy('Expected last button to be rendered.');
+      .withContext('Expected last button to be rendered.')
+      .toBeTruthy();
   });
 
   it('should mark itself as initialized', fakeAsync(() => {
@@ -419,13 +423,15 @@ describe('MDC-based MatPaginator', () => {
     const element = fixture.nativeElement;
 
     expect(element.querySelector('.mat-mdc-paginator-page-size'))
-        .toBeTruthy('Expected select to be rendered.');
+      .withContext('Expected select to be rendered.')
+      .toBeTruthy();
 
     fixture.componentInstance.hidePageSize = true;
     fixture.detectChanges();
 
     expect(element.querySelector('.mat-mdc-paginator-page-size'))
-        .toBeNull('Expected select to be removed.');
+      .withContext('Expected select to be removed.')
+      .toBeNull();
   });
 
   it('should be able to disable all the controls in the paginator via the binding', () => {

@@ -216,11 +216,13 @@ describe('MatChip', () => {
       });
 
       it('should be able to disable ripples through ripple global options at runtime', () => {
-        expect(chipInstance.rippleDisabled).toBe(false, 'Expected chip ripples to be enabled.');
+        expect(chipInstance.rippleDisabled)
+          .withContext('Expected chip ripples to be enabled.').toBe(false);
 
         globalRippleOptions.disabled = true;
 
-        expect(chipInstance.rippleDisabled).toBe(true, 'Expected chip ripples to be disabled.');
+        expect(chipInstance.rippleDisabled)
+          .withContext('Expected chip ripples to be disabled.').toBe(true);
       });
 
       it('should return the chip text if value is undefined', () => {

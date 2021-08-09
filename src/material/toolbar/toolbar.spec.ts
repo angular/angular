@@ -51,8 +51,9 @@ describe('MatToolbar', () => {
     });
 
     it('should not wrap the first row contents inside of a generated element', () => {
-      expect(toolbarElement.firstElementChild!.tagName).toBe('SPAN',
-          'Expected the <span> element of the first row to be a direct child of the toolbar');
+      expect(toolbarElement.firstElementChild!.tagName)
+        .withContext('Expected the <span> element of the first row to be a direct child ' +
+                     'of the toolbar').toBe('SPAN');
     });
   });
 
@@ -63,7 +64,8 @@ describe('MatToolbar', () => {
       fixture.detectChanges();
 
       expect(fixture.debugElement.queryAll(By.css('.mat-toolbar > .mat-toolbar-row')).length)
-        .toBe(2, 'Expected one toolbar row to be present while no content is projected.');
+        .withContext('Expected one toolbar row to be present while no content is projected.')
+        .toBe(2);
     });
 
     it('should throw an error if different toolbar modes are mixed', () => {

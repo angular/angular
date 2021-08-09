@@ -124,15 +124,15 @@ describe('MatButtonToggle with forms', () => {
     });
 
     it('should update the name of radio DOM elements if the name of the group changes', () => {
-       expect(innerButtons.every(button => button.getAttribute('name') === groupInstance.name))
-          .toBe(true, 'Expected all buttons to have the initial name.');
+      expect(innerButtons.every(button => button.getAttribute('name') === groupInstance.name))
+        .withContext('Expected all buttons to have the initial name.').toBe(true);
 
-       fixture.componentInstance.groupName = 'changed-name';
+      fixture.componentInstance.groupName = 'changed-name';
       fixture.detectChanges();
 
-       expect(groupInstance.name).toBe('changed-name');
+      expect(groupInstance.name).toBe('changed-name');
       expect(innerButtons.every(button => button.getAttribute('name') === groupInstance.name))
-          .toBe(true, 'Expected all buttons to have the new name.');
+        .withContext('Expected all buttons to have the new name.').toBe(true);
     });
 
     it('should check the corresponding button toggle on a group value change', () => {

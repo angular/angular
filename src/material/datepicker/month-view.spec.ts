@@ -423,13 +423,14 @@ describe('MatMonthView', () => {
             fixture.detectChanges();
 
             expect(getRangeElements().length)
-            .toBeGreaterThan(0, 'Expected range to be present on init.');
+              .withContext('Expected range to be present on init.').toBeGreaterThan(0);
 
             dispatchKeyboardEvent(calendarBodyEl, 'keydown', ESCAPE);
             fixture.detectChanges();
 
             expect(getRangeElements().length)
-            .toBeGreaterThan(0, 'Expected range to be present after pressing the escape key.');
+              .withContext('Expected range to be present after pressing the escape key.')
+              .toBeGreaterThan(0);
           });
 
           it('should not fire the selected change event when clicking on an already-selected ' +

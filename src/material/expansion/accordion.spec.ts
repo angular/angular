@@ -134,13 +134,15 @@ describe('MatAccordion', () => {
     fixture.detectChanges();
 
     expect(panel.nativeElement.querySelector('.mat-expansion-indicator'))
-      .toBeTruthy('Expected the expansion indicator to be present.');
+      .withContext('Expected the expansion indicator to be present.')
+      .toBeTruthy();
 
     fixture.componentInstance.hideToggle = true;
     fixture.detectChanges();
 
     expect(panel.nativeElement.querySelector('.mat-expansion-indicator'))
-      .toBeFalsy('Expected the expansion indicator to be removed.');
+      .withContext('Expected the expansion indicator to be removed.')
+      .toBeFalsy();
   });
 
   it('should update the expansion panel if togglePosition changed', () => {
@@ -150,13 +152,15 @@ describe('MatAccordion', () => {
     fixture.detectChanges();
 
     expect(panel.nativeElement.querySelector('.mat-expansion-toggle-indicator-after'))
-      .toBeTruthy('Expected the expansion indicator to be positioned after.');
+      .withContext('Expected the expansion indicator to be positioned after.')
+      .toBeTruthy();
 
     fixture.componentInstance.togglePosition = 'before';
     fixture.detectChanges();
 
     expect(panel.nativeElement.querySelector('.mat-expansion-toggle-indicator-before'))
-      .toBeTruthy('Expected the expansion indicator to be positioned before.');
+      .withContext('Expected the expansion indicator to be positioned before.')
+      .toBeTruthy();
   });
 
   it('should move focus to the next header when pressing the down arrow', () => {

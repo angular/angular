@@ -112,13 +112,13 @@ describe('MDC-based MatChipInput', () => {
       fixture.detectChanges();
 
       expect(gridElement.getAttribute('tabindex'))
-        .toBe('-1', 'Expected tabIndex to be set to -1 temporarily.');
+        .withContext('Expected tabIndex to be set to -1 temporarily.').toBe('-1');
 
       tick();
       fixture.detectChanges();
 
       expect(gridElement.getAttribute('tabindex'))
-        .toBe('0', 'Expected tabIndex to be reset back to 0');
+        .withContext('Expected tabIndex to be reset back to 0').toBe('0');
     }));
 
     it('should not allow focus to escape when tabbing backwards', fakeAsync(() => {
@@ -129,12 +129,14 @@ describe('MDC-based MatChipInput', () => {
       dispatchKeyboardEvent(inputNativeElement, 'keydown', TAB, undefined, {shift: true});
       fixture.detectChanges();
 
-      expect(gridElement.getAttribute('tabindex')).toBe('0', 'Expected tabindex to remain 0');
+      expect(gridElement.getAttribute('tabindex'))
+        .withContext('Expected tabindex to remain 0').toBe('0');
 
       tick();
       fixture.detectChanges();
 
-      expect(gridElement.getAttribute('tabindex')).toBe('0', 'Expected tabindex to remain 0');
+      expect(gridElement.getAttribute('tabindex'))
+        .withContext('Expected tabindex to remain 0').toBe('0');
     }));
 
     it('should set input styling classes', () => {

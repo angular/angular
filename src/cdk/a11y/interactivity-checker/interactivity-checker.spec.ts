@@ -28,7 +28,7 @@ describe('InteractivityChecker', () => {
 
       elements.forEach(el => {
         expect(checker.isDisabled(el))
-            .toBe(true, `Expected <${el.nodeName} disabled> to be disabled`);
+          .withContext(`Expected <${el.nodeName} disabled> to be disabled`).toBe(true);
       });
     });
 
@@ -38,7 +38,7 @@ describe('InteractivityChecker', () => {
 
       elements.forEach(el => {
         expect(checker.isDisabled(el))
-            .toBe(false, `Expected <${el.nodeName}> not to be disabled`);
+          .withContext(`Expected <${el.nodeName}> not to be disabled`).toBe(false);
       });
     });
   });
@@ -50,7 +50,7 @@ describe('InteractivityChecker', () => {
       const input = testContainerElement.querySelector('input') as HTMLElement;
 
       expect(checker.isVisible(input))
-          .toBe(false, 'Expected element with `display: none` to not be visible');
+        .withContext('Expected element with `display: none` to not be visible').toBe(false);
     });
 
     it('should return false for the child of a `display: none` element', () => {
@@ -61,7 +61,7 @@ describe('InteractivityChecker', () => {
       const input = testContainerElement.querySelector('input') as HTMLElement;
 
       expect(checker.isVisible(input))
-          .toBe(false, 'Expected element with `display: none` parent to not be visible');
+        .withContext('Expected element with `display: none` parent to not be visible').toBe(false);
     });
 
     it('should return false for a `visibility: hidden` element', () => {
@@ -70,7 +70,7 @@ describe('InteractivityChecker', () => {
       const input = testContainerElement.querySelector('input') as HTMLElement;
 
       expect(checker.isVisible(input))
-          .toBe(false, 'Expected element with `visibility: hidden` to not be visible');
+        .withContext('Expected element with `visibility: hidden` to not be visible').toBe(false);
     });
 
     it('should return false for the child of a `visibility: hidden` element', () => {
@@ -81,7 +81,8 @@ describe('InteractivityChecker', () => {
       const input = testContainerElement.querySelector('input') as HTMLElement;
 
       expect(checker.isVisible(input))
-          .toBe(false, 'Expected element with `visibility: hidden` parent to not be visible');
+        .withContext('Expected element with `visibility: hidden` parent to not be visible')
+        .toBe(false);
     });
 
     it('should return true for an element with `visibility: hidden` ancestor and *closer* ' +
@@ -95,8 +96,8 @@ describe('InteractivityChecker', () => {
       const input = testContainerElement.querySelector('input') as HTMLElement;
 
       expect(checker.isVisible(input))
-          .toBe(true, 'Expected element with `visibility: hidden` ancestor and closer ' +
-              '`visibility: visible` ancestor to be visible');
+        .withContext('Expected element with `visibility: hidden` ancestor and closer ' +
+    '`visibility: visible` ancestor to be visible').toBe(true);
     });
 
     it('should return true for an element without visibility modifiers', () => {
@@ -104,7 +105,7 @@ describe('InteractivityChecker', () => {
       testContainerElement.appendChild(input);
 
       expect(checker.isVisible(input))
-          .toBe(true, 'Expected element without visibility modifiers to be visible');
+        .withContext('Expected element without visibility modifiers to be visible').toBe(true);
     });
   });
 
@@ -114,7 +115,8 @@ describe('InteractivityChecker', () => {
       appendElements(elements);
 
       elements.forEach(el => {
-        expect(checker.isFocusable(el)).toBe(true, `Expected <${el.nodeName}> to be focusable`);
+        expect(checker.isFocusable(el))
+          .withContext(`Expected <${el.nodeName}> to be focusable`).toBe(true);
       });
     });
 
@@ -123,7 +125,8 @@ describe('InteractivityChecker', () => {
       anchor.href = 'google.com';
       testContainerElement.appendChild(anchor);
 
-      expect(checker.isFocusable(anchor)).toBe(true, `Expected <a> with href to be focusable`);
+      expect(checker.isFocusable(anchor))
+        .withContext(`Expected <a> with href to be focusable`).toBe(true);
     });
 
     it('should return false for an anchor without an href', () => {
@@ -131,7 +134,7 @@ describe('InteractivityChecker', () => {
       testContainerElement.appendChild(anchor);
 
       expect(checker.isFocusable(anchor))
-          .toBe(false, `Expected <a> without href not to be focusable`);
+        .withContext(`Expected <a> without href not to be focusable`).toBe(false);
     });
 
     it('should return false for disabled form controls', () => {
@@ -141,7 +144,7 @@ describe('InteractivityChecker', () => {
 
       elements.forEach(el => {
         expect(checker.isFocusable(el))
-            .toBe(false, `Expected <${el.nodeName} disabled> not to be focusable`);
+          .withContext(`Expected <${el.nodeName} disabled> not to be focusable`).toBe(false);
       });
     });
 
@@ -151,7 +154,7 @@ describe('InteractivityChecker', () => {
       const input = testContainerElement.querySelector('input') as HTMLElement;
 
       expect(checker.isFocusable(input))
-          .toBe(false, 'Expected element with `display: none` to not be visible');
+        .withContext('Expected element with `display: none` to not be visible').toBe(false);
     });
 
     it('should return true for a `display: none` element with ignoreVisibility', () => {
@@ -162,7 +165,7 @@ describe('InteractivityChecker', () => {
       config.ignoreVisibility = true;
 
       expect(checker.isFocusable(input, config))
-          .toBe(true, 'Expected element with `display: none` to be focusable');
+        .withContext('Expected element with `display: none` to be focusable').toBe(true);
     });
 
     it('should return false for the child of a `display: none` element', () => {
@@ -173,7 +176,7 @@ describe('InteractivityChecker', () => {
       const input = testContainerElement.querySelector('input') as HTMLElement;
 
       expect(checker.isFocusable(input))
-          .toBe(false, 'Expected element with `display: none` parent to not be visible');
+        .withContext('Expected element with `display: none` parent to not be visible').toBe(false);
     });
 
     it('should return false for a `visibility: hidden` element', () => {
@@ -182,7 +185,7 @@ describe('InteractivityChecker', () => {
       const input = testContainerElement.querySelector('input') as HTMLElement;
 
       expect(checker.isFocusable(input))
-          .toBe(false, 'Expected element with `visibility: hidden` not to be focusable');
+        .withContext('Expected element with `visibility: hidden` not to be focusable').toBe(false);
     });
 
     it('should return false for the child of a `visibility: hidden` element', () => {
@@ -193,7 +196,8 @@ describe('InteractivityChecker', () => {
       const input = testContainerElement.querySelector('input') as HTMLElement;
 
       expect(checker.isFocusable(input))
-          .toBe(false, 'Expected element with `visibility: hidden` parent not to be focusable');
+        .withContext('Expected element with `visibility: hidden` parent not to be focusable')
+        .toBe(false);
     });
 
     it('should return true for an element with `visibility: hidden` ancestor and *closer* ' +
@@ -207,8 +211,8 @@ describe('InteractivityChecker', () => {
       const input = testContainerElement.querySelector('input') as HTMLElement;
 
       expect(checker.isFocusable(input))
-          .toBe(true, 'Expected element with `visibility: hidden` ancestor and closer ' +
-              '`visibility: visible` ancestor to be focusable');
+        .withContext('Expected element with `visibility: hidden` ancestor and closer ' +
+    '`visibility: visible` ancestor to be focusable').toBe(true);
     });
 
     it('should return false for an element with an empty tabindex', () => {
@@ -217,7 +221,7 @@ describe('InteractivityChecker', () => {
       testContainerElement.appendChild(element);
 
       expect(checker.isFocusable(element))
-          .toBe(false, `Expected element with tabindex="" not to be focusable`);
+        .withContext(`Expected element with tabindex="" not to be focusable`).toBe(false);
     });
 
     it('should return false for an element with a non-numeric tabindex', () => {
@@ -226,7 +230,7 @@ describe('InteractivityChecker', () => {
       testContainerElement.appendChild(element);
 
       expect(checker.isFocusable(element))
-          .toBe(false, `Expected element with non-numeric tabindex not to be focusable`);
+        .withContext(`Expected element with non-numeric tabindex not to be focusable`).toBe(false);
     });
 
     it('should return true for an element with contenteditable', () => {
@@ -235,7 +239,7 @@ describe('InteractivityChecker', () => {
       testContainerElement.appendChild(element);
 
       expect(checker.isFocusable(element))
-          .toBe(true, `Expected element with contenteditable to be focusable`);
+        .withContext(`Expected element with contenteditable to be focusable`).toBe(true);
     });
 
 
@@ -245,7 +249,7 @@ describe('InteractivityChecker', () => {
 
       elements.forEach(el => {
         expect(checker.isFocusable(el))
-            .toBe(false, `Expected <${el.nodeName}> not to be focusable`);
+          .withContext(`Expected <${el.nodeName}> not to be focusable`).toBe(false);
       });
     });
 
@@ -307,7 +311,8 @@ describe('InteractivityChecker', () => {
         appendElements(elements);
 
         elements.forEach(el => {
-          expect(checker.isTabbable(el)).toBe(true, `Expected <${el.nodeName}> to be tabbable`);
+          expect(checker.isTabbable(el))
+            .withContext(`Expected <${el.nodeName}> to be tabbable`).toBe(true);
         });
       });
 
@@ -323,7 +328,7 @@ describe('InteractivityChecker', () => {
 
         elements.forEach(el => {
           expect(checker.isFocusable(el))
-            .toBe(true, `Expected <${el.nodeName} tabindex="0"> to be focusable`);
+            .withContext(`Expected <${el.nodeName} tabindex="0"> to be focusable`).toBe(true);
         });
       });
 
@@ -339,7 +344,7 @@ describe('InteractivityChecker', () => {
 
         elements.forEach(el => {
           expect(checker.isTabbable(el))
-            .toBe(false, `Expected <${el.nodeName} tabindex="-1"> not to be tabbable`);
+            .withContext(`Expected <${el.nodeName} tabindex="-1"> not to be tabbable`).toBe(false);
         });
       });
 
@@ -355,7 +360,7 @@ describe('InteractivityChecker', () => {
 
         elements.forEach(el => {
           expect(checker.isTabbable(el))
-            .toBe(true, `Expected <${el.nodeName} tabindex="0"> to be tabbable`);
+            .withContext(`Expected <${el.nodeName} tabindex="0"> to be tabbable`).toBe(true);
         });
       });
 

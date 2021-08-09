@@ -405,8 +405,9 @@ describe('FlexibleConnectedPositionStrategy', () => {
         positionStrategy.reapplyLastPosition();
 
         const overlayRect = overlayRef.overlayElement.getBoundingClientRect();
-        expect(Math.floor(overlayRect.bottom)).toBe(Math.floor(originRect.top),
-            'Expected overlay to be re-aligned to the trigger in the previous position.');
+        expect(Math.floor(overlayRect.bottom))
+          .withContext('Expected overlay to be re-aligned to the trigger in the previous position.')
+          .toBe(Math.floor(originRect.top));
       });
 
       it('should default to the initial position, if no positions fit in the viewport', () => {
@@ -427,8 +428,9 @@ describe('FlexibleConnectedPositionStrategy', () => {
         positionStrategy.reapplyLastPosition();
 
         const overlayRect = overlayRef.overlayElement.getBoundingClientRect();
-        expect(Math.floor(overlayRect.bottom)).toBe(Math.floor(originRect.top),
-            'Expected overlay to be re-aligned to the trigger in the initial position.');
+        expect(Math.floor(overlayRect.bottom))
+          .withContext('Expected overlay to be re-aligned to the trigger in the initial position.')
+          .toBe(Math.floor(originRect.top));
       });
 
       it('should position a panel properly when rtl', () => {
@@ -878,7 +880,8 @@ describe('FlexibleConnectedPositionStrategy', () => {
 
       expect(positionChangeHandler).toHaveBeenCalled();
       expect(latestCall.args[0] instanceof ConnectedOverlayPositionChange)
-          .toBe(true, `Expected strategy to emit an instance of ConnectedOverlayPositionChange.`);
+        .withContext(`Expected strategy to emit an instance of ConnectedOverlayPositionChange.`)
+        .toBe(true);
 
       // If the strategy is re-applied and the initial position would now fit,
       // the position change event should be emitted again.
@@ -1371,7 +1374,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
 
         let overlayRect = overlayRef.overlayElement.getBoundingClientRect();
         expect(Math.floor(overlayRect.top))
-            .toBe(0, 'Expected overlay to be in the viewport initially.');
+          .withContext('Expected overlay to be in the viewport initially.').toBe(0);
 
         window.scroll(0, 100);
         overlayRef.updatePosition();
@@ -1379,7 +1382,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
 
         overlayRect = overlayRef.overlayElement.getBoundingClientRect();
         expect(Math.floor(overlayRect.top))
-            .toBe(0, 'Expected overlay to stay in the viewport after scrolling.');
+          .withContext('Expected overlay to stay in the viewport after scrolling.').toBe(0);
 
         window.scroll(0, 0);
         document.body.removeChild(veryLargeElement);
@@ -1411,7 +1414,8 @@ describe('FlexibleConnectedPositionStrategy', () => {
         const scrollBy = 100;
         let initialOverlayTop = Math.floor(overlayRef.overlayElement.getBoundingClientRect().top);
 
-        expect(initialOverlayTop).toBe(0, 'Expected overlay to be inside the viewport initially.');
+        expect(initialOverlayTop)
+          .withContext('Expected overlay to be inside the viewport initially.').toBe(0);
 
         window.scroll(0, scrollBy);
         overlayRef.updatePosition();
@@ -1419,10 +1423,12 @@ describe('FlexibleConnectedPositionStrategy', () => {
 
         let currentOverlayTop = Math.floor(overlayRef.overlayElement.getBoundingClientRect().top);
 
-        expect(currentOverlayTop).toBeLessThan(0,
-            'Expected overlay to no longer be completely inside the viewport.');
-        expect(currentOverlayTop).toBe(initialOverlayTop - scrollBy,
-            'Expected overlay to maintain its previous position.');
+        expect(currentOverlayTop)
+          .withContext('Expected overlay to no longer be completely inside the viewport.')
+          .toBeLessThan(0);
+        expect(currentOverlayTop)
+          .withContext('Expected overlay to maintain its previous position.')
+          .toBe(initialOverlayTop - scrollBy);
 
         window.scroll(0, 0);
         document.body.removeChild(veryLargeElement);

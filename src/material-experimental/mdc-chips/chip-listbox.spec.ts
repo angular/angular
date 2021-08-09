@@ -116,9 +116,12 @@ describe('MDC-based MatChipListbox', () => {
       it('should not override chips selected', () => {
         const instanceChips = fixture.componentInstance.chips.toArray();
 
-        expect(instanceChips[0].selected).toBe(true, 'Expected first option to be selected.');
-        expect(instanceChips[1].selected).toBe(false, 'Expected second option to be not selected.');
-        expect(instanceChips[2].selected).toBe(true, 'Expected third option to be selected.');
+        expect(instanceChips[0].selected)
+          .withContext('Expected first option to be selected.').toBe(true);
+        expect(instanceChips[1].selected)
+          .withContext('Expected second option to be not selected.').toBe(false);
+        expect(instanceChips[2].selected)
+          .withContext('Expected third option to be selected.').toBe(true);
       });
 
       it('should have role listbox', () => {
@@ -129,7 +132,8 @@ describe('MDC-based MatChipListbox', () => {
         fixture.componentInstance.foods = [];
         fixture.detectChanges();
 
-        expect(chipListboxNativeElement.getAttribute('role')).toBeNull('Expect no role attribute');
+        expect(chipListboxNativeElement.getAttribute('role'))
+          .withContext('Expect no role attribute').toBeNull();
       });
     });
 
@@ -159,7 +163,8 @@ describe('MDC-based MatChipListbox', () => {
       });
 
       it('should not be able to become focused when disabled', () => {
-        expect(chipListboxInstance.focused).toBe(false, 'Expected listbox to not be focused.');
+        expect(chipListboxInstance.focused)
+          .withContext('Expected listbox to not be focused.').toBe(false);
 
         chipListboxInstance.disabled = true;
         fixture.detectChanges();
@@ -167,8 +172,8 @@ describe('MDC-based MatChipListbox', () => {
         chipListboxInstance.focus();
         fixture.detectChanges();
 
-        expect(chipListboxInstance.focused).toBe(false,
-          'Expected listbox to continue not to be focused');
+        expect(chipListboxInstance.focused)
+          .withContext('Expected listbox to continue not to be focused').toBe(false);
       });
 
       it('should remove the tabindex from the listbox if it is disabled', () => {
@@ -299,7 +304,7 @@ describe('MDC-based MatChipListbox', () => {
           fixture.detectChanges();
 
           expect(manager.activeItemIndex)
-              .toBe(initialActiveIndex, 'Expected focused item not to have changed.');
+            .withContext('Expected focused item not to have changed.').toBe(initialActiveIndex);
         });
 
         it('should focus the first item when pressing HOME', () => {
@@ -384,11 +389,12 @@ describe('MDC-based MatChipListbox', () => {
           chipListboxInstance._keyManager.onKeydown(createKeyboardEvent('keydown', TAB));
 
           expect(chipListboxInstance.tabIndex)
-            .toBe(-1, 'Expected tabIndex to be set to -1 temporarily.');
+            .withContext('Expected tabIndex to be set to -1 temporarily.').toBe(-1);
 
           tick();
 
-          expect(chipListboxInstance.tabIndex).toBe(0, 'Expected tabIndex to be reset back to 0');
+          expect(chipListboxInstance.tabIndex)
+            .withContext('Expected tabIndex to be reset back to 0').toBe(0);
         }));
 
         it(`should use user defined tabIndex`, fakeAsync(() => {
@@ -397,16 +403,17 @@ describe('MDC-based MatChipListbox', () => {
           fixture.detectChanges();
 
           expect(chipListboxInstance.tabIndex)
-            .toBe(4, 'Expected tabIndex to be set to user defined value 4.');
+            .withContext('Expected tabIndex to be set to user defined value 4.').toBe(4);
 
           chipListboxInstance._keyManager.onKeydown(createKeyboardEvent('keydown', TAB));
 
           expect(chipListboxInstance.tabIndex)
-            .toBe(-1, 'Expected tabIndex to be set to -1 temporarily.');
+            .withContext('Expected tabIndex to be set to -1 temporarily.').toBe(-1);
 
           tick();
 
-          expect(chipListboxInstance.tabIndex).toBe(4, 'Expected tabIndex to be reset back to 4');
+          expect(chipListboxInstance.tabIndex)
+            .withContext('Expected tabIndex to be reset back to 4').toBe(4);
         }));
       });
 
@@ -463,15 +470,18 @@ describe('MDC-based MatChipListbox', () => {
         dispatchKeyboardEvent(firstChip, 'keydown', SPACE);
         fixture.detectChanges();
 
-        expect(instanceChips.first.selected).toBe(true, 'Expected first option to be selected.');
-        expect(chipListbox.selected).toBe(chips.first, 'Expected first option to be selected.');
+        expect(instanceChips.first.selected)
+          .withContext('Expected first option to be selected.').toBe(true);
+        expect(chipListbox.selected)
+          .withContext('Expected first option to be selected.').toBe(chips.first);
 
         fixture.componentInstance.foods = [];
         fixture.detectChanges();
         tick();
 
         expect(chipListbox.selected)
-          .toBe(undefined, 'Expected selection to be removed when option no longer exists.');
+          .withContext('Expected selection to be removed when option no longer exists.')
+          .toBe(undefined);
       }));
 
 
@@ -486,9 +496,9 @@ describe('MDC-based MatChipListbox', () => {
         fixture.detectChanges();
 
         expect(fixture.componentInstance.chipListbox.value)
-          .toContain('potatoes-8', 'Expect value contain the value of the last option');
+          .withContext('Expect value contain the value of the last option').toContain('potatoes-8');
         expect(fixture.componentInstance.chips.last.selected)
-          .toBeTruthy('Expect last option selected');
+          .withContext('Expect last option selected').toBeTruthy();
       });
 
       it('should not select disabled chips', () => {
@@ -498,10 +508,10 @@ describe('MDC-based MatChipListbox', () => {
         fixture.detectChanges();
 
         expect(fixture.componentInstance.chipListbox.value)
-          .toBeUndefined('Expect value to be undefined');
-        expect(array[2].selected).toBeFalsy('Expect disabled chip not selected');
+          .withContext('Expect value to be undefined').toBeUndefined();
+        expect(array[2].selected).withContext('Expect disabled chip not selected').toBeFalsy();
         expect(fixture.componentInstance.chipListbox.selected)
-          .toBeUndefined('Expect no selected chips');
+          .withContext('Expect no selected chips').toBeUndefined();
       });
     });
 
@@ -524,30 +534,32 @@ describe('MDC-based MatChipListbox', () => {
           tick();
           const array = chips.toArray();
 
-          expect(array[1].selected).toBeTruthy('Expect pizza-1 chip to be selected');
+          expect(array[1].selected).withContext('Expect pizza-1 chip to be selected').toBeTruthy();
 
           dispatchKeyboardEvent(nativeChips[1], 'keydown', SPACE);
           fixture.detectChanges();
 
-          expect(array[1].selected).toBeFalsy(
-            'Expect chip to be not selected after toggle selected');
+          expect(array[1].selected)
+            .withContext('Expect chip to be not selected after toggle selected').toBeFalsy();
         }));
 
         it('should set the view value from the form', () => {
           const chipListbox = fixture.componentInstance.chipListbox;
           const array = chips.toArray();
 
-          expect(chipListbox.value).toBeFalsy('Expect chip listbox to have no initial value');
+          expect(chipListbox.value)
+            .withContext('Expect chip listbox to have no initial value').toBeFalsy();
 
           fixture.componentInstance.control.setValue('pizza-1');
           fixture.detectChanges();
 
-          expect(array[1].selected).toBeTruthy('Expect chip to be selected');
+          expect(array[1].selected)
+            .withContext('Expect chip to be selected').toBeTruthy();
         });
 
         it('should update the form value when the view changes', fakeAsync(() => {
           expect(fixture.componentInstance.control.value)
-            .toEqual(null, `Expected the control's value to be empty initially.`);
+            .withContext(`Expected the control's value to be empty initially.`).toEqual(null);
 
           dispatchKeyboardEvent(nativeChips[0], 'keydown', SPACE);
           fixture.detectChanges();
@@ -555,7 +567,8 @@ describe('MDC-based MatChipListbox', () => {
           tick();
 
           expect(fixture.componentInstance.control.value)
-            .toEqual('steak-0', `Expected control's value to be set to the new option.`);
+            .withContext(`Expected control's value to be set to the new option.`)
+            .toEqual('steak-0');
         }));
 
         it('should clear the selection when a nonexistent option value is selected', () => {
@@ -565,14 +578,16 @@ describe('MDC-based MatChipListbox', () => {
           fixture.detectChanges();
 
           expect(array[1].selected)
-            .toBeTruthy(`Expected chip with the value to be selected.`);
+            .withContext(`Expected chip with the value to be selected.`)
+            .toBeTruthy();
 
           fixture.componentInstance.control.setValue('gibberish');
 
           fixture.detectChanges();
 
           expect(array[1].selected)
-            .toBeFalsy(`Expected chip with the old value not to be selected.`);
+            .withContext(`Expected chip with the old value not to be selected.`)
+            .toBeFalsy();
         });
 
 
@@ -586,12 +601,13 @@ describe('MDC-based MatChipListbox', () => {
           fixture.detectChanges();
 
           expect(array[1].selected)
-            .toBeFalsy(`Expected chip with the old value not to be selected.`);
+            .withContext(`Expected chip with the old value not to be selected.`)
+            .toBeFalsy();
         });
 
         it('should set the control to touched when the chip listbox is touched', fakeAsync(() => {
           expect(fixture.componentInstance.control.touched)
-            .toBe(false, 'Expected the control to start off as untouched.');
+            .withContext('Expected the control to start off as untouched.').toBe(false);
 
           const nativeChipListbox = fixture.debugElement.query(
             By.css('mat-chip-listbox'))!.nativeElement;
@@ -599,12 +615,12 @@ describe('MDC-based MatChipListbox', () => {
           tick();
 
           expect(fixture.componentInstance.control.touched)
-            .toBe(true, 'Expected the control to be touched.');
+            .withContext('Expected the control to be touched.').toBe(true);
         }));
 
         it('should not set touched when a disabled chip listbox is touched', fakeAsync(() => {
           expect(fixture.componentInstance.control.touched)
-            .toBe(false, 'Expected the control to start off as untouched.');
+            .withContext('Expected the control to start off as untouched.').toBe(false);
 
           fixture.componentInstance.control.disable();
           const nativeChipListbox = fixture.debugElement.query(
@@ -613,29 +629,31 @@ describe('MDC-based MatChipListbox', () => {
           tick();
 
           expect(fixture.componentInstance.control.touched)
-            .toBe(false, 'Expected the control to stay untouched.');
+            .withContext('Expected the control to stay untouched.').toBe(false);
         }));
 
         it('should set the control to dirty when the chip listbox\'s value changes in the DOM',
           () => {
           expect(fixture.componentInstance.control.dirty)
-            .toEqual(false, `Expected control to start out pristine.`);
+            .withContext(`Expected control to start out pristine.`).toEqual(false);
 
           dispatchKeyboardEvent(nativeChips[1], 'keydown', SPACE);
           fixture.detectChanges();
 
           expect(fixture.componentInstance.control.dirty)
-            .toEqual(true, `Expected control to be dirty after value was changed by user.`);
+            .withContext(`Expected control to be dirty after value was changed by user.`)
+            .toEqual(true);
         });
 
         it('should not set the control to dirty when the value changes programmatically', () => {
           expect(fixture.componentInstance.control.dirty)
-            .toEqual(false, `Expected control to start out pristine.`);
+            .withContext(`Expected control to start out pristine.`).toEqual(false);
 
           fixture.componentInstance.control.setValue('pizza-1');
 
           expect(fixture.componentInstance.control.dirty)
-            .toEqual(false, `Expected control to stay pristine after programmatic change.`);
+            .withContext(`Expected control to stay pristine after programmatic change.`)
+            .toEqual(false);
         });
 
         it('should be able to programmatically select a falsy option', () => {
@@ -650,7 +668,7 @@ describe('MDC-based MatChipListbox', () => {
           falsyFixture.detectChanges();
 
           expect(falsyFixture.componentInstance.chips.first.selected)
-            .toBe(true, 'Expected first option to be selected');
+            .withContext('Expected first option to be selected').toBe(true);
         });
 
         it('should not focus the active chip when the value is set programmatically', () => {
@@ -681,37 +699,41 @@ describe('MDC-based MatChipListbox', () => {
 
           const array = chips.toArray();
 
-          expect(array[1].selected).toBeTruthy('Expect pizza-1 chip to be selected');
+          expect(array[1].selected)
+            .withContext('Expect pizza-1 chip to be selected').toBeTruthy();
 
           dispatchKeyboardEvent(nativeChips[1], 'keydown', SPACE);
           fixture.detectChanges();
 
-          expect(array[1].selected).toBeFalsy(
-            'Expect chip to be not selected after toggle selected');
+          expect(array[1].selected)
+            .withContext('Expect chip to be not selected after toggle selected').toBeFalsy();
         });
 
         it('should set the view value from the form', () => {
           const chipListbox = fixture.componentInstance.chipListbox;
           const array = chips.toArray();
 
-          expect(chipListbox.value).toBeFalsy('Expect chip listbox to have no initial value');
+          expect(chipListbox.value)
+            .withContext('Expect chip listbox to have no initial value').toBeFalsy();
 
           fixture.componentInstance.control.setValue(['pizza-1']);
           fixture.detectChanges();
 
-          expect(array[1].selected).toBeTruthy('Expect chip to be selected');
+          expect(array[1].selected)
+            .withContext('Expect chip to be selected').toBeTruthy();
         });
 
         it('should update the form value when the view changes', () => {
 
           expect(fixture.componentInstance.control.value)
-            .toEqual(null, `Expected the control's value to be empty initially.`);
+            .withContext(`Expected the control's value to be empty initially.`).toEqual(null);
 
           dispatchKeyboardEvent(nativeChips[0], 'keydown', SPACE);
           fixture.detectChanges();
 
           expect(fixture.componentInstance.control.value)
-            .toEqual(['steak-0'], `Expected control's value to be set to the new option.`);
+            .withContext(`Expected control's value to be set to the new option.`)
+            .toEqual(['steak-0']);
         });
 
         it('should clear the selection when a nonexistent option value is selected', () => {
@@ -721,14 +743,16 @@ describe('MDC-based MatChipListbox', () => {
           fixture.detectChanges();
 
           expect(array[1].selected)
-            .toBeTruthy(`Expected chip with the value to be selected.`);
+            .withContext(`Expected chip with the value to be selected.`)
+            .toBeTruthy();
 
           fixture.componentInstance.control.setValue(['gibberish']);
 
           fixture.detectChanges();
 
           expect(array[1].selected)
-            .toBeFalsy(`Expected chip with the old value not to be selected.`);
+            .withContext(`Expected chip with the old value not to be selected.`)
+            .toBeFalsy();
         });
 
         it('should clear the selection when the control is reset', () => {
@@ -741,7 +765,8 @@ describe('MDC-based MatChipListbox', () => {
           fixture.detectChanges();
 
           expect(array[1].selected)
-            .toBeFalsy(`Expected chip with the old value not to be selected.`);
+            .withContext(`Expected chip with the old value not to be selected.`)
+            .toBeFalsy();
         });
       });
     });

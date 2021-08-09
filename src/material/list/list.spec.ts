@@ -100,8 +100,10 @@ describe('MatList', () => {
 
     const list = fixture.debugElement.children[0];
     const listItem = fixture.debugElement.children[0].query(By.css('mat-list-item'))!;
-    expect(list.nativeElement.getAttribute('role')).toBeNull('Expect mat-list no role');
-    expect(listItem.nativeElement.getAttribute('role')).toBeNull('Expect mat-list-item no role');
+    expect(list.nativeElement.getAttribute('role'))
+      .withContext('Expect mat-list no role').toBeNull();
+    expect(listItem.nativeElement.getAttribute('role'))
+      .withContext('Expect mat-list-item no role').toBeNull();
   });
 
   it('should not show ripples for non-nav lists', () => {
@@ -226,12 +228,12 @@ describe('MatList', () => {
       dispatchMouseEvent(rippleTarget, 'mouseup');
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
-          .toBe(1, 'Expected ripples to be enabled by default.');
+        .withContext('Expected ripples to be enabled by default.').toBe(1);
 
       // Wait for the ripples to go away.
       tick(enterDuration + exitDuration);
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
-          .toBe(0, 'Expected ripples to go away.');
+        .withContext('Expected ripples to go away.').toBe(0);
 
       fixture.componentInstance.disableListRipple = true;
       fixture.detectChanges();
@@ -240,7 +242,7 @@ describe('MatList', () => {
       dispatchMouseEvent(rippleTarget, 'mouseup');
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
-          .toBe(0, 'Expected no ripples after list ripples are disabled.');
+        .withContext('Expected no ripples after list ripples are disabled.').toBe(0);
     }));
 
   it('should disable item ripples when list ripples are disabled via the input in an action list',
@@ -254,12 +256,12 @@ describe('MatList', () => {
       dispatchMouseEvent(rippleTarget, 'mouseup');
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
-          .toBe(1, 'Expected ripples to be enabled by default.');
+        .withContext('Expected ripples to be enabled by default.').toBe(1);
 
       // Wait for the ripples to go away.
       tick(enterDuration + exitDuration);
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
-          .toBe(0, 'Expected ripples to go away.');
+        .withContext('Expected ripples to go away.').toBe(0);
 
       fixture.componentInstance.disableListRipple = true;
       fixture.detectChanges();
@@ -268,7 +270,7 @@ describe('MatList', () => {
       dispatchMouseEvent(rippleTarget, 'mouseup');
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
-          .toBe(0, 'Expected no ripples after list ripples are disabled.');
+        .withContext('Expected no ripples after list ripples are disabled.').toBe(0);
     }));
 
 

@@ -78,7 +78,8 @@ describe('MDC-based MatButton', () => {
       fixture.detectChanges();
 
       expect(fabButtonDebugEl.nativeElement.classList)
-          .toContain('mat-accent', 'Expected fab buttons to use accent palette by default');
+        .withContext('Expected fab buttons to use accent palette by default')
+        .toContain('mat-accent');
     });
   });
 
@@ -90,7 +91,8 @@ describe('MDC-based MatButton', () => {
       fixture.detectChanges();
 
       expect(miniFabButtonDebugEl.nativeElement.classList)
-          .toContain('mat-accent', 'Expected mini-fab buttons to use accent palette by default');
+        .withContext('Expected mini-fab buttons to use accent palette by default')
+        .toContain('mat-accent');
     });
   });
 
@@ -137,11 +139,13 @@ describe('MDC-based MatButton', () => {
     it('should disable the native button element', () => {
       let fixture = TestBed.createComponent(TestApp);
       let buttonNativeElement = fixture.nativeElement.querySelector('button');
-      expect(buttonNativeElement.disabled).toBeFalsy('Expected button not to be disabled');
+      expect(buttonNativeElement.disabled)
+        .withContext('Expected button not to be disabled').toBeFalsy();
 
       fixture.componentInstance.isDisabled = true;
       fixture.detectChanges();
-      expect(buttonNativeElement.disabled).toBeTruthy('Expected button to be disabled');
+      expect(buttonNativeElement.disabled)
+        .withContext('Expected button to be disabled').toBeTruthy();
     });
 
   });
@@ -188,16 +192,18 @@ describe('MDC-based MatButton', () => {
       let buttonDebugElement = fixture.debugElement.query(By.css('a'))!;
       fixture.detectChanges();
       expect(buttonDebugElement.nativeElement.getAttribute('aria-disabled'))
-          .toBe('false', 'Expect aria-disabled="false"');
+        .withContext('Expect aria-disabled="false"').toBe('false');
       expect(buttonDebugElement.nativeElement.getAttribute('disabled'))
-          .toBeNull('Expect disabled="false"');
+        .withContext('Expect disabled="false"')
+        .toBeNull();
 
       testComponent.isDisabled = false;
       fixture.detectChanges();
       expect(buttonDebugElement.nativeElement.getAttribute('aria-disabled'))
-          .toBe('false', 'Expect no aria-disabled');
+        .withContext('Expect no aria-disabled').toBe('false');
       expect(buttonDebugElement.nativeElement.getAttribute('disabled'))
-          .toBeNull('Expect no disabled');
+        .withContext('Expect no disabled')
+        .toBeNull();
     });
 
     it('should be able to set a custom tabindex', () => {
@@ -209,13 +215,13 @@ describe('MDC-based MatButton', () => {
       fixture.detectChanges();
 
       expect(buttonElement.getAttribute('tabIndex'))
-          .toBe('3', 'Expected custom tabindex to be set');
+        .withContext('Expected custom tabindex to be set').toBe('3');
 
       testComponent.isDisabled = true;
       fixture.detectChanges();
 
       expect(buttonElement.getAttribute('tabIndex'))
-          .toBe('-1', 'Expected custom tabindex to be overwritten when disabled.');
+        .withContext('Expected custom tabindex to be overwritten when disabled.').toBe('-1');
     });
   });
 

@@ -86,14 +86,14 @@ describe('CDK drag-drop schematic', () => {
       // In this case we expect the schematic to generate a plain "css" file because
       // the component schematics are using CSS style templates which are not compatible
       // with all CLI supported styles (e.g. Stylus or Sass)
-      expect(tree.files)
-          .toContain(
-              '/projects/material/src/app/foo/foo.component.css',
-              'Expected the schematic to generate a plain "css" file.');
-      expect(tree.files)
-          .not.toContain(
-              '/projects/material/src/app/foo/foo.component.styl',
-              'Expected the schematic to not generate a "stylus" file');
+      // In this case we expect the schematic to generate a plain "css" file because
+      // the component schematics are using CSS style templates which are not compatible
+      // with all CLI supported styles (e.g. Stylus or Sass)
+      expect(tree.files).withContext('Expected the schematic to generate a plain "css" file.')
+        .toContain('/projects/material/src/app/foo/foo.component.css');
+      expect(tree.files).not
+        .withContext('Expected the schematic to not generate a "stylus" file')
+        .toContain('/projects/material/src/app/foo/foo.component.styl');
     });
 
     it('should fall back to the @schematics/angular:component option value', async () => {

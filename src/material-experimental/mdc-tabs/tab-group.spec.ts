@@ -189,13 +189,13 @@ describe('MDC-based MatTabGroup', () => {
       const tabLabel = fixture.debugElement.queryAll(By.css('.mat-mdc-tab'))[1];
 
       expect(testElement.querySelectorAll('.mat-ripple-element').length)
-        .toBe(0, 'Expected no ripples to show up initially.');
+        .withContext('Expected no ripples to show up initially.').toBe(0);
 
       dispatchFakeEvent(tabLabel.nativeElement, 'mousedown');
       dispatchFakeEvent(tabLabel.nativeElement, 'mouseup');
 
       expect(testElement.querySelectorAll('.mat-ripple-element').length)
-        .toBe(1, 'Expected one ripple to show up on label mousedown.');
+        .withContext('Expected one ripple to show up on label mousedown.').toBe(1);
     });
 
     it('should allow disabling ripples for tab-group labels', () => {
@@ -206,13 +206,13 @@ describe('MDC-based MatTabGroup', () => {
       const tabLabel = fixture.debugElement.queryAll(By.css('.mat-mdc-tab'))[1];
 
       expect(testElement.querySelectorAll('.mat-ripple-element').length)
-        .toBe(0, 'Expected no ripples to show up initially.');
+        .withContext('Expected no ripples to show up initially.').toBe(0);
 
       dispatchFakeEvent(tabLabel.nativeElement, 'mousedown');
       dispatchFakeEvent(tabLabel.nativeElement, 'mouseup');
 
       expect(testElement.querySelectorAll('.mat-ripple-element').length)
-        .toBe(0, 'Expected no ripple to show up on label mousedown.');
+        .withContext('Expected no ripple to show up on label mousedown.').toBe(0);
     });
 
     it('should set the isActive flag on each of the tabs', fakeAsync(() => {

@@ -45,8 +45,8 @@ describe('MatMdcInput without forms', () => {
 
     let formField = fixture.debugElement.query(By.directive(MatFormField))!
       .componentInstance as MatFormField;
-    expect(formField.floatLabel).toBe('auto',
-      'Expected MatInput to set floatingLabel to auto by default.');
+    expect(formField.floatLabel)
+      .withContext('Expected MatInput to set floatingLabel to auto by default.').toBe('auto');
   }));
 
   it('should default to global floating label type', fakeAsync(() => {
@@ -57,8 +57,9 @@ describe('MatMdcInput without forms', () => {
 
     let formField = fixture.debugElement.query(By.directive(MatFormField))!
       .componentInstance as MatFormField;
-    expect(formField.floatLabel).toBe('always',
-      'Expected MatInput to set floatingLabel to always from global option.');
+    expect(formField.floatLabel)
+      .withContext('Expected MatInput to set floatingLabel to always from global option.')
+      .toBe('always');
   }));
 
   it('should not be treated as empty if type is date', fakeAsync(() => {
@@ -203,13 +204,13 @@ describe('MatMdcInput without forms', () => {
       fixture.debugElement.query(By.css('input'))!.nativeElement;
 
     expect(inputElement.getAttribute('aria-required'))
-      .toBe('false', 'Expected aria-required to reflect required state of false');
+      .withContext('Expected aria-required to reflect required state of false').toBe('false');
 
     fixture.componentInstance.required = true;
     fixture.detectChanges();
 
     expect(inputElement.getAttribute('aria-required'))
-      .toBe('true', 'Expected aria-required to reflect required state of true');
+      .withContext('Expected aria-required to reflect required state of true').toBe('true');
   }));
 
   it('should not overwrite existing id', fakeAsync(() => {
@@ -363,14 +364,14 @@ describe('MatMdcInput without forms', () => {
     const inputEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
 
     expect(wrapperEl.classList.contains('mdc-text-field--disabled'))
-      .toBe(false, `Expected form field not to start out disabled.`);
+      .withContext(`Expected form field not to start out disabled.`).toBe(false);
     expect(inputEl.disabled).toBe(false);
 
     fixture.componentInstance.disabled = true;
     fixture.detectChanges();
 
     expect(wrapperEl.classList.contains('mdc-text-field--disabled'))
-      .toBe(true, `Expected form field to look disabled after property is set.`);
+      .withContext(`Expected form field to look disabled after property is set.`).toBe(true);
     expect(inputEl.disabled).toBe(true);
   }));
 
@@ -383,14 +384,14 @@ describe('MatMdcInput without forms', () => {
     const selectEl = fixture.debugElement.query(By.css('select'))!.nativeElement;
 
     expect(wrapperEl.classList.contains('mdc-text-field--disabled'))
-      .toBe(false, `Expected form field not to start out disabled.`);
+      .withContext(`Expected form field not to start out disabled.`).toBe(false);
     expect(selectEl.disabled).toBe(false);
 
     fixture.componentInstance.disabled = true;
     fixture.detectChanges();
 
     expect(wrapperEl.classList.contains('mdc-text-field--disabled'))
-      .toBe(true, `Expected form field to look disabled after property is set.`);
+      .withContext(`Expected form field to look disabled after property is set.`).toBe(true);
     expect(selectEl.disabled).toBe(true);
   }));
 
@@ -879,15 +880,19 @@ describe('MatMdcInput with forms', () => {
     }));
 
     it('should not show any errors if the user has not interacted', fakeAsync(() => {
-      expect(testComponent.formControl.untouched).toBe(true, 'Expected untouched form control');
-      expect(containerEl.querySelectorAll('mat-error').length).toBe(0, 'Expected no error message');
+      expect(testComponent.formControl.untouched)
+        .withContext('Expected untouched form control').toBe(true);
+      expect(containerEl.querySelectorAll('mat-error').length)
+        .withContext('Expected no error message').toBe(0);
       expect(inputEl.getAttribute('aria-invalid'))
-        .toBe('false', 'Expected aria-invalid to be set to "false".');
+        .withContext('Expected aria-invalid to be set to "false".').toBe('false');
     }));
 
     it('should display an error message when the input is touched and invalid', fakeAsync(() => {
-      expect(testComponent.formControl.invalid).toBe(true, 'Expected form control to be invalid');
-      expect(containerEl.querySelectorAll('mat-error').length).toBe(0, 'Expected no error message');
+      expect(testComponent.formControl.invalid)
+        .withContext('Expected form control to be invalid').toBe(true);
+      expect(containerEl.querySelectorAll('mat-error').length)
+        .withContext('Expected no error message').toBe(0);
 
       inputEl.value = 'not valid';
       testComponent.formControl.markAsTouched();
@@ -895,11 +900,12 @@ describe('MatMdcInput with forms', () => {
       flush();
 
       expect(containerEl.classList)
-        .toContain('mat-form-field-invalid', 'Expected container to have the invalid CSS class.');
+        .withContext('Expected container to have the invalid CSS class.')
+        .toContain('mat-form-field-invalid');
       expect(containerEl.querySelectorAll('mat-error').length)
-        .toBe(1, 'Expected one error message to have been rendered.');
+        .withContext('Expected one error message to have been rendered.').toBe(1);
       expect(inputEl.getAttribute('aria-invalid'))
-        .toBe('true', 'Expected aria-invalid to be set to "true".');
+        .withContext('Expected aria-invalid to be set to "true".').toBe('true');
     }));
 
     it('should not reset text-field validity if focus changes for an invalid input',
@@ -918,22 +924,27 @@ describe('MatMdcInput with forms', () => {
     }));
 
     it('should display an error message when the parent form is submitted', fakeAsync(() => {
-      expect(testComponent.form.submitted).toBe(false, 'Expected form not to have been submitted');
-      expect(testComponent.formControl.invalid).toBe(true, 'Expected form control to be invalid');
-      expect(containerEl.querySelectorAll('mat-error').length).toBe(0, 'Expected no error message');
+      expect(testComponent.form.submitted)
+        .withContext('Expected form not to have been submitted').toBe(false);
+      expect(testComponent.formControl.invalid)
+        .withContext('Expected form control to be invalid').toBe(true);
+      expect(containerEl.querySelectorAll('mat-error').length)
+        .withContext('Expected no error message').toBe(0);
 
       inputEl.value = 'not valid';
       dispatchFakeEvent(fixture.debugElement.query(By.css('form'))!.nativeElement, 'submit');
       fixture.detectChanges();
       flush();
 
-      expect(testComponent.form.submitted).toBe(true, 'Expected form to have been submitted');
+      expect(testComponent.form.submitted)
+        .withContext('Expected form to have been submitted').toBe(true);
       expect(containerEl.classList)
-        .toContain('mat-form-field-invalid', 'Expected container to have the invalid CSS class.');
+        .withContext('Expected container to have the invalid CSS class.')
+        .toContain('mat-form-field-invalid');
       expect(containerEl.querySelectorAll('mat-error').length)
-        .toBe(1, 'Expected one error message to have been rendered.');
+        .withContext('Expected one error message to have been rendered.').toBe(1);
       expect(inputEl.getAttribute('aria-invalid'))
-        .toBe('true', 'Expected aria-invalid to be set to "true".');
+        .withContext('Expected aria-invalid to be set to "true".').toBe('true');
     }));
 
     it('should display an error message when the parent form group is submitted', fakeAsync(() => {
@@ -948,12 +959,14 @@ describe('MatMdcInput with forms', () => {
       containerEl = groupFixture.debugElement.query(By.css('.mat-mdc-form-field'))!.nativeElement;
       inputEl = groupFixture.debugElement.query(By.css('input'))!.nativeElement;
 
-      expect(component.formGroup.invalid).toBe(true, 'Expected form control to be invalid');
-      expect(containerEl.querySelectorAll('mat-error').length).toBe(0, 'Expected no error message');
+      expect(component.formGroup.invalid)
+        .withContext('Expected form control to be invalid').toBe(true);
+      expect(containerEl.querySelectorAll('mat-error').length)
+        .withContext('Expected no error message').toBe(0);
       expect(inputEl.getAttribute('aria-invalid'))
-        .toBe('false', 'Expected aria-invalid to be set to "false".');
+        .withContext('Expected aria-invalid to be set to "false".').toBe('false');
       expect(component.formGroupDirective.submitted)
-        .toBe(false, 'Expected form not to have been submitted');
+        .withContext('Expected form not to have been submitted').toBe(false);
 
       inputEl.value = 'not valid';
       dispatchFakeEvent(groupFixture.debugElement.query(By.css('form'))!.nativeElement, 'submit');
@@ -961,13 +974,14 @@ describe('MatMdcInput with forms', () => {
       flush();
 
       expect(component.formGroupDirective.submitted)
-        .toBe(true, 'Expected form to have been submitted');
+        .withContext('Expected form to have been submitted').toBe(true);
       expect(containerEl.classList)
-        .toContain('mat-form-field-invalid', 'Expected container to have the invalid CSS class.');
+        .withContext('Expected container to have the invalid CSS class.')
+        .toContain('mat-form-field-invalid');
       expect(containerEl.querySelectorAll('mat-error').length)
-        .toBe(1, 'Expected one error message to have been rendered.');
+        .withContext('Expected one error message to have been rendered.').toBe(1);
       expect(inputEl.getAttribute('aria-invalid'))
-        .toBe('true', 'Expected aria-invalid to be set to "true".');
+        .withContext('Expected aria-invalid to be set to "true".').toBe('true');
     }));
 
     it('should hide the errors and show the hints once the input becomes valid', fakeAsync(() => {
@@ -976,11 +990,12 @@ describe('MatMdcInput with forms', () => {
       flush();
 
       expect(containerEl.classList)
-        .toContain('mat-form-field-invalid', 'Expected container to have the invalid CSS class.');
+        .withContext('Expected container to have the invalid CSS class.')
+        .toContain('mat-form-field-invalid');
       expect(containerEl.querySelectorAll('mat-error').length)
-        .toBe(1, 'Expected one error message to have been rendered.');
+        .withContext('Expected one error message to have been rendered.').toBe(1);
       expect(containerEl.querySelectorAll('mat-hint').length)
-        .toBe(0, 'Expected no hints to be shown.');
+        .withContext('Expected no hints to be shown.').toBe(0);
 
       testComponent.formControl.setValue('valid value');
       fixture.detectChanges();
@@ -989,9 +1004,9 @@ describe('MatMdcInput with forms', () => {
       expect(containerEl.classList).not.toContain('mat-form-field-invalid',
         'Expected container not to have the invalid class when valid.');
       expect(containerEl.querySelectorAll('mat-error').length)
-        .toBe(0, 'Expected no error messages when the input is valid.');
+        .withContext('Expected no error messages when the input is valid.').toBe(0);
       expect(containerEl.querySelectorAll('mat-hint').length)
-        .toBe(1, 'Expected one hint to be shown once the input is valid.');
+        .withContext('Expected one hint to be shown once the input is valid.').toBe(1);
     }));
 
     it('should not hide the hint if there are no error messages', fakeAsync(() => {
@@ -999,14 +1014,14 @@ describe('MatMdcInput with forms', () => {
       fixture.detectChanges();
 
       expect(containerEl.querySelectorAll('mat-hint').length)
-        .toBe(1, 'Expected one hint to be shown on load.');
+        .withContext('Expected one hint to be shown on load.').toBe(1);
 
       testComponent.formControl.markAsTouched();
       fixture.detectChanges();
       flush();
 
       expect(containerEl.querySelectorAll('mat-hint').length)
-        .toBe(1, 'Expected one hint to still be shown.');
+        .withContext('Expected one hint to still be shown.').toBe(1);
     }));
 
     it('should set the proper aria-live attribute on the error messages', fakeAsync(() => {
@@ -1021,7 +1036,7 @@ describe('MatMdcInput with forms', () => {
           .query(By.css('.mat-mdc-form-field-hint'))!.nativeElement.getAttribute('id');
       let describedBy = inputEl.getAttribute('aria-describedby');
 
-      expect(hintId).toBeTruthy('hint should be shown');
+      expect(hintId).withContext('hint should be shown').toBeTruthy();
       expect(describedBy).toBe(hintId);
 
       fixture.componentInstance.formControl.markAsTouched();
@@ -1031,7 +1046,7 @@ describe('MatMdcInput with forms', () => {
         .map(el => el.nativeElement.getAttribute('id')).join(' ');
       describedBy = inputEl.getAttribute('aria-describedby');
 
-      expect(errorIds).toBeTruthy('errors should be shown');
+      expect(errorIds).withContext('errors should be shown').toBeTruthy();
       expect(describedBy).toBe(errorIds);
     }));
 
@@ -1041,17 +1056,19 @@ describe('MatMdcInput with forms', () => {
       fixture.detectChanges();
       flush();
 
-      expect(testComponent.formControl.invalid).toBe(true, 'Expected form control to be invalid');
+      expect(testComponent.formControl.invalid)
+        .withContext('Expected form control to be invalid').toBe(true);
       expect(inputEl.value).toBeFalsy();
       expect(inputEl.getAttribute('aria-invalid'))
-          .toBe('true', 'Expected aria-invalid to be set to "true"');
+        .withContext('Expected aria-invalid to be set to "true"').toBe('true');
 
       inputEl.value = 'not valid';
       fixture.detectChanges();
 
-      expect(testComponent.formControl.invalid).toBe(true, 'Expected form control to be invalid');
+      expect(testComponent.formControl.invalid)
+        .withContext('Expected form control to be invalid').toBe(true);
       expect(inputEl.getAttribute('aria-invalid'))
-          .toBe('true', 'Expected aria-invalid to be set to "true".');
+        .withContext('Expected aria-invalid to be set to "true".').toBe('true');
     }));
 
   });
@@ -1067,21 +1084,22 @@ describe('MatMdcInput with forms', () => {
 
       const control = component.formGroup.get('name')!;
 
-      expect(control.invalid).toBe(true, 'Expected form control to be invalid');
+      expect(control.invalid)
+        .withContext('Expected form control to be invalid').toBe(true);
       expect(containerEl.querySelectorAll('mat-error').length)
-        .toBe(0, 'Expected no error messages');
+        .withContext('Expected no error messages').toBe(0);
 
       control.markAsTouched();
       fixture.detectChanges();
 
       expect(containerEl.querySelectorAll('mat-error').length)
-        .toBe(0, 'Expected no error messages after being touched.');
+        .withContext('Expected no error messages after being touched.').toBe(0);
 
       component.errorState = true;
       fixture.detectChanges();
 
       expect(containerEl.querySelectorAll('mat-error').length)
-        .toBe(1, 'Expected one error messages to have been rendered.');
+        .withContext('Expected one error messages to have been rendered.').toBe(1);
     }));
 
     it('should display an error message when global error matcher returns true', fakeAsync(() => {
@@ -1095,8 +1113,11 @@ describe('MatMdcInput with forms', () => {
       let testComponent = fixture.componentInstance;
 
       // Expect the control to still be untouched but the error to show due to the global setting
-      expect(testComponent.formControl.untouched).toBe(true, 'Expected untouched form control');
-      expect(containerEl.querySelectorAll('mat-error').length).toBe(1, 'Expected an error message');
+      // Expect the control to still be untouched but the error to show due to the global setting
+expect(testComponent.formControl.untouched)
+  .withContext('Expected untouched form control').toBe(true);
+      expect(containerEl.querySelectorAll('mat-error').length)
+        .withContext('Expected an error message').toBe(1);
     }));
 
     it('should display an error message when using ShowOnDirtyErrorStateMatcher', fakeAsync(() => {
@@ -1108,20 +1129,22 @@ describe('MatMdcInput with forms', () => {
       let containerEl = fixture.debugElement.query(By.css('.mat-mdc-form-field'))!.nativeElement;
       let testComponent = fixture.componentInstance;
 
-      expect(testComponent.formControl.invalid).toBe(true, 'Expected form control to be invalid');
-      expect(containerEl.querySelectorAll('mat-error').length).toBe(0, 'Expected no error message');
+      expect(testComponent.formControl.invalid)
+        .withContext('Expected form control to be invalid').toBe(true);
+      expect(containerEl.querySelectorAll('mat-error').length)
+        .withContext('Expected no error message').toBe(0);
 
       testComponent.formControl.markAsTouched();
       fixture.detectChanges();
 
       expect(containerEl.querySelectorAll('mat-error').length)
-        .toBe(0, 'Expected no error messages when touched');
+        .withContext('Expected no error messages when touched').toBe(0);
 
       testComponent.formControl.markAsDirty();
       fixture.detectChanges();
 
       expect(containerEl.querySelectorAll('mat-error').length)
-        .toBe(1, 'Expected one error message when dirty');
+        .withContext('Expected one error message when dirty').toBe(1);
     }));
   });
 
@@ -1154,8 +1177,9 @@ describe('MatMdcInput with forms', () => {
     fixture.componentInstance.formControl.disable();
     fixture.detectChanges();
 
-    expect(formFieldEl.classList).toContain('mat-form-field-disabled',
-      `Expected form field to look disabled after disable() is called.`);
+    expect(formFieldEl.classList)
+      .withContext(`Expected form field to look disabled after disable() is called.`)
+      .toContain('mat-form-field-disabled');
     expect(inputEl.disabled).toBe(true);
   }));
 

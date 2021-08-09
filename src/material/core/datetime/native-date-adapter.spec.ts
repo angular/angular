@@ -24,10 +24,11 @@ describe('NativeDateAdapter', () => {
     platform = _platform;
 
     assertValidDate = (d: Date | null, valid: boolean) => {
-      expect(adapter.isDateInstance(d)).not.toBeNull(`Expected ${d} to be a date instance`);
-      expect(adapter.isValid(d!)).toBe(valid,
-          `Expected ${d} to be ${valid ? 'valid' : 'invalid'},` +
-          ` but was ${valid ? 'invalid' : 'valid'}`);
+      expect(adapter.isDateInstance(d)).not
+        .withContext(`Expected ${d} to be a date instance`).toBeNull();
+      expect(adapter.isValid(d!))
+        .withContext(`Expected ${d} to be ${valid ? 'valid' : 'invalid'}, but ` +
+                     `was ${valid ? 'invalid' : 'valid'}`).toBe(valid);
     };
   }));
 
@@ -215,7 +216,7 @@ describe('NativeDateAdapter', () => {
 
   it("should get today's date", () => {
     expect(adapter.sameDate(adapter.today(), new Date()))
-        .toBe(true, "should be equal to today's date");
+      .withContext("should be equal to today's date").toBe(true);
   });
 
   it('should parse string', () => {
@@ -237,9 +238,9 @@ describe('NativeDateAdapter', () => {
     let d = adapter.parse('hello');
     expect(d).not.toBeNull();
     expect(adapter.isDateInstance(d))
-        .toBe(true, 'Expected string to have been fed through Date.parse');
+      .withContext('Expected string to have been fed through Date.parse').toBe(true);
     expect(adapter.isValid(d as Date))
-        .toBe(false, 'Expected to parse as "invalid date" object');
+      .withContext('Expected to parse as "invalid date" object').toBe(false);
   });
 
   it('should format', () => {

@@ -198,7 +198,8 @@ describe('MatStepper', () => {
 
     it('should set the next stepper button type to "submit"', () => {
       const button = fixture.debugElement.query(By.directive(MatStepperNext))!.nativeElement;
-      expect(button.type).toBe('submit', `Expected the button to have "submit" set as type.`);
+      expect(button.type)
+        .withContext(`Expected the button to have "submit" set as type.`).toBe('submit');
     });
 
     it('should go to previous available step when the previous button is clicked', () => {
@@ -232,7 +233,8 @@ describe('MatStepper', () => {
 
     it('should set the previous stepper button type to "button"', () => {
       const button = fixture.debugElement.query(By.directive(MatStepperPrevious))!.nativeElement;
-      expect(button.type).toBe('button', `Expected the button to have "button" set as type.`);
+      expect(button.type)
+        .withContext(`Expected the button to have "button" set as type.`).toBe('button');
     });
 
     it('should set the correct step position for animation', () => {
@@ -674,7 +676,7 @@ describe('MatStepper', () => {
       fixture.detectChanges();
 
       expect(stepperComponent.selectedIndex)
-          .toBe(3, 'Expected selectedIndex to change when optional step input is empty.');
+        .withContext('Expected selectedIndex to change when optional step input is empty.').toBe(3);
 
       stepperComponent.selectedIndex = 2;
       testComponent.threeGroup.get('threeCtrl')!.setValue('input');
@@ -683,7 +685,8 @@ describe('MatStepper', () => {
 
       expect(testComponent.threeGroup.get('threeCtrl')!.valid).toBe(false);
       expect(stepperComponent.selectedIndex)
-          .toBe(3, 'Expected selectedIndex to change when optional step input is invalid.');
+        .withContext('Expected selectedIndex to change when optional step input is invalid.')
+        .toBe(3);
     });
 
     it('should be able to reset the stepper to its initial state', () => {
@@ -759,14 +762,16 @@ describe('MatStepper', () => {
       fillOutStepper();
 
       expect(steps[2].completed)
-          .toBe(true, 'Expected third step to be considered complete after the first run through.');
+        .withContext('Expected third step to be considered complete after the first run through.')
+        .toBe(true);
 
       stepperComponent.reset();
       fixture.detectChanges();
       fillOutStepper();
 
-      expect(steps[2].completed).toBe(true,
-          'Expected third step to be considered complete when doing a run after a reset.');
+      expect(steps[2].completed)
+        .withContext('Expected third step to be considered complete when doing a run after ' +
+                     'a reset.').toBe(true);
     });
 
     it('should be able to skip past the current step if a custom `completed` value is set', () => {
@@ -1476,28 +1481,32 @@ function assertCorrectKeyboardInteraction(fixture: ComponentFixture<any>,
   fixture.detectChanges();
 
   expect(stepperComponent._getFocusIndex())
-      .toBe(1, 'Expected index of focused step to increase by 1 after pressing the next key.');
+    .withContext('Expected index of focused step to increase by 1 after pressing the next key.')
+    .toBe(1);
   expect(stepperComponent.selectedIndex)
-      .toBe(0, 'Expected index of selected step to remain unchanged after pressing the next key.');
+    .withContext('Expected index of selected step to remain unchanged after pressing the next key.')
+    .toBe(0);
 
   stepHeaderEl = stepHeaders[1].nativeElement;
   dispatchKeyboardEvent(stepHeaderEl, 'keydown', ENTER);
   fixture.detectChanges();
 
   expect(stepperComponent._getFocusIndex())
-      .toBe(1, 'Expected index of focused step to remain unchanged after ENTER event.');
+    .withContext('Expected index of focused step to remain unchanged after ENTER event.').toBe(1);
   expect(stepperComponent.selectedIndex)
-      .toBe(1,
-          'Expected index of selected step to change to index of focused step after ENTER event.');
+    .withContext('Expected index of selected step to change to index of focused step ' +
+                 'after ENTER event.').toBe(1);
 
   stepHeaderEl = stepHeaders[1].nativeElement;
   dispatchKeyboardEvent(stepHeaderEl, 'keydown', prevKey);
   fixture.detectChanges();
 
   expect(stepperComponent._getFocusIndex())
-      .toBe(0, 'Expected index of focused step to decrease by 1 after pressing the previous key.');
-  expect(stepperComponent.selectedIndex).toBe(1,
-      'Expected index of selected step to remain unchanged after pressing the previous key.');
+    .withContext('Expected index of focused step to decrease by 1 after pressing the ' +
+                 'previous key.').toBe(0);
+  expect(stepperComponent.selectedIndex)
+    .withContext('Expected index of selected step to remain unchanged after pressing the ' +
+                 'previous key.').toBe(1);
 
   // When the focus is on the last step and right arrow key is pressed, the focus should cycle
   // through to the first step.
@@ -1506,30 +1515,35 @@ function assertCorrectKeyboardInteraction(fixture: ComponentFixture<any>,
   dispatchKeyboardEvent(stepHeaderEl, 'keydown', nextKey);
   fixture.detectChanges();
 
-  expect(stepperComponent._getFocusIndex()).toBe(0,
-      'Expected index of focused step to cycle through to index 0 after pressing the next key.');
+  expect(stepperComponent._getFocusIndex())
+    .withContext('Expected index of focused step to cycle through to index 0 after pressing ' +
+                 'the next key.').toBe(0);
   expect(stepperComponent.selectedIndex)
-      .toBe(1, 'Expected index of selected step to remain unchanged after pressing the next key.');
+    .withContext('Expected index of selected step to remain unchanged after pressing ' +
+                 'the next key.').toBe(1);
 
   stepHeaderEl = stepHeaders[0].nativeElement;
   dispatchKeyboardEvent(stepHeaderEl, 'keydown', SPACE);
   fixture.detectChanges();
 
   expect(stepperComponent._getFocusIndex())
-      .toBe(0, 'Expected index of focused to remain unchanged after SPACE event.');
+    .withContext('Expected index of focused to remain unchanged after SPACE event.').toBe(0);
   expect(stepperComponent.selectedIndex)
-      .toBe(0,
-          'Expected index of selected step to change to index of focused step after SPACE event.');
+    .withContext('Expected index of selected step to change to index of focused step ' +
+                 'after SPACE event.').toBe(0);
 
   const endEvent = dispatchKeyboardEvent(stepHeaderEl, 'keydown', END);
   expect(stepperComponent._getFocusIndex())
-      .toBe(stepHeaders.length - 1, 'Expected last step to be focused when pressing END.');
-  expect(endEvent.defaultPrevented).toBe(true, 'Expected default END action to be prevented.');
+    .withContext('Expected last step to be focused when pressing END.')
+    .toBe(stepHeaders.length - 1);
+  expect(endEvent.defaultPrevented)
+    .withContext('Expected default END action to be prevented.').toBe(true);
 
   const homeEvent = dispatchKeyboardEvent(stepHeaderEl, 'keydown', HOME);
   expect(stepperComponent._getFocusIndex())
-      .toBe(0, 'Expected first step to be focused when pressing HOME.');
-  expect(homeEvent.defaultPrevented).toBe(true, 'Expected default HOME action to be prevented.');
+    .withContext('Expected first step to be focused when pressing HOME.').toBe(0);
+  expect(homeEvent.defaultPrevented)
+    .withContext('Expected default HOME action to be prevented.').toBe(true);
 }
 
 /** Asserts that arrow key direction works correctly in RTL mode. */
@@ -1568,9 +1582,11 @@ function assertSelectKeyWithModifierInteraction(fixture: ComponentFixture<any>,
   fixture.detectChanges();
 
   expect(stepperComponent._getFocusIndex())
-      .toBe(1, 'Expected index of focused step to increase by 1 after pressing the next key.');
+    .withContext('Expected index of focused step to increase by 1 after pressing ' +
+                 'the next key.').toBe(1);
   expect(stepperComponent.selectedIndex)
-      .toBe(0, 'Expected index of selected step to remain unchanged after pressing the next key.');
+    .withContext('Expected index of selected step to remain unchanged after pressing ' +
+                 'the next key.').toBe(0);
 
   modifiers.forEach(modifier => {
     const event = createKeyboardEvent('keydown', selectionKey);
@@ -1578,8 +1594,9 @@ function assertSelectKeyWithModifierInteraction(fixture: ComponentFixture<any>,
     dispatchEvent(stepHeaders[1].nativeElement, event);
     fixture.detectChanges();
 
-    expect(stepperComponent.selectedIndex).toBe(0, `Expected selected index to remain unchanged ` +
-        `when pressing the selection key with ${modifier} modifier.`);
+    expect(stepperComponent.selectedIndex)
+      .withContext(`Expected selected index to remain unchanged ` +
+    `when pressing the selection key with ${modifier} modifier.`).toBe(0);
     expect(event.defaultPrevented).toBe(false);
   });
 }

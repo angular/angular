@@ -330,9 +330,9 @@ describe('CdkDrag', () => {
           fixture.detectChanges();
 
           expect(dispatchTouchEvent(document, 'touchmove').defaultPrevented)
-              .toBe(true, 'Expected initial touchmove to be prevented.');
+            .withContext('Expected initial touchmove to be prevented.').toBe(true);
           expect(dispatchTouchEvent(document, 'touchmove').defaultPrevented)
-              .toBe(true, 'Expected subsequent touchmose to be prevented.');
+            .withContext('Expected subsequent touchmose to be prevented.').toBe(true);
 
           dispatchTouchEvent(document, 'touchend');
           fixture.detectChanges();
@@ -1057,7 +1057,9 @@ describe('CdkDrag', () => {
       fixture.detectChanges();
       const dragElement = fixture.componentInstance.dragElement.nativeElement;
 
-      expect(dragElement.style.transform).toBeFalsy('Expected element not to be moved by default.');
+      expect(dragElement.style.transform)
+        .withContext('Expected element not to be moved by default.')
+        .toBeFalsy();
 
       startDraggingViaMouse(fixture, dragElement);
       currentTime += 750;
@@ -1066,7 +1068,8 @@ describe('CdkDrag', () => {
       fixture.detectChanges();
 
       expect(dragElement.style.transform)
-          .toBeFalsy('Expected element not to be moved if the mouse moved before the delay.');
+        .withContext('Expected element not to be moved if the mouse moved before the delay.')
+        .toBeFalsy();
     }));
 
     it('should enable native drag interactions if mouse moves before the delay', fakeAsync(() => {
@@ -1080,7 +1083,9 @@ describe('CdkDrag', () => {
       const dragElement = fixture.componentInstance.dragElement.nativeElement;
       const styles = dragElement.style;
 
-      expect(dragElement.style.transform).toBeFalsy('Expected element not to be moved by default.');
+      expect(dragElement.style.transform)
+        .withContext('Expected element not to be moved by default.')
+        .toBeFalsy();
 
       startDraggingViaMouse(fixture, dragElement);
       currentTime += 750;
@@ -1101,7 +1106,9 @@ describe('CdkDrag', () => {
       fixture.detectChanges();
       const dragElement = fixture.componentInstance.dragElement.nativeElement;
 
-      expect(dragElement.style.transform).toBeFalsy('Expected element not to be moved by default.');
+      expect(dragElement.style.transform)
+        .withContext('Expected element not to be moved by default.')
+        .toBeFalsy();
 
       dispatchMouseEvent(dragElement, 'mousedown');
       fixture.detectChanges();
@@ -1112,8 +1119,9 @@ describe('CdkDrag', () => {
       dispatchMouseEvent(document, 'mousemove', 50, 100);
       fixture.detectChanges();
 
-      expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)',
-          'Expected element to be dragged after all the time has passed.');
+      expect(dragElement.style.transform)
+        .withContext('Expected element to be dragged after all the time has passed.')
+        .toBe('translate3d(50px, 100px, 0px)');
     }));
 
     it('should not prevent the default touch action before the delay has elapsed', fakeAsync(() => {
@@ -1125,7 +1133,9 @@ describe('CdkDrag', () => {
       fixture.detectChanges();
       const dragElement = fixture.componentInstance.dragElement.nativeElement;
 
-      expect(dragElement.style.transform).toBeFalsy('Expected element not to be moved by default.');
+      expect(dragElement.style.transform)
+        .withContext('Expected element not to be moved by default.')
+        .toBeFalsy();
 
       dispatchTouchEvent(dragElement, 'touchstart');
       fixture.detectChanges();
@@ -1144,7 +1154,9 @@ describe('CdkDrag', () => {
       fixture.detectChanges();
       const dragElement = fixture.componentInstance.dragElement.nativeElement;
 
-      expect(dragElement.style.transform).toBeFalsy('Expected element not to be moved by default.');
+      expect(dragElement.style.transform)
+        .withContext('Expected element not to be moved by default.')
+        .toBeFalsy();
 
       dispatchMouseEvent(dragElement, 'mousedown');
       fixture.detectChanges();
@@ -1155,8 +1167,9 @@ describe('CdkDrag', () => {
       dispatchMouseEvent(document, 'mousemove', 50, 100);
       fixture.detectChanges();
 
-      expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)',
-          'Expected element to be dragged after all the time has passed.');
+      expect(dragElement.style.transform)
+        .withContext('Expected element to be dragged after all the time has passed.')
+        .toBe('translate3d(50px, 100px, 0px)');
     }));
 
     it('should be able to configure the drag start delay based on the event type', fakeAsync(() => {
@@ -1169,15 +1182,19 @@ describe('CdkDrag', () => {
       fixture.detectChanges();
       const dragElement = fixture.componentInstance.dragElement.nativeElement;
 
-      expect(dragElement.style.transform).toBeFalsy('Expected element not to be moved by default.');
+      expect(dragElement.style.transform)
+        .withContext('Expected element not to be moved by default.')
+        .toBeFalsy();
 
       dragElementViaTouch(fixture, dragElement, 50, 100);
       expect(dragElement.style.transform)
-          .toBeFalsy('Expected element not to be moved via touch because it has a delay.');
+          .withContext('Expected element not to be moved via touch because it has a delay.')
+          .toBeFalsy();
 
       dragElementViaMouse(fixture, dragElement, 50, 100);
-      expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)',
-          'Expected element to be moved via mouse because it has no delay.');
+      expect(dragElement.style.transform)
+        .withContext('Expected element to be moved via mouse because it has no delay.')
+        .toBe('translate3d(50px, 100px, 0px)');
     }));
 
     it('should be able to get the current position', fakeAsync(() => {
@@ -1480,11 +1497,13 @@ describe('CdkDrag', () => {
       dragElementViaMouse(fixture, dragElement, 50, 100);
 
       expect(dragElement.style.transform)
-          .toBeFalsy('Expected not to be able to drag the element by itself.');
+          .withContext('Expected not to be able to drag the element by itself.')
+          .toBeFalsy();
 
       dragElementViaMouse(fixture, handle, 50, 100);
       expect(dragElement.style.transform)
-          .toBe('translate3d(50px, 100px, 0px)', 'Expected to drag the element by its handle.');
+        .withContext('Expected to drag the element by its handle.')
+        .toBe('translate3d(50px, 100px, 0px)');
     }));
 
     it('should disable the tap highlight while dragging via the handle', fakeAsync(() => {
@@ -2173,38 +2192,54 @@ describe('CdkDrag', () => {
       const previewRect = preview.getBoundingClientRect();
       const zeroPxRegex = /^0(px)?$/;
 
-      expect(item.parentNode).toBe(document.body, 'Expected element to be moved out into the body');
-      expect(item.style.position).toBe('fixed', 'Expected element to be removed from layout');
+      expect(item.parentNode)
+        .withContext('Expected element to be moved out into the body').toBe(document.body);
+      expect(item.style.position)
+        .withContext('Expected element to be removed from layout').toBe('fixed');
       expect(item.style.getPropertyPriority('position'))
-          .toBe('important', 'Expect element position to be !important');
+        .withContext('Expect element position to be !important').toBe('important');
       // Use a regex here since some browsers normalize 0 to 0px, but others don't.
-      expect(item.style.top).toMatch(zeroPxRegex, 'Expected element to be removed from layout');
-      expect(item.style.left).toBe('-999em', 'Expected element to be removed from layout');
-      expect(item.style.opacity).toBe('0', 'Expected element to be invisible');
-      expect(preview).toBeTruthy('Expected preview to be in the DOM');
+      // Use a regex here since some browsers normalize 0 to 0px, but others don't.
+expect(item.style.top)
+  .withContext('Expected element to be removed from layout').toMatch(zeroPxRegex);
+      expect(item.style.left)
+        .withContext('Expected element to be removed from layout').toBe('-999em');
+      expect(item.style.opacity)
+        .withContext('Expected element to be invisible').toBe('0');
+      expect(preview).withContext('Expected preview to be in the DOM').toBeTruthy();
       expect(preview.textContent!.trim())
-          .toContain('One', 'Expected preview content to match element');
+        .withContext('Expected preview content to match element').toContain('One');
       expect(preview.getAttribute('dir'))
-          .toBe('ltr', 'Expected preview element to inherit the directionality.');
-      expect(previewRect.width).toBe(itemRect.width, 'Expected preview width to match element');
-      expect(previewRect.height).toBe(itemRect.height, 'Expected preview height to match element');
+        .withContext('Expected preview element to inherit the directionality.').toBe('ltr');
+      expect(previewRect.width)
+        .withContext('Expected preview width to match element').toBe(itemRect.width);
+      expect(previewRect.height)
+        .withContext('Expected preview height to match element').toBe(itemRect.height);
       expect(preview.style.pointerEvents)
-          .toBe('none', 'Expected pointer events to be disabled on the preview');
-      expect(preview.style.zIndex).toBe('1000', 'Expected preview to have a high default zIndex.');
+        .withContext('Expected pointer events to be disabled on the preview').toBe('none');
+      expect(preview.style.zIndex)
+        .withContext('Expected preview to have a high default zIndex.').toBe('1000');
       // Use a regex here since some browsers normalize 0 to 0px, but others don't.
-      expect(preview.style.margin).toMatch(zeroPxRegex, 'Expected the preview margin to be reset.');
+      // Use a regex here since some browsers normalize 0 to 0px, but others don't.
+      expect(preview.style.margin)
+        .withContext('Expected the preview margin to be reset.').toMatch(zeroPxRegex);
 
       dispatchMouseEvent(document, 'mouseup');
       fixture.detectChanges();
       flush();
 
       expect(item.parentNode)
-          .toBe(initialParent, 'Expected element to be moved back into its old parent');
-      expect(item.style.position).toBeFalsy('Expected element to be within the layout');
-      expect(item.style.top).toBeFalsy('Expected element to be within the layout');
-      expect(item.style.left).toBeFalsy('Expected element to be within the layout');
-      expect(item.style.opacity).toBeFalsy('Expected element to be visible');
-      expect(preview.parentNode).toBeFalsy('Expected preview to be removed from the DOM');
+        .withContext('Expected element to be moved back into its old parent').toBe(initialParent);
+      expect(item.style.position)
+        .withContext('Expected element to be within the layout').toBeFalsy();
+      expect(item.style.top)
+        .withContext('Expected element to be within the layout').toBeFalsy();
+      expect(item.style.left)
+        .withContext('Expected element to be within the layout').toBeFalsy();
+      expect(item.style.opacity)
+        .withContext('Expected element to be visible').toBeFalsy();
+      expect(preview.parentNode)
+        .withContext('Expected preview to be removed from the DOM').toBeFalsy();
     }));
 
     it('should be able to configure the preview z-index', fakeAsync(() => {
@@ -2429,17 +2464,20 @@ describe('CdkDrag', () => {
       const sourceCanvas = item.querySelector('canvas') as HTMLCanvasElement;
 
       // via https://stackoverflow.com/a/17386803/2204158
-      expect(sourceCanvas.getContext('2d')!
-        .getImageData(0, 0, sourceCanvas.width, sourceCanvas.height)
-        .data.some(channel => channel !== 0)).toBe(true, 'Expected source canvas to have data.');
+      // via https://stackoverflow.com/a/17386803/2204158
+expect(sourceCanvas.getContext('2d')!
+    .getImageData(0, 0, sourceCanvas.width, sourceCanvas.height)
+    .data.some(channel => channel !== 0))
+      .withContext('Expected source canvas to have data.').toBe(true);
 
       startDraggingViaMouse(fixture, item);
 
       const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
       const previewCanvas = preview.querySelector('canvas')!;
 
-      expect(previewCanvas.toDataURL()).toBe(sourceCanvas.toDataURL(),
-          'Expected cloned canvas to have the same content as the source.');
+      expect(previewCanvas.toDataURL())
+        .withContext('Expected cloned canvas to have the same content as the source.')
+        .toBe(sourceCanvas.toDataURL());
     }));
 
     it('should not throw when cloning an invalid canvas', fakeAsync(() => {
@@ -2508,7 +2546,8 @@ describe('CdkDrag', () => {
       tick(0);
 
       expect(sourceRadioInput.checked)
-        .toBeTruthy('Expected original radio input has preserved its original checked state');
+        .withContext('Expected original radio input has preserved its original checked state')
+        .toBeTruthy();
     }));
 
     it('should clear the ids from descendants of the preview', fakeAsync(() => {
@@ -2548,7 +2587,7 @@ describe('CdkDrag', () => {
       startDraggingViaMouse(fixture, item);
 
       expect(document.querySelector('.cdk-drag-preview')!.getAttribute('dir'))
-          .toBe('rtl', 'Expected preview element to inherit the directionality.');
+        .withContext('Expected preview element to inherit the directionality.').toBe('rtl');
     }));
 
     it('should remove the preview if its `transitionend` event timed out', fakeAsync(() => {
@@ -2572,12 +2611,14 @@ describe('CdkDrag', () => {
       tick(250);
 
       expect(preview.parentNode)
-          .toBeTruthy('Expected preview to be in the DOM mid-way through the transition');
+        .withContext('Expected preview to be in the DOM mid-way through the transition')
+        .toBeTruthy();
 
       tick(500);
 
       expect(preview.parentNode)
-          .toBeFalsy('Expected preview to be removed from the DOM if the transition timed out');
+        .withContext('Expected preview to be removed from the DOM if the transition timed out')
+        .toBeFalsy();
     }));
 
     it('should be able to set a single class on a preview', fakeAsync(() => {
@@ -2689,7 +2730,8 @@ describe('CdkDrag', () => {
       tick(0);
 
       expect(preview.parentNode)
-          .toBeFalsy('Expected preview to be removed from the DOM immediately');
+          .withContext('Expected preview to be removed from the DOM immediately')
+          .toBeFalsy();
     }));
 
     it('should pick out the `transform` duration if multiple properties are being transitioned',
@@ -2711,12 +2753,14 @@ describe('CdkDrag', () => {
         tick(500);
 
         expect(preview.parentNode)
-            .toBeTruthy('Expected preview to be in the DOM at the end of the opacity transition');
+            .withContext('Expected preview to be in the DOM at the end of the opacity transition')
+            .toBeTruthy();
 
         tick(1000);
 
-        expect(preview.parentNode).toBeFalsy(
-            'Expected preview to be removed from the DOM at the end of the transform transition');
+        expect(preview.parentNode)
+          .withContext('Expected preview to be removed from the DOM at the end of the ' +
+                       'transform transition').toBeFalsy();
       }));
 
     it('should create a placeholder element while the item is dragged', fakeAsync(() => {
@@ -2729,17 +2773,20 @@ describe('CdkDrag', () => {
 
       const placeholder = document.querySelector('.cdk-drag-placeholder')! as HTMLElement;
 
-      expect(placeholder).toBeTruthy('Expected placeholder to be in the DOM');
+      expect(placeholder).withContext('Expected placeholder to be in the DOM').toBeTruthy();
       expect(placeholder.parentNode)
-          .toBe(initialParent, 'Expected placeholder to be inserted into the same parent');
+        .withContext('Expected placeholder to be inserted into the same parent')
+        .toBe(initialParent);
       expect(placeholder.textContent!.trim())
-          .toContain('One', 'Expected placeholder content to match element');
+        .withContext('Expected placeholder content to match element').toContain('One');
 
       dispatchMouseEvent(document, 'mouseup');
       fixture.detectChanges();
       flush();
 
-      expect(placeholder.parentNode).toBeFalsy('Expected placeholder to be removed from the DOM');
+      expect(placeholder.parentNode)
+        .withContext('Expected placeholder to be removed from the DOM')
+        .toBeFalsy();
     }));
 
     it('should insert the preview into the `body` if previewContainer is set to `global`',
@@ -3166,13 +3213,13 @@ describe('CdkDrag', () => {
       dispatchMouseEvent(document, 'mousemove', targetRect.left, pointerTop);
       fixture.detectChanges();
       expect(getElementSibligsByPosition(placeholder, 'top').map(e => e.textContent!.trim()))
-          .toEqual(['One', 'Zero', 'Two', 'Three'], 'Expected position to swap.');
+        .withContext('Expected position to swap.').toEqual(['One', 'Zero', 'Two', 'Three']);
 
       // Move down a further 1px.
       dispatchMouseEvent(document, 'mousemove', targetRect.left, pointerTop + 1);
       fixture.detectChanges();
       expect(getElementSibligsByPosition(placeholder, 'top').map(e => e.textContent!.trim()))
-          .toEqual(['One', 'Zero', 'Two', 'Three'], 'Expected positions not to swap.');
+        .withContext('Expected positions not to swap.').toEqual(['One', 'Zero', 'Two', 'Three']);
 
       dispatchMouseEvent(document, 'mouseup');
       fixture.detectChanges();
@@ -3205,13 +3252,13 @@ describe('CdkDrag', () => {
       dispatchMouseEvent(document, 'mousemove', targetRect.left, pointerTop);
       fixture.detectChanges();
       expect(getElementSibligsByPosition(placeholder, 'top').map(e => e.textContent!.trim()))
-          .toEqual(['One', 'Zero', 'Two', 'Three'], 'Expected position to swap.');
+        .withContext('Expected position to swap.').toEqual(['One', 'Zero', 'Two', 'Three']);
 
       // Move up 10px.
       dispatchMouseEvent(document, 'mousemove', targetRect.left, pointerTop - 10);
       fixture.detectChanges();
       expect(getElementSibligsByPosition(placeholder, 'top').map(e => e.textContent!.trim()))
-          .toEqual(['Zero', 'One', 'Two', 'Three'], 'Expected positions to swap again.');
+        .withContext('Expected positions to swap again.').toEqual(['Zero', 'One', 'Two', 'Three']);
 
       dispatchMouseEvent(document, 'mouseup');
       fixture.detectChanges();
@@ -3269,13 +3316,15 @@ describe('CdkDrag', () => {
 
       const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
 
-      expect(preview.parentNode).toBeTruthy('Expected preview to be in the DOM');
-      expect(item.parentNode).toBeTruthy('Expected drag item to be in the DOM');
+      expect(preview.parentNode).withContext('Expected preview to be in the DOM').toBeTruthy();
+      expect(item.parentNode).withContext('Expected drag item to be in the DOM').toBeTruthy();
 
       fixture.destroy();
 
-      expect(preview.parentNode).toBeFalsy('Expected preview to be removed from the DOM');
-      expect(item.parentNode).toBeFalsy('Expected drag item to be removed from the DOM');
+      expect(preview.parentNode)
+        .withContext('Expected preview to be removed from the DOM').toBeFalsy();
+      expect(item.parentNode)
+        .withContext('Expected drag item to be removed from the DOM').toBeFalsy();
     }));
 
     it('should be able to customize the preview element', fakeAsync(() => {
@@ -3368,7 +3417,8 @@ describe('CdkDrag', () => {
         const dragContainer = fixture.componentInstance.dropInstance.element.nativeElement;
         const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
 
-        expect(dragContainer.contains(item)).toBe(true, 'Expected item to be in container.');
+        expect(dragContainer.contains(item))
+          .withContext('Expected item to be in container.').toBe(true);
 
         // The coordinates don't matter.
         dragElementViaMouse(fixture, item, 10, 10);
@@ -3376,7 +3426,7 @@ describe('CdkDrag', () => {
         fixture.detectChanges();
 
         expect(dragContainer.contains(item))
-            .toBe(true, 'Expected item to be returned to container.');
+          .withContext('Expected item to be returned to container.').toBe(true);
       }));
 
     it('should position custom previews next to the pointer', fakeAsync(() => {
@@ -3774,7 +3824,7 @@ describe('CdkDrag', () => {
       fixture.detectChanges();
 
       expect(getElementIndexByPosition(placeholder, 'top'))
-          .toBe(0, 'Expected placeholder to stay in place.');
+        .withContext('Expected placeholder to stay in place.').toBe(0);
 
       dispatchMouseEvent(document, 'mouseup', targetX, targetY);
       fixture.detectChanges();
@@ -3834,12 +3884,12 @@ describe('CdkDrag', () => {
         startDraggingViaMouse(fixture, item.element.nativeElement);
 
         expect(document.querySelectorAll('.cdk-drag-dragging').length)
-            .toBe(1, 'Expected one item to be dragged initially.');
+          .withContext('Expected one item to be dragged initially.').toBe(1);
 
         startDraggingViaMouse(fixture, otherItem.element.nativeElement);
 
         expect(document.querySelectorAll('.cdk-drag-dragging').length)
-            .toBe(1, 'Expected only one item to continue to be dragged.');
+          .withContext('Expected only one item to continue to be dragged.').toBe(1);
       }));
 
     it('should should be able to disable auto-scrolling', fakeAsync(() => {
@@ -4249,8 +4299,8 @@ describe('CdkDrag', () => {
       startDraggingViaMouse(fixture, dragItems.first.element.nativeElement);
       fixture.detectChanges();
 
-      expect(innerClasses).toContain(draggingClass,
-          'Expected inner list to be dragging.');
+      expect(innerClasses)
+        .withContext('Expected inner list to be dragging.').toContain(draggingClass);
       expect(outerClasses).not.toContain(draggingClass,
           'Expected outer list to not be dragging.');
     }));
@@ -4377,7 +4427,8 @@ describe('CdkDrag', () => {
       let item = fixture.componentInstance.dragItems.first;
       startDraggingViaMouse(fixture, item.element.nativeElement);
       expect(document.querySelector('.cdk-drop-list-dragging'))
-          .toBeTruthy('Expected to drag initially.');
+        .withContext('Expected to drag initially.')
+        .toBeTruthy();
 
       fixture.componentInstance.items = [
         {value: 'Five', height: ITEM_HEIGHT, margin: 0},
@@ -4387,13 +4438,15 @@ describe('CdkDrag', () => {
 
       expect(fixture.componentInstance.droppedSpy).not.toHaveBeenCalled();
       expect(document.querySelector('.cdk-drop-list-dragging'))
-          .toBeFalsy('Expected not to be dragging after item is destroyed.');
+        .withContext('Expected not to be dragging after item is destroyed.')
+        .toBeFalsy();
 
       item = fixture.componentInstance.dragItems.first;
       startDraggingViaMouse(fixture, item.element.nativeElement);
 
       expect(document.querySelector('.cdk-drop-list-dragging'))
-          .toBeTruthy('Expected to be able to start a new drag sequence.');
+        .withContext('Expected to be able to start a new drag sequence.')
+        .toBeTruthy();
 
       dispatchMouseEvent(document, 'mouseup');
       fixture.detectChanges();
@@ -4494,32 +4547,32 @@ describe('CdkDrag', () => {
       const preview = document.querySelector('.cdk-drag-preview') as HTMLElement;
       const placeholder = fixture.nativeElement.querySelector('.cdk-drag-placeholder');
 
-      expect(items.every(hasInitialTransform)).toBe(true,
-        'Expected items to preserve transform when dragging starts.');
-      expect(hasInitialTransform(preview)).toBe(true,
-        'Expected preview to preserve transform when dragging starts.');
-      expect(hasInitialTransform(placeholder)).toBe(true,
-        'Expected placeholder to preserve transform when dragging starts.');
+      expect(items.every(hasInitialTransform))
+        .withContext('Expected items to preserve transform when dragging starts.').toBe(true);
+      expect(hasInitialTransform(preview))
+        .withContext('Expected preview to preserve transform when dragging starts.').toBe(true);
+      expect(hasInitialTransform(placeholder))
+        .withContext('Expected placeholder to preserve transform when dragging starts.').toBe(true);
 
       dispatchMouseEvent(document, 'mousemove', thirdItemRect.left + 1, thirdItemRect.top + 1);
       fixture.detectChanges();
-      expect(items.every(hasInitialTransform)).toBe(true,
-        'Expected items to preserve transform while dragging.');
-      expect(hasInitialTransform(preview)).toBe(true,
-        'Expected preview to preserve transform while dragging.');
-      expect(hasInitialTransform(placeholder)).toBe(true,
-        'Expected placeholder to preserve transform while dragging.');
+      expect(items.every(hasInitialTransform))
+        .withContext('Expected items to preserve transform while dragging.').toBe(true);
+      expect(hasInitialTransform(preview))
+        .withContext('Expected preview to preserve transform while dragging.').toBe(true);
+      expect(hasInitialTransform(placeholder))
+        .withContext('Expected placeholder to preserve transform while dragging.').toBe(true);
 
       dispatchMouseEvent(document, 'mouseup');
       fixture.detectChanges();
       flush();
       fixture.detectChanges();
-      expect(items.every(hasInitialTransform)).toBe(true,
-        'Expected items to preserve transform when dragging stops.');
-      expect(hasInitialTransform(preview)).toBe(true,
-        'Expected preview to preserve transform when dragging stops.');
-      expect(hasInitialTransform(placeholder)).toBe(true,
-         'Expected placeholder to preserve transform when dragging stops.');
+      expect(items.every(hasInitialTransform))
+        .withContext('Expected items to preserve transform when dragging stops.').toBe(true);
+      expect(hasInitialTransform(preview))
+        .withContext('Expected preview to preserve transform when dragging stops.').toBe(true);
+      expect(hasInitialTransform(placeholder))
+        .withContext('Expected placeholder to preserve transform when dragging stops.').toBe(true);
     }));
 
   });
@@ -4571,19 +4624,19 @@ describe('CdkDrag', () => {
 
       expect(placeholder).toBeTruthy();
       expect(dropZones[0].contains(placeholder))
-          .toBe(true, 'Expected placeholder to be inside the first container.');
+        .withContext('Expected placeholder to be inside the first container.').toBe(true);
 
       dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.top + 1);
       fixture.detectChanges();
 
       expect(dropZones[1].contains(placeholder))
-          .toBe(true, 'Expected placeholder to be inside second container.');
+        .withContext('Expected placeholder to be inside second container.').toBe(true);
 
       dispatchMouseEvent(document, 'mousemove', initialRect.left + 1, initialRect.top + 1);
       fixture.detectChanges();
 
       expect(dropZones[0].contains(placeholder))
-          .toBe(true, 'Expected placeholder to be back inside first container.');
+        .withContext('Expected placeholder to be back inside first container.').toBe(true);
 
       dispatchMouseEvent(document, 'mouseup');
       fixture.detectChanges();
@@ -4611,19 +4664,19 @@ describe('CdkDrag', () => {
 
         expect(placeholder).toBeTruthy();
         expect(dropZones[0].contains(placeholder))
-            .toBe(true, 'Expected placeholder to be inside the first container.');
+          .withContext('Expected placeholder to be inside the first container.').toBe(true);
 
         dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.top + 1);
         fixture.detectChanges();
 
         expect(dropZones[1].contains(placeholder))
-            .toBe(true, 'Expected placeholder to be inside second container.');
+          .withContext('Expected placeholder to be inside second container.').toBe(true);
 
         dispatchMouseEvent(document, 'mousemove', initialRect.left + 1, initialRect.top + 1);
         fixture.detectChanges();
 
         expect(dropZones[0].contains(placeholder))
-            .toBe(true, 'Expected placeholder to be back inside first container.');
+          .withContext('Expected placeholder to be back inside first container.').toBe(true);
 
         dispatchMouseEvent(document, 'mouseup');
         fixture.detectChanges();
@@ -4786,19 +4839,19 @@ describe('CdkDrag', () => {
       expect(placeholder).toBeTruthy();
 
       expect(dropZones[0].contains(placeholder))
-          .toBe(true, 'Expected placeholder to be inside the first container.');
+        .withContext('Expected placeholder to be inside the first container.').toBe(true);
 
       dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.top + 1);
       fixture.detectChanges();
 
       expect(dropZones[1].contains(placeholder))
-          .toBe(true, 'Expected placeholder to be inside second container.');
+        .withContext('Expected placeholder to be inside second container.').toBe(true);
 
       dispatchMouseEvent(document, 'mousemove', initialRect.left + 1, initialRect.top + 1);
       fixture.detectChanges();
 
       expect(dropZones[0].contains(placeholder))
-          .toBe(true, 'Expected placeholder to be back inside first container.');
+        .withContext('Expected placeholder to be back inside first container.').toBe(true);
 
       dispatchMouseEvent(document, 'mouseup');
       fixture.detectChanges();
@@ -4831,12 +4884,13 @@ describe('CdkDrag', () => {
       fixture.detectChanges();
 
       expect(targetElement.previousSibling === placeholder)
-          .toBe(true, 'Expected placeholder to be inside second container before last item.');
+        .withContext('Expected placeholder to be inside second container before last item.')
+        .toBe(true);
 
       // Update target rect
       targetRect = targetElement.getBoundingClientRect();
       expect(initialTargetZoneRect.bottom <= targetRect.top)
-        .toBe(true, 'Expected target rect to be outside of initial target zone rect');
+        .withContext('Expected target rect to be outside of initial target zone rect').toBe(true);
 
         // Swap with target
       dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.bottom - 1);
@@ -4885,13 +4939,13 @@ describe('CdkDrag', () => {
       expect(placeholder).toBeTruthy();
 
       expect(dropZones[0].contains(placeholder))
-          .toBe(true, 'Expected placeholder to be inside the first container.');
+        .withContext('Expected placeholder to be inside the first container.').toBe(true);
 
       dispatchMouseEvent(document, 'mousemove', targetRect.left, targetRect.top);
       fixture.detectChanges();
 
       expect(dropZones[1].firstElementChild === placeholder)
-          .toBe(true, 'Expected placeholder to be first child inside second container.');
+        .withContext('Expected placeholder to be first child inside second container.').toBe(true);
 
       dispatchMouseEvent(document, 'mouseup');
     }));
@@ -4922,13 +4976,13 @@ describe('CdkDrag', () => {
       expect(placeholder).toBeTruthy();
 
       expect(dropZones[0].contains(placeholder))
-          .toBe(true, 'Expected placeholder to be inside the first container.');
+        .withContext('Expected placeholder to be inside the first container.').toBe(true);
 
       dispatchMouseEvent(document, 'mousemove', targetRect.left, targetRect.top);
       fixture.detectChanges();
 
       expect(dropZones[1].lastChild === placeholder)
-          .toBe(true, 'Expected placeholder to be last child inside second container.');
+        .withContext('Expected placeholder to be last child inside second container.').toBe(true);
 
       dispatchMouseEvent(document, 'mouseup');
     }));
@@ -5072,10 +5126,11 @@ describe('CdkDrag', () => {
       const dropContainers = fixture.componentInstance.dropInstances
           .map(drop => drop.element.nativeElement);
 
-      expect(dropContainers[0].contains(item.element.nativeElement)).toBe(true,
-          'Expected DOM element to be in first container');
-      expect(item.dropContainer).toBe(fixture.componentInstance.dropInstances.first,
-          'Expected CdkDrag to be in first container in memory');
+      expect(dropContainers[0].contains(item.element.nativeElement))
+        .withContext('Expected DOM element to be in first container').toBe(true);
+      expect(item.dropContainer)
+        .withContext('Expected CdkDrag to be in first container in memory')
+        .toBe(fixture.componentInstance.dropInstances.first);
 
       dragElementViaMouse(fixture, item.element.nativeElement,
           targetRect.left + 1, targetRect.top + 1);
@@ -5097,10 +5152,11 @@ describe('CdkDrag', () => {
         dropPoint: {x: jasmine.any(Number), y: jasmine.any(Number)}
       });
 
-      expect(dropContainers[0].contains(item.element.nativeElement)).toBe(true,
-          'Expected DOM element to be returned to first container');
-      expect(item.dropContainer).toBe(fixture.componentInstance.dropInstances.first,
-          'Expected CdkDrag to be returned to first container in memory');
+      expect(dropContainers[0].contains(item.element.nativeElement))
+        .withContext('Expected DOM element to be returned to first container').toBe(true);
+      expect(item.dropContainer)
+        .withContext('Expected CdkDrag to be returned to first container in memory')
+        .toBe(fixture.componentInstance.dropInstances.first);
     }));
 
     it('should be able to return an element to its initial container in the same sequence, ' +
@@ -5126,19 +5182,19 @@ describe('CdkDrag', () => {
 
         expect(placeholder).toBeTruthy();
         expect(dropZones[0].contains(placeholder))
-            .toBe(true, 'Expected placeholder to be inside the first container.');
+          .withContext('Expected placeholder to be inside the first container.').toBe(true);
 
         dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.top + 1);
         fixture.detectChanges();
 
         expect(dropZones[1].contains(placeholder))
-            .toBe(true, 'Expected placeholder to be inside second container.');
+          .withContext('Expected placeholder to be inside second container.').toBe(true);
 
         dispatchMouseEvent(document, 'mousemove', initialRect.left + 1, initialRect.top + 1);
         fixture.detectChanges();
 
         expect(dropZones[0].contains(placeholder))
-            .toBe(true, 'Expected placeholder to be back inside first container.');
+          .withContext('Expected placeholder to be back inside first container.').toBe(true);
 
         dispatchMouseEvent(document, 'mouseup');
         fixture.detectChanges();
@@ -5205,7 +5261,7 @@ describe('CdkDrag', () => {
          const item = fixture.componentInstance.groupedDragItems[0][1];
 
          expect(dropZones.every(c => !c.classList.contains('cdk-drop-list-receiving')))
-             .toBe(true, 'Expected neither of the containers to have the class.');
+          .withContext('Expected neither of the containers to have the class.').toBe(true);
 
          startDraggingViaMouse(fixture, item.element.nativeElement);
          fixture.detectChanges();
@@ -5216,9 +5272,8 @@ describe('CdkDrag', () => {
                  'Expected source container not to have the receiving class.');
 
          expect(dropZones[1].classList)
-             .toContain(
-                 'cdk-drop-list-receiving',
-                 'Expected target container to have the receiving class.');
+          .withContext('Expected target container to have the receiving class.')
+          .toContain('cdk-drop-list-receiving');
        }));
 
     it('should toggle the `receiving` class when the item enters a new list', fakeAsync(() => {
@@ -5232,7 +5287,7 @@ describe('CdkDrag', () => {
          const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
 
          expect(dropZones.every(c => !c.classList.contains('cdk-drop-list-receiving')))
-             .toBe(true, 'Expected neither of the containers to have the class.');
+          .withContext('Expected neither of the containers to have the class.').toBe(true);
 
          startDraggingViaMouse(fixture, item.element.nativeElement);
 
@@ -5242,22 +5297,19 @@ describe('CdkDrag', () => {
                  'Expected source container not to have the receiving class.');
 
          expect(dropZones[1].classList)
-             .toContain(
-                 'cdk-drop-list-receiving',
-                 'Expected target container to have the receiving class.');
+          .withContext('Expected target container to have the receiving class.')
+          .toContain('cdk-drop-list-receiving');
 
          dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.top + 1);
          fixture.detectChanges();
 
          expect(dropZones[0].classList)
-             .toContain(
-                 'cdk-drop-list-receiving',
-                 'Expected old container to have the receiving class after exiting.');
+          .withContext('Expected old container to have the receiving class after exiting.')
+          .toContain('cdk-drop-list-receiving');
 
-         expect(dropZones[1].classList)
-             .not.toContain(
-                 'cdk-drop-list-receiving',
-                 'Expected new container not to have the receiving class after exiting.');
+         expect(dropZones[1].classList).not
+          .withContext('Expected new container not to have the receiving class after exiting.')
+          .toContain('cdk-drop-list-receiving');
        }));
 
     it('should not set the receiving class if the item does not match the enter predicate',
@@ -5271,13 +5323,13 @@ describe('CdkDrag', () => {
         const item = fixture.componentInstance.groupedDragItems[0][1];
 
         expect(dropZones.every(c => !c.classList.contains('cdk-drop-list-receiving')))
-            .toBe(true, 'Expected neither of the containers to have the class.');
+          .withContext('Expected neither of the containers to have the class.').toBe(true);
 
         startDraggingViaMouse(fixture, item.element.nativeElement);
         fixture.detectChanges();
 
         expect(dropZones.every(c => !c.classList.contains('cdk-drop-list-receiving')))
-            .toBe(true, 'Expected neither of the containers to have the class.');
+          .withContext('Expected neither of the containers to have the class.').toBe(true);
       }));
 
     it('should set the receiving class on the source container, even if the enter predicate ' +
@@ -5293,27 +5345,24 @@ describe('CdkDrag', () => {
         const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
 
         expect(dropZones.every(c => !c.classList.contains('cdk-drop-list-receiving')))
-            .toBe(true, 'Expected neither of the containers to have the class.');
+          .withContext('Expected neither of the containers to have the class.').toBe(true);
 
         startDraggingViaMouse(fixture, item.element.nativeElement);
 
-        expect(dropZones[0].classList)
-            .not.toContain(
-                'cdk-drop-list-receiving',
-                'Expected source container not to have the receiving class.');
+        expect(dropZones[0].classList).not
+          .withContext('Expected source container not to have the receiving class.')
+          .toContain('cdk-drop-list-receiving');
 
         expect(dropZones[1].classList)
-            .toContain(
-                'cdk-drop-list-receiving',
-                'Expected target container to have the receiving class.');
+          .withContext('Expected target container to have the receiving class.')
+          .toContain('cdk-drop-list-receiving');
 
         dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.top + 1);
         fixture.detectChanges();
 
         expect(dropZones[0].classList)
-            .toContain(
-                'cdk-drop-list-receiving',
-                'Expected old container to have the receiving class after exiting.');
+          .withContext('Expected old container to have the receiving class after exiting.')
+          .toContain('cdk-drop-list-receiving');
 
         expect(dropZones[1].classList)
             .not.toContain(
@@ -5344,20 +5393,20 @@ describe('CdkDrag', () => {
 
         expect(placeholder).toBeTruthy();
         expect(dropZones[0].contains(placeholder))
-            .toBe(true, 'Expected placeholder to be inside the first container.');
+          .withContext('Expected placeholder to be inside the first container.').toBe(true);
 
         dispatchMouseEvent(document, 'mousemove',
             intermediateRect.left + 1, intermediateRect.top + 1);
         fixture.detectChanges();
 
         expect(dropZones[1].contains(placeholder))
-            .toBe(true, 'Expected placeholder to be inside second container.');
+          .withContext('Expected placeholder to be inside second container.').toBe(true);
 
         dispatchMouseEvent(document, 'mousemove', finalRect.left + 1, finalRect.top + 1);
         fixture.detectChanges();
 
         expect(dropZones[2].contains(placeholder))
-            .toBe(true, 'Expected placeholder to be inside third container.');
+          .withContext('Expected placeholder to be inside third container.').toBe(true);
 
         dispatchMouseEvent(document, 'mouseup');
         fixture.detectChanges();
@@ -5403,20 +5452,20 @@ describe('CdkDrag', () => {
 
         expect(placeholder).toBeTruthy();
         expect(dropZones[0].contains(placeholder))
-            .toBe(true, 'Expected placeholder to be inside the first container.');
+          .withContext('Expected placeholder to be inside the first container.').toBe(true);
 
         dispatchMouseEvent(document, 'mousemove',
             intermediateRect.left + 1, intermediateRect.top + 1);
         fixture.detectChanges();
 
         expect(dropZones[1].contains(placeholder))
-            .toBe(true, 'Expected placeholder to be inside second container.');
+          .withContext('Expected placeholder to be inside second container.').toBe(true);
 
         dispatchMouseEvent(document, 'mousemove', finalRect.left + 1, finalRect.top + 1);
         fixture.detectChanges();
 
         expect(dropZones[1].contains(placeholder))
-            .toBe(true, 'Expected placeholder to remain in the second container.');
+          .withContext('Expected placeholder to remain in the second container.').toBe(true);
 
         dispatchMouseEvent(document, 'mouseup');
         fixture.detectChanges();
@@ -5454,17 +5503,17 @@ describe('CdkDrag', () => {
 
         expect(placeholder).toBeTruthy();
         expect(dropZones[0].contains(placeholder))
-            .toBe(true, 'Expected placeholder to be inside the first container.');
+          .withContext('Expected placeholder to be inside the first container.').toBe(true);
         expect(getElementIndexByPosition(placeholder, 'top'))
-            .toBe(1, 'Expected placeholder to be at item index.');
+          .withContext('Expected placeholder to be at item index.').toBe(1);
 
         dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.top + 1);
         fixture.detectChanges();
 
         expect(dropZones[1].contains(placeholder))
-            .toBe(true, 'Expected placeholder to be inside second container.');
+          .withContext('Expected placeholder to be inside second container.').toBe(true);
         expect(getElementIndexByPosition(placeholder, 'top'))
-            .toBe(3, 'Expected placeholder to be at the target index.');
+          .withContext('Expected placeholder to be at the target index.').toBe(3);
 
         const firstInitialSiblingRect = groups[0][0].element
             .nativeElement.getBoundingClientRect();
@@ -5475,9 +5524,9 @@ describe('CdkDrag', () => {
         fixture.detectChanges();
 
         expect(dropZones[0].contains(placeholder))
-            .toBe(true, 'Expected placeholder to be back inside first container.');
+          .withContext('Expected placeholder to be back inside first container.').toBe(true);
         expect(getElementIndexByPosition(placeholder, 'top'))
-            .toBe(1, 'Expected placeholder to be back at the initial index.');
+          .withContext('Expected placeholder to be back at the initial index.').toBe(1);
 
         dispatchMouseEvent(document, 'mouseup');
         fixture.detectChanges();
@@ -5503,17 +5552,17 @@ describe('CdkDrag', () => {
 
         expect(placeholder).toBeTruthy();
         expect(dropZones[0].contains(placeholder))
-            .toBe(true, 'Expected placeholder to be inside the first container.');
+          .withContext('Expected placeholder to be inside the first container.').toBe(true);
         expect(getElementIndexByPosition(placeholder, 'top'))
-            .toBe(1, 'Expected placeholder to be at item index.');
+          .withContext('Expected placeholder to be at item index.').toBe(1);
 
         dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.top + 1);
         fixture.detectChanges();
 
         expect(dropZones[1].contains(placeholder))
-            .toBe(true, 'Expected placeholder to be inside second container.');
+          .withContext('Expected placeholder to be inside second container.').toBe(true);
         expect(getElementIndexByPosition(placeholder, 'top'))
-            .toBe(3, 'Expected placeholder to be at the target index.');
+          .withContext('Expected placeholder to be at the target index.').toBe(3);
 
         const nextTargetRect = groups[0][3].element.nativeElement.getBoundingClientRect();
 
@@ -5522,9 +5571,9 @@ describe('CdkDrag', () => {
         fixture.detectChanges();
 
         expect(dropZones[0].contains(placeholder))
-            .toBe(true, 'Expected placeholder to be back inside first container.');
+          .withContext('Expected placeholder to be back inside first container.').toBe(true);
         expect(getElementIndexByPosition(placeholder, 'top'))
-            .toBe(2, 'Expected placeholder to be at the index at which it entered.');
+          .withContext('Expected placeholder to be at the index at which it entered.').toBe(2);
       }));
 
     it('should toggle a class when dragging an item inside a wrapper component component ' +
@@ -5550,25 +5599,21 @@ describe('CdkDrag', () => {
          startDraggingViaMouse(fixture, item);
 
          expect(startZone.classList)
-             .toContain(
-                 'cdk-drop-list-dragging',
-                 'Expected start to have dragging class after dragging has started.');
-         expect(targetZone.classList)
-             .not.toContain(
-                 'cdk-drop-list-dragging',
-                 'Expected target not to have dragging class after dragging has started.');
+          .withContext('Expected start to have dragging class after dragging has started.')
+          .toContain('cdk-drop-list-dragging');
+         expect(targetZone.classList).not
+          .withContext('Expected target not to have dragging class after dragging has started.')
+          .toContain('cdk-drop-list-dragging');
 
          dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.top + 1);
          fixture.detectChanges();
 
-         expect(startZone.classList)
-             .not.toContain(
-                 'cdk-drop-list-dragging',
-                 'Expected start not to have dragging class once item has been moved over.');
+         expect(startZone.classList).not
+          .withContext('Expected start not to have dragging class once item has been moved over.')
+          .toContain('cdk-drop-list-dragging');
          expect(targetZone.classList)
-             .toContain(
-                 'cdk-drop-list-dragging',
-                 'Expected target to have dragging class once item has been moved over.');
+          .withContext('Expected target to have dragging class once item has been moved over.')
+          .toContain('cdk-drop-list-dragging');
        }));
 
     it('should dispatch an event when an item enters a new container', fakeAsync(() => {
@@ -5787,12 +5832,12 @@ describe('CdkDrag', () => {
         startDraggingViaMouse(fixture, item.element.nativeElement);
 
         expect(document.querySelectorAll('.cdk-drag-dragging').length)
-            .toBe(1, 'Expected one item to be dragged initially.');
+          .withContext('Expected one item to be dragged initially.').toBe(1);
 
         startDraggingViaMouse(fixture, itemInOtherList.element.nativeElement);
 
         expect(document.querySelectorAll('.cdk-drag-dragging').length)
-            .toBe(1, 'Expected only one item to continue to be dragged.');
+          .withContext('Expected only one item to continue to be dragged.').toBe(1);
       }));
 
     it('should insert the preview inside the shadow root by default', fakeAsync(() => {

@@ -19,7 +19,8 @@ describe('HighContrastModeDetector', () => {
     fakePlatform.isBrowser = false;
     const detector = new HighContrastModeDetector(fakePlatform, {});
     expect(detector.getHighContrastMode())
-        .toBe(HighContrastMode.NONE, 'Expected high-contrast mode `NONE` on non-browser platforms');
+      .withContext('Expected high-contrast mode `NONE` on non-browser platforms')
+      .toBe(HighContrastMode.NONE);
   });
 
   it('should not apply any css classes for non-browser platforms', () => {
@@ -28,26 +29,28 @@ describe('HighContrastModeDetector', () => {
     const detector = new HighContrastModeDetector(fakePlatform, fakeDocument);
     detector._applyBodyHighContrastModeCssClasses();
     expect(fakeDocument.body.className)
-        .toBe('', 'Expected body not to have any CSS classes in non-browser platforms');
+      .withContext('Expected body not to have any CSS classes in non-browser platforms').toBe('');
   });
 
   it('should detect WHITE_ON_BLACK when backgrounds are coerced to black', () => {
     const detector = new HighContrastModeDetector(fakePlatform, getFakeDocument('rgb(0,0,0)'));
     expect(detector.getHighContrastMode())
-        .toBe(HighContrastMode.WHITE_ON_BLACK, 'Expected high-contrast mode `WHITE_ON_BLACK`');
+      .withContext('Expected high-contrast mode `WHITE_ON_BLACK`')
+      .toBe(HighContrastMode.WHITE_ON_BLACK);
   });
 
   it('should detect BLACK_ON_WHITE when backgrounds are coerced to white ', () => {
     const detector =
         new HighContrastModeDetector(fakePlatform, getFakeDocument('rgb(255,255,255)'));
     expect(detector.getHighContrastMode())
-        .toBe(HighContrastMode.BLACK_ON_WHITE, 'Expected high-contrast mode `BLACK_ON_WHITE`');
+      .withContext('Expected high-contrast mode `BLACK_ON_WHITE`')
+      .toBe(HighContrastMode.BLACK_ON_WHITE);
   });
 
   it('should detect NONE when backgrounds are not coerced ', () => {
     const detector = new HighContrastModeDetector(fakePlatform, getFakeDocument('rgb(1,2,3)'));
     expect(detector.getHighContrastMode())
-        .toBe(HighContrastMode.NONE, 'Expected high-contrast mode `NONE`');
+      .withContext('Expected high-contrast mode `NONE`').toBe(HighContrastMode.NONE);
   });
 
   it('should apply css classes for BLACK_ON_WHITE high-contrast mode', () => {
@@ -71,7 +74,7 @@ describe('HighContrastModeDetector', () => {
     const detector = new HighContrastModeDetector(fakePlatform, fakeDocument);
     detector._applyBodyHighContrastModeCssClasses();
     expect(fakeDocument.body.className)
-        .toBe('', 'Expected body not to have any CSS classes in non-browser platforms');
+      .withContext('Expected body not to have any CSS classes in non-browser platforms').toBe('');
   });
 });
 

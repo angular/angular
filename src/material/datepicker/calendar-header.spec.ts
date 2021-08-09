@@ -189,7 +189,7 @@ describe('MatCalendarHeader', () => {
 
       expect(calendarInstance.currentView).toBe('month');
       expect(calendarInstance.activeDate).toEqual(new Date(2016, DEC, 31));
-      expect(testComponent.selected).toBeFalsy('no date should be selected yet');
+      expect(testComponent.selected).withContext('no date should be selected yet').toBeFalsy();
     });
 
     it('should format the year in the period button using the date adapter', () => {

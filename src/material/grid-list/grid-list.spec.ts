@@ -521,8 +521,10 @@ describe('MatGridList', () => {
     fixture.componentInstance.rowHeight = '400px';
     fixture.detectChanges();
 
-    expect(tileInlineStyles.paddingTop).toBeFalsy('Expected tile padding to be reset.');
-    expect(listInlineStyles.paddingBottom).toBeFalsy('Expected list padding to be reset.');
+    expect(tileInlineStyles.paddingTop)
+      .withContext('Expected tile padding to be reset.').toBeFalsy();
+    expect(listInlineStyles.paddingBottom)
+      .withContext('Expected list padding to be reset.').toBeFalsy();
 
     expect(getDimension(tile, 'top')).toBe(0);
     expect(getDimension(tile, 'height')).toBe(400);
@@ -534,7 +536,7 @@ describe('MatGridList', () => {
 
     fixture.detectChanges();
     expect(tiles.every(tile => getComputedLeft(tile) >= 0))
-        .toBe(true, 'Expected none of the tiles to have a negative `left`');
+      .withContext('Expected none of the tiles to have a negative `left`').toBe(true);
   });
 
   it('should default to LTR if empty directionality is given', () => {

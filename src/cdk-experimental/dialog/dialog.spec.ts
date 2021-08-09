@@ -209,8 +209,8 @@ describe('Dialog', () => {
 
     // beforeClose should emit before dialog container is destroyed
     const beforeCloseHandler = jasmine.createSpy('beforeClose callback').and.callFake(() => {
-      expect(overlayContainerElement.querySelector('cdk-dialog-container'))
-          .not.toBeNull('dialog container exists when beforeClose is called');
+      expect(overlayContainerElement.querySelector('cdk-dialog-container')).not
+        .withContext('dialog container exists when beforeClose is called').toBeNull();
     });
 
     dialogRef.beforeClosed().subscribe(beforeCloseHandler);
@@ -261,7 +261,7 @@ describe('Dialog', () => {
     flushMicrotasks();
 
     expect(overlayContainerElement.querySelectorAll('cdk-dialog-container').length)
-        .toBe(1, 'Expected one open dialog.');
+      .withContext('Expected one open dialog.').toBe(1);
 
     dialogRef.close();
     flushMicrotasks();
@@ -269,7 +269,7 @@ describe('Dialog', () => {
     tick(500);
 
     expect(overlayContainerElement.querySelectorAll('cdk-dialog-container').length)
-        .toBe(0, 'Expected no open dialogs.');
+      .withContext('Expected no open dialogs.').toBe(0);
   }));
 
   it('should close when clicking on the overlay backdrop', fakeAsync(() => {
@@ -403,8 +403,8 @@ describe('Dialog', () => {
 
     let overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
 
-    expect(overlayPane.style.maxWidth).toBe('80vw',
-      'Expected dialog to set a default max-width on overlay pane');
+    expect(overlayPane.style.maxWidth)
+      .withContext('Expected dialog to set a default max-width on overlay pane').toBe('80vw');
 
     dialogRef.close();
 
@@ -716,7 +716,8 @@ describe('Dialog', () => {
     viewContainerFixture.detectChanges();
     flush();
 
-    expect(dialogRef.componentInstance).toBeFalsy('Expected reference to have been cleared.');
+    expect(dialogRef.componentInstance)
+      .withContext('Expected reference to have been cleared.').toBeFalsy();
   }));
 
   it('should assign a unique id to each dialog', () => {
@@ -892,7 +893,8 @@ describe('Dialog', () => {
       flushMicrotasks();
 
       expect(document.activeElement!.tagName)
-          .toBe('INPUT', 'Expected first tabbable element (input) in the dialog to be focused.');
+        .withContext('Expected first tabbable element (input) in the dialog to be focused.')
+        .toBe('INPUT');
     }));
 
     it('should focus the dialog element on open', fakeAsync(() => {
@@ -907,7 +909,8 @@ describe('Dialog', () => {
       let container =
         overlayContainerElement.querySelector('cdk-dialog-container') as HTMLInputElement;
 
-      expect(document.activeElement).toBe(container, 'Expected container to be focused on open');
+      expect(document.activeElement)
+        .withContext('Expected container to be focused on open').toBe(container);
     }));
 
     it('should focus the first header element on open', fakeAsync(() => {
@@ -923,7 +926,7 @@ describe('Dialog', () => {
         overlayContainerElement.querySelector('h1[tabindex="-1"]') as HTMLInputElement;
 
       expect(document.activeElement)
-        .toBe(firstHeader, 'Expected first header to be focused on open');
+        .withContext('Expected first header to be focused on open').toBe(firstHeader);
     }));
 
     it('should focus the first element that matches the css selector from autoFocus on open',
@@ -940,7 +943,7 @@ describe('Dialog', () => {
         overlayContainerElement.querySelector('p[tabindex="-1"]') as HTMLInputElement;
 
       expect(document.activeElement)
-        .toBe(firstParagraph, 'Expected first paragraph to be focused on open');
+        .withContext('Expected first paragraph to be focused on open').toBe(firstParagraph);
     }));
 
     it('should re-focus trigger element when dialog closes', fakeAsync(() => {
@@ -968,8 +971,9 @@ describe('Dialog', () => {
       viewContainerFixture.detectChanges();
       flush();
 
-      expect(document.activeElement!.id).toBe('dialog-trigger',
-          'Expected that the trigger was refocused after the dialog is closed.');
+      expect(document.activeElement!.id)
+        .withContext('Expected that the trigger was refocused after the dialog is closed.')
+        .toBe('dialog-trigger');
 
       document.body.removeChild(button);
     }));
@@ -1027,14 +1031,14 @@ describe('Dialog', () => {
       otherButton.focus();
 
       expect(document.activeElement!.id)
-          .toBe('other-button', 'Expected focus to be on the alternate button.');
+        .withContext('Expected focus to be on the alternate button.').toBe('other-button');
 
       flushMicrotasks();
       viewContainerFixture.detectChanges();
       flush();
 
       expect(document.activeElement!.id)
-          .toBe('other-button', 'Expected focus to stay on the alternate button.');
+        .withContext('Expected focus to stay on the alternate button.').toBe('other-button');
 
       body.removeChild(button);
       body.removeChild(otherButton);
@@ -1065,8 +1069,9 @@ describe('Dialog', () => {
       viewContainerFixture.detectChanges();
       flushMicrotasks();
 
-      expect(document.activeElement!.id).toBe('input-to-be-focused',
-          'Expected that the trigger was refocused after the dialog is closed.');
+      expect(document.activeElement!.id)
+        .withContext('Expected that the trigger was refocused after the dialog is closed.')
+        .toBe('input-to-be-focused');
 
       document.body.removeChild(button);
       document.body.removeChild(input);
@@ -1081,7 +1086,7 @@ describe('Dialog', () => {
         flushMicrotasks();
 
         expect(document.activeElement!.tagName.toLowerCase())
-            .toBe('cdk-dialog-container', 'Expected dialog container to be focused.');
+          .withContext('Expected dialog container to be focused.').toBe('cdk-dialog-container');
       }));
 
   });
@@ -1154,14 +1159,14 @@ describe('Dialog with a parent Dialog', () => {
       flush();
 
       expect(overlayContainerElement.textContent)
-          .toContain('Pizza', 'Expected a dialog to be opened');
+        .withContext('Expected a dialog to be opened').toContain('Pizza');
 
       childDialog.closeAll();
       fixture.detectChanges();
       flush();
 
       expect(overlayContainerElement.textContent!.trim())
-          .toBe('', 'Expected closeAll on child Dialog to close dialog opened by parent');
+        .withContext('Expected closeAll on child Dialog to close dialog opened by parent').toBe('');
     }));
 
   it('should close dialogs opened by a child when calling closeAll on a parent Dialog',
@@ -1170,14 +1175,14 @@ describe('Dialog with a parent Dialog', () => {
       fixture.detectChanges();
 
       expect(overlayContainerElement.textContent)
-          .toContain('Pizza', 'Expected a dialog to be opened');
+        .withContext('Expected a dialog to be opened').toContain('Pizza');
 
       parentDialog.closeAll();
       fixture.detectChanges();
       flush();
 
       expect(overlayContainerElement.textContent!.trim())
-          .toBe('', 'Expected closeAll on parent Dialog to close dialog opened by child');
+        .withContext('Expected closeAll on parent Dialog to close dialog opened by child').toBe('');
     }));
 
   it('should not close the parent dialogs, when a child is destroyed', fakeAsync(() => {
@@ -1186,14 +1191,14 @@ describe('Dialog with a parent Dialog', () => {
     flush();
 
     expect(overlayContainerElement.textContent)
-        .toContain('Pizza', 'Expected a dialog to be opened');
+      .withContext('Expected a dialog to be opened').toContain('Pizza');
 
     childDialog.ngOnDestroy();
     fixture.detectChanges();
     flush();
 
     expect(overlayContainerElement.textContent)
-        .toContain('Pizza', 'Expected a dialog to remain opened');
+      .withContext('Expected a dialog to remain opened').toContain('Pizza');
   }));
 
   it('should close the top dialog via the escape key', fakeAsync(() => {

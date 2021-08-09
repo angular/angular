@@ -98,7 +98,8 @@ describe('MatIcon', () => {
 
     const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
     expect(matIconElement.classList.contains('notranslate'))
-      .toBeTruthy('Expected the mat-icon element to include the notranslate class');
+      .withContext('Expected the mat-icon element to include the notranslate class')
+      .toBeTruthy();
   });
 
   it('should apply class based on color attribute', () => {
@@ -130,26 +131,29 @@ describe('MatIcon', () => {
     const fixture = TestBed.createComponent(IconWithLigature);
     const iconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
     expect(iconElement.getAttribute('aria-hidden'))
-      .toBe('true', 'Expected the mat-icon element has aria-hidden="true" by default');
+      .withContext('Expected the mat-icon element has aria-hidden="true" by default').toBe('true');
   });
 
   it('should not override a user-provided aria-hidden attribute', () => {
     const fixture = TestBed.createComponent(IconWithAriaHiddenFalse);
     const iconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
     expect(iconElement.getAttribute('aria-hidden'))
-      .toBe('false', 'Expected the mat-icon element has the user-provided aria-hidden value');
+      .withContext('Expected the mat-icon element has the user-provided aria-hidden value')
+      .toBe('false');
   });
 
   it('should apply inline styling', () => {
     const fixture = TestBed.createComponent(InlineIcon);
     const iconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
     expect(iconElement.classList.contains('mat-icon-inline'))
-      .toBeFalsy('Expected the mat-icon element to not include the inline styling class');
+      .withContext('Expected the mat-icon element to not include the inline styling class')
+      .toBeFalsy();
 
     fixture.debugElement.componentInstance.inline = true;
     fixture.detectChanges();
     expect(iconElement.classList.contains('mat-icon-inline'))
-      .toBeTruthy('Expected the mat-icon element to include the inline styling class');
+      .withContext('Expected the mat-icon element to include the inline styling class')
+      .toBeTruthy();
   });
 
   describe('Ligature icons', () => {

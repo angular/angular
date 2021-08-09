@@ -88,11 +88,12 @@ describe('Portals', () => {
       const domPortal = new DomPortal(testAppComponent.domPortalContent);
       const initialParent = domPortal.element.parentNode!;
 
-      expect(innerContent).toBeTruthy('Expected portal content to be rendered.');
+      expect(innerContent)
+        .withContext('Expected portal content to be rendered.').toBeTruthy();
       expect(domPortal.element.contains(innerContent))
-          .toBe(true, 'Expected content to be inside portal on init.');
+        .withContext('Expected content to be inside portal on init.').toBe(true);
       expect(hostContainer.contains(innerContent))
-          .toBe(false, 'Expected content to be outside of portal outlet.');
+        .withContext('Expected content to be outside of portal outlet.').toBe(false);
 
       testAppComponent.selectedPortal = domPortal;
       fixture.detectChanges();
@@ -100,16 +101,17 @@ describe('Portals', () => {
       expect(domPortal.element.parentNode)
           .not.toBe(initialParent, 'Expected portal to be out of the initial parent on attach.');
       expect(hostContainer.contains(innerContent))
-          .toBe(true, 'Expected content to be inside the outlet on attach.');
+        .withContext('Expected content to be inside the outlet on attach.').toBe(true);
       expect(testAppComponent.portalOutlet.hasAttached()).toBe(true);
 
       testAppComponent.selectedPortal = undefined;
       fixture.detectChanges();
 
       expect(domPortal.element.parentNode)
-          .toBe(initialParent, 'Expected portal to be back inside initial parent on detach.');
+        .withContext('Expected portal to be back inside initial parent on detach.')
+        .toBe(initialParent);
       expect(hostContainer.contains(innerContent))
-          .toBe(false, 'Expected content to be removed from outlet on detach.');
+        .withContext('Expected content to be removed from outlet on detach.').toBe(false);
       expect(testAppComponent.portalOutlet.hasAttached()).toBe(false);
     });
 
@@ -550,25 +552,28 @@ describe('Portals', () => {
       let componentInstance: PizzaMsg = portal.attach(host).instance;
 
       expect(componentInstance instanceof PizzaMsg)
-          .toBe(true, 'Expected a PizzaMsg component to be created');
+        .withContext('Expected a PizzaMsg component to be created').toBe(true);
       expect(someDomElement.textContent)
-          .toContain('Pizza', 'Expected the static string "Pizza" in the DomPortalOutlet.');
+        .withContext('Expected the static string "Pizza" in the DomPortalOutlet.')
+        .toContain('Pizza');
 
       componentInstance.snack = new Chocolate();
       someFixture.detectChanges();
       expect(someDomElement.textContent)
-          .toContain('Chocolate', 'Expected the bound string "Chocolate" in the DomPortalOutlet');
+        .withContext('Expected the bound string "Chocolate" in the DomPortalOutlet')
+        .toContain('Chocolate');
 
       host.detach();
 
       expect(someDomElement.innerHTML)
-          .toBe('', 'Expected the DomPortalOutlet to be empty after detach');
+        .withContext('Expected the DomPortalOutlet to be empty after detach').toBe('');
     });
 
     it('should call the dispose function even if the host has no attached content', () => {
       let spy = jasmine.createSpy('host dispose spy');
 
-      expect(host.hasAttached()).toBe(false, 'Expected host not to have attached content.');
+      expect(host.hasAttached())
+        .withContext('Expected host not to have attached content.').toBe(false);
 
       host.setDisposeFn(spy);
       host.dispose();

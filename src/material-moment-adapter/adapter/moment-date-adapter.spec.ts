@@ -31,10 +31,11 @@ describe('MomentDateAdapter', () => {
     adapter.setLocale('en');
 
     assertValidDate = (d: moment.Moment | null, valid: boolean) => {
-      expect(adapter.isDateInstance(d)).not.toBeNull(`Expected ${d} to be a date instance`);
-      expect(adapter.isValid(d!)).toBe(valid,
-          `Expected ${d} to be ${valid ? 'valid' : 'invalid'},` +
-          ` but was ${valid ? 'invalid' : 'valid'}`);
+      expect(adapter.isDateInstance(d)).not
+        .withContext(`Expected ${d} to be a date instance`).toBeNull();
+      expect(adapter.isValid(d!))
+        .withContext(`Expected ${d} to be ${valid ? 'valid' : 'invalid'}, but ` +
+                     `was ${valid ? 'invalid' : 'valid'}`).toBe(valid);
     };
   }));
 
@@ -172,7 +173,7 @@ describe('MomentDateAdapter', () => {
 
   it("should get today's date", () => {
     expect(adapter.sameDate(adapter.today(), moment()))
-        .toBe(true, "should be equal to today's date");
+      .withContext("should be equal to today's date").toBe(true);
   });
 
   it('should parse string according to given format', () => {
@@ -207,9 +208,9 @@ describe('MomentDateAdapter', () => {
     let d = adapter.parse('hello', 'MM/DD/YYYY');
     expect(d).not.toBeNull();
     expect(adapter.isDateInstance(d))
-        .toBe(true, 'Expected string to have been fed through Date.parse');
+      .withContext('Expected string to have been fed through Date.parse').toBe(true);
     expect(adapter.isValid(d as moment.Moment))
-        .toBe(false, 'Expected to parse as "invalid date" object');
+      .withContext('Expected to parse as "invalid date" object').toBe(false);
   });
 
   it('should format date according to given format', () => {

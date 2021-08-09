@@ -176,12 +176,12 @@ describe('MDC-based Option Chips', () => {
 
       it('should be able to disable ripples through ripple global options at runtime', () => {
         expect(chipInstance._isRippleDisabled())
-            .toBe(false, 'Expected chip ripples to be enabled.');
+          .withContext('Expected chip ripples to be enabled.').toBe(false);
 
         globalRippleOptions.disabled = true;
 
         expect(chipInstance._isRippleDisabled())
-            .toBe(true, 'Expected chip ripples to be disabled.');
+          .withContext('Expected chip ripples to be disabled.').toBe(true);
       });
 
     });

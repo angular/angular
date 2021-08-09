@@ -149,9 +149,12 @@ describe('MatChipList', () => {
       it('should not override chips selected', () => {
         const instanceChips = fixture.componentInstance.chips.toArray();
 
-        expect(instanceChips[0].selected).toBe(true, 'Expected first option to be selected.');
-        expect(instanceChips[1].selected).toBe(false, 'Expected second option to be not selected.');
-        expect(instanceChips[2].selected).toBe(true, 'Expected third option to be selected.');
+        expect(instanceChips[0].selected)
+          .withContext('Expected first option to be selected.').toBe(true);
+        expect(instanceChips[1].selected)
+          .withContext('Expected second option to be not selected.').toBe(false);
+        expect(instanceChips[2].selected)
+          .withContext('Expected third option to be selected.').toBe(true);
       });
 
       it('should have role listbox', () => {
@@ -162,7 +165,8 @@ describe('MatChipList', () => {
         fixture.componentInstance.foods = [];
         fixture.detectChanges();
 
-        expect(chipListNativeElement.getAttribute('role')).toBeNull('Expect no role attribute');
+        expect(chipListNativeElement.getAttribute('role'))
+          .withContext('Expect no role attribute').toBeNull();
       });
 
       it('should not have aria-required when it has no role', () => {
@@ -199,7 +203,8 @@ describe('MatChipList', () => {
       });
 
       it('should be able to become focused when disabled', () => {
-        expect(chipListInstance.focused).toBe(false, 'Expected list to not be focused.');
+        expect(chipListInstance.focused)
+          .withContext('Expected list to not be focused.').toBe(false);
 
         chipListInstance.disabled = true;
         fixture.detectChanges();
@@ -207,7 +212,8 @@ describe('MatChipList', () => {
         chipListInstance.focus();
         fixture.detectChanges();
 
-        expect(chipListInstance.focused).toBe(false, 'Expected list to continue not to be focused');
+        expect(chipListInstance.focused)
+          .withContext('Expected list to continue not to be focused').toBe(false);
       });
 
       it('should remove the tabindex from the list if it is disabled', () => {
@@ -364,7 +370,7 @@ describe('MatChipList', () => {
           fixture.detectChanges();
 
           expect(manager.activeItemIndex)
-              .toBe(initialActiveIndex, 'Expected focused item not to have changed.');
+            .withContext('Expected focused item not to have changed.').toBe(initialActiveIndex);
         });
 
         it('should focus the first item when pressing HOME', () => {
@@ -450,11 +456,12 @@ describe('MatChipList', () => {
           chipListInstance._keyManager.onKeydown(createKeyboardEvent('keydown', TAB));
 
           expect(chipListInstance._tabIndex)
-            .toBe(-1, 'Expected tabIndex to be set to -1 temporarily.');
+            .withContext('Expected tabIndex to be set to -1 temporarily.').toBe(-1);
 
           tick();
 
-          expect(chipListInstance._tabIndex).toBe(0, 'Expected tabIndex to be reset back to 0');
+          expect(chipListInstance._tabIndex)
+            .withContext('Expected tabIndex to be reset back to 0').toBe(0);
         }));
 
         it(`should use user defined tabIndex`, fakeAsync(() => {
@@ -463,16 +470,17 @@ describe('MatChipList', () => {
           fixture.detectChanges();
 
           expect(chipListInstance._tabIndex)
-            .toBe(4, 'Expected tabIndex to be set to user defined value 4.');
+            .withContext('Expected tabIndex to be set to user defined value 4.').toBe(4);
 
           chipListInstance._keyManager.onKeydown(createKeyboardEvent('keydown', TAB));
 
           expect(chipListInstance._tabIndex)
-            .toBe(-1, 'Expected tabIndex to be set to -1 temporarily.');
+            .withContext('Expected tabIndex to be set to -1 temporarily.').toBe(-1);
 
           tick();
 
-          expect(chipListInstance._tabIndex).toBe(4, 'Expected tabIndex to be reset back to 4');
+          expect(chipListInstance._tabIndex)
+            .withContext('Expected tabIndex to be reset back to 4').toBe(4);
         }));
       });
 
@@ -651,7 +659,7 @@ describe('MatChipList', () => {
 
     it('should float placeholder if chip is selected', () => {
       expect(formField.classList.contains('mat-form-field-should-float'))
-        .toBe(true, 'placeholder should be floating');
+        .withContext('placeholder should be floating').toBe(true);
     });
 
     it('should remove selection if chip has been removed', fakeAsync(() => {
@@ -661,15 +669,18 @@ describe('MatChipList', () => {
       dispatchKeyboardEvent(firstChip, 'keydown', SPACE);
       fixture.detectChanges();
 
-      expect(instanceChips.first.selected).toBe(true, 'Expected first option to be selected.');
-      expect(chipList.selected).toBe(chips.first, 'Expected first option to be selected.');
+      expect(instanceChips.first.selected)
+        .withContext('Expected first option to be selected.').toBe(true);
+      expect(chipList.selected)
+        .withContext('Expected first option to be selected.').toBe(chips.first);
 
       fixture.componentInstance.foods = [];
       fixture.detectChanges();
       tick();
 
       expect(chipList.selected)
-        .toBe(undefined, 'Expected selection to be removed when option no longer exists.');
+        .withContext('Expected selection to be removed when option no longer exists.')
+        .toBe(undefined);
     }));
 
 
@@ -684,9 +695,10 @@ describe('MatChipList', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.chipList.value)
-        .toContain('potatoes-8', 'Expect value contain the value of the last option');
+        .withContext('Expect value contain the value of the last option').toContain('potatoes-8');
       expect(fixture.componentInstance.chips.last.selected)
-        .toBeTruthy('Expect last option selected');
+        .withContext('Expect last option selected')
+        .toBeTruthy();
     });
 
     it('should not select disabled chips', () => {
@@ -696,10 +708,12 @@ describe('MatChipList', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.chipList.value)
-        .toBeUndefined('Expect value to be undefined');
-      expect(array[2].selected).toBeFalsy('Expect disabled chip not selected');
+        .withContext('Expect value to be undefined')
+        .toBeUndefined();
+      expect(array[2].selected).withContext('Expect disabled chip not selected').toBeFalsy();
       expect(fixture.componentInstance.chipList.selected)
-        .toBeUndefined('Expect no selected chips');
+        .withContext('Expect no selected chips')
+        .toBeUndefined();
     });
 
   });
@@ -723,36 +737,37 @@ describe('MatChipList', () => {
 
         const array = chips.toArray();
 
-        expect(array[1].selected).toBeTruthy('Expect pizza-1 chip to be selected');
+        expect(array[1].selected).withContext('Expect pizza-1 chip to be selected').toBeTruthy();
 
         dispatchKeyboardEvent(nativeChips[1], 'keydown', SPACE);
         fixture.detectChanges();
 
-        expect(array[1].selected).toBeFalsy('Expect chip to be not selected after toggle selected');
+        expect(array[1].selected)
+          .withContext('Expect chip to be not selected after toggle selected').toBeFalsy();
       });
 
       it('should set the view value from the form', () => {
         const chipList = fixture.componentInstance.chipList;
         const array = chips.toArray();
 
-        expect(chipList.value).toBeFalsy('Expect chip list to have no initial value');
+        expect(chipList.value).withContext('Expect chip list to have no initial value').toBeFalsy();
 
         fixture.componentInstance.control.setValue('pizza-1');
         fixture.detectChanges();
 
-        expect(array[1].selected).toBeTruthy('Expect chip to be selected');
+        expect(array[1].selected).withContext('Expect chip to be selected').toBeTruthy();
       });
 
       it('should update the form value when the view changes', () => {
 
         expect(fixture.componentInstance.control.value)
-          .toEqual(null, `Expected the control's value to be empty initially.`);
+          .withContext(`Expected the control's value to be empty initially.`).toEqual(null);
 
         dispatchKeyboardEvent(nativeChips[0], 'keydown', SPACE);
         fixture.detectChanges();
 
         expect(fixture.componentInstance.control.value)
-          .toEqual('steak-0', `Expected control's value to be set to the new option.`);
+          .withContext(`Expected control's value to be set to the new option.`).toEqual('steak-0');
       });
 
       it('should clear the selection when a nonexistent option value is selected', () => {
@@ -762,14 +777,16 @@ describe('MatChipList', () => {
         fixture.detectChanges();
 
         expect(array[1].selected)
-          .toBeTruthy(`Expected chip with the value to be selected.`);
+          .withContext(`Expected chip with the value to be selected.`)
+          .toBeTruthy();
 
         fixture.componentInstance.control.setValue('gibberish');
 
         fixture.detectChanges();
 
         expect(array[1].selected)
-          .toBeFalsy(`Expected chip with the old value not to be selected.`);
+          .withContext(`Expected chip with the old value not to be selected.`)
+          .toBeFalsy();
       });
 
 
@@ -783,65 +800,70 @@ describe('MatChipList', () => {
         fixture.detectChanges();
 
         expect(array[1].selected)
-          .toBeFalsy(`Expected chip with the old value not to be selected.`);
+          .withContext(`Expected chip with the old value not to be selected.`)
+          .toBeFalsy();
       });
 
       it('should set the control to touched when the chip list is touched', () => {
         expect(fixture.componentInstance.control.touched)
-          .toBe(false, 'Expected the control to start off as untouched.');
+          .withContext('Expected the control to start off as untouched.').toBe(false);
 
         const nativeChipList = fixture.debugElement.query(By.css('.mat-chip-list'))!.nativeElement;
         dispatchFakeEvent(nativeChipList, 'blur');
 
         expect(fixture.componentInstance.control.touched)
-          .toBe(true, 'Expected the control to be touched.');
+          .withContext('Expected the control to be touched.').toBe(true);
       });
 
       it('should not set touched when a disabled chip list is touched', () => {
         expect(fixture.componentInstance.control.touched)
-          .toBe(false, 'Expected the control to start off as untouched.');
+          .withContext('Expected the control to start off as untouched.').toBe(false);
 
         fixture.componentInstance.control.disable();
         const nativeChipList = fixture.debugElement.query(By.css('.mat-chip-list'))!.nativeElement;
         dispatchFakeEvent(nativeChipList, 'blur');
 
         expect(fixture.componentInstance.control.touched)
-          .toBe(false, 'Expected the control to stay untouched.');
+          .withContext('Expected the control to stay untouched.').toBe(false);
       });
 
       it('should set the control to dirty when the chip list\'s value changes in the DOM', () => {
         expect(fixture.componentInstance.control.dirty)
-          .toEqual(false, `Expected control to start out pristine.`);
+          .withContext(`Expected control to start out pristine.`).toEqual(false);
 
         dispatchKeyboardEvent(nativeChips[1], 'keydown', SPACE);
         fixture.detectChanges();
 
         expect(fixture.componentInstance.control.dirty)
-          .toEqual(true, `Expected control to be dirty after value was changed by user.`);
+          .withContext(`Expected control to be dirty after value was changed by user.`)
+          .toEqual(true);
       });
 
       it('should not set the control to dirty when the value changes programmatically', () => {
         expect(fixture.componentInstance.control.dirty)
-          .toEqual(false, `Expected control to start out pristine.`);
+          .withContext(`Expected control to start out pristine.`).toEqual(false);
 
         fixture.componentInstance.control.setValue('pizza-1');
 
         expect(fixture.componentInstance.control.dirty)
-          .toEqual(false, `Expected control to stay pristine after programmatic change.`);
+          .withContext(`Expected control to stay pristine after programmatic change.`)
+          .toEqual(false);
       });
 
 
       it('should set an asterisk after the placeholder if the control is required', () => {
         let requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'))!;
         expect(requiredMarker)
-          .toBeNull(`Expected placeholder not to have an asterisk, as control was not required.`);
+          .withContext(`Expected placeholder not to have an asterisk, as control was not required.`)
+          .toBeNull();
 
         fixture.componentInstance.isRequired = true;
         fixture.detectChanges();
 
         requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'))!;
         expect(requiredMarker)
-          .not.toBeNull(`Expected placeholder to have an asterisk, as control was required.`);
+          .withContext(`Expected placeholder to have an asterisk, as control was required.`)
+          .not.toBeNull();
       });
 
       it('should be able to programmatically select a falsy option', () => {
@@ -856,7 +878,7 @@ describe('MatChipList', () => {
         falsyFixture.detectChanges();
 
         expect(falsyFixture.componentInstance.chips.first.selected)
-          .toBe(true, 'Expected first option to be selected');
+          .withContext('Expected first option to be selected').toBe(true);
       });
 
       it('should not focus the active chip when the value is set programmatically', () => {
@@ -903,36 +925,38 @@ describe('MatChipList', () => {
 
         const array = chips.toArray();
 
-        expect(array[1].selected).toBeTruthy('Expect pizza-1 chip to be selected');
+        expect(array[1].selected).withContext('Expect pizza-1 chip to be selected').toBeTruthy();
 
         dispatchKeyboardEvent(nativeChips[1], 'keydown', SPACE);
         fixture.detectChanges();
 
-        expect(array[1].selected).toBeFalsy('Expect chip to be not selected after toggle selected');
+        expect(array[1].selected)
+          .withContext('Expect chip to be not selected after toggle selected').toBeFalsy();
       });
 
       it('should set the view value from the form', () => {
         const chipList = fixture.componentInstance.chipList;
         const array = chips.toArray();
 
-        expect(chipList.value).toBeFalsy('Expect chip list to have no initial value');
+        expect(chipList.value).withContext('Expect chip list to have no initial value').toBeFalsy();
 
         fixture.componentInstance.control.setValue(['pizza-1']);
         fixture.detectChanges();
 
-        expect(array[1].selected).toBeTruthy('Expect chip to be selected');
+        expect(array[1].selected).withContext('Expect chip to be selected').toBeTruthy();
       });
 
       it('should update the form value when the view changes', () => {
 
         expect(fixture.componentInstance.control.value)
-          .toEqual(null, `Expected the control's value to be empty initially.`);
+          .withContext(`Expected the control's value to be empty initially.`).toEqual(null);
 
         dispatchKeyboardEvent(nativeChips[0], 'keydown', SPACE);
         fixture.detectChanges();
 
         expect(fixture.componentInstance.control.value)
-          .toEqual(['steak-0'], `Expected control's value to be set to the new option.`);
+          .withContext(`Expected control's value to be set to the new option.`)
+          .toEqual(['steak-0']);
       });
 
       it('should clear the selection when a nonexistent option value is selected', () => {
@@ -942,14 +966,16 @@ describe('MatChipList', () => {
         fixture.detectChanges();
 
         expect(array[1].selected)
-          .toBeTruthy(`Expected chip with the value to be selected.`);
+          .withContext(`Expected chip with the value to be selected.`)
+          .toBeTruthy();
 
         fixture.componentInstance.control.setValue(['gibberish']);
 
         fixture.detectChanges();
 
         expect(array[1].selected)
-          .toBeFalsy(`Expected chip with the old value not to be selected.`);
+          .withContext(`Expected chip with the old value not to be selected.`)
+          .toBeFalsy();
       });
 
 
@@ -963,7 +989,8 @@ describe('MatChipList', () => {
         fixture.detectChanges();
 
         expect(array[1].selected)
-          .toBeFalsy(`Expected chip with the old value not to be selected.`);
+          .withContext(`Expected chip with the old value not to be selected.`)
+          .toBeFalsy();
       });
     });
 
@@ -1002,35 +1029,36 @@ describe('MatChipList', () => {
 
       const array = fixture.componentInstance.chips.toArray();
 
-      expect(array[1].selected).toBeTruthy('Expect pizza-1 chip to be selected');
+      expect(array[1].selected).withContext('Expect pizza-1 chip to be selected').toBeTruthy();
 
       dispatchKeyboardEvent(nativeChips[1], 'keydown', SPACE);
       fixture.detectChanges();
 
-      expect(array[1].selected).toBeFalsy('Expect chip to be not selected after toggle selected');
+      expect(array[1].selected)
+        .withContext('Expect chip to be not selected after toggle selected').toBeFalsy();
     });
 
     it('should set the view value from the form', () => {
       const array = fixture.componentInstance.chips.toArray();
 
-      expect(array[1].selected).toBeFalsy('Expect chip to not be selected');
+      expect(array[1].selected).withContext('Expect chip to not be selected').toBeFalsy();
 
       fixture.componentInstance.control.setValue(['pizza-1']);
       fixture.detectChanges();
 
-      expect(array[1].selected).toBeTruthy('Expect chip to be selected');
+      expect(array[1].selected).withContext('Expect chip to be selected').toBeTruthy();
     });
 
     it('should update the form value when the view changes', () => {
 
       expect(fixture.componentInstance.control.value)
-        .toEqual(null, `Expected the control's value to be empty initially.`);
+        .withContext(`Expected the control's value to be empty initially.`).toEqual(null);
 
       dispatchKeyboardEvent(nativeChips[0], 'keydown', SPACE);
       fixture.detectChanges();
 
       expect(fixture.componentInstance.control.value)
-        .toEqual(['steak-0'], `Expected control's value to be set to the new option.`);
+        .withContext(`Expected control's value to be set to the new option.`).toEqual(['steak-0']);
     });
 
     it('should clear the selection when a nonexistent option value is selected', () => {
@@ -1040,14 +1068,16 @@ describe('MatChipList', () => {
       fixture.detectChanges();
 
       expect(array[1].selected)
-        .toBeTruthy(`Expected chip with the value to be selected.`);
+        .withContext(`Expected chip with the value to be selected.`)
+        .toBeTruthy();
 
       fixture.componentInstance.control.setValue(['gibberish']);
 
       fixture.detectChanges();
 
       expect(array[1].selected)
-        .toBeFalsy(`Expected chip with the old value not to be selected.`);
+        .withContext(`Expected chip with the old value not to be selected.`)
+        .toBeFalsy();
     });
 
     it('should clear the selection when the control is reset', () => {
@@ -1060,12 +1090,13 @@ describe('MatChipList', () => {
       fixture.detectChanges();
 
       expect(array[1].selected)
-        .toBeFalsy(`Expected chip with the old value not to be selected.`);
+        .withContext(`Expected chip with the old value not to be selected.`)
+        .toBeFalsy();
     });
 
     it('should set the control to touched when the chip list is touched', fakeAsync(() => {
       expect(fixture.componentInstance.control.touched)
-        .toBe(false, 'Expected the control to start off as untouched.');
+        .withContext('Expected the control to start off as untouched.').toBe(false);
 
       const nativeChipList = fixture.debugElement.query(By.css('.mat-chip-list'))!.nativeElement;
 
@@ -1073,53 +1104,55 @@ describe('MatChipList', () => {
       tick();
 
       expect(fixture.componentInstance.control.touched)
-        .toBe(true, 'Expected the control to be touched.');
+        .withContext('Expected the control to be touched.').toBe(true);
     }));
 
     it('should not set touched when a disabled chip list is touched', () => {
       expect(fixture.componentInstance.control.touched)
-        .toBe(false, 'Expected the control to start off as untouched.');
+        .withContext('Expected the control to start off as untouched.').toBe(false);
 
       fixture.componentInstance.control.disable();
       const nativeChipList = fixture.debugElement.query(By.css('.mat-chip-list'))!.nativeElement;
       dispatchFakeEvent(nativeChipList, 'blur');
 
       expect(fixture.componentInstance.control.touched)
-        .toBe(false, 'Expected the control to stay untouched.');
+        .withContext('Expected the control to stay untouched.').toBe(false);
     });
 
     it('should set the control to dirty when the chip list\'s value changes in the DOM', () => {
       expect(fixture.componentInstance.control.dirty)
-        .toEqual(false, `Expected control to start out pristine.`);
+        .withContext(`Expected control to start out pristine.`).toEqual(false);
 
       dispatchKeyboardEvent(nativeChips[1], 'keydown', SPACE);
       fixture.detectChanges();
 
       expect(fixture.componentInstance.control.dirty)
-        .toEqual(true, `Expected control to be dirty after value was changed by user.`);
+        .withContext(`Expected control to be dirty after value was changed by user.`).toEqual(true);
     });
 
     it('should not set the control to dirty when the value changes programmatically', () => {
       expect(fixture.componentInstance.control.dirty)
-        .toEqual(false, `Expected control to start out pristine.`);
+        .withContext(`Expected control to start out pristine.`).toEqual(false);
 
       fixture.componentInstance.control.setValue(['pizza-1']);
 
       expect(fixture.componentInstance.control.dirty)
-        .toEqual(false, `Expected control to stay pristine after programmatic change.`);
+        .withContext(`Expected control to stay pristine after programmatic change.`).toEqual(false);
     });
 
     it('should set an asterisk after the placeholder if the control is required', () => {
       let requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'))!;
       expect(requiredMarker)
-        .toBeNull(`Expected placeholder not to have an asterisk, as control was not required.`);
+        .withContext(`Expected placeholder not to have an asterisk, as control was not required.`)
+        .toBeNull();
 
       fixture.componentInstance.isRequired = true;
       fixture.detectChanges();
 
       requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'))!;
-      expect(requiredMarker)
-        .not.toBeNull(`Expected placeholder to have an asterisk, as control was required.`);
+      expect(requiredMarker).not
+        .withContext(`Expected placeholder to have an asterisk, as control was required.`)
+        .toBeNull();
     });
 
     it('should keep focus on the input after adding the first chip', fakeAsync(() => {
@@ -1136,8 +1169,10 @@ describe('MatChipList', () => {
       });
 
       nativeInput.focus();
-      expect(fixture.componentInstance.foods).toEqual([], 'Expected all chips to be removed.');
-      expect(document.activeElement).toBe(nativeInput, 'Expected input to be focused.');
+      expect(fixture.componentInstance.foods)
+        .withContext('Expected all chips to be removed.').toEqual([]);
+      expect(document.activeElement)
+        .withContext('Expected input to be focused.').toBe(nativeInput);
 
       typeInElement(nativeInput, '123');
       fixture.detectChanges();
@@ -1145,7 +1180,8 @@ describe('MatChipList', () => {
       fixture.detectChanges();
       tick();
 
-      expect(document.activeElement).toBe(nativeInput, 'Expected input to remain focused.');
+      expect(document.activeElement)
+        .withContext('Expected input to remain focused.').toBe(nativeInput);
     }));
 
     it('should set aria-invalid if the form field is invalid', () => {
@@ -1239,49 +1275,53 @@ describe('MatChipList', () => {
 
     it('should not show any errors if the user has not interacted', () => {
       expect(errorTestComponent.formControl.untouched)
-        .toBe(true, 'Expected untouched form control');
-      expect(containerEl.querySelectorAll('mat-error').length).toBe(0, 'Expected no error message');
+        .withContext('Expected untouched form control').toBe(true);
+      expect(containerEl.querySelectorAll('mat-error').length)
+        .withContext('Expected no error message').toBe(0);
       expect(chipListEl.getAttribute('aria-invalid'))
-        .toBe('false', 'Expected aria-invalid to be set to "false".');
+        .withContext('Expected aria-invalid to be set to "false".').toBe('false');
     });
 
     it('should display an error message when the list is touched and invalid', fakeAsync(() => {
       expect(errorTestComponent.formControl.invalid)
-        .toBe(true, 'Expected form control to be invalid');
+        .withContext('Expected form control to be invalid').toBe(true);
       expect(containerEl.querySelectorAll('mat-error').length)
-        .toBe(0, 'Expected no error message');
+        .withContext('Expected no error message').toBe(0);
 
       errorTestComponent.formControl.markAsTouched();
       fixture.detectChanges();
       tick();
 
       expect(containerEl.classList)
-        .toContain('mat-form-field-invalid', 'Expected container to have the invalid CSS class.');
+        .withContext('Expected container to have the invalid CSS class.')
+        .toContain('mat-form-field-invalid');
       expect(containerEl.querySelectorAll('mat-error').length)
-        .toBe(1, 'Expected one error message to have been rendered.');
+        .withContext('Expected one error message to have been rendered.').toBe(1);
       expect(chipListEl.getAttribute('aria-invalid'))
-        .toBe('true', 'Expected aria-invalid to be set to "true".');
+        .withContext('Expected aria-invalid to be set to "true".').toBe('true');
     }));
 
     it('should display an error message when the parent form is submitted', fakeAsync(() => {
       expect(errorTestComponent.form.submitted)
-        .toBe(false, 'Expected form not to have been submitted');
+        .withContext('Expected form not to have been submitted').toBe(false);
       expect(errorTestComponent.formControl.invalid)
-        .toBe(true, 'Expected form control to be invalid');
-      expect(containerEl.querySelectorAll('mat-error').length).toBe(0, 'Expected no error message');
+        .withContext('Expected form control to be invalid').toBe(true);
+      expect(containerEl.querySelectorAll('mat-error').length)
+        .withContext('Expected no error message').toBe(0);
 
       dispatchFakeEvent(fixture.debugElement.query(By.css('form'))!.nativeElement, 'submit');
       fixture.detectChanges();
 
       fixture.whenStable().then(() => {
         expect(errorTestComponent.form.submitted)
-          .toBe(true, 'Expected form to have been submitted');
+          .withContext('Expected form to have been submitted').toBe(true);
         expect(containerEl.classList)
-          .toContain('mat-form-field-invalid', 'Expected container to have the invalid CSS class.');
+          .withContext('Expected container to have the invalid CSS class.')
+          .toContain('mat-form-field-invalid');
         expect(containerEl.querySelectorAll('mat-error').length)
-          .toBe(1, 'Expected one error message to have been rendered.');
+          .withContext('Expected one error message to have been rendered.').toBe(1);
         expect(chipListEl.getAttribute('aria-invalid'))
-          .toBe('true', 'Expected aria-invalid to be set to "true".');
+          .withContext('Expected aria-invalid to be set to "true".').toBe('true');
       });
     }));
 
@@ -1292,11 +1332,12 @@ describe('MatChipList', () => {
 
       fixture.whenStable().then(() => {
         expect(containerEl.classList)
-          .toContain('mat-form-field-invalid', 'Expected container to have the invalid CSS class.');
+          .withContext('Expected container to have the invalid CSS class.')
+          .toContain('mat-form-field-invalid');
         expect(containerEl.querySelectorAll('mat-error').length)
-          .toBe(1, 'Expected one error message to have been rendered.');
+          .withContext('Expected one error message to have been rendered.').toBe(1);
         expect(containerEl.querySelectorAll('mat-hint').length)
-          .toBe(0, 'Expected no hints to be shown.');
+          .withContext('Expected no hints to be shown.').toBe(0);
 
         errorTestComponent.formControl.setValue('something');
         fixture.detectChanges();
@@ -1305,9 +1346,9 @@ describe('MatChipList', () => {
           expect(containerEl.classList).not.toContain('mat-form-field-invalid',
             'Expected container not to have the invalid class when valid.');
           expect(containerEl.querySelectorAll('mat-error').length)
-            .toBe(0, 'Expected no error messages when the input is valid.');
+            .withContext('Expected no error messages when the input is valid.').toBe(0);
           expect(containerEl.querySelectorAll('mat-hint').length)
-            .toBe(1, 'Expected one hint to be shown once the input is valid.');
+            .withContext('Expected one hint to be shown once the input is valid.').toBe(1);
         });
       });
     }));
@@ -1324,7 +1365,7 @@ describe('MatChipList', () => {
           fixture.debugElement.query(By.css('.mat-hint'))!.nativeElement.getAttribute('id');
       let describedBy = chipListEl.getAttribute('aria-describedby');
 
-      expect(hintId).toBeTruthy('hint should be shown');
+      expect(hintId).withContext('hint should be shown').toBeTruthy();
       expect(describedBy).toBe(hintId);
 
       fixture.componentInstance.formControl.markAsTouched();
@@ -1334,7 +1375,7 @@ describe('MatChipList', () => {
         .map(el => el.nativeElement.getAttribute('id')).join(' ');
       describedBy = chipListEl.getAttribute('aria-describedby');
 
-      expect(errorIds).toBeTruthy('errors should be shown');
+      expect(errorIds).withContext('errors should be shown').toBeTruthy();
       expect(describedBy).toBe(errorIds);
     });
   });
@@ -1346,7 +1387,7 @@ describe('MatChipList', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('.mat-chip').classList)
-        .toContain('mat-chip-selected', 'Expected first chip to be selected.');
+      .withContext('Expected first chip to be selected.').toContain('mat-chip-selected');
   }));
 
   function createComponent<T>(component: Type<T>, providers: Provider[] = [], animationsModule:

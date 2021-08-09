@@ -370,7 +370,8 @@ describe('MDC-based MatSlideToggle without forms', () => {
         .query(By.directive(MatSlideToggle))!.componentInstance as MatSlideToggle;
 
       expect(slideToggle.tabIndex)
-        .toBe(5, 'Expected tabIndex property to have been set based on the native attribute');
+        .withContext('Expected tabIndex property to have been set based on the native attribute')
+        .toBe(5);
     }));
 
     it('should add the disabled class if disabled through attribute', () => {
@@ -432,22 +433,22 @@ describe('MDC-based MatSlideToggle without forms', () => {
 
       expect(testComponent.toggleTriggered).toBe(0);
       expect(testComponent.dragTriggered).toBe(0);
-      expect(slideToggle.checked).toBe(false, 'Expect slide toggle value not changed');
+      expect(slideToggle.checked).withContext('Expect slide toggle value not changed').toBe(false);
 
       labelElement.click();
       fixture.detectChanges();
       tick();
 
-      expect(slideToggle.checked).toBe(false, 'Expect slide toggle value not changed');
-      expect(testComponent.toggleTriggered).toBe(1, 'Expect toggle once');
+      expect(slideToggle.checked).withContext('Expect slide toggle value not changed').toBe(false);
+      expect(testComponent.toggleTriggered).withContext('Expect toggle once').toBe(1);
       expect(testComponent.dragTriggered).toBe(0);
 
       buttonElement.click();
       fixture.detectChanges();
       tick();
 
-      expect(slideToggle.checked).toBe(false, 'Expect slide toggle value not changed');
-      expect(testComponent.toggleTriggered).toBe(2, 'Expect toggle twice');
+      expect(slideToggle.checked).withContext('Expect slide toggle value not changed').toBe(false);
+      expect(testComponent.toggleTriggered).withContext('Expect toggle twice').toBe(2);
       expect(testComponent.dragTriggered).toBe(0);
     }));
 
@@ -635,14 +636,15 @@ describe('MDC-based MatSlideToggle with forms', () => {
       fixture.detectChanges();
 
       expect(slideToggle.checked)
-        .toBe(true, 'Expected slide-toggle to be checked initially');
+        .withContext('Expected slide-toggle to be checked initially').toBe(true);
 
       labelElement.click();
       fixture.detectChanges();
       tick();
 
       expect(slideToggle.checked)
-        .toBe(false, 'Expected slide-toggle to be no longer checked after label click.');
+        .withContext('Expected slide-toggle to be no longer checked after label click.')
+        .toBe(false);
     }));
 
     it('should be pristine if initial value is set from NgModel', fakeAsync(() => {
@@ -766,7 +768,8 @@ describe('MDC-based MatSlideToggle with forms', () => {
 
       spyOn(fixture.componentInstance, 'onChange').and.callFake(() => {
         expect(fixture.componentInstance.checked)
-          .toBe(true, 'Expected the model value to have changed before the change event fired.');
+          .withContext('Expected the model value to have changed before the change event fired.')
+          .toBe(true);
       });
 
       labelEl.click();

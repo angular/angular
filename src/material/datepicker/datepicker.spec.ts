@@ -212,13 +212,15 @@ describe('MatDatepicker', () => {
         testComponent.datepicker.open();
         fixture.detectChanges();
 
-        expect(testComponent.datepicker.opened).toBe(true, 'Expected datepicker to be open.');
+        expect(testComponent.datepicker.opened)
+          .withContext('Expected datepicker to be open.').toBe(true);
 
         const event = dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
         fixture.detectChanges();
         flush();
 
-        expect(testComponent.datepicker.opened).toBe(false, 'Expected datepicker to be closed.');
+        expect(testComponent.datepicker.opened)
+          .withContext('Expected datepicker to be closed.').toBe(false);
         expect(event.defaultPrevented).toBe(true);
       }));
 
@@ -226,7 +228,8 @@ describe('MatDatepicker', () => {
         testComponent.datepicker.open();
         fixture.detectChanges();
 
-        expect(testComponent.datepicker.opened).toBe(true, 'Expected datepicker to be open.');
+        expect(testComponent.datepicker.opened)
+          .withContext('Expected datepicker to be open.').toBe(true);
 
         const event = dispatchKeyboardEvent(document.body, 'keydown', ESCAPE, undefined, {
           alt: true
@@ -234,7 +237,8 @@ describe('MatDatepicker', () => {
         fixture.detectChanges();
         flush();
 
-        expect(testComponent.datepicker.opened).toBe(true, 'Expected datepicker to stay open.');
+        expect(testComponent.datepicker.opened)
+          .withContext('Expected datepicker to stay open.').toBe(true);
         expect(event.defaultPrevented).toBe(false);
       }));
 
@@ -381,7 +385,7 @@ describe('MatDatepicker', () => {
       it('should attach popup to native input', () => {
         let attachToRef = testComponent.datepickerInput.getConnectedOverlayOrigin();
         expect(attachToRef.nativeElement.tagName.toLowerCase())
-            .toBe('input', 'popup should be attached to native input');
+          .withContext('popup should be attached to native input').toBe('input');
       });
 
       it('input should aria-owns calendar after opened in non-touch mode', fakeAsync(() => {
@@ -683,8 +687,10 @@ describe('MatDatepicker', () => {
 
         // When the calendar is in year view, the first cell should be for a month rather than
         // for a date.
-        expect(firstCalendarCell.textContent!.trim())
-            .toBe('JAN', 'Expected the calendar to be in year-view');
+        // When the calendar is in year view, the first cell should be for a month rather than
+// for a date.
+expect(firstCalendarCell.textContent!.trim())
+  .withContext('Expected the calendar to be in year-view').toBe('JAN');
       });
 
       it('should fire yearSelected when user selects calendar year in year view',
@@ -733,8 +739,10 @@ describe('MatDatepicker', () => {
 
         // When the calendar is in year view, the first cell should be for a month rather than
         // for a date.
-        expect(firstCalendarCell.textContent!.trim())
-            .toBe('2016', 'Expected the calendar to be in multi-year-view');
+        // When the calendar is in year view, the first cell should be for a month rather than
+// for a date.
+expect(firstCalendarCell.textContent!.trim())
+  .withContext('Expected the calendar to be in multi-year-view').toBe('2016');
       });
 
       it('should fire yearSelected when user selects calendar year in multiyear view',
@@ -1137,21 +1145,23 @@ describe('MatDatepicker', () => {
         fixture.detectChanges();
 
         toggle.focus();
-        expect(document.activeElement).toBe(toggle, 'Expected toggle to be focused.');
+        expect(document.activeElement)
+          .withContext('Expected toggle to be focused.').toBe(toggle);
 
         fixture.componentInstance.datepicker.open();
         fixture.detectChanges();
 
         let pane = document.querySelector('.cdk-overlay-pane')!;
 
-        expect(pane).toBeTruthy('Expected calendar to be open.');
+        expect(pane).withContext('Expected calendar to be open.').toBeTruthy();
         expect(pane.contains(document.activeElement))
-            .toBe(true, 'Expected focus to be inside the calendar.');
+          .withContext('Expected focus to be inside the calendar.').toBe(true);
 
         fixture.componentInstance.datepicker.close();
         fixture.detectChanges();
 
-        expect(document.activeElement).toBe(toggle, 'Expected focus to be restored to toggle.');
+        expect(document.activeElement)
+          .withContext('Expected focus to be restored to toggle.').toBe(toggle);
       });
 
       it('should restore focus when placed inside a shadow root', () => {
@@ -1189,22 +1199,23 @@ describe('MatDatepicker', () => {
         fixture.detectChanges();
 
         toggle.focus();
-        expect(document.activeElement).toBe(toggle, 'Expected toggle to be focused.');
+        expect(document.activeElement)
+          .withContext('Expected toggle to be focused.').toBe(toggle);
 
         fixture.componentInstance.datepicker.open();
         fixture.detectChanges();
 
         let pane = document.querySelector('.cdk-overlay-pane')!;
 
-        expect(pane).toBeTruthy('Expected calendar to be open.');
+        expect(pane).withContext('Expected calendar to be open.').toBeTruthy();
         expect(pane.contains(document.activeElement))
-            .toBe(true, 'Expected focus to be inside the calendar.');
+          .withContext('Expected focus to be inside the calendar.').toBe(true);
 
         fixture.componentInstance.datepicker.close();
         fixture.detectChanges();
 
         expect(document.activeElement)
-            .not.toBe(toggle, 'Expected focus not to be restored to toggle.');
+            .not.withContext('Expected focus not to be restored to toggle.').toBe(toggle);
       });
 
       it('should not override focus if it was moved inside the closed event in touchUI mode',
@@ -1224,7 +1235,8 @@ describe('MatDatepicker', () => {
           // Focus the input before opening so that the datepicker restores focus to it on close.
           input.focus();
 
-          expect(document.activeElement).toBe(input, 'Expected input to be focused on init.');
+          expect(document.activeElement)
+            .withContext('Expected input to be focused on init.').toBe(input);
 
           datepicker.open();
           fixture.detectChanges();
@@ -1240,7 +1252,8 @@ describe('MatDatepicker', () => {
           fixture.detectChanges();
 
           expect(document.activeElement)
-              .toBe(focusTarget, 'Expected alternate focus target to be focused after closing.');
+            .withContext('Expected alternate focus target to be focused after closing.')
+            .toBe(focusTarget);
 
           focusTarget.parentNode!.removeChild(focusTarget);
           subscription.unsubscribe();
@@ -1283,10 +1296,12 @@ describe('MatDatepicker', () => {
         fixture.detectChanges();
 
         expect(fixture.nativeElement.querySelector('.mat-datepicker-toggle .custom-icon'))
-            .toBeTruthy('Expected custom icon to be rendered.');
+          .withContext('Expected custom icon to be rendered.')
+          .toBeTruthy();
 
         expect(fixture.nativeElement.querySelector('.mat-datepicker-toggle mat-icon'))
-            .toBeFalsy('Expected default icon to be removed.');
+          .withContext('Expected default icon to be removed.')
+          .toBeFalsy();
       }));
     });
 
@@ -1836,7 +1851,9 @@ describe('MatDatepicker', () => {
         (fixture.componentInstance.datepicker as any)._focusedElementBeforeOpen = input;
 
         // Ensure that the datepicker is actually open.
-        expect(testComponent.datepicker.opened).toBe(true, 'Expected datepicker to be open.');
+        // Ensure that the datepicker is actually open.
+expect(testComponent.datepicker.opened)
+  .withContext('Expected datepicker to be open.').toBe(true);
 
         // Close the datepicker.
         testComponent.datepicker.close();
@@ -1849,7 +1866,8 @@ describe('MatDatepicker', () => {
         // Flush out the scheduled tasks.
         flush();
 
-        expect(testComponent.datepicker.opened).toBe(false, 'Expected datepicker to be closed.');
+        expect(testComponent.datepicker.opened)
+          .withContext('Expected datepicker to be closed.').toBe(false);
       }));
     });
 
@@ -1978,9 +1996,9 @@ describe('MatDatepicker', () => {
       const inputRect = input.getBoundingClientRect();
 
       expect(Math.floor(overlayRect.top))
-          .toBe(Math.floor(inputRect.bottom), 'Expected popup to align to input bottom.');
+        .withContext('Expected popup to align to input bottom.').toBe(Math.floor(inputRect.bottom));
       expect(Math.floor(overlayRect.left))
-          .toBe(Math.floor(inputRect.left), 'Expected popup to align to input left.');
+        .withContext('Expected popup to align to input left.').toBe(Math.floor(inputRect.left));
     });
 
     it('should be above and to the right when there is no space below', () => {
@@ -1992,9 +2010,9 @@ describe('MatDatepicker', () => {
       const inputRect = input.getBoundingClientRect();
 
       expect(Math.floor(overlayRect.bottom))
-          .toBe(Math.floor(inputRect.top), 'Expected popup to align to input top.');
+        .withContext('Expected popup to align to input top.').toBe(Math.floor(inputRect.top));
       expect(Math.floor(overlayRect.left))
-          .toBe(Math.floor(inputRect.left), 'Expected popup to align to input left.');
+        .withContext('Expected popup to align to input left.').toBe(Math.floor(inputRect.left));
     });
 
     it('should be below and to the left when there is no space on the right', () => {
@@ -2006,9 +2024,9 @@ describe('MatDatepicker', () => {
       const inputRect = input.getBoundingClientRect();
 
       expect(Math.floor(overlayRect.top))
-          .toBe(Math.floor(inputRect.bottom), 'Expected popup to align to input bottom.');
+        .withContext('Expected popup to align to input bottom.').toBe(Math.floor(inputRect.bottom));
       expect(Math.floor(overlayRect.right))
-          .toBe(Math.floor(inputRect.right), 'Expected popup to align to input right.');
+        .withContext('Expected popup to align to input right.').toBe(Math.floor(inputRect.right));
     });
 
     it('should be above and to the left when there is no space on the bottom', () => {
@@ -2020,9 +2038,9 @@ describe('MatDatepicker', () => {
       const inputRect = input.getBoundingClientRect();
 
       expect(Math.floor(overlayRect.bottom))
-          .toBe(Math.floor(inputRect.top), 'Expected popup to align to input top.');
+        .withContext('Expected popup to align to input top.').toBe(Math.floor(inputRect.top));
       expect(Math.floor(overlayRect.right))
-          .toBe(Math.floor(inputRect.right), 'Expected popup to align to input right.');
+        .withContext('Expected popup to align to input right.').toBe(Math.floor(inputRect.right));
     });
 
     it('should be able to customize the calendar position along the X axis', () => {
@@ -2037,7 +2055,7 @@ describe('MatDatepicker', () => {
       const inputRect = input.getBoundingClientRect();
 
       expect(Math.floor(overlayRect.right))
-          .toBe(Math.floor(inputRect.right), 'Expected popup to align to input right.');
+        .withContext('Expected popup to align to input right.').toBe(Math.floor(inputRect.right));
     });
 
     it('should be able to customize the calendar position along the Y axis', () => {
@@ -2052,7 +2070,7 @@ describe('MatDatepicker', () => {
       const inputRect = input.getBoundingClientRect();
 
       expect(Math.floor(overlayRect.bottom))
-          .toBe(Math.floor(inputRect.top), 'Expected popup to align to input top.');
+        .withContext('Expected popup to align to input top.').toBe(Math.floor(inputRect.top));
     });
 
   });

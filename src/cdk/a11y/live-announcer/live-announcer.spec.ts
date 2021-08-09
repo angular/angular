@@ -102,7 +102,8 @@ describe('LiveAnnouncer', () => {
       announcer.ngOnDestroy();
 
       expect(document.body.querySelector('.cdk-live-announcer-element'))
-          .toBeFalsy('Expected that the aria-live element was remove from the DOM.');
+        .withContext('Expected that the aria-live element was remove from the DOM.')
+        .toBeFalsy();
     }));
 
     it('should return a promise that resolves after the text has been announced', fakeAsync(() => {
@@ -137,7 +138,8 @@ describe('LiveAnnouncer', () => {
       tick(100);
 
       expect(document.body.querySelectorAll('.cdk-live-announcer-element').length)
-          .toBe(1, 'Expected only one live announcer element in the DOM.');
+        .withContext('Expected only one live announcer element in the DOM.')
+        .toBe(1);
 
       if (extraElement.parentNode) {
         extraElement.parentNode.removeChild(extraElement);

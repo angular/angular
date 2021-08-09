@@ -115,7 +115,8 @@ describe('Overlay directives', () => {
 
     expect(overlayContainerElement.textContent!.trim()).toBe('');
     expect(getPaneElement())
-      .toBeFalsy('Expected the overlay pane element to be removed when disposed.');
+      .withContext('Expected the overlay pane element to be removed when disposed.')
+      .toBeFalsy();
   });
 
   it('should use a connected position strategy with a default set of positions', () => {
@@ -162,8 +163,8 @@ describe('Overlay directives', () => {
     const event = dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
     fixture.detectChanges();
 
-    expect(overlayContainerElement.textContent!.trim()).toBe('',
-        'Expected overlay to have been detached.');
+    expect(overlayContainerElement.textContent!.trim())
+      .withContext('Expected overlay to have been detached.').toBe('');
     expect(event.defaultPrevented).toBe(true);
   });
 
@@ -614,7 +615,8 @@ describe('Overlay directives', () => {
       const latestCall = fixture.componentInstance.positionChangeHandler.calls.mostRecent();
 
       expect(latestCall.args[0] instanceof ConnectedOverlayPositionChange)
-          .toBe(true, `Expected directive to emit an instance of ConnectedOverlayPositionChange.`);
+        .withContext(`Expected directive to emit an instance of ConnectedOverlayPositionChange.`)
+        .toBe(true);
     });
 
     it('should emit when attached', () => {
@@ -624,7 +626,8 @@ describe('Overlay directives', () => {
 
       expect(fixture.componentInstance.attachHandler).toHaveBeenCalled();
       expect(fixture.componentInstance.attachResult instanceof HTMLElement)
-          .toBe(true, `Expected pane to be populated with HTML elements when attach was called.`);
+        .withContext(`Expected pane to be populated with HTML elements when attach was called.`)
+        .toBe(true);
 
       fixture.componentInstance.isOpen = false;
       fixture.detectChanges();

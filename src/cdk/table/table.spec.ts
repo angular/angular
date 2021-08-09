@@ -581,10 +581,11 @@ describe('CdkTable', () => {
     thisFixture.detectChanges();
 
     const rowGroups = Array.from(thisTableElement.querySelectorAll('thead, tbody, tfoot'));
-    expect(rowGroups.length).toBe(3, 'Expected table to have a thead, tbody, and tfoot');
+    expect(rowGroups.length)
+      .withContext('Expected table to have a thead, tbody, and tfoot').toBe(3);
     for (const group of rowGroups) {
       expect(group.getAttribute('role'))
-          .toBe('rowgroup', 'Expected thead, tbody, and tfoot to have role="rowgroup"');
+        .withContext('Expected thead, tbody, and tfoot to have role="rowgroup"').toBe('rowgroup');
     }
   });
 
@@ -594,9 +595,11 @@ describe('CdkTable', () => {
     thisFixture.detectChanges();
 
     const rowGroups: HTMLElement[] = Array.from(thisTableElement.querySelectorAll('thead, tfoot'));
-    expect(rowGroups.length).toBe(2, 'Expected table to have a thead and tfoot');
+    expect(rowGroups.length)
+      .withContext('Expected table to have a thead and tfoot').toBe(2);
     for (const group of rowGroups) {
-      expect(group.style.display).toBe('none', 'Expected thead and tfoot to be `display: none`');
+      expect(group.style.display)
+        .withContext('Expected thead and tfoot to be `display: none`').toBe('none');
     }
   });
 
@@ -873,21 +876,25 @@ describe('CdkTable', () => {
         expect(element.style.position).toBe('');
         expect(element.style.zIndex || '0').toBe('0');
         ['top', 'bottom', 'left', 'right'].forEach(d => {
-          expect(element.style[d] || 'unset').toBe('unset', `Expected ${d} to be unset`);
+          expect(element.style[d] || 'unset')
+            .withContext(`Expected ${d} to be unset`).toBe('unset');
         });
       });
     }
 
     function expectStickyStyles(element: any, zIndex: string, directions: PositionDirections = {}) {
       expect(element.style.position).toContain('sticky');
-      expect(element.style.zIndex).toBe(zIndex, `Expected zIndex to be ${zIndex}`);
+      expect(element.style.zIndex)
+        .withContext(`Expected zIndex to be ${zIndex}`).toBe(zIndex);
 
       ['top', 'bottom', 'left', 'right'].forEach(d => {
         const directionValue = directions[d];
 
         if (!directionValue) {
           // If no expected position for this direction, must either be unset or empty string
-          expect(element.style[d] || 'unset').toBe('unset', `Expected ${d} to be unset`);
+          // If no expected position for this direction, must either be unset or empty string
+          expect(element.style[d] || 'unset')
+            .withContext(`Expected ${d} to be unset`).toBe('unset');
           return;
         }
 
@@ -897,9 +904,10 @@ describe('CdkTable', () => {
         // caused by individual browsers.
         if (directionValue.includes('px')) {
           expect(Math.round(parseInt(element.style[d])))
-            .toBe(Math.round(parseInt(directionValue)), expectationMessage);
+            .withContext(expectationMessage).toBe(Math.round(parseInt(directionValue)));
         } else {
-          expect(element.style[d]).toBe(directionValue, expectationMessage);
+          expect(element.style[d])
+            .withContext(expectationMessage).toBe(directionValue);
         }
       });
     }

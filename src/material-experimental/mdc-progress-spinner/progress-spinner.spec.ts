@@ -126,15 +126,20 @@ describe('MDC-based MatProgressSpinner', () => {
     fixture.detectChanges();
 
     expect(parseInt(spinner.style.width))
-      .toBe(32, 'Expected the custom diameter to be applied to the host element width.');
+      .withContext('Expected the custom diameter to be applied to the host element width.')
+      .toBe(32);
     expect(parseInt(spinner.style.height))
-      .toBe(32, 'Expected the custom diameter to be applied to the host element height.');
+      .withContext('Expected the custom diameter to be applied to the host element height.')
+      .toBe(32);
     expect(parseInt(svgElement.clientWidth))
-      .toBe(32, 'Expected the custom diameter to be applied to the svg element width.');
+      .withContext('Expected the custom diameter to be applied to the svg element width.')
+      .toBe(32);
     expect(parseInt(svgElement.clientHeight))
-      .toBe(32, 'Expected the custom diameter to be applied to the svg element height.');
+      .withContext('Expected the custom diameter to be applied to the svg element height.')
+      .toBe(32);
     expect(svgElement.getAttribute('viewBox'))
-      .toBe('0 0 25.2 25.2', 'Expected the custom diameter to be applied to the svg viewBox.');
+      .withContext('Expected the custom diameter to be applied to the svg viewBox.')
+      .toBe('0 0 25.2 25.2');
   });
 
   it('should allow a custom stroke width', () => {
@@ -146,10 +151,12 @@ describe('MDC-based MatProgressSpinner', () => {
     const circleElement = fixture.nativeElement.querySelector('circle');
     const svgElement = fixture.nativeElement.querySelector('svg');
 
-    expect(parseInt(circleElement.style.strokeWidth)).toBe(40, 'Expected the custom stroke ' +
-      'width to be applied to the circle element as a percentage of the element size.');
+    expect(parseInt(circleElement.style.strokeWidth))
+      .withContext('Expected the custom stroke ' +
+    'width to be applied to the circle element as a percentage of the element size.').toBe(40);
     expect(svgElement.getAttribute('viewBox'))
-      .toBe('0 0 130 130', 'Expected the viewBox to be adjusted based on the stroke width.');
+      .withContext('Expected the viewBox to be adjusted based on the stroke width.')
+      .toBe('0 0 130 130');
   });
 
   it('should allow floating point values for custom diameter', () => {
@@ -162,15 +169,20 @@ describe('MDC-based MatProgressSpinner', () => {
     const svgElement: HTMLElement = fixture.nativeElement.querySelector('svg');
 
     expect(parseFloat(spinner.style.width))
-      .toBe(32.5, 'Expected the custom diameter to be applied to the host element width.');
+      .withContext('Expected the custom diameter to be applied to the host element width.')
+      .toBe(32.5);
     expect(parseFloat(spinner.style.height))
-      .toBe(32.5, 'Expected the custom diameter to be applied to the host element height.');
+      .withContext('Expected the custom diameter to be applied to the host element height.')
+      .toBe(32.5);
     expect(Math.ceil(svgElement.clientWidth))
-      .toBe(33, 'Expected the custom diameter to be applied to the svg element width.');
+      .withContext('Expected the custom diameter to be applied to the svg element width.')
+      .toBe(33);
     expect(Math.ceil(svgElement.clientHeight))
-      .toBe(33, 'Expected the custom diameter to be applied to the svg element height.');
+      .withContext('Expected the custom diameter to be applied to the svg element height.')
+      .toBe(33);
     expect(svgElement.getAttribute('viewBox'))
-      .toBe('0 0 25.75 25.75', 'Expected the custom diameter to be applied to the svg viewBox.');
+      .withContext('Expected the custom diameter to be applied to the svg viewBox.')
+      .toBe('0 0 25.75 25.75');
   });
 
   it('should allow floating point values for custom stroke width', () => {
@@ -182,10 +194,12 @@ describe('MDC-based MatProgressSpinner', () => {
     const circleElement = fixture.nativeElement.querySelector('circle');
     const svgElement = fixture.nativeElement.querySelector('svg');
 
-    expect(parseFloat(circleElement.style.strokeWidth)).toBe(40.5, 'Expected the custom stroke ' +
-      'width to be applied to the circle element as a percentage of the element size.');
+    expect(parseFloat(circleElement.style.strokeWidth))
+      .withContext('Expected the custom stroke ' +
+    'width to be applied to the circle element as a percentage of the element size.').toBe(40.5);
     expect(svgElement.getAttribute('viewBox'))
-      .toBe('0 0 130.5 130.5', 'Expected the viewBox to be adjusted based on the stroke width.');
+      .withContext('Expected the viewBox to be adjusted based on the stroke width.')
+      .toBe('0 0 130.5 130.5');
   });
 
   it('should expand the host element if the stroke width is greater than the default', () => {

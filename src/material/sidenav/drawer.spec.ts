@@ -199,17 +199,17 @@ describe('MatDrawer', () => {
       fixture.detectChanges();
       tick();
 
-      expect(testComponent.openCount).toBe(1, 'Expected one open event.');
-      expect(testComponent.openStartCount).toBe(1, 'Expected one open start event.');
-      expect(testComponent.closeCount).toBe(0, 'Expected no close events.');
-      expect(testComponent.closeStartCount).toBe(0, 'Expected no close start events.');
+      expect(testComponent.openCount).withContext('Expected one open event.').toBe(1);
+      expect(testComponent.openStartCount).withContext('Expected one open start event.').toBe(1);
+      expect(testComponent.closeCount).withContext('Expected no close events.').toBe(0);
+      expect(testComponent.closeStartCount).withContext('Expected no close start events.').toBe(0);
 
       const event = dispatchKeyboardEvent(drawer.nativeElement, 'keydown', ESCAPE);
       fixture.detectChanges();
       flush();
 
-      expect(testComponent.closeCount).toBe(1, 'Expected one close event.');
-      expect(testComponent.closeStartCount).toBe(1, 'Expected one close start event.');
+      expect(testComponent.closeCount).withContext('Expected one close event.').toBe(1);
+      expect(testComponent.closeStartCount).withContext('Expected one close start event.').toBe(1);
       expect(event.defaultPrevented).toBe(true);
     }));
 
@@ -225,16 +225,17 @@ describe('MatDrawer', () => {
       fixture.detectChanges();
       tick();
 
-      expect(testComponent.closeCount).toBe(0, 'Expected no close events.');
-      expect(testComponent.closeStartCount).toBe(0, 'Expected no close start events.');
+      expect(testComponent.closeCount).withContext('Expected no close events.').toBe(0);
+      expect(testComponent.closeStartCount).withContext('Expected no close start events.').toBe(0);
 
       const event = createKeyboardEvent('keydown', ESCAPE, undefined, {alt: true});
       dispatchEvent(drawer.nativeElement, event);
       fixture.detectChanges();
       flush();
 
-      expect(testComponent.closeCount).toBe(0, 'Expected still no close events.');
-      expect(testComponent.closeStartCount).toBe(0, 'Expected still no close start events.');
+      expect(testComponent.closeCount).withContext('Expected still no close events.').toBe(0);
+      expect(testComponent.closeStartCount)
+        .withContext('Expected still no close start events.').toBe(0);
       expect(event.defaultPrevented).toBe(false);
     }));
 
@@ -309,7 +310,7 @@ describe('MatDrawer', () => {
       flush();
 
       expect(document.activeElement)
-          .toBe(openButton, 'Expected focus to be restored to the open button on close.');
+        .withContext('Expected focus to be restored to the open button on close.').toBe(openButton);
     }));
 
     it('should restore focus on close if focus is on drawer', fakeAsync(() => {
@@ -332,7 +333,7 @@ describe('MatDrawer', () => {
       flush();
 
       expect(document.activeElement)
-          .toBe(openButton, 'Expected focus to be restored to the open button on close.');
+        .withContext('Expected focus to be restored to the open button on close.').toBe(openButton);
     }));
 
     it('should restore focus to an SVG element', fakeAsync(() => {
@@ -354,7 +355,7 @@ describe('MatDrawer', () => {
       flush();
 
       expect(document.activeElement)
-          .toBe(svg, 'Expected focus to be restored to the SVG element on close.');
+        .withContext('Expected focus to be restored to the SVG element on close.').toBe(svg);
     }));
 
     it('should not restore focus on close if focus is outside drawer', fakeAsync(() => {
@@ -378,7 +379,8 @@ describe('MatDrawer', () => {
       tick();
 
       expect(document.activeElement)
-          .toBe(closeButton, 'Expected focus not to be restored to the open button on close.');
+        .withContext('Expected focus not to be restored to the open button on close.')
+        .toBe(closeButton);
     }));
 
     it('should pick up drawers that are not direct descendants', fakeAsync(() => {
@@ -451,7 +453,7 @@ describe('MatDrawer', () => {
 
       const drawerEl = fixture.debugElement.query(By.css('mat-drawer'))!.nativeElement;
       expect(drawerEl.hasAttribute('align'))
-          .toBe(false, 'Expected drawer not to have a native align attribute.');
+        .withContext('Expected drawer not to have a native align attribute.').toBe(false);
     });
 
     it('should throw when multiple drawers have the same position', fakeAsync(() => {
@@ -635,13 +637,13 @@ describe('MatDrawer', () => {
           Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('.cdk-focus-trap-anchor'));
 
       expect(anchors.every(anchor => !anchor.hasAttribute('tabindex')))
-          .toBe(true, 'Expected focus trap anchors to be disabled in side mode.');
+        .withContext('Expected focus trap anchors to be disabled in side mode.').toBe(true);
 
       testComponent.mode = 'over';
       fixture.detectChanges();
 
       expect(anchors.every(anchor => anchor.getAttribute('tabindex') === '0'))
-          .toBe(true, 'Expected focus trap anchors to be enabled in over mode.');
+        .withContext('Expected focus trap anchors to be enabled in over mode.').toBe(true);
     }));
 
   });
@@ -842,7 +844,8 @@ describe('MatDrawerContainer', () => {
       fixture.detectChanges();
 
       const content = fixture.debugElement.nativeElement.querySelector('.mat-drawer-content');
-      expect(content.style.marginLeft).toBe('', 'Margin should be omitted when drawer is closed');
+      expect(content.style.marginLeft)
+        .withContext('Margin should be omitted when drawer is closed').toBe('');
 
       // Open the drawer and resolve the open animation.
       fixture.componentInstance.drawer.open();
@@ -858,7 +861,8 @@ describe('MatDrawerContainer', () => {
       flush();
       fixture.detectChanges();
 
-      expect(content.style.marginLeft).toBe('', 'Margin should be removed after drawer close.');
+      expect(content.style.marginLeft)
+        .withContext('Margin should be removed after drawer close.').toBe('');
 
       discardPeriodicTasks();
     }));

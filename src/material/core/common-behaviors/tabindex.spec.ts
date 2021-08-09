@@ -7,12 +7,12 @@ describe('mixinTabIndex', () => {
     const instance = new classWithMixin();
 
     expect(instance.tabIndex)
-      .toBe(0, 'Expected the mixed-into class to have a tabIndex property');
+      .withContext('Expected the mixed-into class to have a tabIndex property').toBe(0);
 
     instance.tabIndex = 4;
 
     expect(instance.tabIndex)
-      .toBe(4, 'Expected the mixed-into class to have an updated tabIndex property');
+      .withContext('Expected the mixed-into class to have an updated tabIndex property').toBe(4);
   });
 
   it('should set tabIndex to `-1` if the disabled property is set to true', () => {
@@ -20,12 +20,13 @@ describe('mixinTabIndex', () => {
     const instance = new classWithMixin();
 
     expect(instance.tabIndex)
-      .toBe(0, 'Expected tabIndex to be set to 0 initially');
+      .withContext('Expected tabIndex to be set to 0 initially').toBe(0);
 
     instance.disabled = true;
 
     expect(instance.tabIndex)
-      .toBe(-1, 'Expected tabIndex to be set to -1 if the disabled property is set to true');
+      .withContext('Expected tabIndex to be set to -1 if the disabled property is set to true')
+      .toBe(-1);
   });
 
   it('should allow having a custom default tabIndex value', () => {
@@ -33,12 +34,12 @@ describe('mixinTabIndex', () => {
     const instance = new classWithMixin();
 
     expect(instance.tabIndex)
-      .toBe(20, 'Expected tabIndex to be set to 20 initially');
+      .withContext('Expected tabIndex to be set to 20 initially').toBe(20);
 
     instance.tabIndex = 0;
 
     expect(instance.tabIndex)
-      .toBe(0, 'Expected tabIndex to still support 0 as value');
+      .withContext('Expected tabIndex to still support 0 as value').toBe(0);
   });
 
   it('should allow for the default tabIndex to change after init', () => {

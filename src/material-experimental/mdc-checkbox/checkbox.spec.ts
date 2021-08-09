@@ -100,7 +100,7 @@ describe('MDC-based MatCheckbox', () => {
          expect(inputElement.checked).toBe(false);
          expect(inputElement.indeterminate).toBe(false);
          expect(inputElement.getAttribute('aria-checked'))
-             .toBe('false', 'Expect aria-checked to be false');
+          .withContext('Expect aria-checked to be false').toBe('false');
 
          testComponent.isIndeterminate = true;
          fixture.detectChanges();
@@ -108,7 +108,7 @@ describe('MDC-based MatCheckbox', () => {
          expect(inputElement.checked).toBe(false);
          expect(inputElement.indeterminate).toBe(true);
          expect(inputElement.getAttribute('aria-checked'))
-             .toBe('mixed', 'Expect aria checked to be mixed for indeterminate checkbox');
+          .withContext('Expect aria checked to be mixed for indeterminate checkbox').toBe('mixed');
 
          testComponent.isIndeterminate = false;
          fixture.detectChanges();
@@ -148,7 +148,7 @@ describe('MDC-based MatCheckbox', () => {
          expect(inputElement.checked).toBe(true);
          expect(testComponent.isIndeterminate).toBe(true);
          expect(inputElement.getAttribute('aria-checked'))
-             .toBe('true', 'Expect aria checked to be true');
+          .withContext('Expect aria checked to be true').toBe('true');
 
          inputElement.click();
          fixture.detectChanges();
@@ -584,7 +584,8 @@ describe('MDC-based MatCheckbox', () => {
            flush();
 
            expect(inputElement.checked).toBe(false);
-           expect(inputElement.indeterminate).toBe(true, 'indeterminate should not change');
+           expect(inputElement.indeterminate)
+            .withContext('indeterminate should not change').toBe(true);
          }));
     });
 
@@ -772,7 +773,8 @@ describe('MDC-based MatCheckbox', () => {
              .componentInstance as MatCheckbox;
 
          expect(checkbox.tabIndex)
-             .toBe(5, 'Expected tabIndex property to have been set based on the native attribute');
+          .withContext('Expected tabIndex property to have been set based on the native attribute')
+          .toBe(5);
        }));
 
     it('should clear the tabindex attribute from the host element', fakeAsync(() => {

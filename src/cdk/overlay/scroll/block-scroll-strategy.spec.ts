@@ -51,23 +51,24 @@ describe('BlockScrollStrategy', () => {
   it('should toggle scroll blocking along the y axis', skipIOS(() => {
     window.scroll(0, 100);
     expect(viewport.getViewportScrollPosition().top)
-        .toBe(100, 'Expected viewport to be scrollable initially.');
+      .withContext('Expected viewport to be scrollable initially.').toBe(100);
 
     overlayRef.attach(componentPortal);
     expect(documentElement.style.top)
-        .toBe('-100px', 'Expected <html> element to be offset by the previous scroll amount.');
+      .withContext('Expected <html> element to be offset by the previous scroll amount.')
+      .toBe('-100px');
 
     window.scroll(0, 300);
     expect(viewport.getViewportScrollPosition().top)
-        .toBe(100, 'Expected the viewport not to scroll.');
+      .withContext('Expected the viewport not to scroll.').toBe(100);
 
     overlayRef.detach();
     expect(viewport.getViewportScrollPosition().top)
-        .toBe(100, 'Expected old scroll position to have bee restored after disabling.');
+      .withContext('Expected old scroll position to have bee restored after disabling.').toBe(100);
 
     window.scroll(0, 300);
     expect(viewport.getViewportScrollPosition().top)
-        .toBe(300, 'Expected user to be able to scroll after disabling.');
+      .withContext('Expected user to be able to scroll after disabling.').toBe(300);
   }));
 
 
@@ -77,23 +78,24 @@ describe('BlockScrollStrategy', () => {
 
     window.scroll(100, 0);
     expect(viewport.getViewportScrollPosition().left)
-        .toBe(100, 'Expected viewport to be scrollable initially.');
+      .withContext('Expected viewport to be scrollable initially.').toBe(100);
 
     overlayRef.attach(componentPortal);
     expect(documentElement.style.left)
-        .toBe('-100px', 'Expected <html> element to be offset by the previous scroll amount.');
+      .withContext('Expected <html> element to be offset by the previous scroll amount.')
+      .toBe('-100px');
 
     window.scroll(300, 0);
     expect(viewport.getViewportScrollPosition().left)
-        .toBe(100, 'Expected the viewport not to scroll.');
+      .withContext('Expected the viewport not to scroll.').toBe(100);
 
     overlayRef.detach();
     expect(viewport.getViewportScrollPosition().left)
-        .toBe(100, 'Expected old scroll position to have bee restored after disabling.');
+      .withContext('Expected old scroll position to have bee restored after disabling.').toBe(100);
 
     window.scroll(300, 0);
     expect(viewport.getViewportScrollPosition().left)
-        .toBe(300, 'Expected user to be able to scroll after disabling.');
+      .withContext('Expected user to be able to scroll after disabling.').toBe(300);
   }));
 
 

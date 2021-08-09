@@ -72,13 +72,14 @@ describe('MatSnackBar', () => {
     const inertElement = containerElement.querySelector('[aria-hidden]')!;
 
     expect(inertElement.getAttribute('aria-hidden'))
-      .toBe('true', 'Expected the non-live region to be aria-hidden');
-    expect(inertElement.textContent).toContain('Snack time!',
-        'Expected non-live region to contain the snack bar content');
+      .withContext('Expected the non-live region to be aria-hidden').toBe('true');
+    expect(inertElement.textContent)
+      .withContext('Expected non-live region to contain the snack bar content')
+      .toContain('Snack time!');
 
     const liveElement = containerElement.querySelector('[aria-live]')!;
     expect(liveElement.childNodes.length)
-        .toBe(0, 'Expected live region to not contain any content');
+      .withContext('Expected live region to not contain any content').toBe(0);
   });
 
   it('should move content to the live region after 150ms', fakeAsync(() => {
@@ -89,11 +90,13 @@ describe('MatSnackBar', () => {
     const liveElement = containerElement.querySelector('[aria-live]')!;
     tick(announceDelay);
 
-    expect(liveElement.textContent).toContain('Snack time!',
-        'Expected live region to contain the snack bar content');
+    expect(liveElement.textContent)
+      .withContext('Expected live region to contain the snack bar content')
+      .toContain('Snack time!');
 
     const inertElement = containerElement.querySelector('[aria-hidden]')!;
-    expect(inertElement).toBeFalsy('Expected non-live region to not contain any content');
+    expect(inertElement)
+      .withContext('Expected non-live region to not contain any content').toBeFalsy();
     flush();
   }));
 
@@ -106,11 +109,11 @@ describe('MatSnackBar', () => {
         .querySelector('.mat-mdc-simple-snack-bar .mat-mdc-snack-bar-action')! as HTMLElement;
     actionButton.focus();
     expect(document.activeElement)
-        .toBe(actionButton, 'Expected the focus to move to the action button');
+      .withContext('Expected the focus to move to the action button').toBe(actionButton);
 
     flush();
     expect(document.activeElement)
-        .toBe(actionButton, 'Expected the focus to remain on the action button');
+      .withContext('Expected the focus to remain on the action button').toBe(actionButton);
   }));
 
   it('should have aria-live of `assertive` with an `assertive` politeness if no announcement ' +
@@ -123,8 +126,9 @@ describe('MatSnackBar', () => {
     const containerElement = overlayContainerElement.querySelector('mat-snack-bar-container')!;
     const liveElement = containerElement.querySelector('[aria-live]')!;
 
-    expect(liveElement.getAttribute('aria-live')).toBe('assertive',
-        'Expected snack bar container live region to have aria-live="assertive"');
+    expect(liveElement.getAttribute('aria-live'))
+      .withContext('Expected snack bar container live region to have aria-live="assertive"')
+      .toBe('assertive');
   });
 
   it('should have aria-live of `polite` with an `assertive` politeness if an announcement ' +
@@ -137,7 +141,8 @@ describe('MatSnackBar', () => {
     const liveElement = containerElement.querySelector('[aria-live]')!;
 
     expect(liveElement.getAttribute('aria-live'))
-        .toBe('polite', 'Expected snack bar container live region to have aria-live="polite"');
+      .withContext('Expected snack bar container live region to have aria-live="polite"')
+      .toBe('polite');
   });
 
   it('should have aria-live of `polite` with a `polite` politeness', () => {
@@ -148,7 +153,8 @@ describe('MatSnackBar', () => {
     const liveElement = containerElement.querySelector('[aria-live]')!;
 
     expect(liveElement.getAttribute('aria-live'))
-        .toBe('polite', 'Expected snack bar container live region to have aria-live="polite"');
+      .withContext('Expected snack bar container live region to have aria-live="polite"')
+      .toBe('polite');
   });
 
   it('should have aria-live of `off` if the politeness is turned off', () => {
@@ -159,7 +165,7 @@ describe('MatSnackBar', () => {
     const liveElement = containerElement.querySelector('[aria-live]')!;
 
     expect(liveElement.getAttribute('aria-live'))
-        .toBe('off', 'Expected snack bar container live region to have aria-live="off"');
+      .withContext('Expected snack bar container live region to have aria-live="off"').toBe('off');
   });
 
   it('should have role of `alert` with an `assertive` politeness (Firefox only)', () => {
@@ -199,15 +205,16 @@ describe('MatSnackBar', () => {
     viewContainerFixture.detectChanges();
 
     let messageElement = overlayContainerElement.querySelector('mat-snack-bar-container')!;
-    expect(messageElement.textContent).toContain('Snack time!',
-        'Expected snack bar to show a message without a ViewContainerRef');
+    expect(messageElement.textContent)
+      .withContext('Expected snack bar to show a message without a ViewContainerRef')
+      .toContain('Snack time!');
 
     snackBarRef.dismiss();
     viewContainerFixture.detectChanges();
     flush();
 
     expect(overlayContainerElement.childNodes.length)
-        .toBe(0, 'Expected snack bar to be dismissed without a ViewContainerRef');
+      .withContext('Expected snack bar to be dismissed without a ViewContainerRef').toBe(0);
   }));
 
   it('should open a simple message with a button', () => {
@@ -217,21 +224,22 @@ describe('MatSnackBar', () => {
     viewContainerFixture.detectChanges();
 
     expect(snackBarRef.instance instanceof MatSimpleSnackBar)
-        .toBe(true, 'Expected the snack bar content component to be SimpleSnackBar');
+      .withContext('Expected the snack bar content component to be SimpleSnackBar').toBe(true);
     expect(snackBarRef.instance.snackBarRef)
-        .toBe(snackBarRef,
-            'Expected the snack bar reference to be placed in the component instance');
+      .withContext('Expected the snack bar reference to be placed in the component instance')
+      .toBe(snackBarRef);
 
     let messageElement = overlayContainerElement.querySelector('mat-snack-bar-container')!;
     expect(messageElement.textContent)
-        .toContain(simpleMessage, `Expected the snack bar message to be '${simpleMessage}'`);
+      .withContext(`Expected the snack bar message to be '${simpleMessage}'`)
+      .toContain(simpleMessage);
 
     let buttonElement = overlayContainerElement.querySelector('button.mat-mdc-button')!;
     expect(buttonElement.tagName)
-        .toBe('BUTTON', 'Expected snack bar action label to be a <button>');
+      .withContext('Expected snack bar action label to be a <button>').toBe('BUTTON');
     expect((buttonElement.textContent || '').trim())
-        .toBe(simpleActionLabel,
-            `Expected the snack bar action label to be '${simpleActionLabel}'`);
+      .withContext(`Expected the snack bar action label to be '${simpleActionLabel}'`)
+      .toBe(simpleActionLabel);
   });
 
   it('should open a simple message with no button', () => {
@@ -241,16 +249,18 @@ describe('MatSnackBar', () => {
     viewContainerFixture.detectChanges();
 
     expect(snackBarRef.instance instanceof MatSimpleSnackBar)
-        .toBe(true, 'Expected the snack bar content component to be SimpleSnackBar');
+      .withContext('Expected the snack bar content component to be SimpleSnackBar').toBe(true);
     expect(snackBarRef.instance.snackBarRef)
-        .toBe(snackBarRef,
-            'Expected the snack bar reference to be placed in the component instance');
+      .withContext('Expected the snack bar reference to be placed in the component instance')
+      .toBe(snackBarRef);
 
     let messageElement = overlayContainerElement.querySelector('mat-snack-bar-container')!;
     expect(messageElement.textContent)
-        .toContain(simpleMessage, `Expected the snack bar message to be '${simpleMessage}'`);
+      .withContext(`Expected the snack bar message to be '${simpleMessage}'`)
+      .toContain(simpleMessage);
     expect(overlayContainerElement.querySelector('button.mat-mdc-button'))
-        .toBeNull('Expected the query selection for action label to be null');
+      .withContext('Expected the query selection for action label to be null')
+      .toBeNull();
   });
 
   it('should dismiss the snack bar and remove itself from the view', fakeAsync(() => {
@@ -260,21 +270,23 @@ describe('MatSnackBar', () => {
     let snackBarRef = snackBar.open(simpleMessage, undefined, config);
     viewContainerFixture.detectChanges();
     expect(overlayContainerElement.childElementCount)
-        .toBeGreaterThan(0, 'Expected overlay container element to have at least one child');
+      .withContext('Expected overlay container element to have at least one child')
+      .toBeGreaterThan(0);
 
     snackBarRef.afterDismissed().subscribe({complete: dismissCompleteSpy});
 
     snackBarRef.dismiss();
     viewContainerFixture.detectChanges();
     const messageElement = overlayContainerElement.querySelector('mat-snack-bar-container')!;
-    expect (messageElement.hasAttribute('mat-exit'))
-        .toBe(true, 'Expected the snackbar container to have the "exit" attribute upon dismiss');
+    expect(messageElement.hasAttribute('mat-exit'))
+      .withContext('Expected the snackbar container to have the "exit" attribute upon dismiss')
+      .toBe(true);
 
     flush();
 
     expect(dismissCompleteSpy).toHaveBeenCalled();
     expect(overlayContainerElement.childElementCount)
-        .toBe(0, 'Expected the overlay container element to have no child elements');
+      .withContext('Expected the overlay container element to have no child elements').toBe(0);
   }));
 
 
@@ -286,7 +298,8 @@ describe('MatSnackBar', () => {
     flush();
 
     expect(overlayContainerElement.childElementCount)
-        .toBe(1, 'Expected the overlay with the default announcement message to be added');
+      .withContext('Expected the overlay with the default announcement message to be added')
+      .toBe(1);
 
     expect(liveAnnouncer.announce).not.toHaveBeenCalled();
   }));
@@ -302,7 +315,7 @@ describe('MatSnackBar', () => {
     flush();
 
     expect(overlayContainerElement.childElementCount)
-        .toBe(1, 'Expected the overlay with a custom `announcementMessage` to be added');
+      .withContext('Expected the overlay with a custom `announcementMessage` to be added').toBe(1);
 
     expect(liveAnnouncer.announce).toHaveBeenCalledWith('Custom announcement', 'assertive');
   }));
@@ -329,7 +342,8 @@ describe('MatSnackBar', () => {
     flush();
 
     expect(overlayContainerElement.childElementCount)
-        .toBe(0, 'Expected snack bar to be removed after the view container was destroyed');
+      .withContext('Expected snack bar to be removed after the view container was destroyed')
+      .toBe(0);
   }));
 
   it('should open a new snackbar after dismissing a previous snackbar', fakeAsync(() => {
@@ -497,7 +511,8 @@ describe('MatSnackBar', () => {
 
     let pane = overlayContainerElement.querySelector('.cdk-global-overlay-wrapper')!;
 
-    expect(pane.getAttribute('dir')).toBe('rtl', 'Expected the pane to be in RTL mode.');
+    expect(pane.getAttribute('dir'))
+      .withContext('Expected the pane to be in RTL mode.').toBe('rtl');
   });
 
   it('should be able to override the default config', fakeAsync(() => {
@@ -523,7 +538,8 @@ describe('MatSnackBar', () => {
     flush();
 
     expect(overlayContainerElement.querySelector('mat-snack-bar-container')!.classList)
-        .toContain('custom-class', 'Expected class applied through the defaults to be applied.');
+      .withContext('Expected class applied through the defaults to be applied.')
+      .toContain('custom-class');
   }));
 
   it('should dismiss the open snack bar on destroy', fakeAsync(() => {
@@ -558,16 +574,19 @@ describe('MatSnackBar', () => {
       const snackBarRef = snackBar.openFromComponent(BurritosNotification);
 
       expect(snackBarRef.instance instanceof BurritosNotification)
-          .toBe(true, 'Expected the snack bar content component to be BurritosNotification');
+        .withContext('Expected the snack bar content component to be BurritosNotification')
+        .toBe(true);
       expect(overlayContainerElement.textContent!.trim())
-          .toBe('Burritos are on the way.', 'Expected component to have the proper text.');
+        .withContext('Expected component to have the proper text.')
+        .toBe('Burritos are on the way.');
     });
 
     it('should inject the snack bar reference into the component', () => {
       const snackBarRef = snackBar.openFromComponent(BurritosNotification);
 
       expect(snackBarRef.instance.snackBarRef)
-          .toBe(snackBarRef, 'Expected component to have an injected snack bar reference.');
+        .withContext('Expected component to have an injected snack bar reference.')
+        .toBe(snackBarRef);
     });
 
     it('should have exactly one MDC label element', () => {
@@ -583,10 +602,11 @@ describe('MatSnackBar', () => {
         }
       });
 
-      expect(snackBarRef.instance.data).toBeTruthy('Expected component to have a data object.');
+      expect(snackBarRef.instance.data)
+        .withContext('Expected component to have a data object.').toBeTruthy();
       expect(snackBarRef.instance.data.burritoType)
-          .toBe('Chimichanga',
-              'Expected the injected data object to be the one the user provided.');
+        .withContext('Expected the injected data object to be the one the user provided.')
+        .toBe('Chimichanga');
     });
 
     it('should allow manually dismissing with an action', fakeAsync(() => {
@@ -686,14 +706,15 @@ describe('MatSnackBar with parent MatSnackBar', () => {
     tick(1000);
 
     expect(overlayContainerElement.textContent)
-        .toContain('Pizza', 'Expected a snackBar to be opened');
+      .withContext('Expected a snackBar to be opened').toContain('Pizza');
 
     childSnackBar.open('Taco');
     fixture.detectChanges();
     tick(1000);
 
     expect(overlayContainerElement.textContent)
-        .toContain('Taco', 'Expected parent snackbar msg to be dismissed by opening from child');
+      .withContext('Expected parent snackbar msg to be dismissed by opening from child')
+      .toContain('Taco');
   }));
 
   it('should close snackBars opened by child when opening from parent', fakeAsync(() => {
@@ -702,14 +723,15 @@ describe('MatSnackBar with parent MatSnackBar', () => {
     tick(1000);
 
     expect(overlayContainerElement.textContent)
-        .toContain('Pizza', 'Expected a snackBar to be opened');
+      .withContext('Expected a snackBar to be opened').toContain('Pizza');
 
     parentSnackBar.open('Taco');
     fixture.detectChanges();
     tick(1000);
 
     expect(overlayContainerElement.textContent)
-        .toContain('Taco', 'Expected child snackbar msg to be dismissed by opening from parent');
+      .withContext('Expected child snackbar msg to be dismissed by opening from parent')
+      .toContain('Taco');
   }));
 
   it('should not dismiss parent snack bar if child is destroyed', fakeAsync(() => {
@@ -767,10 +789,14 @@ describe('MatSnackBar Positioning', () => {
     flush();
 
     const overlayPaneEl = overlayContainerEl.querySelector('.cdk-overlay-pane') as HTMLElement;
-    expect(overlayPaneEl.style.marginBottom).toBe('0px', 'Expected margin-bottom to be "0px"');
-    expect(overlayPaneEl.style.marginTop).toBe('', 'Expected margin-top to be ""');
-    expect(overlayPaneEl.style.marginRight).toBe('', 'Expected margin-right to be ""');
-    expect(overlayPaneEl.style.marginLeft).toBe('', 'Expected margin-left  to be ""');
+    expect(overlayPaneEl.style.marginBottom)
+      .withContext('Expected margin-bottom to be "0px"').toBe('0px');
+    expect(overlayPaneEl.style.marginTop)
+      .withContext('Expected margin-top to be ""').toBe('');
+    expect(overlayPaneEl.style.marginRight)
+      .withContext('Expected margin-right to be ""').toBe('');
+    expect(overlayPaneEl.style.marginLeft)
+      .withContext('Expected margin-left  to be ""').toBe('');
   }));
 
   it('should be in the bottom left corner', fakeAsync(() => {
@@ -783,10 +809,14 @@ describe('MatSnackBar Positioning', () => {
     flush();
 
     const overlayPaneEl = overlayContainerEl.querySelector('.cdk-overlay-pane') as HTMLElement;
-    expect(overlayPaneEl.style.marginBottom).toBe('0px', 'Expected margin-bottom to be "0px"');
-    expect(overlayPaneEl.style.marginTop).toBe('', 'Expected margin-top to be ""');
-    expect(overlayPaneEl.style.marginRight).toBe('', 'Expected margin-right to be ""');
-    expect(overlayPaneEl.style.marginLeft).toBe('0px', 'Expected margin-left  to be "0px"');
+    expect(overlayPaneEl.style.marginBottom)
+      .withContext('Expected margin-bottom to be "0px"').toBe('0px');
+    expect(overlayPaneEl.style.marginTop)
+      .withContext('Expected margin-top to be ""').toBe('');
+    expect(overlayPaneEl.style.marginRight)
+      .withContext('Expected margin-right to be ""').toBe('');
+    expect(overlayPaneEl.style.marginLeft)
+      .withContext('Expected margin-left  to be "0px"').toBe('0px');
   }));
 
   it('should be in the bottom right corner', fakeAsync(() => {
@@ -799,10 +829,14 @@ describe('MatSnackBar Positioning', () => {
     flush();
 
     const overlayPaneEl = overlayContainerEl.querySelector('.cdk-overlay-pane') as HTMLElement;
-    expect(overlayPaneEl.style.marginBottom).toBe('0px', 'Expected margin-bottom to be "0px"');
-    expect(overlayPaneEl.style.marginTop).toBe('', 'Expected margin-top to be ""');
-    expect(overlayPaneEl.style.marginRight).toBe('0px', 'Expected margin-right to be "0px"');
-    expect(overlayPaneEl.style.marginLeft).toBe('', 'Expected margin-left  to be ""');
+    expect(overlayPaneEl.style.marginBottom)
+      .withContext('Expected margin-bottom to be "0px"').toBe('0px');
+    expect(overlayPaneEl.style.marginTop)
+      .withContext('Expected margin-top to be ""').toBe('');
+    expect(overlayPaneEl.style.marginRight)
+      .withContext('Expected margin-right to be "0px"').toBe('0px');
+    expect(overlayPaneEl.style.marginLeft)
+      .withContext('Expected margin-left  to be ""').toBe('');
   }));
 
   it('should be in the bottom center', fakeAsync(() => {
@@ -815,10 +849,14 @@ describe('MatSnackBar Positioning', () => {
     flush();
 
     const overlayPaneEl = overlayContainerEl.querySelector('.cdk-overlay-pane') as HTMLElement;
-    expect(overlayPaneEl.style.marginBottom).toBe('0px', 'Expected margin-bottom to be "0px"');
-    expect(overlayPaneEl.style.marginTop).toBe('', 'Expected margin-top to be ""');
-    expect(overlayPaneEl.style.marginRight).toBe('', 'Expected margin-right to be ""');
-    expect(overlayPaneEl.style.marginLeft).toBe('', 'Expected margin-left  to be ""');
+    expect(overlayPaneEl.style.marginBottom)
+      .withContext('Expected margin-bottom to be "0px"').toBe('0px');
+    expect(overlayPaneEl.style.marginTop)
+      .withContext('Expected margin-top to be ""').toBe('');
+    expect(overlayPaneEl.style.marginRight)
+      .withContext('Expected margin-right to be ""').toBe('');
+    expect(overlayPaneEl.style.marginLeft)
+      .withContext('Expected margin-left  to be ""').toBe('');
   }));
 
   it('should be in the top left corner', fakeAsync(() => {
@@ -831,10 +869,14 @@ describe('MatSnackBar Positioning', () => {
     flush();
 
     const overlayPaneEl = overlayContainerEl.querySelector('.cdk-overlay-pane') as HTMLElement;
-    expect(overlayPaneEl.style.marginBottom).toBe('', 'Expected margin-bottom to be ""');
-    expect(overlayPaneEl.style.marginTop).toBe('0px', 'Expected margin-top to be "0px"');
-    expect(overlayPaneEl.style.marginRight).toBe('', 'Expected margin-right to be ""');
-    expect(overlayPaneEl.style.marginLeft).toBe('0px', 'Expected margin-left  to be "0px"');
+    expect(overlayPaneEl.style.marginBottom)
+      .withContext('Expected margin-bottom to be ""').toBe('');
+    expect(overlayPaneEl.style.marginTop)
+      .withContext('Expected margin-top to be "0px"').toBe('0px');
+    expect(overlayPaneEl.style.marginRight)
+      .withContext('Expected margin-right to be ""').toBe('');
+    expect(overlayPaneEl.style.marginLeft)
+      .withContext('Expected margin-left  to be "0px"').toBe('0px');
   }));
 
   it('should be in the top right corner', fakeAsync(() => {
@@ -847,10 +889,14 @@ describe('MatSnackBar Positioning', () => {
     flush();
 
     const overlayPaneEl = overlayContainerEl.querySelector('.cdk-overlay-pane') as HTMLElement;
-    expect(overlayPaneEl.style.marginBottom).toBe('', 'Expected margin-bottom to be ""');
-    expect(overlayPaneEl.style.marginTop).toBe('0px', 'Expected margin-top to be "0px"');
-    expect(overlayPaneEl.style.marginRight).toBe('0px', 'Expected margin-right to be "0px"');
-    expect(overlayPaneEl.style.marginLeft).toBe('', 'Expected margin-left  to be ""');
+    expect(overlayPaneEl.style.marginBottom)
+      .withContext('Expected margin-bottom to be ""').toBe('');
+    expect(overlayPaneEl.style.marginTop)
+      .withContext('Expected margin-top to be "0px"').toBe('0px');
+    expect(overlayPaneEl.style.marginRight)
+      .withContext('Expected margin-right to be "0px"').toBe('0px');
+    expect(overlayPaneEl.style.marginLeft)
+      .withContext('Expected margin-left  to be ""').toBe('');
   }));
 
   it('should be in the top center', fakeAsync(() => {
@@ -863,10 +909,14 @@ describe('MatSnackBar Positioning', () => {
     flush();
 
     const overlayPaneEl = overlayContainerEl.querySelector('.cdk-overlay-pane') as HTMLElement;
-    expect(overlayPaneEl.style.marginBottom).toBe('', 'Expected margin-bottom to be ""');
-    expect(overlayPaneEl.style.marginTop).toBe('0px', 'Expected margin-top to be "0px"');
-    expect(overlayPaneEl.style.marginRight).toBe('', 'Expected margin-right to be ""');
-    expect(overlayPaneEl.style.marginLeft).toBe('', 'Expected margin-left  to be ""');
+    expect(overlayPaneEl.style.marginBottom)
+      .withContext('Expected margin-bottom to be ""').toBe('');
+    expect(overlayPaneEl.style.marginTop)
+      .withContext('Expected margin-top to be "0px"').toBe('0px');
+    expect(overlayPaneEl.style.marginRight)
+      .withContext('Expected margin-right to be ""').toBe('');
+    expect(overlayPaneEl.style.marginLeft)
+      .withContext('Expected margin-left  to be ""').toBe('');
   }));
 
   it('should handle start based on direction (rtl)', fakeAsync(() => {
@@ -880,10 +930,14 @@ describe('MatSnackBar Positioning', () => {
     flush();
 
     const overlayPaneEl = overlayContainerEl.querySelector('.cdk-overlay-pane') as HTMLElement;
-    expect(overlayPaneEl.style.marginBottom).toBe('', 'Expected margin-bottom to be ""');
-    expect(overlayPaneEl.style.marginTop).toBe('0px', 'Expected margin-top to be "0px"');
-    expect(overlayPaneEl.style.marginRight).toBe('0px', 'Expected margin-right to be "0px"');
-    expect(overlayPaneEl.style.marginLeft).toBe('', 'Expected margin-left  to be ""');
+    expect(overlayPaneEl.style.marginBottom)
+      .withContext('Expected margin-bottom to be ""').toBe('');
+    expect(overlayPaneEl.style.marginTop)
+      .withContext('Expected margin-top to be "0px"').toBe('0px');
+    expect(overlayPaneEl.style.marginRight)
+      .withContext('Expected margin-right to be "0px"').toBe('0px');
+    expect(overlayPaneEl.style.marginLeft)
+      .withContext('Expected margin-left  to be ""').toBe('');
   }));
 
   it('should handle start based on direction (ltr)', fakeAsync(() => {
@@ -897,10 +951,14 @@ describe('MatSnackBar Positioning', () => {
     flush();
 
     const overlayPaneEl = overlayContainerEl.querySelector('.cdk-overlay-pane') as HTMLElement;
-    expect(overlayPaneEl.style.marginBottom).toBe('', 'Expected margin-bottom to be ""');
-    expect(overlayPaneEl.style.marginTop).toBe('0px', 'Expected margin-top to be "0px"');
-    expect(overlayPaneEl.style.marginRight).toBe('', 'Expected margin-right to be ""');
-    expect(overlayPaneEl.style.marginLeft).toBe('0px', 'Expected margin-left  to be "0px"');
+    expect(overlayPaneEl.style.marginBottom)
+      .withContext('Expected margin-bottom to be ""').toBe('');
+    expect(overlayPaneEl.style.marginTop)
+      .withContext('Expected margin-top to be "0px"').toBe('0px');
+    expect(overlayPaneEl.style.marginRight)
+      .withContext('Expected margin-right to be ""').toBe('');
+    expect(overlayPaneEl.style.marginLeft)
+      .withContext('Expected margin-left  to be "0px"').toBe('0px');
   }));
 
   it('should handle end based on direction (rtl)', fakeAsync(() => {
@@ -914,10 +972,14 @@ describe('MatSnackBar Positioning', () => {
     flush();
 
     const overlayPaneEl = overlayContainerEl.querySelector('.cdk-overlay-pane') as HTMLElement;
-    expect(overlayPaneEl.style.marginBottom).toBe('', 'Expected margin-bottom to be ""');
-    expect(overlayPaneEl.style.marginTop).toBe('0px', 'Expected margin-top to be "0px"');
-    expect(overlayPaneEl.style.marginRight).toBe('', 'Expected margin-right to be ""');
-    expect(overlayPaneEl.style.marginLeft).toBe('0px', 'Expected margin-left  to be "0px"');
+    expect(overlayPaneEl.style.marginBottom)
+      .withContext('Expected margin-bottom to be ""').toBe('');
+    expect(overlayPaneEl.style.marginTop)
+      .withContext('Expected margin-top to be "0px"').toBe('0px');
+    expect(overlayPaneEl.style.marginRight)
+      .withContext('Expected margin-right to be ""').toBe('');
+    expect(overlayPaneEl.style.marginLeft)
+      .withContext('Expected margin-left  to be "0px"').toBe('0px');
   }));
 
   it('should handle end based on direction (ltr)', fakeAsync(() => {
@@ -931,10 +993,14 @@ describe('MatSnackBar Positioning', () => {
     flush();
 
     const overlayPaneEl = overlayContainerEl.querySelector('.cdk-overlay-pane') as HTMLElement;
-    expect(overlayPaneEl.style.marginBottom).toBe('', 'Expected margin-bottom to be ""');
-    expect(overlayPaneEl.style.marginTop).toBe('0px', 'Expected margin-top to be "0px"');
-    expect(overlayPaneEl.style.marginRight).toBe('0px', 'Expected margin-right to be "0px"');
-    expect(overlayPaneEl.style.marginLeft).toBe('', 'Expected margin-left  to be ""');
+    expect(overlayPaneEl.style.marginBottom)
+      .withContext('Expected margin-bottom to be ""').toBe('');
+    expect(overlayPaneEl.style.marginTop)
+      .withContext('Expected margin-top to be "0px"').toBe('0px');
+    expect(overlayPaneEl.style.marginRight)
+      .withContext('Expected margin-right to be "0px"').toBe('0px');
+    expect(overlayPaneEl.style.marginLeft)
+      .withContext('Expected margin-left  to be ""').toBe('');
   }));
 
 });

@@ -240,7 +240,8 @@ describe('MatRadio', () => {
       let rippleAmount = radioNativeElements[0]
           .querySelectorAll('.mat-ripple-element:not(.mat-radio-persistent-ripple)').length;
 
-      expect(rippleAmount).toBe(0, 'Expected a disabled radio button to not show ripples');
+      expect(rippleAmount)
+        .withContext('Expected a disabled radio button to not show ripples').toBe(0);
 
       testComponent.isFirstDisabled = false;
       fixture.detectChanges();
@@ -252,7 +253,7 @@ describe('MatRadio', () => {
           .querySelectorAll('.mat-ripple-element:not(.mat-radio-persistent-ripple)').length;
 
       expect(rippleAmount)
-        .toBe(1, 'Expected an enabled radio button to show ripples');
+        .withContext('Expected an enabled radio button to show ripples').toBe(1);
     });
 
     it('should not show ripples if matRippleDisabled input is set', () => {
@@ -330,43 +331,54 @@ describe('MatRadio', () => {
 
       expect(changeSpy).not.toHaveBeenCalled();
       expect(groupInstance.value).toBe('apple');
-      expect(groupInstance.selected).toBeFalsy('expect group selected to be null');
-      expect(radioInstances[0].checked).toBeFalsy('should not select the first button');
-      expect(radioInstances[1].checked).toBeFalsy('should not select the second button');
-      expect(radioInstances[2].checked).toBeFalsy('should not select the third button');
+      expect(groupInstance.selected)
+        .withContext('expect group selected to be null').toBeFalsy();
+      expect(radioInstances[0].checked)
+        .withContext('should not select the first button').toBeFalsy();
+      expect(radioInstances[1].checked)
+        .withContext('should not select the second button').toBeFalsy();
+      expect(radioInstances[2].checked)
+        .withContext('should not select the third button').toBeFalsy();
 
       radioInstances[0].value = 'apple';
 
       fixture.detectChanges();
 
-      expect(groupInstance.selected).toBe(
-        radioInstances[0], 'expect group selected to be first button');
-      expect(radioInstances[0].checked).toBeTruthy('expect group select the first button');
-      expect(radioInstances[1].checked).toBeFalsy('should not select the second button');
-      expect(radioInstances[2].checked).toBeFalsy('should not select the third button');
+      expect(groupInstance.selected)
+        .withContext('expect group selected to be first button').toBe(radioInstances[0]);
+      expect(radioInstances[0].checked)
+        .withContext('expect group select the first button').toBeTruthy();
+      expect(radioInstances[1].checked)
+        .withContext('should not select the second button').toBeFalsy();
+      expect(radioInstances[2].checked)
+        .withContext('should not select the third button')
+        .toBeFalsy();
     });
 
     it('should apply class based on color attribute', () => {
       expect(radioNativeElements.every(radioEl => radioEl.classList.contains('mat-accent')))
-        .toBe(true, 'Expected every radio element to use the accent color by default.');
+        .withContext('Expected every radio element to use the accent color by default.').toBe(true);
 
       testComponent.color = 'primary';
       fixture.detectChanges();
 
       expect(radioNativeElements.every(radioEl => radioEl.classList.contains('mat-primary')))
-        .toBe(true, 'Expected every radio element to use the primary color from the binding.');
+        .withContext('Expected every radio element to use the primary color from the binding.')
+        .toBe(true);
 
       testComponent.color = 'warn';
       fixture.detectChanges();
 
       expect(radioNativeElements.every(radioEl => radioEl.classList.contains('mat-warn')))
-        .toBe(true, 'Expected every radio element to use the primary color from the binding.');
+        .withContext('Expected every radio element to use the primary color from the binding.')
+        .toBe(true);
 
       testComponent.color = null;
       fixture.detectChanges();
 
       expect(radioNativeElements.every(radioEl => radioEl.classList.contains('mat-accent')))
-        .toBe(true, 'Expected every radio element to fallback to accent color if value is falsy.');
+        .withContext('Expected every radio element to fallback to accent color if value is falsy.')
+        .toBe(true);
     });
 
     it('should be able to inherit the color from the radio group', () => {
@@ -374,7 +386,7 @@ describe('MatRadio', () => {
       fixture.detectChanges();
 
       expect(radioNativeElements.every(radioEl => radioEl.classList.contains('mat-warn')))
-        .toBe(true, 'Expected every radio element to have the warn color.');
+        .withContext('Expected every radio element to have the warn color.').toBe(true);
     });
 
     it('should have the individual button color take precedence over the group color', () => {
@@ -443,14 +455,14 @@ describe('MatRadio', () => {
       const nodes: HTMLInputElement[] = innerRadios.map(radio => radio.nativeElement);
 
       expect(nodes.every(radio => radio.getAttribute('name') === groupInstance.name))
-          .toBe(true, 'Expected all radios to have the initial name.');
+        .withContext('Expected all radios to have the initial name.').toBe(true);
 
       fixture.componentInstance.groupName = 'changed-name';
       fixture.detectChanges();
 
       expect(groupInstance.name).toBe('changed-name');
       expect(nodes.every(radio => radio.getAttribute('name') === groupInstance.name))
-          .toBe(true, 'Expected all radios to have the new name.');
+        .withContext('Expected all radios to have the new name.').toBe(true);
     });
 
     it('should check the corresponding radio button on group value change', () => {
@@ -774,13 +786,13 @@ describe('MatRadio', () => {
         .query(By.css('.mat-radio-button input'))!.nativeElement as HTMLInputElement;
 
       expect(radioButtonInput.tabIndex)
-        .toBe(0, 'Expected the tabindex to be set to "0" by default.');
+        .withContext('Expected the tabindex to be set to "0" by default.').toBe(0);
 
       fixture.componentInstance.tabIndex = 4;
       fixture.detectChanges();
 
       expect(radioButtonInput.tabIndex)
-        .toBe(4, 'Expected the tabindex to be set to "4".');
+        .withContext('Expected the tabindex to be set to "4".').toBe(4);
     });
 
     it('should remove the tabindex from the host element', () => {

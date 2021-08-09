@@ -562,7 +562,7 @@ describe('MatMenu', () => {
       expect(panel.classList).not.toContain('custom-one');
       expect(panel.classList).toContain('custom-two');
       expect(panel.classList)
-          .toContain('mat-elevation-z4', 'Expected mat-elevation-z4 not to be removed');
+        .withContext('Expected mat-elevation-z4 not to be removed').toContain('mat-elevation-z4');
     }));
 
   it('should set the "menu" role on the overlay panel', fakeAsync(() => {
@@ -574,10 +574,11 @@ describe('MatMenu', () => {
 
     const menuPanel = overlayContainerElement.querySelector('.mat-menu-panel');
 
-    expect(menuPanel).toBeTruthy('Expected to find a menu panel.');
+    expect(menuPanel).withContext('Expected to find a menu panel.').toBeTruthy();
 
     const role = menuPanel ? menuPanel.getAttribute('role') : '';
-    expect(role).toBe('menu', 'Expected panel to have the "menu" role.');
+    expect(role)
+      .withContext('Expected panel to have the "menu" role.').toBe('menu');
   }));
 
   it('should forward ARIA attributes to the menu panel', fakeAsync(() => {
@@ -979,7 +980,8 @@ describe('MatMenu', () => {
       let menuPanel = document.querySelector('.mat-menu-panel')!;
       let items = menuPanel.querySelectorAll('.mat-menu-panel [mat-menu-item]');
 
-      expect(document.activeElement).toBe(items[0], 'Expected first item to be focused on open');
+      expect(document.activeElement)
+        .withContext('Expected first item to be focused on open').toBe(items[0]);
 
       // Add a new item after the first one.
       fixture.componentInstance.items.splice(1, 0, {label: 'Calzone', disabled: false});
@@ -990,7 +992,8 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick();
 
-      expect(document.activeElement).toBe(items[1], 'Expected second item to be focused');
+      expect(document.activeElement)
+        .withContext('Expected second item to be focused').toBe(items[1]);
       flush();
     }));
 
@@ -1010,18 +1013,21 @@ describe('MatMenu', () => {
     const menuPanel = document.querySelector('.mat-menu-panel')!;
     const items = menuPanel.querySelectorAll('.mat-menu-panel [mat-menu-item]');
 
-    expect(document.activeElement).toBe(items[0], 'Expected first item to be focused on open');
+    expect(document.activeElement)
+      .withContext('Expected first item to be focused on open').toBe(items[0]);
 
     fixture.componentInstance.itemInstances.toArray()[3].focus();
     fixture.detectChanges();
 
-    expect(document.activeElement).toBe(items[3], 'Expected fourth item to be focused');
+    expect(document.activeElement)
+      .withContext('Expected fourth item to be focused').toBe(items[3]);
 
     dispatchKeyboardEvent(menuPanel, 'keydown', DOWN_ARROW);
     fixture.detectChanges();
     tick();
 
-    expect(document.activeElement).toBe(items[4], 'Expected fifth item to be focused');
+    expect(document.activeElement)
+      .withContext('Expected fifth item to be focused').toBe(items[4]);
     flush();
   }));
 
@@ -1041,7 +1047,7 @@ describe('MatMenu', () => {
     flush();
 
     expect(overlayContainerElement.querySelectorAll('.mat-menu-item').length)
-        .toBe(2, 'Expected two open menus');
+      .withContext('Expected two open menus').toBe(2);
   }));
 
   it('should focus the menu panel if all items are disabled', fakeAsync(() => {
@@ -1100,7 +1106,8 @@ describe('MatMenu', () => {
     tick(500);
 
     const items = document.querySelectorAll('.mat-menu-panel [mat-menu-item]');
-    expect(document.activeElement).toBe(items[3], 'Expected fourth item to be focused');
+    expect(document.activeElement)
+      .withContext('Expected fourth item to be focused').toBe(items[3]);
   }));
 
   it('should default to the "below" and "after" positions', fakeAsync(() => {
@@ -1126,9 +1133,11 @@ describe('MatMenu', () => {
 
       const panel = overlayContainerElement.querySelector('.mat-menu-panel')!;
 
-      expect(panel).toBeTruthy('Expected panel to be defined');
-      expect(panel.textContent).toContain('Another item', 'Expected panel to have correct content');
-      expect(fixture.componentInstance.trigger.menuOpen).toBe(true, 'Expected menu to be open');
+      expect(panel).withContext('Expected panel to be defined').toBeTruthy();
+      expect(panel.textContent)
+        .withContext('Expected panel to have correct content').toContain('Another item');
+      expect(fixture.componentInstance.trigger.menuOpen)
+        .withContext('Expected menu to be open').toBe(true);
     }));
 
     it('should detach the lazy content when the menu is closed', fakeAsync(() => {
@@ -1155,23 +1164,27 @@ describe('MatMenu', () => {
         fixture.detectChanges();
         const trigger = fixture.componentInstance.trigger;
 
-        expect(trigger.menuOpen).toBe(false, 'Expected menu to start off closed');
+        expect(trigger.menuOpen)
+          .withContext('Expected menu to start off closed').toBe(false);
 
         trigger.openMenu();
         fixture.detectChanges();
         tick(500);
 
-        expect(trigger.menuOpen).toBe(true, 'Expected menu to be open');
+        expect(trigger.menuOpen)
+          .withContext('Expected menu to be open').toBe(true);
 
         trigger.closeMenu();
         fixture.detectChanges();
 
         expect(trigger.menuOpen)
-            .toBe(true, 'Expected menu to be considered open while the close animation is running');
+          .withContext('Expected menu to be considered open while the close animation is running')
+          .toBe(true);
         tick(500);
         fixture.detectChanges();
 
-        expect(trigger.menuOpen).toBe(false, 'Expected menu to be closed');
+        expect(trigger.menuOpen)
+          .withContext('Expected menu to be closed').toBe(false);
       }));
 
     it('should focus the first menu item when opening a lazy menu via keyboard', fakeAsync(() => {
@@ -1193,7 +1206,8 @@ describe('MatMenu', () => {
 
       const item = document.querySelector('.mat-menu-panel [mat-menu-item]')!;
 
-      expect(document.activeElement).toBe(item, 'Expected first item to be focused');
+      expect(document.activeElement)
+        .withContext('Expected first item to be focused').toBe(item);
     }));
 
     it('should be able to open the same menu with a different context', fakeAsync(() => {
@@ -1287,7 +1301,8 @@ describe('MatMenu', () => {
       let panel = overlayContainerElement.querySelector('.mat-menu-panel') as HTMLElement;
 
       expect(Math.floor(panel.getBoundingClientRect().bottom))
-          .toBe(Math.floor(trigger.getBoundingClientRect().top), 'Expected menu to open above');
+        .withContext('Expected menu to open above')
+        .toBe(Math.floor(trigger.getBoundingClientRect().top));
 
       fixture.componentInstance.trigger.closeMenu();
       fixture.detectChanges();
@@ -1302,7 +1317,8 @@ describe('MatMenu', () => {
       panel = overlayContainerElement.querySelector('.mat-menu-panel') as HTMLElement;
 
       expect(Math.floor(panel.getBoundingClientRect().top))
-          .toBe(Math.floor(trigger.getBoundingClientRect().bottom), 'Expected menu to open below');
+        .withContext('Expected menu to open below')
+        .toBe(Math.floor(trigger.getBoundingClientRect().bottom));
     }));
 
     it('should not throw if a menu reposition is requested while the menu is closed',
@@ -1336,13 +1352,14 @@ describe('MatMenu', () => {
         // To find the overlay left, subtract the menu width from the origin's right side.
         const expectedLeft = triggerRect.right - overlayRect.width;
         expect(Math.floor(overlayRect.left))
-            .toBe(Math.floor(expectedLeft),
-                `Expected menu to open in "before" position if "after" position wouldn't fit.`);
+          .withContext(`Expected menu to open in "before" position if "after" position ` +
+                       `wouldn't fit.`).toBe(Math.floor(expectedLeft));
 
         // The y-position of the overlay should be unaffected, as it can already fit vertically
+        // The y-position of the overlay should be unaffected, as it can already fit vertically
         expect(Math.floor(overlayRect.top))
-            .toBe(Math.floor(triggerRect.bottom),
-                `Expected menu top position to be unchanged if it can fit in the viewport.`);
+          .withContext(`Expected menu top position to be unchanged if it can fit in the viewport.`)
+          .toBe(Math.floor(triggerRect.bottom));
       }));
 
     it('should fall back to "above" mode if "below" mode would not fit on screen', fakeAsync(() => {
@@ -1363,13 +1380,14 @@ describe('MatMenu', () => {
       const overlayRect = overlayPane.getBoundingClientRect();
 
       expect(Math.floor(overlayRect.bottom))
-          .toBe(Math.floor(triggerRect.top),
-              `Expected menu to open in "above" position if "below" position wouldn't fit.`);
+        .withContext(`Expected menu to open in "above" position if "below" position wouldn't fit.`)
+        .toBe(Math.floor(triggerRect.top));
 
       // The x-position of the overlay should be unaffected, as it can already fit horizontally
+      // The x-position of the overlay should be unaffected, as it can already fit horizontally
       expect(Math.floor(overlayRect.left))
-          .toBe(Math.floor(triggerRect.left),
-              `Expected menu x position to be unchanged if it can fit in the viewport.`);
+        .withContext(`Expected menu x position to be unchanged if it can fit in the viewport.`)
+        .toBe(Math.floor(triggerRect.left));
     }));
 
     it('should re-position menu on both axes if both defaults would not fit', fakeAsync(() => {
@@ -1393,12 +1411,12 @@ describe('MatMenu', () => {
       const expectedLeft = triggerRect.right - overlayRect.width;
 
       expect(Math.floor(overlayRect.left))
-          .toBe(Math.floor(expectedLeft),
-              `Expected menu to open in "before" position if "after" position wouldn't fit.`);
+        .withContext(`Expected menu to open in "before" position if "after" position wouldn't fit.`)
+        .toBe(Math.floor(expectedLeft));
 
       expect(Math.floor(overlayRect.bottom))
-          .toBe(Math.floor(triggerRect.top),
-              `Expected menu to open in "above" position if "below" position wouldn't fit.`);
+        .withContext(`Expected menu to open in "above" position if "below" position wouldn't fit.`)
+        .toBe(Math.floor(triggerRect.top));
     }));
 
     it('should re-position a menu with custom position set', fakeAsync(() => {
@@ -1415,15 +1433,19 @@ describe('MatMenu', () => {
 
       // As designated "before" position won't fit on screen, the menu should fall back
       // to "after" mode, where the left sides of the overlay and trigger are aligned.
+      // As designated "before" position won't fit on screen, the menu should fall back
+      // to "after" mode, where the left sides of the overlay and trigger are aligned.
       expect(Math.floor(overlayRect.left))
-          .toBe(Math.floor(triggerRect.left),
-              `Expected menu to open in "after" position if "before" position wouldn't fit.`);
+        .withContext(`Expected menu to open in "after" position if "before" position wouldn't fit.`)
+        .toBe(Math.floor(triggerRect.left));
 
       // As designated "above" position won't fit on screen, the menu should fall back
       // to "below" mode, where the top edges of the overlay and trigger are aligned.
+      // As designated "above" position won't fit on screen, the menu should fall back
+      // to "below" mode, where the top edges of the overlay and trigger are aligned.
       expect(Math.floor(overlayRect.top))
-          .toBe(Math.floor(triggerRect.bottom),
-              `Expected menu to open in "below" position if "above" position wouldn't fit.`);
+        .withContext(`Expected menu to open in "below" position if "above" position wouldn't fit.`)
+        .toBe(Math.floor(triggerRect.bottom));
     }));
 
     function getOverlayPane(): HTMLElement {
@@ -1487,9 +1509,10 @@ describe('MatMenu', () => {
         subject.openMenu();
 
         // Since the menu is overlaying the trigger, the overlay top should be the trigger top.
+        // Since the menu is overlaying the trigger, the overlay top should be the trigger top.
         expect(Math.floor(subject.overlayRect.top))
-            .toBe(Math.floor(subject.triggerRect.top),
-                `Expected menu to open in default "below" position.`);
+          .withContext(`Expected menu to open in default "below" position.`)
+          .toBe(Math.floor(subject.triggerRect.top));
       }));
     });
 
@@ -1502,9 +1525,10 @@ describe('MatMenu', () => {
         subject.openMenu();
 
         // Since the menu is below the trigger, the overlay top should be the trigger bottom.
+        // Since the menu is below the trigger, the overlay top should be the trigger bottom.
         expect(Math.floor(subject.overlayRect.top))
-            .toBe(Math.floor(subject.triggerRect.bottom),
-                `Expected menu to open directly below the trigger.`);
+          .withContext(`Expected menu to open directly below the trigger.`)
+          .toBe(Math.floor(subject.triggerRect.bottom));
       }));
 
       it('supports above position fall back', fakeAsync(() => {
@@ -1515,9 +1539,10 @@ describe('MatMenu', () => {
         subject.openMenu();
 
         // Since the menu is above the trigger, the overlay bottom should be the trigger top.
+        // Since the menu is above the trigger, the overlay bottom should be the trigger top.
         expect(Math.floor(subject.overlayRect.bottom))
-            .toBe(Math.floor(subject.triggerRect.top),
-                `Expected menu to open in "above" position if "below" position wouldn't fit.`);
+          .withContext(`Expected menu to open in "above" position if "below" position ` +
+                       `wouldn't fit.`).toBe(Math.floor(subject.triggerRect.top));
       }));
 
       it('repositions the origin to be below, so the menu opens from the trigger', fakeAsync(() => {
@@ -1722,7 +1747,7 @@ describe('MatMenu', () => {
       instance.rootTriggerEl.nativeElement.click();
       fixture.detectChanges();
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(1, 'Expected one open menu');
+        .withContext('Expected one open menu').toBe(1);
 
       const items = Array.from(overlay.querySelectorAll('.mat-menu-panel [mat-menu-item]'));
       const levelOneTrigger = overlay.querySelector('#level-one-trigger')!;
@@ -1733,16 +1758,17 @@ describe('MatMenu', () => {
       fixture.detectChanges();
 
       expect(levelOneTrigger.classList)
-          .toContain('mat-menu-item-highlighted', 'Expected the trigger to be highlighted');
+        .withContext('Expected the trigger to be highlighted')
+        .toContain('mat-menu-item-highlighted');
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(2, 'Expected two open menus');
+        .withContext('Expected two open menus').toBe(2);
 
       dispatchMouseEvent(items[items.indexOf(levelOneTrigger) + 1], 'mouseenter');
       fixture.detectChanges();
       tick(500);
 
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(1, 'Expected one open menu');
+        .withContext('Expected one open menu').toBe(1);
       expect(levelOneTrigger.classList)
           .not.toContain('mat-menu-item-highlighted',
               'Expected the trigger to not be highlighted');
@@ -1767,14 +1793,14 @@ describe('MatMenu', () => {
         tick();
 
         expect(overlay.querySelectorAll('.mat-menu-panel').length)
-            .toBe(3, 'Expected three open menus');
+          .withContext('Expected three open menus').toBe(3);
 
         dispatchMouseEvent(items[items.indexOf(levelOneTrigger) + 1], 'mouseenter');
         fixture.detectChanges();
         tick(500);
 
         expect(overlay.querySelectorAll('.mat-menu-panel').length)
-            .toBe(1, 'Expected one open menu');
+          .withContext('Expected one open menu').toBe(1);
       }));
 
       it('should close submenu when hovering over disabled sibling item', fakeAsync(() => {
@@ -1790,7 +1816,7 @@ describe('MatMenu', () => {
         tick(500);
 
         expect(overlay.querySelectorAll('.mat-menu-panel').length)
-            .toBe(2, 'Expected two open menus');
+          .withContext('Expected two open menus').toBe(2);
 
         items[1].componentInstance.disabled = true;
         fixture.detectChanges();
@@ -1801,7 +1827,7 @@ describe('MatMenu', () => {
         tick(500);
 
         expect(overlay.querySelectorAll('.mat-menu-panel').length)
-            .toBe(1, 'Expected one open menu');
+          .withContext('Expected one open menu').toBe(1);
       }));
 
     it('should not open submenu when hovering over disabled trigger', fakeAsync(() => {
@@ -1811,7 +1837,7 @@ describe('MatMenu', () => {
       tick(500);
 
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(1, 'Expected one open menu');
+        .withContext('Expected one open menu').toBe(1);
 
       const item = fixture.debugElement.query(By.directive(MatMenuItem))!;
 
@@ -1824,7 +1850,7 @@ describe('MatMenu', () => {
       tick(500);
 
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(1, 'Expected to remain at one open menu');
+        .withContext('Expected to remain at one open menu').toBe(1);
     }));
 
 
@@ -1834,7 +1860,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(1, 'Expected one open menu');
+        .withContext('Expected one open menu').toBe(1);
 
       const levelOneTrigger = overlay.querySelector('#level-one-trigger')! as HTMLElement;
 
@@ -1842,12 +1868,12 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(2, 'Expected two open menus');
+        .withContext('Expected two open menus').toBe(2);
 
       levelOneTrigger.click();
       fixture.detectChanges();
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(2, 'Expected repeat clicks not to close the menu.');
+        .withContext('Expected repeat clicks not to close the menu.').toBe(2);
     }));
 
     it('should open and close a nested menu with arrow keys in ltr', fakeAsync(() => {
@@ -1855,7 +1881,7 @@ describe('MatMenu', () => {
       instance.rootTriggerEl.nativeElement.click();
       fixture.detectChanges();
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(1, 'Expected one open menu');
+        .withContext('Expected one open menu').toBe(1);
 
       const levelOneTrigger = overlay.querySelector('#level-one-trigger')! as HTMLElement;
 
@@ -1864,7 +1890,8 @@ describe('MatMenu', () => {
 
       const panels = overlay.querySelectorAll('.mat-menu-panel');
 
-      expect(panels.length).toBe(2, 'Expected two open menus');
+      expect(panels.length)
+        .withContext('Expected two open menus').toBe(2);
       dispatchKeyboardEvent(panels[1], 'keydown', LEFT_ARROW);
       fixture.detectChanges();
       tick(500);
@@ -1877,7 +1904,7 @@ describe('MatMenu', () => {
       instance.rootTriggerEl.nativeElement.click();
       fixture.detectChanges();
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(1, 'Expected one open menu');
+        .withContext('Expected one open menu').toBe(1);
 
       const levelOneTrigger = overlay.querySelector('#level-one-trigger')! as HTMLElement;
 
@@ -1886,7 +1913,8 @@ describe('MatMenu', () => {
 
       const panels = overlay.querySelectorAll('.mat-menu-panel');
 
-      expect(panels.length).toBe(2, 'Expected two open menus');
+      expect(panels.length)
+        .withContext('Expected two open menus').toBe(2);
       dispatchKeyboardEvent(panels[1], 'keydown', RIGHT_ARROW);
       fixture.detectChanges();
       tick(500);
@@ -1906,13 +1934,13 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(1, 'Expected one menu to remain open');
+        .withContext('Expected one menu to remain open').toBe(1);
 
       dispatchKeyboardEvent(menu, 'keydown', LEFT_ARROW);
       fixture.detectChanges();
       tick(500);
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(1, 'Expected one menu to remain open');
+        .withContext('Expected one menu to remain open').toBe(1);
     }));
 
     it('should close all of the menus when the backdrop is clicked', fakeAsync(() => {
@@ -1930,18 +1958,19 @@ describe('MatMenu', () => {
       tick(500);
 
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(3, 'Expected three open menus');
+        .withContext('Expected three open menus').toBe(3);
       expect(overlay.querySelectorAll('.cdk-overlay-backdrop').length)
-          .toBe(1, 'Expected one backdrop element');
+        .withContext('Expected one backdrop element').toBe(1);
       expect(overlay.querySelectorAll('.mat-menu-panel, .cdk-overlay-backdrop')[0].classList)
-          .toContain('cdk-overlay-backdrop', 'Expected backdrop to be beneath all of the menus');
+        .withContext('Expected backdrop to be beneath all of the menus')
+        .toContain('cdk-overlay-backdrop');
 
       (overlay.querySelector('.cdk-overlay-backdrop')! as HTMLElement).click();
       fixture.detectChanges();
       tick(500);
 
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(0, 'Expected no open menus');
+        .withContext('Expected no open menus').toBe(0);
     }));
 
     it('should shift focus between the sub-menus', fakeAsync(() => {
@@ -1951,35 +1980,35 @@ describe('MatMenu', () => {
       tick(500);
 
       expect(overlay.querySelector('.mat-menu-panel')!.contains(document.activeElement))
-          .toBe(true, 'Expected focus to be inside the root menu');
+        .withContext('Expected focus to be inside the root menu').toBe(true);
 
       instance.levelOneTrigger.openMenu();
       fixture.detectChanges();
       tick(500);
 
       expect(overlay.querySelectorAll('.mat-menu-panel')[1].contains(document.activeElement))
-          .toBe(true, 'Expected focus to be inside the first nested menu');
+        .withContext('Expected focus to be inside the first nested menu').toBe(true);
 
       instance.levelTwoTrigger.openMenu();
       fixture.detectChanges();
       tick(500);
 
       expect(overlay.querySelectorAll('.mat-menu-panel')[2].contains(document.activeElement))
-          .toBe(true, 'Expected focus to be inside the second nested menu');
+        .withContext('Expected focus to be inside the second nested menu').toBe(true);
 
       instance.levelTwoTrigger.closeMenu();
       fixture.detectChanges();
       tick(500);
 
       expect(overlay.querySelectorAll('.mat-menu-panel')[1].contains(document.activeElement))
-          .toBe(true, 'Expected focus to be back inside the first nested menu');
+        .withContext('Expected focus to be back inside the first nested menu').toBe(true);
 
       instance.levelOneTrigger.closeMenu();
       fixture.detectChanges();
       tick(500);
 
       expect(overlay.querySelector('.mat-menu-panel')!.contains(document.activeElement))
-          .toBe(true, 'Expected focus to be back inside the root menu');
+        .withContext('Expected focus to be back inside the root menu').toBe(true);
     }));
 
     it('should restore focus to a nested trigger when navgating via the keyboard', fakeAsync(() => {
@@ -2093,14 +2122,15 @@ describe('MatMenu', () => {
 
       const menus = overlay.querySelectorAll('.mat-menu-panel');
 
-      expect(menus.length).toBe(3, 'Expected three open menus');
+      expect(menus.length)
+        .withContext('Expected three open menus').toBe(3);
 
       (menus[2].querySelector('.mat-menu-item')! as HTMLElement).click();
       fixture.detectChanges();
       tick(500);
 
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(0, 'Expected no open menus');
+        .withContext('Expected no open menus').toBe(0);
     }));
 
     it('should close all of the menus when the user tabs away', fakeAsync(() => {
@@ -2116,14 +2146,15 @@ describe('MatMenu', () => {
 
       const menus = overlay.querySelectorAll('.mat-menu-panel');
 
-      expect(menus.length).toBe(3, 'Expected three open menus');
+      expect(menus.length)
+        .withContext('Expected three open menus').toBe(3);
 
       dispatchKeyboardEvent(menus[menus.length - 1], 'keydown', TAB);
       fixture.detectChanges();
       tick(500);
 
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(0, 'Expected no open menus');
+        .withContext('Expected no open menus').toBe(0);
     }));
 
     it('should set a class on the menu items that trigger a sub-menu', fakeAsync(() => {
@@ -2157,11 +2188,13 @@ describe('MatMenu', () => {
       const menus = overlay.querySelectorAll('.mat-menu-panel');
 
       expect(menus[0].classList)
-        .toContain('mat-elevation-z4', 'Expected root menu to have base elevation.');
+        .withContext('Expected root menu to have base elevation.').toContain('mat-elevation-z4');
       expect(menus[1].classList)
-        .toContain('mat-elevation-z5', 'Expected first sub-menu to have base elevation + 1.');
+        .withContext('Expected first sub-menu to have base elevation + 1.')
+        .toContain('mat-elevation-z5');
       expect(menus[2].classList)
-        .toContain('mat-elevation-z6', 'Expected second sub-menu to have base elevation + 2.');
+        .withContext('Expected second sub-menu to have base elevation + 2.')
+        .toContain('mat-elevation-z6');
     }));
 
     it('should update the elevation when the same menu is opened at a different depth',
@@ -2179,14 +2212,15 @@ describe('MatMenu', () => {
         let lastMenu = overlay.querySelectorAll('.mat-menu-panel')[2];
 
         expect(lastMenu.classList)
-            .toContain('mat-elevation-z6', 'Expected menu to have the base elevation plus two.');
+          .withContext('Expected menu to have the base elevation plus two.')
+          .toContain('mat-elevation-z6');
 
         (overlay.querySelector('.cdk-overlay-backdrop')! as HTMLElement).click();
         fixture.detectChanges();
         tick(500);
 
         expect(overlay.querySelectorAll('.mat-menu-panel').length)
-            .toBe(0, 'Expected no open menus');
+          .withContext('Expected no open menus').toBe(0);
 
         instance.alternateTrigger.openMenu();
         fixture.detectChanges();
@@ -2194,10 +2228,11 @@ describe('MatMenu', () => {
 
         lastMenu = overlay.querySelector('.mat-menu-panel') as HTMLElement;
 
-        expect(lastMenu.classList).not.toContain('mat-elevation-z6',
-          'Expected menu not to maintain old elevation.');
-        expect(lastMenu.classList).toContain('mat-elevation-z4',
-          'Expected menu to have the proper updated elevation.');
+        expect(lastMenu.classList).not.withContext('Expected menu not to maintain old elevation.')
+          .toContain('mat-elevation-z6');
+        expect(lastMenu.classList)
+          .withContext('Expected menu to have the proper updated elevation.')
+          .toContain('mat-elevation-z4');
       }));
 
     it('should not change focus origin if origin not specified for trigger', fakeAsync(() => {
@@ -2235,9 +2270,9 @@ describe('MatMenu', () => {
           overlayContainerElement.querySelectorAll('.mat-menu-panel')[1].classList;
 
       expect(menuClasses)
-          .toContain('mat-elevation-z24', 'Expected user elevation to be maintained');
+        .withContext('Expected user elevation to be maintained').toContain('mat-elevation-z24');
       expect(menuClasses)
-          .not.toContain('mat-elevation-z3', 'Expected no stacked elevation.');
+          .not.withContext('Expected no stacked elevation.').toContain('mat-elevation-z3');
     }));
 
     it('should close all of the menus when the root is closed programmatically', fakeAsync(() => {
@@ -2253,14 +2288,15 @@ describe('MatMenu', () => {
 
       const menus = overlay.querySelectorAll('.mat-menu-panel');
 
-      expect(menus.length).toBe(3, 'Expected three open menus');
+      expect(menus.length)
+        .withContext('Expected three open menus').toBe(3);
 
       instance.rootTrigger.closeMenu();
       fixture.detectChanges();
       tick(500);
 
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(0, 'Expected no open menus');
+        .withContext('Expected no open menus').toBe(0);
     }));
 
     it('should toggle a nested menu when its trigger is added after init', fakeAsync(() => {
@@ -2269,7 +2305,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(1, 'Expected one open menu');
+        .withContext('Expected one open menu').toBe(1);
 
       instance.showLazy = true;
       fixture.detectChanges();
@@ -2282,9 +2318,10 @@ describe('MatMenu', () => {
       fixture.detectChanges();
 
       expect(lazyTrigger.classList)
-          .toContain('mat-menu-item-highlighted', 'Expected the trigger to be highlighted');
+        .withContext('Expected the trigger to be highlighted')
+        .toContain('mat-menu-item-highlighted');
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(2, 'Expected two open menus');
+        .withContext('Expected two open menus').toBe(2);
     }));
 
     it('should prevent the default mousedown action if the menu item opens a sub-menu',
@@ -2315,13 +2352,13 @@ describe('MatMenu', () => {
       repeaterFixture.detectChanges();
       tick(500);
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(1, 'Expected one open menu');
+        .withContext('Expected one open menu').toBe(1);
 
       dispatchMouseEvent(overlay.querySelector('.level-one-trigger')!, 'mouseenter');
       repeaterFixture.detectChanges();
       tick(500);
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(2, 'Expected two open menus');
+        .withContext('Expected two open menus').toBe(2);
     }));
 
     it('should be able to trigger the same nested menu from different triggers', fakeAsync(() => {
@@ -2333,7 +2370,7 @@ describe('MatMenu', () => {
       repeaterFixture.detectChanges();
       tick(500);
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(1, 'Expected one open menu');
+        .withContext('Expected one open menu').toBe(1);
 
       const triggers = overlay.querySelectorAll('.level-one-trigger');
 
@@ -2341,14 +2378,14 @@ describe('MatMenu', () => {
       repeaterFixture.detectChanges();
       tick(500);
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(2, 'Expected two open menus');
+        .withContext('Expected two open menus').toBe(2);
 
       dispatchMouseEvent(triggers[1], 'mouseenter');
       repeaterFixture.detectChanges();
       tick(500);
 
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(2, 'Expected two open menus');
+        .withContext('Expected two open menus').toBe(2);
     }));
 
     it('should close the initial menu if the user moves away while animating', fakeAsync(() => {
@@ -2360,7 +2397,7 @@ describe('MatMenu', () => {
       repeaterFixture.detectChanges();
       tick(500);
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(1, 'Expected one open menu');
+        .withContext('Expected one open menu').toBe(1);
 
       const triggers = overlay.querySelectorAll('.level-one-trigger');
 
@@ -2372,7 +2409,7 @@ describe('MatMenu', () => {
       tick(500);
 
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(2, 'Expected two open menus');
+        .withContext('Expected two open menus').toBe(2);
     }));
 
     it('should be able to open a submenu through an item that is not a direct descendant ' +
@@ -2385,14 +2422,14 @@ describe('MatMenu', () => {
         nestedFixture.detectChanges();
         tick(500);
         expect(overlay.querySelectorAll('.mat-menu-panel').length)
-            .toBe(1, 'Expected one open menu');
+          .withContext('Expected one open menu').toBe(1);
 
         dispatchMouseEvent(overlay.querySelector('.level-one-trigger')!, 'mouseenter');
         nestedFixture.detectChanges();
         tick(500);
 
         expect(overlay.querySelectorAll('.mat-menu-panel').length)
-            .toBe(2, 'Expected two open menus');
+          .withContext('Expected two open menus').toBe(2);
       }));
 
     it('should not close when hovering over a menu item inside a sub-menu panel that is declared' +
@@ -2405,21 +2442,21 @@ describe('MatMenu', () => {
         nestedFixture.detectChanges();
         tick(500);
         expect(overlay.querySelectorAll('.mat-menu-panel').length)
-            .toBe(1, 'Expected one open menu');
+          .withContext('Expected one open menu').toBe(1);
 
         dispatchMouseEvent(overlay.querySelector('.level-one-trigger')!, 'mouseenter');
         nestedFixture.detectChanges();
         tick(500);
 
         expect(overlay.querySelectorAll('.mat-menu-panel').length)
-            .toBe(2, 'Expected two open menus');
+          .withContext('Expected two open menus').toBe(2);
 
         dispatchMouseEvent(overlay.querySelector('.level-two-item')!, 'mouseenter');
         nestedFixture.detectChanges();
         tick(500);
 
         expect(overlay.querySelectorAll('.mat-menu-panel').length)
-            .toBe(2, 'Expected two open menus to remain');
+          .withContext('Expected two open menus to remain').toBe(2);
       }));
 
     it('should not re-focus a child menu trigger when hovering another trigger', fakeAsync(() => {
@@ -2436,7 +2473,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick();
       expect(overlay.querySelectorAll('.mat-menu-panel').length)
-          .toBe(2, 'Expected two open menus');
+        .withContext('Expected two open menus').toBe(2);
 
       dispatchMouseEvent(items[items.indexOf(levelOneTrigger) + 1], 'mouseenter');
       fixture.detectChanges();

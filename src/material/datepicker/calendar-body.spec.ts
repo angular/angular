@@ -65,9 +65,11 @@ describe('MatCalendarBody', () => {
       const selectedCells = cellEls.filter(c => c.getAttribute('aria-selected') === 'true');
       const deselectedCells = cellEls.filter(c => c.getAttribute('aria-selected') === 'false');
 
-      expect(selectedCells.length).toBe(1, 'Expected one cell to be marked as selected.');
+      expect(selectedCells.length)
+        .withContext('Expected one cell to be marked as selected.').toBe(1);
       expect(deselectedCells.length)
-          .toBe(cellEls.length - 1, 'Expected remaining cells to be marked as deselected.');
+        .withContext('Expected remaining cells to be marked as deselected.')
+        .toBe(cellEls.length - 1);
     });
 
     it('places label in first row if space is available', () => {
@@ -80,7 +82,7 @@ describe('MatCalendarBody', () => {
       expect(labelEls.length).toBe(1);
       expect(cellEls.length).toBe(11);
       expect(rowEls[0].firstElementChild!.classList)
-          .toContain('mat-calendar-body-label', 'first cell should be the label');
+        .withContext('first cell should be the label').toContain('mat-calendar-body-label');
       expect(labelEls[0].getAttribute('colspan')).toBe('3');
     });
 
@@ -91,7 +93,7 @@ describe('MatCalendarBody', () => {
       fixture.detectChanges();
 
       expect(todayElement.classList)
-          .toContain('mat-calendar-body-selected', 'today should be selected');
+        .withContext('today should be selected').toContain('mat-calendar-body-selected');
     });
 
     it('should mark active date', () => {

@@ -620,15 +620,15 @@ describe('CdkOption and CdkListbox', () => {
 
     it('should be able to set the disabled state via setDisabledState', () => {
       expect(listboxInstance.disabled)
-          .toBe(false, 'Expected the selection list to be enabled.');
+        .withContext('Expected the selection list to be enabled.').toBe(false);
       expect(optionInstances.every(option => !option.disabled))
-          .toBe(true, 'Expected every list option to be enabled.');
+        .withContext('Expected every list option to be enabled.').toBe(true);
 
       listboxInstance.setDisabledState(true);
       fixture.detectChanges();
 
       expect(listboxInstance.disabled)
-          .toBe(true, 'Expected the selection list to be disabled.');
+        .withContext('Expected the selection list to be disabled.').toBe(true);
       for (const option of optionElements) {
         expect(option.getAttribute('aria-disabled')).toBe('true');
       }
@@ -636,7 +636,7 @@ describe('CdkOption and CdkListbox', () => {
 
     it('should be able to select options via writeValue', () => {
       expect(optionInstances.every(option => !option.disabled))
-          .toBe(true, 'Expected every list option to be enabled.');
+        .withContext('Expected every list option to be enabled.').toBe(true);
 
       listboxInstance.writeValue('arc');
       fixture.detectChanges();
@@ -651,7 +651,7 @@ describe('CdkOption and CdkListbox', () => {
 
     it('should be select multiple options by their values', () => {
       expect(optionInstances.every(option => !option.disabled))
-          .toBe(true, 'Expected every list option to be enabled.');
+        .withContext('Expected every list option to be enabled.').toBe(true);
 
       testComponent.isMultiselectable = true;
       fixture.detectChanges();
@@ -676,7 +676,7 @@ describe('CdkOption and CdkListbox', () => {
     it('should be able to disable options from the control', () => {
       expect(testComponent.listbox.disabled).toBeFalse();
       expect(optionInstances.every(option => !option.disabled))
-          .toBe(true, 'Expected every list option to be enabled.');
+        .withContext('Expected every list option to be enabled.').toBe(true);
 
       testComponent.form.disable();
       fixture.detectChanges();
@@ -690,7 +690,7 @@ describe('CdkOption and CdkListbox', () => {
     it('should be able to toggle disabled state after form control is disabled',  () => {
       expect(testComponent.listbox.disabled).toBeFalse();
       expect(optionInstances.every(option => !option.disabled))
-          .toBe(true, 'Expected every list option to be enabled.');
+        .withContext('Expected every list option to be enabled.').toBe(true);
 
       testComponent.form.disable();
       fixture.detectChanges();
@@ -705,7 +705,7 @@ describe('CdkOption and CdkListbox', () => {
 
       expect(testComponent.listbox.disabled).toBeFalse();
       expect(optionInstances.every(option => !option.disabled))
-          .toBe(true, 'Expected every list option to be enabled.');
+        .withContext('Expected every list option to be enabled.').toBe(true);
     });
 
     it('should be able to select options via setting the value in form control', () => {

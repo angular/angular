@@ -108,7 +108,7 @@ describe('CdkTree', () => {
       it('with rendered dataNodes', () => {
         const nodes = getNodes(treeElement);
 
-        expect(nodes).toBeDefined('Expect nodes to be defined');
+        expect(nodes).withContext('Expect nodes to be defined').toBeDefined();
         expect(nodes[0].classList).toContain('customNodeClass');
       });
 
@@ -242,7 +242,7 @@ describe('CdkTree', () => {
         expect(dataSource.data.length).toBe(3);
 
         expect(component.treeControl.expansionModel.selected.length)
-          .toBe(0, `Expect no expanded node`);
+          .withContext(`Expect no expanded node`).toBe(0);
 
         component.toggleRecursively = false;
         let data = dataSource.data;
@@ -262,21 +262,21 @@ describe('CdkTree', () => {
         fixture.detectChanges();
 
         expect(component.treeControl.expansionModel.selected.length)
-          .toBe(1, `Expect node expanded`);
+          .withContext(`Expect node expanded`).toBe(1);
         expect(component.treeControl.expansionModel.selected[0]).toBe(data[2]);
 
         (getNodes(treeElement)[2] as HTMLElement).click();
         fixture.detectChanges();
 
         expect(component.treeControl.expansionModel.selected.length)
-          .toBe(0, `Expect node collapsed`);
+          .withContext(`Expect node collapsed`).toBe(0);
       });
 
       it('should expand/collapse the node recursively', () => {
         expect(dataSource.data.length).toBe(3);
 
         expect(component.treeControl.expansionModel.selected.length)
-          .toBe(0, `Expect no expanded node`);
+          .withContext(`Expect no expanded node`).toBe(0);
 
         let data = dataSource.data;
         dataSource.addChild(data[2]);
@@ -294,17 +294,17 @@ describe('CdkTree', () => {
         fixture.detectChanges();
 
         expect(component.treeControl.expansionModel.selected.length)
-          .toBe(2, `Expect nodes expanded`);
+          .withContext(`Expect nodes expanded`).toBe(2);
         expect(component.treeControl.expansionModel.selected[0])
-          .toBe(data[2], `Expect parent node expanded`);
+          .withContext(`Expect parent node expanded`).toBe(data[2]);
         expect(component.treeControl.expansionModel.selected[1])
-          .toBe(data[3], `Expected child node expanded`);
+          .withContext(`Expected child node expanded`).toBe(data[3]);
 
         (getNodes(treeElement)[2] as HTMLElement).click();
         fixture.detectChanges();
 
         expect(component.treeControl.expansionModel.selected.length)
-          .toBe(0, `Expect node collapsed`);
+          .withContext(`Expect node collapsed`).toBe(0);
       });
     });
 
@@ -550,7 +550,7 @@ describe('CdkTree', () => {
       it('with rendered dataNodes', () => {
         const nodes = getNodes(treeElement);
 
-        expect(nodes).toBeDefined('Expect nodes to be defined');
+        expect(nodes).withContext('Expect nodes to be defined').toBeDefined();
         expect(nodes[0].classList).toContain('customNodeClass');
       });
 
@@ -745,7 +745,7 @@ describe('CdkTree', () => {
         fixture.detectChanges();
 
         expect(component.treeControl.expansionModel.selected.length)
-          .toBe(1, `Expect node expanded`);
+          .withContext(`Expect node expanded`).toBe(1);
         expectNestedTreeToMatch(treeElement,
           [`topping_1 - cheese_1 + base_1`],
           [`topping_2 - cheese_2 + base_2`],
@@ -760,13 +760,13 @@ describe('CdkTree', () => {
           [`topping_2 - cheese_2 + base_2`],
           [`topping_3 - cheese_3 + base_3`]);
         expect(component.treeControl.expansionModel.selected.length)
-          .toBe(0, `Expect node collapsed`);
+          .withContext(`Expect node collapsed`).toBe(0);
 
         (getNodes(treeElement)[1] as HTMLElement).click();
         fixture.detectChanges();
 
         expect(component.treeControl.expansionModel.selected.length)
-          .toBe(1, `Expect node expanded`);
+          .withContext(`Expect node expanded`).toBe(1);
         expectNestedTreeToMatch(treeElement,
           [`topping_1 - cheese_1 + base_1`],
           [`topping_2 - cheese_2 + base_2`],
@@ -789,7 +789,7 @@ describe('CdkTree', () => {
         fixture.detectChanges();
 
         expect(component.treeControl.expansionModel.selected.length)
-          .toBe(3, `Expect node expanded`);
+          .withContext(`Expect node expanded`).toBe(3);
         expectNestedTreeToMatch(treeElement,
           [`topping_1 - cheese_1 + base_1`],
           [`topping_2 - cheese_2 + base_2`],
@@ -801,7 +801,7 @@ describe('CdkTree', () => {
         fixture.detectChanges();
 
         expect(component.treeControl.expansionModel.selected.length)
-          .toBe(0, `Expect node collapsed`);
+          .withContext(`Expect node collapsed`).toBe(0);
         expectNestedTreeToMatch(treeElement,
           [`topping_1 - cheese_1 + base_1`],
           [`topping_2 - cheese_2 + base_2`],

@@ -648,7 +648,7 @@ describe('MatSlider', () => {
 
     it('should be able to reset the tick interval after it has been set', () => {
       expect(sliderNativeElement.classList)
-          .toContain('mat-slider-has-ticks', 'Expected element to have ticks initially.');
+        .withContext('Expected element to have ticks initially.').toContain('mat-slider-has-ticks');
 
       fixture.componentInstance.tickInterval = 0;
       fixture.detectChanges();
@@ -1243,7 +1243,7 @@ describe('MatSlider', () => {
       fixture.detectChanges();
 
       expect(sliderNativeElement.classList.contains('mat-slider-hide-last-tick'))
-          .toBe(true, 'last tick should be hidden');
+        .withContext('last tick should be hidden').toBe(true);
     });
   });
 
@@ -1317,12 +1317,14 @@ describe('MatSlider', () => {
 
       const slider = fixture.debugElement.query(By.directive(MatSlider))!.componentInstance;
 
-      expect(slider.tabIndex).toBe(0, 'Expected the tabIndex to be set to 0 by default.');
+      expect(slider.tabIndex)
+        .withContext('Expected the tabIndex to be set to 0 by default.').toBe(0);
 
       fixture.componentInstance.tabIndex = 3;
       fixture.detectChanges();
 
-      expect(slider.tabIndex).toBe(3, 'Expected the tabIndex to have been changed.');
+      expect(slider.tabIndex)
+        .withContext('Expected the tabIndex to have been changed.').toBe(3);
     });
 
     it('should detect the native tabindex attribute', () => {
@@ -1332,7 +1334,8 @@ describe('MatSlider', () => {
       const slider = fixture.debugElement.query(By.directive(MatSlider))!.componentInstance;
 
       expect(slider.tabIndex)
-        .toBe(5, 'Expected the tabIndex to be set to the value of the native attribute.');
+        .withContext('Expected the tabIndex to be set to the value of the native attribute.')
+        .toBe(5);
     });
   });
 

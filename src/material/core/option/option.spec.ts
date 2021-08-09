@@ -162,20 +162,22 @@ describe('MatOption component', () => {
     });
 
     it('should show ripples by default', () => {
-      expect(optionInstance.disableRipple).toBeFalsy('Expected ripples to be enabled by default');
+      expect(optionInstance.disableRipple)
+        .withContext('Expected ripples to be enabled by default')
+        .toBeFalsy();
       expect(optionNativeElement.querySelectorAll('.mat-ripple-element').length)
-        .toBe(0, 'Expected no ripples to show up initially');
+        .withContext('Expected no ripples to show up initially').toBe(0);
 
       dispatchFakeEvent(optionNativeElement, 'mousedown');
       dispatchFakeEvent(optionNativeElement, 'mouseup');
 
       expect(optionNativeElement.querySelectorAll('.mat-ripple-element').length)
-        .toBe(1, 'Expected one ripple to show up after a fake click.');
+        .withContext('Expected one ripple to show up after a fake click.').toBe(1);
     });
 
     it('should not show ripples if the option is disabled', () => {
       expect(optionNativeElement.querySelectorAll('.mat-ripple-element').length)
-        .toBe(0, 'Expected no ripples to show up initially');
+        .withContext('Expected no ripples to show up initially').toBe(0);
 
       fixture.componentInstance.disabled = true;
       fixture.detectChanges();
@@ -184,7 +186,7 @@ describe('MatOption component', () => {
       dispatchFakeEvent(optionNativeElement, 'mouseup');
 
       expect(optionNativeElement.querySelectorAll('.mat-ripple-element').length)
-        .toBe(0, 'Expected no ripples to show up after click on a disabled option.');
+        .withContext('Expected no ripples to show up after click on a disabled option.').toBe(0);
     });
 
   });

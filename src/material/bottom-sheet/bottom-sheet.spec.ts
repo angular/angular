@@ -336,7 +336,7 @@ describe('MatBottomSheet', () => {
     // Wait for the open animation to finish.
     flush();
     expect(bottomSheetRef.containerInstance._animationState)
-        .toBe('visible', `Expected the animation state would be 'visible'.`);
+      .withContext(`Expected the animation state would be 'visible'.`).toBe('visible');
   }));
 
   it('should remove past bottom sheets when opening new ones', fakeAsync(() => {
@@ -603,8 +603,9 @@ describe('MatBottomSheet', () => {
       viewContainerFixture.detectChanges();
       flushMicrotasks();
 
-      expect(document.activeElement!.tagName).toBe('MAT-BOTTOM-SHEET-CONTAINER',
-          'Expected bottom sheet container to be focused.');
+      expect(document.activeElement!.tagName)
+        .withContext('Expected bottom sheet container to be focused.')
+        .toBe('MAT-BOTTOM-SHEET-CONTAINER');
     }));
 
     it('should create a focus trap if autoFocus is disabled', fakeAsync(() => {
@@ -632,7 +633,8 @@ describe('MatBottomSheet', () => {
       flushMicrotasks();
 
       expect(document.activeElement!.tagName)
-        .toBe('INPUT', 'Expected first tabbable element (input) in the dialog to be focused.');
+        .withContext('Expected first tabbable element (input) in the dialog to be focused.')
+        .toBe('INPUT');
     }));
 
     it('should focus the bottom sheet element on open when autoFocus is set to ' +
@@ -647,7 +649,8 @@ describe('MatBottomSheet', () => {
       let container =
         overlayContainerElement.querySelector('.mat-bottom-sheet-container') as HTMLInputElement;
 
-      expect(document.activeElement).toBe(container, 'Expected container to be focused on open');
+      expect(document.activeElement)
+        .withContext('Expected container to be focused on open').toBe(container);
     }));
 
     it('should focus the bottom sheet element on open when autoFocus is set to ' +
@@ -664,7 +667,7 @@ describe('MatBottomSheet', () => {
         overlayContainerElement.querySelector('h1[tabindex="-1"]') as HTMLInputElement;
 
       expect(document.activeElement)
-        .toBe(firstHeader, 'Expected first header to be focused on open');
+        .withContext('Expected first header to be focused on open').toBe(firstHeader);
     }));
 
     it('should focus the first element that matches the css selector on open when ' +
@@ -681,7 +684,7 @@ describe('MatBottomSheet', () => {
       overlayContainerElement.querySelector('p[tabindex="-1"]') as HTMLInputElement;
 
       expect(document.activeElement)
-        .toBe(firstParagraph, 'Expected first paragraph to be focused on open');
+        .withContext('Expected first paragraph to be focused on open').toBe(firstParagraph);
     }));
 
     it('should re-focus trigger element when bottom sheet closes', fakeAsync(() => {
@@ -707,8 +710,9 @@ describe('MatBottomSheet', () => {
       viewContainerFixture.detectChanges();
       tick(500);
 
-      expect(document.activeElement!.id).toBe('bottom-sheet-trigger',
-          'Expected that the trigger was refocused after the sheet is closed.');
+      expect(document.activeElement!.id)
+        .withContext('Expected that the trigger was refocused after the sheet is closed.')
+        .toBe('bottom-sheet-trigger');
 
       document.body.removeChild(button);
     }));
@@ -770,14 +774,14 @@ describe('MatBottomSheet', () => {
       otherButton.focus();
 
       expect(document.activeElement!.id)
-          .toBe('other-button', 'Expected focus to be on the alternate button.');
+        .withContext('Expected focus to be on the alternate button.').toBe('other-button');
 
       flushMicrotasks();
       viewContainerFixture.detectChanges();
       flush();
 
       expect(document.activeElement!.id)
-          .toBe('other-button', 'Expected focus to stay on the alternate button.');
+        .withContext('Expected focus to stay on the alternate button.').toBe('other-button');
 
       body.removeChild(button);
       body.removeChild(otherButton);
@@ -848,14 +852,15 @@ describe('MatBottomSheet with parent MatBottomSheet', () => {
     tick(1000);
 
     expect(overlayContainerElement.textContent)
-        .toContain('Pizza', 'Expected a bottom sheet to be opened');
+      .withContext('Expected a bottom sheet to be opened').toContain('Pizza');
 
     childBottomSheet.open(TacoMsg);
     fixture.detectChanges();
     tick(1000);
 
     expect(overlayContainerElement.textContent)
-        .toContain('Taco', 'Expected parent bottom sheet to be dismissed by opening from child');
+      .withContext('Expected parent bottom sheet to be dismissed by opening from child')
+      .toContain('Taco');
   }));
 
   it('should close bottom sheets opened by child when opening from parent', fakeAsync(() => {
@@ -864,14 +869,15 @@ describe('MatBottomSheet with parent MatBottomSheet', () => {
     tick(1000);
 
     expect(overlayContainerElement.textContent)
-        .toContain('Pizza', 'Expected a bottom sheet to be opened');
+      .withContext('Expected a bottom sheet to be opened').toContain('Pizza');
 
     parentBottomSheet.open(TacoMsg);
     fixture.detectChanges();
     tick(1000);
 
     expect(overlayContainerElement.textContent)
-        .toContain('Taco', 'Expected child bottom sheet to be dismissed by opening from parent');
+      .withContext('Expected child bottom sheet to be dismissed by opening from parent')
+      .toContain('Taco');
   }));
 
   it('should not close parent bottom sheet when child is destroyed', fakeAsync(() => {
@@ -880,14 +886,14 @@ describe('MatBottomSheet with parent MatBottomSheet', () => {
     tick(1000);
 
     expect(overlayContainerElement.textContent)
-        .toContain('Pizza', 'Expected a bottom sheet to be opened');
+      .withContext('Expected a bottom sheet to be opened').toContain('Pizza');
 
     childBottomSheet.ngOnDestroy();
     fixture.detectChanges();
     tick(1000);
 
     expect(overlayContainerElement.textContent)
-        .toContain('Pizza', 'Expected a bottom sheet to stay open');
+      .withContext('Expected a bottom sheet to stay open').toContain('Pizza');
   }));
 
 });

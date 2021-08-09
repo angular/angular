@@ -243,8 +243,9 @@ describe('MatTooltip', () => {
       const overlayRef = tooltipDirective._overlayRef;
 
       expect(!!overlayRef).toBeTruthy();
-      expect(overlayRef!.overlayElement.classList).toContain('mat-tooltip-panel',
-          'Expected the overlay panel element to have the tooltip panel class set.');
+      expect(overlayRef!.overlayElement.classList)
+        .withContext('Expected the overlay panel element to have the tooltip panel class set.')
+        .toContain('mat-tooltip-panel');
     }));
 
     it('should not show if disabled', fakeAsync(() => {
@@ -429,10 +430,12 @@ describe('MatTooltip', () => {
 
       // Make sure classes aren't prematurely added
       let tooltipElement = overlayContainerElement.querySelector('.mat-tooltip') as HTMLElement;
-      expect(tooltipElement.classList).not.toContain('custom-one',
-        'Expected to not have the class before enabling matTooltipClass');
-      expect(tooltipElement.classList).not.toContain('custom-two',
-        'Expected to not have the class before enabling matTooltipClass');
+      expect(tooltipElement.classList).not
+        .withContext('Expected to not have the class before enabling matTooltipClass')
+        .toContain('custom-one');
+      expect(tooltipElement.classList).not
+        .withContext('Expected to not have the class before enabling matTooltipClass')
+        .toContain('custom-two');
 
       // Enable the classes via ngClass syntax
       fixture.componentInstance.showTooltipClass = true;
@@ -440,10 +443,12 @@ describe('MatTooltip', () => {
 
       // Make sure classes are correctly added
       tooltipElement = overlayContainerElement.querySelector('.mat-tooltip') as HTMLElement;
-      expect(tooltipElement.classList).toContain('custom-one',
-        'Expected to have the class after enabling matTooltipClass');
-      expect(tooltipElement.classList).toContain('custom-two',
-        'Expected to have the class after enabling matTooltipClass');
+      expect(tooltipElement.classList)
+        .withContext('Expected to have the class after enabling matTooltipClass')
+        .toContain('custom-one');
+      expect(tooltipElement.classList)
+        .withContext('Expected to have the class after enabling matTooltipClass')
+        .toContain('custom-two');
     }));
 
     it('should be removed after parent destroyed', fakeAsync(() => {
@@ -584,8 +589,9 @@ describe('MatTooltip', () => {
       const tooltipWrapper =
           overlayContainerElement.querySelector('.cdk-overlay-connected-position-bounding-box')!;
 
-      expect(tooltipWrapper).toBeTruthy('Expected tooltip to be shown.');
-      expect(tooltipWrapper.getAttribute('dir')).toBe('rtl', 'Expected tooltip to be in RTL mode.');
+      expect(tooltipWrapper).withContext('Expected tooltip to be shown.').toBeTruthy();
+      expect(tooltipWrapper.getAttribute('dir'))
+        .withContext('Expected tooltip to be in RTL mode.').toBe('rtl');
     }));
 
     it('should keep the overlay direction in sync with the trigger direction', fakeAsync(() => {
@@ -597,7 +603,8 @@ describe('MatTooltip', () => {
 
       let tooltipWrapper =
           overlayContainerElement.querySelector('.cdk-overlay-connected-position-bounding-box')!;
-      expect(tooltipWrapper.getAttribute('dir')).toBe('rtl', 'Expected tooltip to be in RTL.');
+      expect(tooltipWrapper.getAttribute('dir'))
+        .withContext('Expected tooltip to be in RTL.').toBe('rtl');
 
       tooltipDirective.hide(0);
       tick(0);
@@ -612,7 +619,8 @@ describe('MatTooltip', () => {
 
       tooltipWrapper =
           overlayContainerElement.querySelector('.cdk-overlay-connected-position-bounding-box')!;
-      expect(tooltipWrapper.getAttribute('dir')).toBe('ltr', 'Expected tooltip to be in LTR.');
+      expect(tooltipWrapper.getAttribute('dir'))
+        .withContext('Expected tooltip to be in LTR.').toBe('ltr');
     }));
 
     it('should be able to set the tooltip message as a number', fakeAsync(() => {
@@ -934,21 +942,24 @@ describe('MatTooltip', () => {
       tick(0);
 
       // Expect that the tooltip is displayed
+      // Expect that the tooltip is displayed
       expect(tooltipDirective._isTooltipVisible())
-          .toBe(true, 'Expected tooltip to be initially visible');
+        .withContext('Expected tooltip to be initially visible').toBe(true);
 
       // Scroll the page but tick just before the default throttle should update.
       fixture.componentInstance.scrollDown();
       tick(SCROLL_THROTTLE_MS - 1);
       expect(tooltipDirective._isTooltipVisible())
-          .toBe(true, 'Expected tooltip to be visible when scrolling, before throttle limit');
+        .withContext('Expected tooltip to be visible when scrolling, before throttle limit')
+        .toBe(true);
 
       // Finish ticking to the throttle's limit and check that the scroll event notified the
       // tooltip and it was hidden.
       tick(100);
       fixture.detectChanges();
       expect(tooltipDirective._isTooltipVisible())
-          .toBe(false, 'Expected tooltip hidden when scrolled out of view, after throttle limit');
+        .withContext('Expected tooltip hidden when scrolled out of view, after throttle limit')
+        .toBe(false);
     }));
 
     it('should execute the `hide` call, after scrolling away, inside the NgZone', fakeAsync(() => {

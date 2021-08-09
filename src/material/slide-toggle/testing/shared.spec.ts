@@ -71,12 +71,13 @@ export function runHarnessTests(
 
   it('should get valid state', async () => {
     const [requiredToggle, optionalToggle] = await loader.getAllHarnesses(slideToggleHarness);
-    expect(await optionalToggle.isValid()).toBe(true, 'Expected optional toggle to be valid');
+    expect(await optionalToggle.isValid())
+      .withContext('Expected optional toggle to be valid').toBe(true);
     expect(await requiredToggle.isValid())
-        .toBe(true, 'Expected required checked toggle to be valid');
+      .withContext('Expected required checked toggle to be valid').toBe(true);
     await requiredToggle.uncheck();
     expect(await requiredToggle.isValid())
-        .toBe(false, 'Expected required unchecked toggle to be invalid');
+      .withContext('Expected required unchecked toggle to be invalid').toBe(false);
   });
 
   it('should get name', async () => {

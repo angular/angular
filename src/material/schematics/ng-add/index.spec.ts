@@ -41,8 +41,8 @@ describe('ng-add schematic', () => {
   /** Expects the given file to be in the styles of the specified workspace project. */
   function expectProjectStyleFile(project: ProjectDefinition, filePath: string) {
     expect(getProjectTargetOptions(project, 'build').styles)
-        .toContain(
-            filePath, `Expected "${filePath}" to be added to the project styles in the workspace.`);
+      .withContext(`Expected "${filePath}" to be added to the project styles in the workspace.`)
+      .toContain(filePath);
   }
 
   /** Removes the specified dependency from the /package.json in the given tree. */
@@ -66,23 +66,22 @@ describe('ng-add schematic', () => {
     expect(dependencies['@angular/material']).toBe('~0.0.0-PLACEHOLDER');
     expect(dependencies['@angular/cdk']).toBe('~0.0.0-PLACEHOLDER');
     expect(dependencies['@angular/forms'])
-        .toBe(
-            angularCoreVersion,
-            'Expected the @angular/forms package to have the same version as @angular/core.');
+      .withContext('Expected the @angular/forms package to have the same version as @angular/core.')
+        .toBe(angularCoreVersion);
     expect(dependencies['@angular/animations'])
-        .toBe(
-            angularCoreVersion,
-            'Expected the @angular/animations package to have the same version as @angular/core.');
+      .withContext('Expected the @angular/animations package to have the same ' +
+                   'version as @angular/core.').toBe(angularCoreVersion);
 
     expect(Object.keys(dependencies))
-        .toEqual(
-            Object.keys(dependencies).sort(),
-            'Expected the modified "dependencies" to be sorted alphabetically.');
+      .withContext('Expected the modified "dependencies" to be sorted alphabetically.')
+      .toEqual(Object.keys(dependencies).sort());
 
-    expect(runner.tasks.some(task => task.name === 'node-package')).toBe(true,
-      'Expected the package manager to be scheduled in order to update lock files.');
-    expect(runner.tasks.some(task => task.name === 'run-schematic')).toBe(true,
-      'Expected the setup-project schematic to be scheduled.');
+    expect(runner.tasks.some(task => task.name === 'node-package'))
+      .withContext('Expected the package manager to be scheduled in order to update lock files.')
+        .toBe(true);
+    expect(runner.tasks.some(task => task.name === 'run-schematic'))
+      .withContext('Expected the setup-project schematic to be scheduled.')
+        .toBe(true);
   });
 
   it('should respect version range from CLI ng-add command', async () => {
@@ -136,7 +135,8 @@ describe('ng-add schematic', () => {
     const project = getProjectFromWorkspace(workspace);
     const expectedStylesPath = normalize(`/${project.root}/src/custom-theme.scss`);
 
-    expect(tree.files).toContain(expectedStylesPath, 'Expected a custom theme file to be created');
+    expect(tree.files)
+      .withContext('Expected a custom theme file to be created').toContain(expectedStylesPath);
     expectProjectStyleFile(project, 'projects/material/src/custom-theme.scss');
   });
 
@@ -184,9 +184,8 @@ describe('ng-add schematic', () => {
       const fileContent = getFileContent(tree, '/projects/material/src/app/app.module.ts');
 
       expect(fileContent)
-          .toContain(
-              'BrowserAnimationsModule',
-              'Expected the project app module to import the "BrowserAnimationsModule".');
+        .withContext('Expected the project app module to import the "BrowserAnimationsModule".')
+        .toContain('BrowserAnimationsModule');
     });
 
     it('should not add BrowserAnimationsModule if NoopAnimationsModule is set up', async () => {
@@ -215,9 +214,8 @@ describe('ng-add schematic', () => {
       const fileContent = getFileContent(tree, '/projects/material/src/app/app.module.ts');
 
       expect(fileContent)
-          .toContain(
-              'NoopAnimationsModule',
-              'Expected the project app module to import the "NoopAnimationsModule".');
+        .withContext('Expected the project app module to import the "NoopAnimationsModule".')
+        .toContain('NoopAnimationsModule');
     });
 
     it('should not add NoopAnimationsModule if BrowserAnimationsModule is set up', async () => {
@@ -335,10 +333,12 @@ describe('ng-add schematic', () => {
       const project = getProjectFromWorkspace(workspace);
       const styles = getProjectTargetOptions(project, 'build').styles;
 
-      expect(styles).not.toContain(
-          existingThemePath, 'Expected the existing prebuilt theme file to be removed.');
-      expect(styles).toContain(
-          defaultPrebuiltThemePath, 'Expected the default prebuilt theme to be added.');
+      expect(styles).not
+        .withContext('Expected the existing prebuilt theme file to be removed.')
+        .toContain(existingThemePath);
+      expect(styles)
+        .withContext('Expected the default prebuilt theme to be added.')
+        .toContain(defaultPrebuiltThemePath);
     });
 
     it('should not replace existing custom theme files', async () => {
@@ -363,9 +363,10 @@ describe('ng-add schematic', () => {
       const project = getProjectFromWorkspace(workspace);
       const styles = getProjectTargetOptions(project, 'build').styles;
 
-      expect(styles).toEqual(
-          ['projects/material/src/styles.css', defaultPrebuiltThemePath],
-          'Expected the "styles.css" file and default prebuilt theme to be the only styles');
+      expect(styles)
+        .withContext('Expected the "styles.css" file and default prebuilt theme to be ' +
+                     'the only styles')
+                        .toEqual(['projects/material/src/styles.css', defaultPrebuiltThemePath]);
     });
 
     it('should not overwrite existing custom theme files', async () => {
@@ -375,7 +376,7 @@ describe('ng-add schematic', () => {
               .toPromise();
 
       expect(tree.readContent('/projects/material/custom-theme.scss'))
-          .toBe('custom-theme', 'Expected the old custom theme content to be unchanged.');
+        .withContext('Expected the old custom theme content to be unchanged.').toBe('custom-theme');
     });
   });
 

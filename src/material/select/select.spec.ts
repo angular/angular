@@ -238,13 +238,15 @@ describe('MatSelect', () => {
 
         it('should set aria-required for required selects', fakeAsync(() => {
           expect(select.getAttribute('aria-required'))
-              .toEqual('false', `Expected aria-required attr to be false for normal selects.`);
+            .withContext(`Expected aria-required attr to be false for normal selects.`)
+            .toEqual('false');
 
           fixture.componentInstance.isRequired = true;
           fixture.detectChanges();
 
           expect(select.getAttribute('aria-required'))
-              .toEqual('true', `Expected aria-required attr to be true for required selects.`);
+            .withContext(`Expected aria-required attr to be true for required selects.`)
+            .toEqual('true');
         }));
 
         it('should set the mat-select-required class for required selects', fakeAsync(() => {
@@ -254,20 +256,23 @@ describe('MatSelect', () => {
           fixture.componentInstance.isRequired = true;
           fixture.detectChanges();
 
-          expect(select.classList).toContain(
-              'mat-select-required', `Expected the mat-select-required class to be set.`);
+          expect(select.classList)
+            .withContext(`Expected the mat-select-required class to be set.`)
+            .toContain('mat-select-required');
         }));
 
         it('should set aria-invalid for selects that are invalid and touched', fakeAsync(() => {
           expect(select.getAttribute('aria-invalid'))
-              .toEqual('false', `Expected aria-invalid attr to be false for valid selects.`);
+            .withContext(`Expected aria-invalid attr to be false for valid selects.`)
+            .toEqual('false');
 
           fixture.componentInstance.isRequired = true;
           fixture.componentInstance.control.markAsTouched();
           fixture.detectChanges();
 
           expect(select.getAttribute('aria-invalid'))
-              .toEqual('true', `Expected aria-invalid attr to be true for invalid selects.`);
+            .withContext(`Expected aria-invalid attr to be true for invalid selects.`)
+            .toEqual('true');
         }));
 
         it('should set aria-disabled for disabled selects', fakeAsync(() => {
@@ -304,27 +309,34 @@ describe('MatSelect', () => {
           const formControl = fixture.componentInstance.control;
           const options = fixture.componentInstance.options.toArray();
 
-          expect(formControl.value).toBeFalsy('Expected no initial value.');
+          expect(formControl.value).withContext('Expected no initial value.').toBeFalsy();
 
           dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
 
-          expect(options[0].selected).toBe(true, 'Expected first option to be selected.');
-          expect(formControl.value).toBe(options[0].value,
-              'Expected value from first option to have been set on the model.');
+          expect(options[0].selected)
+            .withContext('Expected first option to be selected.').toBe(true);
+          expect(formControl.value)
+            .withContext('Expected value from first option to have been set on the model.')
+            .toBe(options[0].value);
 
           dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
           dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
 
           // Note that the third option is skipped, because it is disabled.
-          expect(options[3].selected).toBe(true, 'Expected fourth option to be selected.');
-          expect(formControl.value).toBe(options[3].value,
-              'Expected value from fourth option to have been set on the model.');
+          // Note that the third option is skipped, because it is disabled.
+          expect(options[3].selected)
+            .withContext('Expected fourth option to be selected.').toBe(true);
+          expect(formControl.value)
+            .withContext('Expected value from fourth option to have been set on the model.')
+            .toBe(options[3].value);
 
           dispatchKeyboardEvent(select, 'keydown', UP_ARROW);
 
-          expect(options[1].selected).toBe(true, 'Expected second option to be selected.');
-          expect(formControl.value).toBe(options[1].value,
-              'Expected value from second option to have been set on the model.');
+          expect(options[1].selected)
+            .withContext('Expected second option to be selected.').toBe(true);
+          expect(formControl.value)
+            .withContext('Expected value from second option to have been set on the model.')
+            .toBe(options[1].value);
 
           flush();
         }));
@@ -334,27 +346,33 @@ describe('MatSelect', () => {
             const formControl = fixture.componentInstance.control;
             const options = fixture.componentInstance.options.toArray();
 
-            expect(formControl.value).toBeFalsy('Expected no initial value.');
+            expect(formControl.value).withContext('Expected no initial value.').toBeFalsy();
 
             dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
             flush();
 
-            expect(options[0].selected).toBe(true, 'Expected first option to be selected.');
-            expect(formControl.value).toBe(options[0].value,
-                'Expected value from first option to have been set on the model.');
+            expect(options[0].selected)
+              .withContext('Expected first option to be selected.').toBe(true);
+            expect(formControl.value)
+              .withContext('Expected value from first option to have been set on the model.')
+              .toBe(options[0].value);
 
             formControl.reset();
             fixture.detectChanges();
 
-            expect(options[0].selected).toBe(false, 'Expected first option to be deselected.');
-            expect(formControl.value).toBeFalsy('Expected value to be reset.');
+            expect(options[0].selected)
+              .withContext('Expected first option to be deselected.').toBe(false);
+            expect(formControl.value)
+              .withContext('Expected value to be reset.').toBeFalsy();
 
             dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
             flush();
 
-            expect(options[0].selected).toBe(true, 'Expected first option to be selected again.');
-            expect(formControl.value).toBe(options[0].value,
-                'Expected value from first option to have been set on the model again.');
+            expect(options[0].selected)
+              .withContext('Expected first option to be selected again.').toBe(true);
+            expect(formControl.value)
+              .withContext('Expected value from first option to have been set on the model again.')
+              .toBe(options[0].value);
         }));
 
         it('should select first/last options via the HOME/END keys on a closed select',
@@ -363,21 +381,25 @@ describe('MatSelect', () => {
             const firstOption = fixture.componentInstance.options.first;
             const lastOption = fixture.componentInstance.options.last;
 
-            expect(formControl.value).toBeFalsy('Expected no initial value.');
+            expect(formControl.value).withContext('Expected no initial value.').toBeFalsy();
 
             const endEvent = dispatchKeyboardEvent(select, 'keydown', END);
 
             expect(endEvent.defaultPrevented).toBe(true);
-            expect(lastOption.selected).toBe(true, 'Expected last option to be selected.');
-            expect(formControl.value).toBe(lastOption.value,
-                'Expected value from last option to have been set on the model.');
+            expect(lastOption.selected)
+              .withContext('Expected last option to be selected.').toBe(true);
+            expect(formControl.value)
+              .withContext('Expected value from last option to have been set on the model.')
+              .toBe(lastOption.value);
 
             const homeEvent = dispatchKeyboardEvent(select, 'keydown', HOME);
 
             expect(homeEvent.defaultPrevented).toBe(true);
-            expect(firstOption.selected).toBe(true, 'Expected first option to be selected.');
-            expect(formControl.value).toBe(firstOption.value,
-                'Expected value from first option to have been set on the model.');
+            expect(firstOption.selected)
+              .withContext('Expected first option to be selected.').toBe(true);
+            expect(formControl.value)
+              .withContext('Expected value from first option to have been set on the model.')
+              .toBe(firstOption.value);
 
             flush();
           }));
@@ -386,7 +408,7 @@ describe('MatSelect', () => {
           const formControl = fixture.componentInstance.control;
           const options = fixture.componentInstance.options.toArray();
 
-          expect(formControl.value).toBeFalsy('Expected no initial value.');
+          expect(formControl.value).withContext('Expected no initial value.').toBeFalsy();
 
           fixture.componentInstance.select.open();
           fixture.detectChanges();
@@ -409,27 +431,34 @@ describe('MatSelect', () => {
           const formControl = fixture.componentInstance.control;
           const options = fixture.componentInstance.options.toArray();
 
-          expect(formControl.value).toBeFalsy('Expected no initial value.');
+          expect(formControl.value).withContext('Expected no initial value.').toBeFalsy();
 
           dispatchKeyboardEvent(select, 'keydown', RIGHT_ARROW);
 
-          expect(options[0].selected).toBe(true, 'Expected first option to be selected.');
-          expect(formControl.value).toBe(options[0].value,
-              'Expected value from first option to have been set on the model.');
+          expect(options[0].selected)
+            .withContext('Expected first option to be selected.').toBe(true);
+          expect(formControl.value)
+            .withContext('Expected value from first option to have been set on the model.')
+            .toBe(options[0].value);
 
           dispatchKeyboardEvent(select, 'keydown', RIGHT_ARROW);
           dispatchKeyboardEvent(select, 'keydown', RIGHT_ARROW);
 
           // Note that the third option is skipped, because it is disabled.
-          expect(options[3].selected).toBe(true, 'Expected fourth option to be selected.');
-          expect(formControl.value).toBe(options[3].value,
-              'Expected value from fourth option to have been set on the model.');
+          // Note that the third option is skipped, because it is disabled.
+          expect(options[3].selected)
+            .withContext('Expected fourth option to be selected.').toBe(true);
+          expect(formControl.value)
+            .withContext('Expected value from fourth option to have been set on the model.')
+            .toBe(options[3].value);
 
           dispatchKeyboardEvent(select, 'keydown', LEFT_ARROW);
 
-          expect(options[1].selected).toBe(true, 'Expected second option to be selected.');
-          expect(formControl.value).toBe(options[1].value,
-              'Expected value from second option to have been set on the model.');
+          expect(options[1].selected)
+            .withContext('Expected second option to be selected.').toBe(true);
+          expect(formControl.value)
+            .withContext('Expected value from second option to have been set on the model.')
+            .toBe(options[1].value);
           flush();
         }));
 
@@ -462,29 +491,33 @@ describe('MatSelect', () => {
         it('should open a single-selection select using ALT + DOWN_ARROW', fakeAsync(() => {
           const {control: formControl, select: selectInstance} = fixture.componentInstance;
 
-          expect(selectInstance.panelOpen).toBe(false, 'Expected select to be closed.');
-          expect(formControl.value).toBeFalsy('Expected no initial value.');
+          expect(selectInstance.panelOpen)
+            .withContext('Expected select to be closed.').toBe(false);
+          expect(formControl.value).withContext('Expected no initial value.').toBeFalsy();
 
           const event = createKeyboardEvent('keydown', DOWN_ARROW, undefined, {alt: true});
 
           dispatchEvent(select, event);
 
-          expect(selectInstance.panelOpen).toBe(true, 'Expected select to be open.');
-          expect(formControl.value).toBeFalsy('Expected value not to have changed.');
+          expect(selectInstance.panelOpen)
+            .withContext('Expected select to be open.').toBe(true);
+          expect(formControl.value).withContext('Expected value not to have changed.').toBeFalsy();
         }));
 
         it('should open a single-selection select using ALT + UP_ARROW', fakeAsync(() => {
           const {control: formControl, select: selectInstance} = fixture.componentInstance;
 
-          expect(selectInstance.panelOpen).toBe(false, 'Expected select to be closed.');
-          expect(formControl.value).toBeFalsy('Expected no initial value.');
+          expect(selectInstance.panelOpen)
+            .withContext('Expected select to be closed.').toBe(false);
+          expect(formControl.value).withContext('Expected no initial value.').toBeFalsy();
 
           const event = createKeyboardEvent('keydown', UP_ARROW, undefined, {alt: true});
 
           dispatchEvent(select, event);
 
-          expect(selectInstance.panelOpen).toBe(true, 'Expected select to be open.');
-          expect(formControl.value).toBeFalsy('Expected value not to have changed.');
+          expect(selectInstance.panelOpen)
+            .withContext('Expected select to be open.').toBe(true);
+          expect(formControl.value).withContext('Expected value not to have changed.').toBeFalsy();
         }));
 
         it('should close when pressing ALT + DOWN_ARROW', fakeAsync(() => {
@@ -493,14 +526,17 @@ describe('MatSelect', () => {
           selectInstance.open();
           fixture.detectChanges();
 
-          expect(selectInstance.panelOpen).toBe(true, 'Expected select to be open.');
+          expect(selectInstance.panelOpen)
+            .withContext('Expected select to be open.').toBe(true);
 
           const event = createKeyboardEvent('keydown', DOWN_ARROW, undefined, {alt: true});
 
           dispatchEvent(select, event);
 
-          expect(selectInstance.panelOpen).toBe(false, 'Expected select to be closed.');
-          expect(event.defaultPrevented).toBe(true, 'Expected default action to be prevented.');
+          expect(selectInstance.panelOpen)
+            .withContext('Expected select to be closed.').toBe(false);
+          expect(event.defaultPrevented)
+            .withContext('Expected default action to be prevented.').toBe(true);
         }));
 
         it('should close when pressing ALT + UP_ARROW', fakeAsync(() => {
@@ -509,35 +545,42 @@ describe('MatSelect', () => {
           selectInstance.open();
           fixture.detectChanges();
 
-          expect(selectInstance.panelOpen).toBe(true, 'Expected select to be open.');
+          expect(selectInstance.panelOpen)
+            .withContext('Expected select to be open.').toBe(true);
 
           const event = createKeyboardEvent('keydown', UP_ARROW, undefined, {alt: true});
 
           dispatchEvent(select, event);
 
-          expect(selectInstance.panelOpen).toBe(false, 'Expected select to be closed.');
-          expect(event.defaultPrevented).toBe(true, 'Expected default action to be prevented.');
+          expect(selectInstance.panelOpen)
+            .withContext('Expected select to be closed.').toBe(false);
+          expect(event.defaultPrevented)
+            .withContext('Expected default action to be prevented.').toBe(true);
         }));
 
         it('should be able to select options by typing on a closed select', fakeAsync(() => {
           const formControl = fixture.componentInstance.control;
           const options = fixture.componentInstance.options.toArray();
 
-          expect(formControl.value).toBeFalsy('Expected no initial value.');
+          expect(formControl.value).withContext('Expected no initial value.').toBeFalsy();
 
           dispatchEvent(select, createKeyboardEvent('keydown', 80, 'p'));
           tick(DEFAULT_TYPEAHEAD_DEBOUNCE_INTERVAL);
 
-          expect(options[1].selected).toBe(true, 'Expected second option to be selected.');
-          expect(formControl.value).toBe(options[1].value,
-            'Expected value from second option to have been set on the model.');
+          expect(options[1].selected)
+            .withContext('Expected second option to be selected.').toBe(true);
+          expect(formControl.value)
+            .withContext('Expected value from second option to have been set on the model.')
+            .toBe(options[1].value);
 
           dispatchEvent(select, createKeyboardEvent('keydown', 69, 'e'));
           tick(DEFAULT_TYPEAHEAD_DEBOUNCE_INTERVAL);
 
-          expect(options[5].selected).toBe(true, 'Expected sixth option to be selected.');
-          expect(formControl.value).toBe(options[5].value,
-            'Expected value from sixth option to have been set on the model.');
+          expect(options[5].selected)
+            .withContext('Expected sixth option to be selected.').toBe(true);
+          expect(formControl.value)
+            .withContext('Expected value from sixth option to have been set on the model.')
+            .toBe(options[5].value);
         }));
 
         it('should not open the select when pressing space while typing', fakeAsync(() => {
@@ -546,7 +589,8 @@ describe('MatSelect', () => {
           fixture.componentInstance.typeaheadDebounceInterval = DEFAULT_TYPEAHEAD_DEBOUNCE_INTERVAL;
           fixture.detectChanges();
 
-          expect(selectInstance.panelOpen).toBe(false, 'Expected select to be closed on init.');
+          expect(selectInstance.panelOpen)
+            .withContext('Expected select to be closed on init.').toBe(false);
 
           dispatchEvent(select, createKeyboardEvent('keydown', 80, 'p'));
           tick(DEFAULT_TYPEAHEAD_DEBOUNCE_INTERVAL / 2);
@@ -555,14 +599,14 @@ describe('MatSelect', () => {
           dispatchKeyboardEvent(select, 'keydown', SPACE);
           fixture.detectChanges();
 
-          expect(selectInstance.panelOpen).toBe(false,
-              'Expected select to remain closed after space was pressed.');
+          expect(selectInstance.panelOpen)
+            .withContext('Expected select to remain closed after space was pressed.').toBe(false);
 
           tick(DEFAULT_TYPEAHEAD_DEBOUNCE_INTERVAL / 2);
           fixture.detectChanges();
 
-          expect(selectInstance.panelOpen).toBe(false,
-              'Expected select to be closed when the timer runs out.');
+          expect(selectInstance.panelOpen)
+            .withContext('Expected select to be closed when the timer runs out.').toBe(false);
         }));
 
         it('should be able to customize the typeahead debounce interval', fakeAsync(() => {
@@ -572,19 +616,22 @@ describe('MatSelect', () => {
           fixture.componentInstance.typeaheadDebounceInterval = 1337;
           fixture.detectChanges();
 
-          expect(formControl.value).toBeFalsy('Expected no initial value.');
+          expect(formControl.value).withContext('Expected no initial value.').toBeFalsy();
 
           dispatchEvent(select, createKeyboardEvent('keydown', 80, 'p'));
           tick(DEFAULT_TYPEAHEAD_DEBOUNCE_INTERVAL);
 
-          expect(formControl.value).toBeFalsy('Expected no value after a bit of time has passed.');
+          expect(formControl.value)
+            .withContext('Expected no value after a bit of time has passed.').toBeFalsy();
 
           tick(1337);
 
           expect(options[1].selected)
-            .toBe(true, 'Expected second option to be selected after all the time has passed.');
-          expect(formControl.value).toBe(options[1].value,
-            'Expected value from second option to have been set on the model.');
+            .withContext('Expected second option to be selected after all the time has passed.')
+            .toBe(true);
+          expect(formControl.value)
+            .withContext('Expected value from second option to have been set on the model.')
+            .toBe(options[1].value);
         }));
 
         it('should open the panel when pressing a vertical arrow key on a closed multiple select',
@@ -599,13 +646,17 @@ describe('MatSelect', () => {
 
             const initialValue = instance.control.value;
 
-            expect(instance.select.panelOpen).toBe(false, 'Expected panel to be closed.');
+            expect(instance.select.panelOpen)
+              .withContext('Expected panel to be closed.').toBe(false);
 
             const event = dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
 
-            expect(instance.select.panelOpen).toBe(true, 'Expected panel to be open.');
-            expect(instance.control.value).toBe(initialValue, 'Expected value to stay the same.');
-            expect(event.defaultPrevented).toBe(true, 'Expected default to be prevented.');
+            expect(instance.select.panelOpen)
+              .withContext('Expected panel to be open.').toBe(true);
+            expect(instance.control.value)
+              .withContext('Expected value to stay the same.').toBe(initialValue);
+            expect(event.defaultPrevented)
+              .withContext('Expected default to be prevented.').toBe(true);
           }));
 
         it('should open the panel when pressing a horizontal arrow key on closed multiple select',
@@ -620,13 +671,17 @@ describe('MatSelect', () => {
 
             const initialValue = instance.control.value;
 
-            expect(instance.select.panelOpen).toBe(false, 'Expected panel to be closed.');
+            expect(instance.select.panelOpen)
+              .withContext('Expected panel to be closed.').toBe(false);
 
             const event = dispatchKeyboardEvent(select, 'keydown', RIGHT_ARROW);
 
-            expect(instance.select.panelOpen).toBe(true, 'Expected panel to be open.');
-            expect(instance.control.value).toBe(initialValue, 'Expected value to stay the same.');
-            expect(event.defaultPrevented).toBe(true, 'Expected default to be prevented.');
+            expect(instance.select.panelOpen)
+              .withContext('Expected panel to be open.').toBe(true);
+            expect(instance.control.value)
+              .withContext('Expected value to stay the same.').toBe(initialValue);
+            expect(event.defaultPrevented)
+              .withContext('Expected default to be prevented.').toBe(true);
           }));
 
         it('should do nothing when typing on a closed multi-select', fakeAsync(() => {
@@ -640,24 +695,31 @@ describe('MatSelect', () => {
 
           const initialValue = instance.control.value;
 
-          expect(instance.select.panelOpen).toBe(false, 'Expected panel to be closed.');
+          expect(instance.select.panelOpen)
+            .withContext('Expected panel to be closed.').toBe(false);
 
           dispatchEvent(select, createKeyboardEvent('keydown', 80, 'p'));
 
-          expect(instance.select.panelOpen).toBe(false, 'Expected panel to stay closed.');
-          expect(instance.control.value).toBe(initialValue, 'Expected value to stay the same.');
+          expect(instance.select.panelOpen)
+            .withContext('Expected panel to stay closed.').toBe(false);
+          expect(instance.control.value)
+            .withContext('Expected value to stay the same.').toBe(initialValue);
         }));
 
         it('should do nothing if the key manager did not change the active item', fakeAsync(() => {
           const formControl = fixture.componentInstance.control;
 
-          expect(formControl.value).toBeNull('Expected form control value to be empty.');
-          expect(formControl.pristine).toBe(true, 'Expected form control to be clean.');
+          expect(formControl.value)
+            .withContext('Expected form control value to be empty.').toBeNull();
+          expect(formControl.pristine)
+            .withContext('Expected form control to be clean.').toBe(true);
 
           dispatchKeyboardEvent(select, 'keydown', 16); // Press a random key.
 
-          expect(formControl.value).toBeNull('Expected form control value to stay empty.');
-          expect(formControl.pristine).toBe(true, 'Expected form control to stay clean.');
+          expect(formControl.value)
+            .withContext('Expected form control value to stay empty.').toBeNull();
+          expect(formControl.pristine)
+            .withContext('Expected form control to stay clean.').toBe(true);
         }));
 
         it('should continue from the selected option when the value is set programmatically',
@@ -689,13 +751,14 @@ describe('MatSelect', () => {
               overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
 
           options[3].focus();
-          expect(document.activeElement).toBe(options[3], 'Expected fourth option to be focused.');
+          expect(document.activeElement)
+            .withContext('Expected fourth option to be focused.').toBe(options[3]);
 
           multiFixture.componentInstance.control.setValue(['steak-0', 'sushi-7']);
           multiFixture.detectChanges();
 
           expect(document.activeElement)
-              .toBe(options[3], 'Expected fourth option to remain focused.');
+            .withContext('Expected fourth option to remain focused.').toBe(options[3]);
         }));
 
         it('should not cycle through the options if the control is disabled', fakeAsync(() => {
@@ -706,7 +769,8 @@ describe('MatSelect', () => {
 
           dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
 
-          expect(formControl.value).toBe('eggs-5', 'Expected value to remain unchaged.');
+          expect(formControl.value)
+            .withContext('Expected value to remain unchaged.').toBe('eggs-5');
         }));
 
         it('should not wrap selection after reaching the end of the options', fakeAsync(() => {
@@ -716,11 +780,13 @@ describe('MatSelect', () => {
             dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
           });
 
-          expect(lastOption.selected).toBe(true, 'Expected last option to be selected.');
+          expect(lastOption.selected)
+            .withContext('Expected last option to be selected.').toBe(true);
 
           dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
 
-          expect(lastOption.selected).toBe(true, 'Expected last option to stay selected.');
+          expect(lastOption.selected)
+            .withContext('Expected last option to stay selected.').toBe(true);
 
           flush();
         }));
@@ -734,12 +800,12 @@ describe('MatSelect', () => {
           select = multiFixture.debugElement.query(By.css('mat-select'))!.nativeElement;
 
           expect(multiFixture.componentInstance.select.panelOpen)
-              .toBe(false, 'Expected panel to be closed initially.');
+            .withContext('Expected panel to be closed initially.').toBe(false);
 
           dispatchKeyboardEvent(select, 'keydown', TAB);
 
           expect(multiFixture.componentInstance.select.panelOpen)
-              .toBe(false, 'Expected panel to stay closed.');
+            .withContext('Expected panel to stay closed.').toBe(false);
         }));
 
         it('should toggle the next option when pressing shift + DOWN_ARROW on a multi-select',
@@ -839,7 +905,8 @@ describe('MatSelect', () => {
 
           fixture.componentInstance.select.focus();
 
-          expect(document.activeElement).toBe(select, 'Expected select element to be focused.');
+          expect(document.activeElement)
+            .withContext('Expected select element to be focused.').toBe(select);
         }));
 
         it('should set `aria-multiselectable` to true on the listbox inside multi select',
@@ -873,7 +940,7 @@ describe('MatSelect', () => {
           const host = fixture.debugElement.query(By.css('mat-select'))!.nativeElement;
 
           expect(host.hasAttribute('aria-activedescendant'))
-              .toBe(false, 'Expected no aria-activedescendant on init.');
+            .withContext('Expected no aria-activedescendant on init.').toBe(false);
 
           fixture.componentInstance.select.open();
           fixture.detectChanges();
@@ -882,14 +949,15 @@ describe('MatSelect', () => {
           const options = overlayContainerElement.querySelectorAll('mat-option');
 
           expect(host.getAttribute('aria-activedescendant'))
-              .toBe(options[4].id, 'Expected aria-activedescendant to match the active option.');
+            .withContext('Expected aria-activedescendant to match the active option.')
+            .toBe(options[4].id);
 
           fixture.componentInstance.select.close();
           fixture.detectChanges();
           flush();
 
           expect(host.hasAttribute('aria-activedescendant'))
-              .toBe(false, 'Expected no aria-activedescendant when closed.');
+            .withContext('Expected no aria-activedescendant when closed.').toBe(false);
         }));
 
         it('should set aria-activedescendant based on the focused option', fakeAsync(() => {
@@ -956,7 +1024,8 @@ describe('MatSelect', () => {
             option.click();
             multiFixture.detectChanges();
 
-            expect(document.activeElement).toBe(select, 'Expected trigger to be focused.');
+            expect(document.activeElement)
+              .withContext('Expected trigger to be focused.').toBe(select);
           }));
 
         it('should set a role of listbox on the select panel', fakeAsync(() => {
@@ -1037,8 +1106,9 @@ describe('MatSelect', () => {
         }));
 
         it('should set aria-selected on each option for single select',  fakeAsync(() => {
-          expect(options.every(option => !option.hasAttribute('aria-selected'))).toBe(true,
-            'Expected all unselected single-select options not to have aria-selected set.');
+          expect(options.every(option => !option.hasAttribute('aria-selected')))
+            .withContext('Expected all unselected single-select options not to have ' +
+                         'aria-selected set.').toBe(true);
 
           options[1].click();
           fixture.detectChanges();
@@ -1047,11 +1117,13 @@ describe('MatSelect', () => {
           fixture.detectChanges();
           flush();
 
-          expect(options[1].getAttribute('aria-selected')).toEqual('true',
-            'Expected selected single-select option to have aria-selected="true".');
+          expect(options[1].getAttribute('aria-selected'))
+            .withContext('Expected selected single-select option to have aria-selected="true".')
+            .toEqual('true');
           options.splice(1, 1);
-          expect(options.every(option => !option.hasAttribute('aria-selected'))).toBe(true,
-            'Expected all unselected single-select options not to have aria-selected set.');
+          expect(options.every(option => !option.hasAttribute('aria-selected')))
+            .withContext('Expected all unselected single-select options not to have ' +
+                         'aria-selected set.').toBe(true);
         }));
 
         it('should set aria-selected on each option for multi-select', fakeAsync(() => {
@@ -1067,8 +1139,9 @@ describe('MatSelect', () => {
           options = Array.from(overlayContainerElement.querySelectorAll('mat-option'));
 
           expect(options.every(option => option.hasAttribute('aria-selected') &&
-            option.getAttribute('aria-selected') === 'false')).toBe(true,
-            'Expected all unselected multi-select options to have aria-selected="false".');
+          option.getAttribute('aria-selected') === 'false'))
+            .withContext('Expected all unselected multi-select options to have ' +
+                         'aria-selected="false".').toBe(true);
 
           options[1].click();
           multiFixture.detectChanges();
@@ -1077,12 +1150,14 @@ describe('MatSelect', () => {
           multiFixture.detectChanges();
           flush();
 
-          expect(options[1].getAttribute('aria-selected')).toEqual('true',
-            'Expected selected multi-select option to have aria-selected="true".');
+          expect(options[1].getAttribute('aria-selected'))
+            .withContext('Expected selected multi-select option to have ' +
+                         'aria-selected="true".').toEqual('true');
           options.splice(1, 1);
           expect(options.every(option => option.hasAttribute('aria-selected') &&
-            option.getAttribute('aria-selected') === 'false')).toBe(true,
-            'Expected all unselected multi-select options to have aria-selected="false".');
+          option.getAttribute('aria-selected') === 'false'))
+            .withContext('Expected all unselected multi-select options to have ' +
+                         'aria-selected="false".').toBe(true);
           }));
 
         it('should set the tabindex of each option according to disabled state', fakeAsync(() => {
@@ -1107,8 +1182,8 @@ describe('MatSelect', () => {
         it('should remove the active state from options that have been deselected while closed',
           fakeAsync(() => {
             let activeOptions = options.filter(option => option.classList.contains('mat-active'));
-            expect(activeOptions).toEqual([options[0]],
-                'Expected first option to have active styles.');
+            expect(activeOptions)
+              .withContext('Expected first option to have active styles.').toEqual([options[0]]);
 
             options[1].click();
             fixture.detectChanges();
@@ -1117,8 +1192,9 @@ describe('MatSelect', () => {
             flush();
 
             activeOptions = options.filter(option => option.classList.contains('mat-active'));
-            expect(activeOptions).toEqual([options[1]],
-              'Expected only selected option to be marked as active after it is clicked.');
+            expect(activeOptions)
+              .withContext('Expected only selected option to be marked as active after ' +
+                           'it is clicked.').toEqual([options[1]]);
 
             fixture.componentInstance.control.setValue(fixture.componentInstance.foods[7].value);
             fixture.detectChanges();
@@ -1130,8 +1206,9 @@ describe('MatSelect', () => {
             fixture.detectChanges();
 
             activeOptions = options.filter(option => option.classList.contains('mat-active'));
-            expect(activeOptions).toEqual([options[7]],
-              'Expected only selected option to be marked as active after the value has changed.');
+            expect(activeOptions)
+              .withContext('Expected only selected option to be marked as active after the ' +
+                           'value has changed.').toEqual([options[7]]);
           }));
       });
 
@@ -1158,9 +1235,12 @@ describe('MatSelect', () => {
           const group = groups[0];
           const label = group.querySelector('span')!;
 
-          expect(label.getAttribute('id')).toBeTruthy('Expected label to have an id.');
+          expect(label.getAttribute('id'))
+            .withContext('Expected label to have an id.')
+            .toBeTruthy();
           expect(group.getAttribute('aria-labelledby'))
-              .toBe(label.getAttribute('id'), 'Expected `aria-labelledby` to match the label id.');
+            .withContext('Expected `aria-labelledby` to match the label id.')
+            .toBe(label.getAttribute('id'));
         }));
 
         it('should set the `aria-disabled` attribute if the group is disabled', fakeAsync(() => {
@@ -1383,13 +1463,15 @@ describe('MatSelect', () => {
         const options = fixture.componentInstance.options.toArray();
 
         expect(options.every(option => option.disableRipple === false))
-            .toBeTruthy('Expected all options to have disableRipple set to false initially.');
+          .withContext('Expected all options to have disableRipple set to false initially.')
+          .toBeTruthy();
 
         fixture.componentInstance.disableRipple = true;
         fixture.detectChanges();
 
         expect(options.every(option => option.disableRipple === true))
-            .toBeTruthy('Expected all options to have disableRipple set to true.');
+          .withContext('Expected all options to have disableRipple set to true.')
+          .toBeTruthy();
       }));
 
       it('should not show ripples if they were disabled', fakeAsync(() => {
@@ -1418,7 +1500,7 @@ describe('MatSelect', () => {
         groupFixture.detectChanges();
 
         expect(document.querySelectorAll('.cdk-overlay-container mat-option').length)
-            .toBeGreaterThan(0, 'Expected at least one option to be rendered.');
+          .withContext('Expected at least one option to be rendered.').toBeGreaterThan(0);
       }));
 
       it('should not consider itself as blurred if the trigger loses focus while the ' +
@@ -1429,7 +1511,8 @@ describe('MatSelect', () => {
           dispatchFakeEvent(selectElement, 'focus');
           fixture.detectChanges();
 
-          expect(selectInstance.focused).toBe(true, 'Expected select to be focused.');
+          expect(selectInstance.focused)
+            .withContext('Expected select to be focused.').toBe(true);
 
           selectInstance.open();
           fixture.detectChanges();
@@ -1437,7 +1520,8 @@ describe('MatSelect', () => {
           dispatchFakeEvent(selectElement, 'blur');
           fixture.detectChanges();
 
-          expect(selectInstance.focused).toBe(true, 'Expected select element to remain focused.');
+          expect(selectInstance.focused)
+            .withContext('Expected select element to remain focused.').toBe(true);
         }));
 
     });
@@ -1456,7 +1540,7 @@ describe('MatSelect', () => {
 
       it('should not float label if no option is selected', fakeAsync(() => {
         expect(formField.classList.contains('mat-form-field-should-float'))
-            .toBe(false, 'Label should not be floating');
+          .withContext('Label should not be floating').toBe(false);
       }));
 
       it('should focus the first option if no option is selected', fakeAsync(() => {
@@ -1559,14 +1643,14 @@ describe('MatSelect', () => {
         expect(options[0].classList)
             .not.toContain('mat-selected', 'Expected first option to no longer be selected');
         expect(options[1].classList)
-            .toContain('mat-selected', 'Expected second option to be selected');
+          .withContext('Expected second option to be selected').toContain('mat-selected');
 
         const optionInstances = fixture.componentInstance.options.toArray();
 
         expect(optionInstances[0].selected)
-            .toBe(false, 'Expected first option to no longer be selected');
+          .withContext('Expected first option to no longer be selected').toBe(false);
         expect(optionInstances[1].selected)
-            .toBe(true, 'Expected second option to be selected');
+          .withContext('Expected second option to be selected').toBe(true);
       }));
 
       it('should remove selection if option has been removed', fakeAsync(() => {
@@ -1582,14 +1666,16 @@ describe('MatSelect', () => {
         firstOption.click();
         fixture.detectChanges();
 
-        expect(select.selected).toBe(select.options.first, 'Expected first option to be selected.');
+        expect(select.selected)
+          .withContext('Expected first option to be selected.').toBe(select.options.first);
 
         fixture.componentInstance.foods = [];
         fixture.detectChanges();
         flush();
 
         expect(select.selected)
-            .toBeUndefined('Expected selection to be removed when option no longer exists.');
+          .withContext('Expected selection to be removed when option no longer exists.')
+          .toBeUndefined();
       }));
 
       it('should display the selected option in the trigger', fakeAsync(() => {
@@ -1605,7 +1691,7 @@ describe('MatSelect', () => {
         const value = fixture.debugElement.query(By.css('.mat-select-value'))!.nativeElement;
 
         expect(formField.classList.contains('mat-form-field-should-float'))
-            .toBe(true, 'Label should be floating');
+          .withContext('Label should be floating').toBe(true);
         expect(value.textContent).toContain('Steak');
       }));
 
@@ -1800,7 +1886,8 @@ describe('MatSelect', () => {
 
         const value = fixture.debugElement.query(By.css('.mat-select-value'))!;
         expect(value.nativeElement.textContent)
-            .toContain('Pizza', `Expected trigger to be populated by the control's initial value.`);
+          .withContext(`Expected trigger to be populated by the control's initial value.`)
+          .toContain('Pizza');
 
         trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
         trigger.click();
@@ -1810,8 +1897,8 @@ describe('MatSelect', () => {
         const options =
             overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
         expect(options[1].classList)
-            .toContain('mat-selected',
-                `Expected option with the control's initial value to be selected.`);
+          .withContext(`Expected option with the control's initial value to be selected.`)
+          .toContain('mat-selected');
       }));
 
       it('should set the view value from the form', fakeAsync(() => {
@@ -1823,7 +1910,8 @@ describe('MatSelect', () => {
 
         value = fixture.debugElement.query(By.css('.mat-select-value'))!;
         expect(value.nativeElement.textContent)
-            .toContain('Pizza', `Expected trigger to be populated by the control's new value.`);
+          .withContext(`Expected trigger to be populated by the control's new value.`)
+          .toContain('Pizza');
 
         trigger.click();
         fixture.detectChanges();
@@ -1831,13 +1919,14 @@ describe('MatSelect', () => {
 
         const options =
             overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
-        expect(options[1].classList).toContain(
-            'mat-selected', `Expected option with the control's new value to be selected.`);
+        expect(options[1].classList)
+          .withContext(`Expected option with the control's new value to be selected.`)
+          .toContain('mat-selected');
       }));
 
       it('should update the form value when the view changes', fakeAsync(() => {
         expect(fixture.componentInstance.control.value)
-            .toEqual(null, `Expected the control's value to be empty initially.`);
+          .withContext(`Expected the control's value to be empty initially.`).toEqual(null);
 
         trigger.click();
         fixture.detectChanges();
@@ -1849,7 +1938,7 @@ describe('MatSelect', () => {
         flush();
 
         expect(fixture.componentInstance.control.value)
-            .toEqual('steak-0', `Expected control's value to be set to the new option.`);
+          .withContext(`Expected control's value to be set to the new option.`).toEqual('steak-0');
       }));
 
       it('should clear the selection when a nonexistent option value is selected', fakeAsync(() => {
@@ -1861,7 +1950,7 @@ describe('MatSelect', () => {
 
         const value = fixture.debugElement.query(By.css('.mat-select-value'))!;
         expect(value.nativeElement.textContent.trim())
-            .toBe('Food', `Expected trigger to show the placeholder.`);
+          .withContext(`Expected trigger to show the placeholder.`).toBe('Food');
         expect(trigger.textContent)
             .not.toContain('Pizza', `Expected trigger is cleared when option value is not found.`);
 
@@ -1885,7 +1974,7 @@ describe('MatSelect', () => {
 
         const value = fixture.debugElement.query(By.css('.mat-select-value'))!;
         expect(value.nativeElement.textContent.trim())
-            .toBe('Food', `Expected trigger to show the placeholder.`);
+          .withContext(`Expected trigger to show the placeholder.`).toBe('Food');
         expect(trigger.textContent)
             .not.toContain('Pizza', `Expected trigger is cleared when option value is not found.`);
 
@@ -1901,7 +1990,7 @@ describe('MatSelect', () => {
 
       it('should set the control to touched when the select is blurred', fakeAsync(() => {
         expect(fixture.componentInstance.control.touched)
-            .toEqual(false, `Expected the control to start off as untouched.`);
+          .withContext(`Expected the control to start off as untouched.`).toEqual(false);
 
         trigger.click();
         dispatchFakeEvent(trigger, 'blur');
@@ -1909,7 +1998,7 @@ describe('MatSelect', () => {
         flush();
 
         expect(fixture.componentInstance.control.touched)
-            .toEqual(false, `Expected the control to stay untouched when menu opened.`);
+          .withContext(`Expected the control to stay untouched when menu opened.`).toEqual(false);
 
         const backdrop =
             overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
@@ -1919,12 +2008,13 @@ describe('MatSelect', () => {
         flush();
 
         expect(fixture.componentInstance.control.touched)
-            .toEqual(true, `Expected the control to be touched as soon as focus left the select.`);
+          .withContext(`Expected the control to be touched as soon as focus left the select.`)
+          .toEqual(true);
       }));
 
       it('should set the control to touched when the panel is closed', fakeAsync(() => {
         expect(fixture.componentInstance.control.touched)
-            .toBe(false, 'Expected the control to start off as untouched.');
+          .withContext('Expected the control to start off as untouched.').toBe(false);
 
         trigger.click();
         dispatchFakeEvent(trigger, 'blur');
@@ -1932,30 +2022,30 @@ describe('MatSelect', () => {
         flush();
 
         expect(fixture.componentInstance.control.touched)
-            .toBe(false, 'Expected the control to stay untouched when menu opened.');
+          .withContext('Expected the control to stay untouched when menu opened.').toBe(false);
 
         fixture.componentInstance.select.close();
         fixture.detectChanges();
         flush();
 
         expect(fixture.componentInstance.control.touched)
-            .toBe(true, 'Expected the control to be touched when the panel was closed.');
+          .withContext('Expected the control to be touched when the panel was closed.').toBe(true);
       }));
 
       it('should not set touched when a disabled select is touched', fakeAsync(() => {
         expect(fixture.componentInstance.control.touched)
-            .toBe(false, 'Expected the control to start off as untouched.');
+          .withContext('Expected the control to start off as untouched.').toBe(false);
 
         fixture.componentInstance.control.disable();
         dispatchFakeEvent(trigger, 'blur');
 
         expect(fixture.componentInstance.control.touched)
-            .toBe(false, 'Expected the control to stay untouched.');
+          .withContext('Expected the control to stay untouched.').toBe(false);
       }));
 
       it('should set the control to dirty when the select value changes in DOM', fakeAsync(() => {
         expect(fixture.componentInstance.control.dirty)
-            .toEqual(false, `Expected control to start out pristine.`);
+          .withContext(`Expected control to start out pristine.`).toEqual(false);
 
         trigger.click();
         fixture.detectChanges();
@@ -1967,31 +2057,35 @@ describe('MatSelect', () => {
         flush();
 
         expect(fixture.componentInstance.control.dirty)
-            .toEqual(true, `Expected control to be dirty after value was changed by user.`);
+          .withContext(`Expected control to be dirty after value was changed by user.`)
+          .toEqual(true);
       }));
 
       it('should not set the control to dirty when the value changes programmatically',
           fakeAsync(() => {
             expect(fixture.componentInstance.control.dirty)
-                .toEqual(false, `Expected control to start out pristine.`);
+              .withContext(`Expected control to start out pristine.`).toEqual(false);
 
             fixture.componentInstance.control.setValue('pizza-1');
 
             expect(fixture.componentInstance.control.dirty)
-                .toEqual(false, `Expected control to stay pristine after programmatic change.`);
+              .withContext(`Expected control to stay pristine after programmatic change.`)
+              .toEqual(false);
           }));
 
       it('should set an asterisk after the label if control is required', fakeAsync(() => {
         let requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'));
         expect(requiredMarker)
-            .toBeNull(`Expected label not to have an asterisk, as control was not required.`);
+          .withContext(`Expected label not to have an asterisk, as control was not required.`)
+          .toBeNull();
 
         fixture.componentInstance.isRequired = true;
         fixture.detectChanges();
 
         requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'));
-        expect(requiredMarker)
-            .not.toBeNull(`Expected label to have an asterisk, as control was required.`);
+        expect(requiredMarker).not
+          .withContext(`Expected label to have an asterisk, as control was required.`)
+          .toBeNull();
       }));
     });
 
@@ -2005,28 +2099,30 @@ describe('MatSelect', () => {
         const trigger =
             fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
         expect(getComputedStyle(trigger).getPropertyValue('cursor'))
-            .toEqual('default', `Expected cursor to be default arrow on disabled control.`);
+          .withContext(`Expected cursor to be default arrow on disabled control.`)
+          .toEqual('default');
 
         trigger.click();
         fixture.detectChanges();
 
         expect(overlayContainerElement.textContent)
-            .toEqual('', `Expected select panel to stay closed.`);
+          .withContext(`Expected select panel to stay closed.`).toEqual('');
         expect(fixture.componentInstance.select.panelOpen)
-            .toBe(false, `Expected select panelOpen property to stay false.`);
+          .withContext(`Expected select panelOpen property to stay false.`).toBe(false);
 
         fixture.componentInstance.control.enable();
         fixture.detectChanges();
         expect(getComputedStyle(trigger).getPropertyValue('cursor'))
-            .toEqual('pointer', `Expected cursor to be a pointer on enabled control.`);
+          .withContext(`Expected cursor to be a pointer on enabled control.`).toEqual('pointer');
 
         trigger.click();
         fixture.detectChanges();
 
         expect(overlayContainerElement.textContent)
-            .toContain('Steak', `Expected select panel to open normally on re-enabled control`);
+          .withContext(`Expected select panel to open normally on re-enabled control`)
+          .toContain('Steak');
         expect(fixture.componentInstance.select.panelOpen)
-            .toBe(true, `Expected select panelOpen property to become true.`);
+          .withContext(`Expected select panelOpen property to become true.`).toBe(true);
       }));
     });
 
@@ -2042,21 +2138,23 @@ describe('MatSelect', () => {
 
       it('should float the label when the panel is open and unselected', fakeAsync(() => {
         expect(formField.classList.contains('mat-form-field-should-float'))
-            .toBe(false, 'Expected label to initially have a normal position.');
+          .withContext('Expected label to initially have a normal position.').toBe(false);
 
         fixture.componentInstance.select.open();
         fixture.detectChanges();
         flush();
 
-        expect(formField.classList).toContain('mat-form-field-should-float',
-            'Expected label to animate up to floating position.');
+        expect(formField.classList)
+          .withContext('Expected label to animate up to floating position.')
+          .toContain('mat-form-field-should-float');
 
         fixture.componentInstance.select.close();
         fixture.detectChanges();
         flush();
 
-        expect(formField.classList).not.toContain('mat-form-field-should-float',
-            'Expected placeholder to animate back down to normal position.');
+        expect(formField.classList).not
+          .withContext('Expected placeholder to animate back down to normal position.')
+          .toContain('mat-form-field-should-float');
       }));
 
     });
@@ -2093,7 +2191,7 @@ describe('MatSelect', () => {
         });
 
         expect(panel.scrollTop)
-            .toBe(initialScrollPosition, 'Expected scroll position not to change');
+          .withContext('Expected scroll position not to change').toBe(initialScrollPosition);
       }));
 
       it('should scroll down to the active option', fakeAsync(() => {
@@ -2102,7 +2200,9 @@ describe('MatSelect', () => {
         }
 
         // <option index * height> - <panel height> = 16 * 48 - 256 = 512
-        expect(panel.scrollTop).toBe(512, 'Expected scroll to be at the 16th option.');
+        // <option index * height> - <panel height> = 16 * 48 - 256 = 512
+        expect(panel.scrollTop)
+          .withContext('Expected scroll to be at the 16th option.').toBe(512);
       }));
 
       it('should scroll up to the active option', fakeAsync(() => {
@@ -2116,7 +2216,9 @@ describe('MatSelect', () => {
         }
 
         // <option index * height> = 9 * 48 = 432
-        expect(panel.scrollTop).toBe(432, 'Expected scroll to be at the 9th option.');
+        // <option index * height> = 9 * 48 = 432
+        expect(panel.scrollTop)
+          .withContext('Expected scroll to be at the 9th option.').toBe(432);
       }));
 
       it('should skip option group labels', fakeAsync(() => {
@@ -2139,7 +2241,11 @@ describe('MatSelect', () => {
         // Note that we press down 5 times, but it will skip
         // 3 options because the second group is disabled.
         // <(option index + group labels) * height> - <panel height> = (9 + 3) * 48 - 256 = 320
-        expect(panel.scrollTop).toBe(320, 'Expected scroll to be at the 9th option.');
+        // Note that we press down 5 times, but it will skip
+        // 3 options because the second group is disabled.
+        // <(option index + group labels) * height> - <panel height> = (9 + 3) * 48 - 256 = 320
+        expect(panel.scrollTop)
+          .withContext('Expected scroll to be at the 9th option.').toBe(320);
       }));
 
       it('should scroll to the top when pressing HOME', fakeAsync(() => {
@@ -2148,12 +2254,14 @@ describe('MatSelect', () => {
           fixture.detectChanges();
         }
 
-        expect(panel.scrollTop).toBeGreaterThan(0, 'Expected panel to be scrolled down.');
+        expect(panel.scrollTop)
+          .withContext('Expected panel to be scrolled down.').toBeGreaterThan(0);
 
         dispatchKeyboardEvent(host, 'keydown', HOME);
         fixture.detectChanges();
 
-        expect(panel.scrollTop).toBe(0, 'Expected panel to be scrolled to the top');
+        expect(panel.scrollTop)
+          .withContext('Expected panel to be scrolled to the top').toBe(0);
       }));
 
       it('should scroll to the bottom of the panel when pressing END', fakeAsync(() => {
@@ -2161,7 +2269,9 @@ describe('MatSelect', () => {
         fixture.detectChanges();
 
         // <option amount> * <option height> - <panel height> = 30 * 48 - 256 = 1184
-        expect(panel.scrollTop).toBe(1184, 'Expected panel to be scrolled to the bottom');
+        // <option amount> * <option height> - <panel height> = 30 * 48 - 256 = 1184
+        expect(panel.scrollTop)
+          .withContext('Expected panel to be scrolled to the bottom').toBe(1184);
       }));
 
       it('should scroll to the active option when typing', fakeAsync(() => {
@@ -2174,7 +2284,9 @@ describe('MatSelect', () => {
         flush();
 
         // <option index * height> - <panel height> = 16 * 48 - 256 = 512
-        expect(panel.scrollTop).toBe(512, 'Expected scroll to be at the 16th option.');
+        // <option index * height> - <panel height> = 16 * 48 - 256 = 512
+        expect(panel.scrollTop)
+          .withContext('Expected scroll to be at the 16th option.').toBe(512);
       }));
 
       it('should scroll to top when going to first option in top group', fakeAsync(() => {
@@ -2285,15 +2397,15 @@ describe('MatSelect', () => {
       const trigger =
           fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
       expect(getComputedStyle(trigger).getPropertyValue('cursor'))
-          .toEqual('default', `Expected cursor to be default arrow on disabled control.`);
+        .withContext(`Expected cursor to be default arrow on disabled control.`).toEqual('default');
 
       trigger.click();
       fixture.detectChanges();
 
       expect(overlayContainerElement.textContent)
-          .toEqual('', `Expected select panel to stay closed.`);
+        .withContext(`Expected select panel to stay closed.`).toEqual('');
       expect(fixture.componentInstance.select.panelOpen)
-          .toBe(false, `Expected select panelOpen property to stay false.`);
+        .withContext(`Expected select panelOpen property to stay false.`).toBe(false);
 
       fixture.componentInstance.isDisabled = false;
       fixture.detectChanges();
@@ -2301,15 +2413,16 @@ describe('MatSelect', () => {
 
       fixture.detectChanges();
       expect(getComputedStyle(trigger).getPropertyValue('cursor'))
-          .toEqual('pointer', `Expected cursor to be a pointer on enabled control.`);
+        .withContext(`Expected cursor to be a pointer on enabled control.`).toEqual('pointer');
 
       trigger.click();
       fixture.detectChanges();
 
       expect(overlayContainerElement.textContent)
-          .toContain('Steak', `Expected select panel to open normally on re-enabled control`);
+        .withContext(`Expected select panel to open normally on re-enabled control`)
+        .toContain('Steak');
       expect(fixture.componentInstance.select.panelOpen)
-          .toBe(true, `Expected select panelOpen property to become true.`);
+        .withContext(`Expected select panelOpen property to become true.`).toBe(true);
     }));
   });
 
@@ -2332,7 +2445,8 @@ describe('MatSelect', () => {
 
       const value = fixture.debugElement.query(By.css('.mat-select-value'))!;
       expect(value.nativeElement.textContent)
-          .toContain('Pizza', `Expected trigger to be populated by the control's initial value.`);
+        .withContext(`Expected trigger to be populated by the control's initial value.`)
+        .toContain('Pizza');
 
       const pane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
       expect(pane.style.minWidth).toEqual('300px');
@@ -2367,7 +2481,7 @@ describe('MatSelect', () => {
         const firstOptionID = options[0].id;
 
         expect(options[0].id)
-            .toContain('mat-option', `Expected option ID to have the correct prefix.`);
+          .withContext(`Expected option ID to have the correct prefix.`).toContain('mat-option');
         expect(options[0].id).not.toEqual(options[1].id, `Expected option IDs to be unique.`);
 
         const backdrop =
@@ -2383,7 +2497,7 @@ describe('MatSelect', () => {
         options =
             overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
         expect(options[0].id)
-            .toContain('mat-option', `Expected option ID to have the correct prefix.`);
+          .withContext(`Expected option ID to have the correct prefix.`).toContain('mat-option');
         expect(options[0].id).not.toEqual(firstOptionID, `Expected option IDs to be unique.`);
         expect(options[0].id).not.toEqual(options[1].id, `Expected option IDs to be unique.`);
       }));
@@ -2406,13 +2520,13 @@ describe('MatSelect', () => {
       fixture.detectChanges();
 
       expect(formField.classList.contains('mat-form-field-can-float'))
-          .toBe(false, 'Floating label should be disabled');
+        .withContext('Floating label should be disabled').toBe(false);
 
       fixture.componentInstance.control.setValue('pizza-1');
       fixture.detectChanges();
 
       expect(formField.classList.contains('mat-form-field-can-float'))
-          .toBe(false, 'Floating label should be disabled');
+        .withContext('Floating label should be disabled').toBe(false);
     }));
 
     it('should be able to always float the label', fakeAsync(() => {
@@ -2422,9 +2536,9 @@ describe('MatSelect', () => {
       fixture.detectChanges();
 
       expect(formField.classList.contains('mat-form-field-can-float'))
-          .toBe(true, 'Label should be able to float');
+        .withContext('Label should be able to float').toBe(true);
       expect(formField.classList.contains('mat-form-field-should-float'))
-          .toBe(true, 'Label should be floating');
+        .withContext('Label should be floating').toBe(true);
     }));
 
     it('should default to global floating label type', fakeAsync(() => {
@@ -2454,9 +2568,9 @@ describe('MatSelect', () => {
       formField = fixture.debugElement.query(By.css('.mat-form-field'))!.nativeElement;
 
       expect(formField.classList.contains('mat-form-field-can-float'))
-          .toBe(true, 'Label should be able to float');
+        .withContext('Label should be able to float').toBe(true);
       expect(formField.classList.contains('mat-form-field-should-float'))
-          .toBe(true, 'Label should be floating');
+        .withContext('Label should be floating').toBe(true);
     }));
 
     it('should float the label on focus if it has a placeholder', fakeAsync(() => {
@@ -2469,7 +2583,7 @@ describe('MatSelect', () => {
       fixture.detectChanges();
 
       expect(formField.classList.contains('mat-form-field-should-float'))
-          .toBe(true, 'Label should be floating');
+        .withContext('Label should be floating').toBe(true);
     }));
   });
 
@@ -2695,27 +2809,29 @@ describe('MatSelect', () => {
     }));
 
     it('should not set the invalid class on a clean select', fakeAsync(() => {
-      expect(testComponent.formGroup.untouched).toBe(true, 'Expected the form to be untouched.');
-      expect(testComponent.formControl.invalid).toBe(true, 'Expected form control to be invalid.');
+      expect(testComponent.formGroup.untouched)
+        .withContext('Expected the form to be untouched.').toBe(true);
+      expect(testComponent.formControl.invalid)
+        .withContext('Expected form control to be invalid.').toBe(true);
       expect(select.classList)
           .not.toContain('mat-select-invalid', 'Expected select not to appear invalid.');
       expect(select.getAttribute('aria-invalid'))
-          .toBe('false', 'Expected aria-invalid to be set to false.');
+        .withContext('Expected aria-invalid to be set to false.').toBe('false');
     }));
 
     it('should appear as invalid if it becomes touched', fakeAsync(() => {
       expect(select.classList)
           .not.toContain('mat-select-invalid', 'Expected select not to appear invalid.');
       expect(select.getAttribute('aria-invalid'))
-          .toBe('false', 'Expected aria-invalid to be set to false.');
+        .withContext('Expected aria-invalid to be set to false.').toBe('false');
 
       testComponent.formControl.markAsTouched();
       fixture.detectChanges();
 
       expect(select.classList)
-          .toContain('mat-select-invalid', 'Expected select to appear invalid.');
+        .withContext('Expected select to appear invalid.').toContain('mat-select-invalid');
       expect(select.getAttribute('aria-invalid'))
-          .toBe('true', 'Expected aria-invalid to be set to true.');
+        .withContext('Expected aria-invalid to be set to true.').toBe('true');
     }));
 
     it('should not have the invalid class when the select becomes valid', fakeAsync(() => {
@@ -2723,9 +2839,9 @@ describe('MatSelect', () => {
       fixture.detectChanges();
 
       expect(select.classList)
-          .toContain('mat-select-invalid', 'Expected select to appear invalid.');
+        .withContext('Expected select to appear invalid.').toContain('mat-select-invalid');
       expect(select.getAttribute('aria-invalid'))
-          .toBe('true', 'Expected aria-invalid to be set to true.');
+        .withContext('Expected aria-invalid to be set to true.').toBe('true');
 
       testComponent.formControl.setValue('pizza-1');
       fixture.detectChanges();
@@ -2733,33 +2849,35 @@ describe('MatSelect', () => {
       expect(select.classList)
           .not.toContain('mat-select-invalid', 'Expected select not to appear invalid.');
       expect(select.getAttribute('aria-invalid'))
-          .toBe('false', 'Expected aria-invalid to be set to false.');
+        .withContext('Expected aria-invalid to be set to false.').toBe('false');
     }));
 
     it('should appear as invalid when the parent form group is submitted', fakeAsync(() => {
       expect(select.classList)
           .not.toContain('mat-select-invalid', 'Expected select not to appear invalid.');
       expect(select.getAttribute('aria-invalid'))
-          .toBe('false', 'Expected aria-invalid to be set to false.');
+        .withContext('Expected aria-invalid to be set to false.').toBe('false');
 
       dispatchFakeEvent(fixture.debugElement.query(By.css('form'))!.nativeElement, 'submit');
       fixture.detectChanges();
 
       expect(select.classList)
-          .toContain('mat-select-invalid', 'Expected select to appear invalid.');
+        .withContext('Expected select to appear invalid.').toContain('mat-select-invalid');
       expect(select.getAttribute('aria-invalid'))
-          .toBe('true', 'Expected aria-invalid to be set to true.');
+        .withContext('Expected aria-invalid to be set to true.').toBe('true');
     }));
 
     it('should render the error messages when the parent form is submitted', fakeAsync(() => {
       const debugEl = fixture.debugElement.nativeElement;
 
-      expect(debugEl.querySelectorAll('mat-error').length).toBe(0, 'Expected no error messages');
+      expect(debugEl.querySelectorAll('mat-error').length)
+        .withContext('Expected no error messages').toBe(0);
 
       dispatchFakeEvent(fixture.debugElement.query(By.css('form'))!.nativeElement, 'submit');
       fixture.detectChanges();
 
-      expect(debugEl.querySelectorAll('mat-error').length).toBe(1, 'Expected one error message');
+      expect(debugEl.querySelectorAll('mat-error').length)
+        .withContext('Expected one error message').toBe(1);
     }));
 
     it('should override error matching behavior via injection token', fakeAsync(() => {
@@ -2852,7 +2970,8 @@ describe('MatSelect', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.customAccessor.select.ngControl)
-          .toBeFalsy('Expected mat-select NOT to inherit control from parent value accessor.');
+        .withContext('Expected mat-select NOT to inherit control from parent value accessor.')
+        .toBeFalsy();
       expect(fixture.componentInstance.customAccessor.writeValue).toHaveBeenCalled();
     }));
   });
@@ -2870,9 +2989,9 @@ describe('MatSelect', () => {
       flush();
 
       expect(fixture.componentInstance.options.first.selected)
-          .toBe(true, 'Expected first option to be selected');
+        .withContext('Expected first option to be selected').toBe(true);
       expect(overlayContainerElement.querySelectorAll('mat-option')[0].classList)
-          .toContain('mat-selected', 'Expected first option to be selected');
+        .withContext('Expected first option to be selected').toContain('mat-selected');
     }));
   });
 
@@ -2924,8 +3043,8 @@ describe('MatSelect', () => {
 
       const label = fixture.debugElement.query(By.css('.mat-select-value'))!.nativeElement;
 
-      expect(label.textContent).toContain('azziP',
-          'Expected the displayed text to be "Pizza" in reverse.');
+      expect(label.textContent)
+        .withContext('Expected the displayed text to be "Pizza" in reverse.').toContain('azziP');
     }));
   });
 
@@ -3217,7 +3336,8 @@ describe('MatSelect', () => {
 
       const select = fixture.debugElement.nativeElement.querySelector('mat-select');
 
-      expect(document.activeElement).toBe(select, 'Expected trigger to be focused.');
+      expect(document.activeElement)
+        .withContext('Expected trigger to be focused.').toBe(select);
     }));
 
     it('should not restore focus to the host element when clicking outside', fakeAsync(() => {
@@ -3230,7 +3350,8 @@ describe('MatSelect', () => {
       fixture.detectChanges();
       flush();
 
-      expect(document.activeElement).toBe(select, 'Expected trigger to be focused.');
+      expect(document.activeElement)
+        .withContext('Expected trigger to be focused.').toBe(select);
 
       select.blur(); // Blur manually since the programmatic click might not do it.
       (overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement).click();
@@ -3320,7 +3441,8 @@ describe('MatSelect', () => {
       const fixture = TestBed.createComponent(BasicSelectWithoutFormsMultiple);
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.selectedFoods).toBeFalsy('Expected no value on init.');
+      expect(fixture.componentInstance.selectedFoods)
+        .withContext('Expected no value on init.').toBeFalsy();
 
       const select = fixture.nativeElement.querySelector('.mat-select');
       const trigger = fixture.nativeElement.querySelector('.mat-select-trigger');
@@ -3337,7 +3459,8 @@ describe('MatSelect', () => {
       flush();
 
       expect(fixture.componentInstance.selectedFoods)
-          .toBeFalsy('Expected no value after tabbing away.');
+        .withContext('Expected no value after tabbing away.')
+        .toBeFalsy();
     }));
 
     it('should emit once when a reset value is selected', fakeAsync(() => {
@@ -3423,7 +3546,9 @@ describe('MatSelect', () => {
           const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
 
           // The panel should be scrolled to 0 because centering the option disabled.
-          expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to be scrolled.`);
+          // The panel should be scrolled to 0 because centering the option disabled.
+expect(scrollContainer.scrollTop)
+  .withContext(`Expected panel not to be scrolled.`).toEqual(0);
           // The trigger should contain 'Pizza' because it was preselected
           expect(trigger.textContent).toContain('Pizza');
           // The selected index should be 1 because it was preselected
@@ -3479,8 +3604,11 @@ describe('MatSelect', () => {
       // Expect the coordinates to be within a pixel of each other. We can't rely on comparing
       // the exact value, because different browsers report the various sizes with slight (< 1px)
       // deviations.
+      // Expect the coordinates to be within a pixel of each other. We can't rely on comparing
+      // the exact value, because different browsers report the various sizes with slight (< 1px)
+      // deviations.
       expect(Math.abs(topDifference) < 2)
-          .toBe(true, `Expected trigger to align with option ${index}.`);
+        .withContext(`Expected trigger to align with option ${index}.`).toBe(true);
 
       // For the animation to start at the option's center, its origin must be the distance
       // from the top of the overlay to the option top + half the option height (48/2 = 24).
@@ -3490,8 +3618,11 @@ describe('MatSelect', () => {
 
       // Because the origin depends on the Y axis offset, we also have to
       // round down and check that the difference is within a pixel.
-      expect(Math.abs(expectedOrigin - origin) < 2).toBe(true,
-          `Expected panel animation to originate in the center of option ${index}.`);
+      // Because the origin depends on the Y axis offset, we also have to
+      // round down and check that the difference is within a pixel.
+      expect(Math.abs(expectedOrigin - origin) < 2)
+        .withContext(`Expected panel animation to originate in the center of option ${index}.`)
+        .toBe(true);
     }
 
     describe('ample space to open', () => {
@@ -3515,7 +3646,9 @@ describe('MatSelect', () => {
             const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
 
             // The panel should be scrolled to 0 because centering the option is not possible.
-            expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to be scrolled.`);
+            // The panel should be scrolled to 0 because centering the option is not possible.
+expect(scrollContainer.scrollTop)
+  .withContext(`Expected panel not to be scrolled.`).toEqual(0);
             checkTriggerAlignedWithOption(0);
           }));
 
@@ -3532,7 +3665,9 @@ describe('MatSelect', () => {
             const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
 
             // The panel should be scrolled to 0 because centering the option is not possible.
-            expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to be scrolled.`);
+            // The panel should be scrolled to 0 because centering the option is not possible.
+expect(scrollContainer.scrollTop)
+  .withContext(`Expected panel not to be scrolled.`).toEqual(0);
             checkTriggerAlignedWithOption(1);
           }));
 
@@ -3552,8 +3687,12 @@ describe('MatSelect', () => {
         // This will be its original offset from the scrollTop - half the panel height + half
         // the option height. 4 (index) * 48 (option height) = 192px offset from scrollTop
         // 192 - 256/2 + 48/2 = 88px
-        expect(scrollContainer.scrollTop)
-            .toEqual(88, `Expected overlay panel to be scrolled to center the selected option.`);
+        // The selected option should be scrolled to the center of the panel.
+// This will be its original offset from the scrollTop - half the panel height + half
+// the option height. 4 (index) * 48 (option height) = 192px offset from scrollTop
+// 192 - 256/2 + 48/2 = 88px
+expect(scrollContainer.scrollTop)
+  .withContext(`Expected overlay panel to be scrolled to center the selected option.`).toEqual(88);
 
         checkTriggerAlignedWithOption(4);
       }));
@@ -3573,8 +3712,11 @@ describe('MatSelect', () => {
         // The selected option should be scrolled to the max scroll position.
         // This will be the height of the scrollContainer - the panel height.
         // 8 options * 48px = 384 scrollContainer height, 384 - 256 = 128px max scroll
-        expect(scrollContainer.scrollTop)
-            .toEqual(128, `Expected overlay panel to be scrolled to its maximum position.`);
+        // The selected option should be scrolled to the max scroll position.
+// This will be the height of the scrollContainer - the panel height.
+// 8 options * 48px = 384 scrollContainer height, 384 - 256 = 128px max scroll
+expect(scrollContainer.scrollTop)
+  .withContext(`Expected overlay panel to be scrolled to its maximum position.`).toEqual(128);
 
         checkTriggerAlignedWithOption(7);
       }));
@@ -3611,8 +3753,13 @@ describe('MatSelect', () => {
         // This will be its original offset from the scrollTop - half the panel height + half the
         // option height. 10 (option index + 3 group labels before it) * 48 (option height) = 480
         // 480 (offset from scrollTop) - 256/2 + 48/2 = 376px
+        // The selected option should be scrolled to the center of the panel.
+        // This will be its original offset from the scrollTop - half the panel height + half the
+        // option height. 10 (option index + 3 group labels before it) * 48 (option height) = 480
+        // 480 (offset from scrollTop) - 256/2 + 48/2 = 376px
         expect(Math.floor(scrollContainer.scrollTop))
-            .toBe(376, `Expected overlay panel to be scrolled to center the selected option.`);
+          .withContext(`Expected overlay panel to be scrolled to center the selected option.`)
+          .toBe(376);
 
         checkTriggerAlignedWithOption(7, groupFixture.componentInstance.select);
       }));
@@ -3650,8 +3797,12 @@ describe('MatSelect', () => {
           // This will be its original offset from the scrollTop - half the panel height + half the
           // option height. 10 (option index + 3 group labels before it) * 48 (option height) = 480
           // 480 (offset from scrollTop) - 256/2 + 48/2 = 376px
-          expect(Math.floor(scrollContainer.scrollTop))
-              .toBe(376, `Expected overlay panel to be scrolled to center the selected option.`);
+          // The selected option should be scrolled to the center of the panel.
+// This will be its original offset from the scrollTop - half the panel height + half the
+// option height. 10 (option index + 3 group labels before it) * 48 (option height) = 480
+// 480 (offset from scrollTop) - 256/2 + 48/2 = 376px
+expect(Math.floor(scrollContainer.scrollTop))
+  .withContext(`Expected overlay panel to be scrolled to center the selected option.`).toBe(376);
 
           checkTriggerAlignedWithOption(7, groupFixture.componentInstance.select);
         }));
@@ -3712,8 +3863,8 @@ describe('MatSelect', () => {
             const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
 
             expect(Math.ceil(scrollContainer.scrollTop))
-                .toEqual(Math.ceil(idealScrollTop + 5),
-                    `Expected panel to adjust scroll position to fit in viewport.`);
+              .withContext(`Expected panel to adjust scroll position to fit in viewport.`)
+              .toEqual(Math.ceil(idealScrollTop + 5));
 
             checkTriggerAlignedWithOption(4);
           }));
@@ -3779,8 +3930,12 @@ describe('MatSelect', () => {
             // Note that different browser/OS combinations report the different dimensions with
             // slight deviations (< 1px). We round the expectation and check that the values
             // are within a pixel of each other to avoid flakes.
+            // Note that different browser/OS combinations report the different dimensions with
+            // slight deviations (< 1px). We round the expectation and check that the values
+            // are within a pixel of each other to avoid flakes.
             expect(Math.abs(difference) < 2)
-                .toBe(true, `Expected panel to adjust scroll position to fit in viewport.`);
+              .withContext(`Expected panel to adjust scroll position to fit in viewport.`)
+              .toBe(true);
 
             checkTriggerAlignedWithOption(4);
           }));
@@ -3805,17 +3960,22 @@ describe('MatSelect', () => {
             const scrollContainer = overlayPane.querySelector('.mat-select-panel')!;
 
             // Expect no scroll to be attempted
-            expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to be scrolled.`);
+            // Expect no scroll to be attempted
+            expect(scrollContainer.scrollTop)
+              .withContext(`Expected panel not to be scrolled.`).toEqual(0);
 
             const difference = Math.floor(overlayBottom) - Math.floor(triggerBottom);
 
             // Check that the values are within a pixel of each other. This avoids sub-pixel
             // deviations between OS and browser versions.
+            // Check that the values are within a pixel of each other. This avoids sub-pixel
+            // deviations between OS and browser versions.
             expect(Math.abs(difference) < 2)
-                .toEqual(true, `Expected trigger bottom to align with overlay bottom.`);
+              .withContext(`Expected trigger bottom to align with overlay bottom.`).toEqual(true);
 
             expect(fixture.componentInstance.select._transformOrigin)
-                .toContain(`bottom`, `Expected panel animation to originate at the bottom.`);
+              .withContext(`Expected panel animation to originate at the bottom.`)
+              .toContain(`bottom`);
           }));
 
       it('should fall back to "below" positioning if scroll adjustment won\'t help',
@@ -3838,13 +3998,16 @@ describe('MatSelect', () => {
             const scrollContainer = overlayPane.querySelector('.mat-select-panel')!;
 
             // Expect scroll to remain at the max scroll position
-            expect(scrollContainer.scrollTop).toEqual(128, `Expected panel to be at max scroll.`);
+            // Expect scroll to remain at the max scroll position
+            expect(scrollContainer.scrollTop)
+              .withContext(`Expected panel to be at max scroll.`).toEqual(128);
 
             expect(Math.floor(overlayTop))
-                .toEqual(Math.floor(triggerTop), `Expected trigger top to align with overlay top.`);
+              .withContext(`Expected trigger top to align with overlay top.`)
+              .toEqual(Math.floor(triggerTop));
 
             expect(fixture.componentInstance.select._transformOrigin)
-                .toContain(`top`, `Expected panel animation to originate at the top.`);
+              .withContext(`Expected panel animation to originate at the top.`).toContain(`top`);
           }));
 
     });
@@ -3863,8 +4026,9 @@ describe('MatSelect', () => {
 
         const panelLeft = document.querySelector('.mat-select-panel')!.getBoundingClientRect().left;
 
-        expect(panelLeft).toBeGreaterThan(0,
-            `Expected select panel to be inside the viewport in ltr.`);
+        expect(panelLeft)
+          .withContext(`Expected select panel to be inside the viewport in ltr.`)
+          .toBeGreaterThan(0);
       }));
 
       it('should stay within the viewport when overflowing on the left in rtl', fakeAsync(() => {
@@ -3876,8 +4040,9 @@ describe('MatSelect', () => {
 
         const panelLeft = document.querySelector('.mat-select-panel')!.getBoundingClientRect().left;
 
-        expect(panelLeft).toBeGreaterThan(0,
-            `Expected select panel to be inside the viewport in rtl.`);
+        expect(panelLeft)
+          .withContext(`Expected select panel to be inside the viewport in rtl.`)
+          .toBeGreaterThan(0);
       }));
 
       it('should stay within the viewport when overflowing on the right in ltr', fakeAsync(() => {
@@ -3890,8 +4055,9 @@ describe('MatSelect', () => {
         const panelRight = document.querySelector('.mat-select-panel')!
             .getBoundingClientRect().right;
 
-        expect(viewportRect - panelRight).toBeGreaterThan(0,
-            `Expected select panel to be inside the viewport in ltr.`);
+        expect(viewportRect - panelRight)
+          .withContext(`Expected select panel to be inside the viewport in ltr.`)
+          .toBeGreaterThan(0);
       }));
 
       it('should stay within the viewport when overflowing on the right in rtl', fakeAsync(() => {
@@ -3905,8 +4071,9 @@ describe('MatSelect', () => {
         const panelRight = document.querySelector('.mat-select-panel')!
             .getBoundingClientRect().right;
 
-        expect(viewportRect - panelRight).toBeGreaterThan(0,
-            `Expected select panel to be inside the viewport in rtl.`);
+        expect(viewportRect - panelRight)
+          .withContext(`Expected select panel to be inside the viewport in rtl.`)
+          .toBeGreaterThan(0);
       }));
 
       it('should keep the position within the viewport on repeat openings', fakeAsync(() => {
@@ -3918,7 +4085,8 @@ describe('MatSelect', () => {
         let panelLeft = document.querySelector('.mat-select-panel')!.getBoundingClientRect().left;
 
         expect(panelLeft)
-            .toBeGreaterThanOrEqual(0, `Expected select panel to be inside the viewport.`);
+          .withContext(`Expected select panel to be inside the viewport.`)
+          .toBeGreaterThanOrEqual(0);
 
         fixture.componentInstance.select.close();
         fixture.detectChanges();
@@ -3930,8 +4098,9 @@ describe('MatSelect', () => {
 
         panelLeft = document.querySelector('.mat-select-panel')!.getBoundingClientRect().left;
 
-        expect(panelLeft).toBeGreaterThanOrEqual(0,
-            `Expected select panel continue being inside the viewport.`);
+        expect(panelLeft)
+          .withContext(`Expected select panel continue being inside the viewport.`)
+          .toBeGreaterThanOrEqual(0);
       }));
     });
 
@@ -4070,8 +4239,10 @@ describe('MatSelect', () => {
 
         // Check that the values are within a pixel of each other. This avoids sub-pixel
         // deviations between OS and browser versions.
+        // Check that the values are within a pixel of each other. This avoids sub-pixel
+        // deviations between OS and browser versions.
         expect(Math.abs(difference) < 2)
-            .toEqual(true, `Expected trigger bottom to align with overlay bottom.`);
+          .withContext(`Expected trigger bottom to align with overlay bottom.`).toEqual(true);
       }));
 
       it('should fall back to "below" positioning properly when scrolled', fakeAsync(() => {
@@ -4104,7 +4275,8 @@ describe('MatSelect', () => {
         const overlayTop = overlayPane.getBoundingClientRect().top;
 
         expect(Math.floor(overlayTop))
-            .toEqual(Math.floor(triggerTop), `Expected trigger top to align with overlay top.`);
+          .withContext(`Expected trigger top to align with overlay top.`)
+          .toEqual(Math.floor(triggerTop));
       }));
     });
 
@@ -4125,8 +4297,11 @@ describe('MatSelect', () => {
 
         // Each option is 32px wider than the trigger, so it must be adjusted 16px
         // to ensure the text overlaps correctly.
-        expect(Math.floor(firstOptionLeft)).toEqual(Math.floor(triggerLeft - 16),
-            `Expected trigger to align with the selected option on the x-axis in LTR.`);
+        // Each option is 32px wider than the trigger, so it must be adjusted 16px
+        // to ensure the text overlaps correctly.
+        expect(Math.floor(firstOptionLeft))
+          .withContext(`Expected trigger to align with the selected option on the x-axis in LTR.`)
+          .toEqual(Math.floor(triggerLeft - 16));
       }));
 
       it('should align the trigger and the selected option on the x-axis in rtl', fakeAsync(() => {
@@ -4143,9 +4318,11 @@ describe('MatSelect', () => {
 
         // Each option is 32px wider than the trigger, so it must be adjusted 16px
         // to ensure the text overlaps correctly.
+        // Each option is 32px wider than the trigger, so it must be adjusted 16px
+        // to ensure the text overlaps correctly.
         expect(Math.floor(firstOptionRight))
-            .toEqual(Math.floor(triggerRight + 16),
-                `Expected trigger to align with the selected option on the x-axis in RTL.`);
+          .withContext(`Expected trigger to align with the selected option on the x-axis in RTL.`)
+          .toEqual(Math.floor(triggerRight + 16));
       }));
     });
 
@@ -4172,9 +4349,10 @@ describe('MatSelect', () => {
             document.querySelector('.cdk-overlay-pane mat-option')!.getBoundingClientRect().left;
 
         // 44px accounts for the checkbox size, margin and the panel's padding.
+        // 44px accounts for the checkbox size, margin and the panel's padding.
         expect(Math.floor(firstOptionLeft))
-            .toEqual(Math.floor(triggerLeft - 40),
-                `Expected trigger label to align along x-axis, accounting for the checkbox.`);
+          .withContext(`Expected trigger label to align along x-axis, accounting for the checkbox.`)
+          .toEqual(Math.floor(triggerLeft - 40));
       }));
 
       it('should adjust for the checkbox in rtl', fakeAsync(() => {
@@ -4188,9 +4366,10 @@ describe('MatSelect', () => {
             document.querySelector('.cdk-overlay-pane mat-option')!.getBoundingClientRect().right;
 
         // 44px accounts for the checkbox size, margin and the panel's padding.
+        // 44px accounts for the checkbox size, margin and the panel's padding.
         expect(Math.floor(firstOptionRight))
-            .toEqual(Math.floor(triggerRight + 40),
-                `Expected trigger label to align along x-axis, accounting for the checkbox.`);
+          .withContext(`Expected trigger label to align along x-axis, accounting for the checkbox.`)
+          .toEqual(Math.floor(triggerRight + 40));
       }));
     });
 
@@ -4221,8 +4400,10 @@ describe('MatSelect', () => {
               .getBoundingClientRect().left;
 
           // 32px is the 16px default padding plus 16px of padding when an option is in a group.
-          expect(Math.floor(selectedOptionLeft)).toEqual(Math.floor(triggerLeft - 32),
-              `Expected trigger label to align along x-axis, accounting for the padding in ltr.`);
+          // 32px is the 16px default padding plus 16px of padding when an option is in a group.
+          expect(Math.floor(selectedOptionLeft))
+            .withContext(`Expected trigger label to align along x-axis, accounting for the ` +
+                         `padding in ltr.`).toEqual(Math.floor(triggerLeft - 32));
         });
       }));
 
@@ -4241,8 +4422,10 @@ describe('MatSelect', () => {
             .getBoundingClientRect().right;
 
         // 32px is the 16px default padding plus 16px of padding when an option is in a group.
-        expect(Math.floor(selectedOptionRight)).toEqual(Math.floor(triggerRight + 32),
-            `Expected trigger label to align along x-axis, accounting for the padding in rtl.`);
+        // 32px is the 16px default padding plus 16px of padding when an option is in a group.
+        expect(Math.floor(selectedOptionRight))
+          .withContext(`Expected trigger label to align along x-axis, accounting for the ` +
+                       `padding in rtl.`).toEqual(Math.floor(triggerRight + 32));
       }));
 
       it('should not adjust if all options are within a group, except the selected one',
@@ -4286,10 +4469,11 @@ describe('MatSelect', () => {
           const difference =
               Math.abs(optionTop + (menuItemHeight - triggerHeight) / 2 - triggerTop);
           expect(difference)
-              .toBeLessThan(0.1, 'Expected trigger to align with the first option.');
+            .withContext('Expected trigger to align with the first option.').toBeLessThan(0.1);
         } else {
           expect(Math.floor(optionTop + (menuItemHeight - triggerHeight) / 2))
-              .toBe(Math.floor(triggerTop), 'Expected trigger to align with the first option.');
+            .withContext('Expected trigger to align with the first option.')
+            .toBe(Math.floor(triggerTop));
         }
       }));
 
@@ -4534,14 +4718,16 @@ describe('MatSelect', () => {
       fixture.detectChanges();
       flush();
 
-      expect(testInstance.options.toArray().every(option => !!option.multiple)).toBe(true,
-          'Expected `multiple` to have been added to initial set of options.');
+      expect(testInstance.options.toArray().every(option => !!option.multiple))
+        .withContext('Expected `multiple` to have been added to initial set of options.')
+        .toBe(true);
 
       testInstance.foods.push({ value: 'cake-8', viewValue: 'Cake' });
       fixture.detectChanges();
 
-      expect(testInstance.options.toArray().every(option => !!option.multiple)).toBe(true,
-          'Expected `multiple` to have been set on dynamically-added option.');
+      expect(testInstance.options.toArray().every(option => !!option.multiple))
+        .withContext('Expected `multiple` to have been set on dynamically-added option.')
+        .toBe(true);
     }));
 
     it('should update the active item index on click', fakeAsync(() => {

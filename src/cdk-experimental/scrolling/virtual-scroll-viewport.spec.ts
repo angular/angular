@@ -29,7 +29,7 @@ describe('CdkVirtualScrollViewport', () => {
       const contentWrapper =
           viewport.elementRef.nativeElement.querySelector('.cdk-virtual-scroll-content-wrapper')!;
       expect(contentWrapper.children.length)
-          .toBe(4, 'should render 4 50px items to fill 200px space');
+        .withContext('should render 4 50px items to fill 200px space').toBe(4);
     }));
 
     it('should render extra content if first item is smaller than average', fakeAsync(() => {
@@ -38,8 +38,9 @@ describe('CdkVirtualScrollViewport', () => {
 
       const contentWrapper =
           viewport.elementRef.nativeElement.querySelector('.cdk-virtual-scroll-content-wrapper')!;
-      expect(contentWrapper.children.length).toBe(4,
-          'should render 4 items to fill 200px space based on 50px estimate from first item');
+      expect(contentWrapper.children.length)
+        .withContext('should render 4 items to fill 200px space based on 50px ' +
+                     'estimate from first item').toBe(4);
     }));
 
     it('should throw if maxBufferPx is less than minBufferPx', fakeAsync(() => {

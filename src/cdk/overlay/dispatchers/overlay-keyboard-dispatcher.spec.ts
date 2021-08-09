@@ -35,18 +35,20 @@ describe('OverlayKeyboardDispatcher', () => {
     keyboardDispatcher.add(overlayTwo);
 
     expect(keyboardDispatcher._attachedOverlays.length)
-        .toBe(2, 'Expected both overlays to be tracked.');
-    expect(keyboardDispatcher._attachedOverlays[0]).toBe(overlayOne, 'Expected one to be first.');
-    expect(keyboardDispatcher._attachedOverlays[1]).toBe(overlayTwo, 'Expected two to be last.');
+      .withContext('Expected both overlays to be tracked.').toBe(2);
+    expect(keyboardDispatcher._attachedOverlays[0])
+      .withContext('Expected one to be first.').toBe(overlayOne);
+    expect(keyboardDispatcher._attachedOverlays[1])
+      .withContext('Expected two to be last.').toBe(overlayTwo);
 
     // Detach first one and re-attach it
     keyboardDispatcher.remove(overlayOne);
     keyboardDispatcher.add(overlayOne);
 
     expect(keyboardDispatcher._attachedOverlays[0])
-        .toBe(overlayTwo, 'Expected two to now be first.');
+      .withContext('Expected two to now be first.').toBe(overlayTwo);
     expect(keyboardDispatcher._attachedOverlays[1])
-        .toBe(overlayOne, 'Expected one to now be last.');
+      .withContext('Expected one to now be last.').toBe(overlayOne);
   });
 
   it('should dispatch body keyboard events to the most recently attached overlay', () => {

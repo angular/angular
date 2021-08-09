@@ -214,13 +214,13 @@ describe('MDC-based MatSelectionList without forms', () => {
       let selectList =
         selectionList.injector.get<MatSelectionList>(MatSelectionList).selectedOptions;
 
-      expect(selectList.selected.length).toBe(0, 'before click');
+      expect(selectList.selected.length).withContext('before click').toBe(0);
       expect(listOptions[0].nativeElement.getAttribute('aria-disabled')).toBe('true');
 
       dispatchMouseEvent(testListItem._hostElement, 'click');
       fixture.detectChanges();
 
-      expect(selectList.selected.length).toBe(0, 'after click');
+      expect(selectList.selected.length).withContext('after click').toBe(0);
     });
 
     it('should be able to un-disable disabled items', () => {
@@ -529,12 +529,12 @@ describe('MDC-based MatSelectionList without forms', () => {
         dispatchMouseEvent(rippleTarget, 'mouseup');
 
         expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
-          .toBe(1, 'Expected ripples to be enabled by default.');
+          .withContext('Expected ripples to be enabled by default.').toBe(1);
 
         // Wait for the ripples to go away.
         tick(enterDuration + exitDuration);
         expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
-          .toBe(0, 'Expected ripples to go away.');
+          .withContext('Expected ripples to go away.').toBe(0);
 
         fixture.componentInstance.listRippleDisabled = true;
         fixture.detectChanges();
@@ -543,7 +543,7 @@ describe('MDC-based MatSelectionList without forms', () => {
         dispatchMouseEvent(rippleTarget, 'mouseup');
 
         expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
-          .toBe(0, 'Expected no ripples after list ripples are disabled.');
+          .withContext('Expected no ripples after list ripples are disabled.').toBe(0);
       }));
 
     it('can bind both selected and value at the same time', () => {
@@ -639,13 +639,13 @@ describe('MDC-based MatSelectionList without forms', () => {
 
     it('should disable ripples for disabled option', () => {
       expect(listOption.rippleDisabled)
-        .toBe(false, 'Expected ripples to be enabled by default');
+        .withContext('Expected ripples to be enabled by default').toBe(false);
 
       fixture.componentInstance.disableItem = true;
       fixture.detectChanges();
 
       expect(listOption.rippleDisabled)
-        .toBe(true, 'Expected ripples to be disabled if option is disabled');
+        .withContext('Expected ripples to be disabled if option is disabled').toBe(true);
     });
 
     it('should apply the "mat-list-item-disabled" class properly', () => {
@@ -701,13 +701,13 @@ describe('MDC-based MatSelectionList without forms', () => {
       const testOption = listOption[2].componentInstance as MatListOption;
 
       expect(testOption.rippleDisabled)
-        .toBe(true, 'Expected ripples of list option to be disabled');
+        .withContext('Expected ripples of list option to be disabled').toBe(true);
 
       fixture.componentInstance.disabled = false;
       fixture.detectChanges();
 
       expect(testOption.rippleDisabled)
-        .toBe(false, 'Expected ripples of list option to be enabled');
+        .withContext('Expected ripples of list option to be enabled').toBe(false);
     });
   });
 
@@ -735,11 +735,11 @@ describe('MDC-based MatSelectionList without forms', () => {
 
     it('should be able to customize checkbox position', () => {
       expect(fixture.nativeElement.querySelector('.mdc-list-item__end .mdc-checkbox'))
-        .toBeTruthy('Expected checkbox to show up after content.');
-      expect(
-        fixture.nativeElement.querySelector('.mdc-list-item__start .mdc-checkbox')
-      )
-        .toBeFalsy('Expected no checkbox to show up before content.');
+        .withContext('Expected checkbox to show up after content.')
+        .toBeTruthy();
+      expect(fixture.nativeElement.querySelector('.mdc-list-item__start .mdc-checkbox'))
+        .withContext('Expected no checkbox to show up before content.')
+        .toBeFalsy();
     });
   });
 
@@ -761,7 +761,8 @@ describe('MDC-based MatSelectionList without forms', () => {
       const checkboxPositionClass = position === 'before' ?
           'mdc-list-item--with-leading-checkbox' : 'mdc-list-item--with-trailing-checkbox';
       expect(listItemElement.querySelector(`${containerSelector} .mdc-checkbox`))
-          .toBeDefined(`Expected checkbox to be aligned ${position}`);
+        .withContext(`Expected checkbox to be aligned ${position}`)
+        .toBeDefined();
       expect(listItemElement.classList).toContain(checkboxPositionClass);
     }
 
@@ -1061,7 +1062,7 @@ describe('MDC-based MatSelectionList with forms', () => {
 
     it('should update the model if an option got selected programmatically', fakeAsync(() => {
       expect(fixture.componentInstance.selectedOptions.length)
-        .toBe(0, 'Expected no options to be selected by default');
+        .withContext('Expected no options to be selected by default').toBe(0);
 
       listOptions[0].toggle();
       fixture.detectChanges();
@@ -1069,12 +1070,12 @@ describe('MDC-based MatSelectionList with forms', () => {
       tick();
 
       expect(fixture.componentInstance.selectedOptions.length)
-        .toBe(1, 'Expected first list option to be selected');
+        .withContext('Expected first list option to be selected').toBe(1);
     }));
 
     it('should update the model if an option got clicked', fakeAsync(() => {
       expect(fixture.componentInstance.selectedOptions.length)
-        .toBe(0, 'Expected no options to be selected by default');
+        .withContext('Expected no options to be selected by default').toBe(0);
 
       dispatchMouseEvent(listOptions[0]._hostElement, 'click');
       fixture.detectChanges();
@@ -1082,12 +1083,12 @@ describe('MDC-based MatSelectionList with forms', () => {
       tick();
 
       expect(fixture.componentInstance.selectedOptions.length)
-        .toBe(1, 'Expected first list option to be selected');
+        .withContext('Expected first list option to be selected').toBe(1);
     }));
 
     it('should update the options if a model value is set', fakeAsync(() => {
       expect(fixture.componentInstance.selectedOptions.length)
-        .toBe(0, 'Expected no options to be selected by default');
+        .withContext('Expected no options to be selected by default').toBe(0);
 
       fixture.componentInstance.selectedOptions = ['opt3'];
       fixture.detectChanges();
@@ -1095,30 +1096,32 @@ describe('MDC-based MatSelectionList with forms', () => {
       tick();
 
       expect(fixture.componentInstance.selectedOptions.length)
-        .toBe(1, 'Expected first list option to be selected');
+        .withContext('Expected first list option to be selected').toBe(1);
     }));
 
     it('should not mark the model as touched when the list is blurred', fakeAsync(() => {
       expect(ngModel.touched)
-        .toBe(false, 'Expected the selection-list to be untouched by default.');
+        .withContext('Expected the selection-list to be untouched by default.').toBe(false);
 
       dispatchFakeEvent(selectionListDebug.nativeElement, 'blur');
       fixture.detectChanges();
       tick();
 
-      expect(ngModel.touched).toBe(false, 'Expected the selection-list to remain untouched.');
+      expect(ngModel.touched)
+        .withContext('Expected the selection-list to remain untouched.').toBe(false);
     }));
 
     it('should mark the model as touched when a list item is blurred', fakeAsync(() => {
       expect(ngModel.touched)
-        .toBe(false, 'Expected the selection-list to be untouched by default.');
+        .withContext('Expected the selection-list to be untouched by default.').toBe(false);
 
       dispatchFakeEvent(fixture.nativeElement.querySelector('.mat-mdc-list-option'), 'blur');
       fixture.detectChanges();
       tick();
 
       expect(ngModel.touched)
-        .toBe(true, 'Expected the selection-list to be touched after an item is blurred.');
+        .withContext('Expected the selection-list to be touched after an item is blurred.')
+        .toBe(true);
     }));
 
     it('should be pristine by default', fakeAsync(() => {
@@ -1136,7 +1139,7 @@ describe('MDC-based MatSelectionList with forms', () => {
       tick();
 
       expect(ngModel.pristine)
-        .toBe(true, 'Expected the selection-list to be pristine by default.');
+        .withContext('Expected the selection-list to be pristine by default.').toBe(true);
 
       listOptions[1].toggle();
       fixture.detectChanges();
@@ -1144,7 +1147,7 @@ describe('MDC-based MatSelectionList with forms', () => {
       tick();
 
       expect(ngModel.pristine)
-        .toBe(false, 'Expected the selection-list to be dirty after state change.');
+        .withContext('Expected the selection-list to be dirty after state change.').toBe(false);
     }));
 
     it('should remove a selected option from the value on destroy', fakeAsync(() => {
@@ -1255,28 +1258,28 @@ describe('MDC-based MatSelectionList with forms', () => {
 
     it('should be able to disable options from the control', () => {
       expect(selectionList.disabled)
-        .toBe(false, 'Expected the selection list to be enabled.');
+        .withContext('Expected the selection list to be enabled.').toBe(false);
       expect(listOptions.every(option => !option.disabled))
-        .toBe(true, 'Expected every list option to be enabled.');
+        .withContext('Expected every list option to be enabled.').toBe(true);
 
       fixture.componentInstance.formControl.disable();
       fixture.detectChanges();
 
       expect(selectionList.disabled)
-        .toBe(true, 'Expected the selection list to be disabled.');
+        .withContext('Expected the selection list to be disabled.').toBe(true);
       expect(listOptions.every(option => option.disabled))
-        .toBe(true, 'Expected every list option to be disabled.');
+        .withContext('Expected every list option to be disabled.').toBe(true);
     });
 
     it('should be able to update the disabled property after form control disabling', () => {
       expect(listOptions.every(option => !option.disabled))
-        .toBe(true, 'Expected every list option to be enabled.');
+        .withContext('Expected every list option to be enabled.').toBe(true);
 
       fixture.componentInstance.formControl.disable();
       fixture.detectChanges();
 
       expect(listOptions.every(option => option.disabled))
-        .toBe(true, 'Expected every list option to be disabled.');
+        .withContext('Expected every list option to be disabled.').toBe(true);
 
       // Previously the selection list has been disabled through FormControl#disable. Now we
       // want to verify that we can still change the disabled state through updating the disabled
@@ -1286,24 +1289,26 @@ describe('MDC-based MatSelectionList with forms', () => {
       fixture.detectChanges();
 
       expect(listOptions.every(option => !option.disabled))
-        .toBe(true, 'Expected every list option to be enabled.');
+        .withContext('Expected every list option to be enabled.').toBe(true);
     });
 
     it('should be able to set the value through the form control', () => {
       expect(listOptions.every(option => !option.selected))
-        .toBe(true, 'Expected every list option to be unselected.');
+        .withContext('Expected every list option to be unselected.').toBe(true);
 
       fixture.componentInstance.formControl.setValue(['opt2', 'opt3']);
       fixture.detectChanges();
 
-      expect(listOptions[1].selected).toBe(true, 'Expected second option to be selected.');
-      expect(listOptions[2].selected).toBe(true, 'Expected third option to be selected.');
+      expect(listOptions[1].selected)
+        .withContext('Expected second option to be selected.').toBe(true);
+      expect(listOptions[2].selected)
+        .withContext('Expected third option to be selected.').toBe(true);
 
       fixture.componentInstance.formControl.setValue(null);
       fixture.detectChanges();
 
       expect(listOptions.every(option => !option.selected))
-        .toBe(true, 'Expected every list option to be unselected.');
+        .withContext('Expected every list option to be unselected.').toBe(true);
     });
 
     it('should deselect option whose value no longer matches', () => {
@@ -1312,12 +1317,14 @@ describe('MDC-based MatSelectionList with forms', () => {
       fixture.componentInstance.formControl.setValue(['opt2']);
       fixture.detectChanges();
 
-      expect(option.selected).toBe(true, 'Expected option to be selected.');
+      expect(option.selected)
+        .withContext('Expected option to be selected.').toBe(true);
 
       option.value = 'something-different';
       fixture.detectChanges();
 
-      expect(option.selected).toBe(false, 'Expected option not to be selected.');
+      expect(option.selected)
+        .withContext('Expected option not to be selected.').toBe(false);
       expect(fixture.componentInstance.formControl.value).toEqual([]);
     });
 
@@ -1331,8 +1338,10 @@ describe('MDC-based MatSelectionList with forms', () => {
       listOptions = fixture.debugElement.queryAll(By.directive(MatListOption))
         .map(optionDebugEl => optionDebugEl.componentInstance);
 
-      expect(listOptions[1].selected).toBe(true, 'Expected second option to be selected.');
-      expect(listOptions[2].selected).toBe(true, 'Expected third option to be selected.');
+      expect(listOptions[1].selected)
+        .withContext('Expected second option to be selected.').toBe(true);
+      expect(listOptions[2].selected)
+        .withContext('Expected third option to be selected.').toBe(true);
     });
 
     it('should not clear the form control when the list is destroyed', fakeAsync(() => {

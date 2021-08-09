@@ -122,13 +122,13 @@ describe('MDC-based MatProgressBar', () => {
         fixture.detectChanges();
 
         expect(progressElement.nativeElement.getAttribute('aria-valuenow'))
-            .toBe('50', 'Expected aria-valuenow to be set in determinate mode.');
+          .withContext('Expected aria-valuenow to be set in determinate mode.').toBe('50');
 
         progressComponent.mode = 'indeterminate';
         fixture.detectChanges();
 
         expect(progressElement.nativeElement.hasAttribute('aria-valuenow'))
-            .toBe(false, 'Expect aria-valuenow to be cleared in indeterminate mode.');
+          .withContext('Expect aria-valuenow to be cleared in indeterminate mode.').toBe(false);
       });
 
       it('should remove the `aria-valuenow` attribute in query mode', () => {
@@ -143,13 +143,13 @@ describe('MDC-based MatProgressBar', () => {
         fixture.detectChanges();
 
         expect(progressElement.nativeElement.getAttribute('aria-valuenow'))
-            .toBe('50', 'Expected aria-valuenow to be set in determinate mode.');
+          .withContext('Expected aria-valuenow to be set in determinate mode.').toBe('50');
 
         progressComponent.mode = 'query';
         fixture.detectChanges();
 
         expect(progressElement.nativeElement.hasAttribute('aria-valuenow'))
-            .toBe(false, 'Expect aria-valuenow to be cleared in query mode.');
+          .withContext('Expect aria-valuenow to be cleared in query mode.').toBe(false);
       });
 
     });

@@ -21,34 +21,39 @@ describe('CdkFlatTreeControl', () => {
 
 
       expect(treeControl.isExpanded(secondNode))
-          .toBeTruthy('Expect second node to be expanded');
+        .withContext('Expect second node to be expanded')
+        .toBeTruthy();
       expect(treeControl.expansionModel.selected)
-          .toContain(secondNode, 'Expect second node in expansionModel');
+        .withContext('Expect second node in expansionModel').toContain(secondNode);
       expect(treeControl.expansionModel.selected.length)
-          .toBe(1, 'Expect only second node in expansionModel');
+        .withContext('Expect only second node in expansionModel').toBe(1);
 
       treeControl.toggle(sixthNode);
 
       expect(treeControl.isExpanded(secondNode))
-          .toBeTruthy('Expect second node to stay expanded');
+          .withContext('Expect second node to stay expanded')
+          .toBeTruthy();
       expect(treeControl.isExpanded(sixthNode))
-          .toBeTruthy('Expect sixth node to be expanded');
+        .withContext('Expect sixth node to be expanded')
+        .toBeTruthy();
       expect(treeControl.expansionModel.selected)
-          .toContain(sixthNode, 'Expect sixth node in expansionModel');
+        .withContext('Expect sixth node in expansionModel').toContain(sixthNode);
       expect(treeControl.expansionModel.selected)
-          .toContain(secondNode, 'Expect second node in expansionModel');
+        .withContext('Expect second node in expansionModel').toContain(secondNode);
       expect(treeControl.expansionModel.selected.length)
-          .toBe(2, 'Expect two dataNodes in expansionModel');
+        .withContext('Expect two dataNodes in expansionModel').toBe(2);
 
       treeControl.collapse(secondNode);
 
       expect(treeControl.isExpanded(secondNode))
-          .toBeFalsy('Expect second node to be collapsed');
+        .withContext('Expect second node to be collapsed')
+        .toBeFalsy();
       expect(treeControl.expansionModel.selected.length)
-          .toBe(1, 'Expect one node in expansionModel');
-      expect(treeControl.isExpanded(sixthNode)).toBeTruthy('Expect sixth node to stay expanded');
+        .withContext('Expect one node in expansionModel').toBe(1);
+      expect(treeControl.isExpanded(sixthNode))
+        .withContext('Expect sixth node to stay expanded').toBeTruthy();
       expect(treeControl.expansionModel.selected)
-          .toContain(sixthNode, 'Expect sixth node in expansionModel');
+        .withContext('Expect sixth node in expansionModel').toContain(sixthNode);
     });
 
     it('should return correct expandable values', () => {
@@ -57,11 +62,13 @@ describe('CdkFlatTreeControl', () => {
 
       for (let i = 0; i < 10; i++) {
         expect(treeControl.isExpandable(nodes[i]))
-          .toBeTruthy(`Expect node[${i}] to be expandable`);
+          .withContext(`Expect node[${i}] to be expandable`)
+          .toBeTruthy();
 
         for (let j = 0; j < 4; j++) {
           expect(treeControl.isExpandable(nodes[i].children[j]))
-            .toBeFalsy(`Expect node[${i}]'s child[${j}] to be not expandable`);
+            .withContext(`Expect node[${i}]'s child[${j}] to be not expandable`)
+            .toBeFalsy();
         }
       }
     });
@@ -75,15 +82,15 @@ describe('CdkFlatTreeControl', () => {
 
       for (let i = 0; i < numNodes; i++) {
         expect(treeControl.getLevel(nodes[i]))
-          .toBe(1, `Expec node[${i}]'s level to be 1`);
+          .withContext(`Expec node[${i}]'s level to be 1`).toBe(1);
 
         for (let j = 0; j < numChildren; j++) {
           expect(treeControl.getLevel(nodes[i].children[j]))
-            .toBe(2, `Expect node[${i}]'s child[${j}] to be not expandable`);
+            .withContext(`Expect node[${i}]'s child[${j}] to be not expandable`).toBe(2);
 
           for (let k = 0; k < numGrandChildren; k++) {
             expect(treeControl.getLevel(nodes[i].children[j].children[k]))
-              .toBe(3, `Expect node[${i}]'s child[${j}] to be not expandable`);
+              .withContext(`Expect node[${i}]'s child[${j}] to be not expandable`).toBe(3);
           }
         }
       }
@@ -102,16 +109,20 @@ describe('CdkFlatTreeControl', () => {
 
       const expandedNodesNum = 1 + numChildren + numChildren * numGrandChildren;
       expect(treeControl.expansionModel.selected.length)
-          .toBe(expandedNodesNum, `Expect expanded ${expandedNodesNum} nodes`);
+        .withContext(`Expect expanded ${expandedNodesNum} nodes`).toBe(expandedNodesNum);
 
-      expect(treeControl.isExpanded(nodes[1])).toBeTruthy('Expect second node to be expanded');
+      expect(treeControl.isExpanded(nodes[1]))
+        .withContext('Expect second node to be expanded')
+        .toBeTruthy();
       for (let i = 0; i < numChildren; i++) {
 
         expect(treeControl.isExpanded(nodes[1].children[i]))
-          .toBeTruthy(`Expect second node's children to be expanded`);
+          .withContext(`Expect second node's children to be expanded`)
+          .toBeTruthy();
         for (let j = 0; j < numGrandChildren; j++) {
           expect(treeControl.isExpanded(nodes[1].children[i].children[j]))
-              .toBeTruthy(`Expect second node grand children to be not expanded`);
+            .withContext(`Expect second node grand children to be not expanded`)
+            .toBeTruthy();
         }
       }
 
@@ -130,14 +141,15 @@ describe('CdkFlatTreeControl', () => {
 
       treeControl.collapseAll();
 
-      expect(treeControl.expansionModel.selected.length).toBe(0, `Expect no expanded nodes`);
+      expect(treeControl.expansionModel.selected.length)
+        .withContext(`Expect no expanded nodes`).toBe(0);
 
       treeControl.expandAll();
 
       const totalNumber = numNodes + numNodes * numChildren
           + numNodes * numChildren * numGrandChildren;
       expect(treeControl.expansionModel.selected.length)
-        .toBe(totalNumber, `Expect ${totalNumber} expanded nodes`);
+        .withContext(`Expect ${totalNumber} expanded nodes`).toBe(totalNumber);
     });
   });
 
@@ -150,12 +162,14 @@ describe('CdkFlatTreeControl', () => {
     treeControl.trackBy = (node: TestData) => `${node.a} ${node.b} ${node.c}`;
 
     treeControl.expand(secondNode);
-    expect(treeControl.isExpanded(secondNode)).toBeTruthy('Expect second node to be expanded');
+    expect(treeControl.isExpanded(secondNode))
+      .withContext('Expect second node to be expanded').toBeTruthy();
 
     // Replace the second node with a brand new instance with same hash
     nodes[1] = new TestData(
         secondNode.a, secondNode.b, secondNode.c, secondNode.level, secondNode.children);
-    expect(treeControl.isExpanded(nodes[1])).toBeTruthy('Expect second node to still be expanded');
+    expect(treeControl.isExpanded(nodes[1]))
+      .withContext('Expect second node to still be expanded').toBeTruthy();
   });
 });
 

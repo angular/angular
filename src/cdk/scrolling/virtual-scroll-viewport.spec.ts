@@ -53,7 +53,7 @@ describe('CdkVirtualScrollViewport', () => {
       const contentWrapper =
           viewport.elementRef.nativeElement.querySelector('.cdk-virtual-scroll-content-wrapper')!;
       expect(contentWrapper.children.length)
-          .toBe(4, 'should render 4 50px items to fill 200px space');
+        .withContext('should render 4 50px items to fill 200px space').toBe(4);
     }));
 
     it('should get the data length', fakeAsync(() => {
@@ -97,7 +97,8 @@ describe('CdkVirtualScrollViewport', () => {
       finishInit(fixture);
 
       expect(viewport.getRenderedRange())
-          .toEqual({start: 0, end: 4}, 'should render the first 4 50px items to fill 200px space');
+        .withContext('should render the first 4 50px items to fill 200px space')
+        .toEqual({ start: 0, end: 4 });
     }));
 
     it('should get the rendered content offset', fakeAsync(() => {
@@ -106,8 +107,9 @@ describe('CdkVirtualScrollViewport', () => {
       fixture.detectChanges();
       flush();
 
-      expect(viewport.getOffsetToRenderedContentStart()).toBe(testComponent.itemSize,
-          'should have 50px offset since first 50px item is not rendered');
+      expect(viewport.getOffsetToRenderedContentStart())
+        .withContext('should have 50px offset since first 50px item is not rendered')
+        .toBe(testComponent.itemSize);
     }));
 
     it('should get the scroll offset', fakeAsync(() => {
@@ -123,23 +125,25 @@ describe('CdkVirtualScrollViewport', () => {
       finishInit(fixture);
 
       expect(viewport.measureRenderedContentSize())
-          .toBe(testComponent.viewportSize,
-              'should render 4 50px items with combined size of 200px to fill 200px space');
+        .withContext('should render 4 50px items with combined size of 200px to fill 200px space')
+        .toBe(testComponent.viewportSize);
     }));
 
     it('should measure range size', fakeAsync(() => {
       finishInit(fixture);
 
-      expect(viewport.measureRangeSize({start: 1, end: 3}))
-          .toBe(testComponent.itemSize * 2, 'combined size of 2 50px items should be 100px');
+      expect(viewport.measureRangeSize({ start: 1, end: 3 }))
+        .withContext('combined size of 2 50px items should be 100px')
+        .toBe(testComponent.itemSize * 2);
     }));
 
     it('should measure range size when items has a margin', fakeAsync(() => {
       fixture.componentInstance.hasMargin = true;
       finishInit(fixture);
 
-      expect(viewport.measureRangeSize({start: 1, end: 3})).toBe(testComponent.itemSize * 2 + 10,
-            'combined size of 2 50px items with a 10px margin should be 110px');
+      expect(viewport.measureRangeSize({ start: 1, end: 3 }))
+        .withContext('combined size of 2 50px items with a 10px margin should be 110px')
+        .toBe(testComponent.itemSize * 2 + 10);
     }));
 
     it('should set total content size', fakeAsync(() => {
@@ -192,8 +196,10 @@ describe('CdkVirtualScrollViewport', () => {
       flush();
 
       const items = fixture.elementRef.nativeElement.querySelectorAll('.item');
-      expect(items.length).toBe(1, 'Expected 1 item to be rendered');
-      expect(items[0].innerText.trim()).toBe('2 - 2', 'Expected item with index 2 to be rendered');
+      expect(items.length)
+        .withContext('Expected 1 item to be rendered').toBe(1);
+      expect(items[0].innerText.trim())
+        .withContext('Expected item with index 2 to be rendered').toBe('2 - 2');
     }));
 
     it('should set content offset to top of content', fakeAsync(() => {
@@ -298,14 +304,15 @@ describe('CdkVirtualScrollViewport', () => {
           end: Math.ceil((offset + testComponent.viewportSize) / testComponent.itemSize)
         };
         expect(viewport.getRenderedRange())
-            .toEqual(expectedRange,
-                `rendered range should match expected value at scroll offset ${offset}`);
+          .withContext(`rendered range should match expected value at scroll offset ${offset}`)
+          .toEqual(expectedRange);
         expect(viewport.getOffsetToRenderedContentStart())
-            .toBe(expectedRange.start * testComponent.itemSize,
-                `rendered content offset should match expected value at scroll offset ${offset}`);
+          .withContext(`rendered content offset should match expected value at ` +
+                       `scroll offset ${offset}`)
+                          .toBe(expectedRange.start * testComponent.itemSize);
         expect(viewport.measureRenderedContentSize())
-            .toBe((expectedRange.end - expectedRange.start) * testComponent.itemSize,
-                `rendered content size should match expected value at offset ${offset}`);
+          .withContext(`rendered content size should match expected value at offset ${offset}`)
+          .toBe((expectedRange.end - expectedRange.start) * testComponent.itemSize);
       }
     }));
 
@@ -324,14 +331,14 @@ describe('CdkVirtualScrollViewport', () => {
           end: Math.ceil((offset + testComponent.viewportSize) / testComponent.itemSize)
         };
         expect(viewport.getRenderedRange())
-            .toEqual(expectedRange,
-                `rendered range should match expected value at scroll offset ${offset}`);
+          .withContext(`rendered range should match expected value at scroll offset ${offset}`)
+          .toEqual(expectedRange);
         expect(viewport.getOffsetToRenderedContentStart())
-            .toBe(expectedRange.start * testComponent.itemSize,
-                `rendered content offset should match expected value at scroll offset ${offset}`);
+          .withContext(`rendered content offset should match expected value at scroll ` +
+                       `offset ${offset}`).toBe(expectedRange.start * testComponent.itemSize);
         expect(viewport.measureRenderedContentSize())
-            .toBe((expectedRange.end - expectedRange.start) * testComponent.itemSize,
-                `rendered content size should match expected value at offset ${offset}`);
+          .withContext(`rendered content size should match expected value at offset ${offset}`)
+          .toBe((expectedRange.end - expectedRange.start) * testComponent.itemSize);
       }
     }));
 
@@ -340,9 +347,9 @@ describe('CdkVirtualScrollViewport', () => {
       testComponent.maxBufferPx = testComponent.itemSize;
       finishInit(fixture);
 
-      expect(viewport.getRenderedRange()).toEqual({start: 0, end: 5},
-          'should render the first 5 50px items to fill 200px space, plus one buffer element at' +
-          ' the end');
+      expect(viewport.getRenderedRange())
+        .withContext('should render the first 5 50px items to fill 200px space, ' +
+                     'plus one buffer element at the end').toEqual({ start: 0, end: 5 });
     }));
 
     it('should render buffer element at the start and end when scrolled to the middle',
@@ -354,9 +361,9 @@ describe('CdkVirtualScrollViewport', () => {
           fixture.detectChanges();
           flush();
 
-          expect(viewport.getRenderedRange()).toEqual({start: 1, end: 7},
-              'should render 6 50px items to fill 200px space, plus one buffer element at the' +
-              ' start and end');
+          expect(viewport.getRenderedRange())
+            .withContext('should render 6 50px items to fill 200px space, plus one ' +
+                         'buffer element at the start and end').toEqual({ start: 1, end: 7 });
         }));
 
     it('should render buffer element at the start when scrolled to the bottom', fakeAsync(() => {
@@ -367,9 +374,9 @@ describe('CdkVirtualScrollViewport', () => {
       fixture.detectChanges();
       flush();
 
-      expect(viewport.getRenderedRange()).toEqual({start: 5, end: 10},
-          'should render the last 5 50px items to fill 200px space, plus one buffer element at' +
-          ' the start');
+      expect(viewport.getRenderedRange())
+        .withContext('should render the last 5 50px items to fill 200px space, plus one ' +
+                     'buffer element at the start').toEqual({ start: 5, end: 10 });
     }));
 
     it('should handle dynamic item size', fakeAsync(() => {
@@ -379,14 +386,16 @@ describe('CdkVirtualScrollViewport', () => {
       flush();
 
       expect(viewport.getRenderedRange())
-          .toEqual({start: 2, end: 6}, 'should render 4 50px items to fill 200px space');
+        .withContext('should render 4 50px items to fill 200px space')
+        .toEqual({ start: 2, end: 6 });
 
       testComponent.itemSize *= 2;
       fixture.detectChanges();
       flush();
 
       expect(viewport.getRenderedRange())
-          .toEqual({start: 1, end: 3}, 'should render 2 100px items to fill 200px space');
+        .withContext('should render 2 100px items to fill 200px space')
+        .toEqual({ start: 1, end: 3 });
     }));
 
     it('should handle dynamic buffer size', fakeAsync(() => {
@@ -396,7 +405,8 @@ describe('CdkVirtualScrollViewport', () => {
       flush();
 
       expect(viewport.getRenderedRange())
-          .toEqual({start: 2, end: 6}, 'should render 4 50px items to fill 200px space');
+        .withContext('should render 4 50px items to fill 200px space')
+        .toEqual({ start: 2, end: 6 });
 
       testComponent.minBufferPx = testComponent.itemSize;
       testComponent.maxBufferPx = testComponent.itemSize;
@@ -404,7 +414,8 @@ describe('CdkVirtualScrollViewport', () => {
       flush();
 
       expect(viewport.getRenderedRange())
-          .toEqual({start: 1, end: 7}, 'should expand to 1 buffer element on each side');
+        .withContext('should expand to 1 buffer element on each side')
+        .toEqual({ start: 1, end: 7 });
     }));
 
     it('should handle dynamic item array', fakeAsync(() => {
@@ -414,14 +425,15 @@ describe('CdkVirtualScrollViewport', () => {
       flush();
 
       expect(viewport.getOffsetToRenderedContentStart())
-          .toBe(testComponent.itemSize * 6, 'should be scrolled to bottom of 10 item list');
+        .withContext('should be scrolled to bottom of 10 item list')
+        .toBe(testComponent.itemSize * 6);
 
       testComponent.items = Array(5).fill(0);
       fixture.detectChanges();
       flush();
 
       expect(viewport.getOffsetToRenderedContentStart())
-          .toBe(testComponent.itemSize, 'should be scrolled to bottom of 5 item list');
+        .withContext('should be scrolled to bottom of 5 item list').toBe(testComponent.itemSize);
     }));
 
     it('should handle dynamic item array with dynamic buffer', fakeAsync(() => {
@@ -431,7 +443,8 @@ describe('CdkVirtualScrollViewport', () => {
       flush();
 
       expect(viewport.getOffsetToRenderedContentStart())
-          .toBe(testComponent.itemSize * 6, 'should be scrolled to bottom of 10 item list');
+        .withContext('should be scrolled to bottom of 10 item list')
+        .toBe(testComponent.itemSize * 6);
 
       testComponent.items = Array(5).fill(0);
       testComponent.minBufferPx = testComponent.itemSize;
@@ -441,7 +454,7 @@ describe('CdkVirtualScrollViewport', () => {
       flush();
 
       expect(viewport.getOffsetToRenderedContentStart())
-          .toBe(0, 'should render from first item');
+        .withContext('should render from first item').toBe(0);
     }));
 
     it('should handle dynamic item array keeping position when possible', fakeAsync(() => {
@@ -452,14 +465,14 @@ describe('CdkVirtualScrollViewport', () => {
       flush();
 
       expect(viewport.getOffsetToRenderedContentStart())
-          .toBe(testComponent.itemSize * 50, 'should be scrolled to index 50 item list');
+        .withContext('should be scrolled to index 50 item list').toBe(testComponent.itemSize * 50);
 
       testComponent.items = Array(54).fill(0);
       fixture.detectChanges();
       flush();
 
       expect(viewport.getOffsetToRenderedContentStart())
-          .toBe(testComponent.itemSize * 50, 'should be kept the scroll position');
+        .withContext('should be kept the scroll position').toBe(testComponent.itemSize * 50);
     }));
 
     it('should update viewport as user scrolls right in horizontal mode', fakeAsync(() => {
@@ -478,14 +491,14 @@ describe('CdkVirtualScrollViewport', () => {
           end: Math.ceil((offset + testComponent.viewportSize) / testComponent.itemSize)
         };
         expect(viewport.getRenderedRange())
-            .toEqual(expectedRange,
-                `rendered range should match expected value at scroll offset ${offset}`);
+          .withContext(`rendered range should match expected value at scroll offset ${offset}`)
+          .toEqual(expectedRange);
         expect(viewport.getOffsetToRenderedContentStart())
-            .toBe(expectedRange.start * testComponent.itemSize,
-                `rendered content offset should match expected value at scroll offset ${offset}`);
+          .withContext(`rendered content offset should match expected value at scroll ` +
+                       `offset ${offset}`).toBe(expectedRange.start * testComponent.itemSize);
         expect(viewport.measureRenderedContentSize())
-            .toBe((expectedRange.end - expectedRange.start) * testComponent.itemSize,
-                `rendered content size should match expected value at offset ${offset}`);
+          .withContext(`rendered content size should match expected value at offset ${offset}`)
+          .toBe((expectedRange.end - expectedRange.start) * testComponent.itemSize);
       }
     }));
 
@@ -505,14 +518,14 @@ describe('CdkVirtualScrollViewport', () => {
           end: Math.ceil((offset + testComponent.viewportSize) / testComponent.itemSize)
         };
         expect(viewport.getRenderedRange())
-            .toEqual(expectedRange,
-                `rendered range should match expected value at scroll offset ${offset}`);
+          .withContext(`rendered range should match expected value at scroll offset ${offset}`)
+          .toEqual(expectedRange);
         expect(viewport.getOffsetToRenderedContentStart())
-            .toBe(expectedRange.start * testComponent.itemSize,
-                `rendered content offset should match expected value at scroll offset ${offset}`);
+          .withContext(`rendered content offset should match expected value at scroll ` +
+                       `offset ${offset}`).toBe(expectedRange.start * testComponent.itemSize);
         expect(viewport.measureRenderedContentSize())
-            .toBe((expectedRange.end - expectedRange.start) * testComponent.itemSize,
-                `rendered content size should match expected value at offset ${offset}`);
+          .withContext(`rendered content size should match expected value at offset ${offset}`)
+          .toBe((expectedRange.end - expectedRange.start) * testComponent.itemSize);
       }
     }));
 
@@ -522,7 +535,7 @@ describe('CdkVirtualScrollViewport', () => {
       finishInit(fixture);
 
       expect(viewport.getRenderedRange())
-          .toEqual({start: 0, end: 4}, 'newly emitted items should be rendered');
+        .withContext('newly emitted items should be rendered').toEqual({ start: 0, end: 4 });
     }));
 
     it('should work with an Observable', fakeAsync(() => {
@@ -531,14 +544,14 @@ describe('CdkVirtualScrollViewport', () => {
       finishInit(fixture);
 
       expect(viewport.getRenderedRange())
-          .toEqual({start: 0, end: 0}, 'no items should be rendered');
+        .withContext('no items should be rendered').toEqual({ start: 0, end: 0 });
 
       data.next([1, 2, 3]);
       fixture.detectChanges();
       flush();
 
       expect(viewport.getRenderedRange())
-          .toEqual({start: 0, end: 3}, 'newly emitted items should be rendered');
+        .withContext('newly emitted items should be rendered').toEqual({ start: 0, end: 3 });
     }));
 
     it('should work with a DataSource', fakeAsync(() => {
@@ -547,14 +560,14 @@ describe('CdkVirtualScrollViewport', () => {
       finishInit(fixture);
 
       expect(viewport.getRenderedRange())
-          .toEqual({start: 0, end: 0}, 'no items should be rendered');
+        .withContext('no items should be rendered').toEqual({ start: 0, end: 0 });
 
       data.next([1, 2, 3]);
       fixture.detectChanges();
       flush();
 
       expect(viewport.getRenderedRange())
-          .toEqual({start: 0, end: 3}, 'newly emitted items should be rendered');
+        .withContext('newly emitted items should be rendered').toEqual({ start: 0, end: 3 });
     }));
 
     it('should disconnect from data source on destroy', fakeAsync(() => {
@@ -692,21 +705,21 @@ describe('CdkVirtualScrollViewport', () => {
       finishInit(fixture);
 
       expect(viewport.getRenderedRange())
-          .toEqual({start: 0, end: 6}, 'should have 2 buffer items initially');
+        .withContext('should have 2 buffer items initially').toEqual({ start: 0, end: 6 });
 
       triggerScroll(viewport, 50);
       fixture.detectChanges();
       flush();
 
       expect(viewport.getRenderedRange())
-          .toEqual({start: 0, end: 6}, 'should not render additional buffer yet');
+        .withContext('should not render additional buffer yet').toEqual({ start: 0, end: 6 });
 
       triggerScroll(viewport, 51);
       fixture.detectChanges();
       flush();
 
       expect(viewport.getRenderedRange())
-          .toEqual({start: 0, end: 8}, 'should render 2 more buffer items');
+        .withContext('should render 2 more buffer items').toEqual({ start: 0, end: 8 });
     }));
 
     it('should throw if maxBufferPx is less than minBufferPx', fakeAsync(() => {

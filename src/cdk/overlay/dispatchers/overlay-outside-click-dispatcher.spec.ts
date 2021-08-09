@@ -33,19 +33,19 @@ describe('OverlayOutsideClickDispatcher', () => {
     outsideClickDispatcher.add(overlayTwo);
 
     expect(outsideClickDispatcher._attachedOverlays.length)
-        .toBe(2, 'Expected both overlays to be tracked.');
+      .withContext('Expected both overlays to be tracked.').toBe(2);
     expect(outsideClickDispatcher._attachedOverlays[0])
-      .toBe(overlayOne, 'Expected one to be first.');
+      .withContext('Expected one to be first.').toBe(overlayOne);
     expect(outsideClickDispatcher._attachedOverlays[1])
-      .toBe(overlayTwo, 'Expected two to be last.');
+      .withContext('Expected two to be last.').toBe(overlayTwo);
 
     outsideClickDispatcher.remove(overlayOne);
     outsideClickDispatcher.add(overlayOne);
 
     expect(outsideClickDispatcher._attachedOverlays[0])
-        .toBe(overlayTwo, 'Expected two to now be first.');
+      .withContext('Expected two to now be first.').toBe(overlayTwo);
     expect(outsideClickDispatcher._attachedOverlays[1])
-        .toBe(overlayOne, 'Expected one to now be last.');
+      .withContext('Expected one to now be last.').toBe(overlayOne);
 
     overlayOne.dispose();
     overlayTwo.dispose();

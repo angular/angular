@@ -8,12 +8,14 @@ describe('MixinColor', () => {
     const instance = new classWithColor();
 
     expect(instance.color)
-        .toBeFalsy('Expected the mixed-into class to have a color property');
+      .withContext('Expected the mixed-into class to have a color property')
+      .toBeFalsy();
 
     instance.color = 'accent';
 
     expect(instance.color)
-        .toBe('accent', 'Expected the mixed-into class to have an updated color property');
+      .withContext('Expected the mixed-into class to have an updated color property')
+      .toBe('accent');
   });
 
   it('should remove old color classes if new color is set', () => {
@@ -21,19 +23,21 @@ describe('MixinColor', () => {
     const instance = new classWithColor();
 
     expect(instance.testElement.classList.length)
-      .toBe(0, 'Expected the element to not have any classes at initialization');
+      .withContext('Expected the element to not have any classes at initialization').toBe(0);
 
     instance.color = 'primary';
 
     expect(instance.testElement.classList)
-      .toContain('mat-primary', 'Expected the element to have the "mat-primary" class set');
+      .withContext('Expected the element to have the "mat-primary" class set')
+      .toContain('mat-primary');
 
     instance.color = 'accent';
 
     expect(instance.testElement.classList)
       .not.toContain('mat-primary', 'Expected the element to no longer have "mat-primary" set.');
     expect(instance.testElement.classList)
-      .toContain('mat-accent', 'Expected the element to have the "mat-accent" class set');
+      .withContext('Expected the element to have the "mat-accent" class set')
+      .toContain('mat-accent');
   });
 
   it('should allow having no color set', () => {
@@ -41,17 +45,18 @@ describe('MixinColor', () => {
     const instance = new classWithColor();
 
     expect(instance.testElement.classList.length)
-      .toBe(0, 'Expected the element to not have any classes at initialization');
+      .withContext('Expected the element to not have any classes at initialization').toBe(0);
 
     instance.color = 'primary';
 
     expect(instance.testElement.classList)
-      .toContain('mat-primary', 'Expected the element to have the "mat-primary" class set');
+      .withContext('Expected the element to have the "mat-primary" class set')
+      .toContain('mat-primary');
 
     instance.color = undefined;
 
     expect(instance.testElement.classList.length)
-      .toBe(0, 'Expected the element to have no color class set.');
+      .withContext('Expected the element to have no color class set.').toBe(0);
   });
 
   it('should allow having a default color if specified', () => {
@@ -59,12 +64,13 @@ describe('MixinColor', () => {
     const instance = new classWithColor();
 
     expect(instance.testElement.classList)
-      .toContain('mat-accent', 'Expected the element to have the "mat-accent" class by default.');
+      .withContext('Expected the element to have the "mat-accent" class by default.')
+      .toContain('mat-accent');
 
     instance.color = undefined;
 
     expect(instance.testElement.classList)
-      .toContain('mat-accent', 'Expected the default color "mat-accent" to be set.');
+      .withContext('Expected the default color "mat-accent" to be set.').toContain('mat-accent');
   });
 
   it('should allow for the default color to change after init', () => {

@@ -9,10 +9,10 @@ describe('MixinDisabled', () => {
     let instance = new classWithDisabled();
 
     expect(instance.disabled)
-        .toBe(false, 'Expected the mixed-into class to have a disabled property');
+      .withContext('Expected the mixed-into class to have a disabled property').toBe(false);
 
     instance.disabled = true;
     expect(instance.disabled)
-        .toBe(true, 'Expected the mixed-into class to have an updated disabled property');
+      .withContext('Expected the mixed-into class to have an updated disabled property').toBe(true);
   });
 });

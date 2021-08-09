@@ -902,16 +902,19 @@ describe('MatDateRangeInput', () => {
     fixture.detectChanges();
     tick();
 
-    expect(fixture.componentInstance.startDateModelChangeCount).toBe(1, 'Start Date set once');
-    expect(fixture.componentInstance.endDateModelChangeCount).toBe(0, 'End Date not set');
+    expect(fixture.componentInstance.startDateModelChangeCount)
+      .withContext('Start Date set once').toBe(1);
+    expect(fixture.componentInstance.endDateModelChangeCount)
+      .withContext('End Date not set').toBe(0);
 
     fixture.componentInstance.rangePicker.select(toDate);
     fixture.detectChanges();
     tick();
 
-    expect(fixture.componentInstance.startDateModelChangeCount).toBe(1,
-      'Start Date unchanged (set once)');
-    expect(fixture.componentInstance.endDateModelChangeCount).toBe(1, 'End Date set once');
+    expect(fixture.componentInstance.startDateModelChangeCount)
+      .withContext('Start Date unchanged (set once)').toBe(1);
+    expect(fixture.componentInstance.endDateModelChangeCount)
+      .withContext('End Date set once').toBe(1);
 
     fixture.componentInstance.rangePicker.open();
     fixture.detectChanges();
@@ -923,17 +926,19 @@ describe('MatDateRangeInput', () => {
     fixture.detectChanges();
     tick();
 
-    expect(fixture.componentInstance.startDateModelChangeCount).toBe(2, 'Start Date set twice');
-    expect(fixture.componentInstance.endDateModelChangeCount).toBe(2,
-      'End Date set twice (nulled)');
+    expect(fixture.componentInstance.startDateModelChangeCount)
+      .withContext('Start Date set twice').toBe(2);
+    expect(fixture.componentInstance.endDateModelChangeCount)
+      .withContext('End Date set twice (nulled)').toBe(2);
 
     fixture.componentInstance.rangePicker.select(toDate2);
     fixture.detectChanges();
     tick();
 
-    expect(fixture.componentInstance.startDateModelChangeCount).toBe(2,
-      'Start Date unchanged (set twice)');
-    expect(fixture.componentInstance.endDateModelChangeCount).toBe(3, 'End date set three times');
+    expect(fixture.componentInstance.startDateModelChangeCount)
+      .withContext('Start Date unchanged (set twice)').toBe(2);
+    expect(fixture.componentInstance.endDateModelChangeCount)
+      .withContext('End date set three times').toBe(3);
   }));
 
 });

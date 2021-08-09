@@ -128,19 +128,23 @@ describe('AriaDescriber', () => {
     const descriptionNode = fixture.nativeElement.querySelector('#description-with-existing-id');
 
     expect(document.body.contains(descriptionNode))
-        .toBe(true, 'Expected node to be inside the document to begin with.');
-    expect(getMessagesContainer()).toBeNull('Expected no messages container on init.');
+      .withContext('Expected node to be inside the document to begin with.')
+      .toBe(true);
+    expect(getMessagesContainer())
+      .withContext('Expected no messages container on init.').toBeNull();
 
     ariaDescriber.describe(component.element1, descriptionNode);
 
     expectMessage(component.element1, 'Hello');
     expect(getMessagesContainer())
-        .toBeNull('Expected no messages container after the element was described.');
+      .withContext('Expected no messages container after the element was described.')
+      .toBeNull();
 
     ariaDescriber.removeDescription(component.element1, descriptionNode);
 
-    expect(document.body.contains(descriptionNode)).toBe(true,
-        'Expected description node to still be in the DOM after it is no longer being used.');
+    expect(document.body.contains(descriptionNode))
+      .withContext('Expected description node to still be in the DOM after it is' +
+                   'no longer being used.').toBe(true);
   });
 
   it('should keep nodes set as descriptions inside their original position in the DOM', () => {
@@ -148,18 +152,20 @@ describe('AriaDescriber', () => {
     const descriptionNode = fixture.nativeElement.querySelector('#description-with-existing-id');
     const initialParent = descriptionNode.parentNode;
 
-    expect(initialParent).toBeTruthy('Expected node to have a parent initially.');
+    expect(initialParent).withContext('Expected node to have a parent initially.').toBeTruthy();
 
     ariaDescriber.describe(component.element1, descriptionNode);
 
     expectMessage(component.element1, 'Hello');
-    expect(descriptionNode.parentNode).toBe(initialParent,
-        'Expected node to stay inside the same parent when used as a description.');
+    expect(descriptionNode.parentNode)
+      .withContext('Expected node to stay inside the same parent when used as a description.')
+      .toBe(initialParent);
 
     ariaDescriber.removeDescription(component.element1, descriptionNode);
 
-    expect(descriptionNode.parentNode).toBe(initialParent,
-      'Expected node to stay inside the same parent after not being used as a description.');
+    expect(descriptionNode.parentNode)
+      .withContext('Expected node to stay inside the same parent after not ' +
+                   'being used as a description.').toBe(initialParent);
   });
 
   it('should be able to unregister messages while having others registered', () => {
@@ -247,7 +253,8 @@ describe('AriaDescriber', () => {
     const descriptionNode = fixture.nativeElement.querySelector('#description-with-existing-id');
 
     expect(document.body.contains(descriptionNode))
-        .toBe(true, 'Expected node to be inside the document to begin with.');
+      .withContext('Expected node to be inside the document to begin with.')
+      .toBe(true);
 
     ariaDescriber.describe(component.element1, descriptionNode);
 
@@ -257,8 +264,9 @@ describe('AriaDescriber', () => {
     ariaDescriber.ngOnDestroy();
 
     expect(component.element1.hasAttribute(CDK_DESCRIBEDBY_HOST_ATTRIBUTE)).toBe(false);
-    expect(document.body.contains(descriptionNode)).toBe(true,
-        'Expected description node to still be in the DOM after it is no longer being used.');
+    expect(document.body.contains(descriptionNode))
+      .withContext('Expected description node to still be in the DOM after ' +
+                   'it is no longer being used.').toBe(true);
   });
 
   it('should remove the aria-describedby attribute if there are no more messages', () => {

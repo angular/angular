@@ -71,13 +71,14 @@ describe('MatExpansionPanel', () => {
       By.css('.mat-expansion-panel-content'))!.nativeElement;
     fixture.detectChanges();
 
-    expect(content.textContent.trim()).toBe('', 'Expected content element to be empty.');
+    expect(content.textContent.trim())
+      .withContext('Expected content element to be empty.').toBe('');
 
     fixture.componentInstance.expanded = true;
     fixture.detectChanges();
 
     expect(content.textContent.trim())
-        .toContain('Some content', 'Expected content to be rendered.');
+      .withContext('Expected content to be rendered.').toContain('Some content');
   }));
 
   it('should render the content for a lazy-loaded panel that is opened on init', fakeAsync(() => {
@@ -87,7 +88,7 @@ describe('MatExpansionPanel', () => {
     fixture.detectChanges();
 
     expect(content.textContent.trim())
-        .toContain('Some content', 'Expected content to be rendered.');
+      .withContext('Expected content to be rendered.').toContain('Some content');
   }));
 
   it('emit correct events for change in panel expanded state', () => {
@@ -194,7 +195,8 @@ describe('MatExpansionPanel', () => {
     const button = fixture.debugElement.query(By.css('button'))!.nativeElement;
 
     button.focus();
-    expect(document.activeElement).toBe(button, 'Expected button to start off focusable.');
+    expect(document.activeElement)
+      .withContext('Expected button to start off focusable.').toBe(button);
 
     button.blur();
     fixture.componentInstance.expanded = false;
@@ -207,7 +209,8 @@ describe('MatExpansionPanel', () => {
     getComputedStyle(button).getPropertyValue('visibility');
 
     button.focus();
-    expect(document.activeElement).not.toBe(button, 'Expected button to no longer be focusable.');
+    expect(document.activeElement).not
+      .withContext('Expected button to no longer be focusable.').toBe(button);
   }));
 
   it('should restore focus to header if focused element is inside panel on close', fakeAsync(() => {
@@ -220,13 +223,15 @@ describe('MatExpansionPanel', () => {
     const header = fixture.debugElement.query(By.css('mat-expansion-panel-header'))!.nativeElement;
 
     button.focus();
-    expect(document.activeElement).toBe(button, 'Expected button to start off focusable.');
+    expect(document.activeElement)
+      .withContext('Expected button to start off focusable.').toBe(button);
 
     fixture.componentInstance.expanded = false;
     fixture.detectChanges();
     tick(250);
 
-    expect(document.activeElement).toBe(header, 'Expected header to be focused.');
+    expect(document.activeElement)
+      .withContext('Expected header to be focused.').toBe(header);
   }));
 
   it('should not change focus origin if origin not specified', fakeAsync(() => {
@@ -280,13 +285,15 @@ describe('MatExpansionPanel', () => {
     fixture.detectChanges();
 
     expect(header.querySelector('.mat-expansion-indicator'))
-        .toBeTruthy('Expected indicator to be shown.');
+      .withContext('Expected indicator to be shown.')
+      .toBeTruthy();
 
     fixture.componentInstance.hideToggle = true;
     fixture.detectChanges();
 
     expect(header.querySelector('.mat-expansion-indicator'))
-        .toBeFalsy('Expected indicator to be hidden.');
+      .withContext('Expected indicator to be hidden.')
+      .toBeFalsy();
   });
 
   it('should update the indicator rotation when the expanded state is toggled programmatically',
@@ -298,13 +305,15 @@ describe('MatExpansionPanel', () => {
 
       const arrow = fixture.debugElement.query(By.css('.mat-expansion-indicator'))!.nativeElement;
 
-      expect(arrow.style.transform).toBe('rotate(0deg)', 'Expected no rotation.');
+      expect(arrow.style.transform)
+        .withContext('Expected no rotation.').toBe('rotate(0deg)');
 
       fixture.componentInstance.expanded = true;
       fixture.detectChanges();
       tick(250);
 
-      expect(arrow.style.transform).toBe('rotate(180deg)', 'Expected 180 degree rotation.');
+      expect(arrow.style.transform)
+        .withContext('Expected 180 degree rotation.').toBe('rotate(180deg)');
     }));
 
   it('should make sure accordion item runs ngOnDestroy when expansion panel is destroyed', () => {

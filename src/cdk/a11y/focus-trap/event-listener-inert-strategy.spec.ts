@@ -23,9 +23,9 @@ describe('EventListenerFocusTrapInertStrategy', () => {
       componentInstance.outsideFocusableElement.nativeElement.focus();
       flush();
 
-      expect(componentInstance.activeElement).toBe(
-        componentInstance.firstFocusableElement.nativeElement,
-        'Expected first focusable element to be focused');
+      expect(componentInstance.activeElement)
+        .withContext('Expected first focusable element to be focused')
+        .toBe(componentInstance.firstFocusableElement.nativeElement);
   }));
 
   it('does not intercept focus when focus moves to another element in the FocusTrap',
@@ -37,9 +37,9 @@ describe('EventListenerFocusTrapInertStrategy', () => {
       componentInstance.secondFocusableElement.nativeElement.focus();
       flush();
 
-      expect(componentInstance.activeElement).toBe(
-        componentInstance.secondFocusableElement.nativeElement,
-        'Expected second focusable element to be focused');
+      expect(componentInstance.activeElement)
+        .withContext('Expected second focusable element to be focused')
+        .toBe(componentInstance.secondFocusableElement.nativeElement);
   }));
 
   it('should not intercept focus if it moved outside the trap and back in again',
@@ -52,8 +52,9 @@ describe('EventListenerFocusTrapInertStrategy', () => {
       secondFocusableElement.nativeElement.focus();
       flush();
 
-      expect(fixture.componentInstance.activeElement).toBe(secondFocusableElement.nativeElement,
-          'Expected second focusable element to be focused');
+      expect(fixture.componentInstance.activeElement)
+        .withContext('Expected second focusable element to be focused')
+        .toBe(secondFocusableElement.nativeElement);
   }));
 
 });

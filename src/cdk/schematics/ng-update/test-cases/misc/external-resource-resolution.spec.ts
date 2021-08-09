@@ -19,10 +19,10 @@ describe('ng-update external resource resolution', () => {
     await runFixers();
 
     expect(appTree.readContent('/projects/material/test.html'))
-        .toBe(expected, 'Expected absolute devkit tree paths to work.');
+      .withContext('Expected absolute devkit tree paths to work.').toBe(expected);
     expect(appTree.readContent('/projects/cdk-testing/src/some-tmpl.html'))
-        .toBe(expected, 'Expected relative paths with parent segments to work.');
+      .withContext('Expected relative paths with parent segments to work.').toBe(expected);
     expect(appTree.readContent('/projects/cdk-testing/src/test-cases/local.html'))
-        .toBe(expected, 'Expected relative paths without explicit dot to work.');
+      .withContext('Expected relative paths without explicit dot to work.').toBe(expected);
   });
 });

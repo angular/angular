@@ -146,15 +146,20 @@ describe('MatProgressSpinner', () => {
     fixture.detectChanges();
 
     expect(parseInt(spinner.style.width))
-        .toBe(32, 'Expected the custom diameter to be applied to the host element width.');
+      .withContext('Expected the custom diameter to be applied to the host element width.')
+      .toBe(32);
     expect(parseInt(spinner.style.height))
-        .toBe(32, 'Expected the custom diameter to be applied to the host element height.');
+      .withContext('Expected the custom diameter to be applied to the host element height.')
+      .toBe(32);
     expect(parseInt(svgElement.style.width))
-        .toBe(32, 'Expected the custom diameter to be applied to the svg element width.');
+      .withContext('Expected the custom diameter to be applied to the svg element width.')
+      .toBe(32);
     expect(parseInt(svgElement.style.height))
-        .toBe(32, 'Expected the custom diameter to be applied to the svg element height.');
+      .withContext('Expected the custom diameter to be applied to the svg element height.')
+      .toBe(32);
     expect(svgElement.getAttribute('viewBox'))
-        .toBe('0 0 25.2 25.2', 'Expected the custom diameter to be applied to the svg viewBox.');
+      .withContext('Expected the custom diameter to be applied to the svg viewBox.')
+      .toBe('0 0 25.2 25.2');
   });
 
   it('should add a style tag with the indeterminate animation to the document head when using a ' +
@@ -190,15 +195,20 @@ describe('MatProgressSpinner', () => {
       const svgElement = fixture.nativeElement.querySelector('svg');
 
       expect(parseFloat(spinner.style.width))
-        .toBe(32.5, 'Expected the custom diameter to be applied to the host element width.');
+        .withContext('Expected the custom diameter to be applied to the host element width.')
+        .toBe(32.5);
       expect(parseFloat(spinner.style.height))
-        .toBe(32.5, 'Expected the custom diameter to be applied to the host element height.');
+        .withContext('Expected the custom diameter to be applied to the host element height.')
+        .toBe(32.5);
       expect(parseFloat(svgElement.style.width))
-        .toBe(32.5, 'Expected the custom diameter to be applied to the svg element width.');
+        .withContext('Expected the custom diameter to be applied to the svg element width.')
+        .toBe(32.5);
       expect(parseFloat(svgElement.style.height))
-        .toBe(32.5, 'Expected the custom diameter to be applied to the svg element height.');
+        .withContext('Expected the custom diameter to be applied to the svg element height.')
+        .toBe(32.5);
       expect(svgElement.getAttribute('viewBox'))
-        .toBe('0 0 25.75 25.75', 'Expected the custom diameter to be applied to the svg viewBox.');
+        .withContext('Expected the custom diameter to be applied to the svg viewBox.')
+        .toBe('0 0 25.75 25.75');
   });
 
   it('should handle creating animation style tags based on a floating point diameter', () => {
@@ -209,10 +219,12 @@ describe('MatProgressSpinner', () => {
 
     const circleElement = fixture.nativeElement.querySelector('circle');
 
-    expect(circleElement.style.animationName).toBe('mat-progress-spinner-stroke-rotate-32_5',
-    'Expected the spinner circle element to have an animation name based on the custom diameter');
-    expect(document.head.querySelectorAll('style[mat-spinner-animation="32_5"]').length).toBe(1,
-    'Expected a style tag with the indeterminate animation to be attached to the document head');
+    expect(circleElement.style.animationName)
+      .withContext('Expected the spinner circle element to have an animation name based on ' +
+                   'the custom diameter').toBe('mat-progress-spinner-stroke-rotate-32_5');
+    expect(document.head.querySelectorAll('style[mat-spinner-animation="32_5"]').length)
+      .withContext('Expected a style tag with the indeterminate animation to be ' +
+                   'attached to the document head').toBe(1);
   });
 
   it('should allow a custom stroke width', () => {
@@ -224,10 +236,12 @@ describe('MatProgressSpinner', () => {
     const circleElement = fixture.nativeElement.querySelector('circle');
     const svgElement = fixture.nativeElement.querySelector('svg');
 
-    expect(parseInt(circleElement.style.strokeWidth)).toBe(40, 'Expected the custom stroke ' +
-      'width to be applied to the circle element as a percentage of the element size.');
+    expect(parseInt(circleElement.style.strokeWidth))
+      .withContext('Expected the custom stroke ' +
+    'width to be applied to the circle element as a percentage of the element size.').toBe(40);
     expect(svgElement.getAttribute('viewBox'))
-      .toBe('0 0 130 130', 'Expected the viewBox to be adjusted based on the stroke width.');
+      .withContext('Expected the viewBox to be adjusted based on the stroke width.')
+      .toBe('0 0 130 130');
   });
 
   it('should allow floating point values for custom stroke width', () => {
@@ -239,10 +253,12 @@ describe('MatProgressSpinner', () => {
     const circleElement = fixture.nativeElement.querySelector('circle');
     const svgElement = fixture.nativeElement.querySelector('svg');
 
-    expect(parseFloat(circleElement.style.strokeWidth)).toBe(40.5, 'Expected the custom stroke ' +
-      'width to be applied to the circle element as a percentage of the element size.');
+    expect(parseFloat(circleElement.style.strokeWidth))
+      .withContext('Expected the custom stroke ' +
+    'width to be applied to the circle element as a percentage of the element size.').toBe(40.5);
     expect(svgElement.getAttribute('viewBox'))
-      .toBe('0 0 130.5 130.5', 'Expected the viewBox to be adjusted based on the stroke width.');
+      .withContext('Expected the viewBox to be adjusted based on the stroke width.')
+      .toBe('0 0 130.5 130.5');
   });
 
   it('should expand the host element if the stroke width is greater than the default', () => {

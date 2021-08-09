@@ -289,13 +289,13 @@ describe('MatTabHeader', () => {
         const buttonAfter = fixture.debugElement.query(By.css('.mat-tab-header-pagination-after'))!;
 
         expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
-          .toBe(0, 'Expected no ripple to show up initially.');
+          .withContext('Expected no ripple to show up initially.').toBe(0);
 
         dispatchFakeEvent(buttonAfter.nativeElement, 'mousedown');
         dispatchFakeEvent(buttonAfter.nativeElement, 'mouseup');
 
         expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
-          .toBe(1, 'Expected one ripple to show up after mousedown');
+          .withContext('Expected one ripple to show up after mousedown').toBe(1);
       });
 
       it('should allow disabling ripples for pagination buttons', () => {
@@ -308,13 +308,13 @@ describe('MatTabHeader', () => {
         const buttonAfter = fixture.debugElement.query(By.css('.mat-tab-header-pagination-after'))!;
 
         expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
-          .toBe(0, 'Expected no ripple to show up initially.');
+          .withContext('Expected no ripple to show up initially.').toBe(0);
 
         dispatchFakeEvent(buttonAfter.nativeElement, 'mousedown');
         dispatchFakeEvent(buttonAfter.nativeElement, 'mouseup');
 
         expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
-          .toBe(0, 'Expected no ripple to show up after mousedown');
+          .withContext('Expected no ripple to show up after mousedown').toBe(0);
       });
 
     });
@@ -388,7 +388,8 @@ describe('MatTabHeader', () => {
         }));
 
       it('should not scroll if the sequence is interrupted quickly', fakeAsync(() => {
-        expect(header.scrollDistance).toBe(0, 'Expected to start off not scrolled.');
+        expect(header.scrollDistance)
+          .withContext('Expected to start off not scrolled.').toBe(0);
 
         dispatchFakeEvent(nextButton, 'mousedown');
         fixture.detectChanges();
@@ -400,7 +401,8 @@ describe('MatTabHeader', () => {
 
         tick(3000);
 
-        expect(header.scrollDistance).toBe(0, 'Expected not to have scrolled after a while.');
+        expect(header.scrollDistance)
+          .withContext('Expected not to have scrolled after a while.').toBe(0);
       }));
 
       it('should clear the timeouts on destroy', fakeAsync(() => {
@@ -455,17 +457,20 @@ describe('MatTabHeader', () => {
       }));
 
       it('should stop scrolling if the pointer leaves the header', fakeAsync(() => {
-        expect(header.scrollDistance).toBe(0, 'Expected to start off not scrolled.');
+        expect(header.scrollDistance)
+          .withContext('Expected to start off not scrolled.').toBe(0);
 
         dispatchFakeEvent(nextButton, 'mousedown');
         fixture.detectChanges();
         tick(300);
 
-        expect(header.scrollDistance).toBe(0, 'Expected not to scroll after short amount of time.');
+        expect(header.scrollDistance)
+          .withContext('Expected not to scroll after short amount of time.').toBe(0);
 
         tick(1000);
 
-        expect(header.scrollDistance).toBeGreaterThan(0, 'Expected to scroll after some time.');
+        expect(header.scrollDistance)
+          .withContext('Expected to scroll after some time.').toBeGreaterThan(0);
 
         const previousDistance = header.scrollDistance;
 
@@ -477,13 +482,15 @@ describe('MatTabHeader', () => {
       }));
 
       it('should not scroll when pressing the right mouse button', fakeAsync(() => {
-        expect(header.scrollDistance).toBe(0, 'Expected to start off not scrolled.');
+        expect(header.scrollDistance)
+          .withContext('Expected to start off not scrolled.').toBe(0);
 
         dispatchEvent(nextButton, createMouseEvent('mousedown', undefined, undefined, 2));
         fixture.detectChanges();
         tick(3000);
 
-        expect(header.scrollDistance).toBe(0, 'Expected not to have scrolled after a while.');
+        expect(header.scrollDistance)
+          .withContext('Expected not to have scrolled after a while.').toBe(0);
       }));
 
       /**
@@ -492,24 +499,28 @@ describe('MatTabHeader', () => {
        * @param endEventName Name of the event that is supposed to end the scrolling.
        */
       function assertNextButtonScrolling(startEventName: string, endEventName: string) {
-        expect(header.scrollDistance).toBe(0, 'Expected to start off not scrolled.');
+        expect(header.scrollDistance)
+          .withContext('Expected to start off not scrolled.').toBe(0);
 
         dispatchFakeEvent(nextButton, startEventName);
         fixture.detectChanges();
         tick(300);
 
-        expect(header.scrollDistance).toBe(0, 'Expected not to scroll after short amount of time.');
+        expect(header.scrollDistance)
+          .withContext('Expected not to scroll after short amount of time.').toBe(0);
 
         tick(1000);
 
-        expect(header.scrollDistance).toBeGreaterThan(0, 'Expected to scroll after some time.');
+        expect(header.scrollDistance)
+          .withContext('Expected to scroll after some time.').toBeGreaterThan(0);
 
         const previousDistance = header.scrollDistance;
 
         tick(100);
 
         expect(header.scrollDistance)
-            .toBeGreaterThan(previousDistance, 'Expected to scroll again after some more time.');
+          .withContext('Expected to scroll again after some more time.')
+          .toBeGreaterThan(previousDistance);
 
         dispatchFakeEvent(nextButton, endEventName);
       }
@@ -525,26 +536,28 @@ describe('MatTabHeader', () => {
 
         let currentScroll = header.scrollDistance;
 
-        expect(currentScroll).toBeGreaterThan(0, 'Expected to start off scrolled.');
+        expect(currentScroll)
+          .withContext('Expected to start off scrolled.').toBeGreaterThan(0);
 
         dispatchFakeEvent(prevButton, startEventName);
         fixture.detectChanges();
         tick(300);
 
         expect(header.scrollDistance)
-            .toBe(currentScroll, 'Expected not to scroll after short amount of time.');
+          .withContext('Expected not to scroll after short amount of time.').toBe(currentScroll);
 
         tick(1000);
 
         expect(header.scrollDistance)
-            .toBeLessThan(currentScroll, 'Expected to scroll after some time.');
+          .withContext('Expected to scroll after some time.').toBeLessThan(currentScroll);
 
         currentScroll = header.scrollDistance;
 
         tick(100);
 
         expect(header.scrollDistance)
-            .toBeLessThan(currentScroll, 'Expected to scroll again after some more time.');
+          .withContext('Expected to scroll again after some more time.')
+          .toBeLessThan(currentScroll);
 
         dispatchFakeEvent(nextButton, endEventName);
       }

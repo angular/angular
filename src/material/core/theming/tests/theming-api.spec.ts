@@ -250,7 +250,7 @@ describe('theming api', () => {
    * generated at top-level.
    */
   function hasDensityStyles(parsed: Root, baseSelector: string|null): 'all'|'partial'|'none' {
-    expect(parsed.nodes).toBeDefined('Expected CSS to be not empty.');
+    expect(parsed.nodes).withContext('Expected CSS to be not empty.').toBeDefined();
     expect(knownDensitySelectors.size).not.toBe(0);
     const missingDensitySelectors = new Set(knownDensitySelectors.keys());
     const baseSelectorRegex = new RegExp(`^${baseSelector} `, 'g');
@@ -318,6 +318,6 @@ describe('theming api', () => {
     const match = writeSpy.calls.all().find(
         (s: jasmine.CallInfo<typeof process.stderr.write>) =>
             typeof s.args[0] === 'string' && message.test(s.args[0]));
-    expect(match).toBeDefined('Expected warning to be printed.');
+    expect(match).withContext('Expected warning to be printed.').toBeDefined();
   }
 });
