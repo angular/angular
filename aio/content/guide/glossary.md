@@ -1092,7 +1092,7 @@ See [custom element](#custom-element).
 
 ## workspace
 
-A collection of Angular [projects](#project) (that is, applications and libraries) powered by the [Angular CLI] (#cli) that are typically co-located in a single source-control repository (such as [git](https://git-scm.com/)).
+A collection of Angular [projects](#project) (that is, applications and libraries) powered by the [Angular CLI](#cli) that are typically co-located in a single source-control repository (such as [git](https://git-scm.com/)).
 
 The [CLI](#cli) [`ng new` command](cli/new) creates a file system directory (the "workspace root").
 In the workspace root, it also creates the workspace [configuration file](#configuration) (`angular.json`) and, by default, an initial application project with the same name.
