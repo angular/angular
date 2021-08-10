@@ -1053,6 +1053,18 @@ describe('Driver', () => {
             expect(scope.clients.openWindow).not.toHaveBeenCalled();
           });
         });
+
+        describe('customized data with no onActionClick default', () => {
+          it('has no client interaction', async () => {
+            expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+            spyOn(scope.clients, 'openWindow');
+
+            await driver.initialized;
+            await scope.handleClick(
+                {title: 'This is a test without action', body: 'Test body without action', data: {}});
+            expect(scope.clients.openWindow).not.toHaveBeenCalled();
+          });
+        });
       });
 
       describe('URL resolution', () => {
