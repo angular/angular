@@ -636,6 +636,12 @@ export class Router {
                            (this.onSameUrlNavigation === 'reload' ? true : urlTransition) &&
                            this.urlHandlingStrategy.shouldProcessUrl(t.rawUrl);
 
+                       // If the source of the navigation is from a browser event, the URL is
+                       // already updated. We already need to sync the internal state.
+                       if (t.source !== 'imperative') {
+                         this.browserUrlTree = t.rawUrl;
+                       }
+
                        if (processCurrentUrl) {
                          return of(t).pipe(
                              // Fire NavigationStart event
@@ -954,7 +960,12 @@ export class Router {
                                  this.urlHandlingStrategy.merge(e.url, this.rawUrlTree);
                              const extras = {
                                skipLocationChange: t.extras.skipLocationChange,
-                               replaceUrl: this.urlUpdateStrategy === 'eager'
+                               // The URL is already updated at this point if we have 'eager' URL
+                               // updates or if the navigation was triggered by the browser (back
+                               // button, URL bar, etc). We want to replace that item in history if
+                               // the navigation is rejected.
+                               replaceUrl:
+                                   this.urlUpdateStrategy === 'eager' || t.source !== 'imperative'
                              };
 
                              this.scheduleNavigation(
