@@ -49,6 +49,11 @@
             "desc": "Add API Based CMS to your Angular app",
             "url": "https://github.com/ButterCMS/buttercms-angular-tutorial",
             "title": "API Based CMS with Butter"
+          },
+          "angular-community-meetup": {
+            "desc": "Come learn technical skills and network at this monthly, multi-series, multi-event, multi-timezone online meetup.",
+            "url": "https://ngxp.show",
+            "title": "Angular Community Meetup"
           }
         }
       },
@@ -90,6 +95,12 @@
             "logo": "",
             "title": "NgRuAir",
             "url": "https://github.com/ngRuAir/ngruair"
+          },
+          "ngxp": {
+            "desc": "Weekly technical-adjacent podcast by Brooke Avery & Erik Slack.on't just code in Angular, come enjoy the Angular Experience!",
+            "logo": "",
+            "title": "Angular Experience (NgXP)",
+            "url": "https://ngxp.show"
           }
         }
       }
