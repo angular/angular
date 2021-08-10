@@ -1,0 +1,26 @@
+/** For building //packages/platform-browser/animations. */
+{
+  "extends": "../../tsconfig-tsec-base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": ".tsec",
+    "paths": {
+      "@angular/core": ["../../core"],
+      "@angular/common": ["../../common"],
+      "@angular/platform-browser": ["../"],
+      "@angular/animations": ["../../animations"],
+      "@angular/animations/browser": ["../../animations/browser"]
+    }
+  },
+  "include": [
+    "*.ts",
+    "src/**/*.ts"
+  ],
+  "references": [
+    {"path": "../../core/tsconfig-tsec.json"},
+    {"path": "../../common/tsconfig-tsec.json"},
+    {"path": "../tsconfig-tsec.json"},
+    {"path": "../../animations/tsconfig-tsec.json"},
+    {"path": "../../animations/browser/tsconfig-tsec.json"}
+  ]
+}

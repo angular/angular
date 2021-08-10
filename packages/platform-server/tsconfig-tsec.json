@@ -1,0 +1,33 @@
+/** For building //packages/platform-server. */
+{
+  "extends": "../tsconfig-tsec-base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": ".tsec",
+    "paths": {
+      "@angular/core": ["../core"],
+      "@angular/common": ["../common"],
+      "@angular/common/http": ["../common/http"],
+      "@angular/compiler": ["../compiler"],
+      "@angular/platform-browser": ["../platform-browser"],
+      "@angular/platform-browser/animations": ["../platform-browser/animations"],
+      "@angular/platform-browser-dynamic": ["../platform-browser-dynamic"],
+      "@angular/animations/browser": ["../animations/browser"]
+    }
+  },
+  "include": [
+    "*.ts",
+    "src/**/*.ts"
+  ],
+  "references": [
+    {"path": "../core/tsconfig-tsec.json"},
+    {"path": "../common/tsconfig-tsec.json"},
+    {"path": "../common/http/tsconfig-tsec.json"},
+    {"path": "../compiler/tsconfig-tsec.json"},
+    {"path": "../platform-browser/tsconfig-tsec.json"},
+    {"path": "../platform-browser/animations/tsconfig-tsec.json"},
+    {"path": "../platform-browser-dynamic/tsconfig-tsec.json"},
+    {"path": "../zone.js/lib/tsconfig-tsec.json"},
+    {"path": "../animations/browser/tsconfig-tsec.json"}
+  ]
+}

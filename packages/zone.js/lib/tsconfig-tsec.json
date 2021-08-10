@@ -1,0 +1,9 @@
+/* For building //packages/zone.js/lib:zone_d_ts. */
+{
+  "extends": "../../tsconfig-tsec-base.json",
+  "compilerOptions": {
+    "outFile": ".tsec/zone.d.ts",
+    "types": ["node"]
+  },
+  "files": ["zone.ts"]
+}

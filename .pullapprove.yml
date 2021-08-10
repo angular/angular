@@ -731,9 +731,13 @@ groups:
           'packages/core/test/linker/security_integration_spec.ts',
           'packages/compiler/src/schema/**',
           'packages/platform-browser/src/security/**',
+          'packages/tsconfig-tsec.json',
+          'packages/tsconfig-tsec-base.json',
+          'packages/**/tsconfig-tsec.json',
+          'packages/tsec-exemption.json'
           'aio/content/guide/security.md',
           'aio/content/examples/security/**',
-          'aio/content/images/guide/security/**'
+          'aio/content/images/guide/security/**',
           ])
     reviewers:
       users:
