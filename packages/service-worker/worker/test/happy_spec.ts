@@ -1060,8 +1060,11 @@ describe('Driver', () => {
             spyOn(scope.clients, 'openWindow');
 
             await driver.initialized;
-            await scope.handleClick(
-                {title: 'This is a test without action', body: 'Test body without action', data: {}});
+            await scope.handleClick({
+              title: 'This is a test without action',
+              body: 'Test body without action',
+              data: {}
+            });
             expect(scope.clients.openWindow).not.toHaveBeenCalled();
           });
         });
