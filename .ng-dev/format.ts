@@ -24,7 +24,6 @@ export const format: FormatConfig = {
       // Do not format generated ng-dev script
       '!dev-infra/ng-dev.js',
       '!dev-infra/build-worker.js',
-      '!dev-infra/commit-message-filter.js',
       // Do not format compliance test-cases since they must match generated code
       '!packages/compiler-cli/test/compliance/test_cases/**/*.js',
       // Do not format the locale files which are checked-in for Google3, but generated using
