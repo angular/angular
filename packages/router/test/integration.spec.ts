@@ -1230,7 +1230,11 @@ describe('Integration', () => {
          location.simulateHashChange('/blocked');
 
          advance(fixture);
-         expectEvents(recordedEvents, [[NavigationStart, '/blocked']]);
+         expectEvents(recordedEvents, [
+           [NavigationStart, '/blocked'],
+           [NavigationStart, '/simple'],
+           [NavigationEnd, '/simple'],
+         ]);
        }));
   });
 
