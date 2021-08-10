@@ -131,7 +131,7 @@
     "css-selector-parser": "^1.4.1",
     "dgeni": "^0.4.14",
     "dgeni-packages": "^0.29.1",
-    "entities": "^2.2.0",
+    "entities": "^3.0.0",
     "esbuild": "^0.12.0",
     "eslint": "^7.26.0",
     "eslint-plugin-import": "^2.23.4",
