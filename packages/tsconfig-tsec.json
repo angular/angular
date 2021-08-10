@@ -1,0 +1,10 @@
+/** Main config for building all packages that need to be checked by tsec. */
+{
+  "extends": "./tsconfig-tsec-base.json",
+  "include": [],
+  "references": [
+    {"path": "core/tsconfig-tsec.json"},
+    {"path": "platform-browser/tsconfig-tsec.json"},
+    {"path": "platform-server/tsconfig-tsec.json"}
+  ]
+}

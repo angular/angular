@@ -1,0 +1,11 @@
+/** For building //packages/compiler. */
+{
+  "extends": "../tsconfig-tsec-base.json",
+  "compilerOptions": {
+    "outDir": ".tsec"
+  },
+  "include": [
+    "*.ts",
+    "src/**/*.ts"
+  ]
+}

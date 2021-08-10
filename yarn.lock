@@ -9049,7 +9049,7 @@ minimalistic-assert@^1.0.0:
   resolved "https://registry.yarnpkg.com/minimalistic-assert/-/minimalistic-assert-1.0.1.tgz#2e194de044626d4a10e7f7fbc00ce73e83e4d5c7"
   integrity sha512-UtJcAD4yEaGtjPezWuO9wC4nwUnVH/8/Im3yEHQP4b67cXlD/Qr9hdITCU1xDbSEXg2XKNaP8jsReV7vQd00/A==
 
-minimatch@3.0.4, minimatch@^3.0.4:
+minimatch@3.0.4, minimatch@^3.0.3, minimatch@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-3.0.4.tgz#5166e286457f03306064be5497e8dbb0c3d32083"
   integrity sha512-yJHVQEhyqPLUTgt9B83PXu6W3rx4MvvHvSUvToogpwoGDOUQ+yDrR0HRot+yOCdCO7u4hX3pWft6kWBBcqh0UA==
@@ -13269,6 +13269,14 @@ ts-node@^10.0.0:
     diff "^4.0.1"
     make-error "^1.1.1"
     yn "3.1.1"
+
+tsec@0.1.7:
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/tsec/-/tsec-0.1.7.tgz#db217a1c7a47e2c0bca07aa9cd7ae28863343b22"
+  integrity sha512-hS8VPL8RX1jPvF8dPNvgZe9j0zE7L8Lj9pPuBYDoYaXDhGtXSfCY1Qn0vKTl7TaohXnnlnvlaNtvlMjubnX0CA==
+  dependencies:
+    glob "^7.1.1"
+    minimatch "^3.0.3"
 
 tsickle@0.38.1:
   version "0.38.1"

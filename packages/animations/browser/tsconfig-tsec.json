@@ -1,0 +1,20 @@
+/** For building //packages/animations/browser. */
+{
+  "extends": "../../tsconfig-tsec-base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": ".tsec",
+    "paths": {
+      "@angular/core": ["../../core"],
+      "@angular/animations": ["../"]
+    }
+  },
+  "include": [
+    "*.ts",
+    "src/**/*.ts"
+  ],
+  "references": [
+    {"path": "../../core/tsconfig-tsec.json"},
+    {"path": "../tsconfig-tsec.json"}
+  ]
+}

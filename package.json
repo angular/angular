@@ -36,7 +36,8 @@
     "symbol-extractor:update": "node tools/symbol-extractor/run_all_symbols_extractor_tests.js accept",
     "ts-circular-deps:check": "yarn -s ng-dev ts-circular-deps check --config ./packages/circular-deps-test.conf.js",
     "ts-circular-deps:approve": "yarn -s ng-dev ts-circular-deps approve --config ./packages/circular-deps-test.conf.js",
-    "check-tooling-setup": "yarn tsc --project .ng-dev/tsconfig.json"
+    "check-tooling-setup": "yarn tsc --project .ng-dev/tsconfig.json",
+    "tsec:packages": "yarn tsec -b packages/tsconfig-tsec.json"
   },
   "// 1": "dependencies are used locally and by bazel",
   "dependencies": {
@@ -180,6 +181,7 @@
     "sauce-connect": "https://saucelabs.com/downloads/sc-4.6.2-linux.tar.gz",
     "semver": "^7.3.5",
     "ts-node": "^10.0.0",
+    "tsec": "0.1.7",
     "tslint-eslint-rules": "5.4.0",
     "tslint-no-toplevel-property-access": "0.0.2",
     "typed-graphqlify": "^3.1.1",

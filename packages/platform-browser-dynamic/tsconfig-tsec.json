@@ -1,0 +1,25 @@
+/** For building //packages/platform-browser-dynamic. */
+{
+  "extends": "../tsconfig-tsec-base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": ".tsec",
+    "paths": {
+      "@angular/core": ["../core"],
+      "@angular/common": ["../common"],
+      "@angular/compiler": ["../compiler"],
+      "@angular/platform-browser": ["../platform-browser"]
+    }
+  },
+  "include": [
+    "*.ts",
+    "src/**/*.ts",
+    "../*.d.ts"
+  ],
+  "references": [
+    {"path": "../core/tsconfig-tsec.json"},
+    {"path": "../common/tsconfig-tsec.json"},
+    {"path": "../compiler/tsconfig-tsec.json"},
+    {"path": "../platform-browser/tsconfig-tsec.json"}
+  ]
+}
