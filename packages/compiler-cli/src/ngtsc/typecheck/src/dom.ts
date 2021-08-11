@@ -10,8 +10,8 @@ import {DomElementSchemaRegistry, ParseSourceSpan, SchemaMetadata, TmplAstElemen
 import * as ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
-import {TemplateId} from '../api';
-import {makeTemplateDiagnostic, TemplateDiagnostic} from '../diagnostics';
+import {TemplateDiagnostic, TemplateId} from '../api';
+import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {TemplateSourceResolver} from './tcb_util';
 

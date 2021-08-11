@@ -12,8 +12,8 @@ import * as ts from 'typescript';
 
 import {ErrorCode, makeDiagnostic, makeRelatedInformation, ngErrorCode} from '../../diagnostics';
 import {ClassDeclaration} from '../../reflection';
-import {TemplateId} from '../api';
-import {makeTemplateDiagnostic, TemplateDiagnostic} from '../diagnostics';
+import {TemplateDiagnostic, TemplateId} from '../api';
+import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {TemplateSourceResolver} from './tcb_util';
 
