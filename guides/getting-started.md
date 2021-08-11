@@ -62,7 +62,7 @@ import { MatSliderModule } from '@angular/material/slider';
 Add the `<mat-slider>` tag to the `app.component.html` like so:
 
 ```html
-<mat-slider min="1" max="100" step="1" value="1"></mat-slider>
+<mat-slider min="1" max="100" step="1" value="50"></mat-slider>
 ```
 
 Run your local dev server:
