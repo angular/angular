@@ -8,13 +8,6 @@
     "platformName": "iOS",
     "deviceName": "iPhone 12 Pro Simulator"
   },
-  "BROWSERSTACK_EDGE87": {
-    "base": "BrowserStack",
-    "browser": "Edge",
-    "browser_version": "87.0",
-    "os": "Windows",
-    "os_version": "10"
-  },
   "BROWSERSTACK_SAFARI13": {
     "base": "BrowserStack",
     "browser": "Safari",

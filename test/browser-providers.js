@@ -1,5 +1,3 @@
-'use strict';
-
 /*
  * Browser Configuration for the different jobs in the legacy Karma tests.
  *
@@ -7,9 +5,8 @@
  *   - `saucelabs`: Launches the browser within Saucelabs
  */
 const browserConfig = {
-  'Edge87':            {unitTest: {target: 'browserstack'}},
-  'iOS14':             {unitTest: {target: 'saucelabs'}},
-  'Safari13':          {unitTest: {target: 'browserstack'}},
+  'iOS14': {unitTest: {target: 'saucelabs'}},
+  'Safari13': {unitTest: {target: 'browserstack'}},
 };
 
 /** Exports all available custom Karma browsers. */
@@ -28,7 +25,5 @@ function buildConfiguration(type, target) {
     .filter(([, config]) => config.target === target)
     .map(([browserName]) => browserName);
 
-  return targetBrowsers.map(browserName => {
-    return `${target.toUpperCase()}_${browserName.toUpperCase()}`;
-  });
+  return targetBrowsers.map(browserName => `${target.toUpperCase()}_${browserName.toUpperCase()}`);
 }
