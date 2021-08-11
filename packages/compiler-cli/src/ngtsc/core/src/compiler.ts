@@ -465,7 +465,13 @@ export class NgCompiler {
   getDiagnosticsForComponent(component: ts.ClassDeclaration): ts.Diagnostic[] {
     const compilation = this.ensureAnalyzed();
     const ttc = compilation.templateTypeChecker;
-    return this.addMessageTextDetails(ttc.getDiagnosticsForComponent(component));
+    const diagnostics: ts.Diagnostic[] = [];
+    diagnostics.push(...ttc.getDiagnosticsForComponent(component));
+    if (this.options._extendedTemplateDiagnostics) {
+      const extendedTemplateChecker = compilation.extendedTemplateChecker;
+      diagnostics.push(...extendedTemplateChecker.getDiagnosticsForComponent(component));
+    }
+    return this.addMessageTextDetails(diagnostics);
   }
 
   /**
