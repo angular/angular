@@ -65,7 +65,7 @@ log('\n# patch: use local version of @angular/* and zone.js in component_benchma
 [['@npm//@angular/platform-browser', '@angular//packages/platform-browser'],
  ['@npm//@angular/core', '@angular//packages/core'],
  [
-   'load\\("@npm//@angular/bazel:index.bzl". "ng_module"\\)',
+   'load\\("@npm//@angular/bazel:index.bzl", "ng_module"\\)',
    'load\("@angular//tools:defaults.bzl", "ng_module"\)'
  ],
  ['@npm//zone.js', '//packages/zone.js/bundles:zone.umd.js'],
