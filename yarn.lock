@@ -167,10 +167,10 @@
     call-me-maybe "^1.0.1"
     js-yaml "^4.1.0"
 
-"@babel/cli@7.14.5":
-  version "7.14.5"
-  resolved "https://registry.yarnpkg.com/@babel/cli/-/cli-7.14.5.tgz#9551b194f02360729de6060785bbdcce52c69f0a"
-  integrity sha512-poegjhRvXHWO0EAsnYajwYZuqcz7gyfxwfaecUESxDujrqOivf3zrjFbub8IJkrqEaz3fvJWh001EzxBub54fg==
+"@babel/cli@7.14.8":
+  version "7.14.8"
+  resolved "https://registry.yarnpkg.com/@babel/cli/-/cli-7.14.8.tgz#fac73c0e2328a8af9fd3560c06b096bfa3730933"
+  integrity sha512-lcy6Lymft9Rpfqmrqdd4oTDdUx9ZwaAhAfywVrHG4771Pa6PPT0danJ1kDHBXYqh4HHSmIdA+nlmfxfxSDPtBg==
   dependencies:
     commander "^4.0.1"
     convert-source-map "^1.1.0"
@@ -1172,24 +1172,24 @@
   resolved "https://registry.yarnpkg.com/@jsdevtools/ono/-/ono-7.1.3.tgz#9df03bbd7c696a5c58885c34aa06da41c8543796"
   integrity sha512-4JQNk+3mVzK3xh2rqd6RB4J46qUR19azEHBneZyTZM+c456qOrbbM/5xcR8huNCCcbVt7+UmizG6GuUvPvKUYg==
 
-"@microsoft/api-extractor-model@7.13.4":
-  version "7.13.4"
-  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor-model/-/api-extractor-model-7.13.4.tgz#bff4a52a35da5d9896650041d4f7a769c970da60"
-  integrity sha512-NYaR3hJinh089/Gkee8fvmEFf9zKkoUvNxgkqUlKBCDXH2+Ou4tNDuL8G6zjhKBPicHkp2VcL8l7q9H6txUkjQ==
+"@microsoft/api-extractor-model@7.13.5":
+  version "7.13.5"
+  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor-model/-/api-extractor-model-7.13.5.tgz#7836a81ba47b9a654062ed0361e4eee69afae51e"
+  integrity sha512-il6AebNltYo5hEtqXZw4DMvrwBPn6+F58TxwqmsLY+U+sSJNxaYn2jYksArrjErXVPR3gUgRMqD6zsdIkg+WEQ==
   dependencies:
     "@microsoft/tsdoc" "0.13.2"
     "@microsoft/tsdoc-config" "~0.15.2"
-    "@rushstack/node-core-library" "3.39.1"
+    "@rushstack/node-core-library" "3.40.0"
 
-"@microsoft/api-extractor@7.18.4":
-  version "7.18.4"
-  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.18.4.tgz#2d7641b36d323b4ac710d838a972be7e4f14d32b"
-  integrity sha512-Wx45VuIAu09Pk9Qwzt0I57OX31BaWO2r6+mfSXqYFsJjYTqwUkdFh92G1GKYgvuR9oF/ai7w10wrFpx5WZYbGg==
+"@microsoft/api-extractor@7.18.5":
+  version "7.18.5"
+  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.18.5.tgz#cc2804d7c8b9d0f1e63fd85d0448569b767db102"
+  integrity sha512-NUGS6WxexziEnroHUOI3KKVmMX02god7SLA8Y4a5GKCL5k7AHuHFqP2bpd5Otx2odfbdj15ObO7FU/XA3Oxh8w==
   dependencies:
-    "@microsoft/api-extractor-model" "7.13.4"
+    "@microsoft/api-extractor-model" "7.13.5"
     "@microsoft/tsdoc" "0.13.2"
     "@microsoft/tsdoc-config" "~0.15.2"
-    "@rushstack/node-core-library" "3.39.1"
+    "@rushstack/node-core-library" "3.40.0"
     "@rushstack/rig-package" "0.2.13"
     "@rushstack/ts-command-line" "4.8.1"
     colors "~1.2.1"
@@ -1485,10 +1485,10 @@
     estree-walker "^1.0.1"
     picomatch "^2.2.2"
 
-"@rushstack/node-core-library@3.39.1":
-  version "3.39.1"
-  resolved "https://registry.yarnpkg.com/@rushstack/node-core-library/-/node-core-library-3.39.1.tgz#dd1dc270e3035ac4de270f0ca80c25724ce19cc7"
-  integrity sha512-HHgMEHZTXQ3NjpQzWd5+fSt2Eod9yFwj6qBPbaeaNtDNkOL8wbLoxVimQNtcH0Qhn4wxF5u2NTDNFsxf2yd1jw==
+"@rushstack/node-core-library@3.40.0":
+  version "3.40.0"
+  resolved "https://registry.yarnpkg.com/@rushstack/node-core-library/-/node-core-library-3.40.0.tgz#2551915ea34e34ec2abb7172b9d7f4546144d9d4"
+  integrity sha512-P6uMPI7cqTdawLSPAG5BQrBu1MHlGRPqecp7ruIRgyukIEzkmh0QAnje4jAL/l1r3hw0qe4e+Dz5ZSnukT/Egg==
   dependencies:
     "@types/node" "10.17.13"
     colors "~1.2.1"
@@ -1771,15 +1771,10 @@
   resolved "https://registry.yarnpkg.com/@types/jasmine-ajax/-/jasmine-ajax-3.3.3.tgz#ec89515434d4aee9772e25a730bd626ecf44260d"
   integrity sha512-e2iJYrdwfxr6WmLHxNjISUgbrbGaRsFHsc9xnrq8SGFzbSYPDZ4lmAkIulAAjqrkZ1z21OJCZsZwWMnxoeX7+A==
 
-"@types/jasmine@*":
+"@types/jasmine@*", "@types/jasmine@3.8.2":
   version "3.8.2"
   resolved "https://registry.yarnpkg.com/@types/jasmine/-/jasmine-3.8.2.tgz#27ab0aaac29581bcbde5774e1843f90df977078e"
   integrity sha512-u5h7dqzy2XpXTzhOzSNQUQpKGFvROF8ElNX9P/TJvsHnTg/JvsAseVsGWQAQQldqanYaM+5kwxW909BBFAUYsg==
-
-"@types/jasmine@3.8.1":
-  version "3.8.1"
-  resolved "https://registry.yarnpkg.com/@types/jasmine/-/jasmine-3.8.1.tgz#8feebf4035d1e4c6a6ed4d27f3bbd285d8d0da91"
-  integrity sha512-ioRNoJvv0eXL1c9BZKpnywZWb5YflhaSiF3IOp9deyoh30MOwkB3bNuzi4UW76EFEhcmqpoEpdWhcUAAilomTw==
 
 "@types/jasminewd2@^2.0.8":
   version "2.0.10"
@@ -6512,10 +6507,10 @@ got@^9.6.0:
     to-readable-stream "^1.0.0"
     url-parse-lax "^3.0.0"
 
-graceful-fs@4.2.6, graceful-fs@^4.0.0, graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.2, graceful-fs@^4.2.3, graceful-fs@^4.2.4, graceful-fs@^4.2.6:
-  version "4.2.6"
-  resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.6.tgz#ff040b2b0853b23c3d31027523706f1885d76bee"
-  integrity sha512-nTnJ528pbqxYanhpDYsi4Rd8MAeaBA67+RZ10CM1m3bTAVFEDcd5AuA4a6W5YkGZ1iNXHzZz8T6TBKLeBuNriQ==
+graceful-fs@4.2.8, graceful-fs@^4.0.0, graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.2, graceful-fs@^4.2.3, graceful-fs@^4.2.4, graceful-fs@^4.2.6:
+  version "4.2.8"
+  resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.8.tgz#e412b8d33f5e006593cbd3cee6df9f2cebbe802a"
+  integrity sha512-qkIilPUYcNhJpd33n0GBXTB1MMPp14TxEsEs0pTrsSVucApsYzW5V+Q8Qxhik6KU3evy+qkAAowTByymK0avdg==
 
 graphviz@0.0.9:
   version "0.0.9"
