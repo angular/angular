@@ -1,3 +1,25 @@
+<a name="12.2.1"></a>
+# 12.2.1 "concrete-wall" (2021-08-11)
+### cdk/drag-drop
+| Commit | Description |
+| -- | -- |
+| [29466d9e38](https://github.com/angular/components/commit/29466d9e38a29deab35ffe6343a1bec008b66daf) | fix(cdk/drag-drop): add generic parameter for item type in CdkDragDrop ([#23209](https://github.com/angular/components/pull/23209)) |
+### material-experimental/mdc-button
+| Commit | Description |
+| -- | -- |
+| [48b7ae7542](https://github.com/angular/components/commit/48b7ae75426d0bebca6e2fbcfceb962cdbaa76f9) | fix(material-experimental/mdc-button): fix ripple size after MDC changes ([#23266](https://github.com/angular/components/pull/23266)) |
+### material/core
+| Commit | Description |
+| -- | -- |
+| [6f1a276d4b](https://github.com/angular/components/commit/6f1a276d4bd72d86425672f1066c08ac7a0a83ed) | fix(material/core): sanity checks not running ([#23289](https://github.com/angular/components/pull/23289)) |
+### material/tabs
+| Commit | Description |
+| -- | -- |
+| [5d0ad3b806](https://github.com/angular/components/commit/5d0ad3b8062d6956645acb1a181b1b0302df99d7) | fix(material/tabs): pagination not working inside flex container ([#23160](https://github.com/angular/components/pull/23160)) |
+## Special Thanks:
+Guilherme Rossato, Kristiyan Kostadinov, Paul Gschwendtner, Zach Arend and mmalerba
+
+
 # 12.2.0 "corduroy-aardvark" (2021-08-04)
 
 ### cdk
