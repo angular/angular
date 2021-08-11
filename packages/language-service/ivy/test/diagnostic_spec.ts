@@ -384,7 +384,7 @@ describe('getSemanticDiagnostics', () => {
     expect(diags[0].category).toEqual(ts.DiagnosticCategory.Warning);
   });
 
-  it('should not produce invalid banana in box warning', () => {
+  it('should not produce invalid banana in box warning without the required flags', () => {
     const files = {
       'app.ts': `
         import {Component} from '@angular/core';
@@ -402,6 +402,50 @@ describe('getSemanticDiagnostics', () => {
     const diags = project.getDiagnosticsForFile('app.ts');
     expect(diags.length).toEqual(0);
   });
+
+  it('should produce invalid banana in box warning in external html file', () => {
+    const files = {
+      'app.ts': `
+        import {Component} from '@angular/core';
+        @Component({
+          selector: 'test',
+          templateUrl: './app.html',
+        })
+        export class TestCmp { 
+          bar: string = "text"; 
+        }
+    `,
+      'app.html': `<div ([foo])="bar"></div>`
+    };
+    const project = createModuleAndProjectWithDeclarations(
+        env, 'test', files, {strictTemplates: true, _extendedTemplateDiagnostics: true});
+
+    const diags = project.getDiagnosticsForFile('app.html');
+    expect(diags.length).toEqual(1);
+    expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX));
+    expect(diags[0].category).toEqual(ts.DiagnosticCategory.Warning);
+  });
+
+  it('should not produce invalid banana in box warning in external html file without the required flags',
+     () => {
+       const files = {
+         'app.ts': `
+        import {Component} from '@angular/core';
+        @Component({
+          selector: 'test',
+          templateUrl: './app.html',
+        })
+        export class TestCmp { 
+          bar: string = "text"; 
+        }
+    `,
+         'app.html': `<div ([foo])="bar"></div>`
+       };
+       const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+
+       const diags = project.getDiagnosticsForFile('app.html');
+       expect(diags.length).toEqual(0);
+     });
 });
 
 function getTextOfDiagnostic(diag: ts.Diagnostic): string {
