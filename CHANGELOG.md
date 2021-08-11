@@ -1,3 +1,29 @@
+<a name="13.0.0-next.1"></a>
+# 13.0.0-next.1 (2021-08-11)
+### forms
+| Commit | Description |
+| -- | -- |
+| [e49fc96ed3](https://github.com/angular/angular/commit/e49fc96ed33c26434a14b80487dd912d8c76cace) | feat(forms): Make Form Statuses use stricter types. ([#42952](https://github.com/angular/angular/pull/42952)) |
+### router
+| Commit | Description |
+| -- | -- |
+| [bbad42310b](https://github.com/angular/angular/commit/bbad42310b6ba4df803917fa9b32e1e702eca531) | fix(router): ensure check for match options is compatible with property renaming ([#43086](https://github.com/angular/angular/pull/43086)) |
+| [784671597e](https://github.com/angular/angular/commit/784671597e0b28d9696bdc325b426a6c7be0cd8e) | fix(router): Allow question marks in query param values ([#31187](https://github.com/angular/angular/pull/31187)) |
+## Breaking Changes
+### forms
+A new type called `FormControlStatus` has been introduced, which is a union of all possible status strings for form controls. `AbstractControl.status` has been narrowed from `string` to `FormControlStatus`, and `statusChanges` has been narrowed from `Observable<any>` to `Observable<FormControlStatus>`. Most applications should consume the new types seamlessly. Any breakage caused by this change is likely due to one of the following two problems: (1) the app is comparing `AbstractControl.status` against a string which is not a valid status; or, (2) the app is using `statusChanges` events as if they were something other than strings.
+### router
+The default url serializer would previously drop
+everything after and including a question mark in query parameters. That
+is, for a navigation to `/path?q=hello?&other=123`, the query
+params would be parsed to just `{q: 'hello'}`. This is
+incorrect because the URI spec allows for question mark characers in
+query data. This change will now correctly parse the params for the
+above example to be `{v: 'hello?', other: '123'}`.
+## Special Thanks:
+Amadou Sall, Andrew Kushnir, Andrew Scott, Daniel Trevino, Dylan Hunn, Erik Slack, Fabien BERNARD, George Kalpakas, Jeroen van Warmerdam, Joey Perrott, Jon Rimmer, Tim Gates and Vugar_Abdullayev
+
+
 <a name="12.2.1"></a>
 # 12.2.1 (2021-08-11)
 ### router
