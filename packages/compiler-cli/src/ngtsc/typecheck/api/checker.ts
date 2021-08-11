@@ -12,7 +12,7 @@ import {TextAttribute} from '@angular/compiler/src/render3/r3_ast';
 import * as ts from 'typescript';
 import {ErrorCode} from '../../diagnostics';
 
-import {FullTemplateMapping, TypeCheckableDirectiveMeta} from './api';
+import {FullTemplateMapping, NgTemplateDiagnostic, TypeCheckableDirectiveMeta} from './api';
 import {GlobalCompletion} from './completion';
 import {DirectiveInScope, PipeInScope} from './scope';
 import {DirectiveSymbol, ElementSymbol, ShimLocation, Symbol, TemplateSymbol} from './symbols';
@@ -175,7 +175,7 @@ export interface TemplateTypeChecker {
         start: number,
         end: number,
         sourceFile: ts.SourceFile,
-      }[]): ts.Diagnostic;
+      }[]): NgTemplateDiagnostic<T>;
 }
 
 /**

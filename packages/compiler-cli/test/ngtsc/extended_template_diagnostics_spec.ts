@@ -7,7 +7,7 @@
  */
 
 import * as ts from 'typescript';
-import {ErrorCode} from '../../src/ngtsc/diagnostics';
+import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {getSourceCodeForDiagnostic, loadStandardTestFiles} from '../../src/ngtsc/testing';
 
@@ -39,7 +39,7 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
-      expect(diags[0].code).toBe(ErrorCode.INVALID_BANANA_IN_BOX);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX));
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('([notARealThing])="bar"');
     });
 
@@ -62,7 +62,7 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
-      expect(diags[0].code).toBe(ErrorCode.INVALID_BANANA_IN_BOX);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX));
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('([notARealThing])="bar"');
     });
 

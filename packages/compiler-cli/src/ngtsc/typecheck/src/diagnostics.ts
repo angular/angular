@@ -7,8 +7,8 @@
  */
 import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
 import * as ts from 'typescript';
-import {TemplateId} from '../api';
-import {makeTemplateDiagnostic, TemplateDiagnostic} from '../diagnostics';
+import {TemplateDiagnostic, TemplateId} from '../api';
+import {makeTemplateDiagnostic} from '../diagnostics';
 import {getTemplateMapping, TemplateSourceResolver} from './tcb_util';
 
 

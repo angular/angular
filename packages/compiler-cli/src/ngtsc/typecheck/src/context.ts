@@ -16,8 +16,8 @@ import {PerfEvent, PerfRecorder} from '../../perf';
 import {FileUpdate} from '../../program_driver';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
-import {TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckContext, TypeCheckingConfig, TypeCtorMetadata} from '../api';
-import {makeTemplateDiagnostic, TemplateDiagnostic} from '../diagnostics';
+import {TemplateDiagnostic, TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckContext, TypeCheckingConfig, TypeCtorMetadata} from '../api';
+import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {DomSchemaChecker, RegistryDomSchemaChecker} from './dom';
 import {Environment} from './environment';

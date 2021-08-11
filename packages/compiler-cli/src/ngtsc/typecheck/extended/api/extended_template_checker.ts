@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+import {TemplateDiagnostic} from '../../api';
 
 /**
  * Interface to generate extended template diangostics from the component tempaltes.
@@ -15,5 +16,5 @@ export interface ExtendedTemplateChecker {
   /**
    * Run `TemplateCheck`s for a component and return the generated `ts.Diagnostic`s.
    */
-  getExtendedTemplateDiagnosticsForComponent(component: ts.ClassDeclaration): ts.Diagnostic[];
+  getExtendedTemplateDiagnosticsForComponent(component: ts.ClassDeclaration): TemplateDiagnostic[];
 }
