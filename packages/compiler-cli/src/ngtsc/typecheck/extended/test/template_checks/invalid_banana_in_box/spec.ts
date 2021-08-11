@@ -7,7 +7,7 @@
  */
 
 import * as ts from 'typescript';
-import {ErrorCode} from '../../../../../diagnostics';
+import {ErrorCode, ngErrorCode} from '../../../../../diagnostics';
 import {absoluteFrom, getSourceFileOrError} from '../../../../../file_system';
 import {runInEachFileSystem} from '../../../../../file_system/testing';
 import {getSourceCodeForDiagnostic} from '../../../../../testing';
@@ -33,7 +33,7 @@ runInEachFileSystem(() => {
       const diags = extendedTemplateChecker.getExtendedTemplateDiagnosticsForComponent(component);
       expect(diags.length).toBe(1);
       expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
-      expect(diags[0].code).toBe(ErrorCode.INVALID_BANANA_IN_BOX);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX));
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('([notARealThing])="var1"');
     });
 
@@ -94,10 +94,10 @@ runInEachFileSystem(() => {
       const diags = extendedTemplateChecker.getExtendedTemplateDiagnosticsForComponent(component);
       expect(diags.length).toBe(2);
       expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
-      expect(diags[0].code).toBe(ErrorCode.INVALID_BANANA_IN_BOX);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX));
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('([notARealThing])="var1"');
       expect(diags[1].category).toBe(ts.DiagnosticCategory.Warning);
-      expect(diags[1].code).toBe(ErrorCode.INVALID_BANANA_IN_BOX);
+      expect(diags[1].code).toBe(ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX));
       expect(getSourceCodeForDiagnostic(diags[1])).toBe('([notARealThing2])="var1"');
     });
   });

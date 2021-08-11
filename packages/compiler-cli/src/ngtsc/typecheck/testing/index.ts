@@ -20,9 +20,8 @@ import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} fro
 import {ComponentScopeReader, LocalModuleScope, ScopeData, TypeCheckScopeRegistry} from '../../scope';
 import {makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
-import {ProgramTypeCheckAdapter, TemplateTypeChecker, TypeCheckContext} from '../api';
+import {ProgramTypeCheckAdapter, TemplateDiagnostic, TemplateTypeChecker, TypeCheckContext} from '../api';
 import {TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckingConfig} from '../api/api';
-import {TemplateDiagnostic} from '../diagnostics';
 import {TemplateTypeCheckerImpl} from '../src/checker';
 import {DomSchemaChecker} from '../src/dom';
 import {Environment} from '../src/environment';

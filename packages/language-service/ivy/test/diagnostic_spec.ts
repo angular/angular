@@ -380,7 +380,7 @@ describe('getSemanticDiagnostics', () => {
 
     const diags = project.getDiagnosticsForFile('app.ts');
     expect(diags.length).toEqual(1);
-    expect(diags[0].code).toEqual(ErrorCode.INVALID_BANANA_IN_BOX);
+    expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX));
     expect(diags[0].category).toEqual(ts.DiagnosticCategory.Warning);
   });
 
