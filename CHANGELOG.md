@@ -1,3 +1,13 @@
+<a name="12.2.1"></a>
+# 12.2.1 (2021-08-11)
+### router
+| Commit | Description |
+| -- | -- |
+| [dd3abdb9d9](https://github.com/angular/angular/commit/dd3abdb9d9b2c4363fb1f468a05bf449b55f55a5) | fix(router): ensure check for match options is compatible with property renaming ([#43086](https://github.com/angular/angular/pull/43086)) |
+## Special Thanks:
+Amadou Sall, Andrew Kushnir, Andrew Scott, Daniel Trevino, Erik Slack, Fabien BERNARD, George Kalpakas, Jeroen van Warmerdam, Joey Perrott, Tim Gates and Vugar_Abdullayev
+
+
 <a name="13.0.0-next.0"></a>
 # 13.0.0-next.0 (2021-08-04)
 ### compiler-cli
