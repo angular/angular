@@ -45,10 +45,10 @@ test --test_output=errors
 
 # Configures script to do version stamping.
 # See https://docs.bazel.build/versions/master/user-manual.html#flag--workspace_status_command
-build:release --workspace_status_command="node ./tools/bazel-stamp-vars.js"
+build:release --workspace_status_command="yarn -s ng-dev release build-env-stamp --mode=release"
 build:release --stamp
 
-build:snapshot-build --workspace_status_command="node ./tools/bazel-stamp-vars.js --snapshot"
+build:snapshot-build --workspace_status_command="yarn -s ng-dev release build-env-stamp --mode=snapshot"
 build:snapshot-build --stamp
 
 ################################

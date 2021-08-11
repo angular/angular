@@ -1,7 +1,7 @@
 import * as chalk from 'chalk';
 import {join} from 'path';
-import {checkReleasePackage} from './release-output/check-package';
-import {releasePackages} from './release-output/release-packages';
+import {checkReleasePackage} from '../release-checks/npm-package-output/check-package';
+import {releasePackages} from '../../.ng-dev/release';
 
 /**
  * Checks the release output by running the release-output validations for each

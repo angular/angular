@@ -4,10 +4,12 @@
 // options used by `ts-node` when running the scripts.
 {
   "include": ["./**/*.ts"],
-  "exclude": ["./public_api_guard/**/*.ts"],
   "compilerOptions": {
     "outDir": "../dist/tools",
-    "lib": ["es2015"],
+    "target": "es2016",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "lib": ["es2016"],
     "skipLibCheck": true,
     // Don't emit to the file system, because we only want to check for compilation errors.
     "noEmit": true,

@@ -3,7 +3,6 @@ import {sync as glob} from 'glob';
 import {basename, dirname, isAbsolute, join} from 'path';
 import * as semver from 'semver';
 import * as ts from 'typescript';
-import {Version} from '../version-name/parse-version';
 
 /** RegExp that matches Angular component inline styles that contain a sourcemap reference. */
 const inlineStylesSourcemapRegex = /styles: ?\[["'].*sourceMappingURL=.*["']/;
@@ -126,31 +125,9 @@ export function checkPrimaryPackageJson(
         `Unexpected package version. Expected: ${expectedVersion} but got: ${packageJson.version}`);
   } else if (semver.valid(expectedVersion) === null) {
     failures.push(`Version does not satisfy SemVer specification: ${packageJson.version}`);
-  } else if (packageJson['ng-update'] && packageJson['ng-update'].migrations) {
-    failures.push(...checkMigrationCollection(
-        packageJson['ng-update'].migrations, dirname(packageJsonPath),
-        semver.parse(expectedVersion)!));
   }
 
   return failures;
-}
-
-/**
- * Checks the ng-update migration setup for the specified "package.json"
- * file if present.
- */
-export function checkPackageJsonMigrations(
-    packageJsonPath: string, currentVersion: Version): string[] {
-  const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
-
-  if (packageJson['ng-update'] && packageJson['ng-update'].migrations) {
-    // TODO(devversion): switch release publish tooling to use `SemVer` instead
-    // of custom version parsing/serializing.
-    return checkMigrationCollection(
-        packageJson['ng-update'].migrations, dirname(packageJsonPath),
-        semver.parse(currentVersion.format())!);
-  }
-  return [];
 }
 
 /**
@@ -192,37 +169,5 @@ export function checkCdkPackage(packagePath: string): string[] {
     failures.push('New Sass API bundle could not be found.');
   }
 
-  return failures;
-}
-
-/**
- * Checks if the migration collected referenced in the specified "package.json"
- * has a migration set up for the given target version.
- */
-function checkMigrationCollection(
-    collectionPath: string, packagePath: string, targetVersion: semver.SemVer): string[] {
-  const collection = JSON.parse(readFileSync(join(packagePath, collectionPath), 'utf8'));
-  if (!collection.schematics) {
-    return ['No schematics found in migration collection.'];
-  }
-
-  const failures: string[] = [];
-  const lowerBoundaryVersion = `${targetVersion.major}.0.0-0`;
-  const schematics = collection.schematics;
-  const targetSchematics = Object.keys(schematics).filter(name => {
-    const schematicVersion = schematics[name].version;
-    try {
-      return schematicVersion && semver.gte(schematicVersion, lowerBoundaryVersion) &&
-          semver.lte(schematicVersion, targetVersion);
-    } catch {
-      failures.push(`Could not parse version for migration: ${name}`);
-    }
-  });
-
-  if (targetSchematics.length === 0) {
-    failures.push(`No migration configured that handles versions: ^${lowerBoundaryVersion}`);
-  } else if (targetSchematics.length > 1) {
-    failures.push(`Multiple migrations targeting the same major version: ${targetVersion.major}`);
-  }
   return failures;
 }

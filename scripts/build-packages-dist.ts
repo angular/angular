@@ -6,9 +6,10 @@
  * distribution folder within the project.
  */
 
-const {execSync} = require('child_process');
-const {join} = require('path');
-const {chmod, cp, mkdir, rm, set, test} = require('shelljs');
+import {execSync} from 'child_process';
+import {join} from 'path';
+import {BuiltPackage} from '@angular/dev-infra-private/release/config';
+import {chmod, cp, mkdir, rm, set, test} from 'shelljs';
 
 // ShellJS should exit if a command fails.
 set('-e');
@@ -20,7 +21,7 @@ const releaseTargetTag = 'release-package';
 const projectDir = join(__dirname, '../');
 
 /** Command that runs Bazel. */
-const bazelCmd = process.env.BAZEL_COMMAND || `yarn -s bazel`;
+const bazelCmd = process.env.BAZEL_COMMAND || `bazel`;
 
 /** Command that queries Bazel for all release package targets. */
 const queryPackagesCmd =
@@ -43,7 +44,7 @@ if (module === require.main) {
 }
 
 /** Builds the release packages for NPM. */
-function performNpmReleaseBuild() {
+export function performNpmReleaseBuild(): BuiltPackage[] {
   return buildReleasePackages(false, defaultDistPath, /* isSnapshotBuild */ false);
 }
 
@@ -51,7 +52,7 @@ function performNpmReleaseBuild() {
  * Builds the release packages as snapshot build. This means that the current
  * Git HEAD SHA is included in the version (for easier debugging and back tracing).
  */
-function performDefaultSnapshotBuild() {
+export function performDefaultSnapshotBuild(): BuiltPackage[] {
   return buildReleasePackages(false, defaultDistPath, /* isSnapshotBuild */ true);
 }
 
@@ -59,7 +60,9 @@ function performDefaultSnapshotBuild() {
  * Builds the release packages with the given compile mode and copies
  * the package output into the given directory.
  */
-function buildReleasePackages(useIvy, distPath, isSnapshotBuild) {
+function buildReleasePackages(useIvy: boolean, distPath: string,
+                              isSnapshotBuild: boolean): BuiltPackage[] {
+
   console.log('######################################');
   console.log('  Building release packages...');
   console.log(`  Compiling with Ivy: ${useIvy}`);
@@ -109,15 +112,15 @@ function buildReleasePackages(useIvy, distPath, isSnapshotBuild) {
     return {
       name: `@angular/${pkg}`,
       outputPath
-    }
-  })
+    };
+  });
 }
 
 /**
  * Gets the package names of the specified Bazel targets.
- * e.g. //src/material:npm_package -> material
+ * e.g. //src/material:npm_package = material
  */
-function getPackageNamesOfTargets(targets) {
+function getPackageNamesOfTargets(targets: string[]): string[] {
   return targets.map(targetName => {
     const matches = targetName.match(/\/\/src\/(.*):npm_package/);
     if (matches === null) {
@@ -128,13 +131,11 @@ function getPackageNamesOfTargets(targets) {
   });
 }
 
-/**
- * Executes the given command in the project directory.
- * @param {string} command The command to run
- * @param {boolean=} captureStdout Whether the stdout should be captured and
- *   returned.
- */
-function exec(command, captureStdout) {
+/** Executes the given command in the project directory. */
+function exec(command: string): void;
+/** Executes the given command in the project directory and returns its stdout. */
+function exec(command: string, captureStdout: true): string;
+function exec(command: string, captureStdout?: true) {
   const stdout = execSync(command, {
     cwd: projectDir,
     stdio: ['inherit', captureStdout ? 'pipe' : 'inherit', 'inherit'],

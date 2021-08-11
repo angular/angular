@@ -386,16 +386,8 @@ jobs:
       - *yarn_install
       - *setup_bazel_binary
 
-      - run: yarn build
-      - run:
-          name: Checking release output
-          command: |
-            pkg_json_version=$(node -pe "require('./package.json').version")
-            expected_version="${pkg_json_version}-sha-$(git rev-parse --short HEAD)"
-            yarn check-release-output ${expected_version}
-      - run:
-          name: Checking tooling scripts
-          command: yarn check-tools
+      - run: yarn build-and-check-release-output
+      - run: yarn check-tools
 
       # TODO(devversion): replace this with bazel tests that run Madge. This is
       # cumbersome and doesn't guarantee no circular deps for other entry-points.

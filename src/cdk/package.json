@@ -33,8 +33,5 @@
   "ng-update": {
     "migrations": "./schematics/migration.json"
   },
-  "sideEffects": false,
-  "publishConfig":{
-    "registry":"https://wombat-dressing-room.appspot.com"
-  }
+  "sideEffects": false
 }

@@ -26,8 +26,5 @@
     "rxjs": "0.0.0-RXJS"
   },
   "sideEffects": false,
-  "publishConfig":{
-    "registry":"https://wombat-dressing-room.appspot.com"
-  },
   "ng-update": {}
 }

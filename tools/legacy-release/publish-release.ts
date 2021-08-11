@@ -10,13 +10,10 @@ import {getGithubNewReleaseUrl} from './git/github-urls';
 import {npmPublish} from './npm/npm-client';
 import {promptForNpmDistTag} from './prompt/npm-dist-tag-prompt';
 import {promptForUpstreamRemote} from './prompt/upstream-remote-prompt';
-import {releasePackages} from './release-output/release-packages';
 import {CHANGELOG_FILE_NAME} from './stage-release';
 import {parseVersionName, Version} from './version-name/parse-version';
-
-// The package builder script is not written in TypeScript and needs to
-// be imported through a CommonJS import.
-const {performNpmReleaseBuild} = require('../../scripts/build-packages-dist');
+import {performNpmReleaseBuild} from '../../scripts/build-packages-dist';
+import {releasePackages} from '../../.ng-dev/release';
 
 /**
  * Class that can be instantiated in order to create a new release. The tasks requires user
@@ -35,9 +32,6 @@ class PublishReleaseTask extends BaseReleaseTask {
 
   /** Path to the release output of the project. */
   releaseOutputPath: string;
-
-  /** Instance of a wrapper that can execute Git commands. */
-  git: GitClient;
 
   constructor(public projectDir: string,
               public repositoryOwner: string,

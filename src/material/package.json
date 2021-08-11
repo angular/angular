@@ -39,9 +39,6 @@
       "@angular/material-date-fns-adapter"
     ]
   },
-  "sideEffects": false,
-  "publishConfig":{
-    "registry":"https://wombat-dressing-room.appspot.com"
-  }
+  "sideEffects": false
 }
 

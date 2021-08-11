@@ -7,9 +7,10 @@ import {promptAndGenerateChangelog} from './changelog';
 import {GitClient} from './git/git-client';
 import {getGithubBranchCommitsUrl} from './git/github-urls';
 import {promptForNewVersion} from './prompt/new-version-prompt';
-import {checkPackageJsonMigrations} from './release-output/output-validations';
-import {releasePackages} from './release-output/release-packages';
 import {parseVersionName, Version} from './version-name/parse-version';
+import {releasePackages} from '../../.ng-dev/release';
+import {checkPackageJsonMigrations} from '../release-checks/check-migration-collections';
+import * as semver from 'semver';
 
 /** Default filename for the changelog. */
 export const CHANGELOG_FILE_NAME = 'CHANGELOG.md';
@@ -45,9 +46,6 @@ class StageReleaseTask extends BaseReleaseTask {
 
   /** Parsed current version of the project. */
   currentVersion: Version;
-
-  /** Instance of a wrapper that can execute Git commands. */
-  git: GitClient;
 
   /** Octokit API instance that can be used to make Github API calls. */
   githubApi: Octokit;
@@ -253,8 +251,8 @@ class StageReleaseTask extends BaseReleaseTask {
     const failures: string[] = [];
     releasePackages.forEach(packageName => {
       failures.push(...checkPackageJsonMigrations(
-                        join(this.packagesDir, packageName, 'package.json'), newVersion)
-                        .map(f => chalk.yellow(`       ⮑  ${chalk.bold(packageName)}: ${f}`)));
+          join(this.packagesDir, packageName, 'package.json'), semver.parse(newVersion.format())!)
+          .map(f => chalk.yellow(`       ⮑  ${chalk.bold(packageName)}: ${f}`)));
     });
     if (failures.length) {
       console.error(chalk.red(`  ✘   Failures in ng-update migration collection detected:`));
