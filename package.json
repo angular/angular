@@ -15,7 +15,7 @@
   },
   "scripts": {
     "postinstall": "node tools/postinstall/apply-patches.js && ngcc --properties module main --create-ivy-entry-points && node tools/postinstall/update-ngcc-main-fields.js",
-    "build": "ts-node --project scripts/tsconfig.json ./scripts/build-packages-dist.js",
+    "build": "ts-node --project scripts/tsconfig.json ./scripts/build-packages-dist.ts",
     "build-and-check-release-output": "ts-node --project scripts/tsconfig.json scripts/build-and-check-release-output.ts",
     "build-docs-content": "node ./scripts/build-docs-content.js",
     "dev-app": "ibazel run //src/dev-app:devserver",

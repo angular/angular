@@ -1,26 +1,42 @@
 import {BuiltPackage, ReleaseConfig} from '@angular/dev-infra-private/release/config';
 import {ReleaseAction} from '@angular/dev-infra-private/release/publish/actions';
 import {SemVer} from 'semver';
-
-import {
-  assertValidFrameworkPeerDependency
-} from '../tools/release-checks/check-framework-peer-dependency';
-import {
-  assertValidUpdateMigrationCollections
-} from '../tools/release-checks/check-migration-collections';
 import {assertValidNpmPackageOutput} from '../tools/release-checks/npm-package-output';
+import {fork} from 'child_process';
+import {join} from 'path';
+import {FatalReleaseActionError} from '@angular/dev-infra-private/release/publish/actions-error';
 
 const actionProto = ReleaseAction.prototype as any;
 const _origStageFn = actionProto.stageVersionForBranchAndCreatePullRequest;
 const _origVerifyFn = actionProto._verifyPackageVersions;
+
+/** Runs the staging sanity release checks for the given new version. */
+async function runStagingReleaseChecks(newVersion: SemVer) {
+  return new Promise<void>((resolve, reject) => {
+    // Note: We run the staging release checks in a new node process. This is necessary
+    // because before staging, the correct publish branch is checked out. If we'd
+    // directly call into the release checks, the `.ng-dev/release` config would be
+    // cached by NodeJS and release checks would potentially check for packages which
+    // no longer exist in the publish branch (or the other way around).
+    const releaseChecksProcess = fork(
+      join(__dirname, '../tools/release-checks/index.js'), [newVersion.format()]);
+
+    releaseChecksProcess.on('close', code => {
+      if (code !== 0) {
+        reject(new FatalReleaseActionError());
+      } else {
+        resolve();
+      }
+    });
+  });
+}
 
 // Patches the `@angular/dev-infra-private` release tool to perform sanity checks
 // before staging a release. This is temporary until the dev-infra team has implemented
 // a more generic solution to running sanity checks before releasing (potentially building
 // some of the checks we have in the components repository into the release tool).
 actionProto.stageVersionForBranchAndCreatePullRequest = async function(newVersion: SemVer) {
-  await assertValidFrameworkPeerDependency(newVersion);
-  await assertValidUpdateMigrationCollections(newVersion);
+  await runStagingReleaseChecks(newVersion);
 
   return await _origStageFn.apply(this, arguments);
 };
