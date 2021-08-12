@@ -5329,16 +5329,6 @@ ecdsa-sig-formatter@1.0.11, ecdsa-sig-formatter@^1.0.11:
   dependencies:
     safe-buffer "^5.0.1"
 
-ecstatic@^3.3.2:
-  version "3.3.2"
-  resolved "https://registry.yarnpkg.com/ecstatic/-/ecstatic-3.3.2.tgz#6d1dd49814d00594682c652adb66076a69d46c48"
-  integrity sha512-fLf9l1hnwrHI2xn9mEDT7KIi22UDqA2jaCwyCbSUJh9a1V+LEUSL/JO/6TIz/QyuBURWUHrFL5Kg2TtO1bkkog==
-  dependencies:
-    he "^1.1.1"
-    mime "^1.6.0"
-    minimist "^1.1.0"
-    url-join "^2.0.5"
-
 ee-first@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
@@ -7066,7 +7056,7 @@ has@^1.0.3:
   dependencies:
     traverse ">=0.2.4"
 
-he@^1.1.1:
+he@^1.1.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/he/-/he-1.2.0.tgz#84ae65fa7eafb165fddb61566ae14baf05664f0f"
   integrity sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
@@ -7205,21 +7195,23 @@ http-proxy@^1.13.0, http-proxy@^1.17.0, http-proxy@^1.18.0:
     follow-redirects "^1.0.0"
     requires-port "^1.0.0"
 
-http-server@^0.12.3:
-  version "0.12.3"
-  resolved "https://registry.yarnpkg.com/http-server/-/http-server-0.12.3.tgz#ba0471d0ecc425886616cb35c4faf279140a0d37"
-  integrity sha512-be0dKG6pni92bRjq0kvExtj/NrrAd28/8fCXkaI/4piTwQMSDSLMhWyW0NI1V+DBI3aa1HMlQu46/HjVLfmugA==
+http-server@^13.0.0:
+  version "13.0.0"
+  resolved "https://registry.yarnpkg.com/http-server/-/http-server-13.0.0.tgz#27ab5f3bad0e27a29965a4029c26170162f7b98f"
+  integrity sha512-tqOx2M1CiZ3aVaE7Ue/0lup9kOG+Zqg6wdT1HygvxFnvPpU9doBMPcQ1ffT0/QS3J9ua35gipg0o3Dr8N0K0Tg==
   dependencies:
     basic-auth "^1.0.3"
     colors "^1.4.0"
     corser "^2.0.1"
-    ecstatic "^3.3.2"
+    he "^1.1.0"
     http-proxy "^1.18.0"
+    mime "^1.6.0"
     minimist "^1.2.5"
     opener "^1.5.1"
     portfinder "^1.0.25"
     secure-compare "3.0.1"
     union "~0.5.0"
+    url-join "^2.0.5"
 
 http-signature@~1.2.0:
   version "1.2.0"
