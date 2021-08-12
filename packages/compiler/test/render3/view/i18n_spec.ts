@@ -478,7 +478,7 @@ describe('serializeI18nMessageForLocalize', () => {
        expect(messageParts[3].text).toEqual('');
        expect(messageParts[3].sourceSpan.toString()).toEqual('');
        expect(messageParts[4].text).toEqual(' D');
-       expect(messageParts[4].sourceSpan.toString()).toEqual('D');
+       expect(messageParts[4].sourceSpan.toString()).toEqual(' D');
 
        expect(placeHolders[0].text).toEqual('START_TAG_SPAN');
        expect(placeHolders[0].sourceSpan.toString()).toEqual('<span>');
