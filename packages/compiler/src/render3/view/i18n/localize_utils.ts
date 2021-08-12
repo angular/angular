@@ -35,7 +35,10 @@ class LocalizeSerializerVisitor implements i18n.Visitor {
       // Two literal pieces in a row means that there was some comment node in-between.
       context[context.length - 1].text += text.value;
     } else {
-      context.push(new o.LiteralPiece(text.value, text.sourceSpan));
+      const sourceSpan = new ParseSourceSpan(
+          text.sourceSpan.fullStart, text.sourceSpan.end, text.sourceSpan.fullStart,
+          text.sourceSpan.details);
+      context.push(new o.LiteralPiece(text.value, sourceSpan));
     }
   }
 
@@ -90,7 +93,7 @@ function getSourceSpan(message: i18n.Message): ParseSourceSpan {
   const startNode = message.nodes[0];
   const endNode = message.nodes[message.nodes.length - 1];
   return new ParseSourceSpan(
-      startNode.sourceSpan.start, endNode.sourceSpan.end, startNode.sourceSpan.fullStart,
+      startNode.sourceSpan.fullStart, endNode.sourceSpan.end, startNode.sourceSpan.fullStart,
       startNode.sourceSpan.details);
 }
 
