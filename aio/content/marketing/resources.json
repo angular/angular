@@ -615,6 +615,11 @@
             "desc": "Integrate a Headless CMS into your Angular App, create blog posts and pages",
             "url":"https://medium.com/orlyknop/how-to-integrate-buttercms-into-angular-2-app-a1baaa51402",
             "logo": ""
+          },
+          "angular-projects": {
+            "title": "Angular Projects - Second Edition",
+            "desc": "Build modern web apps by exploring Angular with 10 different projects and cutting-edge technologies",
+            "url": "https://www.packtpub.com/product/angular-projects-second-edition/9781800205260"
           }
         }
       },
