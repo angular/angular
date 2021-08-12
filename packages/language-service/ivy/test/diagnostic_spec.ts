@@ -361,6 +361,47 @@ describe('getSemanticDiagnostics', () => {
     expect(diag.category).toBe(ts.DiagnosticCategory.Error);
     expect(getTextOfDiagnostic(diag)).toBe(`'./missing.css'`);
   });
+
+  it('should produce invalid banana in box warning', () => {
+    const files = {
+      'app.ts': `
+        import {Component} from '@angular/core';
+        @Component({
+          selector: 'test',
+          template: '<div ([notARealThing])="bar"></div>',
+        })
+        export class TestCmp { 
+          bar: string = "text"; 
+        }
+    `
+    };
+    const project = createModuleAndProjectWithDeclarations(
+        env, 'test', files, {strictTemplates: true, _extendedTemplateDiagnostics: true});
+
+    const diags = project.getDiagnosticsForFile('app.ts');
+    expect(diags.length).toEqual(1);
+    expect(diags[0].code).toEqual(ErrorCode.INVALID_BANANA_IN_BOX);
+    expect(diags[0].category).toEqual(ts.DiagnosticCategory.Warning);
+  });
+
+  it('should not produce invalid banana in box warning', () => {
+    const files = {
+      'app.ts': `
+        import {Component} from '@angular/core';
+        @Component({
+          selector: 'test',
+          template: '<div ([notARealThing])="bar"></div>',
+        })
+        export class TestCmp { 
+          bar: string = "text"; 
+        }
+    `
+    };
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+
+    const diags = project.getDiagnosticsForFile('app.ts');
+    expect(diags.length).toEqual(0);
+  });
 });
 
 function getTextOfDiagnostic(diag: ts.Diagnostic): string {
