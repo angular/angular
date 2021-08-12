@@ -861,6 +861,12 @@
     "bio": "Andrew is a software engineer using Angular and .NET. He spends most of his spare time staying up-to-date, helping other people, and experimenting with web tech.",
     "groups": ["GDE"]
   },
+  "tmdavisgoogle": {
+    "name": "Tiffany Davis",
+    "bio": "Tiffany is an editor working on Angular documentation.",
+    "groups": ["Angular"],
+    "lead": "aikidave"
+  },
   "toddmotto": {
     "name": "Todd Motto",
     "picture": "toddmotto.jpg",
