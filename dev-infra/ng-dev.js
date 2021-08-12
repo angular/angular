@@ -5653,7 +5653,10 @@ class RenderContext {
          * of the group title.
          */
         const commitGroups = Array.from(groups.entries())
-            .map(([title, commits]) => ({ title, commits }))
+            .map(([title, commits]) => ({
+            title,
+            commits: commits.sort((a, b) => a.type > b.type ? 1 : a.type < b.type ? -1 : 0)
+        }))
             .sort((a, b) => a.title > b.title ? 1 : a.title < b.title ? -1 : 0);
         // If the configuration provides a sorting order, updated the sorted list of group keys to
         // satisfy the order of the groups provided in the list with any groups not found in the list at
