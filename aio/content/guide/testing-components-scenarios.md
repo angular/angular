@@ -1558,7 +1558,7 @@ You can consolidate the two `beforeEach()` functions into a single, async `befor
 
 The `compileComponents()` method returns a promise so you can perform the
 synchronous setup tasks _after_ compilation by moving the synchronous code
-into a `then(...)` callback.
+after the `await` keyword, where the promise has been resolved.
 
 <code-example
   path="testing/src/app/banner/banner-external.component.spec.ts"
