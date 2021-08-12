@@ -5733,6 +5733,12 @@ class RenderContext {
     replaceCommitHeaderPullRequestNumber(header) {
         return header.replace(/\(#(\d+)\)$/, (_, g) => `(${this.pullRequestToLink(+g)})`);
     }
+    /**
+     * Bulletize a paragraph.
+     */
+    bulletizeText(text) {
+        return '- ' + text.replace(/\\n/g, '\\n  ');
+    }
 }
 /**
  * Builds a date stamp for stamping in release notes.
@@ -5784,14 +5790,8 @@ _%>
   for (const group of asCommitGroups(breakingChanges)) {
 _%>
 ### <%- group.title %>
-
+<%- group.commits.map(commit => bulletizeText(commit.breakingChanges[0].text)).join('\\n\\n') %>
 <%_
-    for (const commit of group.commits) {
-_%>
-<%- commit.breakingChanges[0].text %>
-
-<%_
-    }
   }
 }
 _%>
@@ -5805,13 +5805,8 @@ _%>
   for (const group of asCommitGroups(deprecations)) {
 _%>
 ### <%- group.title %>
-
+<%- group.commits.map(commit => bulletizeText(commit.deprecations[0].text)).join('\\n\\n') %>
 <%_
-    for (const commit of group.commits) {
-_%>
-<%- commit.deprecations[0].text %>
-<%_
-    }
   }
 }
 _%>
@@ -5876,14 +5871,8 @@ _%>
   for (const group of asCommitGroups(breakingChanges)) {
 _%>
 ### <%- group.title %>
-
+<%- group.commits.map(commit => bulletizeText(commit.breakingChanges[0].text)).join('\\n\\n') %>
 <%_
-    for (const commit of group.commits) {
-_%>
-<%- commit.breakingChanges[0].text %>
-
-<%_
-    }
   }
 }
 _%>
@@ -5897,19 +5886,19 @@ _%>
   for (const group of asCommitGroups(deprecations)) {
 _%>
 ### <%- group.title %>
-
+<%- group.commits.map(commit => bulletizeText(commit.deprecations[0].text)).join('\\n\\n') %>
 <%_
-    for (const commit of group.commits) {
-_%>
-<%- commit.deprecations[0].text %>
-<%_
-    }
   }
 }
 _%>
 
 <%_
-const authors = commits.filter(unique('author')).map(c => c.author).sort();
+const botsAuthorName = ['dependabot[bot]', 'Renovate Bot'];
+const authors = commits
+  .filter(unique('author'))
+  .map(c => c.author)
+  .filter(a => !botsAuthorName.includes(a))
+  .sort();
 if (authors.length === 1) {
 _%>
 ## Special Thanks:

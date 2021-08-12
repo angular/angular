@@ -161,6 +161,13 @@ export class RenderContext {
   replaceCommitHeaderPullRequestNumber(header: string): string {
     return header.replace(/\(#(\d+)\)$/, (_, g) => `(${this.pullRequestToLink(+g)})`);
   }
+
+  /**
+   * Bulletize a paragraph.
+   */
+  bulletizeText(text: string): string {
+    return '- ' + text.replace(/\\n/g, '\\n  ');
+  }
 }
 
 
