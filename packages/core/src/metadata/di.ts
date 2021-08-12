@@ -131,7 +131,8 @@ export abstract class Query {}
  */
 export interface ContentChildrenDecorator {
   /**
-   * Parameter decorator that configures a content query.
+   * @description
+   * Property decorator that configures a content query.
    *
    * Use to get the `QueryList` of elements or directives from the content DOM.
    * Any time a child element is added, removed, or moved, the query list will be
@@ -233,7 +234,8 @@ export const ContentChildren: ContentChildrenDecorator = makePropDecorator(
  */
 export interface ContentChildDecorator {
   /**
-   * Parameter decorator that configures a content query.
+   * @description
+   * Property decorator that configures a content query.
    *
    * Use to get the first element or the directive matching the selector from the content DOM.
    * If the content DOM changes, and a new child matches the selector,
@@ -314,7 +316,8 @@ export const ContentChild: ContentChildDecorator = makePropDecorator(
  */
 export interface ViewChildrenDecorator {
   /**
-   * Parameter decorator that configures a view query.
+   * @description
+   * Property decorator that configures a view query.
    *
    * Use to get the `QueryList` of elements or directives from the view DOM.
    * Any time a child element is added, removed, or moved, the query list will be updated,
