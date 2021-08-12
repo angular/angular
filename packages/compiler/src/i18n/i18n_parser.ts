@@ -7,10 +7,11 @@
  */
 
 import {Lexer as ExpressionLexer} from '../expression_parser/lexer';
-import {InterpolationPiece, Parser as ExpressionParser} from '../expression_parser/parser';
+import {Parser as ExpressionParser} from '../expression_parser/parser';
 import * as html from '../ml_parser/ast';
 import {getHtmlTagDefinition} from '../ml_parser/html_tags';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
+import {Token, TokenType} from '../ml_parser/lexer';
 import {ParseSourceSpan} from '../parse_util';
 
 import * as i18n from './i18n_ast';
@@ -105,13 +106,18 @@ class _I18nVisitor implements html.Visitor {
   }
 
   visitAttribute(attribute: html.Attribute, context: I18nMessageVisitorContext): i18n.Node {
-    const node = this._visitTextWithInterpolation(
-        attribute.value, attribute.valueSpan || attribute.sourceSpan, context, attribute.i18n);
+    const node = attribute.valueTokens === undefined || attribute.valueTokens.length === 1 ?
+        new i18n.Text(attribute.value, attribute.valueSpan || attribute.sourceSpan) :
+        this._visitTextWithInterpolation(
+            attribute.valueTokens, attribute.valueSpan || attribute.sourceSpan, context,
+            attribute.i18n);
     return context.visitNodeFn(attribute, node);
   }
 
   visitText(text: html.Text, context: I18nMessageVisitorContext): i18n.Node {
-    const node = this._visitTextWithInterpolation(text.value, text.sourceSpan, context, text.i18n);
+    const node = text.tokens.length === 1 ?
+        new i18n.Text(text.value, text.sourceSpan) :
+        this._visitTextWithInterpolation(text.tokens, text.sourceSpan, context, text.i18n);
     return context.visitNodeFn(text, node);
   }
 
@@ -165,65 +171,53 @@ class _I18nVisitor implements html.Visitor {
    * @param previousI18n Any i18n metadata associated with this `text` from a previous pass.
    */
   private _visitTextWithInterpolation(
-      text: string, sourceSpan: ParseSourceSpan, context: I18nMessageVisitorContext,
+      tokens: Token[], sourceSpan: ParseSourceSpan, context: I18nMessageVisitorContext,
       previousI18n: i18n.I18nMeta|undefined): i18n.Node {
-    const {strings, expressions} = this._expressionParser.splitInterpolation(
-        text, sourceSpan.start.toString(), this._interpolationConfig);
-
-    // No expressions, return a single text.
-    if (expressions.length === 0) {
-      return new i18n.Text(text, sourceSpan);
-    }
-
     // Return a sequence of `Text` and `Placeholder` nodes grouped in a `Container`.
     const nodes: i18n.Node[] = [];
-    for (let i = 0; i < strings.length - 1; i++) {
-      this._addText(nodes, strings[i], sourceSpan);
-      this._addPlaceholder(nodes, context, expressions[i], sourceSpan);
+    // We will only create a container if there are actually interpolations,
+    // so this flag tracks that.
+    let hasInterpolation = false;
+    for (const token of tokens) {
+      switch (token.type) {
+        case TokenType.INTERPOLATION:
+        case TokenType.ATTR_VALUE_INTERPOLATION:
+          hasInterpolation = true;
+          const expression = token.parts[1];
+          const baseName = extractPlaceholderName(expression) || 'INTERPOLATION';
+          const phName = context.placeholderRegistry.getPlaceholderName(baseName, expression);
+          context.placeholderToContent[phName] = {
+            text: token.parts.join(''),
+            sourceSpan: token.sourceSpan
+          };
+          nodes.push(new i18n.Placeholder(expression, phName, token.sourceSpan));
+          break;
+        default:
+          if (token.parts[0].length > 0) {
+            // This token is text or an encoded entity.
+            // If it is following on from a previous text node then merge it into that node
+            // Otherwise, if it is following an interpolation, then add a new node.
+            const previous = nodes[nodes.length - 1];
+            if (previous instanceof i18n.Text) {
+              previous.value += token.parts[0];
+              previous.sourceSpan = new ParseSourceSpan(
+                  previous.sourceSpan.start, token.sourceSpan.end, previous.sourceSpan.fullStart,
+                  previous.sourceSpan.details);
+            } else {
+              nodes.push(new i18n.Text(token.parts[0], token.sourceSpan));
+            }
+          }
+          break;
+      }
     }
-    // The last index contains no expression
-    this._addText(nodes, strings[strings.length - 1], sourceSpan);
 
-    // Whitespace removal may have invalidated the interpolation source-spans.
-    reusePreviousSourceSpans(nodes, previousI18n);
-
-    return new i18n.Container(nodes, sourceSpan);
-  }
-
-  /**
-   * Create a new `Text` node from the `textPiece` and add it to the `nodes` collection.
-   *
-   * @param nodes The nodes to which the created `Text` node should be added.
-   * @param textPiece The text and relative span information for this `Text` node.
-   * @param interpolationSpan The span of the whole interpolated text.
-   */
-  private _addText(
-      nodes: i18n.Node[], textPiece: InterpolationPiece, interpolationSpan: ParseSourceSpan): void {
-    if (textPiece.text.length > 0) {
-      // No need to add empty strings
-      const stringSpan = getOffsetSourceSpan(interpolationSpan, textPiece);
-      nodes.push(new i18n.Text(textPiece.text, stringSpan));
+    if (hasInterpolation) {
+      // Whitespace removal may have invalidated the interpolation source-spans.
+      reusePreviousSourceSpans(nodes, previousI18n);
+      return new i18n.Container(nodes, sourceSpan);
+    } else {
+      return nodes[0];
     }
-  }
-
-  /**
-   * Create a new `Placeholder` node from the `expression` and add it to the `nodes` collection.
-   *
-   * @param nodes The nodes to which the created `Text` node should be added.
-   * @param context The current context of the visitor, used to compute and store placeholders.
-   * @param expression The expression text and relative span information for this `Placeholder`
-   *     node.
-   * @param interpolationSpan The span of the whole interpolated text.
-   */
-  private _addPlaceholder(
-      nodes: i18n.Node[], context: I18nMessageVisitorContext, expression: InterpolationPiece,
-      interpolationSpan: ParseSourceSpan): void {
-    const sourceSpan = getOffsetSourceSpan(interpolationSpan, expression);
-    const baseName = extractPlaceholderName(expression.text) || 'INTERPOLATION';
-    const phName = context.placeholderRegistry.getPlaceholderName(baseName, expression.text);
-    const text = this._interpolationConfig.start + expression.text + this._interpolationConfig.end;
-    context.placeholderToContent[phName] = {text, sourceSpan};
-    nodes.push(new i18n.Placeholder(expression.text, phName, sourceSpan));
   }
 }
 
@@ -247,7 +241,7 @@ function reusePreviousSourceSpans(nodes: i18n.Node[], previousI18n: i18n.I18nMet
 
   if (previousI18n instanceof i18n.Container) {
     // The `previousI18n` is a `Container`, which means that this is a second i18n extraction pass
-    // after whitespace has been removed from the AST ndoes.
+    // after whitespace has been removed from the AST nodes.
     assertEquivalentNodes(previousI18n.children, nodes);
 
     // Reuse the source-spans from the first pass.
@@ -280,14 +274,6 @@ function assertEquivalentNodes(previousNodes: i18n.Node[], nodes: i18n.Node[]): 
     throw new Error(
         'The types of the i18n message children changed between first and second pass.');
   }
-}
-
-/**
- * Create a new `ParseSourceSpan` from the `sourceSpan`, offset by the `start` and `end` values.
- */
-function getOffsetSourceSpan(
-    sourceSpan: ParseSourceSpan, {start, end}: InterpolationPiece): ParseSourceSpan {
-  return new ParseSourceSpan(sourceSpan.fullStart.moveBy(start), sourceSpan.fullStart.moveBy(end));
 }
 
 const _CUSTOM_PH_EXP =

@@ -7,14 +7,28 @@ export class MyComponent {
 }
 MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: `
-  <div i18n>Some Message</div>
+  <div i18n-title title="Some &amp; attribute"></div>
+  <div i18n>Some &amp; message</div>
+  <div i18n-title title="Some &amp; {{'interpolated'}} attribute"></div>
+  <div i18n>Some &amp; {{'interpolated' }} message</div>
+  <div i18n>&amp;</div>
+  <div i18n>&amp;&quot;</div>
+  <div i18n-title title="&quot;"></div>
+  <div i18n-title title="&quot;&quot;"></div>
 `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{
                     selector: 'my-component',
                     template: `
-  <div i18n>Some Message</div>
+  <div i18n-title title="Some &amp; attribute"></div>
+  <div i18n>Some &amp; message</div>
+  <div i18n-title title="Some &amp; {{'interpolated'}} attribute"></div>
+  <div i18n>Some &amp; {{'interpolated' }} message</div>
+  <div i18n>&amp;</div>
+  <div i18n>&amp;&quot;</div>
+  <div i18n-title title="&quot;"></div>
+  <div i18n-title title="&quot;&quot;"></div>
 `
                 }]
         }] });
