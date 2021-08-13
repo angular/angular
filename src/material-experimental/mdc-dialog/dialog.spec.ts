@@ -774,14 +774,14 @@ describe('MDC-based MatDialog', () => {
         .withContext('Expected reference to have been cleared.').toBeFalsy();
      }));
 
-  it('should assign a unique id to each dialog', () => {
+  it('should assign a unique id to each dialog', fakeAsync(() => {
     const one = dialog.open(PizzaMsg);
     const two = dialog.open(PizzaMsg);
 
     expect(one.id).toBeTruthy();
     expect(two.id).toBeTruthy();
     expect(one.id).not.toBe(two.id);
-  });
+  }));
 
   it('should allow for the id to be overwritten', () => {
     const dialogRef = dialog.open(PizzaMsg, {id: 'pizza'});
@@ -1200,7 +1200,7 @@ describe('MDC-based MatDialog', () => {
          expect(document.activeElement!.id)
              .not.toBe(
                  'dialog-trigger',
-                 'Expcted the focus not to have changed before the animation finishes.');
+                 'Expected the focus not to have changed before the animation finishes.');
 
          flushMicrotasks();
          viewContainerFixture.detectChanges();
@@ -1929,6 +1929,14 @@ describe('MDC-based MatDialog with animations enabled', () => {
        flush();
        expect(dialogRef.getState()).toBe(MatDialogState.CLOSED);
      }));
+
+  it('should return the previous dialogRef if the previous dialog hasn\'t finished animating open',
+    () => {
+    let dialogRef1: MatDialogRef<PizzaMsg>, dialogRef2: MatDialogRef<PizzaMsg>;
+      dialogRef1 = dialog.open(PizzaMsg);
+      dialogRef2 = dialog.open(PizzaMsg);
+      expect(dialogRef1).toEqual(dialogRef2);
+    });
 });
 
 @Directive({selector: 'dir-with-view-container'})

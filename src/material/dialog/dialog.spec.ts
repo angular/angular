@@ -1334,7 +1334,7 @@ describe('MatDialog', () => {
 
       tick(500);
       viewContainerFixture.detectChanges();
-      expect(lastFocusOrigin!).withContext('Expected the trigger button to be blurred').toBeNull();
+      expect(lastFocusOrigin!).toBe('program');
 
       dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
 
@@ -1367,7 +1367,7 @@ describe('MatDialog', () => {
 
       tick(500);
       viewContainerFixture.detectChanges();
-      expect(lastFocusOrigin!).withContext('Expected the trigger button to be blurred').toBeNull();
+      expect(lastFocusOrigin!).toBe('program');
 
       const backdrop = overlayContainerElement
           .querySelector('.cdk-overlay-backdrop') as HTMLElement;
@@ -1398,12 +1398,18 @@ describe('MatDialog', () => {
       // Patch the element focus after the initial and real focus, because otherwise the
       // `activeElement` won't be set, and the dialog won't be able to restore focus to an element.
       patchElementFocus(button);
+      expect(lastFocusOrigin!)
+        .withContext('Expected the trigger button to be focused via program')
+        .toBe('program');
 
       dialog.open(ContentElementDialog, {viewContainerRef: testViewContainerRef});
 
       tick(500);
       viewContainerFixture.detectChanges();
-      expect(lastFocusOrigin!).withContext('Expected the trigger button to be blurred').toBeNull();
+      tick(500);
+      expect(lastFocusOrigin!)
+        .withContext('Expected the trigger button to be blurred')
+        .toBeNull();
 
       const closeButton = overlayContainerElement
         .querySelector('button[mat-dialog-close]') as HTMLElement;
@@ -1416,7 +1422,8 @@ describe('MatDialog', () => {
       tick(500);
 
       expect(lastFocusOrigin!)
-        .withContext('Expected the trigger button to be focused via keyboard').toBe('keyboard');
+        .withContext( 'Expected the trigger button to be focused via keyboard')
+        .toBe('keyboard');
 
       focusMonitor.stopMonitoring(button);
       document.body.removeChild(button);
@@ -1435,12 +1442,17 @@ describe('MatDialog', () => {
       // Patch the element focus after the initial and real focus, because otherwise the
       // `activeElement` won't be set, and the dialog won't be able to restore focus to an element.
       patchElementFocus(button);
+      expect(lastFocusOrigin!)
+        .withContext('Expected the trigger button to be focused via program')
+        .toBe('program');
 
       dialog.open(ContentElementDialog, {viewContainerRef: testViewContainerRef});
 
-      tick(500);
       viewContainerFixture.detectChanges();
-      expect(lastFocusOrigin!).withContext('Expected the trigger button to be blurred').toBeNull();
+      tick(500);
+      expect(lastFocusOrigin!)
+        .withContext('Expected the trigger button to be blurred')
+        .toBeNull();
 
       const closeButton = overlayContainerElement
         .querySelector('button[mat-dialog-close]') as HTMLElement;
@@ -1454,7 +1466,8 @@ describe('MatDialog', () => {
       tick(500);
 
       expect(lastFocusOrigin!)
-        .withContext('Expected the trigger button to be focused via mouse').toBe('mouse');
+        .withContext( 'Expected the trigger button to be focused via mouse')
+        .toBe('mouse');
 
       focusMonitor.stopMonitoring(button);
       document.body.removeChild(button);

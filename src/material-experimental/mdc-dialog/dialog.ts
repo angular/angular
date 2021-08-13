@@ -12,6 +12,7 @@ import {Inject, Injectable, InjectionToken, Injector, Optional, SkipSelf} from '
 import {_MatDialogBase, MatDialogConfig} from '@angular/material/dialog';
 import {MatDialogContainer} from './dialog-container';
 import {MatDialogRef} from './dialog-ref';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
 /** Injection token that can be used to access the data that was passed in to a dialog. */
 export const MAT_DIALOG_DATA = new InjectionToken<any>('MatMdcDialogData');
@@ -52,9 +53,11 @@ export class MatDialog extends _MatDialogBase<MatDialogContainer> {
       @Optional() location: Location,
       @Optional() @Inject(MAT_DIALOG_DEFAULT_OPTIONS) defaultOptions: MatDialogConfig,
       @Inject(MAT_DIALOG_SCROLL_STRATEGY) scrollStrategy: any,
-      @Optional() @SkipSelf() parentDialog: MatDialog, overlayContainer: OverlayContainer) {
+      @Optional() @SkipSelf() parentDialog: MatDialog, overlayContainer: OverlayContainer,
+      @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: 'NoopAnimations'|
+      'BrowserAnimations') {
     super(
         overlay, injector, defaultOptions, parentDialog, overlayContainer, scrollStrategy,
-        MatDialogRef, MatDialogContainer, MAT_DIALOG_DATA);
+        MatDialogRef, MatDialogContainer, MAT_DIALOG_DATA, animationMode);
   }
 }

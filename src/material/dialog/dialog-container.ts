@@ -114,9 +114,6 @@ export abstract class _MatDialogContainerBase extends BasePortalOutlet {
     // Save the previously focused element. This element will be re-focused
     // when the dialog closes.
     this._capturePreviouslyFocusedElement();
-    // Move focus onto the dialog immediately in order to prevent the user
-    // from accidentally opening multiple dialogs at the same time.
-    this._focusDialogContainer();
   }
 
   /**
@@ -218,7 +215,13 @@ export abstract class _MatDialogContainerBase extends BasePortalOutlet {
         break;
       case true:
       case 'first-tabbable':
-        this._focusTrap.focusInitialElementWhenReady();
+        this._focusTrap.focusInitialElementWhenReady().then(focusedSuccessfully => {
+          // If we weren't able to find a focusable element in the dialog, then focus the dialog
+          // container instead.
+          if (!focusedSuccessfully) {
+            this._focusDialogContainer();
+          }
+        });
         break;
       case 'first-heading':
         this._focusByCssSelector('h1, h2, h3, h4, h5, h6, [role="heading"]');
