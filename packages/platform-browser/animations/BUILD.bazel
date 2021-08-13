@@ -1,4 +1,5 @@
 load("//tools:defaults.bzl", "ng_module")
+load("//tools:tsec.bzl", "tsec_config", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -19,4 +20,16 @@ ng_module(
         "//packages/core",
         "//packages/platform-browser",
     ],
+)
+
+tsec_config(
+    name = "tsec_config",
+    src = ":tsconfig-tsec.json",
+    deps = ["//packages:tsec_config"],
+)
+
+tsec_test(
+    name = "tsec_test",
+    target = "animations",
+    tsconfig = "tsec_config",
 )

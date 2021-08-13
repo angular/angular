@@ -1,0 +1,8 @@
+/** For building //packages/platform-server/init. */
+{
+  "extends": "../../tsconfig-tsec-base.json",
+  "include": [
+    "*.ts",
+    "src/**/*.ts"
+  ]
+}

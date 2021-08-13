@@ -1,4 +1,5 @@
 load("//tools:defaults.bzl", "ng_module")
+load("//tools:tsec.bzl", "tsec_config", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -15,4 +16,16 @@ ng_module(
     deps = [
         "//packages/platform-server",
     ],
+)
+
+tsec_config(
+    name = "tsec_config",
+    src = ":tsconfig-tsec.json",
+    deps = ["//packages:tsec_config"],
+)
+
+tsec_test(
+    name = "tsec_test",
+    target = "init",
+    tsconfig = "tsec_config",
 )

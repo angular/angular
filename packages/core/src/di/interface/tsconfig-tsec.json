@@ -1,0 +1,7 @@
+/** For building //packages/core/src/di/interface. */
+{
+  "extends": "../../../../tsconfig-tsec-base.json",
+  "include": [
+    "**/*.ts"
+  ]
+}

@@ -1,15 +1,10 @@
 /** For building //packages/core. */
 {
   "extends": "../tsconfig-tsec-base.json",
-  "compilerOptions": {
-    "outDir": ".tsec"
-  },
   "include": [
     "*.ts",
     "src/**/*.ts",
-    "../*.d.ts"
-  ],
-  "references": [
-    {"path": "../zone.js/lib/tsconfig-tsec.json"}
+    "../*.d.ts",
+    "../zone.js/lib/zone.d.ts"
   ]
 }

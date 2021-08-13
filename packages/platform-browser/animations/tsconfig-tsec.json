@@ -3,7 +3,6 @@
   "extends": "../../tsconfig-tsec-base.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "outDir": ".tsec",
     "paths": {
       "@angular/core": ["../../core"],
       "@angular/common": ["../../common"],
@@ -15,12 +14,5 @@
   "include": [
     "*.ts",
     "src/**/*.ts"
-  ],
-  "references": [
-    {"path": "../../core/tsconfig-tsec.json"},
-    {"path": "../../common/tsconfig-tsec.json"},
-    {"path": "../tsconfig-tsec.json"},
-    {"path": "../../animations/tsconfig-tsec.json"},
-    {"path": "../../animations/browser/tsconfig-tsec.json"}
   ]
 }

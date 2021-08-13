@@ -1,4 +1,5 @@
 load("//tools:defaults.bzl", "api_golden_test_npm_package", "ng_module", "ng_package")
+load("//tools:tsec.bzl", "tsec_config", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -17,6 +18,18 @@ ng_module(
         "//packages/zone.js/lib:zone_d_ts",
         "@npm//@types/hammerjs",
     ],
+)
+
+tsec_config(
+    name = "tsec_config",
+    src = ":tsconfig-tsec.json",
+    deps = ["//packages:tsec_config"],
+)
+
+tsec_test(
+    name = "tsec_test",
+    target = "platform-browser",
+    tsconfig = "tsec_config",
 )
 
 ng_package(
