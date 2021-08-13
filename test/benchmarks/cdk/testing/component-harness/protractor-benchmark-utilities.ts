@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {runBenchmark} from '@angular/dev-infra-private/benchmark/driver-utilities';
+import {runBenchmark} from '@angular/dev-infra-private/bazel/benchmark/driver-utilities';
 import {USE_BENCHPRESS} from './constants';
 
 /**

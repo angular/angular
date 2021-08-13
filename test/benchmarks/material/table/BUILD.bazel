@@ -1,4 +1,4 @@
-load("@npm//@angular/dev-infra-private/benchmark/component_benchmark:component_benchmark.bzl", "component_benchmark")
+load("@npm//@angular/dev-infra-private/bazel/benchmark/component_benchmark:component_benchmark.bzl", "component_benchmark")
 
 component_benchmark(
     name = "benchmark",

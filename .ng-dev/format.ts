@@ -1,4 +1,4 @@
-import {FormatConfig} from '@angular/dev-infra-private/format/config';
+import {FormatConfig} from '@angular/dev-infra-private/ng-dev/format/config';
 
 /**
  * Configuration for the ng-dev format command. We currently only use the buildifier

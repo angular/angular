@@ -1,7 +1,7 @@
 import {SemVer} from 'semver';
 import {checkReleasePackage} from './check-package';
-import {BuiltPackage} from '@angular/dev-infra-private/release/config';
-import {error} from '@angular/dev-infra-private/utils/console';
+import {BuiltPackage} from '@angular/dev-infra-private/ng-dev/release/config';
+import {error} from '@angular/dev-infra-private/ng-dev/utils/console';
 import * as chalk from 'chalk';
 
 /** Asserts that the given built packages are valid for public consumption. */

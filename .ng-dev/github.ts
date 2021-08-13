@@ -1,4 +1,4 @@
-import {GithubConfig} from '@angular/dev-infra-private/utils/config';
+import {GithubConfig} from '@angular/dev-infra-private/ng-dev/utils/config';
 
 /**
  * Github configuration for the ng-dev command. This repository is

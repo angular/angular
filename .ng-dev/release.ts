@@ -1,10 +1,12 @@
-import {BuiltPackage, ReleaseConfig} from '@angular/dev-infra-private/release/config';
-import {ReleaseAction} from '@angular/dev-infra-private/release/publish/actions';
+import {BuiltPackage, ReleaseConfig} from '@angular/dev-infra-private/ng-dev/release/config';
+import {ReleaseAction} from '@angular/dev-infra-private/ng-dev/release/publish/actions';
 import {SemVer} from 'semver';
 import {assertValidNpmPackageOutput} from '../tools/release-checks/npm-package-output';
 import {fork} from 'child_process';
 import {join} from 'path';
-import {FatalReleaseActionError} from '@angular/dev-infra-private/release/publish/actions-error';
+import {
+  FatalReleaseActionError
+} from '@angular/dev-infra-private/ng-dev/release/publish/actions-error';
 
 const actionProto = ReleaseAction.prototype as any;
 const _origStageFn = actionProto.stageVersionForBranchAndCreatePullRequest;

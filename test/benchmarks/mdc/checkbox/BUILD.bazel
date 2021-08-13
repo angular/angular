@@ -1,4 +1,4 @@
-load("@npm//@angular/dev-infra-private/benchmark/component_benchmark:component_benchmark.bzl", "component_benchmark")
+load("@npm//@angular/dev-infra-private/bazel/benchmark/component_benchmark:component_benchmark.bzl", "component_benchmark")
 
 # TODO(wagnermaciel): Update this target to provide indigo-pink in a way that doesn't require having to import it with
 # stylesUrls inside the components once `component_benchmark` supports asset injection.
