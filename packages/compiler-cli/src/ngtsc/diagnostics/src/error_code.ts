@@ -183,6 +183,16 @@ export enum ErrorCode {
   INVALID_BANANA_IN_BOX = 8101,
 
   /**
+   * The left side of a nullish coalescing operation is not nullable.
+   *
+   * ```
+   * {{ foo ?? bar }}
+   * ```
+   * When the type of foo doesn't include `null` or `undefined`.
+   */
+  NULLISH_COALESCING_NOT_NULLABLE = 8102,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */
