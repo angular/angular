@@ -12,6 +12,7 @@ load("@npm//typescript:index.bzl", "tsc")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("@npm//@angular/dev-infra-private/bazel/benchmark/ng_rollup_bundle:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
 load("//tools:ng_benchmark.bzl", _ng_benchmark = "ng_benchmark")
+load("//tools:tsec.bzl", _get_forwarded_target_name = "get_forwarded_target_name", _ts_library_forwarded = "ts_library_forwarded")
 load("@npm//@angular/dev-infra-private/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
 load("@npm//@angular/dev-infra-private/bazel:extract_js_module_output.bzl", "extract_js_module_output")
 
@@ -128,6 +129,16 @@ def ts_library(name, tsconfig = None, testonly = False, deps = [], module_name =
         **kwargs
     )
 
+    # Forward `srcs` and `deps` to an implicitly create rule so that
+    # `tsec_test` can get those arguments from its `target` argument.
+    _ts_library_forwarded(
+        name = _get_forwarded_target_name(name),
+        testonly = True,
+        srcs = kwargs.get("srcs", []),
+        deps = deps,
+        tags = ["tsec"],
+    )
+
     # Select the es5 .js output of the ts_library for use in downstream boostrap targets
     # with `output_group = "es5_sources"`. This exposes an internal detail of ts_library
     # that is not ideal.
@@ -179,6 +190,16 @@ def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps 
         package_name = package_name,
         perf_flag = "//packages/compiler-cli:ng_perf",
         **kwargs
+    )
+
+    # Forward `srcs` and `deps` to an implicitly create rule so that
+    # `tsec_test` can get those arguments from its `target` argument.
+    _ts_library_forwarded(
+        name = _get_forwarded_target_name(name),
+        testonly = True,
+        srcs = kwargs.get("srcs", []),
+        deps = deps,
+        tags = ["tsec"],
     )
 
 def ng_package(name, readme_md = None, license_banner = None, deps = [], **kwargs):

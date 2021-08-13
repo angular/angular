@@ -1,4 +1,5 @@
 load("//tools:defaults.bzl", "ts_config", "ts_library")
+load("//tools:tsec.bzl", "tsec_config")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -19,6 +20,13 @@ ts_library(
 ts_config(
     name = "tsconfig-test",
     src = "tsconfig-test.json",
+    deps = [":tsconfig-build.json"],
+)
+
+tsec_config(
+    name = "tsec_config",
+    src = "tsconfig-tsec-base.json",
+    exemption = ":tsec-exemption.json",
     deps = [":tsconfig-build.json"],
 )
 

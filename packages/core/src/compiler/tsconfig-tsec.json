@@ -1,0 +1,8 @@
+/** For building //packages/core/src/compiler. */
+{
+  "extends": "../../../tsconfig-tsec-base.json",
+  "include": [
+    "**/*.ts",
+    "../util/ng_dev_mode.d.ts"
+  ]
+}

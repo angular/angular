@@ -1,0 +1,7 @@
+/** For building //packages/core/src/inteface. */
+{
+  "extends": "../../../tsconfig-tsec-base.json",
+  "include": [
+    "*.ts"
+  ]
+}
