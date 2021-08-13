@@ -1,22 +1,30 @@
 # Getting Started with Angular Material
 
-This guide explains how to set up your Angular project to begin using Angular Material. It includes information on prerequisites, installing Angular Material, and optionally displaying a sample material component in your application to verify your setup.
+This guide explains how to set up your Angular project to begin using Angular Material. It includes
+information on prerequisites, installing Angular Material, and optionally displaying a sample
+Material component in your application to verify your setup.
 
 *Angular Resources*
 
-If you are new to Angular or getting started with a new Angular application, see [Angular's full Getting Started Guide](https://angular.io/start) and [Setting up your environment](https://angular.io/guide/setup-local).
+If you are new to Angular or getting started with a new Angular application, see
+[Angular's full Getting Started Guide](https://angular.io/start) and
+[Setting up your environment](https://angular.io/guide/setup-local).
 
 For existing applications, follow the steps below to begin using Angular Material.
 
 ## Install Angular Material
 
-Use the Angular CLI's installation [schematic](https://material.angular.io/guide/schematics) to set up your Angular Material project by running the following command:
+Use the Angular CLI's installation [schematic](https://material.angular.io/guide/schematics) to set
+up your Angular Material project by running the following command:
 
 ```bash
 ng add @angular/material
 ```
 
-The `ng add` command will install Angular Material, the [Component Dev Kit (CDK)](https://material.angular.io/cdk/categories), [Angular Animations](https://angular.io/guide/animations) and ask you the following questions to determine which features to include:
+The `ng add` command will install Angular Material, the
+[Component Dev Kit (CDK)](https://material.angular.io/cdk/categories),
+[Angular Animations](https://angular.io/guide/animations) and ask you the following questions to
+determine which features to include:
 
 1. Choose a prebuilt theme name, or "custom" for a custom theme:
 
@@ -30,7 +38,7 @@ The `ng add` command will install Angular Material, the [Component Dev Kit (CDK)
 
    Importing the [`BrowserAnimationsModule`](https://angular.io/api/platform-browser/animations/BrowserAnimationsModule) into your application enables Angular's [animation system](https://angular.io/guide/animations). Declining this will disable most of Angular Material's animations.
 
-The `ng add` command will additionally perform the following configurations:
+The `ng add` command will additionally perform the following actions:
 
 * Add project dependencies to `package.json`
 * Add the Roboto font to your `index.html`
@@ -47,16 +55,18 @@ You're done! Angular Material is now configured to be used in your application.
 
 Let's display a slider component in your app and verify that everything works.
 
-You need to import the `MatSliderModule` that you want to display by adding the following lines to your app.module.ts file.
+You need to import the `MatSliderModule` that you want to display by adding the following lines to
+your `app.module.ts` file.
 
 ```ts
 import { MatSliderModule } from '@angular/material/slider';
-…
-@NgModule ({....
-  imports: [...,
-  MatSliderModule,
-…]
+
+@NgModule ({
+  imports: [
+    MatSliderModule,
+  ]
 })
+class AppModule {}
 ```
 
 Add the `<mat-slider>` tag to the `app.component.html` like so:
@@ -73,6 +83,8 @@ ng serve
 
 Then point your browser to [http://localhost:4200](http://localhost:4200)
 
-You should see the material slider component on the page.
+You should see the Material slider component on the page.
 
-In addition to the installation schematic, Angular Material comes with [several schematics](https://material.angular.io/guide/schematics) (like nav, table, address-form, etc.) that can be used to easily generate pre-built components in your application.
+In addition to the installation schematic, Angular Material comes with
+[several other schematics](https://material.angular.io/guide/schematics) (like nav, table,
+address-form, etc.) that can be used to easily generate pre-built components in your application.
