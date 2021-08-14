@@ -45,7 +45,7 @@ export interface ResourceHost {
    * Load a referenced resource either statically or asynchronously. If the host returns a
    * `Promise<string>` it is assumed the user of the corresponding `Program` will call
    * `loadNgStructureAsync()`. Returning  `Promise<string>` outside `loadNgStructureAsync()` will
-   * cause a diagnostics diagnostic error or an exception to be thrown.
+   * cause a diagnostics error or an exception to be thrown.
    */
   readResource(fileName: string): Promise<string>|string;
 
