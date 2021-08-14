@@ -211,8 +211,12 @@ export function validateStyleParams(
   }
 }
 
+const SINGLE_PARAM_REGEX = new RegExp(`^${SUBSTITUTION_EXPR_START}\\s*((?:(?!${
+    SUBSTITUTION_EXPR_END}).)+?)\\s*${SUBSTITUTION_EXPR_END}$`);
+
 const PARAM_REGEX =
     new RegExp(`${SUBSTITUTION_EXPR_START}\\s*(.+?)\\s*${SUBSTITUTION_EXPR_END}`, 'g');
+
 export function extractStyleParams(value: string|number): string[] {
   let params: string[] = [];
   if (typeof value === 'string') {
@@ -227,8 +231,18 @@ export function extractStyleParams(value: string|number): string[] {
 
 export function interpolateParams(
     value: string|number, params: {[name: string]: any}, errors: any[]): string|number {
+  if (typeof value === 'number') {
+    return value;
+  }
+
   const original = value.toString();
-  const str = original.replace(PARAM_REGEX, (_, varName) => {
+
+  const matches = original.match(SINGLE_PARAM_REGEX);
+  if (matches) {
+    return interpolateSingleParam(matches[1], params, errors);
+  }
+
+  return original.replace(PARAM_REGEX, (_, varName) => {
     let localVal = params[varName];
     // this means that the value was never overridden by the data passed in by the user
     if (!params.hasOwnProperty(varName)) {
@@ -237,9 +251,24 @@ export function interpolateParams(
     }
     return localVal.toString();
   });
+}
 
-  // we do this to assert that numeric values stay as they are
-  return str == original ? value : str;
+function interpolateSingleParam(
+    varName: string, params: {[name: string]: any}, errors: any[]): string|number {
+  let result: string|number;
+  if (!params.hasOwnProperty(varName)) {
+    // this means that the value was never overridden by the data passed in by the user
+    errors.push(`Please provide a value for the animation param ${varName}`);
+    result = '';
+  } else {
+    let paramVal = params[varName];
+    // only numeric values are allowed not to be strings as they will be converted later on
+    if (typeof paramVal !== 'number' && typeof paramVal !== 'string') {
+      paramVal = paramVal.toString();
+    }
+    result = paramVal;
+  }
+  return result;
 }
 
 export function iteratorToArray(iterator: any): any[] {
