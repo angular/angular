@@ -23,7 +23,8 @@ import {valueReferenceToExpression, wrapFunctionExpressionsInParens} from './uti
  */
 export function extractClassMetadata(
     clazz: DeclarationNode, reflection: ReflectionHost, isCore: boolean,
-    annotateForClosureCompiler?: boolean): R3ClassMetadata|null {
+    annotateForClosureCompiler?: boolean,
+    angularDecoratorTransform: (dec: Decorator) => Decorator = dec => dec): R3ClassMetadata|null {
   if (!reflection.isClass(clazz)) {
     return null;
   }
@@ -37,7 +38,9 @@ export function extractClassMetadata(
   }
   const ngClassDecorators =
       classDecorators.filter(dec => isAngularDecorator(dec, isCore))
-          .map(decorator => decoratorToMetadata(decorator, annotateForClosureCompiler))
+          .map(
+              decorator => decoratorToMetadata(
+                  angularDecoratorTransform(decorator), annotateForClosureCompiler))
           // Since the `setClassMetadata` call is intended to be emitted after the class
           // declaration, we have to strip references to the existing identifiers or
           // TypeScript might generate invalid code when it emits to JS. In particular
@@ -156,8 +159,8 @@ function isAngularDecorator(decorator: Decorator, isCore: boolean): boolean {
 
 /**
  * Recursively recreates all of the `Identifier` descendant nodes with a particular name inside
- * of an AST node, thus removing any references to them. Useful if a particular node has to be t
- * aken from one place any emitted to another one exactly as it has been written.
+ * of an AST node, thus removing any references to them. Useful if a particular node has to be
+ * taken from one place any emitted to another one exactly as it has been written.
  */
 function removeIdentifierReferences<T extends ts.Node>(node: T, name: string): T {
   const result = ts.transform(

@@ -504,7 +504,8 @@ export class ComponentDecoratorHandler implements
         },
         typeCheckMeta: extractDirectiveTypeCheckMeta(node, inputs, this.reflector),
         classMetadata: extractClassMetadata(
-            node, this.reflector, this.isCore, this.annotateForClosureCompiler),
+            node, this.reflector, this.isCore, this.annotateForClosureCompiler,
+            dec => this._transformDecoratorToInlineResources(dec, component, styles, template)),
         template,
         providersRequiringFactory,
         viewProvidersRequiringFactory,
@@ -918,6 +919,43 @@ export class ComponentDecoratorHandler implements
         compileDeclareClassMetadata(analysis.classMetadata).toStmt() :
         null;
     return compileResults(fac, def, classMetadata, 'ɵcmp');
+  }
+
+  private _transformDecoratorToInlineResources(
+      dec: Decorator, component: Map<string, ts.Expression>, styles: string[],
+      template: ParsedTemplateWithSource): Decorator {
+    if (dec.name !== 'Component') {
+      return dec;
+    }
+
+    // If no external resources are referenced, preserve the original decorator
+    // for the best source map experience when the decorator is emitted in TS.
+    if (!component.has('templateUrl') && !component.has('styleUrls')) {
+      return dec;
+    }
+
+    const metadata = new Map(component);
+
+    // Set the `template` property if the `templateUrl` property is set.
+    if (metadata.has('templateUrl')) {
+      metadata.delete('templateUrl');
+      metadata.set('template', ts.createStringLiteral(template.content));
+    }
+
+    // Set the `styles` property if the `styleUrls` property is set.
+    if (metadata.has('styleUrls')) {
+      metadata.delete('styleUrls');
+      metadata.set('styles', ts.createArrayLiteral(styles.map(s => ts.createStringLiteral(s))));
+    }
+
+    // Convert the metadata to TypeScript AST object literal element nodes.
+    const newMetadataFields: ts.ObjectLiteralElementLike[] = [];
+    for (const [name, value] of metadata.entries()) {
+      newMetadataFields.push(ts.createPropertyAssignment(ts.createStringLiteral(name), value));
+    }
+
+    // Return the original decorator with the overridden metadata argument.
+    return {...dec, args: [ts.createObjectLiteral(newMetadataFields)]};
   }
 
   private _resolveLiteral(decorator: Decorator): ts.ObjectLiteralExpression {
