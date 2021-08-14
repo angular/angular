@@ -37,7 +37,6 @@ export class NgtscProgram implements api.Program {
    */
   private tsProgram: ts.Program;
 
-  private closureCompilerEnabled: boolean;
   private host: NgCompilerHost;
   private incrementalStrategy: TrackedIncrementalBuildStrategy;
 
@@ -52,8 +51,6 @@ export class NgtscProgram implements api.Program {
     if (!options.disableTypeScriptVersionCheck) {
       verifySupportedTypeScriptVersion();
     }
-
-    this.closureCompilerEnabled = !!options.annotateForClosureCompiler;
 
     const reuseProgram = oldProgram?.compiler.getCurrentProgram();
     this.host = NgCompilerHost.wrap(delegateHost, rootNames, options, reuseProgram ?? null);
