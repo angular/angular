@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentInit, ChangeDetectorRef, ContentChildren, Directive, ElementRef, Input, OnChanges, OnDestroy, Optional, QueryList, Renderer2, SimpleChanges} from '@angular/core';
+import {AfterContentInit, ChangeDetectorRef, ContentChildren, Directive, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Optional, Output, QueryList, Renderer2, SimpleChanges,} from '@angular/core';
 import {from, of, Subscription} from 'rxjs';
 import {mergeAll} from 'rxjs/operators';
 
@@ -15,7 +15,6 @@ import {Router} from '../router';
 import {IsActiveMatchOptions} from '../url_tree';
 
 import {RouterLink, RouterLinkWithHref} from './router_link';
-
 
 /**
  *
@@ -72,6 +71,16 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
  * </div>
  * ```
  *
+ * You can use the output `routerLinkActivated` to get notified each time the link becomes
+ * active or inactive.
+ *
+ * ```
+ * <a
+ *  routerLink="/user/bob"
+ *  routerLinkActive="active-link"
+ *  (routerLinkActivated)="this.onRouterLinkActive($event)">Bob</a>
+ * ```
+ *
  * @ngModule RouterModule
  *
  * @publicApi
@@ -85,7 +94,6 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   @ContentChildren(RouterLinkWithHref, {descendants: true})
   linksWithHrefs!: QueryList<RouterLinkWithHref>;
 
-  private classes: string[] = [];
   private routerEventsSubscription: Subscription;
   private linkInputChangesSubscription?: Subscription;
   public readonly isActive: boolean = false;
@@ -99,6 +107,15 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
    */
   @Input() routerLinkActiveOptions: {exact: boolean}|IsActiveMatchOptions = {exact: false};
 
+  private classes: string[] = [];
+
+  @Input()
+  set routerLinkActive(data: string[]|string|undefined) {
+    const classes = (Array.isArray(data) ? data : data?.split(' ')) ?? [];
+    this.classes = classes.filter((c) => !!c);
+  }
+
+  @Output() public readonly routerLinkActivated: EventEmitter<boolean> = new EventEmitter();
 
   constructor(
       private router: Router, private element: ElementRef, private renderer: Renderer2,
@@ -114,35 +131,36 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   /** @nodoc */
   ngAfterContentInit(): void {
     // `of(null)` is used to force subscribe body to execute once immediately (like `startWith`).
-    of(this.links.changes, this.linksWithHrefs.changes, of(null)).pipe(mergeAll()).subscribe(_ => {
-      this.update();
-      this.subscribeToEachLinkOnChanges();
-    });
+    of(this.links.changes, this.linksWithHrefs.changes, of(null))
+        .pipe(mergeAll())
+        .subscribe((_) => {
+          this.update();
+          this.subscribeToEachLinkOnChanges();
+        });
   }
 
   private subscribeToEachLinkOnChanges() {
     this.linkInputChangesSubscription?.unsubscribe();
     const allLinkChanges =
-        [...this.links.toArray(), ...this.linksWithHrefs.toArray(), this.link, this.linkWithHref]
-            .filter((link): link is RouterLink|RouterLinkWithHref => !!link)
-            .map(link => link.onChanges);
-    this.linkInputChangesSubscription = from(allLinkChanges).pipe(mergeAll()).subscribe(link => {
+        [
+          ...this.links.toArray(),
+          ...this.linksWithHrefs.toArray(),
+          this.link,
+          this.linkWithHref,
+        ].filter((link): link is RouterLink|RouterLinkWithHref => !!link)
+            .map((link) => link.onChanges);
+    this.linkInputChangesSubscription = from(allLinkChanges).pipe(mergeAll()).subscribe((link) => {
       if (this.isActive !== this.isLinkActive(this.router)(link)) {
         this.update();
       }
     });
   }
 
-  @Input()
-  set routerLinkActive(data: string[]|string) {
-    const classes = Array.isArray(data) ? data : data.split(' ');
-    this.classes = classes.filter(c => !!c);
-  }
-
   /** @nodoc */
   ngOnChanges(changes: SimpleChanges): void {
     this.update();
   }
+
   /** @nodoc */
   ngOnDestroy(): void {
     this.routerEventsSubscription.unsubscribe();
@@ -163,24 +181,28 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
             this.renderer.removeClass(this.element.nativeElement, c);
           }
         });
+
+        // Emit on routerLinkActivated after classes are updated
+        this.routerLinkActivated.emit(hasActiveLinks);
       }
     });
   }
 
-  private isLinkActive(router: Router): (link: (RouterLink|RouterLinkWithHref)) => boolean {
+  private isLinkActive(router: Router): (link: RouterLink|RouterLinkWithHref) => boolean {
     const options: boolean|IsActiveMatchOptions =
         isActiveMatchOptions(this.routerLinkActiveOptions) ?
-        this.routerLinkActiveOptions :
-        // While the types should disallow `undefined` here, it's possible without strict inputs
-        (this.routerLinkActiveOptions.exact || false);
+        this.routerLinkActiveOptions :  // While the types should disallow `undefined` here, it's
+                                        // possible without strict inputs
+        this.routerLinkActiveOptions.exact || false;
     return (link: RouterLink|RouterLinkWithHref) => router.isActive(link.urlTree, options);
   }
 
   private hasActiveLinks(): boolean {
     const isActiveCheckFn = this.isLinkActive(this.router);
-    return this.link && isActiveCheckFn(this.link) ||
-        this.linkWithHref && isActiveCheckFn(this.linkWithHref) ||
-        this.links.some(isActiveCheckFn) || this.linksWithHrefs.some(isActiveCheckFn);
+    return (
+        (this.link && isActiveCheckFn(this.link)) ||
+        (this.linkWithHref && isActiveCheckFn(this.linkWithHref)) ||
+        this.links.some(isActiveCheckFn) || this.linksWithHrefs.some(isActiveCheckFn));
   }
 }
 
