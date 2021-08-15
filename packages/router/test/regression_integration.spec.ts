@@ -266,14 +266,9 @@ describe('Integration', () => {
          location.simulateHashChange('/one');
          advance(fixture);
 
-         const BASE_ERROR_MESSAGE =
-             'This asserts current behavior, which is incorrect. When #28561 is fixed, it should be: ';
-
-         expect(location.path()).toEqual('/one', BASE_ERROR_MESSAGE + '/');
-         const urlChanges = ['replace: /', 'hash: /one'];
-         expect(location.urlChanges)
-             .toEqual(
-                 urlChanges, BASE_ERROR_MESSAGE + JSON.stringify(urlChanges.concat('replace: /')));
+         expect(location.path()).toEqual('/');
+         const urlChanges = ['replace: /', 'hash: /one', 'replace: /'];
+         expect(location.urlChanges).toEqual(urlChanges);
        }));
   });
 });

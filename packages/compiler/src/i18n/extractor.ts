@@ -28,7 +28,6 @@ import {NgModuleResolver} from '../ng_module_resolver';
 import {ParseError} from '../parse_util';
 import {PipeResolver} from '../pipe_resolver';
 import {DomElementSchemaRegistry} from '../schema/dom_element_schema_registry';
-import {syntaxError} from '../util';
 
 import {MessageBundle} from './message_bundle';
 
@@ -41,7 +40,7 @@ import {MessageBundle} from './message_bundle';
 export interface ExtractorHost extends StaticSymbolResolverHost, AotSummaryResolverHost {
   /**
    * Converts a path that refers to a resource into an absolute filePath
-   * that can be lateron used for loading the resource via `loadResource.
+   * that can be later on used for loading the resource via `loadResource.
    */
   resourceNameToFileName(path: string, containingFile: string): string|null;
   /**

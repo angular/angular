@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
-import {APP_INITIALIZER, ApplicationInitStatus, Inject, InjectionToken, Injector, StaticProvider} from '@angular/core';
+import {APP_INITIALIZER, ApplicationInitStatus, InjectionToken, Injector, StaticProvider} from '@angular/core';
 
 /**
  * An id that identifies a particular application being bootstrapped, that should
@@ -21,10 +21,11 @@ export function appInitializerFactory(transitionId: string, document: any, injec
     // the server.
     injector.get(ApplicationInitStatus).donePromise.then(() => {
       const dom = getDOM();
-      const styles: any[] =
-          Array.prototype.slice.apply(document.querySelectorAll(`style[ng-transition]`));
-      styles.filter(el => el.getAttribute('ng-transition') === transitionId)
-          .forEach(el => dom.remove(el));
+      const styles: HTMLCollectionOf<HTMLStyleElement> =
+          document.querySelectorAll(`style[ng-transition="${transitionId}"]`);
+      for (let i = 0; i < styles.length; i++) {
+        dom.remove(styles[i]);
+      }
     });
   };
 }

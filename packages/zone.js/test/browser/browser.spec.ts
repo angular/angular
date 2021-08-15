@@ -959,7 +959,7 @@ describe('Zone', function() {
            button.dispatchEvent(clickEvent);
 
            expect(logs.length).toBe(2);
-           expect(logs).toEqual(['click', 'once click']);
+           expect(logs).toEqual(['once click', 'click']);
            logs = [];
 
            button.dispatchEvent(clickEvent);

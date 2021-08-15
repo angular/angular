@@ -44,7 +44,7 @@ load("@io_bazel_rules_webtesting//web:repositories.bzl", "web_test_repositories"
 
 web_test_repositories()
 
-load("//dev-infra/bazel/browsers:browser_repositories.bzl", "browser_repositories")
+load("@npm//@angular/dev-infra-private/bazel/browsers:browser_repositories.bzl", "browser_repositories")
 
 browser_repositories()
 

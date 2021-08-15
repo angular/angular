@@ -9,7 +9,7 @@ load("//tools:defaults.bzl", "protractor_web_test_suite")
 def e2e_test(name, server, **kwargs):
     protractor_web_test_suite(
         name = name,
-        on_prepare = "//dev-infra/benchmark/component_benchmark:start-server.js",
+        on_prepare = "@npm//@angular/dev-infra-private/bazel/benchmark/component_benchmark:start-server.js",
         server = server,
         **kwargs
     )

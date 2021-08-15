@@ -1,7 +1,7 @@
 {
   "rulesDirectory": [
     "tools/tslint",
-    "dev-infra/tslint-rules",
+    "node_modules/@angular/dev-infra-private/tslint-rules",
     "node_modules/vrsource-tslint-rules/rules",
     "node_modules/tslint-eslint-rules/dist/rules",
     "node_modules/tslint-no-toplevel-property-access/rules"
@@ -120,9 +120,7 @@
       "./modules/benchmarks_external/**/*",
       // Ignore zone.js directory
       // TODO(JiaLiPassion): add zone.js back later
-      "./packages/zone.js/**/*",
-      "./dev-infra/ng-dev.js",
-      "./dev-infra/build-worker.js"
+      "./packages/zone.js/**/*"
     ]
   }
 }

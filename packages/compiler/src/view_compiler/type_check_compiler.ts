@@ -11,11 +11,11 @@ import {StaticReflector} from '../aot/static_reflector';
 import {StaticSymbol} from '../aot/static_symbol';
 import {CompileDirectiveMetadata, CompilePipeSummary} from '../compile_metadata';
 import {BindingForm, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins, EventHandlerVars, LocalResolver} from '../compiler_util/expression_converter';
+import {OutputContext} from '../constant_pool';
 import {AST, ASTWithSource, Interpolation} from '../expression_parser/ast';
 import * as o from '../output/output_ast';
 import {ParseSourceSpan} from '../parse_util';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, ReferenceAst, TemplateAst, TemplateAstVisitor, templateVisitAll, TextAst, VariableAst} from '../template_parser/template_ast';
-import {OutputContext} from '../util';
 
 
 /**

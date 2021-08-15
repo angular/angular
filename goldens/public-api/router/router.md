@@ -560,7 +560,9 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
     // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
-    set routerLinkActive(data: string[] | string);
+    readonly routerLinkActivated: EventEmitter<boolean>;
+    // (undocumented)
+    set routerLinkActive(data: string[] | string | undefined);
     routerLinkActiveOptions: {
         exact: boolean;
     } | IsActiveMatchOptions;

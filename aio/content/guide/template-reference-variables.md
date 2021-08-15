@@ -162,6 +162,12 @@ You declare a template input variable using the `let` keyword as in `let hero`.
 
 There are several such variables in this example: `hero`, `i`, and `odd`.
 
+```html
+<ng-template #hero let-hero let-i="index" let-odd="isOdd">
+  <div [class]="{'odd-row': odd}">{{i}}:{{hero.name}}</div>
+</ng-template>
+```
+
 The variable's scope is limited to a single instance of the repeated template.
 Use the same variable name again in the definition of other structural directives.
 
