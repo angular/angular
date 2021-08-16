@@ -11,7 +11,7 @@ import {Observable} from 'rxjs';
 
 import {HttpHandler} from './backend';
 import {HttpRequest} from './request';
-import {HttpEvent} from './response';
+import {HttpEvent} from './response'; 
 
 /**
  * Intercepts and handles an `HttpRequest` or `HttpResponse`.
