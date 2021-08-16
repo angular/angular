@@ -22,7 +22,7 @@ export const scheduler = {
   },
 
   /**
-   * Schedule a callback to be called before the next time the browser recanculates styles and paints.
+   * Schedule a callback to be called before the next time the browser recalculates styles and paints.
    * Using `requestAnimationFrame` triggers a recalculation so it should only be used if you want to update the DOM.
    * (If `window.requestAnimationFrame()` is not available, use `scheduler.schedule()` instead.)
    *
