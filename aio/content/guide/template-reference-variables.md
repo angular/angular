@@ -24,7 +24,6 @@ The following template variable, `#phone`, declares a `phone` variable on an `<i
 
 <code-example path="template-reference-variables/src/app/app.component.html" region="ref-var" header="src/app/app.component.html"></code-example>
 
-Refer to a template variable anywhere in the component's template.
 Here, a `<button>` further down the template refers to the `phone` variable.
 
 <code-example path="template-reference-variables/src/app/app.component.html" region="ref-phone" header="src/app/app.component.html"></code-example>
