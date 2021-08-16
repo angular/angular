@@ -4,23 +4,13 @@
   "semanticPrefix": "build",
   "separateMajorMinor": false,
   "prHourlyLimit": 2,
-  "labels": [
-    "target: minor",
-    "comp: build & ci",
-    "action: review"
-  ],
+  "labels": ["target: minor", "comp: build & ci", "action: review"],
   "timezone": "America/Tijuana",
   "lockFileMaintenance": {
     "enabled": true
   },
-  "schedule": [
-    "after 10pm every weekday",
-    "before 4am every weekday",
-    "every weekend"
-  ],
-  "baseBranches": [
-    "master"
-  ],
+  "schedule": ["after 10pm every weekday", "before 4am every weekday", "every weekend"],
+  "baseBranches": ["master"],
   "ignoreDeps": [
     "@babel/core",
     "@babel/generator",
@@ -53,59 +43,37 @@
     "integration/bazel/WORKSPACE",
     "package.json",
     "packages/**/package.json",
-    "aio/package.json"
+    "aio/package.json",
+    ".github/workflows/**/*.yml"
   ],
   "packageRules": [
     {
-      "packagePatterns": [
-        "^@angular/.*",
-        "^@angular-devkit/.*",
-        "^@schematics/.*"
-      ],
+      "packagePatterns": ["^@angular/.*", "^@angular-devkit/.*", "^@schematics/.*", "angular/dev-infra"],
       "groupName": "angular",
       "pinVersions": false
     },
     {
-      "packagePatterns": [
-        "^@babel/.*"
-      ],
+      "packagePatterns": ["^@babel/.*"],
       "groupName": "babel",
       "pinVersions": false
     },
     {
-      "packagePatterns": [
-        "^@bazel/.*",
-        "^build_bazel.*"
-      ],
+      "packagePatterns": ["^@bazel/.*", "^build_bazel.*"],
       "groupName": "bazel",
       "pinVersions": false
     },
     {
-      "packagePatterns": [
-        "^remark-.*",
-        "remark"
-      ],
+      "packagePatterns": ["^remark-.*", "remark"],
       "groupName": "remark",
       "pinVersions": false
     },
     {
-      "packageNames": [
-        "typescript",
-        "rxjs",
-        "tslib"
-      ],
+      "packageNames": ["typescript", "rxjs", "tslib"],
       "separateMinorPatch": true
     },
     {
-      "packageNames": [
-        "typescript",
-        "rxjs",
-        "tslib"
-      ],
-      "updateTypes": [
-        "minor",
-        "major"
-      ],
+      "packageNames": ["typescript", "rxjs", "tslib"],
+      "updateTypes": ["minor", "major"],
       "enabled": false
     },
     {
@@ -113,24 +81,13 @@
       "enabled": false
     },
     {
-      "excludePackagePatterns": [
-        "^@angular/.*",
-        "^@angular-devkit/.*",
-        "^@schematics/.*"
-      ],
-      "matchPackagePatterns": [
-        "*"
-      ],
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
+      "excludePackagePatterns": ["^@angular/.*", "^@angular-devkit/.*", "^@schematics/.*", "angular/dev-infra"],
+      "matchPackagePatterns": ["*"],
+      "matchUpdateTypes": ["minor", "patch"],
       "matchCurrentVersion": ">=1",
       "groupName": "all non-major dependencies",
       "groupSlug": "all-minor-patch",
-      "schedule": [
-        "after 1am on Thursday"
-      ]
+      "schedule": ["after 1am on Thursday"]
     }
   ]
 }
