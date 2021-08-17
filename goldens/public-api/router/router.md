@@ -549,6 +549,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
     constructor(router: Router, element: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef, link?: RouterLink | undefined, linkWithHref?: RouterLinkWithHref | undefined);
     // (undocumented)
     readonly isActive: boolean;
+    readonly isActiveChange: EventEmitter<boolean>;
     // (undocumented)
     links: QueryList<RouterLink>;
     // (undocumented)
