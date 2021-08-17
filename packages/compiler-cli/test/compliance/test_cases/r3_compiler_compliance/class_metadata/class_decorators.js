@@ -38,8 +38,8 @@ ComponentWithExternalResource.ɵcmp = …;
   (typeof ngDevMode === "undefined" || ngDevMode) && $i0$.ɵsetClassMetadata(ComponentWithExternalResource, [{
     type: Component,
     args: [{
-      "selector": 'test-cmp',
-      "template": "<span>Test template</span>\n"
+      selector: 'test-cmp',
+      template: "<span>Test template</span>\n"
     }]
   }], null, null);
 })();

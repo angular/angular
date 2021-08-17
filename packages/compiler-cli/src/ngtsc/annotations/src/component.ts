@@ -921,6 +921,18 @@ export class ComponentDecoratorHandler implements
     return compileResults(fac, def, classMetadata, 'ɵcmp');
   }
 
+  /**
+   * Transforms the given decorator to inline external resources. i.e. if the decorator
+   * resolves to `@Component`, the `templateUrl` and `styleUrls` metadata fields will be
+   * transformed to their semantically-equivalent inline variants.
+   *
+   * This method is used for serializing decorators into the class metadata. The emitted
+   * class metadata should not refer to external resources as this would be inconsistent
+   * with the component definitions/declarations which already inline external resources.
+   *
+   * Additionally, the references to external resources would require libraries to ship
+   * external resources exclusively for the class metadata.
+   */
   private _transformDecoratorToInlineResources(
       dec: Decorator, component: Map<string, ts.Expression>, styles: string[],
       template: ParsedTemplateWithSource): Decorator {
@@ -951,7 +963,7 @@ export class ComponentDecoratorHandler implements
     // Convert the metadata to TypeScript AST object literal element nodes.
     const newMetadataFields: ts.ObjectLiteralElementLike[] = [];
     for (const [name, value] of metadata.entries()) {
-      newMetadataFields.push(ts.createPropertyAssignment(ts.createStringLiteral(name), value));
+      newMetadataFields.push(ts.createPropertyAssignment(name, value));
     }
 
     // Return the original decorator with the overridden metadata argument.
