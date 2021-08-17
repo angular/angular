@@ -4662,6 +4662,44 @@ describe('Integration', () => {
          fixture.detectChanges(false /** checkNoChanges */);
          expect(TestBed.inject(NgZone).hasPendingMicrotasks).toBe(false);
        }));
+
+    it('should emit on isActiveChange output when link is activated or inactivated',
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([{
+           path: 'team/:id',
+           component: TeamCmp,
+           children: [{
+             path: 'link',
+             component: DummyLinkCmp,
+             children: [{path: 'simple', component: SimpleCmp}, {path: '', component: BlankCmp}]
+           }]
+         }]);
+
+         router.navigateByUrl('/team/22/link;exact=true');
+         advance(fixture);
+         advance(fixture);
+         expect(location.path()).toEqual('/team/22/link;exact=true');
+
+         const linkComponent =
+             fixture.debugElement.query(By.directive(DummyLinkCmp)).componentInstance as
+             DummyLinkCmp;
+
+         expect(linkComponent.isLinkActivated).toEqual(true);
+         const nativeLink = fixture.nativeElement.querySelector('a');
+         const nativeButton = fixture.nativeElement.querySelector('button');
+         expect(nativeLink.className).toEqual('active');
+         expect(nativeButton.className).toEqual('active');
+
+
+         router.navigateByUrl('/team/22/link/simple');
+         advance(fixture);
+         expect(location.path()).toEqual('/team/22/link/simple');
+         expect(linkComponent.isLinkActivated).toEqual(false);
+         expect(nativeLink.className).toEqual('');
+         expect(nativeButton.className).toEqual('');
+       })));
   });
 
   describe('lazy loading', () => {
@@ -5928,14 +5966,20 @@ class AbsoluteLinkCmp {
 @Component({
   selector: 'link-cmp',
   template:
-      `<router-outlet></router-outlet><a routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}" [routerLink]="['./']">link</a>
+      `<router-outlet></router-outlet><a routerLinkActive="active" (isActiveChange)="this.onRouterLinkActivated($event)" [routerLinkActiveOptions]="{exact: exact}" [routerLink]="['./']">link</a>
  <button routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}" [routerLink]="['./']">button</button>
  `
 })
 class DummyLinkCmp {
   private exact: boolean;
+  public isLinkActivated?: boolean;
+
   constructor(route: ActivatedRoute) {
     this.exact = route.snapshot.paramMap.get('exact') === 'true';
+  }
+
+  public onRouterLinkActivated(isActive: boolean): void {
+    this.isLinkActivated = isActive;
   }
 }
 
