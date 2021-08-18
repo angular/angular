@@ -28,8 +28,8 @@ export function dispatchEvent<T extends Event>(node: Node | Window, event: T): T
  * Shorthand to dispatch a fake event on a specified node.
  * @docs-private
  */
-export function dispatchFakeEvent(node: Node | Window, type: string, canBubble?: boolean): Event {
-  return dispatchEvent(node, createFakeEvent(type, canBubble));
+export function dispatchFakeEvent(node: Node | Window, type: string, bubbles?: boolean): Event {
+  return dispatchEvent(node, createFakeEvent(type, bubbles));
 }
 
 /**
