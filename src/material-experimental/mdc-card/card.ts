@@ -10,11 +10,23 @@ import {
   ChangeDetectionStrategy,
   Component,
   Directive,
+  Inject,
+  InjectionToken,
   Input,
+  Optional,
   ViewEncapsulation,
 } from '@angular/core';
 
 export type MatCardAppearance = 'outlined' | 'raised';
+
+/** Object that can be used to configure the default options for the card module. */
+export interface MatCardConfig {
+  /** Default appearance for cards. */
+  appearance?: MatCardAppearance;
+}
+
+/** Injection token that can be used to provide the default options the card module. */
+export const MAT_CARD_CONFIG = new InjectionToken<MatCardConfig>('MAT_CARD_CONFIG');
 
 /**
  * Material Design card component. Cards contain content and actions about a single subject.
@@ -35,8 +47,11 @@ export type MatCardAppearance = 'outlined' | 'raised';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatCard {
-  @Input() appearance: MatCardAppearance = 'raised';
+  @Input() appearance: MatCardAppearance;
 
+  constructor(@Inject(MAT_CARD_CONFIG) @Optional() config?: MatCardConfig) {
+    this.appearance = config?.appearance || 'raised';
+  }
 }
 
 // TODO(jelbourn): add `MatActionCard`, which is a card that acts like a button (and has a ripple).
