@@ -52,7 +52,7 @@
           },
           "angular-community-meetup": {
             "desc": "Come learn technical skills and network at this monthly, multi-series, multi-event, multi-timezone online meetup.",
-            "url": "https://ngxp.show",
+            "url": "https://angularcommunity.net",
             "title": "Angular Community Meetup"
           }
         }
@@ -97,7 +97,7 @@
             "url": "https://github.com/ngRuAir/ngruair"
           },
           "ngxp": {
-            "desc": "Weekly technical-adjacent podcast by Brooke Avery & Erik Slack.on't just code in Angular, come enjoy the Angular Experience!",
+            "desc": "Weekly technical-adjacent podcast by Brooke Avery & Erik Slack. Don't just code in Angular, come enjoy the Angular Experience!",
             "logo": "",
             "title": "Angular Experience (NgXP)",
             "url": "https://ngxp.show"
