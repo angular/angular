@@ -27,6 +27,9 @@ export function createMouseEvent(
   const event = new MouseEvent(type, {
     bubbles: true,
     cancelable: true,
+    view: window,
+    detail: 0,
+    relatedTarget: null,
     screenX,
     screenY,
     clientX,
@@ -77,7 +80,7 @@ export function createTouchEvent(type: string, pageX = 0, pageY = 0, clientX = 0
   // We cannot use the `TouchEvent` or `Touch` because Firefox and Safari lack support.
   // TODO: Switch to the constructor API when it is available for Firefox and Safari.
   const event = document.createEvent('UIEvent');
-  const touchDetails = {pageX, pageY, clientX, clientY, id: uniqueIds++};
+  const touchDetails = {pageX, pageY, clientX, clientY, identifier: uniqueIds++};
 
   // TS3.6 removes the initUIEvent method and suggests porting to "new UIEvent()".
   (event as any).initUIEvent(type, true, true, window, 0);
@@ -98,15 +101,16 @@ export function createTouchEvent(type: string, pageX = 0, pageY = 0, clientX = 0
 export function createKeyboardEvent(type: string, keyCode: number = 0, key: string = '',
                                     modifiers: ModifierKeys = {}) {
   return new KeyboardEvent(type, {
-      bubbles: true,
-      cancelable: true,
-      keyCode: keyCode,
-      key: key,
-      shiftKey: modifiers.shift,
-      metaKey: modifiers.meta,
-      altKey: modifiers.alt,
-      ctrlKey: modifiers.control,
-    });
+    bubbles: true,
+    cancelable: true,
+    view: window,
+    keyCode: keyCode,
+    key: key,
+    shiftKey: modifiers.shift,
+    metaKey: modifiers.meta,
+    altKey: modifiers.alt,
+    ctrlKey: modifiers.control,
+  });
 }
 
 /**
