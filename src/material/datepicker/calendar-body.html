@@ -14,13 +14,12 @@
 <!-- Create the first row separately so we can include a special spacer cell. -->
 <tr *ngFor="let row of rows; let rowIndex = index" role="row">
   <!--
-    We mark this cell as aria-hidden so it doesn't get read out as one of the days in the week.
-    The aspect ratio of the table cells is maintained by setting the top and bottom padding as a
-    percentage of the width (a variant of the trick described here:
-    https://www.w3schools.com/howto/howto_css_aspect_ratio.asp).
+    This cell is purely decorative, but we can't put `aria-hidden` or `role="presentation"` on it,
+    because it throws off the week days for the rest of the row on NVDA. The aspect ratio of the
+    table cells is maintained by setting the top and bottom padding as a percentage of the width
+    (a variant of the trick described here: https://www.w3schools.com/howto/howto_css_aspect_ratio.asp).
   -->
   <td *ngIf="rowIndex === 0 && _firstRowOffset"
-      aria-hidden="true"
       class="mat-calendar-body-label"
       [attr.colspan]="_firstRowOffset"
       [style.paddingTop]="_cellPadding"
