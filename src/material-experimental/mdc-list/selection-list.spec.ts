@@ -570,6 +570,13 @@ describe('MDC-based MatSelectionList without forms', () => {
         .every(element => element.querySelector('.mat-mdc-focus-indicator') !== null)).toBe(true);
     });
 
+    it('should hide the internal SVG', () => {
+      listOptions.forEach(option => {
+        const svg = option.nativeElement.querySelector('.mdc-checkbox svg');
+        expect(svg.getAttribute('aria-hidden')).toBe('true');
+      });
+    });
+
   });
 
   describe('with list option selected', () => {

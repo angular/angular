@@ -75,6 +75,11 @@ describe('MDC-based MatCheckbox', () => {
       expect(checkboxInstance.ripple).toBeTruthy();
     });
 
+    it('should hide the internal SVG', () => {
+      const svg = checkboxNativeElement.querySelector('svg')!;
+      expect(svg.getAttribute('aria-hidden')).toBe('true');
+    });
+
     it('should toggle checkbox ripple disabledness correctly', fakeAsync(() => {
       const rippleSelector = '.mat-ripple-element:not(.mat-checkbox-persistent-ripple)';
 
