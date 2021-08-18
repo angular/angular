@@ -171,23 +171,27 @@ export function createPlatform(injector: Injector): PlatformRef {
  * @publicApi
  */
 export function createPlatformFactory(
-    parentPlatformFactory: ((extraProviders?: StaticProvider[]) => PlatformRef)|null, name: string,
-    providers: StaticProvider[] = []): (extraProviders?: StaticProvider[]) => PlatformRef {
+    parentPlatformFactory:
+        ((extraProviders?: StaticProvider[], parentInjector?: Injector) => PlatformRef)|null,
+    name: string, providers: StaticProvider[] = []):
+    (extraProviders?: StaticProvider[], parentInjector?: Injector) => PlatformRef {
   const desc = `Platform: ${name}`;
   const marker = new InjectionToken(desc);
-  return (extraProviders: StaticProvider[] = []) => {
+  return (extraProviders: StaticProvider[] = [], parentInjector?: Injector) => {
     let platform = getPlatform();
     if (!platform || platform.injector.get(ALLOW_MULTIPLE_PLATFORMS, false)) {
       if (parentPlatformFactory) {
         parentPlatformFactory(
-            providers.concat(extraProviders).concat({provide: marker, useValue: true}));
+            providers.concat(extraProviders).concat({provide: marker, useValue: true}),
+            parentInjector);
       } else {
         const injectedProviders: StaticProvider[] =
             providers.concat(extraProviders).concat({provide: marker, useValue: true}, {
               provide: INJECTOR_SCOPE,
               useValue: 'platform'
             });
-        createPlatform(Injector.create({providers: injectedProviders, name: desc}));
+        createPlatform(
+            Injector.create({providers: injectedProviders, name: desc, parent: parentInjector}));
       }
     }
     return assertPlatform(marker);

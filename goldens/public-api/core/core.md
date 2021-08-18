@@ -264,7 +264,7 @@ export interface ContentChildrenDecorator {
 export function createPlatform(injector: Injector): PlatformRef;
 
 // @public
-export function createPlatformFactory(parentPlatformFactory: ((extraProviders?: StaticProvider[]) => PlatformRef) | null, name: string, providers?: StaticProvider[]): (extraProviders?: StaticProvider[]) => PlatformRef;
+export function createPlatformFactory(parentPlatformFactory: ((extraProviders?: StaticProvider[], parentInjector?: Injector) => PlatformRef) | null, name: string, providers?: StaticProvider[]): (extraProviders?: StaticProvider[], parentInjector?: Injector) => PlatformRef;
 
 // @public
 export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
