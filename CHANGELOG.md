@@ -1,3 +1,33 @@
+<a name="13.0.0-next.1"></a>
+# 13.0.0-next.1 "gold-guitar" (2021-08-18)
+### cdk/a11y
+| Commit | Description |
+| -- | -- |
+| [b25283cda](https://github.com/angular/components/commit/b25283cda9be37d11f8c380ad6fcc078d5be5da0) | fix: error on firefox ([#23395](https://github.com/angular/components/pull/23395)) |
+### material-experimental/mdc-card
+| Commit | Description |
+| -- | -- |
+| [2789d8eb5](https://github.com/angular/components/commit/2789d8eb5f61ea4cb28ff8c6225178179e610571) | feat: add DI token for configuring appearance ([#23302](https://github.com/angular/components/pull/23302)) |
+### material/checkbox
+| Commit | Description |
+| -- | -- |
+| [8bd8f75d8](https://github.com/angular/components/commit/8bd8f75d84088eb60e631a3b4f4fb04187d705ac) | fix: hide svg from assistive technology ([#23340](https://github.com/angular/components/pull/23340)) |
+### material/datepicker
+| Commit | Description |
+| -- | -- |
+| [e79123660](https://github.com/angular/components/commit/e7912366044aa540de504654d61c7eb212307335) | fix: wrong day of week read out for dates in first row ([#23388](https://github.com/angular/components/pull/23388)) |
+### material/dialog
+| Commit | Description |
+| -- | -- |
+| [728cf1c8e](https://github.com/angular/components/commit/728cf1c8ebd49e089f4bae945511bb0918972c26) | fix: improve screen reader support when opened ([#23085](https://github.com/angular/components/pull/23085)) |
+### material/progress-bar
+| Commit | Description |
+| -- | -- |
+| [e4b54aa2b](https://github.com/angular/components/commit/e4b54aa2b7afeb9fe228f1d3638eb44192353e8b) | feat: add default options injection token ([#23363](https://github.com/angular/components/pull/23363)) |
+## Special Thanks:
+Joey Perrott, Kristiyan Kostadinov, Michael Prentice, Paul Gschwendtner and Wagner Maciel
+
+
 <a name="12.2.2"></a>
 # 12.2.2 "leather-library" (2021-08-18)
 ### material/checkbox
