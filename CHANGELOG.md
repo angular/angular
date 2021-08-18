@@ -1,3 +1,29 @@
+<a name="13.0.0-next.2"></a>
+# 13.0.0-next.2 (2021-08-18)
+### animations
+| Commit | Description |
+| -- | -- |
+| [3cb1f18f97](https://github.com/angular/angular/commit/3cb1f18f976190189440e281581e712aaf0250e4) | fix: add pure annotations to static property initializers ([#43064](https://github.com/angular/angular/pull/43064)) |
+### core
+| Commit | Description |
+| -- | -- |
+| [27a89a9298](https://github.com/angular/angular/commit/27a89a929818dc2d249c2833c4a75582a7dc1349) | fix: add pure annotations to static property initializers ([#43064](https://github.com/angular/angular/pull/43064)) |
+### language-service
+| Commit | Description |
+| -- | -- |
+| [d5f9890c92](https://github.com/angular/angular/commit/d5f9890c9205b4a121275ace84b26776aedd0478) | feat: auto-apply optional chaining on nullable symbol ([#42995](https://github.com/angular/angular/pull/42995)) |
+### platform-browser
+| Commit | Description |
+| -- | -- |
+| [7e71370fe6](https://github.com/angular/angular/commit/7e71370fe6a9e802f68f7d3dbbfd0194ecde2d4f) | perf: avoid intermediate arrays in server transition ([#43145](https://github.com/angular/angular/pull/43145)) |
+### router
+| Commit | Description |
+| -- | -- |
+| [286b2807de](https://github.com/angular/angular/commit/286b2807de61dcd6e24ced5c142fbc6eda9dfbec) | fix: eagerly update internal state on browser-triggered navigations ([#43102](https://github.com/angular/angular/pull/43102)) |
+## Special Thanks:
+Alan Agius, Andrew Scott, Aristeidis Bampakos, Charles Lyding, Dylan Hunn, Edoardo Dusi, Erik Slack, George Kalpakas, Joe Martin (Crowdstaffing), Joey Perrott, Kirk Larkin, Kristiyan Kostadinov, Paul Gschwendtner, Pete Bacon Darwin, TIffany Davis, Theoklitos Bampouris, ali, dario-piotrowicz, ivanwonder and pichuser
+
+
 <a name="12.2.2"></a>
 # 12.2.2 (2021-08-18)
 ### animations
