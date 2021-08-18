@@ -1053,8 +1053,10 @@ describe('Driver', () => {
             expect(scope.clients.openWindow).not.toHaveBeenCalled();
           });
         });
+      });
 
-        describe('customized data with no onActionClick default', () => {
+      describe('Customized data', () => {
+        describe('with no onActionClick', () => {
           it('has no client interaction', async () => {
             expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
             spyOn(scope.clients, 'openWindow');
@@ -1068,7 +1070,29 @@ describe('Driver', () => {
             expect(scope.clients.openWindow).not.toHaveBeenCalled();
           });
         });
-      });
+        describe('with onActionClick', () => {
+          it('uses onActionClick by default when no specific action is clicked', async () => {
+            expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+            spyOn(scope.clients, 'openWindow');
+            const url = 'fooz';
+
+            await driver.initialized;
+            await scope.handleClick(
+                {
+                  title: 'This is a test without action',
+                  body: 'Test body without action',
+                  data: {
+                    onActionClick: {
+                      default: {operation: 'openWindow', url},
+                    },
+                  },
+                },
+                '');
+            expect(scope.clients.openWindow)
+              .toHaveBeenCalledWith(`${scope.registration.scope}${url}`);
+          });
+        });
+      })
 
       describe('URL resolution', () => {
         it('should resolve relative to service worker scope', async () => {
