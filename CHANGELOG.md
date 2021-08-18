@@ -1,3 +1,25 @@
+<a name="12.2.2"></a>
+# 12.2.2 (2021-08-18)
+### animations
+| Commit | Description |
+| -- | -- |
+| [bb6555979d](https://github.com/angular/angular/commit/bb6555979dd02e706f7e98022b9c37a4f54db1ba) | fix: add pure annotations to static property initializers ([#43064](https://github.com/angular/angular/pull/43064)) |
+### core
+| Commit | Description |
+| -- | -- |
+| [738b23347e](https://github.com/angular/angular/commit/738b23347e5eeadfa0321d1429537837dba5e4c1) | fix: add pure annotations to static property initializers ([#43064](https://github.com/angular/angular/pull/43064)) |
+### platform-browser
+| Commit | Description |
+| -- | -- |
+| [535837e617](https://github.com/angular/angular/commit/535837e617a0434f8e7bd9071cc4d8c27fd9f373) | perf: avoid intermediate arrays in server transition ([#43145](https://github.com/angular/angular/pull/43145)) |
+### router
+| Commit | Description |
+| -- | -- |
+| [6449590ec8](https://github.com/angular/angular/commit/6449590ec81eff0873af911fb65679b5a77db27b) | fix: eagerly update internal state on browser-triggered navigations ([#43102](https://github.com/angular/angular/pull/43102)) |
+## Special Thanks:
+Andrew Scott, Aristeidis Bampakos, Charles Lyding, Edoardo Dusi, George Kalpakas, Joe Martin (Crowdstaffing), Joey Perrott, Kirk Larkin, Kristiyan Kostadinov, Pete Bacon Darwin, TIffany Davis, Theoklitos Bampouris, ali, dario-piotrowicz and pichuser
+
+
 <a name="13.0.0-next.1"></a>
 # 13.0.0-next.1 (2021-08-11)
 ### forms
