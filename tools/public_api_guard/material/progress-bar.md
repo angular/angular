@@ -17,6 +17,10 @@ import { InjectionToken } from '@angular/core';
 import { NgZone } from '@angular/core';
 import { NumberInput } from '@angular/cdk/coercion';
 import { OnDestroy } from '@angular/core';
+import { ThemePalette } from '@angular/material/core';
+
+// @public
+export const MAT_PROGRESS_BAR_DEFAULT_OPTIONS: InjectionToken<MatProgressBarDefaultOptions>;
 
 // @public
 export const MAT_PROGRESS_BAR_LOCATION: InjectionToken<MatProgressBarLocation>;
@@ -27,7 +31,7 @@ export function MAT_PROGRESS_BAR_LOCATION_FACTORY(): MatProgressBarLocation;
 // @public
 export class MatProgressBar extends _MatProgressBarBase implements CanColor, AfterViewInit, OnDestroy {
     constructor(elementRef: ElementRef, _ngZone: NgZone, _animationMode?: string | undefined,
-    location?: MatProgressBarLocation);
+    location?: MatProgressBarLocation, defaults?: MatProgressBarDefaultOptions);
     readonly animationEnd: EventEmitter<ProgressAnimationEnd>;
     // (undocumented)
     _animationMode?: string | undefined;
@@ -56,7 +60,13 @@ export class MatProgressBar extends _MatProgressBarBase implements CanColor, Aft
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatProgressBar, "mat-progress-bar", ["matProgressBar"], { "color": "color"; "value": "value"; "bufferValue": "bufferValue"; "mode": "mode"; }, { "animationEnd": "animationEnd"; }, never, never>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatProgressBar, [null, null, { optional: true; }, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatProgressBar, [null, null, { optional: true; }, { optional: true; }, { optional: true; }]>;
+}
+
+// @public
+export interface MatProgressBarDefaultOptions {
+    color?: ThemePalette;
+    mode?: ProgressBarMode;
 }
 
 // @public

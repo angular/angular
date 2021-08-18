@@ -22,7 +22,11 @@ import {
 } from '@angular/core';
 import {CanColor, mixinColor} from '@angular/material-experimental/mdc-core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
-import {ProgressAnimationEnd} from '@angular/material/progress-bar';
+import {
+  MatProgressBarDefaultOptions,
+  MAT_PROGRESS_BAR_DEFAULT_OPTIONS,
+  ProgressAnimationEnd,
+} from '@angular/material/progress-bar';
 import {
   MDCLinearProgressAdapter,
   MDCLinearProgressFoundation,
@@ -67,7 +71,9 @@ export class MatProgressBar extends _MatProgressBarBase implements AfterViewInit
   constructor(elementRef: ElementRef<HTMLElement>,
               private _ngZone: NgZone,
               @Optional() dir?: Directionality,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
+              @Optional() @Inject(MAT_PROGRESS_BAR_DEFAULT_OPTIONS)
+                  defaults?: MatProgressBarDefaultOptions) {
     super(elementRef);
     this._isNoopAnimation = _animationMode === 'NoopAnimations';
     if (dir) {
@@ -75,6 +81,14 @@ export class MatProgressBar extends _MatProgressBarBase implements AfterViewInit
         this._syncFoundation();
         this._foundation?.restartAnimation();
       });
+    }
+
+    if (defaults) {
+      if (defaults.color) {
+        this.color = this.defaultColor = defaults.color;
+      }
+
+      this.mode = defaults.mode || this.mode;
     }
   }
 

@@ -14,4 +14,6 @@ export {
   MAT_PROGRESS_BAR_LOCATION,
   MatProgressBarLocation,
   MAT_PROGRESS_BAR_LOCATION_FACTORY,
+  MAT_PROGRESS_BAR_DEFAULT_OPTIONS,
+  MatProgressBarDefaultOptions,
 } from '@angular/material/progress-bar';

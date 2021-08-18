@@ -24,7 +24,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {CanColor, mixinColor} from '@angular/material/core';
+import {CanColor, mixinColor, ThemePalette} from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {fromEvent, Observable, Subscription} from 'rxjs';
 import {filter} from 'rxjs/operators';
@@ -76,6 +76,20 @@ export function MAT_PROGRESS_BAR_LOCATION_FACTORY(): MatProgressBarLocation {
 
 export type ProgressBarMode = 'determinate' | 'indeterminate' | 'buffer' | 'query';
 
+/** Default `mat-progress-bar` options that can be overridden. */
+export interface MatProgressBarDefaultOptions {
+  /** Default color of the progress bar. */
+  color?: ThemePalette;
+
+  /** Default mode of the progress bar. */
+  mode?: ProgressBarMode;
+}
+
+/** Injection token to be used to override the default options for `mat-progress-bar`. */
+export const MAT_PROGRESS_BAR_DEFAULT_OPTIONS =
+  new InjectionToken<MatProgressBarDefaultOptions>('MAT_PROGRESS_BAR_DEFAULT_OPTIONS');
+
+
 /** Counter used to generate unique IDs for progress bars. */
 let progressbarId = 0;
 
@@ -111,7 +125,9 @@ export class MatProgressBar extends _MatProgressBarBase implements CanColor,
                * @deprecated `location` parameter to be made required.
                * @breaking-change 8.0.0
                */
-              @Optional() @Inject(MAT_PROGRESS_BAR_LOCATION) location?: MatProgressBarLocation) {
+              @Optional() @Inject(MAT_PROGRESS_BAR_LOCATION) location?: MatProgressBarLocation,
+              @Optional() @Inject(MAT_PROGRESS_BAR_DEFAULT_OPTIONS)
+                  defaults?: MatProgressBarDefaultOptions) {
     super(elementRef);
 
     // We need to prefix the SVG reference with the current path, otherwise they won't work
@@ -124,6 +140,14 @@ export class MatProgressBar extends _MatProgressBarBase implements CanColor,
     const path = location ? location.getPathname().split('#')[0] : '';
     this._rectangleFillValue = `url('${path}#${this.progressbarId}')`;
     this._isNoopAnimation = _animationMode === 'NoopAnimations';
+
+    if (defaults) {
+      if (defaults.color) {
+        this.color = this.defaultColor = defaults.color;
+      }
+
+      this.mode = defaults.mode || this.mode;
+    }
   }
 
   /** Flag that indicates whether NoopAnimations mode is set to true. */

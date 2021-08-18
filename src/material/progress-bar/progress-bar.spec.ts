@@ -1,25 +1,25 @@
 import {TestBed, ComponentFixture} from '@angular/core/testing';
-import {Component, DebugElement, Type} from '@angular/core';
+import {Component, DebugElement, Provider, Type} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {dispatchFakeEvent} from '../../cdk/testing/private';
 import {MatProgressBarModule, MAT_PROGRESS_BAR_LOCATION} from './index';
-import {MatProgressBar} from './progress-bar';
+import {MatProgressBar, MAT_PROGRESS_BAR_DEFAULT_OPTIONS} from './progress-bar';
 
 
 describe('MatProgressBar', () => {
   let fakePath: string;
 
   function createComponent<T>(componentType: Type<T>,
-                              imports?: Type<{}>[]): ComponentFixture<T> {
+                              providers: Provider[] = []): ComponentFixture<T> {
     fakePath = '/fake-path';
 
     TestBed.configureTestingModule({
-      imports: imports || [MatProgressBarModule],
+      imports: [MatProgressBarModule],
       declarations: [componentType],
       providers: [{
         provide: MAT_PROGRESS_BAR_LOCATION,
         useValue: {getPathname: () => fakePath}
-      }]
+      }, ...providers]
     }).compileComponents();
 
     return TestBed.createComponent<T>(componentType);
@@ -194,6 +194,20 @@ describe('MatProgressBar', () => {
 
         expect(progressElement.nativeElement.hasAttribute('aria-valuenow'))
           .withContext('Expect aria-valuenow to be cleared in query mode.').toBe(false);
+      });
+
+      it('should be able to configure the default progress bar options via DI', () => {
+        const fixture = createComponent(BasicProgressBar, [{
+          provide: MAT_PROGRESS_BAR_DEFAULT_OPTIONS,
+          useValue: {
+            mode: 'buffer',
+            color: 'warn'
+          }
+        }]);
+        fixture.detectChanges();
+        const progressElement = fixture.debugElement.query(By.css('mat-progress-bar'))!;
+        expect(progressElement.componentInstance.mode).toBe('buffer');
+        expect(progressElement.componentInstance.color).toBe('warn');
       });
 
     });
