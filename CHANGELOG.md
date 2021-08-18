@@ -1,3 +1,17 @@
+<a name="12.2.2"></a>
+# 12.2.2 "leather-library" (2021-08-18)
+### material/checkbox
+| Commit | Description |
+| -- | -- |
+| [08ef775b5](https://github.com/angular/components/commit/08ef775b58e2a66a40eb3ac9d7e5ae6feea7d7e8) | fix: hide svg from assistive technology ([#23340](https://github.com/angular/components/pull/23340)) |
+### material/datepicker
+| Commit | Description |
+| -- | -- |
+| [8919a1e07](https://github.com/angular/components/commit/8919a1e07302a5c2ec68de6d691239c6ce4c4406) | fix: wrong day of week read out for dates in first row ([#23388](https://github.com/angular/components/pull/23388)) |
+## Special Thanks:
+Joey Perrott, Kristiyan Kostadinov and Paul Gschwendtner
+
+
 <a name="13.0.0-next.0"></a>
 # 13.0.0-next.0 "plastic-toy" (2021-08-11)
 ### google-maps
