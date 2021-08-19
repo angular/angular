@@ -10,7 +10,7 @@ This page covers some aspects of TypeScript configuration and the TypeScript env
 that are important to Angular developers, including details about the following files:
 
 * [tsconfig.json](guide/typescript-configuration#tsconfig)&mdash;TypeScript compiler configuration.
-* [typings](guide/typescript-configuration#typings)&mdash;TypesScript declaration files.
+* [typings](guide/typescript-configuration#typings)&mdash;TypeScript declaration files.
 
 
 {@a tsconfig}
