@@ -32,7 +32,7 @@ import {TemplateTypeCheckerImpl} from '../../typecheck';
 import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig} from '../../typecheck/api';
 import {ExtendedTemplateCheckerImpl} from '../../typecheck/extended';
 import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
-import {InvalidBananaInBoxCheck} from '../../typecheck/extended/src/template_checks/invalid_banana_in_box';
+import {InvalidBananaInBoxCheck} from '../../typecheck/extended/checks/invalid_banana_in_box';
 import {getSourceFileOrNull, isDtsPath, resolveModuleName, toUnredirectedSourceFile} from '../../util/src/typescript';
 import {Xi18nContext} from '../../xi18n';
 import {LazyRoute, NgCompilerAdapter, NgCompilerOptions} from '../api';

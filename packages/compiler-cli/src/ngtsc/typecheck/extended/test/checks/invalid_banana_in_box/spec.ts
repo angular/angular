@@ -12,8 +12,8 @@ import {absoluteFrom, getSourceFileOrError} from '../../../../../file_system';
 import {runInEachFileSystem} from '../../../../../file_system/testing';
 import {getSourceCodeForDiagnostic} from '../../../../../testing';
 import {getClass, setup} from '../../../../testing';
+import {InvalidBananaInBoxCheck} from '../../../checks/invalid_banana_in_box/index';
 import {ExtendedTemplateCheckerImpl} from '../../../src/extended_template_checker';
-import {InvalidBananaInBoxCheck} from '../../../src/template_checks/invalid_banana_in_box/index';
 
 runInEachFileSystem(() => {
   describe('TemplateChecks', () => {
