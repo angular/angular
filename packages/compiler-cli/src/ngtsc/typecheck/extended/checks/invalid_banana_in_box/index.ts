@@ -21,9 +21,9 @@ import {TemplateCheck, TemplateContext} from '../../api';
 export class InvalidBananaInBoxCheck implements TemplateCheck<ErrorCode.INVALID_BANANA_IN_BOX> {
   code: ErrorCode.INVALID_BANANA_IN_BOX = 8101;
 
-  run(ctx: TemplateContext,
+  run(ctx: TemplateContext, component: ts.ClassDeclaration,
       template: TmplAstNode[]): NgTemplateDiagnostic<ErrorCode.INVALID_BANANA_IN_BOX>[] {
-    const visitor = new BananaVisitor(ctx);
+    const visitor = new BananaVisitor(ctx, component);
 
     return visitor.getDiagnostics(template);
   }
@@ -32,7 +32,8 @@ export class InvalidBananaInBoxCheck implements TemplateCheck<ErrorCode.INVALID_
 class BananaVisitor extends TmplAstRecursiveVisitor {
   private diagnostics: NgTemplateDiagnostic<ErrorCode.INVALID_BANANA_IN_BOX>[] = [];
 
-  constructor(public readonly ctx: TemplateContext) {
+  constructor(
+      public readonly ctx: TemplateContext, private readonly component: ts.ClassDeclaration) {
     super();
   }
 
@@ -48,7 +49,7 @@ class BananaVisitor extends TmplAstRecursiveVisitor {
       const boundSyntax = boundEvent.sourceSpan.toString();
       const expectedBoundSyntax = boundSyntax.replace(`(${name})`, `[(${name.slice(1, -1)})]`);
       this.diagnostics.push(this.ctx.templateTypeChecker.makeTemplateDiagnostic(
-          this.ctx.component, boundEvent.sourceSpan, ts.DiagnosticCategory.Warning,
+          this.component, boundEvent.sourceSpan, ts.DiagnosticCategory.Warning,
           ErrorCode.INVALID_BANANA_IN_BOX,
           `In the two-way binding syntax the parentheses should be inside the brackets, ex. '${
               expectedBoundSyntax}'. 

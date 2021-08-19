@@ -13,13 +13,17 @@ import {TemplateDiagnostic, TemplateTypeChecker} from '../../api';
 import {ExtendedTemplateChecker, TemplateCheck, TemplateContext} from '../api';
 
 export class ExtendedTemplateCheckerImpl implements ExtendedTemplateChecker {
+  private ctx: TemplateContext;
+
   constructor(
-      private readonly templateTypeChecker: TemplateTypeChecker,
-      private readonly typeChecker: ts.TypeChecker,
-      private readonly templateChecks: TemplateCheck<ErrorCode>[]) {}
+      templateTypeChecker: TemplateTypeChecker, typeChecker: ts.TypeChecker,
+      private readonly templateChecks: TemplateCheck<ErrorCode>[]) {
+    this.ctx = {templateTypeChecker: templateTypeChecker, typeChecker: typeChecker} as
+        TemplateContext;
+  }
 
   getDiagnosticsForComponent(component: ts.ClassDeclaration): TemplateDiagnostic[] {
-    const template = this.templateTypeChecker.getTemplate(component);
+    const template = this.ctx.templateTypeChecker.getTemplate(component);
     // Skip checks if component has no template. This can happen if the user writes a
     // `@Component()` but doesn't add the template, could happen in the language service
     // when users are in the middle of typing code.
@@ -28,14 +32,8 @@ export class ExtendedTemplateCheckerImpl implements ExtendedTemplateChecker {
     }
     const diagnostics: TemplateDiagnostic[] = [];
 
-    const ctx = {
-      templateTypeChecker: this.templateTypeChecker,
-      typeChecker: this.typeChecker,
-      component
-    } as TemplateContext;
-
     for (const check of this.templateChecks) {
-      diagnostics.push(...deduplicateDiagnostics(check.run(ctx, template)));
+      diagnostics.push(...deduplicateDiagnostics(check.run(this.ctx, component, template)));
     }
 
     return diagnostics;
