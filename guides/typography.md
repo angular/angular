@@ -237,12 +237,13 @@ The following example demonstrates usage of the typography styles emitted by the
 You can read typography style values from a typography config via the following Sass functions. Each
 accepts a typography config and a level.
 
-| Function      | Example usage                         |
-|---------------|---------------------------------------|
-| `font-size`   | `mat.font-size($config, 'body-1');`   |
-| `font-family` | `mat.font-family($config, 'body-1');` |
-| `font-weight` | `mat.font-weight($config, 'body-1');` |
-| `line-height` | `mat.line-height($config, 'body-1');` |
+| Function         | Example usage                            |
+|------------------|------------------------------------------|
+| `font-size`      | `mat.font-size($config, 'body-1');`      |
+| `font-family`    | `mat.font-family($config, 'body-1');`    |
+| `font-weight`    | `mat.font-weight($config, 'body-1');`    |
+| `line-height`    | `mat.line-height($config, 'body-1');`    |
+| `letter-spacing` | `mat.letter-spacing($config, 'body-1');` |
 
 Additionally, you can use the `typography-level` Sass mixin to directly emit the CSS styles for a
 given typography level.
