@@ -1,9 +1,11 @@
-@use '@material/icon-button' as mdc-icon-button;
+@use '@material/icon-button/icon-button' as mdc-icon-button;
 @use '../../material/core/style/private';
 @use '../mdc-helpers/mdc-helpers';
 @use 'button-base';
 
-@include mdc-icon-button.without-ripple($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-icon-button.without-ripple(
+  $query: mdc-helpers.$mat-base-styles-query
+);
 
 .mat-mdc-icon-button {
   @include button-base.mat-private-button-interactive() {
