@@ -60,16 +60,13 @@ browser_repositories(
     firefox = True,
 )
 
-# Setup the rules_sass toolchain
-load("@io_bazel_rules_sass//:defs.bzl", "sass_repositories")
-
 # TODO(devversion): remove workaround once `rules_sass` supports v4 of the Bazel NodeJS rules.
 # For now, we ust replicate the original `sass_repositories` call and manually add the
 # `--ignore-scripts` Yarn argument to not run the postinstall version check of `@bazel/worker`
 yarn_install(
     name = "build_bazel_rules_sass_deps",
-    package_json = "@io_bazel_rules_sass//sass:package.json",
-    yarn_lock = "@io_bazel_rules_sass//sass:yarn.lock",
-    symlink_node_modules = False,
     args = ["--ignore-scripts"],
+    package_json = "@io_bazel_rules_sass//sass:package.json",
+    symlink_node_modules = False,
+    yarn_lock = "@io_bazel_rules_sass//sass:yarn.lock",
 )
