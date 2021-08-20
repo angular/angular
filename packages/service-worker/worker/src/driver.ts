@@ -354,7 +354,7 @@ export class Driver implements Debuggable, UpdateSource {
 
     const notificationAction = action === '' || action === undefined ? 'default' : action;
 
-    const onActionClick = notification?.data?.onActionClick[notificationAction];
+    const onActionClick = notification?.data?.onActionClick?.[notificationAction];
 
     const urlToOpen = new URL(onActionClick?.url ?? '', this.scope.registration.scope).href;
 
