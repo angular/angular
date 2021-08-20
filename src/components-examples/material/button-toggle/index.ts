@@ -11,6 +11,7 @@ import {
 import {ButtonToggleOverviewExample} from './button-toggle-overview/button-toggle-overview-example';
 import {ButtonToggleHarnessExample} from './button-toggle-harness/button-toggle-harness-example';
 import {ButtonToggleFormsExample} from './button-toggle-forms/button-toggle-forms-example';
+import {ButtonToggleModeExample} from './button-toggle-mode/button-toggle-mode-example';
 
 export {
   ButtonToggleAppearanceExample,
@@ -18,6 +19,7 @@ export {
   ButtonToggleOverviewExample,
   ButtonToggleHarnessExample,
   ButtonToggleFormsExample,
+  ButtonToggleModeExample,
 };
 
 const EXAMPLES = [
@@ -26,6 +28,7 @@ const EXAMPLES = [
   ButtonToggleOverviewExample,
   ButtonToggleHarnessExample,
   ButtonToggleFormsExample,
+  ButtonToggleModeExample,
 ];
 
 @NgModule({
