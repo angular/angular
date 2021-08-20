@@ -33,9 +33,6 @@ export interface CdkCopyToClipboardConfig {
     attempts?: number;
 }
 
-// @public @deprecated (undocumented)
-export const CKD_COPY_TO_CLIPBOARD_CONFIG: InjectionToken<CdkCopyToClipboardConfig>;
-
 // @public
 class Clipboard_2 {
     constructor(document: any);
