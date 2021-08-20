@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript/lib/tsserverlibrary';
 
-import {GetComponentLocationsForTemplateResponse, GetTcbResponse, NgLanguageService} from '../api';
+import {GetComponentLocationsForTemplateResponse, GetTcbResponse, GetTemplateLocationForComponentResponse, NgLanguageService} from '../api';
 
 import {LanguageService} from './language_service';
 
@@ -155,6 +155,15 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     return ngLS.getComponentLocationsForTemplate(fileName);
   }
 
+  /**
+   * Given a location inside a component, finds the location of the inline template or the file for
+   * the `templateUrl`.
+   */
+  function getTemplateLocationForComponent(
+      fileName: string, position: number): GetTemplateLocationForComponentResponse {
+    return ngLS.getTemplateLocationForComponent(fileName, position);
+  }
+
   return {
     ...tsLS,
     getSemanticDiagnostics,
@@ -171,6 +180,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     getCompilerOptionsDiagnostics,
     getComponentLocationsForTemplate,
     getSignatureHelpItems,
+    getTemplateLocationForComponent,
   };
 }
 

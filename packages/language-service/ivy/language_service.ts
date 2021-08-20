@@ -19,7 +19,7 @@ import {OptimizeFor} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import {findFirstMatchingNode} from '@angular/compiler-cli/src/ngtsc/typecheck/src/comments';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
-import {GetComponentLocationsForTemplateResponse, GetTcbResponse} from '../api';
+import {GetComponentLocationsForTemplateResponse, GetTcbResponse, GetTemplateLocationForComponentResponse} from '../api';
 
 import {LanguageServiceAdapter, LSParseConfigHost} from './adapters';
 import {CompilerFactory} from './compiler_factory';
@@ -30,7 +30,7 @@ import {ReferencesBuilder, RenameBuilder} from './references_and_rename';
 import {createLocationKey} from './references_and_rename_utils';
 import {getSignatureHelp} from './signature_help';
 import {getTargetAtPosition, TargetContext, TargetNodeKind} from './template_target';
-import {findTightestNode, getClassDeclFromDecoratorProp, getPropertyAssignmentFromValue} from './ts_utils';
+import {findTightestNode, getClassDeclFromDecoratorProp, getParentClassDeclaration, getPropertyAssignmentFromValue} from './ts_utils';
 import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils';
 
 interface LanguageServiceConfig {
@@ -309,6 +309,38 @@ export class LanguageService {
                 };
               });
           return componentDeclarationLocations;
+        });
+  }
+
+  getTemplateLocationForComponent(fileName: string, position: number):
+      GetTemplateLocationForComponentResponse {
+    return this.withCompilerAndPerfTracing<GetTemplateLocationForComponentResponse>(
+        PerfPhase.LsComponentLocations, (compiler) => {
+          const nearestNode =
+              findTightestNodeAtPosition(this.programDriver.getProgram(), fileName, position);
+          if (nearestNode === undefined) {
+            return undefined;
+          }
+          const classDeclaration = getParentClassDeclaration(nearestNode);
+          if (classDeclaration === undefined) {
+            return undefined;
+          }
+          const resources = compiler.getComponentResources(classDeclaration);
+          if (resources === null) {
+            return undefined;
+          }
+          const {template} = resources;
+          let templateFileName: string;
+          let span: ts.TextSpan;
+          if (template.path !== null) {
+            span = ts.createTextSpanFromBounds(0, 0);
+            templateFileName = template.path;
+          } else {
+            span = ts.createTextSpanFromBounds(
+                template.expression.getStart(), template.expression.getEnd());
+            templateFileName = template.expression.getSourceFile().fileName;
+          }
+          return {fileName: templateFileName, textSpan: span, contextSpan: span};
         });
   }
 
