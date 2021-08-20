@@ -324,6 +324,8 @@ describe('MatDatepicker', () => {
           flush();
           dispatchKeyboardEvent(calendarBodyEl, 'keydown', ENTER);
           fixture.detectChanges();
+          dispatchKeyboardEvent(calendarBodyEl, 'keyup', ENTER);
+          fixture.detectChanges();
           flush();
 
           expect(document.querySelector('.mat-datepicker-dialog')).toBeNull();

@@ -62,6 +62,9 @@ export const yearsPerRow = 4;
 export class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
   private _rerenderSubscription = Subscription.EMPTY;
 
+  /** Flag used to filter out space/enter keyup events that originated outside of the view. */
+  private _selectionKeyPressed: boolean;
+
   /** The date to display in this multi-year view (everything other than the year is ignored). */
   @Input()
   get activeDate(): D { return this._activeDate; }
@@ -233,7 +236,11 @@ export class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
         break;
       case ENTER:
       case SPACE:
-        this._yearSelected({value: this._dateAdapter.getYear(this._activeDate), event});
+        // Note that we only prevent the default action here while the selection happens in
+        // `keyup` below. We can't do the selection here, because it can cause the calendar to
+        // reopen if focus is restored immediately. We also can't call `preventDefault` on `keyup`
+        // because it's too late (see #23305).
+        this._selectionKeyPressed = true;
         break;
       default:
         // Don't prevent default or focus active cell on keys that we don't explicitly handle.
@@ -246,6 +253,17 @@ export class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
     this._focusActiveCell();
     // Prevent unexpected default actions such as form submission.
     event.preventDefault();
+  }
+
+  /** Handles keyup events on the calendar body when calendar is in multi-year view. */
+  _handleCalendarBodyKeyup(event: KeyboardEvent): void {
+    if (event.keyCode === SPACE || event.keyCode === ENTER) {
+      if (this._selectionKeyPressed) {
+        this._yearSelected({value: this._dateAdapter.getYear(this._activeDate), event});
+      }
+
+      this._selectionKeyPressed = false;
+    }
   }
 
   _getActiveCell(): number {

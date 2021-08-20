@@ -71,6 +71,9 @@ const DAYS_PER_WEEK = 7;
 export class MatMonthView<D> implements AfterContentInit, OnChanges, OnDestroy {
   private _rerenderSubscription = Subscription.EMPTY;
 
+  /** Flag used to filter out space/enter keyup events that originated outside of the view. */
+  private _selectionKeyPressed: boolean;
+
   /**
    * The date to display in this month view (everything other than the month and year is ignored).
    */
@@ -285,9 +288,14 @@ export class MatMonthView<D> implements AfterContentInit, OnChanges, OnDestroy {
         break;
       case ENTER:
       case SPACE:
-        if (!this.dateFilter || this.dateFilter(this._activeDate)) {
-          this._dateSelected({value: this._dateAdapter.getDate(this._activeDate), event});
+        this._selectionKeyPressed = true;
+
+        if (this._canSelect(this._activeDate)) {
           // Prevent unexpected default actions such as form submission.
+          // Note that we only prevent the default action here while the selection happens in
+          // `keyup` below. We can't do the selection here, because it can cause the calendar to
+          // reopen if focus is restored immediately. We also can't call `preventDefault` on `keyup`
+          // because it's too late (see #23305).
           event.preventDefault();
         }
         return;
@@ -313,6 +321,17 @@ export class MatMonthView<D> implements AfterContentInit, OnChanges, OnDestroy {
     this._focusActiveCell();
     // Prevent unexpected default actions such as form submission.
     event.preventDefault();
+  }
+
+  /** Handles keyup events on the calendar body when calendar is in month view. */
+  _handleCalendarBodyKeyup(event: KeyboardEvent): void {
+    if (event.keyCode === SPACE || event.keyCode === ENTER) {
+      if (this._selectionKeyPressed && this._canSelect(this._activeDate)) {
+        this._dateSelected({value: this._dateAdapter.getDate(this._activeDate), event});
+      }
+
+      this._selectionKeyPressed = false;
+    }
   }
 
   /** Initializes this month view. */
@@ -449,5 +468,10 @@ export class MatMonthView<D> implements AfterContentInit, OnChanges, OnDestroy {
 
     this._comparisonRangeStart = this._getCellCompareValue(this.comparisonStart);
     this._comparisonRangeEnd = this._getCellCompareValue(this.comparisonEnd);
+  }
+
+  /** Gets whether a date can be selected in the month view. */
+  private _canSelect(date: D) {
+    return !this.dateFilter || this.dateFilter(date);
   }
 }

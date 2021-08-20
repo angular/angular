@@ -221,6 +221,8 @@ describe('MatCalendar', () => {
 
             dispatchKeyboardEvent(tableBodyEl, 'keydown', ENTER);
             fixture.detectChanges();
+            dispatchKeyboardEvent(tableBodyEl, 'keyup', ENTER);
+            fixture.detectChanges();
 
             expect(calendarInstance.currentView).toBe('month');
             expect(calendarInstance.activeDate).toEqual(new Date(2017, FEB, 28));
@@ -234,6 +236,8 @@ describe('MatCalendar', () => {
             fixture.detectChanges();
 
             dispatchKeyboardEvent(tableBodyEl, 'keydown', SPACE);
+            fixture.detectChanges();
+            dispatchKeyboardEvent(tableBodyEl, 'keyup', SPACE);
             fixture.detectChanges();
 
             expect(calendarInstance.currentView).toBe('month');
@@ -258,6 +262,8 @@ describe('MatCalendar', () => {
 
             dispatchKeyboardEvent(tableBodyEl, 'keydown', ENTER);
             fixture.detectChanges();
+            dispatchKeyboardEvent(tableBodyEl, 'keyup', ENTER);
+            fixture.detectChanges();
 
             expect(calendarInstance.currentView).toBe('year');
             expect(calendarInstance.activeDate).toEqual(new Date(2018, JAN, 31));
@@ -271,6 +277,8 @@ describe('MatCalendar', () => {
             fixture.detectChanges();
 
             dispatchKeyboardEvent(tableBodyEl, 'keydown', SPACE);
+            fixture.detectChanges();
+            dispatchKeyboardEvent(tableBodyEl, 'keyup', SPACE);
             fixture.detectChanges();
 
             expect(calendarInstance.currentView).toBe('year');
@@ -581,6 +589,8 @@ describe('MatCalendar', () => {
 
         tableBodyEl = calendarElement.querySelector('.mat-calendar-body') as HTMLElement;
         dispatchKeyboardEvent(tableBodyEl, 'keydown', ENTER);
+        fixture.detectChanges();
+        dispatchKeyboardEvent(tableBodyEl, 'keyup', ENTER);
         fixture.detectChanges();
 
         expect(calendarInstance.currentView).toBe('month');

@@ -287,6 +287,8 @@ describe('MatMonthView', () => {
 
             dispatchKeyboardEvent(calendarBodyEl, 'keydown', ENTER);
             fixture.detectChanges();
+            dispatchKeyboardEvent(calendarBodyEl, 'keyup', ENTER);
+            fixture.detectChanges();
 
             expect(testComponent.selected).toEqual(new Date(2017, JAN, 4));
           });
@@ -298,6 +300,8 @@ describe('MatMonthView', () => {
             expect(testComponent.selected).toEqual(new Date(2017, JAN, 10));
 
             dispatchKeyboardEvent(calendarBodyEl, 'keydown', SPACE);
+            fixture.detectChanges();
+            dispatchKeyboardEvent(calendarBodyEl, 'keyup', SPACE);
             fixture.detectChanges();
 
             expect(testComponent.selected).toEqual(new Date(2017, JAN, 4));

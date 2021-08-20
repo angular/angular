@@ -785,6 +785,7 @@ export class MatMonthView<D> implements AfterContentInit, OnChanges, OnDestroy {
     _firstWeekOffset: number;
     _focusActiveCell(movePreview?: boolean): void;
     _handleCalendarBodyKeydown(event: KeyboardEvent): void;
+    _handleCalendarBodyKeyup(event: KeyboardEvent): void;
     _init(): void;
     _isRange: boolean;
     _matCalendarBody: MatCalendarBody;
@@ -834,6 +835,7 @@ export class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
     // (undocumented)
     _getActiveCell(): number;
     _handleCalendarBodyKeydown(event: KeyboardEvent): void;
+    _handleCalendarBodyKeyup(event: KeyboardEvent): void;
     _init(): void;
     _matCalendarBody: MatCalendarBody;
     get maxDate(): D | null;
@@ -922,6 +924,7 @@ export class MatYearView<D> implements AfterContentInit, OnDestroy {
     dateFilter: (date: D) => boolean;
     _focusActiveCell(): void;
     _handleCalendarBodyKeydown(event: KeyboardEvent): void;
+    _handleCalendarBodyKeyup(event: KeyboardEvent): void;
     _init(): void;
     _matCalendarBody: MatCalendarBody;
     get maxDate(): D | null;

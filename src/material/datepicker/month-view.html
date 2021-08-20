@@ -25,6 +25,7 @@
          [activeCell]="_dateAdapter.getDate(activeDate) - 1"
          (selectedValueChange)="_dateSelected($event)"
          (previewChange)="_previewChanged($event)"
+         (keyup)="_handleCalendarBodyKeyup($event)"
          (keydown)="_handleCalendarBodyKeydown($event)">
   </tbody>
 </table>
