@@ -15,7 +15,7 @@ import {runInEachFileSystem} from '../../file_system/testing';
 import {ClassDeclaration} from '../../reflection';
 import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, PipeSymbol, ReferenceSymbol, Symbol, SymbolKind, TemplateSymbol, TemplateTypeChecker, TypeCheckingConfig, VariableSymbol} from '../api';
 
-import {getClass, ngForDeclaration, ngForTypeCheckTarget, setup as baseTestSetup, TypeCheckingTarget} from './test_utils';
+import {getClass, ngForDeclaration, ngForTypeCheckTarget, setup as baseTestSetup, TypeCheckingTarget} from '../testing';
 
 runInEachFileSystem(() => {
   describe('TemplateTypeChecker.getSymbolOfNode', () => {

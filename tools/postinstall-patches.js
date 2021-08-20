@@ -61,6 +61,20 @@ ls('node_modules/@types').filter(f => f.startsWith('babel__')).forEach(pkg => {
   }
 });
 
+log('\n# patch: use local version of @angular/* and zone.js in component_benchmark from @angular/dev-infra.-private');
+[['@npm//@angular/platform-browser', '@angular//packages/platform-browser'],
+ ['@npm//@angular/core', '@angular//packages/core'],
+ [
+   'load\\("@npm//@angular/bazel:index.bzl", "ng_module"\\)',
+   'load\("@angular//tools:defaults.bzl", "ng_module"\)'
+ ],
+ ['@npm//zone.js', '//packages/zone.js/bundles:zone.umd.js'],
+
+].forEach(([matcher, replacement]) => {
+  sed('-i', matcher, replacement,
+      'node_modules/@angular/dev-infra-private/bazel/benchmark/component_benchmark/component_benchmark.bzl');
+});
+
 log('\n# patch: delete d.ts files refering to rxjs-compat');
 // more info in https://github.com/angular/angular/pull/33786
 rm('-rf', [

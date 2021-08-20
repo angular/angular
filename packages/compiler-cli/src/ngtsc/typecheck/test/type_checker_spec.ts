@@ -11,7 +11,7 @@ import {absoluteFrom, absoluteFromSourceFile, getSourceFileOrError} from '../../
 import {runInEachFileSystem} from '../../file_system/testing';
 import {OptimizeFor} from '../api';
 
-import {getClass, setup, TestDeclaration} from './test_utils';
+import {getClass, setup, TestDeclaration} from '../testing';
 
 runInEachFileSystem(() => {
   describe('TemplateTypeChecker', () => {

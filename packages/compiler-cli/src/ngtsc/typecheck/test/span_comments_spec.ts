@@ -7,7 +7,7 @@
  */
 
 import {initMockFileSystem} from '../../file_system/testing';
-import {tcb, TestDeclaration} from './test_utils';
+import {tcb, TestDeclaration} from '../testing';
 
 describe('type check blocks diagnostics', () => {
   beforeEach(() => initMockFileSystem('Native'));

@@ -48,7 +48,7 @@ Here is where fixup commits come in handy.
 By addressing review feedback in fixup commits, you make it very straight forward for the reviewer to see what are the new changes that need to be reviewed and verify that their earlier feedback has been addressed.
 This can save a lot of effort, especially on larger Pull Requests (where having to re-review _all_ the changes is pretty wasteful).
 
-When the time comes to merge the Pull Request into the repository, the merge script [knows how to automatically squash](../dev-infra/pr/merge/strategies/autosquash-merge.ts) fixup commits with the corresponding regular commits.
+When the time comes to merge the Pull Request into the repository, the merge script knows how to automatically squash fixup commits with the corresponding regular commits.
 
 
 ## <a name="create-fixup-commits"></a> Creating fixup commits
@@ -69,7 +69,7 @@ git commit --fixup <COMMIT_SHA> ...
 
 ## <a name="squash-fixup-commits"></a> Squashing fixup commits
 
-As mentioned above, the merge script will [automatically squash](../dev-infra/pr/merge/strategies/autosquash-merge.ts) fixup commits.
+As mentioned above, the merge script will automatically squash fixup commits.
 However, sometimes you might want to manually squash a fixup commit.
 
 

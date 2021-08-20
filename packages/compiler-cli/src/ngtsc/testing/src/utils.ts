@@ -138,3 +138,12 @@ function bindingNameEquals(node: ts.BindingName, name: string): boolean {
   }
   return false;
 }
+
+export function getSourceCodeForDiagnostic(diag: ts.Diagnostic): string {
+  if (diag.file === undefined || diag.start === undefined || diag.length === undefined) {
+    throw new Error(
+        `Unable to get source code for diagnostic. Provided diagnostic instance doesn't contain "file", "start" and/or "length" properties.`);
+  }
+  const text = diag.file.text;
+  return text.substr(diag.start, diag.length);
+}

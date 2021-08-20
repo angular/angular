@@ -1,4 +1,4 @@
-import {CommitMessageConfig} from '../dev-infra/commit-message/config';
+import {CommitMessageConfig} from '@angular/dev-infra-private/ng-dev/commit-message/config';
 
 /**
  * The configuration for `ng-dev commit-message` commands.

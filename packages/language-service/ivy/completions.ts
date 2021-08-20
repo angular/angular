@@ -8,7 +8,7 @@
 
 import {AST, BindingPipe, EmptyExpr, ImplicitReceiver, LiteralPrimitive, MethodCall, ParseSourceSpan, PropertyRead, PropertyWrite, SafeMethodCall, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {CompletionKind, DirectiveInScope, TemplateDeclarationSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {CompletionKind, DirectiveInScope, SymbolKind, TemplateDeclarationSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import {BoundEvent, TextAttribute} from '@angular/compiler/src/render3/r3_ast';
 import * as ts from 'typescript';
 
@@ -198,8 +198,8 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
         this.node.receiver instanceof ImplicitReceiver) {
       return this.getGlobalPropertyExpressionCompletion(options);
     } else {
-      const location = this.compiler.getTemplateTypeChecker().getExpressionCompletionLocation(
-          this.node, this.component);
+      const location =
+          this.templateTypeChecker.getExpressionCompletionLocation(this.node, this.component);
       if (location === null) {
         return undefined;
       }
@@ -210,6 +210,23 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       }
 
       const replacementSpan = makeReplacementSpanFromAst(this.node);
+
+      if (!(this.node.receiver instanceof ImplicitReceiver) &&
+          options?.includeCompletionsWithInsertText &&
+          options.includeAutomaticOptionalChainCompletions !== false) {
+        const symbol = this.templateTypeChecker.getSymbolOfNode(this.node.receiver, this.component);
+        if (symbol?.kind === SymbolKind.Expression) {
+          const type = symbol.tsType;
+          const nonNullableType = this.typeChecker.getNonNullableType(type);
+          if (type !== nonNullableType && replacementSpan !== undefined) {
+            // Shift the start location back one so it includes the `.` of the property access.
+            // In combination with the options above, this will indicate to the TS LS to include
+            // optional chaining completions `?.` for nullable types.
+            replacementSpan.start--;
+            replacementSpan.length++;
+          }
+        }
+      }
 
       let ngResults: ts.CompletionEntry[] = [];
       for (const result of tsResults.entries) {

@@ -52,16 +52,12 @@ class _Humanizer implements html.Visitor {
   }
 
   visitAttribute(attribute: html.Attribute, context: any): any {
-    const valueTokens = attribute.valueTokens ?? [];
-    const res = this._appendContext(attribute, [
-      html.Attribute, attribute.name, attribute.value, ...valueTokens.map(token => token.parts)
-    ]);
+    const res = this._appendContext(attribute, [html.Attribute, attribute.name, attribute.value]);
     this.result.push(res);
   }
 
   visitText(text: html.Text, context: any): any {
-    const res = this._appendContext(
-        text, [html.Text, text.value, this.elDepth, ...text.tokens.map(token => token.parts)]);
+    const res = this._appendContext(text, [html.Text, text.value, this.elDepth]);
     this.result.push(res);
   }
 
@@ -87,10 +83,6 @@ class _Humanizer implements html.Visitor {
   private _appendContext(ast: html.Node, input: any[]): any[] {
     if (!this.includeSourceSpan) return input;
     input.push(ast.sourceSpan.toString());
-    if (ast.sourceSpan.fullStart.offset !== ast.sourceSpan.start.offset) {
-      input.push(ast.sourceSpan.fullStart.file.content.substring(
-          ast.sourceSpan.fullStart.offset, ast.sourceSpan.end.offset));
-    }
     return input;
   }
 }

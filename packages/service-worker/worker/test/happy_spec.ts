@@ -1055,44 +1055,20 @@ describe('Driver', () => {
         });
       });
 
-      describe('Customized data', () => {
-        describe('with no onActionClick', () => {
-          it('has no client interaction', async () => {
-            expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
-            spyOn(scope.clients, 'openWindow');
+      describe('no onActionClick field', () => {
+        it('has no client interaction', async () => {
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+          spyOn(scope.clients, 'openWindow');
 
-            await driver.initialized;
-            await scope.handleClick({
-              title: 'This is a test without action',
-              body: 'Test body without action',
-              data: {}
-            });
-            expect(scope.clients.openWindow).not.toHaveBeenCalled();
-          });
+          await driver.initialized;
+          await scope.handleClick(
+              {title: 'This is a test without action', body: 'Test body without action', data: {}});
+          await scope.handleClick(
+              {title: 'This is a test with an action', body: 'Test body with an action', data: {}},
+              'someAction');
+          expect(scope.clients.openWindow).not.toHaveBeenCalled();
         });
-        describe('with onActionClick', () => {
-          it('uses onActionClick by default when no specific action is clicked', async () => {
-            expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
-            spyOn(scope.clients, 'openWindow');
-            const url = 'fooz';
-
-            await driver.initialized;
-            await scope.handleClick(
-                {
-                  title: 'This is a test without action',
-                  body: 'Test body without action',
-                  data: {
-                    onActionClick: {
-                      default: {operation: 'openWindow', url},
-                    },
-                  },
-                },
-                '');
-            expect(scope.clients.openWindow)
-              .toHaveBeenCalledWith(`${scope.registration.scope}${url}`);
-          });
-        });
-      })
+      });
 
       describe('URL resolution', () => {
         it('should resolve relative to service worker scope', async () => {

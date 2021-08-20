@@ -1155,7 +1155,6 @@ groups:
           '.ng-dev/**',
           '.vscode/**',
           '.yarn/**',
-          'dev-infra/**',
           'docs/*.md',
           'docs/images/**',
           'goldens/*',

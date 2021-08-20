@@ -21,7 +21,7 @@ The template options object, `angularCompilerOptions`, is a sibling to the `comp
 {@a tsconfig-extends}
 ## Configuration inheritance with extends
 
-Like the TypeScript compiler, The Angular AOT compiler also supports `extends` in the `angularCompilerOptions` section of the TypeScript configuration file.
+Like the TypeScript compiler, the Angular AOT compiler also supports `extends` in the `angularCompilerOptions` section of the TypeScript configuration file.
 The `extends` property is at the top level, parallel to `compilerOptions` and `angularCompilerOptions`.
 
 A TypeScript configuration can inherit settings from another file using the `extends` property.
