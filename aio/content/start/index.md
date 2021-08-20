@@ -173,6 +173,10 @@ This section walks you through creating a child component, `ProductAlertsCompone
     * `product-alerts.component.html`
     * `product-alerts.component.css`
 
+1. Import the `ProductAlertsComponent` in `app.module.ts`
+`import { ProductAlertsComponent } from './product-alerts/product-alerts.component';` and then add it to `@NgModule()` declarations array
+<code-example header="src/app/app.module.ts" path="getting-started/src/app/app.module.1.ts" region="as-generated"></code-example>
+
 1. Open `product-alerts.component.ts`.
   The `@Component()` decorator indicates that the following class is a component.
   `@Component()` also provides metadata about the component, including its selector, templates, and styles.
