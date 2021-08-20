@@ -441,7 +441,8 @@ export function mixinTabIndex<T extends AbstractConstructor<CanDisable>>(base: T
 
 // @public
 export class NativeDateAdapter extends DateAdapter<Date> {
-    constructor(matDateLocale: string, platform: Platform);
+    constructor(matDateLocale: string,
+    _platform?: Platform);
     // (undocumented)
     addCalendarDays(date: Date, days: number): Date;
     // (undocumented)
@@ -487,6 +488,7 @@ export class NativeDateAdapter extends DateAdapter<Date> {
     today(): Date;
     // (undocumented)
     toIso8601(date: Date): string;
+    // @deprecated (undocumented)
     useUtcForDisplay: boolean;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NativeDateAdapter, [{ optional: true; }, null]>;
