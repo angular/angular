@@ -4,25 +4,47 @@
 
 ```ts
 
+import { AsyncFactoryFn } from '@angular/cdk/testing';
 import { BaseHarnessFilters } from '@angular/cdk/testing';
 import { ContentContainerComponentHarness } from '@angular/cdk/testing';
 import { DialogRole } from '@angular/material/dialog';
 import { HarnessPredicate } from '@angular/cdk/testing';
+import { TestElement } from '@angular/cdk/testing';
 
 // @public
 export interface DialogHarnessFilters extends BaseHarnessFilters {
 }
 
 // @public
-export class MatDialogHarness extends ContentContainerComponentHarness<string> {
+export class MatDialogHarness extends ContentContainerComponentHarness<MatDialogSection | string> {
+    // (undocumented)
+    protected _actions: AsyncFactoryFn<TestElement | null>;
     close(): Promise<void>;
+    // (undocumented)
+    protected _content: AsyncFactoryFn<TestElement | null>;
+    getActionsText(): Promise<string>;
     getAriaDescribedby(): Promise<string | null>;
     getAriaLabel(): Promise<string | null>;
     getAriaLabelledby(): Promise<string | null>;
+    getContentText(): Promise<string>;
     getId(): Promise<string | null>;
     getRole(): Promise<DialogRole | null>;
+    getText(): Promise<string>;
+    getTitleText(): Promise<string>;
     static hostSelector: string;
+    // (undocumented)
+    protected _title: AsyncFactoryFn<TestElement | null>;
     static with(options?: DialogHarnessFilters): HarnessPredicate<MatDialogHarness>;
+}
+
+// @public
+export const enum MatDialogSection {
+    // (undocumented)
+    ACTIONS = ".mat-dialog-actions",
+    // (undocumented)
+    CONTENT = ".mat-dialog-content",
+    // (undocumented)
+    TITLE = ".mat-dialog-title"
 }
 
 // (No @packageDocumentation comment for this package)

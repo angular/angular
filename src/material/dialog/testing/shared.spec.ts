@@ -95,7 +95,7 @@ export function runHarnessTests(
     fixture.componentInstance.open();
     fixture.componentInstance.open({ariaLabelledBy: 'dialog-label'});
     const dialogs = await loader.getAllHarnesses(dialogHarness);
-    expect(await dialogs[0].getAriaLabelledby()).toBe(null);
+    expect(await dialogs[0].getAriaLabelledby()).toMatch(/-dialog-title-\d+/);
     expect(await dialogs[1].getAriaLabelledby()).toBe('dialog-label');
   });
 
@@ -124,12 +124,26 @@ export function runHarnessTests(
     expect(dialogs.length).toBe(1);
   });
 
+  it('should get the text content of each section', async () => {
+    fixture.componentInstance.open();
+    const dialog = await loader.getHarness(dialogHarness);
+    expect(await dialog.getText()).toBe(`I'm the dialog titleI'm the dialog contentCancelOk`);
+    expect(await dialog.getTitleText()).toBe(`I'm the dialog title`);
+    expect(await dialog.getContentText()).toBe(`I'm the dialog content`);
+    expect(await dialog.getActionsText()).toBe(`CancelOk`);
+  });
+
   @Component({
     template: `
     <ng-template>
-      Hello from the dialog!
+      <div matDialogTitle>I'm the dialog title</div>
+      <div matDialogContent>I'm the dialog content</div>
+      <div matDialogActions>
+        <button>Cancel</button>
+        <button>Ok</button>
+      </div>
     </ng-template>
-  `
+    `
   })
   class DialogHarnessTest {
     @ViewChild(TemplateRef) dialogTmpl: TemplateRef<any>;

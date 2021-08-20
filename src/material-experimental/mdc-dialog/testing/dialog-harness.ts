@@ -12,6 +12,13 @@ import {
   MatDialogHarness as NonMdcDialogHarness
 } from '@angular/material/dialog/testing';
 
+/** Selectors for different sections of the mat-dialog that can contain user content. */
+export const enum MatDialogSection {
+  TITLE = '.mat-mdc-dialog-title',
+  CONTENT = '.mat-mdc-dialog-content',
+  ACTIONS = '.mat-mdc-dialog-actions'
+}
+
 /** Harness for interacting with a standard `MatDialog` in tests. */
 export class MatDialogHarness extends NonMdcDialogHarness {
   /** The selector for the host element of a `MatDialog` instance. */
@@ -26,4 +33,8 @@ export class MatDialogHarness extends NonMdcDialogHarness {
   static override with(options: DialogHarnessFilters = {}): HarnessPredicate<MatDialogHarness> {
     return new HarnessPredicate(MatDialogHarness, options);
   }
+
+  protected override _title = this.locatorForOptional(MatDialogSection.TITLE);
+  protected override _content = this.locatorForOptional(MatDialogSection.CONTENT);
+  protected override _actions = this.locatorForOptional(MatDialogSection.ACTIONS);
 }

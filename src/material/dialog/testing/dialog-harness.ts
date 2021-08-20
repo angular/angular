@@ -10,12 +10,25 @@ import {ContentContainerComponentHarness, HarnessPredicate, TestKey} from '@angu
 import {DialogRole} from '@angular/material/dialog';
 import {DialogHarnessFilters} from './dialog-harness-filters';
 
+/** Selectors for different sections of the mat-dialog that can contain user content. */
+export const enum MatDialogSection {
+  TITLE = '.mat-dialog-title',
+  CONTENT = '.mat-dialog-content',
+  ACTIONS = '.mat-dialog-actions'
+}
+
+// @breaking-change 14.0.0 change generic type to MatDialogSection.
 /** Harness for interacting with a standard `MatDialog` in tests. */
-export class MatDialogHarness extends ContentContainerComponentHarness<string> {
+export class MatDialogHarness extends ContentContainerComponentHarness<MatDialogSection | string> {
   // Developers can provide a custom component or template for the
   // dialog. The canonical dialog parent is the "MatDialogContainer".
   /** The selector for the host element of a `MatDialog` instance. */
   static hostSelector = '.mat-dialog-container';
+
+  protected _title = this.locatorForOptional(MatDialogSection.TITLE);
+  protected _content = this.locatorForOptional(MatDialogSection.CONTENT);
+  protected _actions = this.locatorForOptional(MatDialogSection.ACTIONS);
+
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a `MatDialogHarness` that meets
@@ -62,5 +75,25 @@ export class MatDialogHarness extends ContentContainerComponentHarness<string> {
    */
   async close(): Promise<void> {
     await (await this.host()).sendKeys(TestKey.ESCAPE);
+  }
+
+  /** Gets te dialog's text. */
+  async getText() {
+    return (await this.host()).text();
+  }
+
+  /** Gets the dialog's title text. This only works if the dialog is using mat-dialog-title. */
+  async getTitleText() {
+    return (await this._title())?.text() ?? '';
+  }
+
+  /** Gets the dialog's content text. This only works if the dialog is using mat-dialog-content. */
+  async getContentText() {
+    return (await this._content())?.text() ?? '';
+  }
+
+  /** Gets the dialog's actions text. This only works if the dialog is using mat-dialog-actions. */
+  async getActionsText() {
+    return (await this._actions())?.text() ?? '';
   }
 }
