@@ -17,6 +17,7 @@ module.exports = function regionParser() {
     css: blockC,
     yaml: inlineHash,
     yml: inlineHash,
+    sh: inlineHash,
     jade: inlineCOnly,
     pug: inlineCOnly,
     json: inlineC,
