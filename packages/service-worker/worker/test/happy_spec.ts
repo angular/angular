@@ -1055,6 +1055,21 @@ describe('Driver', () => {
         });
       });
 
+      describe('no onActionClick field', () => {
+        it('has no client interaction', async () => {
+          expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+          spyOn(scope.clients, 'openWindow');
+
+          await driver.initialized;
+          await scope.handleClick(
+              {title: 'This is a test without action', body: 'Test body without action', data: {}});
+          await scope.handleClick(
+              {title: 'This is a test with an action', body: 'Test body with an action', data: {}},
+              'someAction');
+          expect(scope.clients.openWindow).not.toHaveBeenCalled();
+        });
+      });
+
       describe('URL resolution', () => {
         it('should resolve relative to service worker scope', async () => {
           (scope.registration.scope as string) = 'http://localhost/foo/bar/';
