@@ -124,6 +124,11 @@ export function create(info: tss.server.PluginCreateInfo): NgLanguageService {
     return undefined;
   }
 
+  function getTemplateLocationForComponent(fileName: string, position: number) {
+    // Not implemented in VE Language Service
+    return undefined;
+  }
+
   function getComponentLocationsForTemplate(fileName: string) {
     // Not implemented in VE Language Service
     return [];
@@ -140,5 +145,6 @@ export function create(info: tss.server.PluginCreateInfo): NgLanguageService {
     getDefinitionAndBoundSpan,
     getTcb,
     getComponentLocationsForTemplate,
+    getTemplateLocationForComponent,
   };
 }

@@ -52,6 +52,7 @@ export type GetTcbResponse = {
 };
 
 export type GetComponentLocationsForTemplateResponse = ts.DocumentSpan[];
+export type GetTemplateLocationForComponentResponse = ts.DocumentSpan|undefined;
 
 /**
  * `NgLanguageService` describes an instance of an Angular language service,
@@ -60,6 +61,8 @@ export type GetComponentLocationsForTemplateResponse = ts.DocumentSpan[];
 export interface NgLanguageService extends ts.LanguageService {
   getTcb(fileName: string, position: number): GetTcbResponse|undefined;
   getComponentLocationsForTemplate(fileName: string): GetComponentLocationsForTemplateResponse;
+  getTemplateLocationForComponent(fileName: string, position: number):
+      GetTemplateLocationForComponentResponse;
 }
 
 export function isNgLanguageService(ls: ts.LanguageService|
