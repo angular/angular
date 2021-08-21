@@ -20,7 +20,7 @@ export class InTheMetadataComponent  {
   clearanceItem = '';
 
   buyIt() {
-    console.warn('Child says: emiting buyEvent with', this.clearanceItem);
+    console.warn('Child says: emitting buyEvent with', this.clearanceItem);
     this.buyEvent.emit(this.clearanceItem);
   }
 
