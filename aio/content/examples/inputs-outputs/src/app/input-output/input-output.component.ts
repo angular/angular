@@ -12,7 +12,7 @@ export class InputOutputComponent {
   lineThrough = '';
 
   delete() {
-    console.warn('Child says: emiting item deleteRequest with', this.item);
+    console.warn('Child says: emitting item deleteRequest with', this.item);
     this.deleteRequest.emit(this.item);
     this.lineThrough = this.lineThrough ? '' : 'line-through';
   }
