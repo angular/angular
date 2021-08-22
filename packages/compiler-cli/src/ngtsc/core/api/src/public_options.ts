@@ -27,6 +27,10 @@ export interface LegacyNgcOptions {
    * For maximum type-checking, set this to `true`, and set `strictTemplates` to `true`.
    *
    * It is an error for this flag to be `false`, while `strictTemplates` is set to `true`.
+   *
+   * @deprecated The `fullTemplateTypeCheck` option has been superseded by the more granular
+   * `strictTemplates` family of compiler options. Usage of `fullTemplateTypeCheck` is therefore
+   * deprecated, `strictTemplates` and its related options should be used instead.
    */
   fullTemplateTypeCheck?: boolean;
 
@@ -127,7 +131,7 @@ export interface StrictTemplateOptions {
   /**
    * If `true`, implies all template strictness flags below (unless individually disabled).
    *
-   * This flag is a superset of `fullTemplateTypeCheck`.
+   * This flag is a superset of the deprecated `fullTemplateTypeCheck` option.
    *
    * Defaults to `false`, even if "fullTemplateTypeCheck" is `true`.
    */
