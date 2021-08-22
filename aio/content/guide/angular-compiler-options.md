@@ -120,6 +120,12 @@ When `true` (recommended), enables the [binding expression validation](guide/aot
 
 Default is `false`, but when you use the CLI command `ng new --strict`, it is set to `true` in the generated project's configuration.
 
+<div class="alert is-important">
+
+The `fullTemplateTypeCheck` option has been deprecated in Angular 13 in favor of the `strictTemplates` family of compiler options.
+
+</div>
+
 ### `generateCodeForLibraries`
 
 When `true` (the default), generates factory files (`.ngfactory.js` and `.ngstyle.js`) for `.d.ts` files with a corresponding `.metadata.json` file.

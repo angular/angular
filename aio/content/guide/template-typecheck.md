@@ -24,8 +24,6 @@ The compiler also has some major limitations in this mode:
 
 In many cases, these things end up as type `any`, which can cause subsequent parts of the expression to go unchecked.
 
-
-
 ### Full mode
 
 If the `fullTemplateTypeCheck` flag is set to `true`, Angular is more aggressive in its type-checking within templates.
@@ -40,6 +38,12 @@ The following still have type `any`.
 * Local references to DOM elements.
 * The `$event` object.
 * Safe navigation expressions.
+
+<div class="alert is-important">
+
+The `fullTemplateTypeCheck` flag has been deprecated in Angular 13. The `strictTemplates` family of compiler options should be used instead.
+
+</div>
 
 
 {@a strict-mode}

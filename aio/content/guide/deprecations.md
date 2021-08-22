@@ -50,6 +50,7 @@ v12 - v15
 | polyfills               | [reflect-metadata](#reflect-metadata)                                                         | <!--v8--> v11         |
 | npm package format      | [`esm5` and `fesm5` entry-points in @angular/* npm packages](guide/deprecations#esm5-fesm5)   | <!-- v9 --> v11       |
 | `@angular/compiler-cli` | [Input setter coercion](#input-setter-coercion)                                               | <!--v13--> v15        |
+| `@angular/compiler-cli` | [`fullTemplateTypeCheck`](#full-template-type-check)                                          | <!--v13--> v15        |
 | `@angular/core`         | [`defineInjectable`](#core)                                                                   | <!--v8--> v11         |
 | `@angular/core`         | [`entryComponents`](api/core/NgModule#entryComponents)                                        | <!--v9--> v11         |
 | `@angular/core`         | [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS)                       | <!--v9--> v11         |
@@ -530,6 +531,36 @@ class SubmitButton {
   }
 }
 ```
+
+{@a full-template-type-check}
+### `fullTemplateTypeCheck`
+
+When compiling your application using the AOT compiler, your templates are type-checked according to a certain strictness level.
+Before Angular 9 there existed only two strictness levels of template type checking as determined by [the `fullTemplateTypeCheck` compiler option](guide/angular-compiler-options).
+In version 9 the `strictTemplates` family of compiler options has been introduced as a more fine-grained approach to configuring how strict your templates are being type-checked.
+
+The `fullTemplateTypeCheck` flag is being deprecated in favor of the new `strictTemplates` option and its related compiler options.
+Projects that currently have `fullTemplateTypeCheck: true` configured can migrate to the following set of compiler options to achieve the same level of type-checking:
+
+<code-example language="json" header="tsconfig.app.json">
+
+{
+  "angularCompilerOptions": {
+    ...
+    "strictTemplates": true,
+    "strictInputTypes": false,
+    "strictNullInputTypes": false,
+    "strictAttributeTypes": false,
+    "strictOutputEventTypes": false,
+    "strictDomEventTypes": false,
+    "strictDomLocalRefTypes": false,
+    "strictSafeNavigationTypes": false,
+    "strictContextGenerics": false,
+    ...
+  }
+}
+
+</code-example>
 
 {@a deprecated-cli-flags}
 
