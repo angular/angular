@@ -11,3 +11,17 @@ MyService.ɵprov = /*@__PURE__*/ $r3$.ɵɵdefineInjectable({
   },
   providedIn: 'root'
 });
+// ...
+MyOptionalService.ɵprov = /*@__PURE__*/ $r3$.ɵɵdefineInjectable({
+  token: MyOptionalService,
+  factory: function MyOptionalService_Factory(t) {
+    let r = null;
+    if (t) {
+      r = new t();
+    } else {
+      r = (() => new MyAlternateService())($r3$.ɵɵinject(SomeDep, 8));
+    }
+    return r;
+  },
+  providedIn: 'root'
+});

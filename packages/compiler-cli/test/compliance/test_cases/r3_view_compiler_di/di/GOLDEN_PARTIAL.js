@@ -162,7 +162,7 @@ export declare class MyService {
 /****************************************************************************************************
  * PARTIAL FILE: usefactory_with_deps.js
  ****************************************************************************************************/
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import * as i0 from "@angular/core";
 class SomeDep {
 }
@@ -176,6 +176,18 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Injectable,
             args: [{ providedIn: 'root', useFactory: () => new MyAlternateService(), deps: [SomeDep] }]
         }] });
+export class MyOptionalService {
+}
+MyOptionalService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyOptionalService, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
+MyOptionalService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyOptionalService, providedIn: 'root', useFactory: () => new MyAlternateService(), deps: [{ token: SomeDep, optional: true }] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyOptionalService, decorators: [{
+            type: Injectable,
+            args: [{
+                    providedIn: 'root',
+                    useFactory: () => new MyAlternateService(),
+                    deps: [[new Optional(), SomeDep]]
+                }]
+        }] });
 
 /****************************************************************************************************
  * PARTIAL FILE: usefactory_with_deps.d.ts
@@ -184,6 +196,10 @@ import * as i0 from "@angular/core";
 export declare class MyService {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyService, never>;
     static ɵprov: i0.ɵɵInjectableDeclaration<MyService>;
+}
+export declare class MyOptionalService {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyOptionalService, never>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MyOptionalService>;
 }
 
 /****************************************************************************************************
