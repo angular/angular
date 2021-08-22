@@ -182,7 +182,7 @@ which is an inherently _asynchronous_ operation.
 
 The `HeroService` must wait for the server to respond,
 `getHeroes()` cannot return immediately with hero data,
-and the browser will not block while the service waits.
+and the browser will block while the service waits.
 
 `HeroService.getHeroes()` must have an _asynchronous signature_ of some kind.
 
