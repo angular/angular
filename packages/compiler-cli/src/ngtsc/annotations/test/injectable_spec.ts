@@ -5,8 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {WrappedNodeExpr} from '@angular/compiler';
-import * as ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError, ngErrorCode} from '../../diagnostics';
 import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
@@ -44,46 +42,6 @@ runInEachFileSystem(() => {
            const res = handler.compileFull(TestClass, analysis);
            expect(res).not.toContain(jasmine.objectContaining({name: 'ɵprov'}));
          });
-    });
-
-    describe('fix', () => {
-      it('should compile dep without Array in @Injectable', () => {
-        const {handler, TestClass, reflectionHost} =
-            fixHandler(`export const Injectable: any; export const Self: any;`, `
-               import { Injectable,Self } from '@angular/core';
-               declare const someToken;
-               @Injectable({
-                 providedIn: 'any',
-                 useFactory: (token) => new TestClass(token),
-                 deps: [[Self, 'stringToken'], [new Self(), someToken], [1]]
-               })
-               export class TestClass {
-                 constructor(token){}
-               }`);
-        let detected =
-            handler.detect(TestClass, reflectionHost.getDecoratorsOfDeclaration(TestClass));
-        if (detected === undefined) {
-          throw new Error('Failed to recognize TestClass');
-        }
-        let {analysis} = handler.analyze(TestClass, detected.metadata);
-        if (analysis === undefined) {
-          throw new Error('Failed to analyze TestClass');
-        }
-        if (analysis.meta.deps === undefined) {
-          throw new Error('Failed to have deps');
-        }
-        analysis.meta.deps.forEach((item) => {
-          let nodeExpr =
-              item.token! as WrappedNodeExpr<ts.Identifier|ts.StringLiteral|ts.NumericLiteral>;
-          if (ts.isArrayLiteralExpression(nodeExpr.node)) {
-            throw new Error('dep can not be ArrayLiteralExpression!');
-          }
-          expect(
-              ts.isStringLiteral(nodeExpr.node) || ts.isIdentifier(nodeExpr.node) ||
-              ts.isNumericLiteral(nodeExpr.node))
-              .toBe(true);
-        });
-      });
     });
   });
 });
@@ -127,24 +85,4 @@ function setupHandler(errorOnDuplicateProv: boolean) {
     throw new Error('Failed to analyze TestClass');
   }
   return {handler, TestClass, ɵprov, analysis};
-}
-
-function fixHandler(angularCoreContent: string, entryFileContent: string) {
-  const ENTRY_FILE = absoluteFrom('/entry.ts');
-  const ANGULAR_CORE = absoluteFrom('/node_modules/@angular/core/index.d.ts');
-  const {program} = makeProgram([
-    {
-      name: ANGULAR_CORE,
-      contents: angularCoreContent,
-    },
-    {name: ENTRY_FILE, contents: entryFileContent},
-  ]);
-  const checker = program.getTypeChecker();
-  const reflectionHost = new TypeScriptReflectionHost(checker);
-  const injectableRegistry = new InjectableClassRegistry(reflectionHost);
-  const handler = new InjectableDecoratorHandler(
-      reflectionHost, false, false, injectableRegistry, NOOP_PERF_RECORDER, false);
-  const TestClass = getDeclaration(program, ENTRY_FILE, 'TestClass', isNamedClassDeclaration);
-
-  return {TestClass, reflectionHost, handler};
 }
