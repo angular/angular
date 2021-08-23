@@ -72,7 +72,7 @@ function buildReleasePackages(useIvy: boolean, distPath: string,
   const targets = exec(queryPackagesCmd, true).split(/\r?\n/);
   const packageNames = getPackageNamesOfTargets(targets);
   const bazelBinPath = exec(`${bazelCmd} info bazel-bin`, true);
-  const getOutputPath = pkgName => join(bazelBinPath, 'src', pkgName, 'npm_package');
+  const getOutputPath = (pkgName: string) => join(bazelBinPath, 'src', pkgName, 'npm_package');
 
   // Build with "--config=release" or `--config=snapshot-build` so that Bazel
   // runs the workspace stamping script. The stamping script ensures that the

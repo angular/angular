@@ -21,5 +21,5 @@ export const config = {
       // Irrelevant for the MDC implementation, because the slider doesn't dispatch any events.
       'MatSliderChange'
     ]
-  }
+  } as {[entryPointName: string]: string[]}
 };

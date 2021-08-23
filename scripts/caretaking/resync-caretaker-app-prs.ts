@@ -1,4 +1,4 @@
-import * as Octokit from '@octokit/rest';
+import {Octokit} from '@octokit/rest';
 import * as fetch from 'node-fetch';
 
 const apiBaseUrl = 'https://test-jperrott.firebaseio.com/pulls';

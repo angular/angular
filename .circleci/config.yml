@@ -387,7 +387,7 @@ jobs:
       - *setup_bazel_binary
 
       - run: yarn build-and-check-release-output
-      - run: yarn check-tools
+      - run: yarn check-tooling-setup
 
       # TODO(devversion): replace this with bazel tests that run Madge. This is
       # cumbersome and doesn't guarantee no circular deps for other entry-points.
