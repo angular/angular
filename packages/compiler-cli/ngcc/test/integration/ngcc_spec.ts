@@ -13,7 +13,7 @@ import * as os from 'os';
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
 import {Folder, MockFileSystem, runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {loadStandardTestFiles, loadTestFiles} from '../../../src/ngtsc/testing';
+import {loadTestFiles} from '../../../src/ngtsc/testing';
 import {getLockFilePath} from '../../src/locking/lock_file';
 import {mainNgcc} from '../../src/main';
 import {clearTsConfigCache} from '../../src/ngcc_options';
@@ -23,10 +23,10 @@ import {EntryPointManifestFile} from '../../src/packages/entry_point_manifest';
 import {Transformer} from '../../src/packages/transformer';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from '../../src/writing/package_json_updater';
 
-import {compileIntoApf, compileIntoFlatEs2015Package, compileIntoFlatEs5Package} from './util';
+import {compileIntoApf, compileIntoFlatEs2015Package, compileIntoFlatEs5Package, loadNgccIntegrationTestFiles} from './util';
 
 const ANGULAR_CORE_IMPORT_REGEX = /import \* as ɵngcc\d+ from '@angular\/core';/;
-const testFiles = loadStandardTestFiles({fakeCore: false, rxjs: true});
+const testFiles = loadNgccIntegrationTestFiles();
 
 runInEachFileSystem(() => {
   describe('ngcc main()', () => {

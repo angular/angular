@@ -43,6 +43,8 @@
     "@angular-devkit/build-optimizer": "0.1200.4",
     "@angular-devkit/core": "12.0.4",
     "@angular-devkit/schematics": "12.0.4",
+    "@angular/common-12": "npm:@angular/common@12.2.2",
+    "@angular/core-12": "npm:@angular/core@12.2.2",
     "@angular/cli": "12.0.4",
     "@babel/cli": "7.14.8",
     "@babel/core": "7.8.6",
