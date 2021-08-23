@@ -10,14 +10,17 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { TopBarComponent } from './top-bar/top-bar.component';
 import { ProductListComponent } from './product-list/product-list.component';
+// #docregion declare-product-alerts
 import { ProductAlertsComponent } from './product-alerts/product-alerts.component';
+// #enddocregion declare-product-alerts
 import { ProductDetailsComponent } from './product-details/product-details.component';
 import { CartComponent } from './cart/cart.component';
 import { ShippingComponent } from './shipping/shipping.component';
 
-// #docregion product-details-route, http-client-module, shipping-route, cart-route
+// #docregion product-details-route, http-client-module, shipping-route, cart-route, declare-product-alerts
 
 @NgModule({
+  // #enddocregion declare-product-alerts
   imports: [
     BrowserModule,
     // #enddocregion product-details-route, cart-route
@@ -36,17 +39,20 @@ import { ShippingComponent } from './shipping/shipping.component';
     ])
   ],
   // #enddocregion product-details-route, cart-route
+  // #docregion declare-product-alerts
   declarations: [
     AppComponent,
     TopBarComponent,
     ProductListComponent,
     ProductAlertsComponent,
+    // #enddocregion declare-product-alerts
     ProductDetailsComponent,
     CartComponent,
 // #enddocregion http-client-module
     ShippingComponent
-// #docregion http-client-module
+  // #docregion declare-product-alerts, http-client-module
   ],
+  // #enddocregion declare-product-alerts
   bootstrap: [
     AppComponent
   ]

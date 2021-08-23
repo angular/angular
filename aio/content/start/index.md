@@ -199,7 +199,11 @@ This section walks you through creating a child component, `ProductAlertsCompone
 
   <code-example header="src/app/product-alerts/product-alerts.component.html" path="getting-started/src/app/product-alerts/product-alerts.component.1.html"></code-example>
 
-1. To display `ProductAlertsComponent` as a child of `ProductListComponent`, add the selector, `<app-product-alerts>` to `product-list.component.html`.
+1. To make `ProductAlertsComponent` available to other components in the application, add it to `AppModule`'s declarations in `app.module.ts`.
+
+  <code-example header="src/app/app.module.ts" path="getting-started/src/app/app.module.ts" region="declare-product-alerts"></code-example>
+
+1. Finally, to display `ProductAlertsComponent` as a child of `ProductListComponent`, add the selector, `<app-product-alerts>` to `product-list.component.html`.
   Pass the current product as input to the component using property binding.
 
   <code-example header="src/app/product-list/product-list.component.html" path="getting-started/src/app/product-list/product-list.component.5.html" region="app-product-alerts"></code-example>
