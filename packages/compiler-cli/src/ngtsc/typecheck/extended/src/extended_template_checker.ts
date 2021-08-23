@@ -18,7 +18,7 @@ export class ExtendedTemplateCheckerImpl implements ExtendedTemplateChecker {
       private readonly typeChecker: ts.TypeChecker,
       private readonly templateChecks: TemplateCheck<ErrorCode>[]) {}
 
-  getExtendedTemplateDiagnosticsForComponent(component: ts.ClassDeclaration): TemplateDiagnostic[] {
+  getDiagnosticsForComponent(component: ts.ClassDeclaration): TemplateDiagnostic[] {
     const template = this.templateTypeChecker.getTemplate(component);
     // Skip checks if component has no template. This can happen if the user writes a
     // `@Component()` but doesn't add the template, could happen in the language service
