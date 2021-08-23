@@ -28,10 +28,6 @@ describe('DragDropRegistry', () => {
     })();
   }));
 
-  afterEach(() => {
-    registry.ngOnDestroy();
-  });
-
   it('should be able to start dragging an item', () => {
     const item = new DragItem();
 

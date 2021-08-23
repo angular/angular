@@ -37,7 +37,6 @@ import {Subject} from 'rxjs';
 
 describe('Overlay directives', () => {
   let overlay: Overlay;
-  let overlayContainer: OverlayContainer;
   let overlayContainerElement: HTMLElement;
   let fixture: ComponentFixture<ConnectedOverlayDirectiveTest>;
   let dir: {value: string};
@@ -61,14 +60,9 @@ describe('Overlay directives', () => {
   });
 
   beforeEach(inject([OverlayContainer, Overlay], (oc: OverlayContainer, o: Overlay) => {
-    overlayContainer = oc;
     overlay = o;
     overlayContainerElement = oc.getContainerElement();
   }));
-
-  afterEach(() => {
-    overlayContainer.ngOnDestroy();
-  });
 
   /** Returns the current open overlay pane element. */
   function getPaneElement() {

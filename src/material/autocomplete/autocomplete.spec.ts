@@ -88,13 +88,6 @@ describe('MatAutocomplete', () => {
     return TestBed.createComponent<T>(component);
   }
 
-  afterEach(inject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
-    // Since we're resetting the testing module in some of the tests,
-    // we can potentially have multiple overlay containers.
-    currentOverlayContainer.ngOnDestroy();
-    overlayContainer.ngOnDestroy();
-  }));
-
   describe('panel toggling', () => {
     let fixture: ComponentFixture<SimpleAutocomplete>;
     let input: HTMLInputElement;
@@ -2140,7 +2133,6 @@ expect(container.scrollTop)
       }));
 
     it('should be able to configure preselecting the first option globally', fakeAsync(() => {
-      overlayContainer.ngOnDestroy();
       fixture.destroy();
       TestBed.resetTestingModule();
       fixture = createComponent(SimpleAutocomplete, [

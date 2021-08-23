@@ -37,7 +37,7 @@ import {
   ViewChild,
   ViewChildren,
 } from '@angular/core';
-import {ComponentFixture, fakeAsync, flush, inject, TestBed, tick} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
 import {MatRipple} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -56,7 +56,6 @@ import {MAT_MENU_SCROLL_STRATEGY, MENU_PANEL_TOP_PADDING} from './menu-trigger';
 
 
 describe('MatMenu', () => {
-  let overlayContainer: OverlayContainer;
   let overlayContainerElement: HTMLElement;
   let focusMonitor: FocusMonitor;
 
@@ -69,20 +68,12 @@ describe('MatMenu', () => {
       providers
     }).compileComponents();
 
-    overlayContainer = TestBed.inject(OverlayContainer);
-    overlayContainerElement = overlayContainer.getContainerElement();
+    overlayContainerElement = TestBed.inject(OverlayContainer).getContainerElement();
     focusMonitor = TestBed.inject(FocusMonitor);
     const fixture = TestBed.createComponent<T>(component);
     window.scroll(0, 0);
     return fixture;
   }
-
-  afterEach(inject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
-    // Since we're resetting the testing module in some of the tests,
-    // we can potentially have multiple overlay containers.
-    currentOverlayContainer.ngOnDestroy();
-    overlayContainer.ngOnDestroy();
-  }));
 
   it('should aria-controls the menu panel', fakeAsync(() => {
     const fixture = createComponent(SimpleMenu, [], [FakeIcon]);

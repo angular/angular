@@ -51,7 +51,6 @@ import {Subject} from 'rxjs';
 
 describe('MatDialog', () => {
   let dialog: MatDialog;
-  let overlayContainer: OverlayContainer;
   let overlayContainerElement: HTMLElement;
   let scrolledSubject = new Subject();
   let focusMonitor: FocusMonitor;
@@ -78,14 +77,9 @@ describe('MatDialog', () => {
     (d: MatDialog, l: Location, oc: OverlayContainer, fm: FocusMonitor) => {
       dialog = d;
       mockLocation = l as SpyLocation;
-      overlayContainer = oc;
       overlayContainerElement = oc.getContainerElement();
       focusMonitor = fm;
   }));
-
-  afterEach(() => {
-    overlayContainer.ngOnDestroy();
-  });
 
   beforeEach(() => {
     viewContainerFixture = TestBed.createComponent(ComponentWithChildViewContainer);
@@ -1864,7 +1858,6 @@ describe('MatDialog with a parent MatDialog', () => {
 
 describe('MatDialog with default options', () => {
   let dialog: MatDialog;
-  let overlayContainer: OverlayContainer;
   let overlayContainerElement: HTMLElement;
 
   let testViewContainerRef: ViewContainerRef;
@@ -1896,13 +1889,8 @@ describe('MatDialog with default options', () => {
   beforeEach(inject([MatDialog, OverlayContainer],
     (d: MatDialog, oc: OverlayContainer) => {
       dialog = d;
-      overlayContainer = oc;
       overlayContainerElement = oc.getContainerElement();
     }));
-
-  afterEach(() => {
-    overlayContainer.ngOnDestroy();
-  });
 
   beforeEach(() => {
     viewContainerFixture = TestBed.createComponent(ComponentWithChildViewContainer);
@@ -1955,7 +1943,6 @@ describe('MatDialog with default options', () => {
 
 describe('MatDialog with animations enabled', () => {
   let dialog: MatDialog;
-  let overlayContainer: OverlayContainer;
 
   let testViewContainerRef: ViewContainerRef;
   let viewContainerFixture: ComponentFixture<ComponentWithChildViewContainer>;
@@ -1970,16 +1957,10 @@ describe('MatDialog with animations enabled', () => {
 
   beforeEach(inject([MatDialog, OverlayContainer], (d: MatDialog, oc: OverlayContainer) => {
     dialog = d;
-    overlayContainer = oc;
-
     viewContainerFixture = TestBed.createComponent(ComponentWithChildViewContainer);
     viewContainerFixture.detectChanges();
     testViewContainerRef = viewContainerFixture.componentInstance.childViewContainer;
   }));
-
-  afterEach(() => {
-    overlayContainer.ngOnDestroy();
-  });
 
   it('should return the current state of the dialog', fakeAsync(() => {
     const dialogRef = dialog.open(PizzaMsg, {viewContainerRef: testViewContainerRef});

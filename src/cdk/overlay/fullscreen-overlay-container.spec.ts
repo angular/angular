@@ -6,7 +6,6 @@ import {Overlay, OverlayContainer, OverlayModule, FullscreenOverlayContainer} fr
 
 describe('FullscreenOverlayContainer', () => {
   let overlay: Overlay;
-  let overlayContainer: FullscreenOverlayContainer;
   let fullscreenListeners: Set<Function>;
   let fakeDocument: any;
 
@@ -58,13 +57,11 @@ describe('FullscreenOverlayContainer', () => {
     }).compileComponents();
   }));
 
-  beforeEach(inject([Overlay, OverlayContainer], (o: Overlay, oc: OverlayContainer) => {
+  beforeEach(inject([Overlay], (o: Overlay) => {
     overlay = o;
-    overlayContainer = oc as FullscreenOverlayContainer;
   }));
 
   afterEach(() => {
-    overlayContainer.ngOnDestroy();
     fakeDocument = null;
   });
 

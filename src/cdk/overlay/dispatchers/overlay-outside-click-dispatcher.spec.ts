@@ -1,7 +1,7 @@
 import {TestBed, inject, fakeAsync} from '@angular/core/testing';
 import {Component, NgModule} from '@angular/core';
 import {dispatchFakeEvent, dispatchMouseEvent} from '../../testing/private';
-import {OverlayModule, OverlayContainer, Overlay} from '../index';
+import {OverlayModule, Overlay} from '../index';
 import {OverlayOutsideClickDispatcher} from './overlay-outside-click-dispatcher';
 import {ComponentPortal} from '@angular/cdk/portal';
 
@@ -20,10 +20,6 @@ describe('OverlayOutsideClickDispatcher', () => {
       overlay = o;
     })();
   });
-
-  afterEach(inject([OverlayContainer], (overlayContainer: OverlayContainer) => {
-    overlayContainer.ngOnDestroy();
-  }));
 
   it('should track overlays in order as they are attached and detached', () => {
     const overlayOne = overlay.create();

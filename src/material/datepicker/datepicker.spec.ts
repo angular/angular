@@ -1,6 +1,6 @@
 import {Directionality} from '@angular/cdk/bidi';
 import {DOWN_ARROW, ENTER, ESCAPE, RIGHT_ARROW, UP_ARROW} from '@angular/cdk/keycodes';
-import {Overlay, OverlayContainer} from '@angular/cdk/overlay';
+import {Overlay} from '@angular/cdk/overlay';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {
   createKeyboardEvent,
@@ -76,10 +76,6 @@ describe('MatDatepicker', () => {
 
     return TestBed.createComponent(component);
   }
-
-  afterEach(inject([OverlayContainer], (container: OverlayContainer) => {
-    container.ngOnDestroy();
-  }));
 
   describe('with MatNativeDateModule', () => {
     describe('standard datepicker', () => {
@@ -455,43 +451,38 @@ describe('MatDatepicker', () => {
         subscription.unsubscribe();
       }));
 
-      it('should reset the datepicker when it is closed externally',
-        fakeAsync(inject([OverlayContainer], (oldOverlayContainer: OverlayContainer) => {
+      it('should reset the datepicker when it is closed externally', fakeAsync(() => {
+        TestBed.resetTestingModule();
 
-          // Destroy the old container manually since resetting the testing module won't do it.
-          oldOverlayContainer.ngOnDestroy();
-          TestBed.resetTestingModule();
+        const scrolledSubject = new Subject();
 
-          const scrolledSubject = new Subject();
+        // Stub out a `CloseScrollStrategy` so we can trigger a detachment via the `OverlayRef`.
+        fixture = createComponent(StandardDatepicker, [MatNativeDateModule], [
+          {
+            provide: ScrollDispatcher,
+            useValue: {scrolled: () => scrolledSubject}
+          },
+          {
+            provide: MAT_DATEPICKER_SCROLL_STRATEGY,
+            deps: [Overlay],
+            useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.close()
+          }
+        ]);
 
-          // Stub out a `CloseScrollStrategy` so we can trigger a detachment via the `OverlayRef`.
-          fixture = createComponent(StandardDatepicker, [MatNativeDateModule], [
-            {
-              provide: ScrollDispatcher,
-              useValue: {scrolled: () => scrolledSubject}
-            },
-            {
-              provide: MAT_DATEPICKER_SCROLL_STRATEGY,
-              deps: [Overlay],
-              useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.close()
-            }
-          ]);
+        fixture.detectChanges();
+        testComponent = fixture.componentInstance;
 
-          fixture.detectChanges();
-          testComponent = fixture.componentInstance;
+        testComponent.datepicker.open();
+        fixture.detectChanges();
 
-          testComponent.datepicker.open();
-          fixture.detectChanges();
+        expect(testComponent.datepicker.opened).toBe(true);
 
-          expect(testComponent.datepicker.opened).toBe(true);
+        scrolledSubject.next();
+        flush();
+        fixture.detectChanges();
 
-          scrolledSubject.next();
-          flush();
-          fixture.detectChanges();
-
-          expect(testComponent.datepicker.opened).toBe(false);
-        }))
-      );
+        expect(testComponent.datepicker.opened).toBe(false);
+      }));
 
       it('should close the datepicker using ALT + UP_ARROW', fakeAsync(() => {
         testComponent.datepicker.open();

@@ -18,10 +18,6 @@ describe('OverlayContainer', () => {
     overlayContainer = oc;
   }));
 
-  afterEach(() => {
-    overlayContainer.ngOnDestroy();
-  });
-
   it('should remove the overlay container element from the DOM on destruction', () => {
     const fixture = TestBed.createComponent(TestComponentWithTemplatePortals);
     fixture.detectChanges();

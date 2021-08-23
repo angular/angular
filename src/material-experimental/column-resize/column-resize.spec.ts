@@ -5,12 +5,11 @@ import {
   ViewChild,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import {ComponentFixture, TestBed, fakeAsync, flushMicrotasks, inject} from '@angular/core/testing';
+import {ComponentFixture, TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {BidiModule} from '@angular/cdk/bidi';
 import {DataSource} from '@angular/cdk/collections';
 import {dispatchKeyboardEvent} from '../../cdk/testing/private';
 import {ESCAPE} from '@angular/cdk/keycodes';
-import {OverlayContainer} from '@angular/cdk/overlay';
 import {MatTableModule} from '@angular/material/table';
 import {BehaviorSubject} from 'rxjs';
 
@@ -348,7 +347,6 @@ describe('Material Popover Edit', () => {
     describe(label, () => {
       let component: BaseTestComponent;
       let fixture: ComponentFixture<BaseTestComponent>;
-      let overlayContainer: OverlayContainer;
 
       beforeEach(fakeAsync(() => {
         jasmine.addMatchers(approximateMatcher);
@@ -357,21 +355,11 @@ describe('Material Popover Edit', () => {
           imports: [BidiModule, MatTableModule, resizeModule],
           declarations: [componentClass],
         }).compileComponents();
-        inject([OverlayContainer], (oc: OverlayContainer) => {
-          overlayContainer = oc;
-        })();
         fixture = TestBed.createComponent(componentClass);
         component = fixture.componentInstance;
         fixture.detectChanges();
         flushMicrotasks();
       }));
-
-      afterEach(() => {
-        // The overlay container's `ngOnDestroy` won't be called between test runs so we need
-        // to call it ourselves, in order to avoid leaking containers between tests and potentially
-        // throwing `querySelector` calls.
-        overlayContainer.ngOnDestroy();
-      });
 
       it('shows resize handle overlays on header row hover and while a resize handle is in use',
           fakeAsync(() => {

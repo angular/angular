@@ -1,8 +1,7 @@
-import {OverlayContainer} from '@angular/cdk/overlay';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component, TemplateRef, ViewChild, Injector} from '@angular/core';
-import {ComponentFixture, inject, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatSnackBar, MatSnackBarConfig, MatSnackBarModule} from '@angular/material/snack-bar';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatSnackBarHarness} from './snack-bar-harness';
@@ -17,7 +16,6 @@ export function runHarnessTests(
     snackBarHarness: typeof MatSnackBarHarness) {
   let fixture: ComponentFixture<SnackbarHarnessTest>;
   let loader: HarnessLoader;
-  let overlayContainer: OverlayContainer;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -28,15 +26,6 @@ export function runHarnessTests(
     fixture = TestBed.createComponent(SnackbarHarnessTest);
     fixture.detectChanges();
     loader = TestbedHarnessEnvironment.documentRootLoader(fixture);
-    inject([OverlayContainer], (oc: OverlayContainer) => {
-      overlayContainer = oc;
-    })();
-  });
-
-  afterEach(() => {
-    // Angular won't call this for us so we need to do it ourselves to avoid leaks.
-    overlayContainer.ngOnDestroy();
-    overlayContainer = null!;
   });
 
   it('should load harness for simple snack-bar', async () => {

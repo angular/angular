@@ -1,8 +1,7 @@
-import {OverlayContainer} from '@angular/cdk/overlay';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
-import {ComponentFixture, inject, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatMenuModule} from '@angular/material/menu';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatMenuHarness} from './menu-harness';
@@ -10,8 +9,6 @@ import {MatMenuHarness} from './menu-harness';
 /** Shared tests to run on both the original and MDC-based menues. */
 export function runHarnessTests(
     menuModule: typeof MatMenuModule, menuHarness: typeof MatMenuHarness) {
-  let overlayContainer: OverlayContainer;
-
   describe('single-level menu', () => {
     let fixture: ComponentFixture<MenuHarnessTest>;
     let loader: HarnessLoader;
@@ -21,10 +18,6 @@ export function runHarnessTests(
         imports: [menuModule, NoopAnimationsModule],
         declarations: [MenuHarnessTest],
       }).compileComponents();
-
-      inject([OverlayContainer], (oc: OverlayContainer) => {
-        overlayContainer = oc;
-      })();
 
       fixture = TestBed.createComponent(MenuHarnessTest);
       fixture.detectChanges();
@@ -107,19 +100,9 @@ export function runHarnessTests(
         declarations: [NestedMenuHarnessTest],
       }).compileComponents();
 
-      inject([OverlayContainer], (oc: OverlayContainer) => {
-        overlayContainer = oc;
-      })();
-
       fixture = TestBed.createComponent(NestedMenuHarnessTest);
       fixture.detectChanges();
       loader = TestbedHarnessEnvironment.loader(fixture);
-    });
-
-    afterEach(() => {
-      // Angular won't call this for us so we need to do it ourselves to avoid leaks.
-      overlayContainer.ngOnDestroy();
-      overlayContainer = null!;
     });
 
     it('should get submenus', async () => {

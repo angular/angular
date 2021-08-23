@@ -21,10 +21,6 @@ describe('AriaDescriber', () => {
     fixture.detectChanges();
   }
 
-  afterEach(() => {
-    ariaDescriber.ngOnDestroy();
-  });
-
   it('should initialize without the message container', () => {
     createFixture();
     expect(getMessagesContainer()).toBeNull();

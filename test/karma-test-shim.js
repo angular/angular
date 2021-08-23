@@ -48,7 +48,7 @@ function configureTestBed() {
 
     console.log('Running tests using Angular version: ' + core.VERSION.full);
 
-    var testBed = testing.TestBed.initTestEnvironment(
+    testing.TestBed.initTestEnvironment(
       testingBrowser.BrowserDynamicTestingModule,
       testingBrowser.platformBrowserDynamicTesting(),
       {teardown: {destroyAfterEach: true}}

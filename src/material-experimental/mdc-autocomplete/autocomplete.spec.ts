@@ -55,7 +55,6 @@ import {
 
 
 describe('MDC-based MatAutocomplete', () => {
-  let overlayContainer: OverlayContainer;
   let overlayContainerElement: HTMLElement;
   let zone: MockNgZone;
 
@@ -80,19 +79,11 @@ describe('MDC-based MatAutocomplete', () => {
     TestBed.compileComponents();
 
     inject([OverlayContainer], (oc: OverlayContainer) => {
-      overlayContainer = oc;
       overlayContainerElement = oc.getContainerElement();
     })();
 
     return TestBed.createComponent<T>(component);
   }
-
-  afterEach(inject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
-    // Since we're resetting the testing module in some of the tests,
-    // we can potentially have multiple overlay containers.
-    currentOverlayContainer.ngOnDestroy();
-    overlayContainer.ngOnDestroy();
-  }));
 
   describe('panel toggling', () => {
     let fixture: ComponentFixture<SimpleAutocomplete>;
@@ -857,7 +848,6 @@ describe('MDC-based MatAutocomplete', () => {
     });
 
     it('should disable the input when used with a value accessor and without `matInput`', () => {
-      overlayContainer.ngOnDestroy();
       fixture.destroy();
       TestBed.resetTestingModule();
 
@@ -2160,7 +2150,6 @@ expect(scrollContainer.scrollTop)
       }));
 
     it('should be able to configure preselecting the first option globally', fakeAsync(() => {
-      overlayContainer.ngOnDestroy();
       fixture.destroy();
       TestBed.resetTestingModule();
       fixture = createComponent(SimpleAutocomplete, [
@@ -2178,7 +2167,6 @@ expect(scrollContainer.scrollTop)
     }));
 
     it('should handle `optionSelections` being accessed too early', fakeAsync(() => {
-      overlayContainer.ngOnDestroy();
       fixture.destroy();
       fixture = TestBed.createComponent(SimpleAutocomplete);
 

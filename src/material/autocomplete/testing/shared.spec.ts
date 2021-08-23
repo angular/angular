@@ -1,8 +1,7 @@
-import {OverlayContainer} from '@angular/cdk/overlay';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
-import {ComponentFixture, inject, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatAutocompleteHarness} from '@angular/material/autocomplete/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -16,7 +15,6 @@ export function runHarnessTests(
     autocompleteHarness: typeof MatAutocompleteHarness) {
   let fixture: ComponentFixture<AutocompleteHarnessTest>;
   let loader: HarnessLoader;
-  let overlayContainer: OverlayContainer;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -30,15 +28,6 @@ export function runHarnessTests(
     fixture = TestBed.createComponent(AutocompleteHarnessTest);
     fixture.detectChanges();
     loader = TestbedHarnessEnvironment.loader(fixture);
-    inject([OverlayContainer], (oc: OverlayContainer) => {
-      overlayContainer = oc;
-    })();
-  });
-
-  afterEach(() => {
-    // Angular won't call this for us so we need to do it ourselves to avoid leaks.
-    overlayContainer.ngOnDestroy();
-    overlayContainer = null!;
   });
 
   it('should load all autocomplete harnesses', async () => {

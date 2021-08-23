@@ -27,7 +27,6 @@ import {Platform} from '@angular/cdk/platform';
 describe('MatSnackBar', () => {
   let snackBar: MatSnackBar;
   let liveAnnouncer: LiveAnnouncer;
-  let overlayContainer: OverlayContainer;
   let overlayContainerElement: HTMLElement;
 
   let testViewContainerRef: ViewContainerRef;
@@ -48,14 +47,8 @@ describe('MatSnackBar', () => {
     (sb: MatSnackBar, la: LiveAnnouncer, oc: OverlayContainer) => {
     snackBar = sb;
     liveAnnouncer = la;
-    overlayContainer = oc;
     overlayContainerElement = oc.getContainerElement();
   }));
-
-  afterEach(() => {
-    overlayContainer.ngOnDestroy();
-    liveAnnouncer.ngOnDestroy();
-  });
 
   beforeEach(() => {
     viewContainerFixture = TestBed.createComponent(ComponentWithChildViewContainer);
@@ -576,7 +569,6 @@ describe('MatSnackBar', () => {
   });
 
   it('should be able to override the default config', fakeAsync(() => {
-    overlayContainer.ngOnDestroy();
     viewContainerFixture.destroy();
 
     TestBed
@@ -590,7 +582,6 @@ describe('MatSnackBar', () => {
 
     inject([MatSnackBar, OverlayContainer], (sb: MatSnackBar, oc: OverlayContainer) => {
       snackBar = sb;
-      overlayContainer = oc;
       overlayContainerElement = oc.getContainerElement();
     })();
 
@@ -724,10 +715,8 @@ describe('MatSnackBar', () => {
 describe('MatSnackBar with parent MatSnackBar', () => {
   let parentSnackBar: MatSnackBar;
   let childSnackBar: MatSnackBar;
-  let overlayContainer: OverlayContainer;
   let overlayContainerElement: HTMLElement;
   let fixture: ComponentFixture<ComponentThatProvidesMatSnackBar>;
-  let liveAnnouncer: LiveAnnouncer;
 
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
@@ -736,22 +725,14 @@ describe('MatSnackBar with parent MatSnackBar', () => {
     }).compileComponents();
   }));
 
-  beforeEach(inject([MatSnackBar, LiveAnnouncer, OverlayContainer],
-    (sb: MatSnackBar, la: LiveAnnouncer, oc: OverlayContainer) => {
+  beforeEach(inject([MatSnackBar, OverlayContainer], (sb: MatSnackBar, oc: OverlayContainer) => {
     parentSnackBar = sb;
-    liveAnnouncer = la;
-    overlayContainer = oc;
     overlayContainerElement = oc.getContainerElement();
 
     fixture = TestBed.createComponent(ComponentThatProvidesMatSnackBar);
     childSnackBar = fixture.componentInstance.snackBar;
     fixture.detectChanges();
   }));
-
-  afterEach(() => {
-    overlayContainer.ngOnDestroy();
-    liveAnnouncer.ngOnDestroy();
-  });
 
   it('should close snackBars opened by parent when opening from child', fakeAsync(() => {
     parentSnackBar.open('Pizza');
@@ -802,8 +783,6 @@ describe('MatSnackBar with parent MatSnackBar', () => {
 
 describe('MatSnackBar Positioning', () => {
   let snackBar: MatSnackBar;
-  let liveAnnouncer: LiveAnnouncer;
-  let overlayContainer: OverlayContainer;
   let overlayContainerEl: HTMLElement;
 
   let viewContainerFixture: ComponentFixture<ComponentWithChildViewContainer>;
@@ -817,18 +796,10 @@ describe('MatSnackBar Positioning', () => {
     }).compileComponents();
   }));
 
-  beforeEach(inject([MatSnackBar, LiveAnnouncer, OverlayContainer],
-    (sb: MatSnackBar, la: LiveAnnouncer, oc: OverlayContainer) => {
+  beforeEach(inject([MatSnackBar, OverlayContainer], (sb: MatSnackBar, oc: OverlayContainer) => {
     snackBar = sb;
-    liveAnnouncer = la;
-    overlayContainer = oc;
     overlayContainerEl = oc.getContainerElement();
   }));
-
-  afterEach(() => {
-    overlayContainer.ngOnDestroy();
-    liveAnnouncer.ngOnDestroy();
-  });
 
   beforeEach(() => {
     viewContainerFixture = TestBed.createComponent(ComponentWithChildViewContainer);

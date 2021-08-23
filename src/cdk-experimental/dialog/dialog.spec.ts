@@ -42,7 +42,6 @@ describe('Dialog', () => {
   let testViewContainerRef: ViewContainerRef;
   let viewContainerFixture: ComponentFixture<ComponentWithChildViewContainer>;
   let mockLocation: SpyLocation;
-  let overlayContainer: OverlayContainer;
 
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
@@ -59,7 +58,6 @@ describe('Dialog', () => {
       (d: Dialog, l: Location, o: OverlayContainer) => {
     dialog = d;
     mockLocation = l as SpyLocation;
-    overlayContainer = o;
     overlayContainerElement = o.getContainerElement();
   }));
 
@@ -69,8 +67,6 @@ describe('Dialog', () => {
     viewContainerFixture.detectChanges();
     testViewContainerRef = viewContainerFixture.componentInstance.childViewContainer;
   });
-
-  afterEach(() => overlayContainer.ngOnDestroy());
 
   it('should open a dialog with a component', () => {
     let dialogRef = dialog.openFromComponent(PizzaMsg, {

@@ -41,11 +41,6 @@ describe('AutofillMonitor', () => {
     }
   }));
 
-  afterEach(() => {
-    // Call destroy to make sure we clean up all listeners.
-    autofillMonitor.ngOnDestroy();
-  });
-
   it('should add monitored class and listener upon monitoring', () => {
     const inputEl = testComponent.input1.nativeElement;
     expect(inputEl.addEventListener).not.toHaveBeenCalled();

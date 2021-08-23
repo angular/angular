@@ -1,4 +1,4 @@
-import {ComponentFixture, fakeAsync, flush, inject, TestBed, tick} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {
@@ -55,7 +55,6 @@ import {
 const MENU_PANEL_TOP_PADDING = 8;
 
 describe('MDC-based MatMenu', () => {
-  let overlayContainer: OverlayContainer;
   let overlayContainerElement: HTMLElement;
   let focusMonitor: FocusMonitor;
 
@@ -68,20 +67,12 @@ describe('MDC-based MatMenu', () => {
       providers
     }).compileComponents();
 
-    overlayContainer = TestBed.inject(OverlayContainer);
-    overlayContainerElement = overlayContainer.getContainerElement();
+    overlayContainerElement = TestBed.inject(OverlayContainer).getContainerElement();
     focusMonitor = TestBed.inject(FocusMonitor);
     const fixture = TestBed.createComponent<T>(component);
     window.scroll(0, 0);
     return fixture;
   }
-
-  afterEach(inject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
-    // Since we're resetting the testing module in some of the tests,
-    // we can potentially have multiple overlay containers.
-    currentOverlayContainer.ngOnDestroy();
-    overlayContainer.ngOnDestroy();
-  }));
 
   it('should aria-controls the menu panel', fakeAsync(() => {
     const fixture = createComponent(SimpleMenu, [], [FakeIcon]);

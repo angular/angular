@@ -79,7 +79,6 @@ import {
 const DEFAULT_TYPEAHEAD_DEBOUNCE_INTERVAL = 200;
 
 describe('MDC-based MatSelect', () => {
-  let overlayContainer: OverlayContainer;
   let overlayContainerElement: HTMLElement;
   let dir: {value: 'ltr'|'rtl', change: Observable<string>};
   let scrolledSubject = new Subject();
@@ -113,14 +112,9 @@ describe('MDC-based MatSelect', () => {
     }).compileComponents();
 
     inject([OverlayContainer], (oc: OverlayContainer) => {
-      overlayContainer = oc;
       overlayContainerElement = oc.getContainerElement();
     })();
   }
-
-  afterEach(() => {
-    overlayContainer.ngOnDestroy();
-  });
 
   describe('core', () => {
     beforeEach(waitForAsync(() => {

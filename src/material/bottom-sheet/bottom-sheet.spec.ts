@@ -41,7 +41,6 @@ import {MatBottomSheetRef} from './bottom-sheet-ref';
 
 describe('MatBottomSheet', () => {
   let bottomSheet: MatBottomSheet;
-  let overlayContainer: OverlayContainer;
   let overlayContainerElement: HTMLElement;
   let viewportRuler: ViewportRuler;
 
@@ -61,15 +60,10 @@ describe('MatBottomSheet', () => {
   beforeEach(inject([MatBottomSheet, OverlayContainer, ViewportRuler, Location],
     (bs: MatBottomSheet, oc: OverlayContainer, vr: ViewportRuler, l: Location) => {
       bottomSheet = bs;
-      overlayContainer = oc;
       viewportRuler = vr;
       overlayContainerElement = oc.getContainerElement();
       mockLocation = l as SpyLocation;
     }));
-
-  afterEach(() => {
-    overlayContainer.ngOnDestroy();
-  });
 
   beforeEach(() => {
     viewContainerFixture = TestBed.createComponent(ComponentWithChildViewContainer);
@@ -821,7 +815,6 @@ describe('MatBottomSheet', () => {
 describe('MatBottomSheet with parent MatBottomSheet', () => {
   let parentBottomSheet: MatBottomSheet;
   let childBottomSheet: MatBottomSheet;
-  let overlayContainer: OverlayContainer;
   let overlayContainerElement: HTMLElement;
   let fixture: ComponentFixture<ComponentThatProvidesMatBottomSheet>;
 
@@ -835,16 +828,11 @@ describe('MatBottomSheet with parent MatBottomSheet', () => {
   beforeEach(inject([MatBottomSheet, OverlayContainer],
     (bs: MatBottomSheet, oc: OverlayContainer) => {
     parentBottomSheet = bs;
-    overlayContainer = oc;
     overlayContainerElement = oc.getContainerElement();
     fixture = TestBed.createComponent(ComponentThatProvidesMatBottomSheet);
     childBottomSheet = fixture.componentInstance.bottomSheet;
     fixture.detectChanges();
   }));
-
-  afterEach(() => {
-    overlayContainer.ngOnDestroy();
-  });
 
   it('should close bottom sheets opened by parent when opening from child', fakeAsync(() => {
     parentBottomSheet.open(PizzaMsg);
@@ -900,7 +888,6 @@ describe('MatBottomSheet with parent MatBottomSheet', () => {
 
 describe('MatBottomSheet with default options', () => {
   let bottomSheet: MatBottomSheet;
-  let overlayContainer: OverlayContainer;
   let overlayContainerElement: HTMLElement;
 
   let testViewContainerRef: ViewContainerRef;
@@ -926,13 +913,8 @@ describe('MatBottomSheet with default options', () => {
   beforeEach(inject([MatBottomSheet, OverlayContainer],
     (b: MatBottomSheet, oc: OverlayContainer) => {
       bottomSheet = b;
-      overlayContainer = oc;
       overlayContainerElement = oc.getContainerElement();
     }));
-
-  afterEach(() => {
-    overlayContainer.ngOnDestroy();
-  });
 
   beforeEach(() => {
     viewContainerFixture = TestBed.createComponent(ComponentWithChildViewContainer);

@@ -43,10 +43,6 @@ describe('MatDateRangeInput', () => {
     return TestBed.createComponent(component);
   }
 
-  afterEach(inject([OverlayContainer], (container: OverlayContainer) => {
-    container.ngOnDestroy();
-  }));
-
   it('should mirror the input value from the start into the mirror element', () => {
     const fixture = createComponent(StandardRangePicker);
     fixture.detectChanges();

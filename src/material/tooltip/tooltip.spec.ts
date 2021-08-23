@@ -47,7 +47,6 @@ import {
 const initialTooltipMessage = 'initial tooltip message';
 
 describe('MatTooltip', () => {
-  let overlayContainer: OverlayContainer;
   let overlayContainerElement: HTMLElement;
   let dir: {value: Direction, change: Subject<Direction>};
   let platform: Platform;
@@ -76,18 +75,10 @@ describe('MatTooltip', () => {
 
     inject([OverlayContainer, FocusMonitor, Platform],
       (oc: OverlayContainer, fm: FocusMonitor, pl: Platform) => {
-        overlayContainer = oc;
         overlayContainerElement = oc.getContainerElement();
         focusMonitor = fm;
         platform = pl;
       })();
-  }));
-
-  afterEach(inject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
-    // Since we're resetting the testing module in some of the tests,
-    // we can potentially have multiple overlay containers.
-    currentOverlayContainer.ngOnDestroy();
-    overlayContainer.ngOnDestroy();
   }));
 
   describe('basic usage', () => {

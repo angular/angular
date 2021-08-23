@@ -1,8 +1,8 @@
 import {NgModule, NgZone, Component} from '@angular/core';
-import {TestBed, inject} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {MockNgZone} from '../../testing/private';
 import {PortalModule, ComponentPortal} from '@angular/cdk/portal';
-import {OverlayModule, Overlay, OverlayConfig, OverlayRef, OverlayContainer} from '../index';
+import {OverlayModule, Overlay, OverlayConfig, OverlayRef} from '../index';
 
 
 describe('GlobalPositonStrategy', () => {
@@ -16,19 +16,15 @@ describe('GlobalPositonStrategy', () => {
       providers: [{provide: NgZone, useFactory: () => zone = new MockNgZone()}]
     });
 
-    inject([Overlay], (o: Overlay) => {
-      overlay = o;
-    })();
+    overlay = TestBed.inject(Overlay);
   });
 
-  afterEach(inject([OverlayContainer], (overlayContainer: OverlayContainer) => {
+  afterEach(() => {
     if (overlayRef) {
       overlayRef.dispose();
       overlayRef = null!;
     }
-
-    overlayContainer.ngOnDestroy();
-  }));
+  });
 
   function attachOverlay(config: OverlayConfig): OverlayRef {
     const portal = new ComponentPortal(BlankPortal);

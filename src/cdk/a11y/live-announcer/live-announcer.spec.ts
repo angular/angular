@@ -28,12 +28,6 @@ describe('LiveAnnouncer', () => {
       fixture = TestBed.createComponent(TestApp);
     })));
 
-    afterEach(() => {
-      // In our tests we always remove the current live element, in
-      // order to avoid having multiple announcer elements in the DOM.
-      announcer.ngOnDestroy();
-    });
-
     it('should correctly update the announce text', fakeAsync(() => {
       let buttonElement = fixture.debugElement.query(By.css('button'))!.nativeElement;
       buttonElement.click();
@@ -116,7 +110,6 @@ describe('LiveAnnouncer', () => {
     }));
 
     it('should ensure that there is only one live element at a time', fakeAsync(() => {
-      announcer.ngOnDestroy();
       fixture.destroy();
 
       TestBed.resetTestingModule().configureTestingModule({
@@ -277,12 +270,6 @@ describe('CdkAriaLive', () => {
     fixture.detectChanges();
     flush();
   })));
-
-  afterEach(fakeAsync(() => {
-    // In our tests we always remove the current live element, in
-    // order to avoid having multiple announcer elements in the DOM.
-    announcer.ngOnDestroy();
-  }));
 
   it('should default politeness to polite', fakeAsync(() => {
     fixture.componentInstance.content = 'New content';

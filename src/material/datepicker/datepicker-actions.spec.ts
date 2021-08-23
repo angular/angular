@@ -1,6 +1,5 @@
 import {Component, ElementRef, Type, ViewChild} from '@angular/core';
-import {OverlayContainer} from '@angular/cdk/overlay';
-import {ComponentFixture, TestBed, inject, flush, fakeAsync} from '@angular/core/testing';
+import {ComponentFixture, TestBed, flush, fakeAsync} from '@angular/core/testing';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatNativeDateModule} from '@angular/material/core';
@@ -28,10 +27,6 @@ describe('MatDatepickerActions', () => {
 
     return TestBed.createComponent(component);
   }
-
-  afterEach(inject([OverlayContainer], (container: OverlayContainer) => {
-    container.ngOnDestroy();
-  }));
 
   it('should render the actions inside calendar panel in popup mode', () => {
     const fixture = createComponent(DatepickerWithActions);

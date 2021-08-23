@@ -28,10 +28,6 @@ describe('ViewportRuler', () => {
     scrollTo(0, 0);
   }));
 
-  afterEach(() => {
-    viewportRuler.ngOnDestroy();
-  });
-
   it('should get the viewport size', () => {
     let size = viewportRuler.getViewportSize();
     expect(size.width).toBe(window.innerWidth);

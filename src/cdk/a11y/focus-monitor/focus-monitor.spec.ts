@@ -247,7 +247,6 @@ describe('FocusMonitor', () => {
     tick();
 
     expect(buttonElement.classList.length)
-
       .withContext('button should have exactly 2 focus classes')
       .toBe(2);
 
@@ -255,7 +254,6 @@ describe('FocusMonitor', () => {
     fixture.detectChanges();
 
     expect(buttonElement.classList.length)
-
       .withContext('button should not have any focus classes')
       .toBe(0);
   }));
@@ -266,7 +264,6 @@ describe('FocusMonitor', () => {
     tick();
 
     expect(buttonElement.classList.length)
-
       .withContext('button should have exactly 2 focus classes')
       .toBe(2);
 
@@ -275,7 +272,6 @@ describe('FocusMonitor', () => {
     fixture.detectChanges();
 
     expect(buttonElement.classList.length)
-
       .withContext('button should not have any focus classes')
       .toBe(0);
   }));

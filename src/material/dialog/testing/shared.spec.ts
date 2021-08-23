@@ -1,10 +1,9 @@
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component, TemplateRef, ViewChild} from '@angular/core';
-import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatDialog, MatDialogConfig, MatDialogModule} from '@angular/material/dialog';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {OverlayContainer} from '@angular/cdk/overlay';
 import {MatDialogHarness} from './dialog-harness';
 
 /** Shared tests to run on both the original and MDC-based dialog's. */
@@ -13,7 +12,6 @@ export function runHarnessTests(
     dialogService: typeof MatDialog) {
   let fixture: ComponentFixture<DialogHarnessTest>;
   let loader: HarnessLoader;
-  let overlayContainer: OverlayContainer;
 
   beforeEach(async () => {
     // If the specified dialog service does not match the default `MatDialog` service
@@ -33,20 +31,6 @@ export function runHarnessTests(
     fixture = TestBed.createComponent(DialogHarnessTest);
     fixture.detectChanges();
     loader = TestbedHarnessEnvironment.documentRootLoader(fixture);
-    inject([OverlayContainer], (oc: OverlayContainer) => {
-      overlayContainer = oc;
-    })();
-  });
-
-  afterEach(() => {
-    // Close all dialogs upon test exit. This is necessary because the "MatDialog"
-    // service is not destroyed in TestBed automatically, and it could mean that
-    // dialogs are left in the DOM.
-    fixture.componentInstance.dialog.closeAll();
-    fixture.detectChanges();
-
-    // Angular won't call this for us so we need to do it ourselves to avoid leaks.
-    overlayContainer.ngOnDestroy();
   });
 
   it('should load harness for dialog', async () => {

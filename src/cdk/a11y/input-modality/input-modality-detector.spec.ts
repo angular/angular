@@ -32,11 +32,6 @@ describe('InputModalityDetector', () => {
     detector = TestBed.inject(InputModalityDetector);
   }
 
-  afterEach(() => {
-    detector?.ngOnDestroy();
-    detector = undefined!;
-  });
-
   it('should do nothing on non-browser platforms', () => {
     setupTest(false);
     expect(detector.mostRecentModality).toBe(null);
