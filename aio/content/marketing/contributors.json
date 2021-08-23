@@ -890,6 +890,14 @@
     "bio": "Uri Shaked is a Google Developer Expert for Web Technologies. He regularly writes about Web and IoT related technologies in his medium blog, and speaks about these topics in conferences and meetup around the world. Among his interests are reverse engineering, hardware hacking, building 3d-printed robots and games, playing music and Salsa dancing.",
     "groups": ["GDE"]
   },
+  "usergalileo": {
+    "name": "Michele Stieven",
+    "picture": "usergalileo.jpg",
+    "twitter": "MicheleStieven",
+    "website": "https://accademia.dev",
+    "bio": "Michele is an Angular GDE who’s always looking for technologies which allow people to create complex, dynamic and reactive applications. He helps teams of big and small companies with tools like Angular, RxJS, Redux and Web Components. He loves writing and making complex things easy, and he does so in his italian blog (https://accademia.dev) which also hosts his video courses. He’s taken part of many conferences, meetups and online events, and loves to help people in community groups. When he’s not working, he’s a musician.",
+    "groups": ["GDE"]
+  },
   "wardbell": {
     "name": "Ward Bell",
     "picture": "wardbell.jpg",
