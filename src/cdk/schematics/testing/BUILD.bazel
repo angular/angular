@@ -21,6 +21,7 @@ ts_library(
         "@npm//@types/jasmine",
         "@npm//@types/node",
         "@npm//fs-extra",
+        "@npm//jsonc-parser",
         "@npm//rxjs",
     ],
 )
