@@ -550,6 +550,8 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
     // (undocumented)
     readonly isActive: boolean;
     // (undocumented)
+    readonly isActiveChange: EventEmitter<boolean>;
+    // (undocumented)
     links: QueryList<RouterLink>;
     // (undocumented)
     linksWithHrefs: QueryList<RouterLinkWithHref>;
@@ -560,9 +562,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
     // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
-    readonly routerLinkActivated: EventEmitter<boolean>;
-    // (undocumented)
-    set routerLinkActive(data: string[] | string | undefined);
+    set routerLinkActive(data: string[] | string);
     routerLinkActiveOptions: {
         exact: boolean;
     } | IsActiveMatchOptions;
