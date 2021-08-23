@@ -460,6 +460,15 @@ export class NgCompiler {
   }
 
   /**
+   * Get all `ts.Diagnostic`s currently available that pertain to the given component.
+   */
+  getDiagnosticsForComponent(component: ts.ClassDeclaration): ts.Diagnostic[] {
+    const compilation = this.ensureAnalyzed();
+    const ttc = compilation.templateTypeChecker;
+    return this.addMessageTextDetails(ttc.getDiagnosticsForComponent(component));
+  }
+
+  /**
    * Add Angular.io error guide links to diagnostics for this compilation.
    */
   private addMessageTextDetails(diagnostics: ts.Diagnostic[]): ts.Diagnostic[] {

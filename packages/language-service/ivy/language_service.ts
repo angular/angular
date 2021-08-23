@@ -68,7 +68,6 @@ export class LanguageService {
 
   getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
     return this.withCompilerAndPerfTracing(PerfPhase.LsDiagnostics, (compiler) => {
-      const ttc = compiler.getTemplateTypeChecker();
       const diagnostics: ts.Diagnostic[] = [];
       if (isTypeScriptFile(fileName)) {
         const program = compiler.getCurrentProgram();
@@ -104,7 +103,7 @@ export class LanguageService {
         const components = compiler.getComponentsWithTemplateFile(fileName);
         for (const component of components) {
           if (ts.isClassDeclaration(component)) {
-            diagnostics.push(...ttc.getDiagnosticsForComponent(component));
+            diagnostics.push(...compiler.getDiagnosticsForComponent(component));
           }
         }
       }
