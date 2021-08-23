@@ -27,8 +27,6 @@
     "deploy-dev-app": "node ./scripts/deploy-dev-app.js",
     "breaking-changes": "ts-node --project scripts/tsconfig.json scripts/breaking-changes.ts",
     "gulp": "gulp",
-    "~~stage-release": "ts-node --project tools/legacy-release/tsconfig.json tools/legacy-release/stage-release.ts",
-    "~~publish-release": "ts-node --project tools/legacy-release/tsconfig.json tools/legacy-release/publish-release.ts",
     "check-entry-point-setup": "node ./scripts/check-entry-point-setup.js",
     "check-rollup-globals": "ts-node --project scripts/tsconfig.json scripts/check-rollup-globals.ts",
     "changelog": "ts-node --project tools/release/tsconfig.json tools/release/changelog.ts",
