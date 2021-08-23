@@ -31,6 +31,7 @@ import {aliasTransformFactory, CompilationMode, declarationTransformFactory, Dec
 import {TemplateTypeCheckerImpl} from '../../typecheck';
 import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig} from '../../typecheck/api';
 import {ExtendedTemplateCheckerImpl} from '../../typecheck/extended';
+import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
 import {InvalidBananaInBoxCheck} from '../../typecheck/extended/src/template_checks/invalid_banana_in_box';
 import {getSourceFileOrNull, isDtsPath, resolveModuleName, toUnredirectedSourceFile} from '../../util/src/typescript';
 import {Xi18nContext} from '../../xi18n';
@@ -54,6 +55,7 @@ interface LazyCompilationState {
   refEmitter: ReferenceEmitter;
   templateTypeChecker: TemplateTypeChecker;
   resourceRegistry: ResourceRegistry;
+  extendedTemplateChecker: ExtendedTemplateChecker;
 }
 
 
@@ -917,10 +919,7 @@ export class NgCompiler {
   private getExtendedTemplateDiagnostics(sf?: ts.SourceFile): ts.Diagnostic[] {
     const diagnostics: ts.Diagnostic[] = [];
     const compilation = this.ensureAnalyzed();
-    const typeChecker = this.inputProgram.getTypeChecker();
-    const templateChecks = [new InvalidBananaInBoxCheck()];
-    const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-        compilation.templateTypeChecker, typeChecker, templateChecks);
+    const extendedTemplateChecker = compilation.extendedTemplateChecker;
     if (sf !== undefined) {
       return compilation.traitCompiler.extendedTemplateCheck(sf, extendedTemplateChecker);
     }
@@ -1095,6 +1094,10 @@ export class NgCompiler {
         reflector, this.adapter, this.incrementalCompilation, scopeRegistry, typeCheckScopeRegistry,
         this.delegatingPerfRecorder);
 
+    const templateChecks = [new InvalidBananaInBoxCheck()];
+    const extendedTemplateChecker =
+        new ExtendedTemplateCheckerImpl(templateTypeChecker, checker, templateChecks);
+
     return {
       isCore,
       traitCompiler,
@@ -1109,6 +1112,7 @@ export class NgCompiler {
       refEmitter,
       templateTypeChecker,
       resourceRegistry,
+      extendedTemplateChecker
     };
   }
 }
