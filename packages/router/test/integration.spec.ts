@@ -4663,7 +4663,7 @@ describe('Integration', () => {
          expect(TestBed.inject(NgZone).hasPendingMicrotasks).toBe(false);
        }));
 
-    it('should emit on routerLinkActivated output when link is activated or inactivated',
+    it('should emit on isActiveChange output when link is activated or inactivated',
        fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
          const fixture = createRoot(router, RootCmp);
 
@@ -5966,7 +5966,7 @@ class AbsoluteLinkCmp {
 @Component({
   selector: 'link-cmp',
   template:
-      `<router-outlet></router-outlet><a routerLinkActive="active" (routerLinkActivated)="this.onRouterLinkActivated($event)" [routerLinkActiveOptions]="{exact: exact}" [routerLink]="['./']">link</a>
+      `<router-outlet></router-outlet><a routerLinkActive="active" (isActiveChange)="this.onRouterLinkActivated($event)" [routerLinkActiveOptions]="{exact: exact}" [routerLink]="['./']">link</a>
  <button routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}" [routerLink]="['./']">button</button>
  `
 })
