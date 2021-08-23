@@ -30,7 +30,7 @@ runInEachFileSystem(() => {
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
           templateTypeChecker, program.getTypeChecker(), [new InvalidBananaInBoxCheck()]);
-      const diags = extendedTemplateChecker.getExtendedTemplateDiagnosticsForComponent(component);
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(1);
       expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
       expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX));
@@ -50,7 +50,7 @@ runInEachFileSystem(() => {
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
           templateTypeChecker, program.getTypeChecker(), [new InvalidBananaInBoxCheck()]);
-      const diags = extendedTemplateChecker.getExtendedTemplateDiagnosticsForComponent(component);
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(0);
     });
 
@@ -68,8 +68,7 @@ runInEachFileSystem(() => {
          const component = getClass(sf, 'TestCmp');
          const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
              templateTypeChecker, program.getTypeChecker(), [new InvalidBananaInBoxCheck()]);
-         const diags =
-             extendedTemplateChecker.getExtendedTemplateDiagnosticsForComponent(component);
+         const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
          expect(diags.length).toBe(0);
        });
 
@@ -91,7 +90,7 @@ runInEachFileSystem(() => {
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
           templateTypeChecker, program.getTypeChecker(), [new InvalidBananaInBoxCheck()]);
-      const diags = extendedTemplateChecker.getExtendedTemplateDiagnosticsForComponent(component);
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(2);
       expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
       expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX));

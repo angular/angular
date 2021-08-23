@@ -617,7 +617,7 @@ export class ComponentDecoratorHandler implements
   extendedTemplateCheck(
       component: ts.ClassDeclaration,
       extendedTemplateChecker: ExtendedTemplateChecker): ts.Diagnostic[] {
-    return extendedTemplateChecker.getExtendedTemplateDiagnosticsForComponent(component);
+    return extendedTemplateChecker.getDiagnosticsForComponent(component);
   }
 
   resolve(

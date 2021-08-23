@@ -16,5 +16,5 @@ export interface ExtendedTemplateChecker {
   /**
    * Run `TemplateCheck`s for a component and return the generated `ts.Diagnostic`s.
    */
-  getExtendedTemplateDiagnosticsForComponent(component: ts.ClassDeclaration): TemplateDiagnostic[];
+  getDiagnosticsForComponent(component: ts.ClassDeclaration): TemplateDiagnostic[];
 }
