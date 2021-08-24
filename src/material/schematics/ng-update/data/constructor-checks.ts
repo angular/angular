@@ -14,6 +14,12 @@ import {ConstructorChecksUpgradeData, TargetVersion, VersionChanges} from '@angu
  * automatically through type checking.
  */
 export const constructorChecks: VersionChanges<ConstructorChecksUpgradeData> = {
+  [TargetVersion.V13]: [
+    {
+      pr: 'https://github.com/angular/components/pull/23389',
+      changes: ['MatFormField']
+    }
+  ],
   [TargetVersion.V12]: [
     {
       pr: 'https://github.com/angular/components/pull/21897',

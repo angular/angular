@@ -65,10 +65,6 @@ export abstract class _MatFormFieldHarnessBase<ControlHarness extends MatFormFie
     getControl(): Promise<ControlHarness | null>;
     getControl<X extends MatFormFieldControlHarness>(type: ComponentHarnessConstructor<X>): Promise<X | null>;
     getControl<X extends MatFormFieldControlHarness>(type: HarnessPredicate<X>): Promise<X | null>;
-    // @deprecated
-    getHarnessLoaderForPrefix(): Promise<TestElement | null>;
-    // @deprecated
-    getHarnessLoaderForSuffix(): Promise<TestElement | null>;
     getLabel(): Promise<string | null>;
     getPrefixText(): Promise<string>;
     getSuffixText(): Promise<string>;

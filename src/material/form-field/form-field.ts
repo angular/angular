@@ -235,12 +235,6 @@ export class MatFormField extends _MatFormFieldBase
   /** Whether the Angular animations are enabled. */
   _animationsEnabled: boolean;
 
-  /**
-   * @deprecated
-   * @breaking-change 8.0.0
-   */
-  @ViewChild('underline') underlineRef: ElementRef;
-
   @ViewChild('connectionContainer', {static: true}) _connectionContainerRef: ElementRef;
   @ViewChild('inputContainer') _inputContainerRef: ElementRef;
   @ViewChild('label') private _label: ElementRef<HTMLElement>;
@@ -268,13 +262,6 @@ export class MatFormField extends _MatFormFieldBase
 
   constructor(
       elementRef: ElementRef, private _changeDetectorRef: ChangeDetectorRef,
-      /**
-       * @deprecated `_labelOptions` parameter no longer being used. To be removed.
-       * @breaking-change 12.0.0
-       */
-      @Inject(ElementRef)
-          // Use `ElementRef` here so Angular has something to inject.
-          _labelOptions: any,
       @Optional() private _dir: Directionality,
       @Optional() @Inject(MAT_FORM_FIELD_DEFAULT_OPTIONS) private _defaults:
           MatFormFieldDefaultOptions, private _platform: Platform, private _ngZone: NgZone,

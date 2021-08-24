@@ -70,8 +70,7 @@ export class MatError {
 
 // @public
 export class MatFormField extends _MatFormFieldBase implements AfterContentInit, AfterContentChecked, AfterViewInit, OnDestroy, CanColor {
-    constructor(elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef,
-    _labelOptions: any, _dir: Directionality, _defaults: MatFormFieldDefaultOptions, _platform: Platform, _ngZone: NgZone, _animationMode: string);
+    constructor(elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, _dir: Directionality, _defaults: MatFormFieldDefaultOptions, _platform: Platform, _ngZone: NgZone, _animationMode: string);
     _animateAndLockLabel(): void;
     _animationsEnabled: boolean;
     get appearance(): MatFormFieldAppearance;
@@ -140,14 +139,12 @@ export class MatFormField extends _MatFormFieldBase implements AfterContentInit,
     _subscriptAnimationState: string;
     // (undocumented)
     _suffixChildren: QueryList<MatSuffix>;
-    // @deprecated (undocumented)
-    underlineRef: ElementRef;
     updateOutlineGap(): void;
     protected _validateControlChild(): void;
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatFormField, "mat-form-field", ["matFormField"], { "color": "color"; "appearance": "appearance"; "hideRequiredMarker": "hideRequiredMarker"; "hintLabel": "hintLabel"; "floatLabel": "floatLabel"; }, {}, ["_controlNonStatic", "_controlStatic", "_labelChildNonStatic", "_labelChildStatic", "_placeholderChild", "_errorChildren", "_hintChildren", "_prefixChildren", "_suffixChildren"], ["[matPrefix]", "*", "mat-placeholder", "mat-label", "[matSuffix]", "mat-error", "mat-hint:not([align='end'])", "mat-hint[align='end']"]>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatFormField, [null, null, null, { optional: true; }, { optional: true; }, null, null, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatFormField, [null, null, { optional: true; }, { optional: true; }, null, null, { optional: true; }]>;
 }
 
 // @public
