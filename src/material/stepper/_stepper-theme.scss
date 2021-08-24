@@ -17,8 +17,13 @@
   .mat-step-header {
     &.cdk-keyboard-focused,
     &.cdk-program-focused,
-    &:hover {
+    &:hover:not([aria-disabled]),
+    &:hover[aria-disabled='false'] {
       background-color: theming.get-color-from-palette($background, hover);
+    }
+
+    &:hover[aria-disabled='true'] {
+      cursor: default;
     }
 
     // On touch devices the :hover state will linger on the element after a tap.

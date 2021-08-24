@@ -70,6 +70,6 @@
     [optional]="step.optional"
     [errorMessage]="step.errorMessage"
     [iconOverrides]="_iconOverrides"
-    [disableRipple]="disableRipple"
+    [disableRipple]="disableRipple || !_stepIsNavigable(i, step)"
     [color]="step.color || color"></mat-step-header>
 </ng-template>
