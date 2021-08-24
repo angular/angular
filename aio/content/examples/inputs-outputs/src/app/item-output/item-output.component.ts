@@ -5,7 +5,6 @@ import { Component, Output, EventEmitter } from '@angular/core';
   templateUrl: './item-output.component.html',
   styleUrls: ['./item-output.component.css']
 })
-
 // #docregion item-output-class
 export class ItemOutputComponent {
 // #docregion item-output
