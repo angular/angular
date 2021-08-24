@@ -6,7 +6,9 @@ import { Component } from '@angular/core';
   template: `
     <h2>Should mankind colonize the Universe?</h2>
     <h3>Agree: {{agreed}}, Disagree: {{disagreed}}</h3>
-    <app-voter *ngFor="let voter of voters"
+
+    <app-voter
+      *ngFor="let voter of voters"
       [name]="voter"
       (voted)="onVoted($event)">
     </app-voter>
