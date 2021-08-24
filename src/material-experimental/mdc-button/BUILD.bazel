@@ -28,7 +28,6 @@ ng_module(
     deps = [
         "//src/cdk/platform",
         "//src/material-experimental/mdc-core",
-        "@npm//@material/ripple",
     ],
 )
 

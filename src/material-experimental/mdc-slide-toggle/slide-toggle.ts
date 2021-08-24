@@ -32,8 +32,7 @@ import {
   NumberInput
 } from '@angular/cdk/coercion';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
-import {ThemePalette, RippleAnimationConfig} from '@angular/material-experimental/mdc-core';
-import {numbers} from '@material/ripple';
+import {ThemePalette} from '@angular/material-experimental/mdc-core';
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {
   MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS,
@@ -42,18 +41,6 @@ import {
 
 // Increasing integer for generating unique ids for slide-toggle components.
 let nextUniqueId = 0;
-
-/** Configuration for the ripple animation. */
-const RIPPLE_ANIMATION_CONFIG: RippleAnimationConfig = {
-  enterDuration: numbers.DEACTIVATION_TIMEOUT_MS,
-  exitDuration: numbers.FG_DEACTIVATION_MS,
-};
-
-/** Configuration for ripples when animations are disabled. */
-const NOOP_RIPPLE_ANIMATION_CONFIG: RippleAnimationConfig = {
-  enterDuration: 0,
-  exitDuration: 0
-};
 
 /** @docs-private */
 export const MAT_SLIDE_TOGGLE_VALUE_ACCESSOR: any = {
@@ -115,9 +102,6 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
 
   /** Whether the slide toggle is currently focused. */
   _focused: boolean;
-
-  /** Configuration for the underlying ripple. */
-  _rippleAnimation: RippleAnimationConfig;
 
   /** Whether noop animations are enabled. */
   _noopAnimations: boolean;
@@ -217,8 +201,6 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
     this.tabIndex = parseInt(tabIndex) || 0;
     this.color = defaults.color || 'accent';
     this._noopAnimations = animationMode === 'NoopAnimations';
-    this._rippleAnimation = this._noopAnimations ?
-      NOOP_RIPPLE_ANIMATION_CONFIG : RIPPLE_ANIMATION_CONFIG;
   }
 
   ngAfterViewInit() {

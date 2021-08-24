@@ -32,7 +32,6 @@ ng_module(
         "@npm//@angular/core",
         "@npm//@angular/forms",
         "@npm//@material/list",
-        "@npm//@material/ripple",
     ],
 )
 

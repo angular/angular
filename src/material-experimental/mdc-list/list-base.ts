@@ -30,7 +30,6 @@ import {
   setLines,
 } from '@angular/material-experimental/mdc-core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
-import {numbers} from '@material/ripple';
 import {Subscription} from 'rxjs';
 import {startWith} from 'rxjs/operators';
 import {MatListAvatarCssMatStyler, MatListIconCssMatStyler} from './list-styling';
@@ -97,19 +96,9 @@ export abstract class MatListItemBase implements AfterContentInit, OnDestroy, Ri
               @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS)
                   globalRippleOptions?: RippleGlobalOptions,
               @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
-    // We have to clone the object, because we don't want to mutate a global value when we assign
-    // the `animation` further down. The downside of doing this is that the ripple renderer won't
-    // pick up dynamic changes to `disabled`, but it's not something we officially support.
-    this.rippleConfig = {...(globalRippleOptions || {})};
+    this.rippleConfig = globalRippleOptions || {};
     this._hostElement = this._elementRef.nativeElement;
     this._noopAnimations = animationMode === 'NoopAnimations';
-
-    if (!this.rippleConfig.animation) {
-      this.rippleConfig.animation = {
-        enterDuration: numbers.DEACTIVATION_TIMEOUT_MS,
-        exitDuration: numbers.FG_DEACTIVATION_MS
-      };
-    }
 
     if (!this._listBase._isNonInteractive) {
       this._initInteractiveListItem();

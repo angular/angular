@@ -39,11 +39,9 @@ import {
   mixinColor,
   mixinDisableRipple,
   mixinTabIndex,
-  RippleAnimationConfig,
   RippleGlobalOptions,
 } from '@angular/material-experimental/mdc-core';
 import {deprecated} from '@material/chips';
-import {numbers} from '@material/ripple';
 import {SPACE, ENTER, hasModifierKey} from '@angular/cdk/keycodes';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -63,12 +61,6 @@ export interface MatChipEvent {
   /** The chip the event was fired on. */
   chip: MatChip;
 }
-
-/** Configuration for the ripple animation. */
-const RIPPLE_ANIMATION_CONFIG: RippleAnimationConfig = {
-  enterDuration: numbers.DEACTIVATION_TIMEOUT_MS,
-  exitDuration: numbers.FG_DEACTIVATION_MS
-};
 
 /**
  * Directive to add MDC CSS to non-basic chips.
@@ -120,9 +112,6 @@ const _MatChipMixinBase = mixinTabIndex(mixinColor(mixinDisableRipple(MatChipBas
 })
 export class MatChip extends _MatChipMixinBase implements AfterContentInit, AfterViewInit,
   CanColor, CanDisableRipple, CanDisable, HasTabIndex, OnDestroy {
-  /** The ripple animation configuration to use for the chip. */
-  readonly _rippleAnimation: RippleAnimationConfig = RIPPLE_ANIMATION_CONFIG;
-
   /** Whether the ripple is centered on the chip. */
   readonly _isRippleCentered = false;
 

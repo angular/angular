@@ -26,7 +26,6 @@ ng_module(
         "//src/material/radio",
         "@npm//@angular/forms",
         "@npm//@material/radio",
-        "@npm//@material/ripple",
     ],
 )
 

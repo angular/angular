@@ -17,9 +17,7 @@ import {
   mixinColor,
   mixinDisabled,
   mixinDisableRipple,
-  RippleAnimationConfig
 } from '@angular/material-experimental/mdc-core';
-import {numbers} from '@material/ripple';
 import {FocusOrigin} from '@angular/cdk/a11y';
 
 /** Inputs common to all buttons. */
@@ -36,12 +34,6 @@ export const MAT_BUTTON_HOST = {
   // Add a class that applies to all buttons. This makes it easier to target if somebody
   // wants to target all Material buttons.
   '[class.mat-mdc-button-base]': 'true',
-};
-
-/** Configuration for the ripple animation. */
-const RIPPLE_ANIMATION_CONFIG: RippleAnimationConfig = {
-  enterDuration: numbers.DEACTIVATION_TIMEOUT_MS,
-  exitDuration: numbers.FG_DEACTIVATION_MS
 };
 
 /** List of classes to add to buttons instances based on host attribute selector. */
@@ -86,12 +78,6 @@ export const _MatButtonMixin = mixinColor(mixinDisabled(mixinDisableRipple(class
 @Directive()
 export class MatButtonBase extends _MatButtonMixin implements CanDisable, CanColor,
                                                               CanDisableRipple {
-  /** The ripple animation configuration to use for the buttons. */
-  _rippleAnimation: RippleAnimationConfig =
-      this._animationMode === 'NoopAnimations' ?
-          {enterDuration: 0, exitDuration: 0} :
-          RIPPLE_ANIMATION_CONFIG;
-
   /** Whether the ripple is centered on the button. */
   _isRippleCentered = false;
 

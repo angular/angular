@@ -6,25 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  Component,
-  ChangeDetectionStrategy,
-  ViewEncapsulation,
-  Inject,
-  ElementRef,
-  Optional,
-  ChangeDetectorRef,
-} from '@angular/core';
-import {
-  MAT_RIPPLE_GLOBAL_OPTIONS,
-  RippleAnimationConfig,
-  RippleGlobalOptions,
-} from '@angular/material-experimental/mdc-core';
-import {MatMenuItem as BaseMatMenuItem, MatMenuPanel, MAT_MENU_PANEL} from '@angular/material/menu';
-import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
-import {FocusMonitor} from '@angular/cdk/a11y';
-import {DOCUMENT} from '@angular/common';
-import {numbers} from '@material/ripple';
+import {Component, ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
+import {MatMenuItem as BaseMatMenuItem} from '@angular/material/menu';
 
 /**
  * Single item inside of a `mat-menu`. Provides the menu item styling and accessibility treatment.
@@ -53,24 +36,4 @@ import {numbers} from '@material/ripple';
     {provide: BaseMatMenuItem, useExisting: MatMenuItem},
   ]
 })
-export class MatMenuItem extends BaseMatMenuItem {
-  _rippleAnimation: RippleAnimationConfig;
-  _noopAnimations: boolean;
-
-  constructor(elementRef: ElementRef<HTMLElement>,
-    @Inject(DOCUMENT) document?: any,
-    focusMonitor?: FocusMonitor,
-    @Inject(MAT_MENU_PANEL) @Optional() parentMenu?: MatMenuPanel<unknown>,
-    @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS)
-      globalRippleOptions?: RippleGlobalOptions,
-    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
-    changeDetectorRef?: ChangeDetectorRef) {
-    super(elementRef, document, focusMonitor, parentMenu, changeDetectorRef);
-
-    this._noopAnimations = animationMode === 'NoopAnimations';
-    this._rippleAnimation = globalRippleOptions?.animation || {
-      enterDuration: numbers.DEACTIVATION_TIMEOUT_MS,
-      exitDuration: numbers.FG_DEACTIVATION_MS
-    };
-  }
-}
+export class MatMenuItem extends BaseMatMenuItem {}

@@ -30,7 +30,6 @@ import {
   MatCheckboxDefaultOptions, MAT_CHECKBOX_DEFAULT_OPTIONS_FACTORY
 } from '@angular/material/checkbox';
 import {
-  RippleAnimationConfig,
   mixinColor,
   mixinDisabled,
   CanColor,
@@ -39,7 +38,6 @@ import {
 } from '@angular/material-experimental/mdc-core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {MDCCheckboxAdapter, MDCCheckboxFoundation} from '@material/checkbox';
-import {numbers} from '@material/ripple';
 
 let nextUniqueId = 0;
 
@@ -65,13 +63,6 @@ export class MatCheckboxChange {
 const _MatCheckboxBase = mixinColor(mixinDisabled(class {
   constructor(public _elementRef: ElementRef) {}
 }));
-
-
-/** Configuration for the ripple animation. */
-const RIPPLE_ANIMATION_CONFIG: RippleAnimationConfig = {
-  enterDuration: numbers.DEACTIVATION_TIMEOUT_MS,
-  exitDuration: numbers.FG_DEACTIVATION_MS,
-};
 
 @Component({
   selector: 'mat-checkbox',
@@ -196,9 +187,6 @@ export class MatCheckbox extends _MatCheckboxBase implements AfterViewInit, OnDe
 
   /** The set of classes that should be applied to the native input. */
   _classes: {[key: string]: boolean} = {'mdc-checkbox__native-control': true};
-
-  /** Animation config for the ripple. */
-  _rippleAnimation = RIPPLE_ANIMATION_CONFIG;
 
   /** ControlValueAccessor onChange */
   private _cvaOnChange = (_: boolean) => {};

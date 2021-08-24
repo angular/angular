@@ -28,7 +28,6 @@ ng_module(
         "@npm//@angular/animations",
         "@npm//@angular/common",
         "@npm//@angular/core",
-        "@npm//@material/ripple",
     ],
 )
 

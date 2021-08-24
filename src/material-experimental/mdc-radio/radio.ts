@@ -34,8 +34,6 @@ import {FocusMonitor} from '@angular/cdk/a11y';
 import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {NG_VALUE_ACCESSOR} from '@angular/forms';
-import {RippleAnimationConfig} from '@angular/material-experimental/mdc-core';
-import {numbers} from '@material/ripple';
 
 // Re-export symbols used by the base Material radio component so that users do not need to depend
 // on both packages.
@@ -59,12 +57,6 @@ export const MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR: any = {
  */
 export const MAT_RADIO_GROUP =
   new InjectionToken<_MatRadioGroupBase<_MatRadioButtonBase>>('MatRadioGroup');
-
-/** Configuration for the ripple animation. */
-const RIPPLE_ANIMATION_CONFIG: RippleAnimationConfig = {
-  enterDuration: numbers.DEACTIVATION_TIMEOUT_MS,
-  exitDuration: numbers.FG_DEACTIVATION_MS
-};
 
 /**
  * A group of radio buttons. May contain one or more `<mat-radio-button>` elements.
@@ -126,9 +118,6 @@ export class MatRadioButton extends _MatRadioButtonBase implements AfterViewInit
     },
   };
 
-  /** Configuration for the underlying ripple. */
-  _rippleAnimation: RippleAnimationConfig;
-
   _radioFoundation = new MDCRadioFoundation(this._radioAdapter);
   _classes: {[key: string]: boolean} = {};
 
@@ -143,8 +132,6 @@ export class MatRadioButton extends _MatRadioButtonBase implements AfterViewInit
               @Attribute('tabindex') tabIndex?: string) {
     super(radioGroup, elementRef, _changeDetector, _focusMonitor,
         _radioDispatcher, animationMode, _providerOverride, tabIndex);
-    this._rippleAnimation =
-        this._noopAnimations ? {enterDuration: 0, exitDuration: 0} : RIPPLE_ANIMATION_CONFIG;
   }
 
   override ngAfterViewInit() {
