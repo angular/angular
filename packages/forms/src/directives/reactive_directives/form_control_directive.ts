@@ -12,7 +12,7 @@ import {FormControl} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
 import {NgControl} from '../ng_control';
-import {ReactiveErrors} from '../reactive_errors';
+import {disabledAttrWarning} from '../reactive_errors';
 import {_ngModelWarning, cleanUpControl, isPropertyUpdated, selectValueAccessor, setUpControl} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
@@ -72,7 +72,7 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
   @Input('disabled')
   set isDisabled(isDisabled: boolean) {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
-      ReactiveErrors.disabledAttrWarning();
+      console.warn(disabledAttrWarning);
     }
   }
 

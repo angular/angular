@@ -12,7 +12,7 @@ import {FormArray, FormControl, FormGroup} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {ControlContainer} from '../control_container';
 import {Form} from '../form_interface';
-import {ReactiveErrors} from '../reactive_errors';
+import {missingFormException} from '../reactive_errors';
 import {cleanUpControl, cleanUpFormContainer, cleanUpValidators, removeListItem, setUpControl, setUpFormContainer, setUpValidators, syncPendingControls} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
@@ -356,7 +356,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
 
   private _checkFormPresent() {
     if (!this.form && (typeof ngDevMode === 'undefined' || ngDevMode)) {
-      ReactiveErrors.missingFormException();
+      throw missingFormException();
     }
   }
 }
