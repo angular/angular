@@ -23,8 +23,6 @@ export class MatTabGroupHarness extends ComponentHarness {
 export class MatTabHarness extends ContentContainerComponentHarness<string> {
     getAriaLabel(): Promise<string | null>;
     getAriaLabelledby(): Promise<string | null>;
-    // @deprecated
-    getHarnessLoaderForContent(): Promise<HarnessLoader>;
     getLabel(): Promise<string>;
     // (undocumented)
     protected getRootHarnessLoader(): Promise<HarnessLoader>;
