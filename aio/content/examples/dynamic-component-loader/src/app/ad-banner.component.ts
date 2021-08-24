@@ -9,17 +9,20 @@ import { AdComponent } from './ad.component';
   selector: 'app-ad-banner',
   // #docregion ad-host
   template: `
-              <div class="ad-banner-example">
-                <h3>Advertisements</h3>
-                <ng-template adHost></ng-template>
-              </div>
-            `
+    <div class="ad-banner-example">
+      <h3>Advertisements</h3>
+      <ng-template adHost></ng-template>
+    </div>
+  `
   // #enddocregion ad-host
 })
 // #docregion class
 export class AdBannerComponent implements OnInit, OnDestroy {
+
   @Input() ads: AdItem[] = [];
+
   currentAdIndex = -1;
+
   @ViewChild(AdDirective, {static: true}) adHost!: AdDirective;
   interval: number | undefined;
 
