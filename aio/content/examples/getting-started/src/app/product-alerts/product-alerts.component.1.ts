@@ -14,6 +14,7 @@ import { Product } from '../products';
 })
 // #docregion input-decorator
 export class ProductAlertsComponent implements OnInit {
+
 // #enddocregion as-generated
   @Input() product!: Product;
 // #docregion as-generated

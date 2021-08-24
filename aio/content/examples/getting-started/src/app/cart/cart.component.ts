@@ -13,17 +13,20 @@ import { CartService } from '../cart.service';
 })
 // #docregion inject-form-builder, checkout-form-group
 export class CartComponent {
+
   // #enddocregion inject-form-builder
   items = this.cartService.getItems();
+
   checkoutForm = this.formBuilder.group({
     name: '',
     address: ''
   });
+
 // #docregion inject-form-builder
   constructor(
     private cartService: CartService,
     private formBuilder: FormBuilder,
-    ) {}
+  ) {}
 // #enddocregion inject-form-builder, checkout-form-group
 
   onSubmit(): void {

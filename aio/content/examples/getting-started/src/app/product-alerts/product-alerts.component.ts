@@ -13,6 +13,6 @@ import { Product } from '../products';
 })
 // #docregion input-output
 export class ProductAlertsComponent {
-  @Input() product: Product|undefined;
+  @Input() product: Product | undefined;
   @Output() notify = new EventEmitter();
 }

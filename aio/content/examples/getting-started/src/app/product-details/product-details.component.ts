@@ -14,8 +14,9 @@ import { CartService } from '../cart.service';
 })
 // #docregion inject-cart-service, add-to-cart
 export class ProductDetailsComponent implements OnInit {
+
 // #enddocregion add-to-cart, inject-cart-service
-  product: Product|undefined;
+  product: Product | undefined;
 
 // #docregion inject-cart-service
   constructor(
