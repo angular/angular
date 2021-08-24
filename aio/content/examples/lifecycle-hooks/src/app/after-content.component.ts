@@ -11,7 +11,8 @@ import { LoggerService } from './logger.service';
   template: `
     <div>projected content begins</div>
       <ng-content></ng-content>
-    <div>projected content ends</div>`
+    <div>projected content ends</div>
+  `
 // #enddocregion template
    + `
     <p *ngIf="comment" class="comment">
