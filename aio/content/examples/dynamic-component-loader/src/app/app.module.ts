@@ -9,16 +9,15 @@ import { AdService } from './ad.service';
 
 @NgModule({
   imports: [ BrowserModule ],
-  providers: [AdService],
-  declarations: [ AppComponent,
-                  AdBannerComponent,
-                  HeroJobAdComponent,
-                  HeroProfileComponent,
-                  AdDirective ],
+  providers: [ AdService ],
+  declarations: [
+    AppComponent,
+    AdBannerComponent,
+    HeroJobAdComponent,
+    HeroProfileComponent,
+    AdDirective ],
   entryComponents: [ HeroJobAdComponent, HeroProfileComponent ],
   bootstrap: [ AppComponent ]
 })
-export class AppModule {
-  constructor() {}
-}
+export class AppModule { }
 
