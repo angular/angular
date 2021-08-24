@@ -12,14 +12,12 @@ import { CartService } from '../cart.service';
 })
 // #docregion props
 export class ShippingComponent {
+
   shippingCosts = this.cartService.getShippingPrices();
 // #enddocregion props
 
-
-
 // #docregion inject-cart-service
-  constructor(private cartService: CartService) {
-  }
+  constructor(private cartService: CartService) { }
 // #enddocregion inject-cart-service
 
 
