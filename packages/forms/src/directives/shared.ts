@@ -16,7 +16,7 @@ import {BuiltInControlValueAccessor, ControlValueAccessor} from './control_value
 import {DefaultValueAccessor} from './default_value_accessor';
 import {NgControl} from './ng_control';
 import {FormArrayName} from './reactive_directives/form_group_name';
-import {ReactiveErrors} from './reactive_errors';
+import {ngModelWarning} from './reactive_errors';
 import {AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 
@@ -360,7 +360,7 @@ export function _ngModelWarning(
 
   if (((warningConfig === null || warningConfig === 'once') && !type._ngModelWarningSentOnce) ||
       (warningConfig === 'always' && !instance._ngModelWarningSent)) {
-    ReactiveErrors.ngModelWarning(name);
+    console.warn(ngModelWarning(name));
     type._ngModelWarningSentOnce = true;
     instance._ngModelWarningSent = true;
   }

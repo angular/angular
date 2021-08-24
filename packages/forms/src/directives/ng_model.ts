@@ -18,7 +18,7 @@ import {NgControl} from './ng_control';
 import {NgForm} from './ng_form';
 import {NgModelGroup} from './ng_model_group';
 import {controlPath, isPropertyUpdated, selectValueAccessor, setUpControl} from './shared';
-import {TemplateDrivenErrors} from './template_driven_errors';
+import {formGroupNameException, missingNameException, modelParentException} from './template_driven_errors';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 export const formControlBinding: any = {
@@ -295,9 +295,9 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       if (!(this._parent instanceof NgModelGroup) &&
           this._parent instanceof AbstractFormGroupDirective) {
-        TemplateDrivenErrors.formGroupNameException();
+        throw formGroupNameException();
       } else if (!(this._parent instanceof NgModelGroup) && !(this._parent instanceof NgForm)) {
-        TemplateDrivenErrors.modelParentException();
+        throw modelParentException();
       }
     }
   }
@@ -306,7 +306,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
     if (this.options && this.options.name) this.name = this.options.name;
 
     if (!this._isStandalone() && !this.name && (typeof ngDevMode === 'undefined' || ngDevMode)) {
-      TemplateDrivenErrors.missingNameException();
+      throw missingNameException();
     }
   }
 
