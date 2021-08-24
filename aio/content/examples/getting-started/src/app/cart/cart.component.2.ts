@@ -11,6 +11,7 @@ import { CartService } from '../cart.service';
 })
 // #docregion inject-cart, items
 export class CartComponent {
+
 // #enddocregion inject-cart
   items = this.cartService.getItems();
 // #docregion inject-cart

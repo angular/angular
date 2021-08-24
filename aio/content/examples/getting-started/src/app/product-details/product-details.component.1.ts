@@ -13,12 +13,11 @@ import { Product, products } from '../products';
 })
 // #docregion props-methods, product-prop
 export class ProductDetailsComponent implements OnInit {
-  product: Product|undefined;
+
+  product: Product | undefined;
   // #enddocregion product-prop
 
-  constructor(
-    private route: ActivatedRoute,
-  ) { }
+  constructor(private route: ActivatedRoute) { }
 
   // #enddocregion props-methods
   // #docregion get-product
