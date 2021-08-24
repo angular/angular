@@ -13,7 +13,7 @@ import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 import {AbstractFormGroupDirective} from './abstract_form_group_directive';
 import {ControlContainer} from './control_container';
 import {NgForm} from './ng_form';
-import {TemplateDrivenErrors} from './template_driven_errors';
+import {modelGroupParentException} from './template_driven_errors';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 export const modelGroupProvider: any = {
@@ -72,7 +72,7 @@ export class NgModelGroup extends AbstractFormGroupDirective implements OnInit, 
   override _checkParentType(): void {
     if (!(this._parent instanceof NgModelGroup) && !(this._parent instanceof NgForm) &&
         (typeof ngDevMode === 'undefined' || ngDevMode)) {
-      TemplateDrivenErrors.modelGroupParentException();
+      throw modelGroupParentException();
     }
   }
 }

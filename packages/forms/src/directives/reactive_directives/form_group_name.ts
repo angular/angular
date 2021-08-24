@@ -12,7 +12,7 @@ import {FormArray} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {AbstractFormGroupDirective} from '../abstract_form_group_directive';
 import {ControlContainer} from '../control_container';
-import {ReactiveErrors} from '../reactive_errors';
+import {arrayParentException, groupParentException} from '../reactive_errors';
 import {controlPath} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
@@ -98,7 +98,7 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
   /** @internal */
   override _checkParentType(): void {
     if (_hasInvalidParent(this._parent) && (typeof ngDevMode === 'undefined' || ngDevMode)) {
-      ReactiveErrors.groupParentException();
+      throw groupParentException();
     }
   }
 }
@@ -207,7 +207,7 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
 
   private _checkParentType(): void {
     if (_hasInvalidParent(this._parent) && (typeof ngDevMode === 'undefined' || ngDevMode)) {
-      ReactiveErrors.arrayParentException();
+      throw arrayParentException();
     }
   }
 }
