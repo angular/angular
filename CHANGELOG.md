@@ -1,3 +1,13 @@
+<a name="12.2.3"></a>
+# 12.2.3 (2021-08-25)
+### service-worker
+| Commit | Description |
+| -- | -- |
+| [fc7f92159d](https://github.com/angular/angular/commit/fc7f92159df16e894d9909cfc8969ed4b7d9924a) | fix: NPE if onActionClick is undefined ([#43210](https://github.com/angular/angular/pull/43210)) |
+## Special Thanks:
+Daniel Trevino, Erik Slack, George Kalpakas, dario-piotrowicz and shlasouski
+
+
 <a name="13.0.0-next.2"></a>
 # 13.0.0-next.2 (2021-08-18)
 ### animations
