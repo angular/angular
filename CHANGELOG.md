@@ -1,3 +1,39 @@
+<a name="13.0.0-next.3"></a>
+# 13.0.0-next.3 (2021-08-25)
+## Breaking Changes
+### router
+- Previously `null` and `undefined` inputs for `routerLink` were
+equivalent to empty string and there was no way to disable the link's
+navigation.
+In addition, the `href` is changed from a property `HostBinding()` to an
+attribute binding (`HostBinding('attr.href')`). The effect of this
+change is that `DebugElement.properties['href']` will now return the
+`href` value returned by the native element which will be the full URL
+rather than the internal value of the `RouterLink` `href` property.
+### compiler-cli
+| Commit | Description |
+| -- | -- |
+| [bed121c34f](https://github.com/angular/angular/commit/bed121c34f9c4ec4741a4690693423bb7ed66982) | feat: inline resources when generating class metadata calls ([#43178](https://github.com/angular/angular/pull/43178)) |
+### core
+| Commit | Description |
+| -- | -- |
+| [e57691c9c5](https://github.com/angular/angular/commit/e57691c9c5f8456f7dc75180aa1e80330da560fe) | feat: Add migration to update empty routerLinks in templates ([#43176](https://github.com/angular/angular/pull/43176)) |
+### language-service
+| Commit | Description |
+| -- | -- |
+| [b10d90bef6](https://github.com/angular/angular/commit/b10d90bef6a3d1b721d087268aa7377985dd4c4f) | feat: Add method for retrieving the component template at the cursor location ([#43208](https://github.com/angular/angular/pull/43208)) |
+### router
+| Commit | Description |
+| -- | -- |
+| [ccb09b4558](https://github.com/angular/angular/commit/ccb09b4558a3864fb5b2fe2214d08f1c1fe2758f) | fix: null/undefined routerLink should disable navigation ([#43087](https://github.com/angular/angular/pull/43087)) |
+### service-worker
+| Commit | Description |
+| -- | -- |
+| [6e924313c3](https://github.com/angular/angular/commit/6e924313c3bd93236227e92a5054fc8cc9b37644) | fix: NPE if onActionClick is undefined ([#43210](https://github.com/angular/angular/pull/43210)) |
+## Special Thanks:
+Alex Rickabaugh, Andrew Scott, Daniel Trevino, George Kalpakas, Paul Gschwendtner, dario-piotrowicz and shlasouski
+
+
 <a name="12.2.3"></a>
 # 12.2.3 (2021-08-25)
 ### service-worker
