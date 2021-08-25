@@ -380,7 +380,7 @@ The following is an example of how the `<app-root>` and `<app-child>` view trees
        ...content goes here...
      </#VIEW>
     </app-child>
-  <#VIEW>
+  </#VIEW>
 </app-root>
  ```
 
