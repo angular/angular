@@ -166,7 +166,7 @@ class LibHeaderComponent extends LibHeaderToken {
   selector: 'lib-card',
   ...,
 })
-class LibCardComponent implement AfterContentInit {
+class LibCardComponent implements AfterContentInit {
   @ContentChild(LibHeaderToken)
   header: LibHeaderToken|null = null;
 
