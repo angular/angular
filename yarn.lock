@@ -184,10 +184,10 @@
   dependencies:
     tslib "^2.2.0"
 
-"@angular/cdk@~12.1.0":
-  version "12.1.0"
-  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-12.1.0.tgz#0d3496b308e43743b7fd8e899ba5b0ad4d21a6bf"
-  integrity sha512-AkkhEveUDwblJyTd1NvuP7eH7Pwj14hyMmMnzfKBcaImvsSXK/z0T58wzp5vVYUtAQc05MuojwfsJQCev5QwNg==
+"@angular/cdk@~12.2.0":
+  version "12.2.2"
+  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-12.2.2.tgz#9c804be21e4b1a4c1d4b04ae2f9f09926a057e94"
+  integrity sha512-aF8pfzJYfTeMpc+71nXcSaHOOjAdk+XEKTbTSmOO++OLoOevUoQU0ap0g+H3pfKyO5QCx28IZQxtQHV134QrqA==
   dependencies:
     tslib "^2.2.0"
   optionalDependencies:
@@ -288,10 +288,10 @@
   uid "81397775bc8dbf4c6ecd5c8ac2746ecdc8b6cc9e"
   resolved "https://codeload.github.com/angular/language-service-builds/tar.gz/81397775bc8dbf4c6ecd5c8ac2746ecdc8b6cc9e"
 
-"@angular/material@~12.1.0":
-  version "12.1.0"
-  resolved "https://registry.yarnpkg.com/@angular/material/-/material-12.1.0.tgz#6bd0ce14f5bb491ba332104b9c329a7bc1382384"
-  integrity sha512-YxR09gfqfGmJysySlUWqcGYPWBVNTu2Cb48z1nxTFz13A4idw3qZa1NdHKPxi0f53x1koEd9DxKnx8M1XwvmSg==
+"@angular/material@~12.2.0":
+  version "12.2.2"
+  resolved "https://registry.yarnpkg.com/@angular/material/-/material-12.2.2.tgz#1f560af8b001fceb6e2115de8d287b287feb4c82"
+  integrity sha512-leBvANI2RzK2QaWkW1ZX1M5lePAEYRYoRwtKLxYiNfUreArHpz44qpOhXwsYD2aJ+ZrdCRZxEPHe2r+2LpN8Uw==
   dependencies:
     tslib "^2.2.0"
 
