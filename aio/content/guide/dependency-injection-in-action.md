@@ -66,7 +66,7 @@ and confirm that the three `HeroBioComponent` instances have their own cached he
 When a class requires a dependency, that dependency is added to the constructor as a parameter.
 When Angular needs to instantiate the class, it calls upon the DI framework to supply the dependency.
 By default, the DI framework searches for a provider in the injector hierarchy,
-starting at the component's local injector of the component, and if necessary bubbling up
+starting at the component's local injector, and if necessary bubbling up
 through the injector tree until it reaches the root injector.
 
 * The first injector configured with a provider supplies the dependency (a service instance or value) to the constructor.
