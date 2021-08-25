@@ -1,3 +1,21 @@
+<a name="12.2.3"></a>
+# 12.2.3 "meteorite-mango" (2021-08-25)
+### material/datepicker
+| Commit | Description |
+| -- | -- |
+| [1244e25e9](https://github.com/angular/components/commit/1244e25e92aa616fc84d86722aa1b81568831635) | fix: calendar reopening on spacebar selection ([#23336](https://github.com/angular/components/pull/23336)) |
+### material/stepper
+| Commit | Description |
+| -- | -- |
+| [8103d9bc5](https://github.com/angular/components/commit/8103d9bc57f335fe5ff1c6c12ca4964fc27ccb15) | fix: remove ripple and hover styling for disabled step ([#23386](https://github.com/angular/components/pull/23386)) |
+### material-experimental/mdc-slider
+| Commit | Description |
+| -- | -- |
+| [e725863a4](https://github.com/angular/components/commit/e725863a43e0f8293b67739a2ad5b50b48aa630d) | fix: correct description of slider harness thumb getters ([#23431](https://github.com/angular/components/pull/23431)) |
+## Special Thanks:
+Amy Sorto, Kristiyan Kostadinov, Michael-James, Paul Gschwendtner and Wagner Maciel
+
+
 <a name="13.0.0-next.1"></a>
 # 13.0.0-next.1 "gold-guitar" (2021-08-18)
 ### cdk/a11y
@@ -453,7 +471,7 @@ Guilherme Rossato, Kristiyan Kostadinov, Paul Gschwendtner, Zach Arend and mmale
 
 
 ## 12.1.1 "bronze-banana" (2021-06-30)
-  
+
 ### cdk
 
 |            |                       |
