@@ -219,7 +219,6 @@
 
 "@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#6254699cc7ccff62be948dc5edcdea87a936ff24":
   version "0.0.0"
-  uid "6254699cc7ccff62be948dc5edcdea87a936ff24"
   resolved "https://github.com/angular/dev-infra-private-builds.git#6254699cc7ccff62be948dc5edcdea87a936ff24"
   dependencies:
     "@actions/core" "^1.4.0"
@@ -1601,7 +1600,7 @@
     "@octokit/plugin-request-log" "^1.0.2"
     "@octokit/plugin-rest-endpoint-methods" "4.4.1"
 
-"@octokit/rest@^18.6.2", "@octokit/rest@^18.7.0":
+"@octokit/rest@^18.7.0":
   version "18.9.1"
   resolved "https://registry.yarnpkg.com/@octokit/rest/-/rest-18.9.1.tgz#db1d7ac1d7b10e908f7d4b78fe35a392554ccb26"
   integrity sha512-idZ3e5PqXVWOhtZYUa546IDHTHjkGZbj3tcJsN0uhCy984KD865e8GB2WbYDc2ZxFuJRiyd0AftpL2uPNhF+UA==
@@ -2180,13 +2179,6 @@
     "@types/node" "*"
     "@types/source-list-map" "*"
     source-map "^0.6.1"
-
-"@types/yaml@^1.9.7":
-  version "1.9.7"
-  resolved "https://registry.yarnpkg.com/@types/yaml/-/yaml-1.9.7.tgz#2331f36e0aac91311a63d33eb026c21687729679"
-  integrity sha512-8WMXRDD1D+wCohjfslHDgICd2JtMATZU8CkhH8LVJqcJs6dyYj5TGptzP8wApbmEullGBSsCEzzap73DQ1HJaA==
-  dependencies:
-    yaml "*"
 
 "@types/yargs-parser@*":
   version "20.2.1"
@@ -8934,13 +8926,6 @@ magic-string@0.25.7, magic-string@^0.25.2:
   dependencies:
     sourcemap-codec "^1.4.4"
 
-magic-string@^0.22.4:
-  version "0.22.5"
-  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.22.5.tgz#8e9cf5afddf44385c1da5bc2a6a0dbd10b03657e"
-  integrity sha512-oreip9rJZkzvA8Qzk9HFs8fZGF/u7H/gtrE8EN6RjKJ9kh2HlC+yQ2QezifqTZfGyiuAV0dRv5a+y/8gBb1m9w==
-  dependencies:
-    vlq "^0.2.2"
-
 make-dir@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/make-dir/-/make-dir-2.1.0.tgz#5f0310e18b8be898cc07009295a30ae41e91e6f5"
@@ -9634,11 +9619,6 @@ node-source-walk@^4.0.0, node-source-walk@^4.2.0:
   integrity sha512-hPs/QMe6zS94f5+jG3kk9E7TNm4P2SulrKiLWMzKszBfNZvL/V6wseHlTd7IvfW0NZWqPtK3+9yYNr+3USGteA==
   dependencies:
     "@babel/parser" "^7.0.0"
-
-node-uuid@1.4.8:
-  version "1.4.8"
-  resolved "https://registry.yarnpkg.com/node-uuid/-/node-uuid-1.4.8.tgz#b040eb0923968afabf8d32fb1f17f1167fdab907"
-  integrity sha1-sEDrCSOWivq/jTL7HxfxFn/auQc=
 
 nodejs-websocket@^1.7.2:
   version "1.7.2"
@@ -11168,7 +11148,7 @@ prepend-http@^2.0.0:
   resolved "https://registry.yarnpkg.com/prepend-http/-/prepend-http-2.0.0.tgz#e92434bfa5ea8c19f41cdfd401d741a3c819d897"
   integrity sha1-6SQ0v6XqjBn0HN/UAddBo8gZ2Jc=
 
-prettier@^2.3.0, prettier@^2.3.2:
+prettier@^2.3.2:
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.3.2.tgz#ef280a05ec253712e486233db5c6f23441e7342d"
   integrity sha512-lnJzDfJ66zkMy58OL5/NY5zp70S7Nz6KqcKkXYzn2tMVrNxvbqaBpg7H3qHaLxCJ5lNMsGuM8+ohS7cZrthdLQ==
@@ -12056,13 +12036,6 @@ rollup-plugin-commonjs@^10.1.0:
     resolve "^1.11.0"
     rollup-pluginutils "^2.8.1"
 
-rollup-plugin-hashbang@^2.2.2:
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-hashbang/-/rollup-plugin-hashbang-2.2.2.tgz#971fc49b452e63f9dfdc75f79ae7256b3485e750"
-  integrity sha512-Yxw9ogeK3KncG1e4CvK0I0IKVBNeJP+DTZS3bExGTfGjw0WP1C7xxbY7LtRd8IKx4fFf53hz7XR1XG7UV6xqCw==
-  dependencies:
-    magic-string "^0.22.4"
-
 rollup-plugin-node-resolve@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/rollup-plugin-node-resolve/-/rollup-plugin-node-resolve-5.2.0.tgz#730f93d10ed202473b1fb54a5997a7db8c6d8523"
@@ -12233,7 +12206,6 @@ sauce-connect-launcher@^1.2.4:
 
 "sauce-connect@https://saucelabs.com/downloads/sc-4.6.2-linux.tar.gz":
   version "0.0.0"
-  uid "7b7f35433af9c3380758e048894d7b9aecf3754e"
   resolved "https://saucelabs.com/downloads/sc-4.6.2-linux.tar.gz#7b7f35433af9c3380758e048894d7b9aecf3754e"
 
 saucelabs@^1.5.0:
@@ -14224,11 +14196,6 @@ vlq@1.0.1:
   resolved "https://registry.yarnpkg.com/vlq/-/vlq-1.0.1.tgz#c003f6e7c0b4c1edd623fd6ee50bbc0d6a1de468"
   integrity sha512-gQpnTgkubC6hQgdIcRdYGDSDc+SaujOdyesZQMv6JlfQee/9Mp0Qhnys6WxDWvQnL5WZdT7o2Ul187aSt0Rq+w==
 
-vlq@^0.2.2:
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/vlq/-/vlq-0.2.3.tgz#8f3e4328cf63b1540c0d67e1b2778386f8975b26"
-  integrity sha512-DRibZL6DsNhIgYQ+wNdWDL2SL3bKPlVrRiBqV5yuMm++op8W4kGFtaQfCs4KEJn0wBZcHVHJ3eoywX8983k1ow==
-
 void-elements@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/void-elements/-/void-elements-2.0.1.tgz#c066afb582bb1cb4128d60ea92392e94d5e9dbec"
@@ -14688,7 +14655,7 @@ yallist@^4.0.0:
   resolved "https://registry.yarnpkg.com/yallist/-/yallist-4.0.0.tgz#9bb92790d9c0effec63be73519e11a35019a3a72"
   integrity sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==
 
-yaml@*, yaml@^1.10.0, yaml@^1.10.2:
+yaml@^1.10.0, yaml@^1.10.2:
   version "1.10.2"
   resolved "https://registry.yarnpkg.com/yaml/-/yaml-1.10.2.tgz#2301c5ffbf12b467de8da2333a459e29e7920e4b"
   integrity sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==
