@@ -362,7 +362,7 @@ type LocationChangeInfo = {
 };
 
 /**
- * The equivalent `IsActiveUrlTreeOptions` options for `Router.isActive` is called with `true`
+ * The equivalent `IsActiveMatchOptions` options for `Router.isActive` is called with `true`
  * (exact = true).
  */
 export const exactMatchOptions: IsActiveMatchOptions = {
@@ -373,7 +373,7 @@ export const exactMatchOptions: IsActiveMatchOptions = {
 };
 
 /**
- * The equivalent `IsActiveUrlTreeOptions` options for `Router.isActive` is called with `false`
+ * The equivalent `IsActiveMatchOptions` options for `Router.isActive` is called with `false`
  * (exact = false).
  */
 export const subsetMatchOptions: IsActiveMatchOptions = {
@@ -1318,9 +1318,9 @@ export class Router {
    * Returns whether the url is activated.
    *
    * @deprecated
-   * Use `IsActiveUrlTreeOptions` instead.
+   * Use `IsActiveMatchOptions` instead.
    *
-   * - The equivalent `IsActiveUrlTreeOptions` for `true` is
+   * - The equivalent `IsActiveMatchOptions` for `true` is
    * `{paths: 'exact', queryParams: 'exact', fragment: 'ignored', matrixParams: 'ignored'}`.
    * - The equivalent for `false` is
    * `{paths: 'subset', queryParams: 'subset', fragment: 'ignored', matrixParams: 'ignored'}`.
