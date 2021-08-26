@@ -1,3 +1,51 @@
+<a name="13.0.0-next.2"></a>
+# 13.0.0-next.2 "emerald-earring" (2021-08-26)
+## Breaking Changes
+### cdk/clipboard
+* `CKD_COPY_TO_CLIPBOARD_CONFIG` has been removed. Use `CDK_COPY_TO_CLIPBOARD_CONFIG` instead.
+### material/form-field
+* `MatFormFieldHarness.getHarnessLoaderForPrefix` has been removed. Use `MatFormFieldHarness.getPrefixText` instead.
+* `MatFormFieldHarness.getHarnessLoaderForSuffix` has been removed. Use `MatFormFieldHarness.getSuffixText` instead.
+* The `_labelOptions` parameter of the `MatFormField` constructor has been removed.
+* `MatFormField.underlineRef` has been removed.
+### material/tabs
+* `MatTabHarness.getHarnessLoaderForContent` has been removed. Use `MatTabHarness.getRootHarnessLoader` instead.
+### cdk/clipboard
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5833597a7](https://github.com/angular/components/commit/5833597a7ad8adca95da5533fb6f1efa5340a623) | refactor | clean up deprecated APIs for v13 ([#23401](https://github.com/angular/components/pull/23401)) |
+### cdk/testing
+| Commit | Type | Description |
+| -- | -- | -- |
+| [692ebafe7](https://github.com/angular/components/commit/692ebafe7baab75771f0f279b7e7090ec4f903aa) | fix | fake touch event does not set proper touch identifier |
+### material/datepicker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b761dbcb2](https://github.com/angular/components/commit/b761dbcb27ca12573429407467b71ec092c5951d) | fix | calendar reopening on spacebar selection ([#23336](https://github.com/angular/components/pull/23336)) |
+### material/dialog
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3dc5af4bf](https://github.com/angular/components/commit/3dc5af4bfd2e15fe9a1330740068732cfc65d29f) | feat | add support for content sections in harness ([#23357](https://github.com/angular/components/pull/23357)) |
+### material/form-field
+| Commit | Type | Description |
+| -- | -- | -- |
+| [700c0601c](https://github.com/angular/components/commit/700c0601c03c113925562fd31f49d66a65ac3dae) | refactor | remove deprecated APIs for version 13 ([#23389](https://github.com/angular/components/pull/23389)) |
+### material/stepper
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b5b262d3e](https://github.com/angular/components/commit/b5b262d3e0f15eeae173b1f56a68d661953b7b83) | fix | remove ripple and hover styling for disabled step ([#23386](https://github.com/angular/components/pull/23386)) |
+### material/tabs
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3ad08940f](https://github.com/angular/components/commit/3ad08940f13aad9403b89722eb7dd5f388a4d536) | refactor | remove deprecated APIs for v13 ([#23426](https://github.com/angular/components/pull/23426)) |
+### material-experimental/mdc-slider
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c4cf3c945](https://github.com/angular/components/commit/c4cf3c9456d57371ee725991afe6afe49f7928ca) | fix | correct description of slider harness thumb getters ([#23431](https://github.com/angular/components/pull/23431)) |
+## Special Thanks
+Amy Sorto, Kristiyan Kostadinov, Michael-James, Paul Gschwendtner, Wagner Maciel and mmalerba
+
+
 <a name="12.2.3"></a>
 # 12.2.3 "meteorite-mango" (2021-08-25)
 ### material/datepicker
