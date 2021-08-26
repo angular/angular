@@ -12,6 +12,7 @@ body:
         - common
         - compiler-cli
         - compiler
+        - core
         - elements
         - forms
         - language-service
