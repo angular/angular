@@ -75,7 +75,7 @@
     "cypress-iframe": "^1.0.1",
     "document-register-element": "^1.7.2",
     "husky": "^4.3.8",
-    "jasmine-core": "~3.7.0",
+    "jasmine-core": "~3.9.0",
     "jasmine-spec-reporter": "~7.0.0",
     "karma": "~6.3.2",
     "karma-chrome-launcher": "~3.1.0",
