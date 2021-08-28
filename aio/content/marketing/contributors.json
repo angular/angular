@@ -257,6 +257,14 @@
     "bio": "Doug is an overly-opinionated software developer with a passion for making awesome developer tools. He is motivated primarily by his selfish desire to make his own life easier, but loves to share his tools and workflows with others to make everyone's lives easier.",
     "groups": ["Angular"]
   },
+  "dmezhenskyi": {
+    "name": "Dmytro Mezhenskyi",
+    "picture": "dmytro-mezhenskyi.jpg",
+    "bio": "Dmytro is a self-taught Frontend Developer, originally from Ukraine and currently living in Vienna, Austria. He is also a content creator and author of a YouTube channel \"Decoded Frontend\".",
+    "groups": ["GDE"],
+    "twitter": "DecodedFrontend",
+    "website": "https://youtube.com/DecodedFrontend"
+  },
   "doguhan": {
     "name": "Doguhan Uluca",
     "picture": "doguhan.jpg",
