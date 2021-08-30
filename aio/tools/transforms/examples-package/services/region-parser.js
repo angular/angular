@@ -15,6 +15,7 @@ module.exports = function regionParser() {
     html: html,
     svg: html,
     css: blockC,
+    conf: inlineHash,
     yaml: inlineHash,
     yml: inlineHash,
     sh: inlineHash,
