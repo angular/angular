@@ -467,6 +467,7 @@ export class RouteConfigLoadStart {
 // @public
 export class Router {
     constructor(rootComponentType: Type<any> | null, urlSerializer: UrlSerializer, rootContexts: ChildrenOutletContexts, location: Location_2, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
+    canceledNavigationResolution: 'replace' | 'computed';
     // (undocumented)
     config: Routes;
     createUrlTree(commands: any[], navigationExtras?: UrlCreationOptions): UrlTree;
