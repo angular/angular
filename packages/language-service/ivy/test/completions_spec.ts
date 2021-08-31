@@ -506,6 +506,21 @@ describe('completions', () => {
               ['[value]']);
         });
 
+        it('should return event completion', () => {
+          const {templateFile} = setup(`<button ></button>`, ``);
+          templateFile.moveCursorToText(`<button ¦>`);
+          const completions = templateFile.getCompletionsAtPosition();
+          expectContain(completions, DisplayInfoKind.EVENT, ['(click)']);
+        });
+
+        it('should return event completion with empty parens', () => {
+          const {templateFile} = setup(`<button ()></button>`, ``);
+          templateFile.moveCursorToText(`<button (¦)>`);
+          const completions = templateFile.getCompletionsAtPosition();
+          expectContain(completions, DisplayInfoKind.EVENT, ['(click)']);
+        });
+
+
         it('should return completions for a partial attribute', () => {
           const {appFile} = setupInlineTemplate(`<input val>`, '');
           appFile.moveCursorToText('<input val¦>');
@@ -535,6 +550,13 @@ describe('completions', () => {
               completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
               ['value']);
           expectReplacementText(completions, appFile.contents, 'val');
+        });
+
+        it('should return completions inside an event binding', () => {
+          const {templateFile} = setup(`<button (cl)=''></button>`, ``);
+          templateFile.moveCursorToText(`(cl¦)=''`);
+          const completions = templateFile.getCompletionsAtPosition();
+          expectContain(completions, DisplayInfoKind.EVENT, ['(click)']);
         });
       });
 

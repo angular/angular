@@ -553,6 +553,11 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       // the user is completing on a property binding `[foo|]`, don't offer output event
       // completions.
       switch (completion.kind) {
+        case AttributeCompletionKind.DomEvent:
+          if (this.node instanceof TmplAstBoundAttribute) {
+            continue;
+          }
+          break;
         case AttributeCompletionKind.DomAttribute:
         case AttributeCompletionKind.DomProperty:
           if (this.node instanceof TmplAstBoundEvent) {
@@ -629,6 +634,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     let documentation: ts.SymbolDisplayPart[]|undefined = undefined;
     let info: DisplayInfo|null;
     switch (completion.kind) {
+      case AttributeCompletionKind.DomEvent:
       case AttributeCompletionKind.DomAttribute:
       case AttributeCompletionKind.DomProperty:
         // TODO(alxhub): ideally we would show the same documentation as quick info here. However,
