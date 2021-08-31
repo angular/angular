@@ -64,3 +64,18 @@ packages locally and test them by either of the following ways:
 If you're making changes to a public API, they need to be propagated to our public API golden files.
 To save the changes you can run `yarn approve-api <target>` and to review the changes, you can look
 at the file under `tools/public_api_guard/<target>.d.ts`.
+
+
+### Disabling Git hooks
+
+If your development workflow does not intend the commit message validation to run automatically
+when commits are being created, or if you do not want to run the formatter upon `git commit`, you
+can disable any installed Git hooks by setting `HUSKY=0` in your shell environment. e.g.
+
+```bash
+# .zshrc
+export HUSKY=0
+
+# .bashrc
+export HUSKY=0
+```
