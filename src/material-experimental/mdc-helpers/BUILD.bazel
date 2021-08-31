@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "sass_library")
-load("//tools:npm_sass_library.bzl", "npm_sass_library")
+load("//tools:defaults.bzl", "npm_sass_library", "sass_library")
 
 package(default_visibility = ["//visibility:public"])
 

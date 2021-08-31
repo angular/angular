@@ -1,7 +1,7 @@
 # Re-export of Bazel rules with repository-wide defaults
 
 load("@build_bazel_rules_nodejs//:index.bzl", _pkg_npm = "pkg_npm")
-load("@io_bazel_rules_sass//:defs.bzl", _sass_binary = "sass_binary", _sass_library = "sass_library")
+load("@io_bazel_rules_sass//:defs.bzl", _npm_sass_library = "npm_sass_library", _sass_binary = "sass_binary", _sass_library = "sass_library")
 load("@npm//@angular/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@npm//@bazel/concatjs:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
@@ -53,6 +53,9 @@ def sass_binary(sourcemap = False, **kwargs):
 
 def sass_library(**kwargs):
     _sass_library(**kwargs)
+
+def npm_sass_library(**kwargs):
+    _npm_sass_library(**kwargs)
 
 def ts_library(tsconfig = None, deps = [], testonly = False, **kwargs):
     # Add tslib because we use import helpers for all public packages.
