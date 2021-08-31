@@ -1372,7 +1372,7 @@ export class Router {
           t.resolve(true);
         },
         e => {
-          this.console.warn(`Unhandled Navigation Error: `);
+          this.console.warn(`Unhandled Navigation Error: ${e}`);
         });
   }
 
