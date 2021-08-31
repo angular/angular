@@ -9,7 +9,7 @@
 import {
   ComponentHarness,
   ComponentHarnessConstructor,
-  HarnessLoader,
+  HarnessLoader, HarnessPredicate,
   parallel,
   TestElement,
 } from '@angular/cdk/testing';
@@ -310,6 +310,19 @@ export function crossEnvironmentSpecs(
             '\n(SubComponentHarness with host element matching selector: "test-sub" satisfying' +
             ' the constraints: title = "List of test tools", item count = 4)');
       }
+    });
+
+    it('should have correct description for debugging', () => {
+      const predicate = new HarnessPredicate(MainComponentHarness, {})
+          .addOption('test', {
+            regexes: [/test/gim, /"test"/],
+            strings: [`test`, `"test"`],
+            numbers: [10]
+          }, async () => true);
+      expect(predicate.getDescription()).toBe(`test = {` +
+          `"regexes":[/test/gim,/"test"/],` +
+          `"strings":["test","\\"test\\""],` +
+          `"numbers":[10]}`);
     });
   });
 

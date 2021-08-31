@@ -561,15 +561,18 @@ function _valueAsString(value: unknown) {
   if (value === undefined) {
     return 'undefined';
   }
-  // `JSON.stringify` doesn't handle RegExp properly, so we need a custom replacer.
   try {
-    return JSON.stringify(value, (_, v) => {
-      if (v instanceof RegExp) {
-        return `/${v.toString()}/`;
-      }
-
-      return typeof v === 'string' ? v.replace('/\//g', '\\/') : v;
-    }).replace(/"\/\//g, '\\/').replace(/\/\/"/g, '\\/').replace(/\\\//g, '/');
+    // `JSON.stringify` doesn't handle RegExp properly, so we need a custom replacer.
+    // Use a character that is unlikely to appear in real strings to denote the start and end of
+    // the regex. This allows us to strip out the extra quotes around the value added by
+    // `JSON.stringify`. Also do custom escaping on `"` characters to prevent `JSON.stringify`
+    // from escaping them as if they were part of a string.
+    const stringifiedValue = JSON.stringify(value, (_, v) => v instanceof RegExp ?
+        `◬MAT_RE_ESCAPE◬${v.toString().replace(/"/g, '◬MAT_RE_ESCAPE◬')}◬MAT_RE_ESCAPE◬` : v);
+    // Strip out the extra quotes around regexes and put back the manually escaped `"` characters.
+    return stringifiedValue
+        .replace(/"◬MAT_RE_ESCAPE◬|◬MAT_RE_ESCAPE◬"/g, '')
+        .replace(/◬MAT_RE_ESCAPE◬/g, '"');
   } catch {
     // `JSON.stringify` will throw if the object is cyclical,
     // in this case the best we can do is report the value as `{...}`.
