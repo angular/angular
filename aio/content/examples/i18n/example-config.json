@@ -1,5 +1,8 @@
 {
   "projectType": "i18n",
+  "overrideBoilerplate": [
+    "angular.json"
+  ],
   "tests": [
     {
       "cmd": "yarn",
