@@ -90,15 +90,18 @@ function getTestNames(files: string[]): string[] {
         // Note that this is a little naive since it'll take the literal text of the test
         // name expression which could include things like string concatenation. It's fine
         // for the limited use cases of the script.
-        testNames.push(node.arguments[0].getText(sourceFile)
-          // Replace the quotes around the test name.
-          .replace(/^['`]|['`]$/g, '')
-          // Strip newlines followed by indentation.
-          .replace(/\n\s+/g, ' ')
-          // Strip escape characters.
-          .replace(/\\/g, '')
-          // Collapse concatenated strings.
-          .replace(/['`]\s+\+\s+['`]/g, ''));
+        testNames.push(
+          node.arguments[0]
+            .getText(sourceFile)
+            // Replace the quotes around the test name.
+            .replace(/^['"`]|['"`]$/g, '')
+            // Strip newlines followed by indentation.
+            .replace(/\n\s+/g, ' ')
+            // Strip escape characters.
+            .replace(/\\/g, '')
+            // Collapse concatenated strings.
+            .replace(/['"`]\s+\+\s+['"`]/g, ''),
+        );
       } else {
         node.forEachChild(walk);
       }

@@ -15,13 +15,6 @@
         "Use 'readonly T[]' instead."
       ]
     ],
-    "max-line-length": [true, {
-      "limit": 100,
-      "check-strings": true,
-      "check-regex": true,
-      "ignore-pattern": "//\\s+https?://"
-      }
-    ],
     // Disable this flag because of SHA tslint#48b0c597f9257712c7d1f04b55ed0aa60e333f6a
     // TSLint now shows warnings if types for properties are inferred. This rule needs to be
     // disabled because all properties need to have explicit types set to work for Dgeni.
@@ -29,10 +22,6 @@
     "comment-format": [
       true,
       "check-space"
-    ],
-    "indent": [
-      true,
-      "spaces"
     ],
     "eofline": true,
     "no-construct": true,
@@ -49,45 +38,12 @@
     "no-var-keyword": true,
     "member-access": [true, "no-public"],
     "no-debugger": true,
-    "one-line": [
-      true,
-      "check-catch",
-      "check-else",
-      "check-open-brace",
-      "check-whitespace"
-    ],
-    "quotemark": [
-      true,
-      "single",
-      "avoid-escape"
-    ],
-    "semicolon": true,
-    "typedef-whitespace": [
-      true,
-      {
-        "call-signature": "nospace",
-        "index-signature": "nospace",
-        "parameter": "nospace",
-        "property-declaration": "nospace",
-        "variable-declaration": "nospace"
-      }
-    ],
-    "curly": true,
     "variable-name": [
       true,
       "ban-keywords",
       "check-format",
       "allow-leading-underscore",
       "allow-snake-case"
-    ],
-    "whitespace": [
-      true,
-      "check-branch",
-      "check-decl",
-      "check-operator",
-      "check-separator",
-      "check-type",
-      "check-preblock"
     ],
     // Bans jasmine helper functions that will prevent the CI from properly running tests.
     "ban": [
@@ -127,7 +83,6 @@
     // Custom Rules
     "ts-loader": true,
     "no-exposed-todo": true,
-    "no-import-export-spacing": true,
     "no-private-getters": [true, "^_"],
     "no-undecorated-base-class-di": true,
     "no-undecorated-class-with-angular-features": true,

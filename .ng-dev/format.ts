@@ -6,4 +6,5 @@ import {FormatConfig} from '@angular/dev-infra-private/ng-dev/format/config';
  */
 export const format: FormatConfig = {
   buildifier: true,
+  prettier: true,
 };
