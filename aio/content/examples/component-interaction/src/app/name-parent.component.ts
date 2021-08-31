@@ -6,10 +6,7 @@ import { Component } from '@angular/core';
   template: `
     <h2>Master controls {{names.length}} names</h2>
 
-    <app-name-child
-      *ngFor="let name of names"
-      [name]="name">
-    </app-name-child>
+    <app-name-child *ngFor="let name of names" [name]="name"></app-name-child>
   `
 })
 export class NameParentComponent {
