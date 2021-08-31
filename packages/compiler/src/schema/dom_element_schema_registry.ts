@@ -14,6 +14,7 @@ import {dashCaseToCamelCase} from '../util';
 import {SECURITY_SCHEMA} from './dom_security_schema';
 import {ElementSchemaRegistry} from './element_schema_registry';
 
+const EVENT = 'event';
 const BOOLEAN = 'boolean';
 const NUMBER = 'number';
 const STRING = 'string';
@@ -249,30 +250,36 @@ const _PROP_TO_ATTR: {[name: string]: string} =
 
 export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   private _schema: {[element: string]: {[property: string]: string}} = {};
+  // We don't allow binding to events for security reasons. Allowing event bindings would almost
+  // certainly introduce bad XSS vulnerabilities. Instead, we store events in a separate schema.
+  private _eventSchema: {[element: string]: Set<string>} = {};
 
   constructor() {
     super();
     SCHEMA.forEach(encodedType => {
       const type: {[property: string]: string} = {};
+      const events: Set<string> = new Set();
       const [strType, strProperties] = encodedType.split('|');
       const properties = strProperties.split(',');
       const [typeNames, superName] = strType.split('^');
-      typeNames.split(',').forEach(tag => this._schema[tag.toLowerCase()] = type);
+      typeNames.split(',').forEach(tag => {
+        this._schema[tag.toLowerCase()] = type;
+        this._eventSchema[tag.toLowerCase()] = events;
+      });
       const superType = superName && this._schema[superName.toLowerCase()];
       if (superType) {
         Object.keys(superType).forEach((prop: string) => {
           type[prop] = superType[prop];
         });
+        for (const superEvent of this._eventSchema[superName.toLowerCase()]) {
+          events.add(superEvent);
+        }
       }
       properties.forEach((property: string) => {
         if (property.length > 0) {
           switch (property[0]) {
             case '*':
-              // We don't yet support events.
-              // If ever allowing to bind to events, GO THROUGH A SECURITY REVIEW, allowing events
-              // will
-              // almost certainly introduce bad XSS vulnerabilities.
-              // type[property.substring(1)] = EVENT;
+              events.add(property.substring(1));
               break;
             case '!':
               type[property.substring(1)] = BOOLEAN;
@@ -398,6 +405,10 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     const elementProperties = this._schema[tagName.toLowerCase()] || this._schema['unknown'];
     // Convert properties to attributes.
     return Object.keys(elementProperties).map(prop => _PROP_TO_ATTR[prop] ?? prop);
+  }
+
+  allKnownEventsOfElement(tagName: string): string[] {
+    return Array.from(this._eventSchema[tagName.toLowerCase()] ?? []);
   }
 
   override normalizeAnimationStyleProperty(propName: string): string {
