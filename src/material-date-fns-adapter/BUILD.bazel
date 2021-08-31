@@ -1,5 +1,5 @@
 load("//tools:defaults.bzl", "ng_module", "ng_package", "ng_test_library", "ng_web_test_suite")
-load(":esbuild-amd.bzl", "esbuild_amd")
+load("//tools/esbuild:index.bzl", "esbuild_amd")
 
 package(default_visibility = ["//visibility:public"])
 

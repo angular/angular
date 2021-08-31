@@ -40,7 +40,7 @@ export async function expectLocation(element: FinderResult, {x, y}: Point) {
  * Asserts that one element is aligned with another.
  */
 export async function expectAlignedWith(element: FinderResult, otherElement: FinderResult) {
-  await getElement(otherElement).getLocation().then((location: Point) => {
-    expectLocation(getElement(element), location);
+  await getElement(otherElement).getLocation().then(async (location: Point) => {
+    await expectLocation(getElement(element), location);
   });
 }
