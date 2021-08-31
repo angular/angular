@@ -57,11 +57,11 @@ resetting it will call `reset` on the underlying form control which clears the v
 - <kbd>SHIFT</kbd>+<kbd>TAB</kbd>: Focuses the previous tabbable element
 
 ### Accessibility
-The CDK stepper is treated as a tabbed view for accessibility purposes, so it is given
-`role="tablist"` by default. The header of step that can be clicked to select the step
-is given `role="tab"`, and the content that can be expanded upon selection is given
-`role="tabpanel"`. `aria-selected` attribute of step header and `aria-expanded` attribute of
-step content is automatically set based on step selection change.
+Apart from the built-in keyboard support, the stepper doesn't apply any treatment. When implementing
+your own component, it is recommended that the stepper is treated as a tabbed view for accessibility
+purposes by giving it a `role="tablist"`. The header of step that can be clicked to select the step
+should be given `role="tab"`, and the content that can be expanded upon selection should be given
+`role="tabpanel"`. Furthermore, the step header should have an `aria-selected` attribute that
+reflects its selected state and the associated content element should have `aria-expanded`.
 
-The stepper and each step should be given a meaningful label via `aria-label` or `aria-labelledby`.
-
+You can refer to the [Angular Material stepper](https://github.com/angular/components/tree/master/src/material/stepper) as an example of an accessible implementation.
