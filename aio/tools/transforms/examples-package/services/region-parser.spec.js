@@ -142,7 +142,6 @@ describe('regionParser service', () => {
     expect(output.regions['']).toEqual(t('abc', '/* . . . */', 'ghi'));
   });
 
-
   it('should join multiple regions with the current plaster string', () => {
     const output = regionParser(
         t('/* #docregion */', 'abc', '/* #enddocregion */', 'def', '/* #docregion */', 'ghi',
@@ -161,6 +160,26 @@ describe('regionParser service', () => {
         'test-type');
     expect(output.regions['']).toEqual(t('abc', '/* . . . */', 'ghi'));
     expect(output.regions['A']).toEqual(t('jkl', 'pqr'));
+  });
+
+  it('should indent the plaster string to the level of the docregion marker', () => {
+    const output = regionParser(
+        t(
+          '/* #docregion */',
+          'abc',
+          '/* #enddocregion */',
+          '  def',
+          '    /* #docregion */',
+          '    ghi',
+          '    /* #enddocregion */',
+          'jkl',
+        ),
+        'test-type');
+    expect(output.regions['']).toEqual(t(
+      'abc',
+      '    /* . . . */',
+      '    ghi'
+      ));
   });
 
   it('should parse multiple region names separated by commas', () => {

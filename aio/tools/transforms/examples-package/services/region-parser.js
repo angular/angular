@@ -60,7 +60,9 @@ module.exports = function regionParser() {
               }
               region.open = true;
               if (plaster) {
-                region.lines.push(plaster);
+                // Use the same indent as the docregion marker
+                const indent = startRegion[0].split(/[^ ]/, 1);
+                region.lines.push(indent + plaster);
               }
             } else {
               regionMap[regionName] = {lines: [], open: true};
