@@ -904,6 +904,34 @@ export interface OnInit {
 }
 
 // @public
+export class OnPushNgZone implements NgZone {
+    // (undocumented)
+    readonly hasPendingMacrotasks: boolean;
+    // (undocumented)
+    hasPendingMicrotasks: boolean;
+    // (undocumented)
+    isStable: boolean;
+    // (undocumented)
+    markForCheck(): void;
+    // (undocumented)
+    readonly onError: EventEmitter<any>;
+    // (undocumented)
+    readonly onMicrotaskEmpty: EventEmitter<any>;
+    // (undocumented)
+    readonly onStable: EventEmitter<any>;
+    // (undocumented)
+    readonly onUnstable: EventEmitter<any>;
+    // (undocumented)
+    run(fn: (...args: any[]) => any, applyThis?: any, applyArgs?: any): any;
+    // (undocumented)
+    runGuarded(fn: (...args: any[]) => any, applyThis?: any, applyArgs?: any): any;
+    // (undocumented)
+    runOutsideAngular(fn: (...args: any[]) => any): any;
+    // (undocumented)
+    runTask(fn: (...args: any[]) => any, applyThis?: any, applyArgs?: any, name?: string): any;
+}
+
+// @public
 export interface Optional {
 }
 

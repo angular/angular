@@ -41,7 +41,7 @@ import {Testability, TestabilityRegistry} from './testability/testability';
 import {isPromise} from './util/lang';
 import {scheduleMicroTask} from './util/microtask';
 import {stringify} from './util/stringify';
-import {NgZone, NoopNgZone, OnPushNgZone} from './zone/ng_zone';
+import {NgZone, NoopNgZone} from './zone/ng_zone';
 
 let _platform: PlatformRef;
 
@@ -228,9 +228,8 @@ export interface BootstrapOptions {
    * - Provide your own `NgZone` instance.
    * - `zone.js` - Use default `NgZone` which requires `Zone.js`.
    * - `noop` - Use `NoopNgZone` which does nothing.
-   * - `onpush` - Use `OnPushNgZone` which is lighter but requires OnPush use.
    */
-  ngZone?: NgZone|'zone.js'|'noop'|'onpush';
+  ngZone?: NgZone|'zone.js'|'noop';
 
   /**
    * Optionally specify coalescing event change detections or not.
@@ -446,14 +445,12 @@ export class PlatformRef {
 }
 
 function getNgZone(
-    ngZoneOption: NgZone|'zone.js'|'noop'|'onpush'|undefined,
+    ngZoneOption: NgZone|'zone.js'|'noop'|undefined,
     extra?: {ngZoneEventCoalescing: boolean, ngZoneRunCoalescing: boolean}): NgZone {
   let ngZone: NgZone;
 
   if (ngZoneOption === 'noop') {
     ngZone = new NoopNgZone();
-  } else if (ngZoneOption === 'onpush') {
-    ngZone = new OnPushNgZone();
   } else {
     ngZone = (ngZoneOption === 'zone.js' ? undefined : ngZoneOption) || new NgZone({
                enableLongStackTrace: typeof ngDevMode === 'undefined' ? false : !!ngDevMode,

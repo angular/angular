@@ -512,7 +512,7 @@ export class OnPushNgZone implements NgZone {
   readonly onError: EventEmitter<any> = new EventEmitter();
 
   private performingChangeDetection = false;
-  private changeDetectionScheduled = false;
+  private activePromise?: Promise<void>;
 
   run(fn: (...args: any[]) => any, applyThis?: any, applyArgs?: any): any {
     this.markForCheck();
@@ -544,27 +544,32 @@ export class OnPushNgZone implements NgZone {
     if (this.isStable) this.onUnstable.emit(true);
     this.isStable = false;
     this.hasPendingMicrotasks = true;
-    if (this.changeDetectionScheduled) return;
-    this.changeDetectionScheduled = true;
-    const nextTick = requestAnimationFrame || setTimeout;
-    nextTick(() => {
-      this.performingChangeDetection = true;
-      this.hasPendingMicrotasks = false;
-      this.withoutFail(() => {
-        this.onMicrotaskEmpty.emit(true);
-      });
-
-      this.isStable = true;
-      this.withoutFail(() => {
-        this.onStable.emit(true);
-      });
-
-      this.changeDetectionScheduled = false;
-      this.performingChangeDetection = false;
+    // Ideally, we'd use cancellable promises, but those aren't a thing.
+    // Instead, early return from all but the last promise scheduled in one
+    // tick.
+    const promise = Promise.resolve().then(() => {
+      if (this.activePromise !== promise) return;
+      this.stabilize();
     });
+    this.activePromise = promise;
   }
 
-  private withoutFail(fn: () => void) {
+  private stabilize() {
+    this.performingChangeDetection = true;
+
+    this.hasPendingMicrotasks = false;
+    this.withoutFail(() => {
+      this.onMicrotaskEmpty.emit(true);
+    });
+    this.isStable = true;
+    this.withoutFail(() => {
+      this.onStable.emit(true);
+    });
+
+    this.performingChangeDetection = false;
+  }
+
+  private withoutFail(fn: VoidFunction) {
     try {
       fn();
     } catch (exception) {

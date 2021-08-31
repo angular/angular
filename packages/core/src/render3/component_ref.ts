@@ -17,7 +17,7 @@ import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory
 import {RendererFactory2} from '../render/api';
 import {Sanitizer} from '../sanitization/sanitizer';
 import {VERSION} from '../version';
-import {NgZone} from '../zone';
+import {NgZone, NoopNgZone} from '../zone';
 
 import {assertComponentType} from './assert';
 import {ChainedInjector} from './chained_injector';
@@ -141,10 +141,10 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     const rootLView = createLView(
         null, rootTView, rootContext, rootFlags, null, null, rendererFactory, hostRenderer,
         sanitizer, rootViewInjector);
-    const ngZone = rootViewInjector.get(NgZone, {});
+    const ngZone = rootViewInjector.get(NgZone, new NoopNgZone());
     if (ngZone.markForCheck) {
       rootLView[MARK_DIRTY] = () => {
-        ngZone.markForCheck?.();
+        ngZone.markForCheck!();
       };
     }
 

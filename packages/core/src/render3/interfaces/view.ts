@@ -11,6 +11,7 @@ import {ProviderToken} from '../../di/provider_token';
 import {Type} from '../../interface/type';
 import {SchemaMetadata} from '../../metadata/schema';
 import {Sanitizer} from '../../sanitization/sanitizer';
+
 import {LContainer} from './container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList, ViewQueriesFunction} from './definition';
 import {I18nUpdateOpCodes, TI18n, TIcu} from './i18n';
@@ -329,7 +330,7 @@ export interface LView extends Array<any> {
   [TRANSPLANTED_VIEWS_TO_REFRESH]: number;
 
   /**
-   * Function to mark the view as dirty and ensure change dection is scheduled.
+   * Function to mark the view as dirty and ensure change detection is scheduled.
    */
   [MARK_DIRTY]: (() => void)|undefined;
 }

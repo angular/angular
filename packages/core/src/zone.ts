@@ -7,4 +7,4 @@
  */
 
 // Public API for Zone
-export {NgZone, NoopNgZone as ɵNoopNgZone} from './zone/ng_zone';
+export {NgZone, NoopNgZone as ɵNoopNgZone, OnPushNgZone} from './zone/ng_zone';

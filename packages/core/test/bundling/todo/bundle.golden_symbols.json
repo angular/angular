@@ -1,5 +1,8 @@
 [
   {
+    "name": "AnonymousSubject"
+  },
+  {
     "name": "CLEAN_PROMISE"
   },
   {
@@ -21,7 +24,13 @@
     "name": "EMPTY_OBJ"
   },
   {
+    "name": "EMPTY_PAYLOAD"
+  },
+  {
     "name": "ElementRef"
+  },
+  {
+    "name": "EventEmitter"
   },
   {
     "name": "InjectFlags"
@@ -75,10 +84,19 @@
     "name": "NgIfContext"
   },
   {
+    "name": "NgZone"
+  },
+  {
     "name": "NodeInjector"
   },
   {
     "name": "NodeInjectorFactory"
+  },
+  {
+    "name": "ObjectUnsubscribedError"
+  },
+  {
+    "name": "Observable"
   },
   {
     "name": "Optional"
@@ -96,10 +114,28 @@
     "name": "RuntimeError"
   },
   {
+    "name": "SafeSubscriber"
+  },
+  {
     "name": "Sanitizer"
   },
   {
     "name": "SkipSelf"
+  },
+  {
+    "name": "Subject"
+  },
+  {
+    "name": "SubjectSubscriber"
+  },
+  {
+    "name": "SubjectSubscription"
+  },
+  {
+    "name": "Subscriber"
+  },
+  {
+    "name": "Subscription"
   },
   {
     "name": "TemplateRef"
@@ -127,6 +163,9 @@
   },
   {
     "name": "TodoStore"
+  },
+  {
+    "name": "UnsubscriptionError"
   },
   {
     "name": "VERSION"
@@ -168,6 +207,9 @@
     "name": "__window"
   },
   {
+    "name": "_enable_super_gross_mode_that_will_cause_bad_things"
+  },
+  {
     "name": "_global"
   },
   {
@@ -178,6 +220,9 @@
   },
   {
     "name": "_symbolIterator"
+  },
+  {
+    "name": "_wrapInTimeout"
   },
   {
     "name": "addComponentLogic"
@@ -234,6 +279,9 @@
     "name": "callHooks"
   },
   {
+    "name": "checkStable"
+  },
+  {
     "name": "classIndexOf"
   },
   {
@@ -253,6 +301,9 @@
   },
   {
     "name": "concatStringsWithSpace"
+  },
+  {
+    "name": "config"
   },
   {
     "name": "configureViewWithDirective"
@@ -321,6 +372,12 @@
     "name": "domRendererFactory3"
   },
   {
+    "name": "empty"
+  },
+  {
+    "name": "empty2"
+  },
+  {
     "name": "enterDI"
   },
   {
@@ -352,6 +409,9 @@
   },
   {
     "name": "findStylingValue"
+  },
+  {
+    "name": "flattenUnsubscriptionErrors"
   },
   {
     "name": "forwardRef"
@@ -462,6 +522,9 @@
     "name": "getProjectionNodes"
   },
   {
+    "name": "getPromiseCtor"
+  },
+  {
     "name": "getSelectedIndex"
   },
   {
@@ -495,7 +558,13 @@
     "name": "hasTagAndTypeMatch"
   },
   {
+    "name": "hostReportError"
+  },
+  {
     "name": "icuContainerIterate"
+  },
+  {
+    "name": "identity"
   },
   {
     "name": "includeViewProviders"
@@ -534,6 +603,9 @@
     "name": "isAnimationProp"
   },
   {
+    "name": "isArray"
+  },
+  {
     "name": "isComponentDef"
   },
   {
@@ -550,6 +622,9 @@
   },
   {
     "name": "isDirectiveHost"
+  },
+  {
+    "name": "isFunction"
   },
   {
     "name": "isInCheckNoChangesMode"
@@ -657,7 +732,19 @@
     "name": "noSideEffects"
   },
   {
+    "name": "noop"
+  },
+  {
     "name": "notFoundValueOrThrow"
+  },
+  {
+    "name": "observable"
+  },
+  {
+    "name": "onEnter"
+  },
+  {
+    "name": "onLeave"
   },
   {
     "name": "readPatchedData"
@@ -709,6 +796,9 @@
   },
   {
     "name": "resolveForwardRef"
+  },
+  {
+    "name": "rxSubscriber"
   },
   {
     "name": "saveNameToExportMap"
@@ -796,6 +886,9 @@
   },
   {
     "name": "unwrapRNode"
+  },
+  {
+    "name": "updateMicroTaskStatus"
   },
   {
     "name": "updateTransplantedViewCount"
