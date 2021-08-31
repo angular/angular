@@ -21,8 +21,8 @@ module.exports = function regionParser() {
     sh: inlineHash,
     jade: inlineCOnly,
     pug: inlineCOnly,
-    json: inlineC,
-    'json.annotated': inlineC
+    json: inlineCOnly,
+    'json.annotated': inlineCOnly
   };
 
   return regionParserImpl;
