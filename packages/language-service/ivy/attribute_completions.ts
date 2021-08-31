@@ -33,6 +33,11 @@ export enum AttributeCompletionKind {
   DomProperty,
 
   /**
+   * Completion of an event from the DOM schema.
+   */
+  DomEvent,
+
+  /**
    * Completion of an attribute that results in a new directive being matched on an element.
    */
   DirectiveAttribute,
@@ -85,6 +90,15 @@ export interface DomPropertyCompletion {
    * Name of the DOM property
    */
   property: string;
+}
+
+export interface DomEventCompletion {
+  kind: AttributeCompletionKind.DomEvent;
+
+  /**
+   * Name of the DOM event
+   */
+  eventName: string;
 }
 
 /**
@@ -163,8 +177,9 @@ export interface DirectiveOutputCompletion {
  *
  * Disambiguated by the `kind` property into various types of completions.
  */
-export type AttributeCompletion = DomAttributeCompletion|DomPropertyCompletion|
-    DirectiveAttributeCompletion|DirectiveInputCompletion|DirectiveOutputCompletion;
+export type AttributeCompletion =
+    DomAttributeCompletion|DomPropertyCompletion|DirectiveAttributeCompletion|
+    DirectiveInputCompletion|DirectiveOutputCompletion|DomEventCompletion;
 
 /**
  * Given an element and its context, produce a `Map` of all possible attribute completions.
@@ -345,8 +360,13 @@ export function buildAttributeCompletionTable(
         });
       }
     }
+    for (const event of checker.getPotentialDomEvents(element.name)) {
+      table.set(event, {
+        kind: AttributeCompletionKind.DomEvent,
+        eventName: event,
+      });
+    }
   }
-
   return table;
 }
 
@@ -466,6 +486,16 @@ export function addAttributeCompletionEntries(
           replacementSpan,
         });
       }
+      break;
+    }
+    case AttributeCompletionKind.DomEvent: {
+      entries.push({
+        kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
+        name: `(${completion.eventName})`,
+        sortText: completion.eventName,
+        replacementSpan,
+      });
+      break;
     }
   }
 }
@@ -474,6 +504,7 @@ export function getAttributeCompletionSymbol(
     completion: AttributeCompletion, checker: ts.TypeChecker): ts.Symbol|null {
   switch (completion.kind) {
     case AttributeCompletionKind.DomAttribute:
+    case AttributeCompletionKind.DomEvent:
     case AttributeCompletionKind.DomProperty:
       return null;
     case AttributeCompletionKind.DirectiveAttribute:
