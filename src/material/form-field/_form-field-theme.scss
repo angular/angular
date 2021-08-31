@@ -1,8 +1,8 @@
 @use 'sass:map';
+@use 'sass:math';
 @use '../core/theming/theming';
 @use '../core/typography/typography';
 @use '../core/typography/typography-utils';
-@use '../core/style/private';
 
 @use './form-field-fill-theme.scss';
 @use './form-field-legacy-theme.scss';
@@ -127,7 +127,7 @@ $dedupe: 0;
 @mixin _label-floating($font-scale, $infix-padding, $infix-margin-top) {
   transform: translateY(-$infix-margin-top - $infix-padding + $dedupe)
              scale($font-scale);
-  width: private.private-div(100%, $font-scale) + $dedupe;
+  width: math.div(100%, $font-scale) + $dedupe;
 
   $dedupe: $dedupe + 0.00001 !global;
 }
@@ -157,7 +157,7 @@ $dedupe: 0;
   // Mocks show half of the text size, but this margin is applied to an element with the subscript
   // text font size, so we need to divide by the scale factor to make it half of the original text
   // size.
-  $subscript-margin-top: private.private-div(0.5em, $subscript-font-scale);
+  $subscript-margin-top: math.div(0.5em, $subscript-font-scale);
   // The padding applied to the form-field-wrapper to reserve space for the subscript, since it's
   // absolutely positioned. This is a combination of the subscript's margin and line-height, but we
   // need to multiply by the subscript font scale factor since the wrapper has a larger font size.
@@ -234,7 +234,7 @@ $dedupe: 0;
 
     // We want the subscript to start at the end of the content box, not the padding box,
     // so we move it up by the padding amount (adjusted for the smaller font size);
-    top: calc(100% - #{private.private-div($wrapper-padding-bottom, $subscript-font-scale)});
+    top: calc(100% - #{math.div($wrapper-padding-bottom, $subscript-font-scale)});
   }
 
   @include form-field-legacy-theme.legacy-typography($config);

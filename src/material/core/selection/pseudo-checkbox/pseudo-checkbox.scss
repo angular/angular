@@ -1,3 +1,4 @@
+@use 'sass:math';
 @use '../../style/checkbox-common';
 @use '../../style/private';
 @use '../../style/variables';
@@ -50,20 +51,20 @@ $_checkmark-size: checkbox-common.$size - (2 * $_padding);
 }
 
 .mat-pseudo-checkbox-indeterminate::after {
-  top: private.private-div(checkbox-common.$size - checkbox-common.$border-width, 2) -
+  top: math.div(checkbox-common.$size - checkbox-common.$border-width, 2) -
       checkbox-common.$border-width;
-  left: private.private-div(checkbox-common.$border-width, 2);
+  left: math.div(checkbox-common.$border-width, 2);
   width: checkbox-common.$size - 6px;
   opacity: 1;
   border-radius: 2px;
 }
 
 .mat-pseudo-checkbox-checked::after {
-  top: private.private-div(checkbox-common.$size, 2) - private.private-div($_checkmark-size, 4) -
-      private.private-div(checkbox-common.$size, 10) - checkbox-common.$border-width;
+  top: math.div(checkbox-common.$size, 2) - math.div($_checkmark-size, 4) -
+       math.div(checkbox-common.$size, 10) - checkbox-common.$border-width;
   left: $_padding - checkbox-common.$border-width * 1.5;
   width: $_checkmark-size;
-  height: private.private-div($_checkmark-size - checkbox-common.$border-width, 2);
+  height: math.div($_checkmark-size - checkbox-common.$border-width, 2);
   border-left: checkbox-common.$border-width solid currentColor;
   transform: rotate(-45deg);
   opacity: 1;

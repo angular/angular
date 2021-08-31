@@ -1,7 +1,7 @@
+@use 'sass:math';
 @use '../core/style/variables';
 @use '../core/ripple/ripple';
 @use '../core/style/vendor-prefixes';
-@use '../core/style/private';
 @use '../../cdk/a11y';
 
 
@@ -98,7 +98,7 @@ $ripple-radius: 20px;
     @include a11y.high-contrast(active, off) {
       // Since we use a background color to render the circle, it won't be
       // displayed in high contrast mode. Use a border as a fallback.
-      border: solid private.private-div($size, 2);
+      border: solid math.div($size, 2);
     }
   }
 

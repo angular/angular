@@ -51,7 +51,6 @@ sass_binary(
 sass_binary(
     name = "simple_snack_bar_scss",
     src = "simple-snack-bar.scss",
-    deps = ["//src/material/core:core_scss_lib"],
 )
 
 ng_test_library(

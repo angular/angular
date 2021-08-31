@@ -1,6 +1,6 @@
+@use 'sass:math';
 @use '../core/style/variables';
 @use '../core/style/vendor-prefixes';
-@use '../core/style/private';
 @use '../../cdk/a11y';
 
 
@@ -124,8 +124,8 @@ $focus-ring-size: 30px !default;
   @extend %_mat-slider-cursor;
 
   position: absolute;
-  right: private.private-div(-$thumb-size, 2);
-  bottom: private.private-div(-$thumb-size, 2);
+  right: math.div(-$thumb-size, 2);
+  bottom: math.div(-$thumb-size, 2);
   box-sizing: border-box;
   width: $thumb-size;
   height: $thumb-size;
@@ -281,7 +281,7 @@ $focus-ring-size: 30px !default;
 
   .mat-slider-wrapper {
     height: $track-thickness;
-    top: private.private-div($thickness - $track-thickness, 2);
+    top: math.div($thickness - $track-thickness, 2);
     left: $padding;
     right: $padding;
   }
@@ -317,7 +317,7 @@ $focus-ring-size: 30px !default;
     @include a11y.high-contrast(active, off) {
       height: 0;
       outline: solid $track-thickness;
-      top: private.private-div($track-thickness, 2);
+      top: math.div($track-thickness, 2);
     }
   }
 
@@ -333,14 +333,14 @@ $focus-ring-size: 30px !default;
   }
 
   .mat-slider-focus-ring {
-    top: private.private-div(-$focus-ring-size, 2);
-    right: private.private-div(-$focus-ring-size, 2);
+    top: math.div(-$focus-ring-size, 2);
+    right: math.div(-$focus-ring-size, 2);
   }
 
   .mat-slider-thumb-label {
-    right: private.private-div(-$thumb-label-size, 2);
+    right: math.div(-$thumb-label-size, 2);
     top: -($thumb-label-size + $thumb-arrow-gap);
-    transform: translateY(private.private-div($thumb-label-size, 2) + $thumb-arrow-gap)
+    transform: translateY(math.div($thumb-label-size, 2) + $thumb-arrow-gap)
         scale(0.01)
         rotate(45deg);
   }
@@ -373,7 +373,7 @@ $focus-ring-size: 30px !default;
     width: $track-thickness;
     top: $padding;
     bottom: $padding;
-    left: private.private-div($thickness - $track-thickness, 2);
+    left: math.div($thickness - $track-thickness, 2);
   }
 
   .mat-slider-wrapper::after {
@@ -407,13 +407,13 @@ $focus-ring-size: 30px !default;
     @include a11y.high-contrast(active, off) {
       width: 0;
       outline: solid $track-thickness;
-      left: private.private-div($track-thickness, 2);
+      left: math.div($track-thickness, 2);
     }
   }
 
   .mat-slider-focus-ring {
-    bottom: private.private-div(-$focus-ring-size, 2);
-    left: private.private-div(-$focus-ring-size, 2);
+    bottom: math.div(-$focus-ring-size, 2);
+    left: math.div(-$focus-ring-size, 2);
   }
 
   .mat-slider-ticks {
@@ -432,9 +432,9 @@ $focus-ring-size: 30px !default;
   }
 
   .mat-slider-thumb-label {
-    bottom: private.private-div(-$thumb-label-size, 2);
+    bottom: math.div(-$thumb-label-size, 2);
     left: -($thumb-label-size + $thumb-arrow-gap);
-    transform: translateX(private.private-div($thumb-label-size, 2) + $thumb-arrow-gap)
+    transform: translateX(math.div($thumb-label-size, 2) + $thumb-arrow-gap)
         scale(0.01)
         rotate(-45deg);
   }

@@ -3,7 +3,6 @@
 @use 'sass:math';
 @use 'sass:meta';
 @use 'sass:string';
-@use '../style/private';
 
 
 // Utility for fetching a nested value from a typography config.
@@ -78,10 +77,8 @@
     font-family: $font-family;
   }
   @else {
-    // Otherwise use the shorthand `font`, because it's the least amount of bytes. Note
-    // that we need to use `list.slash` for `font-size/line-height` in order to prevent
-    // Sass from dividing the two values.
-    font: $font-weight private.private-slash($font-size, $line-height) $font-family;
+    // Otherwise use the shorthand `font`, because it's the least amount of bytes.
+    font: $font-weight list.slash($font-size, $line-height) $font-family;
   }
 }
 

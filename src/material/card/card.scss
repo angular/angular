@@ -1,3 +1,4 @@
+@use 'sass:math';
 @use '../core/style/variables';
 @use '../core/style/elevation';
 @use '../core/style/private';
@@ -59,8 +60,8 @@ $header-size: 40px !default;
 
 .mat-card-actions {
   @extend %mat-card-section-base;
-  margin-left: private.private-div(-$padding, 2);
-  margin-right: private.private-div(-$padding, 2);
+  margin-left: math.div(-$padding, 2);
+  margin-right: math.div(-$padding, 2);
   padding: 8px 0;
 }
 

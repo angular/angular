@@ -1,8 +1,8 @@
 @use 'sass:map';
+@use 'sass:math';
 @use '../core/theming/theming';
 @use '../core/typography/typography';
 @use '../core/typography/typography-utils';
-@use '../core/style/private';
 
 
 // Theme styles that only apply to the fill appearance of the form-field.
@@ -55,7 +55,7 @@ $fill-dedupe: 0;
 @mixin _label-floating($font-scale, $infix-padding, $infix-margin-top) {
   transform: translateY(-$infix-margin-top - $infix-padding + $fill-dedupe)
              scale($font-scale);
-  width: private.private-div(100%, $font-scale) + $fill-dedupe;
+  width: math.div(100%, $font-scale) + $fill-dedupe;
 
   $fill-dedupe: $fill-dedupe + 0.00001 !global;
 }

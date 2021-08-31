@@ -1,11 +1,11 @@
 @use 'sass:map';
+@use 'sass:math';
 @use '@material/switch/switch' as mdc-switch;
 @use '@material/switch/switch-theme' as mdc-switch-theme;
 @use '@material/form-field' as mdc-form-field;
 @use '@material/ripple' as mdc-ripple;
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/style/layout-common';
-@use '../../material/core/style/private';
 @use '../../cdk/a11y';
 
 @include mdc-form-field.core-styles($query: mdc-helpers.$mat-base-styles-query);
@@ -66,6 +66,6 @@
     // Usually 1px would be enough, but MDC reduces the opacity on the
     // element so we need to make this a bit more prominent.
     outline: solid 2px;
-    outline-offset: private.private-div(map.get(mdc-switch-theme.$light-theme, track-height), 2);
+    outline-offset: math.div(map.get(mdc-switch-theme.$light-theme, track-height), 2);
   }
 }

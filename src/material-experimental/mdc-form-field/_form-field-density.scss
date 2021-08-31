@@ -1,8 +1,8 @@
+@use 'sass:map';
+@use 'sass:math';
 @use '@material/density' as mdc-density;
 @use '@material/textfield' as mdc-textfield;
-@use 'sass:map';
 @use '../../material/core/theming/theming';
-@use '../../material/core/style/private';
 @use 'form-field-sizing';
 
 // Mixin that sets the vertical spacing for the infix container of filled form fields.
@@ -55,7 +55,7 @@
   // cannot update the spacing to explicit numbers based on the density scale. Instead, we
   // determine the height reduction and equally subtract it from the default `top` and `bottom`
   // padding that is provided by the Material Design specification.
-  $vertical-deduction: private.private-div(mdc-textfield.$height - $height, 2);
+  $vertical-deduction: math.div(mdc-textfield.$height - $height, 2);
   // Map that describes the padding for form-fields with label.
   $with-label-padding: (
     top: form-field-sizing.$mat-form-field-with-label-input-padding-top - $vertical-deduction,
@@ -78,7 +78,7 @@
   // form-field because we do not know what type of form-field control is set up. Hence
   // we always use a fixed position for the label. This does not have any implications.
   .mat-mdc-form-field .mat-mdc-text-field-wrapper .mdc-floating-label {
-    top: private.private-div($height, 2);
+    top: math.div($height, 2);
   }
 
   // For the outline appearance, we re-create the active floating label transform. This is

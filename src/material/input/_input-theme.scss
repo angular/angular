@@ -1,7 +1,7 @@
 @use 'sass:map';
+@use 'sass:math';
 @use '../core/theming/palette';
 @use '../core/theming/theming';
-@use '../core/style/private';
 @use '../core/style/form-common';
 @use '../core/typography/typography';
 @use '../core/typography/typography-utils';
@@ -69,7 +69,7 @@
 
   // The amount of space between the top of the line and the top of the actual text
   // (as a fraction of the font-size).
-  $line-spacing: private.private-div($line-height - 1, 2);
+  $line-spacing: math.div($line-height - 1, 2);
 
   // <input> elements seem to have their height set slightly too large on Safari causing the text to
   // be misaligned w.r.t. the placeholder. Adding this margin corrects it.

@@ -1,17 +1,16 @@
 @use 'sass:map';
+@use 'sass:math';
 @use '../core/theming/theming';
 @use '../core/typography/typography';
 @use '../core/typography/typography-utils';
-@use '../core/style/private';
 
 $target-height: 22px;
 $font-size: 10px;
-$vertical-padding: private.private-div($target-height - $font-size, 2);
+$vertical-padding: math.div($target-height - $font-size, 2);
 
 $handset-target-height: 30px;
 $handset-font-size: 14px;
-$handset-vertical-padding:
-    private.private-div($handset-target-height - $handset-font-size, 2);
+$handset-vertical-padding: math.div($handset-target-height - $handset-font-size, 2);
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);

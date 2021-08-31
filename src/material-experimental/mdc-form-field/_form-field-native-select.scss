@@ -1,8 +1,8 @@
 @use 'sass:map';
+@use 'sass:math';
 @use '../mdc-helpers/mdc-helpers';
 @use '../../cdk/a11y';
 @use '../../material/core/theming/palette';
-@use '../../material/core/style/private';
 @use '@material/theme/theme-color' as mdc-theme-color;
 
 // Width of the Material Design form-field select arrow.
@@ -66,8 +66,8 @@ $mat-form-field-select-horizontal-end-padding: $mat-form-field-select-arrow-widt
       content: '';
       width: 0;
       height: 0;
-      border-left: private.private-div($mat-form-field-select-arrow-width, 2) solid transparent;
-      border-right: private.private-div($mat-form-field-select-arrow-width, 2) solid transparent;
+      border-left: math.div($mat-form-field-select-arrow-width, 2) solid transparent;
+      border-right: math.div($mat-form-field-select-arrow-width, 2) solid transparent;
       border-top: $mat-form-field-select-arrow-height solid;
       position: absolute;
       right: 0;

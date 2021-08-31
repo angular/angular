@@ -1,8 +1,8 @@
+@use 'sass:math';
 @use '../core/style/menu-common';
 @use '../core/style/list-common';
 @use '../core/style/variables';
 @use '../core/style/vendor-prefixes';
-@use '../core/style/private';
 @use '../../cdk/a11y';
 
 $arrow-size: 5px !default;
@@ -129,7 +129,7 @@ $placeholder-arrow-space: 2 * ($arrow-size + $arrow-margin);
   // Delay the transition until the label has animated about a third of the way through, in
   // order to prevent the placeholder from overlapping for a split second.
   transition: color variables.$swift-ease-out-duration
-      private.private-div(variables.$swift-ease-out-duration, 3)
+      math.div(variables.$swift-ease-out-duration, 3)
       variables.$swift-ease-out-timing-function;
 
   ._mat-animation-noopable & {

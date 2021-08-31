@@ -1,6 +1,6 @@
+@use 'sass:math';
 @use '../core/style/variables';
 @use '../core/style/vendor-prefixes';
-@use '../core/style/private';
 @use '../../cdk/a11y';
 
 $date-range-input-separator-spacing: 4px;
@@ -8,7 +8,7 @@ $date-range-input-part-max-width: calc(50% - #{$date-range-input-separator-spaci
 
 @mixin _placeholder-transition($property) {
   transition: #{$property} variables.$swift-ease-out-duration
-    private.private-div(variables.$swift-ease-out-duration, 3)
+    math.div(variables.$swift-ease-out-duration, 3)
     variables.$swift-ease-out-timing-function;
 }
 

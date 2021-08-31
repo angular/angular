@@ -1,9 +1,9 @@
 @use 'sass:map';
+@use 'sass:math';
 @use '../core/theming/theming';
 @use '../core/typography/typography';
 @use '../core/typography/typography-utils';
 @use '../core/density/private/compatibility';
-@use '../core/style/private';
 @use './stepper-variables';
 
 @mixin color($config-or-theme) {
@@ -145,7 +145,7 @@
   $density-scale: theming.get-density-config($config-or-theme);
   $height: compatibility.private-density-prop-value(stepper-variables.$density-config,
     $density-scale, height);
-  $vertical-padding: private.private-div($height - stepper-variables.$label-header-height, 2);
+  $vertical-padding: math.div($height - stepper-variables.$label-header-height, 2);
 
   @include compatibility.private-density-legacy-compatibility() {
     .mat-horizontal-stepper-header {
@@ -167,13 +167,13 @@
     // Ensures that the horizontal lines for the step header are centered vertically.
     .mat-stepper-label-position-bottom .mat-horizontal-stepper-header {
       &::after, &::before {
-        top: $vertical-padding + private.private-div(stepper-variables.$label-header-height, 2);
+        top: $vertical-padding + math.div(stepper-variables.$label-header-height, 2);
       }
     }
 
     // Ensures that the horizontal line for the step content is aligned centered vertically.
     .mat-stepper-label-position-bottom .mat-stepper-horizontal-line {
-      top: $vertical-padding + private.private-div(stepper-variables.$label-header-height, 2);
+      top: $vertical-padding + math.div(stepper-variables.$label-header-height, 2);
     }
   }
 }

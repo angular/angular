@@ -4,10 +4,10 @@
 @use 'sass:color';
 @use 'sass:map';
 @use 'sass:meta';
+@use 'sass:math';
 @use '../core/theming/theming';
 @use '../core/typography/typography';
 @use '../core/typography/typography-utils';
-@use '../core/style/private';
 @use '../../cdk/a11y';
 
 $font-size: 12px;
@@ -29,13 +29,13 @@ $_badge-structure-emitted: false !default;
 
   &.mat-badge-above {
     .mat-badge-content {
-      top: private.private-div(-$size, 2);
+      top: math.div(-$size, 2);
     }
   }
 
   &.mat-badge-below {
     .mat-badge-content {
-      bottom: private.private-div(-$size, 2);
+      bottom: math.div(-$size, 2);
     }
   }
 
@@ -68,27 +68,27 @@ $_badge-structure-emitted: false !default;
   &.mat-badge-overlap {
     &.mat-badge-before {
       .mat-badge-content {
-        left: private.private-div(-$size, 2);
+        left: math.div(-$size, 2);
       }
     }
 
     [dir='rtl'] &.mat-badge-before {
       .mat-badge-content {
         left: auto;
-        right: private.private-div(-$size, 2);
+        right: math.div(-$size, 2);
       }
     }
 
     &.mat-badge-after {
       .mat-badge-content {
-        right: private.private-div(-$size, 2);
+        right: math.div(-$size, 2);
       }
     }
 
     [dir='rtl'] &.mat-badge-after {
       .mat-badge-content {
         right: auto;
-        left: private.private-div(-$size, 2);
+        left: math.div(-$size, 2);
       }
     }
   }

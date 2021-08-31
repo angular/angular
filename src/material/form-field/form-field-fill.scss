@@ -1,5 +1,5 @@
+@use 'sass:math';
 @use '../core/style/variables';
-@use '../core/style/private';
 @use '../../cdk/a11y';
 
 // Styles that only apply to the fill appearance of the form-field.
@@ -18,8 +18,7 @@ $fill-line-spacing: 0.75em !default;
 // The scale of the subscript and floating label text w.r.t the value text.
 $fill-subscript-font-scale: 0.75 !default;
 // The horizontal padding between the edge of the subscript box and the start of the subscript text.
-$fill-subscript-padding:
-    private.private-div($fill-side-padding, $fill-subscript-font-scale);
+$fill-subscript-padding: math.div($fill-side-padding, $fill-subscript-font-scale);
 
 
 .mat-form-field-appearance-fill {

@@ -1,5 +1,5 @@
+@use 'sass:math';
 @use '@material/card' as mdc-card;
-@use '../../material/core/style/private';
 @use '../mdc-helpers/mdc-helpers';
 
 // TODO(jelbourn): move header and title-group styles to their own files.
@@ -44,7 +44,7 @@ $mat-card-default-padding: 16px !default;
   // When a subtitle is inside of a header, we want to move it up slightly to reduce the space with
   // the title, and add a margin bottom to create space underneath the header.
   .mat-mdc-card-subtitle {
-    margin-top: -(private.private-div($mat-card-default-padding, 2));
+    margin-top: -(math.div($mat-card-default-padding, 2));
     margin-bottom: $mat-card-default-padding;
   }
 }

@@ -1,5 +1,5 @@
+@use 'sass:math';
 @use '../core/style/variables';
-@use '../core/style/private';
 @use './stepper-variables';
 
 .mat-stepper-vertical,
@@ -33,7 +33,7 @@
 }
 
 %mat-header-horizontal-line-label-position-bottom {
-  $half-side-gap: private.private-div(stepper-variables.$side-gap, 2);
+  $half-side-gap: math.div(stepper-variables.$side-gap, 2);
   border-top-width: stepper-variables.$line-width;
   border-top-style: solid;
   content: '';

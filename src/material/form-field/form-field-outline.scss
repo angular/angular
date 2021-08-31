@@ -1,5 +1,5 @@
+@use 'sass:math';
 @use '../core/style/variables';
-@use '../core/style/private';
 @use '../../cdk/a11y';
 
 // Styles that only apply to the outline appearance of the form-field.
@@ -17,8 +17,7 @@ $outline-width: 1px;
 // The width of the thick outline (used for focus, hover, and error state).
 $outline-thick-width: 2px;
 // The horizontal padding between the edge of the subscript box and the start of the subscript text.
-$outline-subscript-padding:
-    private.private-div($outline-side-padding, $outline-subscript-font-scale);
+$outline-subscript-padding: math.div($outline-side-padding, $outline-subscript-font-scale);
 
 
 .mat-form-field-appearance-outline {

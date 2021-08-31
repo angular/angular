@@ -1,6 +1,6 @@
+@use 'sass:math';
 @use '../core/style/variables';
 @use '../core/style/vendor-prefixes';
-@use '../core/style/private';
 @use '../../cdk/a11y';
 
 // The Input element proper.
@@ -109,8 +109,7 @@
     // Delay the transition until the label has animated about a third of the way through, in
     // order to prevent the placeholder from overlapping for a split second.
     transition: color variables.$swift-ease-out-duration
-      private.private-div(variables.$swift-ease-out-duration, 3)
-      variables.$swift-ease-out-timing-function;
+      math.div(variables.$swift-ease-out-duration, 3) variables.$swift-ease-out-timing-function;
   }
 
   .mat-form-field-hide-placeholder & {
@@ -219,7 +218,7 @@ select.mat-input-element {
     position: absolute;
     top: 50%;
     right: 0;
-    margin-top: private.private-div(-$arrow-size, 2);
+    margin-top: math.div(-$arrow-size, 2);
 
     // Make the arrow non-clickable so the user can click on the form control under it.
     pointer-events: none;

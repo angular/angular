@@ -1,4 +1,4 @@
-@use '../core/style/private';
+@use 'sass:math';
 @use '../../cdk/a11y';
 
 $calendar-body-label-padding-start: 5% !default;
@@ -6,7 +6,7 @@ $calendar-body-label-padding-start: 5% !default;
 // the same amount of padding regardless of the number of columns. We align the header label with
 // the one third mark of the first cell, this was chosen somewhat arbitrarily to make it look
 // roughly like the mock. Half way is too far since the cell text is center aligned.
-$calendar-body-label-side-padding: private.private-div(33%, 7) !default;
+$calendar-body-label-side-padding: math.div(33%, 7) !default;
 $calendar-body-cell-min-size: 32px !default;
 $calendar-body-cell-content-margin: 5% !default;
 $calendar-body-cell-content-border-width: 1px !default;

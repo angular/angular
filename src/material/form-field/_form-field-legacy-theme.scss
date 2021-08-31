@@ -1,6 +1,6 @@
 @use 'sass:map';
+@use 'sass:math';
 @use '../core/theming/theming';
-@use '../core/style/private';
 @use '../core/style/form-common';
 @use '../core/typography/typography';
 @use '../core/typography/typography-utils';
@@ -55,7 +55,7 @@ $legacy-dedupe: 0;
   -ms-transform: translateY(-$infix-margin-top - $infix-padding + $legacy-dedupe)
                   scale($font-scale);
 
-  width: private.private-div(100%, $font-scale) + $legacy-dedupe;
+  width: math.div(100%, $font-scale) + $legacy-dedupe;
 
   $legacy-dedupe: $legacy-dedupe + 0.00001 !global;
 }
@@ -80,7 +80,7 @@ $legacy-dedupe: 0;
   $subscript-font-scale: 0.75;
   // The amount of space between the top of the line and the top of the actual text
   // (as a fraction of the font-size).
-  $line-spacing: private.private-div($line-height - 1, 2);
+  $line-spacing: math.div($line-height - 1, 2);
   // The padding on the infix. Mocks show half of the text size, but seem to measure from the edge
   // of the text itself, not the edge of the line; therefore we subtract off the line spacing.
   $infix-padding: 0.5em - $line-spacing;
@@ -93,7 +93,7 @@ $legacy-dedupe: 0;
   // text font size, so we need to divide by the scale factor to make it half of the original text
   // size. We again need to subtract off the line spacing since the mocks measure to the edge of the
   // text, not the  edge of the line.
-  $subscript-margin-top: private.private-div(0.5em, $subscript-font-scale) - ($line-spacing * 2);
+  $subscript-margin-top: math.div(0.5em, $subscript-font-scale) - ($line-spacing * 2);
   // The padding applied to the form-field-wrapper to reserve space for the subscript, since it's
   // absolutely positioned. This is a combination of the subscript's margin and line-height, but we
   // need to multiply by the subscript font scale factor since the wrapper has a larger font size.
@@ -146,7 +146,7 @@ $legacy-dedupe: 0;
 
       // We want the subscript to start at the end of the content box, not the padding box,
       // so we move it up by the padding amount (adjusted for the smaller font size);
-      top: calc(100% - #{private.private-div($wrapper-padding-bottom, $subscript-font-scale)});
+      top: calc(100% - #{math.div($wrapper-padding-bottom, $subscript-font-scale)});
     }
   }
 
