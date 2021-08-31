@@ -18,11 +18,6 @@ const JAN = 1, FEB = 2, MAR = 3, DEC = 12;
 describe('LuxonDateAdapter', () => {
   let adapter: DateAdapter<DateTime>;
 
-  if (!isSupported()) {
-    it('should pass', () => expect(1).toBe(1));
-    return;
-  }
-
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [LuxonDateModule]
@@ -205,11 +200,11 @@ describe('LuxonDateAdapter', () => {
   it('should format with a different locale', () => {
     let date = adapter.format(DateTime.local(2017, JAN, 2), 'DD');
 
-    expect(stripDirectionalityCharacters(date)).toEqual('Jan 2, 2017');
+    expect(date).toEqual('Jan 2, 2017');
     adapter.setLocale('da-DK');
 
     date = adapter.format(DateTime.local(2017, JAN, 2), 'DD');
-    expect(stripDirectionalityCharacters(date)).toEqual('2. jan. 2017');
+    expect(date).toEqual('2. jan. 2017');
   });
 
   it('should throw when attempting to format invalid date', () => {
@@ -377,11 +372,6 @@ describe('LuxonDateAdapter', () => {
 describe('LuxonDateAdapter with MAT_DATE_LOCALE override', () => {
   let adapter: DateAdapter<DateTime>;
 
-  if (!isSupported()) {
-    it('should pass', () => expect(1).toBe(1));
-    return;
-  }
-
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [LuxonDateModule],
@@ -393,17 +383,12 @@ describe('LuxonDateAdapter with MAT_DATE_LOCALE override', () => {
 
   it('should take the default locale id from the MAT_DATE_LOCALE injection token', () => {
     const date = adapter.format(DateTime.local(2017, JAN, 2), 'DD');
-    expect(stripDirectionalityCharacters(date)).toEqual('2. jan. 2017');
+    expect(date).toEqual('2. jan. 2017');
   });
 });
 
 describe('LuxonDateAdapter with LOCALE_ID override', () => {
   let adapter: DateAdapter<DateTime>;
-
-  if (!isSupported()) {
-    it('should pass', () => expect(1).toBe(1));
-    return;
-  }
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -416,19 +401,12 @@ describe('LuxonDateAdapter with LOCALE_ID override', () => {
 
   it('should take the default locale id from the LOCALE_ID injection token', () => {
     const date = adapter.format(DateTime.local(2017, JAN, 2), 'DD');
-
-    // Some browsers add extra invisible characters that we should strip before asserting.
-    expect(stripDirectionalityCharacters(date)).toEqual('2 janv. 2017');
+    expect(date).toEqual('2 janv. 2017');
   });
 });
 
 describe('LuxonDateAdapter with MAT_LUXON_DATE_ADAPTER_OPTIONS override', () => {
   let adapter: DateAdapter<DateTime>;
-
-  if (!isSupported()) {
-    it('should pass', () => expect(1).toBe(1));
-    return;
-  }
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -466,16 +444,6 @@ describe('LuxonDateAdapter with MAT_LUXON_DATE_ADAPTER_OPTIONS override', () => 
   });
 
 });
-
-
-function isSupported(): boolean {
-  // As of version 2.0.0 Luxon doesn't support any version of IE so we have to skip the tests there.
-  return typeof navigator !== 'undefined' && !(/(msie|trident|edge)/i.test(navigator.userAgent));
-}
-
-function stripDirectionalityCharacters(str: string) {
-  return str.replace(/[\u200e\u200f]/g, '');
-}
 
 function assertValidDate(adapter: DateAdapter<DateTime>, d: DateTime | null, valid: boolean) {
   expect(adapter.isDateInstance(d)).not

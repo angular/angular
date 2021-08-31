@@ -88,15 +88,8 @@ export class LuxonDateAdapter extends DateAdapter<LuxonDateTime> {
     // functionality so we have to fall back to the Intl API.
     const dtf = new Intl.DateTimeFormat(this.locale, {day: 'numeric', timeZone: 'utc'});
 
-    return range(31, i => {
-      // Format a UTC date in order to avoid DST issues.
-      const date = LuxonDateTime.utc(2017, 1, i + 1).toJSDate();
-
-      // Strip out unicode LTR and RTL characters. Edge and IE insert these into formatted
-      // dates while other browsers do not. We remove them to make output consistent and
-      // because they interfere with date parsing.
-      return dtf.format(date).replace(/[\u200e\u200f]/g, '');
-    });
+    // Format a UTC date in order to avoid DST issues.
+    return range(31, i => dtf.format(LuxonDateTime.utc(2017, 1, i + 1).toJSDate()));
   }
 
   getDayOfWeekNames(style: 'long' | 'short' | 'narrow'): string[] {
