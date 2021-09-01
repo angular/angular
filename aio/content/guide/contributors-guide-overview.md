@@ -31,4 +31,9 @@ Before you get started with your contributions, we recommend that you review [Co
     <p>Review the syntax and styles used within the Angular documentation set.</p>
     <p class="card-footer">Get to know the writing style</p>
   </a>
+  <a href="guide/localizing-angular" class="docs-card" title="Angular localization guidelines">
+    <section>Angular localization guidelines</section>
+    <p>Learn about the guidelines for localizing Angular documentation.</p>
+    <p class="card-footer">Localize documentation</p>
+  </a>
 </div>
