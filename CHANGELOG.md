@@ -1,3 +1,13 @@
+<a name="12.2.4"></a>
+# 12.2.4 (2021-09-01)
+### compiler-cli
+| Commit | Description |
+| -- | -- |
+| [8233906be2](https://github.com/angular/angular/commit/8233906be25e19da6d8115094616d3e4b5e36fea) | fix: Emit type annotations for synthesized decorator fields ([#43021](https://github.com/angular/angular/pull/43021)) |
+## Special Thanks:
+Andrew Scott, Daniel Trevino, George Kalpakas, Joey Perrott, Kristiyan Kostadinov, nickreid and segunb
+
+
 <a name="13.0.0-next.3"></a>
 # 13.0.0-next.3 (2021-08-25)
 ## Breaking Changes
