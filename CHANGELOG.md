@@ -1,3 +1,21 @@
+<a name="13.0.0-next.3"></a>
+# 13.0.0-next.3 "pith-panther" (2021-09-01)
+## Breaking Changes
+### material
+- * Material now requires at least version 1.34.0 of Sass. Version 1.38.0 is recommended.
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ab6e12f4d7](https://github.com/angular/components/commit/ab6e12f4d7a196e4eb69b7b5740eb6094432a809) | fix | **tabs:** tab header border reset when parent has a background color ([#23450](https://github.com/angular/components/pull/23450)) |
+| [40f0674e39](https://github.com/angular/components/commit/40f0674e3959d53cd6413cf3a5c30053ca0973d9) | refactor | **core:** update minimum required sass version and clean up workarounds ([#23414](https://github.com/angular/components/pull/23414)) |
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [829e095524](https://github.com/angular/components/commit/829e09552418d392a2d716aea8b4518b388c7167) | fix | **testing:** fix value stringification in harnesses ([#23421](https://github.com/angular/components/pull/23421)) |
+## Special Thanks
+Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner and Rameshwor Shrestha
+
+
 <a name="12.2.4"></a>
 # 12.2.4 "pulp-porpoise" (2021-09-01)
 ### cdk
