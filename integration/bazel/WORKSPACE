@@ -5,18 +5,18 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Fetch rules_nodejs so we can install our npm dependencies
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "659dfa20721ff324d5e9d198d8bf3d8c74ef6563a7223d9c4974a0ca1e66dbf0",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/4.0.0-rc.0/rules_nodejs-4.0.0-rc.0.tar.gz"],
+    sha256 = "8a7c981217239085f78acc9898a1f7ba99af887c1996ceb3b4504655383a2c3c",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/4.0.0/rules_nodejs-4.0.0.tar.gz"],
 )
 
 # Fetch sass rules for compiling sass files
 http_archive(
     name = "io_bazel_rules_sass",
-    sha256 = "8fe68fe0e651a7546db281671ff600ac7a662b81326886f47602bcedbe70fa90",
-    strip_prefix = "rules_sass-1.38.1",
+    sha256 = "334b2ad87c13109486a8bfdc8d80d90e4ce6a4528bc6fb090b021ec87c2c3080",
+    strip_prefix = "rules_sass-1.39.0",
     urls = [
-        "https://github.com/bazelbuild/rules_sass/archive/1.38.1.zip",
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_sass/archive/1.38.1.zip",
+        "https://github.com/bazelbuild/rules_sass/archive/1.39.0.zip",
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_sass/archive/1.39.0.zip",
     ],
 )
 
@@ -60,13 +60,7 @@ browser_repositories(
     firefox = True,
 )
 
-# TODO(devversion): remove workaround once `rules_sass` supports v4 of the Bazel NodeJS rules.
-# For now, we ust replicate the original `sass_repositories` call and manually add the
-# `--ignore-scripts` Yarn argument to not run the postinstall version check of `@bazel/worker`
-yarn_install(
-    name = "build_bazel_rules_sass_deps",
-    args = ["--ignore-scripts"],
-    package_json = "@io_bazel_rules_sass//sass:package.json",
-    symlink_node_modules = False,
-    yarn_lock = "@io_bazel_rules_sass//sass:yarn.lock",
-)
+# Setup the rules_sass toolchain
+load("@io_bazel_rules_sass//:defs.bzl", "sass_repositories")
+
+sass_repositories()
