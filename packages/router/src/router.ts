@@ -352,16 +352,6 @@ function defaultRouterHook(snapshot: RouterStateSnapshot, runExtras: {
 }
 
 /**
- * Information related to a location change, necessary for scheduling follow-up Router navigations.
- */
-type LocationChangeInfo = {
-  source: 'popstate'|'hashchange',
-  urlTree: UrlTree,
-  state: RestoredState|null,
-  transitionId: number
-};
-
-/**
  * The equivalent `IsActiveMatchOptions` options for `Router.isActive` is called with `true`
  * (exact = true).
  */
@@ -407,11 +397,6 @@ export class Router {
   private disposed = false;
 
   private locationSubscription?: SubscriptionLike;
-  /**
-   * Tracks the previously seen location change from the location subscription so we can compare
-   * the two latest to see if they are duplicates. See setUpLocationChangeListener.
-   */
-  private lastLocationChangeInfo: LocationChangeInfo|null = null;
   private navigationId: number = 0;
 
   /**
@@ -1039,13 +1024,15 @@ export class Router {
     // run into ngZone
     if (!this.locationSubscription) {
       this.locationSubscription = this.location.subscribe(event => {
-        const currentChange = this.extractLocationChangeInfoFromEvent(event);
-        // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
-        // hybrid apps.
-        if (this.shouldScheduleNavigation(this.lastLocationChangeInfo, currentChange)) {
+        const source = event['type'] === 'popstate' ? 'popstate' : 'hashchange';
+        if (source === 'popstate') {
+          // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
+          // hybrid apps.
           setTimeout(() => {
-            const {source, state, urlTree} = currentChange;
             const extras: NavigationExtras = {replaceUrl: true};
+            // Navigations coming from Angular router have a navigationId state
+            // property. When this exists, restore the state.
+            const state = event.state?.navigationId ? event.state : null;
             if (state) {
               const stateCopy = {...state} as Partial<RestoredState>;
               delete stateCopy.navigationId;
@@ -1054,48 +1041,12 @@ export class Router {
                 extras.state = stateCopy;
               }
             }
+            const urlTree = this.parseUrl(event['url']!);
             this.scheduleNavigation(urlTree, source, state, extras);
           }, 0);
         }
-        this.lastLocationChangeInfo = currentChange;
       });
     }
-  }
-
-  /** Extracts router-related information from a `PopStateEvent`. */
-  private extractLocationChangeInfoFromEvent(change: PopStateEvent): LocationChangeInfo {
-    return {
-      source: change['type'] === 'popstate' ? 'popstate' : 'hashchange',
-      urlTree: this.parseUrl(change['url']!),
-      // Navigations coming from Angular router have a navigationId state
-      // property. When this exists, restore the state.
-      state: change.state?.navigationId ? change.state : null,
-      transitionId: this.getTransition().id
-    } as const;
-  }
-
-  /**
-   * Determines whether two events triggered by the Location subscription are due to the same
-   * navigation. The location subscription can fire two events (popstate and hashchange) for a
-   * single navigation. The second one should be ignored, that is, we should not schedule another
-   * navigation in the Router.
-   */
-  private shouldScheduleNavigation(previous: LocationChangeInfo|null, current: LocationChangeInfo):
-      boolean {
-    if (!previous) return true;
-
-    const sameDestination = current.urlTree.toString() === previous.urlTree.toString();
-    const eventsOccurredAtSameTime = current.transitionId === previous.transitionId;
-    if (!eventsOccurredAtSameTime || !sameDestination) {
-      return true;
-    }
-
-    if ((current.source === 'hashchange' && previous.source === 'popstate') ||
-        (current.source === 'popstate' && previous.source === 'hashchange')) {
-      return false;
-    }
-
-    return true;
   }
 
   /** The current URL. */
