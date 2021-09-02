@@ -4500,10 +4500,10 @@ devtools-protocol@0.0.869402:
   resolved "https://registry.yarnpkg.com/devtools-protocol/-/devtools-protocol-0.0.869402.tgz#03ade701761742e43ae4de5dc188bcd80f156d8d"
   integrity sha512-VvlVYY+VDJe639yHs5PHISzdWTLL3Aw8rO4cvUtwvoxFd6FHbE4OpHHcde52M6096uYYazAmd4l0o5VuFRO2WA==
 
-dgeni-packages@^0.29.1:
-  version "0.29.1"
-  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.29.1.tgz#7e8b2914ef7844e6a346bd14bd27c733cc7c5d16"
-  integrity sha512-lZvCv1G7Ngjf5Lp+oqbnJWKVe4UBnPsmqHRprsu3EMoLyzSW1kQdFl72B+r2cCALeQXGhNeDyAIGrJnAQs/roA==
+dgeni-packages@^0.29.2:
+  version "0.29.2"
+  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.29.2.tgz#3b4af98156e50a850ca26a48c55d6d608b454ae5"
+  integrity sha512-vUR4OqSVqzbH4hTdIc7WWynTJ92XQXfdtgLoIFa9cfYRElWSTWkNsUa5+MWM/oNChusfNkFoIyRrNgNHvliWIw==
   dependencies:
     canonical-path "^1.0.0"
     catharsis "^0.8.1"
