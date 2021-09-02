@@ -841,6 +841,17 @@ describe('completions', () => {
       expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title']);
       expectReplacementText(completions, templateFile.contents, 'title');
     });
+
+    it('should not shift the start location when the user has input the optional chaining', () => {
+      const {templateFile} = setup('{{article?.title}}', `article?: { title: string };`);
+      templateFile.moveCursorToText('{{article?.title¦}}');
+      const completions = templateFile.getCompletionsAtPosition({
+        includeCompletionsWithInsertText: true,
+        includeAutomaticOptionalChainCompletions: true,
+      });
+      expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title']);
+      expectReplacementText(completions, templateFile.contents, 'title');
+    });
   });
 });
 

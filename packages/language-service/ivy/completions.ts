@@ -212,7 +212,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       const replacementSpan = makeReplacementSpanFromAst(this.node);
 
       if (!(this.node.receiver instanceof ImplicitReceiver) &&
-          options?.includeCompletionsWithInsertText &&
+          !(this.node instanceof SafePropertyRead) && options?.includeCompletionsWithInsertText &&
           options.includeAutomaticOptionalChainCompletions !== false) {
         const symbol = this.templateTypeChecker.getSymbolOfNode(this.node.receiver, this.component);
         if (symbol?.kind === SymbolKind.Expression) {
