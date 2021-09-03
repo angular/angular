@@ -540,14 +540,14 @@ export class AsyncFunctionVisitor {
    */
   private createGeneratorFunction(asyncFn: AsyncFunction, asyncScope: AsyncSuperScope|null):
       ts.Expression {
+    const generatorName = this.computeGeneratorName(asyncFn);
     if (asyncScope === null || !asyncScope.hasSuperAccess) {
       // No super accesses in this async function so we can hoist the generator outside the body.
-      const generatorName = this.computeGeneratorName(asyncFn);
       const generatorFn = this.createGeneratorFunctionDeclaration(asyncFn, generatorName);
       this.context.hoistFunctionDeclaration(generatorFn);
       return generatorName;
     } else {
-      return this.createGeneratorFunctionExpression(asyncFn);
+      return this.createGeneratorFunctionExpression(asyncFn, generatorName);
     }
   }
 
@@ -568,12 +568,14 @@ export class AsyncFunctionVisitor {
   /**
    * Create the generator function expression that will replace the async function.
    */
-  private createGeneratorFunctionExpression(asyncFn: AsyncFunction): ts.FunctionExpression {
+  private createGeneratorFunctionExpression(asyncFn: AsyncFunction, generatorName: ts.Identifier):
+      ts.FunctionExpression {
     const star = this.factory.createToken(ts.SyntaxKind.AsteriskToken);
     const generatorBody = this.createGeneratorBody(asyncFn);
 
     const generatorFn = this.factory.createFunctionExpression(
-        NO_MODIFIERS, star, '', NO_TYPE_PARAMETERS, asyncFn.parameters, NO_TYPE, generatorBody);
+        NO_MODIFIERS, star, generatorName, NO_TYPE_PARAMETERS, asyncFn.parameters, NO_TYPE,
+        generatorBody);
     return generatorFn;
   }
 
