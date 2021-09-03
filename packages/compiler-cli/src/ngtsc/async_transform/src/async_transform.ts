@@ -541,7 +541,7 @@ export class AsyncFunctionVisitor {
   private createGeneratorFunction(asyncFn: AsyncFunction, asyncScope: AsyncSuperScope|null):
       ts.Expression {
     const generatorName = this.computeGeneratorName(asyncFn);
-    if (asyncScope === null || !asyncScope.hasSuperAccess) {
+    if (canBeHoisted(asyncFn, asyncScope)) {
       // No super accesses in this async function so we can hoist the generator outside the body.
       const generatorFn = this.createGeneratorFunctionDeclaration(asyncFn, generatorName);
       this.context.hoistFunctionDeclaration(generatorFn);
@@ -638,4 +638,51 @@ export class AsyncFunctionVisitor {
     return ts.isBlock(body) ? body :
                               this.factory.createBlock([this.factory.createReturnStatement(body)]);
   }
+}
+
+/**
+ * Can the generator for the given `asyncFn`, within the given `asyncScope`, be hoisted to the top
+ * of the current lexical scope?
+ */
+function canBeHoisted(asyncFn: AsyncFunction, asyncScope: AsyncSuperScope|null): boolean {
+  asyncFn = ts.getOriginalNode(asyncFn, isAsyncFunction);
+  return !asyncScope?.hasSuperAccess &&
+      (isTopLevelFunctionDeclaration(asyncFn) || isTopLevelFunctionExpression(asyncFn) ||
+       isMemberOfTopLevelClass(asyncFn));
+}
+
+/**
+ * Is the given `asyncFn` a function declaration defined at the top level of a file?
+ */
+function isTopLevelFunctionDeclaration(asyncFn: AsyncFunction): boolean {
+  return ts.isFunctionDeclaration(asyncFn) && asyncFn.parent !== undefined &&
+      ts.isSourceFile(asyncFn.parent);
+}
+
+/**
+ * Is the given `asyncFn` a function expression (or arrow function) defined as the initializer of a
+ * top level variable declaration?
+ */
+function isTopLevelFunctionExpression(asyncFn: AsyncFunction): boolean {
+  if (!ts.isFunctionExpression(asyncFn) && !ts.isArrowFunction(asyncFn)) {
+    return false;
+  }
+  let node = asyncFn.parent;
+  while (node !== undefined &&
+         (ts.isVariableDeclaration(node) || ts.isVariableDeclarationList(node) ||
+          ts.isVariableStatement(node))) {
+    node = node.parent;
+  }
+  return ts.isSourceFile(node);
+}
+
+/**
+ * Is the given `asyncFn` a member of class, which is declared at the top level of a file?
+ */
+function isMemberOfTopLevelClass(asyncFn: AsyncFunction): boolean {
+  const classNode = ts.isMethodDeclaration(asyncFn) ?
+      asyncFn.parent :
+      ts.isPropertyDeclaration(asyncFn.parent) ? asyncFn.parent?.parent : undefined;
+  return classNode !== undefined && ts.isClassDeclaration(classNode) &&
+      classNode.parent !== undefined && ts.isSourceFile(classNode.parent);
 }

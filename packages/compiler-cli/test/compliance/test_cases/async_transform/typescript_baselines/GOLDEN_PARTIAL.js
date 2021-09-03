@@ -1,12 +1,11 @@
 /****************************************************************************************************
  * PARTIAL FILE: asyncFunctionsAcrossFiles/b.js
  ****************************************************************************************************/
-function* f_generator() {
-    yield a.f();
-}
 import { a } from './a';
 export const b = {
-    f: () => Zone.__awaiter(this, [], f_generator)
+    f: () => Zone.__awaiter(this, [], function* f_generator() {
+        yield a.f();
+    })
 };
 
 /****************************************************************************************************
@@ -19,12 +18,11 @@ export declare const b: {
 /****************************************************************************************************
  * PARTIAL FILE: asyncFunctionsAcrossFiles/a.js
  ****************************************************************************************************/
-function* f_generator() {
-    yield b.f();
-}
 import { b } from './b';
 export const a = {
-    f: () => Zone.__awaiter(this, [], f_generator)
+    f: () => Zone.__awaiter(this, [], function* f_generator() {
+        yield b.f();
+    })
 };
 
 /****************************************************************************************************
@@ -108,12 +106,11 @@ declare var await: () => void;
 class C {
     method() {
         const ɵarguments = arguments;
-        function* asyncArrow_generator(foo) {
+        function other() { }
+        var asyncArrow = (foo) => Zone.__awaiter(this, [foo], function* asyncArrow_generator(foo) {
             yield foo;
             yield other.apply(this, ɵarguments);
-        }
-        function other() { }
-        var asyncArrow = (foo) => Zone.__awaiter(this, [foo], asyncArrow_generator);
+        });
         const localArgs = arguments;
         const syncArrow = (foo) => {
             other.apply(this, arguments);
@@ -133,8 +130,7 @@ declare class C {
  ****************************************************************************************************/
 class C {
     method() {
-        function* fn_generator() { return yield this; }
-        var fn = () => Zone.__awaiter(this, [], fn_generator);
+        var fn = () => Zone.__awaiter(this, [], function* fn_generator() { return yield this; });
     }
 }
 
@@ -164,9 +160,6 @@ function* f13_generator() { return p; }
 function* m1_generator() { }
 function* m2_generator() { }
 function* m3_generator() { }
-function* m1_generator_1() { }
-function* m2_generator_1() { }
-function* m3_generator_1() { }
 function* m4_generator() { }
 function* m5_generator() { }
 function* m6_generator() { }
@@ -202,21 +195,21 @@ let f11 = () => Zone.__awaiter(this, [], f11_generator);
 let f12 = () => Zone.__awaiter(this, [], f12_generator);
 let f13 = () => Zone.__awaiter(this, [], f13_generator);
 let o = { m1() {
-        return Zone.__awaiter(this, [], m1_generator);
+        return Zone.__awaiter(this, [], function* m1_generator_1() { });
     }, m2() {
-        return Zone.__awaiter(this, [], m2_generator);
+        return Zone.__awaiter(this, [], function* m2_generator_1() { });
     }, m3() {
-        return Zone.__awaiter(this, [], m3_generator);
+        return Zone.__awaiter(this, [], function* m3_generator_1() { });
     } };
 class C {
     m1() {
-        return Zone.__awaiter(this, [], m1_generator_1);
+        return Zone.__awaiter(this, [], m1_generator);
     }
     m2() {
-        return Zone.__awaiter(this, [], m2_generator_1);
+        return Zone.__awaiter(this, [], m2_generator);
     }
     m3() {
-        return Zone.__awaiter(this, [], m3_generator_1);
+        return Zone.__awaiter(this, [], m3_generator);
     }
     static m4() {
         return Zone.__awaiter(this, [], m4_generator);
@@ -230,9 +223,8 @@ class C {
 }
 var M;
 (function (M) {
-    function* f1_generator_1() { }
     function f1() {
-        return Zone.__awaiter(this, [], f1_generator_1);
+        return Zone.__awaiter(this, [], function* f1_generator_1() { });
     }
     M.f1 = f1;
 })(M || (M = {}));
@@ -572,11 +564,10 @@ declare function fGenericIndexedTypeForExplicitPromiseOfKProp<TObj extends Obj, 
  * PARTIAL FILE: asyncIIFE.js
  ****************************************************************************************************/
 function f1() {
-    function* anonymous_generator() {
+    (() => Zone.__awaiter(this, [], function* anonymous_generator() {
         yield 10;
         throw new Error();
-    }
-    (() => Zone.__awaiter(this, [], anonymous_generator))();
+    }))();
     var x = 1;
 }
 

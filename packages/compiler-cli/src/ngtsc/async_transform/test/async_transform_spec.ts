@@ -313,12 +313,13 @@ runInEachFileSystem(() => {
       };
       const emittedContent = emitProgram(testFile);
       expect(emittedContent.split(/\r?\n/g)).toEqual([
+        // Note that the top level async function gets its generator hoisted
         'function* outer_generator(x, y) {',
-        '    function* inner_generator(a, b) {',
-        '        return yield 300;',
-        '    }',
         '    function inner(a, b) {',
-        '        return Zone.__awaiter(this, [a, b], inner_generator);',
+        // while the nested async function's generator is inline.
+        '        return Zone.__awaiter(this, [a, b], function* inner_generator(a, b) {',
+        '            return yield 300;',
+        '        });',
         '    }',
         '    yield inner(x, y);',
         '}',
@@ -663,7 +664,9 @@ runInEachFileSystem(() => {
       expect(emittedContent.split(/\r?\n/g)).toEqual([
         'function foo() {',
         '    const ɵarguments = arguments;',
-        '    function* asyncArrow_generator(foo) {',
+        '    let obj = { arguments: [] };',
+        '    function other() { }',
+        '    var asyncArrow = (foo) => Zone.__awaiter(this, [foo], function* asyncArrow_generator(foo) {',
         '        yield foo;',
         '        yield other.apply(this, ɵarguments);',
         '        ɵarguments?.[0]?.toString();',
@@ -672,31 +675,25 @@ runInEachFileSystem(() => {
         '        obj.arguments;',
         '        obj = { arguments: {} };',
         '        obj = { arguments: ɵarguments };',
-        '    }',
-        '    function* asyncArrow2_generator() {',
+        '    });',
+        '    var asyncArrow2 = () => Zone.__awaiter(this, [], function* asyncArrow2_generator() {',
         '        class arguments {',
         '            arguments() { }',
         '        }',
-        '    }',
-        '    function* asyncArrow3_generator() {',
+        '    });',
+        '    var asyncArrow3 = () => Zone.__awaiter(this, [], function* asyncArrow3_generator() {',
         '        let arguments;',
         '        (function (arguments) {',
         '            arguments[arguments["arguments"] = 0] = "arguments";',
         '        })(arguments || (arguments = {}));',
-        '    }',
-        '    function* asyncArrow4_generator() {',
+        '    });',
+        '    var asyncArrow4 = () => Zone.__awaiter(this, [], function* asyncArrow4_generator() {',
         '        arguments: while (true) {',
         '            if (ɵarguments[0])',
         '                continue arguments;',
         '            break arguments;',
         '        }',
-        '    }',
-        '    let obj = { arguments: [] };',
-        '    function other() { }',
-        '    var asyncArrow = (foo) => Zone.__awaiter(this, [foo], asyncArrow_generator);',
-        '    var asyncArrow2 = () => Zone.__awaiter(this, [], asyncArrow2_generator);',
-        '    var asyncArrow3 = () => Zone.__awaiter(this, [], asyncArrow3_generator);',
-        '    var asyncArrow4 = () => Zone.__awaiter(this, [], asyncArrow4_generator);',
+        '    });',
         '    const localArgs = arguments;',
         '    const syncArrow = (foo) => {',
         '        other.apply(this, arguments);',
@@ -722,16 +719,211 @@ runInEachFileSystem(() => {
          const emittedContent = emitProgram(testFile);
          expect(emittedContent.split(/\r?\n/g)).toEqual([
            'function foo() {',
-           '    function* asyncArrow_generator() {',
+           '    const asyncArrow = () => Zone.__awaiter(this, [], function* asyncArrow_generator() {',
            '        function innerFunction() {',
            '            const x = arguments[0];',
            '        }',
-           '    }',
-           '    const asyncArrow = () => Zone.__awaiter(this, [], asyncArrow_generator);',
+           '    });',
            '}',
            '',
          ]);
        });
+
+    describe('generator hoisting', () => {
+      it('should hoist generators for top-level async functions', () => {
+        const testFile = {
+          name: _('/test.ts'),
+          contents: [
+            'async function fn1() {',
+            '  return 100;',
+            '}',
+            'const fn2 = async function fn2() {',
+            '  return 100;',
+            '};',
+            'const fn3 = async () => {',
+            '  return 100;',
+            '};',
+          ].join('\n')
+        };
+        const emittedContent = emitProgram(testFile);
+        expect(emittedContent.split(/\r?\n/g)).toEqual([
+          'function* fn1_generator() {',
+          '    return 100;',
+          '}',
+          'function* fn2_generator() {',
+          '    return 100;',
+          '}',
+          'function* fn3_generator() {',
+          '    return 100;',
+          '}',
+          'function fn1() {',
+          '    return Zone.__awaiter(this, [], fn1_generator);',
+          '}',
+          'const fn2 = function fn2() {',
+          '    return Zone.__awaiter(this, [], fn2_generator);',
+          '};',
+          'const fn3 = () => Zone.__awaiter(this, [], fn3_generator);',
+          '',
+        ]);
+      });
+
+      it('should not hoist generators for functions that are not top-level', () => {
+        const testFile = {
+          name: _('/test.ts'),
+          contents: [
+            'function outer() {',
+            '  async function fn1() {',
+            '    return 100;',
+            '  }',
+            '  const fn2 = async function fn2() {',
+            '    return 100;',
+            '  };',
+            '  const fn3 = async () => {',
+            '    return 100;',
+            '  };',
+            '}',
+            'if (true) {',
+            '  async function fn4() {',
+            '    return 100;',
+            '  }',
+            '}',
+          ].join('\n')
+        };
+        const emittedContent = emitProgram(testFile);
+        expect(emittedContent.split(/\r?\n/g)).toEqual([
+          'function outer() {',
+          '    function fn1() {',
+          '        return Zone.__awaiter(this, [], function* fn1_generator() {',
+          '            return 100;',
+          '        });',
+          '    }',
+          '    const fn2 = function fn2() {',
+          '        return Zone.__awaiter(this, [], function* fn2_generator() {',
+          '            return 100;',
+          '        });',
+          '    };',
+          '    const fn3 = () => Zone.__awaiter(this, [], function* fn3_generator() {',
+          '        return 100;',
+          '    });',
+          '}',
+          'if (true) {',
+          '    function fn4() {',
+          '        return Zone.__awaiter(this, [], function* fn4_generator() {',
+          '            return 100;',
+          '        });',
+          '    }',
+          '}',
+          '',
+        ]);
+      });
+
+      it('should hoist generators for async functions that are members of top-level classes',
+         () => {
+           const testFile = {
+             name: _('/test.ts'),
+             contents: [
+               'class Test {',
+               '  static async fn0() {',
+               '    return 100;',
+               '  }',
+               '  async fn1() {',
+               '    return 100;',
+               '  }',
+               '  fn2 = async function fn2() {',
+               '    return 100;',
+               '  }',
+               '  fn3 = async () => {',
+               '    return 100;',
+               '  }',
+               '}',
+             ].join('\n')
+           };
+           const emittedContent = emitProgram(testFile);
+           expect(emittedContent.split(/\r?\n/g)).toEqual([
+             'function* fn0_generator() {',
+             '    return 100;',
+             '}',
+             'function* fn1_generator() {',
+             '    return 100;',
+             '}',
+             'class Test {',
+             '    constructor() {',
+             '        function* fn2_generator() {',
+             '            return 100;',
+             '        }',
+             '        function* fn3_generator() {',
+             '            return 100;',
+             '        }',
+             '        this.fn2 = function fn2() {',
+             '            return Zone.__awaiter(this, [], fn2_generator);',
+             '        };',
+             '        this.fn3 = () => Zone.__awaiter(this, [], fn3_generator);',
+             '    }',
+             '    static fn0() {',
+             '        return Zone.__awaiter(this, [], fn0_generator);',
+             '    }',
+             '    fn1() {',
+             '        return Zone.__awaiter(this, [], fn1_generator);',
+             '    }',
+             '}',
+             '',
+           ]);
+         });
+
+
+      it('should not hoist generators for async functions that are members of non-top-level classes',
+         () => {
+           const testFile = {
+             name: _('/test.ts'),
+             contents: [
+               'function outer() {',
+               '  class Test {',
+               '    static async fn0() {',
+               '      return 100;',
+               '    }',
+               '    async fn1() {',
+               '      return 100;',
+               '    }',
+               '    fn2 = async function fn2() {',
+               '      return 100;',
+               '    }',
+               '    fn3 = async () => {',
+               '      return 100;',
+               '    }',
+               '  }',
+               '}',
+             ].join('\n')
+           };
+           const emittedContent = emitProgram(testFile);
+           expect(emittedContent.split(/\r?\n/g)).toEqual([
+             'function outer() {',
+             '    class Test {',
+             '        constructor() {',
+             '            this.fn2 = function fn2() {',
+             '                return Zone.__awaiter(this, [], function* fn2_generator() {',
+             '                    return 100;',
+             '                });',
+             '            };',
+             '            this.fn3 = () => Zone.__awaiter(this, [], function* fn3_generator() {',
+             '                return 100;',
+             '            });',
+             '        }',
+             '        static fn0() {',
+             '            return Zone.__awaiter(this, [], function* fn0_generator() {',
+             '                return 100;',
+             '            });',
+             '        }',
+             '        fn1() {',
+             '            return Zone.__awaiter(this, [], function* fn1_generator() {',
+             '                return 100;',
+             '            });',
+             '        }',
+             '    }',
+             '}',
+             '',
+           ]);
+         });
+    });
   });
 
   function emitProgram(testFile: Parameters<typeof makeProgram>[0][0]): string {

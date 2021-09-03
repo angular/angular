@@ -14,9 +14,6 @@ function* f13_generator() { return p; }
 function* m1_generator() { }
 function* m2_generator() { }
 function* m3_generator() { }
-function* m1_generator_1() { }
-function* m2_generator_1() { }
-function* m3_generator_1() { }
 function* m4_generator() { }
 function* m5_generator() { }
 function* m6_generator() { }
@@ -53,24 +50,24 @@ let f12 = () => Zone.__awaiter(this, [], f12_generator);
 let f13 = () => Zone.__awaiter(this, [], f13_generator);
 let o = {
     m1() {
-        return Zone.__awaiter(this, [], m1_generator);
+        return Zone.__awaiter(this, [], function* m1_generator_1() { });
     },
     m2() {
-        return Zone.__awaiter(this, [], m2_generator);
+        return Zone.__awaiter(this, [], function* m2_generator_1() { });
     },
     m3() {
-        return Zone.__awaiter(this, [], m3_generator);
+        return Zone.__awaiter(this, [], function* m3_generator_1() { });
     }
 };
 class C {
     m1() {
-        return Zone.__awaiter(this, [], m1_generator_1);
+        return Zone.__awaiter(this, [], m1_generator);
     }
     m2() {
-        return Zone.__awaiter(this, [], m2_generator_1);
+        return Zone.__awaiter(this, [], m2_generator);
     }
     m3() {
-        return Zone.__awaiter(this, [], m3_generator_1);
+        return Zone.__awaiter(this, [], m3_generator);
     }
     static m4() {
         return Zone.__awaiter(this, [], m4_generator);
@@ -84,9 +81,8 @@ class C {
 }
 var M;
 (function (M) {
-    function* f1_generator_1() { }
     function f1() {
-        return Zone.__awaiter(this, [], f1_generator_1);
+        return Zone.__awaiter(this, [], function* f1_generator_1() { });
     }
     M.f1 = f1;
 })(M || (M = {}));

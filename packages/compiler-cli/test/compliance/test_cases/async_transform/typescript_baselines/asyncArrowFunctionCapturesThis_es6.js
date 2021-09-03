@@ -1,6 +1,5 @@
 class C {
     method() {
-        function* fn_generator() { return yield this; }
-        var fn = () => Zone.__awaiter(this, [], fn_generator);
+        var fn = () => Zone.__awaiter(this, [], function* fn_generator() { return yield this; });
     }
 }
