@@ -5831,6 +5831,60 @@ describe('Integration', () => {
       expect(router.routeReuseStrategy).toBeInstanceOf(AttachDetachReuseStrategy);
     });
 
+    it('should emit an event when an outlet gets attached/detached', fakeAsync(() => {
+         @Component({
+           selector: 'container',
+           template:
+               `<router-outlet (attach)="recordAttached($event)" (detach)="recordDetached($event)"></router-outlet>`
+         })
+         class Container {
+           attachedComponents: any[] = [];
+           detachedComponents: any[] = [];
+
+           recordAttached(component: any): void {
+             this.attachedComponents.push(component);
+           }
+
+           recordDetached(component: any): void {
+             this.detachedComponents.push(component);
+           }
+         }
+
+         TestBed.configureTestingModule({
+           declarations: [Container],
+           imports: [RouterTestingModule],
+           providers: [{provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy}]
+         });
+
+         const router = TestBed.inject(Router);
+         const fixture = createRoot(router, Container);
+         const cmp = fixture.componentInstance;
+
+         router.resetConfig([{path: 'a', component: BlankCmp}, {path: 'b', component: SimpleCmp}]);
+
+         cmp.attachedComponents = [];
+         cmp.detachedComponents = [];
+
+         router.navigateByUrl('/a');
+         advance(fixture);
+         expect(cmp.attachedComponents.length).toEqual(0);
+         expect(cmp.detachedComponents.length).toEqual(0);
+
+         router.navigateByUrl('/b');
+         advance(fixture);
+         expect(cmp.attachedComponents.length).toEqual(0);
+         expect(cmp.detachedComponents.length).toEqual(1);
+         expect(cmp.detachedComponents[0] instanceof BlankCmp).toBe(true);
+
+         // the route will be reused by the `RouteReuseStrategy`
+         router.navigateByUrl('/a');
+         advance(fixture);
+         expect(cmp.attachedComponents.length).toEqual(1);
+         expect(cmp.attachedComponents[0] instanceof BlankCmp).toBe(true);
+         expect(cmp.detachedComponents.length).toEqual(1);
+         expect(cmp.detachedComponents[0] instanceof BlankCmp).toBe(true);
+       }));
+
     it('should support attaching & detaching fragments',
        fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
          const fixture = createRoot(router, RootCmp);

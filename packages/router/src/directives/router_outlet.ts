@@ -81,6 +81,18 @@ export interface RouterOutletContract {
    * Emits a deactivate event when a component is destroyed.
    */
   deactivateEvents?: EventEmitter<unknown>;
+
+  /**
+   * Emits an attached component instance when the `RouteReuseStrategy` instructs to re-attach a
+   * previously detached subtree.
+   **/
+  attachEvents?: EventEmitter<unknown>;
+
+  /**
+   * Emits a detached component instance when the `RouteReuseStrategy` instructs to detach the
+   * subtree.
+   */
+  detachEvents?: EventEmitter<unknown>;
 }
 
 /**
@@ -113,12 +125,17 @@ export interface RouterOutletContract {
  * `http://base-path/primary-route-path(outlet-name:route-path)`
  *
  * A router outlet emits an activate event when a new component is instantiated,
- * and a deactivate event when a component is destroyed.
+ * deactivate event when a component is destroyed.
+ * An attached event emits when the `RouteReuseStrategy` instructs the outlet to reattach the
+ * subtree, and the detached event emits when the `RouteReuseStrategy` instructs the outlet to
+ * detach the subtree.
  *
  * ```
  * <router-outlet
  *   (activate)='onActivate($event)'
- *   (deactivate)='onDeactivate($event)'></router-outlet>
+ *   (deactivate)='onDeactivate($event)'
+ *   (attach)='onAttach($event)'
+ *   (detach)='onDetach($event)'></router-outlet>
  * ```
  *
  * @see [Routing tutorial](guide/router-tutorial-toh#named-outlets "Example of a named
@@ -137,6 +154,16 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
 
   @Output('activate') activateEvents = new EventEmitter<any>();
   @Output('deactivate') deactivateEvents = new EventEmitter<any>();
+  /**
+   * Emits an attached component instance when the `RouteReuseStrategy` instructs to re-attach a
+   * previously detached subtree.
+   **/
+  @Output('attach') attachEvents = new EventEmitter<unknown>();
+  /**
+   * Emits a detached component instance when the `RouteReuseStrategy` instructs to detach the
+   * subtree.
+   */
+  @Output('detach') detachEvents = new EventEmitter<unknown>();
 
   constructor(
       private parentContexts: ChildrenOutletContexts, private location: ViewContainerRef,
@@ -203,6 +230,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     const cmp = this.activated;
     this.activated = null;
     this._activatedRoute = null;
+    this.detachEvents.emit(cmp.instance);
     return cmp;
   }
 
@@ -213,6 +241,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     this.activated = ref;
     this._activatedRoute = activatedRoute;
     this.location.insert(ref.hostView);
+    this.attachEvents.emit(ref.instance);
   }
 
   deactivate(): void {

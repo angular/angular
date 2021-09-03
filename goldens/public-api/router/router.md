@@ -615,6 +615,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     // (undocumented)
     activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver | null): void;
     attach(ref: ComponentRef<any>, activatedRoute: ActivatedRoute): void;
+    attachEvents: EventEmitter<unknown>;
     // (undocumented)
     get component(): Object;
     // (undocumented)
@@ -622,6 +623,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     // (undocumented)
     deactivateEvents: EventEmitter<any>;
     detach(): ComponentRef<any>;
+    detachEvents: EventEmitter<unknown>;
     // (undocumented)
     get isActivated(): boolean;
     // (undocumented)
@@ -637,10 +639,12 @@ export interface RouterOutletContract {
     activateEvents?: EventEmitter<unknown>;
     activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver | null): void;
     attach(ref: ComponentRef<unknown>, activatedRoute: ActivatedRoute): void;
+    attachEvents?: EventEmitter<unknown>;
     component: Object | null;
     deactivate(): void;
     deactivateEvents?: EventEmitter<unknown>;
     detach(): ComponentRef<unknown>;
+    detachEvents?: EventEmitter<unknown>;
     isActivated: boolean;
 }
 
