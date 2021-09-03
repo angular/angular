@@ -178,7 +178,7 @@ export class AsyncFunctionVisitor {
     }
 
     if (isSuperContainer(node) && superScope !== null && superScope.hasSuperAccess) {
-      // Convert the `super` container to include `super` proxies if there were access to `super`
+      // Convert the `super` container to include `super` proxies if there were accesses to `super`
       // from within an `async` function in this scope.
       node = this.addSuperProxies(node, superScope);
     }
@@ -283,19 +283,19 @@ export class AsyncFunctionVisitor {
    *
    * It is not possible to transform the `super` accesses as part of the larger AST traversal, since
    * is it only known whether the `super` "element" accesses must support "writes" as well as
-   * "reads" after all node in the scope have been traversed.
+   * "reads" after all nodes in the scope have been traversed.
    */
   private addSuperProxies(node: SuperContainer, superScope: AsyncSuperScope): SuperContainer {
     const superAccessesVisitor = new TransformSuperElementAccessesVisitor(this.context, superScope);
     const container = ts.visitEachChild(node, superAccessesVisitor.visitor, this.context);
 
-    const bodyStatements = [];
+    const bodyStatements: ts.Statement[] = [];
     if (superScope.hasPropertyAccess) {
       // If there are super property accesses (e.g. `super.foo`) then insert the `super` proxy
       bodyStatements.push(this.createSuperPropertyAccessProxy(superScope));
     }
 
-    // Now add the original statements frm the body, if there is one.
+    // Now add the original statements from the body, if there is one.
     if (container.body !== undefined) bodyStatements.push(...container.body.statements);
     const body = this.factory.createBlock(bodyStatements, true);
 
