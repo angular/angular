@@ -25,8 +25,8 @@ export class ArgumentsScopes extends Scopes<ArgumentsScope> {
   /**
    * Create a new instance of `AsyncArgumentsScope` based on the given `node`.
    */
-  override createScope(): ArgumentsScope {
-    return new ArgumentsScope(this);
+  override createScope(node: ts.Node): ArgumentsScope {
+    return new ArgumentsScope(this, node);
   }
 }
 
@@ -37,7 +37,7 @@ export class ArgumentsScope {
   private _argumentsAccesses = false;
   private _argumentsProxy: ts.Identifier|null = null;
 
-  constructor(private scopes: ArgumentsScopes) {}
+  constructor(private scopes: ArgumentsScopes, readonly node: ts.Node) {}
 
   /**
    * Identifier for the `arguments` proxy variable
@@ -112,7 +112,8 @@ export function isArgumentsContainer(node: ts.Node): node is ArgumentsContainer 
  *
  * Skip scenarios like `obj.arguments` and `obj = { arguments: {} }`.
  */
-export function isArgumentsAccessInAsyncArrowFn(node: ts.Node): node is ts.Identifier {
+export function isArgumentsAccessInAsyncArrowFn(
+    node: ts.Node, container: ts.Node): node is ts.Identifier {
   node = ts.getOriginalNode(node);
   const parent = node.parent;
   if (parent === undefined) {
@@ -120,18 +121,18 @@ export function isArgumentsAccessInAsyncArrowFn(node: ts.Node): node is ts.Ident
   }
   return isArgumentsIdentifier(node) && !isDeclarationName(node, parent) &&
       !isLabel(node, parent) && !isPropertyName(node, parent) && !ts.isQualifiedName(parent) &&
-      !isTagName(node, parent) && isInAsyncArrowFn(node);
+      !isTagName(node, parent) && isInAsyncArrowFn(node, container);
 }
 
 /**
  * Test to see if the given `node` is a shorthand property assignment named `arguments` within an
  * "async arrow" function. E.g. `{ arguments }`.
  */
-export function isShorthandArgumentsInAsyncArrowFn(node: ts.Node):
+export function isShorthandArgumentsInAsyncArrowFn(node: ts.Node, container: ts.Node):
     node is ts.ShorthandPropertyAssignment&{name: ts.Identifier} {
   node = ts.getOriginalNode(node);
   return ts.isShorthandPropertyAssignment(node) && isArgumentsIdentifier(node.name) &&
-      isInAsyncArrowFn(node);
+      isInAsyncArrowFn(node, container);
 }
 
 /**
@@ -142,17 +143,17 @@ function isArgumentsIdentifier(node: ts.Node): node is ts.Identifier {
 }
 
 /**
- * Test to see if this node is directly within an arrow function.
+ * Test to see if this node is directly within an async arrow function.
+ *
+ * We search up the tree from `node` looking for an async arrow function
+ * stopping if we reach the arguments `container` node.
  */
-function isInAsyncArrowFn(node: ts.Node): boolean {
-  while (node.parent !== undefined) {
+function isInAsyncArrowFn(node: ts.Node, container: ts.Node): boolean {
+  container = ts.getOriginalNode(container);
+  while (node !== container) {
     if (ts.isArrowFunction(node)) {
       // We have an arrow function with no block: `(arg1, arg2) => expression`
       return isAsync(node);
-    }
-    if (ts.isBlock(node) && ts.isArrowFunction(node.parent)) {
-      // We have an arrow function with a block: `(arg1, arg2) => { statement; statement; ... }`
-      return isAsync(node.parent);
     }
     node = node.parent;
   }

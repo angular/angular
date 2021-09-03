@@ -26,13 +26,13 @@ export abstract class Scopes<Scope> {
   /**
    * Implement this method to create a new instance of Scope based on the given `node`.
    */
-  abstract createScope(): Scope;
+  abstract createScope(node: ts.Node): Scope;
 
   /**
    * Push a scope onto the stack.
    */
-  push(): void {
-    this.scopeStack.push(this.createScope());
+  push(node: ts.Node): void {
+    this.scopeStack.push(this.createScope(node));
   }
 
   /**

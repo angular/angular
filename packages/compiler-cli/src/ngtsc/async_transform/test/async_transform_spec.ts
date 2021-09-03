@@ -705,6 +705,33 @@ runInEachFileSystem(() => {
         '',
       ]);
     });
+
+    it('should not transform `arguments` access within a normal function inside an async function',
+       () => {
+         const testFile = {
+           name: _('/test.ts'),
+           contents: `
+        function foo() {
+          const asyncArrow = async () => {
+            function innerFunction() {
+              const x = arguments[0];
+            }
+          };
+        }`,
+         };
+         const emittedContent = emitProgram(testFile);
+         expect(emittedContent.split(/\r?\n/g)).toEqual([
+           'function foo() {',
+           '    function* asyncArrow_generator() {',
+           '        function innerFunction() {',
+           '            const x = arguments[0];',
+           '        }',
+           '    }',
+           '    const asyncArrow = () => Zone.__awaiter(this, [], asyncArrow_generator);',
+           '}',
+           '',
+         ]);
+       });
   });
 
   function emitProgram(testFile: Parameters<typeof makeProgram>[0][0]): string {

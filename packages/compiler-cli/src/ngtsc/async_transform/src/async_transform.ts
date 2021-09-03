@@ -92,10 +92,10 @@ export class AsyncFunctionVisitor {
    */
   private enterScopes(node: ts.Node): void {
     if (isSuperContainer(node)) {
-      this.superScopes.push();
+      this.superScopes.push(node);
     }
     if (isArgumentsContainer(node)) {
-      this.argumentsScopes.push();
+      this.argumentsScopes.push(node);
     }
 
     const superScope = this.superScopes.peek();
@@ -128,12 +128,14 @@ export class AsyncFunctionVisitor {
    * Record usage of `super` and `arguments` at this `node` within the current lexical scopes.
    */
   private recordUsage(node: ts.Node): void {
+    const argumentsScope = this.argumentsScopes.peek();
     if (isSuperPropertyAccess(node)) {
       this.recordSuperPropertyAccess(node);
     } else if (isSuperElementAccess(node)) {
       this.recordSuperElementAccess(node);
-    } else if (isArgumentsAccessInAsyncArrowFn(node)) {
-      this.recordArgumentsAccess(node);
+    } else if (
+        argumentsScope !== null && isArgumentsAccessInAsyncArrowFn(node, argumentsScope.node)) {
+      this.recordArgumentsAccess(node, argumentsScope);
     }
   }
 
@@ -145,7 +147,7 @@ export class AsyncFunctionVisitor {
     const superScope = this.superScopes.peek();
 
     if (argumentsScope !== null) {
-      if (isShorthandArgumentsInAsyncArrowFn(node)) {
+      if (isShorthandArgumentsInAsyncArrowFn(node, argumentsScope.node)) {
         // We have something like: `{ arguments }`.
         // Split it into a property name and value `{ arguments: arguments }`
         // and then replace the property value with a reference to the arguments proxy:
@@ -153,7 +155,7 @@ export class AsyncFunctionVisitor {
         node = this.factory.createPropertyAssignment('arguments', argumentsScope.argumentsProxy);
       }
 
-      if (isArgumentsAccessInAsyncArrowFn(node)) {
+      if (isArgumentsAccessInAsyncArrowFn(node, argumentsScope.node)) {
         // Substitute the `arguments` identifier with the `ɵarguments` proxy identifier if this
         // access is within an async arrow function.
         node = argumentsScope.argumentsProxy;
@@ -225,11 +227,8 @@ export class AsyncFunctionVisitor {
    *
    * This is used later on to indicate that a `ɵarguments` proxy variable is required.
    */
-  private recordArgumentsAccess(node: ts.Identifier): void {
-    const asyncScope = this.argumentsScopes.peek();
-    if (asyncScope !== null) {
-      asyncScope.recordArgumentsAccess();
-    }
+  private recordArgumentsAccess(node: ts.Identifier, asyncScope: ArgumentsScope): void {
+    asyncScope.recordArgumentsAccess();
   }
 
 
