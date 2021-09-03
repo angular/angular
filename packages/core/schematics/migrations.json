@@ -102,7 +102,7 @@
     },
     "migration-v13-router-link-empty-expression": {
       "version": "13.0.0-beta",
-      "description": "Migrates `[routerLink]=\"\"` in templates to `[routerLink]=\"[]\"` because these links are likely intented to route to the current page with updated fragment/query params.",
+      "description": "Migrates `[routerLink]=\"\"` in templates to `[routerLink]=\"[]\"` because these links are likely intended to route to the current page with updated fragment/query params.",
       "factory": "./migrations/router-link-empty-expression/index"
     }
   }
