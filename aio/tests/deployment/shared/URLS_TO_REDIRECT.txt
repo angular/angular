@@ -203,6 +203,7 @@
 /guide/cli-quickstart --> /start
 /guide/displaying-data --> /start#template-syntax
 /guide/i18n --> /guide/i18n-overview
+/guide --> /docs
 /guide/learning-angular --> /start
 /guide/learning-angular.html --> /start
 /guide/metadata --> /guide/aot-compiler
