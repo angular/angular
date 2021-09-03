@@ -21,6 +21,7 @@ import {
 import {DomSanitizer, SafeResourceUrl, SafeHtml} from '@angular/platform-browser';
 import {forkJoin, Observable, of as observableOf, throwError as observableThrow} from 'rxjs';
 import {catchError, finalize, map, share, tap} from 'rxjs/operators';
+import {TrustedHTML, trustedHTMLFromString} from './trusted-types';
 
 
 /**
@@ -96,12 +97,12 @@ class SvgIconConfig {
 
   constructor(
     public url: SafeResourceUrl,
-    public svgText: string | null,
+    public svgText: TrustedHTML | null,
     public options?: IconOptions) {}
 }
 
 /** Icon configuration whose content has already been loaded. */
-type LoadedSvgIconConfig = SvgIconConfig & {svgText: string};
+type LoadedSvgIconConfig = SvgIconConfig & {svgText: TrustedHTML};
 
 /**
  * Service to register and display icons used by the `<mat-icon>` component.
@@ -129,7 +130,7 @@ export class MatIconRegistry implements OnDestroy {
   private _cachedIconsByUrl = new Map<string, SVGElement>();
 
   /** In-progress icon fetches. Used to coalesce multiple requests to the same URL. */
-  private _inProgressUrlFetches = new Map<string, Observable<string>>();
+  private _inProgressUrlFetches = new Map<string, Observable<TrustedHTML>>();
 
   /** Map from font identifiers to their CSS class names. Used for icon fonts. */
   private _fontCssClassesByAlias = new Map<string, string>();
@@ -209,8 +210,10 @@ export class MatIconRegistry implements OnDestroy {
       throw getMatIconFailedToSanitizeLiteralError(literal);
     }
 
+    // Security: The literal is passed in as SafeHtml, and is thus trusted.
+    const trustedLiteral = trustedHTMLFromString(cleanLiteral);
     return this._addSvgIconConfig(namespace, iconName,
-        new SvgIconConfig('', cleanLiteral, options));
+        new SvgIconConfig('', trustedLiteral, options));
   }
 
   /**
@@ -251,7 +254,9 @@ export class MatIconRegistry implements OnDestroy {
       throw getMatIconFailedToSanitizeLiteralError(literal);
     }
 
-    return this._addSvgIconSetConfig(namespace, new SvgIconConfig('', cleanLiteral, options));
+    // Security: The literal is passed in as SafeHtml, and is thus trusted.
+    const trustedLiteral = trustedHTMLFromString(cleanLiteral);
+    return this._addSvgIconSetConfig(namespace, new SvgIconConfig('', trustedLiteral, options));
   }
 
   /**
@@ -399,7 +404,7 @@ export class MatIconRegistry implements OnDestroy {
 
     // Not found in any cached icon sets. If there are icon sets with URLs that we haven't
     // fetched, fetch them now and look for iconName in the results.
-    const iconSetFetchRequests: Observable<string | null>[] = iconSetConfigs
+    const iconSetFetchRequests: Observable<TrustedHTML | null>[] = iconSetConfigs
       .filter(iconSetConfig => !iconSetConfig.svgText)
       .map(iconSetConfig => {
         return this._loadSvgIconSetFromConfig(iconSetConfig).pipe(
@@ -444,7 +449,7 @@ export class MatIconRegistry implements OnDestroy {
       // the parsing by doing a quick check using `indexOf` to see if there's any chance for the
       // icon to be in the set. This won't be 100% accurate, but it should help us avoid at least
       // some of the parsing.
-      if (config.svgText && config.svgText.indexOf(iconName) > -1) {
+      if (config.svgText && config.svgText.toString().indexOf(iconName) > -1) {
         const svg = this._svgElementFromConfig(config as LoadedSvgIconConfig);
         const foundIcon = this._extractSvgIconFromSet(svg, iconName, config.options);
         if (foundIcon) {
@@ -470,7 +475,7 @@ export class MatIconRegistry implements OnDestroy {
    * Loads the content of the icon set URL specified in the
    * SvgIconConfig and attaches it to the config.
    */
-  private _loadSvgIconSetFromConfig(config: SvgIconConfig): Observable<string | null> {
+  private _loadSvgIconSetFromConfig(config: SvgIconConfig): Observable<TrustedHTML | null> {
     if (config.svgText) {
       return observableOf(null);
     }
@@ -516,7 +521,7 @@ export class MatIconRegistry implements OnDestroy {
     // have to create an empty SVG node using innerHTML and append its content.
     // Elements created using DOMParser.parseFromString have the same problem.
     // http://stackoverflow.com/questions/23003278/svg-innerhtml-in-firefox-can-not-display
-    const svg = this._svgElementFromString('<svg></svg>');
+    const svg = this._svgElementFromString(trustedHTMLFromString('<svg></svg>'));
     // Clone the node so we don't remove it from the parent icon set element.
     svg.appendChild(iconElement);
 
@@ -526,9 +531,9 @@ export class MatIconRegistry implements OnDestroy {
   /**
    * Creates a DOM element from the given SVG string.
    */
-  private _svgElementFromString(str: string): SVGElement {
+  private _svgElementFromString(str: TrustedHTML): SVGElement {
     const div = this._document.createElement('DIV');
-    div.innerHTML = str;
+    div.innerHTML = str as unknown as string;
     const svg = div.querySelector('svg') as SVGElement;
 
     // TODO: add an ngDevMode check
@@ -543,7 +548,7 @@ export class MatIconRegistry implements OnDestroy {
    * Converts an element into an SVG node by cloning all of its children.
    */
   private _toSvgElement(element: Element): SVGElement {
-    const svg = this._svgElementFromString('<svg></svg>');
+    const svg = this._svgElementFromString(trustedHTMLFromString('<svg></svg>'));
     const attributes = element.attributes;
 
     // Copy over all the attributes from the `symbol` to the new SVG, except the id.
@@ -585,7 +590,7 @@ export class MatIconRegistry implements OnDestroy {
    * Returns an Observable which produces the string contents of the given icon. Results may be
    * cached, so future calls with the same URL may not cause another HTTP request.
    */
-  private _fetchIcon(iconConfig: SvgIconConfig): Observable<string> {
+  private _fetchIcon(iconConfig: SvgIconConfig): Observable<TrustedHTML> {
     const {url: safeUrl, options} = iconConfig;
     const withCredentials = options?.withCredentials ?? false;
 
@@ -615,6 +620,11 @@ export class MatIconRegistry implements OnDestroy {
     }
 
     const req = this._httpClient.get(url, {responseType: 'text', withCredentials}).pipe(
+      map(svg => {
+        // Security: This SVG is fetched from a SafeResourceUrl, and is thus
+        // trusted HTML.
+        return trustedHTMLFromString(svg);
+      }),
       finalize(() => this._inProgressUrlFetches.delete(url)),
       share(),
     );
