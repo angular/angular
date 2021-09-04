@@ -16,7 +16,7 @@ removing the `href` attribute.
 
 In the example from above, there is no value provided to the `routerLink` input.
 This button would previously navigate to the current page and update the fragment to "section_2".
-The updated behavio is to disable this link because the input
+The updated behavior is to disable this link because the input
 for `routerLink` is `undefined`.
 
 If the intent for the link is to link to the current page rather than disable navigation,
