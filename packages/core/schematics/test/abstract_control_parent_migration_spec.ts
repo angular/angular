@@ -28,6 +28,7 @@ describe('AbstractControl.parent migration', () => {
       compilerOptions: {lib: ['es2015'], strictNullChecks: true},
     }));
     writeFile('/angular.json', JSON.stringify({
+      version: 1,
       projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
     }));
     // We need to declare the Angular symbols we're testing for, otherwise type checking won't work.

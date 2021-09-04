@@ -21,8 +21,8 @@ const MODULE_AUGMENTATION_FILENAME = 'ɵɵASYNC_MIGRATION_CORE_AUGMENTATION.d.ts
 
 /** Migration that switches from `async` to `waitForAsync`. */
 export default function(): Rule {
-  return (tree: Tree) => {
-    const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
+  return async (tree: Tree) => {
+    const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
     const allPaths = [...buildPaths, ...testPaths];
 

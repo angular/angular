@@ -17,8 +17,8 @@ import {UpdateRecorder} from './update_recorder';
 
 /** Entry point for the v11 "relativeLinkResolution RouterModule options" schematic. */
 export default function(): Rule {
-  return (tree: Tree) => {
-    const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
+  return async (tree: Tree) => {
+    const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
 
     if (!buildPaths.length && !testPaths.length) {

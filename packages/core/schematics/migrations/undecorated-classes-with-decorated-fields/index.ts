@@ -21,8 +21,8 @@ import {UpdateRecorder} from './update_recorder';
  * https://hackmd.io/vuQfavzfRG6KUCtU7oK_EA
  */
 export default function(): Rule {
-  return (tree: Tree, ctx: SchematicContext) => {
-    const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
+  return async (tree: Tree, ctx: SchematicContext) => {
+    const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
     const allPaths = [...buildPaths, ...testPaths];
     const failures: string[] = [];

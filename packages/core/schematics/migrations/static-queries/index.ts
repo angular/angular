@@ -45,7 +45,7 @@ export default function(): Rule {
 
 /** Runs the V8 migration static-query migration for all determined TypeScript projects. */
 async function runMigration(tree: Tree, context: SchematicContext) {
-  const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
+  const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
   const basePath = process.cwd();
   const logger = context.logger;
 

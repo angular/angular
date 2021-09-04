@@ -28,6 +28,7 @@ describe('Undecorated classes with decorated fields migration', () => {
 
     writeFile('/tsconfig.json', JSON.stringify({compilerOptions: {lib: ['es2015']}}));
     writeFile('/angular.json', JSON.stringify({
+      version: 1,
       projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
     }));
 
@@ -294,6 +295,7 @@ describe('Undecorated classes with decorated fields migration', () => {
 
   it('should not add multiple TODOs for ambiguous classes', async () => {
     writeFile('/angular.json', JSON.stringify({
+      version: 1,
       projects: {
         test: {
           architect: {

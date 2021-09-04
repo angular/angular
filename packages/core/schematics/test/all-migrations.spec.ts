@@ -29,6 +29,7 @@ describe('all migrations', () => {
 
     writeFile('/node_modules/@angular/core/index.d.ts', `export const MODULE: any;`);
     writeFile('/angular.json', JSON.stringify({
+      version: 1,
       projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
     }));
     writeFile('/tsconfig.json', `{}`);

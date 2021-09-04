@@ -33,6 +33,7 @@ describe('static-queries migration with template strategy', () => {
       },
     }));
     writeFile('/angular.json', JSON.stringify({
+      version: 1,
       projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
     }));
 

@@ -17,8 +17,8 @@ import {UpdateRecorder} from './update_recorder';
 
 /** Entry point for the V9 "missing @Injectable" schematic. */
 export default function(): Rule {
-  return (tree: Tree, ctx: SchematicContext) => {
-    const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
+  return async (tree: Tree, ctx: SchematicContext) => {
+    const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
     const failures: string[] = [];
 
