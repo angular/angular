@@ -47,7 +47,7 @@ export class NoopAnimationDriver implements AnimationDriver {
  * @publicApi
  */
 export abstract class AnimationDriver {
-  static NOOP: AnimationDriver = /* @__PURE__ */ new NoopAnimationDriver();
+  static NOOP: AnimationDriver = (/* @__PURE__ */ new NoopAnimationDriver());
 
   abstract validateStyleProperty(prop: string): boolean;
 
