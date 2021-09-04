@@ -82,7 +82,6 @@
     "@types/minimist": "^1.2.0",
     "@types/multimatch": "^4.0.0",
     "@types/node": "^12.11.1",
-    "@types/node-fetch": "^2.5.7",
     "@types/selenium-webdriver": "3.0.7",
     "@types/semver": "^7.3.4",
     "@types/shelljs": "^0.8.6",
