@@ -130,6 +130,8 @@ export class BrowserViewportScroller implements ViewportScroller {
       // After scrolling to the element, the spec dictates that we follow the focus steps for the
       // target. Rather than following the robust steps, simply attempt focus.
       this.attemptFocus(elSelected);
+    } else {
+      this.scrollToPosition([0, 0]);
     }
   }
 

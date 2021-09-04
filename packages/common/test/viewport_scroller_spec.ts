@@ -67,10 +67,11 @@ describe('BrowserViewportScroller', () => {
       cleanup();
     });
 
-    it('should not scroll when no matching element is found', () => {
+    it('should scroll to top when no matching element is found', () => {
       const {cleanup} = createTallElement();
+      spyOn(scroller, 'scrollToPosition');
       scroller.scrollToAnchor(anchor);
-      expect(scroller.getScrollPosition()[1]).toEqual(0);
+      expect(scroller.scrollToPosition).toHaveBeenCalledWith([0, 0]);
       cleanup();
     });
 
