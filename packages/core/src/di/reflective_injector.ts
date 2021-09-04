@@ -270,7 +270,7 @@ export abstract class ReflectiveInjector implements Injector {
 }
 
 export class ReflectiveInjector_ implements ReflectiveInjector {
-  private static INJECTOR_KEY = /* @__PURE__ */ ReflectiveKey.get(Injector);
+  private static INJECTOR_KEY = (/* @__PURE__ */ ReflectiveKey.get(Injector));
   /** @internal */
   _constructionCounter: number = 0;
   /** @internal */
