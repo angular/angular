@@ -44,7 +44,7 @@ export function packageNonAnimatableStyles(
  * `destroy()` is called then all styles will be removed.
  */
 export class SpecialCasedStyles {
-  static initialStylesByElement = /* @__PURE__ */ new WeakMap<any, {[key: string]: any}>();
+  static initialStylesByElement = (/* @__PURE__ */ new WeakMap<any, {[key: string]: any}>());
 
   private _state = SpecialCasedStylesState.Pending;
   private _initialStyles!: {[key: string]: any};
