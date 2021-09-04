@@ -30,8 +30,8 @@ interface FixedTemplate {
 
 /** Entry point for the RouterLink empty expression migration. */
 export default function(): Rule {
-  return (tree: Tree, context: SchematicContext) => {
-    const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
+  return async (tree: Tree, context: SchematicContext) => {
+    const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
 
     if (!buildPaths.length && !testPaths.length) {

@@ -17,8 +17,8 @@ import {findLiteralsToMigrate, migrateLiteral} from './util';
 
 /** Migration that removes `canActivate` property from routes that also have `redirectTo`. */
 export default function(): Rule {
-  return (tree: Tree) => {
-    const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
+  return async (tree: Tree) => {
+    const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
     const allPaths = [...buildPaths, ...testPaths];
 

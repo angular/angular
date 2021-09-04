@@ -21,8 +21,8 @@ import {AnalysisFailure, ModuleWithProvidersTransform} from './transform';
  * Runs the ModuleWithProviders migration for all TypeScript projects in the current CLI workspace.
  */
 export default function(): Rule {
-  return (tree: Tree, ctx: SchematicContext) => {
-    const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
+  return async (tree: Tree, ctx: SchematicContext) => {
+    const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
     const allPaths = [...buildPaths, ...testPaths];
     const failures: string[] = [];

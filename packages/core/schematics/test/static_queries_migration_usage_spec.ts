@@ -37,6 +37,7 @@ describe('static-queries migration with usage strategy', () => {
       },
     }));
     writeFile('/angular.json', JSON.stringify({
+      version: 1,
       projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
     }));
 
@@ -671,6 +672,7 @@ describe('static-queries migration with usage strategy', () => {
       // recorded for TypeScript projects not at the schematic tree root.
       host.sync.rename(normalize('/tsconfig.json'), normalize('/src/tsconfig.json'));
       writeFile('/angular.json', JSON.stringify({
+        version: 1,
         projects: {t: {architect: {build: {options: {tsConfig: './src/tsconfig.json'}}}}}
       }));
 

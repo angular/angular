@@ -17,8 +17,8 @@ import {findLiteralsToMigrate, migrateLiteral} from './util';
 
 /** Migration that switches `Router.navigateByUrl` and `Router.createUrlTree` to a new signature. */
 export default function(): Rule {
-  return (tree: Tree) => {
-    const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
+  return async (tree: Tree) => {
+    const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
     const allPaths = [...buildPaths, ...testPaths];
 

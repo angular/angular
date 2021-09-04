@@ -19,8 +19,8 @@ import {findFragmentAccesses, migrateActivatedRouteSnapshotFragment} from './uti
  * Migration that marks accesses of `ActivatedRouteSnapshot.fragment` as non-null.
  */
 export default function(): Rule {
-  return (tree: Tree) => {
-    const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
+  return async (tree: Tree) => {
+    const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
     const allPaths = [...buildPaths, ...testPaths];
 

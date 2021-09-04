@@ -23,8 +23,8 @@ const FAILURE_MESSAGE = `Found assignment to template variable.`;
 
 /** Entry point for the V8 template variable assignment schematic. */
 export default function(): Rule {
-  return (tree: Tree, context: SchematicContext) => {
-    const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
+  return async (tree: Tree, context: SchematicContext) => {
+    const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
 
     if (!buildPaths.length && !testPaths.length) {

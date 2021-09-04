@@ -30,6 +30,7 @@ describe('ModuleWithProviders migration', () => {
       }
     }));
     writeFile('/angular.json', JSON.stringify({
+      version: 1,
       projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
     }));
 

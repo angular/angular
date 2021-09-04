@@ -32,8 +32,8 @@ const MIGRATION_AOT_FAILURE = 'This migration uses the Angular compiler internal
 
 /** Entry point for the V9 "undecorated-classes-with-di" migration. */
 export default function(): Rule {
-  return (tree: Tree, ctx: SchematicContext) => {
-    const {buildPaths} = getProjectTsConfigPaths(tree);
+  return async (tree: Tree, ctx: SchematicContext) => {
+    const {buildPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
     const failures: string[] = [];
     let programError = false;

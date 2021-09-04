@@ -31,6 +31,7 @@ describe('waitForAsync migration', () => {
       },
     }));
     writeFile('/angular.json', JSON.stringify({
+      version: 1,
       projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
     }));
     // We need to declare the Angular symbols we're testing for, otherwise type checking won't work.
