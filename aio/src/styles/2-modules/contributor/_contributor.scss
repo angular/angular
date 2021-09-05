@@ -44,8 +44,8 @@ aio-contributor {
   }
 
   .contributor-info {
-    height: 168px;
-    width: 168px;
+    height: 100%;
+    width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -59,7 +59,7 @@ aio-contributor {
       display: flex;
       @include mixins.font-size(14);
       font-weight: 500;
-      margin: 8px;
+      margin: 0.8rem;
       padding: 0;
 
       &:hover {
@@ -67,16 +67,27 @@ aio-contributor {
       }
 
       &.icon {
-        min-width: 20px;
-        width: 20px;
+        $size: 2rem;
+        min-width: $size;
+        width: $size;
 
         mat-icon {
-          height: 20px;
-          width: 20px;
+          $size: 2rem;
+          height: $size;
+          width: $size;
+          font-size: 2rem;
+
+          &[svgicon] {
+            line-height: 0;
+
+            svg {
+              height: 100%;
+              width: 100%;
+            }
+          }
 
           &.link-icon {
-            margin-top: -7px;
-            transform: rotateZ(45deg);
+            transform: translateY(-10%) rotateZ(45deg);
           }
         }
       }
@@ -84,8 +95,10 @@ aio-contributor {
   }
 
   .contributor-card {
-    width: 250px;
-    height: 270px;
+    width: 25rem;
+    height: 27rem;
+    max-width: 310px;
+    max-height: 340px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -147,8 +160,15 @@ aio-contributor {
     justify-content: center;
     border-radius: 50%;
     align-items: center;
-    height: 168px;
-    width: 168px;
+    $size: 16.8rem;
+    height: $size;
+    width: $size;
+    $min-size: 105px;
+    min-height: $min-size;
+    min-width: $min-size;
+    $max-size: 230px;
+    max-height: $max-size;
+    max-width: $max-size;
     background-size: cover;
     background-position: center;
     margin: 8px auto;
