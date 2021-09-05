@@ -443,7 +443,7 @@ export class HttpClient {
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
    *
-   * @return An `Observable` of the reuested response, wuth body of type `any`.
+   * @return An `Observable` of the requested response, with body of type `any`.
    */
   request(method: string, url: string, options?: {
     body?: any,
@@ -1476,7 +1476,7 @@ export class HttpClient {
    * @param options The HTTP options to send with the request.
    *
    * @return An `Observable` of the `HttpResponse` for the request,
-   * with a responmse body of the requested type.
+   * with a response body of the requested type.
    */
   head<T>(url: string, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]}, observe: 'response',
@@ -1893,7 +1893,7 @@ export class HttpClient {
   /**
    * Constructs an `Observable` that, when subscribed, causes the configured
    * `OPTIONS` request to execute on the server. This method allows the client
-   * to determine the supported HTTP methods and other capabilites of an endpoint,
+   * to determine the supported HTTP methods and other capabilities of an endpoint,
    * without implying a resource action. See the individual overloads for
    * details on the return type.
    */
