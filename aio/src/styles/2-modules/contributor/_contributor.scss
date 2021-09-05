@@ -3,7 +3,6 @@
 aio-contributor-list {
   .contributor-group {
     display: flex;
-    flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
   }
@@ -21,12 +20,10 @@ aio-contributor-list {
 
 aio-contributor {
   margin: 8px;
-  position: relative;
   cursor: pointer;
   border-radius: 4px;
   box-shadow: 0 2px 2px rgba(10, 16, 20, 0.24), 0 0 2px rgba(10, 16, 20, 0.12);
   transition: all .3s;
-  perspective: 800px;
 
   @media (hover) {
     &:hover {
@@ -44,13 +41,12 @@ aio-contributor {
   }
 
   .contributor-info {
-    height: 168px;
-    width: 168px;
+    height: 100%;
+    width: 100%;
     display: flex;
-    flex-direction: row;
+    flex-wrap: wrap;
     justify-content: center;
-    align-items: center;
-    text-align: center;
+    align-content: center;
     /* There is no point in hiding this if we can't hover to show it. */
     @media (hover) { opacity: 0; }
     border-radius: 50%;
@@ -58,24 +54,34 @@ aio-contributor {
     .info-item {
       display: flex;
       @include mixins.font-size(14);
+      font-size: clamp(10px, 1.4rem, 30px);
       font-weight: 500;
-      margin: 8px;
-      padding: 0;
+      margin: 0.8rem;
+      width: 100%;
+      justify-content: center;
 
       &:hover {
         text-decoration: none;
       }
 
       &.icon {
-        min-width: 20px;
-        width: 20px;
+        $size: 23px;
+        min-width: $size;
+        width: $size;
 
         mat-icon {
-          height: 20px;
-          width: 20px;
+          height: $size;
+          width: $size;
+          font-size: $size;
+
+          &[svgicon] {
+            svg {
+              height: 100%;
+              width: 100%;
+            }
+          }
 
           &.link-icon {
-            margin-top: -7px;
             transform: rotateZ(45deg);
           }
         }
@@ -84,20 +90,15 @@ aio-contributor {
   }
 
   .contributor-card {
-    width: 250px;
-    height: 270px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    position: relative;
-    overflow: hidden;
-    border-radius: 4px;
+    width: 25rem;
+    height: 27rem;
+    max-width: 310px;
+    max-height: 340px;
     transform-style:preserve-3d;
     transition:transform ease 500ms;
 
     h3 {
-      margin: 8px 0;
+      margin: 0.8rem 0;
     }
 
     .card-front, .card-back {
@@ -107,17 +108,10 @@ aio-contributor {
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
-    }
-
-    .card-front {
       justify-content: center;
     }
 
     .card-back {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
       padding: 16px 24px;
       transform:rotateY(180deg);
 
@@ -126,7 +120,7 @@ aio-contributor {
       }
 
       p {
-        margin: 8px 0;
+        margin: 0.8rem 0;
         @include mixins.font-size(12);
         @include mixins.line-height(14);
         text-align: left;
@@ -143,15 +137,19 @@ aio-contributor {
   }
 
   .contributor-image {
-    display: flex;
-    justify-content: center;
     border-radius: 50%;
-    align-items: center;
-    height: 168px;
-    width: 168px;
+    $size: 16.8rem;
+    height: $size;
+    width: $size;
+    $min-size: 105px;
+    min-height: $min-size;
+    min-width: $min-size;
+    $max-size: 230px;
+    max-height: $max-size;
+    max-width: $max-size;
     background-size: cover;
     background-position: center;
-    margin: 8px auto;
+    margin: 0.8rem auto;
     transition: all .2s ease-in-out;
   }
 

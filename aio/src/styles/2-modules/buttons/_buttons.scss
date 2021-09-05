@@ -68,7 +68,8 @@ a.button.mat-button,
     @include mixins.line-height(48);
     margin: 8px;
     padding: 0px 16px;
-    width: 168px;
+    width: 16.8rem;
+    min-width: max-content;
 
     @media (max-width: 480px) {
       @include mixins.font-size(14);
