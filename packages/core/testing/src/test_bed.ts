@@ -465,8 +465,11 @@ export class TestBedViewEngine implements TestBed {
     this._moduleRef = this._moduleFactory.create(ngZoneInjector);
     // ApplicationInitStatus.runInitializers() is marked @internal to core. So casting to any
     // before accessing it.
-    (this._moduleRef.injector.get(ApplicationInitStatus) as any).runInitializers();
-    this._instantiated = true;
+    try {
+      (this._moduleRef.injector.get(ApplicationInitStatus) as any).runInitializers();
+    } finally {
+      this._instantiated = true;
+    }
   }
 
   private _createCompilerAndModule(): Type<any> {

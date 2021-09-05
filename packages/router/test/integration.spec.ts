@@ -16,7 +16,6 @@ import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, 
 import {EMPTY, Observable, Observer, of, Subscription, SubscriptionLike} from 'rxjs';
 import {delay, filter, first, map, mapTo, tap} from 'rxjs/operators';
 
-import {RouterInitializer} from '../src/router_module';
 import {forEach} from '../src/utils/collection';
 import {isUrlTree} from '../src/utils/type_guards';
 import {RouterTestingModule} from '../testing';
@@ -5942,42 +5941,6 @@ describe('Integration', () => {
          advance(fixture);
          expect(fixture).toContainComponent(Tool2Component, '(e)');
        }));
-  });
-
-  describe('RouterInitializer', () => {
-    it('should not throw from appInitializer if module is destroyed before location is initialized',
-       done => {
-         let resolveInitializer: () => void;
-         let moduleRef: NgModuleRef<SelfDestructModule>;
-
-         @NgModule({
-           imports: [RouterModule.forRoot([])],
-           providers: [
-             {
-               provide: LOCATION_INITIALIZED,
-               useValue: new Promise<void>(resolve => resolveInitializer = resolve)
-             },
-             {
-               // Required when running the tests in a browser
-               provide: APP_BASE_HREF,
-               useValue: ''
-             }
-           ]
-         })
-         class SelfDestructModule {
-           constructor(ref: NgModuleRef<SelfDestructModule>, routerInitializer: RouterInitializer) {
-             moduleRef = ref;
-             routerInitializer.appInitializer().then(done, done.fail);
-           }
-         }
-
-         TestBed.resetTestingModule()
-             .configureTestingModule({imports: [SelfDestructModule], declarations: [SimpleCmp]})
-             .createComponent(SimpleCmp);
-
-         moduleRef!.destroy();
-         resolveInitializer!();
-       });
   });
 });
 
