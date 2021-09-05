@@ -1344,20 +1344,20 @@ describe('TestBed module teardown', () => {
     TestBed.resetTestingModule();
   });
 
-  it('should not tear down the test module by default', () => {
-    expect(TestBed.shouldTearDownTestingModule()).toBe(false);
+  it('should tear down the test module by default', () => {
+    expect(TestBed.shouldTearDownTestingModule()).toBe(true);
   });
 
   it('should be able to configure the teardown behavior', () => {
-    TestBed.configureTestingModule({teardown: {destroyAfterEach: true}});
-    expect(TestBed.shouldTearDownTestingModule()).toBe(true);
+    TestBed.configureTestingModule({teardown: {destroyAfterEach: false}});
+    expect(TestBed.shouldTearDownTestingModule()).toBe(false);
   });
 
   it('should reset the teardown behavior back to the default when TestBed is reset', () => {
-    TestBed.configureTestingModule({teardown: {destroyAfterEach: true}});
-    expect(TestBed.shouldTearDownTestingModule()).toBe(true);
-    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({teardown: {destroyAfterEach: false}});
     expect(TestBed.shouldTearDownTestingModule()).toBe(false);
+    TestBed.resetTestingModule();
+    expect(TestBed.shouldTearDownTestingModule()).toBe(true);
   });
 
   it('should destroy test module providers when test module teardown is enabled', () => {

@@ -469,7 +469,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
             status: true,
           });
         });
-        return update.activateUpdate().then(() => done()).catch(err => done.fail(err));
+        update.activateUpdate().then(() => done()).catch(err => done.fail(err));
       });
       it('reports activation failure when requested', done => {
         mock.messages.subscribe((msg: {action: string, statusNonce: number}) => {
@@ -481,7 +481,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
             error: 'Failed to activate',
           });
         });
-        return update.activateUpdate()
+        update.activateUpdate()
             .catch(err => {
               expect(err.message).toEqual('Failed to activate');
             })

@@ -12,11 +12,8 @@ import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
 import {TestBed} from './test_bed';
 
-/**
- * Whether test modules should be torn down by default.
- * Currently disabled for backwards-compatibility reasons.
- */
-export const TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT = false;
+/** Whether test modules should be torn down by default. */
+export const TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT = true;
 
 /**
  * An abstract class for inserting the root test component element in a platform independent way.
