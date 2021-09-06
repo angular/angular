@@ -42,11 +42,7 @@ describe('Property binding e2e tests', () => {
     expect(await element.all(by.css('ul')).get(1).getText()).toBe(`21 phone`);
   });
 
-  it('should display one-time initialized string', async () => {
-    expect(await element.all(by.css('p')).get(3).getText()).toContain(`one-time initialized`);
-  });
-
   it('should display Malicious content', async () => {
-    expect(await element.all(by.css('h2')).get(8).getText()).toBe(`Malicious content`);
+    expect(await element.all(by.css('h2')).get(7).getText()).toBe(`Malicious content`);
   });
 });

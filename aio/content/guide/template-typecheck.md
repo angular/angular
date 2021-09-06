@@ -135,7 +135,7 @@ Unless otherwise noted, each option below is set to the value for `strictTemplat
     </tr>
     <tr>
       <td><code>strictAttributeTypes</code></td>
-      <td>Whether to check <code>@Input()</code> bindings that are made using text attributes (for example, <code>&lt;mat-tab label="Step 1"&gt;</code> vs <code>&lt;mat-tab [label]="'Step 1'"&gt;</code>).</td>
+      <td>Whether to check <code>@Input()</code> bindings that are made using text attributes (for example, <code>&lt;mat-tab label="Step 1"&gt;</code> vs <code>&lt;mat-tab label="Step 1"&gt;</code>).</td>
     </tr>
     <tr>
       <td><code>strictSafeNavigationTypes</code></td>
