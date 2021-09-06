@@ -75,7 +75,7 @@ log('\n# patch: use local version of @angular/* and zone.js in component_benchma
       'node_modules/@angular/dev-infra-private/bazel/benchmark/component_benchmark/component_benchmark.bzl');
 });
 
-log('\n# patch: delete d.ts files refering to rxjs-compat');
+log('\n# patch: delete d.ts files referring to rxjs-compat');
 // more info in https://github.com/angular/angular/pull/33786
 rm('-rf', [
   'node_modules/rxjs/add/',
