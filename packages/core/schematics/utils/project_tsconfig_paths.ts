@@ -49,6 +49,7 @@ export async function getProjectTsConfigPaths(tree: Tree):
   };
 }
 
+/** Get options for all configurations for the passed builder target. */
 function*
     allTargetOptions(target: workspaces.TargetDefinition):
         Iterable<[string | undefined, Record<string, json.JsonValue|undefined>]> {
@@ -81,7 +82,10 @@ function createHost(tree: Tree): workspaces.WorkspaceHost {
       return tree.overwrite(path, data);
     },
     async isDirectory(path: string): Promise<boolean> {
-      // approximate a directory check
+      // Approximate a directory check.
+      // We don't need to consider empty directories and hence this is a good enough approach.
+      // This is also per documentation, see:
+      // https://angular.io/guide/schematics-for-libraries#get-the-project-configuration
       return !tree.exists(path) && tree.getDir(path).subfiles.length > 0;
     },
     async isFile(path: string): Promise<boolean> {
