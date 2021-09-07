@@ -27,6 +27,8 @@ import {
   OutputNameUpgradeData,
   propertyNames,
   PropertyNameUpgradeData,
+  SymbolRemovalUpgradeData,
+  symbolRemoval,
 } from './data';
 
 
@@ -41,6 +43,7 @@ export const cdkUpgradeData: UpgradeData = {
   methodCallChecks,
   outputNames,
   propertyNames,
+  symbolRemoval,
 };
 
 /**
@@ -57,6 +60,7 @@ export interface UpgradeData {
   methodCallChecks: VersionChanges<MethodCallUpgradeData>;
   outputNames: VersionChanges<OutputNameUpgradeData>;
   propertyNames: VersionChanges<PropertyNameUpgradeData>;
+  symbolRemoval: VersionChanges<SymbolRemovalUpgradeData>;
 }
 
 /**

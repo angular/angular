@@ -31,6 +31,7 @@ import {MiscTemplateMigration} from './migrations/misc-template';
 import {OutputNamesMigration} from './migrations/output-names';
 import {PropertyNamesMigration} from './migrations/property-names';
 import {UpgradeData} from './upgrade-data';
+import {SymbolRemovalMigration} from './migrations/symbol-removal';
 
 
 /** List of migrations which run for the CDK update. */
@@ -46,6 +47,7 @@ export const cdkMigrations: MigrationCtor<UpgradeData>[] = [
   MiscTemplateMigration,
   OutputNamesMigration,
   PropertyNamesMigration,
+  SymbolRemovalMigration,
 ];
 
 export type NullableDevkitMigration = MigrationCtor<UpgradeData|null, DevkitContext>;
