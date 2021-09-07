@@ -213,6 +213,10 @@ commands:
           keys:
             - *cache_key_win
             - *cache_key_win_fallback
+      # Install @bazel/bazelisk globally and use that for the first run.
+      # Workaround for https://github.com/bazelbuild/rules_nodejs/issues/894
+      # NB: the issue was for @bazel/bazel but the same problem applies to @bazel/bazelisk
+      - run: yarn global add @bazel/bazelisk@$env:BAZELISK_VERSION
       # On Windows `~/` is not resolved when using as a CLI value. `../` results in the same path.
       - run: yarn install --frozen-lockfile --non-interactive --cache-folder ../.cache/yarn
 
@@ -799,11 +803,11 @@ jobs:
       - setup_win
       - run:
           name: Build all windows CI targets
-          command: yarn bazel build --build_tag_filters=-ivy-only //packages/compiler-cli/...
+          command: bazel build --build_tag_filters=-ivy-only //packages/compiler-cli/...
           no_output_timeout: 15m
       - run:
           name: Test all windows CI targets
-          command: yarn bazel test --test_tag_filters="-ivy-only,-browser:chromium-local" //packages/compiler-cli/...
+          command: bazel test --test_tag_filters="-ivy-only,-browser:chromium-local" //packages/compiler-cli/...
           no_output_timeout: 15m
 
   test_ivy_aot_win:
@@ -812,11 +816,11 @@ jobs:
       - setup_win
       - run:
           name: Build all windows CI targets
-          command: yarn bazel build --config=ivy --build_tag_filters=-no-ivy-aot,-fixme-ivy-aot //packages/compiler-cli/...
+          command: bazel build --config=ivy --build_tag_filters=-no-ivy-aot,-fixme-ivy-aot //packages/compiler-cli/...
           no_output_timeout: 15m
       - run:
           name: Test all windows CI targets
-          command: yarn bazel test --config=ivy --test_tag_filters="-no-ivy-aot,-fixme-ivy-aot,-browser:chromium-local" //packages/compiler-cli/... //packages/localize/...
+          command: bazel test --config=ivy --test_tag_filters="-no-ivy-aot,-fixme-ivy-aot,-browser:chromium-local" //packages/compiler-cli/... //packages/localize/...
           no_output_timeout: 15m
       # Save dependencies to use on subsequent runs.
       - save_cache:
