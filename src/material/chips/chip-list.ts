@@ -160,7 +160,8 @@ export class MatChipList extends _MatChipListBase implements MatFormFieldControl
 
   /** The array of selected chips inside chip list. */
   get selected(): MatChip[] | MatChip {
-    return this.multiple ? this._selectionModel.selected : this._selectionModel.selected[0];
+    return this.multiple ? (this._selectionModel?.selected || []) :
+                            this._selectionModel?.selected[0];
   }
 
   /** The ARIA role applied to the chip list. */
