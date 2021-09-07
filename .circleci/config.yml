@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  cypress: cypress-io/cypress@1.28.0
+  cypress: cypress-io/cypress@1.29.0
 executors:
   node-and-browsers:
     docker:
