@@ -637,6 +637,7 @@ export class Validators {
     static pattern(pattern: string | RegExp): ValidatorFn;
     static required(control: AbstractControl): ValidationErrors | null;
     static requiredTrue(control: AbstractControl): ValidationErrors | null;
+    static type(type: ControlValueType): ValidatorFn;
 }
 
 // @public (undocumented)
