@@ -23,52 +23,72 @@ describe('MDC-based MatPaginator', () => {
   }
 
   describe('with the default internationalization provider', () => {
-    it('should show the right range text', () => {
-      const fixture = createComponent(MatPaginatorApp);
-      const component = fixture.componentInstance;
-      const rangeElement = fixture.nativeElement.querySelector('.mat-mdc-paginator-range-label');
+    describe('showing the right range text', () => {
+      it('should show second page of list of 100, each page contains 10 items', () => {
+        const fixture = createComponent(MatPaginatorApp);
+        const component = fixture.componentInstance;
+        const rangeElement = fixture.nativeElement.querySelector('.mat-mdc-paginator-range-label');
+        component.length = 100;
+        component.pageSize = 10;
+        component.pageIndex = 1;
+        fixture.detectChanges();
+        expect(rangeElement.textContent!.trim()).toBe('11 – 20 of 100');
+      });
 
-      // View second page of list of 100, each page contains 10 items.
-      component.length = 100;
-      component.pageSize = 10;
-      component.pageIndex = 1;
-      fixture.detectChanges();
-      expect(rangeElement.innerText.trim()).toBe('11 – 20 of 100');
+      it('should show third page of list of 200, each page contains 20 items', () => {
+        const fixture = createComponent(MatPaginatorApp);
+        const component = fixture.componentInstance;
+        const rangeElement = fixture.nativeElement.querySelector('.mat-mdc-paginator-range-label');
+        component.length = 200;
+        component.pageSize = 20;
+        component.pageIndex = 2;
+        fixture.detectChanges();
+        expect(rangeElement.textContent!.trim()).toBe('41 – 60 of 200');
+      });
 
-      // View third page of list of 200, each page contains 20 items.
-      component.length = 200;
-      component.pageSize = 20;
-      component.pageIndex = 2;
-      fixture.detectChanges();
-      expect(rangeElement.innerText.trim()).toBe('41 – 60 of 200');
+      it('should show first page of list of 0, each page contains 5 items', () => {
+        const fixture = createComponent(MatPaginatorApp);
+        const component = fixture.componentInstance;
+        const rangeElement = fixture.nativeElement.querySelector('.mat-mdc-paginator-range-label');
+        component.length = 0;
+        component.pageSize = 5;
+        component.pageIndex = 2;
+        fixture.detectChanges();
+        expect(rangeElement.textContent!.trim()).toBe('0 of 0');
+      });
 
-      // View first page of list of 0, each page contains 5 items.
-      component.length = 0;
-      component.pageSize = 5;
-      component.pageIndex = 2;
-      fixture.detectChanges();
-      expect(rangeElement.innerText.trim()).toBe('0 of 0');
+      it('should show third page of list of 12, each page contains 5 items', () => {
+        const fixture = createComponent(MatPaginatorApp);
+        const component = fixture.componentInstance;
+        const rangeElement = fixture.nativeElement.querySelector('.mat-mdc-paginator-range-label');
+        component.length = 12;
+        component.pageSize = 5;
+        component.pageIndex = 2;
+        fixture.detectChanges();
+        expect(rangeElement.textContent!.trim()).toBe('11 – 12 of 12');
+      });
 
-      // View third page of list of 12, each page contains 5 items.
-      component.length = 12;
-      component.pageSize = 5;
-      component.pageIndex = 2;
-      fixture.detectChanges();
-      expect(rangeElement.innerText.trim()).toBe('11 – 12 of 12');
+      it('should show third page of list of 10, each page contains 5 items', () => {
+        const fixture = createComponent(MatPaginatorApp);
+        const component = fixture.componentInstance;
+        const rangeElement = fixture.nativeElement.querySelector('.mat-mdc-paginator-range-label');
+        component.length = 10;
+        component.pageSize = 5;
+        component.pageIndex = 2;
+        fixture.detectChanges();
+        expect(rangeElement.textContent!.trim()).toBe('11 – 15 of 10');
+      });
 
-      // View third page of list of 10, each page contains 5 items.
-      component.length = 10;
-      component.pageSize = 5;
-      component.pageIndex = 2;
-      fixture.detectChanges();
-      expect(rangeElement.innerText.trim()).toBe('11 – 15 of 10');
-
-      // View third page of list of -5, each page contains 5 items.
-      component.length = -5;
-      component.pageSize = 5;
-      component.pageIndex = 2;
-      fixture.detectChanges();
-      expect(rangeElement.innerText.trim()).toBe('11 – 15 of 0');
+      it('should show third page of list of -5, each page contains 5 items', () => {
+        const fixture = createComponent(MatPaginatorApp);
+        const component = fixture.componentInstance;
+        const rangeElement = fixture.nativeElement.querySelector('.mat-mdc-paginator-range-label');
+        component.length = -5;
+        component.pageSize = 5;
+        component.pageIndex = 2;
+        fixture.detectChanges();
+        expect(rangeElement.textContent!.trim()).toBe('11 – 15 of 0');
+      });
     });
 
     it('should show right aria-labels for select and buttons', () => {
