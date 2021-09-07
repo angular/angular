@@ -2789,6 +2789,28 @@ expect(scrollContainer.scrollTop)
     expect(spy.calls.mostRecent().args[0]).toEqual({source: autocomplete, option: options[2]});
   }));
 
+  it('should not emit the optionActivated event when the active option is reset', fakeAsync(() => {
+    const fixture = createComponent(AutocompleteWithActivatedEvent);
+
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openPanel();
+    zone.simulateZoneExit();
+    fixture.detectChanges();
+
+    const input = fixture.nativeElement.querySelector('input');
+    const spy = fixture.componentInstance.optionActivated;
+
+    expect(spy).not.toHaveBeenCalled();
+
+    dispatchKeyboardEvent(input, 'keydown', DOWN_ARROW);
+    fixture.detectChanges();
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    dispatchKeyboardEvent(input, 'keydown', ESCAPE);
+    fixture.detectChanges();
+    expect(spy).toHaveBeenCalledTimes(1);
+  }));
+
   it('should be able to set a custom panel connection element', () => {
     const fixture = createComponent(AutocompleteWithDifferentOrigin);
 

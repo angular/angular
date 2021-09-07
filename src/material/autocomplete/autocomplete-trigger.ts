@@ -574,8 +574,8 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
         // See: https://www.w3.org/TR/wai-aria-practices-1.1/#textbox-keyboard-interaction
         if ((event.keyCode === ESCAPE && !hasModifierKey(event)) ||
             (event.keyCode === UP_ARROW && hasModifierKey(event, 'altKey'))) {
-          this._resetActiveItem();
           this._closeKeyEventStream.next();
+          this._resetActiveItem();
 
           // We need to stop propagation, otherwise the event will eventually
           // reach the input itself and cause the overlay to be reopened.
