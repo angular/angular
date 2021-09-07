@@ -2,7 +2,6 @@
 @mixin user-select($value) {
   -webkit-user-select: $value;
   -moz-user-select: $value;
-  -ms-user-select: $value;
   user-select: $value;
 }
 
@@ -19,6 +18,8 @@
     @content;
   }
 
+  // Note: this isn't necessary anymore since we don't support
+  // IE, but it caused some presubmit failures in #23416.
   &:-ms-input-placeholder {
     @content;
   }

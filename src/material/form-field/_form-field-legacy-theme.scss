@@ -50,11 +50,6 @@ $legacy-dedupe: 0;
   // translateZ fixes.
   transform: translateY(-$infix-margin-top - $infix-padding) scale($font-scale) perspective(100px)
   translateZ(0.001px + $legacy-dedupe);
-  // The tricks above used to smooth out the animation on chrome and firefox actually make things
-  // worse on IE, so we don't include them in the IE version.
-  -ms-transform: translateY(-$infix-margin-top - $infix-padding + $legacy-dedupe)
-                  scale($font-scale);
-
   width: math.div(100%, $font-scale) + $legacy-dedupe;
 
   $legacy-dedupe: $legacy-dedupe + 0.00001 !global;

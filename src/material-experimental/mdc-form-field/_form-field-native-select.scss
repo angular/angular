@@ -1,7 +1,6 @@
 @use 'sass:map';
 @use 'sass:math';
 @use '../mdc-helpers/mdc-helpers';
-@use '../../cdk/a11y';
 @use '../../material/core/theming/palette';
 @use '@material/theme/theme-color' as mdc-theme-color;
 
@@ -25,35 +24,11 @@ $mat-form-field-select-horizontal-end-padding: $mat-form-field-select-arrow-widt
     display: inline-flex;
     box-sizing: border-box;
 
-    // Hides the default arrow native selects.
-    &::-ms-expand {
-      display: none;
-    }
-
     // By default the cursor does not change when hovering over a select. We want to
     // change this for non-disabled select elements so that it's more obvious that the
     // control can be clicked.
     &:not(:disabled) {
       cursor: pointer;
-    }
-
-    // As a part of its user agent styling, IE11 has a blue box inside each focused `select`
-    // element which we have to reset. Note that this needs to be in its own selector, because
-    // having it together with another one will cause other browsers to ignore it.
-    &::-ms-value {
-      // We need to reset the `color` as well, because IE sets it to white.
-      color: inherit;
-      background: none;
-
-      // IE and Edge in high contrast mode reset the color for a focused select to the same color
-      // as the background, however this causes it blend in because we've reset the `background`
-      // above. We have to add a more specific selector in order to ensure that it gets the
-      // `color` from our theme instead.
-      @include a11y.high-contrast(active, off) {
-        .mat-focused & {
-          color: inherit;
-        }
-      }
     }
   }
 

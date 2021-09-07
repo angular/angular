@@ -10,7 +10,6 @@ $legacy-underline-height: 1px !default;
 .mat-form-field-appearance-legacy {
   .mat-form-field-label {
     transform: perspective(100px);
-    -ms-transform: none;
   }
 
   .mat-form-field-prefix,

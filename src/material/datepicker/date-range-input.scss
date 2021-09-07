@@ -55,12 +55,6 @@ $date-range-input-part-max-width: calc(50% - #{$date-range-input-separator-spaci
   -webkit-appearance: none;
   width: 100%;
 
-  // Remove IE's default clear and reveal icons.
-  &::-ms-clear,
-  &::-ms-reveal {
-    display: none;
-  }
-
   // Undo the red box-shadow glow added by Firefox on invalid inputs.
   // See https://developer.mozilla.org/en-US/docs/Web/CSS/:-moz-ui-invalid
   &:-moz-ui-invalid {

@@ -15,9 +15,7 @@
   }
 
   .demo-item {
-    -ms-writing-mode: tb-lr;
     -webkit-writing-mode: vertical-lr;
-    // stylelint-disable-next-line material/no-prefixes
     writing-mode: vertical-lr;
   }
 }

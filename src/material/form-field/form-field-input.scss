@@ -44,12 +44,6 @@
     box-shadow: none;
   }
 
-  // Remove IE's default clear and reveal icons.
-  &::-ms-clear,
-  &::-ms-reveal {
-    display: none;
-  }
-
   // Clear Safari's decorations for search fields.
   &,
   &::-webkit-search-cancel-button,
@@ -99,12 +93,6 @@
     // Prevent users from being able to select the placeholder text. Most of the time this can't
     // happen, however it's possible to do it when clicking on a disabled input (see #13479).
     @include vendor-prefixes.user-select(none);
-
-    &:-ms-input-placeholder {
-      // fix IE11 not able to focus programmatically with css style -ms-user-select: none
-      // see https://github.com/angular/components/issues/15093
-      -ms-user-select: text;
-    }
 
     // Delay the transition until the label has animated about a third of the way through, in
     // order to prevent the placeholder from overlapping for a split second.
@@ -169,10 +157,6 @@ select.mat-input-element {
   top: -1em;
   margin-bottom: -1em;
 
-  &::-ms-expand {
-    display: none;
-  }
-
   // The `outline: none` from `.mat-input-element` works on all browsers, however Firefox also
   // adds a special `focus-inner` which we have to disable explicitly. See:
   // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#Firefox
@@ -182,26 +166,6 @@ select.mat-input-element {
 
   &:not(:disabled) {
     cursor: pointer;
-  }
-
-  // As a part of its user agent styling, IE11 has a blue box inside each focused
-  // `select` element which we have to reset. Note that this needs to be in its own
-  // selector, because having it together with another one will cause other browsers
-  // to ignore it.
-  &::-ms-value {
-    // We need to reset the `color` as well, because IE sets it to white.
-    color: inherit;
-    background: none;
-
-    // IE and Edge in high contrast mode reset the color for a focused select to the same color
-    // as the background, however this causes it blend in because we've reset the `background`
-    // above. We have to add a more specific selector in order to ensure that it gets the
-    // `color` from our theme instead.
-    @include a11y.high-contrast(active, off) {
-      .mat-focused & {
-        color: inherit;
-      }
-    }
   }
 }
 
