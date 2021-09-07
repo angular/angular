@@ -13,7 +13,7 @@ import {map} from 'rxjs/operators';
 import {AsyncValidator, AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
 import {AbstractControl} from './model';
 
-type ControlValueType = 'number' | 'string' | 'object' | 'boolean';
+type ControlValueType = 'number'|'string'|'object'|'boolean';
 
 function isEmptyInputValue(value: any): boolean {
   // we don't check for string here so it also works with arrays
