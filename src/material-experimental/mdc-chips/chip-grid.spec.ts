@@ -732,13 +732,22 @@ describe('MDC-based MatChipGrid', () => {
         .withContext(`Expected placeholder not to have an asterisk, as control was not required.`)
         .toBeNull();
 
-      fixture.componentInstance.isRequired = true;
+      fixture.componentInstance.chipGrid.required = true;
       fixture.detectChanges();
 
       requiredMarker = fixture.debugElement.query(By.css('.mdc-floating-label--required'))!;
       expect(requiredMarker).not
         .withContext(`Expected placeholder to have an asterisk, as control was required.`)
         .toBeNull();
+    });
+
+    it('should mark the component as required if the control has a required validator', () => {
+      fixture.destroy();
+      fixture = TestBed.createComponent(InputChipGrid);
+      fixture.componentInstance.control = new FormControl(undefined, [Validators.required]);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelector('.mdc-floating-label--required')).toBeTruthy();
     });
 
     it('should blur the form field when the active chip is blurred', fakeAsync(() => {
@@ -1077,8 +1086,7 @@ class FormFieldChipGrid {
   template: `
     <mat-form-field>
       <mat-label>New food...</mat-label>
-      <mat-chip-grid #chipGrid
-                    placeholder="Food" [formControl]="control" [required]="isRequired">
+      <mat-chip-grid #chipGrid placeholder="Food" [formControl]="control">
         <mat-chip-row *ngFor="let food of foods" [value]="food.value" (removed)="remove(food)">
           {{ food.viewValue }}
         </mat-chip-row>
@@ -1106,7 +1114,6 @@ class InputChipGrid {
 
   separatorKeyCodes = [ENTER, SPACE];
   addOnBlur: boolean = true;
-  isRequired: boolean;
 
   add(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();

@@ -857,13 +857,20 @@ describe('MatChipList', () => {
           .withContext(`Expected placeholder not to have an asterisk, as control was not required.`)
           .toBeNull();
 
-        fixture.componentInstance.isRequired = true;
+        fixture.componentInstance.chipList.required = true;
         fixture.detectChanges();
 
         requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'))!;
         expect(requiredMarker)
           .withContext(`Expected placeholder to have an asterisk, as control was required.`)
           .not.toBeNull();
+      });
+
+      it('should mark the component as required if the control has a required validator', () => {
+        fixture.componentInstance.control = new FormControl(undefined, [Validators.required]);
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.querySelector('.mat-form-field-required-marker')).toBeTruthy();
       });
 
       it('should be able to programmatically select a falsy option', () => {
@@ -1487,7 +1494,7 @@ class FormFieldChipList {
   selector: 'basic-chip-list',
   template: `
     <mat-form-field>
-      <mat-chip-list placeholder="Food" [formControl]="control" [required]="isRequired"
+      <mat-chip-list placeholder="Food" [formControl]="control"
         [tabIndex]="tabIndexOverride" [selectable]="selectable">
         <mat-chip *ngFor="let food of foods" [value]="food.value" [disabled]="food.disabled">
           {{ food.viewValue }}
@@ -1508,7 +1515,6 @@ class BasicChipList {
     {value: 'sushi-7', viewValue: 'Sushi'},
   ];
   control = new FormControl();
-  isRequired: boolean;
   tabIndexOverride: number;
   selectable: boolean;
 

@@ -28,7 +28,13 @@ import {
   Self,
   ViewEncapsulation,
 } from '@angular/core';
-import {ControlValueAccessor, FormGroupDirective, NgControl, NgForm} from '@angular/forms';
+import {
+  ControlValueAccessor,
+  FormGroupDirective,
+  NgControl,
+  NgForm,
+  Validators,
+} from '@angular/forms';
 import {
   CanUpdateErrorState,
   ErrorStateMatcher,
@@ -213,12 +219,14 @@ export class MatChipList extends _MatChipListBase implements MatFormFieldControl
    * @docs-private
    */
   @Input()
-  get required(): boolean { return this._required; }
+  get required(): boolean {
+    return this._required ?? this.ngControl?.control?.hasValidator(Validators.required) ?? false;
+  }
   set required(value: boolean) {
     this._required = coerceBooleanProperty(value);
     this.stateChanges.next();
   }
-  protected _required: boolean = false;
+  protected _required: boolean | undefined;
 
   /**
    * Implemented as part of MatFormFieldControl.

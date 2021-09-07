@@ -259,7 +259,7 @@ export class MatChipList extends _MatChipListBase implements MatFormFieldControl
     get required(): boolean;
     set required(value: boolean);
     // (undocumented)
-    protected _required: boolean;
+    protected _required: boolean | undefined;
     get role(): string | null;
     get selectable(): boolean;
     set selectable(value: boolean);
