@@ -75,7 +75,7 @@
     "@types/diff": "^5.0.0",
     "@types/events": "3.0.0",
     "@types/hammerjs": "2.0.40",
-    "@types/inquirer": "^7.3.0",
+    "@types/inquirer": "^8.0.0",
     "@types/jasmine": "3.8.2",
     "@types/jasmine-ajax": "^3.3.1",
     "@types/jasminewd2": "^2.0.8",
