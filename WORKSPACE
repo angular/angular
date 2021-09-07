@@ -15,10 +15,10 @@ http_archive(
 # Add sass rules
 http_archive(
     name = "io_bazel_rules_sass",
-    sha256 = "60fa023fe694848acf769d816ad9fee970a27a37489aaf5443a7ccffaac805e9",
-    strip_prefix = "rules_sass-1.38.2",
+    sha256 = "334b2ad87c13109486a8bfdc8d80d90e4ce6a4528bc6fb090b021ec87c2c3080",
+    strip_prefix = "rules_sass-1.39.0",
     urls = [
-        "https://github.com/bazelbuild/rules_sass/archive/1.38.2.zip",
+        "https://github.com/bazelbuild/rules_sass/archive/1.39.0.zip",
     ],
 )
 
@@ -76,17 +76,10 @@ load("@io_bazel_rules_sass//:package.bzl", "rules_sass_dependencies")
 
 rules_sass_dependencies()
 
-# TODO(devversion): remove workaround once `rules_sass` supports v4 of the Bazel NodeJS rules,
-# or when https://github.com/bazelbuild/rules_nodejs/issues/2807 is solved. For now, we just
-# replicate the original `sass_repositories` call and manually add the `--ignore-scripts`
-# Yarn argument to not run the postinstall version check of `@bazel/worker`
-yarn_install(
-    name = "build_bazel_rules_sass_deps",
-    args = ["--ignore-scripts"],
-    package_json = "@io_bazel_rules_sass//sass:package.json",
-    symlink_node_modules = False,
-    yarn_lock = "@io_bazel_rules_sass//sass:yarn.lock",
-)
+# Setup the Sass rule repositories.
+load("@io_bazel_rules_sass//:defs.bzl", "sass_repositories")
+
+sass_repositories()
 
 # Setup repositories for browsers provided by the shared dev-infra package.
 load(
