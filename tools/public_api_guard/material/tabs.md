@@ -244,7 +244,7 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
     // (undocumented)
     static ngAcceptInputType_animationDuration: NumberInput;
     // (undocumented)
-    static ngAcceptInputType_contentTabIndex: BooleanInput;
+    static ngAcceptInputType_contentTabIndex: NumberInput;
     // (undocumented)
     static ngAcceptInputType_disableRipple: BooleanInput;
     // (undocumented)
