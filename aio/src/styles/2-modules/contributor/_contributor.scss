@@ -67,15 +67,14 @@ aio-contributor {
       }
 
       &.icon {
-        $size: 2rem;
+        $size: 20px;
         min-width: $size;
         width: $size;
 
         mat-icon {
-          $size: 2rem;
           height: $size;
           width: $size;
-          font-size: 2rem;
+          font-size: $size;
 
           &[svgicon] {
             line-height: 0;
@@ -110,7 +109,7 @@ aio-contributor {
     transition:transform ease 500ms;
 
     h3 {
-      margin: 8px 0;
+      margin: 0.8rem 0;
     }
 
     .card-front, .card-back {
@@ -139,7 +138,7 @@ aio-contributor {
       }
 
       p {
-        margin: 8px 0;
+        margin: 0.8rem 0;
         @include mixins.font-size(12);
         @include mixins.line-height(14);
         text-align: left;
@@ -171,7 +170,7 @@ aio-contributor {
     max-width: $max-size;
     background-size: cover;
     background-position: center;
-    margin: 8px auto;
+    margin: 0.8rem auto;
     transition: all .2s ease-in-out;
   }
 
