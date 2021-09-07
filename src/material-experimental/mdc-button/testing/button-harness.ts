@@ -14,15 +14,8 @@ import {ButtonHarnessFilters} from '@angular/material/button/testing';
 /** Harness for interacting with a MDC-based mat-button in tests. */
 export class MatButtonHarness extends ContentContainerComponentHarness {
   // TODO(jelbourn) use a single class, like `.mat-button-base`
-  static hostSelector = [
-    '[mat-button]',
-    '[mat-raised-button]',
-    '[mat-flat-button]',
-    '[mat-icon-button]',
-    '[mat-stroked-button]',
-    '[mat-fab]',
-    '[mat-mini-fab]',
-  ].join(',');
+  static hostSelector = `[mat-button], [mat-raised-button], [mat-flat-button],
+                         [mat-icon-button], [mat-stroked-button], [mat-fab], [mat-mini-fab]`;
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a button with specific attributes.

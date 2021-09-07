@@ -15,15 +15,8 @@ import {ButtonHarnessFilters} from './button-harness-filters';
 export class MatButtonHarness extends ContentContainerComponentHarness {
   // TODO(jelbourn) use a single class, like `.mat-button-base`
   /** The selector for the host element of a `MatButton` instance. */
-  static hostSelector = [
-    '[mat-button]',
-    '[mat-raised-button]',
-    '[mat-flat-button]',
-    '[mat-icon-button]',
-    '[mat-stroked-button]',
-    '[mat-fab]',
-    '[mat-mini-fab]',
-  ].join(',');
+  static hostSelector = `[mat-button], [mat-raised-button], [mat-flat-button], [mat-icon-button],
+                         [mat-stroked-button], [mat-fab], [mat-mini-fab]`;
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a `MatButtonHarness` that meets
