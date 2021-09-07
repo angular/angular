@@ -13,6 +13,8 @@ import {map} from 'rxjs/operators';
 import {AsyncValidator, AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
 import {AbstractControl} from './model';
 
+type ControlValueType = 'number' | 'string' | 'object' | 'boolean';
+
 function isEmptyInputValue(value: any): boolean {
   // we don't check for string here so it also works with arrays
   return value == null || value.length === 0;
@@ -110,6 +112,30 @@ const EMAIL_REGEXP =
  * @publicApi
  */
 export class Validators {
+  /**
+   * @description
+   * Validator that requires the control's type to equal to the provided type.
+   *
+   * @usageNotes
+   *
+   * ### Validate against a string type
+   *
+   * ```typescript
+   * const control = new FormControl(2, Validators.type('string'));
+   *
+   * console.log(control.errors); // {type: {required: 'string', actual: 'number'}}
+   * ```
+   *
+   * @returns A validator function that returns an error map with the
+   * `type` property if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
+   *
+   */
+  static type(type: ControlValueType): ValidatorFn {
+    return typeValidator(type);
+  }
+
   /**
    * @description
    * Validator that requires the control's value to be greater than or equal to the provided number.
@@ -407,6 +433,22 @@ export class Validators {
   static composeAsync(validators: (AsyncValidatorFn|null)[]): AsyncValidatorFn|null {
     return composeAsync(validators);
   }
+}
+
+/**
+ * Validator that requires the control's value to have the specified type
+ * (in the sense of a `typeof` comparison).
+ *
+ * Only a subset of types is supported that might actually occur as a form control value.
+ */
+export function typeValidator(type: ControlValueType): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors|null => {
+    if (isEmptyInputValue(control.value)) {
+      return null;  // don't validate empty values to allow optional controls
+    }
+    const typeOfControl = typeof control.value;
+    return typeOfControl !== type ? {'type': {'required': type, 'actual': typeOfControl}} : null;
+  };
 }
 
 /**
