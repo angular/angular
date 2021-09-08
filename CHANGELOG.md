@@ -1,3 +1,15 @@
+<a name="12.2.5"></a>
+# 12.2.5 "copper-duckling" (2021-09-08)
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [eeac3e647](https://github.com/angular/components/commit/eeac3e647992f9e7e7af26d965da5cee479a9433) | fix | **chips:** error if selected value is accessed too early ([#23419](https://github.com/angular/components/pull/23419)) |
+| [2a68fa8d7](https://github.com/angular/components/commit/2a68fa8d705c976af12127e99336074a48f2dc0d) | fix | **autocomplete:** don't emit optionActivated event when option is reset ([#23437](https://github.com/angular/components/pull/23437)) |
+| [03c033fdc](https://github.com/angular/components/commit/03c033fdcc9e83c3a84bf31b1a5b5b8a964842c2) | fix | **tabs:** fix contentTabIndex input type ([#23413](https://github.com/angular/components/pull/23413)) |
+## Special Thanks
+Brandon Yanofsky, Daniil Rabizo, Kristiyan Kostadinov, Paul Gschwendtner and Zach Arend
+
+
 <a name="13.0.0-next.3"></a>
 # 13.0.0-next.3 "pith-panther" (2021-09-01)
 ## Breaking Changes
