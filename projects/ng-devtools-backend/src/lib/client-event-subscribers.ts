@@ -9,7 +9,8 @@ import {
   ProfilerFrame,
   ComponentExplorerViewQuery,
 } from 'protocol';
-import { ComponentTreeNode, getLatestComponentState, queryDirectiveForest, updateState } from './component-tree';
+import { ComponentTreeNode } from './interfaces';
+import { getLatestComponentState, queryDirectiveForest, updateState } from './component-tree';
 import { start as startProfiling, stop as stopProfiling } from './hooks/capture';
 import { serializeDirectiveState } from './state-serializer/state-serializer';
 import { ComponentInspector } from './component-inspector/component-inspector';
@@ -67,29 +68,28 @@ const shutdownCallback = (messageBus: MessageBus<Events>) => () => {
   messageBus.destroy();
 };
 
-const getLatestComponentExplorerViewCallback = (messageBus: MessageBus<Events>) => (
-  query?: ComponentExplorerViewQuery
-) => {
-  // We want to force re-indexing of the component tree.
-  // Pressing the refresh button means the user saw stuck UI.
+const getLatestComponentExplorerViewCallback =
+  (messageBus: MessageBus<Events>) => (query?: ComponentExplorerViewQuery) => {
+    // We want to force re-indexing of the component tree.
+    // Pressing the refresh button means the user saw stuck UI.
 
-  initializeOrGetDirectiveForestHooks().indexForest();
+    initializeOrGetDirectiveForestHooks().indexForest();
 
-  if (!query) {
+    if (!query) {
+      messageBus.emit('latestComponentExplorerView', [
+        {
+          forest: prepareForestForSerialization(initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest()),
+        },
+      ]);
+      return;
+    }
     messageBus.emit('latestComponentExplorerView', [
       {
         forest: prepareForestForSerialization(initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest()),
+        properties: getLatestComponentState(query, initializeOrGetDirectiveForestHooks().getDirectiveForest()),
       },
     ]);
-    return;
-  }
-  messageBus.emit('latestComponentExplorerView', [
-    {
-      forest: prepareForestForSerialization(initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest()),
-      properties: getLatestComponentState(query, initializeOrGetDirectiveForestHooks().getDirectiveForest()),
-    },
-  ]);
-};
+  };
 
 const checkForAngularCallback = (messageBus: MessageBus<Events>) => () => checkForAngular(messageBus);
 const getRoutesCallback = (messageBus: MessageBus<Events>) => () => getRoutes(messageBus);
@@ -108,31 +108,29 @@ const selectedComponentCallback = (position: ElementPosition) => {
   setConsoleReference({ node, position });
 };
 
-const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (
-  position: DirectivePosition,
-  propPath: string[]
-) => {
-  const emitEmpty = () => messageBus.emit('nestedProperties', [position, { props: {} }, propPath]);
-  const node = queryDirectiveForest(
-    position.element,
-    initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest()
-  );
-  if (!node) {
-    return emitEmpty();
-  }
-  const current = position.directive === undefined ? node.component : node.directives[position.directive];
-  if (!current) {
-    return emitEmpty();
-  }
-  let data = current.instance;
-  for (const prop of propPath) {
-    data = data[prop];
-    if (!data) {
-      console.error('Cannot access the properties', propPath, 'of', node);
+const getNestedPropertiesCallback =
+  (messageBus: MessageBus<Events>) => (position: DirectivePosition, propPath: string[]) => {
+    const emitEmpty = () => messageBus.emit('nestedProperties', [position, { props: {} }, propPath]);
+    const node = queryDirectiveForest(
+      position.element,
+      initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest()
+    );
+    if (!node) {
+      return emitEmpty();
     }
-  }
-  messageBus.emit('nestedProperties', [position, { props: serializeDirectiveState(data) }, propPath]);
-};
+    const current = position.directive === undefined ? node.component : node.directives[position.directive];
+    if (!current) {
+      return emitEmpty();
+    }
+    let data = current.instance;
+    for (const prop of propPath) {
+      data = data[prop];
+      if (!data) {
+        console.error('Cannot access the properties', propPath, 'of', node);
+      }
+    }
+    messageBus.emit('nestedProperties', [position, { props: serializeDirectiveState(data) }, propPath]);
+  };
 
 //
 // Subscribe Helpers

@@ -1,6 +1,7 @@
 import { unHighlight, highlight, findComponentAndHost } from '../highlighter';
 import { Type } from '@angular/core';
-import { ComponentTreeNode, findNodeInForest } from '../component-tree';
+import { findNodeInForest } from '../component-tree';
+import { ComponentTreeNode } from '../interfaces';
 import { ElementPosition } from 'protocol';
 import { initializeOrGetDirectiveForestHooks } from '../hooks';
 

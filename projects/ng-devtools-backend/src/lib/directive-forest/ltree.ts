@@ -1,4 +1,4 @@
-import { ComponentTreeNode, ComponentInstanceType, DirectiveInstanceType } from '../component-tree';
+import { ComponentTreeNode, DirectiveInstanceType, ComponentInstanceType } from '../interfaces';
 import { isCustomElement } from '../utils';
 import { getDirectiveName } from '../highlighter';
 import { SemVerDSL } from 'semver-dsl';

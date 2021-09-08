@@ -1,0 +1,47 @@
+load("//tools:angular_ts_library.bzl", "ng_ts_library")
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_ts_library(
+    name = "directive-forest",
+    srcs = glob(
+        include = ["*.ts"],
+        exclude = ["*.spec.ts"]
+    ),
+    deps = [
+        "//projects/ng-devtools-backend/src/lib:interfaces",
+        "//projects/ng-devtools-backend/src/lib:utils",
+        "//projects/ng-devtools-backend/src/lib:highlighter",
+        "//projects/ng-devtools-backend/src/lib:version",
+        "@npm//semver-dsl"
+    ],
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
+)
+
+karma_web_test_suite(
+    name = "test",
+    browsers = [
+        "@io_bazel_rules_webtesting//browsers:chromium-local",
+    ],
+    tags = ["native"],
+    deps = [
+        ":test-lib",
+    ],
+)
+
+ts_library(
+    name = "test-lib",
+    testonly = True,
+    srcs = [
+        "render-tree.spec.ts",
+    ],
+    deps = [
+        ":directive-forest",
+        "@npm//@types",
+        "@npm//@types/jasmine",
+        "//projects/ng-devtools-backend/src/lib:interfaces",
+        "//projects/ng-devtools-backend/src/lib:utils",
+    ],
+)

@@ -1,4 +1,4 @@
-import { ComponentTreeNode } from '../component-tree';
+import { ComponentTreeNode } from '../interfaces';
 import { isCustomElement } from '../utils';
 
 const extractViewTree = (

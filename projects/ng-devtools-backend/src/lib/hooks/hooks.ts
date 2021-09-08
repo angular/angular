@@ -1,4 +1,4 @@
-import { ComponentTreeNode } from './../component-tree';
+import { ComponentTreeNode } from '../interfaces';
 import { ElementPosition } from 'protocol';
 import { IdentityTracker, IndexedNode } from './identity-tracker';
 import { Profiler, selectProfilerStrategy } from './profiler';

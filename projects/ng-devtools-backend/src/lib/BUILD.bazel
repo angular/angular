@@ -1,0 +1,185 @@
+load("//tools:angular_ts_library.bzl", "ng_ts_library")
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_ts_library(
+    name = "lib",
+    srcs = ["index.ts"],
+    deps = [
+        "//projects/protocol",
+        "//projects/ng-devtools-backend/src/lib/hooks",
+        "//projects/ng-devtools-backend/src/lib/directive-forest",
+        "//projects/ng-devtools-backend/src/lib/component-inspector",
+        "//projects/ng-devtools-backend/src/lib/state-serializer",
+        ":client-event-subscribers"
+    ],
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
+)
+
+karma_web_test_suite(
+    name = "highlighter-test",
+    browsers = [
+        "@io_bazel_rules_webtesting//browsers:chromium-local",
+    ],
+    tags = ["native"],
+    deps = [
+        ":highlighter-test-lib",
+    ],
+)
+
+ts_library(
+    name = "highlighter-test-lib",
+    testonly = True,
+    srcs = [
+        "highlighter.spec.ts"
+    ],
+    deps = [
+        ":highlighter",
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@types",
+        "@npm//@types/jasmine",
+    ],
+)
+
+ng_ts_library(
+    name = "highlighter",
+    srcs = ["highlighter.ts"],
+    deps = [
+        "@npm//@angular/core"
+    ],
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
+)
+
+ng_ts_library(
+    name = "interfaces",
+    srcs = ["interfaces.ts"],
+    deps = [
+        "//projects/protocol"
+    ],
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
+)
+
+karma_web_test_suite(
+    name = "router-tree-test",
+    browsers = [
+        "@io_bazel_rules_webtesting//browsers:chromium-local",
+    ],
+    tags = ["native"],
+    deps = [
+        ":router-tree-test-lib",
+    ],
+)
+
+ts_library(
+    name = "router-tree-test-lib",
+    srcs = [
+        "router-tree.spec.ts"
+    ],
+    deps = [
+        ":router-tree",
+        "//projects/protocol",
+        "@npm//@angular/core",
+        "@npm//@angular/router",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@types",
+        "@npm//@types/jasmine",
+    ],
+)
+
+ng_ts_library(
+    name = "router-tree",
+    srcs = ["router-tree.ts"],
+    deps = [
+        "//projects/protocol",
+        "@npm//@angular/router",
+    ],
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
+)
+
+ng_ts_library(
+    name = "set-console-reference",
+    srcs = ["set-console-reference.ts"],
+    deps = [
+        "//projects/shared-utils",
+        "//projects/protocol",
+        ":interfaces"
+    ],
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
+)
+
+ng_ts_library(
+    name = "utils",
+    srcs = ["utils.ts"],
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
+)
+
+ng_ts_library(
+    name = "version",
+    srcs = ["version.ts"],
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
+)
+
+ng_ts_library(
+    name = "client-event-subscribers",
+    srcs = ["client-event-subscribers.ts"],
+    deps = [
+        "//projects/protocol",
+        "//projects/ng-devtools-backend/src/lib/hooks",
+        "//projects/ng-devtools-backend/src/lib/component-inspector",
+        "//projects/ng-devtools-backend/src/lib/state-serializer",
+        ":component-tree",
+        ":set-console-reference",
+        ":angular-check",
+        ":interfaces",
+        ":highlighter",
+        ":utils",
+        "@npm//rxjs"
+    ],
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
+)
+
+ng_ts_library(
+    name = "component-tree",
+    srcs = ["component-tree.ts"],
+    deps = [
+        "//projects/protocol",
+        "//projects/ng-devtools-backend/src/lib/state-serializer",
+        "//projects/ng-devtools-backend/src/lib/directive-forest",
+        "@npm//@angular/core",
+        ":interfaces"
+    ],
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
+)
+
+karma_web_test_suite(
+    name = "angular-check-test",
+    browsers = [
+        "@io_bazel_rules_webtesting//browsers:chromium-local",
+    ],
+    tags = ["native"],
+    deps = [
+        ":angular-check-test-lib",
+    ],
+)
+
+ts_library(
+    name = "angular-check-test-lib",
+    testonly = True,
+    srcs = [
+        "angular-check.spec.ts"
+    ],
+    deps = [
+        ":angular-check",
+        "@npm//@types",
+        "@npm//@types/jasmine",
+    ],
+)
+
+ng_ts_library(
+    name = "angular-check",
+    srcs = ["angular-check.ts"],
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
+)
