@@ -58,6 +58,7 @@ karma_web_test_suite(
     deps = [
         "//projects/ng-devtools/src/lib/devtools-tabs:devtools-tabs-test",
         "//src:rxjs_umd_modules",
+        "//src:d3_umd_modules",
         "@npm//:node_modules/tslib/tslib.js",
     ],
 )

@@ -29,6 +29,7 @@ karma_web_test_suite(
         ":test-lib",
         "@npm//:node_modules/tslib/tslib.js",
         "//src:rxjs_umd_modules",
+        "//src:semver-dsl_umd_modules",
     ],
 )
 
