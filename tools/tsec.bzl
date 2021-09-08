@@ -60,23 +60,13 @@ tsec_config = rule(
 
 TsLibInfo = provider(fields = ["srcs", "deps"])
 
-def _ts_library_forwarded_impl(ctx):
+def _capture_tsec_deps_aspect_impl(target, ctx):
     """Forward `srcs` and `deps` of `ts_library` and `ng_module` macros to `_tsec_test`."""
-    return [TsLibInfo(srcs = ctx.attr.srcs, deps = ctx.attr.deps)]
+    return [TsLibInfo(srcs = ctx.rule.attr.srcs, deps = ctx.rule.attr.deps)]
 
-ts_library_forwarded = rule(
-    implementation = _ts_library_forwarded_impl,
-    attrs = {
-        "srcs": attr.label_list(allow_files = [".ts", ".tsx"]),
-        "deps": attr.label_list(),
-    },
-    doc = """A rule-in-the-middle to forward `srcs` and `deps` to _src_and_deps, to avoid repeating these arguments in tsec_test.
-
-Should only be used by the `ts_library` and `ng_module` macros in tools/default.bzel.""",
+_capture_tsec_deps_aspect = aspect(
+    implementation = _capture_tsec_deps_aspect_impl,
 )
-
-def get_forwarded_target_name(name):
-    return "%s_forwarded" % name
 
 def _all_transitive_deps_impl(ctx):
     files = []
@@ -90,10 +80,10 @@ def _all_transitive_deps_impl(ctx):
         files.append(tsec_tsconfig_info.exemption)
     files.extend(tsec_tsconfig_info.deps)
 
-    if TsLibInfo not in ctx.attr.forwarded_ts_target:
-        fail("`target` must be a ts_library_forwarded target")
+    if TsLibInfo not in ctx.attr.ts_target:
+        fail("`target` must be a ts_library or ng_module target")
 
-    ts_target_info = ctx.attr.forwarded_ts_target[TsLibInfo]
+    ts_target_info = ctx.attr.ts_target[TsLibInfo]
     for s in ts_target_info.srcs:
         if hasattr(s, "files"):
             files.extend(s.files.to_list())
@@ -110,7 +100,7 @@ _all_transitive_deps = rule(
     implementation = _all_transitive_deps_impl,
     attrs = {
         "tsconfig": attr.label(),
-        "forwarded_ts_target": attr.label(),
+        "ts_target": attr.label(aspects = [_capture_tsec_deps_aspect]),
     },
     doc = """Expand all transitive dependencies needed to run `_tsec_test`.""",
 )
@@ -131,7 +121,7 @@ def tsec_test(name, target, tsconfig):
         name = all_transitive_deps_name,
         testonly = True,
         tsconfig = tsconfig,
-        forwarded_ts_target = get_forwarded_target_name(target),
+        ts_target = target,
         tags = ["tsec"],
     )
 
