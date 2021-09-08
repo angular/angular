@@ -1,0 +1,17 @@
+load("//tools:angular_ts_library.bzl", "ng_ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_ts_library(
+    name = "app",
+    srcs = glob(
+        include = ["*.ts"],
+    ),
+    angular_assets = ["app.component.html"],
+    deps = [
+        "@npm//@angular/core",
+        "@npm//@angular/common",
+        "@npm//@angular/platform-browser",
+        "@npm//rxjs",
+    ],
+)

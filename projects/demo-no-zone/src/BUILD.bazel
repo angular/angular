@@ -1,0 +1,63 @@
+load("@npm//@bazel/concatjs:index.bzl", "concatjs_devserver")
+load("@npm//html-insert-assets:index.bzl", "html_insert_assets")
+load("//tools:angular_ts_library.bzl", "ng_ts_library")
+
+package(default_visibility = ["//:__subpackages__"])
+
+_ASSETS = [
+    ":styles.css",
+    "@npm//:node_modules/zone.js/dist/zone.min.js",
+]
+
+html_insert_assets(
+    name = "inject_scripts_for_dev",
+    outs = ["index.html"],
+    args = [
+        "--html=$(execpath //projects/demo-no-zone/src:_index.html)",
+        "--out=$@",
+        "--roots=. $(RULEDIR)",
+        "--assets",
+    ] + ["$(execpath %s)" % s for s in _ASSETS] + [
+        # This file doesn't exist during the build, but will be served by concatjs_devserver
+        "./_/ts_scripts.js",
+    ],
+    data = ["//projects/demo-no-zone/src:_index.html"] + _ASSETS,
+)
+
+ng_ts_library(
+    name = "src",
+    srcs = ["main.ts"],
+    deps = [
+        "//projects/demo-no-zone/src/app",
+        "@npm//@angular/core",
+        "@npm//@angular/common",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@angular/platform-browser",
+        "@npm//rxjs",
+        "@npm//@types",
+    ],
+    module_name = "demo-no-zone",
+)
+
+filegroup(
+    name = "rxjs_umd_modules",
+    srcs = [
+        ":rxjs_shims.js",
+        "@npm//:node_modules/rxjs/bundles/rxjs.umd.js",
+    ],
+)
+
+concatjs_devserver(
+    name = "devserver",
+    entry_module = "demo-no-zone/main",
+    scripts = [
+        "@npm//:node_modules/tslib/tslib.js",
+        ":rxjs_umd_modules",
+    ],
+    static_files = _ASSETS + [
+        "//projects/demo-no-zone/src:src",
+        ":inject_scripts_for_dev",
+    ],
+    deps = ["//projects/demo-no-zone/src"],
+    port = 4200
+)
