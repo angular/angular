@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
-import { Todo } from '../models/todo';
+import { Todo } from './todo';
 import { TodoFilter } from './todos.pipe';
 
 const fib = (n: number) => {

@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from '@angular/core';
-import { ZippyComponent } from './zippy/zippy.component';
+import { ZippyComponent } from './zippy.component';
 
 @Component({
   selector: 'app-demo-component',

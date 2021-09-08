@@ -1,13 +1,11 @@
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { Process } from 'ng-devtools';
-
-declare let process: Process;
 
 export const environment = {
   production: false,
   process: {
     env: {
-      LATEST_SHA: process.env.LATEST_SHA,
+      // todo(aleksanderbodurri): when devtools is merged into the main angular repo, use stamping tooling to inject the latest SHA into the environment
+      LATEST_SHA: '',
     },
   },
   animationModule: NoopAnimationsModule,

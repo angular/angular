@@ -1,0 +1,196 @@
+load("@npm//@bazel/concatjs:index.bzl", "concatjs_devserver")
+load("@npm//html-insert-assets:index.bzl", "html_insert_assets")
+load("//tools:angular_ts_library.bzl", "ng_ts_library")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_library", "sass_binary")
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
+load("@npm//@bazel/terser:index.bzl", "terser_minified")
+load("@build_bazel_rules_nodejs//internal/npm_install:npm_umd_bundle.bzl", "npm_umd_bundle")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_library(
+    name = "material-theming",
+    srcs = ["@npm//:node_modules/@angular/material/_index.scss"]
+)
+
+sass_binary(
+    name = "demo-styles",
+    src = "styles.scss",
+    deps = [":material-theming"],
+    sourcemap = False,
+)
+
+_ASSETS = [
+    "//src:demo-styles",
+    "@npm//:node_modules/zone.js/dist/zone.min.js",
+]
+
+html_insert_assets(
+    name = "inject_scripts_for_dev",
+    outs = ["index.html"],
+    args = [
+        "--html=$(execpath //src:_index.html)",
+        "--out=$@",
+        "--roots=. $(RULEDIR)",
+        "--assets",
+    ] + ["$(execpath %s)" % s for s in _ASSETS] + [
+        # This file doesn't exist during the build, but will be served by concatjs_devserver
+        "./_/ts_scripts.js",
+    ],
+    data = ["//src:_index.html"] + _ASSETS,
+)
+
+ng_ts_library(
+    name = "demo",
+    srcs = ["main.ts"],
+    deps = [
+        "//src/environments",
+        "//src/app",
+        "@npm//@angular/core",
+        "@npm//@angular/common",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@angular/platform-browser",
+        "@npm//rxjs",
+        "@npm//@types",
+    ],
+    devmode_target = "es2018",
+    tsconfig = "//:tsconfig.json",
+    module_name = "demo",
+)
+
+ng_ts_library(
+    name = "demo-e2e",
+    srcs = ["main.e2e.ts"],
+    deps = [
+        "//src/environments",
+        "//src/app:app-e2e",
+        "@npm//@angular/core",
+        "@npm//@angular/common",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@angular/platform-browser",
+        "@npm//rxjs",
+        "@npm//@types",
+    ],
+    tsconfig = "//:tsconfig.json",
+    module_name = "demo",
+)
+
+filegroup(
+    name = "rxjs_umd_modules",
+    srcs = [
+        ":rxjs_shims.js",
+        "@npm//:node_modules/rxjs/bundles/rxjs.umd.js",
+    ],
+)
+
+filegroup(
+    name = "d3_umd_modules",
+    srcs = [
+        ":d3_shims.js",
+        ":d3_umd",
+    ],
+)
+
+filegroup(
+    name = "semver-dsl_umd_modules",
+    srcs = [
+        ":semver_dsl_shims.js",
+        ":semver-dsl_umd",
+    ],
+)
+
+npm_umd_bundle(
+    name = "d3_umd",
+    package_name = "d3",
+    entry_point = "@npm//:node_modules/d3/dist/d3.min.js",
+    package = "@npm//d3",
+)
+
+npm_umd_bundle(
+    name = "semver-dsl_umd",
+    package_name = "semver-dsl",
+    entry_point = "@npm//:node_modules/semver-dsl/index.js",
+    package = "@npm//semver-dsl",
+)
+
+concatjs_devserver(
+    name = "devserver",
+    entry_module = "demo/main",
+    scripts = [
+        "@npm//:node_modules/tslib/tslib.js",
+        ":rxjs_umd_modules",
+        ":d3_umd_modules",
+        ":semver-dsl_umd_modules"
+    ],
+    static_files = _ASSETS + [
+        "//src:demo",
+        ":inject_scripts_for_dev",
+        "//projects/ng-devtools/src/lib/images",
+        "//projects/shell-chrome/src/assets"
+    ],
+    additional_root_paths = [
+        "projects/ng-devtools/src/lib",
+        "projects/shell-chrome/src"
+    ],
+    deps = ["//src:demo"],
+    port = 4200
+)
+
+concatjs_devserver(
+    name = "devserver-e2e",
+    entry_module = "demo/main.e2e",
+    scripts = [
+        "@npm//:node_modules/tslib/tslib.js",
+        ":rxjs_umd_modules",
+        ":d3_umd_modules",
+        ":semver-dsl_umd_modules"
+    ],
+    static_files = _ASSETS + [
+        "//src:demo-e2e",
+        ":inject_scripts_for_dev",
+        "//projects/ng-devtools/src/lib/images",
+        "//projects/shell-chrome/src/assets"
+    ],
+    additional_root_paths = [
+        "projects/ng-devtools/src/lib",
+        "projects/shell-chrome/src"
+    ],
+    deps = ["//src:demo-e2e"],
+    port = 4200
+)
+
+ts_library(
+    name = "demo-application-environment",
+    srcs = ["demo-application-environment.ts"],
+    deps = [
+        "//projects/ng-devtools",
+        "//src/environments"
+    ],
+)
+
+ts_library(
+    name = "demo-application-operations",
+    srcs = ["demo-application-operations.ts"],
+    deps = [
+        "//projects/protocol",
+        "//projects/ng-devtools"
+    ],
+)
+
+ts_library(
+    name = "iframe-message-bus",
+    srcs = ["iframe-message-bus.ts"],
+    deps = [
+        '//projects/protocol'
+    ]
+)
+
+ts_library(
+    name = "zone-unaware-iframe-message-bus",
+    srcs = ["zone-unaware-iframe-message-bus.ts"],
+    deps = [
+        ":iframe-message-bus",
+        "//projects/protocol"
+    ]
+)

@@ -3,9 +3,9 @@ import { DemoAppComponent } from './demo-app.component';
 import { RouterModule } from '@angular/router';
 
 import { initializeMessageBus } from 'ng-devtools-backend';
-import { ZippyComponent } from './zippy/zippy.component';
-import { ZoneUnawareIFrameMessageBus } from 'src/zone-unaware-iframe-message-bus';
-import { HeavyComponent } from './heavy/heavy.component';
+import { ZippyComponent } from './zippy.component';
+import { ZoneUnawareIFrameMessageBus } from '../../zone-unaware-iframe-message-bus';
+import { HeavyComponent } from './heavy.component';
 import { createCustomElement } from '@angular/elements';
 
 @NgModule({

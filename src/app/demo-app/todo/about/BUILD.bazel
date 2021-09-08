@@ -1,0 +1,19 @@
+load("//tools:angular_ts_library.bzl", "ng_ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_ts_library(
+    name = "about",
+    srcs = [
+        "about.component.ts",
+        "about.module.ts"
+    ],
+    deps = [
+        "@npm//@angular/core",
+        "@npm//@angular/router",
+    ],
+    tsconfig = "//:tsconfig.json",
+)
+
+
+

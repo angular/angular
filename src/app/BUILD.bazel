@@ -1,0 +1,56 @@
+load("//tools:angular_ts_library.bzl", "ng_ts_library")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "app-component-styles",
+    src = "app.component.scss",
+)
+
+ng_ts_library(
+    name = "app",
+    srcs = [
+        "app.component.ts",
+        "app.module.ts",
+    ],
+    angular_assets = [
+        "app.component.html",
+        ":app-component-styles"
+    ],
+    deps = [
+        "//src/app/devtools-app",
+        "//src/app/demo-app",
+        "//src:demo-application-operations",
+        "//src:demo-application-environment",
+        "//projects/ng-devtools",
+        "@npm//@angular/core",
+        "@npm//@angular/router",
+        "@npm//@angular/platform-browser",
+    ],
+    tsconfig = "//:tsconfig.json",
+)
+
+ng_ts_library(
+    name = "app-e2e",
+    srcs = [
+        "app.component.ts",
+        "app.e2e.module.ts",
+    ],
+    angular_assets = [
+        "app.component.html",
+        ":app-component-styles"
+    ],
+    deps = [
+        "//src/app/devtools-app",
+        "//src/app/demo-app",
+        "//src:demo-application-operations",
+        "//src:demo-application-environment",
+        "//projects/ng-devtools",
+        "@npm//@angular/core",
+        "@npm//@angular/router",
+        "@npm//@angular/platform-browser",
+    ],
+    tsconfig = "//:tsconfig.json",
+)

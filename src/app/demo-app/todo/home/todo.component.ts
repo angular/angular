@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, Input, Output, EventEmitter } from '@angular/core';
-import { Todo } from '../../models/todo';
+import { Todo } from './todo';
 
 @Component({
   templateUrl: 'todo.component.html',

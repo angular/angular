@@ -1,0 +1,17 @@
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "environments",
+    srcs = [
+        "environment.ts",
+        "environment.prod.ts",
+        "environment.e2e.ts"
+    ],
+    deps = [
+        "@npm//@angular/platform-browser",
+        "//projects/ng-devtools"
+    ],
+    tsconfig = "//:tsconfig.json",
+)
