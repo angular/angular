@@ -1,5 +1,8 @@
 {
   "extends": "tslint:recommended",
+  "linterOptions": {
+    "exclude": ["projects/ng-devtools/src/lib/vendor/**"]
+  },
   "rules": {
     "array-type": false,
     "arrow-parens": false,

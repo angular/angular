@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
-import { injectScripts } from '../inject';
+import { injectScripts } from './inject';
 import { PriorityAwareMessageBus, MessageBus, Events } from 'protocol';
 import { ZoneAwareChromeMessageBus } from './zone-aware-chrome-message-bus';
 
@@ -27,7 +27,8 @@ export class AppComponent implements OnInit {
     chrome.devtools.network.onNavigated.addListener(() => {
       window.location.reload();
     });
-    injectScripts(['backend.js', 'runtime.js']);
+
+    injectScripts(['app/backend-es2015.js']);
     this._cd.detectChanges();
   }
 }
