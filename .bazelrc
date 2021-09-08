@@ -1,0 +1,92 @@
+# Common Bazel settings for JavaScript/NodeJS workspaces
+# This rc file is automatically discovered when Bazel is run in this workspace,
+# see https://docs.bazel.build/versions/master/guide.html#bazelrc
+#
+# The full list of Bazel options: https://docs.bazel.build/versions/master/command-line-reference.html
+
+# Cache action outputs on disk so they persist across output_base and bazel shutdown (eg. changing branches)
+build --disk_cache=~/.cache/bazel-disk-cache
+
+# Bazel picks up host-OS-specific config lines from bazelrc files
+build --enable_platform_specific_config
+
+# Bazel will create symlinks from the workspace directory to output artifacts.
+# Build results will be placed in a directory called "dist/bin"
+# Other directories will be created like "dist/testlogs"
+# Be aware that this will still create a bazel-out symlink in
+# your project directory, which you must exclude from version control and your
+# editor's search path.
+build --symlink_prefix=dist/
+# To disable the symlinks altogether (including bazel-out) you can use
+# build --symlink_prefix=/
+# however this makes it harder to find outputs.
+
+# Specifies desired output mode for running tests.
+# Valid values are
+#   'summary' to output only test status summary
+#   'errors' to also print test logs for failed tests
+#   'all' to print logs for all tests
+#   'streamed' to output logs for all tests in real time
+#     (this will force tests to be executed locally one at a time regardless of --test_strategy value).
+test --test_output=errors
+
+# Support for debugging NodeJS tests
+# Add the Bazel option `--config=debug` to enable this
+# --test_output=streamed
+#     Stream stdout/stderr output from each test in real-time.
+#     See https://docs.bazel.build/versions/master/user-manual.html#flag--test_output for more details.
+# --test_strategy=exclusive
+#     Run one test at a time.
+# --test_timeout=9999
+#     Prevent long running tests from timing out
+#     See https://docs.bazel.build/versions/master/user-manual.html#flag--test_timeout for more details.
+# --nocache_test_results
+#     Always run tests
+# --node_options=--inspect-brk
+#     Pass the --inspect-brk option to all tests which enables the node inspector agent.
+#     See https://nodejs.org/de/docs/guides/debugging-getting-started/#command-line-options for more details.
+# --define=VERBOSE_LOGS=1
+#     Rules will output verbose logs if the VERBOSE_LOGS environment variable is set. `VERBOSE_LOGS` will be passed to
+#     `nodejs_binary` and `nodejs_test` via the default value of the `default_env_vars` attribute of those rules.
+# --compilation_mode=dbg
+#     Rules may change their build outputs if the compilation mode is set to dbg. For example,
+#     mininfiers such as terser may make their output more human readable when this is set. Rules will pass `COMPILATION_MODE`
+#     to `nodejs_binary` executables via the actions.run env attribute.
+#     See https://docs.bazel.build/versions/master/user-manual.html#flag--compilation_mode for more details.
+test:debug --test_output=streamed --test_strategy=exclusive --test_timeout=9999 --nocache_test_results --define=VERBOSE_LOGS=1
+# Use bazel run with `--config=debug` to turn on the NodeJS inspector agent.
+# The node process will break before user code starts and wait for the debugger to connect.
+run:debug --define=VERBOSE_LOGS=1 -- --node_options=--inspect-brk
+# The following option will change the build output of certain rules such as terser and may not be desirable in all cases
+build:debug --compilation_mode=dbg
+
+# Turn off legacy external runfiles
+# This prevents accidentally depending on this feature, which Bazel will remove.
+build --nolegacy_external_runfiles
+
+# Turn on --incompatible_strict_action_env which was on by default
+# in Bazel 0.21.0 but turned off again in 0.22.0. Follow
+# https://github.com/bazelbuild/bazel/issues/7026 for more details.
+# This flag is needed to so that the bazel cache is not invalidated
+# when running bazel via `yarn bazel`.
+# See https://github.com/angular/angular/issues/27514.
+build --incompatible_strict_action_env
+run --incompatible_strict_action_env
+
+# When running `bazel coverage` --instrument_test_targets needs to be set in order to 
+# collect coverage information from test targets
+coverage --instrument_test_targets
+
+# Load any settings specific to the current user.
+# .bazelrc.user should appear in .gitignore so that settings are not shared with team members
+# This needs to be last statement in this
+# config, as the user configuration should be able to overwrite flags from this file.
+# See https://docs.bazel.build/versions/master/best-practices.html#bazelrc
+# (Note that we use .bazelrc.user so the file appears next to .bazelrc in directory listing,
+# rather than user.bazelrc as suggested in the Bazel docs)
+try-import %workspace%/.bazelrc.user
+
+
+# Use the Angular Ivy compiler
+# See https://github.com/angular/angular/blob/master/docs/BAZEL.md#various-flags-used-for-tests
+build --define=angular_ivy_enabled=True

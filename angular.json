@@ -18,7 +18,7 @@
           "builder": "ngx-build-plus:browser",
           "options": {
             "outputPath": "dist/shell-dev",
-            "index": "src/index.html",
+            "index": "src/_index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
@@ -73,6 +73,10 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.e2e.ts"
+                },
+                {
+                  "replace": "src/app/app.module.ts",
+                  "with": "src/app/app.e2e.module.ts"
                 }
               ]
             }
@@ -414,7 +418,7 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "dist/demo-no-zone",
-            "index": "projects/demo-no-zone/src/index.html",
+            "index": "projects/demo-no-zone/src/_index.html",
             "main": "projects/demo-no-zone/src/main.ts",
             "polyfills": "projects/demo-no-zone/src/polyfills.ts",
             "tsConfig": "projects/demo-no-zone/tsconfig.app.json",
