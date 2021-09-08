@@ -1,0 +1,196 @@
+load("//tools:angular_ts_library.bzl", "ng_ts_library")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
+load("@npm//@bazel/terser:index.bzl", "terser_minified")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "app-component-styles",
+    src = "app.component.scss",
+)
+
+ng_ts_library(
+    name = "app",
+    srcs = [
+        "app.component.ts",
+        "app.module.ts",
+        "inject.ts",        
+    ],
+    angular_assets = [
+        "app.component.html",
+        ":app-component-styles"
+    ],
+    deps = [
+        ":zone-aware-chrome-message-bus",
+        "//projects/shell-chrome/src/app:background",
+        "//projects/shell-chrome/src/app:backend",
+        ":chrome-application-environment",
+        ":chrome-application-operations",
+        "//projects/protocol",
+        "//projects/ng-devtools-backend",
+        "//projects/ng-devtools-backend/src/lib:highlighter",
+        "//projects/ng-devtools-backend/src/lib:component-tree",
+        "//projects/ng-devtools",
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser",
+    ],
+    tsconfig = "//projects/shell-chrome:tsconfig-app",
+)
+
+ts_library(
+    name = "ng-validate",
+    srcs = [
+        "ng-validate.ts"
+    ],
+    deps = [
+        "@npm//@types/chrome"
+    ],
+    tsconfig = "//projects/shell-chrome:tsconfig-app",
+)
+
+ts_library(
+    name = "chrome-window-extensions",
+    srcs = [
+        "chrome-window-extensions.ts"
+    ],
+    deps = [
+        "//projects/ng-devtools-backend",
+        "//projects/ng-devtools-backend/src/lib:component-tree"
+    ],
+    tsconfig = "//projects/shell-chrome:tsconfig-app",
+)
+
+ts_library(
+    name = "chrome-application-environment",
+    srcs = [
+        "chrome-application-environment.ts"
+    ],
+    deps = [
+        "//projects/shell-chrome/src/environments:environment",
+        "//projects/ng-devtools"
+    ],
+    tsconfig = "//projects/shell-chrome:tsconfig-app",
+)
+
+ts_library(
+    name = "chrome-application-operations",
+    srcs = [
+        "chrome-application-operations.ts"
+    ],
+    deps = [
+        "//projects/protocol",
+        "//projects/ng-devtools",
+        "@npm//@types/chrome"
+    ],
+    tsconfig = "//projects/shell-chrome:tsconfig-app",
+)
+
+ts_library(
+    name = "same-page-message-bus",
+    srcs = [
+        "same-page-message-bus.ts",
+    ],
+    deps = [
+        "//projects/protocol",
+        "@npm//@angular/core"
+    ],
+    tsconfig = "//projects/shell-chrome:tsconfig-app",
+)
+
+ts_library(
+    name = "zone-aware-chrome-message-bus",
+    srcs = [
+        "zone-aware-chrome-message-bus.ts",
+    ],
+    deps = [
+        ":chrome-message-bus",
+        "//projects/protocol",
+        "@npm//@angular/core",
+    ],
+    tsconfig = "//projects/shell-chrome:tsconfig-app",
+)
+
+ts_library(
+    name = "chrome-message-bus",
+    srcs = [
+        "chrome-message-bus.ts"
+    ],
+    deps = [
+        "//projects/protocol",
+        "@npm//@angular/core"
+    ],
+    tsconfig = "//projects/shell-chrome:tsconfig-app",
+)
+
+ts_library(
+    name = "background",
+    srcs = [
+        "background.ts"
+    ],
+    deps = ["//projects/shell-chrome/src/app:ng-validate"],
+    tsconfig = "//projects/shell-chrome:tsconfig-app",
+)
+
+ts_library(
+    name = "backend",
+    srcs = [
+        "backend.ts"
+    ],
+    deps = [
+        ":same-page-message-bus",
+        "//projects/shell-chrome/src/app:chrome-window-extensions",
+        "//projects/ng-devtools-backend",
+        "//projects/ng-devtools-backend/src/lib:highlighter"
+    ],
+    tsconfig = "//projects/shell-chrome:tsconfig-app",
+)
+
+ts_library(
+    name = "content-script",
+    srcs = [
+        "content-script.ts"
+    ],
+    deps = [
+        "@npm//@types/chrome",
+        ":chrome-message-bus",
+        ":same-page-message-bus",
+         "//projects/protocol",
+    ],
+    tsconfig = "//projects/shell-chrome:tsconfig-app",
+)
+
+rollup_bundle(
+    name = "backend" + "-es2015",
+    entry_point = "backend" + '.ts',
+    config_file = "//projects/shell-chrome/src:rollup.config.js",
+    format = 'iife',
+    deps = [
+        ":" + "backend",
+        "@npm//@rollup/plugin-commonjs",
+        "@npm//@rollup/plugin-node-resolve",
+    ],
+)
+
+[
+    rollup_bundle(
+        name = file_name + "-es2015",
+        args = [
+            "--name", file_name + '-out'
+        ],
+        entry_point = file_name + '.ts',
+        config_file = "//projects/shell-chrome/src:rollup.config.js",
+        format = format,
+        deps = [
+            ":" + file_name,
+            "@npm//@rollup/plugin-commonjs",
+            "@npm//@rollup/plugin-node-resolve",
+        ],
+    )
+    for file_name, format in [
+        ("ng-validate", 'umd'),
+        ("background", "umd"),
+        ("content-script", "umd")
+    ]
+]

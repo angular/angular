@@ -73,9 +73,9 @@ const installContentScript = (tabId: number) => {
   console.log('Installing the content-script');
   // We first inject the content-script and after that
   // invoke the global that it exposes.
-  chrome.tabs.executeScript(tabId, { file: '/content-script.js' }, (result) => {
+  chrome.tabs.executeScript(tabId, { file: 'app/content-script-es2015.js' }, (result) => {
     chrome.tabs.executeScript(tabId, {
-      code: '___devToolsContentScript.main()',
+      code: 'globalThis["content-script-out"].main()',
     });
   });
 };

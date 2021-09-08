@@ -16,21 +16,16 @@
     "default_popup": "popups/not-angular.html"
   },
   "devtools_page": "devtools.html",
-  "web_accessible_resources": ["backend.js", "runtime.js", "devtools.html"],
+  "web_accessible_resources": ["app/backend-es2015.js", "devtools.html"],
   "background": {
-    "scripts": ["background.js", "runtime.js"],
+    "scripts": ["app/background-es2015.js"],
     "persistent": false
   },
   "permissions": ["activeTab", "http://*/*", "https://*/*", "file:///*"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["runtime.js"],
-      "run_at": "document_start"
-    },
-    {
-      "matches": ["<all_urls>"],
-      "js": ["ng-validate.js"],
+      "js": ["app/ng-validate-es2015.js"],
       "run_at": "document_idle"
     }
   ]
