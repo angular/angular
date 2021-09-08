@@ -13,6 +13,7 @@ export interface MsgAny {
 export interface MsgCheckForUpdates {
   action: 'CHECK_FOR_UPDATES';
   statusNonce: number;
+  operationNonce: number;
 }
 
 export function isMsgCheckForUpdates(msg: MsgAny): msg is MsgCheckForUpdates {
@@ -22,6 +23,7 @@ export function isMsgCheckForUpdates(msg: MsgAny): msg is MsgCheckForUpdates {
 export interface MsgActivateUpdate {
   action: 'ACTIVATE_UPDATE';
   statusNonce: number;
+  operationNonce: number;
 }
 
 export function isMsgActivateUpdate(msg: MsgAny): msg is MsgActivateUpdate {

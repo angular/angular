@@ -30,6 +30,9 @@ export class SwUpdate {
 
   /**
    * Emits an `UpdateActivatedEvent` event whenever the app has been updated to a new version.
+   *
+   * @deprecated Use the return value of {@link activateUpdate} instead.
+   *
    */
   readonly activated: Observable<UpdateActivatedEvent>;
 
@@ -60,19 +63,23 @@ export class SwUpdate {
     this.unrecoverable = this.sw.eventsOfType<UnrecoverableStateEvent>('UNRECOVERABLE_STATE');
   }
 
-  checkForUpdate(): Promise<void> {
+  checkForUpdate(): Promise<boolean> {
     if (!this.sw.isEnabled) {
       return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
     }
     const statusNonce = this.sw.generateNonce();
-    return this.sw.postMessageWithStatus('CHECK_FOR_UPDATES', {statusNonce}, statusNonce);
+    const operationNonce = this.sw.generateNonce();
+    return this.sw.postMessageWithStatus(
+        'CHECK_FOR_UPDATES', {statusNonce, operationNonce}, statusNonce, operationNonce);
   }
 
-  activateUpdate(): Promise<void> {
+  activateUpdate(): Promise<boolean> {
     if (!this.sw.isEnabled) {
       return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
     }
     const statusNonce = this.sw.generateNonce();
-    return this.sw.postMessageWithStatus('ACTIVATE_UPDATE', {statusNonce}, statusNonce);
+    const operationNonce = this.sw.generateNonce();
+    return this.sw.postMessageWithStatus(
+        'ACTIVATE_UPDATE', {statusNonce, operationNonce}, statusNonce, operationNonce);
   }
 }

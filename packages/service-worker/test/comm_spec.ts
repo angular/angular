@@ -460,33 +460,40 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           },
         });
       });
-      it('activates updates when requested', done => {
-        mock.messages.subscribe((msg: {action: string, statusNonce: number}) => {
-          expect(msg.action).toEqual('ACTIVATE_UPDATE');
-          mock.sendMessage({
-            type: 'STATUS',
-            nonce: msg.statusNonce,
-            status: true,
-          });
-        });
-        return update.activateUpdate().then(() => done()).catch(err => done.fail(err));
+      it('activates updates when requested', async () => {
+        mock.messages.subscribe(
+            (msg: {action: string, statusNonce: number, operationNonce: number}) => {
+              expect(msg.action).toEqual('ACTIVATE_UPDATE');
+              mock.sendMessage({
+                type: 'STATUS',
+                nonce: msg.statusNonce,
+                status: true,
+              });
+              mock.sendMessage({
+                type: 'OPERATION_COMPLETED',
+                nonce: msg.operationNonce,
+                result: true,
+              });
+            });
+        expect(await update.activateUpdate()).toBeTruthy();
       });
-      it('reports activation failure when requested', done => {
-        mock.messages.subscribe((msg: {action: string, statusNonce: number}) => {
-          expect(msg.action).toEqual('ACTIVATE_UPDATE');
-          mock.sendMessage({
-            type: 'STATUS',
-            nonce: msg.statusNonce,
-            status: false,
-            error: 'Failed to activate',
-          });
-        });
-        return update.activateUpdate()
-            .catch(err => {
-              expect(err.message).toEqual('Failed to activate');
-            })
-            .then(() => done())
-            .catch(err => done.fail(err));
+      it('reports activation failure when requested', async () => {
+        mock.messages.subscribe(
+            (msg: {action: string, statusNonce: number, operationNonce: number}) => {
+              expect(msg.action).toEqual('ACTIVATE_UPDATE');
+              mock.sendMessage({
+                type: 'STATUS',
+                nonce: msg.statusNonce,
+                status: false,
+                error: 'Failed to activate',
+              });
+              mock.sendMessage({
+                type: 'OPERATION_COMPLETED',
+                nonce: msg.operationNonce,
+                error: 'Failed to activate',
+              });
+            });
+        await expectAsync(update.activateUpdate()).toBeRejectedWithError('Failed to activate');
       });
       it('is injectable', () => {
         TestBed.configureTestingModule({

@@ -40,12 +40,13 @@ export abstract class SwRegistrationOptions {
 // @public
 export class SwUpdate {
     constructor(sw: ɵangular_packages_service_worker_service_worker_a);
+    // @deprecated
     readonly activated: Observable<UpdateActivatedEvent>;
     // (undocumented)
-    activateUpdate(): Promise<void>;
+    activateUpdate(): Promise<boolean>;
     readonly available: Observable<UpdateAvailableEvent>;
     // (undocumented)
-    checkForUpdate(): Promise<void>;
+    checkForUpdate(): Promise<boolean>;
     get isEnabled(): boolean;
     readonly unrecoverable: Observable<UnrecoverableStateEvent>;
 }
@@ -89,7 +90,6 @@ export interface UpdateAvailableEvent {
     // (undocumented)
     type: 'UPDATE_AVAILABLE';
 }
-
 
 // (No @packageDocumentation comment for this package)
 

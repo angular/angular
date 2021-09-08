@@ -319,12 +319,13 @@ export class Driver implements Debuggable, UpdateSource {
 
   private async handleMessage(msg: MsgAny&{action: string}, from: Client): Promise<void> {
     if (isMsgCheckForUpdates(msg)) {
-      const action = (async () => {
-        await this.checkForUpdate();
-      })();
-      await this.reportStatus(from, action, msg.statusNonce);
+      const action = this.checkForUpdate();
+      await this.reportStatus(from, action.then(() => undefined), msg.statusNonce);
+      await this.completeOperation(from, action, msg.operationNonce);
     } else if (isMsgActivateUpdate(msg)) {
-      await this.reportStatus(from, this.updateClient(from), msg.statusNonce);
+      const action = this.updateClient(from);
+      await this.reportStatus(from, action.then(() => undefined), msg.statusNonce);
+      await this.completeOperation(from, action, msg.operationNonce);
     }
   }
 
@@ -412,13 +413,29 @@ export class Driver implements Debuggable, UpdateSource {
     }
   }
 
-  async updateClient(client: Client): Promise<void> {
+  private async completeOperation(client: Client, promise: Promise<boolean>, nonce: number):
+      Promise<void> {
+    const response = {type: 'OPERATION_COMPLETED', nonce};
+    try {
+      client.postMessage({
+        ...response,
+        result: await promise,
+      });
+    } catch (e) {
+      client.postMessage({
+        ...response,
+        error: e.toString(),
+      });
+    }
+  }
+
+  async updateClient(client: Client): Promise<boolean> {
     // Figure out which version the client is on. If it's not on the latest,
     // it needs to be moved.
     const existing = this.clientVersionMap.get(client.id);
     if (existing === this.latestHash) {
       // Nothing to do, this client is already on the latest version.
-      return;
+      return false;
     }
 
     // Switch the client over.
@@ -444,6 +461,7 @@ export class Driver implements Debuggable, UpdateSource {
     };
 
     client.postMessage(notice);
+    return true;
   }
 
   private async handleFetch(event: FetchEvent): Promise<Response> {
