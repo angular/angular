@@ -1,3 +1,37 @@
+<a name="13.0.0-next.5"></a>
+# 13.0.0-next.5 (2021-09-08)
+## Breaking Changes
+### common
+- The behavior of the `SpyLocation` used by the `RouterTestingModule` has changed
+to match the behavior of browsers. It no longer emits a 'popstate' event
+when `Location.go` is called. In addition, `simulateHashChange` now
+triggers _both_ a `hashchange` and a `popstate` event.
+Tests which use `location.go` and expect the changes to be picked up by
+the `Router` should likely change to `simulateHashChange` instead.
+Each test is different in what it attempts to assert so there is no
+single change that works for all tests. Each test using the `SpyLocation` to
+simulate browser URL changes should be evaluated on a case-by-case basis.
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c6a93001eb](https://github.com/angular/angular/commit/c6a93001eb74374b0fbc6aea1286fe1183d21382) | fix | synchronise location mock behavior with the navigators ([#41730](https://github.com/angular/angular/pull/41730)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fc3b50e427](https://github.com/angular/angular/commit/fc3b50e4275c84a1cd3f75e4b52ee2dc4b65c35c) | fix | exclude the `SafePropertyRead` when applying the optional chaining ([#43321](https://github.com/angular/angular/pull/43321)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2efc18e675](https://github.com/angular/angular/commit/2efc18e6757157589004e23d8d22b7967de4387d) | fix | migration failed finding tsconfig file ([#43343](https://github.com/angular/angular/pull/43343)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3c6b653089](https://github.com/angular/angular/commit/3c6b653089837459809a370ebcaf8911c3bab9ed) | feat | Option to correctly restore history on failed navigation ([#43289](https://github.com/angular/angular/pull/43289)) |
+| [95f3aecc29](https://github.com/angular/angular/commit/95f3aecc292cafd6ec8f693842d35318f33089ae) | fix | add more context to `Unhandled Navigation Error` ([#43291](https://github.com/angular/angular/pull/43291)) |
+## Special Thanks
+Ahmed Ayed, Alan Agius, Andrew Scott, Charles Barnes, Enea Jahollari, George Kalpakas, Ikko Ashimine, Paul Gschwendtner, Pete Bacon Darwin, William Sedlacek, dario-piotrowicz and ivanwonder
+
+
 <a name="12.2.5"></a>
 # 12.2.5 (2021-09-08)
 ### router
