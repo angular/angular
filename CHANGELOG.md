@@ -1,3 +1,22 @@
+<a name="13.0.0-next.4"></a>
+# 13.0.0-next.4 "copper-duckling" (2021-09-08)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [04b5a0819](https://github.com/angular/components/commit/04b5a08190a1d7b126846317d9aad9c954c5e0f9) | feat | **schematics:** add migration for removed symbols ([#23530](https://github.com/angular/components/pull/23530)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [01734b35a](https://github.com/angular/components/commit/01734b35afa10be68c482dc7370c4d1ae88e499c) | fix | **sidenav:** restore focus with correct origin when closing via the backdrop ([#23492](https://github.com/angular/components/pull/23492)) |
+| [875f00d7b](https://github.com/angular/components/commit/875f00d7b1247ee5795ea6f85ce3528dbb81e232) | fix | **chips:** error if selected value is accessed too early ([#23419](https://github.com/angular/components/pull/23419)) |
+| [9a4a4cf20](https://github.com/angular/components/commit/9a4a4cf2024d7f7ca409cdb9af0ce6a23863ddde) | fix | **autocomplete:** don't emit optionActivated event when option is reset ([#23437](https://github.com/angular/components/pull/23437)) |
+| [4414b0460](https://github.com/angular/components/commit/4414b04600eb321bcac17e65453c5b50997b98b9) | fix | **tabs:** fix contentTabIndex input type ([#23413](https://github.com/angular/components/pull/23413)) |
+| [6c724c18a](https://github.com/angular/components/commit/6c724c18a7520e686ed9779d8aa058d8c1e5e435) | fix | **chips:** show required asterisk when using required validator ([#23379](https://github.com/angular/components/pull/23379)) |
+| [881edec3e](https://github.com/angular/components/commit/881edec3e6fa837c913006df12299448bba62853) | fix | **icon:** make icon-registry compatible with Trusted Types ([#23140](https://github.com/angular/components/pull/23140)) |
+## Special Thanks
+Brandon Yanofsky, Daniil Rabizo, Kristiyan Kostadinov, Paul Gschwendtner, Zach Arend and bjarkler
+
+
 <a name="12.2.5"></a>
 # 12.2.5 "copper-duckling" (2021-09-08)
 ### material
