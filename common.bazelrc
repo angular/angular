@@ -85,8 +85,3 @@ coverage --instrument_test_targets
 # (Note that we use .bazelrc.user so the file appears next to .bazelrc in directory listing,
 # rather than user.bazelrc as suggested in the Bazel docs)
 try-import %workspace%/.bazelrc.user
-
-
-# Use the Angular Ivy compiler
-# See https://github.com/angular/angular/blob/master/docs/BAZEL.md#various-flags-used-for-tests
-build --define=angular_ivy_enabled=True

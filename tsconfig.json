@@ -1,6 +1,12 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "plugins": [
+      {
+        "name": "@bazel/tsetse",
+        "disabledRules": ["must-type-assert-json-parse"]
+      }
+    ],
     "baseUrl": "./",
     "outDir": "./dist",
     "sourceMap": true,
@@ -16,14 +22,15 @@
     "typeRoots": ["node_modules/@types"],
     "lib": ["es2018", "dom"],
     "paths": {
-      "ng-devtools": ["projects/ng-devtools/src/public-api.ts"],
-      "ng-devtools-backend": ["projects/ng-devtools-backend/src/public-api.ts"],
-      "protocol": ["projects/protocol/src/public-api.ts"],
-      "shared-utils": ["projects/shared-utils/src/public-api.ts"]
+      "ng-devtools": ["projects/ng-devtools/src/public-api.ts", "dist/ng-devtools"],
+      "ng-devtools-backend": ["projects/ng-devtools-backend/src/public-api.ts", "dist/ng-devtools-backend"],
+      "protocol": ["projects/protocol/src/public-api.ts", "dist/protocol"],
+      "shared-utils": ["projects/shared-utils/src/public-api.ts", "dist/shared-utils"]
     }
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
-    "strictInjectionParameters": true
+    "strictInjectionParameters": true,
+    "enableIvy": true
   }
 }

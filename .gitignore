@@ -48,3 +48,8 @@ Thumbs.db
 **/coverage/*
 
 .angular
+
+bazel-angular-devtools
+bazel-bin
+bazel-out/*
+bazel-testlogs
