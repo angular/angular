@@ -2,7 +2,7 @@ import { DirectiveForestHooks } from './hooks';
 import { ElementPosition, ProfilerFrame, ElementProfile, DirectiveProfile, LifecycleProfile } from 'protocol';
 import { runOutsideAngular, isCustomElement } from '../utils';
 import { getDirectiveName } from '../highlighter';
-import { ComponentTreeNode } from '../component-tree';
+import { ComponentTreeNode } from '../interfaces';
 import { initializeOrGetDirectiveForestHooks } from '.';
 import { Hooks } from './profiler';
 

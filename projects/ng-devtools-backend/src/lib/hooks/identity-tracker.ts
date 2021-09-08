@@ -1,6 +1,6 @@
-import { ComponentTreeNode } from './../component-tree';
+import { ComponentTreeNode, DirectiveInstanceType, ComponentInstanceType } from '../interfaces';
 import { ElementPosition, DevToolsNode } from 'protocol';
-import { buildDirectiveForest, DirectiveInstanceType, ComponentInstanceType } from '../component-tree';
+import { buildDirectiveForest } from '../component-tree';
 import { Type } from '@angular/core';
 
 interface TreeNode {

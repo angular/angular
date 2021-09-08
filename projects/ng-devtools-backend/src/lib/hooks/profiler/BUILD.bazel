@@ -1,0 +1,22 @@
+load("//tools:angular_ts_library.bzl", "ng_ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_ts_library(
+    name = "profiler",
+    srcs = glob(
+        include = ["*.ts"],
+        exclude = ["*.spec.ts"]
+    ),
+    deps = [
+        "//projects/protocol",
+        "//projects/ng-devtools-backend/src/lib:utils",
+        "//projects/ng-devtools-backend/src/lib/hooks:identity-tracker",
+        "//projects/ng-devtools-backend/src/lib/directive-forest",
+        "@npm//rxjs",
+        "@npm//@angular/core"
+    ],
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
+)
+
+

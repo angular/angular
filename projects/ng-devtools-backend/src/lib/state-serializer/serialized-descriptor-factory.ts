@@ -1,6 +1,8 @@
 import { Descriptor, NestedProp, PropType } from 'protocol';
-import { METADATA_PROPERTY_NAME } from '../directive-forest';
 import { getKeys } from './object-utils';
+
+// todo(aleksanderbodurri) pull this out of this file
+const METADATA_PROPERTY_NAME = '__ngContext__';
 
 export interface CompositeType {
   type: Extract<PropType, PropType.Array | PropType.Object>;

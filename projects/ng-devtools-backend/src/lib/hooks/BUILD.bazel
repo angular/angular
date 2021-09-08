@@ -1,0 +1,34 @@
+load("//tools:angular_ts_library.bzl", "ng_ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_ts_library(
+    name = "hooks",
+    srcs = glob(
+        include = ["*.ts"],
+        exclude = ["*.spec.ts", "identity-tracker.ts"]
+    ),
+    deps = [
+        "//projects/protocol",
+        "//projects/ng-devtools-backend/src/lib/hooks/profiler",
+        "//projects/ng-devtools-backend/src/lib:interfaces",
+        "//projects/ng-devtools-backend/src/lib:highlighter",
+        "//projects/ng-devtools-backend/src/lib:utils",
+        ":identity-tracker"
+    ],
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
+)
+
+
+ng_ts_library(
+    name = "identity-tracker",
+    srcs = ["identity-tracker.ts"],
+    deps = [
+        "//projects/protocol",
+        "//projects/ng-devtools-backend/src/lib:component-tree",
+        "//projects/ng-devtools-backend/src/lib:interfaces",
+        "@npm//@angular/core"
+    ],
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
+)
+

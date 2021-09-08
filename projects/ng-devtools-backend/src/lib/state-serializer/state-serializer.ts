@@ -5,8 +5,10 @@ import {
   createShallowSerializedDescriptor,
   PropertyData,
 } from './serialized-descriptor-factory';
-import { METADATA_PROPERTY_NAME } from '../directive-forest';
 import { getKeys } from './object-utils';
+
+// todo(aleksanderbodurri) pull this out of this file
+const METADATA_PROPERTY_NAME = '__ngContext__';
 
 const ignoreList = new Set([METADATA_PROPERTY_NAME, '__ngSimpleChanges__']);
 
@@ -79,18 +81,15 @@ const nestedSerializer = (
   }
 };
 
-const nestedSerializerContinuation = (nodes: NestedProp[], level: number) => (
-  instance: any,
-  propName: string,
-  nestedLevel: number
-) => {
-  const idx = nodes.findIndex((v) => v.name === propName);
-  if (idx < 0) {
-    // The property is not specified in the query.
-    return nestedSerializer(instance, propName, [], nestedLevel, level);
-  }
-  return nestedSerializer(instance, propName, nodes[idx].children, nestedLevel, level);
-};
+const nestedSerializerContinuation =
+  (nodes: NestedProp[], level: number) => (instance: any, propName: string, nestedLevel: number) => {
+    const idx = nodes.findIndex((v) => v.name === propName);
+    if (idx < 0) {
+      // The property is not specified in the query.
+      return nestedSerializer(instance, propName, [], nestedLevel, level);
+    }
+    return nestedSerializer(instance, propName, nodes[idx].children, nestedLevel, level);
+  };
 
 const levelSerializer = (
   instance: any,

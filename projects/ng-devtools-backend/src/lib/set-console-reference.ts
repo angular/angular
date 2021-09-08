@@ -1,6 +1,6 @@
 import { arrayEquals } from 'shared-utils';
 import { ElementPosition } from 'protocol';
-import { ComponentTreeNode } from './component-tree';
+import { ComponentTreeNode } from './interfaces';
 
 interface ConsoleReferenceNode {
   node: ComponentTreeNode | null;
