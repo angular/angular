@@ -46,6 +46,11 @@ export const PENDING = 'PENDING';
 export const DISABLED = 'DISABLED';
 
 /**
+ * Symbol to signal the value should be set to undefined
+ */
+export const FORM_CONTROL_UNDEFINED_VALUE = Symbol();
+
+/**
  * A form can have several different statuses. Each
  * possible status is returned as a string literal.
  *
@@ -1434,7 +1439,7 @@ export class FormControl extends AbstractControl {
       formState.disabled ? this.disable({onlySelf: true, emitEvent: false}) :
                            this.enable({onlySelf: true, emitEvent: false});
     } else {
-      (this as {value: any}).value = this._pendingValue = formState;
+      (this as {value: any}).value = this._pendingValue = formState === FORM_CONTROL_UNDEFINED_VALUE ? undefined : formState;
     }
   }
 }
