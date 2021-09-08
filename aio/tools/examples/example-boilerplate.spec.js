@@ -127,6 +127,19 @@ describe('example-boilerplate tool', () => {
       ]);
     });
 
+    it('should not copy boilerplate files that are match `overrideBoilerplate` in the example-config.json file', () => {
+      const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
+      exampleBoilerPlate.loadJsonFile.and.returnValue({
+        'overrideBoilerplate': [ 'c/d' ]
+      });
+
+      exampleBoilerPlate.add();
+
+      const isPathIgnored = exampleBoilerPlate.copyDirectoryContents.calls.first().args[2];
+      expect(isPathIgnored(`${boilerplateDir}/cli/a/b`)).toBe(false);
+      expect(isPathIgnored(`${boilerplateDir}/cli/c/d`)).toBe(true);
+    });
+
     it('should try to load the example config file', () => {
       exampleBoilerPlate.add();
       expect(exampleBoilerPlate.loadJsonFile).toHaveBeenCalledTimes(exampleFolders.length);
@@ -140,6 +153,44 @@ describe('example-boilerplate tool', () => {
       spyOn(shelljs, 'exec');
       exampleBoilerPlate.remove();
       expect(shelljs.exec).toHaveBeenCalledWith('git clean -xdfq', {cwd: path.resolve(__dirname, '../../content/examples') });
+    });
+  });
+
+  describe('listOverrides', () => {
+    const examplesDir = path.resolve(__dirname, '../../content/examples');
+    const exampleFolders = ['a/b', 'c/d', 'e/f'];
+    beforeEach(() => {
+      spyOn(exampleBoilerPlate, 'getFoldersContaining').and.returnValue(exampleFolders);
+      spyOn(console, 'log');
+    });
+
+    it('should list all files that are overridden in examples', () => {
+      spyOn(exampleBoilerPlate, 'loadJsonFile').and.returnValues(
+        {"overrideBoilerplate": ["angular.json", "tsconfig.json"]}, // a/b/example-config.json
+        {"overrideBoilerplate": []}, // c/d/example-config.json
+        {}, // e/f/example-config.json
+      );
+      exampleBoilerPlate.listOverrides();
+      expect(exampleBoilerPlate.getFoldersContaining)
+          .toHaveBeenCalledWith(examplesDir, 'example-config.json', 'node_modules');
+      expect(console.log).toHaveBeenCalledWith('Boilerplate files that have been overridden in examples:');
+      expect(console.log).toHaveBeenCalledWith(' - ../../a/b/angular.json');
+      expect(console.log).toHaveBeenCalledWith(' - ../../a/b/tsconfig.json');
+      expect(console.log).toHaveBeenCalledWith(`(All these paths are relative to ${examplesDir}.)`);
+      expect(console.log).toHaveBeenCalledWith('If you are updating the boilerplate files then also consider updating these too.');
+    });
+
+    it('should display a helpful message if there are no overridden files', () => {
+      spyOn(exampleBoilerPlate, 'loadJsonFile').and.returnValues(
+        {"overrideBoilerplate": null}, // a/b/example-config.json
+        {"overrideBoilerplate": []}, // c/d/example-config.json
+        {}, // e/f/example-config.json
+      );
+      exampleBoilerPlate.listOverrides();
+      expect(exampleBoilerPlate.getFoldersContaining)
+          .toHaveBeenCalledWith(examplesDir, 'example-config.json', 'node_modules');
+      expect(console.log).toHaveBeenCalledWith('No boilerplate files have been overridden in examples.');
+      expect(console.log).toHaveBeenCalledWith('You are safe to update the boilerplate files.');
     });
   });
 

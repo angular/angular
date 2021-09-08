@@ -47,6 +47,12 @@ Any necessary changes to boilerplate files will be done automatically through mi
 - Ensure any changes to [cli/tslint.json](./shared/boilerplate/cli/tslint.json) are ported over to [systemjs/tslint.json](./shared/boilerplate/systemjs/tslint.json) and also [aio/content/examples/tslint.json](../../content/examples/tslint.json).
   This last part is important, since this file is used to lint example code on CI.
 
+- Run the following command to list all the boilerplate files that are overridden in specific examples.
+  ```sh
+  node example-boilerplate.js list-overrides
+  ```
+  Inspect each of these files to determine whether they need to be updated.
+
 - Inspect the changes and determine whether some of them need to be applied to the `systemjs` boilerplate files.
 
 - Inspect the changes and determine whether any updates to guides are necessary.
