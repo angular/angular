@@ -1,3 +1,13 @@
+<a name="12.2.5"></a>
+# 12.2.5 (2021-09-08)
+### router
+| Commit | Description |
+| -- | -- |
+| [a0bd6e90f9](https://github.com/angular/angular/commit/a0bd6e90f987377320b3b337d8c3a33235658e9a) | fix: add more context to `Unhandled Navigation Error` ([#43291](https://github.com/angular/angular/pull/43291)) |
+## Special Thanks:
+Alan Agius, Charles Barnes, Enea Jahollari, George Kalpakas, Ikko Ashimine, Paul Gschwendtner, Pete Bacon Darwin, William Sedlacek and dario-piotrowicz
+
+
 <a name="13.0.0-next.4"></a>
 # 13.0.0-next.4 (2021-09-01)
 ### compiler-cli
