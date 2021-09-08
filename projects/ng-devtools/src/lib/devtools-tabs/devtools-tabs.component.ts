@@ -2,9 +2,9 @@
 import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Events, MessageBus, Route } from 'protocol';
 import { DirectiveExplorerComponent } from './directive-explorer/directive-explorer.component';
-import { ApplicationEnvironment } from '../application-environment';
+import { ApplicationEnvironment } from '../application-environment/index';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
-import { TabUpdate } from './tab-update';
+import { TabUpdate } from './tab-update/index';
 import { Theme, ThemeService } from '../theme-service';
 import { Subscription } from 'rxjs';
 import { MatTabNav } from '@angular/material/tabs';

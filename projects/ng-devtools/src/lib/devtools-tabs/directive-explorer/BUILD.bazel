@@ -1,0 +1,67 @@
+load("//tools:angular_ts_library.bzl", "ng_ts_library")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
+load("@npm//@bazel/typescript:index.bzl", "ts_config", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "directive-explorer-component-styles",
+    src = "directive-explorer.component.scss",
+)
+
+ng_ts_library(
+    name = "directive-explorer",
+    srcs = [
+        "directive-explorer.component.ts",
+        "directive-explorer.module.ts"
+    ],
+    angular_assets = [
+        "directive-explorer.component.html",
+        ":directive-explorer-component-styles"
+    ],
+    deps = [
+        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab",
+        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
+        "//projects/ng-devtools/src/lib/vendor/angular-split",
+        "//projects/ng-devtools/src/lib/application-operations",
+        "//projects/protocol",
+        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest",
+        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/breadcrumbs",
+        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source",
+        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
+        "@npm//@angular/core",
+        "@npm//@angular/common",
+        "@npm//@angular/cdk",
+        "@npm//@angular/material",
+        "@npm//rxjs",
+        "@npm//@types",
+    ],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib"
+)
+
+ts_library(
+    name = "directive-explorer-test",
+    testonly = True,
+    srcs = ["directive-explorer.spec.ts"],
+    deps = [
+        ":directive-explorer",
+        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
+        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
+        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest",
+        "//projects/protocol",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    browsers = [
+        "@io_bazel_rules_webtesting//browsers:chromium-local",
+    ],
+    tags = ["native"],
+    deps = [
+        ":directive-explorer-test",
+        "//src:rxjs_umd_modules",
+        "@npm//:node_modules/tslib/tslib.js",
+    ],
+)

@@ -1,0 +1,28 @@
+load("//tools:angular_ts_library.bzl", "ng_ts_library")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+
+package(default_visibility = ["//:__subpackages__"])
+
+sass_binary(
+    name = "split-styles",
+    src = "split.component.scss",
+)
+
+ng_ts_library(
+    name = "split",
+    srcs = [
+        "split.component.ts",
+        "split.module.ts",
+        "splitArea.directive.ts",
+        "utils.ts",
+        "interface.ts"
+    ],
+    angular_assets = [
+        ":split-styles",
+    ],
+    deps = [
+        "@npm//@angular/core",
+        "@npm//@angular/common",
+        "@npm//rxjs"
+    ],
+)

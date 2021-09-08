@@ -1,7 +1,7 @@
 import { DevToolsTabsComponent } from './devtools-tabs.component';
-import { ApplicationEnvironment } from 'ng-devtools';
+import { ApplicationEnvironment } from '../application-environment/index';
 import { Events, MessageBus } from 'protocol';
-import { TabUpdate } from './tab-update';
+import { TabUpdate } from './tab-update/index';
 
 describe('DevtoolsTabsComponent', () => {
   let messageBusMock: MessageBus<Events>;

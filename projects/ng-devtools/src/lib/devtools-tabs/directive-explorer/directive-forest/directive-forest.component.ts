@@ -16,7 +16,7 @@ import { ComponentDataSource, FlatNode } from './component-data-source';
 import { isChildOf, parentCollapsed } from './directive-forest-utils';
 import { IndexedNode } from './index-forest';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import { TabUpdate } from '../../tab-update';
+import { TabUpdate } from '../../tab-update/index';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -174,9 +174,11 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
     }
   }
 
-  private _updateForest(
-    forest: DevToolsNode[]
-  ): { newItems: FlatNode[]; movedItems: FlatNode[]; removedItems: FlatNode[] } {
+  private _updateForest(forest: DevToolsNode[]): {
+    newItems: FlatNode[];
+    movedItems: FlatNode[];
+    removedItems: FlatNode[];
+  } {
     const result = this.dataSource.update(forest, this._showCommentNodes);
     if (!this._initialized && forest && forest.length) {
       this.treeControl.expandAll();

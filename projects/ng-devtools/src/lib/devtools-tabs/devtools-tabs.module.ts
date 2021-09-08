@@ -12,7 +12,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { TabUpdate } from './tab-update';
+import { TabUpdate } from './tab-update/index';
 
 @NgModule({
   declarations: [DevToolsTabsComponent],

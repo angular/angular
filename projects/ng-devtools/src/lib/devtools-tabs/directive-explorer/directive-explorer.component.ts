@@ -22,13 +22,13 @@ import {
   DirectivePosition,
 } from 'protocol';
 import { IndexedNode } from './directive-forest/index-forest';
-import { ApplicationOperations } from '../../application-operations';
+import { ApplicationOperations } from '../../application-operations/index';
 import { ElementPropertyResolver } from './property-resolver/element-property-resolver';
 import { FlatNode } from './directive-forest/component-data-source';
 import { FlatNode as PropertyFlatNode } from './property-resolver/element-property-resolver';
 import { DirectiveForestComponent } from './directive-forest/directive-forest.component';
 import { constructPathOfKeysToPropertyValue } from './property-resolver/directive-property-resolver';
-import { BreadcrumbsComponent } from './breadcrumbs/breadcrumbs.component';
+import { BreadcrumbsComponent } from './directive-forest/breadcrumbs/breadcrumbs.component';
 import { SplitComponent } from '../../../lib/vendor/angular-split/public_api';
 
 const sameDirectives = (a: IndexedNode, b: IndexedNode) => {

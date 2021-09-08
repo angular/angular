@@ -1,0 +1,10 @@
+package(default_visibility = ["//:__subpackages__"])
+
+filegroup(
+    name = "images",
+    srcs = glob([
+        "*.svg",
+        "**/*.png",
+        "*.css",
+    ]),
+)

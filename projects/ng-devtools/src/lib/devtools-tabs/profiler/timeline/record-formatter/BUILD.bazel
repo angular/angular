@@ -1,0 +1,66 @@
+load("//tools:angular_ts_library.bzl", "ng_ts_library")
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_ts_library(
+    name = "record-formatter",
+    srcs = glob(
+        include = [
+            "*.ts",
+        ],
+        exclude = [
+            "record-formatter-spec-constants.ts",
+            "record-formatter.spec.ts",
+            "frame-merger.spec.ts",
+        ],
+    ),
+    deps = [
+        "//projects/protocol",
+        "@npm//@angular/core",
+        "@npm//rxjs",
+        "@npm//@types",
+    ],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib"
+)
+
+ts_library(
+    name = "record-formatter-spec-constants",
+    srcs = ["record-formatter-spec-constants.ts"],
+    deps = [
+        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/flamegraph-formatter",
+        "//projects/protocol",
+        "@npm//@angular/core",
+        "@npm//rxjs",
+        "@npm//@types",
+    ],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib"
+)
+
+ts_library(
+    name = "test-lib",
+    testonly = True,
+    srcs = [
+        "record-formatter.spec.ts",
+        "frame-merger.spec.ts",
+    ],
+    deps = [
+        ":record-formatter-spec-constants",
+        ":record-formatter",
+        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/flamegraph-formatter",
+        "//projects/protocol",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    browsers = [
+        "@io_bazel_rules_webtesting//browsers:chromium-local",
+    ],
+    tags = ["native"],
+    deps = [
+        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter:test-lib",
+    ],
+)
+

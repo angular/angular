@@ -1,0 +1,53 @@
+load("//tools:angular_ts_library.bzl", "ng_ts_library")
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_ts_library(
+    name = "tree-map-formatter",
+    srcs = glob(
+        include = [
+            "*.ts",
+        ],
+        exclude = [
+            "tree-map-formatter.spec.ts"
+        ]
+    ),
+    deps = [
+        "//projects/protocol",
+        "//projects/ng-devtools/src/lib:theme",
+        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
+        "//projects/ng-devtools/src/lib/vendor/memo-decorator",
+        "@npm//@angular/core",
+        "@npm//rxjs",
+        "@npm//@types",
+    ],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib"
+)
+
+ts_library(
+    name = "test-lib",
+    testonly = True,
+    srcs = [
+        "tree-map-formatter.spec.ts"
+    ],
+    deps = [
+        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter:record-formatter-spec-constants",
+        ":tree-map-formatter",
+        "//projects/protocol",
+        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    browsers = [
+        "@io_bazel_rules_webtesting//browsers:chromium-local",
+    ],
+    tags = ["native"],
+    deps = [
+        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/tree-map-formatter:test-lib",
+        "@npm//:node_modules/tslib/tslib.js",
+    ],
+)

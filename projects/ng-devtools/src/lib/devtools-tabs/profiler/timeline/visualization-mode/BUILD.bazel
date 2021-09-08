@@ -1,0 +1,10 @@
+load("//tools:angular_ts_library.bzl", "ng_ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_ts_library(
+    name = "visualization-mode",
+    srcs = ["index.ts"],
+    deps = [],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib"
+)
