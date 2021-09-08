@@ -1,0 +1,16 @@
+# NB: sematics here are not the same as .gitignore
+# see https://github.com/bazelbuild/bazel/issues/8106
+.git
+bazel-out
+
+# **/symlinked_node_modules_yarn
+node_modules
+e2e/symlinked_node_modules_yarn/node_modules
+e2e/symlinked_node_modules_npm/node_modules
+packages/angular/node_modules
+examples/angular/node_modules
+examples/user_managed_deps/node_modules
+
+# **/dist
+dist
+examples/user_managed_deps/dist

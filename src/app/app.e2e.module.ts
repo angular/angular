@@ -5,11 +5,12 @@ import { AppComponent } from './app.component';
 import { DemoApplicationOperations } from '../demo-application-operations';
 import { ApplicationEnvironment, ApplicationOperations } from 'ng-devtools';
 import { DemoApplicationEnvironment } from '../demo-application-environment';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+
 @NgModule({
   declarations: [AppComponent],
   imports: [
-    BrowserAnimationsModule,
+    NoopAnimationsModule,
     RouterModule.forRoot([
       {
         path: '',

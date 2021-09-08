@@ -1,5 +1,5 @@
 @use 'sass:map';
-@use '~@angular/material' as mat;
+@use 'external/npm/node_modules/@angular/material/index' as mat;
 @include mat.core();
 
 html,

@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Todo } from '../models/todo';
+import { Todo } from './todo';
 
 export const enum TodoFilter {
   All = 'all',
@@ -13,7 +13,7 @@ export const enum TodoFilter {
 })
 export class TodosFilter implements PipeTransform {
   transform(todos: Todo[], filter: TodoFilter): Todo[] {
-    return (todos || []).filter(t => {
+    return (todos || []).filter((t) => {
       if (filter === TodoFilter.All) {
         return true;
       }

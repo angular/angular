@@ -1,5 +1,5 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import { IFrameMessageBus } from 'src/iframe-message-bus';
+import { IFrameMessageBus } from '../../iframe-message-bus';
 import { PriorityAwareMessageBus, MessageBus, Events } from 'protocol';
 
 @Component({

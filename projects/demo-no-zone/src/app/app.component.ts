@@ -7,9 +7,7 @@ import { Component, ChangeDetectorRef } from '@angular/core';
 export class AppComponent {
   counter = 0;
 
-  constructor(private _cd: ChangeDetectorRef) {
-    console.log((window as any).ng);
-  }
+  constructor(private _cd: ChangeDetectorRef) {}
 
   increment(): void {
     this.counter++;
