@@ -2,13 +2,12 @@
 import { NgModule, ModuleWithProviders } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { SplitComponent } from './component/split.component';
-import { SplitAreaDirective } from './directive/splitArea.directive';
+import { SplitModule } from './component/split.module';
 
 @NgModule({
-  imports: [CommonModule],
-  declarations: [SplitComponent, SplitAreaDirective],
-  exports: [SplitComponent, SplitAreaDirective],
+  imports: [CommonModule, SplitModule],
+  declarations: [],
+  exports: [SplitModule],
 })
 export class AngularSplitModule {
   public static forRoot(): ModuleWithProviders<AngularSplitModule> {

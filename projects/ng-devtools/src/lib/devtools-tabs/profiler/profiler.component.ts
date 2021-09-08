@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MessageBus, Events, ProfilerFrame } from 'protocol';
-import { FileApiService } from '../../file-api-service';
+import { FileApiService } from './file-api-service';
 import { MatDialog } from '@angular/material/dialog';
-import { ProfilerImportDialogComponent } from './profiler-import-dialog/profiler-import-dialog.component';
+import { ProfilerImportDialogComponent } from './profiler-import-dialog.component';
 import { Subject, Subscription } from 'rxjs';
 
 type State = 'idle' | 'recording' | 'visualizing';

@@ -1,0 +1,19 @@
+load("//tools:angular_ts_library.bzl", "ng_ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_ts_library(
+    name = "angular-split",
+    srcs = ["public_api.ts"],
+    deps = [
+        "//projects/ng-devtools/src/lib/vendor/angular-split/lib/component:split",
+        "//projects/ng-devtools/src/lib/vendor/angular-split/lib",
+        "@npm//@angular/core",
+        "@npm//rxjs",
+        "@npm//@types",
+    ],
+    module_name = "public_api",
+    tsconfig = "//projects/ng-devtools:tsconfig-lib"
+)
+
+

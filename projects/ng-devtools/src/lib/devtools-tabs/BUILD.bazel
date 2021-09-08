@@ -1,0 +1,63 @@
+load("//tools:angular_ts_library.bzl", "ng_ts_library")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
+load("@npm//@bazel/typescript:index.bzl", "ts_config", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "devtools-tabs-component-styles",
+    src = "devtools-tabs.component.scss",
+)
+
+ng_ts_library(
+    name = "devtools-tabs",
+    srcs = [
+        "devtools-tabs.component.ts",
+        "devtools-tabs.module.ts",
+    ],
+    angular_assets = [
+        "devtools-tabs.component.html",
+        ":devtools-tabs-component-styles"
+    ],
+    deps = [
+        "//projects/ng-devtools/src/lib:theme",
+        "//projects/ng-devtools/src/lib/devtools-tabs/tab-update",
+        "//projects/ng-devtools/src/lib/devtools-tabs/router-tree",
+        "//projects/ng-devtools/src/lib/devtools-tabs/profiler",
+        "//projects/ng-devtools/src/lib/application-environment",
+        "//projects/protocol",
+        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer",
+        "@npm//@angular/core",
+        "@npm//@angular/common",
+        "@npm//@angular/material",
+        "@npm//rxjs",
+        "@npm//@types",
+    ],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib"
+)
+
+ts_library(
+    name = "devtools-tabs-test",
+    testonly = True,
+    srcs = ["devtools-tabs.spec.ts"],
+    deps = [
+        ":devtools-tabs",
+        "//projects/ng-devtools/src/lib/devtools-tabs/tab-update",
+        "//projects/ng-devtools/src/lib/application-environment",
+        "//projects/protocol",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    browsers = [
+        "@io_bazel_rules_webtesting//browsers:chromium-local",
+    ],
+    tags = ["native"],
+    deps = [
+        "//projects/ng-devtools/src/lib/devtools-tabs:devtools-tabs-test",
+        "//src:rxjs_umd_modules",
+        "@npm//:node_modules/tslib/tslib.js",
+    ],
+)

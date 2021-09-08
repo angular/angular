@@ -1,19 +1,13 @@
 <nav #navBar mat-tab-nav-bar [color]="'accent'">
   <div id="nav-buttons">
     <button mat-icon-button color="primary" (click)="toggleInspector()" matTooltip="Inspect element">
-      <mat-icon [ngClass]="{ 'inspector-active': inspectorRunning }">
-        pin_end
-      </mat-icon>
+      <mat-icon [ngClass]="{ 'inspector-active': inspectorRunning }"> pin_end </mat-icon>
     </button>
     <button mat-icon-button color="primary" [matMenuTriggerFor]="menu" matTooltip="Open settings">
-      <mat-icon>
-        settings
-      </mat-icon>
+      <mat-icon> settings </mat-icon>
     </button>
     <button mat-icon-button color="primary" [matMenuTriggerFor]="info" matTooltip="Info">
-      <mat-icon>
-        info
-      </mat-icon>
+      <mat-icon> info </mat-icon>
     </button>
   </div>
   <a class="mat-tab-link" mat-tab-link *ngFor="let tab of tabs" (click)="changeTab(tab)" [active]="activeTab === tab">

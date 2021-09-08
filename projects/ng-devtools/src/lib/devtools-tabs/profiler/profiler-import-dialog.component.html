@@ -1,0 +1,35 @@
+<ng-container [ngSwitch]="data.status">
+  <ng-container *ngSwitchCase="'ERROR'">
+    <h1 mat-dialog-title>Error</h1>
+    <div mat-dialog-content>
+      <p>Could not process uploaded file.</p>
+      <p class="error">
+        {{ data.errorMessage }}
+      </p>
+    </div>
+    <div mat-dialog-actions>
+      <button mat-flat-button [mat-dialog-close]="false">Close</button>
+    </div>
+  </ng-container>
+  <ng-container *ngSwitchCase="'INVALID_VERSION'">
+    <h1 mat-dialog-title>Warning</h1>
+    <div mat-dialog-content>
+      <p>
+        The file you are attempting to upload was recorded in a different format than the one supported by your current
+        Angular DevTools version
+      </p>
+      <p>
+        Current format version: <span class="version profiler-version">{{ data.profilerVersion }}</span>
+      </p>
+
+      <p>
+        Format version of uploaded file: <span class="version imported-version">{{ data.importedVersion }}</span>
+      </p>
+      <p>Files recorded in older versions may no longer be compatible. Do you wish to continue?</p>
+    </div>
+    <div mat-dialog-actions>
+      <button mat-flat-button [mat-dialog-close]="false">No Thanks</button>
+      <button mat-flat-button [mat-dialog-close]="true">Yes</button>
+    </div>
+  </ng-container>
+</ng-container>

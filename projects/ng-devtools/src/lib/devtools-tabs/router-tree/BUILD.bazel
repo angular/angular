@@ -1,0 +1,32 @@
+load("//tools:angular_ts_library.bzl", "ng_ts_library")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("@npm//@bazel/typescript:index.bzl", "ts_project")
+
+package(default_visibility = ["//:__subpackages__"])
+
+sass_binary(
+    name = "router-tree-styles",
+    src = "router-tree.component.scss",
+)
+
+ng_ts_library(
+    name = "router-tree",
+    srcs = [
+        "router-tree.component.ts",
+        "router-tree.module.ts",
+    ],
+    angular_assets = [
+        ":router-tree.component.html",
+        ":router-tree-styles",
+    ],
+    deps = [
+         "//projects/protocol",
+        "@npm//@angular/core",
+        "@npm//@angular/common",
+        "@npm//@angular/material",
+        "@npm//d3",
+        "@npm//@types",
+        "@npm//rxjs",
+    ],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib"
+)

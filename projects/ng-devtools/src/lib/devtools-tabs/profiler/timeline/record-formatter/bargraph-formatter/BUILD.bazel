@@ -1,0 +1,24 @@
+load("//tools:angular_ts_library.bzl", "ng_ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_ts_library(
+    name = "bargraph-formatter",
+    srcs = glob(
+        include = [
+            "*.ts",
+        ],
+    ),
+    deps = [
+        "//projects/protocol",
+        "//projects/ng-devtools/src/lib:theme",
+        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
+        "//projects/ng-devtools/src/lib/vendor/memo-decorator",
+        "@npm//@angular/core",
+        "@npm//rxjs",
+        "@npm//ngx-flamegraph",
+        "@npm//@types",
+    ],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib"
+)
+

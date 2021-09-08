@@ -64,10 +64,10 @@ export class RouterTreeComponent implements AfterViewInit {
         'd',
         (d) => `
             M${d.y},${d.x}
-            C${(d.y + d.parent.y) / 2},
-              ${d.x} ${(d.y + d.parent.y) / 2},
-              ${d.parent.x} ${d.parent.y},
-              ${d.parent.x}`
+            C${(d.y + (d as any).parent.y) / 2},
+              ${d.x} ${(d.y + (d as any).parent.y) / 2},
+              ${(d as any).parent.x} ${(d as any).parent.y},
+              ${(d as any).parent.x}`
       );
 
     // Declare the nodes
@@ -88,8 +88,8 @@ export class RouterTreeComponent implements AfterViewInit {
         this.tooltip.style('padding', '4px 8px').transition().style('opacity', 0.9);
         this.tooltip
           .html(content)
-          .style('left', d3.event.pageX + 8 + 'px')
-          .style('top', d3.event.pageY + 8 + 'px');
+          .style('left', (d3 as any).event.pageX + 8 + 'px')
+          .style('top', (d3 as any).event.pageY + 8 + 'px');
       })
       .on('mouseout', () => this.tooltip.transition().style('opacity', 0))
       .attr('transform', (d) => `translate(${d.y},${d.x})`);
@@ -102,7 +102,7 @@ export class RouterTreeComponent implements AfterViewInit {
     node
       .append('text')
       .attr('dy', (d) => (d.depth === 0 || !d.children ? '0.35em' : '-1.50em'))
-      .attr('dx', (d) => {
+      .attr('dx', (d: any): any => {
         if (d.parent && d.children) {
           return 6;
         } else if (!d.parent && d.children) {

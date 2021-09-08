@@ -1,0 +1,17 @@
+load("//tools:angular_ts_library.bzl", "ng_ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_ts_library(
+    name = "tab-update",
+    srcs = glob(
+        include = [
+            "index.ts",
+        ],
+    ),
+    deps = [
+        "@npm//rxjs",
+        "@npm//@types",
+    ],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib"
+)

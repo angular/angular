@@ -1,0 +1,59 @@
+load("//tools:angular_ts_library.bzl", "ng_ts_library")
+load("@io_bazel_rules_sass//:defs.bzl", "multi_sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+multi_sass_binary(
+    name = "recording-visualizer-styles",
+    srcs = [
+        "timeline-visualizer.component.scss",
+        "tree-map-visualizer.component.scss",
+        "flamegraph-visualizer.component.scss",
+        "bargraph-visualizer.component.scss",
+        "bar-chart.component.scss",
+        "execution-details.component.scss",
+    ],
+)
+
+ng_ts_library(
+    name = "recording-visualizer",
+    srcs = [
+        "recording-visualizer.module.ts",
+        "timeline-visualizer.component.ts",
+        "tree-map-visualizer.component.ts",
+        "flamegraph-visualizer.component.ts",
+        "bargraph-visualizer.component.ts",
+        "bar-chart.component.ts",
+        "execution-details.component.ts",
+        "profile-formatter.ts"
+    ],
+    angular_assets = [
+        "timeline-visualizer.component.html",
+        "tree-map-visualizer.component.html",
+        "flamegraph-visualizer.component.html",
+        "bargraph-visualizer.component.html",
+        "bar-chart.component.html",
+        "execution-details.component.html",
+        ":recording-visualizer-styles"
+    ],
+    deps = [
+        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/tree-map-formatter",
+        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/flamegraph-formatter",
+        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/bargraph-formatter",
+        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/visualization-mode",
+        "//projects/ng-devtools/src/lib/vendor/angular-split",
+        "//projects/ng-devtools/src/lib:theme",
+        "//projects/protocol",
+        "//projects/ng-devtools/src/lib/vendor/webtreemap",
+        "@npm//ngx-flamegraph",
+        "@npm//@angular/animations",
+        "@npm//@angular/core",
+        "@npm//@angular/common",
+        "@npm//@angular/material",
+        "@npm//rxjs",
+        "@npm//@types",
+    ],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib"
+)
+
+

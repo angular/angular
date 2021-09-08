@@ -17,8 +17,8 @@ import {
 import { Observable, Subscriber, Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
-import { IArea, IPoint, ISplitSnapshot, IAreaSnapshot, IOutputData, IOutputAreaSizes } from '../interface';
-import { SplitAreaDirective } from '../directive/splitArea.directive';
+import { IArea, IPoint, ISplitSnapshot, IAreaSnapshot, IOutputData, IOutputAreaSizes } from './interface';
+import { SplitAreaDirective } from './splitArea.directive';
 import {
   getInputPositiveNumber,
   getInputBoolean,
@@ -29,7 +29,7 @@ import {
   getElementPixelSize,
   getGutterSideAbsorptionCapacity,
   updateAreaSize,
-} from '../utils';
+} from './utils';
 
 /**
  * angular-split

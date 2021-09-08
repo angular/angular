@@ -1,0 +1,51 @@
+load("//tools:angular_ts_library.bzl", "ng_ts_library")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "devtools-component-styles",
+    src = "devtools.component.scss",
+)
+
+ng_ts_library(
+    name = "lib",
+    srcs = glob(
+        include = ["*.ts"],
+        exclude = ["theme-service.ts"]
+    ),
+    angular_assets = [
+        "devtools.component.html",
+        ":devtools-component-styles"
+    ],
+    deps = [
+        "//projects/protocol",
+        ":theme",
+        "//projects/ng-devtools/src/lib/devtools-tabs",
+        "@npm//@angular/core",
+        "@npm//@angular/material",
+        "@npm//@angular/forms",
+        "@npm//@angular/common",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@angular/cdk",
+        "@npm//@angular/animations",
+        "@npm//rxjs",
+        "@npm//@types",
+    ],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib"
+)
+
+ng_ts_library(
+    name = "theme",
+    srcs = glob(
+        include = ["theme-service.ts"],
+    ),
+    deps = [
+        "@npm//@angular/core",
+        "@npm//rxjs",
+        "@npm//@types",
+    ],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib"
+)
+
+
