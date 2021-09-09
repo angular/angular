@@ -15,7 +15,7 @@
     "@types/node": "^10.9.4",
     "domino": "2.1.6",
     "jest": "^26.4",
-    "google-closure-compiler": "^20210601.0.0",
+    "google-closure-compiler": "^20210907.0.0",
     "mocha": "^9.0.0",
     "mock-require": "3.0.3",
     "promises-aplus-tests": "^2.1.2",
