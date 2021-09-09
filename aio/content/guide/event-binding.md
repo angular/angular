@@ -53,8 +53,8 @@ After those steps, if you add event listeners for the `scroll` event, the listen
 1. Parent directives listen for the event by binding to this property and accessing the data through the `$event` object.
 
 Consider an `ItemDetailComponent` that presents item information and responds to user actions.
-Although the `ItemDetailComponent` has a delete button, it doesn't contain the functionality to delete the hero.
-It can only raise an event reporting the user's delete request.
+Although the `ItemDetailComponent` has a delete button, it doesn't contain the functionality to display warning message.
+It can raise an event reporting the deleted item.
 
 
 <code-example path="event-binding/src/app/item-detail/item-detail.component.html" header="src/app/item-detail/item-detail.component.html (template)" region="line-through"></code-example>
