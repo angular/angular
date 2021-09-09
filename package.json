@@ -118,7 +118,7 @@
     "dependency-graph": "^0.11.0",
     "diff": "^5.0.0",
     "domino": "~2.1.6",
-    "google-closure-compiler": "20210601.0.0",
+    "google-closure-compiler": "20210907.0.0",
     "graceful-fs": "4.2.8",
     "hammerjs": "~2.0.8",
     "http-server": "^13.0.0",

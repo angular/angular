@@ -6498,40 +6498,40 @@ google-auth-library@^7.0.0, google-auth-library@^7.6.1:
     jws "^4.0.0"
     lru-cache "^6.0.0"
 
-google-closure-compiler-java@^20210601.0.0:
-  version "20210601.0.0"
-  resolved "https://registry.yarnpkg.com/google-closure-compiler-java/-/google-closure-compiler-java-20210601.0.0.tgz#88dc11b334bee6a704d9674c5143fd2e0d553517"
-  integrity sha512-bH6nIwOmp4qDWvlbXx5/DE3XA2aDGQoCpmRYZJGONY1Sy6Xfbq0ioXRHH9eBDP9hxhCJ5Sd/K89A0NZ8Nz9RJA==
+google-closure-compiler-java@^20210907.0.0:
+  version "20210907.0.0"
+  resolved "https://registry.yarnpkg.com/google-closure-compiler-java/-/google-closure-compiler-java-20210907.0.0.tgz#bba0fd62edb902fc224c45e0292965d3a8f39461"
+  integrity sha512-ASIR8rf3d3Qrf6qHQdLelPHIGRZBnT+AZ9SDT/cLCTYwvvWZhUxh5r4/v6ZAr3XGBbZpX4rgBDa0tZOmpgeRYQ==
 
-google-closure-compiler-linux@^20210601.0.0:
-  version "20210601.0.0"
-  resolved "https://registry.yarnpkg.com/google-closure-compiler-linux/-/google-closure-compiler-linux-20210601.0.0.tgz#6e5dd7b00b96dc1fd1ba30e3401af85558768322"
-  integrity sha512-rnEQt7zz/1P1SfPhJiHQpfCgMPrsVVyEgDs09h67xn6+LXa9L0RP+hrJDEHqSWwjDPz0BkfUUv6zkqZvp1h/lw==
+google-closure-compiler-linux@^20210907.0.0:
+  version "20210907.0.0"
+  resolved "https://registry.yarnpkg.com/google-closure-compiler-linux/-/google-closure-compiler-linux-20210907.0.0.tgz#b61d7219755d47eb843087a576a84b1b73d7941e"
+  integrity sha512-hnb3zrXtvdIpC7J+zUdOGyhW7zuk2NYps2J4G6EzVqQ+w1Mp22bhwdeFWeMp/DxueGJn8oenQNSXAANJKOxpiA==
 
-google-closure-compiler-osx@^20210601.0.0:
-  version "20210601.0.0"
-  resolved "https://registry.yarnpkg.com/google-closure-compiler-osx/-/google-closure-compiler-osx-20210601.0.0.tgz#e23356bc9ef6e68c2980f60a207f603767b50b21"
-  integrity sha512-A5r4s/WthR2iLMM0mxsluw8EW2AcOomC5ri/H6FjzpMq0RVEnLTgaGYdXolUAfEzH/7XtJJT2+JkYk3HSLCtrg==
+google-closure-compiler-osx@^20210907.0.0:
+  version "20210907.0.0"
+  resolved "https://registry.yarnpkg.com/google-closure-compiler-osx/-/google-closure-compiler-osx-20210907.0.0.tgz#7654a7646780fb6ec514ec21f7d73bba6cc6fb28"
+  integrity sha512-38dOzEJEt82nXeiIvCiV4rEzX06rdG/4bELg9PpGpGYDLzx4d4ielBNgsflKdkQ2rtvIZY06NsO733knS8gXRQ==
 
-google-closure-compiler-windows@^20210601.0.0:
-  version "20210601.0.0"
-  resolved "https://registry.yarnpkg.com/google-closure-compiler-windows/-/google-closure-compiler-windows-20210601.0.0.tgz#b5400d06bbf0bbd2602ee3ae0c2bc7ebd5829692"
-  integrity sha512-6r94bPShnB0XXh9+5/qXGDHJN2PQGhF9yJPcgBZj+FAZlQGzlYkT0pkyp+loZT3lG+YRbjD28Lgo7xMcY4xgkA==
+google-closure-compiler-windows@^20210907.0.0:
+  version "20210907.0.0"
+  resolved "https://registry.yarnpkg.com/google-closure-compiler-windows/-/google-closure-compiler-windows-20210907.0.0.tgz#749e08798d767e5ecdc3a75d3cb9ba45593e69b9"
+  integrity sha512-KJ9baxBaKeo4L5fn8v++vZyclzLQYYStw3fLhEcfW6xU3z6JOHpovN1Ff+DnAljRZhjJ2JbOeB5wg1dy4zkMNA==
 
-google-closure-compiler@20210601.0.0:
-  version "20210601.0.0"
-  resolved "https://registry.yarnpkg.com/google-closure-compiler/-/google-closure-compiler-20210601.0.0.tgz#34597c33c9285ebd3a5364f5299f6c9ddc9fc88a"
-  integrity sha512-lzzEoG2VTB7uUjnWnMyeZMU163w69HJpM27yh8Up9Ha5McHZeESjt3NRwU8cWMbCRdY06nFbRCDIVCRcadHCiw==
+google-closure-compiler@20210907.0.0:
+  version "20210907.0.0"
+  resolved "https://registry.yarnpkg.com/google-closure-compiler/-/google-closure-compiler-20210907.0.0.tgz#77c808514c6207fcd7112ac43b95ea4067b58cba"
+  integrity sha512-km2Jl0iLoTDHWoj8exQRcVBD+cNZ9sXplUVMyEpKAeWEEFjfSCV6J1Zbpz4doYUHeOxDem5fI1Cr42Pw+xtlMQ==
   dependencies:
     chalk "2.x"
-    google-closure-compiler-java "^20210601.0.0"
+    google-closure-compiler-java "^20210907.0.0"
     minimist "1.x"
     vinyl "2.x"
     vinyl-sourcemaps-apply "^0.2.0"
   optionalDependencies:
-    google-closure-compiler-linux "^20210601.0.0"
-    google-closure-compiler-osx "^20210601.0.0"
-    google-closure-compiler-windows "^20210601.0.0"
+    google-closure-compiler-linux "^20210907.0.0"
+    google-closure-compiler-osx "^20210907.0.0"
+    google-closure-compiler-windows "^20210907.0.0"
 
 google-gax@^2.24.1:
   version "2.27.0"
