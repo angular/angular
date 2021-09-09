@@ -114,7 +114,7 @@ export interface TestBed {
     // @deprecated (undocumented)
     get(token: any, notFoundValue?: any): any;
     initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, options?: TestEnvironmentOptions): void;
-    // (undocumented)
+    // @deprecated
     initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): void;
     // (undocumented)
     inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
@@ -172,9 +172,8 @@ export interface TestBedStatic {
     get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
     // @deprecated (undocumented)
     get(token: any, notFoundValue?: any): any;
-    // (undocumented)
     initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, options?: TestEnvironmentOptions): TestBed;
-    // (undocumented)
+    // @deprecated
     initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): TestBed;
     // (undocumented)
     inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
@@ -220,9 +219,8 @@ export class TestComponentRenderer {
 
 // @public (undocumented)
 export interface TestEnvironmentOptions {
-    // (undocumented)
+    // @deprecated
     aotSummaries?: () => any[];
-    // (undocumented)
     teardown?: ModuleTeardownOptions;
 }
 

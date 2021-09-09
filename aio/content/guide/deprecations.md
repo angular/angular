@@ -57,6 +57,8 @@ v12 - v15
 | `@angular/router`       | [`loadChildren` string syntax](#loadChildren)                                                 | <!--v9--> v11         |
 | `@angular/core/testing` | [`TestBed.get`](#testing)                                                                     | <!--v9--> v12         |
 | `@angular/core/testing` | [`async`](#testing)                                                                           | <!--v9--> v12         |
+| `@angular/core/testing` | [`aotSummaries` argument in `TestBed.initTestEnvironment`](#testing)                                                                           | <!--v13--> v14         |
+| `@angular/core/testing` | [`aotSummaries` field of the `TestModuleMetadata` type](#testing)                                                                           | <!--v13--> v14         |
 | `@angular/forms`        | [`FormBuilder.group` legacy options parameter](api/forms/FormBuilder#group)                   | <!--v11--> v14        |
 | `@angular/router`       | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props)                 | unspecified           |
 | template syntax         | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector)                            | <!--v7--> unspecified |
@@ -115,6 +117,8 @@ This section contains a complete list all of the currently-deprecated APIs, with
 |:---                                           |:---                                                 |:---                   |:---                                           |
 | [`TestBed.get`](api/core/testing/TestBed#get) | [`TestBed.inject`](api/core/testing/TestBed#inject) | v9                    | Same behavior, but type safe.                 |
 | [`async`](api/core/testing/async)             | [`waitForAsync`](api/core/testing/waitForAsync)     | v10                   | Same behavior, but rename to avoid confusion. |
+| [`aotSummaries` argument in `TestBed.initTestEnvironment`](api/core/testing/TestBed#inittestenvironment)             | No replacement needed     | v13                   | Summary files are unused in Ivy. |
+| [`aotSummaries` field of the `TestModuleMetadata` type](api/core/testing/TestModuleMetadata)             | No replacement needed     | v13                   | Summary files are unused in Ivy. |
 
 {@a forms}
 
