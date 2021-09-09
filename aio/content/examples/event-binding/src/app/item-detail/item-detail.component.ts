@@ -17,7 +17,7 @@ export class ItemDetailComponent {
   @Input() prefix = '';
 
   // #docregion deleteRequest
-  // This component makes a request but it can't actually delete a hero.
+  // This component makes a request but it can't display warning message.
   @Output() deleteRequest = new EventEmitter<Item>();
 
   delete() {
