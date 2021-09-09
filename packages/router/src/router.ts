@@ -883,11 +883,19 @@ export class Router {
                            // AngularJS sync code which looks for a value here in order to determine
                            // whether or not to handle a given popstate event or to leave it to the
                            // Angular router.
-                           this.resetUrlToCurrentUrlTree();
+                           this.restoreHistory(t);
+                           this.cancelNavigationTransition(t, cancelationReason);
+                         } else {
+                           // We cannot trigger a `location.historyGo` if the
+                           // cancellation was due to a new navigation before the previous could
+                           // complete. This is because `location.historyGo` triggers a `popstate`
+                           // which would also trigger another navigation. Instead, treat this as a
+                           // redirect and do not reset the state.
+                           this.cancelNavigationTransition(t, cancelationReason);
+                           // TODO(atscott): The same problem happens here with a fresh page load
+                           // and a new navigation before that completes where we won't set a page
+                           // id.
                          }
-                         // Note: Other `canceledNavigationResolution` strategies will not support
-                         // the AngularJS use-case that's mentioned above.
-                         this.cancelNavigationTransition(t, cancelationReason);
                        }
                        // currentNavigation should always be reset to null here. If navigation was
                        // successful, lastSuccessfulTransition will have already been set. Therefore
@@ -918,7 +926,7 @@ export class Router {
                            // This is only applicable with initial navigation, so setting
                            // `navigated` only when not redirecting resolves this scenario.
                            this.navigated = true;
-                           this.restoreHistory(t);
+                           this.restoreHistory(t, true);
                          }
                          const navCancel = new NavigationCancel(
                              t.id, this.serializeUrl(t.extractedUrl), e.message);
@@ -955,7 +963,7 @@ export class Router {
                          /* All other errors should reset to the router's internal URL reference to
                           * the pre-error state. */
                        } else {
-                         this.restoreHistory(t);
+                         this.restoreHistory(t, true);
                          const navError =
                              new NavigationError(t.id, this.serializeUrl(t.extractedUrl), e);
                          eventsSubject.next(navError);
@@ -1431,7 +1439,7 @@ export class Router {
    * Performs the necessary rollback action to restore the browser URL to the
    * state before the transition.
    */
-  private restoreHistory(t: NavigationTransition) {
+  private restoreHistory(t: NavigationTransition, restoringFromCaughtError = false) {
     if (this.canceledNavigationResolution === 'computed') {
       const targetPagePosition = this.currentPageId - t.targetPageId;
       // The navigator change the location before triggered the browser event,
@@ -1459,7 +1467,13 @@ export class Router {
         // there's no restoration needed.
       }
     } else if (this.canceledNavigationResolution === 'replace') {
-      this.resetState(t);
+      // TODO(atscott): It seems like we should _always_ reset the state here. It would be a no-op
+      // for `deferred` navigations that haven't change the internal state yet because guards
+      // reject. For 'eager' navigations, it seems like we also really should reset the state
+      // because the navigation was cancelled. Investigate if this can be done by running TGP.
+      if (restoringFromCaughtError) {
+        this.resetState(t);
+      }
       this.resetUrlToCurrentUrlTree();
     }
   }
