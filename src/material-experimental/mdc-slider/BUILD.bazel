@@ -27,6 +27,7 @@ ng_module(
         "//src/cdk/platform",
         "//src/material-experimental/mdc-core",
         "@npm//@angular/forms",
+        "@npm//@material/base",
         "@npm//@material/slider",
     ],
 )

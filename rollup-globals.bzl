@@ -39,10 +39,6 @@ ROLLUP_GLOBALS = {
     "@angular/material-date-fns-adapter": "ng.materialDateFnsAdapter",
     "@angular/youtube-player": "ng.youtubePlayer",
 
-    # This UMD module name would not match with anything that MDC provides, but we just
-    # add this to make the linter happy. This module resolves to a type-only file anyways.
-    "@material/base/types": "mdc.base.types",
-
     # Third-party libraries.
     "kagekiri": "kagekiri",
     "moment": "moment",

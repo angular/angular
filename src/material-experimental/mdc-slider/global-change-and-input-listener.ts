@@ -8,7 +8,7 @@
 
 import {DOCUMENT} from '@angular/common';
 import {Inject, Injectable, NgZone, OnDestroy} from '@angular/core';
-import {SpecificEventListener} from '@material/base/types';
+import {SpecificEventListener} from '@material/base';
 import {fromEvent, Observable, Subject, Subscription} from 'rxjs';
 import {finalize, share, takeUntil} from 'rxjs/operators';
 
