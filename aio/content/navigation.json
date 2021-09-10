@@ -1158,8 +1158,9 @@
           "title": "한국어",
           "url": "https://angular.kr/"
         },
-        { "title": "Complete language list",
-           "url": "guide/localized-documentation"
+        { 
+          "title": "Complete language list",
+          "url": "guide/localized-documentation"
         }
       ]
     }
