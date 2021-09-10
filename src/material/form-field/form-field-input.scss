@@ -57,7 +57,8 @@
   // same selector as the IE ones, otherwise Safari will ignore it.
   &::-webkit-contacts-auto-fill-button,
   &::-webkit-caps-lock-indicator,
-  &::-webkit-credentials-auto-fill-button {
+  // Preserve the autofill icon on password inputs since it includes some important functionality.
+  &:not([type='password'])::-webkit-credentials-auto-fill-button {
     visibility: hidden;
   }
 
