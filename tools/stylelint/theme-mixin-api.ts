@@ -8,7 +8,7 @@ import {
   Node,
   Result,
   Root
-} from './stylelint-postcss-types';
+} from 'postcss';
 
 /** Name of this stylelint rule. */
 const ruleName = 'material/theme-mixin-api';
@@ -198,7 +198,9 @@ const plugin = (isEnabled: boolean, _options: never, context: {fix: boolean}) =>
     }
 
     function reportError(node: Node, message: string) {
-      utils.report({result, ruleName, node, message});
+      // We need these `as any` casts, because Stylelint uses an older version
+      // of the postcss typings that don't match up with our anymore.
+      utils.report({result: result as any, ruleName, node: node as any, message});
     }
   };
 };
@@ -229,4 +231,4 @@ function stripNewlinesAndIndentation(value: string): string {
 
 // Note: We need to cast the value explicitly to `Plugin` because the stylelint types
 // do not type the context parameter. https://stylelint.io/developer-guide/rules#add-autofix
-module.exports = createPlugin(ruleName, plugin as Plugin);
+module.exports = createPlugin(ruleName, plugin as unknown as Plugin);

@@ -1,6 +1,6 @@
 import {createPlugin, Plugin, utils} from 'stylelint';
 import {basename, join} from 'path';
-import {Result, Root} from './stylelint-postcss-types';
+import {Result, Root} from 'postcss';
 
 const ruleName = 'material/no-unused-import';
 const messages = utils.ruleMessages(ruleName, {
@@ -25,20 +25,22 @@ const factory = (isEnabled: boolean, _options: never, context: {fix: boolean}) =
         // Flag namespaces we didn't manage to parse so that we can fix the parsing logic.
         if (!namespace) {
           utils.report({
-            result,
+            // We need these `as any` casts, because Stylelint uses an older version
+            // of the postcss typings that don't match up with our anymore.
+            result: result as any,
             ruleName,
             message: messages.invalid(rule.params),
-            node: rule
+            node: rule as any
           });
         } else if (!fileContent.includes(namespace + '.')) {
           if (context.fix) {
             rule.remove();
           } else {
             utils.report({
-              result,
+              result: result as any,
               ruleName,
               message: messages.expected(namespace),
-              node: rule
+              node: rule as any
             });
           }
         }

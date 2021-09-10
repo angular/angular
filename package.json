@@ -163,7 +163,7 @@
     "@types/selenium-webdriver": "^3.0.17",
     "@types/semver": "^7.3.4",
     "@types/send": "^0.14.5",
-    "@types/stylelint": "^9.10.1",
+    "@types/stylelint": "^13.13.2",
     "@types/yaml": "^1.9.7",
     "autoprefixer": "^10.2.5",
     "browser-sync": "2.26.13",
