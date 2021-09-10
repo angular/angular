@@ -181,7 +181,7 @@
     "sauce-connect": "https://saucelabs.com/downloads/sc-4.6.2-linux.tar.gz",
     "semver": "^7.3.5",
     "ts-node": "^10.0.0",
-    "tsec": "0.1.8",
+    "tsec": "0.1.9",
     "tslint-eslint-rules": "5.4.0",
     "tslint-no-toplevel-property-access": "0.0.2",
     "typed-graphqlify": "^3.1.1",

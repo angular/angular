@@ -13270,10 +13270,10 @@ ts-node@^10.0.0:
     make-error "^1.1.1"
     yn "3.1.1"
 
-tsec@0.1.8:
-  version "0.1.8"
-  resolved "https://registry.yarnpkg.com/tsec/-/tsec-0.1.8.tgz#010d0c020d94b7e984e4511f0dd3bafb271a49f3"
-  integrity sha512-flbk1R6DC/ef+ZyBMjSALVh04hHDLRtUehUjpxP+gpShqF6IOVbK1XsjxV/7Sus/eH8svjPyOgI+WvlGIbxCMg==
+tsec@0.1.9:
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/tsec/-/tsec-0.1.9.tgz#8741e28d5631a6695c4a5242f8fe160f92571e74"
+  integrity sha512-ZwbD/FHEPnNnlY9vp88Ft0R3G6ac6Fv4DQnV3DWvKnSAJGpCUC8kDHar5DhfuR6NIaP/KEz8KCTTYj1w/qXmvw==
   dependencies:
     glob "^7.1.1"
     minimatch "^3.0.3"
