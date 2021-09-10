@@ -1019,6 +1019,16 @@ describe('MatStepper', () => {
       assertArrowKeyInteractionInRtl(fixture, stepHeaders);
     });
 
+    it('should maintain the correct navigation order when a step is added later on', () => {
+      const fixture = createComponent(HorizontalStepperWithDelayedStep);
+      fixture.detectChanges();
+      fixture.componentInstance.renderSecondStep = true;
+      fixture.detectChanges();
+
+      const stepHeaders = fixture.debugElement.queryAll(By.css('.mat-horizontal-stepper-header'));
+      assertCorrectKeyboardInteraction(fixture, stepHeaders, 'horizontal');
+    });
+
     it('should reverse arrow key focus when switching into RTL after init', () => {
       const fixture = createComponent(SimpleMatHorizontalStepperApp);
       fixture.detectChanges();
@@ -2031,4 +2041,17 @@ class StepperWithStaticOutOfBoundsIndex {
 })
 class StepperWithLazyContent {
   selectedIndex = 0;
+}
+
+@Component({
+  template: `
+    <mat-stepper>
+      <mat-step label="Step 1">Content 1</mat-step>
+      <mat-step label="Step 2" *ngIf="renderSecondStep">Content 2</mat-step>
+      <mat-step label="Step 3">Content 3</mat-step>
+    </mat-stepper>
+  `
+})
+class HorizontalStepperWithDelayedStep {
+  renderSecondStep = false;
 }
