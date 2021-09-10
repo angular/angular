@@ -5548,6 +5548,30 @@ describe('Integration', () => {
              [NavigationEnd, '/include/simple']
            ]);
          })));
+
+      it('should not reset parts of the URL not handled by the router', fakeAsync(() => {
+           const location = TestBed.inject(Location) as SpyLocation;
+           const router = TestBed.inject(Router);
+           const fixture = createRoot(router, RootCmp);
+
+           router.resetConfig([{
+             path: 'include',
+             component: TeamCmp,
+             children:
+                 [{path: 'user/:name', component: UserCmp}, {path: 'simple', component: SimpleCmp}]
+           }]);
+
+           try {
+             location.simulateHashChange('/include/butThisPartNotFound(aux:excluded)');
+             advance(fixture);
+           } catch (e) {
+           }
+           // The router only handled the primary URL. So it processes the navigation and then
+           // cannot match the `butThisPartNotFound` part to a URL, throws an error, and then
+           // resets the state in the `catchError` block. The excluded part of the URL _should not_
+           // be reset because it might be handled by another application.
+           expect(location.path()).toEqual('/(aux:excluded)');
+         }));
     });
 
     it('can use `relativeTo` `route.parent` in `routerLink` to close secondary outlet',
