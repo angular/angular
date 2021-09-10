@@ -480,7 +480,7 @@ The effects of defining a `deploy url` and `base href` can overlap.
 However, defining a `base href` has a few unique effects.
 * Defining a `base href` can be used for locating relative template (HTML) assets, and relative fetch/XMLHttpRequests.
 
-The `base href` can also be used to define the Angular router's default base (see [APP_BASE_HREF](https://angular.io/api/common/APP_BASE_HREF)). Users with more complicated setups may need to manually configure the `APP_BASE_HREF` token within the application. (e.g., application routing base is / but assets/scripts/etc. are at /assets/).
+The `base href` can also be used to define the Angular router's default base (see [APP_BASE_HREF](api/common/APP_BASE_HREF)). Users with more complicated setups may need to manually configure the `APP_BASE_HREF` token within the application. (e.g., application routing base is / but assets/scripts/etc. are at /assets/).
 
 Unlike the `base href` which can be defined in a single place, the `deploy url` needs to be hard-coded into an application at build time. This means specifying a `deploy url` will decrease build speed, but this is the unfortunate cost of using an option that embeds itself throughout an application. That is why a `base href` is generally the better option.
 

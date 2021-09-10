@@ -2,8 +2,8 @@
 
 <div class="alert is-helpful">
 
-Entry components have been deprecated with the [Ivy rendering engine](https://angular.io/guide/ivy). 
-For more information, see [entryComponents deprecation](https://angular.io/guide/deprecations#entrycomponents-and-analyze_for_entry_components-no-longer-required) in the [Deprecated APIs and features](https://angular.io/guide/deprecations).
+Entry components have been deprecated with the [Ivy rendering engine](guide/ivy).
+For more information, see [entryComponents deprecation](guide/deprecations#entrycomponents-and-analyze_for_entry_components-no-longer-required) in the [Deprecated APIs and features](guide/deprecations).
 
 </div>
 
