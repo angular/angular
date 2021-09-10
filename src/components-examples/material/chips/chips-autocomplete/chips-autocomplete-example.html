@@ -7,7 +7,9 @@
       [removable]="removable"
       (removed)="remove(fruit)">
       {{fruit}}
-      <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+      <button matChipRemove *ngIf="removable">
+        <mat-icon>cancel</mat-icon>
+      </button>
     </mat-chip>
     <input
       placeholder="New fruit..."

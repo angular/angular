@@ -4,7 +4,9 @@
     <mat-chip *ngFor="let fruit of fruits" [selectable]="selectable"
              [removable]="removable" (removed)="remove(fruit)">
       {{fruit.name}}
-      <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+      <button matChipRemove *ngIf="removable">
+        <mat-icon>cancel</mat-icon>
+      </button>
     </mat-chip>
     <input placeholder="New fruit..."
            [matChipInputFor]="chipList"

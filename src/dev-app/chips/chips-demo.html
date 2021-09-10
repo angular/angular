@@ -27,7 +27,9 @@
         <mat-chip color="warn" selected="true" *ngIf="visible"
                  (destroyed)="displayMessage('chip destroyed')" (removed)="toggleVisible()">
           With Events
-          <mat-icon matChipRemove>cancel</mat-icon>
+          <button matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
         </mat-chip>
       </mat-chip-list>
       <div>{{message}}</div>
@@ -39,12 +41,16 @@
         <mat-chip disabled>
           <mat-icon matChipAvatar>home</mat-icon>
           Home
-          <mat-icon matChipRemove>cancel</mat-icon>
+          <button matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
         </mat-chip>
         <mat-chip color="accent" selected="true">
           <mat-chip-avatar>P</mat-chip-avatar>
           Portel
-          <mat-icon matChipRemove>cancel</mat-icon>
+          <button matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
         </mat-chip>
 
         <mat-chip>
@@ -54,7 +60,9 @@
 
         <mat-chip>
           Koby
-          <mat-icon matChipRemove>cancel</mat-icon>
+          <button matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
         </mat-chip>
 
         <mat-chip>
@@ -69,7 +77,9 @@
         <mat-chip selected="true" color="warn">
           <img src="https://material.angularjs.org/material2_assets/ngconf/Husi.png" matChipAvatar>
           Husi
-          <mat-icon matChipRemove>cancel</mat-icon>
+          <button matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
         </mat-chip>
 
         <mat-chip>
@@ -104,7 +114,9 @@
           <mat-chip  *ngFor="let person of people" [color]="color" [selectable]="selectable"
                    [removable]="removable" (removed)="remove(person)">
             {{person.name}}
-            <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+            <button matChipRemove *ngIf="removable">
+              <mat-icon>cancel</mat-icon>
+            </button>
           </mat-chip>
           <input placeholder="New Contributor..."
                  [matChipInputFor]="chipList1"
@@ -127,7 +139,9 @@
           <mat-chip *ngFor="let person of people" [color]="color" [selectable]="selectable"
                    [removable]="removable" (removed)="remove(person)">
             {{person.name}}
-            <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+            <button matChipRemove *ngIf="removable">
+              <mat-icon>cancel</mat-icon>
+            </button>
           </mat-chip>
         </mat-chip-list>
         <input placeholder="New Contributor..."
@@ -148,7 +162,9 @@
           <mat-chip *ngFor="let person of people" [color]="color" [selectable]="selectable"
                    [removable]="removable" (removed)="remove(person)">
             {{person.name}}
-            <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+            <button matChipRemove *ngIf="removable">
+              <mat-icon>cancel</mat-icon>
+            </button>
           </mat-chip>
         </mat-chip-list>
       </mat-form-field>
@@ -185,7 +201,9 @@
         <mat-chip *ngFor="let aColor of availableColors" [color]="aColor.color"
                  [value]="aColor.name" (removed)="removeColor(aColor)">
           {{aColor.name}}
-          <mat-icon matChipRemove>cancel</mat-icon>
+          <button matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
         </mat-chip>
       </mat-chip-list>
 
@@ -196,7 +214,9 @@
         <mat-chip *ngFor="let aColor of availableColors" [color]="aColor.color"
                  [value]="aColor.name" (removed)="removeColor(aColor)">
           {{aColor.name}}
-          <mat-icon matChipRemove>cancel</mat-icon>
+          <button matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
         </mat-chip>
       </mat-chip-list>
 

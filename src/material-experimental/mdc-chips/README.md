@@ -102,7 +102,9 @@ To use chips with an input, use the `<mat-chip-grid>` with `<mat-chip-row>`:
       <mat-chip-row *ngFor="let person of people"
                    (removed)="remove(person)">
         {{person.name}}
-        <mat-icon matChipRemove>cancel</mat-icon>
+        <button matChipRemove>
+          <mat-icon>cancel</mat-icon>
+        </button>
       </mat-chip-row>
       <input [matChipInputFor]="myChipGrid"
              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"

@@ -54,9 +54,19 @@ $chip-remove-size: 18px;
   // anything since it's less than the minimum set above.
   height: 1px;
 
-  .mat-chip-remove.mat-icon {
-    width: $chip-remove-size;
-    height: $chip-remove-size;
+  .mat-chip-remove {
+    // Reset the user agent styles in case a button is used.
+    border: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding: 0;
+    background: none;
+
+    &.mat-icon, .mat-icon {
+      width: $chip-remove-size;
+      height: $chip-remove-size;
+      font-size: $chip-remove-size;
+    }
   }
 
   // Overlay used to darken the chip on hover and focus.

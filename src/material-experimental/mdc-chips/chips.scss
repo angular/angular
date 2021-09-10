@@ -126,6 +126,21 @@ $chip-margin: 4px;
   position: relative;
 }
 
+.mat-mdc-chip-remove {
+  // Reset the user agent styles in case a button is used.
+  border: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding: 0;
+  background: none;
+
+  .mat-icon {
+    width: inherit;
+    height: inherit;
+    font-size: inherit;
+  }
+}
+
 .mat-mdc-chip-row-focusable-text-content,
 .mat-mdc-chip-remove-icon {
   display: flex;
