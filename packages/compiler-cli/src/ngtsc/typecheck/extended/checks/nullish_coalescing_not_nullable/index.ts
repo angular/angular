@@ -27,8 +27,8 @@ export class NullishCoalescingNotNullableCheck extends
       NgTemplateDiagnostic<ErrorCode.NULLISH_COALESCING_NOT_NULLABLE>[] {
     if (!(node instanceof Binary) || node.operation !== '??') return [];
 
-    const symbolLeft = ctx.templateTypeChecker.getSymbolOfNode(node.left, component)!;
-    if (symbolLeft.kind !== SymbolKind.Expression) {
+    const symbolLeft = ctx.templateTypeChecker.getSymbolOfNode(node.left, component);
+    if (symbolLeft === null || symbolLeft.kind !== SymbolKind.Expression) {
       return [];
     }
     const typeLeft = symbolLeft.tsType;
