@@ -1,6 +1,6 @@
 # Angular documentation style guide
 
-This style guide covers the standards for writing [Angular documentation on angular.io](https://angular.io/docs).
+This style guide covers the standards for writing [Angular documentation on angular.io](docs).
 These standards ensure consistency in writing style, Markdown conventions, and code snippets.
 
 ## Prerequisites
@@ -207,7 +207,7 @@ Do not create a node that is both a header and an item node by specifying the `u
 
 ## Code snippets
 
-[Angular.io](https://angular.io/docs) has a custom framework that enables authors to include code snippets directly from working example applications that are automatically tested as part of documentation builds.
+[Angular.io](docs) has a custom framework that enables authors to include code snippets directly from working example applications that are automatically tested as part of documentation builds.
 
 In addition to working code snippets, example code can include terminal commands, a fragment of TypeScript or HTML, or an entire code file.
 
