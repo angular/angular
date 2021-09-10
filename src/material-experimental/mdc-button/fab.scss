@@ -11,6 +11,9 @@
   @include button-base.mat-private-button-touch-target(true);
   @include private.private-animation-noop();
 
+  // Prevent the button from shrinking since it's always supposed to be a circle.
+  flex-shrink: 0;
+
   // MDC adds some styles to fab and mini-fab that conflict with some of our focus indicator
   // styles and don't actually do anything. This undoes those conflicting styles.
   &:not(.mdc-ripple-upgraded):focus::before {
