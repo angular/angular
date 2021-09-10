@@ -194,4 +194,20 @@ describe('InputModalityDetector', () => {
     dispatchMouseEvent(document, 'mousedown');
     expect(detector.mostRecentModality).toBe('mouse');
   }));
+
+  it('should complete the various observables on destroy', () => {
+    setupTest();
+
+    const modalityDetectedSpy = jasmine.createSpy('modalityDetected complete spy');
+    const modalityChangedSpy = jasmine.createSpy('modalityChanged complete spy');
+
+    detector.modalityDetected.subscribe({complete: modalityDetectedSpy});
+    detector.modalityChanged.subscribe({complete: modalityChangedSpy});
+
+    detector.ngOnDestroy();
+
+    expect(modalityDetectedSpy).toHaveBeenCalled();
+    expect(modalityChangedSpy).toHaveBeenCalled();
+  });
+
 });

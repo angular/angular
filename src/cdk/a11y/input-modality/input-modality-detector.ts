@@ -87,7 +87,7 @@ const modalityEventListenerOptions = normalizePassiveListenerOptions({
  * update the input modality to keyboard, but in general this service's behavior is largely
  * undefined.
  */
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class InputModalityDetector implements OnDestroy {
   /** Emits whenever an input modality is detected. */
   readonly modalityDetected: Observable<InputModality>;
@@ -185,21 +185,22 @@ export class InputModalityDetector implements OnDestroy {
 
     // If we're not in a browser, this service should do nothing, as there's no relevant input
     // modality to detect.
-    if (!_platform.isBrowser) { return; }
-
-    // Add the event listeners used to detect the user's input modality.
-    ngZone.runOutsideAngular(() => {
-      document.addEventListener('keydown', this._onKeydown, modalityEventListenerOptions);
-      document.addEventListener('mousedown', this._onMousedown, modalityEventListenerOptions);
-      document.addEventListener('touchstart', this._onTouchstart, modalityEventListenerOptions);
-    });
+    if (_platform.isBrowser) {
+      ngZone.runOutsideAngular(() => {
+        document.addEventListener('keydown', this._onKeydown, modalityEventListenerOptions);
+        document.addEventListener('mousedown', this._onMousedown, modalityEventListenerOptions);
+        document.addEventListener('touchstart', this._onTouchstart, modalityEventListenerOptions);
+      });
+    }
   }
 
   ngOnDestroy() {
-    if (!this._platform.isBrowser) { return; }
+    this._modality.complete();
 
-    document.removeEventListener('keydown', this._onKeydown, modalityEventListenerOptions);
-    document.removeEventListener('mousedown', this._onMousedown, modalityEventListenerOptions);
-    document.removeEventListener('touchstart', this._onTouchstart, modalityEventListenerOptions);
+    if (this._platform.isBrowser) {
+      document.removeEventListener('keydown', this._onKeydown, modalityEventListenerOptions);
+      document.removeEventListener('mousedown', this._onMousedown, modalityEventListenerOptions);
+      document.removeEventListener('touchstart', this._onTouchstart, modalityEventListenerOptions);
+    }
   }
 }
