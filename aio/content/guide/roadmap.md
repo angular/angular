@@ -10,7 +10,7 @@ The projects below are not associated with a particular Angular version. We'll r
 
 ### Improve test times and debugging with automatic test environment tear down
 
-To improve test time and create better isolation across tests, we want to change <code>[TestBed](https://angular.io/api/core/testing/TestBed)</code> to automatically clean up and tear down the test environment after each test run.
+To improve test time and create better isolation across tests, we want to change <code>[TestBed](api/core/testing/TestBed)</code> to automatically clean up and tear down the test environment after each test run.
 
 ### Deprecate and remove IE11 support
 
@@ -32,7 +32,7 @@ MDC Web is a library created by Google's Material Design team that provides reus
 
 We're evaluating components in Angular Material against accessibility standards such as WCAG and working to fix any issues that arise from this process.
 
-### Remove legacy [View Engine](https://angular.io/guide/ivy)
+### Remove legacy [View Engine](guide/ivy)
 
 After the transition of all our internal tooling to Ivy is completed, we will remove the legacy View Engine for reduced Angular conceptual overhead, smaller package size, lower maintenance cost, and lower codebase complexity.
 
@@ -46,7 +46,7 @@ To ensure we provide a future-proof e2e testing strategy, we want to evaluate th
 
 ### Angular libraries use Ivy
 
-Earlier in 2020, we shared an [RFC](https://github.com/angular/angular/issues/38366) for Ivy library distribution. After invaluable feedback from the community, we developed a design of the project. We are now investing in the development of Ivy library distribution, including an update of the library package format to use Ivy compilation, unblock the deprecation of the View Engine library format, and [ngcc](https://angular.io/guide/glossary#ngcc).
+Earlier in 2020, we shared an [RFC](https://github.com/angular/angular/issues/38366) for Ivy library distribution. After invaluable feedback from the community, we developed a design of the project. We are now investing in the development of Ivy library distribution, including an update of the library package format to use Ivy compilation, unblock the deprecation of the View Engine library format, and [ngcc](guide/glossary#ngcc).
 
 ### Ensure smooth adoption for future RxJS changes (v7 and beyond)
 
