@@ -96,7 +96,7 @@ export const NG_ASYNC_VALIDATORS =
  * See [this commit](https://github.com/angular/angular.js/commit/f3f5cf72e) for more details.
  */
 const EMAIL_REGEXP =
-    /^(?=.{1,254}$)(?=.{1,64}@)[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEFa-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEFa-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEFa-zA-Z0-9](?:[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEFa-zA-Z0-9-]{0,61}[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEFa-zA-Z0-9])?(?:\.[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEFa-zA-Z0-9](?:[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEFa-zA-Z0-9-]{0,61}[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEFa-zA-Z0-9])?)*$/;
+    /^(?=.{1,254}$)(?=.{1,64}@)[a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF](?:[a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF-]{0,61}[a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])?(?:\.[a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF](?:[a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF-]{0,61}[a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])?)*$/;
 
 /**
  * @description
