@@ -715,14 +715,9 @@ export class Router {
                              tap(t => {
                                if (this.urlUpdateStrategy === 'eager') {
                                  if (!t.extras.skipLocationChange) {
-                                   this.setBrowserUrl(t.urlAfterRedirects, t);
-                                   // TODO(atscott): The above line is incorrect. It sets the url to
-                                   // only the part that is handled by the router. It should merge
-                                   // that with the rawUrl so the url includes segments not handled
-                                   // by the router:
-                                   //  const rawUrl = this.urlHandlingStrategy.merge(
-                                   //      t.urlAfterRedirects, t.rawUrl);
-                                   //  this.setBrowserUrl(rawUrl, t);
+                                   const rawUrl = this.urlHandlingStrategy.merge(
+                                       t.urlAfterRedirects, t.rawUrl);
+                                   this.setBrowserUrl(rawUrl, t);
                                  }
                                  this.browserUrlTree = t.urlAfterRedirects;
                                }
