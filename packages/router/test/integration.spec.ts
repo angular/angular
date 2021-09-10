@@ -871,17 +871,36 @@ describe('Integration', () => {
      })));
 
   describe('"eager" urlUpdateStrategy', () => {
+    @Injectable()
+    class AuthGuard implements CanActivate {
+      canActivateResult = true;
+
+      canActivate() {
+        return this.canActivateResult;
+      }
+    }
+    @Injectable()
+    class DelayedGuard implements CanActivate {
+      canActivate() {
+        return of('').pipe(delay(1000), mapTo(true));
+      }
+    }
+
     beforeEach(() => {
       const serializer = new DefaultUrlSerializer();
       TestBed.configureTestingModule({
-        providers: [{
-          provide: 'authGuardFail',
-          useValue: (a: any, b: any) => {
-            return new Promise(res => {
-              setTimeout(() => res(serializer.parse('/login')), 1);
-            });
-          }
-        }]
+        providers: [
+          {
+            provide: 'authGuardFail',
+            useValue: (a: any, b: any) => {
+              return new Promise(res => {
+                setTimeout(() => res(serializer.parse('/login')), 1);
+              });
+            }
+          },
+          AuthGuard,
+          DelayedGuard,
+        ]
       });
     });
 
@@ -1028,6 +1047,58 @@ describe('Integration', () => {
          expect(navigation.extras.state).toBeDefined();
          expect(navigation.extras.state).toEqual({foo: 'bar'});
        })));
+
+    it('can renavigate to rejected URL', fakeAsync(() => {
+         const router = TestBed.inject(Router);
+         const canActivate = TestBed.inject(AuthGuard);
+         const location = TestBed.inject(Location) as SpyLocation;
+         router.urlUpdateStrategy = 'eager';
+         router.resetConfig([
+           {path: '', component: BlankCmp},
+           {path: 'simple', component: SimpleCmp, canActivate: [AuthGuard]},
+         ]);
+         const fixture = createRoot(router, RootCmp);
+
+         // Try to navigate to /simple but guard rejects
+         canActivate.canActivateResult = false;
+         router.navigateByUrl('/simple');
+         advance(fixture);
+         expect(location.path()).toEqual('/');
+         expect(fixture.nativeElement.innerHTML).not.toContain('simple');
+
+         // Renavigate to /simple without guard rejection, should succeed.
+         canActivate.canActivateResult = true;
+         router.navigateByUrl('/simple');
+         advance(fixture);
+         expect(location.path()).toEqual('/simple');
+         expect(fixture.nativeElement.innerHTML).toContain('simple');
+       }));
+
+    it('can renavigate to same URL during in-flight navigation', fakeAsync(() => {
+         const router = TestBed.inject(Router);
+         const location = TestBed.inject(Location) as SpyLocation;
+         router.urlUpdateStrategy = 'eager';
+         router.resetConfig([
+           {path: '', component: BlankCmp},
+           {path: 'simple', component: SimpleCmp, canActivate: [DelayedGuard]},
+         ]);
+         const fixture = createRoot(router, RootCmp);
+
+         // Start navigating to /simple, but do not flush the guard delay
+         router.navigateByUrl('/simple');
+         tick();
+         // eager update strategy so URL is already updated.
+         expect(location.path()).toEqual('/simple');
+         expect(fixture.nativeElement.innerHTML).not.toContain('simple');
+
+         // Start an additional navigation to /simple and ensure at least one of those succeeds.
+         // It's not super important which one gets processed, but in the past, the router would
+         // cancel the in-flight one and not process the new one.
+         router.navigateByUrl('/simple');
+         tick(1000);
+         expect(location.path()).toEqual('/simple');
+         expect(fixture.nativeElement.innerHTML).toContain('simple');
+       }));
   });
 
   it('should navigate back and forward',
@@ -1566,6 +1637,33 @@ describe('Integration', () => {
 
          expect(routerUrlBeforeEmittingError).toEqual('/simple');
          expect(locationUrlBeforeEmittingError).toEqual('/simple');
+       }));
+
+    it('can renavigate to throwing component', fakeAsync(() => {
+         const router = TestBed.inject(Router);
+         const location = TestBed.inject(Location) as SpyLocation;
+         router.urlUpdateStrategy = 'eager';
+         router.resetConfig([
+           {path: '', component: BlankCmp},
+           {path: 'throwing', component: ConditionalThrowingCmp},
+         ]);
+         const fixture = createRoot(router, RootCmp);
+
+         // Try navigating to a component which throws an error during activation.
+         ConditionalThrowingCmp.throwError = true;
+         expect(() => {
+           router.navigateByUrl('/throwing');
+           advance(fixture);
+         }).toThrow();
+         expect(location.path()).toEqual('/');
+         expect(fixture.nativeElement.innerHTML).not.toContain('throwing');
+
+         // Ensure we can re-navigate to that same URL and succeed.
+         ConditionalThrowingCmp.throwError = false;
+         router.navigateByUrl('/throwing');
+         advance(fixture);
+         expect(location.path()).toEqual('/throwing');
+         expect(fixture.nativeElement.innerHTML).toContain('throwing');
        }));
 
     it('should reset the url with the right state when navigation errors', fakeAsync(() => {
@@ -6222,6 +6320,15 @@ class ThrowingCmp {
     throw new Error('Throwing Cmp');
   }
 }
+@Component({selector: 'conditional-throwing-cmp', template: 'conditional throwing'})
+class ConditionalThrowingCmp {
+  static throwError = true;
+  constructor() {
+    if (ConditionalThrowingCmp.throwError) {
+      throw new Error('Throwing Cmp');
+    }
+  }
+}
 
 
 
@@ -6272,7 +6379,8 @@ class LazyComponent {
     RootCmpWithTwoOutlets,
     RootCmpWithNamedOutlet,
     EmptyQueryParamsCmp,
-    ThrowingCmp
+    ThrowingCmp,
+    ConditionalThrowingCmp,
   ],
 
 
@@ -6304,7 +6412,8 @@ class LazyComponent {
     RootCmpWithTwoOutlets,
     RootCmpWithNamedOutlet,
     EmptyQueryParamsCmp,
-    ThrowingCmp
+    ThrowingCmp,
+    ConditionalThrowingCmp,
   ],
 
 
@@ -6337,7 +6446,8 @@ class LazyComponent {
     RootCmpWithTwoOutlets,
     RootCmpWithNamedOutlet,
     EmptyQueryParamsCmp,
-    ThrowingCmp
+    ThrowingCmp,
+    ConditionalThrowingCmp,
   ]
 })
 class TestModule {
