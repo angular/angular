@@ -732,7 +732,6 @@ groups:
           'packages/compiler/src/schema/**',
           'packages/platform-browser/src/security/**',
           'packages/tsconfig-tsec-base.json',
-          'packages/**/tsconfig-tsec.json',
           'packages/tsec-exemption.json',
           'tools/tsec.bzl',
           'aio/content/guide/security.md',

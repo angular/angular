@@ -1,7 +1,0 @@
-/** For building //packages/core/src/reflection. */
-{
-  "extends": "../../../tsconfig-tsec-base.json",
-  "include": [
-    "**/*.ts"
-  ]
-}

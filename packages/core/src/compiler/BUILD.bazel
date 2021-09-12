@@ -1,5 +1,5 @@
 load("//tools:defaults.bzl", "ts_library")
-load("//tools:tsec.bzl", "tsec_config", "tsec_test")
+load("//tools:tsec.bzl", "tsec_test")
 
 package(default_visibility = [
     "//packages/compiler/test:__pkg__",
@@ -19,14 +19,8 @@ ts_library(
     ],
 )
 
-tsec_config(
-    name = "tsec_config",
-    src = ":tsconfig-tsec.json",
-    deps = ["//packages:tsec_config"],
-)
-
 tsec_test(
     name = "tsec_test",
     target = "compiler",
-    tsconfig = "tsec_config",
+    tsconfig = "//packages:tsec_config",
 )
