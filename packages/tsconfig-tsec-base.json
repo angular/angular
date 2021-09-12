@@ -2,7 +2,6 @@
 {
   "extends": "./tsconfig-build.json",
   "compilerOptions": {
-    "composite": true,
     "noEmit": true,
     "lib": ["es2017", "dom"],
     "plugins": [{"name": "tsec", "exemptionConfig": "./tsec-exemption.json"}]

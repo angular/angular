@@ -1,6 +1,6 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test")
 load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_module", "ng_package")
-load("//tools:tsec.bzl", "tsec_config", "tsec_test")
+load("//tools:tsec.bzl", "tsec_test")
 load("//packages/common/locales:index.bzl", "generate_base_locale_file")
 
 package(default_visibility = ["//visibility:public"])
@@ -40,16 +40,10 @@ ng_module(
     ],
 )
 
-tsec_config(
-    name = "tsconfig-tsec",
-    src = ":tsconfig-tsec.json",
-    deps = ["//packages:tsec_config"],
-)
-
 tsec_test(
     name = "tsec_test",
     target = "core",
-    tsconfig = "tsconfig-tsec",
+    tsconfig = "//packages:tsec_config",
 )
 
 ng_package(
