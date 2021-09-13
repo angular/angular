@@ -9,16 +9,15 @@ import { AfterViewInit } from '@angular/core';
 import { AutofillMonitor } from '@angular/cdk/text-field';
 import { BooleanInput } from '@angular/cdk/coercion';
 import { CanUpdateErrorState } from '@angular/material/core';
-import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { Constructor } from '@angular/material/core/common-behaviors/constructor';
 import { DoCheck } from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { FormGroupDirective } from '@angular/forms';
 import * as i0 from '@angular/core';
-import * as i3 from '@angular/cdk/text-field';
-import * as i4 from '@angular/material/form-field';
-import * as i5 from '@angular/material/core';
+import * as i2 from '@angular/cdk/text-field';
+import * as i3 from '@angular/material/form-field';
+import * as i4 from '@angular/material/core';
 import { InjectionToken } from '@angular/core';
 import { MatFormField } from '@angular/material/form-field';
 import { MatFormFieldControl } from '@angular/material/form-field';
@@ -123,27 +122,7 @@ export class MatInputModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<MatInputModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<MatInputModule, [typeof i1.MatInput, typeof i2.MatTextareaAutosize], [typeof i3.TextFieldModule, typeof i4.MatFormFieldModule, typeof i5.MatCommonModule], [typeof i3.TextFieldModule, typeof i4.MatFormFieldModule, typeof i1.MatInput, typeof i2.MatTextareaAutosize]>;
-}
-
-// @public @deprecated
-export class MatTextareaAutosize extends CdkTextareaAutosize {
-    // (undocumented)
-    get matAutosize(): boolean;
-    set matAutosize(value: boolean);
-    // (undocumented)
-    get matAutosizeMaxRows(): number;
-    set matAutosizeMaxRows(value: number);
-    // (undocumented)
-    get matAutosizeMinRows(): number;
-    set matAutosizeMinRows(value: number);
-    // (undocumented)
-    get matTextareaAutosize(): boolean;
-    set matTextareaAutosize(value: boolean);
-    // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatTextareaAutosize, "textarea[mat-autosize], textarea[matTextareaAutosize]", ["matTextareaAutosize"], { "cdkAutosizeMinRows": "cdkAutosizeMinRows"; "cdkAutosizeMaxRows": "cdkAutosizeMaxRows"; "matAutosizeMinRows": "matAutosizeMinRows"; "matAutosizeMaxRows": "matAutosizeMaxRows"; "matAutosize": "mat-autosize"; "matTextareaAutosize": "matTextareaAutosize"; }, {}, never>;
-    // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatTextareaAutosize, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatInputModule, [typeof i1.MatInput], [typeof i2.TextFieldModule, typeof i3.MatFormFieldModule, typeof i4.MatCommonModule], [typeof i2.TextFieldModule, typeof i3.MatFormFieldModule, typeof i1.MatInput]>;
 }
 
 // (No @packageDocumentation comment for this package)

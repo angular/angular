@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './autosize';
 export * from './input';
 export * from './input-errors';
 export * from './input-module';

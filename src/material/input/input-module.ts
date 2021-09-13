@@ -10,11 +10,10 @@ import {TextFieldModule} from '@angular/cdk/text-field';
 import {NgModule} from '@angular/core';
 import {ErrorStateMatcher, MatCommonModule} from '@angular/material/core';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatTextareaAutosize} from './autosize';
 import {MatInput} from './input';
 
 @NgModule({
-  declarations: [MatInput, MatTextareaAutosize],
+  declarations: [MatInput],
   imports: [
     TextFieldModule,
     MatFormFieldModule,
@@ -26,7 +25,6 @@ import {MatInput} from './input';
     // be used together with `MatFormField`.
     MatFormFieldModule,
     MatInput,
-    MatTextareaAutosize,
   ],
   providers: [ErrorStateMatcher],
 })

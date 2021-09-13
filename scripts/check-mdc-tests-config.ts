@@ -76,10 +76,7 @@ export const config = {
       'should update the outline gap correctly if the direction changes multiple times',
       'should calculate the outline gaps inside the shadow DOM',
       'should be legacy appearance if no default options provided',
-      'should be legacy appearance if empty default options provided',
-      'should adjust height due to long placeholders',
-      'should work in a tab',
-      'should work in a step'
+      'should be legacy appearance if empty default options provided'
     ],
     'mdc-list': [
       // TODO: these tests need to be double-checked for missing functionality.

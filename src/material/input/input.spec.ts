@@ -43,12 +43,9 @@ import {
 } from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatStepperModule} from '@angular/material/stepper';
-import {MatTabsModule} from '@angular/material/tabs';
 import {Directionality, Direction} from '@angular/cdk/bidi';
 import {Subject} from 'rxjs';
 import {MatInputModule, MatInput, MAT_INPUT_VALUE_ACCESSOR} from './index';
-import {MatTextareaAutosize} from './autosize';
 
 describe('MatInput without forms', () => {
   it('should default to floating labels', fakeAsync(() => {
@@ -1703,44 +1700,6 @@ describe('MatFormField default options', () => {
 
 });
 
-describe('MatInput with textarea autosize', () => {
-  it('should adjust height due to long placeholders', () => {
-    const fixture = createComponent(AutosizeTextareaWithLongPlaceholder);
-    fixture.detectChanges();
-
-    const textarea = fixture.nativeElement.querySelector('textarea');
-    const autosize = fixture.componentInstance.autosize;
-
-    autosize.resizeToFitContent(true);
-
-    const heightWithLongPlaceholder = textarea.clientHeight;
-
-    fixture.componentInstance.placeholder = 'Short';
-    fixture.detectChanges();
-
-    autosize.resizeToFitContent(true);
-
-    expect(textarea.clientHeight)
-      .withContext('Expected the textarea height to be shorter with a long placeholder.')
-      .toBeLessThan(heightWithLongPlaceholder);
-  });
-
-  it('should work in a tab', () => {
-    const fixture = createComponent(AutosizeTextareaInATab, [], [MatTabsModule]);
-    fixture.detectChanges();
-    const textarea = fixture.nativeElement.querySelector('textarea');
-    expect(textarea.getBoundingClientRect().height).toBeGreaterThan(1);
-  });
-
-  it('should work in a step', () => {
-    const fixture = createComponent(AutosizeTextareaInAStep, [], [MatStepperModule]);
-    fixture.detectChanges();
-    const textarea = fixture.nativeElement.querySelector('textarea');
-    expect(textarea.getBoundingClientRect().height).toBeGreaterThan(1);
-  });
-});
-
-
 function createComponent<T>(component: Type<T>,
                             providers: Provider[] = [],
                             imports: any[] = [],
@@ -2181,57 +2140,6 @@ class MatInputWithOutlineInsideInvisibleElement {}
 class MatInputWithOutlineAppearanceInShadowDOM {
   @ViewChild('formField', {read: ElementRef}) formField: ElementRef<HTMLElement>;
 }
-
-
-// Styles to reset padding and border to make measurement comparisons easier.
-const textareaStyleReset = `
-    textarea {
-      padding: 0;
-      border: none;
-      overflow: auto;
-    }`;
-
-@Component({
-  template: `
-    <mat-form-field style="width: 100px" appearance="fill">
-      <textarea matInput matTextareaAutosize [placeholder]="placeholder"></textarea>
-    </mat-form-field>`,
-  styles: [textareaStyleReset],
-})
-class AutosizeTextareaWithLongPlaceholder {
-  placeholder = 'Long Long Long Long Long Long Long Long Placeholder';
-  @ViewChild(MatTextareaAutosize) autosize: MatTextareaAutosize;
-}
-
-@Component({
-  template: `
-    <mat-tab-group>
-      <mat-tab label="Tab 1">
-        <mat-form-field>
-          <textarea matInput matTextareaAutosize>
-            Blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-          </textarea>
-        </mat-form-field>
-      </mat-tab>
-    </mat-tab-group>
-  `
-})
-class AutosizeTextareaInATab {}
-
-@Component({
-  template: `
-    <mat-stepper>
-      <mat-step label="Step 1">
-        <mat-form-field>
-          <textarea matInput matTextareaAautosize>
-            Blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-          </textarea>
-        </mat-form-field>
-      </mat-step>
-    </mat-stepper>
-  `
-})
-class AutosizeTextareaInAStep {}
 
 @Component({
   template: `
