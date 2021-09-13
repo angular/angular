@@ -314,39 +314,6 @@ describe('Integration', () => {
        })));
   });
 
-
-  /**
-   * get/setTransition are private APIs. This test is needed though to guarantee the correct
-   * values are being used. Related to https://github.com/angular/angular/issues/30340 where
-   * stale transition data was being used when kicking off a new navigation.
-   */
-  describe('get/setTransition', () => {
-    it('should provide the most recent NavigationTransition',
-       fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
-         router.resetConfig([
-           {path: '', component: SimpleCmp}, {path: 'a', component: SimpleCmp},
-           {path: 'b', component: SimpleCmp}
-         ]);
-
-         const fixture = createRoot(router, RootCmp);
-
-         const initialTransition = (router as any).getTransition();
-
-         // Confirm initial value
-         expect(initialTransition.urlAfterRedirects.toString()).toBe('/');
-
-
-         router.navigateByUrl('/a', {replaceUrl: true});
-
-         tick();
-
-         // After a navigation, we should see the URL after redirect
-         const nextTransition = (router as any).getTransition();
-         // Confirm initial value
-         expect(nextTransition.urlAfterRedirects.toString()).toBe('/a');
-       })));
-  });
-
   describe('navigation warning', () => {
     const isInAngularZoneFn = NgZone.isInAngularZone;
     let warnings: string[] = [];
