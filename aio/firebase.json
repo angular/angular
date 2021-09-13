@@ -62,6 +62,7 @@
       {"type": 301, "source": "/docs/*/latest/guide/style-guide.html", "destination": "/guide/styleguide"},
       {"type": 301, "source": "/guide/bazel", "destination": "https://github.com/angular/angular/blob/master/packages/bazel/docs/BAZEL_SCHEMATICS.md"},
       {"type": 301, "source": "/guide/cli-quickstart", "destination": "/start"},
+      {"type": 301, "source": "/guide/i18n", "destination": "/guide/i18n-overview"},
       {"type": 301, "source": "/guide/service-worker-getstart", "destination": "/guide/service-worker-getting-started"},
       {"type": 301, "source": "/guide/service-worker-comm", "destination": "/guide/service-worker-communications"},
       {"type": 301, "source": "/guide/service-worker-configref", "destination": "/guide/service-worker-config"},
