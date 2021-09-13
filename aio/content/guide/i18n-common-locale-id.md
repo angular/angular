@@ -52,4 +52,4 @@ The build process (described in [Merge translations into the app][AioGuideI18nCo
 
 <!-- end links -->
 
-@reviewed 2021-08-23
+@reviewed 2021-09-15

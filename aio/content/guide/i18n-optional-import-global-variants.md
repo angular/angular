@@ -10,9 +10,7 @@ Global variants of the locale data are available in [`@angular/common/locales/gl
 
 The following example imports the global variants for French (`fr`).
 
-<code-example language="javascript" header="app.module.ts">
-import '@angular/common/locales/global/fr';
-</code-example>
+<code-example path="i18n/doc-files/app.module.ts" header="src/app/app.module.ts" region="global-locale"></code-example>
 
 <!-- links -->
 
@@ -25,4 +23,4 @@ import '@angular/common/locales/global/fr';
 
 <!-- end links -->
 
-@reviewed 2021-08-23
+@reviewed 2021-09-15
