@@ -1,4 +1,13 @@
-import { Component, ElementRef, HostBinding, HostListener, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostBinding,
+  HostListener,
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { DocumentContents, DocumentService } from 'app/documents/document.service';
 import { NotificationComponent } from 'app/layout/notification/notification.component';

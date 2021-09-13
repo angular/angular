@@ -135,12 +135,17 @@ describe('DocumentService', () => {
 
       httpMock.expectOne({}).flush(null, {status: 500, statusText: 'Server Error'});
       expect(latestDocument.id).toBe(FETCHING_ERROR_ID);
-      expect(latestDocument.contents?.toString()).toContain('We are unable to retrieve the "initial/doc" page at this time.');
+      expect(
+        latestDocument.contents?.toString()
+      ).toContain('We are unable to retrieve the "initial/doc" page at this time.');
       expect(logger.output.error).toEqual([
         [jasmine.any(Error)]
       ]);
       expect(logger.output.error[0][0].message)
-        .toEqual("Error fetching document 'initial/doc': (Http failure response for generated/docs/initial/doc.json: 500 Server Error)");
+        .toEqual(
+          'Error fetching document \'initial/doc\': ' +
+          '(Http failure response for generated/docs/initial/doc.json: 500 Server Error)'
+        );
 
       locationService.go('new/doc');
       httpMock.expectOne({}).flush(doc1);

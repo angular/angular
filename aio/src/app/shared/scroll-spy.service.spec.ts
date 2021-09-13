@@ -3,7 +3,12 @@ import { fakeAsync, tick } from '@angular/core/testing';
 import { DOCUMENT } from '@angular/common';
 
 import { ScrollService } from 'app/shared/scroll.service';
-import { ScrollItem, ScrollSpiedElement, ScrollSpiedElementGroup, ScrollSpyService } from 'app/shared/scroll-spy.service';
+import {
+  ScrollItem,
+  ScrollSpiedElement,
+  ScrollSpiedElementGroup,
+  ScrollSpyService,
+} from 'app/shared/scroll-spy.service';
 
 
 describe('ScrollSpiedElement', () => {

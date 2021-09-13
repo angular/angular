@@ -60,7 +60,9 @@ export interface WithCustomElementComponent {
 }
 
 /** Injection token to provide the element path modules. */
-export const ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN = new InjectionToken<Map<string, LoadChildrenCallback>>('aio/elements-map');
+export const ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN = new InjectionToken<
+  Map<string, LoadChildrenCallback>
+>('aio/elements-map');
 
 /** Map of possible custom element selectors to their lazy-loadable module paths. */
 export const ELEMENT_MODULE_LOAD_CALLBACKS = new Map<string, LoadChildrenCallback>();

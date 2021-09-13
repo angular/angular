@@ -51,7 +51,8 @@ export class TocComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.isEmbedded) {
       // We use the `asap` scheduler because updates to `activeItemIndex` are triggered by DOM changes,
       // which, in turn, are caused by the rendering that happened due to a ChangeDetection.
-      // Without asap, we would be updating the model while still in a ChangeDetection handler, which is disallowed by Angular.
+      // Without asap, we would be updating the model while still in a ChangeDetection handler,
+      // which is disallowed by Angular.
       combineLatest([
         this.tocService.activeItemIndex.pipe(subscribeOn(asapScheduler)),
         this.items.changes.pipe(startWith(this.items)),

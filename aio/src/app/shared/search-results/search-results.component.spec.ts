@@ -37,6 +37,7 @@ describe('SearchResultsComponent', () => {
 
   /** Get a full set of test results. "Take" what you need */
   beforeEach(() => {
+    /* eslint-disable max-len */
     apiD = { path: 'api/d', title: 'API D', deprecated: false, keywords: '', titleWords: '', type: '', topics: '' };
     apiC = { path: 'api/c', title: 'API C', deprecated: false, keywords: '', titleWords: '', type: '', topics: '' };
     guideA = { path: 'guide/a', title: 'Guide A', deprecated: false, keywords: '', titleWords: '', type: '', topics: '' };
@@ -52,9 +53,24 @@ describe('SearchResultsComponent', () => {
     guideL =  { path: 'guide/l', title: 'Guide l', deprecated: false, keywords: '', titleWords: '', type: '', topics: '' };
     guideM =  { path: 'guide/m', title: 'Guide m', deprecated: false, keywords: '', titleWords: '', type: '', topics: '' };
     guideN =  { path: 'guide/n', title: 'Guide n', deprecated: false, keywords: '', titleWords: '', type: '', topics: '' };
+    /* eslint-enable max-len */
 
     standardResults = [
-      guideA, apiD, guideB, guideAC, apiC, guideN, guideM, guideL, guideK, guideJ, guideI, guideH, guideG, guideF, guideE,
+      guideA,
+      apiD,
+      guideB,
+      guideAC,
+      apiC,
+      guideN,
+      guideM,
+      guideL,
+      guideK,
+      guideJ,
+      guideI,
+      guideH,
+      guideG,
+      guideF,
+      guideE,
     ];
   });
 
@@ -71,8 +87,24 @@ describe('SearchResultsComponent', () => {
   });
 
   it('should map the search results into groups based on their containing folder', () => {
-    const startA =  { path: 'start/a', title: 'Start A', deprecated: false, keywords: '', titleWords: '', type: '', topics: '' };
-    const tutorialA =  { path: 'tutorial/a', title: 'Tutorial A', deprecated: false, keywords: '', titleWords: '', type: '', topics: '' };
+    const startA = {
+      path: 'start/a',
+      title: 'Start A',
+      deprecated: false,
+      keywords: '',
+      titleWords: '',
+      type: '',
+      topics: '',
+    };
+    const tutorialA = {
+      path: 'tutorial/a',
+      title: 'Tutorial A',
+      deprecated: false,
+      keywords: '',
+      titleWords: '',
+      type: '',
+      topics: '',
+    };
 
     setSearchResults('', [guideA, apiD, guideB, startA, tutorialA]);
     expect(component.searchAreas).toEqual([
@@ -84,20 +116,92 @@ describe('SearchResultsComponent', () => {
 
   it('should special case results that are top level folders', () => {
     setSearchResults('', [
-      { path: 'docs', title: 'Docs introduction', type: '', keywords: '', titleWords: '', deprecated: false, topics: '' },
-      { path: 'start', title: 'Getting started', type: '', keywords: '', titleWords: '', deprecated: false, topics: '' },
-      { path: 'tutorial', title: 'Tutorial index', type: '', keywords: '', titleWords: '', deprecated: false, topics: '' },
-      { path: 'tutorial/toh-pt1', title: 'Tutorial - part 1', type: '', keywords: '', titleWords: '', deprecated: false, topics: '' },
+      {
+        path: 'docs',
+        title: 'Docs introduction',
+        type: '',
+        keywords: '',
+        titleWords: '',
+        deprecated: false,
+        topics: '',
+      },
+      {
+        path: 'start',
+        title: 'Getting started',
+        type: '',
+        keywords: '',
+        titleWords: '',
+        deprecated: false,
+        topics: '',
+      },
+      {
+        path: 'tutorial',
+        title: 'Tutorial index',
+        type: '',
+        keywords: '',
+        titleWords: '',
+        deprecated: false,
+        topics: '',
+      },
+      {
+        path: 'tutorial/toh-pt1',
+        title: 'Tutorial - part 1',
+        type: '',
+        keywords: '',
+        titleWords: '',
+        deprecated: false,
+        topics: '',
+      },
     ]);
     expect(component.searchAreas).toEqual([
-      { name: 'guides', priorityPages: [
-        { path: 'docs', title: 'Docs introduction', type: '', keywords: '', titleWords: '', deprecated: false, topics: '' },
-      ], pages: [] },
-      { name: 'tutorials', priorityPages: [
-        { path: 'start', title: 'Getting started', type: '', keywords: '', titleWords: '', deprecated: false, topics: '' },
-        { path: 'tutorial', title: 'Tutorial index', type: '', keywords: '', titleWords: '', deprecated: false, topics: '' },
-        { path: 'tutorial/toh-pt1', title: 'Tutorial - part 1', type: '', keywords: '', titleWords: '', deprecated: false, topics: '' },
-      ], pages: [] },
+      {
+        name: 'guides',
+        priorityPages: [
+          {
+            path: 'docs',
+            title: 'Docs introduction',
+            type: '',
+            keywords: '',
+            titleWords: '',
+            deprecated: false,
+            topics: '',
+          },
+        ],
+        pages: [],
+      },
+      {
+        name: 'tutorials',
+        priorityPages: [
+          {
+            path: 'start',
+            title: 'Getting started',
+            type: '',
+            keywords: '',
+            titleWords: '',
+            deprecated: false,
+            topics: '',
+          },
+          {
+            path: 'tutorial',
+            title: 'Tutorial index',
+            type: '',
+            keywords: '',
+            titleWords: '',
+            deprecated: false,
+            topics: '',
+          },
+          {
+            path: 'tutorial/toh-pt1',
+            title: 'Tutorial - part 1',
+            type: '',
+            keywords: '',
+            titleWords: '',
+            deprecated: false,
+            topics: '',
+          },
+        ],
+        pages: [],
+      },
     ]);
   });
 
@@ -154,6 +258,7 @@ describe('SearchResultsComponent', () => {
       guideE.deprecated = true;
       setSearchResults('something', standardResults);
     });
+    // eslint-disable-next-line max-len
     it('should include deprecated items in priority pages unless there are fewer than 5 non-deprecated priority pages', () => {
       // Priority pages do not include deprecated items:
       expect(component.searchAreas[1].priorityPages).not.toContain(guideAC);
@@ -195,7 +300,15 @@ describe('SearchResultsComponent', () => {
       component.resultSelected.subscribe((result: SearchResult) => selected = result);
 
       selected = null;
-      searchResult = { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '', deprecated: false, topics: '' };
+      searchResult = {
+        path: 'news',
+        title: 'News',
+        type: 'marketing',
+        keywords: '',
+        titleWords: '',
+        deprecated: false,
+        topics: '',
+      };
       setSearchResults('something', [searchResult]);
 
       fixture.detectChanges();
