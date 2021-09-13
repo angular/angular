@@ -78,14 +78,11 @@ $calendar-weekday-table-font-size: 11px !default;
     color: theming.get-color-from-palette($foreground, icon);
   }
 
-  .mat-calendar-table-header {
-    color: theming.get-color-from-palette($foreground, hint-text);
-  }
-
   .mat-calendar-table-header-divider::after {
     background: theming.get-color-from-palette($foreground, divider);
   }
 
+  .mat-calendar-table-header,
   .mat-calendar-body-label {
     color: theming.get-color-from-palette($foreground, secondary-text);
   }
