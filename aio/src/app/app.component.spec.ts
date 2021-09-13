@@ -967,7 +967,7 @@ describe('AppComponent', () => {
         jasmine.clock().tick(1);  // triggers the HTTP response for the document
         const toolbar = fixture.debugElement.query(By.css('.app-toolbar'));
 
-        // Initially, `isTransitoning` is true.
+        // Initially, `isTransitioning` is true.
         expect(component.isTransitioning).toBe(true);
         expect(toolbar.classes.transitioning).toBe(true);
 
@@ -976,7 +976,7 @@ describe('AppComponent', () => {
         expect(component.isTransitioning).toBe(false);
         expect(toolbar.classes.transitioning).toBeFalsy();
 
-        // While a document is being rendered, `isTransitoning` is set to true.
+        // While a document is being rendered, `isTransitioning` is set to true.
         triggerDocViewerEvent('docReady');
         fixture.detectChanges();
         expect(component.isTransitioning).toBe(true);
