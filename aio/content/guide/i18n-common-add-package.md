@@ -5,9 +5,7 @@
 
 To take advantage of the localization features of Angular, use the Angular CLI to add the `@angular/localize` package to your project.
 
-<code-example language="sh">
-ng add @angular/localize
-</code-example>
+<code-example path="i18n/doc-files/commands.sh" region="add-localize" language="sh"></code-example>
 
 This command updates the `package.json` and `polyfills.ts` files of your project to import the `@angular/localize` package.
 
@@ -27,4 +25,4 @@ If `@angular/localize` is not installed, the Angular CLI may generate an error w
 
 <!-- end links -->
 
-@reviewed 2021-08-23
+@reviewed 2021-09-15

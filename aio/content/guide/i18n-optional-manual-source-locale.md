@@ -12,7 +12,7 @@ To manually set the source locale of an application to one other than the automa
     
 The following example sets the value of `LOCALE_ID` to `fr` for French.
 
-<code-example path="i18n/doc-files/app.module.ts" header="src/app/app.module.ts"></code-example>
+<code-example path="i18n/doc-files/app.module.ts" header="src/app/app.module.ts" region="locale-id"></code-example>
 
 <!-- links -->
 
@@ -26,4 +26,4 @@ The following example sets the value of `LOCALE_ID` to `fr` for French.
 
 <!-- end links -->
 
-@reviewed 2021-08-23
+@reviewed 2021-09-15
