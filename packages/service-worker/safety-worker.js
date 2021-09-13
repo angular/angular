@@ -14,7 +14,13 @@ self.addEventListener('install', event => {
 
 self.addEventListener('activate', event => {
   event.waitUntil(self.clients.claim());
-  self.registration.unregister().then(() => {
+
+  event.waitUntil(self.registration.unregister().then(() => {
     console.log('NGSW Safety Worker - unregistered old service worker');
-  });
+  }));
+
+  event.waitUntil(caches.keys().then(cacheNames => {
+    const ngswCacheNames = cacheNames.filter(name => /^ngsw:/.test(name));
+    return Promise.all(ngswCacheNames.map(name => caches.delete(name)));
+  }));
 });
