@@ -10,27 +10,7 @@ To adjust the base `href` for each version of the application, the CLI adds the 
 Specify the `"baseHref"` for each locale in your workspace configuration file (`angular.json`).
 The following example displays `"baseHref"` set to an empty string.
 
-<code-example language="json" header="angular.json">
-...
-"projects": {
-    "angular.io-example": {
-        ...
-        "i18n": {
-            "sourceLocale": "en-US",
-            "locales": {
-                "fr": {
-                    "translation": "src/locale/messages.fr.xlf",
-                    "baseHref": ""
-                }
-            }
-        },
-        "architect": {
-            ...
-        }
-    ...
-    }
-}
-</code-example>
+<code-example language="json" header="angular.json" path="i18n/angular.json" region="i18n-baseHref" ></code-example>
 
 Also, to declare the base `href` at compile time, use the CLI `--baseHref` option with [`ng build`][AioCliBuild].
 
@@ -48,70 +28,13 @@ For more information on how to deploy apps to a remote server, see [Deployment][
 
 The following example displays an Nginx configuration.
 
-```nginx
-http {
-
-    # Browser preferred language detection (does NOT require
-    # AcceptLanguageModule)
-    map $http_accept_language $accept_language {
-        ~*^de de;
-        ~*^fr fr;
-        ~*^en en;
-    }
-    # ...
-}
-
-server {
-    listen 80;
-    server_name localhost;
-    root /www/data;
-
-    # Fallback to default language if no preference defined by browser
-    if ($accept_language ~ "^$") {
-        set $accept_language "fr";
-    }
-
-    # Redirect "/" to Angular application in the preferred language of the browser
-    rewrite ^/$ /$accept_language permanent;
-
-    # Everything under the Angular application is always redirected to Angular in the
-    # correct language
-    location ~ ^/(fr|de|en) {
-        try_files $uri /$1/index.html?$args;
-    }
-    # ...
-}
-```
+<code-example path="i18n/doc-files/nginx.conf" language="nginx"></code-example>
 
 #### Apache
 
 The following example displays an Apache configuration.
 
-```apache
-<VirtualHost *:80>
-    ServerName localhost
-    DocumentRoot /www/data
-    <Directory "/www/data">
-        RewriteEngine on
-        RewriteBase /
-        RewriteRule ^../index\.html$ - [L]
-
-        RewriteCond %{REQUEST_FILENAME} !-f
-        RewriteCond %{REQUEST_FILENAME} !-d
-        RewriteRule (..) $1/index.html [L]
-
-        RewriteCond %{HTTP:Accept-Language} ^de [NC]
-        RewriteRule ^$ /de/ [R]
-
-        RewriteCond %{HTTP:Accept-Language} ^en [NC]
-        RewriteRule ^$ /en/ [R]
-
-        RewriteCond %{HTTP:Accept-Language} !^en [NC]
-        RewriteCond %{HTTP:Accept-Language} !^de [NC]
-        RewriteRule ^$ /fr/ [R]
-    </Directory>
-</VirtualHost>
-```
+<code-example path="i18n/doc-files/apache2.conf" language="apache"></code-example>
 
 <!-- links -->
 
@@ -123,4 +46,4 @@ The following example displays an Apache configuration.
 
 <!-- end links -->
 
-@reviewed 2021-08-23
+@reviewed 2021-09-15

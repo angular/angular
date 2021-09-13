@@ -25,4 +25,4 @@ For details, see [How to approach internationalization][ThinkwithgoogleMarketfin
 
 <!-- end links -->
 
-@reviewed 2021-08-23
+@reviewed 2021-09-15
