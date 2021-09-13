@@ -52,7 +52,7 @@ export class ElementsLoader {
       // Load and register the custom element (for the first time).
       const modulePathLoader = this.elementsToLoad.get(selector) as LoadChildrenCallback;
       const loadedAndRegistered =
-          (modulePathLoader() as Promise<NgModuleFactory<WithCustomElementComponent> | Type<WithCustomElementComponent>>)
+        (modulePathLoader() as Promise<NgModuleFactory<WithCustomElementComponent> | Type<WithCustomElementComponent>>)
           .then(elementModuleOrFactory => {
             /**
              * With View Engine, the NgModule factory is created and provided when loaded.

@@ -431,8 +431,14 @@ describe('AppComponent', () => {
         await setupSelectorForTesting();
         locationService.urlSubject.next('docs#section-1');
         const versionWithoutSlashIndex = component.docVersions.length;
-        const versionWithoutSlashUrl = component.docVersions[versionWithoutSlashIndex] = { url: 'https://next.angular.io', title: 'foo' };
-        selectElement.triggerEventHandler('change', { option: versionWithoutSlashUrl, index: versionWithoutSlashIndex });
+        const versionWithoutSlashUrl = (component.docVersions[versionWithoutSlashIndex] = {
+          url: 'https://next.angular.io',
+          title: 'foo',
+        });
+        selectElement.triggerEventHandler('change', {
+          option: versionWithoutSlashUrl,
+          index: versionWithoutSlashIndex,
+        });
         expect(locationService.go).toHaveBeenCalledWith('https://next.angular.io/docs#section-1');
       });
     });
@@ -589,7 +595,10 @@ describe('AppComponent', () => {
     });
 
     describe('restrainScrolling()', () => {
-      const preventedScrolling = (currentTarget: { scrollTop: number, scrollHeight?: number, clientHeight?: number }, deltaY: number) => {
+      const preventedScrolling = (
+        currentTarget: {scrollTop: number, scrollHeight?: number, clientHeight?: number},
+        deltaY: number
+      ) => {
         const evt = {
           deltaY,
           currentTarget,
@@ -780,15 +789,20 @@ describe('AppComponent', () => {
 
       describe('keyup handling', () => {
         it('should grab focus when the / key is pressed', () => {
-          const searchBox: SearchBoxComponent = fixture.debugElement.query(By.directive(SearchBoxComponent)).componentInstance;
+          const searchBox: SearchBoxComponent = fixture.debugElement.query(
+            By.directive(SearchBoxComponent)
+          ).componentInstance;
           spyOn(searchBox, 'focus');
           window.document.dispatchEvent(new KeyboardEvent('keyup', { key: '/' }));
           fixture.detectChanges();
           expect(searchBox.focus).toHaveBeenCalled();
         });
 
+        // eslint-disable-next-line max-len
         it('should set focus back to the search box when the search results are displayed and the escape key is pressed', () => {
-          const searchBox: SearchBoxComponent = fixture.debugElement.query(By.directive(SearchBoxComponent)).componentInstance;
+          const searchBox: SearchBoxComponent = fixture.debugElement.query(
+            By.directive(SearchBoxComponent)
+          ).componentInstance;
           spyOn(searchBox, 'focus');
           component.showSearchResults = true;
           window.document.dispatchEvent(new KeyboardEvent('keyup', { key: 'Escape' }));
@@ -809,7 +823,15 @@ describe('AppComponent', () => {
           const searchService = TestBed.inject(SearchService) as Partial<SearchService> as MockSearchService;
 
           const results = [
-            { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '', deprecated: false, topics: '' }
+            {
+              path: 'news',
+              title: 'News',
+              type: 'marketing',
+              keywords: '',
+              titleWords: '',
+              deprecated: false,
+              topics: '',
+            },
           ];
 
           searchService.searchResults.next({ query: 'something', results });

@@ -130,8 +130,14 @@ export class TocService {
 }
 
 // Helpers
-function querySelectorAll<K extends keyof HTMLElementTagNameMap>(parent: Element, selector: K): HTMLElementTagNameMap[K][];
-function querySelectorAll<K extends keyof SVGElementTagNameMap>(parent: Element, selector: K): SVGElementTagNameMap[K][];
+function querySelectorAll<K extends keyof HTMLElementTagNameMap>(
+  parent: Element,
+  selector: K
+): HTMLElementTagNameMap[K][];
+function querySelectorAll<K extends keyof SVGElementTagNameMap>(
+  parent: Element,
+  selector: K
+): SVGElementTagNameMap[K][];
 function querySelectorAll<E extends Element = Element>(parent: Element, selector: string): E[];
 function querySelectorAll(parent: Element, selector: string) {
   // Wrap the `NodeList` as a regular `Array` to have access to array methods.
