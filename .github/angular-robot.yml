@@ -66,6 +66,7 @@ merge:
       - '**/package.json'
       - '**/third_party/**'
       - '**/tsconfig-build.json'
+      - '**/tsconfig-tsec.json'
       - '**/tsconfig.json'
       - '**/rollup.config.js'
       - '**/BUILD.bazel'
