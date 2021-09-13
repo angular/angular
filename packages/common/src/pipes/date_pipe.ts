@@ -27,7 +27,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * Only the `en-US` locale data comes with Angular. To localize dates
  * in another language, you must import the corresponding locale data.
- * See the [I18n guide](guide/i18n#i18n-pipes) for more information.
+ * See the [I18n guide](guide/i18n-common-format-data-locale) for more information.
  *
  * @see `formatDate()`
  *
@@ -178,7 +178,7 @@ export class DatePipe implements PipeTransform {
    * When not supplied, uses the end-user's local system timezone.
    * @param locale A locale code for the locale format rules to use.
    * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
-   * See [Setting your app locale](guide/i18n#setting-up-the-locale-of-your-app).
+   * See [Setting your app locale](guide/i18n-common-locale-id).
    * @returns A date string in the desired format.
    */
   transform(value: Date|string|number, format?: string, timezone?: string, locale?: string): string
