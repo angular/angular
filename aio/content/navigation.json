@@ -371,9 +371,92 @@
           ]
         },
         {
-          "url": "guide/i18n",
-          "title": "Internationalization (i18n)",
-          "tooltip": "Translate the app's template text into multiple languages."
+          "title": "Internationalization",
+          "tooltip": "Translate the text of your application text into multiple languages",
+          "children": [
+            {
+              "url": "guide/i18n-overview",
+              "title": "Overview",
+              "tooltip": "Introduces the Angular Internationalization and lists topics that teach you how to localize your applications"
+            },
+            {
+              "title": "Common Internationalization tasks",
+              "tooltip": "Task-based content on many of the common tasks associated with Angular Internationalization, such as adding the locale package and formatting data for a locale",
+              "children": [
+                {
+                  "url": "guide/i18n-common",
+                  "title": "Common Internationalization tasks",
+                  "tooltip": "Introduction"
+                },
+                {
+                  "url": "guide/i18n-common-add-package",
+                  "title": "Add the localize package",
+                  "tooltip": "Add the Angular localize package"
+                },
+                {
+                  "url": "guide/i18n-common-locale-id",
+                  "title": "Refer to locales by ID",
+                  "tooltip": "Reference using locale IDs"
+                },
+                {
+                  "url": "guide/i18n-common-format-data-locale",
+                  "title": "Format data based on locale",
+                  "tooltip": "Format data based on locale"
+                },
+                {
+                  "url": "guide/i18n-common-prepare",
+                  "title": "Prepare templates for translations",
+                  "tooltip": "Prepare content for translation"
+                },
+                {
+                  "url": "guide/i18n-common-translation-files",
+                  "title": "Work the translation files",
+                  "tooltip": "Work the translation files"
+                },
+                {
+                  "url": "guide/i18n-common-merge",
+                  "title": "Merge translations into the app",
+                  "tooltip": "Mearge translations into your app"
+                },
+                {
+                  "url": "guide/i18n-common-deploy",
+                  "title": "Deploy multiple locales",
+                  "tooltip": "Deploy multiple locale for your app"
+                }
+              ]
+            },
+            {
+              "url": "guide/i18n-example",
+              "title": "Example Angular application",
+              "tooltip": "Example of a translated Angular application"
+            },
+            {
+              "title": "Optional Internationalization practices",
+              "tooltip": "Task-based content on many of the optional pratices associated with Angular Internationalization",
+              "children": [
+                {
+                  "url": "guide/i18n-optional",
+                  "title": "Optional Internationalization practices",
+                  "tooltip": "Introduction"
+                },
+                {
+                  "url": "guide/i18n-optional-manual-source-locale",
+                  "title": "Set the source locale manually",
+                  "tooltip": "Set the source locale manually"
+                },
+                {
+                  "url": "guide/i18n-optional-import-global-variants",
+                  "title": "Import global variants of the locale data",
+                  "tooltip": "Import global variants of the locale data"
+                },
+                {
+                  "url": "guide/i18n-optional-manage-marked-text",
+                  "title": "Manage marked text with custom IDs",
+                  "tooltip": "Manage marked text with custom IDs"
+                }
+              ]
+            }
+          ]
         },
         {
           "title": "Animations",
