@@ -21,7 +21,7 @@ export function recognize(
     relativeLinkResolution: 'legacy'|'corrected'): MonoTypeOperatorFunction<NavigationTransition> {
   return mergeMap(
       t => recognizeFn(
-               rootComponentType, config, t.urlAfterRedirects, serializer(t.urlAfterRedirects),
+               rootComponentType, config, t.urlAfterRedirects!, serializer(t.urlAfterRedirects!),
                paramsInheritanceStrategy, relativeLinkResolution)
                .pipe(map(targetSnapshot => ({...t, targetSnapshot}))));
 }
