@@ -61,24 +61,15 @@ export interface CanColor {
     defaultColor: ThemePalette | undefined;
 }
 
-// @public @deprecated
-export type CanColorCtor = Constructor<CanColor> & AbstractConstructor<CanColor>;
-
 // @public
 export interface CanDisable {
     disabled: boolean;
 }
 
-// @public @deprecated
-export type CanDisableCtor = Constructor<CanDisable> & AbstractConstructor<CanDisable>;
-
 // @public
 export interface CanDisableRipple {
     disableRipple: boolean;
 }
-
-// @public @deprecated
-export type CanDisableRippleCtor = Constructor<CanDisableRipple> & AbstractConstructor<CanDisableRipple>;
 
 // @public
 export interface CanUpdateErrorState {
@@ -87,9 +78,6 @@ export interface CanUpdateErrorState {
     readonly stateChanges: Subject<void>;
     updateErrorState(): void;
 }
-
-// @public @deprecated
-export type CanUpdateErrorStateCtor = Constructor<CanUpdateErrorState> & AbstractConstructor<CanUpdateErrorState>;
 
 // @public
 export function _countGroupLabelsBeforeOption(optionIndex: number, options: QueryList<MatOption>, optionGroups: QueryList<MatOptgroup>): number;
@@ -165,17 +153,11 @@ export interface HasInitialized {
     _markInitialized: () => void;
 }
 
-// @public @deprecated
-export type HasInitializedCtor = Constructor<HasInitialized>;
-
 // @public
 export interface HasTabIndex {
     defaultTabIndex: number;
     tabIndex: number;
 }
-
-// @public @deprecated
-export type HasTabIndexCtor = Constructor<HasTabIndex> & AbstractConstructor<HasTabIndex>;
 
 // @public (undocumented)
 export const MAT_DATE_FORMATS: InjectionToken<MatDateFormats>;

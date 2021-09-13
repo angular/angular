@@ -36,7 +36,6 @@ import {
 } from '@angular/forms';
 import {
   CanUpdateErrorState,
-  CanUpdateErrorStateCtor,
   ErrorStateMatcher,
   mixinErrorState,
 } from '@angular/material-experimental/mdc-core';
@@ -74,8 +73,7 @@ class MatChipGridBase extends MatChipSet {
     super(_elementRef, _changeDetectorRef, _dir);
   }
 }
-const _MatChipGridMixinBase: CanUpdateErrorStateCtor & typeof MatChipGridBase =
-    mixinErrorState(MatChipGridBase);
+const _MatChipGridMixinBase = mixinErrorState(MatChipGridBase);
 
 /**
  * An extension of the MatChipSet component used with MatChipRow chips and

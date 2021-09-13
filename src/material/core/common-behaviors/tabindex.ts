@@ -20,12 +20,7 @@ export interface HasTabIndex {
   defaultTabIndex: number;
 }
 
-/**
- * @docs-private
- * @deprecated No longer necessary to apply to mixin classes. To be made private.
- * @breaking-change 13.0.0
- */
-export type HasTabIndexCtor = Constructor<HasTabIndex> & AbstractConstructor<HasTabIndex>;
+type HasTabIndexCtor = Constructor<HasTabIndex> & AbstractConstructor<HasTabIndex>;
 
 /** Mixin to augment a directive with a `tabIndex` property. */
 export function mixinTabIndex<T extends AbstractConstructor<CanDisable>>(base: T,

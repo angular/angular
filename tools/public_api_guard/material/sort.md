@@ -15,7 +15,6 @@ import { ElementRef } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import { FocusMonitor } from '@angular/cdk/a11y';
 import { HasInitialized } from '@angular/material/core';
-import { HasInitializedCtor } from '@angular/material/core';
 import * as i0 from '@angular/core';
 import * as i3 from '@angular/common';
 import * as i4 from '@angular/material/core';

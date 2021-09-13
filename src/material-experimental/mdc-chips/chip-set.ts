@@ -22,7 +22,7 @@ import {
   QueryList,
   ViewEncapsulation
 } from '@angular/core';
-import {HasTabIndex, HasTabIndexCtor, mixinTabIndex} from '@angular/material-experimental/mdc-core';
+import {HasTabIndex, mixinTabIndex} from '@angular/material-experimental/mdc-core';
 import {deprecated} from '@material/chips';
 import {merge, Observable, Subject, Subscription} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';
@@ -40,8 +40,7 @@ abstract class MatChipSetBase {
   abstract disabled: boolean;
   constructor(_elementRef: ElementRef) {}
 }
-const _MatChipSetMixinBase: HasTabIndexCtor & typeof MatChipSetBase =
-    mixinTabIndex(MatChipSetBase);
+const _MatChipSetMixinBase = mixinTabIndex(MatChipSetBase);
 
 /**
  * Basic container component for the MatChip component.

@@ -10,9 +10,7 @@ import {BooleanInput, NumberInput} from '@angular/cdk/coercion';
 import {ChangeDetectorRef, Directive, ElementRef, InjectionToken, OnDestroy} from '@angular/core';
 import {
   CanDisable,
-  CanDisableCtor,
   HasTabIndex,
-  HasTabIndexCtor,
   mixinDisabled,
   mixinTabIndex,
 } from '@angular/material-experimental/mdc-core';
@@ -143,11 +141,7 @@ class MatChipRemoveBase extends MatChipTrailingIcon {
   }
 }
 
-const _MatChipRemoveMixinBase:
-  CanDisableCtor &
-  HasTabIndexCtor &
-  typeof MatChipRemoveBase =
-    mixinTabIndex(mixinDisabled(MatChipRemoveBase), 0);
+const _MatChipRemoveMixinBase = mixinTabIndex(mixinDisabled(MatChipRemoveBase), 0);
 
 /**
  * Directive to remove the parent chip when the trailing icon is clicked or
