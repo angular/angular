@@ -110,7 +110,9 @@ describe('TocComponent', () => {
       describe('when fewer than `maxPrimary` TocItems', () => {
 
         beforeEach(() => {
-          tocService.tocList.next([tocItem('Heading A'), tocItem('Heading B'), tocItem('Heading C'), tocItem('Heading D')]);
+          tocService.tocList.next(
+            [ tocItem('Heading A'), tocItem('Heading B'), tocItem('Heading C'), tocItem('Heading D') ]
+          );
           fixture.detectChanges();
           page = setPage();
         });

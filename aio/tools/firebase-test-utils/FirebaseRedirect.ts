@@ -20,8 +20,14 @@ export class FirebaseRedirect {
       return undefined;
     }
 
-    const namedReplacers = this.source.namedGroups.map<[RegExp, string]>(name => [ XRegExp(`:${name}`, 'g'), match[name] ]);
-    const restReplacers = this.source.restNamedGroups.map<[RegExp, string]>(name => [ XRegExp(`:${name}\\*`, 'g'), match[name] ]);
+    const namedReplacers = this.source.namedGroups.map<[RegExp, string]>((name) => [
+      XRegExp(`:${name}`, 'g'),
+      match[name],
+    ]);
+    const restReplacers = this.source.restNamedGroups.map<[RegExp, string]>((name) => [
+      XRegExp(`:${name}\\*`, 'g'),
+      match[name],
+    ]);
     return XRegExp.replaceEach(this.destination, [...namedReplacers, ...restReplacers]);
   }
 }

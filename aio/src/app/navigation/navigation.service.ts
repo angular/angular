@@ -9,7 +9,14 @@ import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
 
 // Import and re-export the Navigation model types
 import { CurrentNodes, NavigationNode, NavigationResponse, NavigationViews, VersionInfo } from './navigation.model';
-export { CurrentNodes, CurrentNode, NavigationNode, NavigationResponse, NavigationViews, VersionInfo } from './navigation.model';
+export {
+  CurrentNodes,
+  CurrentNode,
+  NavigationNode,
+  NavigationResponse,
+  NavigationViews,
+  VersionInfo,
+} from './navigation.model';
 
 export const navigationPath = CONTENT_URL_PREFIX + 'navigation.json';
 
@@ -46,8 +53,8 @@ export class NavigationService {
    * We create an observable by calling `http.get` but then publish it to share the result
    * among multiple subscribers, without triggering new requests.
    * We use `publishLast` because once the http request is complete the request observable completes.
-   * If you use `publish` here then the completed request observable will cause the subscribed observables to complete too.
-   * We `connect` to the published observable to trigger the request immediately.
+   * If you use `publish` here then the completed request observable will cause the subscribed
+   * observables to complete too. We `connect` to the published observable to trigger the request immediately.
    * We could use `.refCount` here but then if the subscribers went from 1 -> 0 -> 1 then you would get
    * another request to the server.
    * We are not storing the subscription from connecting as we do not expect this service to be destroyed.

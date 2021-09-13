@@ -11,20 +11,22 @@ import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
         <div class="card-front" (click)="flipCard(person)" (keyup.enter)="flipCard(person)">
             <h3>{{person.name}}</h3>
 
-            <div class="contributor-image" [style.background-image]="'url('+pictureBase+(person.picture || noPicture)+')'">
-                <div class="contributor-info">
-                    <a *ngIf="person.bio" mat-button class="info-item">
-                        View Bio
-                    </a>
-                    <a *ngIf="person.twitter" mat-icon-button class="info-item icon"
-                        href="https://twitter.com/{{person.twitter}}" target="_blank" (click)="$event.stopPropagation()">
-                        <mat-icon svgIcon="logos:twitter"></mat-icon>
-                    </a>
-                    <a *ngIf="person.website" mat-icon-button class="info-item icon"
-                        href="{{person.website}}" target="_blank" (click)="$event.stopPropagation()">
-                        <mat-icon class="link-icon">link</mat-icon>
-                    </a>
-                </div>
+            <div class="contributor-image"
+                 [style.background-image]="'url('+pictureBase+(person.picture || noPicture)+')'">
+                 <div class="contributor-info">
+                     <a *ngIf="person.bio" mat-button class="info-item">
+                         View Bio
+                     </a>
+                     <a *ngIf="person.twitter" mat-icon-button class="info-item icon"
+                         href="https://twitter.com/{{person.twitter}}"
+                         target="_blank" (click)="$event.stopPropagation()">
+                         <mat-icon svgIcon="logos:twitter"></mat-icon>
+                     </a>
+                     <a *ngIf="person.website" mat-icon-button class="info-item icon"
+                         href="{{person.website}}" target="_blank" (click)="$event.stopPropagation()">
+                         <mat-icon class="link-icon">link</mat-icon>
+                     </a>
+                 </div>
             </div>
         </div>
 
