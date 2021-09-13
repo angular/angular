@@ -68,7 +68,7 @@ export interface TranslateFn {
  * ```
  *
  * This format is the same as that used for `i18n` markers in Angular templates. See the
- * [Angular 18n guide](guide/i18n#mark-text-for-translations).
+ * [Angular 18n guide](guide/i18n-common-prepare#mark-text-for-translations).
  *
  * **Naming placeholders**
  *
