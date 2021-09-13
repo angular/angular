@@ -326,8 +326,9 @@ essentially self-destructing.
 
 Also included in the `@angular/service-worker` NPM package is a small
 script `safety-worker.js`, which when loaded will unregister itself
-from the browser. This script can be used as a last resort to get rid
-of unwanted service workers already installed on client pages.
+from the browser and remove the service worker caches. This script can
+be used as a last resort to get rid of unwanted service workers already 
+installed on client pages.
 
 It's important to note that you cannot register this worker directly,
 as old clients with cached state may not see a new `index.html` which
@@ -339,8 +340,8 @@ most sites, this means that you should serve the safety worker at the
 old Service Worker URL forever.
 
 This script can be used both to deactivate `@angular/service-worker`
-as well as any other Service Workers which might have been served in
-the past on your site.
+(and remove the corresponding caches) as well as any other Service
+Workers which might have been served in the past on your site.
 
 ### Changing your app's location
 
