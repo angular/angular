@@ -9,7 +9,7 @@ For more information see the [universal guide](guide/universal).
 Once SSR is added, run the following command:
 
 <code-example language="sh">
-npm run prerender
+ng run prerender
 </code-example>
 
 ### Build options for prerendering
