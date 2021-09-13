@@ -64,7 +64,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
  *
- * See [Setting your app locale](guide/i18n#setting-up-the-locale-of-your-app).
+ * See [Setting your app locale](guide/i18n-common-locale-id).
  *
  * ### Example
  *
@@ -146,7 +146,7 @@ export class PercentPipe implements PipeTransform {
    * Default is `0`.
    * @param locale A locale code for the locale format rules to use.
    * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
-   * See [Setting your app locale](guide/i18n#setting-up-the-locale-of-your-app).
+   * See [Setting your app locale](guide/i18n-common-locale-id).
    */
   transform(value: number|string|null|undefined, digitsInfo?: string, locale?: string): string
       |null {
@@ -177,7 +177,7 @@ export class PercentPipe implements PipeTransform {
  * The default currency code is currently always `USD` but this is deprecated from v9.
  *
  * **In v11 the default currency code will be taken from the current locale identified by
- * the `LOCALE_ID` token. See the [i18n guide](guide/i18n#setting-up-the-locale-of-your-app) for
+ * the `LOCALE_ID` token. See the [i18n guide](guide/i18n-common-locale-id) for
  * more information.**
  *
  * If you need the previous behavior then set it by creating a `DEFAULT_CURRENCY_CODE` provider in
@@ -250,7 +250,7 @@ export class CurrencyPipe implements PipeTransform {
    * For example, the Canadian dollar has 2 digits, whereas the Chilean peso has none.
    * @param locale A locale code for the locale format rules to use.
    * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
-   * See [Setting your app locale](guide/i18n#setting-up-the-locale-of-your-app).
+   * See [Setting your app locale](guide/i18n-common-locale-id).
    */
   transform(
       value: number|string|null|undefined, currencyCode: string = this._defaultCurrencyCode,
