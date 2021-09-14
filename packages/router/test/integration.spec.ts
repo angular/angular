@@ -1288,23 +1288,16 @@ describe('Integration', () => {
          const fixture = createRoot(router, RootCmp);
 
          router.resetConfig([
-           {path: 'blocked', component: SimpleCmp, canActivate: [RedirectingGuard]},
+           {path: 'blocked', component: BlankCmp, canActivate: [RedirectingGuard]},
            {path: 'simple', component: SimpleCmp}
          ]);
          router.navigateByUrl('/simple');
          advance(fixture);
 
-         const recordedEvents = [] as Event[];
-         router.events.forEach(e => onlyNavigationStartAndEnd(e) && recordedEvents.push(e));
-
          location.simulateHashChange('/blocked');
 
          advance(fixture);
-         expectEvents(recordedEvents, [
-           [NavigationStart, '/blocked'],
-           [NavigationStart, '/simple'],
-           [NavigationEnd, '/simple'],
-         ]);
+         expect(fixture.nativeElement.innerHTML).toContain('simple');
        }));
   });
 

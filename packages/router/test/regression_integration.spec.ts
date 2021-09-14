@@ -8,10 +8,12 @@
 
 import {CommonModule, Location} from '@angular/common';
 import {SpyLocation} from '@angular/common/testing';
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, NgModule, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Injectable, NgModule, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {Router} from '@angular/router';
+import {Resolve, Router} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
+import {of} from 'rxjs';
+import {delay, mapTo} from 'rxjs/operators';
 
 describe('Integration', () => {
   describe('routerLinkActive', () => {
@@ -238,13 +240,16 @@ describe('Integration', () => {
          @Component({template: 'simple'})
          class SimpleCmp {
          }
+         @Component({template: 'one'})
+         class OneCmp {
+         }
 
          TestBed.configureTestingModule({
            imports: [RouterTestingModule.withRoutes([
              {path: '', component: SimpleCmp},
-             {path: 'one', component: SimpleCmp, canActivate: ['returnRootUrlTree']}
+             {path: 'one', component: OneCmp, canActivate: ['returnRootUrlTree']}
            ])],
-           declarations: [SimpleCmp, RootCmp],
+           declarations: [SimpleCmp, RootCmp, OneCmp],
            providers: [
              {
                provide: 'returnRootUrlTree',
@@ -267,8 +272,72 @@ describe('Integration', () => {
          advance(fixture);
 
          expect(location.path()).toEqual('/');
-         const urlChanges = ['replace: /', 'hash: /one', 'replace: /'];
-         expect(location.urlChanges).toEqual(urlChanges);
+         expect(fixture.nativeElement.innerHTML).toContain('one');
+       }));
+  });
+
+  describe('duplicate navigation handling (#43447, #43446)', () => {
+    let location: SpyLocation;
+    let router: Router;
+    let fixture: ComponentFixture<{}>;
+
+    beforeEach(fakeAsync(() => {
+      @Injectable()
+      class DelayedResolve implements Resolve<{}> {
+        resolve() {
+          return of('').pipe(delay(1000), mapTo(true));
+        }
+      }
+      @Component({selector: 'root-cmp', template: `<router-outlet></router-outlet>`})
+      class RootCmp {
+      }
+
+      @Component({template: 'simple'})
+      class SimpleCmp {
+      }
+      @Component({template: 'one'})
+      class OneCmp {
+      }
+      TestBed.configureTestingModule({
+        imports: [RouterTestingModule.withRoutes(
+            [
+              {path: '', component: SimpleCmp},
+              {path: 'one', component: OneCmp, resolve: {x: DelayedResolve}}
+            ],
+            {useHash: true})],
+        declarations: [SimpleCmp, RootCmp, OneCmp],
+        providers: [DelayedResolve],
+      });
+
+      router = TestBed.inject(Router);
+      location = TestBed.inject(Location) as SpyLocation;
+
+      router.navigateByUrl('/');
+      // Will setup location change listeners
+      fixture = createRoot(router, RootCmp);
+    }));
+
+    it('duplicate navigation to same url', fakeAsync(() => {
+         location.simulateHashChange('/one');
+         tick(100);
+         location.simulateHashChange('/one');
+         tick(1000);
+         advance(fixture);
+
+         expect(location.path()).toEqual('/one');
+         expect(fixture.nativeElement.innerHTML).toContain('one');
+       }));
+
+    it('works with a duplicate popstate/hashchange navigation (as seen in firefox)',
+       fakeAsync(() => {
+         (location as any)._subject.emit({'url': 'one', 'pop': true, 'type': 'popstate'});
+         tick(1);
+         (location as any)._subject.emit({'url': 'one', 'pop': true, 'type': 'hashchange'});
+         tick(1000);
+         advance(fixture);
+
+         expect(router.routerState.toString()).toContain(`url:'one'`);
+         expect(fixture.nativeElement.innerHTML).toContain('one');
        }));
   });
 });
