@@ -416,7 +416,7 @@
                 {
                   "url": "guide/i18n-common-merge",
                   "title": "Merge translations into the app",
-                  "tooltip": "Mearge translations into your app"
+                  "tooltip": "Merge translations into your app"
                 },
                 {
                   "url": "guide/i18n-common-deploy",
