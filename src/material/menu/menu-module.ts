@@ -16,30 +16,22 @@ import {MatMenuContent} from './menu-content';
 import {MatMenuItem} from './menu-item';
 import {MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER, MatMenuTrigger} from './menu-trigger';
 
-/**
- * Used by both the current `MatMenuModule` and the MDC `MatMenuModule`
- * to declare the menu-related directives.
- */
-@NgModule({
-  exports: [MatMenuTrigger, MatMenuContent, MatCommonModule],
-  declarations: [
-    MatMenuTrigger,
-    MatMenuContent,
-  ],
-  providers: [MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER]
-})
-export class _MatMenuDirectivesModule {}
-
 @NgModule({
   imports: [
     CommonModule,
     MatCommonModule,
     MatRippleModule,
     OverlayModule,
-    _MatMenuDirectivesModule,
   ],
-  exports: [CdkScrollableModule, MatCommonModule, MatMenu, MatMenuItem, _MatMenuDirectivesModule],
-  declarations: [MatMenu, MatMenuItem],
+  exports: [
+    CdkScrollableModule,
+    MatCommonModule,
+    MatMenu,
+    MatMenuItem,
+    MatMenuTrigger,
+    MatMenuContent
+  ],
+  declarations: [MatMenu, MatMenuItem, MatMenuTrigger, MatMenuContent],
   providers: [MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER]
 })
 export class MatMenuModule {}

@@ -18,7 +18,7 @@ import {
 export class MatMenuHarness extends _MatMenuHarnessBase<
   typeof MatMenuItemHarness, MatMenuItemHarness, MenuItemHarnessFilters> {
   /** The selector for the host element of a `MatMenu` instance. */
-  static hostSelector = '.mat-menu-trigger';
+  static hostSelector = '.mat-mdc-menu-trigger';
   protected _itemClass = MatMenuItemHarness;
 
   /**

@@ -20,8 +20,8 @@ import {
   Overlay,
   OverlayConfig,
   OverlayRef,
-  VerticalConnectionPos,
   ScrollStrategy,
+  VerticalConnectionPos,
 } from '@angular/cdk/overlay';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {
@@ -29,6 +29,8 @@ import {
   Directive,
   ElementRef,
   EventEmitter,
+  HostBinding,
+  HostListener,
   Inject,
   InjectionToken,
   Input,
@@ -41,10 +43,10 @@ import {
 import {normalizePassiveListenerOptions} from '@angular/cdk/platform';
 import {asapScheduler, merge, Observable, of as observableOf, Subscription} from 'rxjs';
 import {delay, filter, take, takeUntil} from 'rxjs/operators';
-import {MenuCloseReason, _MatMenuBase} from './menu';
+import {_MatMenuBase, MenuCloseReason} from './menu';
 import {throwMatMenuMissingError, throwMatMenuRecursiveError} from './menu-errors';
 import {MatMenuItem} from './menu-item';
-import {MatMenuPanel, MAT_MENU_PANEL} from './menu-panel';
+import {MAT_MENU_PANEL, MatMenuPanel} from './menu-panel';
 import {MenuPositionX, MenuPositionY} from './menu-positions';
 
 /** Injection token that determines the scroll handling while the menu is open. */
@@ -71,21 +73,8 @@ const passiveEventListenerOptions = normalizePassiveListenerOptions({passive: tr
 
 // TODO(andrewseguin): Remove the kebab versions in favor of camelCased attribute selectors
 
-/** Directive applied to an element that should trigger a `mat-menu`. */
-@Directive({
-  selector: `[mat-menu-trigger-for], [matMenuTriggerFor]`,
-  host: {
-    'class': 'mat-menu-trigger',
-    'aria-haspopup': 'true',
-    '[attr.aria-expanded]': 'menuOpen || null',
-    '[attr.aria-controls]': 'menuOpen ? menu.panelId : null',
-    '(mousedown)': '_handleMousedown($event)',
-    '(keydown)': '_handleKeydown($event)',
-    '(click)': '_handleClick($event)',
-  },
-  exportAs: 'matMenuTrigger'
-})
-export class MatMenuTrigger implements AfterContentInit, OnDestroy {
+@Directive()
+export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy {
   private _portal: TemplatePortal;
   private _overlayRef: OverlayRef | null = null;
   private _menuOpen: boolean = false;
@@ -113,6 +102,22 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
   // Tracking input type is necessary so it's possible to only auto-focus
   // the first item of the list when the menu is opened via the keyboard
   _openedBy: Exclude<FocusOrigin, 'program' | null> | undefined = undefined;
+
+  @HostBinding('attr.aria-expanded')
+  // Need tp use getter for HostBinding
+  // tslint:disable-next-line:no-private-getters
+  get _ariaExpanded() {
+    return this.menuOpen || null;
+  }
+
+  @HostBinding('attr.aria-controls')
+  // Need tp use getter for HostBinding
+  // tslint:disable-next-line:no-private-getters
+  get _ariaControl() {
+    return this.menuOpen ? this.menu.panelId : null;
+  }
+
+  @HostBinding('attr.aria-haspopup') _ariaHaspopup = true;
 
   /**
    * @deprecated
@@ -508,6 +513,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
   }
 
   /** Handles mouse presses on the trigger. */
+  @HostListener('mousedown', ['$event'])
   _handleMousedown(event: MouseEvent): void {
     if (!isFakeMousedownFromScreenReader(event)) {
       // Since right or middle button clicks won't trigger the `click` event,
@@ -524,6 +530,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
   }
 
   /** Handles key presses on the trigger. */
+  @HostListener('keydown', ['$event'])
   _handleKeydown(event: KeyboardEvent): void {
     const keyCode = event.keyCode;
 
@@ -541,6 +548,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
   }
 
   /** Handles click events on the trigger. */
+  @HostListener('click', ['$event'])
   _handleClick(event: MouseEvent): void {
     if (this.triggersSubmenu()) {
       // Stop event propagation to avoid closing the parent menu.
@@ -597,3 +605,13 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
   }
 
 }
+
+/** Directive applied to an element that should trigger a `mat-menu`. */
+@Directive({
+  selector: `[mat-menu-trigger-for], [matMenuTriggerFor]`,
+  host: {
+    'class': 'mat-menu-trigger',
+  },
+  exportAs: 'matMenuTrigger'
+})
+export class MatMenuTrigger extends _MatMenuTriggerBase {}

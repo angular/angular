@@ -8,19 +8,17 @@
 
 export {MatMenu} from './menu';
 export {MatMenuItem} from './menu-item';
+export {MatMenuTrigger, MatMenuContent} from './directives';
 export * from './module';
 
 export {
-  _MatMenuDirectivesModule,
   fadeInItems,
   MAT_MENU_DEFAULT_OPTIONS,
   MAT_MENU_PANEL,
   MAT_MENU_SCROLL_STRATEGY,
   matMenuAnimations,
-  MatMenuContent,
   MatMenuDefaultOptions,
   MatMenuPanel,
-  MatMenuTrigger,
   MenuPositionX,
   MenuPositionY,
   transformMenu,

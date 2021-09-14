@@ -13,7 +13,7 @@ export {
   _MatMenuBase,
 } from './menu';
 export {MatMenuItem} from './menu-item';
-export {MatMenuTrigger, MAT_MENU_SCROLL_STRATEGY} from './menu-trigger';
+export {MatMenuTrigger, MAT_MENU_SCROLL_STRATEGY, _MatMenuTriggerBase} from './menu-trigger';
 export {MatMenuPanel, MAT_MENU_PANEL} from './menu-panel';
 export * from './menu-module';
 export * from './menu-animations';

@@ -24,8 +24,8 @@ import { FocusableOption } from '@angular/cdk/a11y';
 import { FocusMonitor } from '@angular/cdk/a11y';
 import { FocusOrigin } from '@angular/cdk/a11y';
 import * as i0 from '@angular/core';
-import * as i3 from '@angular/material/core';
-import * as i6 from '@angular/common';
+import * as i5 from '@angular/common';
+import * as i6 from '@angular/material/core';
 import * as i7 from '@angular/cdk/overlay';
 import * as i8 from '@angular/cdk/scrolling';
 import { InjectionToken } from '@angular/core';
@@ -162,7 +162,15 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
 }
 
 // @public
-export class MatMenuContent implements OnDestroy {
+export class MatMenuContent extends _MatMenuContentBase {
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatMenuContent, "ng-template[matMenuContent]", never, {}, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatMenuContent, never>;
+}
+
+// @public (undocumented)
+export abstract class _MatMenuContentBase implements OnDestroy {
     constructor(_template: TemplateRef<any>, _componentFactoryResolver: ComponentFactoryResolver, _appRef: ApplicationRef, _injector: Injector, _viewContainerRef: ViewContainerRef, _document: any, _changeDetectorRef?: ChangeDetectorRef | undefined);
     attach(context?: any): void;
     readonly _attached: Subject<void>;
@@ -170,9 +178,9 @@ export class MatMenuContent implements OnDestroy {
     // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatMenuContent, "ng-template[matMenuContent]", never, {}, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatMenuContentBase, never, never, {}, {}, never>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatMenuContent, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<_MatMenuContentBase, never>;
 }
 
 // @public
@@ -183,16 +191,6 @@ export interface MatMenuDefaultOptions {
     overlayPanelClass?: string | string[];
     xPosition: MenuPositionX;
     yPosition: MenuPositionY;
-}
-
-// @public
-export class _MatMenuDirectivesModule {
-    // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<_MatMenuDirectivesModule, never>;
-    // (undocumented)
-    static ɵinj: i0.ɵɵInjectorDeclaration<_MatMenuDirectivesModule>;
-    // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<_MatMenuDirectivesModule, [typeof i1.MatMenuTrigger, typeof i2.MatMenuContent], never, [typeof i1.MatMenuTrigger, typeof i2.MatMenuContent, typeof i3.MatCommonModule]>;
 }
 
 // @public
@@ -236,7 +234,7 @@ export class MatMenuModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<MatMenuModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<MatMenuModule, [typeof i4.MatMenu, typeof i5.MatMenuItem], [typeof i6.CommonModule, typeof i3.MatCommonModule, typeof i3.MatRippleModule, typeof i7.OverlayModule, typeof _MatMenuDirectivesModule], [typeof i8.CdkScrollableModule, typeof i3.MatCommonModule, typeof i4.MatMenu, typeof i5.MatMenuItem, typeof _MatMenuDirectivesModule]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatMenuModule, [typeof i1.MatMenu, typeof i2.MatMenuItem, typeof i3.MatMenuTrigger, typeof i4.MatMenuContent], [typeof i5.CommonModule, typeof i6.MatCommonModule, typeof i6.MatRippleModule, typeof i7.OverlayModule], [typeof i8.CdkScrollableModule, typeof i6.MatCommonModule, typeof i1.MatMenu, typeof i2.MatMenuItem, typeof i3.MatMenuTrigger, typeof i4.MatMenuContent]>;
 }
 
 // @public
@@ -280,8 +278,22 @@ export interface MatMenuPanel<T = any> {
 }
 
 // @public
-export class MatMenuTrigger implements AfterContentInit, OnDestroy {
+export class MatMenuTrigger extends _MatMenuTriggerBase {
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatMenuTrigger, "[mat-menu-trigger-for], [matMenuTriggerFor]", ["matMenuTrigger"], {}, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatMenuTrigger, never>;
+}
+
+// @public (undocumented)
+export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy {
     constructor(_overlay: Overlay, _element: ElementRef<HTMLElement>, _viewContainerRef: ViewContainerRef, scrollStrategy: any, parentMenu: MatMenuPanel, _menuItemInstance: MatMenuItem, _dir: Directionality, _focusMonitor?: FocusMonitor | undefined);
+    // (undocumented)
+    get _ariaControl(): string | null | undefined;
+    // (undocumented)
+    get _ariaExpanded(): true | null;
+    // (undocumented)
+    _ariaHaspopup: boolean;
     closeMenu(): void;
     // @deprecated (undocumented)
     get _deprecatedMatMenuTriggerFor(): MatMenuPanel;
@@ -313,9 +325,9 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
     triggersSubmenu(): boolean;
     updatePosition(): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatMenuTrigger, "[mat-menu-trigger-for], [matMenuTriggerFor]", ["matMenuTrigger"], { "_deprecatedMatMenuTriggerFor": "mat-menu-trigger-for"; "menu": "matMenuTriggerFor"; "menuData": "matMenuTriggerData"; "restoreFocus": "matMenuTriggerRestoreFocus"; }, { "menuOpened": "menuOpened"; "onMenuOpen": "onMenuOpen"; "menuClosed": "menuClosed"; "onMenuClose": "onMenuClose"; }, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatMenuTriggerBase, never, never, { "_deprecatedMatMenuTriggerFor": "mat-menu-trigger-for"; "menu": "matMenuTriggerFor"; "menuData": "matMenuTriggerData"; "restoreFocus": "matMenuTriggerRestoreFocus"; }, { "menuOpened": "menuOpened"; "onMenuOpen": "onMenuOpen"; "menuClosed": "menuClosed"; "onMenuClose": "onMenuClose"; }, never>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatMenuTrigger, [null, null, null, null, { optional: true; }, { optional: true; self: true; }, { optional: true; }, null]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<_MatMenuTriggerBase, [null, null, null, null, { optional: true; }, { optional: true; self: true; }, { optional: true; }, null]>;
 }
 
 // @public
