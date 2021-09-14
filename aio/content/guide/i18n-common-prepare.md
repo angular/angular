@@ -47,12 +47,12 @@ The following example displays the value of the `i18n` attribute.
 The translator may also need to know the meaning or intent of the text message within this particular application context, in order to translate it the same way as other text with the same meaning.
 Start the `i18n` attribute value with the *meaning* and separate it from the *description* with the `|` character: `<meaning>|<description>`.
 
-For example, you may want to indicate that the `<h1>` tag is a site header that needs to be translated the same way whether it used as a header or referenced in another section of text.
+For example, you may want to indicate that the `<h1>` tag is a site header that needs to be translated the same way, whether it's used as a header or referenced in another section of text.
 The following example shows how to indicate that the `<h1>` tag needs to be translated as a header or referenced elsewhere.
 
 <code-example path="i18n/doc-files/app.component.html" region="i18n-attribute-meaning" header="src/app/app.component.html"></code-example>
 
-The result is any text marked with `site header` as the *meaning* is translated exactly the same way.
+The result is any text marked with `site header`, as the *meaning* is translated exactly the same way.
 
 <!-- section break -->
 
