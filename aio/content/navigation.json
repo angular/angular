@@ -410,8 +410,8 @@
                 },
                 {
                   "url": "guide/i18n-common-translation-files",
-                  "title": "Work the translation files",
-                  "tooltip": "Work the translation files"
+                  "title": "Work with translation files",
+                  "tooltip": "Work with translation files"
                 },
                 {
                   "url": "guide/i18n-common-merge",
