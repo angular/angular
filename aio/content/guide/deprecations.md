@@ -155,7 +155,7 @@ This feature has been deprecated. For more information, please refer to the [mig
 {@a wtf}
 ### Web Tracing Framework integration
 
-Angular previously has supported an integration with the [Web Tracing Framework (WTF)](https://google.github.io/tracing-framework/) for performance testing of Angular applications. This integration has not been maintained and defunct. As a result, the integration was deprecated in Angular version 8 and due to no evidence of any existing usage removed in version 9.
+Angular previously supported an integration with the [Web Tracing Framework (WTF)](https://google.github.io/tracing-framework/) for performance testing of Angular applications. This integration has not been maintained and is now defunct. As a result, the integration was deprecated in Angular version 8, and due to no evidence of any existing usage, removed in version 9.
 
 
 {@a deep-component-style-selector}
