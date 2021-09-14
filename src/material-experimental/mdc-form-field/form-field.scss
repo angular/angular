@@ -90,23 +90,27 @@
   }
 }
 
+// Scale down icons in the subscript and floating label to be the same size
+// as the text.
+.mat-mdc-form-field-subscript-wrapper,
+.mat-mdc-form-field label {
+  .mat-icon {
+    width: 1em;
+    height: 1em;
+    font-size: inherit;
+  }
+}
+
 // Infix that contains the projected content (usually an input or a textarea). We ensure
 // that the projected form-field control and content can stretch as needed, but we also
 // apply a default infix width to make the form-field's look natural.
 .mat-mdc-form-field-infix {
-  // Prevent extra height from being added around the textarea, which throws off the overall
-  // height of the form-field
-  line-height: 0;
   flex: auto;
   min-width: 0;
   width: form-field-sizing.$mat-form-field-default-infix-width;
   // Needed so that the floating label does not overlap with prefixes or suffixes.
   position: relative;
   box-sizing: border-box;
-}
-
-.mat-mdc-form-field-hint-end {
-  order: 1;
 }
 
 // In order to make it possible for developers to disable animations for form-fields,

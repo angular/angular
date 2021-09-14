@@ -1,6 +1,7 @@
 @use '@material/textfield' as mdc-textfield;
 @use '@material/theme/theme' as mdc-theme;
 @use '@material/typography' as mdc-typography;
+@use '@material/textfield/variables' as mdc-textfield-variables;
 @use 'form-field-sizing';
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/theming/theming';
@@ -13,16 +14,13 @@
     position: relative;
   }
 
-  // The horizontal padding between the edge of the text box and the start of the subscript text.
-  $subscript-horizontal-padding: 16px;
-
   .mat-mdc-form-field-hint-wrapper,
   .mat-mdc-form-field-error-wrapper {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    padding: 0 $subscript-horizontal-padding;
+    padding: 0 mdc-textfield-variables.$padding-horizontal;
   }
 
   .mat-mdc-form-field-bottom-align::before {
@@ -31,14 +29,8 @@
     height: 16px;
   }
 
-  // Scale down icons in the subscript to be the same size as the text.
-  .mat-mdc-form-field-subscript-wrapper,
-  .mat-mdc-form-field label {
-    .mat-icon {
-      width: 1em;
-      height: 1em;
-      font-size: inherit;
-    }
+  .mat-mdc-form-field-hint-end {
+    order: 1;
   }
 
   // Clears the floats on the hints. This is necessary for the hint animation to work.

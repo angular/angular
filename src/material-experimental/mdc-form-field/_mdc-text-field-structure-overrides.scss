@@ -1,4 +1,4 @@
-@use 'form-field-sizing';
+@use '@material/textfield/variables' as mdc-textfield-variables;
 
 // Mixin that can be included to override the default MDC text-field
 // styles to fit our needs. See individual comments for context on why
@@ -6,15 +6,21 @@
 @mixin private-text-field-structure-overrides() {
   // Unset the border set by MDC. We move the border (which serves as the Material Design
   // text-field bottom line) into its own element. This is necessary because we want the
-  // bottom-line to span across the whole form-field (including prefixes and suffixes).
-  .mat-mdc-form-field-control {
+  // bottom-line to span across the whole form-field (including prefixes and suffixes). Also
+  // we ensure that font styles are inherited for input elements. We do this because inputs by
+  // default have explicit font styles from the user agent, and we set the desired font styles
+  // in the parent `mat-form-field` element (for better custom form-field control support).
+  // Note: We increase specificity here because the MDC textfield seems to override this,
+  // depending on the CSS order, with an affix selector joint with the input.
+  .mat-mdc-form-field-input-control.mat-mdc-form-field-input-control {
+    font: inherit;
     border: none;
   }
 
   // In order to ensure proper alignment of the floating label, we reset its line-height.
   // The line-height is not important as the element is absolutely positioned and only has one line
   // of text.
-  .mat-mdc-form-field .mdc-floating-label {
+  .mat-mdc-form-field .mdc-floating-label.mdc-floating-label {
     line-height: normal;
   }
 
@@ -24,15 +30,16 @@
   // not work for us since we support arbitrary form field controls which don't necessarily
   // use an `input` element. We organize the vertical spacing on the infix container.
   .mdc-text-field--no-label:not(.mdc-text-field--textarea)
-      .mat-mdc-form-field-control.mdc-text-field__input,
-  .mat-mdc-text-field-wrapper .mat-mdc-form-field-control {
+    .mat-mdc-form-field-input-control.mdc-text-field__input,
+  .mat-mdc-text-field-wrapper .mat-mdc-form-field-input-control {
     height: auto;
   }
 
   // Color inputs are a special case, because setting their height to
   // `auto` will collapse them. The height value is an arbitrary number
   // which was extracted from the user agent styles of Chrome and Firefox.
-  .mat-mdc-text-field-wrapper .mat-mdc-form-field-control.mdc-text-field__input[type='color'] {
+  .mat-mdc-text-field-wrapper
+    .mat-mdc-form-field-input-control.mdc-text-field__input[type='color'] {
     height: 23px;
   }
 
@@ -57,8 +64,8 @@
   [dir='rtl'] {
     // Undo the above padding removals which only apply in LTR languages.
     .mat-mdc-text-field-wrapper {
-      padding-left: form-field-sizing.$mat-form-field-end-padding;
-      padding-right: form-field-sizing.$mat-form-field-end-padding;
+      padding-left: mdc-textfield-variables.$padding-horizontal;
+      padding-right: mdc-textfield-variables.$padding-horizontal;
     }
     // ...and apply the correct padding resets for RTL languages.
     .mat-mdc-form-field-has-icon-suffix .mat-mdc-text-field-wrapper {

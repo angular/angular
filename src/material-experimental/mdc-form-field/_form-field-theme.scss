@@ -3,7 +3,7 @@
 @use '@material/notched-outline' as mdc-notched-outline;
 @use '@material/line-ripple' as mdc-line-ripple;
 @use '@material/theme/theme-color' as mdc-theme-color;
-@use '@material/typography' as mdc-typography;
+@use '@material/typography/typography' as mdc-typography;
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/typography/typography';
 @use 'form-field-density';
@@ -72,13 +72,29 @@
     @include mdc-line-ripple.core-styles($query: mdc-helpers.$mat-typography-styles-query);
     @include form-field-subscript.private-form-field-subscript-typography($config);
 
-    // MDC uses the `subtitle1` level for the input label and value, but the spec shows `body1` as
-    // the correct level.
-    .mat-mdc-form-field-control,
-    .mat-mdc-form-field label,
-    .mat-mdc-form-field-text-prefix,
-    .mat-mdc-form-field-text-suffix {
+    // MDC uses `subtitle1` for the input value, placeholder and floating label. The spec
+    // shows `body1` for text fields though, so we manually override the typography.
+    // Note: Form controls inherit the typography from the parent form field.
+    .mat-mdc-form-field,
+    .mat-mdc-form-field .mdc-floating-label {
       @include mdc-typography.typography(body1, $query: mdc-helpers.$mat-typography-styles-query);
+    }
+
+    // Above, we updated the floating label to use the `body1` typography level. The MDC notched
+    // outline overrides this accidentally (only when the label floats) to a `rem`-based value.
+    // This results in different label widths when floated/docked and ultimately breaks the notch
+    // width as it has been measured in the docked state (where `body1` is applied). We try to
+    // unset these styles set by the `mdc-notched-outline`:
+    // https://github.com/material-components/material-components-web/blob/master/packages/mdc-notched-outline/_mixins.scss#L272-L292.
+    .mat-mdc-form-field .mdc-text-field--outlined {
+      // For the non-upgraded notch label (i.e. when rendered on the server), also
+      // use the correct `body1` typography level.
+      .mdc-floating-label--float-above {
+        font-size: mdc-typography.get-size(body1) * 0.75;
+      }
+      .mdc-notched-outline--upgraded .mdc-floating-label--float-above {
+        font-size: mdc-typography.get-size(body1);
+      }
     }
   }
 }

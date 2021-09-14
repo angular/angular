@@ -93,6 +93,12 @@ const DEFAULT_FLOAT_LABEL: FloatLabelType = 'auto';
  */
 const FLOATING_LABEL_DEFAULT_DOCKED_TRANSFORM = `translateY(-50%)`;
 
+/**
+ * Horizontal padding in pixels used by the MDC for the wrapper containing infix.
+ * This value is extracted from MDC's Sass variables. See `$padding-horizontal`.
+ */
+const WRAPPER_HORIZONTAL_PADDING = 16;
+
 /** Container for form controls that applies Material Design styling and behavior. */
 @Component({
   selector: 'mat-form-field',
@@ -691,16 +697,16 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
     }
     const iconPrefixContainer = this._iconPrefixContainer?.nativeElement;
     const textPrefixContainer = this._textPrefixContainer?.nativeElement;
+    const iconPrefixContainerWidth = iconPrefixContainer?.getBoundingClientRect().width ?? 0;
+    const textPrefixContainerWidth = textPrefixContainer?.getBoundingClientRect().width ?? 0;
     // If the directionality is RTL, the x-axis transform needs to be inverted. This
     // is because `transformX` does not change based on the page directionality.
     const labelHorizontalOffset =
       (this._dir.value === 'rtl' ? -1 : 1) * (
-          (iconPrefixContainer ?
-              // If there's an icon prefix, we disable the default 16px padding,
-              // so make sure to account for that.
-              (iconPrefixContainer?.getBoundingClientRect().width ?? 0) - 16 : 0
-          ) +
-          (textPrefixContainer?.getBoundingClientRect().width ?? 0)
+        // If there's an icon prefix, we subtract the default horizontal padding as we
+        // reset the horizontal padding in CSS too.
+          (iconPrefixContainer ? iconPrefixContainerWidth - WRAPPER_HORIZONTAL_PADDING : 0) +
+          textPrefixContainerWidth
       );
 
     // Update the transform the floating label to account for the prefix container. Note

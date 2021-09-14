@@ -141,7 +141,7 @@ describe('MDC-based MatChipInput', () => {
 
     it('should set input styling classes', () => {
       expect(inputNativeElement.classList).toContain('mat-mdc-input-element');
-      expect(inputNativeElement.classList).toContain('mat-mdc-form-field-control');
+      expect(inputNativeElement.classList).toContain('mat-mdc-form-field-input-control');
       expect(inputNativeElement.classList).toContain('mat-mdc-chip-input');
       expect(inputNativeElement.classList).toContain('mdc-text-field__input');
     });

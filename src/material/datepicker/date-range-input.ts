@@ -249,7 +249,7 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
     if (_formField?._elementRef.nativeElement.classList.contains('mat-mdc-form-field')) {
       const classList = _elementRef.nativeElement.classList;
       classList.add('mat-mdc-input-element');
-      classList.add('mat-mdc-form-field-control');
+      classList.add('mat-mdc-form-field-input-control');
     }
 
     // TODO(crisbeto): remove `as any` after #18206 lands.

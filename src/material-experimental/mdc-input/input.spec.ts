@@ -858,8 +858,8 @@ describe('MatMdcInput without forms', () => {
     const inFormField = fixture.nativeElement.querySelector('.inside');
     const outsideFormField = fixture.nativeElement.querySelector('.outside');
 
-    expect(inFormField.classList).toContain('mat-mdc-form-field-control');
-    expect(outsideFormField.classList).not.toContain('mat-mdc-form-field-control');
+    expect(inFormField.classList).toContain('mat-mdc-form-field-input-control');
+    expect(outsideFormField.classList).not.toContain('mat-mdc-form-field-input-control');
   }));
 
 });

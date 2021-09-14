@@ -135,7 +135,7 @@ export class MatChipInput implements MatChipTextControl, AfterContentInit, OnCha
       this.inputElement = this._elementRef.nativeElement as HTMLInputElement;
 
       if (formField) {
-        this.inputElement.classList.add('mat-mdc-form-field-control');
+        this.inputElement.classList.add('mat-mdc-form-field-input-control');
       }
     }
 

@@ -10,7 +10,15 @@
 @mixin private-text-field-textarea-overrides() {
   // Ensures that textarea elements inside of the form-field have proper vertical spacing
   // to account for the floating label. Also ensures that there is no vertical text overflow.
-  .mat-mdc-textarea-input {
+  // **Note**: Before changing this selector, make sure the `cdk-textarea-autosize` class is
+  // still able to override the `resize` property to `none`.
+  .mat-mdc-form-field-textarea-control {
+    // Set the vertical alignment for textareas inside form fields to be the middle. This
+    // ensures that textareas do not stretch the infix container vertically without having
+    // multiple rows of text. See: https://github.com/angular/components/pull/22089.
+    vertical-align: middle;
+    // Textareas by default also allow users to resize the textarea horizontally. This
+    // causes the textarea to overflow the form-field. We only allow vertical resizing.
     resize: vertical;
     box-sizing: border-box;
     height: auto;

@@ -17,7 +17,7 @@ $mat-form-field-select-horizontal-end-padding: $mat-form-field-select-arrow-widt
   // Remove the native select down arrow and ensure that the native appearance
   // does not conflict with the form-field. e.g. Focus indication of the native
   // select is undesired since we handle focus as part of the form-field.
-  select.mat-mdc-form-field-control {
+  select.mat-mdc-form-field-input-control {
     -moz-appearance: none;
     -webkit-appearance: none;
     background-color: transparent;
@@ -58,7 +58,7 @@ $mat-form-field-select-horizontal-end-padding: $mat-form-field-select-arrow-widt
 
     // Add padding on the end of the native select so that the content does not
     // overlap with the Material Design arrow.
-    .mat-mdc-form-field-control {
+    .mat-mdc-form-field-input-control {
       padding-right: $mat-form-field-select-horizontal-end-padding;
       [dir='rtl'] & {
         padding-right: 0;
@@ -80,7 +80,7 @@ $mat-form-field-select-horizontal-end-padding: $mat-form-field-select-arrow-widt
     $dropdown-icon-color: rgba(mdc-theme-color.prop-value(on-surface), 0.54);
     $disabled-dropdown-icon-color: rgba(mdc-theme-color.prop-value(on-surface), 0.38);
 
-    select.mat-mdc-form-field-control {
+    select.mat-mdc-form-field-input-control {
       // On dark themes we set the native `select` color to some shade of white,
       // however the color propagates to all of the `option` elements, which are
       // always on a white background inside the dropdown, causing them to blend in.
