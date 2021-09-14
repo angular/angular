@@ -472,7 +472,7 @@ Ending IE11 support allows Angular to take advantage of web platform APIs presen
 An additional motivation behind this removal is the drop in global usage of IE11 to just ~1% (as of March 2021).
 For full rationale and discussion behind this deprecation, see [RFC: Internet Explorer 11 support deprecation and removal](https://github.com/angular/angular/issues/41840).
 
-***Note***: *IE11 will be supported in Angular v12 LTS releases through November 2022.*
+**Note**: IE11 will be supported in Angular v12 LTS releases through November 2022.
 -->
 
 {@a deprecated-cli-flags}
