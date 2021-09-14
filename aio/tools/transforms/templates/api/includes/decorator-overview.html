@@ -1,12 +1,12 @@
-{% import "lib/descendants.html" as descendants -%}
+{%- import "lib/descendants.html" as descendants -%}
 
-{% macro renderOptionsTable(doc) %}
+{%- macro renderOptionsTable(doc) -%}
 <table class="is-full-width list-table option-overview">
   <thead>
     <tr><th>Option</th><th>Description</th></tr>
   </thead>
   <tbody>
-  {%- for option in doc.members %}
+    {%- for option in doc.members %}
     <tr class="option">
       <td>
         <a class="code-anchor" href="{$ doc.path $}#{$ option.anchor | urlencode $}">
@@ -15,19 +15,19 @@
       </td>
       <td>{$ option.shortDescription | marked $}</td>
     </tr>
-    {% endfor -%}
+    {%- endfor %}
   </tbody>
 </table>
 
-{% for ancestor in doc.extendsClauses %}{% if ancestor.doc %}
+{%- for ancestor in doc.extendsClauses %}{% if ancestor.doc %}
 <h3 class="no-toc">Inherited from <a class="code-anchor" href="{$ ancestor.doc.path $}">{$ ancestor.doc.name $}</a> decorator</h3>
 {$ renderOptionsTable(ancestor.doc) $}
-{% endif %}{% endfor %}
-{% endmacro %}
+{%- endif %}{% endfor %}
+{%- endmacro -%}
 
-{% if doc.members.length %}
+{%- if doc.members.length %}
 <section class="decorator-overview">
   {$ renderOptionsTable(doc) $}
   {$ descendants.renderDescendants(doc, 'decorator', 'Subclasses') $}
 </section>
-{% endif %}
+{%- endif -%}
