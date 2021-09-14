@@ -168,7 +168,7 @@ Angular CLI comes with two build configurations: `production` and `development`.
 *   Removing comments and dead code
 *   Rewriting code to use short, mangled names (minification)
 
-You can define and name additional alternate configurations (such as `stage`, for instance) appropriate to your development process. Some examples of different build configurations are `stable`, `archive` and `next` used by AIO itself, and the individual locale-specific configurations required for building localized versions of an application. For details, see [Internationalization (i18n)][AioGuideI18nCommonMerge].
+You can define and name additional alternate configurations (such as `stage`, for instance) appropriate to your development process. Some examples of different build configurations are `stable`, `archive`, and `next` used by AIO itself, and the individual locale-specific configurations required for building localized versions of an application. For details, see [Internationalization (i18n)][AioGuideI18nCommonMerge].
 
 You can select an alternate configuration by passing its name to the `--configuration` command line flag.
 
