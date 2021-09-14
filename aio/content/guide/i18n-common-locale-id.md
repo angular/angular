@@ -44,7 +44,7 @@ The build process (described in [Merge translations into the app][AioGuideI18nCo
 
 [GithubAngularAngularTreeMasterPackagesCommonLocales]: https://github.com/angular/angular/tree/master/packages/common/locales "angular/packages/common/locales | angular/angular | GitHub"
 
-[LocStandardsIso6392]: https://www.loc.gov/standards/iso639-2 "ISO 639-2 Registration Authority | Library of Congress"
+[LocStandardsIso6392]: http://www.loc.gov/standards/iso639-2 "ISO 639-2 Registration Authority | Library of Congress"
 
 [RfcEditorInfoBcp47]: https://www.rfc-editor.org/info/bcp47 "BCP 47 | RFC Editor"
 
