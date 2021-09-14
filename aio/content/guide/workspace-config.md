@@ -12,7 +12,7 @@ The following properties, at the top level of the file, configure the workspace.
 *   `version`: The configuration-file version.
 *   `newProjectRoot`: Path where new projects are created. Absolute or relative to the workspace folder.
 *   `defaultProject`: Default project name to use in commands, where not provided as an argument. When you use `ng new` to create a new application in a new workspace, that application is the default project for the workspace until you change it here.
-*   `schematics` : A set of [schematics](guide/glossary#schematic) that customize the `ng generate` sub-command option defaults for this workspace. See [Generation schematics](#schematics) below.
+*   `schematics` : A set of [schematics](guide/glossary#schematic) that customize the `ng generate` sub-command option defaults for this workspace. See the [Generation schematics](#schematics) section.
 *   `projects` : Contains a subsection for each project (library or application) in the workspace, with the per-project configuration options.
 
 The initial application that you create with `ng new app_name` is listed under "projects":
@@ -64,7 +64,7 @@ The following top-level configuration properties are available for each project,
 | `sourceRoot`    | The root folder for this project's source files.                                                                                                        |
 | `projectType`   | One of "application" or "library". An application can run independently in a browser, while a library cannot.                                           |
 | `prefix`        | A string that Angular prepends to generated selectors. Can be customized to identify an application or feature area.                                    |
-| `schematics`    | A set of schematics that customize the `ng generate` sub-command option defaults for this project. See [Generation schematics](#schematics) below.      |
+| `schematics`    | A set of schematics that customize the `ng generate` sub-command option defaults for this project. See the [Generation schematics](#schematics) section.      |
 | `architect`     | Configuration defaults for Architect builder targets for this project.                                                                                  |
 
 {@a schematics}
@@ -133,7 +133,7 @@ See the example in [Build target](#build-target) below.
 </code-example>
 
 *   The `architect/build` section configures defaults for options of the `ng build` command.
-    See [Build target](#build-target) below for more information.
+    See the [Build target](#build-target) section for more information.
 *   The `architect/serve` section overrides build defaults and supplies additional serve defaults for the `ng serve` command. In addition to the options available for the `ng build` command, it adds options related to serving the application.
 *   The `architect/e2e` section overrides build-option defaults for building end-to-end testing applications using the `ng e2e` command.
 *   The `architect/test` section overrides build-option defaults for test builds and supplies additional test-running defaults for the `ng test` command.
@@ -154,8 +154,8 @@ The `architect/build` section configures defaults for options of the `ng build` 
 | PROPERTY        | DESCRIPTION                                                                                                                                                                                                                                                                                                              |
 |:---             |:---                                                                                                                                                                                                                                                                                                                      |
 | `builder`       | The npm package for the build tool used to create this target. The default builder for an application (`ng build myApp`) is `@angular-devkit/build-angular:browser`, which uses the [webpack](https://webpack.js.org) package bundler. **NOTE**: A different builder is used for building a library (`ng build myLib`). |
-| `options`       | This section contains default build target options, used when no named alternative configuration is specified. See [Default build targets](#default-build-targets) below.                                                                                                                                                |
-| `configurations`| This section defines and names alternative configurations for different intended destinations. It contains a section for each named configuration, which sets the default options for that intended environment. See [Alternate build configurations](#build-configs) below.                                             |
+| `options`       | This section contains default build target options, used when no named alternative configuration is specified. See the [Default build targets](#default-build-targets) section.                                                                                                                                                |
+| `configurations`| This section defines and names alternative configurations for different intended destinations. It contains a section for each named configuration, which sets the default options for that intended environment. See the [Alternate build configurations](#build-configs) section.                                             |
 
 {@a build-configs}
 
@@ -184,10 +184,10 @@ Some additional options can only be set through the configuration file, either b
 
 | OPTIONS PROPERTIES         | DESCRIPTION                                                                                                                                                                                                                                                                                           |
 |:---                        |:---                                                                                                                                                                                                                                                                                                   |
-| `assets`                   | An object containing paths to static assets to add to the global context of the project. The default paths point to the project's icon file and its `assets` folder. See more in [Assets configuration](#asset-config) below.                                                                         |
-| `styles`                   | An array of style files to add to the global context of the project. Angular CLI supports CSS imports and all major CSS preprocessors: [sass/scss](https://sass-lang.com) and [less](http://lesscss.org). See more in [Styles and scripts configuration](#style-script-config) below.               |
-| `stylePreprocessorOptions` | An object containing option-value pairs to pass to style preprocessors. See more in [Styles and scripts configuration](#style-script-config) below.                                                                                                                                                   |
-| `scripts`                  | An object containing JavaScript script files to add to the global context of the project. The scripts are loaded exactly as if you had added them in a `<script>` tag inside `index.html`. See more in [Styles and scripts configuration](#style-script-config) below.                                |
+| `assets`                   | An object containing paths to static assets to add to the global context of the project. The default paths point to the project's icon file and its `assets` folder. See more in the [Assets configuration](#asset-config) section.                                                                         |
+| `styles`                   | An array of style files to add to the global context of the project. Angular CLI supports CSS imports and all major CSS preprocessors: [sass/scss](https://sass-lang.com) and [less](http://lesscss.org). See more in the [Styles and scripts configuration](#style-script-config) section.               |
+| `stylePreprocessorOptions` | An object containing option-value pairs to pass to style preprocessors. See more in the [Styles and scripts configuration](#style-script-config) section.                                                                                                                                                   |
+| `scripts`                  | An object containing JavaScript script files to add to the global context of the project. The scripts are loaded exactly as if you had added them in a `<script>` tag inside `index.html`. See more in the [Styles and scripts configuration](#style-script-config) section.                                |
 | `budgets`                  | Default size-budget type and thresholds for all or parts of your application. You can configure the builder to report a warning or an error when the output reaches or exceeds a threshold size. See [Configure size budgets](guide/build#configure-size-budgets). (Not available in `test` section.) |
 | `fileReplacements`         | An object containing files and their compile-time replacements. See more in [Configure target-specific file replacements](guide/build#configure-target-specific-file-replacements).                                                                                                                   |
 
