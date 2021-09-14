@@ -191,7 +191,7 @@ Now deprecated:
 this.value = 'some value';
 ```
 
-This has been deprecated for several reasons. First, developers have found this pattern
+This support was deprecated for several reasons. First, developers found this pattern
 confusing. It seems like the actual `ngModel` directive is being used, but in fact it's
 an input/output property named `ngModel` on the reactive form directive that
 approximates some, but not all, of the directive's behavior.
