@@ -2,8 +2,8 @@
 <section class="see-also">
   <h2>See also</h2>
   <ul>
-  {% for see in doc.see %}
-    <li>{$ see | marked $}</li>{% endfor %}
+    {%- for see in doc.see %}
+    <li>{$ see | marked | trim $}</li>{% endfor %}
   </ul>
 </section>
-{% endif %}
+{%- endif -%}
