@@ -207,7 +207,7 @@ the class removes the convenience of defining forms in the template.
 
 To update your code before support is removed, you'll want to decide whether to stick
 with reactive form directives (and get/set values using reactive forms patterns) or
-switch over to template-driven directives.
+switch to template-driven directives.
 
 After (choice 1 - use reactive forms):
 
