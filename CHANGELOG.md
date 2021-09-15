@@ -1,3 +1,25 @@
+<a name="12.2.6"></a>
+# 12.2.6 (2021-09-15)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [141fde1632](https://github.com/angular/angular/commit/141fde1632b4834449cfd48dcebfc8b1b7d58e09) | fix | emit pure annotations to static property initializers ([#43344](https://github.com/angular/angular/pull/43344)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ca510c87c5](https://github.com/angular/angular/commit/ca510c87c5a890c4b22fd364c58667adef90a1e0) | fix | emit pure annotations to static property initializers ([#43344](https://github.com/angular/angular/pull/43344)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4034f252c9](https://github.com/angular/angular/commit/4034f252c9707dabd01386843f7c278f3d2e4302) | fix | Allow renavigating to failed URLs ([#43424](https://github.com/angular/angular/pull/43424)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a102b27641](https://github.com/angular/angular/commit/a102b27641e3ad00401dd6d2635b9ddcf1151251) | fix | clear service worker cache in safety worker ([#43324](https://github.com/angular/angular/pull/43324)) |
+## Special Thanks
+Alan Agius, Amadou Sall, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Bjarki, David Shevitz, George Kalpakas, Joe Martin (Crowdstaffing), Michele Stieven, Naveed Ahmed, dario-piotrowicz, mezhik91 and mgechev
+
+
 <a name="13.0.0-next.5"></a>
 # 13.0.0-next.5 (2021-09-08)
 ## Breaking Changes
