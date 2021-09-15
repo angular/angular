@@ -1,3 +1,38 @@
+<a name="13.0.0-next.5"></a>
+# 13.0.0-next.5 "fuzzy-puppy" (2021-09-15)
+## Breaking Changes
+### material
+* `matTextareaAutosize` has been removed. Use `cdkTextareaAutosize` from the `@angular/cdk/text-field` module instead.
+* `CanColorCtor` is no longer necessary and has been removed.
+* `CanDisableRippleCtor` is no longer necessary and has been removed.
+* `CanDisableCtor` is no longer necessary and has been removed.
+* `CanUpdateErrorStateCtor` is no longer necessary and has been removed.
+* `HasInitializedCtor` is no longer necessary and has been removed.
+* `HasTabIndexCtor` is no longer necessary and has been removed.
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [771afd9e00](https://github.com/angular/components/commit/771afd9e00c9c87d3a4ccbd084c48f12ed250001) | fix | **mdc-menu:** ensure mat-mdc- prefix on all classes ([#23559](https://github.com/angular/components/pull/23559)) |
+| [04d2aaaf6d](https://github.com/angular/components/commit/04d2aaaf6d1778f5c432977a14918c6788640948) | fix | **mdc-form-field:** fix outline notch width ([#23005](https://github.com/angular/components/pull/23005)) |
+| [81b6b6be90](https://github.com/angular/components/commit/81b6b6be90241ca619736b99788796cbe2db3769) | fix | **mdc-slider:** remove deep imports ([#23451](https://github.com/angular/components/pull/23451)) |
+| [c608df8cec](https://github.com/angular/components/commit/c608df8cec6af28a5b0fb3d0e23f36ffdcb6b7c1) | fix | **mdc-button:** avoid shrinking FAB and icon button ([#23532](https://github.com/angular/components/pull/23532)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1762da875d](https://github.com/angular/components/commit/1762da875d3393db4a7d3ee340b882177c2e670a) | fix | **datepicker:** improve color contrast in calendar header ([#23517](https://github.com/angular/components/pull/23517)) |
+| [053689f1d1](https://github.com/angular/components/commit/053689f1d15845d0d59f881f6c29018e2e3f8c46) | fix | **input:** preserve password autofill icon ([#23534](https://github.com/angular/components/pull/23534)) |
+| [bb9c36bc89](https://github.com/angular/components/commit/bb9c36bc89c2a4bd793ba03deae6d2c8ea4bfe1b) | fix | **chips:** handle matChipRemove set on a button ([#23538](https://github.com/angular/components/pull/23538)) |
+| [741a57ecf0](https://github.com/angular/components/commit/741a57ecf08baa53c4ab1a0a9107f2f94b1da785) | fix | **stepper:** incorrect navigation order when steps are added later on ([#23541](https://github.com/angular/components/pull/23541)) |
+| [760b4564fa](https://github.com/angular/components/commit/760b4564fa41f1d13d4e07e9cba4fa3440284af7) | refactor | **input:** remove deprecated autosize directive ([#23408](https://github.com/angular/components/pull/23408)) |
+| [7bc9bfb9dc](https://github.com/angular/components/commit/7bc9bfb9dc233256f6e7063c62e4371a5a1da346) | refactor | **core:** remove deprecated APIs for v13 ([#23529](https://github.com/angular/components/pull/23529)) |
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a9886a1191](https://github.com/angular/components/commit/a9886a1191217be31b823e8520b0dade925a8157) | fix | **a11y:** complete input modality streams on destroy ([#23522](https://github.com/angular/components/pull/23522)) |
+## Special Thanks
+Andrew Seguin, Jeremy Elbourn, Kristiyan Kostadinov, Miles Malerba, Naveed Baloch and Paul Gschwendtner
+
+
 <a name="12.2.6"></a>
 # 12.2.6 "polyaspartic-polygon" (2021-09-15)
 ### cdk
