@@ -1,3 +1,27 @@
+<a name="13.0.0-next.6"></a>
+# 13.0.0-next.6 (2021-09-15)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6c84c5f513](https://github.com/angular/angular/commit/6c84c5f513d8a0775ab2f7e5de46d5619cbcbc19) | fix | emit pure annotations to static property initializers ([#43344](https://github.com/angular/angular/pull/43344)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c80278ac4a](https://github.com/angular/angular/commit/c80278ac4abf260eefeb14955203c3f8fd80622b) | fix | emit pure annotations to static property initializers ([#43344](https://github.com/angular/angular/pull/43344)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0e8548f667](https://github.com/angular/angular/commit/0e8548f667e5fdefa3ac7cdf1ba47e3e17011ffc) | fix | Allow renavigating to failed URLs ([#43424](https://github.com/angular/angular/pull/43424)) |
+| [796da641f0](https://github.com/angular/angular/commit/796da641f0a29e9f5f5de115c456da37426e971c) | fix | Do not modify parts of URL excluded from with 'eager' updates ([#43421](https://github.com/angular/angular/pull/43421)) |
+| [9e039ca68b](https://github.com/angular/angular/commit/9e039ca68bfae5328f3fc1f16fabd7673c466a25) | fix | Only trigger router navigation on `popstate` events from `Location` subscription ([#43328](https://github.com/angular/angular/pull/43328)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [59353c6305](https://github.com/angular/angular/commit/59353c6305076e1ac1b38aa0a1653a7404beb963) | fix | clear service worker cache in safety worker ([#43324](https://github.com/angular/angular/pull/43324)) |
+## Special Thanks
+Alan Agius, Amadou Sall, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Bjarki, Charles Lyding, David Shevitz, George Kalpakas, Joe Martin (Crowdstaffing), Michele Stieven, Naveed Ahmed, Pei Wang, dario-piotrowicz, mezhik91 and mgechev
+
+
 <a name="12.2.6"></a>
 # 12.2.6 (2021-09-15)
 ### animations
