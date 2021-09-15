@@ -1,3 +1,11 @@
+load("@io_bazel_rules_webtesting//web:web.bzl", "custom_browser")
+
 package(default_visibility = ["//:__subpackages__"])
 
-exports_files(["tsconfig.json", "cypress.json"])
+exports_files(["tsconfig.json", "cypress.json",])
+
+custom_browser(
+    name = "no-sandbox-chrome",
+    browser = "@io_bazel_rules_webtesting//browsers:chromium-local",
+    metadata = "//:nosandbox.json",
+)

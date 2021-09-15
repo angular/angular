@@ -72,7 +72,7 @@ ts_library(
 karma_web_test_suite(
     name = "test",
     browsers = [
-        "@io_bazel_rules_webtesting//browsers:chromium-local",
+        "//:no-sandbox-chrome",
     ],
     tags = ["native"],
     deps = [

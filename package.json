@@ -20,7 +20,7 @@
     "cy:open": "$(yarn bin)/cypress open",
     "cy:ci": "start-server-and-test start-no-animations http-get://localhost:4200 cy:run",
     "cy:watch": "start-server-and-test start-no-animations http-get://localhost:4200 cy:open",
-    "test:ci": "bazel test projects/shared-utils/... projects/protocol/... projects/ng-devtools/... projects/ng-devtools-backend/...",
+    "test:ci": "bazel test projects/...",
     "prettier": "prettier --write \"{,!(node_modules|dist|build|coverage)/**/}*.{js,jsx,ts,tsx,json}\"",
     "prettier:fix": "pretty-quick --staged"
   },

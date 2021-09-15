@@ -21,7 +21,7 @@ ng_ts_library(
 karma_web_test_suite(
     name = "highlighter-test",
     browsers = [
-        "@io_bazel_rules_webtesting//browsers:chromium-local",
+        "//:no-sandbox-chrome",
     ],
     tags = ["native"],
     deps = [
@@ -65,7 +65,7 @@ ng_ts_library(
 karma_web_test_suite(
     name = "router-tree-test",
     browsers = [
-        "@io_bazel_rules_webtesting//browsers:chromium-local",
+        "//:no-sandbox-chrome",
     ],
     tags = ["native"],
     deps = [
@@ -157,7 +157,7 @@ ng_ts_library(
 karma_web_test_suite(
     name = "angular-check-test",
     browsers = [
-        "@io_bazel_rules_webtesting//browsers:chromium-local",
+        "//:no-sandbox-chrome",
     ],
     tags = ["native"],
     deps = [
