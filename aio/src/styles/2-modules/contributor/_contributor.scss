@@ -154,10 +154,7 @@ aio-contributor {
   }
 
   .contributor-image {
-    display: flex;
-    justify-content: center;
     border-radius: 50%;
-    align-items: center;
     $size: 16.8rem;
     height: $size;
     width: $size;
