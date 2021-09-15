@@ -9,11 +9,8 @@ The following command uses the Angular CLI to generate a basic Angular applicati
 The application name in the following example is `routing-app`.
 
 <code-example language="sh">
-  ng new routing-app --routing
+  ng new routing-app --routing --defaults
 </code-example>
-
-When generating a new application, the CLI prompts you to select CSS or a CSS preprocessor.
-For this example, accept the default of `CSS`.
 
 ### Adding components for routing
 
