@@ -230,4 +230,4 @@ In addition to the configuration file, you can also use [`tsc` command line opti
 
 <!-- end links -->
 
-@reviewed 2021-08-18
+@reviewed 2021-09-15
