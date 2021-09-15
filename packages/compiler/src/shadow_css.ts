@@ -629,7 +629,7 @@ const _polyfillHostRe = /-shadowcsshost/gim;
 const _colonHostRe = /:host/gim;
 const _colonHostContextRe = /:host-context/gim;
 
-const _commentRe = /\/\*\s*[\s\S]*?\*\//g;
+const _commentRe = /\/\*[\s\S]*?\*\//g;
 
 function stripComments(input: string): string {
   return input.replace(_commentRe, '');
