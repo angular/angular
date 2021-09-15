@@ -1,3 +1,27 @@
+<a name="12.2.6"></a>
+# 12.2.6 "polyaspartic-polygon" (2021-09-15)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [63f127b0c5](https://github.com/angular/components/commit/63f127b0c5828d8841cc2ed89558c5a385c009a3) | fix | **a11y:** complete input modality streams on destroy ([#23522](https://github.com/angular/components/pull/23522)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b48732305a](https://github.com/angular/components/commit/b48732305abd390505e25de7e49b65967a4f2b5e) | fix | **datepicker:** improve color contrast in calendar header ([#23517](https://github.com/angular/components/pull/23517)) |
+| [886522ccd5](https://github.com/angular/components/commit/886522ccd5039baa68dbaf2cffc5841664bee68d) | fix | **input:** preserve password autofill icon ([#23534](https://github.com/angular/components/pull/23534)) |
+| [b12018a25e](https://github.com/angular/components/commit/b12018a25e25a26999ee4aa276a7fe02c0cb390e) | fix | **chips:** handle matChipRemove set on a button ([#23538](https://github.com/angular/components/pull/23538)) |
+| [3bb9bd4ed6](https://github.com/angular/components/commit/3bb9bd4ed6a2ec96ea2325ed19b2632c018ec852) | fix | **stepper:** incorrect navigation order when steps are added later on ([#23541](https://github.com/angular/components/pull/23541)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e54229f4f0](https://github.com/angular/components/commit/e54229f4f03b1cfbce72935f3079f1d141e1f787) | fix | **mdc-menu:** ensure mat-mdc- prefix on all classes ([#23559](https://github.com/angular/components/pull/23559)) |
+| [13b24ab50b](https://github.com/angular/components/commit/13b24ab50bfbae51d33558e39c562f7875985630) | fix | **mdc-form-field:** fix outline notch width ([#23005](https://github.com/angular/components/pull/23005)) |
+| [4fa5e6c827](https://github.com/angular/components/commit/4fa5e6c827550794438beca1549c358d83dd21d3) | fix | **mdc-slider:** remove deep imports ([#23451](https://github.com/angular/components/pull/23451)) |
+| [5ca6311382](https://github.com/angular/components/commit/5ca6311382760b5cc820308f35e6221ec8ec499c) | fix | **mdc-button:** avoid shrinking FAB and icon button ([#23532](https://github.com/angular/components/pull/23532)) |
+## Special Thanks
+Kristiyan Kostadinov, Miles Malerba, Naveed Baloch and Paul Gschwendtner
+
+
 <a name="13.0.0-next.4"></a>
 # 13.0.0-next.4 "copper-duckling" (2021-09-08)
 ### cdk
