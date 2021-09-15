@@ -576,4 +576,4 @@ Angular used to sanitize `[style]` and `[style.prop]` bindings to prevent malici
 
 <!-- end links -->
 
-@reviewed 2021-09-02
+@reviewed 2021-09-15
