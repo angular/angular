@@ -97,13 +97,6 @@ aio-contributor {
     height: 27rem;
     max-width: 310px;
     max-height: 340px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    position: relative;
-    overflow: hidden;
-    border-radius: 4px;
     transform-style:preserve-3d;
     transition:transform ease 500ms;
 
