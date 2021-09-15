@@ -112,3 +112,5 @@ To continue exploring Angular:
 
 * Continue to [Managing Data](start/start-data "Try it: Managing Data") to add a shopping cart feature, manage cart data, and retrieve external data for shipping prices.
 * Skip ahead to [Deployment](start/start-deployment "Try it: Deployment") to deploy your application to Firebase or move to local development.
+
+@reviewed 2021-09-15
