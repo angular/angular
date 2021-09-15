@@ -274,3 +274,5 @@ To continue exploring Angular and developing this application:
 
 * Continue to [In-app navigation](start/start-routing "Getting started: In-app navigation") to create a product details page.
 * Skip ahead to [Deployment](start/start-deployment "Getting started: Deployment") to move to local development, or deploy your application to Firebase or your own server.
+
+@reviewed 2021-09-15
