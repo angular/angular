@@ -92,3 +92,5 @@ Keep current by following the [Angular blog](https://blog.angular.io/ "Angular b
 To support your UX/UI development, see [Angular Material](https://material.angular.io/ "Angular Material web site").
 
 The Angular community also has an extensive [network of third-party tools and libraries](resources "Angular resources list").
+
+@reviewed 2021-09-15
