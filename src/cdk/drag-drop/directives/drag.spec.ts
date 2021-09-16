@@ -1861,6 +1861,29 @@ describe('CdkDrag', () => {
       flush();
     }));
 
+    it('should not dispatch the `sorted` event when an item is dragged inside ' +
+        'a single-item list', fakeAsync(() => {
+        const fixture = createComponent(DraggableInDropZone);
+        fixture.componentInstance.items = [fixture.componentInstance.items[0]];
+        fixture.detectChanges();
+
+        const draggedItem = fixture.componentInstance.dragItems.first.element.nativeElement;
+        const {top, left} = draggedItem.getBoundingClientRect();
+
+        startDraggingViaMouse(fixture, draggedItem, left, top);
+
+        for (let i = 0; i < 5; i++) {
+          dispatchMouseEvent(document, 'mousemove', left, top + 1);
+          fixture.detectChanges();
+
+          expect(fixture.componentInstance.sortedSpy).not.toHaveBeenCalled();
+        }
+
+        dispatchMouseEvent(document, 'mouseup');
+        fixture.detectChanges();
+        flush();
+      }));
+
     it('should not move items in a vertical list if the pointer is too far away', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();
