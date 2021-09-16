@@ -135,10 +135,14 @@ globally cause input errors to show when the input is dirty and invalid.
 ```
 
 ### Keyboard interaction
-
-- <kbd>DOWN_ARROW</kbd>: Focus next option
-- <kbd>UP_ARROW</kbd>: Focus previous option
-- <kbd>ENTER</kbd> or <kbd>SPACE</kbd>: Select focused item
+| Keyboard shortcut                      | Action                                                                |
+|----------------------------------------|-----------------------------------------------------------------------|
+| <kbd>Down Arrow</kbd>                  | Navigate to the next option.                                          |
+| <kbd>Up Arrow</kbd>                    | Navigate to the previous option.                                      |
+| <kbd>Enter</kbd>                       | If closed, open the select panel. If open, selects the active option. |
+| <kbd>Escape</kbd>                      | Close the select panel.                                               |
+| <kbd>Alt</kbd> + <kbd>Up Arrow</kbd>   | Close the select panel.                                               |
+| <kbd>Alt</kbd> + <kbd>Down Arrow</kbd> | Open the select panel if there are any matching options.              |
 
 ### Accessibility
 When possible, prefer a native `<select>` element over `MatSelect`. The native control
@@ -149,7 +153,7 @@ specification](https://www.w3.org/TR/wai-aria-1.2). The combobox trigger control
 element opened in a pop-up. Previous versions of the ARIA specification
 required that `role="combobox"` apply to a text input control, but the 1.2 version of the
 specification supports a wider variety of interaction patterns. This newer usage of ARIA works
-in all browser and screen-reader combinations supports by Angular Material.
+in all browser and screen-reader combinations supported by Angular Material.
 
 Because the pop-up uses the `role="listbox"` pattern, you should _not_ put other interactive
 controls, such as buttons or checkboxes, inside a select option. Nesting interactive controls like

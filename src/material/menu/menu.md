@@ -90,12 +90,14 @@ with a different set of data, depending on the trigger that opened it:
 ```
 
 ### Keyboard interaction
-- <kbd>DOWN_ARROW</kbd>: Focuses the next menu item
-- <kbd>UP_ARROW</kbd>: Focuses previous menu item
-- <kbd>RIGHT_ARROW</kbd>: Opens the menu item's sub-menu
-- <kbd>LEFT_ARROW</kbd>: Closes the current menu, if it is a sub-menu
-- <kbd>ENTER</kbd>: Activates the focused menu item
-- <kbd>ESCAPE</kbd>: Closes the menu
+| Keyboard shortcut      | Action                                      |
+|------------------------|---------------------------------------------|
+| <kbd>Down Arrow</kbd>  | Focus the next menu item.                   |
+| <kbd>Up Arrow</kbd>    | Focus the previous menu item.               |
+| <kbd>Left Arrow</kbd>  | Close the current menu if it is a sub-menu. |
+| <kbd>Right Arrow</kbd> | Opens the current menu item's sub-menu.     |
+| <kbd>Enter</kbd>       | Activate the focused menu item.             |
+| <kbd>Escape</kbd>      | Close all open menus.                       |
 
 ### Accessibility
 

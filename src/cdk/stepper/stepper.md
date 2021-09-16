@@ -50,11 +50,12 @@ If you want to reset a stepper to its initial state, you can use the `reset` met
 resetting it will call `reset` on the underlying form control which clears the value.
 
 ### Keyboard interaction
-- <kbd>LEFT_ARROW</kbd>: Focuses the previous step header
-- <kbd>RIGHT_ARROW</kbd>: Focuses the next step header
-- <kbd>ENTER</kbd>, <kbd>SPACE</kbd>: Selects the step that the focus is currently on
-- <kbd>TAB</kbd>: Focuses the next tabbable element
-- <kbd>SHIFT</kbd>+<kbd>TAB</kbd>: Focuses the previous tabbable element
+| Keyboard shortcut      | Action                          |
+|------------------------|---------------------------------|
+| <kbd>Left Arrow</kbd>  | Focus the previous step header. |
+| <kbd>Right Arrow</kbd> | Focus the next step header.     |
+| <kbd>Enter</kbd>       | Select the focused step.        |
+| <kbd>Space</kbd>       | Select the focused step.        |
 
 ### Accessibility
 Apart from the built-in keyboard support, the stepper doesn't apply any treatment. When implementing

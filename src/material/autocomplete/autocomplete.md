@@ -100,12 +100,14 @@ autocomplete is attached to using the `matAutocompleteOrigin` directive together
 ```
 
 ### Keyboard interaction
-- <kbd>Down Arrow</kbd>: Next option becomes active
-- <kbd>Up Arrow</kbd>: Previous option becomes active
-- <kbd>Enter</kbd>: Selects currently active item
-- <kbd>Escape</kbd>: Closes the autocomplete panel
-- <kbd>Alt + Up Arrow</kbd>: Closes the autocomplete panel
-- <kbd>Alt + Down Arrow</kbd>: Open the autocomplete panel if there are any matching options.
+| Keyboard shortcut                      | Action                                                         |
+|----------------------------------------|----------------------------------------------------------------|
+| <kbd>Down Arrow</kbd>                  | Navigate to the next option.                                   |
+| <kbd>Up Arrow</kbd>                    | Navigate to the previous option.                               |
+| <kbd>Enter</kbd>                       | Select the active option.                                      |
+| <kbd>Escape</kbd>                      | Close the autocomplete panel.                                  |
+| <kbd>Alt</kbd> + <kbd>Up Arrow</kbd>   | Close the autocomplete panel.                                  |
+| <kbd>Alt</kbd> + <kbd>Down Arrow</kbd> | Open the autocomplete panel if there are any matching options. |
 
 ### Option groups
 `mat-option` can be collected into groups using the `mat-optgroup` element:
@@ -121,8 +123,8 @@ pattern, you should _not_ put other interactive controls, such as buttons or che
 an autocomplete option. Nesting interactive controls like this interferes with most assistive
 technology.
 
-Always provide an accessible label for the autocomplete. This can be done
-via `<mat-label>` inside of `<mat-form-field>`, a native `<label>` element, the `aria-label`
+Always provide an accessible label for the autocomplete. This can be done by using a
+`<mat-label>` inside of `<mat-form-field>`, a native `<label>` element, the `aria-label`
 attribute, or the `aria-labelledby` attribute.
 
 `MatAutocomplete` preserves focus on the text trigger, using `aria-activedescendant` to support
