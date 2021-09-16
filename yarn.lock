@@ -166,10 +166,10 @@
     ora "5.4.1"
     rxjs "6.6.7"
 
-"@angular/animations@github:angular/animations-builds#c6f5fe2c3d798255e62542ea1869f5632b94b73a":
-  version "13.0.0-next.5+46.sha-5163999.with-local-changes"
-  uid c6f5fe2c3d798255e62542ea1869f5632b94b73a
-  resolved "https://codeload.github.com/angular/animations-builds/tar.gz/c6f5fe2c3d798255e62542ea1869f5632b94b73a"
+"@angular/animations@github:angular/animations-builds#cf697933fcc954490f8a7f8a3f140618038eab79":
+  version "13.0.0-next.6+27.sha-e55d052.with-local-changes"
+  uid cf697933fcc954490f8a7f8a3f140618038eab79
+  resolved "https://codeload.github.com/angular/animations-builds/tar.gz/cf697933fcc954490f8a7f8a3f140618038eab79"
   dependencies:
     tslib "^2.2.0"
 
@@ -207,17 +207,17 @@
     symbol-observable "4.0.0"
     uuid "8.3.2"
 
-"@angular/common@github:angular/common-builds#7fde31a50043ea5154db6d29b76dca1ca496eeb5":
-  version "13.0.0-next.5+46.sha-5163999.with-local-changes"
-  uid "7fde31a50043ea5154db6d29b76dca1ca496eeb5"
-  resolved "https://codeload.github.com/angular/common-builds/tar.gz/7fde31a50043ea5154db6d29b76dca1ca496eeb5"
+"@angular/common@github:angular/common-builds#66f3bb6d6dc8f05378b8600673ebd871738cc0c5":
+  version "13.0.0-next.6+27.sha-e55d052.with-local-changes"
+  uid "66f3bb6d6dc8f05378b8600673ebd871738cc0c5"
+  resolved "https://codeload.github.com/angular/common-builds/tar.gz/66f3bb6d6dc8f05378b8600673ebd871738cc0c5"
   dependencies:
     tslib "^2.2.0"
 
-"@angular/compiler-cli@github:angular/compiler-cli-builds#8dda43a477b2a0ade909fa8a14f10345c795fb83":
-  version "13.0.0-next.5+46.sha-5163999.with-local-changes"
-  uid "8dda43a477b2a0ade909fa8a14f10345c795fb83"
-  resolved "https://codeload.github.com/angular/compiler-cli-builds/tar.gz/8dda43a477b2a0ade909fa8a14f10345c795fb83"
+"@angular/compiler-cli@github:angular/compiler-cli-builds#010ef4e6759bfcac48f55f59c442a976361de060":
+  version "13.0.0-next.6+27.sha-e55d052.with-local-changes"
+  uid "010ef4e6759bfcac48f55f59c442a976361de060"
+  resolved "https://codeload.github.com/angular/compiler-cli-builds/tar.gz/010ef4e6759bfcac48f55f59c442a976361de060"
   dependencies:
     "@babel/core" "^7.8.6"
     "@babel/types" "^7.8.6"
@@ -239,10 +239,10 @@
   resolved "https://registry.yarnpkg.com/@angular/compiler/-/compiler-9.0.0.tgz#87e0bef4c369b6cadae07e3a4295778fc93799d5"
   integrity sha512-ctjwuntPfZZT2mNj2NDIVu51t9cvbhl/16epc5xEwyzyDt76pX9UgwvY+MbXrf/C/FWwdtmNtfP698BKI+9leQ==
 
-"@angular/compiler@github:angular/compiler-builds#b176a9ea48a1cc71876b4cf3a022724cb28274e5":
-  version "13.0.0-next.5+46.sha-5163999.with-local-changes"
-  uid b176a9ea48a1cc71876b4cf3a022724cb28274e5
-  resolved "https://codeload.github.com/angular/compiler-builds/tar.gz/b176a9ea48a1cc71876b4cf3a022724cb28274e5"
+"@angular/compiler@github:angular/compiler-builds#208fcec9f2f3acc4b3c7dad9180c9e4cafd3ea7d":
+  version "13.0.0-next.6+27.sha-e55d052.with-local-changes"
+  uid "208fcec9f2f3acc4b3c7dad9180c9e4cafd3ea7d"
+  resolved "https://codeload.github.com/angular/compiler-builds/tar.gz/208fcec9f2f3acc4b3c7dad9180c9e4cafd3ea7d"
   dependencies:
     tslib "^2.2.0"
 
@@ -251,31 +251,31 @@
   resolved "https://registry.yarnpkg.com/@angular/core/-/core-9.0.0.tgz#227dc53e1ac81824f998c6e76000b7efc522641e"
   integrity sha512-6Pxgsrf0qF9iFFqmIcWmjJGkkCaCm6V5QNnxMy2KloO3SDq6QuMVRbN9RtC8Urmo25LP+eZ6ZgYqFYpdD8Hd9w==
 
-"@angular/core@github:angular/core-builds#406ae7c979b6e2c46acad36fc8a5a587097abd58":
-  version "13.0.0-next.5+46.sha-5163999.with-local-changes"
-  uid "406ae7c979b6e2c46acad36fc8a5a587097abd58"
-  resolved "https://codeload.github.com/angular/core-builds/tar.gz/406ae7c979b6e2c46acad36fc8a5a587097abd58"
+"@angular/core@github:angular/core-builds#0aceecbc5375668f91ca230dc62147ed0f958e4c":
+  version "13.0.0-next.6+27.sha-e55d052.with-local-changes"
+  uid "0aceecbc5375668f91ca230dc62147ed0f958e4c"
+  resolved "https://codeload.github.com/angular/core-builds/tar.gz/0aceecbc5375668f91ca230dc62147ed0f958e4c"
   dependencies:
     tslib "^2.2.0"
 
-"@angular/elements@github:angular/elements-builds#6a1d572a60f8572dec00dfe928b26bfb0bce0a0a":
-  version "13.0.0-next.5+46.sha-5163999.with-local-changes"
-  uid "6a1d572a60f8572dec00dfe928b26bfb0bce0a0a"
-  resolved "https://codeload.github.com/angular/elements-builds/tar.gz/6a1d572a60f8572dec00dfe928b26bfb0bce0a0a"
+"@angular/elements@github:angular/elements-builds#e279de19af9735a459f4721fbabf6b2e915596f4":
+  version "13.0.0-next.6+27.sha-e55d052.with-local-changes"
+  uid e279de19af9735a459f4721fbabf6b2e915596f4
+  resolved "https://codeload.github.com/angular/elements-builds/tar.gz/e279de19af9735a459f4721fbabf6b2e915596f4"
   dependencies:
     tslib "^2.2.0"
 
-"@angular/forms@github:angular/forms-builds#2523146459ac90f7a9f6cec0a79e156d24735015":
-  version "13.0.0-next.5+46.sha-5163999.with-local-changes"
-  uid "2523146459ac90f7a9f6cec0a79e156d24735015"
-  resolved "https://codeload.github.com/angular/forms-builds/tar.gz/2523146459ac90f7a9f6cec0a79e156d24735015"
+"@angular/forms@github:angular/forms-builds#c72971307baa2686a252c201702c1e6019c39b30":
+  version "13.0.0-next.6+27.sha-e55d052.with-local-changes"
+  uid c72971307baa2686a252c201702c1e6019c39b30
+  resolved "https://codeload.github.com/angular/forms-builds/tar.gz/c72971307baa2686a252c201702c1e6019c39b30"
   dependencies:
     tslib "^2.2.0"
 
-"@angular/language-service@github:angular/language-service-builds#eb29bee000306cc4ec1f972fa1539c8c2a4ed1c7":
-  version "13.0.0-next.5+46.sha-5163999.with-local-changes"
-  uid eb29bee000306cc4ec1f972fa1539c8c2a4ed1c7
-  resolved "https://codeload.github.com/angular/language-service-builds/tar.gz/eb29bee000306cc4ec1f972fa1539c8c2a4ed1c7"
+"@angular/language-service@github:angular/language-service-builds#7e95d5fbe1738120b713443057f839e5f0709ddf":
+  version "13.0.0-next.6+27.sha-e55d052.with-local-changes"
+  uid "7e95d5fbe1738120b713443057f839e5f0709ddf"
+  resolved "https://codeload.github.com/angular/language-service-builds/tar.gz/7e95d5fbe1738120b713443057f839e5f0709ddf"
 
 "@angular/material@~12.2.0":
   version "12.2.2"
@@ -284,24 +284,24 @@
   dependencies:
     tslib "^2.2.0"
 
-"@angular/platform-browser-dynamic@github:angular/platform-browser-dynamic-builds#02d8f7f11d500e5786e7915cce6ca263fa66f8ca":
-  version "13.0.0-next.5+46.sha-5163999.with-local-changes"
-  uid "02d8f7f11d500e5786e7915cce6ca263fa66f8ca"
-  resolved "https://codeload.github.com/angular/platform-browser-dynamic-builds/tar.gz/02d8f7f11d500e5786e7915cce6ca263fa66f8ca"
+"@angular/platform-browser-dynamic@github:angular/platform-browser-dynamic-builds#cd7f8829293070ad5811bc462d9e85a50ddf86f1":
+  version "13.0.0-next.6+27.sha-e55d052.with-local-changes"
+  uid cd7f8829293070ad5811bc462d9e85a50ddf86f1
+  resolved "https://codeload.github.com/angular/platform-browser-dynamic-builds/tar.gz/cd7f8829293070ad5811bc462d9e85a50ddf86f1"
   dependencies:
     tslib "^2.2.0"
 
-"@angular/platform-browser@github:angular/platform-browser-builds#407baab37fd2e8df322f6dbaca794db9f0feb2e5":
-  version "13.0.0-next.5+46.sha-5163999.with-local-changes"
-  uid "407baab37fd2e8df322f6dbaca794db9f0feb2e5"
-  resolved "https://codeload.github.com/angular/platform-browser-builds/tar.gz/407baab37fd2e8df322f6dbaca794db9f0feb2e5"
+"@angular/platform-browser@github:angular/platform-browser-builds#3550b4991af17472693e59a1781d92d4bca9bfdd":
+  version "13.0.0-next.6+27.sha-e55d052.with-local-changes"
+  uid "3550b4991af17472693e59a1781d92d4bca9bfdd"
+  resolved "https://codeload.github.com/angular/platform-browser-builds/tar.gz/3550b4991af17472693e59a1781d92d4bca9bfdd"
   dependencies:
     tslib "^2.2.0"
 
-"@angular/router@github:angular/router-builds#edf144abeb99742e889bb56e0a5508877c955b75":
-  version "13.0.0-next.5+46.sha-5163999.with-local-changes"
-  uid edf144abeb99742e889bb56e0a5508877c955b75
-  resolved "https://codeload.github.com/angular/router-builds/tar.gz/edf144abeb99742e889bb56e0a5508877c955b75"
+"@angular/router@github:angular/router-builds#c001f494265a931ba29bea56915490b0724d3bca":
+  version "13.0.0-next.6+27.sha-e55d052.with-local-changes"
+  uid c001f494265a931ba29bea56915490b0724d3bca
+  resolved "https://codeload.github.com/angular/router-builds/tar.gz/c001f494265a931ba29bea56915490b0724d3bca"
   dependencies:
     tslib "^2.2.0"
 
