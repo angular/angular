@@ -80,6 +80,10 @@ export interface MatSliderDragEvent {
   styleUrls: ['slider-thumb.css'],
   host: {
     'class': 'mdc-slider__thumb mat-mdc-slider-visual-thumb',
+
+    // NOTE: This class is used internally.
+    // TODO(wagnermaciel): Remove this once it is handled by the mdc foundation (cl/388828896).
+    '[class.mdc-slider__thumb--short-value]': '_isShortValue()',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
@@ -148,6 +152,11 @@ export class MatSliderVisualThumb implements AfterViewInit, OnDestroy {
   ngOnDestroy() {
     this._elementRef.nativeElement.removeEventListener('mouseenter', this._onMouseEnter);
     this._elementRef.nativeElement.removeEventListener('mouseleave', this._onMouseLeave);
+  }
+
+  /** Used to append a class to indicate when the value indicator text is short. */
+  _isShortValue(): boolean {
+    return this.valueIndicatorText?.length <= 2;
   }
 
   private _onMouseEnter = (): void => {
