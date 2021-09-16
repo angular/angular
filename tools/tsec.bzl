@@ -5,10 +5,10 @@ load("@npm//@bazel/typescript/internal:ts_config.bzl", "TsConfigInfo")
 load("@build_bazel_rules_nodejs//:providers.bzl", "DeclarationInfo")
 load("@npm//tsec:index.bzl", _tsec_test = "tsec_test")
 
-TsLibInfo = provider(fields = ["srcs", "deps", "module_name", "paths"])
+TsecTargetInfo = provider(fields = ["srcs", "deps", "module_name", "paths"])
 
 def _capture_tsec_attrs_aspect_impl(target, ctx):
-    """Capture certain attributes of `ts_library` into a TsLibInfo provider."""
+    """Capture certain attributes of `ts_library` into a TsecTargetInfo provider."""
     module_name = getattr(target, "module_name", None)
 
     paths = {}
@@ -16,12 +16,12 @@ def _capture_tsec_attrs_aspect_impl(target, ctx):
     if module_name:
         paths[module_name] = [target.label.package]
     for d in ctx.rule.attr.deps:
-        if TsLibInfo in d:
-            paths.update(d[TsLibInfo].paths)
+        if TsecTargetInfo in d:
+            paths.update(d[TsecTargetInfo].paths)
         if DeclarationInfo in d:
             deps.append(d[DeclarationInfo].transitive_declarations)
     return [
-        TsLibInfo(
+        TsecTargetInfo(
             srcs = ctx.rule.attr.srcs,
             deps = depset(transitive = deps),
             module_name = module_name,
@@ -44,10 +44,8 @@ def _generate_tsconfig(target, base_tsconfig):
     compiler_options = {"noEmit": True}
     compiler_options["baseUrl"] = base_url
 
-    tslib_info = target[TsLibInfo]
-    paths = dict(**tslib_info.paths)
-    paths.pop(tslib_info.module_name)
-    compiler_options["paths"] = paths
+    tslib_info = target[TsecTargetInfo]
+    compiler_options["paths"] = tslib_info.paths
 
     tsconfig["compilerOptions"] = compiler_options
 
@@ -65,11 +63,13 @@ def _generate_tsconfig(target, base_tsconfig):
         # Do not include declarations in node_modules
         if f.owner.workspace_name == "npm":
             continue
+
         path = f.short_path
 
         # Do not include ngc produced files
         if path.endswith(".ngfactory.d.ts") or path.endswith(".ngsummary.d.ts"):
             continue
+
         sets.insert(files, base_url + "/" + path)
 
     tsconfig["files"] = sets.to_list(files)
@@ -88,7 +88,7 @@ def _tsec_config_impl(ctx):
     if base:
         if TsConfigInfo not in base:
             fail("`base` must be a ts_config target")
-        deps.append(depset(base[TsConfigInfo].deps))
+        deps.extend(base[TsConfigInfo].deps)
         base_tsconfig_src = ctx.attr.base.files.to_list()[0]
 
     ts_target = ctx.attr.target
@@ -99,7 +99,9 @@ def _tsec_config_impl(ctx):
         content = generated_tsconfig_content,
     )
 
-    return [DefaultInfo(files = depset([ctx.outputs.out], transitive = deps))]
+    deps.append(ctx.outputs.out)
+
+    return [DefaultInfo(files = depset(deps))]
 
 _tsec_config = rule(
     implementation = _tsec_config_impl,
@@ -119,10 +121,10 @@ _tsec_config = rule(
 )
 
 def _all_transitive_deps_impl(ctx):
-    if TsLibInfo not in ctx.attr.target:
+    if TsecTargetInfo not in ctx.attr.target:
         fail("`target` must be a ts_library target")
 
-    tslib_info = ctx.attr.target[TsLibInfo]
+    tslib_info = ctx.attr.target[TsecTargetInfo]
 
     files = []
     for s in tslib_info.srcs:
