@@ -66,13 +66,12 @@ shown.
 
 ### Accessibility
 
-Elements with the `matTooltip` will add an `aria-describedby` label that provides a reference
+`MatTooltip` adds an `aria-describedby` description that provides a reference
 to a visually hidden element containing the tooltip's message. This provides screenreaders the
-information needed to read out the tooltip's contents when the end-user focuses on the element
-triggering the tooltip. The element referenced via `aria-describedby` is not the tooltip itself,
+information needed to read out the tooltip's contents when the end-user focuses on tooltip's
+trigger. The element referenced by `aria-describedby` is not the tooltip itself,
 but instead an invisible copy of the tooltip content that is always present in the DOM.
 
-If a tooltip will only be shown manually via click, keypress, etc., then extra care should be taken
-such that the action behaves similarly for screen-reader users. One possible approach would be
-to use the `LiveAnnouncer` from the `cdk/a11y` package to announce the tooltip content on such
-an interaction.
+Avoid interactions that exclusively show a tooltip with pointer events like click and mouseenter.
+Always ensure that keyboard users can perform the same set of actions available to mouse and
+touch users.

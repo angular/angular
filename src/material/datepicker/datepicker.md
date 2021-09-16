@@ -562,72 +562,80 @@ value can be anything that is accepted by `ngClass`.
 
 ### Accessibility
 
-The `MatDatepickerInput` and `MatDatepickerToggle` directives add the `aria-haspopup` attribute to
-the native input and toggle button elements respectively, and they trigger a calendar dialog with
-`role="dialog"`.
+The `MatDatepicker` pop-up uses the `role="dialog"` interaction pattern. This dialog then contains
+multiple controls, the most prominent being the calendar itself. This calendar implements the
+`role="grid"` interaction pattern.
 
-`MatDatepickerIntl` includes strings that are used for `aria-label`s. The datepicker input
-should have a placeholder or be given a meaningful label via `aria-label`, `aria-labelledby` or
+The `MatDatepickerInput` and `MatDatepickerToggle` directives both apply the `aria-haspopup`
+attribute to the native input and button elements, respectively.
+
+`MatDatepickerIntl` includes strings that are used for `aria-label` attributes. Always provide
+the datepicker text input a meaningful label via `<mat-label>`, `aria-label`, `aria-labelledby` or
 `MatDatepickerIntl`.
+
+`MatDatepickerInput` adds <kbd>>Alt</kbd> + <kbd>Down Arrow</kbd> as a keyboard short to open the
+datepicker pop-up. However, ChromeOS intercepts this key combination at the OS level such that the
+browser only receives a `PageDown` key event. Because of this behavior, you should always include an
+additional means of opening the pop-up, such as `MatDatepickerToggle`.
 
 #### Keyboard interaction
 
 The datepicker supports the following keyboard shortcuts:
 
-| Shortcut             | Action                                    |
-|----------------------|-------------------------------------------|
-| `ALT` + `DOWN_ARROW` | Open the calendar pop-up                  |
-| `ESCAPE`             | Close the calendar pop-up                 |
+| Shortcut                               | Action                     |
+|----------------------------------------|----------------------------|
+| <kbd>ALT</kbd> + <kbd>DOWN_ARROW</kbd> | Open the calendar pop-up   |
+| <kbd>ESCAPE</kbd>                      | Close the calendar pop-up  |
 
 
 In month view:
 
-| Shortcut             | Action                                    |
-|----------------------|-------------------------------------------|
-| `LEFT_ARROW`         | Go to previous day                        |
-| `RIGHT_ARROW`        | Go to next day                            |
-| `UP_ARROW`           | Go to same day in the previous week       |
-| `DOWN_ARROW`         | Go to same day in the next week           |
-| `HOME`               | Go to the first day of the month          |
-| `END`                | Go to the last day of the month           |
-| `PAGE_UP`            | Go to the same day in the previous month  |
-| `ALT` + `PAGE_UP`    | Go to the same day in the previous year   |
-| `PAGE_DOWN`          | Go to the same day in the next month      |
-| `ALT` + `PAGE_DOWN`  | Go to the same day in the next year       |
-| `ENTER`              | Select current date                       |
+| Shortcut                              | Action                                   |
+|---------------------------------------|------------------------------------------|
+| <kbd>LEFT_ARROW</kbd>                 | Go to previous day                       |
+| <kbd>RIGHT_ARROW</kbd>                | Go to next day                           |
+| <kbd>UP_ARROW</kbd>                   | Go to same day in the previous week      |
+| <kbd>DOWN_ARROW</kbd>                 | Go to same day in the next week          |
+| <kbd>HOME</kbd>                       | Go to the first day of the month         |
+| <kbd>END</kbd>                        | Go to the last day of the month          |
+| <kbd>PAGE_UP</kbd>                    | Go to the same day in the previous month |
+| <kbd>ALT</kbd> + <kbd>PAGE_UP</kbd>   | Go to the same day in the previous year  |
+| <kbd>PAGE_DOWN</kbd>                  | Go to the same day in the next month     |
+| <kbd>ALT</kbd> + <kbd>PAGE_DOWN</kbd> | Go to the same day in the next year      |
+| <kbd>ENTER</kbd>                      | Select current date                      |
 
 
 In year view:
 
-| Shortcut             | Action                                    |
-|----------------------|-------------------------------------------|
-| `LEFT_ARROW`         | Go to previous month                      |
-| `RIGHT_ARROW`        | Go to next month                          |
-| `UP_ARROW`           | Go up a row (back 4 months)               |
-| `DOWN_ARROW`         | Go down a row (forward 4 months)          |
-| `HOME`               | Go to the first month of the year         |
-| `END`                | Go to the last month of the year          |
-| `PAGE_UP`            | Go to the same month in the previous year |
-| `ALT` + `PAGE_UP`    | Go to the same month 10 years back        |
-| `PAGE_DOWN`          | Go to the same month in the next year     |
-| `ALT` + `PAGE_DOWN`  | Go to the same month 10 years forward     |
-| `ENTER`              | Select current month                      |
+| Shortcut                              | Action                                    |
+|---------------------------------------|-------------------------------------------|
+| <kbd>LEFT_ARROW</kbd>                 | Go to previous month                      |
+| <kbd>RIGHT_ARROW</kbd>                | Go to next month                          |
+| <kbd>UP_ARROW</kbd>                   | Go up a row (back 4 months)               |
+| <kbd>DOWN_ARROW</kbd>                 | Go down a row (forward 4 months)          |
+| <kbd>HOME</kbd>                       | Go to the first month of the year         |
+| <kbd>END</kbd>                        | Go to the last month of the year          |
+| <kbd>PAGE_UP</kbd>                    | Go to the same month in the previous year |
+| <kbd>ALT</kbd> + <kbd>PAGE_UP</kbd>   | Go to the same month 10 years back        |
+| <kbd>PAGE_DOWN</kbd>                  | Go to the same month in the next year     |
+| <kbd>ALT</kbd> + <kbd>PAGE_DOWN</kbd> | Go to the same month 10 years forward     |
+| <kbd>ENTER</kbd>                      | Select current month                      |
 
 In multi-year view:
 
-| Shortcut             | Action                                    |
-|----------------------|-------------------------------------------|
-| `LEFT_ARROW`         | Go to previous year                       |
-| `RIGHT_ARROW`        | Go to next year                           |
-| `UP_ARROW`           | Go up a row (back 4 years)                |
-| `DOWN_ARROW`         | Go down a row (forward 4 years)           |
-| `HOME`               | Go to the first year in the current range |
-| `END`                | Go to the last year in the current range  |
-| `PAGE_UP`            | Go back 24 years                          |
-| `ALT` + `PAGE_UP`    | Go back 240 years                         |
-| `PAGE_DOWN`          | Go forward 24 years                       |
-| `ALT` + `PAGE_DOWN`  | Go forward 240 years                      |
-| `ENTER`              | Select current year                       |
+| Shortcut                              | Action                                    |
+|---------------------------------------|-------------------------------------------|
+| <kbd>LEFT_ARROW</kbd>                 | Go to previous year                       |
+| <kbd>RIGHT_ARROW</kbd>                | Go to next year                           |
+| <kbd>UP_ARROW</kbd>                   | Go up a row (back 4 years)                |
+| <kbd>DOWN_ARROW</kbd>                 | Go down a row (forward 4 years)           |
+| <kbd>HOME</kbd>                       | Go to the first year in the current range |
+| <kbd>END</kbd>                        | Go to the last year in the current range  |
+| <kbd>PAGE_UP</kbd>                    | Go back 24 years                          |
+| <kbd>ALT</kbd> + <kbd>PAGE_UP</kbd>   | Go back 240 years                         |
+| <kbd>PAGE_DOWN</kbd>                  | Go forward 24 years                       |
+| <kbd>ALT</kbd> + <kbd>PAGE_DOWN</kbd> | Go forward 240 years                      |
+| <kbd>ENTER</kbd>                      | Select current year                       |
 
 ### Troubleshooting
 

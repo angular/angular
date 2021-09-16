@@ -22,9 +22,18 @@ The color of a `<mat-slide-toggle>` can be changed by using the `color` property
 slide-toggles use the theme's accent color. This can be changed to `'primary'` or `'warn'`.
 
 ### Accessibility
-The `<mat-slide-toggle>` uses an internal `<input type="checkbox">` to provide an accessible
-experience. This internal checkbox receives focus and is automatically labelled by the text content
-of the `<mat-slide-toggle>` element.
 
-Slide toggles without text or labels should be given a meaningful label via `aria-label` or
-`aria-labelledby`.
+`MatSlideToggle` uses an internal `<input type="checkbox">` with `role="switch"` to provide an
+accessible experience. This internal checkbox receives focus and is automatically labelled by the
+text content of the `<mat-slide-toggle>` element. Avoid adding other interactive controls into the
+content of `<mat-slide-toggle>`, as this degrades the experience for users of assistive technology.
+
+Always provide an accessible label via `aria-label` or `aria-labelledby` for toggles without
+descriptive text content. For dynamic labels, `MatSlideToggle` provides input properties for binding
+`aria-label` and `aria-labelledby`. This means that you should not use the `attr.` prefix when
+binding these properties, as demonstrated below.
+
+```html
+<mat-slide-toggle [aria-label]="isSubscribedToEmailsMessage">
+</mat-slide-toggle>
+```

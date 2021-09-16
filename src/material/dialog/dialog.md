@@ -151,42 +151,48 @@ You can control which elements are tab stops with the `tabindex` attribute
 <!-- example(dialog-content) -->
 
 ### Accessibility
-By default, each dialog has `role="dialog"` on the root element. The role can be changed to
-`alertdialog` via the `MatDialogConfig` when opening.
 
-The `aria-label`, `aria-labelledby`, and `aria-describedby` attributes can all be set to the
-dialog element via the `MatDialogConfig` as well. Each dialog should typically have a label
-set via `aria-label` or `aria-labelledby`.
+`MatDialog` creates modal dialogs that implements the ARIA `role="dialog"` pattern by default.
+You can change the dialog's role to `alertdialog` via `MatDialogConfig`.
 
-When a dialog is opened, it will move focus to the first focusable element that it can find. In
-order to prevent users from tabbing into elements in the background, the Material dialog uses
-a [focus trap](https://material.angular.io/cdk/a11y/overview#focustrap) to contain focus
-within itself. Once a dialog is closed, it will return focus to the element that was focused
-before the dialog was opened.
+You should provide a an accessible label to this root dialog element by setting the `ariaLabel` or
+`ariaLabelledBy` properties of `MatDialogConfig`. You can additionally specify a description element
+ID via the `ariaDescribedBy` property of `MatDialogConfig`.
 
-If you're adding a close button that doesn't have text (e.g. a purely icon-based button), make sure
-that it has a meaningful `aria-label` so that users with assistive technology know what it is used
-for.
+#### Keyboard interaction
+By default, the escape key closes `MatDialog`. While you can disable this behavior via
+the `disableClose` property of `MatDialogConfig`, doing this breaks the expected interaction
+pattern for the ARIA `role="dialog"` pattern.
 
 #### Focus management
-By default, the first tabbable element within the dialog will receive focus upon open. This can
-be configured by setting the `cdkFocusInitial` attribute on another focusable element.
 
-Tabbing through the elements of the dialog will keep focus inside of the dialog element,
-wrapping back to the first tabbable element when reaching the end of the tab sequence.
+When opened, `MatDialog` traps browser focus such that it cannot escape the root
+`role="dialog"` element. By default, the first tabbable element in the dialog receives focus.
+You can customize which element receives focus with the `autoFocus` property of
+`MatDialogConfig`, which supports the following values.
 
-#### Focus Restoration
-Upon closing, the dialog returns focus to the element that had focus when the dialog opened.
-In some cases, however, this previously focused element no longer exists in the DOM, such as
-menu items. To manually restore focus to an appropriate element in such cases, you can disable 
-`restoreFocus` in `MatDialogConfig` and pass it into the `open` method.
-Then you can return focus manually by subscribing to the `afterClosed` observable on `MatDialogRef`.
+| Value            | Behavior                                                                 |
+|------------------|--------------------------------------------------------------------------|
+| `first-tabbable` | Focus the first tabbable element. This is the default setting.           |
+| `first-header`   | Focus the first header element (`role="heading"`, `h1` through `h6`)     |
+| `dialog`         | Focus the root `role="dialog"` element.                                  |
+| Any CSS selector | Focus the first element matching the given selector.                     |
+
+While the default setting applies the best behavior for most applications, special cases may benefit
+from these alternatives. Always test your application to verify the behavior that works best for
+your users.
+
+#### Focus restoration
+
+When closed, `MatDialog` restores focus to the element that previously held focus when the
+dialog opened. However, if that previously focused element no longer exists, you must
+add additional handling to return focus to an element that makes sense for the user's workflow.
+Opening a dialog from a menu is one common pattern that causes this situation. The menu
+closes upon clicking an item, thus the focused menu item is no longer in the DOM when the bottom
+sheet attempts to restore focus.
+
+You can add handling for this situation with the `afterClosed()` observable from `MatDialogRef`.
 
 <!-- example({"example":"dialog-from-menu",
               "file":"dialog-from-menu-example.ts", 
               "region":"focus-restoration"}) -->
-
-#### Keyboard interaction
-By default pressing the escape key will close the dialog. While this behavior can
-be turned off via the `disableClose` option, users should generally avoid doing so
-as it breaks the expected interaction pattern for screen-reader users.

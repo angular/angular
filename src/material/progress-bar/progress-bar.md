@@ -42,4 +42,9 @@ The color of a progress-bar can be changed by using the `color` property. By def
 use the theme's primary color. This can be changed to `'accent'` or `'warn'`.  
 
 ### Accessibility
-Each progress bar should be given a meaningful label via `aria-label` or `aria-labelledby`.
+
+`MatProgressBar` implements the ARIA `role="progressbar"` pattern. By default, the progress bar
+sets `aria-valuemin` to `0` and `aria-valuemax` to `100`. Avoid changing these values, as this may
+cause incompatiblity with some assitive technology.
+
+Always provide an accessible label via `aria-label` or `aria-labelledby` for each progress bar.

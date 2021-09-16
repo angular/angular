@@ -376,13 +376,15 @@ to resolve this.
 When using the `multiTemplateDataRows` directive to support multiple rows for each data object, the context of `*matRowDef` is the same except that the `index` value is replaced by `dataIndex` and `renderIndex`.
 
 ### Accessibility
-Tables without text or labels should be given a meaningful label via `aria-label` or
-`aria-labelledby`. The `aria-readonly` defaults to `true` if it's not set.
 
-Table's default role is `grid`, and it can be changed to `treegrid` through `role` attribute.
+By default, `MatTable` applies `role="table"`, assuming the table's contains primarily static
+content. You can change the role by explicitly setting `role="grid"` or `role="treegrid"` on the
+table element. While changing the role will update child element roles, such as changing
+`role="cell"` to `role="gridcell"`, this not _not_ apply additional keyboard input handling or
+focus management to the table.
 
-`mat-table` does not manage any focus/keyboard interaction on its own. Users can add desired
-focus/keyboard interactions in their application.
+Always provide an accessible label for your tables via `aria-label` or `aria-labelledby` on the
+table element.
 
 ### Tables with `display: flex`
 

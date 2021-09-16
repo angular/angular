@@ -23,4 +23,9 @@ The color of a progress-spinner can be changed by using the `color` property. By
 progress-spinners use the theme's primary color. This can be changed to `'accent'` or `'warn'`.
 
 ### Accessibility
-Each progress spinner should be given a meaningful label via `aria-label` or `aria-labelledby`.
+
+`MatProgressSpinner` implements the ARIA `role="progressbar"` pattern. By default, the spinner
+sets `aria-valuemin` to `0` and `aria-valuemax` to `100`. Avoid changing these values, as this may
+cause incompatiblity with some assitive technology.
+
+Always provide an accessible label via `aria-label` or `aria-labelledby` for each spinner.

@@ -85,17 +85,28 @@ duration can be configured globally using the `MAT_TABS_CONFIG` injection token.
                "region": "slow-animation-duration"}) -->
 
 ### Accessibility
-`<mat-tab-group>` and `<mat-nav-tab-bar>` use different interaction patterns. The
-`<mat-tab-group>` component combines `tablist`, `tab`, and `tabpanel` into a single component with
-the appropriate keyboard shortcuts. The `<mat-nav-tab-bar>`, however, use a _navigation_ interaction
-pattern by using a `<nav>` element with anchor elements as the "tabs". The difference
-between these two patterns comes from the fact one updates the page URL while the other does not.
+`MatTabGroup` and `MatTabNavBar` implement different interaction patterns for different use-cases.
+You should choose the component that works best for your application.
+
+`MatTabGroup` combines `tablist`, `tab`, and `tabpanel` into a single component with
+handling for keyboard inputs and focus management. You should use this component for switching
+between content within a single page. 
+
+`MatTabNavBar`, implements a navigation interaction pattern by using a `<nav>` element with anchor
+elements as the "tabs". You should use this component when you want your cross-page navigation to
+look like a tabbed interface. As a rule of thumb, you should consider `MatTabNavBar` if changing
+tabs would change the browser URL.
 
 #### Labels
-Tabs without text or labels should be given a meaningful label via `aria-label` or
-`aria-labelledby`. For `MatTabNav`, the `<nav>` element should have a label as well.
+
+Always provide an accessible label via `aria-label` or `aria-describedby` for tabs without
+descriptive text content.
+
+When using `MatTabNavGroup`, you should also specify a label for the `<nav>` element. 
 
 #### Keyboard interaction
+
+`MatTabGroup` implements the following keyboard interactions.
 
 | Shortcut             | Action                     |
 |----------------------|----------------------------|
@@ -104,3 +115,6 @@ Tabs without text or labels should be given a meaningful label via `aria-label` 
 | `HOME`               | Move focus to first tab    |
 | `END`                | Move focus to last tab     |
 | `SPACE` or `ENTER`   | Switch to focused tab      |
+
+`MatTabNavBar` does not add additional keyboard handling, deferring to the native behavior of
+anchor elements.

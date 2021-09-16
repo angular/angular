@@ -163,12 +163,22 @@ mat-form-field.mat-form-field {
 
 ### Accessibility
 
+By itself, `MatFormField` does not apply any additional accessibility treatment to a control.
+However, several of the form field's optional features interact with the control contained within
+the form field.
+
+When you provide a label via `<mat-label>`, `MatFormField` automatically associates this label with
+the field's control via a native `<label>` element, using the `for` attribute to reference the
+control's ID.
+
 If a floating label is specified, it will be automatically used as the label for the form
 field control. If no floating label is specified, the user should label the form field control
 themselves using `aria-label`, `aria-labelledby` or `<label for=...>`.
 
-Any errors and hints added to the form field are automatically added to the form field control's
-`aria-describedby` set.
+When you provide informational text via `<mat-hint>` or `<mat-error>`, `MatFormField` automatically
+adds these elements' IDs to the control's `aria-describedby` attribute. Additionally, `MatError`
+applies `aria-live="polite"` by default such that assistive technology will announce errors when
+they appear.
 
 ### Troubleshooting
 

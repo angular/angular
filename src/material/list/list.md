@@ -166,21 +166,32 @@ To add a divider, use `<mat-divider>`.
 ```
 
 ### Accessibility
-The type of list used in any given situation depends on how the end-user will be interacting with it.
+
+Angular Material offers multiple varieties of list so that you can choose the type that best applies
+to your use-case.
 
 #### Navigation
-When the list-items navigate somewhere, `<mat-nav-list>` should be used with `<a mat-list-item>`
-elements as the list items. The nav-list will be rendered using `role="navigation"` and can be
-given an `aria-label` to give context on the set of navigation options presented. Additional
-interactive content, such as buttons, should _not_ be added inside the anchors.
+
+You should use `MatNavList` when every item in the list is an anchor that navigate to another URL.
+The root `<mat-nav-list>` element sets `role="navigation"` and should contain only anchor elements
+with the `mat-list-item` attribute. You should not nest any interactive elements inside these
+anchors, including buttons and checkboxes. 
+
+Always provide an accessible label for the `<mat-nav-list>` element via `aria-label` or
+`aria-labelledby`.
 
 #### Selection
-When the list is primarily used to select one or more values, a `<mat-selection-list>` should be
-used with `<mat-list-option>`, which map to `role="listbox"` and `role="option"`, respectively. The
-list should be given an `aria-label` that describes the value or values being selected. Each option
-should _not_ contain any additional interactive elements, such as buttons.
+
+You should use `MatSelectionList` and `MatListOption` for lists that allow the user to select one
+or more values. This list variant uses the `role="listbox"` interaction pattern, handling all
+associated keyboard input and focus management. You should not nest any interactive elements inside
+these options, including buttons and anchors. 
+
+Always provide an accessible label for the `<mat-selection-list>` element via `aria-label` or
+`aria-labelledby` that describes the selection being made.
 
 #### Custom scenarios
+
 By default, the list assumes that it will be used in a purely decorative fashion and thus sets no
 roles, ARIA attributes, or keyboard shortcuts. This is equivalent to having a sequence of `<div>`
 elements on the page. Any interactive content within the list should be given an appropriate

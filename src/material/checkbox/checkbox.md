@@ -56,9 +56,18 @@ The color of a `<mat-checkbox>` can be changed by using the `color` property. By
 use the theme's accent color. This can be changed to `'primary'` or `'warn'`.  
 
 ### Accessibility
-The `<mat-checkbox>` uses an internal `<input type="checkbox">` to provide an accessible experience.
-This internal checkbox receives focus and is automatically labelled by the text content of the
-`<mat-checkbox>` element.
 
-Checkboxes without text or labels should be given a meaningful label via `aria-label` or
-`aria-labelledby`.
+`MatCheckbox` uses an internal `<input type="checkbox">` to provide an accessible experience.
+This internal checkbox receives focus and is automatically labelled by the text content of the
+`<mat-checkbox>` element. Avoid adding other interactive controls into the content of
+`<mat-checkbox>`, as this degrades the experience for users of assistive technology.
+
+Always provide an accessible label via `aria-label` or `aria-labelledby` for checkboxes without
+descriptive text content. For dynamic labels, `MatCheckbox` provides input properties for binding
+`aria-label` and `aria-labelledby`. This means that you should not use the `attr.` prefix when
+binding these properties, as demonstrated below.
+
+```html
+<mat-checkbox [aria-label]="isSubscribedToEmailsMessage">
+</mat-checkbox>
+```

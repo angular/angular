@@ -96,20 +96,49 @@ for `MAT_BOTTOM_SHEET_DEFAULT_OPTIONS` in your application's root module.
 
 
 ### Accessibility
-By default, the bottom sheet has `role="dialog"` on the root element and can be labelled using the
-`ariaLabel` property on the `MatBottomSheetConfig`.
 
-When a bottom sheet is opened, it will move focus to the first focusable element that it can find.
-In order to prevent users from tabbing into elements in the background, the Material bottom sheet
-uses a [focus trap](https://material.angular.io/cdk/a11y/overview#focustrap) to contain focus
-within itself. Once a bottom sheet is closed, it will return focus to the element that was focused
-before it was opened.
-
-#### Focus management
-By default, the first tabbable element within the bottom sheet will receive focus upon open.
-This can be configured by setting the `cdkFocusInitial` attribute on another focusable element.
+`MatBottomSheet` creates modal dialogs that implement the ARIA `role="dialog"` pattern. This root
+dialog element should be given an accessible label via the `ariaLabel` property of
+`MatBottomSheetConfig`.
 
 #### Keyboard interaction
-By default pressing the escape key will close the bottom sheet. While this behavior can
-be turned off via the `disableClose` option, users should generally avoid doing so
-as it breaks the expected interaction pattern for screen-reader users.
+By default, the escape key closes `MatBottomSheet`. While you can disable this behavior by using
+the `disableClose` property of `MatBottomSheetConfig`, doing this breaks the expected interaction
+pattern for the ARIA `role="dialog"` pattern.
+
+#### Focus management
+
+When opened, `MatBottomSheet` traps browser focus such that it cannot escape the root
+`role="dialog"` element. By default, the first tabbable element in the bottom sheet receives focus.
+You can customize which element receives focus with the `autoFocus` property of
+`MatBottomSheetConfig`, which supports the following values.
+
+| Value            | Behavior                                                                 |
+|------------------|--------------------------------------------------------------------------|
+| `first-tabbable` | Focus the first tabbable element. This is the default setting.           |
+| `first-header`   | Focus the first header element (`role="heading"`, `h1` through `h6`)     |
+| `dialog`         | Focus the root `role="dialog"` element.                                  |
+| Any CSS selector | Focus the first element matching the given selector.                     |
+
+While the default setting applies the best behavior for most applications, special cases may benefit
+from these alternatives. Always test your application to verify the behavior that works best for
+your users.
+
+#### Focus restoration
+
+When closed, `MatBottomSheet` restores focus to the element that previously held focus when the
+bottom sheet opened. However, if that previously focused element no longer exists, you must
+add additional handling to return focus to an element that makes sense for the user's workflow.
+Opening a bottom sheet from a menu is one common pattern that causes this situation. The menu
+closes upon clicking an item, thus the focused menu item is no longer in the DOM when the bottom
+sheet attempts to restore focus.
+
+You can add handling for this situation with the `afterDismissed()` observable from
+`MatBottomSheetRef`.
+
+```typescript
+const bottomSheetRef = bottomSheet.open(FileTypeChooser);
+bottomSheetRef.afterDismissed().subscribe(() => {
+  // Restore focus to an appropriate element for the user's workflow here.
+});
+```

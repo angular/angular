@@ -44,32 +44,36 @@ This element can contain:
     * `<img mat-card-lg-image>`
 
 ### Accessibility
-Cards can be used in a wide variety of scenarios and can contain many different types of content.
-Due to this dynamic nature, the appropriate accessibility treatment depends on how `<mat-card>` is
-used.
+
+Cards serve a wide variety of scenarios and may contain many different types of content.
+Due to this flexible nature, the appropriate accessibility treatment depends on how you use
+`<mat-card>`.
 
 #### Group, region, and landmarks
-There are several ARIA roles that communicate that a portion of the UI represents some semantically
-meaningful whole. Depending on what the content of the card means to your application,
-[`role="group"`][0], [`role="region"`][1], or [one of the landmark roles][2] should typically be
-applied to the `<mat-card>` element.
 
-A role is not necessary when the card is used as a purely decorative container that does not
+There are several ARIA roles that communicate that a portion of the UI represents some semantically
+meaningful whole. Depending on what the content of the card means to your application, you can apply
+one of [`role="group"`][role-group], [`role="region"`][role-region], or
+[one of the landmark roles][aria-landmarks] to the `<mat-card>` element.
+
+You do not need to apply a role when using a card as a purely decorative container that does not
 convey a meaningful grouping of related content for a single subject. In these cases, the content
 of the card should follow standard practices for document content.
 
-
 #### Focus
+
 Depending on how cards are used, it may be appropriate to apply a `tabindex` to the `<mat-card>`
-element. If cards are a primary mechanism through which user interacts with the application,
-`tabindex="0"` is appropriate. If attention can be sent to the card, but it's not part of the
-document flow, `tabindex="-1"` is appropriate.
+element. 
 
-If the card acts as a purely decorative container, it does not need to be tabbable. In this case,
-the card content should follow normal best practices for tab order.
+* If cards are a primary mechanism through which user interacts with the application, `tabindex="0"`
+  may be appropriate. 
+* If attention can be sent to the card, but it's not part of the document flow, `tabindex="-1"` may
+  be appropriate.
+* If the card acts as a purely decorative container, it does not need to be tabbable. In this case,
+  the card content should follow normal best practices for tab order.
 
+Always test your application to verify the behavior that works best for your users.
 
-
- [0]: https://www.w3.org/TR/wai-aria/#group
- [1]: https://www.w3.org/TR/wai-aria/#region
- [2]: https://www.w3.org/TR/wai-aria/#landmark
+[role-group]: https://www.w3.org/TR/wai-aria/#group
+[role-region]: https://www.w3.org/TR/wai-aria/#region
+[aria-landmarks]: https://www.w3.org/TR/wai-aria/#landmark

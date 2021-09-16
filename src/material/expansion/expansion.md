@@ -67,10 +67,10 @@ an `ng-template`:
 ```
 
 ### Accessibility
-The expansion-panel aims to mimic the experience of the native `<details>` and `<summary>` elements.
-The expansion panel header has `role="button"` and also the attribute `aria-controls` with the
-expansion panel's id as value.
 
-The expansion panel headers are buttons. Users can use the keyboard to activate the expansion panel
-header to switch between expanded state and collapsed state. Because the header acts as a button,
-additional interactive elements should not be put inside of the header.
+`MatExpansionPanel` imitates the experience of the native `<details>` and `<summary>` elements.
+The expansion panel header applies `role="button"` and the `aria-controls` attribute with the
+content element's ID.
+
+Because expansion panel headers are buttons, avoid adding interactive controls as children
+of `<mat-expansion-panel-header>`, including buttons and anchors.

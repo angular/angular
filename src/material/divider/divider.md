@@ -53,3 +53,8 @@ in a list, because it will overlap with the section divider.
    </mat-list-item>
 </mat-list>
 ```
+
+### Accessibility
+
+`MatDivider` applies the ARIA `role="separator"` attribute, exclusively implementing the
+non-focusable style of separator that distinguishes sections of content.

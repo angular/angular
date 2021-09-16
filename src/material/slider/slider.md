@@ -92,5 +92,7 @@ The slider has the following keyboard bindings:
 | Home        | Set the value to the minimum possible.                                             |
 
 ### Accessibility
-Sliders without text or labels should be given a meaningful label via `aria-label` or
+
+`MatSlider` implements the ARIA `role="slider"` pattern, handling keyboard input and focus
+management. Always provide an accessible label for each slider via `aria-label` or
 `aria-labelledby`.
