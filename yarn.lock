@@ -147,9 +147,9 @@
   dependencies:
     tslib "^2.0.0"
 
-"@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#eabf2e951703de118c8230c29b3a1055e78f2353":
+"@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#16ccdd6316d72bfdaa9f95148b6918d22c0a3471":
   version "0.0.0"
-  resolved "https://github.com/angular/dev-infra-private-builds.git#eabf2e951703de118c8230c29b3a1055e78f2353"
+  resolved "https://github.com/angular/dev-infra-private-builds.git#16ccdd6316d72bfdaa9f95148b6918d22c0a3471"
   dependencies:
     "@actions/core" "^1.4.0"
     "@actions/github" "^5.0.0"
@@ -157,11 +157,11 @@
     "@angular/benchpress" "0.2.1"
     "@bazel/bazelisk" "^1.10.1"
     "@bazel/buildifier" "^4.0.1"
-    "@bazel/esbuild" "4.0.0"
-    "@bazel/jasmine" "4.0.0"
-    "@bazel/protractor" "4.0.0"
-    "@bazel/runfiles" "4.0.0"
-    "@bazel/typescript" "4.0.0"
+    "@bazel/esbuild" "4.1.0"
+    "@bazel/jasmine" "4.1.0"
+    "@bazel/protractor" "4.1.0"
+    "@bazel/runfiles" "4.1.0"
+    "@bazel/typescript" "4.1.0"
     "@microsoft/api-extractor" "7.18.7"
     "@octokit/auth-app" "^3.6.0"
     "@octokit/core" "^3.5.1"
@@ -514,17 +514,17 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
-"@bazel/bazelisk@1.9.0":
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/@bazel/bazelisk/-/bazelisk-1.9.0.tgz#e55cc5394b838d85651bceb06abdc95a28c44e2f"
-  integrity sha512-IHCKlMBHd7VMt3Za7rpTJA8O1WI8TUes5nDjdYv1MM/4OZQQFbM85Zb8ugQaKvy3CzxLpXgxYZUiq7b2TdhQnw==
-
-"@bazel/bazelisk@^1.10.1":
+"@bazel/bazelisk@1.10.1", "@bazel/bazelisk@^1.10.1":
   version "1.10.1"
   resolved "https://registry.yarnpkg.com/@bazel/bazelisk/-/bazelisk-1.10.1.tgz#46236a43ad58e310c55247f866da0dc6083c3d8b"
   integrity sha512-IHszNzBO2UrUy6YtsSAsZtnU6I6qpzXGkWdEvGoMxLgJnDsEnsIYniDCUjvjU1KAP+A03eepmCHlyFcRHMSxRA==
 
-"@bazel/buildifier@4.0.1", "@bazel/buildifier@^4.0.1":
+"@bazel/buildifier@4.2.1":
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/@bazel/buildifier/-/buildifier-4.2.1.tgz#2ea4c0d5015a1f36174a139e8953c4eec509564e"
+  integrity sha512-eMBw//leW3xIbDrylsFKC7ejOMKAja2Z3BmQ5Zan/h7s/C+F2cMz3UFJhSVZRl4AaN3bXVvTNMz385abaTK/tA==
+
+"@bazel/buildifier@^4.0.1":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@bazel/buildifier/-/buildifier-4.0.1.tgz#52cfbad5cbb86e9183a29dde2370cd465730ea0d"
   integrity sha512-BTmtvJbeeEVrqRApI1gr5hvPgYcHLpdGJ5EXNXEWO692ztMPSj5fB/dH0xUlaW45jn6LimYx8ymqTMhj3538og==
@@ -538,53 +538,63 @@
     source-map-support "0.5.9"
     tsutils "2.27.2"
 
-"@bazel/esbuild@4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@bazel/esbuild/-/esbuild-4.0.0.tgz#daa8286d72a9e6522f6f2c514aed9716a331aa25"
-  integrity sha512-SrdJexg+PNjdsTDp0voPS0SlU/yovbwrH+ObtFShHQ2X52u9mqvU2Cm7If48pWobkGK4rl7vDbzIHYWVKdGXlw==
+"@bazel/esbuild@4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@bazel/esbuild/-/esbuild-4.1.0.tgz#419def12e7d56e095b9d3eb40a66574d7f9b8114"
+  integrity sha512-mN1PfDMJlkgxcpMMTKbD6cpalL8SkRo9om7m6bg1olYSwsrAW6QHNa7ohK4xVtnxgQaWDu4KxioJVMlEmebEqw==
 
 "@bazel/ibazel@0.15.10":
   version "0.15.10"
   resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.15.10.tgz#cf0cff1aec6d8e7bb23e1fc618d09fbd39b7a13f"
   integrity sha512-0v+OwCQ6fsGFa50r6MXWbUkSGuWOoZ22K4pMSdtWiL5LKFIE4kfmMmtQS+M7/ICNwk2EIYob+NRreyi/DGUz5A==
 
-"@bazel/jasmine@4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@bazel/jasmine/-/jasmine-4.0.0.tgz#2e95f1b3458e0d69f16e0c820fe4631a43942a90"
-  integrity sha512-vi1n+vbLwKki7aa8kXDG709nxRXAmLEvqbijSpm8d3rrW4f68Ad5xKyT2gezO84OeysUHU3cDZViXWwFcoHRng==
+"@bazel/jasmine@4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@bazel/jasmine/-/jasmine-4.1.0.tgz#ec9fc5179af265de47aba8bb40a094e9b062aab2"
+  integrity sha512-AUKzBZ12qKkcI5apXzL/2VKfsF4tHkdLPNsF/p6gEnIW4/aYb6M9wZOFsUh1MLYds+kqx1zN90EGfiZKa6wbOw==
   dependencies:
     c8 "~7.5.0"
     jasmine-reporters "~2.4.0"
 
-"@bazel/protractor@4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@bazel/protractor/-/protractor-4.0.0.tgz#f29ae81c22790596bfd8212952a8e370406d094f"
-  integrity sha512-YiSU2IYdiW7HoVC3gAZJs9M0CiH9qluAvA9YLfvM3pM7rI1OmXYCm3hojgOLIRslbThcpfAcmQKjeUfdQPX5bA==
+"@bazel/protractor@4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@bazel/protractor/-/protractor-4.1.0.tgz#db2602654d584d2e458cd90e8df2ddc213365ad7"
+  integrity sha512-p5rLdHzZFyc1byMwzzbyKcCWZVFgbcHcdWNc0R0MUQ+iX2dc72nkBci+ob/YxWMnSILVtyYO0vAnu1rP19/9zw==
 
-"@bazel/rollup@4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@bazel/rollup/-/rollup-4.0.0.tgz#909cfa9bd0243fd78657711b3aa644b8432ba636"
-  integrity sha512-OcL7QtNk2nyN/v7fnih0VQ0pIDwSxdGkyZvt/m1SwODx/eJpBceam0yboLoer/sYEZPhv7YFyCTk9n2X64TZ5g==
-
-"@bazel/runfiles@4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@bazel/runfiles/-/runfiles-4.0.0.tgz#3d649d93710364515402b873add73947aaa702e8"
-  integrity sha512-1V0E1ooSw7DARfOBkr24O5GOpqODDd7RuJ2Xb+JljjdpUdJTIaVeqELBpSHAiYzqVJYWAn61sD5JP1CPCllixA==
-
-"@bazel/terser@4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@bazel/terser/-/terser-4.0.0.tgz#9ef0c4635ba0191965f0b6c26eb0cc348c8c1f5e"
-  integrity sha512-sktDTfEBFD6LIv+g7W0l9nt5pih7N7aQVA09lv09rbTWD/JGX1LSSjG2p16af297XMxCP6GoHyVaxOVXS3IPYA==
-
-"@bazel/typescript@4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-4.0.0.tgz#71a6f0f5e340c6b8516b21fbc0f0853e74055d0c"
-  integrity sha512-+Le9q+5IR9gEnSH8sXyxDB5dD6NJx2kbm6AL+cijYVat2MczpGV4sI1mu0mdLzYsEX5Tjt5iHkaNb7sFESjnYA==
+"@bazel/rollup@4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@bazel/rollup/-/rollup-4.1.0.tgz#63c1ae1043a0245e8f21cf9d59030093db3e9721"
+  integrity sha512-EYCbhH8gxGnGT0b/sgjcL5/9MQ2rVkUA6mg9sRJsJPuyyQ9mP0Cbvm0Xy9pqoeu5bFb8aTudQR973Xpcr4LaqQ==
   dependencies:
+    "@bazel/worker" "4.1.0"
+
+"@bazel/runfiles@4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@bazel/runfiles/-/runfiles-4.1.0.tgz#83ab73a09e78465993518dda16a1472c1c0265fe"
+  integrity sha512-xmLDOp9IvI1NOcQaJCzIzcf5bpzverx11g4KbDVaMaeYgkKf0na3lMGTQjrtm0cN3Rsud4NBy7xuyf11IwnDRw==
+
+"@bazel/terser@4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@bazel/terser/-/terser-4.1.0.tgz#071fff105db8eef61e7e9d39c5b17700e5977d15"
+  integrity sha512-4u0xnAhgOtbQV0o09hDjCWvdeIFnxZ40BYm4sYz8uo/YSPIHKggc6GyL8RmGqbuiB6Y8ZfbwUHcIv66FbVojFg==
+
+"@bazel/typescript@4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-4.1.0.tgz#883e793c37df70c4ebc44bc4139f6008b3eb92fa"
+  integrity sha512-EfjGIa70IGwkBqOeirrbCRgvC/jue91L5r13c6NErb6JiSAzbKuxyKvZp4isGNPqv5W/LqpLGim5/yUQAmKXww==
+  dependencies:
+    "@bazel/worker" "4.1.0"
     protobufjs "6.8.8"
     semver "5.6.0"
     source-map-support "0.5.9"
-    tsutils "2.27.2"
+    tsutils "3.21.0"
+
+"@bazel/worker@4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@bazel/worker/-/worker-4.1.0.tgz#f63a5c821ce01731a4bc1b38f7dff16332fe331c"
+  integrity sha512-xO8dMC2GR+MwZrRa+FTG9yr5yzUCFvs7MiVYEJ25L708XhOqs34at6BFH1Xa3/ZYQt7iDBFpwY6QzbhhIIQrXA==
+  dependencies:
+    google-protobuf "^3.6.1"
 
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
@@ -7007,6 +7017,11 @@ google-p12-pem@^3.0.3:
   integrity sha512-e9CwdD2QYkpvJsktki3Bm8P8FSGIneF+/42a9F9QHcQvJ73C2RoYZdrwRl6BhwksWtzl65gT4OnBROhUIFw95Q==
   dependencies:
     node-forge "^0.10.0"
+
+google-protobuf@^3.6.1:
+  version "3.17.3"
+  resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-3.17.3.tgz#f87595073545a77946c8f0b67c302c5f7646d700"
+  integrity sha512-OVPzcSWIAJ+d5yiHyeaLrdufQtrvaBrF4JQg+z8ynTkbO3uFcujqXszTumqg1cGsAsjkWnI+M5B1xZ19yR4Wyg==
 
 got@^11.0.2, got@^11.7.0:
   version "11.8.2"
@@ -13445,17 +13460,17 @@ tsutils@2.27.2:
   dependencies:
     tslib "^1.8.1"
 
+tsutils@3.21.0, tsutils@^3.0.0, tsutils@^3.21.0:
+  version "3.21.0"
+  resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-3.21.0.tgz#b48717d394cea6c1e096983eed58e9d61715b623"
+  integrity sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==
+  dependencies:
+    tslib "^1.8.1"
+
 tsutils@^2.29.0:
   version "2.29.0"
   resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-2.29.0.tgz#32b488501467acbedd4b85498673a0812aca0b99"
   integrity sha512-g5JVHCIJwzfISaXpXE1qvNalca5Jwob6FjI4AoPlqMusJ6ftFE7IkkFoMhVLRgK+4Kx3gkzb8UZK5t5yTTvEmA==
-  dependencies:
-    tslib "^1.8.1"
-
-tsutils@^3.0.0, tsutils@^3.21.0:
-  version "3.21.0"
-  resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-3.21.0.tgz#b48717d394cea6c1e096983eed58e9d61715b623"
-  integrity sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==
   dependencies:
     tslib "^1.8.1"
 
