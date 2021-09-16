@@ -21,9 +21,8 @@ export class MatSnackBarHarness extends BaseMatSnackBarHarness {
   // notified when it's done.
   /** The selector for the host element of a `MatSnackBar` instance. */
   static override hostSelector = '.mat-mdc-snack-bar-container:not([mat-exit])';
-  protected override _messageSelector = '.mat-mdc-simple-snack-bar .mat-mdc-snack-bar-label';
-  protected override _simpleSnackBarSelector = '.mat-mdc-simple-snack-bar';
-  protected override _actionButtonSelector = '.mat-mdc-simple-snack-bar .mat-mdc-snack-bar-action';
+  protected override _messageSelector = '.mdc-snackbar__label';
+  protected override _actionButtonSelector = '.mat-mdc-snack-bar-action';
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a `MatSnackBarHarness` that meets
@@ -35,4 +34,6 @@ export class MatSnackBarHarness extends BaseMatSnackBarHarness {
       options: SnackBarHarnessFilters = {}): HarnessPredicate<BaseMatSnackBarHarness> {
     return new HarnessPredicate<BaseMatSnackBarHarness>(MatSnackBarHarness, options);
   }
+
+  protected override async _assertContentAnnotated() {}
 }

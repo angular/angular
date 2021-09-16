@@ -13,6 +13,8 @@ import { HarnessPredicate } from '@angular/cdk/testing';
 export class MatSnackBarHarness extends ContentContainerComponentHarness<string> {
     // (undocumented)
     protected _actionButtonSelector: string;
+    protected _assertContentAnnotated(): Promise<void>;
+    protected _assertHasAction(): Promise<void>;
     dismissWithAction(): Promise<void>;
     getActionDescription(): Promise<string>;
     getAriaLive(): Promise<AriaLivePoliteness>;
@@ -24,8 +26,6 @@ export class MatSnackBarHarness extends ContentContainerComponentHarness<string>
     isDismissed(): Promise<boolean>;
     // (undocumented)
     protected _messageSelector: string;
-    // (undocumented)
-    protected _simpleSnackBarSelector: string;
     static with(options?: SnackBarHarnessFilters): HarnessPredicate<MatSnackBarHarness>;
 }
 

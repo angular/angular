@@ -17,9 +17,8 @@ export class MatSnackBarHarness extends ContentContainerComponentHarness<string>
   /** The selector for the host element of a `MatSnackBar` instance. */
   static hostSelector = '.mat-snack-bar-container';
   protected _messageSelector = '.mat-simple-snackbar > span';
-  protected _simpleSnackBarSelector = '.mat-simple-snackbar';
   protected _actionButtonSelector = '.mat-simple-snackbar-action > button';
-  private _simpleSnackBarLiveRegion = this.locatorFor('[aria-live]');
+  private _snackBarLiveRegion = this.locatorFor('[aria-live]');
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a `MatSnackBarHarness` that meets
@@ -46,7 +45,7 @@ export class MatSnackBarHarness extends ContentContainerComponentHarness<string>
    * determined based on the ARIA politeness specified in the snack-bar config.
    */
   async getAriaLive(): Promise<AriaLivePoliteness> {
-    return (await this._simpleSnackBarLiveRegion())
+    return (await this._snackBarLiveRegion())
         .getAttribute('aria-live') as Promise<AriaLivePoliteness>;
   }
 
@@ -54,8 +53,8 @@ export class MatSnackBarHarness extends ContentContainerComponentHarness<string>
    * Whether the snack-bar has an action. Method cannot be used for snack-bar's with custom content.
    */
   async hasAction(): Promise<boolean> {
-    await this._assertSimpleSnackBar();
-    return (await this._getSimpleSnackBarActionButton()) !== null;
+    await this._assertContentAnnotated();
+    return (await this._getActionButton()) !== null;
   }
 
   /**
@@ -63,8 +62,8 @@ export class MatSnackBarHarness extends ContentContainerComponentHarness<string>
    * with custom content.
    */
   async getActionDescription(): Promise<string> {
-    await this._assertSimpleSnackBarWithAction();
-    return (await this._getSimpleSnackBarActionButton())!.text();
+    await this._assertHasAction();
+    return (await this._getActionButton())!.text();
   }
 
 
@@ -73,15 +72,15 @@ export class MatSnackBarHarness extends ContentContainerComponentHarness<string>
    * without action or with custom content.
    */
   async dismissWithAction(): Promise<void> {
-    await this._assertSimpleSnackBarWithAction();
-    await (await this._getSimpleSnackBarActionButton())!.click();
+    await this._assertHasAction();
+    await (await this._getActionButton())!.click();
   }
 
   /**
    * Gets the message of the snack-bar. Method cannot be used for snack-bar's with custom content.
    */
   async getMessage(): Promise<string> {
-    await this._assertSimpleSnackBar();
+    await this._assertContentAnnotated();
     return (await this.locatorFor(this._messageSelector)()).text();
   }
 
@@ -102,33 +101,33 @@ export class MatSnackBarHarness extends ContentContainerComponentHarness<string>
   }
 
   /**
-   * Asserts that the current snack-bar does not use custom content. Promise rejects if
-   * custom content is used.
+   * Asserts that the current snack-bar has annotated content. Promise reject
+   * if content is not annotated.
    */
-  private async _assertSimpleSnackBar(): Promise<void> {
+  protected async _assertContentAnnotated(): Promise<void> {
     if (!await this._isSimpleSnackBar()) {
       throw Error('Method cannot be used for snack-bar with custom content.');
     }
   }
 
   /**
-   * Asserts that the current snack-bar does not use custom content and has
-   * an action defined. Otherwise the promise will reject.
+   * Asserts that the current snack-bar has an action defined. Otherwise the
+   * promise will reject.
    */
-  private async _assertSimpleSnackBarWithAction(): Promise<void> {
-    await this._assertSimpleSnackBar();
+  protected async _assertHasAction(): Promise<void> {
+    await this._assertContentAnnotated();
     if (!await this.hasAction()) {
-      throw Error('Method cannot be used for standard snack-bar without action.');
+      throw Error('Method cannot be used for a snack-bar without an action.');
     }
   }
 
   /** Whether the snack-bar is using the default content template. */
   private async _isSimpleSnackBar(): Promise<boolean> {
-    return await this.locatorForOptional(this._simpleSnackBarSelector)() !== null;
+    return await this.locatorForOptional('.mat-simple-snackbar')() !== null;
   }
 
   /** Gets the simple snack bar action button. */
-  private async _getSimpleSnackBarActionButton() {
+  private async _getActionButton() {
     return this.locatorForOptional(this._actionButtonSelector)();
   }
 }

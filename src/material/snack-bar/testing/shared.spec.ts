@@ -91,24 +91,12 @@ export function runHarnessTests(
     fixture.componentInstance.openSimple('Subscribed to newsletter.');
     let snackBar = await loader.getHarness(snackBarHarness);
     expect(await snackBar.getMessage()).toBe('Subscribed to newsletter.');
-
-    // For snack-bar's with custom template, the message cannot be
-    // retrieved. We expect an error to be thrown.
-    fixture.componentInstance.openCustom();
-    snackBar = await loader.getHarness(snackBarHarness);
-    await expectAsync(snackBar.getMessage()).toBeRejectedWithError(/custom content/);
   });
 
   it('should be able to get action description of simple snack-bar', async () => {
     fixture.componentInstance.openSimple('Hello', 'Unsubscribe');
     let snackBar = await loader.getHarness(snackBarHarness);
     expect(await snackBar.getActionDescription()).toBe('Unsubscribe');
-
-    // For snack-bar's with custom template, the action description
-    // cannot be retrieved. We expect an error to be thrown.
-    fixture.componentInstance.openCustom();
-    snackBar = await loader.getHarness(snackBarHarness);
-    await expectAsync(snackBar.getActionDescription()).toBeRejectedWithError(/custom content/);
   });
 
   it('should be able to check whether simple snack-bar has action', async () => {
@@ -119,12 +107,6 @@ export function runHarnessTests(
     fixture.componentInstance.openSimple('No action');
     snackBar = await loader.getHarness(snackBarHarness);
     expect(await snackBar.hasAction()).toBe(false);
-
-    // For snack-bar's with custom template, the action cannot
-    // be found. We expect an error to be thrown.
-    fixture.componentInstance.openCustom();
-    snackBar = await loader.getHarness(snackBarHarness);
-    await expectAsync(snackBar.hasAction()).toBeRejectedWithError(/custom content/);
   });
 
   it('should be able to dismiss simple snack-bar with action', async () => {
@@ -143,7 +125,7 @@ export function runHarnessTests(
 
     fixture.componentInstance.openSimple('No action');
     snackBar = await loader.getHarness(snackBarHarness);
-    await expectAsync(snackBar.dismissWithAction()).toBeRejectedWithError(/without action/);
+    await expectAsync(snackBar.dismissWithAction()).toBeRejectedWithError(/without an action/);
   });
 
   @Component({
