@@ -17,7 +17,6 @@ import {
   FlexibleConnectedPositionStrategy,
 } from '@angular/cdk/overlay';
 import {ComponentPortal, ComponentType, TemplatePortal} from '@angular/cdk/portal';
-import {DOCUMENT} from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -439,22 +438,12 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
   readonly stateChanges = new Subject<void>();
 
   constructor(
-    /**
-     * @deprecated `_dialog` parameter is no longer being used and it will be removed.
-     * @breaking-change 13.0.0
-     */
-    @Inject(ElementRef) _dialog: any,
     private _overlay: Overlay,
     private _ngZone: NgZone,
     private _viewContainerRef: ViewContainerRef,
     @Inject(MAT_DATEPICKER_SCROLL_STRATEGY) scrollStrategy: any,
     @Optional() private _dateAdapter: DateAdapter<D>,
     @Optional() private _dir: Directionality,
-    /**
-     * @deprecated No longer being used. To be removed.
-     * @breaking-change 13.0.0
-     */
-    @Optional() @Inject(DOCUMENT) _document: any,
     private _model: MatDateSelectionModel<S, D>) {
     if (!this._dateAdapter && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw createMissingDateImplError('DateAdapter');

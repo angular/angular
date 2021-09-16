@@ -18,6 +18,10 @@ export const constructorChecks: VersionChanges<ConstructorChecksUpgradeData> = {
     {
       pr: 'https://github.com/angular/components/pull/23389',
       changes: ['MatFormField']
+    },
+    {
+      pr: 'https://github.com/angular/components/pull/23573',
+      changes: ['MatDatepicker', 'MatDateRangePicker']
     }
   ],
   [TargetVersion.V12]: [
