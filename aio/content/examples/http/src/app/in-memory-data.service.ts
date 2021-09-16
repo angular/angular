@@ -8,6 +8,11 @@ export class InMemoryDataService implements InMemoryDbService {
       { id: 13, name: 'Bombasto' },
       { id: 14, name: 'Celeritas' },
     ];
-    return {heroes};
+    const query = [
+      { name: '@angular/core', version: '20.1.0', description: 'angular core package' },
+      { name: '@angular/common', version: '20.1.0', description: 'angular common package' },
+      { name: '@angular/material', version: '20.1.5', description: 'angular material package' },
+    ];
+    return {heroes, query};
   }
 }
