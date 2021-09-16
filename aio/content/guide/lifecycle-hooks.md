@@ -600,3 +600,5 @@ Most of these initial checks are triggered by Angular's first rendering of *unre
 Just moving the cursor into another `<input>` triggers a call.
 Relatively few calls reveal actual changes to pertinent data.
 If you use this hook, your implementation must be extremely lightweight or the user experience suffers.
+
+@reviewed 2021-09-16
