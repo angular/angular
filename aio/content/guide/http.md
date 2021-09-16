@@ -856,7 +856,7 @@ The `CachingInterceptor` in the following example demonstrates this approach.
 </code-example>
 
 * The `isCacheable()` function determines if the request is cacheable.
-In this sample, only GET requests to the npm package search API are cacheable.
+In this sample, only GET requests to the package search API are cacheable.
 
 * If the request is not cacheable, the interceptor forwards the request
 to the next handler in the chain.
@@ -865,8 +865,7 @@ to the next handler in the chain.
 the cached response, by-passing the `next` handler (and all other interceptors downstream).
 
 * If a cacheable request is not in cache, the code calls `sendRequest()`.
-This function creates a [request clone](#immutability) without headers, because the npm API forbids them.
-The function then forwards the clone of the request to `next.handle()` which ultimately calls the server and returns the server's response.
+This function forwards the request to `next.handle()` which ultimately calls the server and returns the server's response.
 
 {@a send-request}
 <code-example
@@ -890,7 +889,7 @@ The `HttpClient.get()` method normally returns an observable that emits a single
 An interceptor can change this to an observable that emits [multiple values](guide/observables).
 
 The following revised version of the `CachingInterceptor` optionally returns an observable that
-immediately emits the cached response, sends the request on to the npm web API,
+immediately emits the cached response, sends the request on to the package search API,
 and emits again later with the updated search results.
 
 <code-example
@@ -980,9 +979,9 @@ If you need to make an HTTP request in response to user input, it's not efficien
 It's better to wait until the user stops typing and then send a request.
 This technique is known as debouncing.
 
-Consider the following template, which lets a user enter a search term to find an npm package by name.
+Consider the following template, which lets a user enter a search term to find a package by name.
 When the user enters a name in a search-box, the `PackageSearchComponent` sends
-a search request for a package with that name to the npm web API.
+a search request for a package with that name to the package search API.
 
 <code-example
   path="http/src/app/package-search/package-search.component.html"
