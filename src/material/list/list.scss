@@ -319,6 +319,7 @@ mat-action-list {
   mat-action-list .mat-list-item {
     &:hover, &:focus {
       outline: dotted 1px;
+      z-index: 1;
     }
   }
 
