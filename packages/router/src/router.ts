@@ -305,27 +305,27 @@ export interface Navigation {
   previousNavigation: Navigation|null;
 }
 
-export type NavigationTransition = {
-  id: number,
-  targetPageId: number,
-  currentUrlTree: UrlTree,
-  currentRawUrl: UrlTree,
-  extractedUrl: UrlTree,
-  urlAfterRedirects: UrlTree,
-  rawUrl: UrlTree,
-  extras: NavigationExtras,
-  resolve: any,
-  reject: any,
-  promise: Promise<boolean>,
-  source: NavigationTrigger,
-  restoredState: RestoredState|null,
-  currentSnapshot: RouterStateSnapshot,
-  targetSnapshot: RouterStateSnapshot|null,
-  currentRouterState: RouterState,
-  targetRouterState: RouterState|null,
-  guards: Checks,
-  guardsResult: boolean|UrlTree|null,
-};
+export interface NavigationTransition {
+  id: number;
+  targetPageId: number;
+  currentUrlTree: UrlTree;
+  currentRawUrl: UrlTree;
+  extractedUrl: UrlTree;
+  urlAfterRedirects?: UrlTree;
+  rawUrl: UrlTree;
+  extras: NavigationExtras;
+  resolve: any;
+  reject: any;
+  promise: Promise<boolean>;
+  source: NavigationTrigger;
+  restoredState: RestoredState|null;
+  currentSnapshot: RouterStateSnapshot;
+  targetSnapshot: RouterStateSnapshot|null;
+  currentRouterState: RouterState;
+  targetRouterState: RouterState|null;
+  guards: Checks;
+  guardsResult: boolean|UrlTree|null;
+}
 
 /**
  * @internal
@@ -722,7 +722,7 @@ export class Router {
                              tap(t => {
                                if (this.urlUpdateStrategy === 'eager') {
                                  if (!t.extras.skipLocationChange) {
-                                   this.setBrowserUrl(t.urlAfterRedirects, t);
+                                   this.setBrowserUrl(t.urlAfterRedirects!, t);
                                    // TODO(atscott): The above line is incorrect. It sets the url to
                                    // only the part that is handled by the router. It should merge
                                    // that with the rawUrl so the url includes segments not handled
@@ -731,13 +731,13 @@ export class Router {
                                    //      t.urlAfterRedirects, t.rawUrl);
                                    //  this.setBrowserUrl(rawUrl, t);
                                  }
-                                 this.browserUrlTree = t.urlAfterRedirects;
+                                 this.browserUrlTree = t.urlAfterRedirects!;
                                }
 
                                // Fire RoutesRecognized
                                const routesRecognized = new RoutesRecognized(
                                    t.id, this.serializeUrl(t.extractedUrl),
-                                   this.serializeUrl(t.urlAfterRedirects), t.targetSnapshot!);
+                                   this.serializeUrl(t.urlAfterRedirects!), t.targetSnapshot!);
                                eventsSubject.next(routesRecognized);
                              }));
                        } else {
@@ -767,7 +767,6 @@ export class Router {
                             * in the browser.
                             */
                            this.rawUrlTree = t.rawUrl;
-                           this.browserUrlTree = t.urlAfterRedirects;
                            t.resolve(null);
                            return EMPTY;
                          }
@@ -796,7 +795,7 @@ export class Router {
                      tap(t => {
                        const guardsStart = new GuardsCheckStart(
                            t.id, this.serializeUrl(t.extractedUrl),
-                           this.serializeUrl(t.urlAfterRedirects), t.targetSnapshot!);
+                           this.serializeUrl(t.urlAfterRedirects!), t.targetSnapshot!);
                        this.triggerEvent(guardsStart);
                      }),
 
@@ -817,7 +816,7 @@ export class Router {
 
                        const guardsEnd = new GuardsCheckEnd(
                            t.id, this.serializeUrl(t.extractedUrl),
-                           this.serializeUrl(t.urlAfterRedirects), t.targetSnapshot!,
+                           this.serializeUrl(t.urlAfterRedirects!), t.targetSnapshot!,
                            !!t.guardsResult);
                        this.triggerEvent(guardsEnd);
                      }),
@@ -838,7 +837,7 @@ export class Router {
                              tap(t => {
                                const resolveStart = new ResolveStart(
                                    t.id, this.serializeUrl(t.extractedUrl),
-                                   this.serializeUrl(t.urlAfterRedirects), t.targetSnapshot!);
+                                   this.serializeUrl(t.urlAfterRedirects!), t.targetSnapshot!);
                                this.triggerEvent(resolveStart);
                              }),
                              switchMap(t => {
@@ -862,7 +861,7 @@ export class Router {
                              tap(t => {
                                const resolveEnd = new ResolveEnd(
                                    t.id, this.serializeUrl(t.extractedUrl),
-                                   this.serializeUrl(t.urlAfterRedirects), t.targetSnapshot!);
+                                   this.serializeUrl(t.urlAfterRedirects!), t.targetSnapshot!);
                                this.triggerEvent(resolveEnd);
                              }));
                        }
@@ -899,9 +898,9 @@ export class Router {
                         URL and the RouterState, as well as updated the browser URL. All this should
                         happen *before* activating. */
                      tap((t: NavigationTransition) => {
-                       this.currentUrlTree = t.urlAfterRedirects;
+                       this.currentUrlTree = t.urlAfterRedirects!;
                        this.rawUrlTree =
-                           this.urlHandlingStrategy.merge(t.urlAfterRedirects, t.rawUrl);
+                           this.urlHandlingStrategy.merge(t.urlAfterRedirects!, t.rawUrl);
 
                        (this as {routerState: RouterState}).routerState = t.targetRouterState!;
 
@@ -909,7 +908,7 @@ export class Router {
                          if (!t.extras.skipLocationChange) {
                            this.setBrowserUrl(this.rawUrlTree, t);
                          }
-                         this.browserUrlTree = t.urlAfterRedirects;
+                         this.browserUrlTree = t.urlAfterRedirects!;
                        }
                      }),
 
@@ -1051,24 +1050,8 @@ export class Router {
     this.routerState.root.component = this.rootComponentType;
   }
 
-  private getTransition(): NavigationTransition {
-    const transition = this.transitions.value;
-    // TODO(atscott): This comment doesn't make it clear why this value needs to be set. In the case
-    // described below (where we don't handle previous or current url), the `browserUrlTree` is set
-    // to the `urlAfterRedirects` value. However, these values *are already the same* because of the
-    // line below. So it seems that we should be able to remove the line below and the line where
-    // `browserUrlTree` is updated when we aren't handling any part of the navigation url.
-    // Run TGP to confirm that this can be done.
-
-    // This value needs to be set. Other values such as extractedUrl are set on initial navigation
-    // but the urlAfterRedirects may not get set if we aren't processing the new URL *and* not
-    // processing the previous URL.
-    transition.urlAfterRedirects = this.browserUrlTree;
-    return transition;
-  }
-
   private setTransition(t: Partial<NavigationTransition>): void {
-    this.transitions.next({...this.getTransition(), ...t});
+    this.transitions.next({...this.transitions.value, ...t});
   }
 
   /**
@@ -1123,7 +1106,7 @@ export class Router {
       // Navigations coming from Angular router have a navigationId state
       // property. When this exists, restore the state.
       state: change.state?.navigationId ? change.state : null,
-      transitionId: this.getTransition().id
+      transitionId: this.transitions.value.id
     } as const;
   }
 
@@ -1447,7 +1430,7 @@ export class Router {
     //   the destination may be the same as the previous imperative attempt. We should not skip
     //   these navigations because it's a separate case from the one above -- it's not a duplicate
     //   navigation.
-    const lastNavigation = this.getTransition();
+    const lastNavigation = this.transitions.value;
     // We don't want to skip duplicate successful navs if they're imperative because
     // onSameUrlNavigation could be 'reload' (so the duplicate is intended).
     const browserNavPrecededByRouterNav = isBrowserTriggeredNavigation(source) && lastNavigation &&
@@ -1457,7 +1440,7 @@ export class Router {
     // However, if it failed, we should compare to the final result (urlAfterRedirects).
     const lastNavigationUrl = (lastNavigationSucceeded || this.currentNavigation) ?
         lastNavigation.rawUrl :
-        lastNavigation.urlAfterRedirects;
+        (lastNavigation.urlAfterRedirects ?? this.browserUrlTree);
     const duplicateNav = lastNavigationUrl.toString() === rawUrl.toString();
     if (browserNavPrecededByRouterNav && duplicateNav) {
       return Promise.resolve(true);  // return value is not used
