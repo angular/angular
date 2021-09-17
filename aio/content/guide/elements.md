@@ -221,3 +221,5 @@ document.querySelector('foo')               //--> Element        (unknown elemen
 document.createElement('my-dialog')         //--> NgElement & WithProperties<{content: string}> (custom element)
 document.querySelector('my-other-element')  //--> NgElement & WithProperties<{foo: 'bar'}>      (custom element)
 ```
+
+@reviewed 2021-09-17
