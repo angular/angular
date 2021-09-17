@@ -147,3 +147,5 @@ But since styles from `ShadowDomEncapsulationComponent` are added to the shadow 
 The result is that the `<h2>` element in the `NoEncapsulationComponent` is colored blue rather than red, which may not be what the component author intended.
 
 <img src="generated/images/guide/view-encapsulation/shadow-dom-encapsulation.png" alt="component with no encapsulation">
+
+@reviewed 2021-09-17
