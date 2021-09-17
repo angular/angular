@@ -380,7 +380,7 @@ When using the `multiTemplateDataRows` directive to support multiple rows for ea
 By default, `MatTable` applies `role="table"`, assuming the table's contains primarily static
 content. You can change the role by explicitly setting `role="grid"` or `role="treegrid"` on the
 table element. While changing the role will update child element roles, such as changing
-`role="cell"` to `role="gridcell"`, this not _not_ apply additional keyboard input handling or
+`role="cell"` to `role="gridcell"`, this does _not_ apply additional keyboard input handling or
 focus management to the table.
 
 Always provide an accessible label for your tables via `aria-label` or `aria-labelledby` on the

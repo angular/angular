@@ -155,7 +155,7 @@ You can control which elements are tab stops with the `tabindex` attribute
 `MatDialog` creates modal dialogs that implements the ARIA `role="dialog"` pattern by default.
 You can change the dialog's role to `alertdialog` via `MatDialogConfig`.
 
-You should provide a an accessible label to this root dialog element by setting the `ariaLabel` or
+You should provide an accessible label to this root dialog element by setting the `ariaLabel` or
 `ariaLabelledBy` properties of `MatDialogConfig`. You can additionally specify a description element
 ID via the `ariaDescribedBy` property of `MatDialogConfig`.
 
