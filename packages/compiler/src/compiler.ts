@@ -74,6 +74,7 @@ export * from './ml_parser/html_parser';
 export * from './ml_parser/html_tags';
 export * from './ml_parser/interpolation_config';
 export * from './ml_parser/tags';
+export {ParseTreeResult, TreeError} from './ml_parser/parser';
 export {LexerRange} from './ml_parser/lexer';
 export * from './ml_parser/xml_parser';
 export {NgModuleCompiler} from './ng_module_compiler';
