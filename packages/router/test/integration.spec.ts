@@ -1182,9 +1182,10 @@ describe('Integration', () => {
   describe('duplicate in-flight navigations', () => {
     @Injectable()
     class RedirectingGuard {
+      skipLocationChange = false;
       constructor(private router: Router) {}
       canActivate() {
-        this.router.navigate(['/simple']);
+        this.router.navigate(['/simple'], {skipLocationChange: this.skipLocationChange});
         return false;
       }
     }
@@ -1265,6 +1266,50 @@ describe('Integration', () => {
 
          advance(fixture);
          expect(fixture.nativeElement.innerHTML).toContain('simple');
+       }));
+
+    it('should not cause URL thrashing', fakeAsync(() => {
+         const router = TestBed.inject(Router);
+         const location = TestBed.inject(Location) as unknown as SpyLocation;
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([
+           {path: 'home', component: SimpleCmp},
+           {path: 'blocked', component: BlankCmp, canActivate: [RedirectingGuard]},
+           {path: 'simple', component: SimpleCmp}
+         ]);
+         router.navigateByUrl('/home');
+         advance(fixture);
+         location.urlChanges = [];
+
+         location.simulateHashChange('/blocked');
+         advance(fixture);
+         expect(fixture.nativeElement.innerHTML).toContain('simple');
+         expect(location.urlChanges).toEqual(['hash: /blocked', '/simple']);
+       }));
+
+    it('can render a 404 page without changing the URL', fakeAsync(() => {
+         const router = TestBed.inject(Router);
+         router.urlUpdateStrategy = 'eager';
+         TestBed.inject(RedirectingGuard).skipLocationChange = true;
+         const location = TestBed.inject(Location) as unknown as SpyLocation;
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([
+           {path: 'home', component: SimpleCmp},
+           {path: 'blocked', component: BlankCmp, canActivate: [RedirectingGuard]},
+           {path: 'simple', redirectTo: '404'},
+           {path: '404', component: SimpleCmp},
+         ]);
+         router.navigateByUrl('/home');
+         advance(fixture);
+         location.urlChanges = [];
+
+         location.simulateHashChange('/blocked');
+         advance(fixture);
+         expect(location.path()).toEqual('/blocked');
+         expect(fixture.nativeElement.innerHTML).toContain('simple');
+         expect(location.urlChanges).toEqual(['hash: /blocked']);
        }));
   });
 
