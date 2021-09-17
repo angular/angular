@@ -271,3 +271,5 @@ You can configure the CLI to default to your preferred CSS preprocessor as expla
 Style strings added to the `@Component.styles` array _must be written in CSS_ because the CLI cannot apply a preprocessor to inline styles.
 
 </div>
+
+@reviewed 2021-09-17
