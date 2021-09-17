@@ -172,3 +172,5 @@ Here are two sample components and the `AdComponent` interface for reference:
 </div>
 
 See the <live-example name="dynamic-component-loader"></live-example>.
+
+@reviewed 2021-09-17
