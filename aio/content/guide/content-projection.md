@@ -155,3 +155,5 @@ The `<ng-container>` element is a logical construct that you can use to group ot
 </div>
 
 In this example, the content we want to project resides inside another element. To project this content as intended, the template uses the `ngProjectAs` attribute. With `ngProjectAs`, the entire `<ng-container>` element is projected into a component using the `[question]` selector.
+
+@reviewed 2021-09-17
