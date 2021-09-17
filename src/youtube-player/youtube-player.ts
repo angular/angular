@@ -278,14 +278,6 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
     (playerObs as ConnectableObservable<Player>).connect();
   }
 
-  /**
-   * @deprecated No longer being used. To be removed.
-   * @breaking-change 11.0.0
-   */
-  createEventsBoundInZone(): YT.Events {
-    return {};
-  }
-
   ngAfterViewInit() {
     this._youtubeContainer.next(this.youtubeContainer.nativeElement);
   }

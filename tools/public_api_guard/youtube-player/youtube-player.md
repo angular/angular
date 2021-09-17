@@ -25,8 +25,6 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
     constructor(_ngZone: NgZone, platformId: Object);
     // (undocumented)
     readonly apiChange: Observable<YT.PlayerEvent>;
-    // @deprecated (undocumented)
-    createEventsBoundInZone(): YT.Events;
     set endSeconds(endSeconds: number | undefined);
     // (undocumented)
     readonly error: Observable<YT.OnErrorEvent>;
