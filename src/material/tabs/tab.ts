@@ -28,7 +28,7 @@ import {
 import {CanDisable, mixinDisabled} from '@angular/material/core';
 import {Subject} from 'rxjs';
 import {MAT_TAB_CONTENT} from './tab-content';
-import {MAT_TAB_LABEL, MatTabLabel} from './tab-label';
+import {MAT_TAB_LABEL, MatTabLabel, MAT_TAB} from './tab-label';
 
 
 // Boilerplate for applying mixins to MatTab.
@@ -49,6 +49,7 @@ export const MAT_TAB_GROUP = new InjectionToken<any>('MAT_TAB_GROUP');
   changeDetection: ChangeDetectionStrategy.Default,
   encapsulation: ViewEncapsulation.None,
   exportAs: 'matTab',
+  providers: [{provide: MAT_TAB, useExisting: MatTab}]
 })
 export class MatTab extends _MatTabBase implements OnInit, CanDisable, OnChanges, OnDestroy {
   /** Content for the tab label given by `<ng-template mat-tab-label>`. */
@@ -133,12 +134,12 @@ export class MatTab extends _MatTabBase implements OnInit, CanDisable, OnChanges
    * TS 4.0 doesn't allow properties to override accessors or vice-versa.
    * @docs-private
    */
-  protected _setTemplateLabelInput(value: MatTabLabel) {
-    // Only update the templateLabel via query if there is actually
-    // a MatTabLabel found. This works around an issue where a user may have
-    // manually set `templateLabel` during creation mode, which would then get clobbered
-    // by `undefined` when this query resolves.
-    if (value) {
+  protected _setTemplateLabelInput(value: MatTabLabel|undefined) {
+    // Only update the label if the query managed to find one. This works around an issue where a
+    // user may have manually set `templateLabel` during creation mode, which would then get
+    // clobbered by `undefined` when the query resolves. Also note that we check that the closest
+    // tab matches the current one so that we don't pick up labels from nested tabs.
+    if (value && value._closestTab === this) {
       this._templateLabel = value;
     }
   }

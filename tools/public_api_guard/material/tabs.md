@@ -59,6 +59,9 @@ export const _MAT_INK_BAR_POSITIONER: InjectionToken<_MatInkBarPositioner>;
 function _MAT_INK_BAR_POSITIONER_FACTORY(): _MatInkBarPositioner;
 
 // @public
+export const MAT_TAB: InjectionToken<any>;
+
+// @public
 const MAT_TAB_CONTENT: InjectionToken<MatTabContent>;
 
 // @public
@@ -114,7 +117,7 @@ export class MatTab extends _MatTabBase implements OnInit, CanDisable, OnChanges
     ngOnInit(): void;
     origin: number | null;
     position: number | null;
-    protected _setTemplateLabelInput(value: MatTabLabel): void;
+    protected _setTemplateLabelInput(value: MatTabLabel | undefined): void;
     readonly _stateChanges: Subject<void>;
     get templateLabel(): MatTabLabel;
     set templateLabel(value: MatTabLabel);
@@ -316,10 +319,13 @@ export type MatTabHeaderPosition = 'above' | 'below';
 
 // @public
 export class MatTabLabel extends CdkPortal {
+    constructor(templateRef: TemplateRef<any>, viewContainerRef: ViewContainerRef, _closestTab: any);
+    // (undocumented)
+    _closestTab: any;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatTabLabel, "[mat-tab-label], [matTabLabel]", never, {}, {}, never>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatTabLabel, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatTabLabel, [null, null, { optional: true; }]>;
 }
 
 // @public

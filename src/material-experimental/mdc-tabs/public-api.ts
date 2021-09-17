@@ -28,5 +28,6 @@ export {
   MatTabsConfig,
   MAT_TABS_CONFIG,
   MAT_TAB_GROUP,
+  MAT_TAB,
   ScrollDirection,
 } from '@angular/material/tabs';

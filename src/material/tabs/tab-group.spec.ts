@@ -40,6 +40,7 @@ describe('MatTabGroup', () => {
         NestedTabs,
         TabGroupWithIndirectDescendantTabs,
         TabGroupWithSpaceAbove,
+        NestedTabGroupWithLabel,
       ],
     });
 
@@ -673,6 +674,19 @@ describe('MatTabGroup', () => {
 
       expect(fixture.nativeElement.textContent).toContain('pizza is active');
     }));
+
+    it('should not pick up mat-tab-label from a child tab', fakeAsync(() => {
+      const fixture = TestBed.createComponent(NestedTabGroupWithLabel);
+      fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
+
+      const labels = fixture.nativeElement.querySelectorAll('.mat-tab-label-content');
+      const contents = Array.from<HTMLElement>(labels).map(label => label.textContent?.trim());
+
+      expect(contents).toEqual(
+        ['Parent 1', 'Parent 2', 'Parent 3', 'Child 1', 'Child 2', 'Child 3']);
+    }));
   });
 
   describe('nested tabs', () => {
@@ -1098,4 +1112,26 @@ class TabGroupWithIndirectDescendantTabs {
 })
 class TabGroupWithSpaceAbove {
   @ViewChild(MatTabGroup) tabGroup: MatTabGroup;
+}
+
+
+@Component({
+  template: `
+    <mat-tab-group>
+      <mat-tab label="Parent 1">
+        <mat-tab-group>
+          <mat-tab label="Child 1">Content 1</mat-tab>
+          <mat-tab>
+            <ng-template mat-tab-label>Child 2</ng-template>
+            Content 2
+          </mat-tab>
+          <mat-tab label="Child 3">Child 3</mat-tab>
+        </mat-tab-group>
+      </mat-tab>
+      <mat-tab label="Parent 2">Parent 2</mat-tab>
+      <mat-tab label="Parent 3">Parent 3</mat-tab>
+    </mat-tab-group>
+  `
+})
+class NestedTabGroupWithLabel {
 }

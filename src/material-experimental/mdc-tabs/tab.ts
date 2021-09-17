@@ -13,7 +13,7 @@ import {
   TemplateRef,
   ContentChild,
 } from '@angular/core';
-import {MatTab as BaseMatTab} from '@angular/material/tabs';
+import {MatTab as BaseMatTab, MAT_TAB} from '@angular/material/tabs';
 import {MatTabContent} from './tab-content';
 import {MatTabLabel} from './tab-label';
 
@@ -28,6 +28,7 @@ import {MatTabLabel} from './tab-label';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   exportAs: 'matTab',
+  providers: [{provide: MAT_TAB, useExisting: MatTab}]
 })
 export class MatTab extends BaseMatTab {
   /**
