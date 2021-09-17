@@ -7,7 +7,7 @@
  */
 
 import * as html from '../../src/ml_parser/ast';
-import {ParseTreeResult} from '../../src/ml_parser/html_parser';
+import {ParseTreeResult} from '../../src/ml_parser/parser';
 import {ParseLocation} from '../../src/parse_util';
 
 export function humanizeDom(parseResult: ParseTreeResult, addSourceSpan: boolean = false): any[] {

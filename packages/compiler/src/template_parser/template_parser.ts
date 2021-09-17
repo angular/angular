@@ -14,10 +14,11 @@ import {AST, ASTWithSource, EmptyExpr, ParsedEvent, ParsedProperty, ParsedVariab
 import {Parser} from '../expression_parser/parser';
 import {createTokenForExternalReference, createTokenForReference, Identifiers} from '../identifiers';
 import * as html from '../ml_parser/ast';
-import {HtmlParser, ParseTreeResult} from '../ml_parser/html_parser';
+import {HtmlParser} from '../ml_parser/html_parser';
 import {removeWhitespaces, replaceNgsp} from '../ml_parser/html_whitespaces';
 import {expandNodes} from '../ml_parser/icu_ast_expander';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
+import {ParseTreeResult} from '../ml_parser/parser';
 import {isNgTemplate, splitNsName} from '../ml_parser/tags';
 import {identifierName, ParseError, ParseErrorLevel, ParseSourceSpan, syntaxError} from '../parse_util';
 import {ProviderElementContext, ProviderViewContext} from '../provider_analyzer';

@@ -7,7 +7,8 @@
  */
 
 import * as html from '../../src/ml_parser/ast';
-import {HtmlParser, ParseTreeResult, TreeError} from '../../src/ml_parser/html_parser';
+import {HtmlParser} from '../../src/ml_parser/html_parser';
+import {ParseTreeResult, TreeError} from '../../src/ml_parser/parser';
 import {TokenType} from '../../src/ml_parser/tokens';
 import {ParseError} from '../../src/parse_util';
 
