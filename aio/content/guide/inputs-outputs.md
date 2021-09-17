@@ -199,3 +199,5 @@ The property `currentItem` and the method `crossOffItem()` are both in the paren
 
 To combine property and event bindings using the banana-in-a-box
 syntax, `[()]`, see [Two-way Binding](guide/two-way-binding).
+
+@reviewed 2021-09-17
