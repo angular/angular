@@ -618,7 +618,7 @@ For example, to avoid `Object is possibly 'undefined'` error in the template abo
 
 Using `*ngIf` allows the TypeScript compiler to infer that the `person` used in the binding expression will never be `undefined`.
 
-For more information about input type narrowing, see [Input setter coercion](guide/template-typecheck#input-setter-coercion) and [Improving template type checking for custom directives](guide/structural-directives#directive-type-checks).
+For more information about input type narrowing, see [Improving template type checking for custom directives](guide/structural-directives#directive-type-checks).
 
 ### Non-null type assertion operator
 

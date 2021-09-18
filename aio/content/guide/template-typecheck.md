@@ -207,7 +207,7 @@ Here, during type checking of the template for `AppComponent`, the `[user]="sele
 Therefore, Angular assigns the `selectedUser` property to `UserDetailComponent.user`, which would result in an error if their types were incompatible.
 TypeScript checks the assignment according to its type system, obeying flags such as `strictNullChecks` as they are configured in the application.
 
-Avoid run-time type errors by providing more specific in-template type requirements to the template type checker. Make the input type requirements for your own directives as specific as possible by providing template-guard functions in the directive definition. See [Improving template type checking for custom directives](guide/structural-directives#directive-type-checks), and [Input setter coercion](#input-setter-coercion) in this guide.
+Avoid run-time type errors by providing more specific in-template type requirements to the template type checker. Make the input type requirements for your own directives as specific as possible by providing template-guard functions in the directive definition. See [Improving template type checking for custom directives](guide/structural-directives#directive-type-checks) in this guide.
 
 
 ### Strict null checks
@@ -299,7 +299,7 @@ set disabled(value: boolean) {
 ```
 
 It would be ideal to change the type of `value` here, from `boolean` to `boolean|''`, to match the set of values which are actually accepted by the setter.
-TypeScript requires that both the getter and setter have the same type, so if the getter should return a `boolean` then the setter is stuck with the narrower type.
+TypeScript prior to version 4.3 requires that both the getter and setter have the same type, so if the getter should return a `boolean` then the setter is stuck with the narrower type.
 
 If the consumer has Angular's strictest type checking for templates enabled, this creates a problem: the empty string `''` is not actually assignable to the `disabled` field, which creates a type error when the attribute form is used.
 
@@ -321,6 +321,12 @@ class SubmitButton {
   static ngAcceptInputType_disabled: boolean|'';
 }
 ```
+
+<div class="alert is-important">
+
+Since TypeScript 4.3, the setter could have been declared to accept `boolean|''` as type, making the input setter coercion field obsolete. As such, input setters coercion fields have been deprecated. 
+
+</div>
 
 This field does not need to have a value. Its existence communicates to the Angular type checker that the `disabled` input should be considered as accepting bindings that match the type `boolean|''`. The suffix should be the `@Input` _field_ name.
 
