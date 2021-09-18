@@ -17,7 +17,7 @@ Angular applications, as single-page applications, are in a prime position to be
 
 Angular's service worker is designed to optimize the end user experience of using an application over a slow or unreliable network connection, while also minimizing the risks of serving outdated content.
 
-The Angular service worker's behavior follows that design goal:
+To achieve this, the Angular service worker follows these guidelines:
 
 * Caching an application is like installing a native application. The application is cached as one unit, and all files update together.
 * A running application continues to run with the same version of all files. It does not suddenly start receiving cached files from a newer version, which are likely incompatible.
@@ -25,17 +25,17 @@ The Angular service worker's behavior follows that design goal:
 * Updates happen in the background, relatively quickly after changes are published. The previous version of the application is served until an update is installed and ready.
 * The service worker conserves bandwidth when possible. Resources are only downloaded if they've changed.
 
-To support these behaviors, the Angular service worker loads a *manifest* file from the server. The manifest describes the resources to cache and includes hashes of every file's contents. When an update to the application is deployed, the contents of the manifest change, informing the service worker that a new version of the application should be downloaded and cached. This manifest is generated from a CLI-generated configuration file called `ngsw-config.json`.
+To support these behaviors, the Angular service worker loads a *manifest* file from the server. The file, called `ngsw.json` (not to be confused with the [web app manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest)), describes the resources to cache and includes hashes of every file's contents. When an update to the application is deployed, the contents of the manifest change, informing the service worker that a new version of the application should be downloaded and cached. This manifest is generated from a CLI-generated configuration file called `ngsw-config.json`.
 
 Installing the Angular service worker is as easy as including an `NgModule`. In addition to registering the Angular service worker with the browser, this also makes a few services available for injection which interact with the service worker and can be used to control it. For example, an application can ask to be notified when a new update becomes available, or an application can ask the service worker to check the server for available updates.
 
 ## Prerequisites
 
-To make use of all the features of Angular service worker, use the latest versions of Angular and the Angular CLI.
+To make use of all the features of Angular service workers, use the latest versions of Angular and the Angular CLI.
 
 In order for service workers to be registered, the application must be accessed over HTTPS, not HTTP.
 Browsers ignore service workers on pages that are served over an insecure connection.
-The reason is that service workers are quite powerful, so extra care needs to be taken to ensure the service worker script has not been tampered with.
+The reason is that service workers are quite powerful, so extra care is needed to ensure the service worker script has not been tampered with.
 
 There is one exception to this rule: to make local development easier, browsers do _not_ require a secure connection when accessing an application on `localhost`.
 
@@ -48,7 +48,7 @@ Browsers like IE and Opera Mini do not support service workers.
 If the user is accessing your application with a browser that does not support service workers, the service worker is not registered and related behavior such as offline cache management and push notifications does not happen.
 More specifically:
 
-* The browser does not download the service worker script and `ngsw.json` manifest file.
+* The browser does not download the service worker script and the `ngsw.json` manifest file.
 * Active attempts to interact with the service worker, such as calling `SwUpdate.checkForUpdate()`, return rejected promises.
 * The observable events of related services, such as `SwUpdate.available`, are not triggered.
 
