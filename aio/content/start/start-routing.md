@@ -25,6 +25,8 @@ This section shows you how to define a route to show individual product details.
 
     <code-example header="src/app/app.module.ts" path="getting-started/src/app/app.module.ts" region="product-details-route">
     </code-example>
+    
+1. To make ProductDetailsComponent available to other components in the application, add it to AppModule's declarations in app.module.ts.
 
 1. Open `product-list.component.html`.
 
