@@ -9,6 +9,7 @@ package(default_visibility = ["//visibility:public"])
 
 PUBLIC_TARGETS = [
     ":compiler-cli",
+    "//packages/compiler-cli/private",
     "//packages/compiler-cli/ngcc",
     "//packages/compiler-cli/linker",
     "//packages/compiler-cli/linker/babel",
@@ -30,6 +31,9 @@ esbuild(
         "//packages/compiler-cli:src/bin/ng_xi18n.ts",
         "//packages/compiler-cli/linker:index.ts",
         "//packages/compiler-cli/linker/babel:index.ts",
+        "//packages/compiler-cli/private:bazel.ts",
+        "//packages/compiler-cli/private:localize.ts",
+        "//packages/compiler-cli/private:migrations.ts",
     ],
     external = [
         "@angular/compiler",
@@ -81,6 +85,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/incremental",
         "//packages/compiler-cli/src/ngtsc/indexer",
+        "//packages/compiler-cli/src/ngtsc/logging",
         "//packages/compiler-cli/src/ngtsc/perf",
         "//packages/compiler-cli/src/ngtsc/program_driver",
         "//packages/compiler-cli/src/ngtsc/reflection",

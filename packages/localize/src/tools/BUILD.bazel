@@ -18,9 +18,7 @@ ts_library(
     tsconfig = ":tsconfig",
     deps = [
         "//packages/compiler",
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/logging",
-        "//packages/compiler-cli/src/ngtsc/sourcemaps",
+        "//packages/compiler-cli/private",
         "//packages/localize",
         "@npm//@babel/core",
         "@npm//@babel/types",

@@ -6,8 +6,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {setFileSystem, NodeJSFileSystem, AbsoluteFsPath, FileSystem, PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {ConsoleLogger, Logger, LogLevel} from '@angular/compiler-cli/src/ngtsc/logging';
+import {setFileSystem, NodeJSFileSystem, AbsoluteFsPath, FileSystem, PathManipulation, ConsoleLogger, Logger, LogLevel} from '@angular/compiler-cli/private/localize';
 import {ɵParsedMessage} from '@angular/localize';
 import * as glob from 'glob';
 import * as yargs from 'yargs';

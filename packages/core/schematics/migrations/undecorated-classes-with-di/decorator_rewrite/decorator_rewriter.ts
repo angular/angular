@@ -7,7 +7,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import type {AotCompiler} from '@angular/compiler';
-import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
+import {PartialEvaluator} from '@angular/compiler-cli/private/migrations';
 import * as ts from 'typescript';
 
 import {ImportManager} from '../../../utils/import_manager';

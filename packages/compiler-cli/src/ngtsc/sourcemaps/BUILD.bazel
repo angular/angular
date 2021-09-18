@@ -12,7 +12,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/logging",
         "@npm//@types/convert-source-map",
         "@npm//@types/node",
-        "@npm//source-map",
+        "@npm//convert-source-map",
         "@npm//sourcemap-codec",
     ],
 )

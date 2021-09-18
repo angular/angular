@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {forwardRefResolver} from '@angular/compiler-cli/src/ngtsc/annotations';
-import {ResolvedValue} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
-import {StaticInterpreter} from '@angular/compiler-cli/src/ngtsc/partial_evaluator/src/interpreter';
+import {forwardRefResolver, ResolvedValue, StaticInterpreter} from '@angular/compiler-cli/private/migrations';
 import * as ts from 'typescript';
 
 export interface ProviderLiteral {

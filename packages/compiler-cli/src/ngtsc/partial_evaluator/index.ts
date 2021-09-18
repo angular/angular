@@ -9,4 +9,5 @@
 export {describeResolvedType, traceDynamicValue} from './src/diagnostics';
 export {DynamicValue} from './src/dynamic';
 export {ForeignFunctionResolver, PartialEvaluator} from './src/interface';
+export {StaticInterpreter} from './src/interpreter';
 export {EnumValue, KnownFn, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './src/result';

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {getFileSystem, PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {getFileSystem, PathManipulation} from '@angular/compiler-cli/private/localize';
 import {ɵParsedTranslation} from '@angular/localize';
 import {NodePath, PluginObj} from '@babel/core';
 import {TaggedTemplateExpression} from '@babel/types';

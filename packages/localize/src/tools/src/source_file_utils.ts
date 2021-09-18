@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, AbsoluteFsPath, getFileSystem, PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {AbsoluteFsPath, getFileSystem, PathManipulation} from '@angular/compiler-cli/private/localize';
 import {ɵisMissingTranslationError, ɵmakeTemplateObject, ɵParsedTranslation, ɵSourceLocation, ɵtranslate} from '@angular/localize';
 import {NodePath} from '@babel/traverse';
 import * as t from '@babel/types';

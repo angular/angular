@@ -24,6 +24,18 @@
     "./linker/babel": {
       "types": "./linker/babel/index.d.ts",
       "default": "./bundles/linker/babel/index.js"
+    },
+    "./private/bazel": {
+      "types": "./private/bazel.d.ts",
+      "default": "./bundles/private/bazel.js"
+    },
+    "./private/localize": {
+      "types": "./private/localize.d.ts",
+      "default": "./bundles/private/localize.js"
+    },
+    "./private/migrations": {
+      "types": "./private/migrations.d.ts",
+      "default": "./bundles/private/migrations.js"
     }
   },
   "dependencies": {
