@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
-import {reflectObjectLiteral, TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
+import {PartialEvaluator, reflectObjectLiteral, TypeScriptReflectionHost} from '@angular/compiler-cli/private/migrations';
 import * as ts from 'typescript';
 
 import {ImportManager} from '../../utils/import_manager';

@@ -9,6 +9,7 @@ package(default_visibility = ["//visibility:public"])
 
 PUBLIC_TARGETS = [
     ":compiler-cli",
+    "//packages/compiler-cli/private",
     "//packages/compiler-cli/ngcc",
     "//packages/compiler-cli/linker",
     "//packages/compiler-cli/linker/babel",
@@ -30,6 +31,9 @@ esbuild(
         "//packages/compiler-cli:src/bin/ng_xi18n.ts",
         "//packages/compiler-cli/linker:index.ts",
         "//packages/compiler-cli/linker/babel:index.ts",
+        "//packages/compiler-cli/private:bazel.ts",
+        "//packages/compiler-cli/private:localize.ts",
+        "//packages/compiler-cli/private:migrations.ts",
     ],
     external = [
         # TODO(devversion): keep the compiler external here.
@@ -90,6 +94,11 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/translator",
         "//packages/compiler-cli/src/ngtsc/typecheck",
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
+        "//packages/compiler-cli/src/ngtsc/logging",
+        "//packages/compiler-cli/src/ngtsc/sourcemaps",
+        "//packages/compiler-cli/src/ngtsc/annotations",
+        "//packages/compiler-cli/src/ngtsc/partial_evaluator",
+        "//packages/compiler-cli/src/ngtsc/imports",
         "@npm//@bazel/typescript",
         "@npm//@types/node",
         "@npm//chokidar",

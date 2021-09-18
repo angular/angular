@@ -5,9 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, ReadonlyFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {Logger} from '@angular/compiler-cli/src/ngtsc/logging';
-import {SourceFile, SourceFileLoader} from '@angular/compiler-cli/src/ngtsc/sourcemaps';
+import {AbsoluteFsPath, Logger, ReadonlyFileSystem, SourceFile, SourceFileLoader} from '@angular/compiler-cli/private/localize';
 import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
 import {transformSync} from '@babel/core';
 

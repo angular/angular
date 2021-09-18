@@ -8,7 +8,7 @@
 import {AbsoluteFsPath, PathManipulation} from '../../../src/ngtsc/file_system';
 
 export function getLockFilePath(fs: PathManipulation) {
-  return fs.resolve(require.resolve('@angular/compiler-cli/ngcc'), '../__ngcc_lock_file__');
+  return fs.resolve(__dirname, '__ngcc_lock_file__');
 }
 
 export interface LockFile {

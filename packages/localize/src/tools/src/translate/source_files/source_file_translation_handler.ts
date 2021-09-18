@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, AbsoluteFsPath, FileSystem, PathSegment} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, PathSegment} from '@angular/compiler-cli/private/localize';
 import {parseSync, transformFromAstSync} from '@babel/core';
 import {File, Program} from '@babel/types';
 
