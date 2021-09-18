@@ -240,9 +240,9 @@ To use this strategy set `strategy` to `freshness` and `timeout` to `0u` in `cac
 This will essentially do the following:
 
 1. Try to fetch from the network first.
-2. If the network request does not complete after 0ms (that is, immediately), fall back to the cache (ignoring cache age).
-3. Once the network request completes, update the cache for future requests.
-4. If the resource does not exist in the cache, wait for the network request anyway.
+1. If the network request does not complete after 0ms (that is, immediately), fall back to the cache (ignoring cache age).
+1. Once the network request completes, update the cache for future requests.
+1. If the resource does not exist in the cache, wait for the network request anyway.
 
 </div>
 
