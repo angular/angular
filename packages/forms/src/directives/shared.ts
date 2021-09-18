@@ -43,6 +43,10 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
 
   dir.valueAccessor!.writeValue(control.value);
 
+  if (control.disabled) {
+    dir.valueAccessor!.setDisabledState?.(true);
+  }
+
   setUpViewChangePipeline(control, dir);
   setUpModelChangePipeline(control, dir);
 
