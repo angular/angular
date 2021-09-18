@@ -80,9 +80,8 @@ jasmine_node_test(
     name = "test",
     bootstrap = ["//tools/testing:node_es5"],
     data = [
-        "//packages/animations:npm_package",
-        "//packages/common:npm_package",
-        "//packages/core:npm_package",
+        "@npm//@angular/animations-12",
+        "@npm//@angular/core-12",
     ],
     tags = [
         # Disabled as these tests pertain to the old ngc compilation and are not relevant in Ivy.

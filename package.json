@@ -45,6 +45,7 @@
     "@angular-devkit/build-optimizer": "0.1300.0-next.6",
     "@angular-devkit/core": "13.0.0-next.6",
     "@angular-devkit/schematics": "13.0.0-next.6",
+    "@angular/animations-12": "npm:@angular/animations@12.2.2",
     "@angular/cli": "13.0.0-next.6",
     "@angular/common-12": "npm:@angular/common@12.2.2",
     "@angular/core-12": "npm:@angular/core@12.2.2",
