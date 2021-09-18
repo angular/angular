@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Reference} from '@angular/compiler-cli/src/ngtsc/imports';
-import {DynamicValue, ResolvedValue} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
-import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
+import {DynamicValue, Reference, ResolvedValue, TypeScriptReflectionHost} from '@angular/compiler-cli/private/migrations';
 import * as ts from 'typescript';
 
 import {ImportManager} from '../../utils/import_manager';

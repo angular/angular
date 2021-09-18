@@ -12,9 +12,7 @@ ts_library(
     deps = [
         "//packages/compiler",
         "//packages/compiler-cli",
-        "//packages/compiler-cli/src/ngtsc/imports",
-        "//packages/compiler-cli/src/ngtsc/partial_evaluator",
-        "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/compiler-cli/private",
         "//packages/core",
         "//packages/core/schematics/utils",
         "@npm//@angular-devkit/core",

@@ -6,8 +6,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {getFileSystem, NodeJSFileSystem, setFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {ConsoleLogger, Logger, LogLevel} from '@angular/compiler-cli/src/ngtsc/logging';
+import {getFileSystem, NodeJSFileSystem, setFileSystem, ConsoleLogger, Logger, LogLevel} from '@angular/compiler-cli/private/localize';
 import * as glob from 'glob';
 import * as yargs from 'yargs';
 import {migrateFile, MigrationMapping} from './migrate';

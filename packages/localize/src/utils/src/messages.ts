@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {computeMsgId} from '@angular/compiler';
-import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {AbsoluteFsPath} from '@angular/compiler-cli/private/localize';
 
 import {BLOCK_MARKER, ID_SEPARATOR, LEGACY_ID_INDICATOR, MEANING_SEPARATOR} from './constants';
 

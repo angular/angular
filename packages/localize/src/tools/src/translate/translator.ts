@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, PathSegment, ReadonlyFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {AbsoluteFsPath, PathSegment, ReadonlyFileSystem} from '@angular/compiler-cli/private/localize';
 import {ɵMessageId, ɵParsedTranslation} from '@angular/localize';
 
 import {Diagnostics} from '../diagnostics';

@@ -13,6 +13,6 @@ ts_library(
     module_name = "@angular/localize/src/utils",
     deps = [
         "//packages/compiler",
-        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/private",
     ],
 )

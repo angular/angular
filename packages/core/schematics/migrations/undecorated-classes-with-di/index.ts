@@ -10,8 +10,7 @@ import {logging} from '@angular-devkit/core';
 import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import type {AotCompiler} from '@angular/compiler';
 import {Diagnostic as NgDiagnostic} from '@angular/compiler-cli';
-import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
-import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
+import {PartialEvaluator, TypeScriptReflectionHost} from '@angular/compiler-cli/private/migrations';
 import {relative} from 'path';
 import * as ts from 'typescript';
 
