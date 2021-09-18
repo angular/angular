@@ -7,7 +7,7 @@
  */
 
 import {CompileReflector, ExternalReference, getUrlScheme, Identifiers, syntaxError} from '@angular/compiler';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, LOCALE_ID, NgModuleFactory, NgModuleRef, QueryList, Renderer2, SecurityContext, TemplateRef, TRANSLATIONS_FORMAT, ViewContainerRef, ViewEncapsulation, ɵand, ɵccf, ɵcmf, ɵCodegenComponentFactoryResolver, ɵcrt, ɵdid, ɵeld, ɵEMPTY_ARRAY, ɵEMPTY_MAP, ɵinlineInterpolate, ɵinterpolate, ɵmod, ɵmpd, ɵncd, ɵnov, ɵpad, ɵpid, ɵpod, ɵppd, ɵprd, ɵqud, ɵReflectionCapabilities as ReflectionCapabilities, ɵregisterModuleFactory, ɵstringify as stringify, ɵted, ɵunv, ɵvid} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, LOCALE_ID, NgModuleFactory, NgModuleRef, QueryList, Renderer2, SecurityContext, TemplateRef, TRANSLATIONS_FORMAT, ViewContainerRef, ViewEncapsulation, ɵand, ɵccf, ɵcmf, ɵCodegenComponentFactoryResolver, ɵcrt, ɵdid, ɵeld, ɵEMPTY_ARRAY, ɵEMPTY_MAP, ɵinlineInterpolate, ɵinterpolate, ɵmod, ɵmpd, ɵncd, ɵnov, ɵpad, ɵpid, ɵpod, ɵppd, ɵprd, ɵqud, ɵReflectionCapabilities as ReflectionCapabilities, ɵregisterModuleFactory, ɵstringify as stringify, ɵted, ɵvid} from '@angular/core';
 
 export const MODULE_SUFFIX = '';
 const builtinExternalReferences = createBuiltinExternalReferencesMap();
@@ -99,7 +99,6 @@ function createBuiltinExternalReferencesMap() {
   map.set(Identifiers.pipeDef, ɵpid);
   map.set(Identifiers.nodeValue, ɵnov);
   map.set(Identifiers.ngContentDef, ɵncd);
-  map.set(Identifiers.unwrapValue, ɵunv);
   map.set(Identifiers.createRendererType2, ɵcrt);
   map.set(Identifiers.createComponentFactory, ɵccf);
   return map;

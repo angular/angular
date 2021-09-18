@@ -108,7 +108,6 @@ export class Identifiers {
   static pipeDef: o.ExternalReference = {name: 'ɵpid', moduleName: CORE};
   static nodeValue: o.ExternalReference = {name: 'ɵnov', moduleName: CORE};
   static ngContentDef: o.ExternalReference = {name: 'ɵncd', moduleName: CORE};
-  static unwrapValue: o.ExternalReference = {name: 'ɵunv', moduleName: CORE};
   static createRendererType2: o.ExternalReference = {name: 'ɵcrt', moduleName: CORE};
   // type only
   static RendererType2: o.ExternalReference = {

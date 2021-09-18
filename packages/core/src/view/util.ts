@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {devModeEqual, WrappedValue} from '../change_detection/change_detection';
+import {devModeEqual} from '../change_detection/change_detection';
 import {SOURCE} from '../di/injector_compatibility';
 import {ViewEncapsulation} from '../metadata/view';
 import {RendererType2} from '../render/api_flags';
@@ -26,16 +26,6 @@ export function tokenKey(token: any): string {
     _tokenKeyCache.set(token, key);
   }
   return key;
-}
-
-export function unwrapValue(view: ViewData, nodeIdx: number, bindingIdx: number, value: any): any {
-  if (WrappedValue.isWrapped(value)) {
-    value = WrappedValue.unwrap(value);
-    const globalBindingIdx = view.def.nodes[nodeIdx].bindingIndex + bindingIdx;
-    const oldValue = WrappedValue.unwrap(view.oldValues[globalBindingIdx]);
-    view.oldValues[globalBindingIdx] = new WrappedValue(oldValue);
-  }
-  return value;
 }
 
 const UNDEFINED_RENDERER_TYPE_ID = '$$undefined';

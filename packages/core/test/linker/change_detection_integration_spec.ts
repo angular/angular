@@ -8,7 +8,7 @@
 
 import {ResourceLoader, UrlResolver} from '@angular/compiler';
 import {MockResourceLoader} from '@angular/compiler/testing';
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, DebugElement, Directive, DoCheck, EventEmitter, HostBinding, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, Provider, RendererFactory2, RendererType2, SimpleChange, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, WrappedValue} from '@angular/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, DebugElement, Directive, DoCheck, EventEmitter, HostBinding, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, Provider, RendererFactory2, RendererType2, SimpleChange, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
@@ -100,7 +100,6 @@ describe(`ChangeDetection`, () => {
         MultiArgPipe,
         PipeWithOnDestroy,
         IdentityPipe,
-        WrappedPipe,
       ],
       providers: [
         RenderLog,
@@ -521,41 +520,6 @@ describe(`ChangeDetection`, () => {
            ctx.detectChanges(false);
 
            expect(renderLog.log).toEqual([]);
-         }));
-
-      it('should unwrap the wrapped value and force a change', fakeAsync(() => {
-           const ctx = _bindSimpleValue('"Megatron" | wrappedPipe', Person);
-
-           ctx.detectChanges(false);
-
-           expect(renderLog.log).toEqual(['id=Megatron']);
-
-           renderLog.clear();
-           ctx.detectChanges(false);
-
-           expect(renderLog.log).toEqual(['id=Megatron']);
-         }));
-
-      it('should record unwrapped values via ngOnChanges', fakeAsync(() => {
-           const ctx = createCompFixture(
-               '<div [testDirective]="\'aName\' | wrappedPipe" [a]="1" [b]="2 | wrappedPipe"></div>');
-           const dir: TestDirective = queryDirs(ctx.debugElement, TestDirective)[0];
-           ctx.detectChanges(false);
-           dir.changes = {};
-           ctx.detectChanges(false);
-
-           // Note: the binding for `a` did not change and has no ValueWrapper,
-           // and should therefore stay unchanged.
-           expect(dir.changes).toEqual({
-             'name': new SimpleChange('aName', 'aName', false),
-             'b': new SimpleChange(2, 2, false)
-           });
-
-           ctx.detectChanges(false);
-           expect(dir.changes).toEqual({
-             'name': new SimpleChange('aName', 'aName', false),
-             'b': new SimpleChange(2, 2, false)
-           });
          }));
 
       it('should call pure pipes only if the arguments change', fakeAsync(() => {
@@ -1824,13 +1788,6 @@ class PipeWithOnDestroy implements PipeTransform, OnDestroy {
 class IdentityPipe implements PipeTransform {
   transform(value: any) {
     return value;
-  }
-}
-
-@Pipe({name: 'wrappedPipe'})
-class WrappedPipe implements PipeTransform {
-  transform(value: any) {
-    return WrappedValue.wrap(value);
   }
 }
 

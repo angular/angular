@@ -756,17 +756,13 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       const pipeValueExpr: o.Expression =
           o.importExpr(Identifiers.nodeValue).callFn([compViewExpr, o.literal(pipeNodeIndex)]);
 
-      return (args: o.Expression[]) => callUnwrapValue(
-                 expression.nodeIndex, expression.bindingIndex,
-                 callCheckStmt(checkIndex, [pipeValueExpr].concat(args)));
+      return (args: o.Expression[]) => callCheckStmt(checkIndex, [pipeValueExpr].concat(args));
     } else {
       const nodeIndex = this._createPipe(expression.sourceSpan, pipe);
       const nodeValueExpr =
           o.importExpr(Identifiers.nodeValue).callFn([VIEW_VAR, o.literal(nodeIndex)]);
 
-      return (args: o.Expression[]) => callUnwrapValue(
-                 expression.nodeIndex, expression.bindingIndex,
-                 nodeValueExpr.prop('transform').callFn(args));
+      return (args: o.Expression[]) => nodeValueExpr.prop('transform').callFn(args);
     }
   }
 
@@ -1012,12 +1008,6 @@ function callCheckStmt(nodeIndex: number, exprs: o.Expression[]): o.Expression {
     return CHECK_VAR.callFn(
         [VIEW_VAR, o.literal(nodeIndex), o.literal(ArgumentType.Inline), ...exprs]);
   }
-}
-
-function callUnwrapValue(nodeIndex: number, bindingIdx: number, expr: o.Expression): o.Expression {
-  return o.importExpr(Identifiers.unwrapValue).callFn([
-    VIEW_VAR, o.literal(nodeIndex), o.literal(bindingIdx), expr
-  ]);
 }
 
 function elementEventNameAndTarget(
