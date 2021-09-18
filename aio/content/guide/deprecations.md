@@ -48,6 +48,7 @@ v12 - v15
 | template syntax         | [`<template>`](#template-tag)                                                                 | <!--v7--> v11         |
 | polyfills               | [reflect-metadata](#reflect-metadata)                                                         | <!--v8--> v11         |
 | npm package format      | [`esm5` and `fesm5` entry-points in @angular/* npm packages](guide/deprecations#esm5-fesm5)   | <!-- v9 --> v11       |
+| `@angular/compiler-cli` | [Input setter coercion](#input-setter-coercion)                                               | <!--v13--> v15        |
 | `@angular/core`         | [`defineInjectable`](#core)                                                                   | <!--v8--> v11         |
 | `@angular/core`         | [`entryComponents`](api/core/NgModule#entryComponents)                                        | <!--v9--> v11         |
 | `@angular/core`         | [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS)                       | <!--v9--> v11         |
@@ -474,6 +475,55 @@ For full rationale and discussion behind this deprecation, see [RFC: Internet Ex
 
 **Note**: IE11 will be supported in Angular v12 LTS releases through November 2022.
 -->
+
+{@a input-setter-coercion}
+### Input setter coercion
+
+Since the `strictTemplates` flag has been introduced in Angular the compiler has been able to type-check input bindings to the declared input type of the corresponding directive.
+When a getter/setter pair is being used for the input it may be desirable to let the setter accept a broader set of types than what is returned by the getter, for example when the setter first converts the input value.
+However, until TypeScript 4.3 a getter/setter pair was required to have identical types so this pattern could not be accurately declared.
+
+To mitigate this limitation, it was made possible to declare [input setter coercion fields](guide/template-typecheck#input-setter-coercion) in directives that are used when type-checking input bindings.
+However, since [TypeScript 4.3](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-3.html#separate-write-types-on-properties) the limitation has been removed; setters can now accept a wider type than what is returned by the getter.
+This means that input coercion fields are no longer needed, as their effects can be achieved by widening the type of the setter.
+
+For example, the following directive:
+
+```typescript
+@Component({...})
+class SubmitButton {
+  private _disabled: boolean;
+
+  @Input()
+  get disabled(): boolean {
+    return this._disabled;
+  }
+
+  set disabled(value: boolean) {
+    this._disabled = (value === '') || value;
+  }
+
+  static ngAcceptInputType_disabled: boolean|'';
+}
+```
+
+can be refactored as follows:
+
+```typescript
+@Component({...})
+class SubmitButton {
+  private _disabled: boolean;
+
+  @Input()
+  get disabled(): boolean {
+    return this._disabled;
+  }
+
+  set disabled(value: boolean|'') {
+    this._disabled = (value === '') || value;
+  }
+}
+```
 
 {@a deprecated-cli-flags}
 
