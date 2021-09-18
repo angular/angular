@@ -123,9 +123,6 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
         cleanUpControl(previousForm, this, /* validateControlPresenceOnChange */ false);
       }
       setUpControl(this.form, this);
-      if (this.control.disabled && this.valueAccessor!.setDisabledState) {
-        this.valueAccessor!.setDisabledState!(true);
-      }
       this.form.updateValueAndValidity({emitEvent: false});
     }
     if (isPropertyUpdated(changes, this.viewModel)) {
