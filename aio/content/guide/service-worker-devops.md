@@ -23,7 +23,7 @@ This file integrity is especially important when lazy loading modules.
 A JS bundle may reference many lazy chunks, and the filenames of the
 lazy chunks are unique to the particular build of the application. If a running
 application at version `X` attempts to load a lazy chunk, but the server has
-updated to version `X + 1` already, the lazy loading operation will fail.
+already updated to version `X + 1`, the lazy loading operation will fail.
 
 The version identifier of the application is determined by the contents of all
 resources, and it changes if any of them change. In practice, the version
@@ -96,7 +96,7 @@ configured lifetimes.
 
 It can be problematic for an application if the version of resources
 it's receiving changes suddenly or without warning. See the
-[Versions](guide/service-worker-devops#versions) section above
+[App versions](guide/service-worker-devops#versions) section above
 for a description of such issues.
 
 The Angular service worker provides a guarantee: a running application
@@ -303,7 +303,7 @@ Tools open to differ from behavior a user might experience.
 * If you look in the Cache Storage viewer, the cache is frequently
 out of date. Right click the Cache Storage title and refresh the caches.
 
-Stopping and starting the service worker in the Service Worker
+* Stopping and starting the service worker in the Service Worker
 pane triggers a check for updates.
 
 ## Service Worker Safety

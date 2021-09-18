@@ -77,7 +77,7 @@ For example, imagine the following scenario:
   This newer version includes the files `index.html`, `main.<main-hash-2>.js` and `lazy-chunk.<lazy-hash-2>.js` (note that the hashes are different now, because the content of the files has changed).
   The old version is no longer available on the server.
 - In the meantime, the user's browser decides to evict `lazy-chunk.<lazy-hash-1>.js` from its cache.
-  Browsers may decide to evict specific (or all) resources from a cache in order to reclaim disk space.
+  This is possible since browsers may decide to evict specific (or all) resources from a cache in order to reclaim disk space.
 - The user opens the application again.
   The service worker serves the latest version known to it at this point, namely the old version (`index.html` and `main.<main-hash-1>.js`).
 - At some later point, the application requests the lazy bundle, `lazy-chunk.<lazy-hash-1>.js`.
@@ -87,7 +87,7 @@ For example, imagine the following scenario:
 In the above scenario, the service worker is not able to serve an asset that would normally be cached.
 That particular application version is broken and there is no way to fix the state of the client without reloading the page.
 In such cases, the service worker notifies the client by sending an `UnrecoverableStateEvent` event.
-You can subscribe to `SwUpdate#unrecoverable` to be notified and handle these errors.
+You can subscribe to `SwUpdate.unrecoverable` to be notified and handle these errors.
 
 <code-example path="service-worker-getting-started/src/app/handle-unrecoverable-state.service.ts" header="handle-unrecoverable-state.service.ts" region="sw-unrecoverable-state"></code-example>
 
