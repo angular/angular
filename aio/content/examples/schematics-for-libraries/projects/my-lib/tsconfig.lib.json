@@ -17,12 +17,8 @@
     ]
   },
   "angularCompilerOptions": {
-    "annotateForClosureCompiler": true,
-    "skipTemplateCodegen": true,
-    "strictMetadataEmit": true,
-    "fullTemplateTypeCheck": true,
-    "strictInjectionParameters": true,
-    "enableResourceInlining": true
+    "strictTemplates": true,
+    "strictInjectionParameters": true
   },
   "exclude": [
     "src/test.ts",
