@@ -1375,16 +1375,6 @@ export abstract class ViewRef extends ChangeDetectorRef {
     abstract onDestroy(callback: Function): any /** TODO #9100 */;
 }
 
-// @public @deprecated
-export class WrappedValue {
-    constructor(value: any);
-    static isWrapped(value: any): value is WrappedValue;
-    static unwrap(value: any): any;
-    static wrap(value: any): WrappedValue;
-    // @deprecated (undocumented)
-    wrapped: any;
-}
-
 // @public
 export function ɵɵdefineInjectable<T>(opts: {
     token: unknown;

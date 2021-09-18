@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, SimpleChange, SimpleChanges, WrappedValue} from '../change_detection/change_detection';
+import {ChangeDetectorRef, SimpleChange, SimpleChanges} from '../change_detection/change_detection';
 import {INJECTOR, Injector, resolveForwardRef} from '../di';
 import {ElementRef} from '../linker/element_ref';
 import {TemplateRef} from '../linker/template_ref';
@@ -436,7 +436,7 @@ function updateProp(
   providerData.instance[propName] = value;
   if (def.flags & NodeFlags.OnChanges) {
     changes = changes || {};
-    const oldValue = WrappedValue.unwrap(view.oldValues[def.bindingIndex + bindingIdx]);
+    const oldValue = view.oldValues[def.bindingIndex + bindingIdx];
     const binding = def.bindings[bindingIdx];
     changes[binding.nonMinifiedName!] =
         new SimpleChange(oldValue, value, (view.state & ViewState.FirstCheck) !== 0);

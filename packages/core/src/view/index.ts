@@ -17,7 +17,7 @@ export {queryDef} from './query';
 export {createComponentFactory, getComponentViewDefinitionFactory, nodeValue, ViewRef_} from './refs';
 export {initServicesIfNeeded} from './services';
 export {textDef} from './text';
-export {createRendererType2, elementEventFullName, EMPTY_MAP, inlineInterpolate, interpolate, rootRenderNodes, tokenKey, unwrapValue} from './util';
+export {createRendererType2, elementEventFullName, EMPTY_MAP, inlineInterpolate, interpolate, rootRenderNodes, tokenKey} from './util';
 export {viewDef} from './view';
 export {attachEmbeddedView, detachEmbeddedView, moveEmbeddedView} from './view_attach';
 
