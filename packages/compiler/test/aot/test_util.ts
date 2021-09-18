@@ -664,8 +664,6 @@ export function setup(options: {
 } = {
   compileAngular: true,
   compileAnimations: true,
-  compileCommon: false,
-  compileFakeCore: false,
 }) {
   let angularFiles = new Map<string, string>();
 
@@ -682,26 +680,14 @@ export function setup(options: {
       if (options.compileAngular) {
         // If this fails please add //packages/core:npm_package as a test data dependency.
         readBazelWrittenFilesFrom(
-            resolveNpmTreeArtifact('angular/packages/core/npm_package'), 'core', angularFiles,
+            resolveNpmTreeArtifact('npm/node_modules/@angular/core-12'), 'core', angularFiles,
             skipDirs);
-      }
-      if (options.compileFakeCore) {
-        readBazelWrittenFilesFrom(
-            resolveNpmTreeArtifact(
-                'angular/packages/compiler-cli/src/ngtsc/testing/fake_core/npm_package'),
-            'core', angularFiles, skipDirs);
       }
       if (options.compileAnimations) {
         // If this fails please add //packages/animations:npm_package as a test data dependency.
         readBazelWrittenFilesFrom(
-            resolveNpmTreeArtifact('angular/packages/animations/npm_package'), 'animations',
+            resolveNpmTreeArtifact('npm/node_modules/@angular/animations-12'), 'animations',
             angularFiles, skipDirs);
-      }
-      if (options.compileCommon) {
-        // If this fails please add //packages/common:npm_package as a test data dependency.
-        readBazelWrittenFilesFrom(
-            resolveNpmTreeArtifact('angular/packages/common/npm_package'), 'common', angularFiles,
-            skipDirs);
       }
       return;
     }
@@ -709,13 +695,6 @@ export function setup(options: {
     if (options.compileAngular) {
       const emittingHost = new EmittingCompilerHost([], {emitMetadata: true});
       emittingHost.addScript('@angular/core/index.ts', minCoreIndex);
-      const emittingProgram = ts.createProgram(emittingHost.scripts, settings, emittingHost);
-      emittingProgram.emit();
-      emittingHost.writtenAngularFiles(angularFiles);
-    }
-    if (options.compileCommon) {
-      const emittingHost =
-          new EmittingCompilerHost(['@angular/common/index.ts'], {emitMetadata: true});
       const emittingProgram = ts.createProgram(emittingHost.scripts, settings, emittingHost);
       emittingProgram.emit();
       emittingHost.writtenAngularFiles(angularFiles);
