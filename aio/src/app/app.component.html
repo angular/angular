@@ -2,6 +2,8 @@
 
 <aio-cookies-popup></aio-cookies-popup>
 
+<a class="skip-to-content-link" href="#main-content">Skip to main content</a>
+
 <div *ngIf="isFetching" class="progress-bar-container">
   <mat-progress-bar mode="indeterminate" color="warn"></mat-progress-bar>
 </div>
@@ -55,6 +57,7 @@
   </mat-sidenav>
 
   <main class="sidenav-content" [id]="pageId" role="main">
+    <div id="main-content" tabindex="-1"></div>
     <aio-mode-banner [mode]="deployment.mode" [version]="versionInfo"></aio-mode-banner>
     <aio-doc-viewer [class.no-animations]="isStarting" [doc]="currentDocument" (docReady)="onDocReady()" (docRemoved)="onDocRemoved()" (docInserted)="onDocInserted()" (docRendered)="onDocRendered()">
     </aio-doc-viewer>
