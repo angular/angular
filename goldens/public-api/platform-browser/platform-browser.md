@@ -7,6 +7,8 @@
 import { ComponentRef } from '@angular/core';
 import { DebugElement } from '@angular/core';
 import { DebugNode } from '@angular/core';
+import * as i0 from '@angular/core';
+import * as i1 from '@angular/common';
 import { InjectionToken } from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
 import { NgZone } from '@angular/core';
@@ -24,10 +26,22 @@ export class BrowserModule {
     static withServerTransition(params: {
         appId: string;
     }): ModuleWithProviders<BrowserModule>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<BrowserModule, [{ optional: true; skipSelf: true; }]>;
+    // (undocumented)
+    static ɵinj: i0.ɵɵInjectorDeclaration<BrowserModule>;
+    // (undocumented)
+    static ɵmod: i0.ɵɵNgModuleDeclaration<BrowserModule, never, never, [typeof i1.CommonModule, typeof i0.ApplicationModule]>;
 }
 
 // @public
 export class BrowserTransferStateModule {
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<BrowserTransferStateModule, never>;
+    // (undocumented)
+    static ɵinj: i0.ɵɵInjectorDeclaration<BrowserTransferStateModule>;
+    // (undocumented)
+    static ɵmod: i0.ɵɵNgModuleDeclaration<BrowserTransferStateModule, never, never, never>;
 }
 
 // @public
@@ -48,22 +62,30 @@ export abstract class DomSanitizer implements Sanitizer {
     abstract bypassSecurityTrustStyle(value: string): SafeStyle;
     abstract bypassSecurityTrustUrl(value: string): SafeUrl;
     abstract sanitize(context: SecurityContext, value: SafeValue | string | null): string | null;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<DomSanitizer, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<DomSanitizer>;
 }
 
 // @public
 export function enableDebugTools<T>(ref: ComponentRef<T>): ComponentRef<T>;
 
 // @public
-export const EVENT_MANAGER_PLUGINS: InjectionToken<ɵangular_packages_platform_browser_platform_browser_g[]>;
+export const EVENT_MANAGER_PLUGINS: InjectionToken<EventManagerPlugin[]>;
 
 // @public
 export class EventManager {
-    constructor(plugins: ɵangular_packages_platform_browser_platform_browser_g[], _zone: NgZone);
+    constructor(plugins: EventManagerPlugin[], _zone: NgZone);
     addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
     // @deprecated
     addGlobalEventListener(target: string, eventName: string, handler: Function): Function;
     getZone(): NgZone;
-    }
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<EventManager, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<EventManager>;
+}
 
 // @public
 export const HAMMER_GESTURE_CONFIG: InjectionToken<HammerGestureConfig>;
@@ -88,6 +110,10 @@ export class HammerGestureConfig {
     overrides: {
         [key: string]: Object;
     };
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<HammerGestureConfig, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<HammerGestureConfig>;
 }
 
 // @public
@@ -95,6 +121,12 @@ export type HammerLoader = () => Promise<void>;
 
 // @public
 export class HammerModule {
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<HammerModule, never>;
+    // (undocumented)
+    static ɵinj: i0.ɵɵInjectorDeclaration<HammerModule>;
+    // (undocumented)
+    static ɵmod: i0.ɵɵNgModuleDeclaration<HammerModule, never, never, never>;
 }
 
 // @public
@@ -110,6 +142,10 @@ export class Meta {
     removeTag(attrSelector: string): void;
     removeTagElement(meta: HTMLMetaElement): void;
     updateTag(tag: MetaDefinition, selector?: string): HTMLMetaElement | null;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<Meta, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<Meta>;
 }
 
 // @public
@@ -164,6 +200,10 @@ export class Title {
     constructor(_doc: any);
     getTitle(): string;
     setTitle(newTitle: string): void;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<Title, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<Title>;
 }
 
 // @public
@@ -174,11 +214,14 @@ export class TransferState {
     remove<T>(key: StateKey<T>): void;
     set<T>(key: StateKey<T>, value: T): void;
     toJson(): string;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<TransferState, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<TransferState>;
 }
 
 // @public (undocumented)
 export const VERSION: Version;
-
 
 // (No @packageDocumentation comment for this package)
 

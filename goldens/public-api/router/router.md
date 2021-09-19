@@ -11,6 +11,7 @@ import { ComponentFactoryResolver } from '@angular/core';
 import { ComponentRef } from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { EventEmitter } from '@angular/core';
+import * as i0 from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { Injector } from '@angular/core';
 import { Location as Location_2 } from '@angular/common';
@@ -493,6 +494,10 @@ export class Router {
     get url(): string;
     urlHandlingStrategy: UrlHandlingStrategy;
     urlUpdateStrategy: 'deferred' | 'eager';
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<Router, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<Router>;
 }
 
 // @public
@@ -539,6 +544,10 @@ export class RouterLink implements OnChanges {
     };
     // (undocumented)
     get urlTree(): UrlTree | null;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLink, ":not(a):not(area)[routerLink]", never, { "queryParams": "queryParams"; "fragment": "fragment"; "queryParamsHandling": "queryParamsHandling"; "preserveFragment": "preserveFragment"; "skipLocationChange": "skipLocationChange"; "replaceUrl": "replaceUrl"; "state": "state"; "relativeTo": "relativeTo"; "routerLink": "routerLink"; }, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<RouterLink, [null, null, { attribute: "tabindex"; }, null, null]>;
 }
 
 // @public
@@ -562,6 +571,10 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
     routerLinkActiveOptions: {
         exact: boolean;
     } | IsActiveMatchOptions;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLinkActive, "[routerLinkActive]", ["routerLinkActive"], { "routerLinkActiveOptions": "routerLinkActiveOptions"; "routerLinkActive": "routerLinkActive"; }, { "isActiveChange": "isActiveChange"; }, ["links", "linksWithHrefs"]>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<RouterLinkActive, [null, null, null, null, { optional: true; }, { optional: true; }]>;
 }
 
 // @public
@@ -590,6 +603,10 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     target: string;
     // (undocumented)
     get urlTree(): UrlTree | null;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLinkWithHref, "a[routerLink],area[routerLink]", never, { "target": "target"; "queryParams": "queryParams"; "fragment": "fragment"; "queryParamsHandling": "queryParamsHandling"; "preserveFragment": "preserveFragment"; "skipLocationChange": "skipLocationChange"; "replaceUrl": "replaceUrl"; "state": "state"; "relativeTo": "relativeTo"; "routerLink": "routerLink"; }, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<RouterLinkWithHref, never>;
 }
 
 // @public
@@ -597,6 +614,12 @@ export class RouterModule {
     constructor(guard: any, router: Router);
     static forChild(routes: Routes): ModuleWithProviders<RouterModule>;
     static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders<RouterModule>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<RouterModule, [{ optional: true; }, { optional: true; }]>;
+    // (undocumented)
+    static ɵinj: i0.ɵɵInjectorDeclaration<RouterModule>;
+    // (undocumented)
+    static ɵmod: i0.ɵɵNgModuleDeclaration<RouterModule, [typeof i1.RouterOutlet, typeof i2.RouterLink, typeof i2.RouterLinkWithHref, typeof i3.RouterLinkActive, typeof i4.ɵEmptyOutletComponent], never, [typeof i1.RouterOutlet, typeof i2.RouterLink, typeof i2.RouterLinkWithHref, typeof i3.RouterLinkActive, typeof i4.ɵEmptyOutletComponent]>;
 }
 
 // @public
@@ -626,6 +649,10 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     ngOnDestroy(): void;
     // (undocumented)
     ngOnInit(): void;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterOutlet, "router-outlet", ["outlet"], {}, { "activateEvents": "activate"; "deactivateEvents": "deactivate"; "attachEvents": "attach"; "detachEvents": "detach"; }, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<RouterOutlet, [null, null, null, { attribute: "name"; }, null]>;
 }
 
 // @public
@@ -653,17 +680,21 @@ export class RouterPreloader implements OnDestroy {
     preload(): Observable<any>;
     // (undocumented)
     setUpPreloading(): void;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<RouterPreloader, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<RouterPreloader>;
 }
 
 // @public
-export class RouterState extends ɵangular_packages_router_router_m<ActivatedRoute> {
+export class RouterState extends Tree<ActivatedRoute> {
     snapshot: RouterStateSnapshot;
     // (undocumented)
     toString(): string;
 }
 
 // @public
-export class RouterStateSnapshot extends ɵangular_packages_router_router_m<ActivatedRouteSnapshot> {
+export class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
     // (undocumented)
     toString(): string;
     url: string;

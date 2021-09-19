@@ -4,6 +4,7 @@
 
 ```ts
 
+import * as i0 from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -1628,14 +1629,30 @@ export class HttpClient {
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         withCredentials?: boolean;
     }): Observable<any>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<HttpClient, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<HttpClient>;
 }
 
 // @public
 export class HttpClientJsonpModule {
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<HttpClientJsonpModule, never>;
+    // (undocumented)
+    static ɵinj: i0.ɵɵInjectorDeclaration<HttpClientJsonpModule>;
+    // (undocumented)
+    static ɵmod: i0.ɵɵNgModuleDeclaration<HttpClientJsonpModule, never, never, never>;
 }
 
 // @public
 export class HttpClientModule {
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<HttpClientModule, never>;
+    // (undocumented)
+    static ɵinj: i0.ɵɵInjectorDeclaration<HttpClientModule>;
+    // (undocumented)
+    static ɵmod: i0.ɵɵNgModuleDeclaration<HttpClientModule, never, [typeof HttpClientXsrfModule], never>;
 }
 
 // @public
@@ -1645,6 +1662,12 @@ export class HttpClientXsrfModule {
         cookieName?: string;
         headerName?: string;
     }): ModuleWithProviders<HttpClientXsrfModule>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<HttpClientXsrfModule, never>;
+    // (undocumented)
+    static ɵinj: i0.ɵɵInjectorDeclaration<HttpClientXsrfModule>;
+    // (undocumented)
+    static ɵmod: i0.ɵɵNgModuleDeclaration<HttpClientXsrfModule, never, never, never>;
 }
 
 // @public
@@ -1770,7 +1793,7 @@ export class HttpParams {
     keys(): string[];
     set(param: string, value: string | number | boolean): HttpParams;
     toString(): string;
-    }
+}
 
 // @public
 export interface HttpParamsOptions {
@@ -2074,7 +2097,11 @@ export interface HttpUserEvent<T> {
 export class HttpXhrBackend implements HttpBackend {
     constructor(xhrFactory: XhrFactory_2);
     handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
-    }
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<HttpXhrBackend, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<HttpXhrBackend>;
+}
 
 // @public
 export abstract class HttpXsrfTokenExtractor {
@@ -2083,22 +2110,29 @@ export abstract class HttpXsrfTokenExtractor {
 
 // @public
 export class JsonpClientBackend implements HttpBackend {
-    constructor(callbackMap: ɵangular_packages_common_http_http_b, document: any);
+    constructor(callbackMap: JsonpCallbackContext, document: any);
     handle(req: HttpRequest<never>): Observable<HttpEvent<any>>;
-    }
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<JsonpClientBackend, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<JsonpClientBackend>;
+}
 
 // @public
 export class JsonpInterceptor {
     constructor(jsonp: JsonpClientBackend);
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>;
-    }
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<JsonpInterceptor, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<JsonpInterceptor>;
+}
 
 // @public @deprecated
 export type XhrFactory = XhrFactory_2;
 
 // @public @deprecated
 export const XhrFactory: typeof XhrFactory_2;
-
 
 // (No @packageDocumentation comment for this package)
 

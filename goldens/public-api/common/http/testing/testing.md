@@ -7,10 +7,18 @@
 import { HttpEvent } from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
 import { HttpRequest } from '@angular/common/http';
+import * as i0 from '@angular/core';
+import * as i1 from '@angular/common/http';
 import { Observer } from 'rxjs';
 
 // @public
 export class HttpClientTestingModule {
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<HttpClientTestingModule, never>;
+    // (undocumented)
+    static ɵinj: i0.ɵɵInjectorDeclaration<HttpClientTestingModule>;
+    // (undocumented)
+    static ɵmod: i0.ɵɵNgModuleDeclaration<HttpClientTestingModule, never, [typeof i1.HttpClientModule], never>;
 }
 
 // @public
@@ -59,7 +67,6 @@ export class TestRequest {
     // (undocumented)
     request: HttpRequest<any>;
 }
-
 
 // (No @packageDocumentation comment for this package)
 

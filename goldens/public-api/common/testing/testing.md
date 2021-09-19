@@ -4,6 +4,7 @@
 
 ```ts
 
+import * as i0 from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { Location as Location_2 } from '@angular/common';
 import { LocationChangeListener } from '@angular/common';
@@ -45,6 +46,10 @@ export class MockLocationStrategy extends LocationStrategy {
     simulatePopState(url: string): void;
     // (undocumented)
     urlChanges: string[];
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MockLocationStrategy, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<MockLocationStrategy>;
 }
 
 // @public
@@ -86,7 +91,11 @@ export class MockPlatformLocation implements PlatformLocation {
     get state(): unknown;
     // (undocumented)
     get url(): string;
-    }
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MockPlatformLocation, [{ optional: true; }]>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<MockPlatformLocation>;
+}
 
 // @public
 export interface MockPlatformLocationConfig {
@@ -132,8 +141,11 @@ export class SpyLocation implements Location_2 {
     subscribe(onNext: (value: any) => void, onThrow?: ((error: any) => void) | null, onReturn?: (() => void) | null): SubscriptionLike;
     // (undocumented)
     urlChanges: string[];
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<SpyLocation, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<SpyLocation>;
 }
-
 
 // (No @packageDocumentation comment for this package)
 
