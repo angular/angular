@@ -34,6 +34,8 @@ esbuild(
         "//packages/compiler-cli/private:bazel.ts",
         "//packages/compiler-cli/private:localize.ts",
         "//packages/compiler-cli/private:migrations.ts",
+        "//packages/compiler-cli/ngcc:src/locking/lock_file_with_child_process/ngcc_lock_unlocker.ts",
+        "//packages/compiler-cli/ngcc:src/execution/cluster/ngcc_cluster_worker.ts",
     ],
     external = [
         "@angular/compiler",

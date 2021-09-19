@@ -15,6 +15,7 @@ import {ParsedConfiguration} from '../../../src/perform_compile';
 import {getEntryPointFormat} from '../packages/entry_point';
 import {makeEntryPointBundle} from '../packages/entry_point_bundle';
 import {createModuleResolutionCache, SharedFileCache} from '../packages/source_file_cache';
+import {Transformer} from '../packages/transformer';
 import {PathMappings} from '../path_mappings';
 import {FileWriter} from '../writing/file_writer';
 
@@ -29,7 +30,6 @@ export function getCreateCompileFn(
     enableI18nLegacyMessageIdFormat: boolean, tsConfig: ParsedConfiguration|null,
     pathMappings: PathMappings|undefined): CreateCompileFn {
   return (beforeWritingFiles, onTaskCompleted) => {
-    const {Transformer} = require('../packages/transformer');
     const transformer = new Transformer(fileSystem, logger, tsConfig);
     const sharedFileCache = new SharedFileCache(fileSystem);
     const moduleResolutionCache = createModuleResolutionCache(fileSystem);
