@@ -7,6 +7,7 @@
 import { AfterViewInit } from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { EventEmitter } from '@angular/core';
+import * as i0 from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { Injector } from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
@@ -135,6 +136,10 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
     // (undocumented)
     ngOnInit(): void;
     get path(): string[];
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<AbstractFormGroupDirective, never, never, {}, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<AbstractFormGroupDirective, never>;
 }
 
 // @public
@@ -149,13 +154,21 @@ export interface AsyncValidatorFn {
 }
 
 // @public
-export class CheckboxControlValueAccessor extends ɵangular_packages_forms_forms_g implements ControlValueAccessor {
+export class CheckboxControlValueAccessor extends BuiltInControlValueAccessor implements ControlValueAccessor {
     writeValue(value: any): void;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<CheckboxControlValueAccessor, "input[type=checkbox][formControlName],input[type=checkbox][formControl],input[type=checkbox][ngModel]", never, {}, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<CheckboxControlValueAccessor, never>;
 }
 
 // @public
 export class CheckboxRequiredValidator extends RequiredValidator {
     validate(control: AbstractControl): ValidationErrors | null;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<CheckboxRequiredValidator, "input[type=checkbox][required][formControlName],input[type=checkbox][required][formControl],input[type=checkbox][required][ngModel]", never, {}, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<CheckboxRequiredValidator, never>;
 }
 
 // @public
@@ -177,9 +190,13 @@ export interface ControlValueAccessor {
 }
 
 // @public
-export class DefaultValueAccessor extends ɵangular_packages_forms_forms_f implements ControlValueAccessor {
+export class DefaultValueAccessor extends BaseControlValueAccessor implements ControlValueAccessor {
     constructor(renderer: Renderer2, elementRef: ElementRef, _compositionMode: boolean);
     writeValue(value: any): void;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<DefaultValueAccessor, "input:not([type=checkbox])[formControlName],textarea[formControlName],input:not([type=checkbox])[formControl],textarea[formControl],input:not([type=checkbox])[ngModel],textarea[ngModel],[ngDefaultControl]", never, {}, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<DefaultValueAccessor, [null, null, { optional: true; }]>;
 }
 
 // @public
@@ -187,6 +204,10 @@ export class EmailValidator implements Validator {
     set email(value: boolean | string);
     registerOnValidatorChange(fn: () => void): void;
     validate(control: AbstractControl): ValidationErrors | null;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<EmailValidator, "[email][formControlName],[email][formControl],[email][ngModel]", never, { "email": "email"; }, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<EmailValidator, never>;
 }
 
 // @public
@@ -246,6 +267,10 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
     ngOnDestroy(): void;
     ngOnInit(): void;
     get path(): string[];
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FormArrayName, "[formArrayName]", never, { "name": "formArrayName"; }, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<FormArrayName, [{ optional: true; host: true; skipSelf: true; }, { optional: true; self: true; }, { optional: true; self: true; }]>;
 }
 
 // @public
@@ -261,6 +286,10 @@ export class FormBuilder {
     }, options: {
         [key: string]: any;
     }): FormGroup;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<FormBuilder, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<FormBuilder>;
 }
 
 // @public
@@ -303,6 +332,10 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
     update: EventEmitter<any>;
     viewModel: any;
     viewToModelUpdate(newValue: any): void;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FormControlDirective, "[formControl]", ["ngForm"], { "form": "formControl"; "isDisabled": "disabled"; "model": "ngModel"; }, { "update": "ngModelChange"; }, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<FormControlDirective, [{ optional: true; self: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }]>;
 }
 
 // @public
@@ -322,6 +355,10 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     // @deprecated (undocumented)
     update: EventEmitter<any>;
     viewToModelUpdate(newValue: any): void;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FormControlName, "[formControlName]", never, { "name": "formControlName"; "isDisabled": "disabled"; "model": "ngModel"; }, { "update": "ngModelChange"; }, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<FormControlName, [{ optional: true; host: true; skipSelf: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }]>;
 }
 
 // @public
@@ -390,16 +427,30 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     resetForm(value?: any): void;
     readonly submitted: boolean;
     updateModel(dir: FormControlName, value: any): void;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FormGroupDirective, "[formGroup]", ["ngForm"], { "form": "formGroup"; }, { "ngSubmit": "ngSubmit"; }, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<FormGroupDirective, [{ optional: true; self: true; }, { optional: true; self: true; }]>;
 }
 
 // @public
 export class FormGroupName extends AbstractFormGroupDirective implements OnInit, OnDestroy {
     constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[]);
     name: string | number | null;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FormGroupName, "[formGroupName]", never, { "name": "formGroupName"; }, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<FormGroupName, [{ optional: true; host: true; skipSelf: true; }, { optional: true; self: true; }, { optional: true; self: true; }]>;
 }
 
 // @public
 export class FormsModule {
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<FormsModule, never>;
+    // (undocumented)
+    static ɵinj: i0.ɵɵInjectorDeclaration<FormsModule>;
+    // (undocumented)
+    static ɵmod: i0.ɵɵNgModuleDeclaration<FormsModule, [typeof i1_2.NgModel, typeof i2_2.NgModelGroup, typeof i3_2.NgForm], never, [typeof i4_2.ɵInternalFormsSharedModule, typeof i1_2.NgModel, typeof i2_2.NgModelGroup, typeof i3_2.NgForm]>;
 }
 
 // @public
@@ -411,12 +462,20 @@ export class MaxLengthValidator implements Validator, OnChanges {
     ngOnChanges(changes: SimpleChanges): void;
     registerOnValidatorChange(fn: () => void): void;
     validate(control: AbstractControl): ValidationErrors | null;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MaxLengthValidator, "[maxlength][formControlName],[maxlength][formControl],[maxlength][ngModel]", never, { "maxlength": "maxlength"; }, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MaxLengthValidator, never>;
 }
 
 // @public
 export class MaxValidator extends AbstractValidatorDirective implements OnChanges {
     max: string | number | null;
     ngOnChanges(changes: SimpleChanges): void;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MaxValidator, "input[type=number][max][formControlName],input[type=number][max][formControl],input[type=number][max][ngModel]", never, { "max": "max"; }, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MaxValidator, never>;
 }
 
 // @public
@@ -428,12 +487,20 @@ export class MinLengthValidator implements Validator, OnChanges {
     ngOnChanges(changes: SimpleChanges): void;
     registerOnValidatorChange(fn: () => void): void;
     validate(control: AbstractControl): ValidationErrors | null;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MinLengthValidator, "[minlength][formControlName],[minlength][formControl],[minlength][ngModel]", never, { "minlength": "minlength"; }, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MinLengthValidator, never>;
 }
 
 // @public
 export class MinValidator extends AbstractValidatorDirective implements OnChanges {
     min: string | number | null;
     ngOnChanges(changes: SimpleChanges): void;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MinValidator, "input[type=number][min][formControlName],input[type=number][min][formControl],input[type=number][min][ngModel]", never, { "min": "min"; }, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MinValidator, never>;
 }
 
 // @public
@@ -453,13 +520,21 @@ export abstract class NgControl extends AbstractControlDirective {
 }
 
 // @public
-export class NgControlStatus extends ɵangular_packages_forms_forms_i {
+export class NgControlStatus extends AbstractControlStatus {
     constructor(cd: NgControl);
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgControlStatus, "[formControlName],[ngModel],[formControl]", never, {}, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgControlStatus, [{ self: true; }]>;
 }
 
 // @public
-export class NgControlStatusGroup extends ɵangular_packages_forms_forms_i {
+export class NgControlStatusGroup extends AbstractControlStatus {
     constructor(cd: ControlContainer);
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgControlStatusGroup, "[formGroupName],[formArrayName],[ngModelGroup],[formGroup],form:not([ngNoForm]),[ngForm]", never, {}, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgControlStatusGroup, [{ optional: true; self: true; }]>;
 }
 
 // @public
@@ -492,6 +567,10 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
     }): void;
     readonly submitted: boolean;
     updateModel(dir: NgControl, value: any): void;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgForm, "form:not([ngNoForm]):not([formGroup]),ng-form,[ngForm]", ["ngForm"], { "options": "ngFormOptions"; }, { "ngSubmit": "ngSubmit"; }, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgForm, [{ optional: true; self: true; }, { optional: true; self: true; }]>;
 }
 
 // @public
@@ -518,12 +597,20 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
     update: EventEmitter<any>;
     viewModel: any;
     viewToModelUpdate(newValue: any): void;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModel, "[ngModel]:not([formControlName]):not([formControl])", ["ngModel"], { "name": "name"; "isDisabled": "disabled"; "model": "ngModel"; "options": "ngModelOptions"; }, { "update": "ngModelChange"; }, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgModel, [{ optional: true; host: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; self: true; }]>;
 }
 
 // @public
 export class NgModelGroup extends AbstractFormGroupDirective implements OnInit, OnDestroy {
     constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[]);
     name: string;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelGroup, "[ngModelGroup]", ["ngModelGroup"], { "name": "ngModelGroup"; }, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgModelGroup, [{ host: true; skipSelf: true; }, { optional: true; self: true; }, { optional: true; self: true; }]>;
 }
 
 // @public
@@ -534,12 +621,20 @@ export class NgSelectOption implements OnDestroy {
     ngOnDestroy(): void;
     set ngValue(value: any);
     set value(value: any);
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgSelectOption, "option", never, { "ngValue": "ngValue"; "value": "value"; }, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgSelectOption, [null, null, { optional: true; host: true; }]>;
 }
 
 // @public
-export class NumberValueAccessor extends ɵangular_packages_forms_forms_g implements ControlValueAccessor {
+export class NumberValueAccessor extends BuiltInControlValueAccessor implements ControlValueAccessor {
     registerOnChange(fn: (_: number | null) => void): void;
     writeValue(value: number): void;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NumberValueAccessor, "input[type=number][formControlName],input[type=number][formControl],input[type=number][ngModel]", never, {}, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NumberValueAccessor, never>;
 }
 
 // @public
@@ -549,11 +644,15 @@ export class PatternValidator implements Validator, OnChanges {
     pattern: string | RegExp;
     registerOnValidatorChange(fn: () => void): void;
     validate(control: AbstractControl): ValidationErrors | null;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<PatternValidator, "[pattern][formControlName],[pattern][formControl],[pattern][ngModel]", never, { "pattern": "pattern"; }, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<PatternValidator, never>;
 }
 
 // @public
-export class RadioControlValueAccessor extends ɵangular_packages_forms_forms_g implements ControlValueAccessor, OnDestroy, OnInit {
-    constructor(renderer: Renderer2, elementRef: ElementRef, _registry: ɵangular_packages_forms_forms_r, _injector: Injector);
+export class RadioControlValueAccessor extends BuiltInControlValueAccessor implements ControlValueAccessor, OnDestroy, OnInit {
+    constructor(renderer: Renderer2, elementRef: ElementRef, _registry: RadioControlRegistry, _injector: Injector);
     fireUncheck(value: any): void;
     formControlName: string;
     name: string;
@@ -565,12 +664,20 @@ export class RadioControlValueAccessor extends ɵangular_packages_forms_forms_g 
     registerOnChange(fn: (_: any) => {}): void;
     value: any;
     writeValue(value: any): void;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RadioControlValueAccessor, "input[type=radio][formControlName],input[type=radio][formControl],input[type=radio][ngModel]", never, { "name": "name"; "formControlName": "formControlName"; "value": "value"; }, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<RadioControlValueAccessor, never>;
 }
 
 // @public
-export class RangeValueAccessor extends ɵangular_packages_forms_forms_g implements ControlValueAccessor {
+export class RangeValueAccessor extends BuiltInControlValueAccessor implements ControlValueAccessor {
     registerOnChange(fn: (_: number | null) => void): void;
     writeValue(value: any): void;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RangeValueAccessor, "input[type=range][formControlName],input[type=range][formControl],input[type=range][ngModel]", never, {}, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<RangeValueAccessor, never>;
 }
 
 // @public
@@ -578,6 +685,12 @@ export class ReactiveFormsModule {
     static withConfig(opts: {
         warnOnNgModelWithFormControl: 'never' | 'once' | 'always';
     }): ModuleWithProviders<ReactiveFormsModule>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<ReactiveFormsModule, never>;
+    // (undocumented)
+    static ɵinj: i0.ɵɵInjectorDeclaration<ReactiveFormsModule>;
+    // (undocumented)
+    static ɵmod: i0.ɵɵNgModuleDeclaration<ReactiveFormsModule, [typeof i5_2.FormControlDirective, typeof i6_2.FormGroupDirective, typeof i7_2.FormControlName, typeof i8_2.FormGroupName, typeof i8_2.FormArrayName], never, [typeof i4_2.ɵInternalFormsSharedModule, typeof i5_2.FormControlDirective, typeof i6_2.FormGroupDirective, typeof i7_2.FormControlName, typeof i8_2.FormGroupName, typeof i8_2.FormArrayName]>;
 }
 
 // @public
@@ -586,23 +699,35 @@ export class RequiredValidator implements Validator {
     get required(): boolean | string;
     set required(value: boolean | string);
     validate(control: AbstractControl): ValidationErrors | null;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RequiredValidator, ":not([type=checkbox])[required][formControlName],:not([type=checkbox])[required][formControl],:not([type=checkbox])[required][ngModel]", never, { "required": "required"; }, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<RequiredValidator, never>;
 }
 
 // @public
-export class SelectControlValueAccessor extends ɵangular_packages_forms_forms_g implements ControlValueAccessor {
+export class SelectControlValueAccessor extends BuiltInControlValueAccessor implements ControlValueAccessor {
     set compareWith(fn: (o1: any, o2: any) => boolean);
     registerOnChange(fn: (value: any) => any): void;
     // (undocumented)
     value: any;
     writeValue(value: any): void;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<SelectControlValueAccessor, "select:not([multiple])[formControlName],select:not([multiple])[formControl],select:not([multiple])[ngModel]", never, { "compareWith": "compareWith"; }, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<SelectControlValueAccessor, never>;
 }
 
 // @public
-export class SelectMultipleControlValueAccessor extends ɵangular_packages_forms_forms_g implements ControlValueAccessor {
+export class SelectMultipleControlValueAccessor extends BuiltInControlValueAccessor implements ControlValueAccessor {
     set compareWith(fn: (o1: any, o2: any) => boolean);
     registerOnChange(fn: (value: any) => any): void;
     value: any;
     writeValue(value: any): void;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<SelectMultipleControlValueAccessor, "select[multiple][formControlName],select[multiple][formControl],select[multiple][ngModel]", never, { "compareWith": "compareWith"; }, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<SelectMultipleControlValueAccessor, never>;
 }
 
 // @public

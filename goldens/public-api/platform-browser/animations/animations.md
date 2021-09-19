@@ -4,6 +4,8 @@
 
 ```ts
 
+import * as i0 from '@angular/core';
+import * as i1 from '@angular/platform-browser';
 import { InjectionToken } from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
 
@@ -13,6 +15,12 @@ export const ANIMATION_MODULE_TYPE: InjectionToken<"NoopAnimations" | "BrowserAn
 // @public
 export class BrowserAnimationsModule {
     static withConfig(config: BrowserAnimationsModuleConfig): ModuleWithProviders<BrowserAnimationsModule>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<BrowserAnimationsModule, never>;
+    // (undocumented)
+    static ɵinj: i0.ɵɵInjectorDeclaration<BrowserAnimationsModule>;
+    // (undocumented)
+    static ɵmod: i0.ɵɵNgModuleDeclaration<BrowserAnimationsModule, never, never, [typeof i1.BrowserModule]>;
 }
 
 // @public
@@ -22,8 +30,13 @@ export interface BrowserAnimationsModuleConfig {
 
 // @public
 export class NoopAnimationsModule {
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NoopAnimationsModule, never>;
+    // (undocumented)
+    static ɵinj: i0.ɵɵInjectorDeclaration<NoopAnimationsModule>;
+    // (undocumented)
+    static ɵmod: i0.ɵɵNgModuleDeclaration<NoopAnimationsModule, never, never, [typeof i1.BrowserModule]>;
 }
-
 
 // (No @packageDocumentation comment for this package)
 
