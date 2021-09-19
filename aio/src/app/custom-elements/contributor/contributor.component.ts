@@ -30,7 +30,8 @@ import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
             </div>
         </div>
 
-        <div class="card-back" *ngIf="person.isFlipped" (click)="flipCard(person)" (keyup.enter)="flipCard(person)" tabindex="0">
+        <div class="card-back" *ngIf="person.isFlipped" (click)="flipCard(person)" (keyup.enter)="flipCard(person)"
+             tabindex="0">
             <h3>{{person.name}}</h3>
             <p class="contributor-bio">{{person.bio}}</p>
         </div>
