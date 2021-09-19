@@ -44,7 +44,7 @@ export class ClusterMaster {
     }
 
     // Set the worker entry-point
-    cluster.setupMaster({exec: this.fileSystem.resolve(__dirname, 'worker.js')});
+    cluster.setupMaster({exec: this.fileSystem.resolve(__dirname, 'ngcc_cluster_worker.js')});
 
     this.taskQueue = analyzeEntryPoints();
     this.onTaskCompleted = createTaskCompletedCallback(this.taskQueue);
