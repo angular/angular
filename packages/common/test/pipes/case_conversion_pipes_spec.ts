@@ -90,9 +90,16 @@ import {LowerCasePipe, TitleCasePipe, UpperCasePipe} from '@angular/common';
       expect(pipe.transform('éric')).toEqual('Éric');
     });
 
+    it('should handle numbers at the beginning of words', () => {
+      expect(pipe.transform('frodo was 1st and bilbo was 2nd'))
+          .toEqual('Frodo Was 1st And Bilbo Was 2nd');
+      expect(pipe.transform('1ST')).toEqual('1st');
+    });
+
     it('should map null to null', () => {
       expect(pipe.transform(null)).toEqual(null);
     });
+
     it('should map undefined to null', () => {
       expect(pipe.transform(undefined)).toEqual(null);
     });
@@ -100,6 +107,7 @@ import {LowerCasePipe, TitleCasePipe, UpperCasePipe} from '@angular/common';
     it('should not support numbers', () => {
       expect(() => pipe.transform(0 as any)).toThrowError();
     });
+
     it('should not support other objects', () => {
       expect(() => pipe.transform({} as any)).toThrowError();
     });
