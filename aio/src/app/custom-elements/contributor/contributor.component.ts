@@ -14,7 +14,7 @@ import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
             <div class="contributor-image"
                  [style.background-image]="'url('+pictureBase+(person.picture || noPicture)+')'">
                  <div class="contributor-info">
-                     <a *ngIf="person.bio" mat-button class="info-item">
+                     <a *ngIf="person.bio" mat-button class="info-item" tabindex="0">
                          View Bio
                      </a>
                      <a *ngIf="person.twitter" mat-icon-button class="info-item icon"
@@ -30,7 +30,8 @@ import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
             </div>
         </div>
 
-        <div class="card-back" *ngIf="person.isFlipped" (click)="flipCard(person)" (keyup.enter)="flipCard(person)">
+        <div class="card-back" *ngIf="person.isFlipped" (click)="flipCard(person)" (keyup.enter)="flipCard(person)"
+             tabindex="0">
             <h3>{{person.name}}</h3>
             <p class="contributor-bio">{{person.bio}}</p>
         </div>
