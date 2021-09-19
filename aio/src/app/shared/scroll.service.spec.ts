@@ -15,9 +15,9 @@ describe('ScrollService', () => {
     return instance;
   };
 
-  const topOfPageElem = {} as Element;
+  const topOfPageElem = {} as HTMLElement;
   let injector: Injector;
-  let document: MockDocument;
+  let document: Document & MockDocument;
   let platformLocation: MockPlatformLocation;
   let scrollService: ScrollService;
   let location: SpyLocation;
@@ -60,7 +60,7 @@ describe('ScrollService', () => {
     });
 
     platformLocation = injector.get(PlatformLocation);
-    document = injector.get(DOCUMENT) as unknown as MockDocument;
+    document = injector.get(DOCUMENT) as unknown as Document & MockDocument;
     scrollService = injector.get(ScrollService);
     location = injector.get(Location) as unknown as SpyLocation;
     sessionStorage = injector.get(SessionStorage);
@@ -241,14 +241,22 @@ describe('ScrollService', () => {
 
   describe('#scrollToElement', () => {
     it('should scroll to element', () => {
-      const element: Element = new MockElement() as any;
+      const element: HTMLElement = new MockElement() as any;
       scrollService.scrollToElement(element);
       expect(element.scrollIntoView).toHaveBeenCalled();
       expect(window.scrollBy).toHaveBeenCalledWith(0, -scrollService.topOffset);
     });
 
+    it('should focus the element if focusable', () => {
+      const element: HTMLElement = Object.assign(new MockElement() as any, {
+        focus: jasmine.createSpy('Element focus'),
+      });
+      scrollService.scrollToElement(element);
+      expect(element.focus).toHaveBeenCalled();
+    });
+
     it('should not scroll more than necessary (e.g. for elements close to the bottom)', () => {
-      const element: Element = new MockElement() as any;
+      const element: HTMLElement = new MockElement() as any;
       const getBoundingClientRect = element.getBoundingClientRect as jasmine.Spy;
       const topOffset = scrollService.topOffset;
 
@@ -264,7 +272,7 @@ describe('ScrollService', () => {
     });
 
     it('should scroll all the way to the top if close enough', () => {
-      const element: Element = new MockElement() as any;
+      const element: HTMLElement = new MockElement() as any;
 
       (window as any).pageYOffset = 25;
       scrollService.scrollToElement(element);
