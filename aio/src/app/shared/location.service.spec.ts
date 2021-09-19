@@ -436,6 +436,14 @@ describe('LocationService', () => {
         expect(result).toBe(false);
       });
 
+      it('local fragment-only URL', () => {
+        location.internalPath = '/some/path';
+        anchor.href = '#some-fragment';
+        const result = service.handleAnchorClick(anchor);
+        expect(service.go).toHaveBeenCalledWith('/some/path#some-fragment');
+        expect(result).toBe(false);
+      });
+
       it('local url with query params', () => {
         anchor.href = 'some/local/url?query=xxx&other=yyy';
         const result = service.handleAnchorClick(anchor);
