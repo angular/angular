@@ -5,12 +5,16 @@
   </style>
   <title>Loved by Millions</title>
   <defs>
-    <symbol id="angular-logo" viewBox="0 0 200 200" width="32" height="32">
+    <!--
+      The `transform` is necessary to work around a Safari issue (see #43498).
+      It's 0.16, because the view box is 200 and our target width is 32 (200 * 0.16 = 32).
+    -->
+    <g id="angular-logo" transform="scale(0.16)">
       <polygon points="100,0 6.9,33.2 21.1,156.3 100,200 178.9,156.3 193.1,33.2" fill="#dd0031" />
       <polygon points="100,0 100,200 178.9,156.3 193.1,33.2 100,0" fill="#c3002f" />
       <path d="M100,22.1L41.8,152.6h21.7l11.7-29.2h49.4l11.7,29.2h21.7L100,22.1z M117,105.4H83l17-40.9L117,105.4z"
         fill="#fff" />
-    </symbol>
+    </g>
   </defs>
   <rect class="water" width="1300" height="700" />
   <path class="land"
