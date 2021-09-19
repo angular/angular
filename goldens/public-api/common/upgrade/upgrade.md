@@ -4,6 +4,8 @@
 
 ```ts
 
+import * as i0 from '@angular/core';
+import * as i1 from '@angular/common';
 import { InjectionToken } from '@angular/core';
 import { Location as Location_2 } from '@angular/common';
 import { LocationStrategy } from '@angular/common';
@@ -45,7 +47,7 @@ export class $locationShim {
     url(): string;
     // (undocumented)
     url(url: string): this;
-    }
+}
 
 // @public
 export class $locationShimProvider {
@@ -53,7 +55,7 @@ export class $locationShimProvider {
     constructor(ngUpgrade: UpgradeModule, location: Location_2, platformLocation: PlatformLocation, urlCodec: UrlCodec, locationStrategy: LocationStrategy);
     hashPrefix(prefix?: string): void;
     html5Mode(mode?: any): void;
-    }
+}
 
 // @public
 export class AngularJSUrlCodec implements UrlCodec {
@@ -110,6 +112,12 @@ export interface LocationUpgradeConfig {
 export class LocationUpgradeModule {
     // (undocumented)
     static config(config?: LocationUpgradeConfig): ModuleWithProviders<LocationUpgradeModule>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<LocationUpgradeModule, never>;
+    // (undocumented)
+    static ɵinj: i0.ɵɵInjectorDeclaration<LocationUpgradeModule>;
+    // (undocumented)
+    static ɵmod: i0.ɵɵNgModuleDeclaration<LocationUpgradeModule, never, [typeof i1.CommonModule], never>;
 }
 
 // @public
@@ -140,7 +148,6 @@ export abstract class UrlCodec {
         pathname: string;
     };
 }
-
 
 // (No @packageDocumentation comment for this package)
 

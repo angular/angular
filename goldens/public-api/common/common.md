@@ -7,6 +7,7 @@
 import { ChangeDetectorRef } from '@angular/core';
 import { DoCheck } from '@angular/core';
 import { ElementRef } from '@angular/core';
+import * as i0 from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { Injector } from '@angular/core';
 import { IterableDiffers } from '@angular/core';
@@ -41,10 +42,20 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
     transform<T>(obj: null | undefined): null;
     // (undocumented)
     transform<T>(obj: Observable<T> | Subscribable<T> | Promise<T> | null | undefined): T | null;
-    }
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<AsyncPipe, never>;
+    // (undocumented)
+    static ɵpipe: i0.ɵɵPipeDeclaration<AsyncPipe, "async">;
+}
 
 // @public
 export class CommonModule {
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<CommonModule, never>;
+    // (undocumented)
+    static ɵinj: i0.ɵɵInjectorDeclaration<CommonModule>;
+    // (undocumented)
+    static ɵmod: i0.ɵɵNgModuleDeclaration<CommonModule, [typeof i1.NgClass, typeof i2.NgComponentOutlet, typeof i3.NgForOf, typeof i4.NgIf, typeof i5.NgTemplateOutlet, typeof i6.NgStyle, typeof i7.NgSwitch, typeof i7.NgSwitchCase, typeof i7.NgSwitchDefault, typeof i8.NgPlural, typeof i8.NgPluralCase, typeof i9.AsyncPipe, typeof i10.UpperCasePipe, typeof i10.LowerCasePipe, typeof i11.JsonPipe, typeof i12.SlicePipe, typeof i13.DecimalPipe, typeof i13.PercentPipe, typeof i10.TitleCasePipe, typeof i13.CurrencyPipe, typeof i14.DatePipe, typeof i15.I18nPluralPipe, typeof i16.I18nSelectPipe, typeof i17.KeyValuePipe], never, [typeof i1.NgClass, typeof i2.NgComponentOutlet, typeof i3.NgForOf, typeof i4.NgIf, typeof i5.NgTemplateOutlet, typeof i6.NgStyle, typeof i7.NgSwitch, typeof i7.NgSwitchCase, typeof i7.NgSwitchDefault, typeof i8.NgPlural, typeof i8.NgPluralCase, typeof i9.AsyncPipe, typeof i10.UpperCasePipe, typeof i10.LowerCasePipe, typeof i11.JsonPipe, typeof i12.SlicePipe, typeof i13.DecimalPipe, typeof i13.PercentPipe, typeof i10.TitleCasePipe, typeof i13.CurrencyPipe, typeof i14.DatePipe, typeof i15.I18nPluralPipe, typeof i16.I18nSelectPipe, typeof i17.KeyValuePipe]>;
 }
 
 // @public
@@ -56,6 +67,10 @@ export class CurrencyPipe implements PipeTransform {
     transform(value: null | undefined, currencyCode?: string, display?: 'code' | 'symbol' | 'symbol-narrow' | string | boolean, digitsInfo?: string, locale?: string): null;
     // (undocumented)
     transform(value: number | string | null | undefined, currencyCode?: string, display?: 'code' | 'symbol' | 'symbol-narrow' | string | boolean, digitsInfo?: string, locale?: string): string | null;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<CurrencyPipe, never>;
+    // (undocumented)
+    static ɵpipe: i0.ɵɵPipeDeclaration<CurrencyPipe, "currency">;
 }
 
 // @public
@@ -67,6 +82,10 @@ export class DatePipe implements PipeTransform {
     transform(value: null | undefined, format?: string, timezone?: string, locale?: string): null;
     // (undocumented)
     transform(value: Date | string | number | null | undefined, format?: string, timezone?: string, locale?: string): string | null;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<DatePipe, never>;
+    // (undocumented)
+    static ɵpipe: i0.ɵɵPipeDeclaration<DatePipe, "date">;
 }
 
 // @public
@@ -78,6 +97,10 @@ export class DecimalPipe implements PipeTransform {
     transform(value: null | undefined, digitsInfo?: string, locale?: string): null;
     // (undocumented)
     transform(value: number | string | null | undefined, digitsInfo?: string, locale?: string): string | null;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<DecimalPipe, never>;
+    // (undocumented)
+    static ɵpipe: i0.ɵɵPipeDeclaration<DecimalPipe, "number">;
 }
 
 // @public
@@ -197,6 +220,10 @@ export class HashLocationStrategy extends LocationStrategy implements OnDestroy 
     pushState(state: any, title: string, path: string, queryParams: string): void;
     // (undocumented)
     replaceState(state: any, title: string, path: string, queryParams: string): void;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<HashLocationStrategy, [null, { optional: true; }]>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<HashLocationStrategy>;
 }
 
 // @public
@@ -206,6 +233,10 @@ export class I18nPluralPipe implements PipeTransform {
     transform(value: number | null | undefined, pluralMap: {
         [count: string]: string;
     }, locale?: string): string;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<I18nPluralPipe, never>;
+    // (undocumented)
+    static ɵpipe: i0.ɵɵPipeDeclaration<I18nPluralPipe, "i18nPlural">;
 }
 
 // @public
@@ -214,6 +245,10 @@ export class I18nSelectPipe implements PipeTransform {
     transform(value: string | null | undefined, mapping: {
         [key: string]: string;
     }): string;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<I18nSelectPipe, never>;
+    // (undocumented)
+    static ɵpipe: i0.ɵɵPipeDeclaration<I18nSelectPipe, "i18nSelect">;
 }
 
 // @public
@@ -232,6 +267,10 @@ export function isPlatformWorkerUi(platformId: Object): boolean;
 export class JsonPipe implements PipeTransform {
     // (undocumented)
     transform(value: any): string;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<JsonPipe, never>;
+    // (undocumented)
+    static ɵpipe: i0.ɵɵPipeDeclaration<JsonPipe, "json">;
 }
 
 // @public
@@ -259,6 +298,10 @@ export class KeyValuePipe implements PipeTransform {
     transform<K extends number, V>(input: Record<K, V> | null | undefined, compareFn?: (a: KeyValue<string, V>, b: KeyValue<string, V>) => number): Array<KeyValue<string, V>> | null;
     // (undocumented)
     transform<K extends string, V>(input: Record<K, V> | ReadonlyMap<K, V> | null | undefined, compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number): Array<KeyValue<K, V>> | null;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<KeyValuePipe, never>;
+    // (undocumented)
+    static ɵpipe: i0.ɵɵPipeDeclaration<KeyValuePipe, "keyvalue">;
 }
 
 // @public
@@ -279,8 +322,11 @@ class Location_2 {
     replaceState(path: string, query?: string, state?: any): void;
     static stripTrailingSlash: (url: string) => string;
     subscribe(onNext: (value: PopStateEvent_2) => void, onThrow?: ((exception: any) => void) | null, onReturn?: (() => void) | null): SubscriptionLike;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<Location_2, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<Location_2>;
 }
-
 export { Location_2 as Location }
 
 // @public
@@ -320,6 +366,10 @@ export abstract class LocationStrategy {
     abstract pushState(state: any, title: string, url: string, queryParams: string): void;
     // (undocumented)
     abstract replaceState(state: any, title: string, url: string, queryParams: string): void;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<LocationStrategy, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<LocationStrategy>;
 }
 
 // @public
@@ -330,6 +380,10 @@ export class LowerCasePipe implements PipeTransform {
     transform(value: null | undefined): null;
     // (undocumented)
     transform(value: string | null | undefined): string | null;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<LowerCasePipe, never>;
+    // (undocumented)
+    static ɵpipe: i0.ɵɵPipeDeclaration<LowerCasePipe, "lowercase">;
 }
 
 // @public
@@ -343,7 +397,11 @@ export class NgClass implements DoCheck {
     });
     // (undocumented)
     ngDoCheck(): void;
-    }
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgClass, "[ngClass]", never, { "klass": "class"; "ngClass": "ngClass"; }, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgClass, never>;
+}
 
 // @public
 export class NgComponentOutlet implements OnChanges, OnDestroy {
@@ -360,7 +418,11 @@ export class NgComponentOutlet implements OnChanges, OnDestroy {
     ngOnChanges(changes: SimpleChanges): void;
     // (undocumented)
     ngOnDestroy(): void;
-    }
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgComponentOutlet, "[ngComponentOutlet]", never, { "ngComponentOutlet": "ngComponentOutlet"; "ngComponentOutletInjector": "ngComponentOutletInjector"; "ngComponentOutletContent": "ngComponentOutletContent"; "ngComponentOutletNgModuleFactory": "ngComponentOutletNgModuleFactory"; }, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgComponentOutlet, never>;
+}
 
 // @public
 export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
@@ -372,7 +434,11 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
     // (undocumented)
     get ngForTrackBy(): TrackByFunction<T>;
     static ngTemplateContextGuard<T, U extends NgIterable<T>>(dir: NgForOf<T, U>, ctx: any): ctx is NgForOfContext<T, U>;
-    }
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgForOf<any, any>, "[ngFor][ngForOf]", never, { "ngForOf": "ngForOf"; "ngForTrackBy": "ngForTrackBy"; "ngForTemplate": "ngForTemplate"; }, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgForOf<any, any>, never>;
+}
 
 // @public (undocumented)
 export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
@@ -403,7 +469,11 @@ export class NgIf<T = unknown> {
     set ngIfThen(templateRef: TemplateRef<NgIfContext<T>> | null);
     static ngTemplateContextGuard<T>(dir: NgIf<T>, ctx: any): ctx is NgIfContext<Exclude<T, false | 0 | '' | null | undefined>>;
     static ngTemplateGuard_ngIf: 'binding';
-    }
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgIf<any>, "[ngIf]", never, { "ngIf": "ngIf"; "ngIfThen": "ngIfThen"; "ngIfElse": "ngIfElse"; }, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgIf<any>, never>;
+}
 
 // @public (undocumented)
 export class NgIfContext<T = unknown> {
@@ -420,6 +490,10 @@ export class NgLocaleLocalization extends NgLocalization {
     getPluralCategory(value: any, locale?: string): string;
     // (undocumented)
     protected locale: string;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgLocaleLocalization, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<NgLocaleLocalization>;
 }
 
 // @public (undocumented)
@@ -435,13 +509,21 @@ export class NgPlural {
     addCase(value: string, switchView: SwitchView): void;
     // (undocumented)
     set ngPlural(value: number);
-    }
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgPlural, "[ngPlural]", never, { "ngPlural": "ngPlural"; }, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgPlural, never>;
+}
 
 // @public
 export class NgPluralCase {
     constructor(value: string, template: TemplateRef<Object>, viewContainer: ViewContainerRef, ngPlural: NgPlural);
     // (undocumented)
     value: string;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgPluralCase, "[ngPluralCase]", never, {}, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgPluralCase, [{ attribute: "ngPluralCase"; }, null, null, { host: true; }]>;
 }
 
 // @public
@@ -453,24 +535,40 @@ export class NgStyle implements DoCheck {
     set ngStyle(values: {
         [klass: string]: any;
     } | null);
-    }
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgStyle, "[ngStyle]", never, { "ngStyle": "ngStyle"; }, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgStyle, never>;
+}
 
 // @public
 export class NgSwitch {
     // (undocumented)
     set ngSwitch(newValue: any);
-    }
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgSwitch, "[ngSwitch]", never, { "ngSwitch": "ngSwitch"; }, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgSwitch, never>;
+}
 
 // @public
 export class NgSwitchCase implements DoCheck {
     constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>, ngSwitch: NgSwitch);
     ngDoCheck(): void;
     ngSwitchCase: any;
-    }
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgSwitchCase, "[ngSwitchCase]", never, { "ngSwitchCase": "ngSwitchCase"; }, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgSwitchCase, [null, null, { optional: true; host: true; }]>;
+}
 
 // @public
 export class NgSwitchDefault {
     constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>, ngSwitch: NgSwitch);
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgSwitchDefault, "[ngSwitchDefault]", never, {}, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgSwitchDefault, [null, null, { optional: true; host: true; }]>;
 }
 
 // @public
@@ -480,7 +578,11 @@ export class NgTemplateOutlet implements OnChanges {
     ngOnChanges(changes: SimpleChanges): void;
     ngTemplateOutlet: TemplateRef<any> | null;
     ngTemplateOutletContext: Object | null;
-    }
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgTemplateOutlet, "[ngTemplateOutlet]", never, { "ngTemplateOutletContext": "ngTemplateOutletContext"; "ngTemplateOutlet": "ngTemplateOutlet"; }, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgTemplateOutlet, never>;
+}
 
 // @public
 export enum NumberFormatStyle {
@@ -535,6 +637,10 @@ export class PathLocationStrategy extends LocationStrategy implements OnDestroy 
     pushState(state: any, title: string, url: string, queryParams: string): void;
     // (undocumented)
     replaceState(state: any, title: string, url: string, queryParams: string): void;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<PathLocationStrategy, [null, { optional: true; }]>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<PathLocationStrategy>;
 }
 
 // @public
@@ -546,6 +652,10 @@ export class PercentPipe implements PipeTransform {
     transform(value: null | undefined, digitsInfo?: string, locale?: string): null;
     // (undocumented)
     transform(value: number | string | null | undefined, digitsInfo?: string, locale?: string): string | null;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<PercentPipe, never>;
+    // (undocumented)
+    static ɵpipe: i0.ɵɵPipeDeclaration<PercentPipe, "percent">;
 }
 
 // @public
@@ -580,6 +690,10 @@ export abstract class PlatformLocation {
     abstract replaceState(state: any, title: string, url: string): void;
     // (undocumented)
     abstract get search(): string;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<PlatformLocation, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<PlatformLocation>;
 }
 
 // @public
@@ -609,7 +723,6 @@ interface PopStateEvent_2 {
     // (undocumented)
     url?: string;
 }
-
 export { PopStateEvent_2 as PopStateEvent }
 
 // @public
@@ -627,6 +740,10 @@ export class SlicePipe implements PipeTransform {
     transform(value: string, start: number, end?: number): string;
     // (undocumented)
     transform(value: string | null | undefined, start: number, end?: number): string | null;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<SlicePipe, never>;
+    // (undocumented)
+    static ɵpipe: i0.ɵɵPipeDeclaration<SlicePipe, "slice">;
 }
 
 // @public
@@ -643,6 +760,10 @@ export class TitleCasePipe implements PipeTransform {
     transform(value: null | undefined): null;
     // (undocumented)
     transform(value: string | null | undefined): string | null;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<TitleCasePipe, never>;
+    // (undocumented)
+    static ɵpipe: i0.ɵɵPipeDeclaration<TitleCasePipe, "titlecase">;
 }
 
 // @public
@@ -661,6 +782,10 @@ export class UpperCasePipe implements PipeTransform {
     transform(value: null | undefined): null;
     // (undocumented)
     transform(value: string | null | undefined): string | null;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<UpperCasePipe, never>;
+    // (undocumented)
+    static ɵpipe: i0.ɵɵPipeDeclaration<UpperCasePipe, "uppercase">;
 }
 
 // @public (undocumented)
@@ -700,7 +825,6 @@ export abstract class XhrFactory {
     // (undocumented)
     abstract build(): XMLHttpRequest;
 }
-
 
 // (No @packageDocumentation comment for this package)
 

@@ -10,7 +10,6 @@ export function clearTranslations(): void;
 // @public
 export function loadTranslations(translations: Record<MessageId, TargetMessage>): void;
 
-
 // (No @packageDocumentation comment for this package)
 
 ```

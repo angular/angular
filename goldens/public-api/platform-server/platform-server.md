@@ -4,6 +4,10 @@
 
 ```ts
 
+import * as i0 from '@angular/core';
+import * as i1 from '@angular/common/http';
+import * as i2 from '@angular/platform-browser/animations';
+import * as i3 from '@angular/platform-browser';
 import { InjectionToken } from '@angular/core';
 import { NgModuleFactory } from '@angular/core';
 import { PlatformRef } from '@angular/core';
@@ -36,6 +40,10 @@ export class PlatformState {
     constructor(_doc: any);
     getDocument(): any;
     renderToString(): string;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<PlatformState, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<PlatformState>;
 }
 
 // @public
@@ -54,15 +62,26 @@ export function renderModuleFactory<T>(moduleFactory: NgModuleFactory<T>, option
 
 // @public
 export class ServerModule {
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<ServerModule, never>;
+    // (undocumented)
+    static ɵinj: i0.ɵɵInjectorDeclaration<ServerModule>;
+    // (undocumented)
+    static ɵmod: i0.ɵɵNgModuleDeclaration<ServerModule, never, [typeof i1.HttpClientModule, typeof i2.NoopAnimationsModule], [typeof i3.BrowserModule]>;
 }
 
 // @public
 export class ServerTransferStateModule {
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<ServerTransferStateModule, never>;
+    // (undocumented)
+    static ɵinj: i0.ɵɵInjectorDeclaration<ServerTransferStateModule>;
+    // (undocumented)
+    static ɵmod: i0.ɵɵNgModuleDeclaration<ServerTransferStateModule, never, never, never>;
 }
 
 // @public (undocumented)
 export const VERSION: Version;
-
 
 // (No @packageDocumentation comment for this package)
 

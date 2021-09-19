@@ -7,6 +7,8 @@
 import { ChildrenOutletContexts } from '@angular/router';
 import { Compiler } from '@angular/core';
 import { ExtraOptions } from '@angular/router';
+import * as i0 from '@angular/core';
+import * as i1 from '@angular/router';
 import { Injector } from '@angular/core';
 import { Location as Location_2 } from '@angular/common';
 import { ModuleWithProviders } from '@angular/core';
@@ -21,6 +23,12 @@ import { UrlSerializer } from '@angular/router';
 export class RouterTestingModule {
     // (undocumented)
     static withRoutes(routes: Routes, config?: ExtraOptions): ModuleWithProviders<RouterTestingModule>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<RouterTestingModule, never>;
+    // (undocumented)
+    static ɵinj: i0.ɵɵInjectorDeclaration<RouterTestingModule>;
+    // (undocumented)
+    static ɵmod: i0.ɵɵNgModuleDeclaration<RouterTestingModule, never, never, [typeof i1.RouterModule]>;
 }
 
 // @public

@@ -6,6 +6,7 @@
 
 import { DoCheck } from '@angular/core';
 import { ElementRef } from '@angular/core';
+import * as i0 from '@angular/core';
 import { Injector } from '@angular/core';
 import { NgModuleFactory } from '@angular/core';
 import { NgModuleRef } from '@angular/core';
@@ -58,7 +59,11 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     ngOnDestroy(): void;
     // (undocumented)
     ngOnInit(): void;
-    }
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<UpgradeComponent, never, never, {}, {}, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<UpgradeComponent, never>;
+}
 
 // @public
 export class UpgradeModule {
@@ -70,11 +75,16 @@ export class UpgradeModule {
     bootstrap(element: Element, modules?: string[], config?: any): void;
     injector: Injector;
     ngZone: NgZone;
-    }
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<UpgradeModule, never>;
+    // (undocumented)
+    static ɵinj: i0.ɵɵInjectorDeclaration<UpgradeModule>;
+    // (undocumented)
+    static ɵmod: i0.ɵɵNgModuleDeclaration<UpgradeModule, never, never, never>;
+}
 
 // @public (undocumented)
 export const VERSION: Version;
-
 
 // (No @packageDocumentation comment for this package)
 
