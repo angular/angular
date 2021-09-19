@@ -13,7 +13,7 @@
   margin: 5px;
   outline: none;
   padding: 1rem 1.5rem;
-  position: absolute;
+  position: fixed;
   top: -100%;
   z-index: cdk.$overlay-container-z-index + 1;
 
