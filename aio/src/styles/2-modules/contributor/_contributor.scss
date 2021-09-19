@@ -26,6 +26,7 @@ aio-contributor {
   transition: all .3s;
 
   @media (hover) {
+    &:focus-within,
     &:hover {
       transform: translate3d(0,-3px,0);
       box-shadow: 0 8px 8px rgba(10, 16, 20, 0.24), 0 0 8px rgba(10, 16, 20, 0.12);
