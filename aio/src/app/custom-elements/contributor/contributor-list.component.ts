@@ -10,6 +10,7 @@ import { LocationService } from 'app/shared/location.service';
       <a *ngFor="let name of groupNames"
           class="button mat-button filter-button"
           [class.selected]="name === selectedGroup.name"
+          tabindex="0"
           (click)="selectGroup(name)"
           (keyup.enter)="selectGroup(name)">{{name}}</a>
     </div>
