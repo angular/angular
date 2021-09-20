@@ -624,7 +624,8 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
 
   /** The currently selected option. */
   get selected(): MatOption | MatOption[] {
-    return this.multiple ? this._selectionModel.selected : this._selectionModel.selected[0];
+    return this.multiple ? (this._selectionModel?.selected || []) :
+                            this._selectionModel?.selected[0];
   }
 
   /** The value displayed in the trigger. */

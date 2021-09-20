@@ -2703,11 +2703,34 @@ expect(panel.scrollTop)
   describe(`when the select's value is accessed on initialization`, () => {
     beforeEach(waitForAsync(() => configureMatSelectTestingModule([SelectEarlyAccessSibling])));
 
-    it('should not throw when trying to access the selected value on init', fakeAsync(() => {
-      expect(() => {
-        TestBed.createComponent(SelectEarlyAccessSibling).detectChanges();
-      }).not.toThrow();
-    }));
+    it('should not throw when trying to access the selected value on init in the view',
+      fakeAsync(() => {
+        expect(() => {
+          TestBed.createComponent(SelectEarlyAccessSibling).detectChanges();
+        }).not.toThrow();
+      }));
+
+    it('should not throw when reading selected value programmatically in single selection mode',
+      fakeAsync(() => {
+        expect(() => {
+          const fixture = TestBed.createComponent(SelectEarlyAccessSibling);
+          const select = fixture.debugElement.query(By.directive(MatSelect)).componentInstance;
+          // We're checking that accessing the getter won't throw.
+          select.multiple = false;
+          return select.selected;
+        }).not.toThrow();
+      }));
+
+    it('should not throw when reading selected value programmatically in multi selection mode',
+      fakeAsync(() => {
+        expect(() => {
+          const fixture = TestBed.createComponent(SelectEarlyAccessSibling);
+          const select = fixture.debugElement.query(By.directive(MatSelect)).componentInstance;
+          // We're checking that accessing the getter won't throw.
+          select.multiple = true;
+          return select.selected;
+        }).not.toThrow();
+      }));
   });
 
   describe('with ngIf and mat-label', () => {
