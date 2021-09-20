@@ -17,6 +17,10 @@
     "./package.json": {
       "default": "./package.json"
     },
+    "./ngcc": {
+      "types": "./ngcc/index.d.ts",
+      "default": "./bundles/ngcc/index.js"
+    },
     "./linker": {
       "types": "./linker/index.d.ts",
       "default": "./bundles/linker/index.js"
