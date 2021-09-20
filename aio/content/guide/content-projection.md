@@ -150,7 +150,7 @@ This example uses an `<ng-container>` attribute to simulate projecting a compone
 
 <header>Reminder!</header>
 
-The `<ng-container>` element is a logical construct that you can use to group other DOM elements; however, the `<ng-container>` itself is not rendered in the DOM tree.
+The `ng-container` element is a logical construct that is used to group other DOM elements; however, the `ng-container` itself is not rendered in the DOM tree.
 
 </div>
 
