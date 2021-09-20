@@ -288,6 +288,43 @@
     yaml "^1.10.0"
     yargs "^17.0.0"
 
+"@angular/forms-12@npm:@angular/forms@12.2.2":
+  version "12.2.2"
+  resolved "https://registry.yarnpkg.com/@angular/forms/-/forms-12.2.2.tgz#278aea61ed59f1ddba13a1e4f1d0fc25c4f0b290"
+  integrity sha512-v0zYUdbL+odeDWJNYGq9KZ3535+esDuPaPjXkZkq05/DPCMZym35hx6RlFWn5DElSSfxn4n15mfZXaIWbJNbEQ==
+  dependencies:
+    tslib "^2.2.0"
+
+"@angular/platform-browser-12@npm:@angular/platform-browser@12.2.2":
+  version "12.2.2"
+  resolved "https://registry.yarnpkg.com/@angular/platform-browser/-/platform-browser-12.2.2.tgz#e967454d83836f5de03e5bb85f064b6cdee712dd"
+  integrity sha512-uI/tBCzGl7ifQZB7euidO4OOY4qz2jrlMH2Ri6nVuXlLFl4/39ekq75xbJtIQ9/Nf4sWYpUytkq1oW820ZOtcA==
+  dependencies:
+    tslib "^2.2.0"
+
+"@angular/platform-browser-dynamic-12@npm:@angular/platform-browser-dynamic@12.2.2":
+  version "12.2.2"
+  resolved "https://registry.yarnpkg.com/@angular/platform-browser-dynamic/-/platform-browser-dynamic-12.2.2.tgz#ad335fb890785507c91e98e0fa9eef206596c39f"
+  integrity sha512-Ig0gyntnO9nt7ZLkRhDpdyqKH2kgza1i7L5fxtyw72JdPaUcgPSPvL06GST/ak4WQ04hEb28IEYQGqLKCOUvEA==
+  dependencies:
+    tslib "^2.2.0"
+
+"@angular/platform-server-12@npm:@angular/platform-server@12.2.2":
+  version "12.2.2"
+  resolved "https://registry.yarnpkg.com/@angular/platform-server/-/platform-server-12.2.2.tgz#b0d62cd25ed84f8d403aa5439b20f73b93d5b703"
+  integrity sha512-A9bc8aIRnKtYUIFTXnb9NdMlzCgZu0ODgyWDObDZ7OAoeRH4X0Ay7R7vWLmzWe7189UtH7RElsf5x4mlzbtUzg==
+  dependencies:
+    domino "^2.1.2"
+    tslib "^2.2.0"
+    xhr2 "^0.2.0"
+
+"@angular/router-12@npm:@angular/router@12.2.2":
+  version "12.2.2"
+  resolved "https://registry.yarnpkg.com/@angular/router/-/router-12.2.2.tgz#c837d86f042fcf58a448017ce880fbb5b602b481"
+  integrity sha512-zG6VtWqdPBUJq5JlZIJM4CegcPN7FE2s/I0tIhtzMO2lr65+V6X+RVWUXhDHnKR8dBmten+XZpLBYb1ZNhUUUw==
+  dependencies:
+    tslib "^2.2.0"
+
 "@apidevtools/json-schema-ref-parser@^9.0.3":
   version "9.0.9"
   resolved "https://registry.yarnpkg.com/@apidevtools/json-schema-ref-parser/-/json-schema-ref-parser-9.0.9.tgz#d720f9256e3609621280584f2b47ae165359268b"
@@ -5081,7 +5118,7 @@ dom-serialize@^2.2.1:
     extend "^3.0.0"
     void-elements "^2.0.0"
 
-domino@~2.1.6:
+domino@^2.1.2, domino@~2.1.6:
   version "2.1.6"
   resolved "https://registry.yarnpkg.com/domino/-/domino-2.1.6.tgz#fe4ace4310526e5e7b9d12c7de01b7f485a57ffe"
   integrity sha512-3VdM/SXBZX2omc9JF9nOPCtDaYQ67BGp5CoLpIQlO2KCAPETs8TcDHacF26jXadGbvUteZzRTeos2fhID5+ucQ==
@@ -13838,7 +13875,7 @@ xdg-basedir@^4.0.0:
   resolved "https://registry.yarnpkg.com/xdg-basedir/-/xdg-basedir-4.0.0.tgz#4bc8d9984403696225ef83a1573cbbcb4e79db13"
   integrity sha512-PSNhEJDejZYV7h50BohL09Er9VaIefr2LMAf3OEmpCkjOi34eYyQYAXUTjEQtZJTKcF0E2UKTh+osDLsgNim9Q==
 
-xhr2@0.2.1:
+xhr2@0.2.1, xhr2@^0.2.0:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/xhr2/-/xhr2-0.2.1.tgz#4e73adc4f9cfec9cbd2157f73efdce3a5f108a93"
   integrity sha512-sID0rrVCqkVNUn8t6xuv9+6FViXjUVXq8H5rWOH2rz9fDNQEd4g0EA2XlcEdJXRz5BMEn4O1pJFdT+z4YHhoWw==

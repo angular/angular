@@ -76,17 +76,37 @@ INTEGRATION_TESTS = {
         "pinned_npm_packages": ["systemjs"],
     },
     "i18n": {"tags": ["no-ivy-aot"]},
-    "injectable-def": {"tags": ["no-ivy-aot"]},
-    "ivy-i18n": {"tags": ["ivy-only"]},
-    "trusted-types": {"tags": ["ivy-only"]},
+    "injectable-def": {
+        # This test relies on ESM for running the app in SSR. RxJS added ESM resolution
+        # support with RXJS v7. We allow the version to be pinned to v7.
+        # TODO: Remove this and update the test once the project uses RxJS v7, or if rxjs v6 has ESM support.
+        "pinned_npm_packages": ["rxjs"],
+    },
+    "ivy-i18n": {},
+    "trusted-types": {},
     "ng_elements": {"tags": ["no-ivy-aot"]},
-    "ng_elements_schematics": {"tags": ["ivy-only"]},
+    "ng_elements_schematics": {},
     "ng_update": {},
-    "ng_update_migrations": {"tags": ["no-ivy-aot"]},
-    "ngcc": {"tags": ["no-ivy-aot"]},
+    "ng_update_migrations": {},
+    "ngcc": {
+        "use_view_engine_packages": [
+            "@angular/animations",
+            "@angular/common",
+            "@angular/core",
+            "@angular/forms",
+            "@angular/platform-browser",
+            "@angular/platform-browser-dynamic",
+            "@angular/platform-server",
+            "@angular/router",
+        ],
+    },
     "platform-server": {"tags": ["no-ivy-aot"]},
     "service-worker-schema": {},
-    "side-effects": {"tags": ["no-ivy-aot"]},
+    # The `side-effects` test is currently disabled as it does not run the
+    # Angular linker plugin and therefore partial declarations are retained
+    # as side-effects. To make this test helpful again, we need to run the linker.
+    # TODO(devversion): replace this with a solution we maintain that runs the Babel linker plugin.
+    "side-effects": {"tags": ["manual"]},
     "terser": {},
     "typings_test_rxjs7": {},
     "typings_test_ts41": {
@@ -121,6 +141,7 @@ INTEGRATION_TESTS = {
         commands = INTEGRATION_TESTS[test_folder].get("commands", "default"),
         pinned_npm_packages = INTEGRATION_TESTS[test_folder].get("pinned_npm_packages", []),
         tags = INTEGRATION_TESTS[test_folder].get("tags", []),
+        use_view_engine_packages = INTEGRATION_TESTS[test_folder].get("use_view_engine_packages", []),
     )
     for test_folder in INTEGRATION_TESTS
 ]
