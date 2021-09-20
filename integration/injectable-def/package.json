@@ -2,6 +2,7 @@
   "name": "angular-integration",
   "version": "0.0.0",
   "license": "MIT",
+  "type": "module",
   "dependencies": {
     "@angular/animations": "file:../../dist/packages-dist/animations",
     "@angular/common": "file:../../dist/packages-dist/common",
@@ -12,7 +13,7 @@
     "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
     "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
     "@types/node": "file:../../node_modules/@types/node",
-    "rxjs": "file:../../node_modules/rxjs",
+    "rxjs": "^7.3.0",
     "typescript": "file:../../node_modules/typescript",
     "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
   },
@@ -20,7 +21,8 @@
     "@types/jasmine": "file:../../node_modules/@types/jasmine",
     "concurrently": "3.4.0",
     "lite-server": "2.2.2",
-    "protractor": "file:../../node_modules/protractor"
+    "protractor": "file:../../node_modules/protractor",
+    "rollup": "file:../../node_modules/rollup"
   },
   "//resolutions-comment": "Ensure a single version of webdriver-manager which comes from root node_modules that has already run webdriver-manager update",
   "resolutions": {
