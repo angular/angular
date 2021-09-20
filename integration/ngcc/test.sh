@@ -227,11 +227,3 @@ assertSucceeded "Expected the app to successfully compile with the ngcc-processe
 
   grep "directives: \[.*\.MatButton.*\]" dist/src/main.js
   assertSucceeded "Expected the compiled app's 'main.ts' to list 'MatButton' in 'directives'."
-
-
-# 'ivy-ngcc' should fail with an appropriate error message.
-  ivy-ngcc
-  assertFailed "Expected 'ivy-ngcc' to fail (since it was renamed to 'ngcc')."
-
-  ivy-ngcc 2>&1 | grep "Error: The 'ivy-ngcc' command was renamed to just 'ngcc'. Please update your usage."
-  assertSucceeded "Expected 'ivy-ngcc' to show an appropriate error message."
