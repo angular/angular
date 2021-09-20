@@ -586,6 +586,28 @@ describe('Overlay', () => {
       expect(strategy.dispose).not.toHaveBeenCalled();
     }));
 
+    it('should not throw when disposing multiple times in a row', () => {
+      const overlayRef = overlay.create();
+      overlayRef.attach(componentPortal);
+
+      expect(overlayContainerElement.textContent).toContain('Pizza');
+
+      expect(() => {
+        overlayRef.dispose();
+        overlayRef.dispose();
+        overlayRef.dispose();
+      }).not.toThrow();
+    });
+
+    it('should not trigger timers when disposing of an overlay', fakeAsync(() => {
+      const overlayRef = overlay.create({hasBackdrop: true});
+      overlayRef.attach(templatePortal);
+      overlayRef.dispose();
+
+      // The assertion here is that `fakeAsync` doesn't flag
+      // any pending timeouts after the test is done.
+    }));
+
   });
 
   describe('size', () => {
