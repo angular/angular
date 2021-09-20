@@ -17,8 +17,8 @@ jasmine_node_test(
     timeout = "long",  # 900 seconds
     bootstrap = ["//tools/testing:node_es5"],
     data = [
-        "//packages/common:npm_package",
-        "//packages/core:npm_package",
+        "@npm//@angular/common-12",
+        "@npm//@angular/core-12",
     ],
     tags = [
         # Disabled as these tests pertain to typechecking in the old ngc compiler. The Ivy ngtsc

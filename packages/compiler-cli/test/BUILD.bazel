@@ -42,7 +42,7 @@ jasmine_node_test(
     name = "extract_i18n",
     bootstrap = ["//tools/testing:node_es5"],
     data = [
-        "//packages/core:npm_package",
+        "@npm//@angular/core-12",
     ],
     tags = [
         # Disabled as the tests pertain to the old extraction tool only, whereas the Ivy extraction
@@ -51,8 +51,8 @@ jasmine_node_test(
     ],
     deps = [
         ":extract_i18n_lib",
-        "//packages/common:npm_package",
         "//packages/core",
+        "@npm//@angular/common-12",
         "@npm//minimist",
     ],
 )
@@ -77,10 +77,10 @@ jasmine_node_test(
     timeout = "long",  # 900 seconds
     bootstrap = ["//tools/testing:node_es5"],
     data = [
-        "//packages/common:npm_package",
-        "//packages/core:npm_package",
-        "//packages/platform-browser:npm_package",
-        "//packages/router:npm_package",
+        "@npm//@angular/common-12",
+        "@npm//@angular/core-12",
+        "@npm//@angular/platform-browser-12",
+        "@npm//@angular/router-12",
     ],
     tags = [
         # Disabled as these tests are specific to the old ngc compiler, and not ngtsc which has its
@@ -116,7 +116,7 @@ jasmine_node_test(
     name = "perform_watch",
     bootstrap = ["//tools/testing:node_es5"],
     data = [
-        "//packages/core:npm_package",
+        "@npm//@angular/core-12",
     ],
     deps = [
         ":perform_watch_lib",
@@ -143,7 +143,7 @@ jasmine_node_test(
     name = "perform_compile",
     bootstrap = ["//tools/testing:node_es5"],
     data = [
-        "//packages/core:npm_package",
+        "@npm//@angular/core-12",
     ],
     deps = [
         ":perform_compile_lib",
