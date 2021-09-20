@@ -22,9 +22,14 @@ type Logger = logging.LoggerApi;
 const README_URL =
     'https://github.com/angular/angular/blob/master/packages/core/schematics/migrations/router-link-empty-expression/README.md';
 
+interface Replacement {
+  start: number;
+  end: number;
+  newContent: string;
+}
 interface FixedTemplate {
   originalTemplate: ResolvedTemplate;
-  newContent: string;
+  replacements: Replacement[];
   emptyRouterlinkExpressions: TmplAstBoundAttribute[];
 }
 
@@ -69,7 +74,7 @@ function fixEmptyRouterlinks(resolvedTemplates: ResolvedTemplate[], tree: Tree, 
   const collectedFixes: string[] = [];
   const fixesByFile = getFixesByFile(resolvedTemplates);
 
-  for (const [absFilePath, fixes] of fixesByFile) {
+  for (const [absFilePath, templateFixes] of fixesByFile) {
     const treeFilePath = relative(normalize(basePath), normalize(absFilePath));
     const originalFileContent = tree.read(treeFilePath)?.toString();
     if (originalFileContent === undefined) {
@@ -80,14 +85,17 @@ function fixEmptyRouterlinks(resolvedTemplates: ResolvedTemplate[], tree: Tree, 
     }
 
     const updater = tree.beginUpdate(treeFilePath);
-    for (const fix of fixes) {
-      const displayFilePath = normalize(relative(basePath, fix.originalTemplate.filePath));
-      updater.remove(fix.originalTemplate.start, fix.originalTemplate.content.length);
-      updater.insertLeft(fix.originalTemplate.start, fix.newContent);
-
-      for (const n of fix.emptyRouterlinkExpressions) {
+    for (const templateFix of templateFixes) {
+      // Sort backwards so string replacements do not conflict
+      templateFix.replacements.sort((a, b) => b.start - a.start);
+      for (const replacement of templateFix.replacements) {
+        updater.remove(replacement.start, replacement.end - replacement.start);
+        updater.insertLeft(replacement.start, replacement.newContent);
+      }
+      const displayFilePath = normalize(relative(basePath, templateFix.originalTemplate.filePath));
+      for (const n of templateFix.emptyRouterlinkExpressions) {
         const {line, character} =
-            fix.originalTemplate.getCharacterAndLineOfPosition(n.sourceSpan.start.offset);
+            templateFix.originalTemplate.getCharacterAndLineOfPosition(n.sourceSpan.start.offset);
         collectedFixes.push(`${displayFilePath}@${line + 1}:${character + 1}`);
       }
       tree.commitUpdate(updater);
@@ -140,18 +148,28 @@ function fixEmptyRouterlinksInTemplate(template: ResolvedTemplate): FixedTemplat
     return null;
   }
 
-  // Sort backwards so string replacements do not conflict
-  emptyRouterlinkExpressions.sort((a, b) => b.value.sourceSpan.start - a.value.sourceSpan.start);
-  let newContent = template.content;
+  const replacements: Replacement[] = [];
   for (const expr of emptyRouterlinkExpressions) {
+    let replacement: Replacement;
     if (expr.valueSpan) {
-      newContent = newContent.substr(0, expr.value.sourceSpan.start) + '[]' +
-          newContent.substr(expr.value.sourceSpan.start);
+      replacement = {
+        start: template.start + expr.value.sourceSpan.start,
+        end: template.start + expr.value.sourceSpan.end,
+        newContent: '[]',
+      };
     } else {
-      newContent = newContent.substr(0, expr.sourceSpan.end.offset) + '="[]"' +
-          newContent.substr(expr.sourceSpan.end.offset);
+      const spanLength = expr.sourceSpan.end.offset - expr.sourceSpan.start.offset;
+      // `expr.value.sourceSpan.start` is the start of the very beginning of the binding since there
+      // is no value
+      const endOfExpr = template.start + expr.value.sourceSpan.start + spanLength;
+      replacement = {
+        start: endOfExpr,
+        end: endOfExpr,
+        newContent: '="[]"',
+      };
     }
+    replacements.push(replacement);
   }
 
-  return {originalTemplate: template, newContent, emptyRouterlinkExpressions};
+  return {originalTemplate: template, replacements, emptyRouterlinkExpressions};
 }
