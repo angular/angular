@@ -55,7 +55,7 @@ http-server -p 8080 -c-1 dist/<project-name>
 
 ### Initial load
 
-With the server running, you can point your browser at `http://localhost:8080`. Your application should load normally.
+With the server running, you can point your browser at [http://localhost:8080](http://localhost:8080). Your application should load normally.
 
 <div class="alert is-helpful">
 
@@ -78,7 +78,7 @@ In Chrome:
 
 1. Select **Tools** > **Developer Tools** (from the Chrome menu located at the top right corner).
 1. Go to the **Network tab**.
-1. Select **offline** from the throttling selection.
+1. Select **Offline** in the **Throttling** dropdown menu.
 
 <div class="lightbox">
   <img src="generated/images/guide/service-worker/offline-option.png" alt="The offline option in the Network tab is selected">
@@ -144,7 +144,7 @@ http-server -p 8080 -c-1 dist/<project-name>
 
 Now look at how the browser and service worker handle the updated application.
 
-1. Open `http://localhost:8080` again in the same window. What happens?
+1. Open [http://localhost:8080](http://localhost:8080) again in the same window. What happens?
 
 <div class="lightbox">
   <img src="generated/images/guide/service-worker/welcome-msg-en.png" alt="It still says Welcome to Service Workers!">
