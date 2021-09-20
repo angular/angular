@@ -21,12 +21,19 @@ export * from './src/perform_compile';
 export {CompilerOptions as AngularCompilerOptions} from './src/transformers/api';
 
 export {ngToTsDiagnostic} from './src/transformers/util';
-export {NgTscPlugin} from './src/ngtsc/tsc_plugin';
-export {NgtscProgram} from './src/ngtsc/program';
 
 // Internal exports needed for packages relying on the compiler-cli.
 // TODO: Consider moving into `@angular/compiler-cli/private`. This would
 // help with a consistent pattern for cross package imports for Angular.
 export * from './src/tooling';
+
+// Exposed as they are needed for relying on the `linker`.
+export * from './src/ngtsc/logging';
+export * from './src/ngtsc/file_system';
+
+// Exports for dealing with the `ngtsc` program.
+export {NgTscPlugin} from './src/ngtsc/tsc_plugin';
+export {NgtscProgram} from './src/ngtsc/program';
+export {OptimizeFor} from './src/ngtsc/typecheck/api';
 
 setFileSystem(new NodeJSFileSystem());
