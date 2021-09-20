@@ -296,13 +296,13 @@ Test also that clicking the *Stop* button pauses the countdown timer:
 
 ## Parent calls an _@ViewChild()_
 
-The *local variable* approach is uncomplicated. But it is limited because
+The *local variable* approach is straightforward. But it is limited because
 the parent-child wiring must be done entirely within the parent template.
 The parent component *itself* has no access to the child.
 
 You can't use the *local variable* technique if the parent component's *class* relies on the
-child component's *class*.  The parent-child relationship of the components is not established
-within each components respective *class* with the *local variable* technique.  Because the *class*
+child component's *class*. The parent-child relationship of the components is not established
+within each components respective *class* with the *local variable* technique. Because the *class*
 instances are not connected to one another, the parent *class* cannot access the child *class*
 properties and methods.
 
