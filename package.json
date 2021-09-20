@@ -29,7 +29,6 @@
     "gulp": "gulp",
     "check-entry-point-setup": "node ./scripts/check-entry-point-setup.js",
     "check-rollup-globals": "ts-node --project scripts/tsconfig.json scripts/check-rollup-globals.ts",
-    "changelog": "ts-node --project tools/release/tsconfig.json tools/release/changelog.ts",
     "format": "yarn ng-dev format changed",
     "cherry-pick-patch": "ts-node --project tools/cherry-pick-patch/tsconfig.json tools/cherry-pick-patch/cherry-pick-patch.ts",
     "ownerslint": "ts-node --project scripts/tsconfig.json scripts/ownerslint.ts",
