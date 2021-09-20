@@ -136,7 +136,7 @@ function getFixesByFile(templates: ResolvedTemplate[]): Map<string, FixedTemplat
 function fixEmptyRouterlinksInTemplate(template: ResolvedTemplate): FixedTemplate|null {
   const emptyRouterlinkExpressions = analyzeResolvedTemplate(template);
 
-  if (!emptyRouterlinkExpressions) {
+  if (!emptyRouterlinkExpressions || emptyRouterlinkExpressions.length === 0) {
     return null;
   }
 
