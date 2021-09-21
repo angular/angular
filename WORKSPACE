@@ -12,6 +12,17 @@ http_archive(
     urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/4.3.0/rules_nodejs-4.3.0.tar.gz"],
 )
 
+# The PKG rules are needed to build tar packages for integration tests. The builtin
+# rule in `@bazel_tools` is not Windows compatible and outdated.
+http_archive(
+    name = "rules_pkg",
+    sha256 = "a89e203d3cf264e564fcb96b6e06dd70bc0557356eb48400ce4b5d97c2c3720d",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_pkg/releases/download/0.5.1/rules_pkg-0.5.1.tar.gz",
+        "https://github.com/bazelbuild/rules_pkg/releases/download/0.5.1/rules_pkg-0.5.1.tar.gz",
+    ],
+)
+
 # Check the rules_nodejs version and download npm dependencies
 # Note: bazel (version 2 and after) will check the .bazelversion file so we don't need to
 # assert on that.
@@ -51,6 +62,10 @@ browser_repositories()
 load("@build_bazel_rules_nodejs//toolchains/esbuild:esbuild_repositories.bzl", "esbuild_repositories")
 
 esbuild_repositories()
+
+load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
+
+rules_pkg_dependencies()
 
 load("//packages/common/locales/generate-locales-tool:cldr-data.bzl", "cldr_data_repository")
 
