@@ -6,14 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-const path = require('path');
+import * as path from 'path';
+import {moduleRules, baseDir} from './base-config.mjs';
 
-module.exports = {
+export default {
   entry: {
     helloworld: './built/src/helloworld/client.js',
     transferstate: './built/src/transferstate/client.js',
   },
-  output: {path: path.join(__dirname, 'built'), filename: '[name]-bundle.js'},
-  module: {loaders: [{test: /\.js$/, loader: 'babel-loader?presets[]=es2015'}]},
-  resolve: {extensions: ['.js']}
+  // Allow for better debugging of this integration test.
+  optimization: {minimize: false},
+  output: {path: path.join(baseDir, 'webpack-out'), filename: '[name]-bundle.js'},
+  module: {
+    rules: moduleRules,
+  }
 };
