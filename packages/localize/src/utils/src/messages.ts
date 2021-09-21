@@ -97,7 +97,7 @@ export interface MessageMetadata {
  *
  * ```
  * const name = 'Jo Bloggs';
- * $localize`Hello ${name}:title!`;
+ * $localize`Hello ${name}:title@@ID:!`;
  * ```
  *
  * May be parsed into:
@@ -107,6 +107,8 @@ export interface MessageMetadata {
  *   id: '6998194507597730591',
  *   substitutions: { title: 'Jo Bloggs' },
  *   messageString: 'Hello {$title}!',
+ *   placeholderNames: ['title'],
+ *   associatedMessageIds: { title: 'ID' },
  * }
  * ```
  */
@@ -119,6 +121,11 @@ export interface ParsedMessage extends MessageMetadata {
    * A mapping of placeholder names to substitution values.
    */
   substitutions: Record<string, any>;
+  /**
+   * An optional mapping of placeholder names to associated MessageIds.
+   * This can be used to match ICU placeholders to the message that contains the ICU.
+   */
+  associatedMessageIds?: Record<string, MessageId>;
   /**
    * An optional mapping of placeholder names to source locations
    */
@@ -149,19 +156,23 @@ export function parseMessage(
     expressionLocations: (SourceLocation|undefined)[] = []): ParsedMessage {
   const substitutions: {[placeholderName: string]: any} = {};
   const substitutionLocations: {[placeholderName: string]: SourceLocation|undefined} = {};
+  const associatedMessageIds: {[placeholderName: string]: MessageId} = {};
   const metadata = parseMetadata(messageParts[0], messageParts.raw[0]);
   const cleanedMessageParts: string[] = [metadata.text];
   const placeholderNames: string[] = [];
   let messageString = metadata.text;
   for (let i = 1; i < messageParts.length; i++) {
-    const {text: messagePart, block: placeholderName = computePlaceholderName(i)} =
-        splitBlock(messageParts[i], messageParts.raw[i]);
+    const {messagePart, placeholderName = computePlaceholderName(i), associatedMessageId} =
+        parsePlaceholder(messageParts[i], messageParts.raw[i]);
     messageString += `{$${placeholderName}}${messagePart}`;
     if (expressions !== undefined) {
       substitutions[placeholderName] = expressions[i - 1];
       substitutionLocations[placeholderName] = expressionLocations[i - 1];
     }
     placeholderNames.push(placeholderName);
+    if (associatedMessageId !== undefined) {
+      associatedMessageIds[placeholderName] = associatedMessageId;
+    }
     cleanedMessageParts.push(messagePart);
   }
   const messageId = metadata.customId || computeMsgId(messageString, metadata.meaning || '');
@@ -178,6 +189,7 @@ export function parseMessage(
     messageParts: cleanedMessageParts,
     messagePartLocations,
     placeholderNames,
+    associatedMessageIds,
     location,
   };
 }
@@ -194,14 +206,14 @@ export function parseMessage(
  * For example:
  *
  * ```ts
- * `:meaning|description@@custom-id`
- * `:meaning|@@custom-id`
- * `:meaning|description`
- * `description@@custom-id`
- * `meaning|`
- * `description`
- * `@@custom-id`
- * `:meaning|description@@custom-id␟legacy-id-1␟legacy-id-2`
+ * `:meaning|description@@custom-id:`
+ * `:meaning|@@custom-id:`
+ * `:meaning|description:`
+ * `:description@@custom-id:`
+ * `:meaning|:`
+ * `:description:`
+ * `:@@custom-id:`
+ * `:meaning|description@@custom-id␟legacy-id-1␟legacy-id-2:`
  * ```
  *
  * @param cooked The cooked version of the message part to parse.
@@ -224,6 +236,37 @@ export function parseMetadata(cooked: string, raw: string): MessageMetadata {
       description = undefined;
     }
     return {text: messageString, meaning, description, customId, legacyIds};
+  }
+}
+
+/**
+ * Parse the given message part (`cooked` + `raw`) to extract any placeholder metadata from the
+ * text.
+ *
+ * If the message part has a metadata block this function will extract the `placeholderName` and
+ * `associatedMessageId` (if provided) from the block.
+ *
+ * These metadata properties are serialized in the string delimited by `@@`.
+ *
+ * For example:
+ *
+ * ```ts
+ * `:placeholder-name@@associated-id:`
+ * ```
+ *
+ * @param cooked The cooked version of the message part to parse.
+ * @param raw The raw version of the message part to parse.
+ * @returns A object containing the metadata (`placeholderName` and `associatedMesssageId`) of the
+ *     preceding placeholder, along with the static text that follows.
+ */
+export function parsePlaceholder(cooked: string, raw: string):
+    {messagePart: string; placeholderName?: string; associatedMessageId?: string;} {
+  const {text: messagePart, block} = splitBlock(cooked, raw);
+  if (block === undefined) {
+    return {messagePart};
+  } else {
+    const [placeholderName, associatedMessageId] = block.split(ID_SEPARATOR);
+    return {messagePart, placeholderName, associatedMessageId};
   }
 }
 

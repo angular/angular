@@ -69,9 +69,12 @@ runInEachFileSystem(() => {
               mockMessage('80808', ['multi\nlines'], [], {}),
               mockMessage('90000', ['<escape', 'me>'], ['double-quotes-"'], {}),
               mockMessage(
-                  '100000',
+                  '100000', ['pre-ICU ', ' post-ICU'], ['ICU'],
+                  {associatedMessageIds: {ICU: 'SOME_ICU_ID'}}),
+              mockMessage(
+                  'SOME_ICU_ID',
                   [
-                    'pre-ICU {VAR_SELECT, select, a {a} b {{INTERPOLATION}} c {pre {INTERPOLATION_1} post}} post-ICU'
+                    '{VAR_SELECT, select, a {a} b {{INTERPOLATION}} c {pre {INTERPOLATION_1} post}}'
                   ],
                   [], {}),
               mockMessage(
@@ -84,7 +87,7 @@ runInEachFileSystem(() => {
             const serializer = new Xliff2TranslationSerializer(
                 'xx', absoluteFrom('/project'), useLegacyIds, options);
             const output = serializer.serialize(messages);
-            expect(output).toEqual([
+            expect(output.split(/\r?\n/)).toEqual([
               `<?xml version="1.0" encoding="UTF-8" ?>`,
               `<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="xx">`,
               `  <file id="ngi18n" original="ng.template"${toAttributes(options)}>`,
@@ -120,7 +123,12 @@ runInEachFileSystem(() => {
               `    </unit>`,
               `    <unit id="100000">`,
               `      <segment>`,
-              `        <source>pre-ICU {VAR_SELECT, select, a {a} b {<ph id="0" equiv="INTERPOLATION"/>} c {pre <ph id="1" equiv="INTERPOLATION_1"/> post}} post-ICU</source>`,
+              `        <source>pre-ICU <ph id="0" equiv="ICU" subFlows="SOME_ICU_ID"/> post-ICU</source>`,
+              `      </segment>`,
+              `    </unit>`,
+              `    <unit id="SOME_ICU_ID">`,
+              `      <segment>`,
+              `        <source>{VAR_SELECT, select, a {a} b {<ph id="0" equiv="INTERPOLATION"/>} c {pre <ph id="1" equiv="INTERPOLATION_1"/> post}}</source>`,
               `      </segment>`,
               `    </unit>`,
               `    <unit id="100001">`,
@@ -155,8 +163,9 @@ runInEachFileSystem(() => {
               `      </segment>`,
               `    </unit>`,
               `  </file>`,
-              `</xliff>\n`,
-            ].join('\n'));
+              `</xliff>`,
+              ``,
+            ]);
           });
 
           it('should convert a set of parsed messages into an XML string', () => {

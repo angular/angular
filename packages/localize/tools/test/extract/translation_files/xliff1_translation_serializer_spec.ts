@@ -64,9 +64,12 @@ runInEachFileSystem(() => {
               mockMessage('80808', ['multi\nlines'], [], {}),
               mockMessage('90000', ['<escape', 'me>'], ['double-quotes-"'], {}),
               mockMessage(
-                  '100000',
+                  '100000', ['pre-ICU ', ' post-ICU'], ['ICU'],
+                  {associatedMessageIds: {ICU: 'SOME_ICU_ID'}}),
+              mockMessage(
+                  'SOME_ICU_ID',
                   [
-                    'pre-ICU {VAR_SELECT, select, a {a} b {{INTERPOLATION}} c {pre {INTERPOLATION_1} post}} post-ICU'
+                    '{VAR_SELECT, select, a {a} b {{INTERPOLATION}} c {pre {INTERPOLATION_1} post}}'
                   ],
                   [], {}),
               mockMessage(
@@ -108,7 +111,10 @@ runInEachFileSystem(() => {
               `        <source>&lt;escape<x id="double-quotes-&quot;"/>me&gt;</source>`,
               `      </trans-unit>`,
               `      <trans-unit id="100000" datatype="html">`,
-              `        <source>pre-ICU {VAR_SELECT, select, a {a} b {<x id="INTERPOLATION"/>} c {pre <x id="INTERPOLATION_1"/> post}} post-ICU</source>`,
+              `        <source>pre-ICU <x id="ICU" xid="SOME_ICU_ID"/> post-ICU</source>`,
+              `      </trans-unit>`,
+              `      <trans-unit id="SOME_ICU_ID" datatype="html">`,
+              `        <source>{VAR_SELECT, select, a {a} b {<x id="INTERPOLATION"/>} c {pre <x id="INTERPOLATION_1"/> post}}</source>`,
               `      </trans-unit>`,
               `      <trans-unit id="100001" datatype="html">`,
               `        <source>{VAR_PLURAL, plural, one {<x id="START_BOLD_TEXT" ctype="x-b"/>something bold<x id="CLOSE_BOLD_TEXT" ctype="x-b"/>} other {pre <x id="START_TAG_SPAN" ctype="x-span"/>middle<x id="CLOSE_TAG_SPAN" ctype="x-span"/> post}}</source>`,
