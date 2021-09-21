@@ -1,6 +1,6 @@
 """Re-export of some bazel rules with repository-wide defaults."""
 
-load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("@build_bazel_rules_nodejs//:index.bzl", _nodejs_binary = "nodejs_binary", _pkg_npm = "pkg_npm")
 load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@npm//@bazel/concatjs:index.bzl", _concatjs_devserver = "concatjs_devserver", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
