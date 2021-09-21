@@ -26,7 +26,8 @@ export class BottomSheetDemo {
     hasBackdrop: defaultConfig.hasBackdrop,
     disableClose: defaultConfig.disableClose,
     backdropClass: defaultConfig.backdropClass,
-    direction: 'ltr'
+    direction: 'ltr',
+    ariaLabel: 'Example bottom sheet'
   };
 
   @ViewChild(TemplateRef) template: TemplateRef<any>;
