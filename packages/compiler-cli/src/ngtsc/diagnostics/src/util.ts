@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ErrorCode} from './error_code';
+
 const ERROR_CODE_MATCHER = /(\u001b\[\d+m ?)TS-99(\d+: ?\u001b\[\d+m)/g;
 
 /**
@@ -19,4 +21,8 @@ const ERROR_CODE_MATCHER = /(\u001b\[\d+m ?)TS-99(\d+: ?\u001b\[\d+m)/g;
  */
 export function replaceTsWithNgInErrors(errors: string): string {
   return errors.replace(ERROR_CODE_MATCHER, '$1NG$2');
+}
+
+export function ngErrorCode(code: ErrorCode): number {
+  return parseInt('-99' + code);
 }
