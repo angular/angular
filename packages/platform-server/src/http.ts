@@ -5,15 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {INITIAL_CONFIG, PlatformConfig} from './tokens';
 
-
-const xhr2: any = require('xhr2');
-
-import {Injectable, Injector, Provider} from '@angular/core';
 import {PlatformLocation, XhrFactory} from '@angular/common';
-import {HttpEvent, HttpRequest, HttpHandler, HttpBackend, ɵHttpInterceptingHandler as HttpInterceptingHandler} from '@angular/common/http';
+import {HttpBackend, HttpEvent, HttpHandler, HttpRequest, ɵHttpInterceptingHandler as HttpInterceptingHandler} from '@angular/common/http';
+import {Injectable, Injector, Provider} from '@angular/core';
 import {Observable, Observer, Subscription} from 'rxjs';
+import * as xhr2 from 'xhr2';
+
+import {INITIAL_CONFIG, PlatformConfig} from './tokens';
 
 // @see https://www.w3.org/Protocols/HTTP/1.1/draft-ietf-http-v11-spec-01#URI-syntax
 const isAbsoluteUrl = /^[a-zA-Z\-\+.]+:\/\//;
