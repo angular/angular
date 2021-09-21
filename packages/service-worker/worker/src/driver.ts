@@ -481,7 +481,8 @@ export class Driver implements Debuggable, UpdateSource {
             await this.notifyClientsAboutUnrecoverableState(appVersion, err.message);
           }
           if (err.isCritical) {
-            // Something went wrong with the activation of this version.
+            // Something went wrong with handling the request from this version.
+            this.debugger.log(err, `Driver.handleFetch(version: ${appVersion.manifestHash})`);
             await this.versionFailed(appVersion, err);
             return this.safeFetch(event.request);
           }
