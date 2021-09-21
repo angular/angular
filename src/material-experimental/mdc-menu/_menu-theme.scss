@@ -28,7 +28,7 @@
     // chevron ourselves, we have to handle the color as well.
     .mat-mdc-menu-item .mat-icon-no-color,
     .mat-mdc-menu-submenu-icon {
-      @include mdc-theme.prop(color, text-icon-on-background);
+      @include mdc-theme.prop(color, text-primary-on-background);
     }
 
     // MDC's hover and focus styles are tied to their ripples which we aren't using.
