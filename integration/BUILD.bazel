@@ -108,7 +108,10 @@ INTEGRATION_TESTS = {
     # TODO(devversion): replace this with a solution we maintain that runs the Babel linker plugin.
     "side-effects": {"tags": ["manual"]},
     "terser": {},
-    "typings_test_rxjs7": {},
+    "typings_test_rxjs7": {
+        # The project root uses an older version than the one we want to test here.
+        "pinned_npm_packages": ["rxjs"],
+    },
     "typings_test_ts41": {
         # Special case for `typings_test_ts41` test as we want to pin
         # `typescript` at version 4.1.x for that test and not link to the
