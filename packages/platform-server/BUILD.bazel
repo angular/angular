@@ -40,6 +40,10 @@ ng_package(
         "//packages/platform-server/init:package.json",
         "//packages/platform-server/testing:package.json",
     ],
+    externals = [
+        "domino",
+        "xhr2",
+    ],
     tags = [
         "release-with-framework",
     ],

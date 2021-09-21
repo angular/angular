@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-const domino = require('domino');
 
-import {ɵBrowserDomAdapter as BrowserDomAdapter} from '@angular/platform-browser';
 import {ɵsetRootDomAdapter as setRootDomAdapter} from '@angular/common';
+import {ɵBrowserDomAdapter as BrowserDomAdapter} from '@angular/platform-browser';
+import * as domino from 'domino';
 
 export function setDomTypes() {
   // Make all Domino types available in the global env.
