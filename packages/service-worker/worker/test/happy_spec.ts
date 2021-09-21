@@ -2045,12 +2045,12 @@ describe('Driver', () => {
       // `client1`).
       expect(await makeRequest(scope, '/bar.txt', 'client1')).toBe('this is bar (broken)');
       expect(driver.state).toBe(DriverReadyState.EXISTING_CLIENTS_ONLY);
-      brokenLazyServer.sawRequestFor('/bar.txt');
+      brokenLazyServer.assertSawRequestFor('/bar.txt');
       brokenLazyServer.clearRequests();
 
-      // `client1` should not be served from the network.
+      // `client1` should now be served from the network.
       expect(await makeRequest(scope, '/foo.txt', 'client1')).toBe('this is foo (broken)');
-      brokenLazyServer.sawRequestFor('/foo.txt');
+      brokenLazyServer.assertSawRequestFor('/foo.txt');
 
       // `client2` should still be served from the old version (since it never updated).
       expect(await makeRequest(scope, '/foo.txt', 'client2')).toBe('this is foo');
