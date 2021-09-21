@@ -147,6 +147,7 @@ export function setupBazelTo(tmpDirPath: string) {
   linkNpmArtifact('@angular/core-12', '@angular/core');
   linkNpmArtifact('@angular/common-12', '@angular/common');
   linkNpmArtifact('@angular/router-12', '@angular/router');
+  linkNpmArtifact('@angular/forms-12', '@angular/forms');
   linkNpmArtifact('@angular/platform-browser-12', '@angular/platform-browser');
 
   // Link typescript
