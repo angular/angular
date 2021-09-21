@@ -2048,15 +2048,72 @@ describe('Driver', () => {
       brokenLazyServer.assertSawRequestFor('/bar.txt');
       brokenLazyServer.clearRequests();
 
-      // `client1` should now be served from the network.
+      // `client1` should still be served from the latest (broken) version.
       expect(await makeRequest(scope, '/foo.txt', 'client1')).toBe('this is foo (broken)');
-      brokenLazyServer.assertSawRequestFor('/foo.txt');
+      brokenLazyServer.assertNoOtherRequests();
 
       // `client2` should still be served from the old version (since it never updated).
       expect(await makeRequest(scope, '/foo.txt', 'client2')).toBe('this is foo');
       server.assertNoOtherRequests();
       brokenLazyServer.assertNoOtherRequests();
+
+      // New clients should be served from the network.
+      expect(await makeRequest(scope, '/foo.txt', 'client3')).toBe('this is foo (broken)');
+      brokenLazyServer.assertSawRequestFor('/foo.txt');
     });
+
+    it('enters does not enter degraded mode when something goes wrong with an older version',
+       async () => {
+         await driver.initialized;
+
+         // Three clients on initial version.
+         expect(await makeRequest(scope, '/foo.txt', 'client1')).toBe('this is foo');
+         expect(await makeRequest(scope, '/foo.txt', 'client2')).toBe('this is foo');
+         expect(await makeRequest(scope, '/foo.txt', 'client3')).toBe('this is foo');
+
+         // Install a broken version (`bar.txt` has invalid hash).
+         scope.updateServerState(brokenLazyServer);
+         await driver.checkForUpdate();
+
+         // Update `client1` and `client2` but not `client3`.
+         await makeNavigationRequest(scope, '/', 'client1');
+         await makeNavigationRequest(scope, '/', 'client2');
+         server.clearRequests();
+         brokenLazyServer.clearRequests();
+
+         expect(await makeRequest(scope, '/foo.txt', 'client1')).toBe('this is foo (broken)');
+         expect(await makeRequest(scope, '/foo.txt', 'client2')).toBe('this is foo (broken)');
+         expect(await makeRequest(scope, '/foo.txt', 'client3')).toBe('this is foo');
+         server.assertNoOtherRequests();
+         brokenLazyServer.assertNoOtherRequests();
+
+         // Install a newer, non-broken version.
+         scope.updateServerState(serverUpdate);
+         await driver.checkForUpdate();
+
+         // Update `client1` bot not `client2` or `client3`.
+         await makeNavigationRequest(scope, '/', 'client1');
+         expect(await makeRequest(scope, '/foo.txt', 'client1')).toBe('this is foo v2');
+
+         // Trying to fetch `bar.txt` (which has an invalid hash on the broken version) from
+         // `client2` should invalidate that particular version (which is not the latest one).
+         // (NOTE: Since the file is not cached locally, it is fetched from the server.)
+         expect(await makeRequest(scope, '/bar.txt', 'client2')).toBe('this is bar');
+         expect(driver.state).toBe(DriverReadyState.NORMAL);
+         serverUpdate.clearRequests();
+
+         // Existing clients should still be served from their assigned versions.
+         expect(await makeRequest(scope, '/foo.txt', 'client1')).toBe('this is foo v2');
+         expect(await makeRequest(scope, '/foo.txt', 'client2')).toBe('this is foo (broken)');
+         expect(await makeRequest(scope, '/foo.txt', 'client3')).toBe('this is foo');
+         server.assertNoOtherRequests();
+         brokenLazyServer.assertNoOtherRequests();
+         serverUpdate.assertNoOtherRequests();
+
+         // New clients should be served from the latest version.
+         expect(await makeRequest(scope, '/foo.txt', 'client4')).toBe('this is foo v2');
+         serverUpdate.assertNoOtherRequests();
+       });
 
     it('recovers from degraded `EXISTING_CLIENTS_ONLY` mode as soon as there is a valid update',
        async () => {

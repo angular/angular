@@ -481,7 +481,8 @@ export class Driver implements Debuggable, UpdateSource {
             await this.notifyClientsAboutUnrecoverableState(appVersion, err.message);
           }
           if (err.isCritical) {
-            // Something went wrong with the activation of this version.
+            // Something went wrong with handling the request from this version.
+            this.debugger.log(err, `Driver.handleFetch(version: ${appVersion.manifestHash})`);
             await this.versionFailed(appVersion, err);
             return this.safeFetch(event.request);
           }
@@ -800,36 +801,32 @@ export class Driver implements Debuggable, UpdateSource {
     }
 
     const brokenHash = broken[0];
-    const affectedClients = Array.from(this.clientVersionMap.entries())
-                                .filter(([clientId, hash]) => hash === brokenHash)
-                                .map(([clientId]) => clientId);
+
+    // The specified version is broken and new clients should not be served from it. However, it is
+    // deemed even riskier to switch the existing clients to a different version or to the network.
+    // Therefore, we keep clients on their current version (even if broken) and ensure that no new
+    // clients will be assigned to it.
 
     // TODO: notify affected apps.
 
     // The action taken depends on whether the broken manifest is the active (latest) or not.
-    // If so, the SW cannot accept new clients, but can continue to service old ones.
+    // - If the broken version is not the latest, no further action is necessary, since new clients
+    //   will be assigned to the latest version anyway.
+    // - If the broken version is the latest, the SW cannot accept new clients (but can continue to
+    //   service old ones).
     if (this.latestHash === brokenHash) {
-      // The latest manifest is broken. This means that new clients are at the mercy of the
-      // network, but caches continue to be valid for previous versions. This is
-      // unfortunate but unavoidable.
+      // The latest manifest is broken. This means that new clients are at the mercy of the network,
+      // but caches continue to be valid for previous versions. This is unfortunate but unavoidable.
       this.state = DriverReadyState.EXISTING_CLIENTS_ONLY;
       this.stateMessage = `Degraded due to: ${errorToString(err)}`;
 
-      // Cancel the binding for the affected clients.
-      affectedClients.forEach(clientId => this.clientVersionMap.delete(clientId));
-    } else {
-      // The latest version is viable, but this older version isn't. The only
-      // possible remedy is to stop serving the older version and go to the network.
-      // Put the affected clients on the latest version.
-      affectedClients.forEach(clientId => this.clientVersionMap.set(clientId, this.latestHash!));
-    }
-
-    try {
-      await this.sync();
-    } catch (err2) {
-      // We are already in a bad state. No need to make things worse.
-      // Just log the error and move on.
-      this.debugger.log(err2, `Driver.versionFailed(${err.message || err})`);
+      try {
+        await this.sync();
+      } catch (err2) {
+        // We are already in a bad state. No need to make things worse.
+        // Just log the error and move on.
+        this.debugger.log(err2, `Driver.versionFailed(${err.message || err})`);
+      }
     }
   }
 
