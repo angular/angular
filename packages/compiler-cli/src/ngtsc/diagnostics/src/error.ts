@@ -8,7 +8,8 @@
 
 import ts from 'typescript';
 
-import {ErrorCode, ngErrorCode} from './error_code';
+import {ErrorCode} from './error_code';
+import {ngErrorCode} from './util';
 
 export class FatalDiagnosticError {
   constructor(

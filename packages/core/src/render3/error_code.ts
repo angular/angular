@@ -8,7 +8,7 @@
 
 // Base URL for the error details page.
 // Keep this value in sync with a similar const in
-// `packages/compiler-cli/src/ngtsc/diagnostics/src/error_code.ts`.
+// `packages/compiler-cli/src/ngtsc/diagnostics/src/docs.ts`.
 const ERROR_DETAILS_PAGE_BASE_URL = 'https://angular.io/errors';
 
 export const enum RuntimeErrorCode {
