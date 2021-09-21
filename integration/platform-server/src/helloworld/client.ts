@@ -8,10 +8,9 @@
 
 import 'zone.js/bundles/zone.umd';
 
-import {enableProdMode} from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';
-import {HelloWorldModuleNgFactory} from './app.ngfactory';
+import {HelloWorldModule} from './app';
 
 window['doBootstrap'] = function() {
-  platformBrowser().bootstrapModuleFactory(HelloWorldModuleNgFactory);
+  platformBrowser().bootstrapModule(HelloWorldModule);
 };
