@@ -11,6 +11,7 @@ import {BidiModule} from '@angular/cdk/bidi';
 import {Inject, InjectionToken, isDevMode, NgModule, Optional, Version} from '@angular/core';
 import {VERSION as CDK_VERSION} from '@angular/cdk';
 import {DOCUMENT} from '@angular/common';
+import {_isTestEnvironment} from '@angular/cdk/platform';
 
 // Private version constant to circumvent test/build issues,
 // i.e. avoid core to depend on the @angular/material primary entry-point
@@ -84,19 +85,13 @@ export class MatCommonModule {
     }
   }
 
-  /** Use defaultView of injected document if available or fallback to global window reference */
-  private _getWindow(): Window | null {
-    const win = this._document.defaultView || window;
-    return typeof win === 'object' && win ? win : null;
-  }
-
   /** Gets whether a specific sanity check is enabled. */
   private _checkIsEnabled(name: keyof GranularSanityChecks): boolean {
     // TODO(crisbeto): we can't use `ngDevMode` here yet, because ViewEngine apps might not support
     // it. Since these checks can have performance implications and they aren't tree shakeable
     // in their current form, we can leave the `isDevMode` check in for now.
     // tslint:disable-next-line:ban
-    if (!isDevMode() || this._isTestEnv()) {
+    if (!isDevMode() || _isTestEnvironment()) {
       return false;
     }
 
@@ -105,12 +100,6 @@ export class MatCommonModule {
     }
 
     return !!this._sanityChecks[name];
-  }
-
-  /** Whether the code is running in tests. */
-  private _isTestEnv() {
-    const window = this._getWindow() as any;
-    return window && (window.__karma__ || window.jasmine);
   }
 
   private _checkDoctypeIsDefined(): void {

@@ -8,31 +8,7 @@
 
 import {DOCUMENT} from '@angular/common';
 import {Inject, Injectable, OnDestroy} from '@angular/core';
-import {Platform} from '@angular/cdk/platform';
-
-// Avoid using `declare const` because it caused conflicts inside Google
-// with the real typings for these symbols. We use `declare interface` instead
-// of just `interface` for interop with Closure Compiler (prevents property renaming):
-// https://github.com/angular/tsickle/blob/master/README.md#differences-from-typescript
-declare interface TestGlobals {
-  jasmine: unknown;
-  __karma__: unknown;
-  jest: unknown;
-  Mocha: unknown;
-}
-
-const globalsForTest = (typeof window !== 'undefined' ? window : {}) as {} as TestGlobals;
-
-/**
- * Whether we're in a testing environment.
- * TODO(crisbeto): remove this once we have an overlay testing module or Angular starts tearing
- * down the testing `NgModule` (see https://github.com/angular/angular/issues/18831).
- */
-const isTestEnvironment =
-    (typeof globalsForTest.__karma__ !== 'undefined' && !!globalsForTest.__karma__) ||
-    (typeof globalsForTest.jasmine !== 'undefined' && !!globalsForTest.jasmine) ||
-    (typeof globalsForTest.jest !== 'undefined' && !!globalsForTest.jest) ||
-    (typeof globalsForTest.Mocha !== 'undefined' && !!globalsForTest.Mocha);
+import {Platform, _isTestEnvironment} from '@angular/cdk/platform';
 
 /** Container inside which all overlays will render. */
 @Injectable({providedIn: 'root'})
@@ -54,7 +30,7 @@ export class OverlayContainer implements OnDestroy {
 
   /**
    * This method returns the overlay container element. It will lazily
-   * create the element the first time  it is called to facilitate using
+   * create the element the first time it is called to facilitate using
    * the container in non-browser environments.
    * @returns the container element
    */
@@ -73,7 +49,10 @@ export class OverlayContainer implements OnDestroy {
   protected _createContainer(): void {
     const containerClass = 'cdk-overlay-container';
 
-    if (this._platform.isBrowser || isTestEnvironment) {
+    // TODO(crisbeto): remove the testing check once we have an overlay testing
+    // module or Angular starts tearing down the testing `NgModule`. See:
+    // https://github.com/angular/angular/issues/18831
+    if (this._platform.isBrowser || _isTestEnvironment()) {
       const oppositePlatformContainers =
           this._document.querySelectorAll(`.${containerClass}[platform="server"], ` +
                                           `.${containerClass}[platform="test"]`);
@@ -97,7 +76,7 @@ export class OverlayContainer implements OnDestroy {
     // module which does the cleanup, we try to detect that we're in a test environment and we
     // always clear the container. See #17006.
     // TODO(crisbeto): remove the test environment check once we have an overlay testing module.
-    if (isTestEnvironment) {
+    if (_isTestEnvironment()) {
       container.setAttribute('platform', 'test');
     } else if (!this._platform.isBrowser) {
       container.setAttribute('platform', 'server');

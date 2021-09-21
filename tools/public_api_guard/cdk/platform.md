@@ -22,6 +22,9 @@ export function _getShadowRoot(element: HTMLElement): ShadowRoot | null;
 export function getSupportedInputTypes(): Set<string>;
 
 // @public
+export function _isTestEnvironment(): boolean;
+
+// @public
 export function normalizePassiveListenerOptions(options: AddEventListenerOptions): AddEventListenerOptions | boolean;
 
 // @public
