@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ImplicitReceiver, ParseSourceSpan, PropertyRead, RecursiveAstVisitor} from '@angular/compiler';
-import {BoundAttribute, BoundEvent, BoundText, Element, Node, NullVisitor, Template, visitAll} from '@angular/compiler/src/render3/r3_ast';
+import {ImplicitReceiver, ParseSourceSpan, PropertyRead, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstTemplate} from '@angular/compiler';
+import {NullVisitor, visitAll} from '@angular/compiler/src/render3/r3_ast';
 
 /**
  * AST visitor that traverses the Render3 HTML AST in order to check if the given
@@ -22,7 +22,7 @@ export class TemplateUsageVisitor extends NullVisitor {
   }
 
   /** Checks whether the given query is statically accessed within the specified HTML nodes. */
-  isQueryUsedStatically(htmlNodes: Node[]): boolean {
+  isQueryUsedStatically(htmlNodes: TmplAstNode[]): boolean {
     this.hasQueryTemplateReference = false;
     this.expressionAstVisitor.hasQueryPropertyRead = false;
 
@@ -32,7 +32,7 @@ export class TemplateUsageVisitor extends NullVisitor {
     return !this.hasQueryTemplateReference && this.expressionAstVisitor.hasQueryPropertyRead;
   }
 
-  override visitElement(element: Element): void {
+  override visitElement(element: TmplAstElement): void {
     // In case there is a template references variable that matches the query property
     // name, we can finish this visitor as such a template variable can be used in the
     // entire template and the query therefore can't be accessed from the template.
@@ -47,7 +47,7 @@ export class TemplateUsageVisitor extends NullVisitor {
     visitAll(this, element.children);
   }
 
-  override visitTemplate(template: Template): void {
+  override visitTemplate(template: TmplAstTemplate): void {
     visitAll(this, template.attributes);
     visitAll(this, template.inputs);
     visitAll(this, template.outputs);
@@ -57,15 +57,15 @@ export class TemplateUsageVisitor extends NullVisitor {
     // lifecycle hook at the earliest.
   }
 
-  override visitBoundAttribute(attribute: BoundAttribute) {
+  override visitBoundAttribute(attribute: TmplAstBoundAttribute) {
     attribute.value.visit(this.expressionAstVisitor, attribute.sourceSpan);
   }
 
-  override visitBoundText(text: BoundText) {
+  override visitBoundText(text: TmplAstBoundText) {
     text.value.visit(this.expressionAstVisitor, text.sourceSpan);
   }
 
-  override visitBoundEvent(node: BoundEvent) {
+  override visitBoundEvent(node: TmplAstBoundEvent) {
     node.handler.visit(this.expressionAstVisitor, node.handlerSpan);
   }
 }

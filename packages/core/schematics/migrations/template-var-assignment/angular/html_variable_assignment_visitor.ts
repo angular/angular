@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ImplicitReceiver, ParseSourceSpan, PropertyWrite, RecursiveAstVisitor} from '@angular/compiler';
-import {BoundEvent, Element, NullVisitor, Template, Variable, visitAll} from '@angular/compiler/src/render3/r3_ast';
+import {ImplicitReceiver, ParseSourceSpan, PropertyWrite, RecursiveAstVisitor, TmplAstBoundEvent, TmplAstElement, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
+import {NullVisitor, visitAll} from '@angular/compiler/src/render3/r3_ast';
 
 export interface TemplateVariableAssignment {
   start: number;
@@ -22,16 +22,16 @@ export interface TemplateVariableAssignment {
 export class HtmlVariableAssignmentVisitor extends NullVisitor {
   variableAssignments: TemplateVariableAssignment[] = [];
 
-  private currentVariables: Variable[] = [];
+  private currentVariables: TmplAstVariable[] = [];
   private expressionAstVisitor =
       new ExpressionAstVisitor(this.variableAssignments, this.currentVariables);
 
-  override visitElement(element: Element): void {
+  override visitElement(element: TmplAstElement): void {
     visitAll(this, element.outputs);
     visitAll(this, element.children);
   }
 
-  override visitTemplate(template: Template): void {
+  override visitTemplate(template: TmplAstTemplate): void {
     // Keep track of the template variables which can be accessed by the template
     // child nodes through the implicit receiver.
     this.currentVariables.push(...template.variables);
@@ -52,7 +52,7 @@ export class HtmlVariableAssignmentVisitor extends NullVisitor {
     });
   }
 
-  override visitBoundEvent(node: BoundEvent) {
+  override visitBoundEvent(node: TmplAstBoundEvent) {
     node.handler.visit(this.expressionAstVisitor, node.handlerSpan);
   }
 }
@@ -61,7 +61,7 @@ export class HtmlVariableAssignmentVisitor extends NullVisitor {
 class ExpressionAstVisitor extends RecursiveAstVisitor {
   constructor(
       private variableAssignments: TemplateVariableAssignment[],
-      private currentVariables: Variable[]) {
+      private currentVariables: TmplAstVariable[]) {
     super();
   }
 

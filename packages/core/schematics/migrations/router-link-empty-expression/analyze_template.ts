@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BoundAttribute, visitAll} from '@angular/compiler/src/render3/r3_ast';
+import {TmplAstBoundAttribute} from '@angular/compiler';
+import {visitAll} from '@angular/compiler/src/render3/r3_ast';
 
 import {ResolvedTemplate} from '../../utils/ng_component_template';
 import {parseHtmlGracefully} from '../../utils/parse_html';
 
 import {RouterLinkEmptyExprVisitor} from './angular/html_routerlink_empty_expr_visitor';
 
-export function analyzeResolvedTemplate(template: ResolvedTemplate): BoundAttribute[]|null {
+export function analyzeResolvedTemplate(template: ResolvedTemplate): TmplAstBoundAttribute[]|null {
   const templateNodes = parseHtmlGracefully(template.content, template.filePath);
 
   if (!templateNodes) {

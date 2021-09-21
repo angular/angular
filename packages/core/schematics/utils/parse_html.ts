@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {parseTemplate} from '@angular/compiler';
-import {Node} from '@angular/compiler/src/render3/r3_ast';
+import {parseTemplate, TmplAstNode} from '@angular/compiler';
 
 /**
  * Parses the given HTML content using the Angular compiler. In case the parsing
  * fails, null is being returned.
  */
-export function parseHtmlGracefully(htmlContent: string, filePath: string): Node[]|null {
+export function parseHtmlGracefully(htmlContent: string, filePath: string): TmplAstNode[]|null {
   try {
     return parseTemplate(htmlContent, filePath).nodes;
   } catch {
