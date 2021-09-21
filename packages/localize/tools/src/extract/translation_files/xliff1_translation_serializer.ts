@@ -83,8 +83,11 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
     const length = message.messageParts.length - 1;
     for (let i = 0; i < length; i++) {
       this.serializeTextPart(xml, message.messageParts[i]);
-      const location = message.substitutionLocations?.[message.placeholderNames[i]];
-      this.serializePlaceholder(xml, message.placeholderNames[i], location?.text);
+      const name = message.placeholderNames[i];
+      const location = message.substitutionLocations?.[name];
+      const associatedMessageId =
+          message.associatedMessageIds && message.associatedMessageIds[name];
+      this.serializePlaceholder(xml, name, location?.text, associatedMessageId);
     }
     this.serializeTextPart(xml, message.messageParts[length]);
   }
@@ -94,12 +97,13 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
     const length = pieces.length - 1;
     for (let i = 0; i < length; i += 2) {
       xml.text(pieces[i]);
-      this.serializePlaceholder(xml, pieces[i + 1], undefined);
+      this.serializePlaceholder(xml, pieces[i + 1], undefined, undefined);
     }
     xml.text(pieces[length]);
   }
 
-  private serializePlaceholder(xml: XmlFile, id: string, text: string|undefined): void {
+  private serializePlaceholder(
+      xml: XmlFile, id: string, text: string|undefined, associatedId: string|undefined): void {
     const attrs: Record<string, string> = {id};
     const ctype = getCtypeForPlaceholder(id);
     if (ctype !== null) {
@@ -107,6 +111,9 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
     }
     if (text !== undefined) {
       attrs['equiv-text'] = text;
+    }
+    if (associatedId !== undefined) {
+      attrs['xid'] = associatedId;
     }
     xml.startTag('x', attrs, {selfClosing: true});
   }

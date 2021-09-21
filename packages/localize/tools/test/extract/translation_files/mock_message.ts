@@ -16,6 +16,7 @@ export interface MockMessageOptions {
   location?: SourceLocation;
   legacyIds?: string[];
   messagePartLocations?: (SourceLocation|undefined)[];
+  associatedMessageIds?: Record<string, string>;
   substitutionLocations?: Record<string, SourceLocation|undefined>;
 }
 

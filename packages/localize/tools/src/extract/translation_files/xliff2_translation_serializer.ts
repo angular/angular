@@ -92,7 +92,10 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
     const length = message.messageParts.length - 1;
     for (let i = 0; i < length; i++) {
       this.serializeTextPart(xml, message.messageParts[i]);
-      this.serializePlaceholder(xml, message.placeholderNames[i], message.substitutionLocations);
+      const name = message.placeholderNames[i];
+      const associatedMessageId =
+          message.associatedMessageIds && message.associatedMessageIds[name];
+      this.serializePlaceholder(xml, name, message.substitutionLocations, associatedMessageId);
     }
     this.serializeTextPart(xml, message.messageParts[length]);
   }
@@ -102,14 +105,15 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
     const length = pieces.length - 1;
     for (let i = 0; i < length; i += 2) {
       xml.text(pieces[i]);
-      this.serializePlaceholder(xml, pieces[i + 1], undefined);
+      this.serializePlaceholder(xml, pieces[i + 1], undefined, undefined);
     }
     xml.text(pieces[length]);
   }
 
   private serializePlaceholder(
       xml: XmlFile, placeholderName: string,
-      substitutionLocations: Record<string, ɵSourceLocation|undefined>|undefined): void {
+      substitutionLocations: Record<string, ɵSourceLocation|undefined>|undefined,
+      associatedMessageId: string|undefined): void {
     const text = substitutionLocations?.[placeholderName]?.text;
 
     if (placeholderName.startsWith('START_')) {
@@ -146,6 +150,9 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
       }
       if (text !== undefined) {
         attrs.disp = text;
+      }
+      if (associatedMessageId !== undefined) {
+        attrs['subFlows'] = associatedMessageId;
       }
       xml.startTag('ph', attrs, {selfClosing: true});
     }
