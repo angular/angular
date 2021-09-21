@@ -6,6 +6,7 @@
 """
 
 load("//tools/npm_integration_test:npm_integration_test.bzl", "npm_integration_test")
+load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
 
 # The @npm packages at the root node_modules are used by integration tests
 # with `file:../../node_modules/foobar` references
@@ -68,7 +69,7 @@ FRAMEWORK_PACKAGES = [
 def npm_package_archives():
     """Function to generate pkg_tar definitions for WORKSPACE yarn_install manual_build_file_contents"""
     npm_packages_to_archive = NPM_PACKAGE_ARCHIVES
-    result = """load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
+    result = """load("@rules_pkg//:pkg.bzl", "pkg_tar")
 """
     for name in npm_packages_to_archive:
         label_name = _npm_package_archive_label(name)
@@ -77,7 +78,7 @@ def npm_package_archives():
     name = "{label_name}",
     srcs = ["//{name}:{last_segment_name}__all_files"],
     extension = "tar.gz",
-    strip_prefix = "./node_modules/{name}",
+    strip_prefix = "/external/npm/node_modules/{name}",
     # should not be built unless it is a dependency of another rule
     tags = ["manual"],
 )
@@ -168,11 +169,20 @@ def _angular_integration_test(name, **kwargs):
 
 def angular_integration_test(name, **kwargs):
     "Sets up the integration test target based on the test folder name"
+
+    # Note: We copy the `package.json` file to the `bazel-bin` as otherwise
+    # the actual source file `package.json` file would be modified on Windows.
+    copy_to_bin(
+        name = "%s_package_json" % name,
+        srcs = ["%s/package.json" % name],
+    )
+
     native.filegroup(
         name = "_%s_sources" % name,
-        srcs = native.glob(
+        srcs = ["%s_package_json" % name] + native.glob(
             include = ["%s/**" % name],
             exclude = [
+                "%s/package.json",
                 "%s/node_modules/**" % name,
                 "%s/.yarn_local_cache/**" % name,
             ],
