@@ -128,7 +128,7 @@ This section describes the resources to cache, broken up into the following grou
 
 ### `cacheQueryOptions`
 
-These options are used to modify the matching behavior of requests. They are passed to the browsers `Cache.match` function. See [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Cache/match) for details. Currently, only the following options are supported:
+These options are used to modify the matching behavior of requests. They are passed to the browsers `Cache#match` function. See [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Cache/match) for details. Currently, only the following options are supported:
 
 * `ignoreSearch`: Ignore query parameters. Defaults to `false`.
 

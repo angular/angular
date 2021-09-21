@@ -17,7 +17,7 @@ Angular applications, as single-page applications, are in a prime position to be
 
 Angular's service worker is designed to optimize the end user experience of using an application over a slow or unreliable network connection, while also minimizing the risks of serving outdated content.
 
-The Angular service worker's behavior follows these design goals:
+To achieve this, the Angular service worker follows these guidelines:
 
 * Caching an application is like installing a native application. The application is cached as one unit, and all files update together.
 * A running application continues to run with the same version of all files. It does not suddenly start receiving cached files from a newer version, which are likely incompatible.
