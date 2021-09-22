@@ -1,3 +1,47 @@
+<a name="13.0.0-next.7"></a>
+# 13.0.0-next.7 (2021-09-22)
+## Breaking Changes
+### router
+- The router will no longer replace the browser URL when a new navigation
+cancels an ongoing navigation. This often causes URL flicker and was
+only in place to support some AngularJS hybrid applications. Hybrid
+applications which rely on the `navigationId` being present on initial
+navigations that were handled by the Angular router should instead
+subscribe to `NavigationCancel` events and perform the
+`location.replaceState` themselves to add `navigationId` to the Router
+state.
+In addition, tests which assert `urlChanges` on the `SpyLocation` may
+need to be adjusted to account for the `replaceState` which is no longer
+triggered.
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [df792ebc26](https://github.com/angular/angular/commit/df792ebc260b6a3a1eecd33c9de858e7943f8128) | fix | titlecase pipe incorrectly handling numbers ([#43476](https://github.com/angular/angular/pull/43476)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [feba4d2719](https://github.com/angular/angular/commit/feba4d27191089301ae1926952403107ae2bb75d) | fix | include leading whitespace in source-spans of i18n messages ([#43132](https://github.com/angular/angular/pull/43132)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9470f56ad3](https://github.com/angular/angular/commit/9470f56ad3159f5fba7731db49de39eb1734f616) | fix | handle directives that refer to a namespaced class in a type parameter bound ([#43511](https://github.com/angular/angular/pull/43511)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [77bd2538cb](https://github.com/angular/angular/commit/77bd2538cb8fe114a326209791d7ec043d65ea9e) | fix | apply individual expression edits to preserve newline characters ([#43519](https://github.com/angular/angular/pull/43519)) |
+| [d849350c7b](https://github.com/angular/angular/commit/d849350c7bf19117bbf85e2d854b5be4d5eb4b25) | fix | Ensure routerLink migration doesn't update unrelated files ([#43519](https://github.com/angular/angular/pull/43519)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [35725f5550](https://github.com/angular/angular/commit/35725f5550e305762038f154f1c9a0b9e809c883) | fix | improve error message for missing animation trigger ([#41356](https://github.com/angular/angular/pull/41356)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c5d0bd4966](https://github.com/angular/angular/commit/c5d0bd4966a4fc595d57f75569754b4d224ef2ba) | fix | Prevent URL flicker when new navigations cancel ongoing ones ([#43496](https://github.com/angular/angular/pull/43496)) |
+## Special Thanks
+Andrew Scott, Daniel Díaz, George Kalpakas, Jessica Janiuk, JoostK, Kristiyan Kostadinov, Mwiku, Pei Wang, Pete Bacon Darwin, Teri Glover, Virginia Dooley, Xiaohanxu1996, dario-piotrowicz and kirjs
+
+
 <a name="12.2.7"></a>
 # 12.2.7 (2021-09-22)
 ### common
