@@ -44,11 +44,13 @@ export class SwUpdate {
     readonly activated: Observable<UpdateActivatedEvent>;
     // (undocumented)
     activateUpdate(): Promise<boolean>;
+    // @deprecated
     readonly available: Observable<UpdateAvailableEvent>;
     // (undocumented)
     checkForUpdate(): Promise<boolean>;
     get isEnabled(): boolean;
     readonly unrecoverable: Observable<UnrecoverableStateEvent>;
+    readonly versionUpdates: Observable<VersionEvent>;
 }
 
 // @public
@@ -75,7 +77,7 @@ export interface UpdateActivatedEvent {
     type: 'UPDATE_ACTIVATED';
 }
 
-// @public
+// @public @deprecated
 export interface UpdateAvailableEvent {
     // (undocumented)
     available: {
