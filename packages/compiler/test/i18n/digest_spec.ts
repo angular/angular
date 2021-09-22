@@ -22,6 +22,7 @@ import {computeMsgId, digest, sha1} from '../../src/i18n/digest';
           description: '',
           sources: [],
           customId: 'i',
+          messageString: '',
         })).toEqual('i');
       });
     });

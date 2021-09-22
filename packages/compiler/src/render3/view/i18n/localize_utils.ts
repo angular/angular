@@ -30,49 +30,56 @@ export function createLocalizeStatements(
  * The result can be used for generating the `$localize` tagged template literals.
  */
 class LocalizeSerializerVisitor implements i18n.Visitor {
-  visitText(text: i18n.Text, context: o.MessagePiece[]): any {
-    if (context[context.length - 1] instanceof o.LiteralPiece) {
+  constructor(
+      private placeholderToMessage: {[phName: string]: i18n.Message},
+      private pieces: o.MessagePiece[]) {}
+
+  visitText(text: i18n.Text): any {
+    if (this.pieces[this.pieces.length - 1] instanceof o.LiteralPiece) {
       // Two literal pieces in a row means that there was some comment node in-between.
-      context[context.length - 1].text += text.value;
+      this.pieces[this.pieces.length - 1].text += text.value;
     } else {
       const sourceSpan = new ParseSourceSpan(
           text.sourceSpan.fullStart, text.sourceSpan.end, text.sourceSpan.fullStart,
           text.sourceSpan.details);
-      context.push(new o.LiteralPiece(text.value, sourceSpan));
+      this.pieces.push(new o.LiteralPiece(text.value, sourceSpan));
     }
   }
 
-  visitContainer(container: i18n.Container, context: o.MessagePiece[]): any {
-    container.children.forEach(child => child.visit(this, context));
+  visitContainer(container: i18n.Container): any {
+    container.children.forEach(child => child.visit(this));
   }
 
-  visitIcu(icu: i18n.Icu, context: o.MessagePiece[]): any {
-    context.push(new o.LiteralPiece(serializeIcuNode(icu), icu.sourceSpan));
+  visitIcu(icu: i18n.Icu): any {
+    this.pieces.push(new o.LiteralPiece(serializeIcuNode(icu), icu.sourceSpan));
   }
 
-  visitTagPlaceholder(ph: i18n.TagPlaceholder, context: o.MessagePiece[]): any {
-    context.push(this.createPlaceholderPiece(ph.startName, ph.startSourceSpan ?? ph.sourceSpan));
+  visitTagPlaceholder(ph: i18n.TagPlaceholder): any {
+    this.pieces.push(
+        this.createPlaceholderPiece(ph.startName, ph.startSourceSpan ?? ph.sourceSpan));
     if (!ph.isVoid) {
-      ph.children.forEach(child => child.visit(this, context));
-      context.push(this.createPlaceholderPiece(ph.closeName, ph.endSourceSpan ?? ph.sourceSpan));
+      ph.children.forEach(child => child.visit(this));
+      this.pieces.push(
+          this.createPlaceholderPiece(ph.closeName, ph.endSourceSpan ?? ph.sourceSpan));
     }
   }
 
-  visitPlaceholder(ph: i18n.Placeholder, context: o.MessagePiece[]): any {
-    context.push(this.createPlaceholderPiece(ph.name, ph.sourceSpan));
+  visitPlaceholder(ph: i18n.Placeholder): any {
+    this.pieces.push(this.createPlaceholderPiece(ph.name, ph.sourceSpan));
   }
 
-  visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): any {
-    context.push(this.createPlaceholderPiece(ph.name, ph.sourceSpan));
+  visitIcuPlaceholder(ph: i18n.IcuPlaceholder): any {
+    this.pieces.push(
+        this.createPlaceholderPiece(ph.name, ph.sourceSpan, this.placeholderToMessage[ph.name]));
   }
 
-  private createPlaceholderPiece(name: string, sourceSpan: ParseSourceSpan): o.PlaceholderPiece {
+  private createPlaceholderPiece(
+      name: string, sourceSpan: ParseSourceSpan,
+      associatedMessage?: i18n.Message): o.PlaceholderPiece {
     return new o.PlaceholderPiece(
-        formatI18nPlaceholderName(name, /* useCamelCase */ false), sourceSpan);
+        formatI18nPlaceholderName(name, /* useCamelCase */ false), sourceSpan, associatedMessage);
   }
 }
-
-const serializerVisitor = new LocalizeSerializerVisitor();
 
 /**
  * Serialize an i18n message into two arrays: messageParts and placeholders.
@@ -85,7 +92,8 @@ const serializerVisitor = new LocalizeSerializerVisitor();
 export function serializeI18nMessageForLocalize(message: i18n.Message):
     {messageParts: o.LiteralPiece[], placeHolders: o.PlaceholderPiece[]} {
   const pieces: o.MessagePiece[] = [];
-  message.nodes.forEach(node => node.visit(serializerVisitor, pieces));
+  const serializerVisitor = new LocalizeSerializerVisitor(message.placeholderToMessage, pieces);
+  message.nodes.forEach(node => node.visit(serializerVisitor));
   return processMessagePieces(pieces);
 }
 
