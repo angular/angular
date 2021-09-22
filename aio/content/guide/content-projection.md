@@ -93,7 +93,7 @@ The following steps demonstrate a typical implementation of conditional content 
    <code-example path="content-projection/src/app/example-zippy.template.html" header="content-projection/src/app/example-zippy.template.html" region="ng-container">
    </code-example>
 
-   This example uses the `ngTemplateOutlet` directive to render a given `ng-template` element, which you will define in a later step. Apply an `ngTemplateOutlet` directive to any type of element. This example assigns the directive to an `ng-container` element because the component does not need to render a real DOM element.
+   This example uses the `ngTemplateOutlet` directive to render a given `<ng-template>` element, which you will define in a later step. You can apply an `ngTemplateOutlet` directive to any type of element. This example assigns the directive to an `<ng-container>` element because the component does not need to render a real DOM element.
 
 1. Wrap the `<ng-container>` element in another element, such as a `div` element, and apply your conditional logic.
 
@@ -150,7 +150,7 @@ This example uses an `<ng-container>` attribute to simulate projecting a compone
 
 <header>Reminder!</header>
 
-The `ng-container` element is a logical construct used to group other DOM elements; however, the `ng-container` itself is not rendered in the DOM tree.
+The `<ng-container>` element is a logical construct that you can use to group other DOM elements; however, the `<ng-container>` itself is not rendered in the DOM tree.
 
 </div>
 
