@@ -72,6 +72,7 @@ export class MockActivateEvent extends MockExtendableEvent {
 
 export class MockFetchEvent extends MockExtendableEvent implements FetchEvent {
   readonly preloadResponse = Promise.resolve();
+  handled = Promise.resolve(undefined);
   response: Promise<Response|undefined> = Promise.resolve(undefined);
 
   constructor(

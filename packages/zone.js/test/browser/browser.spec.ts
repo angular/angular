@@ -2969,25 +2969,30 @@ describe('Zone', function() {
                });
              }));
 
+      // Note: `navigator` is cast to `any` in this test, because the preferred way of accessing
+      // `getUserMedia` is through `navigator.mediaDevices`, however some older browsers still
+      // expose it directly on `navigator`.
       it('navigator.getUserMedia should in zone',
          ifEnvSupportsWithDone(
              () => {
-               return !isEdge() && navigator && typeof navigator.getUserMedia === 'function';
+               return !isEdge() && navigator &&
+                   typeof (navigator as any).getUserMedia === 'function';
              },
              (done: Function) => {
                const zone = Zone.current.fork({name: 'media'});
                zone.run(() => {
                  const constraints = {audio: true, video: {width: 1280, height: 720}};
-                 navigator.getUserMedia(
-                     constraints,
-                     () => {
-                       expect(Zone.current.name).toEqual(zone.name);
-                       done();
-                     },
-                     () => {
-                       expect(Zone.current.name).toEqual(zone.name);
-                       done();
-                     });
+                 (navigator as any)
+                     .getUserMedia(
+                         constraints,
+                         () => {
+                           expect(Zone.current.name).toEqual(zone.name);
+                           done();
+                         },
+                         () => {
+                           expect(Zone.current.name).toEqual(zone.name);
+                           done();
+                         });
                });
              }));
     });

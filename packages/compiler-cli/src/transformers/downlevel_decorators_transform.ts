@@ -67,8 +67,7 @@ function extractMetadataFromSingleDecorator(
         for (const arg of call.arguments) {
           args.push(arg);
         }
-        const argsArrayLiteral = ts.createArrayLiteral(args);
-        argsArrayLiteral.elements.hasTrailingComma = true;
+        const argsArrayLiteral = ts.createArrayLiteral(ts.createNodeArray(args, true));
         metadataProperties.push(ts.createPropertyAssignment('args', argsArrayLiteral));
       }
       break;

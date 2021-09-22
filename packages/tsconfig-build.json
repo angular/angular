@@ -10,6 +10,7 @@
     "noImplicitAny": true,
     "noImplicitOverride": true,
     "strictNullChecks": true,
+    "useUnknownInCatchVariables": false,
     "strict": true,
     "strictPropertyInitialization": true,
     "noFallthroughCasesInSwitch": true,
