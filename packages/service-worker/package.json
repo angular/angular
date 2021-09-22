@@ -7,6 +7,17 @@
   "engines": {
     "node": "^12.14.1 || >=14.0.0"
   },
+  "exports": {
+    "./ngsw-worker.js": {
+      "default": "./ngsw-worker.js"
+    },
+    "./safety-worker.js": {
+      "default": "./safety-worker.js"
+    },
+    "./config/schema.json": {
+      "default": "./config/schema.json"
+    }
+  },
   "dependencies": {
     "tslib": "^2.3.0"
   },
