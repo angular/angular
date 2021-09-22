@@ -516,6 +516,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           update.available.toPromise().catch(err => fail(err));
           update.activated.toPromise().catch(err => fail(err));
           update.unrecoverable.toPromise().catch(err => fail(err));
+          update.versionUpdates.toPromise().catch(err => fail(err));
         });
         it('gives an error when checking for updates', done => {
           update = new SwUpdate(comm);
