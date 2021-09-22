@@ -1,4 +1,5 @@
-load("//tools:defaults.bzl", "ng_rollup_bundle", "ts_library")
+load("@npm//@bazel/esbuild:index.bzl", "esbuild", "esbuild_config")
+load("//tools:defaults.bzl", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -14,9 +15,21 @@ ts_library(
     ],
 )
 
-ng_rollup_bundle(
+esbuild_config(
+    name = "esbuild_config",
+    config_file = "esbuild.config.js",
+)
+
+esbuild(
     name = "ngsw_config",
+    config = ":esbuild_config",
     entry_point = ":main.ts",
+    external = [
+        "@angular/service-worker",
+    ],
+    format = "esm",
+    platform = "node",
+    target = "node14",
     deps = [
         ":cli",
     ],

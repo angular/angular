@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-const {Generator} = require('@angular/service-worker/config');
-const fs = require('fs');
-const path = require('path');
+import {Config, Generator} from '@angular/service-worker/config';
+import * as fs from 'fs';
+import * as path from 'path';
+
 import {NodeFilesystem} from './filesystem';
-import {Config} from '../config/src/in';
 
 
 const cwd = process.cwd();
