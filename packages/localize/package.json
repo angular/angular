@@ -24,9 +24,8 @@
     "save": "devDependencies"
   },
   "sideEffects": [
-    "**/init/index.js",
-    "**/init.js",
-    "**/localize-init.umd.js"
+    "**/init/index.mjs",
+    "**/init.mjs"
   ],
   "dependencies": {
     "@babel/core": "7.8.3",
