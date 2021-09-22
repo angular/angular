@@ -1,3 +1,25 @@
+<a name="12.2.7"></a>
+# 12.2.7 (2021-09-22)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2bb4bf1468](https://github.com/angular/angular/commit/2bb4bf1468935a49a3d478d0cc13e7eb7fd1b98a) | fix | titlecase pipe incorrectly handling numbers ([#43476](https://github.com/angular/angular/pull/43476)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9c8a1f8a71](https://github.com/angular/angular/commit/9c8a1f8a71be9b8380afbdc61ee7ee60f24488b4) | fix | include leading whitespace in source-spans of i18n messages ([#43132](https://github.com/angular/angular/pull/43132)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [defb02f11e](https://github.com/angular/angular/commit/defb02f11e2bd75452e8722e1474bb230d189864) | fix | handle directives that refer to a namespaced class in a type parameter bound ([#43511](https://github.com/angular/angular/pull/43511)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [adc7c56ede](https://github.com/angular/angular/commit/adc7c56ede7ad34a90f5ef1b878e261836b25c45) | fix | improve error message for missing animation trigger ([#41356](https://github.com/angular/angular/pull/41356)) |
+## Special Thanks
+Andrew Scott, Daniel Díaz, George Kalpakas, JoostK, Kristiyan Kostadinov, Mwiku, Pete Bacon Darwin, Teri Glover, Virginia Dooley, Xiaohanxu1996, dario-piotrowicz and kirjs
+
+
 <a name="13.0.0-next.6"></a>
 # 13.0.0-next.6 (2021-09-15)
 ### animations
