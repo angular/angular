@@ -856,6 +856,7 @@ export class Driver implements Debuggable, UpdateSource {
     if (manifest.configVersion !== SUPPORTED_CONFIG_VERSION) {
       await this.deleteAllCaches();
       await this.scope.registration.unregister();
+      await this.notifyClientsAboutVersionInstallationFailed(manifest, hash);
       throw new Error(`Invalid config version: expected ${SUPPORTED_CONFIG_VERSION}, got ${
           manifest.configVersion}.`);
     }
@@ -877,7 +878,7 @@ export class Driver implements Debuggable, UpdateSource {
     }
 
     await this.sync();
-    await this.notifyClientsAboutUpdate(newVersion);
+    await this.notifyClientsAboutVersionReady(newVersion);
   }
 
   async checkForUpdate(): Promise<boolean> {
@@ -898,6 +899,8 @@ export class Driver implements Debuggable, UpdateSource {
       if (this.versions.has(hash)) {
         return false;
       }
+
+      await this.notifyClientsAboutVersionDetected(manifest, hash);
 
       await this.setupUpdate(manifest, hash);
 
@@ -1073,7 +1076,41 @@ export class Driver implements Debuggable, UpdateSource {
     }));
   }
 
-  async notifyClientsAboutUpdate(next: AppVersion): Promise<void> {
+  async notifyClientsAboutVersionInstallationFailed(manifest: Manifest, hash: string):
+      Promise<void> {
+    await this.initialized;
+
+    const clients = await this.scope.clients.matchAll();
+
+    await Promise.all(clients.map(async client => {
+      // Send a notice.
+      client.postMessage({
+        type: 'VERSION_INSTALLATION_FAILED',
+        version: this.mergeHashWithAppData(manifest, hash)
+      });
+    }));
+  }
+
+  async notifyClientsAboutVersionDetected(manifest: Manifest, hash: string): Promise<void> {
+    await this.initialized;
+
+    const clients = await this.scope.clients.matchAll();
+
+    await Promise.all(clients.map(async client => {
+      // Firstly, determine which version this client is on.
+      const version = this.clientVersionMap.get(client.id);
+      if (version === undefined) {
+        // Unmapped client - assume it's the latest.
+        return;
+      }
+
+      // Send a notice.
+      client.postMessage(
+          {type: 'VERSION_DETECTED', version: this.mergeHashWithAppData(manifest, hash)});
+    }));
+  }
+
+  async notifyClientsAboutVersionReady(next: AppVersion): Promise<void> {
     await this.initialized;
 
     const clients = await this.scope.clients.matchAll();
@@ -1095,9 +1132,9 @@ export class Driver implements Debuggable, UpdateSource {
 
       // Send a notice.
       const notice = {
-        type: 'UPDATE_AVAILABLE',
-        current: this.mergeHashWithAppData(current.manifest, version),
-        available: this.mergeHashWithAppData(next.manifest, this.latestHash!),
+        type: 'VERSION_READY',
+        currentVersion: this.mergeHashWithAppData(current.manifest, version),
+        latestVersion: this.mergeHashWithAppData(next.manifest, this.latestHash!),
       };
 
       client.postMessage(notice);
