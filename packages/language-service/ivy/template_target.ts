@@ -10,7 +10,7 @@ import {ParseSpan, TmplAstBoundEvent} from '@angular/compiler';
 import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
 import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
 
-import {isTemplateNodeWithKeyAndValue, isWithin, isWithinKeyValue} from './utils';
+import {isBoundEventWithSyntheticHandler, isTemplateNodeWithKeyAndValue, isWithin, isWithinKeyValue} from './utils';
 
 /**
  * Contextual information for a target position within the template.
@@ -375,22 +375,10 @@ class TemplateTargetVisitor implements t.Visitor {
   }
 
   visitBoundEvent(event: t.BoundEvent) {
-    // An event binding with no value (e.g. `(event|)`) parses to a `BoundEvent` with a
-    // `LiteralPrimitive` handler with value `'ERROR'`, as opposed to a property binding with no
-    // value which has an `EmptyExpr` as its value. This is a synthetic node created by the binding
-    // parser, and is not suitable to use for Language Service analysis. Skip it.
-    //
-    // TODO(alxhub): modify the parser to generate an `EmptyExpr` instead.
-    let handler: e.AST = event.handler;
-    if (handler instanceof e.ASTWithSource) {
-      handler = handler.ast;
+    if (!isBoundEventWithSyntheticHandler(event)) {
+      const visitor = new ExpressionVisitor(this.position);
+      visitor.visit(event.handler, this.path);
     }
-    if (handler instanceof e.LiteralPrimitive && handler.value === 'ERROR') {
-      return;
-    }
-
-    const visitor = new ExpressionVisitor(this.position);
-    visitor.visit(event.handler, this.path);
   }
 
   visitText(text: t.Text) {

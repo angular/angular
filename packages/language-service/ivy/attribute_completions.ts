@@ -370,6 +370,10 @@ export function buildAttributeCompletionTable(
   return table;
 }
 
+function buildSnippet(insertSnippet: true|undefined, text: string): string|undefined {
+  return insertSnippet ? `${text}="$1"` : undefined;
+}
+
 /**
  * Given an `AttributeCompletion`, add any available completions to a `ts.CompletionEntry` array of
  * results.
@@ -381,10 +385,15 @@ export function buildAttributeCompletionTable(
  * is generated. Note that this completion does not have the `[]` property binding sugar as its
  * implicitly present in a property binding context (we're already completing within an `[attr|]`
  * expression).
+ *
+ * If the `insertSnippet` is `true`, the completion entries should includes the property or event
+ * binding sugar in some case. For Example `<div (my¦) />`, the `replacementSpan` is `(my)`, and the
+ * `insertText` is `(myOutput)="$0"`.
  */
 export function addAttributeCompletionEntries(
     entries: ts.CompletionEntry[], completion: AttributeCompletion, isAttributeContext: boolean,
-    isElementContext: boolean, replacementSpan: ts.TextSpan|undefined): void {
+    isElementContext: boolean, replacementSpan: ts.TextSpan|undefined,
+    insertSnippet: true|undefined): void {
   switch (completion.kind) {
     case AttributeCompletionKind.DirectiveAttribute: {
       entries.push({
@@ -403,17 +412,21 @@ export function addAttributeCompletionEntries(
       entries.push({
         kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
         name: prefix + completion.attribute,
+        insertText: buildSnippet(insertSnippet, prefix + completion.attribute),
+        isSnippet: insertSnippet,
         sortText: prefix + completion.attribute,
         replacementSpan,
       });
       break;
     }
     case AttributeCompletionKind.DirectiveInput: {
-      if (isAttributeContext) {
+      if (isAttributeContext || insertSnippet) {
         // Offer a completion of a property binding.
         entries.push({
           kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
           name: `[${completion.propertyName}]`,
+          insertText: buildSnippet(insertSnippet, `[${completion.propertyName}]`),
+          isSnippet: insertSnippet,
           sortText: completion.propertyName,
           replacementSpan,
         });
@@ -422,6 +435,8 @@ export function addAttributeCompletionEntries(
           entries.push({
             kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
             name: `[(${completion.propertyName})]`,
+            insertText: buildSnippet(insertSnippet, `[(${completion.propertyName})]`),
+            isSnippet: insertSnippet,
             // This completion should sort after the property binding.
             sortText: completion.propertyName + '_1',
             replacementSpan,
@@ -431,6 +446,8 @@ export function addAttributeCompletionEntries(
         entries.push({
           kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
           name: completion.propertyName,
+          insertText: buildSnippet(insertSnippet, completion.propertyName),
+          isSnippet: insertSnippet,
           // This completion should sort after both property binding options (one-way and two-way).
           sortText: completion.propertyName + '_2',
           replacementSpan,
@@ -439,6 +456,8 @@ export function addAttributeCompletionEntries(
         entries.push({
           kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
           name: completion.propertyName,
+          insertText: buildSnippet(insertSnippet, completion.propertyName),
+          isSnippet: insertSnippet,
           sortText: completion.propertyName,
           replacementSpan,
         });
@@ -446,10 +465,12 @@ export function addAttributeCompletionEntries(
       break;
     }
     case AttributeCompletionKind.DirectiveOutput: {
-      if (isAttributeContext) {
+      if (isAttributeContext || insertSnippet) {
         entries.push({
           kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
           name: `(${completion.eventName})`,
+          insertText: buildSnippet(insertSnippet, `(${completion.eventName})`),
+          isSnippet: insertSnippet,
           sortText: completion.eventName,
           replacementSpan,
         });
@@ -457,6 +478,8 @@ export function addAttributeCompletionEntries(
         entries.push({
           kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
           name: completion.eventName,
+          insertText: buildSnippet(insertSnippet, completion.eventName),
+          isSnippet: insertSnippet,
           sortText: completion.eventName,
           replacementSpan,
         });
@@ -464,11 +487,13 @@ export function addAttributeCompletionEntries(
       break;
     }
     case AttributeCompletionKind.DomAttribute: {
-      if (isAttributeContext && completion.isAlsoProperty) {
+      if ((isAttributeContext || insertSnippet) && completion.isAlsoProperty) {
         // Offer a completion of a property binding to the DOM property.
         entries.push({
           kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
           name: `[${completion.attribute}]`,
+          insertText: buildSnippet(insertSnippet, `[${completion.attribute}]`),
+          isSnippet: insertSnippet,
           // In the case of DOM attributes, the property binding should sort after the attribute
           // binding.
           sortText: completion.attribute + '_1',
@@ -482,6 +507,8 @@ export function addAttributeCompletionEntries(
         entries.push({
           kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
           name: completion.property,
+          insertText: buildSnippet(insertSnippet, completion.property),
+          isSnippet: insertSnippet,
           sortText: completion.property,
           replacementSpan,
         });
@@ -492,6 +519,8 @@ export function addAttributeCompletionEntries(
       entries.push({
         kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
         name: `(${completion.eventName})`,
+        insertText: buildSnippet(insertSnippet, `(${completion.eventName})`),
+        isSnippet: insertSnippet,
         sortText: completion.eventName,
         replacementSpan,
       });

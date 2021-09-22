@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, Call, EmptyExpr, ImplicitReceiver, LiteralPrimitive, ParseSourceSpan, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, ASTWithSource, BindingPipe, Call, EmptyExpr, ImplicitReceiver, LiteralPrimitive, ParseSourceSpan, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {CompletionKind, DirectiveInScope, SymbolKind, TemplateDeclarationSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import {BoundEvent, TextAttribute} from '@angular/compiler/src/render3/r3_ast';
@@ -15,7 +15,7 @@ import ts from 'typescript';
 import {addAttributeCompletionEntries, AttributeCompletionKind, buildAttributeCompletionTable, getAttributeCompletionSymbol} from './attribute_completions';
 import {DisplayInfo, DisplayInfoKind, getDirectiveDisplayInfo, getSymbolDisplayInfo, getTsSymbolDisplayInfo, unsafeCastDisplayInfoKindToScriptElementKind} from './display_parts';
 import {TargetContext, TargetNodeKind, TemplateTarget} from './template_target';
-import {filterAliasImports} from './utils';
+import {filterAliasImports, isBoundEventWithSyntheticHandler} from './utils';
 
 type PropertyExpressionCompletionBuilder =
     CompletionBuilder<PropertyRead|PropertyWrite|EmptyExpr|SafePropertyRead|TmplAstBoundEvent>;
@@ -70,7 +70,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     } else if (this.isElementTagCompletion()) {
       return this.getElementTagCompletion();
     } else if (this.isElementAttributeCompletion()) {
-      return this.getElementAttributeCompletions();
+      return this.getElementAttributeCompletions(options);
     } else if (this.isPipeCompletion()) {
       return this.getPipeCompletions();
     } else if (this.isLiteralCompletion()) {
@@ -538,8 +538,10 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
          this.node instanceof TmplAstTextAttribute || this.node instanceof TmplAstBoundEvent);
   }
 
-  private getElementAttributeCompletions(this: ElementAttributeCompletionBuilder):
-      ts.WithMetadata<ts.CompletionInfo>|undefined {
+  private getElementAttributeCompletions(
+      this: ElementAttributeCompletionBuilder,
+      options: ts.GetCompletionsAtPositionOptions|
+      undefined): ts.WithMetadata<ts.CompletionInfo>|undefined {
     let element: TmplAstElement|TmplAstTemplate;
     if (this.node instanceof TmplAstElement) {
       element = this.node;
@@ -556,6 +558,45 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
          this.node instanceof TmplAstTextAttribute) &&
         this.node.keySpan !== undefined) {
       replacementSpan = makeReplacementSpanFromParseSourceSpan(this.node.keySpan);
+    }
+
+    let insertSnippet: true|undefined;
+    if (options?.includeCompletionsWithSnippetText && options.includeCompletionsWithInsertText) {
+      if (this.node instanceof TmplAstBoundEvent && isBoundEventWithSyntheticHandler(this.node)) {
+        replacementSpan = makeReplacementSpanFromParseSourceSpan(this.node.sourceSpan);
+        insertSnippet = true;
+      }
+
+      const isBoundAttributeValueEmpty = this.node instanceof TmplAstBoundAttribute &&
+          (this.node.valueSpan === undefined ||
+           (this.node.value instanceof ASTWithSource && this.node.value.ast instanceof EmptyExpr));
+      if (isBoundAttributeValueEmpty) {
+        replacementSpan = makeReplacementSpanFromParseSourceSpan(this.node.sourceSpan);
+        insertSnippet = true;
+      }
+
+      if (this.node instanceof TmplAstTextAttribute && this.node.keySpan !== undefined) {
+        // The `sourceSpan` only includes `ngFor` and the `valueSpan` is always empty even if there
+        // is something there because we split this up into the desugared AST, `ngFor ngForOf=""`.
+        const nodeStart = this.node.keySpan.start.getContext(1, 1);
+        if (nodeStart?.before[0] === '*') {
+          const nodeEnd = this.node.keySpan.end.getContext(1, 1);
+          if (nodeEnd?.after[0] !== '=') {
+            // *ngFor -> *ngFor="¦"
+            insertSnippet = true;
+          }
+        } else {
+          if (this.node.value === '') {
+            replacementSpan = makeReplacementSpanFromParseSourceSpan(this.node.sourceSpan);
+            insertSnippet = true;
+          }
+        }
+      }
+
+      if (this.node instanceof TmplAstElement) {
+        // <div ¦ />
+        insertSnippet = true;
+      }
     }
 
     const attrTable = buildAttributeCompletionTable(
@@ -607,8 +648,10 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       // Is the completion for an element (not an <ng-template>)?
       const isElementContext =
           this.node instanceof TmplAstElement || this.nodeParent instanceof TmplAstElement;
+
       addAttributeCompletionEntries(
-          entries, completion, isAttributeContext, isElementContext, replacementSpan);
+          entries, completion, isAttributeContext, isElementContext, replacementSpan,
+          insertSnippet);
     }
 
     return {
