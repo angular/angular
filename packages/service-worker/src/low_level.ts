@@ -178,14 +178,11 @@ export class NgswCommChannel {
         .then(() => undefined);
   }
 
-  postMessageWithStatus(type: string, payload: Object, nonce: number, operationNonce: number):
+  postMessageWithOperation(type: string, payload: Object, operationNonce: number):
       Promise<boolean> {
-    const waitForStatus = this.waitForStatus(nonce);
     const waitForOperationCompleted = this.waitForOperationCompleted(operationNonce);
     const postMessage = this.postMessage(type, payload);
-    return Promise.all([waitForStatus, postMessage, waitForOperationCompleted]).then(([
-                                                                                       , , result
-                                                                                     ]) => result);
+    return Promise.all([postMessage, waitForOperationCompleted]).then(([, result]) => result);
   }
 
   generateNonce(): number {

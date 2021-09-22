@@ -90,19 +90,15 @@ export class SwUpdate {
     if (!this.sw.isEnabled) {
       return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
     }
-    const statusNonce = this.sw.generateNonce();
-    const operationNonce = this.sw.generateNonce();
-    return this.sw.postMessageWithStatus(
-        'CHECK_FOR_UPDATES', {statusNonce, operationNonce}, statusNonce, operationNonce);
+    const nonce = this.sw.generateNonce();
+    return this.sw.postMessageWithOperation('CHECK_FOR_UPDATES', {nonce}, nonce);
   }
 
   activateUpdate(): Promise<boolean> {
     if (!this.sw.isEnabled) {
       return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
     }
-    const statusNonce = this.sw.generateNonce();
-    const operationNonce = this.sw.generateNonce();
-    return this.sw.postMessageWithStatus(
-        'ACTIVATE_UPDATE', {statusNonce, operationNonce}, statusNonce, operationNonce);
+    const nonce = this.sw.generateNonce();
+    return this.sw.postMessageWithOperation('ACTIVATE_UPDATE', {nonce}, nonce);
   }
 }

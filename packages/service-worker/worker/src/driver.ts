@@ -320,12 +320,10 @@ export class Driver implements Debuggable, UpdateSource {
   private async handleMessage(msg: MsgAny&{action: string}, from: Client): Promise<void> {
     if (isMsgCheckForUpdates(msg)) {
       const action = this.checkForUpdate();
-      await this.reportStatus(from, action.then(() => undefined), msg.statusNonce);
-      await this.completeOperation(from, action, msg.operationNonce);
+      await this.completeOperation(from, action, msg.nonce);
     } else if (isMsgActivateUpdate(msg)) {
       const action = this.updateClient(from);
-      await this.reportStatus(from, action.then(() => undefined), msg.statusNonce);
-      await this.completeOperation(from, action, msg.operationNonce);
+      await this.completeOperation(from, action, msg.nonce);
     }
   }
 
@@ -398,19 +396,6 @@ export class Driver implements Debuggable, UpdateSource {
 
     // As per the spec windowClients are `sorted in the most recently focused order`
     return windowClients[0];
-  }
-  private async reportStatus(client: Client, promise: Promise<void>, nonce: number): Promise<void> {
-    const response = {type: 'STATUS', nonce, status: true};
-    try {
-      await promise;
-      client.postMessage(response);
-    } catch (e) {
-      client.postMessage({
-        ...response,
-        status: false,
-        error: e.toString(),
-      });
-    }
   }
 
   private async completeOperation(client: Client, promise: Promise<boolean>, nonce: number):
