@@ -21,17 +21,12 @@ describe('@angular/common ng_package', () => {
     it('/locales', () => {
       const files = shx.ls('locales').stdout.split('\n');
       expect(files.some(n => n.endsWith('.d.ts'))).toBe(true, `.d.ts files don't exist`);
-      expect(files.some(n => n.endsWith('.js'))).toBe(true, `.js files don't exist`);
+      expect(files.some(n => n.endsWith('.mjs'))).toBe(true, `.mjs files don't exist`);
     });
     it('/locales/extra', () => {
       const files = shx.ls('locales/extra').stdout.split('\n');
       expect(files.some(n => n.endsWith('.d.ts'))).toBe(true, `.d.ts files don't exist`);
-      expect(files.some(n => n.endsWith('.js'))).toBe(true, `.js files don't exist`);
-    });
-    // regression test for https://github.com/angular/angular/issues/23217
-    // Note, we don't have an e2e test that covers this
-    it('doesn\'t pass require in a way that breaks webpack static analysis', () => {
-      expect(shx.cat('locales/fr.js')).not.toContain('factory(require, exports)');
+      expect(files.some(n => n.endsWith('.mjs'))).toBe(true, `.mjs files don't exist`);
     });
   });
 

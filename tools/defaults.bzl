@@ -242,7 +242,7 @@ def ng_package(name, readme_md = None, license_banner = None, deps = [], **kwarg
         visibility = visibility,
     )
 
-def pkg_npm(name, **kwargs):
+def pkg_npm(name, use_prodmode_output = False, **kwargs):
     """Default values for pkg_npm"""
     visibility = kwargs.pop("visibility", None)
 
@@ -258,15 +258,15 @@ def pkg_npm(name, **kwargs):
 
     # The `pkg_npm` rule brings in devmode (`JSModuleInfo`) and prodmode (`JSEcmaScriptModuleInfo`)
     # output into the the NPM package We do not intend to ship the prodmode ECMAScript `.mjs`
-    # files, but the `JSModuleInfo` outputs (which correspond to devmode output). We cannot
-    # ship prodmode ECMAScript output was our output is not fully ESM-compatible due to relative
-    # imports not specifying an explicit extension.
+    # files, but the `JSModuleInfo` outputs (which correspond to devmode output). Depending on
+    # the `use_prodmode_output` macro attribute, we either ship the ESM output of dependencies,
+    # or continue shipping the devmode ES5 output.
     # TODO: Clean this up in the future if we have combined devmode and prodmode output.
     # https://github.com/bazelbuild/rules_nodejs/commit/911529fd364eb3ee1b8ecdc568a9fcf38a8b55ca.
     # https://github.com/bazelbuild/rules_nodejs/blob/stable/packages/typescript/internal/build_defs.bzl#L334-L337.
     extract_js_module_output(
         name = "%s_js_module_output" % name,
-        provider = "JSModuleInfo",
+        provider = "JSEcmaScriptModuleInfo" if use_prodmode_output else "JSModuleInfo",
         include_declarations = True,
         include_default_files = True,
         deps = deps,
