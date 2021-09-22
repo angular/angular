@@ -17,6 +17,9 @@ ts_library(
 ng_rollup_bundle(
     name = "ngsw_config",
     entry_point = ":main.ts",
+    # The CLI should use ESM for the bundle as it relies on the `config`
+    # entry-point which is using ESM. NodeJS allows for ESM to execute directly.
+    format = "esm",
     deps = [
         ":cli",
     ],
