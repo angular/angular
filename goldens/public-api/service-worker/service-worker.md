@@ -59,7 +59,7 @@ export interface UnrecoverableStateEvent {
     type: 'UNRECOVERABLE_STATE';
 }
 
-// @public
+// @public @deprecated
 export interface UpdateActivatedEvent {
     // (undocumented)
     current: {
