@@ -3,33 +3,39 @@
   "version": "0.0.0",
   "license": "MIT",
   "dependencies": {
-    "@angular/common": "file:../../dist/packages-dist/common",
-    "@angular/compiler": "file:../../dist/packages-dist/compiler",
-    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
-    "@angular/core": "file:../../dist/packages-dist/core",
-    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
-    "rxjs": "file:../../node_modules/rxjs",
-    "typescript": "file:../../node_modules/typescript",
-    "tslib": "file:../../node_modules/tslib",
-    "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
+    "@angular/common": "file:C:/users/paul/_bazel_paul/gsqtgr5s/execroot/angular/bazel-out/x64_windows-fastbuild/bin/packages/common/npm_package_archive.tar.gz",
+    "@angular/compiler": "file:C:/users/paul/_bazel_paul/gsqtgr5s/execroot/angular/bazel-out/x64_windows-fastbuild/bin/packages/compiler/npm_package_archive.tar.gz",
+    "@angular/compiler-cli": "file:C:/users/paul/_bazel_paul/gsqtgr5s/execroot/angular/bazel-out/x64_windows-fastbuild/bin/packages/compiler-cli/npm_package_archive.tar.gz",
+    "@angular/core": "file:C:/users/paul/_bazel_paul/gsqtgr5s/execroot/angular/bazel-out/x64_windows-fastbuild/bin/packages/core/npm_package_archive.tar.gz",
+    "@angular/localize": "file:C:/users/paul/_bazel_paul/gsqtgr5s/execroot/angular/bazel-out/x64_windows-fastbuild/bin/packages/localize/npm_package_archive.tar.gz",
+    "@angular/platform-browser": "file:C:/users/paul/_bazel_paul/gsqtgr5s/execroot/angular/bazel-out/x64_windows-fastbuild/bin/packages/platform-browser/npm_package_archive.tar.gz",
+    "rxjs": "file:C:/users/paul/_bazel_paul/gsqtgr5s/execroot/angular/bazel-out/x64_windows-fastbuild/bin/external/npm/rxjs_archive.tar.gz",
+    "tslib": "file:C:/users/paul/_bazel_paul/gsqtgr5s/execroot/angular/bazel-out/x64_windows-fastbuild/bin/external/npm/tslib_archive.tar.gz",
+    "typescript": "file:C:/users/paul/_bazel_paul/gsqtgr5s/execroot/angular/bazel-out/x64_windows-fastbuild/bin/external/npm/typescript_archive.tar.gz",
+    "zone.js": "file:C:/users/paul/_bazel_paul/gsqtgr5s/execroot/angular/bazel-out/x64_windows-fastbuild/bin/packages/zone.js/npm_package_archive.tar.gz"
   },
   "devDependencies": {
-    "@types/jasmine": "file:../../node_modules/@types/jasmine",
-    "@types/jasminewd2": "file:../../node_modules/@types/jasminewd2",
+    "@babel/core": "file:C:/users/paul/_bazel_paul/gsqtgr5s/execroot/angular/bazel-out/x64_windows-fastbuild/bin/external/npm/babel_core_archive.tar.gz",
+    "@rollup/plugin-babel": "file:C:/users/paul/_bazel_paul/gsqtgr5s/execroot/angular/bazel-out/x64_windows-fastbuild/bin/external/npm/rollup_plugin-babel_archive.tar.gz",
+    "@rollup/plugin-node-resolve": "file:C:/users/paul/_bazel_paul/gsqtgr5s/execroot/angular/bazel-out/x64_windows-fastbuild/bin/external/npm/rollup_plugin-node-resolve_archive.tar.gz",
+    "@types/jasmine": "file:C:/users/paul/_bazel_paul/gsqtgr5s/execroot/angular/bazel-out/x64_windows-fastbuild/bin/external/npm/types_jasmine_archive.tar.gz",
+    "@types/jasminewd2": "file:C:/users/paul/_bazel_paul/gsqtgr5s/execroot/angular/bazel-out/x64_windows-fastbuild/bin/external/npm/types_jasminewd2_archive.tar.gz",
     "concurrently": "3.4.0",
-    "google-closure-compiler": "file:../../node_modules/google-closure-compiler",
+    "google-closure-compiler": "file:C:/users/paul/_bazel_paul/gsqtgr5s/execroot/angular/bazel-out/x64_windows-fastbuild/bin/external/npm/google-closure-compiler_archive.tar.gz",
     "lite-server": "2.2.2",
-    "protractor": "file:../../node_modules/protractor",
-    "puppeteer": "file:../../node_modules/puppeteer",
-    "tsickle": "file:../../node_modules/tsickle"
+    "protractor": "file:C:/users/paul/_bazel_paul/gsqtgr5s/execroot/angular/bazel-out/x64_windows-fastbuild/bin/external/npm/protractor_archive.tar.gz",
+    "puppeteer": "file:C:/users/paul/_bazel_paul/gsqtgr5s/execroot/angular/bazel-out/x64_windows-fastbuild/bin/external/npm/puppeteer_archive.tar.gz",
+    "rollup": "file:C:/users/paul/_bazel_paul/gsqtgr5s/execroot/angular/bazel-out/x64_windows-fastbuild/bin/external/npm/rollup_archive.tar.gz",
+    "tsickle": "file:C:/users/paul/_bazel_paul/gsqtgr5s/execroot/angular/bazel-out/x64_windows-fastbuild/bin/external/npm/tsickle_archive.tar.gz"
   },
   "//resolutions-comment": "Ensure a single version of webdriver-manager which comes from root node_modules that has already run webdriver-manager update",
   "resolutions": {
-    "**/webdriver-manager": "file:../../node_modules/webdriver-manager"
+    "**/webdriver-manager": "file:C:/users/paul/_bazel_paul/gsqtgr5s/execroot/angular/bazel-out/x64_windows-fastbuild/bin/external/npm/webdriver-manager_archive.tar.gz"
   },
   "scripts": {
+    "build": "yarn ngc && yarn rollup -c rollup.config.mjs && yarn closure",
     "closure": "google-closure-compiler --flagfile closure.conf",
-    "test": "ngc && yarn run closure && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first && yarn test-locale-folder",
+    "test": "yarn build && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first && yarn test-locale-folder",
     "test-locale-folder": "node test-locale-folder.js",
     "serve": "lite-server -c e2e/browser.config.json",
     "preprotractor": "tsc -p e2e",
