@@ -70,7 +70,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     } else if (this.isElementTagCompletion()) {
       return this.getElementTagCompletion();
     } else if (this.isElementAttributeCompletion()) {
-      return this.getElementAttributeCompletions();
+      return this.getElementAttributeCompletions(options);
     } else if (this.isPipeCompletion()) {
       return this.getPipeCompletions();
     } else if (this.isLiteralCompletion()) {
@@ -538,8 +538,10 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
          this.node instanceof TmplAstTextAttribute || this.node instanceof TmplAstBoundEvent);
   }
 
-  private getElementAttributeCompletions(this: ElementAttributeCompletionBuilder):
-      ts.WithMetadata<ts.CompletionInfo>|undefined {
+  private getElementAttributeCompletions(
+      this: ElementAttributeCompletionBuilder,
+      options: ts.GetCompletionsAtPositionOptions|
+      undefined): ts.WithMetadata<ts.CompletionInfo>|undefined {
     let element: TmplAstElement|TmplAstTemplate;
     if (this.node instanceof TmplAstElement) {
       element = this.node;
@@ -556,6 +558,83 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
          this.node instanceof TmplAstTextAttribute) &&
         this.node.keySpan !== undefined) {
       replacementSpan = makeReplacementSpanFromParseSourceSpan(this.node.keySpan);
+    }
+
+    let insertSnippet: true|undefined;
+    /**
+     * If the `insertText` includes the snippet, it should includes the property or event binding
+     * sugar in some case. For Example `<div (my¦) />`, the `replacementSpan` is `(my)`, and the
+     * `insertText` is `(myOutput)="$0"`.
+     */
+    let includebBindingSugar = false;
+    if (options?.includeCompletionsWithSnippetText && options.includeCompletionsWithInsertText) {
+      if (this.node instanceof TmplAstBoundEvent && this.node.keySpan !== undefined) {
+        const nodeStart = this.node.keySpan.start.getContext(1, 1);
+        const nodeEnd = this.node.keySpan.end.getContext(1, 1);
+        switch (nodeStart?.before) {
+          case '(':
+            // (click) -> (click)="¦"
+            if (nodeEnd?.after[1] !== '=' && replacementSpan) {
+              replacementSpan.start--;
+              replacementSpan.length += 2;
+              insertSnippet = true;
+              includebBindingSugar = true;
+            }
+            break;
+          case '-':
+            // on-click -> on-click="¦"
+            if (nodeEnd?.after[0] !== '=') {
+              insertSnippet = true;
+            }
+            break;
+        }
+      }
+
+      if (this.node instanceof TmplAstBoundAttribute && this.node.keySpan !== undefined) {
+        const nodeStart = this.node.keySpan.start.getContext(1, 1);
+        const nodeEnd = this.node.keySpan.end.getContext(2, 1);
+        switch (nodeStart?.before) {
+          case '[':
+            // [property] -> [property]="¦"
+            if (nodeEnd?.after[1] !== '=' && replacementSpan) {
+              replacementSpan.start--;
+              replacementSpan.length += 2;
+              insertSnippet = true;
+              includebBindingSugar = true;
+            }
+            break;
+          case '(':
+            // [(property)] -> [(property)]="¦"
+            if (this.nodeContext === CompletionNodeContext.TwoWayBinding &&
+                nodeEnd?.after[2] !== '=' && replacementSpan) {
+              replacementSpan.start -= 2;
+              replacementSpan.length += 4;
+              insertSnippet = true;
+              includebBindingSugar = true;
+            }
+            break;
+          case '-':
+            // bind-property -> bind-property="¦"
+            // bindon-property -> bindon-property="¦"
+            if (nodeEnd?.after[0] !== '=') {
+              insertSnippet = true;
+            }
+            break;
+        }
+      }
+
+      if (this.node instanceof TmplAstTextAttribute && this.node.keySpan !== undefined) {
+        const nodeEnd = this.node.keySpan.end.getContext(1, 1);
+        if (nodeEnd?.after[0] !== '=') {
+          // *ngFor -> *ngFor="¦"
+          insertSnippet = true;
+        }
+      }
+
+      if (this.node instanceof TmplAstElement) {
+        // <div ¦ />
+        insertSnippet = true;
+      }
     }
 
     const attrTable = buildAttributeCompletionTable(
@@ -602,13 +681,14 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       }
 
       // Is the completion in an attribute context (instead of a property context)?
-      const isAttributeContext =
+      const isAttributeContext = includebBindingSugar ||
           (this.node instanceof TmplAstElement || this.node instanceof TmplAstTextAttribute);
       // Is the completion for an element (not an <ng-template>)?
       const isElementContext =
           this.node instanceof TmplAstElement || this.nodeParent instanceof TmplAstElement;
       addAttributeCompletionEntries(
-          entries, completion, isAttributeContext, isElementContext, replacementSpan);
+          entries, completion, isAttributeContext, isElementContext, replacementSpan,
+          insertSnippet);
     }
 
     return {
