@@ -2,9 +2,8 @@ decls: 2,
 vars: 1,
 consts: function() {
   __i18nIcuMsg__('{VAR_SELECT, select, male {male} female {female} other {other}}',[['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]])
-  return [
-    $i18n_0$
-  ];
+  __i18nMsg__('before {$icu} after', [['icu', '$i18n_0$', '7670372064920373295']], {})
+  return [$i18n_1$];
 },
 template: function MyComponent_Template(rf, ctx) {
   if (rf & 1) {

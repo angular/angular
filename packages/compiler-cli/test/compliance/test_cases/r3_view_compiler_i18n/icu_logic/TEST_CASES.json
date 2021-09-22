@@ -4,7 +4,7 @@
     {
       "description": "should handle single icus",
       "inputFiles": [
-        "single_icu"
+        "single_icu.ts"
       ],
       "expectations": [
         {

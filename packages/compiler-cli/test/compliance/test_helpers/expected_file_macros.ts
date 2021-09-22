@@ -59,9 +59,11 @@ function parsePlaceholders(str: string): Placeholder[] {
   const placeholders = eval(`(${str})`);
   if (!Array.isArray(placeholders) ||
       !placeholders.every(
-          p => Array.isArray(p) && p.length === 2 && typeof p[0] === 'string' &&
-              typeof p[1] === 'string')) {
-    throw new Error('Expected an array of Placeholder arrays (`[string, string]`) but got ' + str);
+          p => Array.isArray(p) && p.length >= 2 && typeof p[0] === 'string' &&
+              typeof p[1] === 'string' && (p.length === 2 || typeof p[2] === 'string'))) {
+    throw new Error(
+        'Expected an array of Placeholder arrays (`[name: string, identifier: string, associatedId?: string]`) but got ' +
+        str);
   }
   return placeholders;
 }

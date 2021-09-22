@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {computeMsgId} from '../i18n/digest';
+import {Message} from '../i18n/i18n_ast';
 import {ParseSourceSpan} from '../parse_util';
 import {I18nMeta} from '../render3/view/i18n/meta';
 
@@ -524,11 +526,29 @@ export class TemplateLiteralElement {
   }
 }
 
-export abstract class MessagePiece {
+export class LiteralPiece {
   constructor(public text: string, public sourceSpan: ParseSourceSpan) {}
 }
-export class LiteralPiece extends MessagePiece {}
-export class PlaceholderPiece extends MessagePiece {}
+export class PlaceholderPiece {
+  /**
+   * Create a new instance of a `PlaceholderPiece`.
+   *
+   * @param text the name of this placeholder (e.g. `PH_1`).
+   * @param sourceSpan the location of this placeholder in its localized message the source code.
+   * @param associatedMessage reference to another message that this placeholder is associated with.
+   * The `associatedMessage` is mainly used to provide a relationship to an ICU message that has
+   * been extracted out from the message containing the placeholder.
+   */
+  constructor(
+      public text: string, public sourceSpan: ParseSourceSpan, public associatedMessage?: Message) {
+  }
+}
+
+export type MessagePiece = LiteralPiece|PlaceholderPiece;
+
+const MEANING_SEPARATOR = '|';
+const ID_SEPARATOR = '@@';
+const LEGACY_ID_INDICATOR = '␟';
 
 export class LocalizedString extends Expression {
   constructor(
@@ -560,10 +580,6 @@ export class LocalizedString extends Expression {
    * @param messagePart The first part of the tagged string
    */
   serializeI18nHead(): CookedRawString {
-    const MEANING_SEPARATOR = '|';
-    const ID_SEPARATOR = '@@';
-    const LEGACY_ID_INDICATOR = '␟';
-
     let metaBlock = this.metaBlock.description || '';
     if (this.metaBlock.meaning) {
       metaBlock = `${this.metaBlock.meaning}${MEANING_SEPARATOR}${metaBlock}`;
@@ -593,14 +609,24 @@ export class LocalizedString extends Expression {
    * Serialize the given `placeholderName` and `messagePart` into "cooked" and "raw" strings that
    * can be used in a `$localize` tagged string.
    *
-   * @param placeholderName The placeholder name to serialize
-   * @param messagePart The following message string after this placeholder
+   * The format is `:<placeholder-name>[@@<associated-id>]:`.
+   *
+   * The `associated-id` is the message id of the (usually an ICU) message to which this placeholder
+   * refers.
+   *
+   * @param partIndex The index of the message part to serialize.
    */
   serializeI18nTemplatePart(partIndex: number): CookedRawString {
-    const placeholderName = this.placeHolderNames[partIndex - 1].text;
+    const placeholder = this.placeHolderNames[partIndex - 1];
     const messagePart = this.messageParts[partIndex];
+    let metaBlock = placeholder.text;
+    if (placeholder.associatedMessage?.legacyIds.length === 0) {
+      metaBlock += `${ID_SEPARATOR}${
+          computeMsgId(
+              placeholder.associatedMessage.messageString, placeholder.associatedMessage.meaning)}`;
+    }
     return createCookedRawString(
-        placeholderName, messagePart.text, this.getMessagePartSourceSpan(partIndex));
+        metaBlock, messagePart.text, this.getMessagePartSourceSpan(partIndex));
   }
 }
 

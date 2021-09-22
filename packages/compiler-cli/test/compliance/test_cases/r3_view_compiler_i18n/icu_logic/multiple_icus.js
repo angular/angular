@@ -3,7 +3,7 @@ vars: 2,
 consts: function() {
   __i18nIcuMsg__('{VAR_SELECT, select, male {male} female {female} other {other}}', [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]])
   __i18nIcuMsg__('{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}', [['VAR_SELECT', String.raw`\uFFFD1\uFFFD`]])
-  __i18nMsg__(' {$icu} {$icu_1} ', [['icu', '$i18n_0$'], ['icu_1', '$i18n_1$']], {})
+  __i18nMsg__(' {$icu} {$icu_1} ', [['icu', '$i18n_0$', '7670372064920373295'], ['icu_1', '$i18n_1$', '4590395557003415341']], {})
   return [
     $i18n_2$
   ];
