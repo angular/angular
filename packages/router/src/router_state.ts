@@ -125,9 +125,19 @@ export class ActivatedRoute {
   constructor(
       /** An observable of the URL segments matched by this route. */
       public url: Observable<UrlSegment[]>,
-      /** An observable of the matrix parameters scoped to this route. */
+      /**
+       * An observable of the matrix parameters scoped to this route.
+       *
+       * `paramMap` should be used instead of this, because it more convenient to use,
+       * and this might be deprecated in a future Angular version.
+       */
       public params: Observable<Params>,
-      /** An observable of the query parameters shared by all the routes. */
+      /**
+       * An observable of the query parameters shared by all the routes.
+       *
+       * `queryParamMap` should be used instead of this, because it more convenient to use,
+       * and this might be deprecated in a future Angular version.
+       */
       public queryParams: Observable<Params>,
       /** An observable of the URL fragment shared by all the routes. */
       public fragment: Observable<string|null>,
@@ -320,9 +330,17 @@ export class ActivatedRouteSnapshot {
        *    return params;
        *  }
        *  ```
+       *
+       * `paramMap` should be used instead of this, because it more convenient to use,
+       * and this might be deprecated in a future Angular version.
        */
       public params: Params,
-      /** The query parameters shared by all the routes */
+      /**
+       * The query parameters shared by all the routes
+       *
+       * `queryParamMap` should be used instead of this, because it more convenient to use,
+       * and this might be deprecated in a future Angular version.
+       */
       public queryParams: Params,
       /** The URL fragment shared by all the routes */
       public fragment: string|null,
