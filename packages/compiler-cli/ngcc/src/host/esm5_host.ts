@@ -573,6 +573,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    *
    * 1. `__spread(arguments)`
    * 2. `__spreadArray([], __read(arguments))`
+   * 3. `__spreadArray([], __read(arguments), false)`
    *
    * The tslib helpers may have been emitted inline as in the above example, or they may be read
    * from a namespace import.
@@ -587,8 +588,8 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
       // `__spread(arguments)`
       return call.args.length === 1 && isArgumentsIdentifier(call.args[0]);
     } else if (call.helper === KnownDeclaration.TsHelperSpreadArray) {
-      // `__spreadArray([], __read(arguments))`
-      if (call.args.length !== 2) {
+      // `__spreadArray([], __read(arguments), false)`
+      if (call.args.length !== 2 && call.args.length !== 3) {
         return false;
       }
 

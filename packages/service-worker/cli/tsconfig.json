@@ -10,6 +10,7 @@
     "outDir": "../../../dist/all/@angular/service-worker/cli-custom",
     "noImplicitAny": true,
     "noImplicitOverride": true,
+    "useUnknownInCatchVariables": false,
     "noFallthroughCasesInSwitch": true,
     "rootDir": ".",
     "paths": {

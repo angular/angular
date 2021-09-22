@@ -36,7 +36,7 @@ export class LanguageServiceTestEnv {
       cancellationToken: ts.server.nullCancellationToken,
       host,
       typingsInstaller: ts.server.nullTypingsInstaller,
-
+      session: undefined,
       useInferredProjectPerProjectRoot: true,
       useSingleInferredProject: true,
     });

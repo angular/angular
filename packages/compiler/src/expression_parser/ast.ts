@@ -260,9 +260,9 @@ export class Binary extends AST {
 export class Unary extends Binary {
   // Redeclare the properties that are inherited from `Binary` as `never`, as consumers should not
   // depend on these fields when operating on `Unary`.
-  override left: never;
-  override right: never;
-  override operation: never;
+  override left: never = null as never;
+  override right: never = null as never;
+  override operation: never = null as never;
 
   /**
    * Creates a unary minus expression "-x", represented as `Binary` using "0 - x".

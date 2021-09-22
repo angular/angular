@@ -47,7 +47,7 @@ export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
   /**
    * @docsNotRequired
    */
-  private _stubbedModules: {[path: string]: Promise<NgModuleFactory<any>>} = {};
+  private _stubbedModules: {[path: string]: Promise<NgModuleFactory<any>>|undefined} = {};
 
   /**
    * @docsNotRequired
@@ -71,7 +71,7 @@ export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
 
   load(path: string): Promise<NgModuleFactory<any>> {
     if (this._stubbedModules[path]) {
-      return this._stubbedModules[path];
+      return this._stubbedModules[path]!;
     } else {
       return <any>Promise.reject(new Error(`Cannot find module ${path}`));
     }

@@ -26,13 +26,13 @@
     "@microsoft/api-extractor": "7.18.7",
     "shelljs": "0.8.4",
     "tsickle": "^0.38.0",
-    "tslib": "^2.2.0"
+    "tslib": "^2.3.0"
   },
   "peerDependencies": {
     "@angular/compiler-cli": "0.0.0-PLACEHOLDER",
     "@bazel/typescript": ">=1.0.0",
     "terser": "^4.3.1",
-    "typescript": ">=4.2.3 <4.4",
+    "typescript": ">=4.2.3 <4.5",
     "rollup": ">=1.20.0",
     "rollup-plugin-commonjs": ">=9.0.0",
     "rollup-plugin-node-resolve": ">=4.2.0",

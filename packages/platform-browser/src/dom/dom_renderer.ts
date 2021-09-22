@@ -140,7 +140,7 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   destroy(): void {}
 
-  destroyNode: null;
+  destroyNode = null;
 
   createElement(name: string, namespace?: string): any {
     if (namespace) {
