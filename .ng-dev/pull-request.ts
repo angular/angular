@@ -1,10 +1,10 @@
-import {MergeConfig} from '@angular/dev-infra-private/ng-dev/pr/merge/config';
+import {PullRequestConfig} from '@angular/dev-infra-private/ng-dev/pr/config';
 
 /**
- * Configuration for the merge tool in `ng-dev`. This sets up the labels which
- * are respected by the merge script (e.g. the target labels).
+ * Configuration for the pull request commands in `ng-dev`. This includes the
+ * setup for the merge command.
  */
-export const merge: MergeConfig = {
+export const pullRequest: PullRequestConfig = {
   // By default, the merge script merges locally with `git cherry-pick` and autosquash.
   // This has the downside of pull requests showing up as `Closed` instead of `Merged`.
   // In the components repository, since we don't use fixup or squash commits, we can
