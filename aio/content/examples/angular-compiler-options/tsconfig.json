@@ -1,0 +1,37 @@
+// #docplaster ...
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
+// #docregion angular-compiler-options
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    // #enddocregion angular-compiler-options
+    "outDir": "./dist/out-tsc",
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "sourceMap": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "es2017",
+    "module": "es2020",
+    "lib": [
+      "es2018",
+      "dom"
+    ]
+    // #docregion angular-compiler-options
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    // #enddocregion angular-compiler-options
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+    // #docregion angular-compiler-options
+  }
+}
+// #enddocregion angular-compiler-options
