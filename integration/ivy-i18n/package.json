@@ -27,7 +27,7 @@
     "translated:legacy-xlf:update-translations": "node scripts/update-xlf-translation-file.js \"../tmp/legacy-locales/messages.legacy.xlf\"",
     "translated:legacy-xmb:test": "yarn ng build && yarn extract --format xmb --outputPath ../tmp/legacy-locales/messages.legacy.xmb && yarn translated:legacy-xmb:update-translations && yarn ng build --configuration=translated-legacy-xmb && yarn translated:legacy:translate -t \"../tmp/legacy-locales/messages.legacy.xtb\" && yarn translated:legacy:e2e",
     "translated:legacy-xmb:update-translations": "node scripts/update-xmb-translation-file.js \"../tmp/legacy-locales/messages.legacy.xmb\"",
-    "extract": "localize-extract --source dist/main-es2015*.js"
+    "extract": "localize-extract --source dist/main*.js"
   },
   "private": true,
   "dependencies": {
