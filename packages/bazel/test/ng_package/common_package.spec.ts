@@ -114,6 +114,8 @@ describe('@angular/common ng_package', () => {
             node: './fesm2015/upgrade.mjs',
             default: './fesm2020/upgrade.mjs',
           },
+          './locales/global/*': {default: './locales/global/*.js'},
+          './locales/*': {default: './locales/*.mjs'},
         }
       }));
     });
