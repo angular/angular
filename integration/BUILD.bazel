@@ -15,7 +15,6 @@ load(":angular_integration_test.bzl", "angular_integration_test")
 #   ====                                ====        =============
 #   dynamic-compiler                    4201        /e2e/browser.config.json: "port": 4201
 #   hello_world__closure                4202        /e2e/browser.config.json: "port": 4202
-#   hello_world__systemjs_umd           4203        /bs-config.e2e.json: "port": 4203
 #   i18n                                4204        /e2e/browser.config.json: "port": 4204
 #   ng_elements                         4205        /e2e/browser.config.json: "port": 4205
 #   platform-server                     4206        /src/server.ts: app.listen(4206,...
@@ -67,13 +66,6 @@ INTEGRATION_TESTS = {
         #   With ngDevMode not being set to false, this size tracking test provides little value but a lot of
         #   headache to continue updating the size.
         "tags": ["no-ivy-aot"],
-    },
-    "hello_world__systemjs_umd": {
-        # Special case for `hello_world__systemjs_umd` test as we want to pin
-        # `systems` at version 0.20.2 and not link to the root @npm//systemjs
-        # which is stuck at 0.18.10 and can't be updated to 0.20.2 without
-        # breaking the legacy saucelabs job.
-        "pinned_npm_packages": ["systemjs"],
     },
     "i18n": {},
     "injectable-def": {
