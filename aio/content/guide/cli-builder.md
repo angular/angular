@@ -207,7 +207,7 @@ A target specifies the builder to use, its default options configuration, and na
 The Architect tool uses the target definition to resolve input options for a given run.
 
 The `angular.json` file has a section for each project, and the "architect" section of each project configures targets for builders used by CLI commands such as 'build', 'test', and 'lint'.
-By default, for example, the `build` command runs the builder  `@angular-devkit/build-angular:browser` to perform the build task, and passes in default option values as specified for the `build` target in   `angular.json`.
+By default, for example, the `build` command runs the builder <code class="no-auto-link">@angular-devkit/build-angular:browser</code> to perform the build task, and passes in default option values as specified for the `build` target in `angular.json`.
 
 <code-example language="json" header="angular.json">
 {
