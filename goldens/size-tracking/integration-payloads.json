@@ -2,55 +2,58 @@
   "cli-hello-world": {
     "master": {
       "uncompressed": {
-        "runtime-es2015": 1170,
-        "main-es2015": 138189,
-        "polyfills-es2015": 36964
+        "runtime": 1083,
+        "main": 139282,
+        "polyfills": 36964
       }
     }
   },
   "cli-hello-world-ivy-minimal": {
     "master": {
       "uncompressed": {
-        "runtime-es2015": 1205,
-        "main-es2015": 17597,
-        "polyfills-es2015": 37127
+        "runtime": 1107,
+        "main": "TODO(i): temporarily increase the payload size limit from 17597 - this needs to be investigate further what caused the increase.",
+        "main": "Likely there is a missing PURE annotation https://github.com/angular/angular/pull/43344",
+        "main": "Tracking issue: https://github.com/angular/angular/issues/43568",
+        "main": 20064,
+        "polyfills": 36941
       }
     }
   },
   "cli-hello-world-ivy-compat": {
     "master": {
       "uncompressed": {
-        "runtime-es2015": 1205,
-        "main-es2015": 144579,
-        "polyfills-es2015": 36964
+        "runtime": 1105,
+        "main": 145314,
+        "polyfills": 36939
       }
     }
   },
   "cli-hello-world-ivy-i18n": {
     "master": {
       "uncompressed": {
-        "runtime-es2015": 1190,
-        "main-es2015": 137055,
-        "polyfills-es2015": 37641
+        "runtime": 1101,
+        "main": 137914,
+        "polyfills": 37641
       }
     }
   },
   "cli-hello-world-lazy": {
     "master": {
       "uncompressed": {
-        "runtime-es2015": 2854,
-        "main-es2015": 296436,
-        "polyfills-es2015": 37064,
-        "src_app_lazy_lazy_module_ts-es2015": 822
+        "runtime": 2843,
+        "main": 239937,
+        "polyfills": 37064,
+        "src_app_lazy_lazy_module_ts": 795
       }
     }
   },
   "forms": {
     "master": {
       "uncompressed": {
-        "runtime-es2015": 1150,
-        "main-es2015": 163007,
-        "polyfills-es2015": 36975
+        "runtime": 1063,
+        "main": 164069,
+        "polyfills": 36975
       }
     }
   },
