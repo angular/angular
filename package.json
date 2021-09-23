@@ -173,7 +173,7 @@
     "@yarnpkg/lockfile": "^1.1.0",
     "browserstacktunnel-wrapper": "^2.0.4",
     "check-side-effects": "0.0.23",
-    "cldr": "5.7.0",
+    "cldr": "7.0.0",
     "cldrjs": "0.5.5",
     "conventional-changelog": "^3.1.24",
     "firebase-tools": "^9.0.0",

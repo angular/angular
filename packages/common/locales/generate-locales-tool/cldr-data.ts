@@ -22,17 +22,17 @@ const cldrjs: typeof import('cldrjs') = require('cldrjs');
  * (noticeable in local development if locale data is re-generated).
  */
 const CLDR_DATA_GLOBS = [
-  'cldr-core-37.0.0/scriptMetadata.json',
-  'cldr-core-37.0.0/supplemental/**/*.json',
-  'cldr-dates-full-37.0.0/main/**/*.json',
-  'cldr-numbers-full-37.0.0/main/**/*.json',
+  'cldr-core/scriptMetadata.json',
+  'cldr-core/supplemental/*.json',
+  'cldr-dates-full/main/**/*.json',
+  'cldr-numbers-full/main/**/*.json',
 ];
 
 /** Path to the CLDR available locales file. */
-const CLDR_AVAILABLE_LOCALES_PATH = 'cldr-core-37.0.0/availableLocales.json';
+const CLDR_AVAILABLE_LOCALES_PATH = 'cldr-core/availableLocales.json';
 
 /** Path to the CLDR locale aliases file. */
-const CLDR_LOCALE_ALIASES_PATH = 'cldr-core-37.0.0/supplemental/aliases.json';
+const CLDR_LOCALE_ALIASES_PATH = 'cldr-core/supplemental/aliases.json';
 
 /**
  * Instance providing access to a locale's CLDR data. This type extends the `cldrjs`

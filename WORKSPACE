@@ -71,13 +71,7 @@ load("//packages/common/locales/generate-locales-tool:cldr-data.bzl", "cldr_data
 
 cldr_data_repository(
     name = "cldr_data",
-    # Since we use the Github archives for CLDR 37, we need to specify a path
-    # to the available locales. This wouldn't be needed with CLDR 39 as that
-    # comes with an official JSON archive not containing a version suffix.
-    available_locales_path = "cldr-core-37.0.0/availableLocales.json",
     urls = {
-        "https://github.com/unicode-cldr/cldr-core/archive/37.0.0.zip": "32b5c49c3874aa342b90412c207b42e7aefb2435295891fb714c34ce58b3c706",
-        "https://github.com/unicode-cldr/cldr-dates-full/archive/37.0.0.zip": "e1c410dd8ad7d75df4a5393efaf5d28f0d56c0fa126c5d66e171a3f21a988a1e",
-        "https://github.com/unicode-cldr/cldr-numbers-full/archive/37.0.0.zip": "a921b90cf7f436e63fbdd55880f96e39a203acd9e174b0ceafa20a02c242a12e",
+        "https://github.com/unicode-org/cldr-json/releases/download/39.0.0/cldr-39.0.0-json-full.zip": "a631764b6bb7967fab8cc351aff3ffa3f430a23646899976dd9d65801446def6",
     },
 )
