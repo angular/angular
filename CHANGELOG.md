@@ -1,3 +1,38 @@
+<a name="13.0.0-next.6"></a>
+# 13.0.0-next.6 "wax-window" (2021-09-23)
+## Breaking Changes
+### material
+- * The `_document` and `_dialog` parameters have been removed from the `MatDatepicker` and `MatDateRangePicker` constructors.
+### youtube-player
+- * `YouTubePlayer.createEventsBoundInZone` has been removed.
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f282bd6b0](https://github.com/angular/components/commit/f282bd6b0b8964177bcca5a4b2f5f175f8fc5d9d) | fix | **mdc-menu:** use primary text color for menu icons ([#23608](https://github.com/angular/components/pull/23608)) |
+| [4e3b72c22](https://github.com/angular/components/commit/4e3b72c22e784f5c4748a97ccbdfccbf9fb8dd0a) | fix | **mdc-snack-bar:** add harness support for getting label and actions ([#23585](https://github.com/angular/components/pull/23585)) |
+| [4160f11cd](https://github.com/angular/components/commit/4160f11cdb46eefe5feabc13ffd80c4abd5afbae) | fix | **mdc-slider:** append class to indicate short value indicator text ([#23566](https://github.com/angular/components/pull/23566)) |
+### youtube-player
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7539cf283](https://github.com/angular/components/commit/7539cf28371a938bc4f052d14be4bfa1b529300c) | refactor | remove deprecated APIs for v13 ([#23520](https://github.com/angular/components/pull/23520)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ca67623e5](https://github.com/angular/components/commit/ca67623e52903a7390ccb47ceb7fae72d999aee4) | fix | **core:** avoid running sanity checks on some test environments ([#23374](https://github.com/angular/components/pull/23374)) |
+| [a41ac2bad](https://github.com/angular/components/commit/a41ac2bad77a2a9f24eb44031bd0d7681a672c14) | fix | **select:** error if selected value is accessed too early ([#23378](https://github.com/angular/components/pull/23378)) |
+| [505c0d188](https://github.com/angular/components/commit/505c0d188e7614251bd92ee2644da81bf7161f43) | fix | **tabs:** picking up mat-tab-label from child tabs ([#23560](https://github.com/angular/components/pull/23560)) |
+| [ef4fc568e](https://github.com/angular/components/commit/ef4fc568ea39fac07134bcf63023489e0dfae1c8) | fix | **list:** fix action-list focus state for high contrast firefox ([#23584](https://github.com/angular/components/pull/23584)) |
+| [f8dc1770d](https://github.com/angular/components/commit/f8dc1770d100e272bbfa7e89e6376751caa35d5c) | refactor | **datepicker:** remove deprecated APIs for v13 ([#23574](https://github.com/angular/components/pull/23574)) |
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2f655c9a1](https://github.com/angular/components/commit/2f655c9a1ae8670e09ceaf9f58962d619705e342) | fix | **overlay:** avoid unnecessary timeouts when disposing of overlay ([#23474](https://github.com/angular/components/pull/23474)) |
+| [d70faa001](https://github.com/angular/components/commit/d70faa001872361cad7ac19cba51fe69f42f73d2) | fix | **drag-drop:** sorted event emitted multiple times for single-item list ([#23589](https://github.com/angular/components/pull/23589)) |
+| [cfe79b8f4](https://github.com/angular/components/commit/cfe79b8f455f4bf8584293ff975f602d48322d99) | fix | **layout:** breakpoint observer not firing callback on chrome in specific cases ([#23571](https://github.com/angular/components/pull/23571)) |
+## Special Thanks
+Benjamin Kindle, Jeremy Elbourn, Kristiyan Kostadinov, Marco Marche, Miles Malerba, Paul Gschwendtner, Wagner Maciel and Zach Arend
+
+
 <a name="12.2.7"></a>
 # 12.2.7 "ceramic-cup" (2021-09-23)
 ### cdk
