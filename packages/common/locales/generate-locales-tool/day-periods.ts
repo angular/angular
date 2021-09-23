@@ -38,11 +38,10 @@ export function getDayPeriods(localeData: CldrLocaleData, dayPeriodsList: string
  * Returns day period rules for a locale
  * @returns string[]
  */
-export function getDayPeriodRules(localeData: CldrLocaleData): {[key: string]: []} {
-  const dayPeriodRules =
-      localeData.get(`supplemental/dayPeriodRuleSet/${localeData.attributes.language}`);
+export function getDayPeriodRules(
+    localeData: CldrLocaleData, language = localeData.attributes.language): {[key: string]: []} {
+  const dayPeriodRules = localeData.get(`supplemental/dayPeriodRuleSet/${language}`);
   const rules: any = {};
-
   if (dayPeriodRules) {
     Object.keys(dayPeriodRules).forEach(key => {
       if (dayPeriodRules[key]._at) {
@@ -53,9 +52,19 @@ export function getDayPeriodRules(localeData: CldrLocaleData): {[key: string]: [
     });
   }
 
+  // Implements inheritance for the day periods. As of CLDR v39, the `nn` locale
+  // for example fully inherits from `no`.
+  // http://cldr.unicode.org/index/downloads/cldr-39?pli=1#TOC-Migration.
+  if (dayPeriodRules === undefined) {
+    const parentLocale = localeData.get(`supplemental/parentLocales/parentLocale/${language}`);
+
+    if (parentLocale !== undefined) {
+      return getDayPeriodRules(localeData, parentLocale);
+    }
+  }
+
   return rules;
 }
-
 
 /**
  * Returns the basic day periods (am/pm)

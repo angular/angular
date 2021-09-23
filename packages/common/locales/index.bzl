@@ -1,37 +1,7 @@
 load("@cldr_data//:index.bzl", _ALL_CLDR_LOCALES = "LOCALES")
 
-# There are a couple of locales for which no data is present, even within the
-# CLDR full tier packages. For these locales, we do not generate any data.
-# TODO(devversion): Remove once we update to CLDR v39 where this problem no longer persists.
-# Note that this worked before in the Gulp tooling without such an exclusion list because the
-# `cldr-data-downloader` overwrote the `availableLocales` to only capture locales with data.
-NO_DATA_LOCALES = [
-    "ff-Adlm",
-    "ff-Adlm-BF",
-    "ff-Adlm-CM",
-    "ff-Adlm-GH",
-    "ff-Adlm-GM",
-    "ff-Adlm-GW",
-    "ff-Adlm-LR",
-    "ff-Adlm-MR",
-    "ff-Adlm-NE",
-    "ff-Adlm-NG",
-    "ff-Adlm-SL",
-    "ff-Adlm-SN",
-    "mai",
-    "mni",
-    "mni-Beng",
-    "ms-ID",
-    "pcm",
-    "sat",
-    "sat-Olck",
-    "sd-Deva",
-    "su",
-    "su-Latn",
-]
-
 # List of locales the tool can generate files for.
-LOCALES = [l for l in _ALL_CLDR_LOCALES if l not in NO_DATA_LOCALES]
+LOCALES = _ALL_CLDR_LOCALES
 
 # Labels resolving to the individual `generate-locale-tool` entry-points
 GENERATE_LOCALES_TOOL_BIN = "//packages/common/locales/generate-locales-tool/bin"
