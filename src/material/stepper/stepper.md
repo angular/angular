@@ -222,3 +222,23 @@ is given `role="tab"`, and the content that can be expanded upon selection is gi
 step content is automatically set based on step selection change.
 
 The stepper and each step should be given a meaningful label via `aria-label` or `aria-labelledby`.
+
+Prefer verticl steppers when building for small screen sizes, as horizontal
+steppers typically take up significantly more horizontal space thus introduce
+horizontal scrolling. Applications with multiple scrolling dimensions make
+content harder to consume for some users. See the [Responsive Stepper section](#responsive-stepper)
+above for an example on building a stepper that adjusts its layout based on
+viewport size.
+
+#### Forms
+Steppers often contain forms and form controls. If validation errors inside of a
+stepper's form prevents moving to another step, make sure that your form
+controls communicate error messages to assistive technology. This helps the user
+know why they can't advance to another step. You can accomplish this by using
+`<mat-error>` with `<mat-form-field>`, or by using an ARIA live region.
+
+When a step contains a forms validation error, `MatStepper` will display the
+error in the step's header if specified. See the [Error State section](#error-state)
+for an example of a stepper with an error message. For non-linear steppers, you
+should use an ARIA live region to announce error messages when users navigate
+away from a step with an error message.
