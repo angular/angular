@@ -90,6 +90,8 @@ describe('@angular/common ng_package', () => {
               {default: './fesm2020/http/testing.mjs', types: './http/testing/testing.d.ts'},
           './testing': {default: './fesm2020/testing.mjs', types: './testing/testing.d.ts'},
           './upgrade': {default: './fesm2020/upgrade.mjs', types: './upgrade/upgrade.d.ts'},
+          './locales/global/*': {default: './locales/global/*.js'},
+          './locales/*': {default: './locales/*.mjs'},
         }
       }));
     });
