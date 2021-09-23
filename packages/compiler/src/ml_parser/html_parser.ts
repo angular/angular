@@ -10,8 +10,6 @@ import {getHtmlTagDefinition} from './html_tags';
 import {TokenizeOptions} from './lexer';
 import {Parser, ParseTreeResult} from './parser';
 
-export {ParseTreeResult, TreeError} from './parser';
-
 export class HtmlParser extends Parser {
   constructor() {
     super(getHtmlTagDefinition);

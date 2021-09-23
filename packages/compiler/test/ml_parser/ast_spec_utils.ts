@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ParseTreeResult} from '../../src/compiler';
 import * as html from '../../src/ml_parser/ast';
-import {ParseTreeResult} from '../../src/ml_parser/html_parser';
 import {ParseLocation} from '../../src/parse_util';
 
 export function humanizeDom(parseResult: ParseTreeResult, addSourceSpan: boolean = false): any[] {

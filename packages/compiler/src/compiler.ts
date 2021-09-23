@@ -70,6 +70,7 @@ export * from './expression_parser/ast';
 export * from './expression_parser/lexer';
 export * from './expression_parser/parser';
 export * from './metadata_resolver';
+export {ParseTreeResult} from './ml_parser/parser';
 export * from './ml_parser/ast';
 export * from './ml_parser/html_parser';
 export * from './ml_parser/html_tags';

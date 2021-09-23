@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {TreeError} from '../..//src/ml_parser/parser';
+import {ParseTreeResult} from '../../src/compiler';
 import * as html from '../../src/ml_parser/ast';
-import {HtmlParser, ParseTreeResult, TreeError} from '../../src/ml_parser/html_parser';
+import {HtmlParser} from '../../src/ml_parser/html_parser';
 import {TokenType} from '../../src/ml_parser/tokens';
 import {ParseError} from '../../src/parse_util';
 
