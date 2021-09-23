@@ -167,9 +167,23 @@ Angular to let binding into `<iframe src>`:
 
 Content Security Policy (CSP) is a defense-in-depth
 technique to prevent XSS. To enable CSP, configure your web server to return an appropriate
-`Content-Security-Policy` HTTP header. Read more about content security policy at the 
+`Content-Security-Policy` HTTP header. Read more about content security policy at the
 [Web Fundamentals guide](https://developers.google.com/web/fundamentals/security/csp) on the
 Google Developers website.
+
+The minimal policy required for brand new Angular is:
+
+```
+default-src 'self'; style-src 'self' 'unsafe-inline';
+```
+
+* The `default-src 'self';` section allows the page to load all its required resources from the same
+  origin.
+* `style-src 'self' 'unsafe-inline';` allows the page to load global styles from the same origin
+  (`'self'`) and enables components to load their styles (`'unsafe-inline'` - see
+  [`angular/angular#6361`](https://github.com/angular/angular/issues/6361)).
+
+Angular itself requires only these settings to function correctly. As your project grows, however, you may need to expand your CSP settings beyond this minimum to accommodate additional features specific to your application.
 
 {@a trusted-types}
 ### Enforcing Trusted Types
