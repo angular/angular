@@ -4,21 +4,7 @@ When you use [AOT compilation](guide/aot-compiler), you can control how your app
 
 The template options object, `angularCompilerOptions`, is a sibling to the `compilerOptions` object that supplies standard options to the TypeScript compiler.
 
-<code-example language="json">
-
-{
-  "compilerOptions": {
-    "experimentalDecorators": true,
-    ...
-  },
-  "angularCompilerOptions": {
-    "fullTemplateTypeCheck": true,
-    "preserveWhitespaces": true,
-    ...
-  }
-}
-
-</code-example>
+<code-example language="json" header="tsconfig.json" path="angular-compiler-options/tsconfig.json" region="angular-compiler-options"></code-example>
 
 {@a tsconfig-extends}
 
@@ -32,22 +18,7 @@ The configuration options from the base file are loaded first, then overridden b
 
 For example:
 
-<code-example language="json">
-
-{
-  "extends": "../tsconfig.json",
-  "compilerOptions": {
-    "experimentalDecorators": true,
-    ...
-  },
-  "angularCompilerOptions": {
-    "fullTemplateTypeCheck": true,
-    "preserveWhitespaces": true,
-    ...
-  }
-}
-
-</code-example>
+<code-example language="json" header="tsconfig.app.json" path="angular-compiler-options/tsconfig.app.json" region="angular-compiler-options-app"></code-example>
 
 For more information, see the [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html).
 

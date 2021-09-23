@@ -237,6 +237,7 @@ groups:
         contains_any_globs(files.exclude('packages/compiler-cli/ngcc/**'), [
           'packages/compiler/**',
           'packages/examples/compiler/**',
+          'aio/content/examples/angular-compiler-options/**',
           'packages/compiler-cli/**',
           'aio/content/guide/angular-compiler-options.md',
           'aio/content/guide/aot-compiler.md',

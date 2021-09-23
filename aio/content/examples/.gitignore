@@ -99,3 +99,7 @@ upgrade-phonecat-3-final/rollup-config.js
 
 # schematics
 !schematics-for-libraries/projects/my-lib/package.json
+
+#angular-compiler-options
+!angular-compiler-options/tsconfig.json
+!angular-compiler-options/tsconfig.app.json
