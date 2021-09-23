@@ -237,7 +237,6 @@
 
 "@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#a9c20b73ffe183e4be891660b0a6b4f551296d41":
   version "0.0.0"
-  uid a9c20b73ffe183e4be891660b0a6b4f551296d41
   resolved "https://github.com/angular/dev-infra-private-builds.git#a9c20b73ffe183e4be891660b0a6b4f551296d41"
   dependencies:
     "@actions/core" "^1.4.0"
@@ -4037,20 +4036,20 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
-cldr@5.7.0:
-  version "5.7.0"
-  resolved "https://registry.yarnpkg.com/cldr/-/cldr-5.7.0.tgz#8c466bdc2500fd293462029631011adcd55bc5ae"
-  integrity sha512-Pyoh0kwXJIUvbAvQoQqKIr0pKWwWfkcYCIDKWmVIxJ9HftSsg57AqyfW1EzWRcP4nJj40WX4vB/lXQ+Uw4NbNA==
+cldr@7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/cldr/-/cldr-7.0.0.tgz#8e0f42acc21b5762842cf23a747120be898447fe"
+  integrity sha512-BmD93+RhHGkdVRO9LYL6kd7IA9ANxnpH1A+OM6FdhKVYXqRgBaDmt9P83VaQB6gMBaFvOl4IozW/g3ViLn9LeQ==
   dependencies:
-    escodegen "^1.12.0"
+    escodegen "^2.0.0"
     esprima "^4.0.1"
     memoizeasync "^1.1.0"
     passerror "^1.1.1"
     pegjs "^0.10.0"
     seq "^0.3.5"
     unicoderegexp "^0.4.1"
-    xmldom "^0.3.0"
-    xpath "^0.0.27"
+    xmldom "^0.6.0"
+    xpath "^0.0.32"
 
 cldrjs@0.5.5:
   version "0.5.5"
@@ -5807,7 +5806,7 @@ escape-string-regexp@^4.0.0:
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-4.0.0.tgz#14ba83a5d373e3d311e5afca29cf5bfad965bf34"
   integrity sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==
 
-escodegen@^1.12.0, escodegen@^1.8.1:
+escodegen@^1.8.1:
   version "1.14.3"
   resolved "https://registry.yarnpkg.com/escodegen/-/escodegen-1.14.3.tgz#4e7b81fba61581dc97582ed78cab7f0e8d63f503"
   integrity sha512-qFcX0XJkdg+PB3xjZZG/wKSuT1PnQWx57+TVSjIMmILd2yC/6ByYElPwJnslDsuWuSAp4AwJGumarAAmJch5Kw==
@@ -12602,7 +12601,6 @@ sass@1.42.1:
 
 "sauce-connect@https://saucelabs.com/downloads/sc-4.6.2-linux.tar.gz":
   version "0.0.0"
-  uid "7b7f35433af9c3380758e048894d7b9aecf3754e"
   resolved "https://saucelabs.com/downloads/sc-4.6.2-linux.tar.gz#7b7f35433af9c3380758e048894d7b9aecf3754e"
 
 saucelabs@^1.5.0:
@@ -15017,20 +15015,20 @@ xmlbuilder@~11.0.0:
   resolved "https://registry.yarnpkg.com/xmlbuilder/-/xmlbuilder-11.0.1.tgz#be9bae1c8a046e76b31127726347d0ad7002beb3"
   integrity sha512-fDlsI/kFEx7gLvbecc0/ohLG50fugQp8ryHzMTuW9vSa1GJ0XYWKnhsUx7oie3G98+r56aTQIUB4kht42R3JvA==
 
-xmldom@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.3.0.tgz#e625457f4300b5df9c2e1ecb776147ece47f3e5a"
-  integrity sha512-z9s6k3wxE+aZHgXYxSTpGDo7BYOUfJsIRyoZiX6HTjwpwfS2wpQBQKa2fD+ShLyPkqDYo5ud7KitmLZ2Cd6r0g==
-
 xmldom@^0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.5.0.tgz#193cb96b84aa3486127ea6272c4596354cb4962e"
   integrity sha512-Foaj5FXVzgn7xFzsKeNIde9g6aFBxTPi37iwsno8QvApmtg7KYrr+OPyRHcJF7dud2a5nGRBXK3n0dL62Gf7PA==
 
-xpath@^0.0.27:
-  version "0.0.27"
-  resolved "https://registry.yarnpkg.com/xpath/-/xpath-0.0.27.tgz#dd3421fbdcc5646ac32c48531b4d7e9d0c2cfa92"
-  integrity sha512-fg03WRxtkCV6ohClePNAECYsmpKKTv5L8y/X3Dn1hQrec3POx2jHZ/0P2qQ6HvsrU1BmeqXcof3NGGueG6LxwQ==
+xmldom@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.6.0.tgz#43a96ecb8beece991cef382c08397d82d4d0c46f"
+  integrity sha512-iAcin401y58LckRZ0TkI4k0VSM1Qg0KGSc3i8rU+xrxe19A/BN1zHyVSJY7uoutVlaTSzYyk/v5AmkewAP7jtg==
+
+xpath@^0.0.32:
+  version "0.0.32"
+  resolved "https://registry.yarnpkg.com/xpath/-/xpath-0.0.32.tgz#1b73d3351af736e17ec078d6da4b8175405c48af"
+  integrity sha512-rxMJhSIoiO8vXcWvSifKqhvV96GjiD5wYb8/QHdoRyQvraTpp4IEv944nhGausZZ3u7dhQXteZuZbaqfpB7uYw==
 
 xregexp@2.0.0:
   version "2.0.0"

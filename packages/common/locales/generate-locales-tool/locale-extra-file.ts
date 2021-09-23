@@ -36,7 +36,7 @@ export function generateDayPeriodsSupplementalString(locale: string, localeData:
     const keys = Object.keys(dayPeriods.format.narrow);
 
     if (keys.length !== Object.keys(dayPeriodRules).length) {
-      throw new Error(`Error: locale ${locale} has not the correct number of day period rules`);
+      throw new Error(`Error: locale ${locale} has an incorrect number of day period rules`);
     }
 
     const dayPeriodsFormat = removeDuplicates([
