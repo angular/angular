@@ -1,3 +1,27 @@
+<a name="12.2.7"></a>
+# 12.2.7 "ceramic-cup" (2021-09-23)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2ed15d806](https://github.com/angular/components/commit/2ed15d806436db44e6c461aa38972e7462251450) | fix | **overlay:** avoid unnecessary timeouts when disposing of overlay ([#23474](https://github.com/angular/components/pull/23474)) |
+| [92140d288](https://github.com/angular/components/commit/92140d288640a409af8e5cf52cafa1b0eb8228b1) | fix | **layout:** breakpoint observer not firing callback on chrome in specific cases ([#23571](https://github.com/angular/components/pull/23571)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [01d8e8988](https://github.com/angular/components/commit/01d8e89887163f7d7b3f7fd672b1d8d93c2f28d4) | fix | **core:** avoid running sanity checks on some test environments ([#23374](https://github.com/angular/components/pull/23374)) |
+| [aad556928](https://github.com/angular/components/commit/aad55692864aa0417b23e8d111a20a0c70a2305d) | fix | **select:** error if selected value is accessed too early ([#23378](https://github.com/angular/components/pull/23378)) |
+| [d256219c1](https://github.com/angular/components/commit/d256219c12c7cb196aad5d612a96639f8474f608) | fix | **tabs:** picking up mat-tab-label from child tabs ([#23560](https://github.com/angular/components/pull/23560)) |
+| [525bf7dcf](https://github.com/angular/components/commit/525bf7dcf9588671599f1708c4f69260e4261eae) | fix | **list:** fix action-list focus state for high contrast firefox ([#23584](https://github.com/angular/components/pull/23584)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a9c2da11e](https://github.com/angular/components/commit/a9c2da11e28da5f11ebcf5a94de13553615e4946) | fix | **mdc-menu:** use primary text color for menu icons ([#23608](https://github.com/angular/components/pull/23608)) |
+| [201220f65](https://github.com/angular/components/commit/201220f659e3ef99d541ab41db867f30f957c507) | fix | **mdc-snack-bar:** add harness support for getting label and actions ([#23585](https://github.com/angular/components/pull/23585)) |
+| [82fd042ff](https://github.com/angular/components/commit/82fd042ffe3589808ad905dd97dda35b6eaf50ca) | fix | **mdc-slider:** append class to indicate short value indicator text ([#23566](https://github.com/angular/components/pull/23566)) |
+## Special Thanks
+Benjamin Kindle, Jeremy Elbourn, Kristiyan Kostadinov, Marco Marche, Miles Malerba, Wagner Maciel and Zach Arend
+
+
 <a name="13.0.0-next.5"></a>
 # 13.0.0-next.5 "fuzzy-puppy" (2021-09-15)
 ## Breaking Changes
