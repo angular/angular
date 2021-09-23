@@ -467,7 +467,7 @@ export class Scroll {
  * * [ResolveStart](api/router/ResolveStart): When the router begins the *resolve*
  * phase of routing.
  * * [ResolveEnd](api/router/ResolveEnd): When the router finishes the *resolve*
- * phase of routing successfuly.
+ * phase of routing successfully.
  * * [ChildActivationEnd](api/router/ChildActivationEnd): When the router finishes
  * activating a route's children.
  * * [ActivationEnd](api/router/ActivationEnd): When the router finishes activating a route.
