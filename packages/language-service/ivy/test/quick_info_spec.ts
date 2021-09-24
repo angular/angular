@@ -9,7 +9,7 @@
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
 import * as ts from 'typescript/lib/tsserverlibrary';
-import {LanguageServiceTestEnv, Project} from '../testing';
+import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv, Project} from '../testing';
 
 function quickInfoSkeleton(): {[fileName: string]: string} {
   return {
@@ -441,6 +441,25 @@ describe('quick info', () => {
           expectedSpanText: 'setTitle',
           expectedDisplayString: '(method) AppCmp.setTitle(newTitle: string): void'
         });
+      });
+
+      it('should work for safe method calls', () => {
+        const files = {
+          'app.ts': `import {Component} from '@angular/core';
+            @Component({template: '<div (click)="something?.myFunc()"></div>'})
+            export class AppCmp {
+              something!: {
+                /** Documentation for myFunc. */
+                myFunc(): void
+              };
+            }`,
+        };
+        const project = createModuleAndProjectWithDeclarations(env, 'test_project', files);
+        const appFile = project.openFile('app.ts');
+        appFile.moveCursorToText('something?.myF¦unc()');
+        const info = appFile.getQuickInfoAtPosition()!;
+        expect(toText(info.displayParts)).toEqual('(method) myFunc(): void');
+        expect(toText(info.documentation)).toEqual('Documentation for myFunc.');
       });
 
       it('should work for accessed properties in writes', () => {

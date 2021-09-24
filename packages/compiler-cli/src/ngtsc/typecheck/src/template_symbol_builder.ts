@@ -499,8 +499,6 @@ export class SymbolBuilder {
     // AST so there is no way to retrieve a `Symbol` for just the `name` via a specific node.
     if (expression instanceof PropertyWrite) {
       withSpan = expression.nameSpan;
-    } else if (expression instanceof Call && expression.receiver instanceof PropertyRead) {
-      withSpan = expression.receiver.nameSpan;
     }
 
     let node: ts.Node|null = null;
@@ -530,12 +528,8 @@ export class SymbolBuilder {
     // - If our expression is a pipe binding ("a | test:b:c"), we want the Symbol for the
     // `transform` on the pipe.
     // - Otherwise, we retrieve the symbol for the node itself with no special considerations
-    if ((expression instanceof SafePropertyRead ||
-         (expression instanceof Call && expression.receiver instanceof SafePropertyRead)) &&
-        ts.isConditionalExpression(node)) {
-      const whenTrueSymbol = (expression instanceof Call && ts.isCallExpression(node.whenTrue)) ?
-          this.getSymbolOfTsNode(node.whenTrue.expression) :
-          this.getSymbolOfTsNode(node.whenTrue);
+    if (expression instanceof SafePropertyRead && ts.isConditionalExpression(node)) {
+      const whenTrueSymbol = this.getSymbolOfTsNode(node.whenTrue);
       if (whenTrueSymbol === null) {
         return null;
       }
