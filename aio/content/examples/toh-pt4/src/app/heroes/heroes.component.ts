@@ -24,7 +24,7 @@ export class HeroesComponent implements OnInit {
   constructor(private heroService: HeroService, private messageService: MessageService) { }
 
   // #docregion ng-on-init
-  ngOnInit() {
+  ngOnInit(): void {
     this.getHeroes();
   }
   // #enddocregion ng-on-init
