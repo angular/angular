@@ -96,16 +96,15 @@ See [Angular CLI Builders](guide/cli-builder).
 ### Default Architect builders and targets
 
 Angular defines default builders for use with specific CLI commands, or with the general `ng run` command.
-The JSON schemas that define the options and defaults for each of these default builders are collected in the [`@angular-devkit/build-angular`](https://github.com/angular/angular-cli/blob/master/packages/angular/cli/lib/config/schema.json) package.
+The JSON schemas that define the options and defaults for each of these default builders are collected in the [`@angular-devkit/build-angular`](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/build_angular/builders.json) package.
 The schemas configure options for the following builders.
 
-*   app-shell
-*   browser
-*   dev-server
-*   extract-i18n
-*   karma
-*   server
-*   tslint
+* [app-shell](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/build_angular/src/builders/app-shell/schema.json)
+* [browser](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/build_angular/src/builders/browser/schema.json)
+* [dev-server](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/build_angular/src/builders/dev-server/schema.json)
+* [extract-i18n](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/build_angular/src/builders/extract-i18n/schema.json)
+* [karma](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/build_angular/src/builders/karma/schema.json)
+* [server](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/build_angular/src/builders/server/schema.json)
 
 ### Configuring builder targets
 
