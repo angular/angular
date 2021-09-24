@@ -36,10 +36,10 @@ export function matchObjectShape<T>(
     }
     return true;
   };
-  matcher.jasmineToString = function() {
+  matcher.jasmineToString = function(pp: typeof jasmine.pp) {
     let errors: string[] = [];
     if (!_actual || typeof _actual !== 'object') {
-      return `Expecting ${jasmine.pp(expect)} got ${jasmine.pp(_actual)}`;
+      return `Expecting ${pp(expect)} got ${pp(_actual)}`;
     }
     for (const key in expected) {
       if (expected.hasOwnProperty(key) && !jasmine.matchersUtil.equals(_actual[key], expected[key]))
