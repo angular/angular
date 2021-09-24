@@ -167,24 +167,29 @@ import * as i0 from "@angular/core";
 class SomeDep {
 }
 class MyAlternateService {
+    constructor(dep) { }
 }
 export class MyService {
 }
 MyService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyService, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
-MyService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyService, providedIn: 'root', useFactory: () => new MyAlternateService(), deps: [{ token: SomeDep }] });
+MyService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyService, providedIn: 'root', useFactory: (dep) => new MyAlternateService(dep), deps: [{ token: SomeDep }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyService, decorators: [{
             type: Injectable,
-            args: [{ providedIn: 'root', useFactory: () => new MyAlternateService(), deps: [SomeDep] }]
+            args: [{
+                    providedIn: 'root',
+                    useFactory: (dep) => new MyAlternateService(dep),
+                    deps: [SomeDep]
+                }]
         }] });
 export class MyOptionalService {
 }
 MyOptionalService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyOptionalService, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
-MyOptionalService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyOptionalService, providedIn: 'root', useFactory: () => new MyAlternateService(), deps: [{ token: SomeDep, optional: true }] });
+MyOptionalService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyOptionalService, providedIn: 'root', useFactory: (dep) => new MyAlternateService(dep), deps: [{ token: SomeDep, optional: true }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyOptionalService, decorators: [{
             type: Injectable,
             args: [{
                     providedIn: 'root',
-                    useFactory: () => new MyAlternateService(),
+                    useFactory: (dep) => new MyAlternateService(dep),
                     deps: [[new Optional(), SomeDep]]
                 }]
         }] });

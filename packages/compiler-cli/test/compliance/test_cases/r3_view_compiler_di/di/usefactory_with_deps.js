@@ -5,7 +5,7 @@ MyService.ɵprov = /*@__PURE__*/ $r3$.ɵɵdefineInjectable({
     if (t) {
       r = new t();
     } else {
-      r = (() => new MyAlternateService())($r3$.ɵɵinject(SomeDep));
+      r = ((dep) => new MyAlternateService(dep))($r3$.ɵɵinject(SomeDep));
     }
     return r;
   },
@@ -19,7 +19,7 @@ MyOptionalService.ɵprov = /*@__PURE__*/ $r3$.ɵɵdefineInjectable({
     if (t) {
       r = new t();
     } else {
-      r = (() => new MyAlternateService())($r3$.ɵɵinject(SomeDep, 8));
+      r = ((dep) => new MyAlternateService(dep))($r3$.ɵɵinject(SomeDep, 8));
     }
     return r;
   },
