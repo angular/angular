@@ -158,8 +158,13 @@
         headline-5: map.get($config, headline),
         headline-6: map.get($config, title),
         subtitle-1: map.get($config, subheading-2),
-        subtitle-2: map.get($config, subheading-1),
-        body-1: map.get($config, body-2),
+
+        // These mappings are odd, but body-2 in the 2014 system actually looks closer to subtitle-2
+        // in the 2018 system, and subeading-1 in the 2014 system looks more like body-1 in the 2018
+        // system.
+        subtitle-2: map.get($config, body-2),
+        body-1: map.get($config, subheading-1),
+
         body-2: map.get($config, body-1),
         button: map.get($config, button),
         caption: map.get($config, caption),
