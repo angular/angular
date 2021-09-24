@@ -14,6 +14,7 @@ def _extract_typings_rule_impl(ctx):
 
     return [DefaultInfo(files = depset(transitive = transitive_depsets))]
 
+# TODO: Move into shared dev-infra package.
 extract_typings = rule(
     implementation = _extract_typings_rule_impl,
     doc = """Rule that extracts all transitive typings of dependencies""",

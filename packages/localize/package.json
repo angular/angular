@@ -3,9 +3,15 @@
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - library for localizing messages",
   "bin": {
-    "localize-translate": "./src/tools/src/translate/main.js",
-    "localize-extract": "./src/tools/src/extract/main.js",
-    "localize-migrate": "./src/tools/src/migrate/main.js"
+    "localize-translate": "./tools/bundles/src/translate/cli.js",
+    "localize-extract": "./tools/bundles/src/extract/cli.js",
+    "localize-migrate": "./tools/bundles/src/migrate/cli.js"
+  },
+  "exports": {
+    "./tools": {
+      "types": "./tools/index.d.ts",
+      "default": "./tools/bundles/index.js"
+    }
   },
   "author": "angular",
   "license": "MIT",
@@ -28,7 +34,8 @@
     "**/init.mjs"
   ],
   "dependencies": {
-    "@babel/core": "7.8.3",
+    "@babel/core": "7.8.6",
+    "@babel/types": "7.8.6",
     "glob": "7.2.0",
     "yargs": "^17.0.0"
   },

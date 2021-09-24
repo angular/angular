@@ -10,7 +10,7 @@ import {loadTestDirectory} from '@angular/compiler-cli/src/ngtsc/testing';
 import {resolve as realResolve} from 'path';
 
 import {Diagnostics} from '../../../src/diagnostics';
-import {translateFiles} from '../../../src/translate/main';
+import {translateFiles} from '../../../src/translate/index';
 import {getOutputPathFn} from '../../../src/translate/output_path';
 import {runInNativeFileSystem} from '../../helpers';
 
