@@ -10,7 +10,7 @@ import {InvalidFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/src
 import {MockLogger} from '@angular/compiler-cli/src/ngtsc/logging/testing';
 import {loadTestDirectory} from '@angular/compiler-cli/src/ngtsc/testing';
 
-import {extractTranslations} from '../../../src/extract/main';
+import {extractTranslations} from '../../../src/extract/index';
 import {FormatOptions} from '../../../src/extract/translation_files/format_options';
 import {runInNativeFileSystem} from '../../helpers';
 import {toAttributes} from '../translation_files/utils';
@@ -398,7 +398,7 @@ runInNativeFileSystem(() => {
              `        <context-group purpose="location">`,
              // These source file paths are due to how Bazel TypeScript compilation source-maps
              // work
-             `          <context context-type="sourcefile">../packages/localize/src/tools/test/extract/integration/test_files/src/a.ts</context>`,
+             `          <context context-type="sourcefile">../packages/localize/tools/test/extract/integration/test_files/src/a.ts</context>`,
              `          <context context-type="linenumber">3,${
                  target === 'es2015' ? 7 : 5}</context>`,
              `        </context-group>`,
@@ -406,7 +406,7 @@ runInNativeFileSystem(() => {
              `      <trans-unit id="7829869508202074508" datatype="html">`,
              `        <source>Message in <x id="b-file" equiv-text="file"/>!</source>`,
              `        <context-group purpose="location">`,
-             `          <context context-type="sourcefile">../packages/localize/src/tools/test/extract/integration/test_files/src/b.ts</context>`,
+             `          <context context-type="sourcefile">../packages/localize/tools/test/extract/integration/test_files/src/b.ts</context>`,
              `          <context context-type="linenumber">3</context>`,
              `        </context-group>`,
              `      </trans-unit>`,
