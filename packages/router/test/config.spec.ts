@@ -76,7 +76,7 @@ describe('config', () => {
 
     it('should throw when redirectTo and loadChildren are used together', () => {
       expect(() => {
-        validateConfig([{path: 'a', redirectTo: 'b', loadChildren: 'value'}]);
+        validateConfig([{path: 'a', redirectTo: 'b', loadChildren: jasmine.createSpy('value')}]);
       })
           .toThrowError(
               `Invalid configuration of route 'a': redirectTo and loadChildren cannot be used together`);
@@ -84,7 +84,7 @@ describe('config', () => {
 
     it('should throw when children and loadChildren are used together', () => {
       expect(() => {
-        validateConfig([{path: 'a', children: [], loadChildren: 'value'}]);
+        validateConfig([{path: 'a', children: [], loadChildren: jasmine.createSpy('value')}]);
       })
           .toThrowError(
               `Invalid configuration of route 'a': children and loadChildren cannot be used together`);
@@ -168,7 +168,7 @@ describe('config', () => {
         validateConfig([{path: 'a', outlet: 'aux', children: []}]);
       }).not.toThrow();
       expect(() => {
-        validateConfig([{path: 'a', outlet: 'aux', loadChildren: 'child'}]);
+        validateConfig([{path: 'a', outlet: 'aux', loadChildren: jasmine.createSpy('child')}]);
       }).not.toThrow();
     });
   });
