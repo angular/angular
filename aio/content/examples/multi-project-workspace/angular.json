@@ -141,8 +141,7 @@
               "outputPath": "dist/my-second-app",
               "index": "projects/my-second-app/src/index.html",
               "main": "projects/my-second-app/src/main.ts",
-              "polyfills": "projects/my-second-app/src/polyfills.ts",
-              "tsConfig": "projects/my-second-app/tsconfig.app.json",
+              "tsConfig": "tsconfig.json",
               "aot": true,
               "assets": [
                 "projects/my-second-app/src/favicon.ico",
@@ -221,11 +220,7 @@
           "lint": {
             "builder": "@angular-devkit/build-angular:tslint",
             "options": {
-              "tsConfig": [
-                "projects/my-second-app/tsconfig.app.json",
-                "projects/my-second-app/tsconfig.spec.json",
-                "projects/my-second-app/e2e/tsconfig.json"
-              ],
+              "tsConfig": [],
               "exclude": [
                 "**/node_modules/**"
               ]
