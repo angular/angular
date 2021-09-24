@@ -5106,6 +5106,34 @@ describe('Integration', () => {
                      `RouterModule.forRoot() called twice. Lazy loaded modules should use RouterModule.forChild() instead.`);
            })));
 
+    it('throws a descriptive error when string-based loadChildren is used', fakeAsync(() => {
+         // Although the string-based `loadChildren` API (`DeprecatedLoadChildren`) is still
+         // available, the runtime no longer bundles a loader that is capable of handling it by
+         // default. This test verifies that a descriptive error is reported.
+         @NgModule({
+           imports: [RouterModule.forRoot([{
+             path: 'lazy/loaded',
+             loadChildren: 'module',
+           }])],
+         })
+         class LoadedModule {
+         }
+
+         TestBed.configureTestingModule({
+           imports: [LoadedModule],
+         });
+
+         const router = TestBed.inject(Router);
+         const fixture = createRoot(router, RootCmp);
+
+         let recordedError: any = null;
+         router.navigateByUrl('/lazy/loaded').catch(err => recordedError = err);
+         advance(fixture);
+         expect(recordedError.message)
+             .toEqual(
+                 'The usage of `loadChildren` with a module path string is no longer available. Find more at https://v12.angular.io/api/router/LoadChildrenCallback to learn about the new approach.');
+       }));
+
     it('should combine routes from multiple modules into a single configuration',
        fakeAsync(inject(
            [Router, Location, NgModuleFactoryLoader],

@@ -54,7 +54,6 @@ v12 - v15
 | `@angular/core`         | [`defineInjectable`](#core)                                                                   | <!--v8--> v11         |
 | `@angular/core`         | [`entryComponents`](api/core/NgModule#entryComponents)                                        | <!--v9--> v11         |
 | `@angular/core`         | [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS)                       | <!--v9--> v11         |
-| `@angular/router`       | [`loadChildren` string syntax](#loadChildren)                                                 | <!--v9--> v11         |
 | `@angular/core/testing` | [`TestBed.get`](#testing)                                                                     | <!--v9--> v12         |
 | `@angular/core/testing` | [`async`](#testing)                                                                           | <!--v9--> v12         |
 | `@angular/forms`        | [`FormBuilder.group` legacy options parameter](api/forms/FormBuilder#group)                   | <!--v11--> v14        |
@@ -623,6 +622,14 @@ For more information about the npm package format, see the [Angular Package Form
 ### Style Sanitization for `[style]` and `[style.prop]` bindings
 
 Angular used to sanitize `[style]` and `[style.prop]` bindings to prevent malicious code from being inserted through `javascript:` expressions in CSS `url()` entries. However, most modern browsers no longer support the usage of these expressions, so sanitization was only maintained for the sake of IE 6 and 7. Given that Angular does not support either IE 6 or 7 and sanitization has a performance cost, we will no longer sanitize style bindings as of version 10 of Angular.
+
+### `loadChildren` string syntax in `@angular/router`
+
+It is no longer possible to use the `loadChildren` string syntax to configure lazy routes.
+The string syntax has been replaced with dynamic import statements.
+Find more information about the replacement [in the `LoadChildrenCallback` documentation](api/router/LoadChildrenCallback).
+
+The supporting classes `SystemJsNgModuleLoader` and `SystemJsNgModuleLoaderConfig` classes were removed from `@angular/core`.
 
 <!-- links -->
 

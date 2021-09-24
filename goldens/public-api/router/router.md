@@ -660,14 +660,14 @@ export class RouterPreloader implements OnDestroy {
 }
 
 // @public
-export class RouterState extends ɵangular_packages_router_router_m<ActivatedRoute> {
+export class RouterState extends ɵangular_packages_router_router_n<ActivatedRoute> {
     snapshot: RouterStateSnapshot;
     // (undocumented)
     toString(): string;
 }
 
 // @public
-export class RouterStateSnapshot extends ɵangular_packages_router_router_m<ActivatedRouteSnapshot> {
+export class RouterStateSnapshot extends ɵangular_packages_router_router_n<ActivatedRouteSnapshot> {
     // (undocumented)
     toString(): string;
     url: string;

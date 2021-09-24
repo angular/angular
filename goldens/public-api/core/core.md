@@ -1213,19 +1213,6 @@ export interface StaticClassSansProvider {
 // @public
 export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvider | ConstructorProvider | FactoryProvider | any[];
 
-// @public @deprecated
-export class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
-    constructor(_compiler: Compiler, config?: SystemJsNgModuleLoaderConfig);
-    // (undocumented)
-    load(path: string): Promise<NgModuleFactory<any>>;
-}
-
-// @public @deprecated
-export abstract class SystemJsNgModuleLoaderConfig {
-    factoryPathPrefix: string;
-    factoryPathSuffix: string;
-}
-
 // @public
 export abstract class TemplateRef<C> {
     abstract createEmbeddedView(context: C): EmbeddedViewRef<C>;

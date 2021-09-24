@@ -7,7 +7,7 @@
  */
 
 import {APP_BASE_HREF, HashLocationStrategy, Location, LOCATION_INITIALIZED, LocationStrategy, PathLocationStrategy, PlatformLocation, ViewportScroller} from '@angular/common';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, Inject, Injectable, InjectionToken, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, NgProbeToken, OnDestroy, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, Inject, Injectable, InjectionToken, Injector, ModuleWithProviders, NgModule, NgModuleFactory, NgModuleFactoryLoader, NgProbeToken, OnDestroy, Optional, Provider, SkipSelf} from '@angular/core';
 import {of, Subject} from 'rxjs';
 
 import {EmptyOutletComponent} from './components/empty_outlet';
@@ -26,6 +26,18 @@ import {ActivatedRoute} from './router_state';
 import {UrlHandlingStrategy} from './url_handling_strategy';
 import {DefaultUrlSerializer, UrlSerializer, UrlTree} from './url_tree';
 import {flatten} from './utils/collection';
+
+@Injectable()
+export class UnavailableNgModuleFactoryLoader implements NgModuleFactoryLoader {
+  load(path: string): Promise<NgModuleFactory<any>> {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+      return Promise.reject(new Error(
+          'The usage of `loadChildren` with a module path string is no longer available. Find more at https://v12.angular.io/api/router/LoadChildrenCallback to learn about the new approach.'));
+    } else {
+      return Promise.reject(new Error('string based `loadChildren` is unavailable'));
+    }
+  }
+}
 
 /**
  * The directives defined in the `RouterModule`.
@@ -59,7 +71,7 @@ export const ROUTER_PROVIDERS: Provider[] = [
   },
   ChildrenOutletContexts,
   {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
-  {provide: NgModuleFactoryLoader, useClass: SystemJsNgModuleLoader},
+  {provide: NgModuleFactoryLoader, useClass: UnavailableNgModuleFactoryLoader},
   RouterPreloader,
   NoPreloading,
   PreloadAllModules,
