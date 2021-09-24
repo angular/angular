@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, Compiler, Component, ComponentFactoryResolver, CUSTOM_ELEMENTS_SCHEMA, Directive, forwardRef, getModuleFactory, HostBinding, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, Self, Type, ɵivyEnabled as ivyEnabled, ɵɵdefineNgModule as defineNgModule} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, Compiler, Component, ComponentFactoryResolver, CUSTOM_ELEMENTS_SCHEMA, Directive, forwardRef, getModuleFactory, getNgModuleById, HostBinding, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, Self, Type, ɵivyEnabled as ivyEnabled, ɵɵdefineNgModule as defineNgModule} from '@angular/core';
 import {ɵɵdefineInjectable} from '@angular/core/src/di/interface/defs';
+import {NgModuleType} from '@angular/core/src/render3';
 import {getNgModuleDef} from '@angular/core/src/render3/definition';
 import {NgModuleData} from '@angular/core/src/view/types';
 import {tokenKey} from '@angular/core/src/view/util';
@@ -329,6 +330,17 @@ function declareTests(config?: {useJit: boolean}) {
         class SomeModule {
         }
         createModule(SomeModule);
+
+        if (ivyEnabled) {
+          const moduleType = getNgModuleById(token);
+          expect(moduleType).toBeTruthy();
+          expect(moduleType).toBe(SomeModule as NgModuleType);
+        } else {
+          // ViewEngine doesn't support this call, expect it to throw.
+          expect(() => getNgModuleById(token))
+              .toThrowError(`ViewEngine doesn't support retrieving NgModule classes by id`);
+        }
+
         const factory = getModuleFactory(token);
         expect(factory).toBeTruthy();
         expect(factory.moduleType).toBe(SomeModule);
@@ -377,8 +389,14 @@ function declareTests(config?: {useJit: boolean}) {
                   });
                 }
 
+                // Verify that we can retrieve NgModule factory by id.
                 createModuleFactory(ChildModule);
                 expect(getModuleFactory('child')).toBeAnInstanceOf(NgModuleFactory);
+
+                // Verify that we can also retrieve NgModule class by id.
+                const moduleType = getNgModuleById('child');
+                expect(moduleType).toBeTruthy();
+                expect(moduleType).toBe(ChildModule as NgModuleType);
               });
     });
 

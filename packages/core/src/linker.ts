@@ -12,7 +12,7 @@ export {ComponentFactory, ComponentRef} from './linker/component_factory';
 export {ComponentFactoryResolver} from './linker/component_factory_resolver';
 export {ElementRef} from './linker/element_ref';
 export {NgModuleFactory, NgModuleRef} from './linker/ng_module_factory';
-export {getModuleFactory} from './linker/ng_module_factory_loader';
+export {getModuleFactory, getNgModuleById} from './linker/ng_module_factory_loader';
 export {QueryList} from './linker/query_list';
 export {TemplateRef} from './linker/template_ref';
 export {ViewContainerRef} from './linker/view_container_ref';

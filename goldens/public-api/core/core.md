@@ -496,8 +496,11 @@ export interface ForwardRefFn {
 // @public (undocumented)
 export const getDebugNode: (nativeNode: any) => DebugNode | null;
 
-// @public
+// @public @deprecated
 export const getModuleFactory: (id: string) => NgModuleFactory<any>;
+
+// @public
+export const getNgModuleById: <T>(id: string) => Type<T>;
 
 // @public
 export function getPlatform(): PlatformRef | null;

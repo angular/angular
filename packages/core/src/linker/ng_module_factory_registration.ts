@@ -68,6 +68,7 @@ export function clearModulesForTest(): void {
   modules.clear();
 }
 
-export function getRegisteredNgModuleType(id: string) {
-  return modules.get(id) || autoRegisterModuleById[id];
+export function getRegisteredNgModuleType<T extends NgModuleFactory<unknown>|NgModuleType>(
+    id: string): T|undefined {
+  return (modules.get(id) || autoRegisterModuleById[id]) as T | undefined;
 }
