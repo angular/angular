@@ -5,6 +5,7 @@
     "!**/*.js",
     "!**/*.[1,2].*"
   ],
+  "file": "projects/my-first-app/src/app/app.component.html",
   "tags": [
     [
       "multi",

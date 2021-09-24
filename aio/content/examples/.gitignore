@@ -56,6 +56,7 @@ dist/
 !karma-test-shim.*.js
 !copy-dist-files.js
 !i18n/angular.json
+!multi-project-workspace/angular.json
 
 # AngularJS files
 !**/*.ajs.js
