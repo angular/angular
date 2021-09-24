@@ -113,12 +113,14 @@ export interface TypedEvent {
   type: string;
 }
 
-interface OperationCompletedEvent {
+type OperationCompletedEvent = {
+  type: 'OPERATION_COMPLETED'; nonce: number; result: boolean;
+}|{
   type: 'OPERATION_COMPLETED';
   nonce: number;
-  result: boolean;
-  error?: string;
-}
+  result?: undefined;
+  error: string;
+};
 
 
 function errorObservable(message: string): Observable<any> {
