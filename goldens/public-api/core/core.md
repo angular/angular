@@ -813,12 +813,6 @@ export abstract class NgModuleFactory<T> {
     abstract get moduleType(): Type<T>;
 }
 
-// @public @deprecated
-export abstract class NgModuleFactoryLoader {
-    // (undocumented)
-    abstract load(path: string): Promise<NgModuleFactory<any>>;
-}
-
 // @public
 export abstract class NgModuleRef<T> {
     abstract get componentFactoryResolver(): ComponentFactoryResolver;
@@ -1212,19 +1206,6 @@ export interface StaticClassSansProvider {
 
 // @public
 export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvider | ConstructorProvider | FactoryProvider | any[];
-
-// @public @deprecated
-export class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
-    constructor(_compiler: Compiler, config?: SystemJsNgModuleLoaderConfig);
-    // (undocumented)
-    load(path: string): Promise<NgModuleFactory<any>>;
-}
-
-// @public @deprecated
-export abstract class SystemJsNgModuleLoaderConfig {
-    factoryPathPrefix: string;
-    factoryPathSuffix: string;
-}
 
 // @public
 export abstract class TemplateRef<C> {

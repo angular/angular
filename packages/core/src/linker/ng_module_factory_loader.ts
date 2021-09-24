@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Injectable} from '../di';
 import {NgModuleType} from '../metadata/ng_module_def';
 import {NgModuleFactory as R3NgModuleFactory} from '../render3/ng_module_ref';
 
@@ -15,10 +16,6 @@ import {getRegisteredNgModuleType} from './ng_module_factory_registration';
 
 /**
  * Used to load ng module factories.
- *
- * @publicApi
- * @deprecated the `string` form of `loadChildren` is deprecated, and `NgModuleFactoryLoader` is
- * part of its implementation. See `LoadChildren` for more details.
  */
 export abstract class NgModuleFactoryLoader {
   abstract load(path: string): Promise<NgModuleFactory<any>>;
