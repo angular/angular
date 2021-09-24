@@ -17,6 +17,9 @@ export const ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not support
  * @see {@link guide/service-worker-communications Service worker communication guide}
  *
  * @deprecated
+ * This event was only emitted by the deprecated {@link SwUpdate#available}.
+ * Use the {@link VersionEvent} instead which is emitted by {@link SwUpdate#versionUpdates}.
+ * See {@link SwUpdate#available} docs for an example.
  *
  * @publicApi
  */
@@ -44,7 +47,8 @@ export interface UpdateActivatedEvent {
 }
 
 /**
- * An event emitted when a new version of the app has been detected but downloaded yet.
+ * An event emitted when the service worker has detected a new version of the app on the server and
+ * is about to start downloading it.
  *
  * @see {@link guide/service-worker-communications Service worker communication guide}
  *
@@ -57,6 +61,7 @@ export interface VersionDetectedEvent {
 
 /**
  * An event emitted when the installation of a new version failed.
+ * It may be used for logging/monitoring purposes.
  *
  * @see {@link guide/service-worker-communications Service worker communication guide}
  *
