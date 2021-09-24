@@ -863,9 +863,9 @@ export class Driver implements Debuggable, UpdateSource {
       }
 
       await this.sync();
-      await this.notifyClientsAboutVersionReady(newVersion);
+      await this.notifyClientsAboutVersionReady(manifest, hash);
     } catch (e) {
-      await this.notifyClientsAboutVersionInstallationFailed(manifest, hash);
+      await this.notifyClientsAboutVersionInstallationFailed(manifest, hash, e);
       throw e;
     }
   }
@@ -1065,7 +1065,7 @@ export class Driver implements Debuggable, UpdateSource {
     }));
   }
 
-  async notifyClientsAboutVersionInstallationFailed(manifest: Manifest, hash: string):
+  async notifyClientsAboutVersionInstallationFailed(manifest: Manifest, hash: string, error: any):
       Promise<void> {
     await this.initialized;
 
@@ -1075,7 +1075,8 @@ export class Driver implements Debuggable, UpdateSource {
       // Send a notice.
       client.postMessage({
         type: 'VERSION_INSTALLATION_FAILED',
-        version: this.mergeHashWithAppData(manifest, hash)
+        version: this.mergeHashWithAppData(manifest, hash),
+        error: errorToString(error),
       });
     }));
   }
@@ -1099,7 +1100,7 @@ export class Driver implements Debuggable, UpdateSource {
     }));
   }
 
-  async notifyClientsAboutVersionReady(next: AppVersion): Promise<void> {
+  async notifyClientsAboutVersionReady(manifest: Manifest, hash: string): Promise<void> {
     await this.initialized;
 
     const clients = await this.scope.clients.matchAll();
@@ -1123,7 +1124,7 @@ export class Driver implements Debuggable, UpdateSource {
       const notice = {
         type: 'VERSION_READY',
         currentVersion: this.mergeHashWithAppData(current.manifest, version),
-        latestVersion: this.mergeHashWithAppData(next.manifest, this.latestHash!),
+        latestVersion: this.mergeHashWithAppData(manifest, hash),
       };
 
       client.postMessage(notice);
