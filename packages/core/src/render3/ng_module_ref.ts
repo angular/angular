@@ -23,6 +23,27 @@ import {getNgLocaleIdDef, getNgModuleDef} from './definition';
 import {setLocaleId} from './i18n/i18n_locale_id';
 import {maybeUnwrapFn} from './util/misc_utils';
 
+
+export function createNgModuleRef__PRE_R3__<T>(
+    ngModule: Type<T>, parentInjector?: Injector): NgModuleRef<T> {
+  throw new Error(`This API is Ivy-only and is not supported in ViewEngine`);
+}
+
+export function createNgModuleRef__POST_R3__<T>(
+    ngModule: Type<T>, parentInjector?: Injector): NgModuleRef<T> {
+  return new NgModuleRef<T>(ngModule, parentInjector ?? null);
+}
+
+/**
+ * Returns a new NgModuleRef instance based on the NgModule class and parent injector provided.
+ * @param ngModule NgModule class.
+ * @param parentInjector Optional injector instance to use as a parent for the module injector. If
+ *     not provided, `NullInjector` will be used instead.
+ * @publicApi
+ */
+export const createNgModuleRef: <T>(ngModule: Type<T>, parentInjector?: Injector) =>
+    viewEngine_NgModuleRef<T> = createNgModuleRef__PRE_R3__;
+
 export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements InternalNgModuleRef<T> {
   // tslint:disable-next-line:require-internal-with-underscore
   _bootstrapComponents: Type<any>[] = [];

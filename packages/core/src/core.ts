@@ -37,6 +37,7 @@ export * from './core_render3_private_export';
 export {SecurityContext} from './sanitization/security';
 export {Sanitizer} from './sanitization/sanitizer';
 export * from './codegen_private_exports';
+export {createNgModuleRef} from './render3/ng_module_ref';
 
 import {global} from './util/global';
 if (typeof ngDevMode !== 'undefined' && ngDevMode) {

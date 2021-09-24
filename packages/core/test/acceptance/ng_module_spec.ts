@@ -7,7 +7,8 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, Injectable, InjectionToken, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelement as element, ɵɵproperty as property} from '@angular/core';
+import {Component, createNgModuleRef, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, Injectable, InjectionToken, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelement as element, ɵɵproperty as property} from '@angular/core';
+import {ivyEnabled} from '@angular/core/src/ivy_switch';
 import {TestBed} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -629,6 +630,47 @@ describe('NgModule', () => {
             fixture.detectChanges();
           }).not.toThrow();
         });
+  });
+
+  describe('createNgModuleRef function', () => {
+    it('should create an NgModuleRef instance', () => {
+      const TOKEN_A = new InjectionToken('A');
+      const TOKEN_B = new InjectionToken('B');
+      @NgModule({
+        providers: [
+          {provide: TOKEN_A, useValue: 'TokenValueA'},
+        ]
+      })
+      class AppModule {
+      }
+
+      @NgModule({
+        providers: [
+          {provide: TOKEN_B, useValue: 'TokenValueB'},
+        ]
+      })
+      class ChildModule {
+      }
+
+      if (ivyEnabled) {
+        // Simple case, just passing NgModule class.
+        const ngModuleRef = createNgModuleRef(AppModule);
+        expect(ngModuleRef).toBeAnInstanceOf(NgModuleRef);
+        expect(ngModuleRef.injector.get(TOKEN_A)).toBe('TokenValueA');
+        expect(ngModuleRef.injector.get(TOKEN_B, null)).toBe(null);
+
+        // Both NgModule and parent Injector are present.
+        const ngModuleRef2 =
+            createNgModuleRef(ChildModule, ngModuleRef.injector /* parent injector */);
+        expect(ngModuleRef2).toBeAnInstanceOf(NgModuleRef);
+        expect(ngModuleRef2.injector.get(TOKEN_A)).toBe('TokenValueA');
+        expect(ngModuleRef2.injector.get(TOKEN_B)).toBe('TokenValueB');
+      } else {
+        // ViewEngine doesn't support this API, expect it to throw.
+        expect(() => createNgModuleRef(AppModule))
+            .toThrowError('This API is Ivy-only and is not supported in ViewEngine');
+      }
+    });
   });
 
   it('should be able to use DI through the NgModuleRef inside the module constructor', () => {
