@@ -234,6 +234,10 @@
           {$ property.shortDescription | marked | trim $}{% endif %}
           {$ (property.description or property.constructorParamDoc.description) | marked $}
 
+          {%- if property.deprecated !== undefined %}
+          {$ ('**Deprecated** ' + property.deprecated) | marked | trim $}
+          {%- endif %}
+
           {%- if property.see.length %}
           <p>See also:</p>
           <ul>
