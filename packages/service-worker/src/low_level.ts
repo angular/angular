@@ -113,13 +113,6 @@ export interface TypedEvent {
   type: string;
 }
 
-interface StatusEvent {
-  type: 'STATUS';
-  nonce: number;
-  status: boolean;
-  error?: string;
-}
-
 interface OperationCompletedEvent {
   type: 'OPERATION_COMPLETED';
   nonce: number;
@@ -201,17 +194,6 @@ export class NgswCommChannel {
 
   nextEventOfType<T extends TypedEvent>(type: T['type']): Observable<T> {
     return this.eventsOfType(type).pipe(take(1));
-  }
-
-  waitForStatus(nonce: number): Promise<void> {
-    return this.eventsOfType<StatusEvent>('STATUS')
-        .pipe(filter(event => event.nonce === nonce), take(1), map(event => {
-                if (event.status) {
-                  return undefined;
-                }
-                throw new Error(event.error!);
-              }))
-        .toPromise();
   }
 
   waitForOperationCompleted(nonce: number): Promise<boolean> {
