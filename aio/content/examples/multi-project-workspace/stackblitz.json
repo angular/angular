@@ -12,5 +12,6 @@
       "project",
       "workspace"
     ]
-  ]
+  ],
+  "devDependencies": ["@angular/compiler-cli", "typescript"]
 }

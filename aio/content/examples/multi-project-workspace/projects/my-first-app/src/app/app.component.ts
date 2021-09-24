@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { Service2Service } from 'projects/tools/src/lib/service2/service2.service';
+import { MyLibService } from 'projects/my-lib/src/public-api';
 
 @Component({
   selector: 'app-root',
@@ -8,11 +8,13 @@ import { Service2Service } from 'projects/tools/src/lib/service2/service2.servic
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+  title = 'my-first-app';
+
   constructor(
-    private readonly service2Service: Service2Service
+    private readonly myLibService: MyLibService
   ) {}
 
-  get title() {
-    return this.service2Service.message;
+  get name() {
+    return this.myLibService.name;
   }
 }
