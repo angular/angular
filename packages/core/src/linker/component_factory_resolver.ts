@@ -44,6 +44,9 @@ class _NullComponentFactoryResolver implements ComponentFactoryResolver {
  * @see <live-example name="dynamic-component-loader" noDownload></live-example>
 of the code in this cookbook
  * @publicApi
+ *
+ * @deprecated With Ivy, there is no need to resolve Component factories. No replacement is needed,
+it's possible to use Component Types directly.
  */
 export abstract class ComponentFactoryResolver {
   static NULL: ComponentFactoryResolver = (/* @__PURE__ */ new _NullComponentFactoryResolver());

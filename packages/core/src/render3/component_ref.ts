@@ -39,6 +39,10 @@ import {defaultScheduler} from './util/misc_utils';
 import {getTNode} from './util/view_utils';
 import {RootViewRef, ViewRef} from './view_ref';
 
+/**
+ * @deprecated With Ivy, there is no need to resolve Component factories. No replacement is
+needed, it's possible to use Component Types directly.
+ */
 export class ComponentFactoryResolver extends viewEngine_ComponentFactoryResolver {
   /**
    * @param ngModule The NgModuleRef to which all resolved factories are bound.

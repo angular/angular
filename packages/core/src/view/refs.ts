@@ -428,6 +428,10 @@ class NgModuleRef_ implements NgModuleData, InternalNgModuleRef<any> {
     return this.get(this._moduleType);
   }
 
+  /**
+   * @deprecated With Ivy, there is no need to resolve Component factories. No replacement is
+needed, it's possible to use Component Types directly.
+   */
   get componentFactoryResolver() {
     return this.get(ComponentFactoryResolver);
   }

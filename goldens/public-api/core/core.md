@@ -53,7 +53,7 @@ export class ApplicationInitStatus {
     readonly done = false;
     // (undocumented)
     readonly donePromise: Promise<any>;
-    }
+}
 
 // @public
 export class ApplicationModule {
@@ -70,7 +70,7 @@ export class ApplicationRef {
     readonly isStable: Observable<boolean>;
     tick(): void;
     get viewCount(): number;
-    }
+}
 
 // @public (undocumented)
 export function asNativeElements(debugEls: DebugElement[]): any;
@@ -190,7 +190,7 @@ export abstract class ComponentFactory<C> {
     abstract get selector(): string;
 }
 
-// @public
+// @public @deprecated
 export abstract class ComponentFactoryResolver {
     // (undocumented)
     static NULL: ComponentFactoryResolver;
@@ -361,7 +361,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
     readonly length: number;
     // (undocumented)
     onDestroy(): void;
-    }
+}
 
 // @public @deprecated (undocumented)
 export const defineInjectable: typeof ɵɵdefineInjectable;
@@ -819,6 +819,7 @@ export abstract class NgModuleFactoryLoader {
 
 // @public
 export abstract class NgModuleRef<T> {
+    // @deprecated
     abstract get componentFactoryResolver(): ComponentFactoryResolver;
     abstract destroy(): void;
     abstract get injector(): Injector;
@@ -1215,7 +1216,7 @@ export class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
     constructor(_compiler: Compiler, config?: SystemJsNgModuleLoaderConfig);
     // (undocumented)
     load(path: string): Promise<NgModuleFactory<any>>;
-    }
+}
 
 // @public @deprecated
 export abstract class SystemJsNgModuleLoaderConfig {
@@ -1409,7 +1410,6 @@ export function ɵɵinject<T>(token: ProviderToken<T>, flags?: InjectFlags): T |
 
 // @public
 export function ɵɵinjectAttribute(attrNameToInject: string): string | null;
-
 
 // (No @packageDocumentation comment for this package)
 

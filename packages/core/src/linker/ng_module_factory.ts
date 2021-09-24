@@ -27,6 +27,9 @@ export abstract class NgModuleRef<T> {
   /**
    * The resolver that can retrieve the component factories
    * declared in the `entryComponents` property of the module.
+   *
+   * @deprecated With Ivy, there is no need to resolve Component factories. No replacement is
+needed, it's possible to use Component Types directly.
    */
   abstract get componentFactoryResolver(): ComponentFactoryResolver;
 

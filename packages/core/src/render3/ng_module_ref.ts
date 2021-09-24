@@ -38,6 +38,8 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
   // circular dependency which will result in a runtime error, because the injector doesn't
   // exist yet. We work around the issue by creating the ComponentFactoryResolver ourselves
   // and providing it, rather than letting the injector resolve it.
+  //
+  // Note: this field is deprecated in the parent NgModuleRef class.
   override readonly componentFactoryResolver: ComponentFactoryResolver =
       new ComponentFactoryResolver(this);
 
