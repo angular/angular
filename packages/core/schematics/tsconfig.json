@@ -2,6 +2,7 @@
   "compilerOptions": {
     "noImplicitReturns": true,
     "noImplicitOverride": true,
+    "useUnknownInCatchVariables": false,
     "noFallthroughCasesInSwitch": true,
     "strict": true,
     "moduleResolution": "node",

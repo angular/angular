@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, LiteralPrimitive, MethodCall, ParseError, ParseSourceSpan, PropertyRead, SafeMethodCall, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstTemplate} from '@angular/compiler';
+import {AST, Call, LiteralPrimitive, ParseSourceSpan, PropertyRead, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstTemplate} from '@angular/compiler';
 import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {TextAttribute} from '@angular/compiler/src/render3/r3_ast';
 import * as ts from 'typescript';
@@ -117,8 +117,7 @@ export interface TemplateTypeChecker {
    * autocompletion at that point in the expression, if such a location exists.
    */
   getExpressionCompletionLocation(
-      expr: PropertyRead|SafePropertyRead|MethodCall|SafeMethodCall,
-      component: ts.ClassDeclaration): ShimLocation|null;
+      expr: PropertyRead|SafePropertyRead, component: ts.ClassDeclaration): ShimLocation|null;
 
   /**
    * For the given node represents a `LiteralPrimitive`(the `TextAttribute` represents a string

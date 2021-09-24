@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AST, BindingPipe, LiteralPrimitive, MethodCall, PropertyRead, PropertyWrite, SafeMethodCall, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstNode, TmplAstReference, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, BindingPipe, LiteralPrimitive, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstNode, TmplAstReference, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {DirectiveMeta, PipeMeta} from '@angular/compiler-cli/src/ngtsc/metadata';
@@ -264,9 +264,8 @@ export function getRenameTextAndSpanAtPosition(
     }
   }
 
-  if (node instanceof PropertyRead || node instanceof MethodCall || node instanceof PropertyWrite ||
-      node instanceof SafePropertyRead || node instanceof SafeMethodCall ||
-      node instanceof BindingPipe) {
+  if (node instanceof PropertyRead || node instanceof PropertyWrite ||
+      node instanceof SafePropertyRead || node instanceof BindingPipe) {
     return {text: node.name, span: toTextSpan(node.nameSpan)};
   } else if (node instanceof LiteralPrimitive) {
     const span = toTextSpan(node.sourceSpan);

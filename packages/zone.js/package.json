@@ -8,7 +8,7 @@
   "fesm2015": "./fesm2015/zone.js",
   "typings": "./zone.d.ts",
   "dependencies": {
-    "tslib": "^2.2.0"
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
     "@externs/nodejs": "^1.5.0",
@@ -19,7 +19,7 @@
     "mocha": "^9.0.0",
     "mock-require": "3.0.3",
     "promises-aplus-tests": "^2.1.2",
-    "typescript": "~4.3.4"
+    "typescript": "~4.4.2"
   },
   "scripts": {
     "closuretest": "./scripts/closure/closure_compiler.sh",

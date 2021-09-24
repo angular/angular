@@ -16,7 +16,8 @@ let LOCALE_DATA: {[localeId: string]: any} = {};
 
 /**
  * Register locale data to be used internally by Angular. See the
- * ["I18n guide"](guide/i18n#i18n-pipes) to know how to import additional locale data.
+ * ["I18n guide"](guide/i18n-common-format-data-locale) to know how to import additional locale
+ * data.
  *
  * The signature `registerLocaleData(data: any, extraData?: any)` is deprecated since v5.1
  */
@@ -40,7 +41,7 @@ export function registerLocaleData(data: any, localeId?: string|any, extraData?:
  *
  * @param locale The locale code.
  * @returns The locale data.
- * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n)
+ * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n-overview)
  */
 export function findLocaleData(locale: string): any {
   const normalizedLocale = normalizeLocale(locale);
@@ -84,7 +85,7 @@ export function getLocaleCurrencyCode(locale: string): string|null {
  * @param locale A locale code for the locale format rules to use.
  * @returns The plural function for the locale.
  * @see `NgPlural`
- * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n)
+ * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n-overview)
  */
 export function getLocalePluralCase(locale: string): (value: number) => number {
   const data = findLocaleData(locale);

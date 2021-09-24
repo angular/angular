@@ -47,7 +47,7 @@ describe('inline resources transformer', () => {
       expect(actual).not.toContain('templateUrl:');
       expect(actual.replace(/\s+/g, ' '))
           .toContain(
-              'Foo = __decorate([ core_1.Component({ template: "Some template", otherProp: 3 }) ], Foo)');
+              'Foo = __decorate([ (0, core_1.Component)({ template: "Some template", otherProp: 3 }) ], Foo)');
     });
     it('should allow different quotes', () => {
       const actual = convert(`import {Component} from '@angular/core';
@@ -172,8 +172,6 @@ function convert(source: string) {
   const context = new MockAotContext('/', {[baseFileName + '.ts']: source});
   const host = new MockCompilerHost(context);
 
-  const sourceFile =
-      ts.createSourceFile(fileName, source, ts.ScriptTarget.Latest, /* setParentNodes */ true);
   const program = ts.createProgram(
       [fileName], {
         module: ts.ModuleKind.CommonJS,
@@ -186,7 +184,7 @@ function convert(source: string) {
         program, {loadResource, resourceNameToFileName: (u: string) => u})]
   };
   let result = '';
-  const emitResult = program.emit(
+  program.emit(
       moduleSourceFile, (emittedFileName, data, writeByteOrderMark, onError, sourceFiles) => {
         if (fileName.startsWith(moduleName)) {
           result = data;

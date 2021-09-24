@@ -21,9 +21,9 @@ This sample application is much like the one in the [_Tour of Heroes_ tutorial](
 
 <div class="alert is-helpful">
 
-  For a hands-on experience you can <live-example name="testing" stackblitz="specs" noDownload>run tests and explore the test code</live-example> in your browser as your read this guide.
+  For a hands-on experience, <live-example name="testing" stackblitz="specs" noDownload>run tests and explore the test code</live-example> in your browser as your read this guide.
 
-  If you'd like to experiment with the application that this guide describes, you can <live-example name="testing" noDownload>run it in your browser</live-example> or <live-example name="testing" downloadOnly>download and run it locally</live-example>.
+  If you'd like to experiment with the application that this guide describes, <live-example name="testing" noDownload>run it in your browser</live-example> or <live-example name="testing" downloadOnly>download and run it locally</live-example>.
 
 </div>
 
@@ -64,7 +64,7 @@ A Chrome browser also opens and displays the test output in the "Jasmine HTML Re
 </div>
 
 Most people find this browser output easier to read than the console log.
-You can click on a test row to re-run just that test or click on a description to re-run the tests in the selected test group ("test suite").
+Click on a test row to re-run just that test or click on a description to re-run the tests in the selected test group ("test suite").
 
 Meanwhile, the `ng test` command is watching for changes.
 
@@ -75,7 +75,7 @@ The tests run again, the browser refreshes, and the new test results appear.
 
 The CLI takes care of Jasmine and Karma configuration for you.
 
-You can fine-tune many options by editing the `karma.conf.js` in the root folder of the project and
+Fine-tune many options by editing the `karma.conf.js` in the root folder of the project and
 the `test.ts` files in the `src/` folder.
 
 The `karma.conf.js` file is a partial Karma configuration file.
@@ -98,7 +98,7 @@ The CLI generated a test file for the `AppComponent` named `app.component.spec.t
 
 <div class="alert is-important">
 
-The test file extension **must be `.spec.ts`** so that tooling can identify it as a file with tests (AKA, a _spec_ file).
+The test file extension **must be `.spec.ts`** so that tooling can identify it as a file with tests (also known as a _spec_ file).
 
 </div>
 
@@ -114,7 +114,7 @@ Adopt these two conventions in your own projects for _every kind_ of test file.
 It's a good idea to put unit test spec files in the same folder
 as the application source code files that they test:
 
-- Such tests are easy to find.
+- Such tests are painless to find.
 - You see at a glance if a part of your application lacks tests.
 - Nearby tests can reveal how a part works in context.
 - When you move the source (inevitable), you remember to move the test.
@@ -139,7 +139,7 @@ next to their corresponding helper files.
 
 ## Set up continuous integration
 
-One of the best ways to keep your project bug-free is through a test suite, but it's easy to forget to run tests all the time.
+One of the best ways to keep your project bug-free is through a test suite, but you might forget to run tests all the time.
 Continuous integration (CI) servers let you set up your project repository so that your tests run on every commit and pull request.
 
 There are paid CI services like Circle CI and Travis CI, and you can also host your own for free using Jenkins and others.
@@ -322,7 +322,7 @@ customLaunchers: {
 },
 ```
 
-Now you can run the following command to use the `--no-sandbox` flag:
+Now, run the following command to use the `--no-sandbox` flag:
 
 <code-example language="sh">
   ng test --no-watch --no-progress --browsers=ChromeHeadlessCI
@@ -337,7 +337,7 @@ Now you can run the following command to use the `--no-sandbox` flag:
 
 ## More information on testing
 
-After you've set up your application for testing, you may find the following testing  guides useful.
+After you've set up your application for testing, you might find the following testing  guides useful.
 
 * [Code coverage](guide/testing-code-coverage)&mdash;find out how much of your app your tests are covering and how to specify required amounts.
 * [Testing services](guide/testing-services)&mdash;learn how to test the services your application uses.

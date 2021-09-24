@@ -163,38 +163,19 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
     return value;
   }
 
-  visitInvokeMethodExpr(expr: o.InvokeMethodExpr, ctx: _ExecutionContext): any {
-    const receiver = expr.receiver.visitExpression(this, ctx);
-    const args = this.visitAllExpressions(expr.args, ctx);
-    let result: any;
-    if (expr.builtin != null) {
-      switch (expr.builtin) {
-        case o.BuiltinMethod.ConcatArray:
-          result = receiver.concat(...args);
-          break;
-        case o.BuiltinMethod.SubscribeObservable:
-          result = receiver.subscribe({next: args[0]});
-          break;
-        case o.BuiltinMethod.Bind:
-          result = receiver.bind(...args);
-          break;
-        default:
-          throw new Error(`Unknown builtin method ${expr.builtin}`);
-      }
-    } else {
-      result = receiver[expr.name!].apply(receiver, args);
-    }
-    return result;
-  }
   visitInvokeFunctionExpr(stmt: o.InvokeFunctionExpr, ctx: _ExecutionContext): any {
     const args = this.visitAllExpressions(stmt.args, ctx);
-    const fnExpr = stmt.fn;
+    const fnExpr = stmt.fn as (o.Expression & {receiver: o.Expression | undefined});
     if (fnExpr instanceof o.ReadVarExpr && fnExpr.builtin === o.BuiltinVar.Super) {
       ctx.instance!.constructor.prototype.constructor.apply(ctx.instance, args);
       return null;
     } else {
-      const fn = stmt.fn.visitExpression(this, ctx);
-      return fn.apply(null, args);
+      const fn = fnExpr.visitExpression(this, ctx);
+      let context: any = null;
+      if (fnExpr.receiver) {
+        context = fnExpr.receiver.visitExpression(this, ctx);
+      }
+      return fn.apply(context, args);
     }
   }
   visitTaggedTemplateExpr(expr: o.TaggedTemplateExpr, ctx: _ExecutionContext): any {

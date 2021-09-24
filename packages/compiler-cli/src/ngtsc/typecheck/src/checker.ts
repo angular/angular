@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, CssSelector, DomElementSchemaRegistry, LiteralPrimitive, MethodCall, ParseError, ParseSourceSpan, parseTemplate, PropertyRead, SafeMethodCall, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
+import {AST, CssSelector, DomElementSchemaRegistry, LiteralPrimitive, ParseSourceSpan, PropertyRead, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate} from '@angular/compiler';
 import {TextAttribute} from '@angular/compiler/src/render3/r3_ast';
 import * as ts from 'typescript';
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
@@ -271,8 +271,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   getExpressionCompletionLocation(
-      ast: PropertyRead|SafePropertyRead|MethodCall|SafeMethodCall,
-      component: ts.ClassDeclaration): ShimLocation|null {
+      ast: PropertyRead|SafePropertyRead, component: ts.ClassDeclaration): ShimLocation|null {
     const engine = this.getOrCreateCompletionEngine(component);
     if (engine === null) {
       return null;

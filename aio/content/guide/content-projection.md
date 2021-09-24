@@ -123,7 +123,7 @@ The following steps demonstrate a typical implementation of conditional content 
 
    <div class="alert is-helpful">
 
-   In the case of multi-slot content projection, you can use `@ContentChildren` to get a QueryList of projected elements.
+   In the case of multi-slot content projection, use `@ContentChildren` to get a QueryList of projected elements.
 
    </div>
 
@@ -137,7 +137,7 @@ As described in [Multi-slot Content Projection](#multi-slot), you typically use 
 region="multi-slot"></code-example>
 
 In some cases, you might want to project content as a different element. For example, the content you want to project might be a child of another
-element. You can accomplish this by using the `ngProjectAs` attribute.
+element. Accomplish this with the `ngProjectAs` attribute.
 
 For instance, consider the following HTML snippet:
 
@@ -150,7 +150,7 @@ This example uses an `<ng-container>` attribute to simulate projecting a compone
 
 <header>Reminder!</header>
 
-The `<ng-container>` element is a logical construct that you can use to group other DOM elements; however, the `<ng-container>` itself is not rendered in the DOM tree.
+The `ng-container` element is a logical construct that is used to group other DOM elements; however, the `ng-container` itself is not rendered in the DOM tree.
 
 </div>
 

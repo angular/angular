@@ -67,7 +67,7 @@ class DefaultServerRenderer2 implements Renderer2 {
 
   destroy(): void {}
 
-  destroyNode: null;
+  destroyNode = null;
 
   createElement(name: string, namespace?: string, debugInfo?: any): any {
     if (namespace) {

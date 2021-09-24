@@ -90,10 +90,6 @@ export class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor
     throw new Error('Method not implemented.');
   }
 
-  visitInvokeMethodExpr(ast: o.InvokeMethodExpr, context: Context): never {
-    throw new Error('Method not implemented.');
-  }
-
   visitInvokeFunctionExpr(ast: o.InvokeFunctionExpr, context: Context): never {
     throw new Error('Method not implemented.');
   }

@@ -31,10 +31,10 @@ const MAX_IDLE_DELAY = 30000;
 
 const SUPPORTED_CONFIG_VERSION = 1;
 
-const NOTIFICATION_OPTION_NAMES: (keyof Notification)[] = [
+const NOTIFICATION_OPTION_NAMES = [
   'actions', 'badge', 'body', 'data', 'dir', 'icon', 'image', 'lang', 'renotify',
   'requireInteraction', 'silent', 'tag', 'timestamp', 'title', 'vibrate'
-];
+] as (keyof Notification)[];
 
 interface LatestEntry {
   latest: string;

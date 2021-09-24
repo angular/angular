@@ -381,7 +381,7 @@ class _TreeBuilder {
     // `_peek.type` from TS. Otherwise TS will narrow the type of `_peek.type` preventing it from
     // being able to consider `ATTR_VALUE_INTERPOLATION` as an option. This is because TS is not
     // able to see that `_advance()` will actually mutate `_peek`.
-    const nextTokenType = this._peek.type;
+    const nextTokenType = this._peek.type as TokenType;
     if (nextTokenType === TokenType.ATTR_VALUE_TEXT) {
       valueStartSpan = this._peek.sourceSpan;
       valueEnd = this._peek.sourceSpan.end;

@@ -71,27 +71,10 @@ const externalModuleIdentifier = new o.ExternalReference(anotherModuleUrl, 'some
 
     it('should invoke functions and methods and constructors', () => {
       expect(emitStmt(o.variable('someFn').callFn([o.literal(1)]).toStmt())).toEqual('someFn(1);');
-      expect(emitStmt(o.variable('someObj').callMethod('someMethod', [o.literal(1)]).toStmt()))
+      expect(emitStmt(o.variable('someObj').prop('someMethod').callFn([o.literal(1)]).toStmt()))
           .toEqual('someObj.someMethod(1);');
       expect(emitStmt(o.variable('SomeClass').instantiate([o.literal(1)]).toStmt()))
           .toEqual('new SomeClass(1);');
-    });
-
-    it('should support builtin methods', () => {
-      expect(emitStmt(o.variable('arr1')
-                          .callMethod(o.BuiltinMethod.ConcatArray, [o.variable('arr2')])
-                          .toStmt()))
-          .toEqual('arr1.concat(arr2);');
-
-      expect(emitStmt(o.variable('observable')
-                          .callMethod(o.BuiltinMethod.SubscribeObservable, [o.variable('listener')])
-                          .toStmt()))
-          .toEqual('observable.subscribe(listener);');
-
-      expect(
-          emitStmt(
-              o.variable('fn').callMethod(o.BuiltinMethod.Bind, [o.variable('someObj')]).toStmt()))
-          .toEqual('fn.bind(someObj);');
     });
 
     it('should support literals', () => {
@@ -275,7 +258,7 @@ const externalModuleIdentifier = new o.ExternalReference(anotherModuleUrl, 'some
       let callSomeMethod: o.Statement;
 
       beforeEach(() => {
-        callSomeMethod = o.THIS_EXPR.callMethod('someMethod', []).toStmt();
+        callSomeMethod = o.THIS_EXPR.prop('someMethod').callFn([]).toStmt();
       });
 
       it('should support declaring classes', () => {

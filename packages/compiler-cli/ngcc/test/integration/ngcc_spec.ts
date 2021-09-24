@@ -381,7 +381,7 @@ runInEachFileSystem(() => {
 
          const jsContents = fs.readFile(_(`/node_modules/test-package/esm5/src/index.js`));
          // Verify that the ES5 bundle does contain the expected downleveling syntax.
-         expect(jsContents).toContain('__spreadArray([], __read(arguments))');
+         expect(jsContents).toContain('__spreadArray([], __read(arguments), false)');
          expect(jsContents)
              .toContain(
                  'var ɵSubClass_BaseFactory; return function SubClass_Factory(t) { return (ɵSubClass_BaseFactory || (ɵSubClass_BaseFactory = ɵngcc0.ɵɵgetInheritedFactory(SubClass)))(t || SubClass); };');
@@ -420,7 +420,7 @@ runInEachFileSystem(() => {
 
          const jsContents = fs.readFile(_(`/node_modules/test-package/esm5/src/index.js`));
          // Verify that the ES5 bundle does contain the expected downleveling syntax.
-         expect(jsContents).toContain('__spreadArray([], __read(arguments))');
+         expect(jsContents).toContain('__spreadArray([], __read(arguments), false)');
          expect(jsContents)
              .toContain(
                  'var ɵSubClass_BaseFactory; return function SubClass_Factory(t) { return (ɵSubClass_BaseFactory || (ɵSubClass_BaseFactory = ɵngcc0.ɵɵgetInheritedFactory(SubClass)))(t || SubClass); };');

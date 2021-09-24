@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstVisitor, ASTWithName, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeKeyedRead, SafeMethodCall, SafePropertyRead, ThisReceiver, Unary} from '@angular/compiler';
+import {AST, AstVisitor, ASTWithName, Binary, BindingPipe, Call, Chain, Conditional, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeKeyedRead, SafePropertyRead, ThisReceiver, Unary} from '@angular/compiler';
 
 import {createDiagnostic, Diagnostic} from './diagnostic_messages';
 import {BuiltinType, Signature, Symbol, SymbolQuery, SymbolTable} from './symbols';
@@ -197,30 +197,6 @@ export class AstType implements AstVisitor {
     return this.query.getTypeUnion(this.getType(ast.trueExp), this.getType(ast.falseExp));
   }
 
-  visitFunctionCall(ast: FunctionCall) {
-    // The type of a function call is the return type of the selected signature.
-    // The signature is selected based on the types of the arguments. Angular doesn't
-    // support contextual typing of arguments so this is simpler than TypeScript's
-    // version.
-    const args = ast.args.map(arg => this.getType(arg));
-    const target = this.getType(ast.target!);
-    if (!target || !target.callable) {
-      this.diagnostics.push(createDiagnostic(
-          refinedSpan(ast), Diagnostic.call_target_not_callable, this.sourceOf(ast.target!),
-          target.name));
-      return this.anyType;
-    }
-    const signature = target.selectSignature(args);
-    if (signature) {
-      return signature.result;
-    }
-    // TODO: Consider a better error message here. See `typescript_symbols#selectSignature` for more
-    // details.
-    this.diagnostics.push(
-        createDiagnostic(refinedSpan(ast), Diagnostic.unable_to_resolve_compatible_call_signature));
-    return this.anyType;
-  }
-
   visitImplicitReceiver(_ast: ImplicitReceiver): Symbol {
     const _this = this;
     // Return a pseudo-symbol for the implicit receiver.
@@ -322,10 +298,6 @@ export class AstType implements AstVisitor {
     }
   }
 
-  visitMethodCall(ast: MethodCall) {
-    return this.resolveMethodCall(this.getType(ast.receiver), ast);
-  }
-
   visitPipe(ast: BindingPipe) {
     // The type of a pipe node is the return type of the pipe's transform method. The table returned
     // by getPipes() is expected to contain symbols with the corresponding transform method type.
@@ -371,10 +343,6 @@ export class AstType implements AstVisitor {
     return this.query.getBuiltinType(BuiltinType.Any);
   }
 
-  visitSafeMethodCall(ast: SafeMethodCall) {
-    return this.resolveMethodCall(this.query.getNonNullableType(this.getType(ast.receiver)), ast);
-  }
-
   visitSafePropertyRead(ast: SafePropertyRead) {
     return this.resolvePropertyRead(this.query.getNonNullableType(this.getType(ast.receiver)), ast);
   }
@@ -385,6 +353,66 @@ export class AstType implements AstVisitor {
     const result = targetType.indexed(
         keyType, ast.key instanceof LiteralPrimitive ? ast.key.value : undefined);
     return result || this.anyType;
+  }
+
+  visitCall(ast: Call) {
+    if (ast.receiver instanceof Call) {
+      // The type of a function call is the return type of the selected signature.
+      // The signature is selected based on the types of the arguments. Angular doesn't
+      // support contextual typing of arguments so this is simpler than TypeScript's
+      // version.
+      const args = ast.args.map(arg => this.getType(arg));
+      const target = this.getType(ast.receiver);
+      if (!target || !target.callable) {
+        this.diagnostics.push(createDiagnostic(
+            refinedSpan(ast), Diagnostic.call_target_not_callable, this.sourceOf(ast.receiver),
+            target.name));
+        return this.anyType;
+      }
+      const signature = target.selectSignature(args);
+      if (signature) {
+        return signature.result;
+      }
+      // TODO: Consider a better error message here. See `typescript_symbols#selectSignature` for
+      // more details.
+      this.diagnostics.push(createDiagnostic(
+          refinedSpan(ast), Diagnostic.unable_to_resolve_compatible_call_signature));
+      return this.anyType;
+    }
+
+    if (ast.receiver instanceof PropertyRead || ast.receiver instanceof SafePropertyRead) {
+      const receiver = ast.receiver;
+      const receiverType = receiver instanceof SafePropertyRead ?
+          this.query.getNonNullableType(this.getType(receiver.receiver)) :
+          this.getType(receiver.receiver);
+
+      if (this.isAny(receiverType)) {
+        return this.anyType;
+      }
+      const methodType = this.resolvePropertyRead(receiverType, receiver);
+      if (!methodType) {
+        this.diagnostics.push(createDiagnostic(
+            refinedSpan(receiver), Diagnostic.could_not_resolve_type, receiver.name));
+        return this.anyType;
+      }
+      if (this.isAny(methodType)) {
+        return this.anyType;
+      }
+      if (!methodType.callable) {
+        this.diagnostics.push(createDiagnostic(
+            refinedSpan(receiver), Diagnostic.identifier_not_callable, receiver.name));
+        return this.anyType;
+      }
+      const signature = methodType.selectSignature(ast.args.map(arg => this.getType(arg)));
+      if (!signature) {
+        this.diagnostics.push(createDiagnostic(
+            refinedSpan(receiver), Diagnostic.unable_to_resolve_signature, receiver.name));
+        return this.anyType;
+      }
+      return signature.result;
+    }
+
+    return this.anyType;
   }
 
   /**
@@ -412,33 +440,6 @@ export class AstType implements AstVisitor {
       result = this._undefinedType = this.query.getBuiltinType(BuiltinType.Undefined);
     }
     return result;
-  }
-
-  private resolveMethodCall(receiverType: Symbol, ast: SafeMethodCall|MethodCall) {
-    if (this.isAny(receiverType)) {
-      return this.anyType;
-    }
-    const methodType = this.resolvePropertyRead(receiverType, ast);
-    if (!methodType) {
-      this.diagnostics.push(
-          createDiagnostic(refinedSpan(ast), Diagnostic.could_not_resolve_type, ast.name));
-      return this.anyType;
-    }
-    if (this.isAny(methodType)) {
-      return this.anyType;
-    }
-    if (!methodType.callable) {
-      this.diagnostics.push(
-          createDiagnostic(refinedSpan(ast), Diagnostic.identifier_not_callable, ast.name));
-      return this.anyType;
-    }
-    const signature = methodType.selectSignature(ast.args.map(arg => this.getType(arg)));
-    if (!signature) {
-      this.diagnostics.push(
-          createDiagnostic(refinedSpan(ast), Diagnostic.unable_to_resolve_signature, ast.name));
-      return this.anyType;
-    }
-    return signature.result;
   }
 
   private resolvePropertyRead(receiverType: Symbol, ast: SafePropertyRead|PropertyRead) {

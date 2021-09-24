@@ -57,7 +57,7 @@ There are two main steps to setting up a lazy-loaded feature module:
 
 ### Set up an app
 
-If you don’t already have an app, you can follow the steps below to
+If you don’t already have an app, follow the following steps to
 create one with the CLI. If you already have an app, skip to
 [Configure the routes](#config-routes). Enter the following command
 where `customer-app` is the name of your app:
@@ -106,7 +106,7 @@ The import path is the relative path to the module.
 
 In Angular version 8, the string syntax for the `loadChildren` route specification [was deprecated](guide/deprecations#loadchildren-string-syntax) in favor of the `import()` syntax. However, you can opt into using string-based lazy loading (`loadChildren: './path/to/module#Module'`) by including the lazy-loaded routes in your `tsconfig` file, which includes the lazy-loaded files in the compilation.
 
-By default the CLI will generate projects with stricter file inclusions intended to be used with the `import()` syntax.
+By default the CLI generates projects with stricter file inclusions intended to be used with the `import()` syntax.
 
 </div>
 
@@ -129,9 +129,9 @@ The `orders` route, specified with the `--route` option, is added to the `routes
 
 ### Set up the UI
 
-Though you can type the URL into the address bar, a navigation UI is easier for the user and more common.
+Though you can type the URL into the address bar, a navigation UI is straightforward for the user and more common.
 Replace the default placeholder markup in `app.component.html` with a custom nav
-so you can easily navigate to your modules in the browser:
+so you can navigate to your modules in the browser:
 
 <code-example path="lazy-loading-ngmodules/src/app/app.component.html" header="app.component.html" region="app-component-template" header="src/app/app.component.html"></code-example>
 
@@ -192,7 +192,7 @@ You can check to see that a module is indeed being lazy loaded with the Chrome d
 </div>
 
 
-Click on the Orders or Customers button. If you see a chunk appear, everything is wired up properly and the feature module is being lazy loaded. A chunk should appear for Orders and for Customers but will only appear once for each.
+Click on the Orders or Customers button. If you see a chunk appear, everything is wired up properly and the feature module is being lazy loaded. A chunk should appear for Orders and for Customers but only appears once for each.
 
 
 <div class="lightbox">
@@ -258,7 +258,7 @@ RouterModule.forRoot(
 
 ### Preloading component data
 
-To preload component data, you can use a `resolver`.
+To preload component data, use a `resolver`.
 Resolvers improve UX by blocking the page load until all necessary data is available to fully display the page.
 
 #### Resolvers
@@ -352,7 +352,7 @@ For more information with a working example, see the [routing tutorial section o
 
 ## Troubleshooting lazy-loading modules
 
-A common error when lazy-loading modules is importing common modules in multiple places within an application.  You can test for this condition by first generating the module using the Angular CLI and including the `--route route-name` parameter, where `route-name` is the name of your module. Next, generate the module without the `--route` parameter. If the Angular CLI generates an error when you use the `--route` parameter, but runs correctly without it, you may have imported the same module in multiple places.
+A common error when lazy-loading modules is importing common modules in multiple places within an application.  Test for this condition by first generating the module using the Angular CLI and including the `--route route-name` parameter, where `route-name` is the name of your module. Next, generate the module without the `--route` parameter. If the Angular CLI generates an error when you use the `--route` parameter, but runs correctly without it, you might have imported the same module in multiple places.
 
 Remember, many common Angular modules should be imported at the base of your application.
 
@@ -360,7 +360,7 @@ For more information on Angular Modules, see [NgModules](guide/ngmodules).
 
 ## More on NgModules and routing
 
-You may also be interested in the following:
+You might also be interested in the following:
 * [Routing and Navigation](guide/router).
 * [Providers](guide/providers).
 * [Types of Feature Modules](guide/module-types).

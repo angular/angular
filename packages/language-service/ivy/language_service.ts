@@ -163,7 +163,9 @@ export class LanguageService {
     const node = positionDetails.context.kind === TargetNodeKind.TwoWayBindingContext ?
         positionDetails.context.nodes[0] :
         positionDetails.context.node;
-    return new QuickInfoBuilder(this.tsLS, compiler, templateInfo.component, node).get();
+    return new QuickInfoBuilder(
+               this.tsLS, compiler, templateInfo.component, node, positionDetails.parent)
+        .get();
   }
 
   getReferencesAtPosition(fileName: string, position: number): ts.ReferenceEntry[]|undefined {

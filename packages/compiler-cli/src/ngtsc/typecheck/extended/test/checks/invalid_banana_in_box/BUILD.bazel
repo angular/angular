@@ -3,7 +3,7 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 ts_library(
     name = "test_lib",
     testonly = True,
-    srcs = ["spec.ts"],
+    srcs = ["invalid_banana_in_box_spec.ts"],
     deps = [
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/diagnostics",

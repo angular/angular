@@ -34,7 +34,7 @@ describe('IifeEmitScope', () => {
           new IifeEmitScope<ts.Statement, ts.Expression>(ngImport, translator, factory);
 
       const coreImportRef = new o.ExternalReference('@angular/core', 'foo');
-      const def = emitScope.translateDefinition(o.importExpr(coreImportRef).callMethod('bar', []));
+      const def = emitScope.translateDefinition(o.importExpr(coreImportRef).prop('bar').callFn([]));
       expect(generate(def)).toEqual('function () { return core.foo.bar(); }()');
     });
 

@@ -182,7 +182,7 @@ describe('downlevel decorator transform', () => {
 
     expect(diagnostics.length).toBe(0);
     expect(output).toContain(dedent`
-      MyClass = tslib_1.__decorate([
+      MyClass = (0, tslib_1.__decorate)([
         SomeUnknownDecorator()
       ], MyClass);
     `);
@@ -197,7 +197,7 @@ describe('downlevel decorator transform', () => {
 
     expect(diagnostics.length).toBe(0);
     expect(output).toContain(dedent`
-      MyClass = tslib_1.__decorate([
+      MyClass = (0, tslib_1.__decorate)([
         DecoratorBuilder().customClassDecorator
       ], MyClass);
     `);
@@ -231,7 +231,7 @@ describe('downlevel decorator transform', () => {
 
     expect(diagnostics.length).toBe(0);
     expect(output).toContain(dedent`
-      tslib_1.__decorate([
+      (0, tslib_1.__decorate)([
         SomeDecorator()
       ], MyDir.prototype, "disabled", void 0);
     `);
@@ -428,6 +428,8 @@ describe('downlevel decorator transform', () => {
       MyDir.decorators = [
         { type: core_1.Directive }
       ];
+    `);
+    expect(output).toContain(dedent`
       /**
        * @type {function(): !Array<(null|{
        *   type: ?,
@@ -671,8 +673,8 @@ describe('downlevel decorator transform', () => {
       expect(diagnostics.length).toBe(0);
       expect(output).not.toContain('MyService.decorators');
       expect(output).toContain(dedent`
-        MyService = tslib_1.__decorate([
-          core_1.Injectable()
+        MyService = (0, tslib_1.__decorate)([
+          (0, core_1.Injectable)()
         ], MyService);
       `);
     });
@@ -697,8 +699,8 @@ describe('downlevel decorator transform', () => {
         MyService.ctorParameters = () => [
           { type: InjectClass }
         ];
-        MyService = tslib_1.__decorate([
-          core_1.Injectable()
+        MyService = (0, tslib_1.__decorate)([
+          (0, core_1.Injectable)()
         ], MyService);
       `);
     });
@@ -723,8 +725,8 @@ describe('downlevel decorator transform', () => {
         MyService.ctorParameters = () => [
           { type: InjectClass, decorators: [{ type: core_1.Inject, args: ['test',] }] }
         ];
-        MyService = tslib_1.__decorate([
-          core_1.Injectable()
+        MyService = (0, tslib_1.__decorate)([
+          (0, core_1.Injectable)()
         ], MyService);
       `);
     });

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, ImplicitReceiver, MethodCall, PropertyRead, PropertyWrite, RecursiveAstVisitor, SafeMethodCall, SafePropertyRead} from '../../expression_parser/ast';
+import {AST, BindingPipe, ImplicitReceiver, PropertyRead, PropertyWrite, RecursiveAstVisitor, SafePropertyRead} from '../../expression_parser/ast';
 import {SelectorMatcher} from '../../selector';
 import {BoundAttribute, BoundEvent, BoundText, Content, Element, Icu, Node, Reference, Template, Text, TextAttribute, Variable, Visitor} from '../r3_ast';
 
@@ -484,19 +484,8 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
     return super.visitPropertyWrite(ast, context);
   }
 
-  override visitMethodCall(ast: MethodCall, context: any): any {
-    this.maybeMap(context, ast, ast.name);
-    return super.visitMethodCall(ast, context);
-  }
-
-  override visitSafeMethodCall(ast: SafeMethodCall, context: any): any {
-    this.maybeMap(context, ast, ast.name);
-    return super.visitSafeMethodCall(ast, context);
-  }
-
-  private maybeMap(
-      scope: Scope, ast: PropertyRead|SafePropertyRead|PropertyWrite|MethodCall|SafeMethodCall,
-      name: string): void {
+  private maybeMap(scope: Scope, ast: PropertyRead|SafePropertyRead|PropertyWrite, name: string):
+      void {
     // If the receiver of the expression isn't the `ImplicitReceiver`, this isn't the root of an
     // `AST` expression that maps to a `Variable` or `Reference`.
     if (!(ast.receiver instanceof ImplicitReceiver)) {

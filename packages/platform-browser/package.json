@@ -8,7 +8,7 @@
     "node": "^12.14.1 || >=14.0.0"
   },
   "dependencies": {
-    "tslib": "^2.2.0"
+    "tslib": "^2.3.0"
   },
   "peerDependencies": {
     "@angular/animations": "0.0.0-PLACEHOLDER",

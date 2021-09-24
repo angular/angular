@@ -200,4 +200,24 @@ describe('routerlink emptyExpr assignment migration', () => {
 
        expect(content).toEqual(contents);
      });
+
+  it('should work for files that use CRLF line endings', async () => {
+    writeFile(
+        '/index.ts',
+        `
+      import {Component} from '@angular/core';
+
+      @Component({` +
+            'template: `<div [routerLink]=\'\'>\r\n{{1}}\r\n</div>`' +
+            `})
+      export class MyComp {}
+    `);
+
+    await runMigration();
+    expect(warnOutput.length).toBe(1);
+    expect(warnOutput[0]).toMatch(/^⮑ {3}index.ts@4:35/);
+
+    const content = tree.readContent('/index.ts');
+    expect(content).toContain(`<div [routerLink]='[]'>\r\n{{1}}\r\n</div>`);
+  });
 });

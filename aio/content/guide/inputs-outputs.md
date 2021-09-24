@@ -1,7 +1,7 @@
 # Sharing data between child and parent directives and components
 
 A common pattern in Angular is sharing data between a parent component and one or more child components.
-To implement this pattern use the `@Input()` and `@Output()` decorators.
+Implement this pattern with the `@Input()` and `@Output()` decorators.
 
 <div class="alert is-helpful">
 

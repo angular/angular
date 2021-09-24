@@ -147,7 +147,7 @@ describe('getTargetAtPosition for template AST', () => {
     const {context} = getTargetAtPosition(nodes, position)!;
     const {node} = context as SingleNodeTarget;
     expect(isExpressionNode(node!)).toBe(true);
-    expect(node).toBeInstanceOf(e.MethodCall);
+    expect(node).toBeInstanceOf(e.PropertyRead);
   });
 
   it('should locate element children', () => {
@@ -234,7 +234,7 @@ describe('getTargetAtPosition for template AST', () => {
     expect(errors).toBe(null);
     const {context} = getTargetAtPosition(nodes, position)!;
     const {node} = context as SingleNodeTarget;
-    expect(node).toBeInstanceOf(e.MethodCall);
+    expect(node).toBeInstanceOf(e.PropertyRead);
   });
 
   it('should locate template attribute key', () => {
@@ -546,7 +546,7 @@ describe('getTargetAtPosition for expression AST', () => {
     const {context} = getTargetAtPosition(nodes, position)!;
     const {node} = context as SingleNodeTarget;
     expect(isExpressionNode(node!)).toBe(true);
-    expect(node).toBeInstanceOf(e.MethodCall);
+    expect(node).toBeInstanceOf(e.Call);
   });
 
   it('should locate safe method call', () => {
@@ -555,16 +555,16 @@ describe('getTargetAtPosition for expression AST', () => {
     const {context} = getTargetAtPosition(nodes, position)!;
     const {node} = context as SingleNodeTarget;
     expect(isExpressionNode(node!)).toBe(true);
-    expect(node).toBeInstanceOf(e.SafeMethodCall);
+    expect(node).toBeInstanceOf(e.Call);
   });
 
   it('should identify when in the argument position in a no-arg method call', () => {
     const {errors, nodes, position} = parse(`{{ title.toString(¦) }}`);
     expect(errors).toBe(null);
     const {context} = getTargetAtPosition(nodes, position)!;
-    expect(context.kind).toEqual(TargetNodeKind.MethodCallExpressionInArgContext);
+    expect(context.kind).toEqual(TargetNodeKind.CallExpressionInArgContext);
     const {node} = context as SingleNodeTarget;
-    expect(node).toBeInstanceOf(e.MethodCall);
+    expect(node).toBeInstanceOf(e.Call);
   });
 
   it('should locate literal primitive in interpolation', () => {
