@@ -42,11 +42,9 @@ export class SwUpdate {
     constructor(sw: ɵangular_packages_service_worker_service_worker_a);
     // @deprecated
     readonly activated: Observable<UpdateActivatedEvent>;
-    // (undocumented)
     activateUpdate(): Promise<boolean>;
     // @deprecated
     readonly available: Observable<UpdateAvailableEvent>;
-    // (undocumented)
     checkForUpdate(): Promise<boolean>;
     get isEnabled(): boolean;
     readonly unrecoverable: Observable<UnrecoverableStateEvent>;
