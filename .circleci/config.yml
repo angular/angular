@@ -871,9 +871,11 @@ workflows:
             # since the publishing script expects the legacy outputs layout.
             - build-npm-packages
             - legacy-unit-tests-saucelabs
-      - components-repo-unit-tests:
-          requires:
-            - build-npm-packages
+      # TODO(devversion): re-enable once the Angular components repo has been updated to deal
+      # with partial compilation APF v13 package output (i.e. with the linker processing).
+      #- components-repo-unit-tests:
+      #    requires:
+      #      - build-npm-packages
       - test_zonejs:
           requires:
             - setup
