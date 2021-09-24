@@ -834,36 +834,40 @@ export class Driver implements Debuggable, UpdateSource {
   }
 
   private async setupUpdate(manifest: Manifest, hash: string): Promise<void> {
-    const newVersion =
-        new AppVersion(this.scope, this.adapter, this.db, this.idle, this.debugger, manifest, hash);
+    try {
+      const newVersion = new AppVersion(
+          this.scope, this.adapter, this.db, this.idle, this.debugger, manifest, hash);
 
-    // Firstly, check if the manifest version is correct.
-    if (manifest.configVersion !== SUPPORTED_CONFIG_VERSION) {
-      await this.deleteAllCaches();
-      await this.scope.registration.unregister();
+      // Firstly, check if the manifest version is correct.
+      if (manifest.configVersion !== SUPPORTED_CONFIG_VERSION) {
+        await this.deleteAllCaches();
+        await this.scope.registration.unregister();
+        throw new Error(`Invalid config version: expected ${SUPPORTED_CONFIG_VERSION}, got ${
+            manifest.configVersion}.`);
+      }
+
+      // Cause the new version to become fully initialized. If this fails, then the
+      // version will not be available for use.
+      await newVersion.initializeFully(this);
+
+      // Install this as an active version of the app.
+      this.versions.set(hash, newVersion);
+      // Future new clients will use this hash as the latest version.
+      this.latestHash = hash;
+
+      // If we are in `EXISTING_CLIENTS_ONLY` mode (meaning we didn't have a clean copy of the last
+      // latest version), we can now recover to `NORMAL` mode and start accepting new clients.
+      if (this.state === DriverReadyState.EXISTING_CLIENTS_ONLY) {
+        this.state = DriverReadyState.NORMAL;
+        this.stateMessage = '(nominal)';
+      }
+
+      await this.sync();
+      await this.notifyClientsAboutVersionReady(newVersion);
+    } catch (e) {
       await this.notifyClientsAboutVersionInstallationFailed(manifest, hash);
-      throw new Error(`Invalid config version: expected ${SUPPORTED_CONFIG_VERSION}, got ${
-          manifest.configVersion}.`);
+      throw e;
     }
-
-    // Cause the new version to become fully initialized. If this fails, then the
-    // version will not be available for use.
-    await newVersion.initializeFully(this);
-
-    // Install this as an active version of the app.
-    this.versions.set(hash, newVersion);
-    // Future new clients will use this hash as the latest version.
-    this.latestHash = hash;
-
-    // If we are in `EXISTING_CLIENTS_ONLY` mode (meaning we didn't have a clean copy of the last
-    // latest version), we can now recover to `NORMAL` mode and start accepting new clients.
-    if (this.state === DriverReadyState.EXISTING_CLIENTS_ONLY) {
-      this.state = DriverReadyState.NORMAL;
-      this.stateMessage = '(nominal)';
-    }
-
-    await this.sync();
-    await this.notifyClientsAboutVersionReady(newVersion);
   }
 
   async checkForUpdate(): Promise<boolean> {
