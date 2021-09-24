@@ -53,7 +53,7 @@ export class ApplicationInitStatus {
     readonly done = false;
     // (undocumented)
     readonly donePromise: Promise<any>;
-    }
+}
 
 // @public
 export class ApplicationModule {
@@ -63,14 +63,16 @@ export class ApplicationModule {
 // @public
 export class ApplicationRef {
     attachView(viewRef: ViewRef): void;
-    bootstrap<C>(componentOrFactory: ComponentFactory<C> | Type<C>, rootSelectorOrNode?: string | any): ComponentRef<C>;
+    bootstrap<C>(component: Type<C>, rootSelectorOrNode?: string | any): ComponentRef<C>;
+    // @deprecated
+    bootstrap<C>(componentFactory: ComponentFactory<C>, rootSelectorOrNode?: string | any): ComponentRef<C>;
     readonly components: ComponentRef<any>[];
     readonly componentTypes: Type<any>[];
     detachView(viewRef: ViewRef): void;
     readonly isStable: Observable<boolean>;
     tick(): void;
     get viewCount(): number;
-    }
+}
 
 // @public (undocumented)
 export function asNativeElements(debugEls: DebugElement[]): any;
@@ -361,7 +363,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
     readonly length: number;
     // (undocumented)
     onDestroy(): void;
-    }
+}
 
 // @public @deprecated (undocumented)
 export const defineInjectable: typeof ɵɵdefineInjectable;
@@ -946,6 +948,7 @@ export const platformCore: (extraProviders?: StaticProvider[] | undefined) => Pl
 // @public
 export class PlatformRef {
     bootstrapModule<M>(moduleType: Type<M>, compilerOptions?: (CompilerOptions & BootstrapOptions) | Array<CompilerOptions & BootstrapOptions>): Promise<NgModuleRef<M>>;
+    // @deprecated
     bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>, options?: BootstrapOptions): Promise<NgModuleRef<M>>;
     destroy(): void;
     // (undocumented)
@@ -1215,7 +1218,7 @@ export class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
     constructor(_compiler: Compiler, config?: SystemJsNgModuleLoaderConfig);
     // (undocumented)
     load(path: string): Promise<NgModuleFactory<any>>;
-    }
+}
 
 // @public @deprecated
 export abstract class SystemJsNgModuleLoaderConfig {
@@ -1409,7 +1412,6 @@ export function ɵɵinject<T>(token: ProviderToken<T>, flags?: InjectFlags): T |
 
 // @public
 export function ɵɵinjectAttribute(attrNameToInject: string): string | null;
-
 
 // (No @packageDocumentation comment for this package)
 
