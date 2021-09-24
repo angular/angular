@@ -157,6 +157,17 @@ It has a great deal of useful information including:
 
   <tr>
     <td>
+      <code>params</code>
+    </td>
+    <td>
+
+    An `Observable` that contains the required and [optional parameters](guide/router-tutorial-toh#optional-route-parameters) specific to the route.
+
+    </td>
+  </tr>
+
+  <tr>
+    <td>
       <code>paramMap</code>
     </td>
     <td>
@@ -175,6 +186,17 @@ It has a great deal of useful information including:
 
     An `Observable` that contains a [map](api/router/ParamMap) of the [query parameters](guide/router-tutorial-toh#query-parameters) available to all routes.
     The map supports retrieving single and multiple values from the query parameter.
+
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <code>queryParams</code>
+    </td>
+    <td>
+
+    An `Observable` that contains the [query parameters](guide/router-tutorial-toh#query-parameters) available to all routes.
 
     </td>
   </tr>
@@ -246,17 +268,6 @@ It has a great deal of useful information including:
     </td>
   </tr>
 </table>
-
-<div class="alert is-helpful">
-
-Two older properties are still available; however, their replacements are preferable as they might be deprecated in a future Angular version.
-
-* `params`: An `Observable` that contains the required and [optional parameters](guide/router-tutorial-toh#optional-route-parameters) specific to the route. Use `paramMap` instead.
-
-* `queryParams`: An `Observable` that contains the [query parameters](guide/router-tutorial-toh#query-parameters) available to all routes.
-Use `queryParamMap` instead.
-
-</div>
 
 ### Router events
 
