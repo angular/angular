@@ -263,6 +263,9 @@ export interface ContentChildrenDecorator {
 }
 
 // @public
+export const createNgModuleRef: <T>(ngModule: Type<T>, parentInjector?: Injector) => NgModuleRef<T>;
+
+// @public
 export function createPlatform(injector: Injector): PlatformRef;
 
 // @public
