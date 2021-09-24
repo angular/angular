@@ -202,6 +202,6 @@
     "@babel/template": "7.8.6",
     "@babel/traverse": "7.8.6",
     "@babel/types": "7.8.6",
-    "typescript": "4.4.2"
+    "typescript": "4.4.3"
   }
 }
