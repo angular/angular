@@ -467,13 +467,10 @@ runInEachFileSystem(() => {
           const safeMethodCall = nodes[2].inputs[0].value as ASTWithSource;
           const methodCallSymbol = templateTypeChecker.getSymbolOfNode(safeMethodCall, cmp)!;
           assertExpressionSymbol(methodCallSymbol);
-          expect(program.getTypeChecker().symbolToString(methodCallSymbol.tsSymbol!))
-              .toEqual('speak');
-          expect((methodCallSymbol.tsSymbol!.declarations![0] as ts.PropertyDeclaration)
-                     .parent.name!.getText())
-              .toEqual('Person');
+          // Note that the symbol returned is for the return value of the safe method call.
+          expect(methodCallSymbol.tsSymbol).toBeNull();
           expect(program.getTypeChecker().typeToString(methodCallSymbol.tsType))
-              .toEqual('string | undefined');
+              .toBe('string | undefined');
         });
 
         it('safe keyed reads', () => {
@@ -869,14 +866,9 @@ runInEachFileSystem(() => {
         const node = getAstElements(templateTypeChecker, cmp)[0];
         const callSymbol = templateTypeChecker.getSymbolOfNode(node.inputs[0].value, cmp)!;
         assertExpressionSymbol(callSymbol);
-        // Note that the symbol returned is for the method name of the Call. The AST
-        // does not support specific designation for the name so we assume that's what
-        // is wanted in this case. We don't support retrieving a symbol for the whole
-        // call expression and if you want to get a symbol for the args, you can
-        // use the AST of the args in the `Call`.
-        expect(program.getTypeChecker().symbolToString(callSymbol.tsSymbol!)).toEqual('toString');
-        expect(program.getTypeChecker().typeToString(callSymbol.tsType))
-            .toEqual('(v: any) => string');
+        // Note that the symbol returned is for the return value of the Call.
+        expect(callSymbol.tsSymbol).toBeNull();
+        expect(program.getTypeChecker().typeToString(callSymbol.tsType)).toBe('string');
       });
     });
 

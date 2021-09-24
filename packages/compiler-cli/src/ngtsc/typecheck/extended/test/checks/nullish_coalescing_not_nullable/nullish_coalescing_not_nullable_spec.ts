@@ -133,25 +133,29 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(0);
     });
 
-    it('does not blow up when there is no symbol for the LHS of the operator', () => {
-      const fileName = absoluteFrom('/main.ts');
-      const {program, templateTypeChecker} = setup([
-        {
-          fileName,
-          templates: {
-            'TestCmp': `{{ (123 | doesNotExist) ?? 'invalid date' }}`,
-          },
-          source: `
-            export class TestCmp { var1: string | undefined = "text"; }
-          `,
-        },
-      ]);
-      const sf = getSourceFileOrError(program, fileName);
-      const component = getClass(sf, 'TestCmp');
-      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(), [new NullishCoalescingNotNullableCheck()]);
-      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
-      expect(diags.length).toBe(0);
-    });
+    it('should not produce nullish coalescing warning when the left side is a nullable expression',
+       () => {
+         const fileName = absoluteFrom('/main.ts');
+         const {program, templateTypeChecker} = setup([
+           {
+             fileName,
+             templates: {
+               'TestCmp': `{{ func() ?? 'foo' }}`,
+             },
+             source: `
+               export class TestCmp {
+                 func: (): string | null => null;
+               }
+             `,
+           },
+         ]);
+         const sf = getSourceFileOrError(program, fileName);
+         const component = getClass(sf, 'TestCmp');
+         const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+             templateTypeChecker, program.getTypeChecker(),
+             [new NullishCoalescingNotNullableCheck()]);
+         const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+         expect(diags.length).toBe(0);
+       });
   });
 });
