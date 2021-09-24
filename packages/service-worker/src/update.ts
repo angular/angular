@@ -87,6 +87,14 @@ export class SwUpdate {
     this.unrecoverable = this.sw.eventsOfType<UnrecoverableStateEvent>('UNRECOVERABLE_STATE');
   }
 
+  /**
+   * Checks for an update and waits until the new version is ready for activation.
+   *
+   * @returns a promise that
+   * - resolves to `true` if a new version was found and is ready to be activated.
+   * - resolves to `false` if no new version was found
+   * - rejects if any error occurs
+   */
   checkForUpdate(): Promise<boolean> {
     if (!this.sw.isEnabled) {
       return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
@@ -95,6 +103,14 @@ export class SwUpdate {
     return this.sw.postMessageWithOperation('CHECK_FOR_UPDATES', {nonce}, nonce);
   }
 
+  /**
+   * Activates an update that is ready for activation.
+   *
+   * @returns a promise that
+   *  - resolves to `true` if an update was activated successfully
+   *  - resolves to `false` if no updated was ready for activation
+   *  - rejects if any error occurs
+   */
   activateUpdate(): Promise<boolean> {
     if (!this.sw.isEnabled) {
       return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));

@@ -32,6 +32,8 @@ export interface UpdateAvailableEvent {
  * @see {@link guide/service-worker-communications Service worker communication guide}
  *
  * @deprecated
+ * This event was only emitted by the deprecated {@link SwUpdate#activated}.
+ * Use the return value of {@link SwUpdate#activateUpdate} instead.
  *
  * @publicApi
  */
