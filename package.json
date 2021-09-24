@@ -63,7 +63,7 @@
     "@bazel/runfiles": "4.0.0",
     "@bazel/terser": "4.0.0",
     "@bazel/typescript": "4.0.0",
-    "@microsoft/api-extractor": "7.18.7",
+    "@microsoft/api-extractor": "7.18.11",
     "@schematics/angular": "13.0.0-next.6",
     "@types/angular": "^1.6.47",
     "@types/babel__core": "7.1.6",
@@ -191,7 +191,6 @@
   "// 4": "Overwrite graceful-fs to a version that does not rely on the 'natives' package. This fixes gulp for >= 10.13, more information: #28213",
   "// 5": "Ensure a single version of webdriver-manager so it is hoisted as the integration tests depend on it being found at ../../node_modules/webdriver-manager",
   "// 6": "Ensure that `@babel/*` packages match the below versions to avoid conflicts with `types/babel__*`",
-  "// 7": "TypeScript has to be resolved to 4.4 temporarily until @microsoft/api-extractor is updated",
   "resolutions": {
     "**/graceful-fs": "4.2.8",
     "**/webdriver-manager": "12.1.8",
@@ -201,7 +200,6 @@
     "@babel/preset-env": "7.10.2",
     "@babel/template": "7.8.6",
     "@babel/traverse": "7.8.6",
-    "@babel/types": "7.8.6",
-    "typescript": "4.4.3"
+    "@babel/types": "7.8.6"
   }
 }
