@@ -167,30 +167,18 @@ import * as i0 from "@angular/core";
 class SomeDep {
 }
 class MyAlternateService {
-    constructor(dep) { }
+    constructor(dep, optional) { }
 }
 export class MyService {
 }
 MyService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyService, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
-MyService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyService, providedIn: 'root', useFactory: (dep) => new MyAlternateService(dep), deps: [{ token: SomeDep }] });
+MyService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyService, providedIn: 'root', useFactory: (dep, optional) => new MyAlternateService(dep, optional), deps: [{ token: SomeDep }, { token: SomeDep, optional: true }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyService, decorators: [{
             type: Injectable,
             args: [{
                     providedIn: 'root',
-                    useFactory: (dep) => new MyAlternateService(dep),
-                    deps: [SomeDep]
-                }]
-        }] });
-export class MyOptionalService {
-}
-MyOptionalService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyOptionalService, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
-MyOptionalService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyOptionalService, providedIn: 'root', useFactory: (dep) => new MyAlternateService(dep), deps: [{ token: SomeDep, optional: true }] });
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyOptionalService, decorators: [{
-            type: Injectable,
-            args: [{
-                    providedIn: 'root',
-                    useFactory: (dep) => new MyAlternateService(dep),
-                    deps: [[new Optional(), SomeDep]]
+                    useFactory: (dep, optional) => new MyAlternateService(dep, optional),
+                    deps: [SomeDep, [new Optional(), SomeDep]]
                 }]
         }] });
 
@@ -201,10 +189,6 @@ import * as i0 from "@angular/core";
 export declare class MyService {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyService, never>;
     static ɵprov: i0.ɵɵInjectableDeclaration<MyService>;
-}
-export declare class MyOptionalService {
-    static ɵfac: i0.ɵɵFactoryDeclaration<MyOptionalService, never>;
-    static ɵprov: i0.ɵɵInjectableDeclaration<MyOptionalService>;
 }
 
 /****************************************************************************************************
