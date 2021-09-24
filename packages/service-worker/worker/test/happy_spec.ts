@@ -14,7 +14,7 @@ import {sha1} from '../src/sha1';
 import {clearAllCaches, MockCache} from '../testing/cache';
 import {MockWindowClient} from '../testing/clients';
 import {MockRequest, MockResponse} from '../testing/fetch';
-import {MockFileSystem, MockFileSystemBuilder, MockServerState, MockServerStateBuilder, tmpHashTableForFs,} from '../testing/mock';
+import {MockFileSystem, MockFileSystemBuilder, MockServerState, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock';
 import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
 import {envIsSupported} from '../testing/utils';
 

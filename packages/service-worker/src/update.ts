@@ -10,7 +10,7 @@ import {Injectable} from '@angular/core';
 import {NEVER, Observable} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 
-import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, UnrecoverableStateEvent, UpdateActivatedEvent, UpdateAvailableEvent, VersionEvent, VersionReadyEvent,} from './low_level';
+import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, UnrecoverableStateEvent, UpdateActivatedEvent, UpdateAvailableEvent, VersionEvent, VersionReadyEvent} from './low_level';
 
 
 
@@ -25,12 +25,13 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, UnrecoverableStateEvent, UpdateAc
 @Injectable()
 export class SwUpdate {
   /**
-   * Emits an `VersionDetectedEvent` event whenever a new version was detected.
+   * Emits a `VersionDetectedEvent` event whenever a new version is detected on the server.
    *
-   * Emits an `VersionInstallationFailedEvent` event whenever an installation of version fails.
+   * Emits a `VersionInstallationFailedEvent` event whenever checking for or downloading a new
+   * version fails.
    *
-   * Emits an `VersionReadyEvent` event whenever a new version is ready for activation.
-   *
+   * Emits a `VersionReadyEvent` event whenever a new version has been downloaded and is ready for
+   * activation.
    */
   readonly versionUpdates: Observable<VersionEvent>;
 
