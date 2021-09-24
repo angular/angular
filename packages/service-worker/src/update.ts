@@ -41,11 +41,11 @@ export class SwUpdate {
    * @deprecated Use {@link versionUpdates} instead.
    *
    * The of behavior `available` can be rebuild by filtering for the `VersionReadyEvent`:
-   * @example
+   * ```
    * this.versionUpdates.pipe(
    *   filter((evt: VersionEvent): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
    * ).subscribe(...)
-   *
+   * ```
    */
   readonly available: Observable<UpdateAvailableEvent>;
 
