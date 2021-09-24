@@ -24,7 +24,7 @@
     "master": {
       "uncompressed": {
         "runtime": 1105,
-        "main": 145314,
+        "main": 144744,
         "polyfills": 36939
       }
     }
@@ -33,7 +33,7 @@
     "master": {
       "uncompressed": {
         "runtime": 1101,
-        "main": 137914,
+        "main": 137399,
         "polyfills": 37641
       }
     }
@@ -42,7 +42,7 @@
     "master": {
       "uncompressed": {
         "runtime": 2843,
-        "main": 239937,
+        "main": 238453,
         "polyfills": 37064,
         "src_app_lazy_lazy_module_ts": 795
       }

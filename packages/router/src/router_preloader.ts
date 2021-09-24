@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, Injectable, Injector, NgModuleFactoryLoader, NgModuleRef, OnDestroy} from '@angular/core';
+import {Compiler, Injectable, Injector, NgModuleRef, OnDestroy} from '@angular/core';
 import {from, Observable, of, Subscription} from 'rxjs';
 import {catchError, concatMap, filter, map, mergeAll, mergeMap} from 'rxjs/operators';
 
@@ -77,12 +77,12 @@ export class RouterPreloader implements OnDestroy {
   private subscription?: Subscription;
 
   constructor(
-      private router: Router, moduleLoader: NgModuleFactoryLoader, compiler: Compiler,
-      private injector: Injector, private preloadingStrategy: PreloadingStrategy) {
+      private router: Router, compiler: Compiler, private injector: Injector,
+      private preloadingStrategy: PreloadingStrategy) {
     const onStartLoad = (r: Route) => router.triggerEvent(new RouteConfigLoadStart(r));
     const onEndLoad = (r: Route) => router.triggerEvent(new RouteConfigLoadEnd(r));
 
-    this.loader = new RouterConfigLoader(moduleLoader, compiler, onStartLoad, onEndLoad);
+    this.loader = new RouterConfigLoader(injector, compiler, onStartLoad, onEndLoad);
   }
 
   setUpPreloading(): void {

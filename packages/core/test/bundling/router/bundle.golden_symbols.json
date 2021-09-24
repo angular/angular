@@ -177,9 +177,6 @@
     "name": "DATA_URL_PATTERN"
   },
   {
-    "name": "DEFAULT_CONFIG"
-  },
-  {
     "name": "DEFAULT_CURRENCY_CODE"
   },
   {
@@ -477,9 +474,6 @@
     "name": "NgModuleFactory"
   },
   {
-    "name": "NgModuleFactoryLoader"
-  },
-  {
     "name": "NgModuleRef"
   },
   {
@@ -768,12 +762,6 @@
     "name": "SwitchMapSubscriber"
   },
   {
-    "name": "SystemJsNgModuleLoader"
-  },
-  {
-    "name": "SystemJsNgModuleLoaderConfig"
-  },
-  {
     "name": "THROW_IF_NOT_FOUND"
   },
   {
@@ -1003,9 +991,6 @@
   },
   {
     "name": "catchError"
-  },
-  {
-    "name": "checkNotEmpty"
   },
   {
     "name": "checkStable"

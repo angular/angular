@@ -17,7 +17,6 @@ import { Location as Location_2 } from '@angular/common';
 import { LocationStrategy } from '@angular/common';
 import { ModuleWithProviders } from '@angular/core';
 import { NgModuleFactory } from '@angular/core';
-import { NgModuleFactoryLoader } from '@angular/core';
 import { Observable } from 'rxjs';
 import { OnChanges } from '@angular/core';
 import { OnDestroy } from '@angular/core';
@@ -174,9 +173,6 @@ export class DefaultUrlSerializer implements UrlSerializer {
     serialize(tree: UrlTree): string;
 }
 
-// @public @deprecated
-export type DeprecatedLoadChildren = string;
-
 // @public
 export type DetachedRouteHandle = {};
 
@@ -246,7 +242,7 @@ export interface IsActiveMatchOptions {
 }
 
 // @public
-export type LoadChildren = LoadChildrenCallback | DeprecatedLoadChildren;
+export type LoadChildren = LoadChildrenCallback;
 
 // @public
 export type LoadChildrenCallback = () => Type<any> | NgModuleFactory<any> | Observable<Type<any>> | Promise<NgModuleFactory<any> | Type<any> | any>;
@@ -466,7 +462,7 @@ export class RouteConfigLoadStart {
 
 // @public
 export class Router {
-    constructor(rootComponentType: Type<any> | null, urlSerializer: UrlSerializer, rootContexts: ChildrenOutletContexts, location: Location_2, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
+    constructor(rootComponentType: Type<any> | null, urlSerializer: UrlSerializer, rootContexts: ChildrenOutletContexts, location: Location_2, injector: Injector, compiler: Compiler, config: Routes);
     canceledNavigationResolution: 'replace' | 'computed';
     // (undocumented)
     config: Routes;
@@ -650,7 +646,7 @@ export interface RouterOutletContract {
 
 // @public
 export class RouterPreloader implements OnDestroy {
-    constructor(router: Router, moduleLoader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, preloadingStrategy: PreloadingStrategy);
+    constructor(router: Router, compiler: Compiler, injector: Injector, preloadingStrategy: PreloadingStrategy);
     // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)

@@ -917,7 +917,7 @@ describe('ngc transformer command-line', () => {
           import {Component, NgModule} from '@angular/core';
           import {RouterModule} from '@angular/router';
 
-          export function foo(): string {
+          export function foo(): any {
             console.log('side-effect');
             return 'test';
           }
@@ -951,7 +951,7 @@ describe('ngc transformer command-line', () => {
           import {Component, NgModule} from '@angular/core';
           import {RouterModule} from '@angular/router';
 
-          export function foo(): string {
+          export function foo(): any {
             console.log('side-effect');
             return 'test';
           }

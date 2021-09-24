@@ -10,10 +10,9 @@ import { ExtraOptions } from '@angular/router';
 import { Injector } from '@angular/core';
 import { Location as Location_2 } from '@angular/common';
 import { ModuleWithProviders } from '@angular/core';
-import { NgModuleFactory } from '@angular/core';
-import { NgModuleFactoryLoader } from '@angular/core';
 import { Route } from '@angular/router';
 import { Router } from '@angular/router';
+import { RouteReuseStrategy } from '@angular/router';
 import { Routes } from '@angular/router';
 import { UrlHandlingStrategy } from '@angular/router';
 import { UrlSerializer } from '@angular/router';
@@ -25,25 +24,7 @@ export class RouterTestingModule {
 }
 
 // @public
-export function setupTestingRouter(urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location_2, loader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, routes: Route[][], opts?: ExtraOptions, urlHandlingStrategy?: UrlHandlingStrategy): Router;
-
-// @public @deprecated
-export function setupTestingRouter(urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location_2, loader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, routes: Route[][], urlHandlingStrategy?: UrlHandlingStrategy): Router;
-
-// @public
-export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
-    constructor(compiler: Compiler);
-    // (undocumented)
-    load(path: string): Promise<NgModuleFactory<any>>;
-    set stubbedModules(modules: {
-        [path: string]: any;
-    });
-    // (undocumented)
-    get stubbedModules(): {
-        [path: string]: any;
-    };
-    }
-
+export function setupTestingRouter(urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location_2, compiler: Compiler, injector: Injector, routes: Route[][], opts?: ExtraOptions | UrlHandlingStrategy, urlHandlingStrategy?: UrlHandlingStrategy, routeReuseStrategy?: RouteReuseStrategy): Router;
 
 // (No @packageDocumentation comment for this package)
 

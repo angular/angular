@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, Component, Injector, NgModule, NgModuleFactory, NgModuleFactoryLoader, NgModuleRef, Type} from '@angular/core';
+import {Compiler, Component, Injector, NgModule, NgModuleFactory, NgModuleRef, Type} from '@angular/core';
 import {resolveComponentResources} from '@angular/core/src/metadata/resource_loading';
 import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {PreloadAllModules, PreloadingStrategy, RouterPreloader} from '@angular/router';
@@ -15,7 +15,7 @@ import {catchError, delay, filter, switchMap, take} from 'rxjs/operators';
 
 import {Route, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouterModule} from '../index';
 import {LoadedRouterConfig} from '../src/config';
-import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
+import {RouterTestingModule} from '../testing';
 
 
 describe('RouterPreloader', () => {

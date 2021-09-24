@@ -12,18 +12,6 @@ import {NgModuleFactory as R3NgModuleFactory} from '../render3/ng_module_ref';
 import {NgModuleFactory} from './ng_module_factory';
 import {getRegisteredNgModuleType} from './ng_module_factory_registration';
 
-
-/**
- * Used to load ng module factories.
- *
- * @publicApi
- * @deprecated the `string` form of `loadChildren` is deprecated, and `NgModuleFactoryLoader` is
- * part of its implementation. See `LoadChildren` for more details.
- */
-export abstract class NgModuleFactoryLoader {
-  abstract load(path: string): Promise<NgModuleFactory<any>>;
-}
-
 export function getModuleFactory__PRE_R3__(id: string): NgModuleFactory<any> {
   const factory = getRegisteredNgModuleType(id) as NgModuleFactory<any>| null;
   if (!factory) throw noModuleError(id);

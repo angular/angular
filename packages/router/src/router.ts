@@ -7,7 +7,7 @@
  */
 
 import {Location, PopStateEvent} from '@angular/common';
-import {Compiler, Injectable, Injector, NgModuleFactoryLoader, NgModuleRef, NgZone, Type, ɵConsole as Console} from '@angular/core';
+import {Compiler, Injectable, Injector, NgModuleRef, NgZone, Type, ɵConsole as Console} from '@angular/core';
 import {BehaviorSubject, EMPTY, Observable, of, Subject, SubscriptionLike} from 'rxjs';
 import {catchError, filter, finalize, map, switchMap, tap} from 'rxjs/operators';
 
@@ -581,7 +581,7 @@ export class Router {
   constructor(
       private rootComponentType: Type<any>|null, private urlSerializer: UrlSerializer,
       private rootContexts: ChildrenOutletContexts, private location: Location, injector: Injector,
-      loader: NgModuleFactoryLoader, compiler: Compiler, public config: Routes) {
+      compiler: Compiler, public config: Routes) {
     const onLoadStart = (r: Route) => this.triggerEvent(new RouteConfigLoadStart(r));
     const onLoadEnd = (r: Route) => this.triggerEvent(new RouteConfigLoadEnd(r));
 
@@ -595,7 +595,7 @@ export class Router {
     this.rawUrlTree = this.currentUrlTree;
     this.browserUrlTree = this.currentUrlTree;
 
-    this.configLoader = new RouterConfigLoader(loader, compiler, onLoadStart, onLoadEnd);
+    this.configLoader = new RouterConfigLoader(injector, compiler, onLoadStart, onLoadEnd);
     this.routerState = createEmptyState(this.currentUrlTree, this.rootComponentType);
 
     this.transitions = new BehaviorSubject<NavigationTransition>({

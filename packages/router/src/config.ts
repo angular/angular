@@ -113,25 +113,10 @@ export type LoadChildrenCallback = () => Type<any>|NgModuleFactory<any>|Observab
  *
  * A function that returns a set of routes to load.
  *
- * The string form of `LoadChildren` is deprecated (see `DeprecatedLoadChildren`). The function
- * form (`LoadChildrenCallback`) should be used instead.
- *
- * @see `loadChildrenCallback`
+ * @see `LoadChildrenCallback`
  * @publicApi
  */
-export type LoadChildren = LoadChildrenCallback|DeprecatedLoadChildren;
-
-/**
- * A string of the form `path/to/file#exportName` that acts as a URL for a set of routes to load.
- *
- * @see `loadChildrenCallback`
- * @publicApi
- * @deprecated The `string` form of `loadChildren` is deprecated in favor of the
- * `LoadChildrenCallback` function which uses the ES dynamic `import()` expression.
- * This offers a more natural and standards-based mechanism to dynamically
- * load an ES module at runtime.
- */
-export type DeprecatedLoadChildren = string;
+export type LoadChildren = LoadChildrenCallback;
 
 /**
  *

@@ -7,7 +7,7 @@
  */
 
 import {APP_BASE_HREF, HashLocationStrategy, Location, LOCATION_INITIALIZED, LocationStrategy, PathLocationStrategy, PlatformLocation, ViewportScroller} from '@angular/common';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, Inject, Injectable, InjectionToken, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, NgProbeToken, OnDestroy, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, Inject, Injectable, InjectionToken, Injector, ModuleWithProviders, NgModule, NgProbeToken, OnDestroy, Optional, Provider, SkipSelf} from '@angular/core';
 import {of, Subject} from 'rxjs';
 
 import {EmptyOutletComponent} from './components/empty_outlet';
@@ -52,14 +52,13 @@ export const ROUTER_PROVIDERS: Provider[] = [
     provide: Router,
     useFactory: setupRouter,
     deps: [
-      UrlSerializer, ChildrenOutletContexts, Location, Injector, NgModuleFactoryLoader, Compiler,
-      ROUTES, ROUTER_CONFIGURATION, [UrlHandlingStrategy, new Optional()],
+      UrlSerializer, ChildrenOutletContexts, Location, Injector, Compiler, ROUTES,
+      ROUTER_CONFIGURATION, [UrlHandlingStrategy, new Optional()],
       [RouteReuseStrategy, new Optional()]
     ]
   },
   ChildrenOutletContexts,
   {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
-  {provide: NgModuleFactoryLoader, useClass: SystemJsNgModuleLoader},
   RouterPreloader,
   NoPreloading,
   PreloadAllModules,
@@ -431,11 +430,10 @@ export interface ExtraOptions {
 
 export function setupRouter(
     urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
-    injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Route[][],
-    opts: ExtraOptions = {}, urlHandlingStrategy?: UrlHandlingStrategy,
-    routeReuseStrategy?: RouteReuseStrategy) {
-  const router = new Router(
-      null, urlSerializer, contexts, location, injector, loader, compiler, flatten(config));
+    injector: Injector, compiler: Compiler, config: Route[][], opts: ExtraOptions = {},
+    urlHandlingStrategy?: UrlHandlingStrategy, routeReuseStrategy?: RouteReuseStrategy) {
+  const router =
+      new Router(null, urlSerializer, contexts, location, injector, compiler, flatten(config));
 
   if (urlHandlingStrategy) {
     router.urlHandlingStrategy = urlHandlingStrategy;
