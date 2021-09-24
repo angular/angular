@@ -27,7 +27,7 @@ describe('RouterPreloader', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
         imports: [RouterTestingModule.withRoutes(
-            [{path: 'lazy', loadChildren: 'expected', canLoad: ['someGuard']}])],
+            [{path: 'lazy', loadChildren: jasmine.createSpy('expected'), canLoad: ['someGuard']}])],
         providers: [{provide: PreloadingStrategy, useExisting: PreloadAllModules}]
       });
     });
@@ -51,40 +51,37 @@ describe('RouterPreloader', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
         imports: [RouterTestingModule.withRoutes(
-            [{path: 'lazy', loadChildren: 'expected', canLoad: ['someGuard']}])],
+            [{path: 'lazy', loadChildren: () => LoadedModule, canLoad: ['someGuard']}])],
         providers: [{provide: PreloadingStrategy, useExisting: PreloadAllModules}]
       });
     });
 
 
     it('should work',
-       fakeAsync(inject(
-           [NgModuleFactoryLoader, RouterPreloader, Router],
-           (loader: SpyNgModuleFactoryLoader, preloader: RouterPreloader, router: Router) => {
-             loader.stubbedModules = {expected: LoadedModule};
+       fakeAsync(inject([RouterPreloader, Router], (preloader: RouterPreloader, router: Router) => {
+         preloader.preload().subscribe(() => {});
 
-             preloader.preload().subscribe(() => {});
+         tick();
 
-             tick();
-
-             const c = router.config;
-             expect((c[0] as any)._loadedConfig).not.toBeDefined();
-           })));
+         const c = router.config;
+         expect((c[0] as any)._loadedConfig).not.toBeDefined();
+       })));
   });
 
   describe('should preload configurations', () => {
+    let lazySpy: jasmine.Spy;
     beforeEach(() => {
+      lazySpy = jasmine.createSpy('expected');
       TestBed.configureTestingModule({
-        imports: [RouterTestingModule.withRoutes([{path: 'lazy', loadChildren: 'expected'}])],
+        imports: [RouterTestingModule.withRoutes([{path: 'lazy', loadChildren: lazySpy}])],
         providers: [{provide: PreloadingStrategy, useExisting: PreloadAllModules}]
       });
     });
 
     it('should work',
        fakeAsync(inject(
-           [NgModuleFactoryLoader, RouterPreloader, Router, NgModuleRef],
-           (loader: SpyNgModuleFactoryLoader, preloader: RouterPreloader, router: Router,
-            testModule: NgModuleRef<any>) => {
+           [RouterPreloader, Router, NgModuleRef],
+           (preloader: RouterPreloader, router: Router, testModule: NgModuleRef<any>) => {
              const events: Array<RouteConfigLoadStart|RouteConfigLoadEnd> = [];
              @NgModule({
                declarations: [LazyLoadedCmp],
@@ -94,8 +91,8 @@ describe('RouterPreloader', () => {
              }
 
              @NgModule({
-               imports:
-                   [RouterModule.forChild([{path: 'LoadedModule1', loadChildren: 'expected2'}])]
+               imports: [RouterModule.forChild(
+                   [{path: 'LoadedModule1', loadChildren: () => LoadedModule2}])]
              })
              class LoadedModule1 {
              }
@@ -106,18 +103,12 @@ describe('RouterPreloader', () => {
                }
              });
 
-             loader.stubbedModules = {
-               expected: LoadedModule1,
-               expected2: LoadedModule2,
-             };
-
+             lazySpy.and.returnValue(LoadedModule1);
              preloader.preload().subscribe(() => {});
 
              tick();
 
              const c = router.config;
-             expect(c[0].loadChildren).toEqual('expected');
-
              const loadedConfig: LoadedRouterConfig = (c[0] as any)._loadedConfig!;
              const module: any = loadedConfig.module;
              expect(loadedConfig.routes[0].path).toEqual('LoadedModule1');
@@ -139,18 +130,20 @@ describe('RouterPreloader', () => {
   });
 
   describe('should support modules that have already been loaded', () => {
+    let lazySpy: jasmine.Spy;
     beforeEach(() => {
+      lazySpy = jasmine.createSpy('expected');
       TestBed.configureTestingModule({
-        imports: [RouterTestingModule.withRoutes([{path: 'lazy', loadChildren: 'expected'}])],
+        imports: [RouterTestingModule.withRoutes([{path: 'lazy', loadChildren: lazySpy}])],
         providers: [{provide: PreloadingStrategy, useExisting: PreloadAllModules}]
       });
     });
 
     it('should work',
        fakeAsync(inject(
-           [NgModuleFactoryLoader, RouterPreloader, Router, NgModuleRef, Compiler],
-           (loader: SpyNgModuleFactoryLoader, preloader: RouterPreloader, router: Router,
-            testModule: NgModuleRef<any>, compiler: Compiler) => {
+           [RouterPreloader, Router, NgModuleRef, Compiler],
+           (preloader: RouterPreloader, router: Router, testModule: NgModuleRef<any>,
+            compiler: Compiler) => {
              @NgModule()
              class LoadedModule2 {
              }
@@ -161,9 +154,9 @@ describe('RouterPreloader', () => {
                imports: [RouterModule.forChild([
                  <Route>{
                    path: 'LoadedModule2',
-                   loadChildren: 'no',
+                   loadChildren: jasmine.createSpy('no'),
                    _loadedConfig: {
-                     routes: [{path: 'LoadedModule3', loadChildren: 'expected3'}],
+                     routes: [{path: 'LoadedModule3', loadChildren: () => LoadedModule3}],
                      module: module2,
                    }
                  },
@@ -176,11 +169,7 @@ describe('RouterPreloader', () => {
              class LoadedModule3 {
              }
 
-             loader.stubbedModules = {
-               expected: LoadedModule1,
-               expected3: LoadedModule3,
-             };
-
+             lazySpy.and.returnValue(LoadedModule1);
              preloader.preload().subscribe(() => {});
 
              tick();
@@ -516,7 +505,8 @@ describe('RouterPreloader', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
         imports: [RouterTestingModule.withRoutes([
-          {path: 'lazy1', loadChildren: 'expected1'}, {path: 'lazy2', loadChildren: 'expected2'}
+          {path: 'lazy1', loadChildren: jasmine.createSpy('expected1')},
+          {path: 'lazy2', loadChildren: () => LoadedModule}
         ])],
         providers: [{provide: PreloadingStrategy, useExisting: PreloadAllModules}]
       });
@@ -524,19 +514,15 @@ describe('RouterPreloader', () => {
 
 
     it('should work',
-       fakeAsync(inject(
-           [NgModuleFactoryLoader, RouterPreloader, Router],
-           (loader: SpyNgModuleFactoryLoader, preloader: RouterPreloader, router: Router) => {
-             loader.stubbedModules = {expected2: LoadedModule};
+       fakeAsync(inject([RouterPreloader, Router], (preloader: RouterPreloader, router: Router) => {
+         preloader.preload().subscribe(() => {});
 
-             preloader.preload().subscribe(() => {});
+         tick();
 
-             tick();
-
-             const c = router.config;
-             expect((c[0] as any)._loadedConfig).not.toBeDefined();
-             expect((c[1] as any)._loadedConfig).toBeDefined();
-           })));
+         const c = router.config;
+         expect((c[0] as any)._loadedConfig).not.toBeDefined();
+         expect((c[1] as any)._loadedConfig).toBeDefined();
+       })));
   });
 
   describe('should copy loaded configs', () => {
@@ -547,28 +533,25 @@ describe('RouterPreloader', () => {
 
     beforeEach(() => {
       TestBed.configureTestingModule({
-        imports: [RouterTestingModule.withRoutes([{path: 'lazy1', loadChildren: 'expected'}])],
+        imports:
+            [RouterTestingModule.withRoutes([{path: 'lazy1', loadChildren: () => LoadedModule}])],
         providers: [{provide: PreloadingStrategy, useExisting: PreloadAllModules}]
       });
     });
 
 
     it('should work',
-       fakeAsync(inject(
-           [NgModuleFactoryLoader, RouterPreloader, Router],
-           (loader: SpyNgModuleFactoryLoader, preloader: RouterPreloader, router: Router) => {
-             loader.stubbedModules = {expected: LoadedModule};
+       fakeAsync(inject([RouterPreloader, Router], (preloader: RouterPreloader, router: Router) => {
+         preloader.preload().subscribe(() => {});
 
-             preloader.preload().subscribe(() => {});
+         tick();
 
-             tick();
-
-             const c = router.config as {_loadedConfig: LoadedRouterConfig}[];
-             expect(c[0]._loadedConfig).toBeDefined();
-             expect(c[0]._loadedConfig!.routes).not.toBe(configs);
-             expect(c[0]._loadedConfig!.routes[0]).not.toBe(configs[0]);
-             expect(c[0]._loadedConfig!.routes[0].component).toBe(configs[0].component);
-           })));
+         const c = router.config as {_loadedConfig: LoadedRouterConfig}[];
+         expect(c[0]._loadedConfig).toBeDefined();
+         expect(c[0]._loadedConfig!.routes).not.toBe(configs);
+         expect(c[0]._loadedConfig!.routes[0]).not.toBe(configs[0]);
+         expect(c[0]._loadedConfig!.routes[0].component).toBe(configs[0].component);
+       })));
   });
 
   describe(
@@ -587,18 +570,13 @@ describe('RouterPreloader', () => {
         beforeEach(() => {
           TestBed.configureTestingModule({
             imports: [RouterTestingModule.withRoutes(
-                [{path: 'lazyEmptyModule', loadChildren: 'expected2'}])],
+                [{path: 'lazyEmptyModule', loadChildren: () => EmptyModule}])],
             providers: [{provide: PreloadingStrategy, useExisting: PreloadAllModules}]
           });
         });
 
-        it('should work',
-           fakeAsync(inject(
-               [NgModuleFactoryLoader, RouterPreloader],
-               (loader: SpyNgModuleFactoryLoader, preloader: RouterPreloader) => {
-                 loader.stubbedModules = {expected2: EmptyModule};
-
-                 preloader.preload().subscribe();
-               })));
+        it('should work', fakeAsync(inject([RouterPreloader], (preloader: RouterPreloader) => {
+             preloader.preload().subscribe();
+           })));
       });
 });

@@ -81,13 +81,9 @@ describe('AppComponent & RouterTestingModule', () => {
 
 
 ///////////////
-import { NgModuleFactoryLoader } from '@angular/core';
-import { SpyNgModuleFactoryLoader } from '@angular/router/testing';
 
 import { HeroModule } from './hero/hero.module';  // should be lazy loaded
 import { HeroListComponent } from './hero/hero-list.component';
-
-let loader: SpyNgModuleFactoryLoader;
 
 ///////// Can't get lazy loaded Heroes to work yet
 xdescribe('AppComponent & Lazy Loading (not working yet)', () => {
@@ -104,9 +100,7 @@ xdescribe('AppComponent & Lazy Loading (not working yet)', () => {
 
   beforeEach(fakeAsync(() => {
     createComponent();
-    loader = TestBed.inject(NgModuleFactoryLoader) as SpyNgModuleFactoryLoader;
-    loader.stubbedModules = {expected: HeroModule};
-    router.resetConfig([{path: 'heroes', loadChildren: 'expected'}]);
+    router.resetConfig([{path: 'heroes', loadChildren: () => HeroModule}]);
   }));
 
   it('should navigate to "Heroes" on click', waitForAsync(() => {
