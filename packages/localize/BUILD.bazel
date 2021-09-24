@@ -25,7 +25,7 @@ ng_package(
     ],
     nested_packages = [
         "//packages/localize/schematics:npm_package",
-        "//packages/localize/src/tools:npm_package",
+        "//packages/localize/tools:npm_package",
     ],
     tags = [
         "release-with-framework",

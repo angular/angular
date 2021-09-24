@@ -1,7 +1,7 @@
 load("@npm//typescript:index.bzl", "tsc")
 load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
 
-package(default_visibility = ["//packages/localize/src/tools/test/extract/integration:__pkg__"])
+package(default_visibility = ["//packages/localize/tools/test/extract/integration:__pkg__"])
 
 tsc(
     name = "compile_es5",
