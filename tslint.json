@@ -13,7 +13,28 @@
     // Custom rules written in TypeScript.
     "require-internal-with-underscore": true,
     "no-implicit-override-abstract": true,
-
+    // The following CommonJS modules have type definitions that suggest the existence of
+    // named exports. This is not true at runtime when imported from an ES module. Instead
+    // default imports should be used as for the ESModule/CommonJS interop. Read more about
+    // this here: https://nodejs.org/api/esm.html#esm_import_statements.
+    // Note: The same applies for the `cluster` builtin which does not expose prototype
+    // methods as named exports.
+    "no-named-import-for-es-module-interop": [
+      true,
+      "typescript",
+      "minimist",
+      "magic-string",
+      "semver",
+      "yargs",
+      "glob",
+      "cluster",
+      "convert-source-map",
+      "@babel/core",
+      "@babel/types",
+      "@babel/template",
+      "@babel/parser",
+      "@babel/generator"
+    ],
     "eofline": true,
     "file-header": [
       true,

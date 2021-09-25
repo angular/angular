@@ -10,6 +10,7 @@
     "module": "es2020",
     "strict": true,
     "moduleResolution": "node",
+    "esModuleInterop": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "outDir": "../dist/all/@angular",
