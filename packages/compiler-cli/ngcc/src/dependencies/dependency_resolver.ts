@@ -7,6 +7,7 @@
  */
 
 import {DepGraph} from 'dependency-graph';
+import module from 'module';
 
 import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
@@ -16,7 +17,7 @@ import {PartiallyOrderedList} from '../utils';
 
 import {createDependencyInfo, DependencyHost, EntryPointWithDependencies} from './dependency_host';
 
-const builtinNodeJsModules = new Set<string>(require('module').builtinModules);
+const builtinNodeJsModules = new Set<string>(module.builtinModules);
 
 /**
  * Holds information about entry points that are removed because
