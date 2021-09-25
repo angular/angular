@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {create, getExternalFiles} from '../src/ts_plugin';
 import {CompletionKind} from '../src/types';

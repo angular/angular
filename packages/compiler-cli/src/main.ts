@@ -7,7 +7,7 @@
  */
 
 import * as tsickle from 'tsickle';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {Diagnostics, exitCodeFromResult, filterErrorsAndWarnings, formatDiagnostics, ParsedConfiguration, performCompilation, readConfiguration} from './perform_compile';
 import {createPerformWatchHost, performWatchCompilation} from './perform_watch';

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {leadingComment} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {TypeScriptAstFactory} from '../src/typescript_ast_factory';
 

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {transformSync} from '@babel/core';
+import {transformSync} from '../src/babel_core';
 
 describe('default babel plugin entry-point', () => {
   it('should work as a Babel plugin using the module specifier', () => {

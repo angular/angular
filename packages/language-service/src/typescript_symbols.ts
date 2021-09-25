@@ -8,7 +8,7 @@
 
 import {CompilePipeSummary, StaticSymbol} from '@angular/compiler';
 import * as path from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {BuiltinType, DeclarationKind, Definition, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './symbols';
 

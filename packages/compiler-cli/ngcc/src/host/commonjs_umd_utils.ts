@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {Declaration} from '../../../src/ngtsc/reflection';
 import {isAssignment} from '../../../src/ngtsc/util/src/typescript';
 

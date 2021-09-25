@@ -7,7 +7,7 @@
  */
 
 import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 const parseSpanComment = /^(\d+),(\d+)$/;
 

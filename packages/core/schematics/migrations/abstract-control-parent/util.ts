@@ -7,7 +7,7 @@
  */
 
 import {normalize} from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {isNullCheck, isSafeAccess} from '../../utils/typescript/nodes';
 import {hasOneOfTypes, isNullableType} from '../../utils/typescript/symbol';
 

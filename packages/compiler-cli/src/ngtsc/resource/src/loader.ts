@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ResourceLoader, ResourceLoaderContext} from '../../annotations';
 import {NgCompilerAdapter, ResourceHostContext} from '../../core/api';

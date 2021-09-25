@@ -7,7 +7,7 @@
  */
 import {Statement} from '@angular/compiler';
 import MagicString from 'magic-string';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {absoluteFromSourceFile, AbsoluteFsPath, PathManipulation, toRelativeImport} from '../../../src/ngtsc/file_system';
 import {Reexport} from '../../../src/ngtsc/imports';

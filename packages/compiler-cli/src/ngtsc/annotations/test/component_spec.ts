@@ -7,7 +7,7 @@
  */
 
 import {ConstantPool} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';

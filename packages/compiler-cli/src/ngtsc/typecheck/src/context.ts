@@ -8,7 +8,7 @@
 
 import {BoundTarget, ParseError, ParseSourceFile, R3TargetBinder, SchemaMetadata, TemplateParseError, TmplAstNode} from '@angular/compiler';
 import {ErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system';
 import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';

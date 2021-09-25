@@ -5,9 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {parse} from '@babel/parser';
 import traverse, {NodePath} from '@babel/traverse';
-import * as t from '@babel/types';
+
+import {types as t} from '../src/babel_core';
 import {BabelDeclarationScope} from '../src/babel_declaration_scope';
 
 describe('BabelDeclarationScope', () => {

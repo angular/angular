@@ -7,7 +7,7 @@
  */
 
 import {DirectiveMeta as T2DirectiveMeta, SchemaMetadata} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';

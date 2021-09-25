@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as o from '@angular/compiler/src/output/output_ast';
-import {NodePath, PluginObj, transformSync} from '@babel/core';
 import generate from '@babel/generator';
-import * as t from '@babel/types';
 
 import {FileLinker} from '../../../linker';
 import {MockFileSystemNative} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {PartialDirectiveLinkerVersion1} from '../../src/file_linker/partial_linkers/partial_directive_linker_1';
+import {NodePath, PluginObj, transformSync, types as t} from '../src/babel_core';
 import {createEs2015LinkerPlugin} from '../src/es2015_linker_plugin';
 
 describe('createEs2015LinkerPlugin()', () => {

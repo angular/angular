@@ -7,7 +7,7 @@
  */
 
 import {RuleFailure, Rules} from 'tslint';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {RelativeLinkResolutionCollector} from '../relative-link-resolution/collector';
 import {TslintUpdateRecorder} from '../relative-link-resolution/google3/tslint_update_recorder';

@@ -9,7 +9,7 @@
 const TS = /\.tsx?$/i;
 const D_TS = /\.d\.ts$/i;
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {AbsoluteFsPath, getFileSystem} from '../../file_system';
 import {DeclarationNode} from '../../reflection';
 

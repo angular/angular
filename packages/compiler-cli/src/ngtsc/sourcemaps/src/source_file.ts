@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {removeComments, removeMapFileComments} from 'convert-source-map';
+import mapHelpers from 'convert-source-map';
 import {decode, encode, SourceMapMappings, SourceMapSegment} from 'sourcemap-codec';
 
 import {AbsoluteFsPath, PathManipulation} from '../../file_system';
@@ -14,7 +14,8 @@ import {RawSourceMap, SourceMapInfo} from './raw_source_map';
 import {compareSegments, offsetSegment, SegmentMarker} from './segment_marker';
 
 export function removeSourceMapComments(contents: string): string {
-  return removeMapFileComments(removeComments(contents)).replace(/\n\n$/, '\n');
+  return mapHelpers.removeMapFileComments(mapHelpers.removeComments(contents))
+      .replace(/\n\n$/, '\n');
 }
 
 export class SourceFile {

@@ -7,7 +7,7 @@
  */
 import {WrappedNodeExpr} from '@angular/compiler';
 import {R3Reference} from '@angular/compiler/src/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';

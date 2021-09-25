@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {fromObject} from 'convert-source-map';
+import mapHelpers from 'convert-source-map';
 
 import {absoluteFrom, FileSystem, getFileSystem} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
@@ -255,19 +255,21 @@ runInEachFileSystem(() => {
          const aMap = createRawSourceMap({file: 'a.js', sources: ['b.js']});
 
          const aPath = _('/foo/src/a.js');
-         fs.writeFile(aPath, 'a content\n' + fromObject(aMap).toComment());
+         fs.writeFile(aPath, 'a content\n' + mapHelpers.fromObject(aMap).toComment());
 
          const bPath = _('/foo/src/b.js');
          fs.writeFile(
              bPath,
              'b content\n' +
-                 fromObject(createRawSourceMap({file: 'b.js', sources: ['c.js']})).toComment());
+                 mapHelpers.fromObject(createRawSourceMap({file: 'b.js', sources: ['c.js']}))
+                     .toComment());
 
          const cPath = _('/foo/src/c.js');
          fs.writeFile(
              cPath,
              'c content\n' +
-                 fromObject(createRawSourceMap({file: 'c.js', sources: ['a.js']})).toComment());
+                 mapHelpers.fromObject(createRawSourceMap({file: 'c.js', sources: ['a.js']}))
+                     .toComment());
 
          const sourceFile = registry.loadSourceFile(aPath)!;
          expect(sourceFile).not.toBe(null!);
@@ -338,7 +340,7 @@ runInEachFileSystem(() => {
       const aPath = _('/foo/src/a.js');
       const aMap = createRawSourceMap(
           {file: 'a.js', sources: ['a.js'], sourcesContent: ['inline original a.js content']});
-      fs.writeFile(aPath, 'a content\n' + fromObject(aMap).toComment());
+      fs.writeFile(aPath, 'a content\n' + mapHelpers.fromObject(aMap).toComment());
 
       const sourceFile = registry.loadSourceFile(aPath);
       if (sourceFile === null) {

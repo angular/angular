@@ -12,7 +12,7 @@
  * Entry point for all public APIs of the language service package.
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 export interface PluginConfig {
   /**

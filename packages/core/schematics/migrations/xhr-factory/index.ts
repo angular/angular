@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {DirEntry, Rule, UpdateRecorder} from '@angular-devkit/schematics';
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {findImportSpecifier} from '../../utils/typescript/imports';
 
 function* visit(directory: DirEntry): IterableIterator<ts.SourceFile> {

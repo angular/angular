@@ -7,7 +7,7 @@
  */
 
 import {RuleFailure, Rules} from 'tslint';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {NgDefinitionCollector} from '../missing-injectable/definition_collector';
 import {TslintUpdateRecorder} from '../missing-injectable/google3/tslint_update_recorder';

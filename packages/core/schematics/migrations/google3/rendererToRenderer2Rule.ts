@@ -7,7 +7,7 @@
  */
 
 import {Replacement, RuleFailure, Rules} from 'tslint';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {getImportSpecifier, replaceImport} from '../../utils/typescript/imports';
 import {closestNode} from '../../utils/typescript/nodes';

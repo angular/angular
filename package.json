@@ -61,7 +61,6 @@
     "@babel/preset-env": "7.10.2",
     "@babel/template": "7.8.6",
     "@babel/traverse": "7.8.6",
-    "@babel/types": "7.8.6",
     "@bazel/concatjs": "4.3.0",
     "@bazel/esbuild": "4.3.0",
     "@bazel/jasmine": "4.3.0",

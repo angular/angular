@@ -7,7 +7,7 @@
  */
 
 import {RuleFailure, Rules} from 'tslint';
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {TslintUpdateRecorder} from '../undecorated-classes-with-decorated-fields/google3/tslint_update_recorder';
 import {UndecoratedClassesWithDecoratedFieldsTransform} from '../undecorated-classes-with-decorated-fields/transform';
 

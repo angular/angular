@@ -23,7 +23,7 @@
  */
 
 import {graphql as unauthenticatedGraphql} from '@octokit/graphql';
-import * as minimist from 'minimist';
+import minimist from 'minimist';
 import {alias, params, query as graphqlQuery, types} from 'typed-graphqlify';
 
 // The organization to be considered for the queries.

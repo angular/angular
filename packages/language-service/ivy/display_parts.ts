@@ -8,7 +8,7 @@
 
 import {isNamedClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {DirectiveInScope, ReferenceSymbol, ShimLocation, Symbol, SymbolKind, VariableSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 
 // Reverse mappings of enum would generate strings

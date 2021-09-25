@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {errorSymbol, Evaluator, recordMapEntry} from './evaluator';
 import {ClassMetadata, ConstructorMetadata, FunctionMetadata, InterfaceMetadata, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportDefaultReference, isMetadataImportedSymbolReferenceExpression, isMetadataSymbolicExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression, isMethodMetadata, MemberMetadata, METADATA_VERSION, MetadataEntry, MetadataError, MetadataMap, MetadataSymbolicBinaryExpression, MetadataSymbolicCallExpression, MetadataSymbolicExpression, MetadataSymbolicIfExpression, MetadataSymbolicIndexExpression, MetadataSymbolicPrefixExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataSymbolicSpreadExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata} from './schema';

@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {Statement} from '@angular/compiler';
-import {fromObject, fromSource, generateMapFileComment, SourceMapConverter} from 'convert-source-map';
+import mapHelpers from 'convert-source-map';
 import MagicString from 'magic-string';
 import {encode, SourceMapMappings} from 'sourcemap-codec';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
@@ -127,10 +127,10 @@ runInEachFileSystem(() => {
     let JS_CONTENT: TestFile;
     let COMPONENT_PROGRAM: TestFile;
     let NGMODULE_PROGRAM: TestFile;
-    let JS_CONTENT_MAP: SourceMapConverter;
+    let JS_CONTENT_MAP: mapHelpers.SourceMapConverter;
     let RENDERED_CONTENTS: string;
-    let OUTPUT_PROGRAM_MAP: SourceMapConverter;
-    let MERGED_OUTPUT_PROGRAM_MAP: SourceMapConverter;
+    let OUTPUT_PROGRAM_MAP: mapHelpers.SourceMapConverter;
+    let MERGED_OUTPUT_PROGRAM_MAP: mapHelpers.SourceMapConverter;
 
     beforeEach(() => {
       _ = absoluteFrom;
@@ -182,7 +182,7 @@ runInEachFileSystem(() => {
         ],
       ];
 
-      JS_CONTENT_MAP = fromObject({
+      JS_CONTENT_MAP = mapHelpers.fromObject({
         'version': 3,
         'file': 'file.js',
         'sourceRoot': '',
@@ -196,7 +196,7 @@ runInEachFileSystem(() => {
           `\n// ADD IMPORTS\n\n// ADD EXPORTS\r\n\n// ADD CONSTANTS\n\n// ADD ADJACENT STATEMENTS\n\n// ADD DEFINITIONS\n\n// REMOVE DECORATORS\n` +
           JS_CONTENT.contents;
 
-      OUTPUT_PROGRAM_MAP = fromObject({
+      OUTPUT_PROGRAM_MAP = mapHelpers.fromObject({
         'version': 3,
         'file': 'file.js',
         'sources': ['file.js'],
@@ -227,7 +227,7 @@ runInEachFileSystem(() => {
         'sourcesContent': [JS_CONTENT.contents],
       });
 
-      MERGED_OUTPUT_PROGRAM_MAP = fromObject({
+      MERGED_OUTPUT_PROGRAM_MAP = mapHelpers.fromObject({
         'version': 3,
         'file': 'file.js',
         'sources': ['file.ts'],
@@ -292,7 +292,7 @@ runInEachFileSystem(() => {
                decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
            expect(sourceFile.path).toEqual(_('/node_modules/test-package/src/file.js'));
            expect(sourceFile.contents).toContain(RENDERED_CONTENTS);
-           expect(fromSource(sourceFile.contents)!.toObject())
+           expect(mapHelpers.fromSource(sourceFile.contents)!.toObject())
                .toEqual(OUTPUT_PROGRAM_MAP.toObject());
            expect(mapFile).toBeUndefined();
          });
@@ -683,7 +683,7 @@ UndecoratedBase.ɵdir = /*@__PURE__*/ ɵngcc0.ɵɵdefineDirective({ type: Undeco
                  decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
              expect(sourceFile.path).toEqual(_('/node_modules/test-package/src/file.js'));
              expect(sourceFile.contents).toContain(RENDERED_CONTENTS);
-             expect(fromSource(sourceFile.contents)!.toObject())
+             expect(mapHelpers.fromSource(sourceFile.contents)!.toObject())
                  .toEqual(MERGED_OUTPUT_PROGRAM_MAP.toObject());
              expect(mapFile).toBeUndefined();
            });
@@ -706,7 +706,8 @@ UndecoratedBase.ɵdir = /*@__PURE__*/ ɵngcc0.ɵɵdefineDirective({ type: Undeco
                  decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
              expect(sourceFile.path).toEqual(_('/node_modules/test-package/src/file.js'));
              expect(sourceFile.contents)
-                 .toEqual(RENDERED_CONTENTS + '\n' + generateMapFileComment('file.js.map'));
+                 .toEqual(
+                     RENDERED_CONTENTS + '\n' + mapHelpers.generateMapFileComment('file.js.map'));
              expect(mapFile.path).toEqual(_('/node_modules/test-package/src/file.js.map'));
              expect(JSON.parse(mapFile.contents) as any)
                  .toEqual(MERGED_OUTPUT_PROGRAM_MAP.toObject());

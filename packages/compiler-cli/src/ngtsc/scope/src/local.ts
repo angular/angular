@@ -7,7 +7,7 @@
  */
 
 import {ExternalExpr, SchemaMetadata} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ErrorCode, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
 import {AliasingHost, Reexport, Reference, ReferenceEmitter} from '../../imports';

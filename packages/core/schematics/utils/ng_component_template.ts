@@ -8,7 +8,7 @@
 
 import {existsSync, readFileSync} from 'fs';
 import {dirname, resolve} from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {computeLineStartsMap, getLineAndCharacterFromPosition} from './line_mappings';
 import {getAngularDecorators} from './ng_decorators';

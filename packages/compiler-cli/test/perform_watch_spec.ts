@@ -9,7 +9,7 @@
 import {ivyEnabled} from '@angular/private/testing';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import * as ng from '../index';
 import {FileChangeEvent, performWatchCompilation} from '../src/perform_watch';

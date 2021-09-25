@@ -7,7 +7,7 @@
  */
 
 import {GeneratedFile, HtmlParser, MessageBundle} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import * as api from '../transformers/api';
 import {i18nExtract} from '../transformers/i18n';

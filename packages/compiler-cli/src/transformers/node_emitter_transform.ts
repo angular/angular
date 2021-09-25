@@ -7,7 +7,7 @@
  */
 
 import {GeneratedFile} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {TypeScriptNodeEmitter} from './node_emitter';
 import {GENERATED_FILES, stripComment} from './util';

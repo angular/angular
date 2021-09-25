@@ -7,7 +7,7 @@
  */
 
 import {platform} from 'os';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {absoluteFrom as _, absoluteFromSourceFile} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';

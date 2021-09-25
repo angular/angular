@@ -7,7 +7,7 @@
  */
 
 import * as path from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {TypeScriptServiceHost} from '../src/typescript_host';
 

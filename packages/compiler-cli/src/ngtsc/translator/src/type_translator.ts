@@ -7,7 +7,7 @@
  */
 
 import * as o from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {Context} from './context';
 import {ImportManager} from './import_manager';

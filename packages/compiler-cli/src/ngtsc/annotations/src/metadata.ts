@@ -7,7 +7,7 @@
  */
 
 import {Expression, FunctionExpr, LiteralArrayExpr, LiteralExpr, literalMap, R3ClassMetadata, ReturnStatement, WrappedNodeExpr} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {CtorParameter, DeclarationNode, Decorator, ReflectionHost, TypeValueReferenceKind} from '../../reflection';
 

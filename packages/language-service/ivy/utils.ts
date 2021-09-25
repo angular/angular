@@ -13,7 +13,7 @@ import {DeclarationNode} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {DirectiveSymbol, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
 import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ALIAS_NAME, SYMBOL_PUNC} from './display_parts';
 import {findTightestNode, getParentClassDeclaration} from './ts_utils';

@@ -7,7 +7,7 @@
  */
 
 import {ConstantPool} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {IncrementalBuild} from '../../incremental/api';

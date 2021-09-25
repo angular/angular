@@ -7,7 +7,7 @@
  */
 import * as o from '@angular/compiler';
 import {ImportGenerator, NamedImport, TypeScriptAstFactory} from '@angular/compiler-cli/src/ngtsc/translator';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {Translator} from '../../src/file_linker/translator';
 import {generate} from './helpers';

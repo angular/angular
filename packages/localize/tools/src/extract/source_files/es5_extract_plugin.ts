@@ -7,8 +7,7 @@
  */
 import {PathManipulation} from '@angular/compiler-cli/private/localize';
 import {ɵParsedMessage, ɵparseMessage} from '@angular/localize';
-import {NodePath, PluginObj} from '@babel/core';
-import {CallExpression} from '@babel/types';
+import {NodePath, PluginObj, types as t} from '../../babel_core';
 
 import {buildCodeFrameError, getLocation, isBabelParseError, isGlobalIdentifier, isNamedIdentifier, unwrapMessagePartsFromLocalizeCall, unwrapSubstitutionsFromLocalizeCall} from '../../source_file_utils';
 
@@ -16,7 +15,7 @@ export function makeEs5ExtractPlugin(
     fs: PathManipulation, messages: ɵParsedMessage[], localizeName = '$localize'): PluginObj {
   return {
     visitor: {
-      CallExpression(callPath: NodePath<CallExpression>) {
+      CallExpression(callPath: NodePath<t.CallExpression>) {
         try {
           const calleePath = callPath.get('callee');
           if (isNamedIdentifier(calleePath, localizeName) && isGlobalIdentifier(calleePath)) {

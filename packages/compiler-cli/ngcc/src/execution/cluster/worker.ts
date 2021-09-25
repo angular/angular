@@ -7,7 +7,7 @@
  */
 /// <reference types="node" />
 
-import * as cluster from 'cluster';
+import cluster from 'cluster';
 
 import {Logger} from '../../../../src/ngtsc/logging';
 import {CreateCompileFn} from '../api';

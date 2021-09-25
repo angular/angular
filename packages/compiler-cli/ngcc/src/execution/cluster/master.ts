@@ -8,7 +8,7 @@
 
 /// <reference types="node" />
 
-import * as cluster from 'cluster';
+import cluster from 'cluster';
 
 import {AbsoluteFsPath, PathManipulation} from '../../../../src/ngtsc/file_system';
 import {Logger} from '../../../../src/ngtsc/logging';

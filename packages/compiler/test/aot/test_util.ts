@@ -14,7 +14,7 @@ import {getCachedSourceFile} from '@angular/compiler-cli/src/ngtsc/testing';
 import {newArray} from '@angular/compiler/src/util';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 export interface MetadataProvider {
   getMetadata(source: ts.SourceFile): ModuleMetadata|undefined;

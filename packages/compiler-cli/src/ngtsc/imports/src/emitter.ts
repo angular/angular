@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {Expression, ExternalExpr, ExternalReference, WrappedNodeExpr} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {UnifiedModulesHost} from '../../core/api';
 import {absoluteFromSourceFile, dirname, LogicalFileSystem, LogicalProjectPath, relative, toRelativeImport} from '../../file_system';

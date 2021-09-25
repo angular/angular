@@ -8,7 +8,7 @@
 
 import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, Expression, ExternalExpr, FactoryTarget, getSafePropertyAccessString, makeBindingParser, ParsedHostBindings, ParseError, parseHostBindings, R3ClassMetadata, R3DirectiveMetadata, R3FactoryMetadata, R3QueryMetadata, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
 import {emitDistinctChangesOnlyDefaultValue} from '@angular/compiler/src/core';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {Reference} from '../../imports';

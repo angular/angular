@@ -7,7 +7,7 @@
  */
 import {Statement} from '@angular/compiler';
 import MagicString from 'magic-string';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ImportManager, translateStatement} from '../../../src/ngtsc/translator';
 import {CompiledClass} from '../analysis/types';

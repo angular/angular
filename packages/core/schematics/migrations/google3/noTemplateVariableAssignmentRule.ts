@@ -8,7 +8,7 @@
 
 import * as compiler from '@angular/compiler';
 import {RuleFailure, Rules} from 'tslint';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {NgComponentTemplateVisitor} from '../../utils/ng_component_template';
 import {createHtmlSourceFile} from '../../utils/tslint/tslint_html_source_file';

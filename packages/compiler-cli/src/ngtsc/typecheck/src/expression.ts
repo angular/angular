@@ -7,7 +7,7 @@
  */
 
 import {AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Call, Chain, Conditional, EmptyExpr, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeKeyedRead, SafePropertyRead, ThisReceiver, Unary} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {TypeCheckingConfig} from '../api';
 

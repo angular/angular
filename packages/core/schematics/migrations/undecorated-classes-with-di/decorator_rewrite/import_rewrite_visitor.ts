@@ -8,7 +8,7 @@
 
 import type {AotCompilerHost} from '@angular/compiler';
 import {dirname, resolve} from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ImportManager} from '../../../utils/import_manager';
 import {getImportOfIdentifier, Import} from '../../../utils/typescript/imports';

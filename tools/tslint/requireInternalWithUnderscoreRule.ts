@@ -9,7 +9,7 @@
 import {RuleFailure} from 'tslint/lib';
 import {RuleWalker} from 'tslint/lib/language/walker';
 import {AbstractRule} from 'tslint/lib/rules';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 export class Rule extends AbstractRule {
   override apply(sourceFile: ts.SourceFile): RuleFailure[] {

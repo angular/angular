@@ -8,7 +8,7 @@
 
 import * as compiler from '@angular/compiler';
 import {Replacement, RuleFailure, Rules} from 'tslint';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {NgComponentTemplateVisitor} from '../../utils/ng_component_template';
 import {NgQueryResolveVisitor} from '../static-queries/angular/ng_query_visitor';

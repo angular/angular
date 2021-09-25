@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 /**
  * Creates a fake TypeScript source file that can contain content of templates or stylesheets.

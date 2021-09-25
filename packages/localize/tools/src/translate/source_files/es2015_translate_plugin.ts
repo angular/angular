@@ -7,8 +7,7 @@
  */
 import {getFileSystem, PathManipulation} from '@angular/compiler-cli/private/localize';
 import {ɵParsedTranslation} from '@angular/localize';
-import {NodePath, PluginObj} from '@babel/core';
-import {TaggedTemplateExpression} from '@babel/types';
+import {NodePath, PluginObj, types as t} from '../../babel_core';
 
 import {Diagnostics} from '../../diagnostics';
 import {buildCodeFrameError, buildLocalizeReplacement, isBabelParseError, isLocalize, translate, TranslatePluginOptions, unwrapMessagePartsFromTemplateLiteral} from '../../source_file_utils';
@@ -25,7 +24,7 @@ export function makeEs2015TranslatePlugin(
     fs: PathManipulation = getFileSystem()): PluginObj {
   return {
     visitor: {
-      TaggedTemplateExpression(path: NodePath<TaggedTemplateExpression>) {
+      TaggedTemplateExpression(path: NodePath<t.TaggedTemplateExpression>) {
         try {
           const tag = path.get('tag');
           if (isLocalize(tag, localizeName)) {

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 export const COMMON_IMPORT = '@angular/common';
 export const PLATFORM_BROWSER_IMPORT = '@angular/platform-browser';

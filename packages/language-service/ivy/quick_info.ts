@@ -8,7 +8,7 @@
 import {AST, Call, ImplicitReceiver, PropertyRead, ThisReceiver, TmplAstBoundAttribute, TmplAstNode, TmplAstTextAttribute} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, InputBindingSymbol, OutputBindingSymbol, PipeSymbol, ReferenceSymbol, ShimLocation, Symbol, SymbolKind, VariableSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {createDisplayParts, DisplayInfoKind, SYMBOL_PUNC, SYMBOL_SPACE, SYMBOL_TEXT, unsafeCastDisplayInfoKindToScriptElementKind} from './display_parts';
 import {filterAliasImports, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTextSpanOfNode} from './utils';

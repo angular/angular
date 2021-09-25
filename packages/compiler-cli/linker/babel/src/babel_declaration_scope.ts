@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {NodePath, Scope} from '@babel/traverse';
-import * as t from '@babel/types';
 
 import {DeclarationScope} from '../../../linker';
+
+import {types as t} from './babel_core';
 
 export type ConstantScopePath = NodePath<t.Function|t.Program>;
 

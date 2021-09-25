@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {getImportOfIdentifier} from '../../utils/typescript/imports';
 
 /** Determine whether a node is a ModuleWithProviders type reference node without a generic type */

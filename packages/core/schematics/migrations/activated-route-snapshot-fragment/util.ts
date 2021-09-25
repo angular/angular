@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {isNullCheck, isSafeAccess} from '../../utils/typescript/nodes';
 import {hasOneOfTypes, isNullableType} from '../../utils/typescript/symbol';
 

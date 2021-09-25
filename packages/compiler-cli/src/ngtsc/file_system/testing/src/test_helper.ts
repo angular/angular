@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 /// <reference types="jasmine"/>
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {absoluteFrom, setFileSystem} from '../../src/helpers';
 import {InvalidFileSystem} from '../../src/invalid_file_system';

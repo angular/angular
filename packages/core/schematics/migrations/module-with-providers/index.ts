@@ -8,7 +8,7 @@
 
 import {Rule, SchematicContext, SchematicsException, Tree, UpdateRecorder} from '@angular-devkit/schematics';
 import {relative} from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';

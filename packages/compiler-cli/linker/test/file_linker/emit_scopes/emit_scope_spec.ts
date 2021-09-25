@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as o from '@angular/compiler/src/output/output_ast';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {TypeScriptAstFactory} from '../../../../src/ngtsc/translator';
 import {EmitScope} from '../../../src/file_linker/emit_scopes/emit_scope';

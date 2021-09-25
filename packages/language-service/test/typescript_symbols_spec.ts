@@ -8,7 +8,7 @@
 
 import {Directory} from '@angular/compiler-cli/test/mocks';
 import {ReflectorHost} from '@angular/language-service/src/reflector_host';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {BuiltinType, Symbol, SymbolQuery, SymbolTable} from '../src/symbols';
 import {getSymbolQuery} from '../src/typescript_symbols';

@@ -9,7 +9,7 @@
 import type {AotCompiler, AotCompilerHost, CompileMetadataResolver, StaticSymbol, StaticSymbolResolver, SummaryResolver} from '@angular/compiler';
 import {PartialEvaluator} from '@angular/compiler-cli/private/migrations';
 import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ImportManager} from '../../utils/import_manager';
 import {getAngularDecorators} from '../../utils/ng_decorators';

@@ -8,7 +8,7 @@
 
 import {MessageBundle, Serializer, Xliff, Xliff2, Xmb} from '@angular/compiler';
 import * as path from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {CompilerOptions} from './api';
 

@@ -9,7 +9,7 @@
 import type {AotCompiler, CompileDirectiveMetadata, CompileMetadataResolver, CompileNgModuleMetadata, CompileStylesheetMetadata, ElementAst, EmbeddedTemplateAst, NgAnalyzedModules, QueryMatch, StaticSymbol, TemplateAst} from '@angular/compiler';
 import {createProgram, Diagnostic, readConfiguration} from '@angular/compiler-cli';
 import {resolve} from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ClassMetadataMap} from '../../angular/ng_query_visitor';
 import {NgQueryDefinition, QueryTiming, QueryType} from '../../angular/query-definition';

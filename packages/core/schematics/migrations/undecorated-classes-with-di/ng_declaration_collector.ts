@@ -7,7 +7,7 @@
  */
 
 import {PartialEvaluator, Reference, ResolvedValue} from '@angular/compiler-cli/private/migrations';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {getAngularDecorators, NgDecorator} from '../../utils/ng_decorators';
 import {getPropertyNameText} from '../../utils/typescript/property_name';

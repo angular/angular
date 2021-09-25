@@ -12,7 +12,7 @@ import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {ProgramDriver} from '@angular/compiler-cli/src/ngtsc/program_driver';
 import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ShimLocation, Symbol, SymbolKind, TemplateSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {convertToTemplateDocumentSpan} from './references_and_rename_utils';
 import {getTargetAtPosition, TargetNodeKind} from './template_target';

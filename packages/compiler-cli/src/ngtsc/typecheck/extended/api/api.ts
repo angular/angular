@@ -8,7 +8,7 @@
 
 import {AST, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstContent, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import {ASTWithSource} from '@angular/compiler/src/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ErrorCode} from '../../../diagnostics';
 import {NgTemplateDiagnostic, TemplateTypeChecker} from '../../api';
