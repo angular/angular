@@ -8,7 +8,7 @@
 
 import {PartialModule} from '@angular/compiler';
 import * as o from '@angular/compiler/src/output/output_ast';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {getAngularClassTransformerFactory} from '../../src/transformers/r3_transform';
 import {Directory, MockAotContext, MockCompilerHost} from '../mocks';

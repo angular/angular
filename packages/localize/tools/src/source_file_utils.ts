@@ -8,8 +8,8 @@
 import {AbsoluteFsPath, getFileSystem, PathManipulation} from '@angular/compiler-cli/private/localize';
 import {ɵisMissingTranslationError, ɵmakeTemplateObject, ɵParsedTranslation, ɵSourceLocation, ɵtranslate} from '@angular/localize';
 import {NodePath} from '@babel/traverse';
-import * as t from '@babel/types';
 
+import {types as t} from './babel_core';
 import {DiagnosticHandlingStrategy, Diagnostics} from './diagnostics';
 
 /**

@@ -5,10 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {PluginObj, transformSync} from '@babel/core';
-
 import {needsLinking} from '../../../linker';
 import {createEs2015LinkerPlugin} from '../../../linker/babel';
+import {PluginObj, transformSync} from '../../../linker/babel/src/babel_core';
 import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
 import {ConsoleLogger, LogLevel} from '../../../src/ngtsc/logging';
 import {MapAndPath, RawSourceMap, SourceFileLoader} from '../../../src/ngtsc/sourcemaps';

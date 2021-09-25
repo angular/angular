@@ -8,7 +8,7 @@
  */
 import type {AotCompiler} from '@angular/compiler';
 import {PartialEvaluator} from '@angular/compiler-cli/private/migrations';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ImportManager} from '../../../utils/import_manager';
 import {NgDecorator} from '../../../utils/ng_decorators';

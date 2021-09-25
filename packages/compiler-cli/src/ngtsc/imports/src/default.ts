@@ -7,7 +7,7 @@
  */
 
 import {WrappedNodeExpr} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {getSourceFile} from '../../util/src/typescript';
 

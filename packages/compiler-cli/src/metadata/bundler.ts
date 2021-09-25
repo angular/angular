@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as path from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {MetadataCache} from '../transformers/metadata_cache';
 

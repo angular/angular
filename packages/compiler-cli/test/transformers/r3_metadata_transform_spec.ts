@@ -7,7 +7,7 @@
  */
 
 import {ClassField, ClassMethod, ClassStmt, PartialModule, Statement, StmtModifier} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {isClassMetadata, MetadataCollector} from '../../src/metadata/index';
 import {MetadataCache} from '../../src/transformers/metadata_cache';

@@ -8,7 +8,7 @@
 
 import {CustomTransformers, defaultGatherDiagnostics, Program} from '@angular/compiler-cli';
 import * as api from '@angular/compiler-cli/src/transformers/api';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {createCompilerHost, createProgram} from '../../index';
 import {mainXi18n} from '../../src/extract_i18n';

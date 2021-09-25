@@ -12,7 +12,7 @@ import type {AotCompiler} from '@angular/compiler';
 import {Diagnostic as NgDiagnostic} from '@angular/compiler-cli';
 import {PartialEvaluator, TypeScriptReflectionHost} from '@angular/compiler-cli/private/migrations';
 import {relative} from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {loadEsmModule} from '../../utils/load_esm';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';

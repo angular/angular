@@ -7,7 +7,7 @@
  */
 
 import {createLoweredSymbol, isLoweredSymbol} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {CollectorOptions, isMetadataGlobalReferenceExpression, MetadataCollector, MetadataValue, ModuleMetadata} from '../metadata/index';
 

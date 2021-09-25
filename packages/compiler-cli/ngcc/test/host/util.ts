@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {Trait, TraitState} from '@angular/compiler-cli/src/ngtsc/transform';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {SemanticSymbol} from '../../../src/ngtsc/incremental/semantic_graph';
 import {CtorParameter, TypeValueReferenceKind} from '../../../src/ngtsc/reflection';

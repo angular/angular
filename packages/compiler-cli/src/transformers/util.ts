@@ -8,7 +8,7 @@
 
 import {syntaxError} from '@angular/compiler';
 import * as path from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {CompilerOptions, DEFAULT_ERROR_CODE, Diagnostic, SOURCE} from './api';
 

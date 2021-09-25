@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {basename} from '../../file_system';
 
 // A cache of source files that are typically used across tests and are expensive to parse.

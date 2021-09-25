@@ -7,7 +7,7 @@
  */
 
 import {PartialEvaluator, reflectObjectLiteral, TypeScriptReflectionHost} from '@angular/compiler-cli/private/migrations';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ImportManager} from '../../utils/import_manager';
 import {getAngularDecorators, NgDecorator} from '../../utils/ng_decorators';

@@ -7,7 +7,7 @@
  */
 
 import {AST, TmplAstBoundEvent, TmplAstNode} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ErrorCode} from '../../../../diagnostics';
 import {NgTemplateDiagnostic} from '../../../api';
@@ -34,7 +34,7 @@ export class InvalidBananaInBoxCheck extends
     const diagnostic = ctx.templateTypeChecker.makeTemplateDiagnostic(
         component, node.sourceSpan, ts.DiagnosticCategory.Warning, ErrorCode.INVALID_BANANA_IN_BOX,
         `In the two-way binding syntax the parentheses should be inside the brackets, ex. '${
-            expectedBoundSyntax}'. 
+            expectedBoundSyntax}'.
         Find more at https://angular.io/guide/two-way-binding`);
     return [diagnostic];
   }

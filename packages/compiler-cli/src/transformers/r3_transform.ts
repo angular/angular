@@ -7,7 +7,7 @@
  */
 
 import {PartialModule, Statement, StaticSymbol} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {updateSourceFile} from './node_emitter';
 

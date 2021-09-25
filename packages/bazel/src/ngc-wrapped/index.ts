@@ -12,7 +12,7 @@ import {BazelOptions, CachedFileLoader, CompilerHost, constructManifest, debug, 
 import * as fs from 'fs';
 import * as path from 'path';
 import * as tsickle from 'tsickle';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const NGC_GEN_FILES = /^(.*?)\.(ngfactory|ngsummary|ngstyle|shim\.ngstyle)(.*)$/;

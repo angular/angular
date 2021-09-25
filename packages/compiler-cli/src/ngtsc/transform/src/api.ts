@@ -7,7 +7,7 @@
  */
 
 import {ConstantPool, Expression, Statement, Type} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {Reexport} from '../../imports';
 import {SemanticSymbol} from '../../incremental/semantic_graph';

@@ -7,7 +7,7 @@
  */
 
 import {NgAnalyzedModules} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {createDiagnostic, Diagnostic} from './diagnostic_messages';
 import {getTemplateExpressionDiagnostics} from './expression_diagnostics';

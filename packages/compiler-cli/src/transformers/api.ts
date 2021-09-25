@@ -7,7 +7,7 @@
  */
 
 import {GeneratedFile, ParseSourceSpan, Position} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ExtendedTsCompilerHost, NgCompilerOptions} from '../ngtsc/core/api';
 

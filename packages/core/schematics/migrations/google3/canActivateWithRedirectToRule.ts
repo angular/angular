@@ -7,7 +7,7 @@
  */
 
 import {Replacement, RuleFailure, Rules} from 'tslint';
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {findLiteralsToMigrate, migrateLiteral} from '../can-activate-with-redirect-to/util';
 
 

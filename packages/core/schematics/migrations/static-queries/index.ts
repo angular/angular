@@ -9,7 +9,7 @@
 import {logging} from '@angular-devkit/core';
 import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {relative} from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {loadEsmModule} from '../../utils/load_esm';
 import {NgComponentTemplateVisitor} from '../../utils/ng_component_template';

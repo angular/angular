@@ -7,7 +7,7 @@
  */
 
 import {DomElementSchemaRegistry, ParseSourceSpan, SchemaMetadata, TmplAstElement} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {TemplateDiagnostic, TemplateId} from '../api';

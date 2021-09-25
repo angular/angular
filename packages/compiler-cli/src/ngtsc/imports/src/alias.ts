@@ -7,7 +7,7 @@
  */
 
 import {Expression, ExternalExpr} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {UnifiedModulesHost} from '../../core/api';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';

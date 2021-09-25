@@ -7,7 +7,7 @@
  */
 
 import {forwardRefResolver, ResolvedValue, StaticInterpreter} from '@angular/compiler-cli/private/migrations';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 export interface ProviderLiteral {
   node: ts.ObjectLiteralExpression;

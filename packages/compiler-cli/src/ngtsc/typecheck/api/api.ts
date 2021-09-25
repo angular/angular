@@ -7,7 +7,7 @@
  */
 
 import {AbsoluteSourceSpan, BoundTarget, DirectiveMeta, ParseSourceSpan, SchemaMetadata} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {ErrorCode} from '../../diagnostics';
 
 import {AbsoluteFsPath} from '../../file_system';

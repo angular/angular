@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {CssSelector, DirectiveMeta as T2DirectiveMeta, parseTemplate, R3TargetBinder, SelectorMatcher, TmplAstElement} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';

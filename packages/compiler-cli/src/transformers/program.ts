@@ -10,7 +10,7 @@
 import {AotCompiler, AotCompilerOptions, core, createAotCompiler, FormattedMessageChain, GeneratedFile, getMissingNgModuleMetadataErrorData, getParseErrors, isFormattedError, isSyntaxError, MessageBundle, NgAnalyzedFileWithInjectables, NgAnalyzedModules, ParseSourceSpan, PartialModule} from '@angular/compiler';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {translateDiagnostics} from '../diagnostics/translate_diagnostics';
 import {createBundleIndexHost, MetadataCollector} from '../metadata';

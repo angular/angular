@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ConstantPool} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {Reexport} from '../../../src/ngtsc/imports';
 import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
 import {CompileResult} from '../../../src/ngtsc/transform';

@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as t from '@babel/types';
-
 import {assert, AstHost, FatalLinkerError, Range} from '../../../../linker';
+import {types as t} from '../babel_core';
 
 /**
  * This implementation of `AstHost` is able to get information from Babel AST nodes.

@@ -7,7 +7,7 @@
  */
 
 import {CssSelector, SchemaMetadata, SelectorMatcher} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {DirectiveMeta, flattenInheritedDirectiveMetadata, MetadataReader} from '../../metadata';

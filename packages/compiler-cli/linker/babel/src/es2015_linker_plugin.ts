@@ -5,14 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {PluginObj} from '@babel/core';
+
 import {NodePath} from '@babel/traverse';
-import * as t from '@babel/types';
 
 import {FileLinker, isFatalLinkerError, LinkerEnvironment} from '../../../linker';
 
 import {BabelAstFactory} from './ast/babel_ast_factory';
 import {BabelAstHost} from './ast/babel_ast_host';
+import {PluginObj, types as t} from './babel_core';
 import {BabelDeclarationScope, ConstantScopePath} from './babel_declaration_scope';
 import {LinkerPluginOptions} from './linker_plugin_options';
 

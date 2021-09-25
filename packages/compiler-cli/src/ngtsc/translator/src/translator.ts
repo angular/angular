@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as o from '@angular/compiler';
-import {createTaggedTemplate} from 'typescript';
 
 import {AstFactory, BinaryOperator, ObjectLiteralProperty, SourceMapRange, TemplateElement, TemplateLiteral, UnaryOperator} from './api/ast_factory';
 import {ImportGenerator} from './api/import_generator';

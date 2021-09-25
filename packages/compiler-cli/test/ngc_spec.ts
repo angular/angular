@@ -8,7 +8,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {main, mainDiagnosticsForTest, readCommandLineAndConfiguration, watchMode} from '../src/main';
 import {setup, stripAnsi} from './test_support';

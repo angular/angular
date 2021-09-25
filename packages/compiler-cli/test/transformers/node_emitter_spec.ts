@@ -8,7 +8,7 @@
 
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler';
 import * as o from '@angular/compiler/src/output/output_ast';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {TypeScriptNodeEmitter} from '../../src/transformers/node_emitter';
 import {Directory, MockAotContext, MockCompilerHost} from '../mocks';

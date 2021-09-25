@@ -7,7 +7,7 @@
  */
 
 import {Type} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ImportRewriter} from '../../imports';
 import {ClassDeclaration} from '../../reflection';

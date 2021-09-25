@@ -8,7 +8,7 @@
 
 import {AST, CssSelector, DomElementSchemaRegistry, LiteralPrimitive, ParseSourceSpan, PropertyRead, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate} from '@angular/compiler';
 import {TextAttribute} from '@angular/compiler/src/render3/r3_ast';
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
 
 import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';

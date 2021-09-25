@@ -7,7 +7,7 @@
  */
 import {ConstantPool} from '@angular/compiler';
 import {NOOP_PERF_RECORDER} from '@angular/compiler-cli/src/ngtsc/perf';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ParsedConfiguration} from '../../..';
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader} from '../../../src/ngtsc/annotations';

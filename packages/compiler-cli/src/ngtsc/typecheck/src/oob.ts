@@ -8,7 +8,7 @@
 
 import {BindingPipe, PropertyWrite, TmplAstBoundEvent, TmplAstElement, TmplAstReference, TmplAstVariable} from '@angular/compiler';
 import {BoundAttribute} from '@angular/compiler/src/render3/r3_ast';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ErrorCode, makeDiagnostic, makeRelatedInformation, ngErrorCode} from '../../diagnostics';
 import {ClassDeclaration} from '../../reflection';

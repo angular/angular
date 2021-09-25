@@ -11,7 +11,7 @@ import {MetadataBundler} from '@angular/compiler-cli/src/metadata/bundler';
 import {privateEntriesToIndex} from '@angular/compiler-cli/src/metadata/index_writer';
 import {extractSourceMap, originalPositionFor} from '@angular/compiler/testing/src/output/source_map_util';
 import {NodeFlags} from '@angular/core/src/view/index';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {arrayToMockDir, compile, EmittingCompilerHost, expectNoDiagnostics, isInBazel, MockAotCompilerHost, MockCompilerHost, MockDirectory, MockMetadataBundlerHost, settings, setup, toMockFileArray} from './test_util';
 

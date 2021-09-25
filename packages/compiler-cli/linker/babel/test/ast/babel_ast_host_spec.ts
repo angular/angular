@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as t from '@babel/types';
+import {types as t} from '../../src/babel_core';
 import template from '@babel/template';
 import {parse} from '@babel/parser';
 import {BabelAstHost} from '../../src/ast/babel_ast_host';

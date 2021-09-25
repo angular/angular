@@ -8,7 +8,7 @@
 
 ///<reference types="jasmine"/>
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {AbsoluteFsPath, dirname, getFileSystem, getSourceFileOrError, NgtscCompilerHost} from '../../file_system';
 import {DeclarationNode} from '../../reflection';

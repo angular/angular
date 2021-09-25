@@ -7,7 +7,7 @@
  */
 
 import {AbsoluteSourceSpan, ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {TemplateId, TemplateSourceMapping} from '../api';
 import {getTemplateId} from '../diagnostics';
