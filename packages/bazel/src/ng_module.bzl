@@ -326,6 +326,22 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
     else:
         expected_outs = outs.closure_js
 
+    if not ctx.attr.type_check and ctx.attr.strict_templates:
+        fail("Cannot set type_check = False and strict_templates = True for ng_module()")
+
+    # Targets that set strict_templates should only be built with Ivy. If we allowed
+    # View Engine builds, then later attempts to migrate such targets to Ivy may fail
+    # due to new template errors that only the Ivy compiler produces.
+    #
+    # Note that during i18n message extraction, Ivy targets are still built with
+    # View Engine, so we specifically exempt xi18n compilations from this error.
+    # See b/187342177 for context.
+    if is_legacy_ngc and ctx.attr.strict_templates:
+        fail("strict_templates is not available for legacy View Engine compilations. See go/angular/ivy for details on how to opt in.")
+
+    if ctx.attr.experimental_extended_template_diagnostics and not ctx.attr.strict_templates:
+        fail("Cannot set `experimental_extended_template_diagnostics = True` **and** `strict_templates = False` for `ng_module()`")
+
     angular_compiler_options = {
         "enableResourceInlining": ctx.attr.inline_resources,
         "generateCodeForLibraries": False,
@@ -337,6 +353,7 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "enableIvy": is_ivy_enabled(ctx),
         "compilationMode": ctx.attr.compilation_mode,
         "fullTemplateTypeCheck": ctx.attr.type_check,
+        "_extendedTemplateDiagnostics": ctx.attr.experimental_extended_template_diagnostics,
         # In Google3 we still want to use the symbol factory re-exports in order to
         # not break existing apps inside Google. Unlike Bazel, Google3 does not only
         # enforce strict dependencies of source files, but also for generated files
@@ -353,6 +370,12 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "_useHostForImportGeneration": (not _is_bazel()),
         "_useManifestPathsAsModuleName": (not _is_bazel()),
     }
+
+    # Only add `strictTemplates` if it is requested, that way an existing patch in components won't
+    # be broken by duplicating the key.
+    # TODO(#42966): Inline this in the above dict once components' patch is removed.
+    if ctx.attr.strict_templates:
+        angular_compiler_options["strictTemplates"] = True
 
     if is_perf_requested(ctx):
         # In Ivy mode, set the `tracePerformance` Angular compiler option to enable performance
@@ -713,6 +736,11 @@ NG_MODULE_ATTRIBUTES = {
     ),
     "filter_summaries": attr.bool(default = False),
     "type_check": attr.bool(default = True),
+    "strict_templates": attr.bool(default = False),
+    "experimental_extended_template_diagnostics": attr.bool(
+        default = False,
+        doc = "Experimental option, not publicly supported.",
+    ),
     "inline_resources": attr.bool(default = True),
     "compilation_mode": attr.string(
         doc = """Set the compilation mode for the Angular compiler.
