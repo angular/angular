@@ -13,7 +13,26 @@
     // Custom rules written in TypeScript.
     "require-internal-with-underscore": true,
     "no-implicit-override-abstract": true,
-
+    "validate-import-for-esm-cjs-interop": [true, {
+      // The following CommonJS modules have type definitions that suggest the existence of
+      // named exports. This is not true at runtime when imported from an ES module (because
+      // the ESM interop only exposes statically-discoverable named exports). Instead
+      // default imports should be used to ensure compatibility with both ESM or CommonJS.
+      "noNamedExports": ["typescript", "minimist", "magic-string", "semver", "yargs", "glob", "cluster", "convert-source-map"],
+      // The following CommonJS modules appear to have a default export available (due to the `esModuleInterop` flag),
+      // but at runtime with CJS (e.g. for devmode output/tests) there is no default export as these modules set
+      // `__esModule`. This does not match with what happens in ESM NodeJS runtime where NodeJS exposes
+      // `module.exports` as `export default`. Instead, named exports should be used for compat with CJS/ESM.
+      "noDefaultExport": [],
+      // List of modules which are incompatible and should never be imported at all.
+      "incompatibleModules": {
+        // `@babel/core` and `@babel/types` suggest named exports which do not exist at runtime within ESM
+        // (as these named exports are not statically discoverable by NodeJS). At the same time, these modules
+        // set `__esModule` and the default import does not exist for CJS at runtime (e.g. breaking tests).
+        "@babel/core": "This module is incompatible with the ESM/CJS interop. Use the custom interop file.",
+        "@babel/types": "This module is incompatible with the ESM/CJS interop. Use the custom interop file and import the `types` namespace."
+      }
+    }],
     "eofline": true,
     "file-header": [
       true,

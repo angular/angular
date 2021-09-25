@@ -5,6 +5,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "module": "commonjs",
+    "esModuleInterop": true,
     "moduleResolution": "node",
     "outDir": "../dist/tools/",
     "noImplicitAny": true,
