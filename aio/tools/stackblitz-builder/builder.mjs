@@ -311,7 +311,7 @@ export class StackblitzBuilder {
       '!**/e2e/**/*.*',
       '!**/package.json',
       '!**/example-config.json',
-      '!**/tslint.json',
+      '!**/tslint.json', // TODO: remove this after linting has been removed from systemjs examples
       '!**/.editorconfig',
       '!**/wallaby.js',
       '!**/karma-test-shim.js',
