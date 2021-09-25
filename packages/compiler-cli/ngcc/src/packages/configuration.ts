@@ -16,11 +16,11 @@ import {PackageJsonFormatPropertiesMap} from './entry_point';
 /**
  * The format of a project level configuration file.
  */
-export interface NgccProjectConfig<T = RawNgccPackageConfig> {
+export interface NgccProjectConfig {
   /**
    * The packages that are configured by this project config.
    */
-  packages?: {[packagePath: string]: T|undefined};
+  packages?: {[packagePath: string]: RawNgccPackageConfig|undefined};
   /**
    * Options that control how locking the process is handled.
    */
@@ -102,7 +102,74 @@ interface VersionedPackageConfig extends RawNgccPackageConfig {
   versionRange: string;
 }
 
-type PartiallyProcessedConfig = Required<NgccProjectConfig<VersionedPackageConfig[]>>;
+/**
+ * The internal representation of a configuration file. Configured packages are transformed into
+ * `ProcessedNgccPackageConfig` when a certain version is requested.
+ */
+export class PartiallyProcessedConfig {
+  /**
+   * The packages that are configured by this project config.
+   */
+  packages = new Map<string, VersionedPackageConfig[]>();
+  /**
+   * Options that control how locking the process is handled.
+   */
+  locking: ProcessLockingConfiguration = {};
+  /**
+   * Name of hash algorithm used to generate hashes of the configuration.
+   *
+   * Defaults to `sha256`.
+   */
+  hashAlgorithm = 'sha256';
+
+  /**
+   * Registers the configuration for a particular version of the provided package.
+   */
+  addPackageConfig(packageName: string, config: VersionedPackageConfig): void {
+    if (!this.packages.has(packageName)) {
+      this.packages.set(packageName, []);
+    }
+    this.packages.get(packageName)!.push(config);
+  }
+
+  /**
+   * Finds the configuration for a particular version of the provided package.
+   */
+  findPackageConfig(packageName: string, version: string|null): VersionedPackageConfig|null {
+    if (!this.packages.has(packageName)) {
+      return null;
+    }
+
+    const configs = this.packages.get(packageName)!;
+    if (version === null) {
+      // The package has no version (!) - perhaps the entry-point was from a deep import, which made
+      // it impossible to find the package.json.
+      // So just return the first config that matches the package name.
+      return configs[0];
+    }
+    return configs.find(
+               config => satisfies(version, config.versionRange, {includePrerelease: true})) ??
+        null;
+  }
+
+  /**
+   * Converts the configuration into a JSON representation that is used to compute a hash of the
+   * configuration.
+   */
+  toJson(): string {
+    return JSON.stringify(this, (key: string, value: unknown) => {
+      if (value instanceof Map) {
+        const res: Record<string, unknown> = {};
+        for (const [k, v] of value) {
+          res[k] = v;
+        }
+        return res;
+      } else {
+        return value;
+      }
+    });
+  }
+}
 
 /**
  * The default configuration for ngcc.
@@ -281,9 +348,7 @@ export class NgccConfiguration {
       return this.cache.get(cacheKey)!;
     }
 
-    const projectLevelConfig = this.projectConfig.packages ?
-        findSatisfactoryVersion(this.projectConfig.packages[packageName], version) :
-        null;
+    const projectLevelConfig = this.projectConfig.findPackageConfig(packageName, version);
     if (projectLevelConfig !== null) {
       this.cache.set(cacheKey, projectLevelConfig);
       return projectLevelConfig;
@@ -295,9 +360,7 @@ export class NgccConfiguration {
       return packageLevelConfig;
     }
 
-    const defaultLevelConfig = this.defaultConfig.packages ?
-        findSatisfactoryVersion(this.defaultConfig.packages[packageName], version) :
-        null;
+    const defaultLevelConfig = this.defaultConfig.findPackageConfig(packageName, version);
     if (defaultLevelConfig !== null) {
       this.cache.set(cacheKey, defaultLevelConfig);
       return defaultLevelConfig;
@@ -307,8 +370,7 @@ export class NgccConfiguration {
   }
 
   private processProjectConfig(projectConfig: NgccProjectConfig): PartiallyProcessedConfig {
-    const processedConfig:
-        PartiallyProcessedConfig = {packages: {}, locking: {}, hashAlgorithm: 'sha256'};
+    const processedConfig = new PartiallyProcessedConfig();
 
     // locking configuration
     if (projectConfig.locking !== undefined) {
@@ -320,9 +382,7 @@ export class NgccConfiguration {
       const packageConfig = projectConfig.packages[packageNameAndVersion];
       if (packageConfig) {
         const [packageName, versionRange = '*'] = this.splitNameAndVersion(packageNameAndVersion);
-        const packageConfigs =
-            processedConfig.packages[packageName] || (processedConfig.packages[packageName] = []);
-        packageConfigs!.push({...packageConfig, versionRange});
+        processedConfig.addPackageConfig(packageName, {...packageConfig, versionRange});
       }
     }
 
@@ -392,22 +452,6 @@ export class NgccConfiguration {
   }
 
   private computeHash(): string {
-    return createHash(this.hashAlgorithm).update(JSON.stringify(this.projectConfig)).digest('hex');
+    return createHash(this.hashAlgorithm).update(this.projectConfig.toJson()).digest('hex');
   }
-}
-
-function findSatisfactoryVersion(configs: VersionedPackageConfig[]|undefined, version: string|null):
-    VersionedPackageConfig|null {
-  if (configs === undefined) {
-    return null;
-  }
-  if (version === null) {
-    // The package has no version (!) - perhaps the entry-point was from a deep import, which made
-    // it impossible to find the package.json.
-    // So just return the first config that matches the package name.
-    return configs[0];
-  }
-  return configs.find(
-             config => satisfies(version, config.versionRange, {includePrerelease: true})) ||
-      null;
 }
