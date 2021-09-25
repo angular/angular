@@ -45,8 +45,8 @@ class _NullComponentFactoryResolver implements ComponentFactoryResolver {
 of the code in this cookbook
  * @publicApi
  *
- * @deprecated With Ivy, there is no need to resolve Component factories. No replacement is needed,
-it's possible to use Component Types directly.
+ * @deprecated Angular no longer requires component factories to dynamically create components.
+ * All dynamic component creation APIs now directly accept a component class.
  */
 export abstract class ComponentFactoryResolver {
   static NULL: ComponentFactoryResolver = (/* @__PURE__ */ new _NullComponentFactoryResolver());

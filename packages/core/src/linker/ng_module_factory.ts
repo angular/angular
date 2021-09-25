@@ -28,8 +28,8 @@ export abstract class NgModuleRef<T> {
    * The resolver that can retrieve the component factories
    * declared in the `entryComponents` property of the module.
    *
-   * @deprecated With Ivy, there is no need to resolve Component factories. No replacement is
-needed, it's possible to use Component Types directly.
+   * @deprecated Angular no longer requires component factories to dynamically create components.
+   * All dynamic component creation APIs now directly accept a component class.
    */
   abstract get componentFactoryResolver(): ComponentFactoryResolver;
 
