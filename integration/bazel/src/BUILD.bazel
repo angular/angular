@@ -1,11 +1,11 @@
-package(default_visibility = ["//visibility:public"])
-
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
 load("@npm//http-server:index.bzl", "http_server")
 load("@npm//@angular/bazel:index.bzl", "ng_module")
 load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
 load("@npm//@bazel/terser:index.bzl", "terser_minified")
 load("@npm//@bazel/concatjs:index.bzl", "concatjs_devserver")
+
+package(default_visibility = ["//visibility:public"])
 
 # Allow targets under sub-packages to reference the tsconfig.json file
 exports_files(["tsconfig.json"])
@@ -57,8 +57,8 @@ rollup_bundle(
     entry_point = ":main.ts",
     deps = [
         "//src",
-        "@npm//rollup-plugin-commonjs",
-        "@npm//rollup-plugin-node-resolve",
+        "@npm//@rollup/plugin-commonjs",
+        "@npm//@rollup/plugin-node-resolve",
     ],
 )
 
