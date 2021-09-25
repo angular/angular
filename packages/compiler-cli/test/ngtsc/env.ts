@@ -18,7 +18,6 @@ import {Folder, MockFileSystem} from '../../src/ngtsc/file_system/testing';
 import {IndexedComponent} from '../../src/ngtsc/indexer';
 import {NgtscProgram} from '../../src/ngtsc/program';
 import {DeclarationNode} from '../../src/ngtsc/reflection';
-import {LazyRoute} from '../../src/ngtsc/routing';
 import {NgtscTestCompilerHost} from '../../src/ngtsc/testing';
 import {setWrapHostForTest} from '../../src/transformers/compiler_host';
 
@@ -261,13 +260,6 @@ export class NgtscTestEnvironment {
 
     // ngtsc only produces ts.Diagnostic messages.
     return defaultGatherDiagnostics(program as api.Program) as ts.Diagnostic[];
-  }
-
-  driveRoutes(entryPoint?: string): LazyRoute[] {
-    const {rootNames, options} = readNgcCommandLineAndConfiguration(this.commandLineArgs);
-    const host = createCompilerHost({options});
-    const program = createProgram({rootNames, host, options});
-    return program.listLazyRoutes(entryPoint);
   }
 
   driveIndexer(): Map<DeclarationNode, IndexedComponent> {

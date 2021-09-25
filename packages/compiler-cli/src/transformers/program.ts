@@ -250,9 +250,7 @@ class AngularCompilerProgram implements Program {
   }
 
   listLazyRoutes(route?: string): LazyRoute[] {
-    // Note: Don't analyzedModules if a route is given
-    // to be fast enough.
-    return this.compiler.listLazyRoutes(route, route ? undefined : this.analyzedModules);
+    return [];
   }
 
   emit(parameters: {

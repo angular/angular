@@ -34,10 +34,6 @@
     "packages/compiler-cli/src/ngtsc/partial_evaluator/src/interpreter.ts"
   ],
   [
-    "packages/compiler-cli/src/ngtsc/routing/src/analyzer.ts",
-    "packages/compiler-cli/src/ngtsc/routing/src/lazy.ts"
-  ],
-  [
     "packages/compiler-cli/src/ngtsc/scope/src/component_scope.ts",
     "packages/compiler-cli/src/ngtsc/scope/src/local.ts"
   ],

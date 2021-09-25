@@ -138,8 +138,7 @@ export class DecorationAnalyzer {
         /* errorOnDuplicateProv */ false),
     new NgModuleDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullMetaReader, this.fullRegistry,
-        this.scopeRegistry, this.referencesRegistry, this.isCore, /* routeAnalyzer */ null,
-        this.refEmitter,
+        this.scopeRegistry, this.referencesRegistry, this.isCore, this.refEmitter,
         /* factoryTracker */ null, !!this.compilerOptions.annotateForClosureCompiler,
         this.injectableRegistry, NOOP_PERF_RECORDER),
   ];
