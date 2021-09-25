@@ -7,7 +7,7 @@
  */
 
 import * as compiler from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {MetadataCollector} from '../../src/metadata/collector';
 import {CompilerHost, CompilerOptions, LibrarySummary} from '../../src/transformers/api';

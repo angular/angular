@@ -13,7 +13,7 @@
  * Any changes to this file should be discussed with the Angular CLI team.
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {TypeScriptReflectionHost} from './ngtsc/reflection';
 import {getDownlevelDecoratorsTransform} from './transformers/downlevel_decorators_transform';

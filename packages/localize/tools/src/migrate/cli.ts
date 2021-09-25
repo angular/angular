@@ -8,8 +8,8 @@
  */
 
 import {ConsoleLogger, LogLevel, NodeJSFileSystem, setFileSystem} from '@angular/compiler-cli/private/localize';
-import * as glob from 'glob';
-import * as yargs from 'yargs';
+import glob from 'glob';
+import yargs from 'yargs';
 import {migrateFiles} from './index';
 
 const args = process.argv.slice(2);

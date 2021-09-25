@@ -7,7 +7,7 @@
  */
 
 import {ParseSourceSpan} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ExternalTemplateSourceMapping, TemplateDiagnostic, TemplateId, TemplateSourceMapping} from '../../api';
 

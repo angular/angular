@@ -8,7 +8,7 @@
 
 /// <reference types="node" />
 
-import * as cluster from 'cluster';
+import cluster from 'cluster';
 
 import {MessageFromWorker, MessageToWorker} from './api';
 

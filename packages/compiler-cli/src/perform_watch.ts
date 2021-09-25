@@ -8,7 +8,7 @@
 
 import * as chokidar from 'chokidar';
 import * as path from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {Diagnostics, exitCodeFromResult, ParsedConfiguration, performCompilation, PerformCompilationResult, readConfiguration} from './perform_compile';
 import * as api from './transformers/api';

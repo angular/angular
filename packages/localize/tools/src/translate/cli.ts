@@ -7,8 +7,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {NodeJSFileSystem, setFileSystem} from '@angular/compiler-cli/private/localize';
-import * as glob from 'glob';
-import * as yargs from 'yargs';
+import glob from 'glob';
+import yargs from 'yargs';
 
 import {DiagnosticHandlingStrategy, Diagnostics} from '../diagnostics';
 import {getOutputPathFn} from './output_path';

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {NodePath, Scope} from '@babel/traverse';
-import * as t from '@babel/types';
+import t from '@babel/types';
 
 import {DeclarationScope} from '../../../linker';
 

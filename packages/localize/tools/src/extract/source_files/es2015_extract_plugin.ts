@@ -7,16 +7,16 @@
  */
 import {PathManipulation} from '@angular/compiler-cli/private/localize';
 import {ɵParsedMessage, ɵparseMessage} from '@angular/localize';
-import {NodePath, PluginObj} from '@babel/core';
-import {TaggedTemplateExpression} from '@babel/types';
+import babel from '@babel/core';
+import t from '@babel/types';
 
 import {getLocation, isGlobalIdentifier, isNamedIdentifier, unwrapExpressionsFromTemplateLiteral, unwrapMessagePartsFromTemplateLiteral} from '../../source_file_utils';
 
 export function makeEs2015ExtractPlugin(
-    fs: PathManipulation, messages: ɵParsedMessage[], localizeName = '$localize'): PluginObj {
+    fs: PathManipulation, messages: ɵParsedMessage[], localizeName = '$localize'): babel.PluginObj {
   return {
     visitor: {
-      TaggedTemplateExpression(path: NodePath<TaggedTemplateExpression>) {
+      TaggedTemplateExpression(path: babel.NodePath<t.TaggedTemplateExpression>) {
         const tag = path.get('tag');
         if (isNamedIdentifier(tag, localizeName) && isGlobalIdentifier(tag)) {
           const quasiPath = path.get('quasi');

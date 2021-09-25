@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';  // used as value and is provided at runtime
+import ts from 'typescript'; // used as value and is provided at runtime
 
 import {locateSymbols} from './locate_symbol';
 import {findTightestNode, getClassDeclFromDecoratorProp, getPropertyAssignmentFromValue} from './ts_utils';

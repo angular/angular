@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {intersects, Range, SemVer} from 'semver';
+import semver from 'semver';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {Logger} from '../../../../src/ngtsc/logging';
@@ -36,7 +36,7 @@ export const declarationFunctions = [
 ];
 
 export interface LinkerRange<TExpression> {
-  range: Range;
+  range: semver.Range;
   linker: PartialLinker<TExpression>;
 }
 
@@ -151,7 +151,7 @@ export class PartialLinkerSelector<TExpression> {
 
     const declarationRange = getRange('>=', minVersion);
     for (const {range: linkerRange, linker} of linkerRanges) {
-      if (intersects(declarationRange, linkerRange)) {
+      if (semver.intersects(declarationRange, linkerRange)) {
         return linker;
       }
     }
@@ -183,9 +183,9 @@ export class PartialLinkerSelector<TExpression> {
  * @param versionStr the version given in the partial declaration
  * @returns A semver range for the provided `version` and comparator.
  */
-function getRange(comparator: '<='|'>=', versionStr: string): Range {
-  const version = new SemVer(versionStr);
+function getRange(comparator: '<='|'>=', versionStr: string): semver.Range {
+  const version = new semver.SemVer(versionStr);
   // Wipe out any prerelease versions
   version.prerelease = [];
-  return new Range(`${comparator}${version.format()}`);
+  return new semver.Range(`${comparator}${version.format()}`);
 }

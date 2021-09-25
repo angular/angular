@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {NodePath, PluginObj} from '@babel/core';
-import {MemberExpression, stringLiteral} from '@babel/types';
+import babel from '@babel/core';
+import t from '@babel/types';
 
 import {isLocalize, TranslatePluginOptions} from '../../source_file_utils';
 
@@ -24,15 +24,15 @@ import {isLocalize, TranslatePluginOptions} from '../../source_file_utils';
  * @publicApi used by CLI
  */
 export function makeLocalePlugin(
-    locale: string, {localizeName = '$localize'}: TranslatePluginOptions = {}): PluginObj {
+    locale: string, {localizeName = '$localize'}: TranslatePluginOptions = {}): babel.PluginObj {
   return {
     visitor: {
-      MemberExpression(expression: NodePath<MemberExpression>) {
+      MemberExpression(expression: babel.NodePath<t.MemberExpression>) {
         const obj = expression.get('object');
         if (!isLocalize(obj, localizeName)) {
           return;
         }
-        const property = expression.get('property') as NodePath;
+        const property = expression.get('property') as babel.NodePath;
         if (!property.isIdentifier({name: 'locale'})) {
           return;
         }
@@ -59,7 +59,7 @@ export function makeLocalePlugin(
           }
         }
         // Replace the `$localize.locale` with the string literal
-        expression.replaceWith(stringLiteral(locale));
+        expression.replaceWith(t.stringLiteral(locale));
       }
     }
   };
@@ -75,7 +75,7 @@ export function makeLocalePlugin(
  * @param expression the expression to check
  * @param localizeName the name of the `$localize` symbol
  */
-function isLocalizeGuard(expression: NodePath, localizeName: string): boolean {
+function isLocalizeGuard(expression: babel.NodePath, localizeName: string): boolean {
   if (!expression.isBinaryExpression() ||
       !(expression.node.operator === '!==' || expression.node.operator === '!=')) {
     return false;

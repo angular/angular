@@ -8,7 +8,7 @@
 
 import {runfiles} from '@bazel/runfiles';
 import {CldrStatic} from 'cldrjs';
-import {sync as globSync} from 'glob';
+import glob from 'glob';
 
 // TypeScript doesn't allow us to import the default export without the `esModuleInterop`. We use
 // the NodeJS require function instead as specifying a custom tsconfig complicates the setup
@@ -141,7 +141,7 @@ export class CldrData {
    */
   private _readCldrDataFromRepository(): object[] {
     const jsonFiles =
-        CLDR_DATA_GLOBS.map(pattern => globSync(pattern, {cwd: this.cldrDataDir, absolute: true}))
+        CLDR_DATA_GLOBS.map(pattern => glob.sync(pattern, {cwd: this.cldrDataDir, absolute: true}))
             .reduce((acc, dataFiles) => [...acc, ...dataFiles], []);
 
     // Read the JSON for all determined CLDR json files.

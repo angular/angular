@@ -5,15 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {parse} from '@babel/parser';
+import parser from '@babel/parser';
 import traverse, {NodePath} from '@babel/traverse';
-import * as t from '@babel/types';
+import t from '@babel/types';
 import {BabelDeclarationScope} from '../src/babel_declaration_scope';
 
 describe('BabelDeclarationScope', () => {
   describe('getConstantScopeRef()', () => {
     it('should return a path to the ES module where the expression was imported', () => {
-      const ast = parse(
+      const ast = parser.parse(
           [
             'import * as core from \'@angular/core\';',
             'function foo() {',
@@ -29,7 +29,7 @@ describe('BabelDeclarationScope', () => {
     });
 
     it('should return a path to the ES Module where the expression is declared', () => {
-      const ast = parse(
+      const ast = parser.parse(
           [
             'var core;',
             'export function foo() {',
@@ -45,7 +45,7 @@ describe('BabelDeclarationScope', () => {
     });
 
     it('should return null if the file is not an ES module', () => {
-      const ast = parse(
+      const ast = parser.parse(
           [
             'var core;',
             'function foo() {',
@@ -60,7 +60,7 @@ describe('BabelDeclarationScope', () => {
     });
 
     it('should return the IIFE factory function where the expression is a parameter', () => {
-      const ast = parse(
+      const ast = parser.parse(
           [
             'var core;',
             '(function(core) {',

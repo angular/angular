@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {isClassMetadata, MetadataCollector} from '../../src/metadata/index';
 import {getInlineResourcesTransformFactory, InlineResourcesMetadataTransformer} from '../../src/transformers/inline_resources';

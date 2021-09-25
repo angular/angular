@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as t from '@babel/types';
+import t from '@babel/types';
 
 import {assert, AstHost, FatalLinkerError, Range} from '../../../../linker';
 

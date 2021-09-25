@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {getSourceCodeForDiagnostic, loadStandardTestFiles} from '../../src/ngtsc/testing';
@@ -31,8 +31,8 @@ runInEachFileSystem(() => {
                 selector: 'test',
                 template: '<div ([notARealThing])="bar"></div>',
               })
-              class TestCmp { 
-                bar: string = "text"; 
+              class TestCmp {
+                bar: string = "text";
               }
             `);
 
@@ -50,8 +50,8 @@ runInEachFileSystem(() => {
                 selector: 'test',
                 templateUrl: './test.html',
               })
-              class TestCmp { 
-                bar: string = "text"; 
+              class TestCmp {
+                bar: string = "text";
               }
             `);
 
@@ -74,8 +74,8 @@ runInEachFileSystem(() => {
                 selector: 'test',
                 template: '<div ([notARealThing])="bar"></div>',
               })
-              class TestCmp { 
-                bar: string = "text"; 
+              class TestCmp {
+                bar: string = "text";
               }
             `);
 
@@ -92,8 +92,8 @@ runInEachFileSystem(() => {
                 selector: 'test',
                 template: '<div ([notARealThing])="bar"></div>',
               })
-              class TestCmp { 
-                bar: string = "text"; 
+              class TestCmp {
+                bar: string = "text";
               }
             `);
 
@@ -111,8 +111,8 @@ runInEachFileSystem(() => {
                 selector: 'test',
                 template: '{{ bar ?? "foo" }}',
               })
-              export class TestCmp { 
-                bar: string = "text"; 
+              export class TestCmp {
+                bar: string = "text";
               }
             `);
 
@@ -133,8 +133,8 @@ runInEachFileSystem(() => {
                 selector: 'test',
                 template: '{{ bar ?? "foo" }}',
               })
-              export class TestCmp { 
-                bar: string = undefined; 
+              export class TestCmp {
+                bar: string = undefined;
               }
             `);
 

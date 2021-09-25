@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {ErrorCode, ngErrorCode} from '../../../../../diagnostics';
 import {absoluteFrom, getSourceFileOrError} from '../../../../../file_system';
 import {runInEachFileSystem} from '../../../../../file_system/testing';
@@ -77,12 +77,12 @@ runInEachFileSystem(() => {
       const {program, templateTypeChecker} = setup([{
         fileName,
         templates: {
-          'TestCmp': `<div> 
+          'TestCmp': `<div>
              <div *ngIf="false" ([notARealThing])="var1"> </div>
              <ng-template #elseBlock ([notARealThing2])="var1">Content to render when condition is false.</ng-template>
            </div>`,
         },
-        source: `export class TestCmp { 
+        source: `export class TestCmp {
            var1: string = "text";
          }`
       }]);

@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {PluginObj} from '@babel/core';
+import babel from '@babel/core';
 import {NodePath} from '@babel/traverse';
-import * as t from '@babel/types';
+import t from '@babel/types';
 
 import {FileLinker, isFatalLinkerError, LinkerEnvironment} from '../../../linker';
 
@@ -24,7 +24,7 @@ import {LinkerPluginOptions} from './linker_plugin_options';
  * Babel) that is visited.
  */
 export function createEs2015LinkerPlugin({fileSystem, logger, ...options}: LinkerPluginOptions):
-    PluginObj {
+    babel.PluginObj {
   let fileLinker: FileLinker<ConstantScopePath, t.Statement, t.Expression>|null = null;
 
   return {

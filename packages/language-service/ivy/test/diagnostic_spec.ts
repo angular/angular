@@ -8,7 +8,7 @@
 
 import {ErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics';
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv} from '../testing';
 
@@ -370,8 +370,8 @@ describe('getSemanticDiagnostics', () => {
           selector: 'test',
           template: '<div ([notARealThing])="bar"></div>',
         })
-        export class TestCmp { 
-          bar: string = "text"; 
+        export class TestCmp {
+          bar: string = "text";
         }
     `
     };
@@ -392,8 +392,8 @@ describe('getSemanticDiagnostics', () => {
           selector: 'test',
           template: '<div ([notARealThing])="bar"></div>',
         })
-        export class TestCmp { 
-          bar: string = "text"; 
+        export class TestCmp {
+          bar: string = "text";
         }
     `
     };
@@ -411,8 +411,8 @@ describe('getSemanticDiagnostics', () => {
           selector: 'test',
           templateUrl: './app.html',
         })
-        export class TestCmp { 
-          bar: string = "text"; 
+        export class TestCmp {
+          bar: string = "text";
         }
     `,
       'app.html': `<div ([foo])="bar"></div>`
@@ -435,8 +435,8 @@ describe('getSemanticDiagnostics', () => {
           selector: 'test',
           templateUrl: './app.html',
         })
-        export class TestCmp { 
-          bar: string = "text"; 
+        export class TestCmp {
+          bar: string = "text";
         }
     `,
          'app.html': `<div ([foo])="bar"></div>`

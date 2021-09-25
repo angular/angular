@@ -7,7 +7,7 @@
  */
 import {AbsoluteFsPath, Logger, ReadonlyFileSystem, SourceFile, SourceFileLoader} from '@angular/compiler-cli/private/localize';
 import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
-import {transformSync} from '@babel/core';
+import babel from '@babel/core';
 
 import {makeEs2015ExtractPlugin} from './source_files/es2015_extract_plugin';
 import {makeEs5ExtractPlugin} from './source_files/es5_extract_plugin';
@@ -46,7 +46,7 @@ export class MessageExtractor {
     const sourceCode = this.fs.readFile(this.fs.resolve(this.basePath, filename));
     if (sourceCode.includes(this.localizeName)) {
       // Only bother to parse the file if it contains a reference to `$localize`.
-      transformSync(sourceCode, {
+      babel.transformSync(sourceCode, {
         sourceRoot: this.basePath,
         filename,
         plugins: [

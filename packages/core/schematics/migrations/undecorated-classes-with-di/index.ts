@@ -12,7 +12,7 @@ import {AotCompiler} from '@angular/compiler';
 import {Diagnostic as NgDiagnostic} from '@angular/compiler-cli';
 import {PartialEvaluator, TypeScriptReflectionHost} from '@angular/compiler-cli/private/migrations';
 import {relative} from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {canMigrateFile, createMigrationCompilerHost} from '../../utils/typescript/compiler_host';

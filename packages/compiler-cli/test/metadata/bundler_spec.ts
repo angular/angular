@@ -7,7 +7,7 @@
  */
 
 import * as path from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {CompilerHostAdapter, MetadataBundler, MetadataBundlerHost} from '../../src/metadata/bundler';
 import {MetadataCollector} from '../../src/metadata/collector';

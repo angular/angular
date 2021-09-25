@@ -7,7 +7,7 @@
  */
 
 import {isSyntaxError, Position} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, ReadonlyFileSystem, relative, resolve} from '../src/ngtsc/file_system';
 import {NgCompilerOptions} from './ngtsc/core/api';

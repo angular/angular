@@ -8,7 +8,7 @@
 
 import {CssSelector, SelectorMatcher, TmplAstElement, TmplAstTemplate} from '@angular/compiler';
 import {DirectiveInScope, ElementSymbol, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {DisplayInfoKind, unsafeCastDisplayInfoKindToScriptElementKind} from './display_parts';
 import {makeElementSelector} from './utils';

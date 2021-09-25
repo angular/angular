@@ -7,7 +7,7 @@
  */
 
 import {Replacement, RuleFailure, Rules} from 'tslint';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {findAsyncReferences} from '../../migrations/wait-for-async/util';
 import {getImportSpecifier, replaceImport} from '../../utils/typescript/imports';

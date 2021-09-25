@@ -7,7 +7,7 @@
  */
 
 import {Replacement, RuleFailure} from 'tslint';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {UpdateRecorder} from '../update_recorder';
 

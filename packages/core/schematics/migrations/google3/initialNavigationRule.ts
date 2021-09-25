@@ -7,7 +7,7 @@
  */
 
 import {RuleFailure, Rules} from 'tslint';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {InitialNavigationCollector} from '../initial-navigation/collector';
 import {TslintUpdateRecorder} from '../initial-navigation/google3/tslint_update_recorder';

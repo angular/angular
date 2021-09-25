@@ -7,7 +7,7 @@
  */
 
 import {ClassStmt, PartialModule, Statement, StmtModifier} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {isClassMetadata, MetadataCollector, MetadataValue, ModuleMetadata} from '../metadata/index';
 

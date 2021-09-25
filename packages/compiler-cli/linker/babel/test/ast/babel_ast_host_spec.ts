@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as t from '@babel/types';
+import t from '@babel/types';
 import template from '@babel/template';
-import {parse} from '@babel/parser';
+import parser from '@babel/parser';
 import {BabelAstHost} from '../../src/ast/babel_ast_host';
 
 describe('BabelAstHost', () => {
@@ -326,7 +326,7 @@ describe('BabelAstHost', () => {
 
   describe('getRange()', () => {
     it('should extract the range from the expression', () => {
-      const file = parse('// preamble\nx = \'moo\';');
+      const file = parser.parse('// preamble\nx = \'moo\';');
       const stmt = file.program.body[0];
       assertExpressionStatement(stmt);
       assertAssignmentExpression(stmt.expression);

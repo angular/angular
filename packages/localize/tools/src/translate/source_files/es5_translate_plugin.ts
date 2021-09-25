@@ -7,8 +7,8 @@
  */
 import {getFileSystem, PathManipulation} from '@angular/compiler-cli/private/localize';
 import {ɵParsedTranslation} from '@angular/localize';
-import {NodePath, PluginObj} from '@babel/core';
-import {CallExpression} from '@babel/types';
+import babel from '@babel/core';
+import t from '@babel/types';
 
 import {Diagnostics} from '../../diagnostics';
 import {buildCodeFrameError, buildLocalizeReplacement, isBabelParseError, isLocalize, translate, TranslatePluginOptions, unwrapMessagePartsFromLocalizeCall, unwrapSubstitutionsFromLocalizeCall} from '../../source_file_utils';
@@ -22,10 +22,10 @@ import {buildCodeFrameError, buildLocalizeReplacement, isBabelParseError, isLoca
 export function makeEs5TranslatePlugin(
     diagnostics: Diagnostics, translations: Record<string, ɵParsedTranslation>,
     {missingTranslation = 'error', localizeName = '$localize'}: TranslatePluginOptions = {},
-    fs: PathManipulation = getFileSystem()): PluginObj {
+    fs: PathManipulation = getFileSystem()): babel.PluginObj {
   return {
     visitor: {
-      CallExpression(callPath: NodePath<CallExpression>) {
+      CallExpression(callPath: babel.NodePath<t.CallExpression>) {
         try {
           const calleePath = callPath.get('callee');
           if (isLocalize(calleePath, localizeName)) {

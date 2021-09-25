@@ -7,7 +7,7 @@
  */
 
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {LanguageServiceTestEnv, OpenBuffer, Project} from '../testing';
 import {collectMemberMethods, findTightestNode} from '../ts_utils';
 

@@ -8,7 +8,7 @@
 
 import {AotCompilerHost, collectExternalReferences, EmitterVisitorContext, GeneratedFile, ParseSourceSpan, syntaxError, TypeScriptEmitter} from '@angular/compiler';
 import * as path from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {TypeCheckHost} from '../diagnostics/translate_diagnostics';
 import {ModuleMetadata} from '../metadata/index';

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Range} from 'semver';
+import semver from 'semver';
 
 import {MockLogger} from '../../../../src/ngtsc/logging/testing';
 import {PartialLinker} from '../../../src/file_linker/partial_linkers/partial_linker';
@@ -111,12 +111,12 @@ describe('PartialLinkerSelector', () => {
   function createSelector(unknownDeclarationVersionHandling: 'error'|'warn'|'ignore') {
     const linkerMap = new Map<string, LinkerRange<unknown>[]>();
     linkerMap.set('declareA', [
-      {range: new Range('<=12.0.0'), linker: linkerA},
-      {range: new Range('<=13.0.0'), linker: linkerA2}
+      {range: new semver.Range('<=12.0.0'), linker: linkerA},
+      {range: new semver.Range('<=13.0.0'), linker: linkerA2}
     ]);
     linkerMap.set('declareB', [
-      {range: new Range('<=12.0.0'), linker: linkerB},
-      {range: new Range('<=12.1.0'), linker: linkerB2},
+      {range: new semver.Range('<=12.0.0'), linker: linkerB},
+      {range: new semver.Range('<=12.1.0'), linker: linkerB2},
     ]);
     return new PartialLinkerSelector(linkerMap, logger, unknownDeclarationVersionHandling);
   }

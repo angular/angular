@@ -9,7 +9,7 @@
 import {TmplAstReference, TmplAstTemplate} from '@angular/compiler';
 import {AST, EmptyExpr, ImplicitReceiver, LiteralPrimitive, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstNode} from '@angular/compiler/src/compiler';
 import {TextAttribute} from '@angular/compiler/src/render3/r3_ast';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
 import {CompletionKind, GlobalCompletion, ReferenceCompletion, ShimLocation, VariableCompletion} from '../api';

@@ -6,7 +6,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as yargs from 'yargs';
+import yargs from 'yargs';
 
 import {setFileSystem, NodeJSFileSystem} from '../../src/ngtsc/file_system';
 import {ConsoleLogger, LogLevel} from '../../src/ngtsc/logging';
@@ -22,7 +22,7 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
             default: './node_modules',
             type: 'string',
           })
-          .option('f', {alias: 'formats', hidden: true, array: true, type: 'string'})
+          .option('f', {alias: 'formats', hidden: true, array: true, type: 'string'})
           .option('p', {
             alias: 'properties',
             array: true,

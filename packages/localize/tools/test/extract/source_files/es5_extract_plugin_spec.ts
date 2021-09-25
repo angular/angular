@@ -8,7 +8,7 @@
  */
 import {FileSystem, getFileSystem, PathSegment, relativeFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵParsedMessage} from '@angular/localize/private';
-import {transformSync} from '@babel/core';
+import babel from '@babel/core';
 
 import {makeEs5ExtractPlugin} from '../../../src/extract/source_files/es5_extract_plugin';
 import {runInNativeFileSystem} from '../../helpers';
@@ -38,7 +38,7 @@ runInNativeFileSystem(() => {
       const messages: ɵParsedMessage[] = [];
       const cwd = fs.resolve('/');
       const filename = fs.resolve(cwd, testPath);
-      transformSync(input, {
+      babel.transformSync(input, {
         plugins: [makeEs5ExtractPlugin(getFileSystem(), messages)],
         filename,
         cwd,

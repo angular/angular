@@ -9,7 +9,7 @@
 import {Expression, ExternalExpr, LiteralExpr, ParseLocation, ParseSourceFile, ParseSourceSpan, R3CompiledExpression, R3DependencyMetadata, R3Reference, ReadPropExpr, Statement, WrappedNodeExpr} from '@angular/compiler';
 import {R3FactoryMetadata} from '@angular/compiler/src/compiler';
 import {FactoryTarget} from '@angular/compiler/src/render3/partial/api';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
 import {ImportFlags, Reference, ReferenceEmitter} from '../../imports';

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {isFunctionLikeDeclaration} from '../../../../utils/typescript/functions';
 import {hasModifier} from '../../../../utils/typescript/nodes';

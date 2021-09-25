@@ -11,7 +11,7 @@
 import 'reflect-metadata';
 
 import * as path from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 import * as assert from 'assert';
 import {createProgram, readConfiguration} from '@angular/compiler-cli';
 

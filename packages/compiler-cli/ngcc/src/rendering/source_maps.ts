@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {fromObject, generateMapFileComment, SourceMapConverter} from 'convert-source-map';
+import mapHelpers from 'convert-source-map';
 import MagicString from 'magic-string';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {absoluteFrom, absoluteFromSourceFile, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
@@ -17,7 +17,7 @@ import {FileToWrite} from './utils';
 
 export interface SourceMapInfo {
   source: string;
-  map: SourceMapConverter|null;
+  map: mapHelpers.SourceMapConverter|null;
   isInline: boolean;
 }
 
@@ -40,7 +40,7 @@ export function renderSourceAndMap(
         sourceFilePath, generatedContent, {map: generatedMap, mapPath: sourceMapPath});
 
     const rawMergedMap: RawSourceMap = generatedFile.renderFlattenedSourceMap();
-    const mergedMap = fromObject(rawMergedMap);
+    const mergedMap = mapHelpers.fromObject(rawMergedMap);
     const originalFile = loader.loadSourceFile(sourceFilePath, generatedMagicString.original);
     if (originalFile.rawMap === null && !sourceFile.isDeclarationFile ||
         originalFile.rawMap?.origin === ContentOrigin.Inline) {
@@ -56,7 +56,8 @@ export function renderSourceAndMap(
       ];
     }
 
-    const sourceMapComment = generateMapFileComment(`${fs.basename(sourceFilePath)}.map`);
+    const sourceMapComment =
+        mapHelpers.generateMapFileComment(`${fs.basename(sourceFilePath)}.map`);
     return [
       {path: sourceFilePath, contents: `${generatedFile.contents}\n${sourceMapComment}`},
       {path: sourceMapPath, contents: mergedMap.toJSON()}
@@ -66,7 +67,7 @@ export function renderSourceAndMap(
         sourceFilePath}": ${e.toString()}`);
     return [
       {path: sourceFilePath, contents: generatedContent},
-      {path: sourceMapPath, contents: fromObject(generatedMap).toJSON()},
+      {path: sourceMapPath, contents: mapHelpers.fromObject(generatedMap).toJSON()},
     ];
   }
 }

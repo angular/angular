@@ -8,7 +8,7 @@
 import {FileSystem, getFileSystem, PathSegment, relativeFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵcomputeMsgId, ɵparseTranslation} from '@angular/localize';
 import {ɵParsedTranslation} from '@angular/localize/private';
-import {transformSync} from '@babel/core';
+import babel from '@babel/core';
 
 import {Diagnostics} from '../../../src/diagnostics';
 import {TranslatePluginOptions} from '../../../src/source_file_utils';
@@ -371,7 +371,7 @@ runInNativeFileSystem(() => {
       pluginOptions?: TranslatePluginOptions, diagnostics = new Diagnostics()): string {
     const cwd = fs.resolve('/');
     const filename = fs.resolve(cwd, testPath);
-    return transformSync(input, {
+    return babel.transformSync(input, {
              plugins: [makeEs5TranslatePlugin(diagnostics, translations, pluginOptions)],
              filename,
              cwd,

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {createHash} from 'crypto';
-import {satisfies} from 'semver';
+import semver from 'semver';
 import * as vm from 'vm';
 
 import {AbsoluteFsPath, PathManipulation, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
@@ -181,7 +181,8 @@ export class PartiallyProcessedConfig {
       return configs[0];
     }
     return configs.find(
-               config => satisfies(version, config.versionRange, {includePrerelease: true})) ??
+               config =>
+                   semver.satisfies(version, config.versionRange, {includePrerelease: true})) ??
         null;
   }
 

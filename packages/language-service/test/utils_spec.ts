@@ -7,7 +7,7 @@
  */
 
 import * as ng from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {getClassDeclFromDecoratorProp, getDirectiveClassLike} from '../src/ts_utils';
 import {getPathToNodeAtPosition} from '../src/utils';

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {absoluteFrom, AbsoluteFsPath, FileSystem, PathSegment} from '@angular/compiler-cli/private/localize';
-import {parseSync, transformFromAstSync} from '@babel/core';
-import {File, Program} from '@babel/types';
+import babel from '@babel/core';
+import t from '@babel/types';
 
 import {Diagnostics} from '../../diagnostics';
 import {TranslatePluginOptions} from '../../source_file_utils';
@@ -47,7 +47,7 @@ export class SourceFileTranslationHandler implements TranslationHandler {
         this.writeSourceFile(diagnostics, outputPathFn, sourceLocale, relativeFilePath, contents);
       }
     } else {
-      const ast = parseSync(sourceCode, {sourceRoot, filename: relativeFilePath});
+      const ast = babel.parseSync(sourceCode, {sourceRoot, filename: relativeFilePath});
       if (!ast) {
         diagnostics.error(
             `Unable to parse source file: ${this.fs.join(sourceRoot, relativeFilePath)}`);
@@ -70,10 +70,10 @@ export class SourceFileTranslationHandler implements TranslationHandler {
   }
 
   private translateFile(
-      diagnostics: Diagnostics, ast: File|Program, translationBundle: TranslationBundle,
+      diagnostics: Diagnostics, ast: t.File|t.Program, translationBundle: TranslationBundle,
       sourceRoot: AbsoluteFsPath, filename: PathSegment, outputPathFn: OutputPathFn,
       options: TranslatePluginOptions) {
-    const translated = transformFromAstSync(ast, undefined, {
+    const translated = babel.transformFromAstSync(ast, undefined, {
       compact: true,
       generatorOpts: {minified: true},
       plugins: [

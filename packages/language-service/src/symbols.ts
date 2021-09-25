@@ -7,7 +7,7 @@
  */
 
 import {StaticSymbol} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 
 /**

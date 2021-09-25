@@ -7,7 +7,7 @@
  */
 
 import {compileClassMetadata, CompileClassMetadataFn, compileDeclareClassMetadata, compileDeclareInjectableFromMetadata, compileInjectable, createR3ProviderExpression, Expression, FactoryTarget, LiteralExpr, R3ClassMetadata, R3CompiledExpression, R3DependencyMetadata, R3InjectableMetadata, R3ProviderExpression, Statement, WrappedNodeExpr} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {InjectableClassRegistry} from '../../metadata';

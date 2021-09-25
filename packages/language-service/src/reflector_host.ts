@@ -9,7 +9,7 @@
 import {StaticSymbolResolverHost} from '@angular/compiler';
 import {createMetadataReaderCache, MetadataCollector, MetadataReaderHost, readMetadata} from '@angular/compiler-cli/src/language_services';
 import * as path from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 class ReflectorModuleModuleResolutionHost implements ts.ModuleResolutionHost, MetadataReaderHost {
   private readonly metadataCollector = new MetadataCollector({
