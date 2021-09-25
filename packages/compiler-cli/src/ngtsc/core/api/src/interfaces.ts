@@ -108,9 +108,3 @@ export interface TransformResourceResult {
  */
 export interface ExtendedTsCompilerHost extends ts.CompilerHost, Partial<ResourceHost>,
                                                 Partial<UnifiedModulesHost> {}
-
-export interface LazyRoute {
-  route: string;
-  module: {name: string, filePath: string};
-  referencedModule: {name: string, filePath: string};
-}

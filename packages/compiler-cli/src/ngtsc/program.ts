@@ -220,7 +220,7 @@ export class NgtscProgram implements api.Program {
   }
 
   listLazyRoutes(entryRoute?: string|undefined): api.LazyRoute[] {
-    return this.compiler.listLazyRoutes(entryRoute);
+    return [];
   }
 
   private emitXi18n(): void {

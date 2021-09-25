@@ -50,7 +50,6 @@ export * from './aot/static_symbol';
 export * from './aot/static_symbol_resolver';
 export * from './aot/summary_resolver';
 export {isLoweredSymbol, createLoweredSymbol} from './aot/util';
-export {LazyRoute} from './aot/lazy_routes';
 export * from './ast_path';
 export * from './summary_resolver';
 export {Identifiers} from './identifiers';

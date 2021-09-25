@@ -23,7 +23,6 @@ import {ActivePerfRecorder, DelegatingPerfRecorder, PerfCheckpoint, PerfEvent, P
 import {FileUpdate, ProgramDriver, UpdateMode} from '../../program_driver';
 import {DeclarationNode, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {AdapterResourceLoader} from '../../resource';
-import {entryPointKeyFor, NgModuleRouteAnalyzer} from '../../routing';
 import {ComponentScopeReader, LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../scope';
 import {generatedFactoryTransform} from '../../shims';
 import {ivySwitchTransform} from '../../switch';
@@ -34,9 +33,9 @@ import {ExtendedTemplateCheckerImpl} from '../../typecheck/extended';
 import {ExtendedTemplateChecker, TemplateCheck} from '../../typecheck/extended/api';
 import {InvalidBananaInBoxCheck} from '../../typecheck/extended/checks/invalid_banana_in_box';
 import {NullishCoalescingNotNullableCheck} from '../../typecheck/extended/checks/nullish_coalescing_not_nullable';
-import {getSourceFileOrNull, isDtsPath, resolveModuleName, toUnredirectedSourceFile} from '../../util/src/typescript';
+import {getSourceFileOrNull, isDtsPath, toUnredirectedSourceFile} from '../../util/src/typescript';
 import {Xi18nContext} from '../../xi18n';
-import {LazyRoute, NgCompilerAdapter, NgCompilerOptions} from '../api';
+import {NgCompilerAdapter, NgCompilerOptions} from '../api';
 
 /**
  * State information about a compilation which is only generated once some data is requested from
@@ -50,7 +49,6 @@ interface LazyCompilationState {
   scopeRegistry: LocalModuleScopeRegistry;
   typeCheckScopeRegistry: TypeCheckScopeRegistry;
   exportReferenceGraph: ReferenceGraph|null;
-  routeAnalyzer: NgModuleRouteAnalyzer;
   dtsTransforms: DtsTransformRegistry;
   aliasingHost: AliasingHost|null;
   refEmitter: ReferenceEmitter;
@@ -608,47 +606,6 @@ export class NgCompiler {
   }
 
   /**
-   * List lazy routes detected during analysis.
-   *
-   * This can be called for one specific route, or to retrieve all top-level routes.
-   */
-  listLazyRoutes(entryRoute?: string): LazyRoute[] {
-    if (entryRoute) {
-      // htts://github.com/angular/angular/blob/50732e156/packages/compiler-cli/src/transformers/compiler_host.ts#L175-L188).
-      //
-      // `@angular/cli` will always call this API with an absolute path, so the resolution step is
-      // not necessary, but keeping it backwards compatible in case someone else is using the API.
-
-      // Relative entry paths are disallowed.
-      if (entryRoute.startsWith('.')) {
-        throw new Error(`Failed to list lazy routes: Resolution of relative paths (${
-            entryRoute}) is not supported.`);
-      }
-
-      // Non-relative entry paths fall into one of the following categories:
-      // - Absolute system paths (e.g. `/foo/bar/my-project/my-module`), which are unaffected by the
-      //   logic below.
-      // - Paths to enternal modules (e.g. `some-lib`).
-      // - Paths mapped to directories in `tsconfig.json` (e.g. `shared/my-module`).
-      //   (See https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping.)
-      //
-      // In all cases above, the `containingFile` argument is ignored, so we can just take the first
-      // of the root files.
-      const containingFile = this.inputProgram.getRootFileNames()[0];
-      const [entryPath, moduleName] = entryRoute.split('#');
-      const resolvedModule =
-          resolveModuleName(entryPath, containingFile, this.options, this.adapter, null);
-
-      if (resolvedModule) {
-        entryRoute = entryPointKeyFor(resolvedModule.resolvedFileName, moduleName);
-      }
-    }
-
-    const compilation = this.ensureAnalyzed();
-    return compilation.routeAnalyzer.listLazyRoutes(entryRoute);
-  }
-
-  /**
    * Fetch transformers and other information which is necessary for a consumer to `emit` the
    * program with Angular-added definitions.
    */
@@ -1037,8 +994,6 @@ export class NgCompiler {
       referencesRegistry = new NoopReferencesRegistry();
     }
 
-    const routeAnalyzer = new NgModuleRouteAnalyzer(this.moduleResolver, evaluator);
-
     const dtsTransforms = new DtsTransformRegistry();
 
     const isCore = isAngularCorePackage(this.inputProgram);
@@ -1088,8 +1043,8 @@ export class NgCompiler {
           this.delegatingPerfRecorder),
       new NgModuleDecoratorHandler(
           reflector, evaluator, metaReader, metaRegistry, scopeRegistry, referencesRegistry, isCore,
-          routeAnalyzer, refEmitter, this.adapter.factoryTracker, this.closureCompilerEnabled,
-          injectableRegistry, this.delegatingPerfRecorder, this.options.i18nInLocale),
+          refEmitter, this.adapter.factoryTracker, this.closureCompilerEnabled, injectableRegistry,
+          this.delegatingPerfRecorder, this.options.i18nInLocale),
     ];
 
     const traitCompiler = new TraitCompiler(
@@ -1124,7 +1079,6 @@ export class NgCompiler {
       scopeRegistry,
       dtsTransforms,
       exportReferenceGraph,
-      routeAnalyzer,
       metaReader,
       typeCheckScopeRegistry,
       aliasingHost,

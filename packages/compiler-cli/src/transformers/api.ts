@@ -268,10 +268,7 @@ export interface Program {
   loadNgStructureAsync(): Promise<void>;
 
   /**
-   * Returns the lazy routes in the program.
-   * @param entryRoute A reference to an NgModule like `someModule#name`. If given,
-   *              will recursively analyze routes starting from this symbol only.
-   *              Otherwise will list all routes for all NgModules in the program/
+   * This method is obsolete and always returns an empty array.
    */
   listLazyRoutes(entryRoute?: string): LazyRoute[];
 

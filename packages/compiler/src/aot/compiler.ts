@@ -31,7 +31,6 @@ import {ViewCompiler, ViewCompileResult} from '../view_compiler/view_compiler';
 import {AotCompilerHost} from './compiler_host';
 import {AotCompilerOptions} from './compiler_options';
 import {GeneratedFile} from './generated_file';
-import {LazyRoute, listLazyRoutes, parseLazyRoute} from './lazy_routes';
 import {PartialModule} from './partial_module';
 import {StaticReflector} from './static_reflector';
 import {StaticSymbol} from './static_symbol';
@@ -620,43 +619,6 @@ export class AotCompiler {
 
   private _codegenSourceModule(srcFileUrl: string, ctx: OutputContext): GeneratedFile {
     return new GeneratedFile(srcFileUrl, ctx.genFilePath, ctx.statements);
-  }
-
-  listLazyRoutes(entryRoute?: string, analyzedModules?: NgAnalyzedModules): LazyRoute[] {
-    const self = this;
-    if (entryRoute) {
-      const symbol = parseLazyRoute(entryRoute, this.reflector).referencedModule;
-      return visitLazyRoute(symbol);
-    } else if (analyzedModules) {
-      const allLazyRoutes: LazyRoute[] = [];
-      for (const ngModule of analyzedModules.ngModules) {
-        const lazyRoutes = listLazyRoutes(ngModule, this.reflector);
-        for (const lazyRoute of lazyRoutes) {
-          allLazyRoutes.push(lazyRoute);
-        }
-      }
-      return allLazyRoutes;
-    } else {
-      throw new Error(`Either route or analyzedModules has to be specified!`);
-    }
-
-    function visitLazyRoute(
-        symbol: StaticSymbol, seenRoutes = new Set<StaticSymbol>(),
-        allLazyRoutes: LazyRoute[] = []): LazyRoute[] {
-      // Support pointing to default exports, but stop recursing there,
-      // as the StaticReflector does not yet support default exports.
-      if (seenRoutes.has(symbol) || !symbol.name) {
-        return allLazyRoutes;
-      }
-      seenRoutes.add(symbol);
-      const lazyRoutes =
-          listLazyRoutes(self._metadataResolver.getNgModuleMetadata(symbol, true)!, self.reflector);
-      for (const lazyRoute of lazyRoutes) {
-        allLazyRoutes.push(lazyRoute);
-        visitLazyRoute(lazyRoute.referencedModule, seenRoutes, allLazyRoutes);
-      }
-      return allLazyRoutes;
-    }
   }
 }
 
