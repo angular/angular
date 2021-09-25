@@ -40,6 +40,12 @@
     "./private/migrations": {
       "types": "./private/migrations.d.ts",
       "default": "./bundles/private/migrations.js"
+    },
+    "./ngcc/src/execution/cluster/ngcc_cluster_worker": {
+      "default": "./bundles/ngcc/src/execution/cluster/ngcc_cluster_worker.js"
+    },
+    "./ngcc/src/locking/lock_file_with_child_process/ngcc_lock_unlocker": {
+      "default": "./bundles/ngcc/src/locking/lock_file_with_child_process/ngcc_lock_unlocker.js"
     }
   },
   "dependencies": {

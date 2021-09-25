@@ -7,8 +7,8 @@
  */
 
 /// <reference types="node" />
-import {readFileSync} from 'fs';
-import * as os from 'os';
+import realFs from 'fs';
+import os from 'os';
 
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
 import {Folder, MockFileSystem, runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
@@ -69,7 +69,7 @@ runInEachFileSystem(() => {
       fs.ensureDir(fs.join(pkgPath, 'fesm5'));
       fs.writeFile(
           fs.join(pkgPath, 'fesm5/core.js'),
-          readFileSync(require.resolve('../fesm5_angular_core.js'), 'utf8'));
+          realFs.readFileSync(require.resolve('../fesm5_angular_core.js'), 'utf8'));
 
       pkgJson.esm5 = './fesm5/core.js';
       pkgJson.fesm5 = './fesm5/core.js';

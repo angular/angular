@@ -9,6 +9,7 @@
 /// <reference types="node" />
 
 import cluster from 'cluster';
+import module from 'module';
 
 import {AbsoluteFsPath, PathManipulation} from '../../../../src/ngtsc/file_system';
 import {Logger} from '../../../../src/ngtsc/logging';
@@ -20,7 +21,6 @@ import {stringifyTask} from '../tasks/utils';
 
 import {MessageFromWorker, TaskCompletedMessage, TransformedFilesMessage, UpdatePackageJsonMessage} from './api';
 import {Deferred, sendMessageToWorker} from './utils';
-
 
 /**
  * The cluster master is responsible for analyzing all entry-points, planning the work that needs to
@@ -44,7 +44,7 @@ export class ClusterMaster {
     }
 
     // Set the worker entry-point
-    cluster.setupMaster({exec: this.fileSystem.resolve(__dirname, 'ngcc_cluster_worker.js')});
+    cluster.setupMaster({exec: getClusterWorkerScriptPath(fileSystem)});
 
     this.taskQueue = analyzeEntryPoints();
     this.onTaskCompleted = createTaskCompletedCallback(this.taskQueue);
@@ -329,4 +329,17 @@ export class ClusterMaster {
       }
     };
   }
+}
+
+/** Gets the absolute file path to the cluster worker script. */
+export function getClusterWorkerScriptPath(fileSystem: PathManipulation): AbsoluteFsPath {
+  // This is an interop allowing for the worker script to be determined in both
+  // a CommonJS module, or an ES module which does not come with `require` by default.
+  const requireFn =
+      typeof require !== 'undefined' ? require : module.createRequire(__ESM_IMPORT_META_URL__);
+  // We resolve the worker script using module resolution as in the package output,
+  // the worker might be bundled but exposed through a subpath export mapping.
+  const workerScriptPath =
+      requireFn.resolve('@angular/compiler-cli/ngcc/src/execution/cluster/ngcc_cluster_worker');
+  return fileSystem.resolve(workerScriptPath);
 }
