@@ -125,7 +125,7 @@ To illustrate how dependency injection works, consider the following example. Th
 
 <code-example path="what-is-angular/src/app/logger.service.ts"></code-example>
 
-Next, the `hello-world-di.component.ts` file defines an Angular component. This component contains a button that uses the `writeCount` function of the Logger class. To access that function, the `Logger` service is injected into the `HelloWorldDI` class by adding `private logger: Logger` to the constructor.
+Next, the `hello-world-di.component.ts` file defines an Angular component. This component contains a button that uses the `writeCount` function of the Logger class. To access that function, the `Logger` service is injected into the `HelloWorldDependencyInjectionComponent` class by adding `private logger: Logger` to the constructor.
 
 <code-example path="what-is-angular/src/app/hello-world-di/hello-world-di.component.ts"></code-example>
 
@@ -206,6 +206,6 @@ This topic is intended to give you a brief overview of what Angular is, the adva
 
 To see Angular in action, see our [Getting Started](start) tutorial. This tutorial uses [stackblitz.com](https://stackblitz.com/), for you to explore a working example of Angular without any installation requirements.
 
-To explore Angular's capabilities further, we recommend reading through the sections, Understanding Angular and Developer Guides.
+To explore Angular's capabilities further, we recommend reading through the sections [Understanding Angular](guide/component-overview) and [Developer Guides](guide/routing-overview).
 
 @reviewed 2021-09-14
