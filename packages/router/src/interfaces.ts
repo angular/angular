@@ -430,7 +430,7 @@ export interface Resolve<T> {
  *       {
  *         path: 'team/:id',
  *         component: TeamComponent,
- *         loadChildren: 'team.js',
+ *         loadChildren: () => import('./team').then(mod => mod.TeamModule),
  *         canLoad: [CanLoadTeamSection]
  *       }
  *     ])
@@ -449,7 +449,7 @@ export interface Resolve<T> {
  *       {
  *         path: 'team/:id',
  *         component: TeamComponent,
- *         loadChildren: 'team.js',
+ *         loadChildren: () => import('./team').then(mod => mod.TeamModule),
  *         canLoad: ['canLoadTeamSection']
  *       }
  *     ])
