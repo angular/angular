@@ -1,3 +1,4 @@
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
 load("//tools:defaults.bzl", "jasmine_node_test", "ng_module", "ts_library")
 
 ts_library(
@@ -43,4 +44,19 @@ jasmine_node_test(
         ":test_module_partial_compilation",
     ],
     tags = ["ivy-only"],
+)
+
+ng_module(
+    name = "test_module_warnings_lib",
+    srcs = ["test_module_warnings.ts"],
+    experimental_extended_template_diagnostics = True,
+    strict_templates = True,
+    tags = ["ivy-only"],
+    deps = ["//packages/core"],
+)
+
+build_test(
+    name = "test_module_warnings",
+    tags = ["ivy-only"],
+    targets = [":test_module_warnings_lib"],
 )

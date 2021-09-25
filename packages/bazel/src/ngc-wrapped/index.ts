@@ -351,7 +351,8 @@ export function compile({
   });
   const tsickleEmitResult = emitResult as tsickle.EmitResult;
   let externs = '/** @externs */\n';
-  if (!diagnostics.length) {
+  const hasError = diagnostics.some((diag) => diag.category === ts.DiagnosticCategory.Error);
+  if (!hasError) {
     if (bazelOpts.tsickleGenerateExterns) {
       externs += tsickle.getGeneratedExterns(tsickleEmitResult.externs);
     }
