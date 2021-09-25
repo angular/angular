@@ -9,7 +9,6 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint",
     "e2e": "ng e2e"
   },
   "private": true,
@@ -34,7 +33,6 @@
     "@angular/compiler-cli": "13.0.0-next.7",
     "@types/jasmine": "~3.8.0",
     "@types/node": "^12.11.1",
-    "codelyzer": "^6.0.0",
     "jasmine-core": "~3.8.0",
     "jasmine-marbles": "~0.8.3",
     "jasmine-spec-reporter": "~7.0.0",
@@ -45,7 +43,6 @@
     "karma-jasmine-html-reporter": "~1.7.0",
     "protractor": "~7.0.0",
     "ts-node": "~10.1.0",
-    "tslint": "~6.1.0",
     "typescript": "~4.3.2"
   }
 }
