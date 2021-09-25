@@ -177,9 +177,6 @@
     "name": "DATA_URL_PATTERN"
   },
   {
-    "name": "DEFAULT_CONFIG"
-  },
-  {
     "name": "DEFAULT_CURRENCY_CODE"
   },
   {
@@ -994,9 +991,6 @@
   },
   {
     "name": "catchError"
-  },
-  {
-    "name": "checkNotEmpty"
   },
   {
     "name": "checkStable"
