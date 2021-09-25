@@ -116,9 +116,7 @@ export type LoadChildrenCallback = () => Type<any>|NgModuleFactory<any>|Observab
  * @see `LoadChildrenCallback`
  * @publicApi
  */
-export type LoadChildren = LoadChildrenCallback|DeprecatedLoadChildren;
-
-export type DeprecatedLoadChildren = string;
+export type LoadChildren = LoadChildrenCallback;
 
 /**
  *
