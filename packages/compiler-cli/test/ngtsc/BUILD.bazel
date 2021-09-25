@@ -16,6 +16,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/util",
         "//packages/compiler-cli/test:test_utils",
         "@npm//source-map",
+        "@npm//tsickle",
         "@npm//typescript",
     ],
 )

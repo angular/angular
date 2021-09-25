@@ -56,11 +56,10 @@ describe('compiler (unbundled Angular)', () => {
           genFile => genFile.srcFileUrl === componentPath && genFile.genFileUrl.endsWith('.ts'))!;
     }
 
-    function findLineAndColumn(
-        file: string, token: string): {line: number|null, column: number|null} {
+    function findLineAndColumn(file: string, token: string): {line: number, column: number}|null {
       const index = file.indexOf(token);
       if (index === -1) {
-        return {line: null, column: null};
+        return null;
       }
       const linesUntilToken = file.slice(0, index).split('\n');
       const line = linesUntilToken.length;
@@ -149,7 +148,7 @@ describe('compiler (unbundled Angular)', () => {
         const genFile = compileApp();
         const genSource = toTypeScript(genFile);
         const sourceMap = extractSourceMap(genSource)!;
-        expect(originalPositionFor(sourceMap, findLineAndColumn(genSource, `'span'`)))
+        expect(originalPositionFor(sourceMap, findLineAndColumn(genSource, `'span'`)!))
             .toEqual({line: 2, column: 3, source: ngUrl});
       });
 
@@ -161,7 +160,7 @@ describe('compiler (unbundled Angular)', () => {
         const genFile = compileApp();
         const genSource = toTypeScript(genFile);
         const sourceMap = extractSourceMap(genSource)!;
-        expect(originalPositionFor(sourceMap, findLineAndColumn(genSource, `someMethod()`)))
+        expect(originalPositionFor(sourceMap, findLineAndColumn(genSource, `someMethod()`)!))
             .toEqual({line: 2, column: 9, source: ngUrl});
       });
 
@@ -173,7 +172,7 @@ describe('compiler (unbundled Angular)', () => {
         const genFile = compileApp();
         const genSource = toTypeScript(genFile);
         const sourceMap = extractSourceMap(genSource)!;
-        expect(originalPositionFor(sourceMap, findLineAndColumn(genSource, `someMethod()`)))
+        expect(originalPositionFor(sourceMap, findLineAndColumn(genSource, `someMethod()`)!))
             .toEqual({line: 2, column: 9, source: ngUrl});
       });
 

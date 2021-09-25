@@ -41,6 +41,7 @@ esbuild(
     external = [
         "@angular/compiler",
         "typescript",
+        "tsickle",
         "@babel/core",
         "reflect-metadata",
         "minimist",
@@ -96,6 +97,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/typecheck",
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
         "@npm//@bazel/typescript",
+        "@npm//@types/minimist",
         "@npm//@types/node",
         "@npm//chokidar",
         "@npm//minimist",

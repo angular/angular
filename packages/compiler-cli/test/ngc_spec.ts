@@ -8,9 +8,11 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import * as tsickle from 'tsickle';
 import ts from 'typescript';
 
 import {main, mainDiagnosticsForTest, readCommandLineAndConfiguration, watchMode} from '../src/main';
+
 import {setup, stripAnsi} from './test_support';
 
 describe('ngc transformer command-line', () => {
@@ -676,7 +678,8 @@ describe('ngc transformer command-line', () => {
         export class MyModule {}
       `);
 
-        const exitCode = main(['-p', basePath], errorSpy);
+        const exitCode =
+            main(['-p', basePath], errorSpy, undefined, undefined, undefined, undefined, tsickle);
         expect(exitCode).toEqual(0);
 
         const mymodulejs = path.resolve(outDir, 'mymodule.js');
@@ -708,7 +711,8 @@ describe('ngc transformer command-line', () => {
         export class MyModule {}
       `);
 
-        const exitCode = main(['-p', basePath], errorSpy);
+        const exitCode =
+            main(['-p', basePath], errorSpy, undefined, undefined, undefined, undefined, tsickle);
         expect(exitCode).toEqual(0);
 
         const mymodulejs = path.resolve(outDir, 'mymodule.js');
@@ -749,7 +753,8 @@ describe('ngc transformer command-line', () => {
         export class MyModule {}
     `);
 
-      const exitCode = main(['-p', basePath], errorSpy);
+      const exitCode =
+          main(['-p', basePath], errorSpy, undefined, undefined, undefined, undefined, tsickle);
       expect(exitCode).toEqual(0);
       const mymodulejs = path.resolve(outDir, 'mymodule.js');
       const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
@@ -2118,10 +2123,12 @@ describe('ngc transformer command-line', () => {
   });
 
   describe('tree shakeable services', () => {
-    function compileService(source: string): string {
+    function compileService(source: string, withTsickle = false): string {
       write('service.ts', source);
 
-      const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
+      const exitCode = main(
+          ['-p', path.join(basePath, 'tsconfig.json')], errorSpy, undefined, undefined, undefined,
+          undefined, withTsickle ? tsickle : undefined);
       expect(exitCode).toEqual(0);
 
       const servicePath = path.resolve(outDir, 'service.js');
@@ -2203,7 +2210,7 @@ describe('ngc transformer command-line', () => {
         },
         "files": ["service.ts"]
       }`);
-      const source = compileService(`
+      const input = `
         import {Injectable} from '@angular/core';
         import {Module} from './module';
 
@@ -2211,7 +2218,9 @@ describe('ngc transformer command-line', () => {
           providedIn: Module,
         })
         export class Service {}
-      `);
+      `;
+
+      const source = compileService(input, /* withTsickle */ true);
       expect(source).toMatch(/\/\*\* @nocollapse \*\/ Service\.ɵprov =/);
     });
 

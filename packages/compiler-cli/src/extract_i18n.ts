@@ -10,9 +10,11 @@
  * Extract i18n messages from source code
  */
 
-import * as api from './transformers/api';
-import {ParsedConfiguration} from './perform_compile';
+import minimist from 'minimist';
+
 import {main, readCommandLineAndConfiguration} from './main';
+import {ParsedConfiguration} from './perform_compile';
+import * as api from './transformers/api';
 
 export function mainXi18n(
     args: string[], consoleError: (msg: string) => void = console.error): number {
@@ -22,7 +24,7 @@ export function mainXi18n(
 
 function readXi18nCommandLineAndConfiguration(args: string[]): ParsedConfiguration {
   const options: api.CompilerOptions = {};
-  const parsedArgs = require('minimist')(args);
+  const parsedArgs = minimist(args);
   if (parsedArgs.outFile) options.i18nOutFile = parsedArgs.outFile;
   if (parsedArgs.i18nFormat) options.i18nOutFormat = parsedArgs.i18nFormat;
   if (parsedArgs.locale) options.i18nOutLocale = parsedArgs.locale;
