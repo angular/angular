@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as path from 'path';
+// Note: We do not use a namespace import here because this will result in the
+// named exports being modified if we apply jasmine spies on `path`. Using
+// the default export gives us an object where we can patch properties on.
+import path from 'path';
 import ts from 'typescript';
 
 import {TypeScriptServiceHost} from '../src/typescript_host';
