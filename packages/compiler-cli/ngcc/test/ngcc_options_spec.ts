@@ -5,7 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as os from 'os';
+// Note: We do not use a namespace import here because this will result in the
+// named exports being modified if we apply jasmine spies on `realFs`. Using
+// the default export gives us an object where we can patch properties on.
+import os from 'os';
 
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';

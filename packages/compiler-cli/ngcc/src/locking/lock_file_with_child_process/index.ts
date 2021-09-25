@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ChildProcess, fork} from 'child_process';
+import module from 'module';
 
 import {AbsoluteFsPath, FileSystem} from '../../../../src/ngtsc/file_system';
 import {Logger, LogLevel} from '../../../../src/ngtsc/logging';
@@ -78,7 +79,7 @@ export class LockFileWithChildProcess implements LockFile {
         this.logger.level !== undefined ? this.logger.level.toString() : LogLevel.info.toString();
     const isWindows = process.platform === 'win32';
     const unlocker = fork(
-        __dirname + '/ngcc_lock_unlocker.js', [path, logLevel],
+        getLockFileUnlockerScriptPath(this.fs), [path, logLevel],
         {detached: true, stdio: isWindows ? 'pipe' : 'inherit'});
     if (isWindows) {
       unlocker.stdout?.on('data', process.stdout.write.bind(process.stdout));
@@ -86,4 +87,17 @@ export class LockFileWithChildProcess implements LockFile {
     }
     return unlocker;
   }
+}
+
+/** Gets the absolute file path to the lock file unlocker script. */
+export function getLockFileUnlockerScriptPath(fileSystem: FileSystem): AbsoluteFsPath {
+  // This is an interop allowing for the unlocking script to be determined in both
+  // a CommonJS module, or an ES module which does not come with `require` by default.
+  const requireFn =
+      typeof require !== 'undefined' ? require : module.createRequire(__ESM_IMPORT_META_URL__);
+  // We resolve the worker script using module resolution as in the package output,
+  // the worker might be bundled but exposed through a subpath export mapping.
+  const unlockerScriptPath = requireFn.resolve(
+      '@angular/compiler-cli/ngcc/src/locking/lock_file_with_child_process/ngcc_lock_unlocker');
+  return fileSystem.resolve(unlockerScriptPath);
 }

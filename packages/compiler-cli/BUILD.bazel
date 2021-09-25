@@ -69,6 +69,11 @@ ts_config(
 )
 
 ts_library(
+    name = "import_meta_url_types",
+    srcs = ["import_meta_url.d.ts"],
+)
+
+ts_library(
     name = "compiler-cli",
     srcs = glob(
         [
@@ -76,11 +81,13 @@ ts_library(
             "src/**/*.ts",
         ],
         exclude = [
+            "import_meta_url.d.ts",
             "src/integrationtest/**/*.ts",
         ],
     ),
     tsconfig = ":tsconfig",
     deps = [
+        ":import_meta_url_types",
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/core",
         "//packages/compiler-cli/src/ngtsc/core:api",

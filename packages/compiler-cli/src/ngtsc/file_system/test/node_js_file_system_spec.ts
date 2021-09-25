@@ -5,8 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as realFs from 'fs';
+// Note: We do not use a namespace import here because this will result in the
+// named exports being modified if we apply jasmine spies on `realFs`. Using
+// the default export gives us an object where we can patch properties on.
+import realFs from 'fs';
 import * as os from 'os';
+
 import {NodeJSFileSystem, NodeJSPathManipulation, NodeJSReadonlyFileSystem} from '../src/node_js_file_system';
 import {AbsoluteFsPath, PathSegment} from '../src/types';
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as path from 'path';
+import path from 'path';
 import ts from 'typescript';
 
 import {ReflectorHost} from '../src/reflector_host';
