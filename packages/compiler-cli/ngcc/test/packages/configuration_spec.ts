@@ -10,7 +10,7 @@ import {createHash} from 'crypto';
 import {absoluteFrom, getFileSystem, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../src/ngtsc/testing';
-import {DEFAULT_NGCC_CONFIG, NgccConfiguration, NgccProjectConfig, ProcessLockingConfiguration, RawNgccPackageConfig} from '../../src/packages/configuration';
+import {DEFAULT_NGCC_CONFIG, NgccConfiguration, NgccProjectConfig, PartiallyProcessedConfig, ProcessLockingConfiguration} from '../../src/packages/configuration';
 
 
 runInEachFileSystem(() => {
@@ -75,10 +75,9 @@ runInEachFileSystem(() => {
         loadTestFiles([{name: _Abs('/project-1/empty.js'), contents: ``}]);
         const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
         expect(configuration.hash)
-            .toEqual(
-                createHash('sha256')
-                    .update(JSON.stringify({packages: {}, locking: {}, hashAlgorithm: 'sha256'}))
-                    .digest('hex'));
+            .toEqual(createHash('sha256')
+                         .update(new PartiallyProcessedConfig({}).toJson())
+                         .digest('hex'));
       });
 
       it('should use a custom hash algorithm if specified in the config', () => {
@@ -98,7 +97,7 @@ runInEachFileSystem(() => {
         const project1Conf = new NgccConfiguration(fs, project1);
         const expectedProject1Config =
             `{"packages":{"package-1":[{"entryPoints":{"./entry-point-1":{}},"versionRange":"*"}]},"locking":{},"hashAlgorithm":"md5"}`;
-        expect(JSON.stringify((project1Conf as any).projectConfig)).toEqual(expectedProject1Config);
+        expect((project1Conf as any).projectConfig.toJson()).toEqual(expectedProject1Config);
         expect(project1Conf.hash)
             .toEqual(createHash('md5').update(expectedProject1Config).digest('hex'));
       });
@@ -146,6 +145,24 @@ runInEachFileSystem(() => {
 
           expect(config).toEqual(jasmine.objectContaining({
             ignorableDeepImportMatchers: [/xxx/],
+            entryPoints: new Map(),
+          }));
+        });
+
+        it('should handle packages with an Object member name when no config is present', () => {
+          loadTestFiles([
+            {
+              name: _Abs('/project-1/node_modules/constructor/package.json'),
+              contents: '{"version": "1.0.0"}',
+            },
+          ]);
+
+          const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
+          const config = configuration.getPackageConfig(
+              'constructor', _Abs('/project-1/node_modules/constructor'), '1.0.0');
+
+          expect(config).toEqual(jasmine.objectContaining({
+            ignorableDeepImportMatchers: [],
             entryPoints: new Map(),
           }));
         });
