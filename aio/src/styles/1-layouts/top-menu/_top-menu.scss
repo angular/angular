@@ -1,4 +1,5 @@
 @use '../../mixins';
+@use '../../constants';
 
 // VARIABLES
 $showTopMenuWidth: 1150px;
@@ -159,11 +160,12 @@ mat-toolbar.app-toolbar {
     min-width: 150px;
     height: 100%;
     margin-right: 16px;
+    position: relative;
 
     input {
       border: none;
       border-radius: 100px;
-      padding: 5px 16px;
+      padding: 5px 3rem 5px 16px;
       margin-left: 8px;
       width: 180px;
       max-width: 240px;
@@ -189,6 +191,29 @@ mat-toolbar.app-toolbar {
       @media (max-width: 515px) {
         width: 150px;
       }
+
+      &::-webkit-search-cancel-button {
+        display: none;
+      }
+
+      &::-ms-clear {
+        display: none;
+      }
+
+      &:not(:focus):not(:hover) + mat-icon:not(:hover):not(:focus) {
+        display: none;
+      }
+    }
+
+    mat-icon {
+      position: absolute;
+      color: constants.$blue;
+      right: 0.7rem;
+      font-size: 2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   }
 
