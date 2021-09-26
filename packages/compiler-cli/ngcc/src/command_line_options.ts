@@ -14,7 +14,7 @@ import {NgccOptions} from './ngcc_options';
 
 export function parseCommandLineOptions(args: string[]): NgccOptions {
   const options =
-      yargs
+      yargs(args)
           .option('s', {
             alias: 'source',
             describe:
@@ -114,7 +114,7 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
           })
           .strict()
           .help()
-          .parse(args);
+          .parseSync();
 
   if (options.f?.length) {
     console.error(

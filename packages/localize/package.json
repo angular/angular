@@ -36,7 +36,7 @@
   "dependencies": {
     "@babel/core": "7.8.6",
     "glob": "7.2.0",
-    "yargs": "^17.0.0"
+    "yargs": "^17.2.1"
   },
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",

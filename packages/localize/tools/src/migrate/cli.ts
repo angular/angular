@@ -14,7 +14,7 @@ import {migrateFiles} from './index';
 
 const args = process.argv.slice(2);
 const options =
-    yargs
+    yargs(args)
         .option('r', {
           alias: 'root',
           default: '.',
@@ -38,7 +38,7 @@ const options =
         })
         .strict()
         .help()
-        .parse(args);
+        .parseSync();
 
 const fs = new NodeJSFileSystem();
 setFileSystem(fs);
