@@ -22,7 +22,11 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
     (input)="doSearch()"
     (keyup)="doSearch()"
     (focus)="doFocus()"
-    (click)="doSearch()">`
+    (click)="doSearch()">
+    <mat-icon
+      *ngIf="searchBox.value"
+      (click)="searchBox.value = ''"
+    >close</mat-icon>`
 })
 export class SearchBoxComponent implements AfterViewInit {
 
