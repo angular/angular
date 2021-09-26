@@ -196,7 +196,7 @@ mat-toolbar.app-toolbar {
         display: none;
       }
 
-      &:not(:focus-within,:hover) + mat-icon:not(:hover,:focus) {
+      &:not(:focus):not(:hover) + mat-icon:not(:hover):not(:focus) {
         display: none;
       }
     }
