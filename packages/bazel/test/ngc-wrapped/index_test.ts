@@ -11,7 +11,7 @@ import * as path from 'path';
 import {setup} from './test_support';
 
 describe('ngc_wrapped', () => {
-  it('should work', () => {
+  it('should work', async () => {
     const {read, write, runOneBuild, writeConfig, shouldExist, basePath, typesRoots} = setup();
 
     write('some_project/index.ts', `
@@ -34,7 +34,7 @@ describe('ngc_wrapped', () => {
     });
 
     // expect no error
-    expect(runOneBuild()).toBe(true);
+    expect(await runOneBuild()).toBe(true);
 
     shouldExist('bazel-bin/some_project/index.js');
 
