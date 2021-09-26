@@ -8,15 +8,16 @@ import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
   template: `
     <div [ngClass]="{ 'flipped': person.isFlipped }" class="contributor-card">
 
-        <div class="card-front" (click)="flipCard(person)" (keyup.enter)="flipCard(person)">
+        <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events -->
+        <div class="card-front" (click)="flipCard(person)">
             <h3>{{person.name}}</h3>
 
             <div class="contributor-image"
                  [style.background-image]="'url('+pictureBase+(person.picture || noPicture)+')'">
                  <div class="contributor-info">
-                     <a *ngIf="person.bio" mat-button class="info-item" tabindex="0">
+                     <button *ngIf="person.bio" mat-button class="info-item">
                          View Bio
-                     </a>
+                     </button>
                      <a *ngIf="person.twitter" mat-icon-button class="info-item icon"
                          href="https://twitter.com/{{person.twitter}}"
                          target="_blank" (click)="$event.stopPropagation()">
@@ -30,11 +31,10 @@ import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
             </div>
         </div>
 
-        <div class="card-back" *ngIf="person.isFlipped" (click)="flipCard(person)" (keyup.enter)="flipCard(person)"
-             tabindex="0">
+        <button class="card-back" *ngIf="person.isFlipped" (click)="flipCard(person)">
             <h3>{{person.name}}</h3>
             <p class="contributor-bio">{{person.bio}}</p>
-        </div>
+        </button>
     </div>
   `
 })
