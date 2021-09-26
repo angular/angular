@@ -17,7 +17,7 @@ import {translateFiles} from './index';
 process.title = 'Angular Localization Message Translator (localize-translate)';
 const args = process.argv.slice(2);
 const options =
-    yargs
+    yargs(args)
         .option('r', {
           alias: 'root',
           required: true,
@@ -88,7 +88,7 @@ const options =
 
         .strict()
         .help()
-        .parse(args);
+        .parseSync();
 
 const fs = new NodeJSFileSystem();
 setFileSystem(fs);

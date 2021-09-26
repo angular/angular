@@ -18,7 +18,7 @@ import {extractTranslations} from './index';
 process.title = 'Angular Localization Message Extractor (localize-extract)';
 const args = process.argv.slice(2);
 const options =
-    yargs
+    yargs(args)
         .option('l', {
           alias: 'locale',
           describe: 'The locale of the source being processed',
@@ -88,7 +88,7 @@ const options =
         })
         .strict()
         .help()
-        .parse(args);
+        .parseSync();
 
 const fileSystem = new NodeJSFileSystem();
 setFileSystem(fileSystem);
