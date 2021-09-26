@@ -56,8 +56,6 @@ export class ClusterMaster {
     }
 
     // Set up listeners for worker events (emitted on `cluster`).
-    cluster.on('online', this.wrapEventHandler(worker => this.onWorkerOnline(worker.id)));
-
     cluster.on(
         'message', this.wrapEventHandler((worker, msg) => this.onWorkerMessage(worker.id, msg)));
 
@@ -199,6 +197,14 @@ export class ClusterMaster {
 
   /** Handle a message from a worker. */
   private onWorkerMessage(workerId: number, msg: MessageFromWorker): void {
+    // A worker is now ready and can retrieve a processing task.
+    if (msg.type === 'ready') {
+      this.onWorkerReady(workerId);
+      return;
+    }
+
+    // All other messages except for `ready` are unexpected if the worker has
+    // not notified the `ClusterMaster` about being ready.
     if (!this.taskAssignments.has(workerId)) {
       const knownWorkers = Array.from(this.taskAssignments.keys());
       throw new Error(
@@ -221,8 +227,8 @@ export class ClusterMaster {
     }
   }
 
-  /** Handle a worker's coming online. */
-  private onWorkerOnline(workerId: number): void {
+  /** Handle a worker's coming online and ready for retrieving IPC messages. */
+  private onWorkerReady(workerId: number): void {
     if (this.taskAssignments.has(workerId)) {
       throw new Error(`Invariant violated: Worker #${workerId} came online more than once.`);
     }
