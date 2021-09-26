@@ -1,11 +1,9 @@
 <div class="center-layout">
   <div class="flex-center group-buttons">
-    <a *ngFor="let category of categories"
+    <button *ngFor="let category of categories"
       class="button mat-button filter-button"
       [class.selected]="category.id == selectedCategory.id"
-      tabindex="0"
-      (click)="selectCategory(category.id)"
-      (keyup.enter)="selectCategory(category.id)">{{category.title}}</a>
+      (click)="selectCategory(category.id)">{{category.title}}</button>
   </div>
   <div class="showcase">
     <div *ngFor="let subCategory of selectedCategory?.subCategories">

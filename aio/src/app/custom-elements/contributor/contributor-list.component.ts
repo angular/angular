@@ -7,16 +7,15 @@ import { LocationService } from 'app/shared/location.service';
   selector: 'aio-contributor-list',
   template: `
     <div class="flex-center group-buttons">
-      <a *ngFor="let name of groupNames"
+      <button *ngFor="let name of groupNames"
           class="button mat-button filter-button"
           [class.selected]="name === selectedGroup.name"
-          tabindex="0"
-          (click)="selectGroup(name)"
-          (keyup.enter)="selectGroup(name)">{{name}}</a>
+          (click)="selectGroup(name)">{{name}}</button>
     </div>
     <section *ngIf="selectedGroup" class="grid-fluid">
       <div class="contributor-group">
-        <aio-contributor *ngFor="let person of selectedGroup.contributors" [person]="person"></aio-contributor>
+        <aio-contributor *ngFor="let person of selectedGroup.contributors"
+            [person]="person"></aio-contributor>
       </div>
     </section>
   `,
