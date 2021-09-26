@@ -15,7 +15,8 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
  */
 @Component({
   selector: 'aio-search-box',
-  template: `<input #searchBox
+  template: `
+  <input #searchBox
     type="search"
     aria-label="search"
     placeholder="Search"
@@ -23,10 +24,12 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
     (keyup)="doSearch()"
     (focus)="doFocus()"
     (click)="doSearch()">
-    <mat-icon
-      *ngIf="searchBox.value"
-      (click)="searchBox.value = ''"
-    >close</mat-icon>`
+  <mat-icon
+    *ngIf="searchBox.value"
+    (click)="searchBox.value = ''">
+    close
+  </mat-icon>
+  `
 })
 export class SearchBoxComponent implements AfterViewInit {
 
