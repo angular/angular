@@ -28,7 +28,6 @@ export async function startWorker(logger: Logger, createCompileFn: CreateCompile
       }),
       (_task, outcome, message) => sendMessageToMaster({type: 'task-completed', outcome, message}));
 
-
   // Listen for `ProcessTaskMessage`s and process tasks.
   cluster.worker.on('message', async (msg: MessageToWorker) => {
     try {
@@ -59,6 +58,10 @@ export async function startWorker(logger: Logger, createCompileFn: CreateCompile
       }
     }
   });
+
+  // Notify the master that the worker is now ready and can receive messages.
+  await sendMessageToMaster({type: 'ready'});
+
 
   // Return a promise that is never resolved.
   return new Promise(() => undefined);
