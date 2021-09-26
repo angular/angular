@@ -316,7 +316,7 @@ describe('ViewContainerRef', () => {
 
       const template0 = fixture.componentInstance.vcrComp.templates.first;
       const viewContainerRef = fixture.componentInstance.vcrComp.vcr;
-      const ref0 = viewContainerRef.createEmbeddedView(template0);
+      const ref0 = viewContainerRef.createEmbeddedView(template0!);
 
       // Insert the view again at the same index
       viewContainerRef.insert(ref0, 0);
@@ -685,7 +685,7 @@ describe('ViewContainerRef', () => {
       fixture.detectChanges();
 
       const cmpt = fixture.componentInstance;
-      const viewRef = cmpt.templates.first.createEmbeddedView({});
+      const viewRef = cmpt.templates.first!.createEmbeddedView({});
 
       // ViewContainerRef is empty and we've got a reference to a view that was not attached
       // anywhere

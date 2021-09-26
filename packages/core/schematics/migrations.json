@@ -14,6 +14,11 @@
       "version": "14.0.0-beta",
       "description": "In Angular version 14, the `pathMatch` property of `Routes` was updated to be a strict union of the two valid options: `'full'|'prefix'`. `Routes` and `Route` variables need an explicit type so TypeScript does not infer the property as the looser `string`.",
       "factory": "./migrations/path-match-type/index"
+    },
+    "query-list-first-last": {
+      "version": "14.0.0-beta",
+      "description": "As of Angular version 14, `QueryList`'s `first` and `last` types can be `undefined`.",
+      "factory": "./migrations/query-list-first-last/index"
     }
   }
 }

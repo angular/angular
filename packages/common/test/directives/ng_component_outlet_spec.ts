@@ -138,7 +138,7 @@ describe('insert/remove', () => {
        fixture.componentInstance.currentComponent = InjectedComponent;
        fixture.componentInstance.projectables =
            [fixture.componentInstance.vcRef
-                .createEmbeddedView(fixture.componentInstance.tplRefs.first)
+                .createEmbeddedView(fixture.componentInstance.tplRefs.first!)
                 .rootNodes];
 
 

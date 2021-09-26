@@ -37,13 +37,16 @@ export function isNullCheck(node: ts.Node): boolean {
   }
 
   // `foo.bar && foo.bar.value` where `node` is `foo.bar`.
-  if (ts.isBinaryExpression(node.parent) && node.parent.left === node) {
+  if (ts.isBinaryExpression(node.parent) &&
+      node.parent.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken &&
+      node.parent.left === node) {
     return true;
   }
 
   // `foo.bar && foo.bar.parent && foo.bar.parent.value`
   // where `node` is `foo.bar`.
   if (node.parent.parent && ts.isBinaryExpression(node.parent.parent) &&
+      node.parent.parent.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken &&
       node.parent.parent.left === node.parent) {
     return true;
   }

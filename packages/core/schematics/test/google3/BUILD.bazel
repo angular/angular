@@ -6,6 +6,7 @@ ts_library(
     srcs = glob(["**/*.ts"]),
     deps = [
         "//packages/core/schematics/migrations/google3",
+        "@npm//@angular-devkit/core",
         "@npm//@types/shelljs",
         "@npm//tslint",
     ],

@@ -49,8 +49,8 @@ export class QueryList<T> implements Iterable<T> {
   private _changes: EventEmitter<QueryList<T>>|null = null;
 
   readonly length: number = 0;
-  readonly first: T = undefined!;
-  readonly last: T = undefined!;
+  readonly first?: T;
+  readonly last?: T;
 
   /**
    * Returns `Observable` of `QueryList` notifying the subscriber of changes.
@@ -200,6 +200,6 @@ interface QueryListInternal<T> extends QueryList<T> {
   reset(a: any[]): void;
   notifyOnChanges(): void;
   length: number;
-  last: T;
-  first: T;
+  last?: T;
+  first?: T;
 }
