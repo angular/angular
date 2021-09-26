@@ -1,4 +1,5 @@
 @use '../../mixins';
+@use '../../constants';
 
 aio-contributor-list {
   .contributor-group {
@@ -20,7 +21,6 @@ aio-contributor-list {
 
 aio-contributor {
   margin: 8px;
-  cursor: pointer;
   border-radius: 4px;
   box-shadow: 0 2px 2px rgba(10, 16, 20, 0.24), 0 0 2px rgba(10, 16, 20, 0.12);
   transition: all .3s;
@@ -87,6 +87,17 @@ aio-contributor {
           }
         }
       }
+
+      button {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: constants.$white;
+
+        &:hover {
+          color: constants.$lightgray;
+        }
+      }
     }
   }
 
@@ -103,13 +114,16 @@ aio-contributor {
     }
 
     .card-front, .card-back {
+      cursor: pointer;
       width: 100%;
       height: 100%;
-      text-align: center;
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
       justify-content: center;
+      align-items: center;
+      border: none;
+      background: transparent;
     }
 
     .card-back {

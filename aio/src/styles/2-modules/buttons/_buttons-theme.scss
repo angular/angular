@@ -53,7 +53,7 @@
   .group-buttons {
     // This rule overrides some Angular Material styles defined for `.mat-button`
     // (hence we include `.mat-button` in the selector).
-    a.button.mat-button.filter-button {
+    button.button.mat-button.filter-button {
       background-color: rgba(constants.$blue, 0.2);
 
       &.selected {
