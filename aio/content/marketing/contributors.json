@@ -735,6 +735,14 @@
     "bio": "Ralph(Zhicheng Wang) is a senior consultant at ThoughtWorks and also a GDE. He is a technology enthusiast and he is a passionate advocate of 'Simplicity, Professionalism and Sharing'. In his eighteen years of R&D career, he worked as tester, R&D engineer, project manager, product manager and CTO. He is immersed in the excitement of the arrival of the baby.",
     "groups": ["GDE"]
   },
+  "ricardochavarria": {
+    "name": "Ricardo Chavarria",
+    "picture": "ricardo-chavarria.jpg",
+    "twitter": "ricardo_chl",
+    "website": "https://ricardochavarria.dev",
+    "bio": "Ricardo Chavarria is a software developer with focus in frontend technologies. Organizer of Angular Honduras Community and Ng Conf Honduras. Also is Google Developer Expert in Angular and Auth0 ambassador.",
+    "groups": ["GDE"]
+  },
   "sajee": {
     "name": "Sajeetharan Sinnathurai",
     "picture": "sajee.jpg",
