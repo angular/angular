@@ -75,8 +75,9 @@ runInEachFileSystem(() => {
         loadTestFiles([{name: _Abs('/project-1/empty.js'), contents: ``}]);
         const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
         expect(configuration.hash)
-            .toEqual(
-                createHash('sha256').update(new PartiallyProcessedConfig().toJson()).digest('hex'));
+            .toEqual(createHash('sha256')
+                         .update(new PartiallyProcessedConfig({}).toJson())
+                         .digest('hex'));
       });
 
       it('should use a custom hash algorithm if specified in the config', () => {

@@ -108,7 +108,7 @@ interface VersionedPackageConfig extends RawNgccPackageConfig {
  */
 export class PartiallyProcessedConfig {
   /**
-   * The packages that are configured by this project config.
+   * The packages that are configured by this project config, keyed by package name.
    */
   packages = new Map<string, VersionedPackageConfig[]>();
   /**
@@ -122,10 +122,43 @@ export class PartiallyProcessedConfig {
    */
   hashAlgorithm = 'sha256';
 
+  constructor(projectConfig: NgccProjectConfig) {
+    // locking configuration
+    if (projectConfig.locking !== undefined) {
+      this.locking = projectConfig.locking;
+    }
+
+    // packages configuration
+    for (const packageNameAndVersion in projectConfig.packages) {
+      const packageConfig = projectConfig.packages[packageNameAndVersion];
+      if (packageConfig) {
+        const [packageName, versionRange = '*'] = this.splitNameAndVersion(packageNameAndVersion);
+        this.addPackageConfig(packageName, {...packageConfig, versionRange});
+      }
+    }
+
+    // hash algorithm config
+    if (projectConfig.hashAlgorithm !== undefined) {
+      this.hashAlgorithm = projectConfig.hashAlgorithm;
+    }
+  }
+
+  private splitNameAndVersion(packageNameAndVersion: string): [string, string|undefined] {
+    const versionIndex = packageNameAndVersion.lastIndexOf('@');
+    // Note that > 0 is because we don't want to match @ at the start of the line
+    // which is what you would have with a namespaced package, e.g. `@angular/common`.
+    return versionIndex > 0 ?
+        [
+          packageNameAndVersion.substring(0, versionIndex),
+          packageNameAndVersion.substring(versionIndex + 1),
+        ] :
+        [packageNameAndVersion, undefined];
+  }
+
   /**
    * Registers the configuration for a particular version of the provided package.
    */
-  addPackageConfig(packageName: string, config: VersionedPackageConfig): void {
+  private addPackageConfig(packageName: string, config: VersionedPackageConfig): void {
     if (!this.packages.has(packageName)) {
       this.packages.set(packageName, []);
     }
@@ -306,8 +339,8 @@ export class NgccConfiguration {
   readonly hashAlgorithm: string;
 
   constructor(private fs: ReadonlyFileSystem, baseDir: AbsoluteFsPath) {
-    this.defaultConfig = this.processProjectConfig(DEFAULT_NGCC_CONFIG);
-    this.projectConfig = this.processProjectConfig(this.loadProjectConfig(baseDir));
+    this.defaultConfig = new PartiallyProcessedConfig(DEFAULT_NGCC_CONFIG);
+    this.projectConfig = new PartiallyProcessedConfig(this.loadProjectConfig(baseDir));
     this.hashAlgorithm = this.projectConfig.hashAlgorithm;
     this.hash = this.computeHash();
   }
@@ -369,31 +402,6 @@ export class NgccConfiguration {
     return {versionRange: '*'};
   }
 
-  private processProjectConfig(projectConfig: NgccProjectConfig): PartiallyProcessedConfig {
-    const processedConfig = new PartiallyProcessedConfig();
-
-    // locking configuration
-    if (projectConfig.locking !== undefined) {
-      processedConfig.locking = projectConfig.locking;
-    }
-
-    // packages configuration
-    for (const packageNameAndVersion in projectConfig.packages) {
-      const packageConfig = projectConfig.packages[packageNameAndVersion];
-      if (packageConfig) {
-        const [packageName, versionRange = '*'] = this.splitNameAndVersion(packageNameAndVersion);
-        processedConfig.addPackageConfig(packageName, {...packageConfig, versionRange});
-      }
-    }
-
-    // hash algorithm config
-    if (projectConfig.hashAlgorithm !== undefined) {
-      processedConfig.hashAlgorithm = projectConfig.hashAlgorithm;
-    }
-
-    return processedConfig;
-  }
-
   private loadProjectConfig(baseDir: AbsoluteFsPath): NgccProjectConfig {
     const configFilePath = this.fs.join(baseDir, NGCC_CONFIG_FILENAME);
     if (this.fs.exists(configFilePath)) {
@@ -437,18 +445,6 @@ export class NgccConfiguration {
     };
     vm.runInNewContext(src, sandbox, {filename: srcPath});
     return sandbox.module.exports;
-  }
-
-  private splitNameAndVersion(packageNameAndVersion: string): [string, string|undefined] {
-    const versionIndex = packageNameAndVersion.lastIndexOf('@');
-    // Note that > 0 is because we don't want to match @ at the start of the line
-    // which is what you would have with a namespaced package, e.g. `@angular/common`.
-    return versionIndex > 0 ?
-        [
-          packageNameAndVersion.substring(0, versionIndex),
-          packageNameAndVersion.substring(versionIndex + 1),
-        ] :
-        [packageNameAndVersion, undefined];
   }
 
   private computeHash(): string {
