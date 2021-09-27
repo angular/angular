@@ -179,6 +179,7 @@ def _expected_outs(ctx):
     transpilation_infos = []
     summary_files = []
     metadata_files = []
+    flat_module_out_prodmode_file = None
 
     factory_basename_set = depset([_basename_of(ctx, src) for src in ctx.files.factories])
 
@@ -253,13 +254,20 @@ def _expected_outs(ctx):
 
     # We do this just when producing a flat module index for a publishable ng_module
     if _should_produce_flat_module_outs(ctx):
-        flat_module_out = _flat_module_out_file(ctx)
-        devmode_js_files.append(ctx.actions.declare_file("%s.js" % flat_module_out))
-        closure_js_files.append(ctx.actions.declare_file("%s.mjs" % flat_module_out))
-        bundle_index_typings = ctx.actions.declare_file("%s.d.ts" % flat_module_out)
+        flat_module_out_name = _flat_module_out_file(ctx)
+
+        # Note: We keep track of the prodmode flat module output for `ng_packager` which
+        # uses it as entry-point for producing FESM bundles.
+        # TODO: Remove flat module from `ng_module` and detect package entry-point reliably
+        # in Ivy. Related discussion: https://github.com/angular/angular/pull/36971#issuecomment-625282383.
+        flat_module_out_prodmode_file = ctx.actions.declare_file("%s.mjs" % flat_module_out_name)
+
+        closure_js_files.append(flat_module_out_prodmode_file)
+        devmode_js_files.append(ctx.actions.declare_file("%s.js" % flat_module_out_name))
+        bundle_index_typings = ctx.actions.declare_file("%s.d.ts" % flat_module_out_name)
         declaration_files.append(bundle_index_typings)
         if is_legacy_ngc:
-            metadata_files.append(ctx.actions.declare_file("%s.metadata.json" % flat_module_out))
+            metadata_files.append(ctx.actions.declare_file("%s.metadata.json" % flat_module_out_name))
     else:
         bundle_index_typings = None
 
@@ -294,6 +302,7 @@ def _expected_outs(ctx):
         i18n_messages = i18n_messages_files,
         dev_perf_files = dev_perf_files,
         prod_perf_files = prod_perf_files,
+        flat_module_out_prodmode_file = flat_module_out_prodmode_file,
     )
 
 # Determines if we need to generate View Engine shims (.ngfactory and .ngsummary files)
@@ -670,7 +679,7 @@ def ng_module_impl(ctx, ts_compile_actions):
             # Metadata files are only generated in the legacy ngc compiler.
             metadata_file = outs.metadata[0] if is_legacy_ngc else None,
             typings_file = outs.bundle_index_typings,
-            flat_module_out_file = _flat_module_out_file(ctx),
+            flat_module_out_prodmode_file = outs.flat_module_out_prodmode_file,
         )
 
     if outs.dts_bundle != None:
