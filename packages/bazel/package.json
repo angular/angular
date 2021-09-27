@@ -11,8 +11,7 @@
     "api-extractor": "./src/api-extractor/index.js",
     "ngc-wrapped": "./src/ngc-wrapped/index.js",
     "packager": "./src/ng_package/packager.js",
-    "xi18n": "./src/ngc-wrapped/extract_i18n.js",
-    "modify_tsconfig": "./src/modify_tsconfig.js"
+    "xi18n": "./src/ngc-wrapped/extract_i18n.js"
   },
   "typings": "./src/ngc-wrapped/index.d.ts",
   "bazelBin": {
