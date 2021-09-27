@@ -66,6 +66,9 @@
     "name": "_currentInjector"
   },
   {
+    "name": "_injectImplementation"
+  },
+  {
     "name": "deepForEach"
   },
   {

@@ -180,6 +180,9 @@
     "name": "_global"
   },
   {
+    "name": "_injectImplementation"
+  },
+  {
     "name": "_renderCompCount"
   },
   {
@@ -241,6 +244,9 @@
   },
   {
     "name": "cleanUpView"
+  },
+  {
+    "name": "collectNativeNodes"
   },
   {
     "name": "collectStylingFromDirectives"
@@ -348,6 +354,9 @@
     "name": "generatePropertyAliases"
   },
   {
+    "name": "getBeforeNodeForView"
+  },
+  {
     "name": "getClosureSafeProperty"
   },
   {
@@ -370,6 +379,9 @@
   },
   {
     "name": "getFirstLContainer"
+  },
+  {
+    "name": "getFirstNativeNode"
   },
   {
     "name": "getInjectorIndex"
@@ -622,6 +634,9 @@
   },
   {
     "name": "refreshComponent"
+  },
+  {
+    "name": "refreshContainsDirtyView"
   },
   {
     "name": "refreshContentQueries"
