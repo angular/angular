@@ -65,7 +65,6 @@ INTEGRATION_TESTS = {
         #   We should define ngDevMode to false in Closure, but --define only works in the global scope.
         #   With ngDevMode not being set to false, this size tracking test provides little value but a lot of
         #   headache to continue updating the size.
-        "tags": ["no-ivy-aot"],
     },
     "i18n": {},
     "injectable-def": {
