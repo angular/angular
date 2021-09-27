@@ -76,7 +76,7 @@ export class InjectSetupWrapper {
     constructor(_moduleDef: () => TestModuleMetadata);
     // (undocumented)
     inject(tokens: any[], fn: Function): () => any;
-    }
+}
 
 // @public
 export type MetadataOverride<T> = {
@@ -173,9 +173,7 @@ export interface TestBedStatic {
     // @deprecated (undocumented)
     get(token: any, notFoundValue?: any): any;
     // (undocumented)
-    initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, options?: {
-        teardown?: ModuleTeardownOptions;
-    }): TestBed;
+    initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, options?: TestEnvironmentOptions): TestBed;
     // (undocumented)
     initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): TestBed;
     // (undocumented)
@@ -251,7 +249,6 @@ export function withModule(moduleDef: TestModuleMetadata): InjectSetupWrapper;
 
 // @public (undocumented)
 export function withModule(moduleDef: TestModuleMetadata, fn: Function): () => any;
-
 
 // (No @packageDocumentation comment for this package)
 

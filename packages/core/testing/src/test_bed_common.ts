@@ -79,9 +79,9 @@ export interface ModuleTeardownOptions {
 export interface TestBedStatic {
   new(...args: any[]): TestBed;
 
-  initTestEnvironment(ngModule: Type<any>|Type<any>[], platform: PlatformRef, options?: {
-    teardown?: ModuleTeardownOptions
-  }): TestBed;
+  initTestEnvironment(
+      ngModule: Type<any>|Type<any>[], platform: PlatformRef,
+      options?: TestEnvironmentOptions): TestBed;
   initTestEnvironment(
       ngModule: Type<any>|Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): TestBed;
 
