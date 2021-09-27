@@ -40,7 +40,6 @@ ng_package(
         "//packages/platform-server/init:package.json",
         "//packages/platform-server/testing:package.json",
     ],
-    entry_point = ":index.ts",
     tags = [
         "release-with-framework",
     ],

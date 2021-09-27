@@ -25,8 +25,6 @@ ng_package(
         "package.json",
         "//packages/compiler/testing:package.json",
     ],
-    entry_point = ":compiler.ts",
-    include_devmode_srcs = True,
     tags = [
         "release-with-framework",
     ],

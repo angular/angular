@@ -23,7 +23,6 @@ ng_package(
         "package.json",
         "//packages/localize/init:package.json",
     ],
-    entry_point = ":index.ts",
     nested_packages = [
         "//packages/localize/schematics:npm_package",
         "//packages/localize/src/tools:npm_package",
