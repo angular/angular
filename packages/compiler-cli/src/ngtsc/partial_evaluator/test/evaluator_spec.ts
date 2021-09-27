@@ -760,7 +760,7 @@ runInEachFileSystem(() => {
               export declare function __assign(t: any, ...sources: any[]): any;
               export declare function __spread(...args: any[][]): any[];
               export declare function __spreadArrays(...args: any[][]): any[];
-              export declare function __spreadArray(to: any[], from: any[]): any[];
+              export declare function __spreadArray(to: any[], from: any[], pack?: boolean): any[];
               export declare function __read(o: any, n?: number): any[];
             `,
           },
@@ -870,6 +870,18 @@ runInEachFileSystem(() => {
               const b = [5, 6];
             `,
             'tslib.__spreadArray(a, b)');
+
+        expect(arr).toEqual([4, 5, 6]);
+      });
+
+      it('should evaluate `__spreadArray()` with three arguments', () => {
+        const arr: number[] = evaluateExpression(
+            `
+              import {__spreadArray} from 'tslib';
+              const a = [4];
+              const b = [5, 6];
+            `,
+            '__spreadArray(a, b, false)');
 
         expect(arr).toEqual([4, 5, 6]);
       });

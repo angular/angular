@@ -39,7 +39,7 @@ export class SpreadHelperFn extends KnownFn {
 // Used for `__spreadArray` TypeScript helper function.
 export class SpreadArrayHelperFn extends KnownFn {
   override evaluate(node: ts.Node, args: ResolvedValueArray): ResolvedValue {
-    if (args.length !== 2) {
+    if (args.length !== 2 && args.length !== 3) {
       return DynamicValue.fromUnknown(node);
     }
 
