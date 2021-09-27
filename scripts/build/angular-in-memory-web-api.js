@@ -34,7 +34,7 @@ function buildAngularInMemoryWebApiPackage(destDir) {
   console.info(`${scriptPath}:`);
   console.info('  Building angular-in-memory-web-api npm package');
   console.info('##############################');
-  exec(`${bazelCmd} build //packages/misc/angular-in-memory-web-api:npm_package`);
+  exec(`${bazelCmd} build //packages/misc/angular-in-memory-web-api:npm_package --config=ivy`);
 
   // Create the output directory.
   const absDestDir = resolve(baseDir, destDir);

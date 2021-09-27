@@ -60,12 +60,11 @@ module.exports = {
  *
  * @param {string} destDir Path to the output directory into which we copy the npm packages.
  * This path should either be absolute or relative to the project root.
- * @param {boolean} enableIvy True, if Ivy should be used.
  * @param {string} description Human-readable description of the build.
  * @param {boolean?} isRelease True, if the build should be stamped for a release.
  * @returns {Array<{name: string, outputPath: string}} A list of packages built.
  */
-function buildTargetPackages(destDir, enableIvy, description, isRelease = false) {
+function buildTargetPackages(destDir, description, isRelease = false) {
   console.info('##################################');
   console.info(`${scriptPath}:`);
   console.info('  Building @angular/* npm packages');
@@ -93,8 +92,8 @@ function buildTargetPackages(destDir, enableIvy, description, isRelease = false)
 
   // Use either `--config=snapshot` or `--config=release` so that builds are created with the
   // correct embedded version info.
-  exec(`${bazelCmd} build --config=${isRelease ? 'release' : 'snapshot'} --config=${
-      enableIvy ? 'ivy' : 'view-engine'} ${targets.join(' ')}`);
+  exec(`${bazelCmd} build --config=${isRelease ? 'release' : 'snapshot'} --config=ivy ${
+      targets.join(' ')}`);
 
   // Create the output directory.
   const absDestDir = resolve(baseDir, destDir);

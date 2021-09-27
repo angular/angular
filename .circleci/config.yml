@@ -39,8 +39,7 @@ var_4_win: &cache_key_win_fallback v1-angular-win-node-14-{{ checksum "month.txt
 var_5: &components_repo_unit_tests_cache_key v1-angular-components-{{ checksum "month.txt" }}-d090617912da8e70aa336aa5b4d804b1b535402e
 var_6: &components_repo_unit_tests_cache_key_fallback v1-angular-components-{{ checksum "month.txt" }}
 
-# Workspace initially persisted by the `setup` job, and then enhanced by `build-npm-packages` and
-# `build-ivy-npm-packages`.
+# Workspace initially persisted by the `setup` job, and then enhanced by `build-npm-packages`.
 # https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
 # https://circleci.com/blog/deep-diving-into-circleci-workspaces/
 var_7: &workspace_location ~/
@@ -543,24 +542,6 @@ jobs:
             - ~/bazel_repository_cache
             - ~/.cache/bazelisk
 
-  # Build the ivy npm packages.
-  build-ivy-npm-packages:
-    executor:
-      name: default-executor
-      resource_class: xlarge
-    steps:
-      - custom_attach_workspace
-      - init_environment
-      - run: node scripts/build/build-ivy-npm-packages.js
-
-      # Save the npm packages from //packages/... for other workflow jobs to read
-      - persist_to_workspace:
-          root: *workspace_location
-          paths:
-            - ng/dist/packages-dist-ivy-aot
-            - ng/dist/angular-in-memory-web-api-dist-ivy-aot
-            - ng/dist/zone.js-dist-ivy-aot
-
   # This job creates compressed tarballs (`.tgz` files) for all Angular packages and stores them as
   # build artifacts. This makes it easy to try out changes from a PR build for testing purposes.
   # More info CircleCI build artifacts: https://circleci.com/docs/2.0/artifacts
@@ -848,9 +829,6 @@ workflows:
       - build-npm-packages:
           requires:
             - setup
-      - build-ivy-npm-packages:
-          requires:
-            - setup
       - legacy-unit-tests-saucelabs:
           requires:
             - setup
@@ -892,7 +870,6 @@ workflows:
             # Get the artifacts to publish from the build-packages-dist job
             # since the publishing script expects the legacy outputs layout.
             - build-npm-packages
-            - build-ivy-npm-packages
             - legacy-unit-tests-saucelabs
       - components-repo-unit-tests:
           requires:
