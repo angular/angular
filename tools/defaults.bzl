@@ -191,9 +191,6 @@ def ng_package(name, readme_md = None, license_banner = None, deps = [], **kwarg
         readme_md = "//packages:README.md"
     if not license_banner:
         license_banner = "//packages:license-banner.txt"
-    deps = deps + [
-        "@npm//tslib",
-    ]
     visibility = kwargs.pop("visibility", None)
 
     common_substitutions = dict(kwargs.pop("substitutions", {}), **PKG_GROUP_REPLACEMENTS)
@@ -260,8 +257,11 @@ def pkg_npm(name, **kwargs):
     deps = kwargs.pop("deps", [])
 
     # The `pkg_npm` rule brings in devmode (`JSModuleInfo`) and prodmode (`JSEcmaScriptModuleInfo`)
-    # output into the the NPM package. We do not plan to ship prodmode ECMAScript `.mjs` files yet,
-    # so we only extract the `JSModuleInfo` outputs (which correspond to ES5 output) from the deps.
+    # output into the the NPM package We do not intend to ship the prodmode ECMAScript `.mjs`
+    # files, but the `JSModuleInfo` outputs (which correspond to devmode output). We cannot
+    # ship prodmode ECMAScript output was our output is not fully ESM-compatible due to relative
+    # imports not specifying an explicit extension.
+    # TODO: Clean this up in the future if we have combined devmode and prodmode output.
     # https://github.com/bazelbuild/rules_nodejs/commit/911529fd364eb3ee1b8ecdc568a9fcf38a8b55ca.
     # https://github.com/bazelbuild/rules_nodejs/blob/stable/packages/typescript/internal/build_defs.bzl#L334-L337.
     extract_js_module_output(
@@ -465,6 +465,12 @@ def ng_rollup_bundle(deps = [], **kwargs):
         **kwargs
     )
 
+# TODO: Consider removing this rule in favor of `ng_rollup_bundle`. Most of the tests use
+# the benchmarking rule from dev-infra, but there are cases where we have a bad mix of
+# the rollup bundle rules here. i.e.
+#   - `@angular/language-service` uses the benchmarking rule for shipping to NPM.
+#   - `@angular/service-worker` uses the benchmarking rule for shipping the worker minified.
+#   - `zone.js` uses this rule (as the only consumer) for creating NPM package bundles.
 def rollup_bundle(name, testonly = False, sourcemap = "true", **kwargs):
     """A drop in replacement for the rules nodejs [legacy rollup_bundle].
 
