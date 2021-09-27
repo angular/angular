@@ -330,9 +330,14 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
 
   /** Syncs the root element with the `DragRef`. */
   private _updateRootElement() {
-    const element = this.element.nativeElement;
-    const rootElement = this.rootElementSelector ?
-      element.closest<HTMLElement>(this.rootElementSelector) : element;
+    const element = this.element.nativeElement as HTMLElement;
+    let rootElement = element;
+    if (this.rootElementSelector) {
+      rootElement = element.closest !== undefined
+        ? element.closest(this.rootElementSelector) as HTMLElement
+        // Comment tag doesn't have closest method, so use parent's one.
+        : element.parentElement?.closest(this.rootElementSelector) as HTMLElement;
+    }
 
     if (rootElement && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       assertElementNode(rootElement, 'cdkDrag');

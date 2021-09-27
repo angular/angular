@@ -636,6 +636,19 @@ describe('CdkDrag', () => {
         expect(dragElement.style.transform).toBeFalsy();
       }));
 
+    it('should be able to set an alternate drag root element for ng-container', fakeAsync(() => {
+      const fixture = createComponent(DraggableNgContainerWithAlternateRoot);
+      fixture.detectChanges();
+
+      const dragRoot = fixture.componentInstance.dragRoot.nativeElement;
+
+      expect(dragRoot.style.transform).toBeFalsy();
+
+      dragElementViaMouse(fixture, dragRoot, 50, 100);
+
+      expect(dragRoot.style.transform).toBe('translate3d(50px, 100px, 0px)');
+    }));
+
     it('should preserve the initial transform if the root element changes', fakeAsync(() => {
       const fixture = createComponent(DraggableWithAlternateRoot);
       fixture.detectChanges();
@@ -7148,6 +7161,21 @@ class DraggableWithRadioInputsInDropZone {
     {id: 2, checked: false},
     {id: 3, checked: true},
   ];
+}
+
+
+@Component({
+  template: `
+    <div #dragRoot class="alternate-root" style="width: 200px; height: 200px; background: hotpink">
+      <ng-container cdkDrag cdkDragRootElement=".alternate-root">
+        <div style="width: 100px; height: 100px; background: red;"></div>
+      </ng-container>
+    </div>
+  `
+})
+class DraggableNgContainerWithAlternateRoot {
+  @ViewChild('dragRoot') dragRoot: ElementRef<HTMLElement>;
+  @ViewChild(CdkDrag) dragInstance: CdkDrag;
 }
 
 /**
