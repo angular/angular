@@ -339,9 +339,6 @@
     "name": "LOCALE_ID"
   },
   {
-    "name": "LOCALE_ID"
-  },
-  {
     "name": "LOCATION_INITIALIZED"
   },
   {
@@ -903,7 +900,13 @@
     "name": "_global"
   },
   {
+    "name": "_injectImplementation"
+  },
+  {
     "name": "_keyMap"
+  },
+  {
+    "name": "_platform"
   },
   {
     "name": "_randomChar"
@@ -1002,6 +1005,12 @@
     "name": "cleanUpView"
   },
   {
+    "name": "collectNativeNodes"
+  },
+  {
+    "name": "collectQueryResults"
+  },
+  {
     "name": "compare"
   },
   {
@@ -1027,6 +1036,12 @@
   },
   {
     "name": "connectableObservableDescriptor"
+  },
+  {
+    "name": "containsSegmentGroup"
+  },
+  {
+    "name": "containsSegmentGroupHelper"
   },
   {
     "name": "containsTree"
@@ -1066,6 +1081,9 @@
   },
   {
     "name": "createNewSegmentGroup"
+  },
+  {
+    "name": "createNode"
   },
   {
     "name": "createNodeInjector"
@@ -1239,6 +1257,9 @@
     "name": "flatten"
   },
   {
+    "name": "flatten"
+  },
+  {
     "name": "flattenStyles"
   },
   {
@@ -1269,7 +1290,13 @@
     "name": "getAppInitializer"
   },
   {
+    "name": "getBeforeNodeForView"
+  },
+  {
     "name": "getBootstrapListener"
+  },
+  {
+    "name": "getChildRouteGuards"
   },
   {
     "name": "getClosureSafeProperty"
@@ -1306,6 +1333,9 @@
   },
   {
     "name": "getFirstLContainer"
+  },
+  {
+    "name": "getFirstNativeNode"
   },
   {
     "name": "getFullPath"
@@ -1668,6 +1698,9 @@
     "name": "mergeAll"
   },
   {
+    "name": "mergeEmptyPathMatches"
+  },
+  {
     "name": "mergeHostAttribute"
   },
   {
@@ -1791,6 +1824,9 @@
     "name": "refreshComponent"
   },
   {
+    "name": "refreshContainsDirtyView"
+  },
+  {
     "name": "refreshContentQueries"
   },
   {
@@ -1825,6 +1861,9 @@
   },
   {
     "name": "renderView"
+  },
+  {
+    "name": "replaceSegment"
   },
   {
     "name": "resetPreOrderHookFlags"
@@ -1863,6 +1902,9 @@
     "name": "serializePaths"
   },
   {
+    "name": "serializeSegment"
+  },
+  {
     "name": "setBindingRootForHostBindings"
   },
   {
@@ -1879,6 +1921,9 @@
   },
   {
     "name": "setDirectiveInputsWhichShadowsStyling"
+  },
+  {
+    "name": "setFutureSnapshotsOfActivatedRoutes"
   },
   {
     "name": "setIncludeViewProviders"
@@ -2011,6 +2056,9 @@
   },
   {
     "name": "updateTransplantedViewCount"
+  },
+  {
+    "name": "urlParsingNode"
   },
   {
     "name": "validateConfig"

@@ -261,9 +261,6 @@
     "name": "LOCALE_ID"
   },
   {
-    "name": "LOCALE_ID"
-  },
-  {
     "name": "LifecycleHooksFeature"
   },
   {
@@ -627,7 +624,13 @@
     "name": "_global"
   },
   {
+    "name": "_injectImplementation"
+  },
+  {
     "name": "_keyMap"
+  },
+  {
+    "name": "_platform"
   },
   {
     "name": "_randomChar"
@@ -715,6 +718,9 @@
   },
   {
     "name": "coerceToValidator"
+  },
+  {
+    "name": "collectNativeNodes"
   },
   {
     "name": "collectStylingFromDirectives"
@@ -897,6 +903,9 @@
     "name": "generatePropertyAliases"
   },
   {
+    "name": "getBeforeNodeForView"
+  },
+  {
     "name": "getClosureSafeProperty"
   },
   {
@@ -928,6 +937,9 @@
   },
   {
     "name": "getFirstLContainer"
+  },
+  {
+    "name": "getFirstNativeNode"
   },
   {
     "name": "getInjectableDef"
@@ -1275,6 +1287,9 @@
     "name": "mergeHostAttrs"
   },
   {
+    "name": "mergeMap"
+  },
+  {
     "name": "mergeValidators"
   },
   {
@@ -1369,6 +1384,9 @@
   },
   {
     "name": "refreshComponent"
+  },
+  {
+    "name": "refreshContainsDirtyView"
   },
   {
     "name": "refreshContentQueries"
@@ -1564,6 +1582,9 @@
   },
   {
     "name": "updateTransplantedViewCount"
+  },
+  {
+    "name": "urlParsingNode"
   },
   {
     "name": "viewAttachedToChangeDetector"

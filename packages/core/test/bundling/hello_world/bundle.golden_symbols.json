@@ -60,6 +60,9 @@
     "name": "_global"
   },
   {
+    "name": "_injectImplementation"
+  },
+  {
     "name": "_renderCompCount"
   },
   {
@@ -196,6 +199,9 @@
   },
   {
     "name": "refreshComponent"
+  },
+  {
+    "name": "refreshContainsDirtyView"
   },
   {
     "name": "refreshContentQueries"
