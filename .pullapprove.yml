@@ -775,6 +775,7 @@ groups:
           ])
     reviewers:
       users:
+        - devversion
         - IgorMinar
         - josephperrott
 
