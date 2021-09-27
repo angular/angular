@@ -4,5 +4,8 @@
   },
   {
     "name": "B"
+  },
+  {
+    "name": "no_initializer"
   }
 ]
