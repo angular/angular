@@ -93,7 +93,7 @@ describe('Http Tests', () => {
       await page.configGetResponseButton.click();
       await checkLogForMessage('GET "assets/config.json"');
       expect(await page.configSpan.getText()).toContain('Response headers:');
-      expect(await page.configSpan.getText()).toContain('content-type: application/json; charset=UTF-8');
+      expect(await page.configSpan.getText()).toContain('content-type: application/json; charset=utf-8');
     });
 
     it('can clear the configuration log', async () => {
