@@ -3,7 +3,7 @@
 # Use of this source code is governed by an MIT-style license that can be
 # found in the LICENSE file at https://angular.io/license
 
-load(":ng_module.bzl", "NgPerfInfo")
+load("//packages/bazel/src/ng_module:ng_module.bzl", "NgPerfInfo")
 
 def _ng_perf_flag_impl(ctx):
     return NgPerfInfo(enable_perf_logging = ctx.build_setting_value)
