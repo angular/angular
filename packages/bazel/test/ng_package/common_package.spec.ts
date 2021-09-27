@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {obsoleteInIvy} from '@angular/private/testing';
 import {runfiles} from '@bazel/runfiles';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -36,110 +35,131 @@ describe('@angular/common ng_package', () => {
     });
   });
 
-  it('should have right bundle files', () => {
-    expect(shx.ls('-R', 'bundles').stdout.split('\n').filter(n => !!n).sort()).toEqual([
-      'common-http-testing.umd.js',
-      'common-http-testing.umd.js.map',
-      'common-http.umd.js',
-      'common-http.umd.js.map',
-      'common-testing.umd.js',
-      'common-testing.umd.js.map',
-      'common-upgrade.umd.js',
-      'common-upgrade.umd.js.map',
-      'common.umd.js',
-      'common.umd.js.map',
-    ]);
-  });
-
-  it('should reference core using global symbol in umd', () => {
-    expect(shx.cat('bundles/common.umd.js')).toContain('global.ng.core');
-  });
-
   it('should have right fesm files', () => {
     const expected = [
-      'common.js',
-      'common.js.map',
+      'common.mjs',
+      'common.mjs.map',
       'http',
-      'http.js',
-      'http.js.map',
-      'http/testing.js',
-      'http/testing.js.map',
-      'testing.js',
-      'testing.js.map',
-      'upgrade.js',
-      'upgrade.js.map',
+      'http.mjs',
+      'http.mjs.map',
+      'http/testing.mjs',
+      'http/testing.mjs.map',
+      'testing.mjs',
+      'testing.mjs.map',
+      'upgrade.mjs',
+      'upgrade.mjs.map',
     ];
     expect(shx.ls('-R', 'fesm2015').stdout.split('\n').filter(n => !!n).sort()).toEqual(expected);
+    expect(shx.ls('-R', 'fesm2020').stdout.split('\n').filter(n => !!n).sort()).toEqual(expected);
   });
 
   it('should have the correct source map paths', () => {
-    expect(shx.grep('sourceMappingURL', 'fesm2015/common.js'))
-        .toMatch('//# sourceMappingURL=common.js.map');
-    expect(shx.grep('sourceMappingURL', 'fesm2015/http.js'))
-        .toMatch('//# sourceMappingURL=http.js.map');
-    expect(shx.grep('sourceMappingURL', 'fesm2015/http/testing.js'))
-        .toMatch('//# sourceMappingURL=testing.js.map');
-    expect(shx.grep('sourceMappingURL', 'fesm2015/testing.js'))
-        .toMatch('//# sourceMappingURL=testing.js.map');
-    expect(shx.grep('sourceMappingURL', 'fesm2015/upgrade.js'))
-        .toMatch('//# sourceMappingURL=upgrade.js.map');
+    expect(shx.grep('sourceMappingURL', 'fesm2020/common.mjs'))
+        .toMatch('//# sourceMappingURL=common.mjs.map');
+    expect(shx.grep('sourceMappingURL', 'fesm2020/http.mjs'))
+        .toMatch('//# sourceMappingURL=http.mjs.map');
+    expect(shx.grep('sourceMappingURL', 'fesm2020/http/testing.mjs'))
+        .toMatch('//# sourceMappingURL=testing.mjs.map');
+    expect(shx.grep('sourceMappingURL', 'fesm2020/testing.mjs'))
+        .toMatch('//# sourceMappingURL=testing.mjs.map');
+    expect(shx.grep('sourceMappingURL', 'fesm2020/upgrade.mjs'))
+        .toMatch('//# sourceMappingURL=upgrade.mjs.map');
   });
-
-  describe('secondary entry-point', () => {
-    obsoleteInIvy(
-        `now that we don't need metadata files, we don't need these redirects to help resolve paths to them`)
-        .it('should contain a root type definition re-export', () => {
-          expect(shx.cat('./testing.d.ts')).toContain(`export * from './testing/testing';`);
-        });
-  });
-
 
   describe('should have module resolution properties in the package.json file for', () => {
     interface PackageJson {
       main: string;
-      es2015: string;
+      fesm2015: string;
+      es2020: string;
       module: string;
       typings: string;
+      exports: object;
     }
     // https://github.com/angular/common-builds/blob/master/package.json
     it('/', () => {
       const actual =
           JSON.parse(fs.readFileSync('package.json', {encoding: 'utf-8'})) as PackageJson;
-      expect(actual['main']).toEqual('./bundles/common.umd.js');
+
+      expect(actual).toEqual(jasmine.objectContaining({
+        module: `./fesm2015/common.mjs`,
+        es2020: `./fesm2020/common.mjs`,
+        esm2020: `./esm2020/common.mjs`,
+        fesm2020: `./fesm2020/common.mjs`,
+        fesm2015: `./fesm2015/common.mjs`,
+        typings: `./common.d.ts`,
+        exports: {
+          '.': {
+            types: './common.d.ts',
+            es2015: './fesm2015/common.mjs',
+            node: './fesm2015/common.mjs',
+            default: './fesm2020/common.mjs',
+          },
+          './package.json': {default: './package.json'},
+          './http': {
+            types: './http/http.d.ts',
+            es2015: './fesm2015/http.mjs',
+            node: './fesm2015/http.mjs',
+            default: './fesm2020/http.mjs',
+          },
+          './http/testing': {
+            types: './http/testing/testing.d.ts',
+            es2015: './fesm2015/http/testing.mjs',
+            node: './fesm2015/http/testing.mjs',
+            default: './fesm2020/http/testing.mjs',
+          },
+          './testing': {
+            types: './testing/testing.d.ts',
+            es2015: './fesm2015/testing.mjs',
+            node: './fesm2015/testing.mjs',
+            default: './fesm2020/testing.mjs',
+          },
+          './upgrade': {
+            types: './upgrade/upgrade.d.ts',
+            es2015: './fesm2015/upgrade.mjs',
+            node: './fesm2015/upgrade.mjs',
+            default: './fesm2020/upgrade.mjs',
+          },
+        }
+      }));
     });
     // https://github.com/angular/common-builds/blob/master/http/package.json
     it('/http', () => {
       const actual =
           JSON.parse(fs.readFileSync('http/package.json', {encoding: 'utf-8'})) as PackageJson;
-      expect(actual['main']).toEqual('../bundles/common-http.umd.js');
-      expect(actual['es2015']).toEqual('../fesm2015/http.js');
-      expect(actual['module']).toEqual('../fesm2015/http.js');
+      expect(actual['fesm2015']).toEqual('../fesm2015/http.mjs');
+      expect(actual['es2020']).toEqual('../fesm2020/http.mjs');
+      expect(actual['module']).toEqual('../fesm2015/http.mjs');
       expect(actual['typings']).toEqual('./http.d.ts');
+      expect(actual['exports']).toBeUndefined();
     });
     // https://github.com/angular/common-builds/blob/master/testing/package.json
     it('/testing', () => {
       const actual =
           JSON.parse(fs.readFileSync('testing/package.json', {encoding: 'utf-8'})) as PackageJson;
-      expect(actual['main']).toEqual('../bundles/common-testing.umd.js');
+      expect(actual['fesm2015']).toEqual('../fesm2015/testing.mjs');
+      expect(actual['es2020']).toEqual('../fesm2020/testing.mjs');
+      expect(actual['exports']).toBeUndefined();
     });
     // https://github.com/angular/common-builds/blob/master/http/testing/package.json
     it('/http/testing', () => {
       const actual =
           JSON.parse(fs.readFileSync('http/testing/package.json', {encoding: 'utf-8'})) as
           PackageJson;
-      expect(actual['main']).toEqual('../../bundles/common-http-testing.umd.js');
-      expect(actual['es2015']).toEqual('../../fesm2015/http/testing.js');
-      expect(actual['module']).toEqual('../../fesm2015/http/testing.js');
+      expect(actual['fesm2015']).toEqual('../../fesm2015/http/testing.mjs');
+      expect(actual['es2020']).toEqual('../../fesm2020/http/testing.mjs');
+      expect(actual['module']).toEqual('../../fesm2015/http/testing.mjs');
       expect(actual['typings']).toEqual('./testing.d.ts');
+      expect(actual['exports']).toBeUndefined();
     });
     // https://github.com/angular/common-builds/blob/master/upgrade/package.json
     it('/upgrade', () => {
       const actual =
           JSON.parse(fs.readFileSync('upgrade/package.json', {encoding: 'utf-8'})) as PackageJson;
-      expect(actual['main']).toEqual('../bundles/common-upgrade.umd.js');
-      expect(actual['es2015']).toEqual('../fesm2015/upgrade.js');
-      expect(actual['module']).toEqual('../fesm2015/upgrade.js');
+      expect(actual['fesm2015']).toEqual('../fesm2015/upgrade.mjs');
+      expect(actual['es2020']).toEqual('../fesm2020/upgrade.mjs');
+      expect(actual['module']).toEqual('../fesm2015/upgrade.mjs');
       expect(actual['typings']).toEqual('./upgrade.d.ts');
+      expect(actual['exports']).toBeUndefined();
     });
   });
 });
