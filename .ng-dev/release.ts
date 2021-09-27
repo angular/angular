@@ -22,11 +22,11 @@ export const release: ReleaseConfig = {
     '@angular/service-worker',
     '@angular/upgrade',
   ],
-  buildPackages: async (stampForRelease: boolean|undefined) => {
+  buildPackages: async () => {
     // The buildTargetPackages function is loaded at runtime as the loading the script causes an
     // invocation of bazel.
     const {buildTargetPackages} = require(join(__dirname, '../scripts/build/package-builder'));
-    return buildTargetPackages('dist/release-output', false, 'Release', stampForRelease);
+    return buildTargetPackages('dist/release-output', false, 'Release', /* isRelease */ true);
   },
   releaseNotes: {
     hiddenScopes: ['aio', 'dev-infra', 'docs-infra', 'zone.js'],
