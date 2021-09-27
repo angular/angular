@@ -5259,7 +5259,12 @@ describe('Integration', () => {
        fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
          const fixture = createRoot(router, RootCmp);
 
-         router.resetConfig([{path: 'lazy', loadChildren: jasmine.createSpy('invalid')}]);
+         router.resetConfig([{
+           path: 'lazy',
+           loadChildren: () => {
+             throw new Error('invalid');
+           }
+         }]);
 
          const recordedEvents: any[] = [];
          router.events.forEach(e => recordedEvents.push(e));

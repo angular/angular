@@ -69,10 +69,11 @@ describe('RouterPreloader', () => {
   });
 
   describe('should preload configurations', () => {
+    let lazySpy: jasmine.Spy;
     beforeEach(() => {
+      lazySpy = jasmine.createSpy('expected');
       TestBed.configureTestingModule({
-        imports: [RouterTestingModule.withRoutes(
-            [{path: 'lazy', loadChildren: jasmine.createSpy('expected')}])],
+        imports: [RouterTestingModule.withRoutes([{path: 'lazy', loadChildren: lazySpy}])],
         providers: [{provide: PreloadingStrategy, useExisting: PreloadAllModules}]
       });
     });
@@ -102,14 +103,12 @@ describe('RouterPreloader', () => {
                }
              });
 
-             (router.config[0].loadChildren as jasmine.Spy).and.returnValue(LoadedModule1);
+             lazySpy.and.returnValue(LoadedModule1);
              preloader.preload().subscribe(() => {});
 
              tick();
 
              const c = router.config;
-             expect((c[0].loadChildren as jasmine.Spy).and.identity).toEqual('expected');
-
              const loadedConfig: LoadedRouterConfig = (c[0] as any)._loadedConfig!;
              const module: any = loadedConfig.module;
              expect(loadedConfig.routes[0].path).toEqual('LoadedModule1');
@@ -131,10 +130,11 @@ describe('RouterPreloader', () => {
   });
 
   describe('should support modules that have already been loaded', () => {
+    let lazySpy: jasmine.Spy;
     beforeEach(() => {
+      lazySpy = jasmine.createSpy('expected');
       TestBed.configureTestingModule({
-        imports: [RouterTestingModule.withRoutes(
-            [{path: 'lazy', loadChildren: jasmine.createSpy('expected')}])],
+        imports: [RouterTestingModule.withRoutes([{path: 'lazy', loadChildren: lazySpy}])],
         providers: [{provide: PreloadingStrategy, useExisting: PreloadAllModules}]
       });
     });
@@ -169,7 +169,7 @@ describe('RouterPreloader', () => {
              class LoadedModule3 {
              }
 
-             (router.config[0].loadChildren as jasmine.Spy).and.returnValue(LoadedModule1);
+             lazySpy.and.returnValue(LoadedModule1);
              preloader.preload().subscribe(() => {});
 
              tick();
