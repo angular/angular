@@ -25,7 +25,6 @@ ng_package(
         "package.json",
         "//packages/platform-browser-dynamic/testing:package.json",
     ],
-    entry_point = ":index.ts",
     tags = [
         "release-with-framework",
     ],

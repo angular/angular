@@ -21,7 +21,6 @@ ng_module(
 ng_package(
     name = "npm_package",
     srcs = ["package.json"],
-    entry_point = ":index.ts",
     tags = [
         "release-with-framework",
     ],

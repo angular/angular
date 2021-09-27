@@ -26,7 +26,6 @@ ng_ts_library(
 
 ng_package(
     name = "npm_package",
-    entry_point = ":index.ts",
     deps = [":hello-world"],
 )
 
