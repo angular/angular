@@ -47,7 +47,10 @@ export class SymbolExtractor {
           break;
         case ts.SyntaxKind.VariableDeclaration:
           const varDecl = child as ts.VariableDeclaration;
-          if (varDecl.initializer && fnRecurseDepth !== 0) {
+          // Terser optimizes variable declarations with `undefined` as initializer
+          // by omitting the initializer completely. We capture such declarations as well.
+          // https://github.com/terser/terser/blob/86ea74d5c12ae51b64468/CHANGELOG.md#v540.
+          if (fnRecurseDepth !== 0) {
             symbols.push({name: stripSuffix(varDecl.name.getText())});
           }
           if (fnRecurseDepth == 0 && isRollupExportSymbol(varDecl)) {
