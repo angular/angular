@@ -34,4 +34,10 @@ export class ApiPage extends SitePage {
   getBadge(cls: string) {
     return element(by.css('.api-status-label.' +  cls));
   }
+
+  getInstanceMethodOverloads(name: string) {
+    return element.all(by.css('.instance-method'))
+        .filter(async e => (await e.element(by.css('h3')).getText()).includes(name))
+        .all(by.css('.overload-info'));
+  }
 }

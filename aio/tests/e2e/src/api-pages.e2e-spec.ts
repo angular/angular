@@ -76,4 +76,9 @@ describe('Api pages', () => {
       .toMatch(/https:\/\/github\.com\/angular\/angular\/tree\/[^/]+\/packages\/core\/src\/event_emitter\.ts#L\d+-L\d+/);
     /* eslint-enable max-len */
   });
+
+  it('should show all overloads of interface methods', async () => {
+    await page.navigateTo('api/core/testing/TestBedStatic');
+    expect(await (await page.getInstanceMethodOverloads('initTestEnvironment')).length).toEqual(2);
+  });
 });
