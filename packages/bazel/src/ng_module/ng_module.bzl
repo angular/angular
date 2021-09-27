@@ -6,7 +6,7 @@
 """
 
 load(
-    ":external.bzl",
+    "//packages/bazel/src:external.bzl",
     "BuildSettingInfo",
     "COMMON_ATTRIBUTES",
     "COMMON_OUTPUTS",
