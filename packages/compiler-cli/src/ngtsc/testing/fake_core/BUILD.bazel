@@ -15,7 +15,6 @@ ng_package(
     srcs = [
         "package.json",
     ],
-    entry_point = ":index.ts",
     deps = [
         ":fake_core",
     ],

@@ -42,7 +42,6 @@ ng_package(
         "//packages/common/testing:package.json",
         "//packages/common/upgrade:package.json",
     ],
-    entry_point = ":index.ts",
     nested_packages = ["//packages/common/locales:package"],
     tags = [
         "release-with-framework",
