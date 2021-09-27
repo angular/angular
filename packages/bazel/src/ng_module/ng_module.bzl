@@ -5,6 +5,7 @@
 """Run Angular's AOT template compiler
 """
 
+load("//packages/bazel/src/ng_module:partial_compilation.bzl", "NgPartialCompilationInfo")
 load(
     "//packages/bazel/src:external.bzl",
     "BuildSettingInfo",
@@ -39,6 +40,10 @@ def is_perf_requested(ctx):
         fail("Angular View Engine does not support performance tracing")
     return enable_perf_logging
 
+def _is_partial_compilation_enabled(ctx):
+    """Whether partial compilation is enabled for this target."""
+    return ctx.attr._partial_compilation_flag[NgPartialCompilationInfo].enabled
+
 def is_ivy_enabled(ctx):
     """Determine if the ivy compiler should be used to by the ng_module.
 
@@ -48,6 +53,10 @@ def is_ivy_enabled(ctx):
     Returns:
       Boolean, Whether the ivy compiler should be used.
     """
+
+    # If partial compilation is enabled through a build setting, always enable Ivy.
+    if _is_partial_compilation_enabled(ctx):
+        return True
 
     # Check the renderer flag to see if Ivy is enabled.
     # This is intended to support a transition use case for google3 migration.
@@ -85,6 +94,10 @@ def _compiler_name(ctx):
     """
 
     return "Ivy" if is_ivy_enabled(ctx) else "ViewEngine"
+
+def _get_ivy_compilation_mode(ctx):
+    """Gets the Ivy compilation mode based on the current build settings."""
+    return "partial" if _is_partial_compilation_enabled(ctx) else "full"
 
 def _is_view_engine_enabled(ctx):
     """Determines whether Angular outputs will be produced by the current compilation strategy.
@@ -319,6 +332,7 @@ def _generate_ve_shims(ctx):
 
 def _ngc_tsconfig(ctx, files, srcs, **kwargs):
     generate_ve_shims = _generate_ve_shims(ctx)
+    compilation_mode = _get_ivy_compilation_mode(ctx)
     outs = _expected_outs(ctx)
     is_legacy_ngc = _is_view_engine_enabled(ctx)
     if "devmode_manifest" in kwargs:
@@ -354,6 +368,7 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "compilationMode": ctx.attr.compilation_mode,
         "fullTemplateTypeCheck": ctx.attr.type_check,
         "_extendedTemplateDiagnostics": ctx.attr.experimental_extended_template_diagnostics,
+        "compilationMode": compilation_mode,
         # In Google3 we still want to use the symbol factory re-exports in order to
         # not break existing apps inside Google. Unlike Bazel, Google3 does not only
         # enforce strict dependencies of source files, but also for generated files
@@ -440,7 +455,7 @@ def ngc_compile_action(
         locale = None,
         i18n_args = [],
         dts_bundles_out = None,
-        compile_mode = "prodmode"):
+        target_flavor = "prodmode"):
     """Helper function to create the ngc action.
 
     This is exposed for google3 to wire up i18n replay rules, and is not intended
@@ -457,6 +472,7 @@ def ngc_compile_action(
       locale: i18n locale, or None
       i18n_args: additional command-line arguments to ngc
       dts_bundles_out: produced flattened dts file
+      target_flavor: Whether prodmode or devmode output is being built.
 
     Returns:
       the parameters of the compilation which will be used to replay the ngc action for i18N.
@@ -464,14 +480,23 @@ def ngc_compile_action(
 
     is_legacy_ngc = _is_view_engine_enabled(ctx)
 
+    if is_legacy_ngc:
+        ngc_compilation_mode = target_flavor
+    else:
+        ngc_compilation_mode = "%s %s" % (_get_ivy_compilation_mode(ctx), target_flavor)
+
     mnemonic = "AngularTemplateCompile"
-    progress_message = "Compiling Angular templates (%s - %s) %s" % (_compiler_name(ctx), compile_mode, label)
+    progress_message = "Compiling Angular templates (%s - %s) %s" % (
+        _compiler_name(ctx),
+        ngc_compilation_mode,
+        label,
+    )
 
     if locale:
         mnemonic = "AngularI18NMerging"
         supports_workers = "0"
         progress_message = ("Recompiling Angular templates (ngc - %s) %s for locale %s" %
-                            (compile_mode, label, locale))
+                            (target_flavor, label, locale))
     else:
         supports_workers = str(int(ctx.attr._supports_workers))
 
@@ -572,7 +597,7 @@ def _compile_action(
         perf_out,
         tsconfig_file,
         node_opts,
-        compile_mode):
+        target_flavor):
     # Give the Angular compiler all the user-listed assets
     file_inputs = list(ctx.files.assets)
 
@@ -610,7 +635,7 @@ def _compile_action(
         ],
     )
 
-    return ngc_compile_action(ctx, ctx.label, action_inputs, outputs, messages_out, tsconfig_file, node_opts, None, [], dts_bundles_out, compile_mode)
+    return ngc_compile_action(ctx, ctx.label, action_inputs, outputs, messages_out, tsconfig_file, node_opts, None, [], dts_bundle_out, target_flavor)
 
 def _prodmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
     outs = _expected_outs(ctx)
@@ -619,7 +644,7 @@ def _prodmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
 def _devmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
     outs = _expected_outs(ctx)
     compile_action_outputs = outputs + outs.devmode_js + outs.declarations + outs.summaries + outs.metadata + outs.dev_perf_files
-    _compile_action(ctx, inputs, compile_action_outputs, outs.dts_bundles, None, outs.dev_perf_files, tsconfig_file, node_opts, "devmode")
+    _compile_action(ctx, inputs, compile_action_outputs, outs.dts_bundle, None, outs.dev_perf_files, tsconfig_file, node_opts, "devmode")
 
 def _ts_expected_outs(ctx, label, srcs_files = []):
     # rules_typescript expects a function with two or more arguments, but our
@@ -766,6 +791,11 @@ NG_MODULE_ATTRIBUTES = {
         default = Label(DEFAULT_NG_XI18N),
         executable = True,
         cfg = "host",
+    ),
+    "_partial_compilation_flag": attr.label(
+        default = "//packages/bazel/src:partial_compilation",
+        providers = [NgPartialCompilationInfo],
+        doc = "Internal attribute which points to the partial compilation build setting.",
     ),
     # In the angular/angular monorepo, //tools:defaults.bzl wraps the ng_module rule in a macro
     # which sets this attribute to the //packages/compiler-cli:ng_perf flag.
