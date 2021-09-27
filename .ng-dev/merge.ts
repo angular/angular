@@ -1,4 +1,4 @@
-import {MergeConfig} from '@angular/dev-infra-private/ng-dev/pr/merge/config';
+import {MergeConfig} from '@angular/dev-infra-private/ng-dev/pr/config';
 
 /**
  * Configuration for the merge tool in `ng-dev`. This sets up the labels which
