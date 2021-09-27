@@ -76,7 +76,7 @@ INTEGRATION_TESTS = {
     },
     "ivy-i18n": {},
     "trusted-types": {},
-    "ng_elements": {"tags": ["no-ivy-aot"]},
+    "ng_elements": {},
     "ng_elements_schematics": {},
     "ng_update": {},
     "ng_update_migrations": {},
