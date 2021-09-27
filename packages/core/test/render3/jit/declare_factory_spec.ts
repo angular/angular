@@ -36,6 +36,11 @@ describe('Factory declaration jit compilation', () => {
     expect(instance).toBeInstanceOf(ChildClass);
     expect(instance.testClass).toBeInstanceOf(TestClass);
   });
+
+  it('should compile a factory declaration with an invalid dependency', () => {
+    const factory = InvalidDepsClass.ɵfac as Function;
+    expect(() => factory()).toThrowError(/not compatible/);
+  });
 });
 
 class TestClass {
@@ -54,6 +59,11 @@ class DependingClass {
 class ChildClass extends DependingClass {
   static override ɵfac =
       ɵɵngDeclareFactory({type: ChildClass, deps: null, target: ɵɵFactoryTarget.Injectable});
+}
+
+class InvalidDepsClass {
+  static ɵfac = ɵɵngDeclareFactory(
+      {type: InvalidDepsClass, deps: 'invalid', target: ɵɵFactoryTarget.Injectable});
 }
 
 class TestInjector {
