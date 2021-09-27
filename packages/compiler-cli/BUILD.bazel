@@ -1,10 +1,59 @@
 load("//tools:defaults.bzl", "api_golden_test", "pkg_npm", "ts_config", "ts_library")
+load("@npm//@bazel/esbuild:index.bzl", "esbuild", "esbuild_config")
 
 # Load ng_perf_flag explicitly from ng_perf.bzl as it's private API, and not exposed to other
 # consumers of @angular/bazel.
 load("//packages/bazel/src:ng_perf.bzl", "ng_perf_flag")
 
 package(default_visibility = ["//visibility:public"])
+
+PUBLIC_TARGETS = [
+    ":compiler-cli",
+    "//packages/compiler-cli/ngcc",
+    "//packages/compiler-cli/linker",
+    "//packages/compiler-cli/linker/babel",
+]
+
+esbuild_config(
+    name = "esbuild_config",
+    config_file = "esbuild.config.js",
+)
+
+esbuild(
+    name = "bundles",
+    config = ":esbuild_config",
+    entry_points = [
+        ":index.ts",
+        "//packages/compiler-cli:src/bin/ngc.ts",
+        "//packages/compiler-cli/ngcc:main-ngcc.ts",
+        "//packages/compiler-cli/ngcc:index.ts",
+        "//packages/compiler-cli:src/bin/ng_xi18n.ts",
+        "//packages/compiler-cli/linker:index.ts",
+        "//packages/compiler-cli/linker/babel:index.ts",
+    ],
+    external = [
+        "@angular/compiler",
+        "typescript",
+        "@babel/core",
+        "@babel/types",
+        "reflect-metadata",
+        "minimist",
+        "canonical-path",
+        "chokidar",
+        "convert-source-map",
+        "dependency-graph",
+        "magic-string",
+        "semver",
+        "source-map",
+        "sourcemap-codec",
+        "tslib",
+        "yargs",
+    ],
+    format = "esm",
+    platform = "node",
+    target = "node14",
+    deps = PUBLIC_TARGETS,
+)
 
 ts_config(
     name = "tsconfig",
@@ -63,14 +112,11 @@ pkg_npm(
         "//integration:__pkg__",
         "//packages/compiler-cli/integrationtest:__pkg__",
     ],
-    deps = [
-        ":compiler-cli",
-        "//packages/compiler-cli/linker",
-        "//packages/compiler-cli/linker/babel",
-        "//packages/compiler-cli/ngcc",
-        "//packages/compiler-cli/src/ngtsc/file_system/testing",
-        "//packages/compiler-cli/src/ngtsc/logging/testing",
-    ],
+    # Note: We add `PUBLIC_TARGETS` here to pull in the type definitions into
+    # the NPM package. This also brings in the devmode ES5 sources currently.
+    # These are not referenced anywhere but we would want to only include types.
+    # TODO(devversion): add support for including only type definitions here.
+    deps = [":bundles"] + PUBLIC_TARGETS,
 )
 
 api_golden_test(
