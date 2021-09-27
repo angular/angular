@@ -52,7 +52,7 @@ export class SwUpdate {
   /**
    * Emits an `UpdateActivatedEvent` event whenever the app has been updated to a new version.
    *
-   * @deprecated Use the return value of {@link activateUpdate} instead.
+   * @deprecated Use the return value of {@link SwUpdate#activateUpdate} instead.
    *
    */
   readonly activated: Observable<UpdateActivatedEvent>;
