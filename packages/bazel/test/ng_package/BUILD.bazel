@@ -12,7 +12,6 @@ ts_library(
     srcs = ["core_package.spec.ts"],
     deps = [
         "//packages:types",
-        "//packages/private/testing",
         "@npm//@bazel/runfiles",
         "@npm//@types/shelljs",
     ],
@@ -34,7 +33,6 @@ ts_library(
     srcs = ["common_package.spec.ts"],
     deps = [
         "//packages:types",
-        "//packages/private/testing",
         "@npm//@bazel/runfiles",
         "@npm//@types/shelljs",
     ],

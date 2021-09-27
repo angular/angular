@@ -24,11 +24,10 @@ ng_package(
         ":extra-styles.css",
         ":logo.png",
     ],
-    entry_point = ":index.ts",
-    entry_point_name = "waffels",
     nested_packages = [
         ":arbitrary_npm_package",
     ],
+    primary_bundle_name = "waffels",
     deps = [
         ":example",
         "//packages/bazel/test/ng_package/example/a11y",
