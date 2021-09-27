@@ -318,9 +318,10 @@ def _generate_ve_shims(ctx):
 def _ngc_tsconfig(ctx, files, srcs, **kwargs):
     generate_ve_shims = _generate_ve_shims(ctx)
     compilation_mode = _get_ivy_compilation_mode(ctx)
+    is_devmode = "devmode_manifest" in kwargs
     outs = _expected_outs(ctx)
     is_legacy_ngc = _is_view_engine_enabled(ctx)
-    if "devmode_manifest" in kwargs:
+    if is_devmode:
         expected_outs = outs.devmode_js + outs.declarations + outs.summaries + outs.metadata
     else:
         expected_outs = outs.closure_js
@@ -379,7 +380,7 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
     if is_perf_requested(ctx):
         # In Ivy mode, set the `tracePerformance` Angular compiler option to enable performance
         # metric output.
-        if "devmode_manifest" in kwargs:
+        if is_devmode:
             perf_path = outs.dev_perf_files[0].path
         else:
             perf_path = outs.prod_perf_files[0].path
@@ -392,9 +393,20 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
             [ctx.workspace_name] + ctx.label.package.split("/") + [ctx.label.name, ""],
         )
 
-    return dict(tsc_wrapped_tsconfig(ctx, files, srcs, **kwargs), **{
+    tsconfig = dict(tsc_wrapped_tsconfig(ctx, files, srcs, **kwargs), **{
         "angularCompilerOptions": angular_compiler_options,
     })
+
+    # For prodmode, the compilation target is set to `ES2020`. `@bazel/typecript`
+    # using the `create_tsconfig` function sets `ES2015` by default.
+    # https://github.com/bazelbuild/rules_nodejs/blob/901df3868e3ceda177d3ed181205e8456a5592ea/third_party/github.com/bazelbuild/rules_typescript/internal/common/tsconfig.bzl#L195
+    # TODO(devversion): In the future, combine prodmode and devmode so we can get rid of the
+    # ambiguous terminology and concept that can result in slow-down for development workflows.
+    if not is_devmode:
+        # Note: Keep in sync with the `prodmode_target` for `ts_library` in `tools/defaults.bzl`
+        tsconfig["compilerOptions"]["target"] = "es2020"
+
+    return tsconfig
 
 def _has_target_angular_summaries(target):
     return hasattr(target, "angular") and hasattr(target.angular, "summaries")
