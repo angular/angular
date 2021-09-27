@@ -2,13 +2,29 @@
   "name": "@angular/compiler-cli",
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - the compiler CLI for Node.js",
-  "main": "index.js",
   "typings": "index.d.ts",
   "bin": {
-    "ivy-ngcc": "./ngcc/main-ivy-ngcc.js",
-    "ngcc": "./ngcc/main-ngcc.js",
-    "ngc": "./src/main.js",
-    "ng-xi18n": "./src/extract_i18n.js"
+    "ngcc": "./bundles/ngcc/main-ngcc.js",
+    "ngc": "./bundles/src/bin/ngc.js",
+    "ng-xi18n": "./bundles/src/bin/ng_xi18n.js"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./bundles/index.js"
+    },
+    "./package.json": {
+      "default": "./package.json"
+    },
+    "./linker": {
+      "types": "./linker/index.d.ts",
+      "default": "./bundles/linker/index.js"
+    },
+    "./linker/babel": {
+      "types": "./linker/babel/index.d.ts",
+      "default": "./bundles/linker/babel/index.js"
+    }
   },
   "dependencies": {
     "@babel/core": "^7.8.6",
