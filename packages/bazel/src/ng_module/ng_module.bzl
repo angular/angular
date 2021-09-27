@@ -341,7 +341,6 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         # Summaries are only enabled if Angular outputs are to be produced.
         "enableSummariesForJit": is_legacy_ngc,
         "enableIvy": is_ivy_enabled(ctx),
-        "compilationMode": ctx.attr.compilation_mode,
         "fullTemplateTypeCheck": ctx.attr.type_check,
         "_extendedTemplateDiagnostics": ctx.attr.experimental_extended_template_diagnostics,
         "compilationMode": compilation_mode,
@@ -740,14 +739,6 @@ NG_MODULE_ATTRIBUTES = {
         doc = "Experimental option, not publicly supported.",
     ),
     "inline_resources": attr.bool(default = True),
-    "compilation_mode": attr.string(
-        doc = """Set the compilation mode for the Angular compiler.
-
-        This attribute is a noop if Ivy is not enabled.
-        """,
-        values = ["partial", "full", ""],
-        default = "",
-    ),
     "no_i18n": attr.bool(default = False),
     "compiler": attr.label(
         doc = """Sets a different ngc compiler binary to use for this library.
