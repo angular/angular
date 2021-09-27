@@ -55,7 +55,7 @@ INTEGRATION_TESTS = {
         "commands": "payload_size_tracking",
         "tags": ["ivy-only"],
     },
-    "dynamic-compiler": {"tags": ["no-ivy-aot"]},
+    "dynamic-compiler": {},
     "forms": {
         "commands": "payload_size_tracking",
         "tags": ["ivy-only"],

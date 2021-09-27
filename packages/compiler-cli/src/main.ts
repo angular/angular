@@ -90,7 +90,7 @@ function createEmitCallback(
     return undefined;
   }
   if (tsickle == undefined) {
-    throw Error('Tsickle is not provided but `annotateForClosureCompiler` is enabled.')
+    throw Error('Tsickle is not provided but `annotateForClosureCompiler` is enabled.');
   }
   const tsickleHost: Pick<
       TsickleHost,
