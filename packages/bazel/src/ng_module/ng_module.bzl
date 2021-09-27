@@ -307,12 +307,8 @@ def _expected_outs(ctx):
 
 # Determines if we need to generate View Engine shims (.ngfactory and .ngsummary files)
 def _generate_ve_shims(ctx):
-    # we are checking the workspace name here, because otherwise this would be a breaking change
-    # (the shims used to be on by default)
-    # we can remove this check once angular/components and angular/angular-cli repos no longer depend
-    # on the presence of shims, or if they explicitly opt-in to their generation via ng_modules' generate_ve_shims attr
     return _is_bazel() and _is_view_engine_enabled(ctx) or (
-        getattr(ctx.attr, "generate_ve_shims", False) == True or ctx.workspace_name != "angular"
+        getattr(ctx.attr, "generate_ve_shims", False) == True
     )
 
 def _ngc_tsconfig(ctx, files, srcs, **kwargs):
