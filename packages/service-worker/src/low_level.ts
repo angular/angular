@@ -18,7 +18,7 @@ export const ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not support
  *
  * @deprecated
  * This event was only emitted by the deprecated {@link SwUpdate#available}.
- * Use the {@link VersionEvent} instead which is emitted by {@link SwUpdate#versionUpdates}.
+ * Use the `VersionEvent` instead which is emitted by {@link SwUpdate#versionUpdates}.
  * See {@link SwUpdate#available} docs for an example.
  *
  * @publicApi
