@@ -1,5 +1,6 @@
 @use '../core/style/layout-common';
 @use './stepper-variables';
+@use '../../cdk/a11y';
 
 .mat-step-header {
   overflow: hidden;
@@ -8,6 +9,19 @@
   position: relative;
   box-sizing: content-box;
   -webkit-tap-highlight-color: transparent;
+
+  @include a11y.high-contrast(active, off) {
+    outline: solid 1px;
+    &.cdk-keyboard-focused, &.cdk-program-focused {
+      outline: solid 3px;
+    }
+
+    &[aria-selected='true'] {
+      .mat-step-label {
+        text-decoration: underline;
+      }
+    }
+  }
 }
 
 .mat-step-optional,
