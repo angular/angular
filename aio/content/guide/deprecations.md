@@ -634,7 +634,7 @@ Angular used to sanitize `[style]` and `[style.prop]` bindings to prevent malici
 It is no longer possible to use the `loadChildren` string syntax to configure lazy routes.
 The string syntax has been replaced with dynamic import statements.
 The `DeprecatedLoadChildren` type was removed from `@angular/router`.
-Find more information about the replacement [in the `LoadChildrenCallback` documentation](api/router/LoadChildrenCallback).
+Find more information about the replacement in the [`LoadChildrenCallback` documentation](api/router/LoadChildrenCallback).
 
 The supporting classes `NgModuleFactoryLoader`, `SystemJsNgModuleLoader` and `SystemJsNgModuleLoaderConfig` classes were removed from `@angular/core`, as well as `SpyNgModuleFactoryLoader` from `@angular/router`.
 
