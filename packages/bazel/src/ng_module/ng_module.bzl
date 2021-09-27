@@ -325,7 +325,6 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         # Summaries are only enabled if Angular outputs are to be produced.
         "enableSummariesForJit": is_legacy_ngc,
         "enableIvy": is_ivy_enabled(ctx),
-        "compilationMode": ctx.attr.compilation_mode,
         "fullTemplateTypeCheck": ctx.attr.type_check,
         "compilationMode": compilation_mode,
         # In Google3 we still want to use the symbol factory re-exports in order to
@@ -712,14 +711,6 @@ NG_MODULE_ATTRIBUTES = {
     "filter_summaries": attr.bool(default = False),
     "type_check": attr.bool(default = True),
     "inline_resources": attr.bool(default = True),
-    "compilation_mode": attr.string(
-        doc = """Set the compilation mode for the Angular compiler.
-
-        This attribute is a noop if Ivy is not enabled.
-        """,
-        values = ["partial", "full", ""],
-        default = "",
-    ),
     "no_i18n": attr.bool(default = False),
     "compiler": attr.label(
         doc = """Sets a different ngc compiler binary to use for this library.
