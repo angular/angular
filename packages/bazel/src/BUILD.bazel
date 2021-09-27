@@ -1,4 +1,3 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 
 # BEGIN-DEV-ONLY
 package(default_visibility = ["//packages/bazel:__subpackages__"])
@@ -6,14 +5,5 @@ package(default_visibility = ["//packages/bazel:__subpackages__"])
 filegroup(
     name = "package_assets",
     srcs = glob(["*"]),
-)
-
-nodejs_binary(
-    name = "modify_tsconfig",
-    data = [
-        "modify_tsconfig.js",
-    ],
-    entry_point = ":modify_tsconfig.js",
-    visibility = ["//visibility:public"],
 )
 # END-DEV-ONLY
