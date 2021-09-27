@@ -241,7 +241,7 @@ export interface R3FactoryDefMetadataFacade {
 
 export interface R3DeclareFactoryFacade {
   type: Type;
-  deps: R3DeclareDependencyMetadataFacade[]|null;
+  deps: R3DeclareDependencyMetadataFacade[]|'invalid'|null;
   target: FactoryTarget;
 }
 
