@@ -8,6 +8,7 @@ pkg_npm(
         exclude = ["yarn.lock"],
     ) + [
         "//packages/bazel/src:package_assets",
+        "//packages/bazel/src/ng_module:package_assets",
         "//packages/bazel/src/api-extractor:package_assets",
         "//packages/bazel/src/ng_package:package_assets",
         "//packages/bazel/src/ngc-wrapped:package_assets",
@@ -15,6 +16,10 @@ pkg_npm(
     ],
     substitutions = {
         "(#|//)\\s+BEGIN-DEV-ONLY[\\w\\W]+?(#|//)\\s+END-DEV-ONLY": "",
+        # The partial compilation transition is applied in the user workspace. We do not want to require
+        # users having to define the build setting, so we directly point the flag label to the place where
+        # we expect `@angular/bazel` being located. Note: This expects the `@npm//` workspace to be used.
+        "//packages/bazel/src:partial_compilation": "@npm//@angular/bazel/src:partial_compilation",
         "//packages/bazel/": "//@angular/bazel/",
         "@npm//@bazel/typescript/internal:": "//@bazel/typescript/internal:",
     },
