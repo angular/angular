@@ -227,9 +227,9 @@ export class TestBedRender3 implements TestBed {
    *
    * @publicApi
    */
-  initTestEnvironment(ngModule: Type<any>|Type<any>[], platform: PlatformRef, summariesOrOptions?: {
-    teardown?: ModuleTeardownOptions
-  }|(() => any[])): void {
+  initTestEnvironment(
+      ngModule: Type<any>|Type<any>[], platform: PlatformRef,
+      summariesOrOptions?: TestEnvironmentOptions|(() => any[])): void {
     if (this.platform || this.ngModule) {
       throw new Error('Cannot set base providers because it has already been called');
     }
