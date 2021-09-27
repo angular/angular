@@ -196,7 +196,7 @@ The `AppComponent` template uses this component as follows:
 ```ts
 @Component({
   selector: 'app-root',
-  template: '<user-detail [user]="selectedUser" />',
+  template: '<user-detail [user]="selectedUser"></user-detail>',
 })
 export class AppComponent {
   selectedUser: User | null = null;
@@ -228,10 +228,10 @@ When you enable `strictTemplates` and the TypeScript flag `strictNullChecks`, ty
 
 There are two potential workarounds to the preceding issues:
 
-  1. In the template, include the non-null assertion operator `!` at the end of a nullable expression, such as  `<user-detail [user]="user!" />`.
+  1. In the template, include the non-null assertion operator `!` at the end of a nullable expression, such as  `<user-detail [user]="user!"></user-detail>`.
 
   In this example, the compiler disregards type incompatibilities in nullability, just as in TypeScript code.
-  In the case of the `async` pipe, note that the expression needs to be wrapped in parentheses, as in `<user-detail [user]="(user$ | async)!" />`.
+  In the case of the `async` pipe, note that the expression needs to be wrapped in parentheses, as in `<user-detail [user]="(user$ | async)!"></user-detail>`.
 
   1. Disable strict null checks in Angular templates completely.
 
@@ -260,7 +260,7 @@ Consider the following directive:
   selector: 'submit-button',
   template: `
     <div class="wrapper">
-      <button [disabled]="disabled">Submit</button>'
+      <button [disabled]="disabled">Submit</button>
     </div>
   `,
 })
