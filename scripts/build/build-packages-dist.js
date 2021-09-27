@@ -15,7 +15,7 @@ const {buildZoneJsPackage} = require('./zone-js-builder');
 
 
 // Build the legacy (view engine) npm packages into `dist/packages-dist/`.
-buildTargetPackages('dist/packages-dist', false, 'Production');
+buildTargetPackages('dist/packages-dist', 'Production');
 
 // Build the `angular-in-memory-web-api` npm package into `dist/angular-in-memory-web-api-dist/`,
 // because it might be needed by other scripts/targets.
