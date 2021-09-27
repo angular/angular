@@ -32,7 +32,6 @@ load(
 NgPerfInfo = provider(fields = ["enable_perf_logging"])
 
 _FLAT_DTS_FILE_SUFFIX = ".bundle.d.ts"
-_R3_SYMBOLS_DTS_FILE = "src/r3_symbols.d.ts"
 
 def is_perf_requested(ctx):
     enable_perf_logging = ctx.attr.perf_flag != None and ctx.attr.perf_flag[NgPerfInfo].enable_perf_logging == True
@@ -92,7 +91,6 @@ def _compiler_name(ctx):
     Returns:
       The name of the current compiler to be displayed in build output
     """
-
     return "Ivy" if is_ivy_enabled(ctx) else "ViewEngine"
 
 def _get_ivy_compilation_mode(ctx):
@@ -154,25 +152,6 @@ def _should_produce_dts_bundle(ctx):
       true when we should produce bundled dts.
     """
     return getattr(ctx.attr, "bundle_dts", False)
-
-def _should_produce_r3_symbols_bundle(ctx):
-    """Should we produce r3_symbols bundle.
-
-    NGCC relies on having r3_symbols file. This file is located in @angular/core
-    And should only be included when bundling core in legacy mode.
-
-    Args:
-      ctx: skylark rule execution context
-
-    Returns:
-      true when we should produce r3_symbols dts.
-    """
-
-    # iif we are compiling @angular/core with ngc we should add this addition dts bundle
-    # because ngcc relies on having this file.
-    # see: https://github.com/angular/angular/blob/84406e4d6d93b28b23efbb1701bc5ae1084da67b/packages/compiler-cli/src/ngcc/src/packages/entry_point_bundle.ts#L56
-    # todo: alan-agius4: remove when ngcc doesn't need this anymore
-    return _is_view_engine_enabled(ctx) and ctx.attr.module_name == "@angular/core"
 
 def _should_produce_flat_module_outs(ctx):
     """Should we produce flat module outputs.
@@ -264,16 +243,13 @@ def _expected_outs(ctx):
         if not _is_bazel():
             metadata_files += [ctx.actions.declare_file(basename + ext) for ext in metadata]
 
-    dts_bundles = None
+    dts_bundle = None
     if _should_produce_dts_bundle(ctx):
         # We need to add a suffix to bundle as it might collide with the flat module dts.
         # The flat module dts out contains several other exports
         # https://github.com/angular/angular/blob/84406e4d6d93b28b23efbb1701bc5ae1084da67b/packages/compiler-cli/src/metadata/index_writer.ts#L18
         # the file name will be like 'core.bundle.d.ts'
-        dts_bundles = [ctx.actions.declare_file(ctx.label.name + _FLAT_DTS_FILE_SUFFIX)]
-
-        if _should_produce_r3_symbols_bundle(ctx):
-            dts_bundles.append(ctx.actions.declare_file(_R3_SYMBOLS_DTS_FILE.replace(".d.ts", _FLAT_DTS_FILE_SUFFIX)))
+        dts_bundle = ctx.actions.declare_file(ctx.label.name + _FLAT_DTS_FILE_SUFFIX)
 
     # We do this just when producing a flat module index for a publishable ng_module
     if _should_produce_flat_module_outs(ctx):
@@ -313,7 +289,7 @@ def _expected_outs(ctx):
         transpilation_infos = transpilation_infos,
         summaries = summary_files,
         metadata = metadata_files,
-        dts_bundles = dts_bundles,
+        dts_bundle = dts_bundle,
         bundle_index_typings = bundle_index_typings,
         i18n_messages = i18n_messages_files,
         dev_perf_files = dev_perf_files,
@@ -454,7 +430,7 @@ def ngc_compile_action(
         node_opts,
         locale = None,
         i18n_args = [],
-        dts_bundles_out = None,
+        dts_bundle_out = None,
         target_flavor = "prodmode"):
     """Helper function to create the ngc action.
 
@@ -471,7 +447,7 @@ def ngc_compile_action(
       node_opts: list of strings, extra nodejs options.
       locale: i18n locale, or None
       i18n_args: additional command-line arguments to ngc
-      dts_bundles_out: produced flattened dts file
+      dts_bundle_out: produced flattened dts file
       target_flavor: Whether prodmode or devmode output is being built.
 
     Returns:
@@ -543,28 +519,25 @@ def ngc_compile_action(
             mnemonic = "Angular2MessageExtractor",
         )
 
-    if dts_bundles_out != None:
+    if dts_bundle_out != None:
         # combine the inputs and outputs and filter .d.ts and json files
         filter_inputs = [f for f in inputs.to_list() + outputs if f.path.endswith(".d.ts") or f.path.endswith(".json")]
 
         if _should_produce_flat_module_outs(ctx):
-            dts_entry_points = ["%s.d.ts" % _flat_module_out_file(ctx)]
+            dts_entry_point = "%s.d.ts" % _flat_module_out_file(ctx)
         else:
-            dts_entry_points = [ctx.attr.entry_point.label.name.replace(".ts", ".d.ts")]
-
-        if _should_produce_r3_symbols_bundle(ctx):
-            dts_entry_points.append(_R3_SYMBOLS_DTS_FILE)
+            dts_entry_point = ctx.attr.entry_point.label.name.replace(".ts", ".d.ts")
 
         ctx.actions.run(
-            progress_message = "Bundling DTS (%s) %s" % (compile_mode, str(ctx.label)),
+            progress_message = "Bundling DTS (%s) %s" % (target_flavor, str(ctx.label)),
             mnemonic = "APIExtractor",
             executable = ctx.executable.api_extractor,
             inputs = filter_inputs,
-            outputs = dts_bundles_out,
+            outputs = [dts_bundle_out],
             arguments = [
                 tsconfig_file.path,
-                ",".join(["/".join([ctx.bin_dir.path, ctx.label.package, f]) for f in dts_entry_points]),
-                ",".join([f.path for f in dts_bundles_out]),
+                "/".join([ctx.bin_dir.path, ctx.label.package, dts_entry_point]),
+                dts_bundle_out.path,
             ],
         )
 
@@ -592,7 +565,7 @@ def _compile_action(
         ctx,
         inputs,
         outputs,
-        dts_bundles_out,
+        dts_bundle_out,
         messages_out,
         perf_out,
         tsconfig_file,
@@ -701,8 +674,8 @@ def ng_module_impl(ctx, ts_compile_actions):
             flat_module_out_file = _flat_module_out_file(ctx),
         )
 
-    if outs.dts_bundles != None:
-        providers["dts_bundles"] = outs.dts_bundles
+    if outs.dts_bundle != None:
+        providers["dts_bundle"] = outs.dts_bundle
 
     return providers
 
