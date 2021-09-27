@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * @license
  * Copyright Google LLC All Rights Reserved.
@@ -10,12 +9,10 @@
 /**
  * Extract i18n messages from source code
  */
-// Must be imported first, because Angular decorators throw on load.
-import 'reflect-metadata';
+
 import * as api from './transformers/api';
 import {ParsedConfiguration} from './perform_compile';
 import {main, readCommandLineAndConfiguration} from './main';
-import {setFileSystem, NodeJSFileSystem} from './ngtsc/file_system';
 
 export function mainXi18n(
     args: string[], consoleError: (msg: string) => void = console.error): number {
@@ -37,13 +34,4 @@ function readXi18nCommandLineAndConfiguration(args: string[]): ParsedConfigurati
   ]);
   // only emit the i18nBundle but nothing else.
   return {...config, emitFlags: api.EmitFlags.I18nBundle};
-}
-
-// Entry point
-if (require.main === module) {
-  process.title = 'Angular i18n Message Extractor (ng-xi18n)';
-  const args = process.argv.slice(2);
-  // We are running the real compiler so run against the real file-system
-  setFileSystem(new NodeJSFileSystem());
-  process.exitCode = mainXi18n(args);
 }

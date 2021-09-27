@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * @license
  * Copyright Google LLC All Rights Reserved.
@@ -7,19 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// Must be imported first, because Angular decorators throw on load.
-import 'reflect-metadata';
-
-import * as ts from 'typescript';
 import * as tsickle from 'tsickle';
+import * as ts from 'typescript';
 
-import {replaceTsWithNgInErrors} from './ngtsc/diagnostics';
+import {Diagnostics, exitCodeFromResult, filterErrorsAndWarnings, formatDiagnostics, ParsedConfiguration, performCompilation, readConfiguration} from './perform_compile';
+import {createPerformWatchHost, performWatchCompilation} from './perform_watch';
 import * as api from './transformers/api';
 import {GENERATED_FILES} from './transformers/util';
-
-import {exitCodeFromResult, performCompilation, readConfiguration, formatDiagnostics, Diagnostics, ParsedConfiguration, filterErrorsAndWarnings} from './perform_compile';
-import {performWatchCompilation, createPerformWatchHost} from './perform_watch';
-import {NodeJSFileSystem, setFileSystem} from './ngtsc/file_system';
 
 export function main(
     args: string[], consoleError: (s: string) => void = console.error,
@@ -229,13 +222,4 @@ function printDiagnostics(
   }
   const formatHost = getFormatDiagnosticsHost(options);
   consoleError(formatDiagnostics(diagnostics, formatHost));
-}
-
-// CLI entry point
-if (require.main === module) {
-  process.title = 'Angular Compiler (ngc)';
-  const args = process.argv.slice(2);
-  // We are running the real compiler so run against the real file-system
-  setFileSystem(new NodeJSFileSystem());
-  process.exitCode = main(args);
 }
