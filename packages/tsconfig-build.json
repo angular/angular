@@ -15,9 +15,9 @@
     "strictPropertyInitialization": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
-    "module": "es2015",
-    "target": "es2015",
-    "lib": ["es2015", "dom"],
+    "module": "es2020",
+    "target": "es2020",
+    "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
     "types": [],
@@ -31,6 +31,7 @@
   },
   "bazelOptions": {
     "suppressTsconfigOverrideWarnings": true,
+    // TODO(devversion): Switch devmode target to ES2020 or combine devmode with prodmode.
     "devmodeTargetOverride": "es5"
   }
 }
