@@ -1,3 +1,21 @@
+<a name="13.0.0-next.8"></a>
+# 13.0.0-next.8 (2021-09-27)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ea61ec2562](https://github.com/angular/angular/commit/ea61ec25628206d18a424906f685c0d0fd6aa714) | feat | support TypeScript 4.4 ([#43281](https://github.com/angular/angular/pull/43281)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d9d8f950e9](https://github.com/angular/angular/commit/d9d8f950e90567c79b43eb156b81810a9f3d5c93) | feat | allow disabling min/max validators dynamically (by setting the value to `null`) ([#42978](https://github.com/angular/angular/pull/42978)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e131540f71](https://github.com/angular/angular/commit/e131540f7183041448be771dc91cb4224362e988) | fix | do not unassign clients from a broken version ([#43518](https://github.com/angular/angular/pull/43518)) |
+## Special Thanks
+Alan Agius, Daniel Díaz, Dario Piotrowicz, George Kalpakas, Joe Martin (Crowdstaffing), Kristiyan Kostadinov, Teri Glover, Virginia Dooley and iRealNirmal
+
+
 <a name="13.0.0-next.7"></a>
 # 13.0.0-next.7 (2021-09-22)
 ## Breaking Changes
