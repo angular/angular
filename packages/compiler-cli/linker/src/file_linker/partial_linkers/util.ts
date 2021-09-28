@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {createR3ProviderExpression, R3DeclareDependencyMetadata, R3DependencyMetadata, R3ProviderExpression, R3Reference} from '@angular/compiler';
-import * as o from '@angular/compiler/src/output/output_ast';
+import {createR3ProviderExpression, outputAst as o, R3DeclareDependencyMetadata, R3DependencyMetadata, R3ProviderExpression, R3Reference} from '@angular/compiler';
 
 import {AstObject, AstValue} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';

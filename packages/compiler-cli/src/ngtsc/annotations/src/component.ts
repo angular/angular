@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, FactoryTarget, InterpolationConfig, LexerRange, makeBindingParser, ParsedTemplate, ParseSourceFile, parseTemplate, R3ClassMetadata, R3ComponentMetadata, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr} from '@angular/compiler';
-import {ViewEncapsulation} from '@angular/compiler/src/core';
+import {compileClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, FactoryTarget, InterpolationConfig, LexerRange, makeBindingParser, ParsedTemplate, ParseSourceFile, parseTemplate, R3ClassMetadata, R3ComponentMetadata, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, ViewEncapsulation, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../cycles';

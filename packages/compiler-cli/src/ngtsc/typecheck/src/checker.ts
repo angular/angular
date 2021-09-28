@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, CssSelector, DomElementSchemaRegistry, LiteralPrimitive, ParseSourceSpan, PropertyRead, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate} from '@angular/compiler';
-import {TextAttribute} from '@angular/compiler/src/render3/r3_ast';
+import {AST, CssSelector, DomElementSchemaRegistry, LiteralPrimitive, ParseSourceSpan, PropertyRead, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute} from '@angular/compiler';
 import ts from 'typescript';
-import {ErrorCode, ngErrorCode} from '../../diagnostics';
 
+import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
 import {Reference, ReferenceEmitter} from '../../imports';
 import {IncrementalBuild} from '../../incremental/api';
@@ -281,7 +280,8 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   getLiteralCompletionLocation(
-      node: LiteralPrimitive|TextAttribute, component: ts.ClassDeclaration): ShimLocation|null {
+      node: LiteralPrimitive|TmplAstTextAttribute, component: ts.ClassDeclaration): ShimLocation
+      |null {
     const engine = this.getOrCreateCompletionEngine(component);
     if (engine === null) {
       return null;
