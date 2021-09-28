@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BindingPipe, PropertyWrite, TmplAstBoundEvent, TmplAstElement, TmplAstReference, TmplAstVariable} from '@angular/compiler';
-import {BoundAttribute} from '@angular/compiler/src/render3/r3_ast';
+import {BindingPipe, PropertyWrite, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstReference, TmplAstVariable} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, makeDiagnostic, makeRelatedInformation, ngErrorCode} from '../../diagnostics';
@@ -80,7 +79,7 @@ export interface OutOfBandDiagnosticRecorder {
    * Reports a split two way binding error message.
    */
   splitTwoWayBinding(
-      templateId: TemplateId, input: BoundAttribute, output: TmplAstBoundEvent,
+      templateId: TemplateId, input: TmplAstBoundAttribute, output: TmplAstBoundEvent,
       inputConsumer: ClassDeclaration, outputConsumer: ClassDeclaration|TmplAstElement): void;
 }
 
@@ -225,7 +224,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
   }
 
   splitTwoWayBinding(
-      templateId: TemplateId, input: BoundAttribute, output: TmplAstBoundEvent,
+      templateId: TemplateId, input: TmplAstBoundAttribute, output: TmplAstBoundEvent,
       inputConsumer: ClassDeclaration, outputConsumer: ClassDeclaration|TmplAstElement): void {
     const mapping = this.resolver.getSourceMapping(templateId);
     const errorMsg = `The property and event halves of the two-way binding '${
