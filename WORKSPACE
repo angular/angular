@@ -48,6 +48,10 @@ load("@npm//@angular/dev-infra-private/bazel/browsers:browser_repositories.bzl",
 
 browser_repositories()
 
+load("@build_bazel_rules_nodejs//toolchains/esbuild:esbuild_repositories.bzl", "esbuild_repositories")
+
+esbuild_repositories()
+
 load("//packages/common/locales/generate-locales-tool:cldr-data.bzl", "cldr_data_repository")
 
 cldr_data_repository(

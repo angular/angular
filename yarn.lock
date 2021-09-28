@@ -1177,6 +1177,11 @@
   resolved "https://registry.yarnpkg.com/@bazel/esbuild/-/esbuild-4.1.0.tgz#419def12e7d56e095b9d3eb40a66574d7f9b8114"
   integrity sha512-mN1PfDMJlkgxcpMMTKbD6cpalL8SkRo9om7m6bg1olYSwsrAW6QHNa7ohK4xVtnxgQaWDu4KxioJVMlEmebEqw==
 
+"@bazel/esbuild@4.3.0":
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@bazel/esbuild/-/esbuild-4.3.0.tgz#a511d2090c4fccf865b7f6eafc95673f0486450b"
+  integrity sha512-AUyyCYO17Uk/vaG9VSyDgLbQuW0ZY2ciDDp9frgHWPv55SdZolzAK0lA36QVJuz6/7I4EQBvox6KEpMPBR2f/A==
+
 "@bazel/ibazel@^0.15.8":
   version "0.15.10"
   resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.15.10.tgz#cf0cff1aec6d8e7bb23e1fc618d09fbd39b7a13f"
