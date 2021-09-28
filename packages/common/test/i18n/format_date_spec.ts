@@ -38,6 +38,10 @@ describe('Format date', () => {
       expect(isDate(toDate('2015-06-15T21:43:11Z'))).toBeTruthy();
     });
 
+    it('should support strings with a 5-digit date', () => {
+      expect(isDate(toDate('22015-06-15'))).toBeTruthy();
+    });
+
     it('should throw for empty string', () => {
       expect(() => toDate('')).toThrow();
     });
