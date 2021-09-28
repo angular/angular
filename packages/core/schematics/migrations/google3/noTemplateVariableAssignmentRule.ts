@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as compiler from '@angular/compiler';
 import {RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
 
@@ -34,7 +35,7 @@ export class Rule extends Rules.TypedRule {
     // template variables.
     resolvedTemplates.forEach(template => {
       const filePath = template.filePath;
-      const nodes = analyzeResolvedTemplate(template);
+      const nodes = analyzeResolvedTemplate(template, compiler);
       const templateFile =
           template.inline ? sourceFile : createHtmlSourceFile(filePath, template.content);
 
