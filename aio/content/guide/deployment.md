@@ -387,7 +387,7 @@ You can waste a lot of time and money optimizing something that has no tangible 
 You should measure the application's actual behavior when running in the environments that are important to you.
 
 The
-<a href="https://developers.google.com/web/tools/chrome-devtools/network-performance/understanding-resource-timing" title="Chrome DevTools Network Performance">
+<a href="https://developer.chrome.com/docs/devtools/network/reference/" title="Chrome DevTools Network Performance">
 Chrome DevTools Network Performance page</a> is a good place to start learning about measuring performance.
 
 The [WebPageTest](https://www.webpagetest.org/) tool is another good choice
