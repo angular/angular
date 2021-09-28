@@ -57,6 +57,7 @@
     "@babel/traverse": "7.8.6",
     "@babel/types": "7.8.6",
     "@bazel/concatjs": "4.3.0",
+    "@bazel/esbuild": "4.3.0",
     "@bazel/jasmine": "4.3.0",
     "@bazel/protractor": "4.3.0",
     "@bazel/rollup": "4.3.0",
