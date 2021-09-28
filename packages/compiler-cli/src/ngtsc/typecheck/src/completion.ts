@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TmplAstReference, TmplAstTemplate} from '@angular/compiler';
-import {AST, EmptyExpr, ImplicitReceiver, LiteralPrimitive, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstNode} from '@angular/compiler/src/compiler';
-import {TextAttribute} from '@angular/compiler/src/render3/r3_ast';
+import {AST, EmptyExpr, ImplicitReceiver, LiteralPrimitive, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute} from '@angular/compiler';
 import ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
@@ -34,7 +32,7 @@ export class CompletionEngine {
       new Map<TmplAstTemplate|null, Map<string, ReferenceCompletion|VariableCompletion>>();
 
   private expressionCompletionCache =
-      new Map<PropertyRead|SafePropertyRead|LiteralPrimitive|TextAttribute, ShimLocation>();
+      new Map<PropertyRead|SafePropertyRead|LiteralPrimitive|TmplAstTextAttribute, ShimLocation>();
 
 
   constructor(private tcb: ts.Node, private data: TemplateData, private shimPath: AbsoluteFsPath) {
@@ -156,14 +154,14 @@ export class CompletionEngine {
     return res;
   }
 
-  getLiteralCompletionLocation(expr: LiteralPrimitive|TextAttribute): ShimLocation|null {
+  getLiteralCompletionLocation(expr: LiteralPrimitive|TmplAstTextAttribute): ShimLocation|null {
     if (this.expressionCompletionCache.has(expr)) {
       return this.expressionCompletionCache.get(expr)!;
     }
 
     let tsExpr: ts.StringLiteral|ts.NumericLiteral|null = null;
 
-    if (expr instanceof TextAttribute) {
+    if (expr instanceof TmplAstTextAttribute) {
       const strNode = findFirstMatchingNode(this.tcb, {
         filter: ts.isParenthesizedExpression,
         withSpan: expr.sourceSpan,
