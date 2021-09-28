@@ -6,5 +6,5 @@ the file will be stored in the `bazel-out` folder.
 
 You can retrieve the path to the file by either running:
 
-* `bazel test //src/universal-app:server_test --test_output=all`
-* `echo $(bazel info bazel-bin)/src/universal-app/index-prerendered.html`
+* `bazel run //src/universal-app:server_test --test_output=all`
+* `echo $(bazel info bazel-testlogs)/src/universal-app/server_test/test.outputs/index-prerendered.html`
