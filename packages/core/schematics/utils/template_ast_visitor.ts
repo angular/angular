@@ -24,6 +24,15 @@ import type {TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAst
  * interface `Visitor<T>` is not exported.
  */
 export class TemplateAstVisitor implements TmplAstRecursiveVisitor {
+  /**
+   * Creates a new Render3 Template AST visitor using an instance of the `@angular/compiler`
+   * package. Passing in the compiler is required due to the need to dynamically import the
+   * ESM `@angular/compiler` into a CommonJS schematic.
+   *
+   * @param compilerModule The compiler instance that should be used within the visitor.
+   */
+  constructor(protected readonly compilerModule: typeof import('@angular/compiler')) {}
+
   visitElement(element: TmplAstElement): void {}
   visitTemplate(template: TmplAstTemplate): void {}
   visitContent(content: TmplAstContent): void {}
