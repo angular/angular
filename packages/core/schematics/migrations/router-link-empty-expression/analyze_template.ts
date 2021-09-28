@@ -7,7 +7,6 @@
  */
 
 import {TmplAstBoundAttribute} from '@angular/compiler';
-import {visitAll} from '@angular/compiler/src/render3/r3_ast';
 
 import {ResolvedTemplate} from '../../utils/ng_component_template';
 import {parseHtmlGracefully} from '../../utils/parse_html';
@@ -24,7 +23,7 @@ export function analyzeResolvedTemplate(template: ResolvedTemplate): TmplAstBoun
   const visitor = new RouterLinkEmptyExprVisitor();
 
   // Analyze the Angular Render3 HTML AST and collect all template variable assignments.
-  visitAll(visitor, templateNodes);
+  visitor.visitAll(templateNodes);
 
   return visitor.emptyRouterLinkExpressions;
 }

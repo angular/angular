@@ -7,7 +7,6 @@
  */
 
 import {PropertyWrite} from '@angular/compiler';
-import {visitAll} from '@angular/compiler/src/render3/r3_ast';
 import {ResolvedTemplate} from '../../utils/ng_component_template';
 import {parseHtmlGracefully} from '../../utils/parse_html';
 import {HtmlVariableAssignmentVisitor} from './angular/html_variable_assignment_visitor';
@@ -33,7 +32,7 @@ export function analyzeResolvedTemplate(template: ResolvedTemplate): TemplateVar
   const visitor = new HtmlVariableAssignmentVisitor();
 
   // Analyze the Angular Render3 HTML AST and collect all template variable assignments.
-  visitAll(visitor, templateNodes);
+  visitor.visitAll(templateNodes);
 
   return visitor.variableAssignments.map(
       ({node, start, end}) => ({node, start: start + node.span.start, end}));

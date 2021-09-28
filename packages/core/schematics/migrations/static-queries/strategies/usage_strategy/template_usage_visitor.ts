@@ -7,13 +7,13 @@
  */
 
 import {ImplicitReceiver, ParseSourceSpan, PropertyRead, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstTemplate} from '@angular/compiler';
-import {NullVisitor, visitAll} from '@angular/compiler/src/render3/r3_ast';
+import {TemplateAstVisitor} from '../../../../utils/template_ast_visitor';
 
 /**
  * AST visitor that traverses the Render3 HTML AST in order to check if the given
  * query property is accessed statically in the template.
  */
-export class TemplateUsageVisitor extends NullVisitor {
+export class TemplateUsageVisitor extends TemplateAstVisitor {
   private hasQueryTemplateReference = false;
   private expressionAstVisitor = new ExpressionAstVisitor(this.queryPropertyName);
 
@@ -27,7 +27,7 @@ export class TemplateUsageVisitor extends NullVisitor {
     this.expressionAstVisitor.hasQueryPropertyRead = false;
 
     // Visit all AST nodes and check if the query property is used statically.
-    visitAll(this, htmlNodes);
+    this.visitAll(htmlNodes);
 
     return !this.hasQueryTemplateReference && this.expressionAstVisitor.hasQueryPropertyRead;
   }
@@ -41,16 +41,16 @@ export class TemplateUsageVisitor extends NullVisitor {
       return;
     }
 
-    visitAll(this, element.attributes);
-    visitAll(this, element.inputs);
-    visitAll(this, element.outputs);
-    visitAll(this, element.children);
+    this.visitAll(element.attributes);
+    this.visitAll(element.inputs);
+    this.visitAll(element.outputs);
+    this.visitAll(element.children);
   }
 
   override visitTemplate(template: TmplAstTemplate): void {
-    visitAll(this, template.attributes);
-    visitAll(this, template.inputs);
-    visitAll(this, template.outputs);
+    this.visitAll(template.attributes);
+    this.visitAll(template.inputs);
+    this.visitAll(template.outputs);
 
     // We don't want to visit any children of the template as these never can't
     // access a query statically. The templates can be rendered in the ngAfterViewInit"
