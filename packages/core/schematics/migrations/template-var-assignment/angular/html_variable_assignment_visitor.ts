@@ -7,7 +7,8 @@
  */
 
 import {ImplicitReceiver, ParseSourceSpan, PropertyWrite, RecursiveAstVisitor, TmplAstBoundEvent, TmplAstElement, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
-import {NullVisitor, visitAll} from '@angular/compiler/src/render3/r3_ast';
+import {TemplateAstVisitor} from '../../../utils/template_ast_visitor';
+
 
 export interface TemplateVariableAssignment {
   start: number;
@@ -19,7 +20,7 @@ export interface TemplateVariableAssignment {
  * HTML AST visitor that traverses the Render3 HTML AST in order to find all
  * expressions that write to local template variables within bound events.
  */
-export class HtmlVariableAssignmentVisitor extends NullVisitor {
+export class HtmlVariableAssignmentVisitor extends TemplateAstVisitor {
   variableAssignments: TemplateVariableAssignment[] = [];
 
   private currentVariables: TmplAstVariable[] = [];
@@ -27,8 +28,8 @@ export class HtmlVariableAssignmentVisitor extends NullVisitor {
       new ExpressionAstVisitor(this.variableAssignments, this.currentVariables);
 
   override visitElement(element: TmplAstElement): void {
-    visitAll(this, element.outputs);
-    visitAll(this, element.children);
+    this.visitAll(element.outputs);
+    this.visitAll(element.children);
   }
 
   override visitTemplate(template: TmplAstTemplate): void {
@@ -39,7 +40,7 @@ export class HtmlVariableAssignmentVisitor extends NullVisitor {
     // Visit all children of the template. The template proxies the outputs of the
     // immediate child elements, so we just ignore outputs on the "Template" in order
     // to not visit similar bound events twice.
-    visitAll(this, template.children);
+    this.visitAll(template.children);
 
     // Remove all previously added variables since all children that could access
     // these have been visited already.

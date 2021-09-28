@@ -7,23 +7,23 @@
  */
 
 import {ASTWithSource, EmptyExpr, TmplAstBoundAttribute, TmplAstElement, TmplAstTemplate} from '@angular/compiler';
-import {NullVisitor, visitAll} from '@angular/compiler/src/render3/r3_ast';
+import {TemplateAstVisitor} from '../../../utils/template_ast_visitor';
 
 /**
  * HTML AST visitor that traverses the Render3 HTML AST in order to find all
  * undefined routerLink asssignment ([routerLink]="").
  */
-export class RouterLinkEmptyExprVisitor extends NullVisitor {
+export class RouterLinkEmptyExprVisitor extends TemplateAstVisitor {
   readonly emptyRouterLinkExpressions: TmplAstBoundAttribute[] = [];
 
   override visitElement(element: TmplAstElement): void {
-    visitAll(this, element.inputs);
-    visitAll(this, element.children);
+    this.visitAll(element.inputs);
+    this.visitAll(element.children);
   }
 
   override visitTemplate(t: TmplAstTemplate): void {
-    visitAll(this, t.inputs);
-    visitAll(this, t.children);
+    this.visitAll(t.inputs);
+    this.visitAll(t.children);
   }
 
   override visitBoundAttribute(node: TmplAstBoundAttribute) {
