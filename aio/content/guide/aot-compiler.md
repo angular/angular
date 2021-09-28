@@ -609,7 +609,7 @@ For example, to avoid `Object is possibly 'undefined'` error in the template abo
 ```typescript
   @Component({
     selector: 'my-component',
-    template: '<span *ngIf="person"> {{person.addresss.street}} </span>'
+    template: '<span *ngIf="person"> {{person.address.street}} </span>'
   })
   class MyComponent {
     person?: Person;
