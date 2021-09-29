@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import type {TmplAstBoundAttribute, TmplAstElement, TmplAstTemplate} from '@angular/compiler';
+import {ASTWithSource, EmptyExpr, TmplAstBoundAttribute, TmplAstElement, TmplAstTemplate} from '@angular/compiler';
 import {TemplateAstVisitor} from '../../../utils/template_ast_visitor';
 
 /**
@@ -27,8 +27,8 @@ export class RouterLinkEmptyExprVisitor extends TemplateAstVisitor {
   }
 
   override visitBoundAttribute(node: TmplAstBoundAttribute) {
-    if (node.name === 'routerLink' && node.value instanceof this.compilerModule.ASTWithSource &&
-        node.value.ast instanceof this.compilerModule.EmptyExpr) {
+    if (node.name === 'routerLink' && node.value instanceof ASTWithSource &&
+        node.value.ast instanceof EmptyExpr) {
       this.emptyRouterLinkExpressions.push(node);
     }
   }

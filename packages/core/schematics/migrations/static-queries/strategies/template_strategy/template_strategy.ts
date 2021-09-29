@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import type {AotCompiler, CompileDirectiveMetadata, CompileMetadataResolver, CompileNgModuleMetadata, CompileStylesheetMetadata, ElementAst, EmbeddedTemplateAst, NgAnalyzedModules, QueryMatch, StaticSymbol, TemplateAst} from '@angular/compiler';
+import {AotCompiler, CompileDirectiveMetadata, CompileMetadataResolver, CompileNgModuleMetadata, CompileStylesheetMetadata, ElementAst, EmbeddedTemplateAst, NgAnalyzedModules, QueryMatch, StaticSymbol, TemplateAst} from '@angular/compiler';
 import {createProgram, Diagnostic, readConfiguration} from '@angular/compiler-cli';
 import {resolve} from 'path';
 import * as ts from 'typescript';
@@ -25,7 +25,7 @@ export class QueryTemplateStrategy implements TimingStrategy {
 
   constructor(
       private projectPath: string, private classMetadata: ClassMetadataMap,
-      private host: ts.CompilerHost, private compilerModule: typeof import('@angular/compiler')) {}
+      private host: ts.CompilerHost) {}
 
   /**
    * Sets up the template strategy by creating the AngularCompilerProgram. Returns false if
@@ -54,8 +54,8 @@ export class QueryTemplateStrategy implements TimingStrategy {
     // breaks the analysis of the project because we instantiate a standalone AOT compiler
     // program which does not contain the custom logic by the Angular CLI Webpack compiler plugin.
     const directiveNormalizer = this.metadataResolver!['_directiveNormalizer'];
-    directiveNormalizer['_normalizeStylesheet'] = (metadata: CompileStylesheetMetadata) => {
-      return new this.compilerModule.CompileStylesheetMetadata(
+    directiveNormalizer['_normalizeStylesheet'] = function(metadata: CompileStylesheetMetadata) {
+      return new CompileStylesheetMetadata(
           {styles: metadata.styles, styleUrls: [], moduleUrl: metadata.moduleUrl!});
     };
 
@@ -83,7 +83,7 @@ export class QueryTemplateStrategy implements TimingStrategy {
     }
 
     const parsedTemplate = this._parseTemplate(metadata, ngModule);
-    const queryTimingMap = this.findStaticQueryIds(parsedTemplate);
+    const queryTimingMap = findStaticQueryIds(parsedTemplate);
     const {staticQueryIds} = staticViewQueryIds(queryTimingMap);
 
     metadata.viewQueries.forEach((query, index) => {
@@ -187,45 +187,45 @@ export class QueryTemplateStrategy implements TimingStrategy {
   private _getViewQueryUniqueKey(filePath: string, className: string, propName: string) {
     return `${resolve(filePath)}#${className}-${propName}`;
   }
-
-  /** Figures out which queries are static and which ones are dynamic. */
-  private findStaticQueryIds(
-      nodes: TemplateAst[], result = new Map<TemplateAst, StaticAndDynamicQueryIds>()):
-      Map<TemplateAst, StaticAndDynamicQueryIds> {
-    nodes.forEach((node) => {
-      const staticQueryIds = new Set<number>();
-      const dynamicQueryIds = new Set<number>();
-      let queryMatches: QueryMatch[] = undefined!;
-      if (node instanceof this.compilerModule.ElementAst) {
-        this.findStaticQueryIds(node.children, result);
-        node.children.forEach((child) => {
-          const childData = result.get(child)!;
-          childData.staticQueryIds.forEach(queryId => staticQueryIds.add(queryId));
-          childData.dynamicQueryIds.forEach(queryId => dynamicQueryIds.add(queryId));
-        });
-        queryMatches = node.queryMatches;
-      } else if (node instanceof this.compilerModule.EmbeddedTemplateAst) {
-        this.findStaticQueryIds(node.children, result);
-        node.children.forEach((child) => {
-          const childData = result.get(child)!;
-          childData.staticQueryIds.forEach(queryId => dynamicQueryIds.add(queryId));
-          childData.dynamicQueryIds.forEach(queryId => dynamicQueryIds.add(queryId));
-        });
-        queryMatches = node.queryMatches;
-      }
-      if (queryMatches) {
-        queryMatches.forEach((match) => staticQueryIds.add(match.queryId));
-      }
-      dynamicQueryIds.forEach(queryId => staticQueryIds.delete(queryId));
-      result.set(node, {staticQueryIds, dynamicQueryIds});
-    });
-    return result;
-  }
 }
 
 interface StaticAndDynamicQueryIds {
   staticQueryIds: Set<number>;
   dynamicQueryIds: Set<number>;
+}
+
+/** Figures out which queries are static and which ones are dynamic. */
+function findStaticQueryIds(
+    nodes: TemplateAst[], result = new Map<TemplateAst, StaticAndDynamicQueryIds>()):
+    Map<TemplateAst, StaticAndDynamicQueryIds> {
+  nodes.forEach((node) => {
+    const staticQueryIds = new Set<number>();
+    const dynamicQueryIds = new Set<number>();
+    let queryMatches: QueryMatch[] = undefined!;
+    if (node instanceof ElementAst) {
+      findStaticQueryIds(node.children, result);
+      node.children.forEach((child) => {
+        const childData = result.get(child)!;
+        childData.staticQueryIds.forEach(queryId => staticQueryIds.add(queryId));
+        childData.dynamicQueryIds.forEach(queryId => dynamicQueryIds.add(queryId));
+      });
+      queryMatches = node.queryMatches;
+    } else if (node instanceof EmbeddedTemplateAst) {
+      findStaticQueryIds(node.children, result);
+      node.children.forEach((child) => {
+        const childData = result.get(child)!;
+        childData.staticQueryIds.forEach(queryId => dynamicQueryIds.add(queryId));
+        childData.dynamicQueryIds.forEach(queryId => dynamicQueryIds.add(queryId));
+      });
+      queryMatches = node.queryMatches;
+    }
+    if (queryMatches) {
+      queryMatches.forEach((match) => staticQueryIds.add(match.queryId));
+    }
+    dynamicQueryIds.forEach(queryId => staticQueryIds.delete(queryId));
+    result.set(node, {staticQueryIds, dynamicQueryIds});
+  });
+  return result;
 }
 
 /** Splits queries into static and dynamic. */

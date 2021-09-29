@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import type {AotCompiler} from '@angular/compiler';
+import {AotCompiler} from '@angular/compiler';
 import {CompilerHost, createProgram, readConfiguration} from '@angular/compiler-cli';
 import * as ts from 'typescript';
 

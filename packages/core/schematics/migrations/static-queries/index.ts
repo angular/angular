@@ -11,7 +11,6 @@ import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit
 import {relative} from 'path';
 import * as ts from 'typescript';
 
-import {loadEsmModule} from '../../utils/load_esm';
 import {NgComponentTemplateVisitor} from '../../utils/ng_component_template';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
@@ -70,21 +69,9 @@ async function runMigration(tree: Tree, context: SchematicContext) {
     }
   }
 
-  let compilerModule;
-  try {
-    // Load ESM `@angular/compiler` using the TypeScript dynamic import workaround.
-    // Once TypeScript provides support for keeping the dynamic import this workaround can be
-    // changed to a direct dynamic import.
-    compilerModule = await loadEsmModule<typeof import('@angular/compiler')>('@angular/compiler');
-  } catch (e) {
-    throw new SchematicsException(
-        `Unable to load the '@angular/compiler' package. Details: ${e.message}`);
-  }
-
   if (buildProjects.size) {
     for (let project of Array.from(buildProjects.values())) {
-      failures.push(
-          ...await runStaticQueryMigration(tree, project, strategy, logger, compilerModule));
+      failures.push(...await runStaticQueryMigration(tree, project, strategy, logger));
     }
   }
 
@@ -93,8 +80,8 @@ async function runMigration(tree: Tree, context: SchematicContext) {
   for (const tsconfigPath of testPaths) {
     const project = await analyzeProject(tree, tsconfigPath, basePath, analyzedFiles, logger);
     if (project) {
-      failures.push(...await runStaticQueryMigration(
-          tree, project, SELECTED_STRATEGY.TESTS, logger, compilerModule));
+      failures.push(
+          ...await runStaticQueryMigration(tree, project, SELECTED_STRATEGY.TESTS, logger));
     }
   }
 
@@ -163,8 +150,7 @@ function analyzeProject(
  */
 async function runStaticQueryMigration(
     tree: Tree, project: AnalyzedProject, selectedStrategy: SELECTED_STRATEGY,
-    logger: logging.LoggerApi,
-    compilerModule: typeof import('@angular/compiler')): Promise<string[]> {
+    logger: logging.LoggerApi): Promise<string[]> {
   const {sourceFiles, typeChecker, host, queryVisitor, tsconfigPath, basePath} = project;
   const printer = ts.createPrinter();
   const failureMessages: string[] = [];
@@ -191,11 +177,11 @@ async function runStaticQueryMigration(
 
   let strategy: TimingStrategy;
   if (selectedStrategy === SELECTED_STRATEGY.USAGE) {
-    strategy = new QueryUsageStrategy(classMetadata, typeChecker, compilerModule);
+    strategy = new QueryUsageStrategy(classMetadata, typeChecker);
   } else if (selectedStrategy === SELECTED_STRATEGY.TESTS) {
     strategy = new QueryTestStrategy();
   } else {
-    strategy = new QueryTemplateStrategy(tsconfigPath, classMetadata, host, compilerModule);
+    strategy = new QueryTemplateStrategy(tsconfigPath, classMetadata, host);
   }
 
   try {

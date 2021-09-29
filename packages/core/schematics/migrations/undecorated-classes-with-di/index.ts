@@ -8,14 +8,13 @@
 
 import {logging} from '@angular-devkit/core';
 import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
-import type {AotCompiler} from '@angular/compiler';
+import {AotCompiler} from '@angular/compiler';
 import {Diagnostic as NgDiagnostic} from '@angular/compiler-cli';
 import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {relative} from 'path';
 import * as ts from 'typescript';
 
-import {loadEsmModule} from '../../utils/load_esm';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {canMigrateFile, createMigrationCompilerHost} from '../../utils/typescript/compiler_host';
 
@@ -45,20 +44,8 @@ export default function(): Rule {
           'undecorated base classes which use DI.');
     }
 
-    let compilerModule;
-    try {
-      // Load ESM `@angular/compiler` using the TypeScript dynamic import workaround.
-      // Once TypeScript provides support for keeping the dynamic import this workaround can be
-      // changed to a direct dynamic import.
-      compilerModule = await loadEsmModule<typeof import('@angular/compiler')>('@angular/compiler');
-    } catch (e) {
-      throw new SchematicsException(
-          `Unable to load the '@angular/compiler' package. Details: ${e.message}`);
-    }
-
     for (const tsconfigPath of buildPaths) {
-      const result =
-          runUndecoratedClassesMigration(tree, tsconfigPath, basePath, ctx.logger, compilerModule);
+      const result = runUndecoratedClassesMigration(tree, tsconfigPath, basePath, ctx.logger);
       failures.push(...result.failures);
       programError = programError || !!result.programError;
     }
@@ -83,9 +70,8 @@ export default function(): Rule {
 }
 
 function runUndecoratedClassesMigration(
-    tree: Tree, tsconfigPath: string, basePath: string, logger: logging.LoggerApi,
-    compilerModule: typeof import('@angular/compiler')):
-    {failures: string[], programError?: boolean} {
+    tree: Tree, tsconfigPath: string, basePath: string,
+    logger: logging.LoggerApi): {failures: string[], programError?: boolean} {
   const failures: string[] = [];
   const programData = gracefullyCreateProgram(tree, basePath, tsconfigPath, logger);
 
@@ -106,8 +92,8 @@ function runUndecoratedClassesMigration(
   sourceFiles.forEach(sourceFile => declarationCollector.visitNode(sourceFile));
 
   const {decoratedDirectives, decoratedProviders, undecoratedDeclarations} = declarationCollector;
-  const transform = new UndecoratedClassesTransform(
-      typeChecker, compiler, partialEvaluator, getUpdateRecorder, compilerModule);
+  const transform =
+      new UndecoratedClassesTransform(typeChecker, compiler, partialEvaluator, getUpdateRecorder);
   const updateRecorders = new Map<ts.SourceFile, UpdateRecorder>();
 
   // Run the migrations for decorated providers and both decorated and undecorated

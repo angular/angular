@@ -6,7 +6,6 @@ ts_library(
     tsconfig = "//packages/core/schematics:tsconfig.json",
     visibility = ["//packages/core/schematics/test/google3:__pkg__"],
     deps = [
-        "//packages/compiler",
         "//packages/core/schematics/migrations/activated-route-snapshot-fragment",
         "//packages/core/schematics/migrations/can-activate-with-redirect-to",
         "//packages/core/schematics/migrations/dynamic-queries",

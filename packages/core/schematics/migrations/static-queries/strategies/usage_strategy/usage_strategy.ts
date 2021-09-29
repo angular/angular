@@ -35,9 +35,7 @@ const STATIC_QUERY_LIFECYCLE_HOOKS = {
  * this strategy here: https://hackmd.io/s/Hymvc2OKE
  */
 export class QueryUsageStrategy implements TimingStrategy {
-  constructor(
-      private classMetadata: ClassMetadataMap, private typeChecker: ts.TypeChecker,
-      private compilerModule: typeof import('@angular/compiler')) {}
+  constructor(private classMetadata: ClassMetadataMap, private typeChecker: ts.TypeChecker) {}
 
   setup() {}
 
@@ -103,9 +101,8 @@ export class QueryUsageStrategy implements TimingStrategy {
     // can be marked as static.
     if (classMetadata.template && hasPropertyNameText(query.property!.name)) {
       const template = classMetadata.template;
-      const parsedHtml =
-          parseHtmlGracefully(template.content, template.filePath, this.compilerModule);
-      const htmlVisitor = new TemplateUsageVisitor(query.property!.name.text, this.compilerModule);
+      const parsedHtml = parseHtmlGracefully(template.content, template.filePath);
+      const htmlVisitor = new TemplateUsageVisitor(query.property!.name.text);
 
       if (parsedHtml && htmlVisitor.isQueryUsedStatically(parsedHtml)) {
         return ResolvedUsage.SYNCHRONOUS;

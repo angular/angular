@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import type {ParseSourceSpan, PropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstTemplate} from '@angular/compiler';
+import {ImplicitReceiver, ParseSourceSpan, PropertyRead, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstTemplate} from '@angular/compiler';
 import {TemplateAstVisitor} from '../../../../utils/template_ast_visitor';
 
 /**
@@ -15,33 +15,10 @@ import {TemplateAstVisitor} from '../../../../utils/template_ast_visitor';
  */
 export class TemplateUsageVisitor extends TemplateAstVisitor {
   private hasQueryTemplateReference = false;
-  private expressionAstVisitor;
+  private expressionAstVisitor = new ExpressionAstVisitor(this.queryPropertyName);
 
-  constructor(
-      public queryPropertyName: string, compilerModule: typeof import('@angular/compiler')) {
-    super(compilerModule);
-
-    // AST visitor that checks if the given expression contains property reads that
-    // refer to the specified query property name.
-    // This class must be defined within the template visitor due to the need to extend from a class
-    // value found within `@angular/compiler` which is dynamically imported and provided to the
-    // visitor.
-    this.expressionAstVisitor = new (class extends compilerModule.RecursiveAstVisitor {
-      hasQueryPropertyRead = false;
-
-
-      override visitPropertyRead(node: PropertyRead, span: ParseSourceSpan): any {
-        // The receiver of the property read needs to be "implicit" as queries are accessed
-        // from the component instance and not from other objects.
-        if (node.receiver instanceof compilerModule.ImplicitReceiver &&
-            node.name === queryPropertyName) {
-          this.hasQueryPropertyRead = true;
-          return;
-        }
-
-        super.visitPropertyRead(node, span);
-      }
-    })();
+  constructor(public queryPropertyName: string) {
+    super();
   }
 
   /** Checks whether the given query is statically accessed within the specified HTML nodes. */
@@ -90,5 +67,28 @@ export class TemplateUsageVisitor extends TemplateAstVisitor {
 
   override visitBoundEvent(node: TmplAstBoundEvent) {
     node.handler.visit(this.expressionAstVisitor, node.handlerSpan);
+  }
+}
+
+/**
+ * AST visitor that checks if the given expression contains property reads that
+ * refer to the specified query property name.
+ */
+class ExpressionAstVisitor extends RecursiveAstVisitor {
+  hasQueryPropertyRead = false;
+
+  constructor(private queryPropertyName: string) {
+    super();
+  }
+
+  override visitPropertyRead(node: PropertyRead, span: ParseSourceSpan): any {
+    // The receiver of the property read needs to be "implicit" as queries are accessed
+    // from the component instance and not from other objects.
+    if (node.receiver instanceof ImplicitReceiver && node.name === this.queryPropertyName) {
+      this.hasQueryPropertyRead = true;
+      return;
+    }
+
+    super.visitPropertyRead(node, span);
   }
 }

@@ -8,9 +8,8 @@
 
 import {logging, normalize} from '@angular-devkit/core';
 import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
-import type {TmplAstBoundAttribute} from '@angular/compiler';
+import {EmptyExpr, TmplAstBoundAttribute} from '@angular/compiler';
 import {relative} from 'path';
-import {loadEsmModule} from '../../utils/load_esm';
 
 import {NgComponentTemplateVisitor, ResolvedTemplate} from '../../utils/ng_component_template';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
@@ -45,20 +44,8 @@ export default function(): Rule {
           'Could not find any tsconfig file. Cannot check templates for empty routerLinks.');
     }
 
-    let compilerModule;
-    try {
-      // Load ESM `@angular/compiler` using the TypeScript dynamic import workaround.
-      // Once TypeScript provides support for keeping the dynamic import this workaround can be
-      // changed to a direct dynamic import.
-      compilerModule = await loadEsmModule<typeof import('@angular/compiler')>('@angular/compiler');
-    } catch (e) {
-      throw new SchematicsException(
-          `Unable to load the '@angular/compiler' package. Details: ${e.message}`);
-    }
-
     for (const tsconfigPath of [...buildPaths, ...testPaths]) {
-      runEmptyRouterLinkExpressionMigration(
-          tree, tsconfigPath, basePath, context.logger, compilerModule);
+      runEmptyRouterLinkExpressionMigration(tree, tsconfigPath, basePath, context.logger);
     }
   };
 }
@@ -68,8 +55,7 @@ export default function(): Rule {
  * which templates received updates.
  */
 function runEmptyRouterLinkExpressionMigration(
-    tree: Tree, tsconfigPath: string, basePath: string, logger: Logger,
-    compilerModule: typeof import('@angular/compiler')) {
+    tree: Tree, tsconfigPath: string, basePath: string, logger: Logger) {
   const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
   const typeChecker = program.getTypeChecker();
   const templateVisitor = new NgComponentTemplateVisitor(typeChecker);
@@ -80,15 +66,13 @@ function runEmptyRouterLinkExpressionMigration(
   sourceFiles.forEach(sourceFile => templateVisitor.visitNode(sourceFile));
 
   const {resolvedTemplates} = templateVisitor;
-  fixEmptyRouterlinks(resolvedTemplates, tree, logger, compilerModule);
+  fixEmptyRouterlinks(resolvedTemplates, tree, logger);
 }
 
-function fixEmptyRouterlinks(
-    resolvedTemplates: ResolvedTemplate[], tree: Tree, logger: Logger,
-    compilerModule: typeof import('@angular/compiler')) {
+function fixEmptyRouterlinks(resolvedTemplates: ResolvedTemplate[], tree: Tree, logger: Logger) {
   const basePath = process.cwd();
   const collectedFixes: string[] = [];
-  const fixesByFile = getFixesByFile(resolvedTemplates, compilerModule);
+  const fixesByFile = getFixesByFile(resolvedTemplates);
 
   for (const [absFilePath, templateFixes] of fixesByFile) {
     const treeFilePath = relative(normalize(basePath), normalize(absFilePath));
@@ -132,12 +116,10 @@ function fixEmptyRouterlinks(
 /**
  * Returns fixes for nodes in templates which contain empty routerLink assignments, grouped by file.
  */
-function getFixesByFile(
-    templates: ResolvedTemplate[],
-    compilerModule: typeof import('@angular/compiler')): Map<string, FixedTemplate[]> {
+function getFixesByFile(templates: ResolvedTemplate[]): Map<string, FixedTemplate[]> {
   const fixesByFile = new Map<string, FixedTemplate[]>();
   for (const template of templates) {
-    const templateFix = fixEmptyRouterlinksInTemplate(template, compilerModule);
+    const templateFix = fixEmptyRouterlinksInTemplate(template);
     if (templateFix === null) {
       continue;
     }
@@ -159,10 +141,8 @@ function getFixesByFile(
   return fixesByFile;
 }
 
-function fixEmptyRouterlinksInTemplate(
-    template: ResolvedTemplate, compilerModule: typeof import('@angular/compiler')): FixedTemplate|
-    null {
-  const emptyRouterlinkExpressions = analyzeResolvedTemplate(template, compilerModule);
+function fixEmptyRouterlinksInTemplate(template: ResolvedTemplate): FixedTemplate|null {
+  const emptyRouterlinkExpressions = analyzeResolvedTemplate(template);
 
   if (!emptyRouterlinkExpressions || emptyRouterlinkExpressions.length === 0) {
     return null;
