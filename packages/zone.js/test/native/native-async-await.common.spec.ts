@@ -125,7 +125,7 @@ const generatorTest3 = function*(options: {a: number; throwError: boolean} = {
   try {
     a = yield increaseAsync(a, options.throwError);
   } catch (error) {
-    logs.push(`catch error ${error.message}`);
+    logs.push(`catch error ${(error as Error).message}`);
   }
   logs.push(`after await2 ${Zone.current.name} ${a}`);
   a = yield increaseAsync(a);
