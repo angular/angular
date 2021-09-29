@@ -5131,7 +5131,7 @@ describe('Integration', () => {
          advance(fixture);
          expect(recordedError.message)
              .toEqual(
-                 'The usage of `loadChildren` with a module path string is no longer available. Find more at https://v12.angular.io/api/router/LoadChildrenCallback to learn about the new approach.');
+                 'The usage of `loadChildren` with a module path string is no longer supported. Find more at https://v12.angular.io/api/router/LoadChildrenCallback to learn about the new approach.');
        }));
 
     it('should combine routes from multiple modules into a single configuration',

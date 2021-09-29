@@ -32,9 +32,9 @@ export class UnavailableNgModuleFactoryLoader implements NgModuleFactoryLoader {
   load(path: string): Promise<NgModuleFactory<any>> {
     if (typeof ngDevMode !== 'undefined' && ngDevMode) {
       return Promise.reject(new Error(
-          'The usage of `loadChildren` with a module path string is no longer available. Find more at https://v12.angular.io/api/router/LoadChildrenCallback to learn about the new approach.'));
+          'The usage of `loadChildren` with a module path string is no longer supported. Find more at https://v12.angular.io/api/router/LoadChildrenCallback to learn about the new approach.'));
     } else {
-      return Promise.reject(new Error('string based `loadChildren` is unavailable'));
+      return Promise.reject(new Error('`loadChildren` using a string is no longer supported'));
     }
   }
 }
