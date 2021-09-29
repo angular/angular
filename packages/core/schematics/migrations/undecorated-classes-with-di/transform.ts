@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompiler, AotCompilerHost, CompileMetadataResolver, StaticSymbol, StaticSymbolResolver, SummaryResolver} from '@angular/compiler';
+import type {AotCompiler, AotCompilerHost, CompileMetadataResolver, StaticSymbol, StaticSymbolResolver, SummaryResolver} from '@angular/compiler';
 import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 import * as ts from 'typescript';
@@ -58,7 +58,8 @@ export class UndecoratedClassesTransform {
   constructor(
       private typeChecker: ts.TypeChecker, private compiler: AotCompiler,
       private evaluator: PartialEvaluator,
-      private getUpdateRecorder: (sf: ts.SourceFile) => UpdateRecorder) {
+      private getUpdateRecorder: (sf: ts.SourceFile) => UpdateRecorder,
+      private compilerModule: typeof import('@angular/compiler')) {
     this.symbolResolver = compiler['_symbolResolver'];
     this.compilerHost = compiler['_host'];
     this.metadataResolver = compiler['_metadataResolver'];
@@ -328,7 +329,7 @@ export class UndecoratedClassesTransform {
       directiveMetadata: DeclarationMetadata, targetSourceFile: ts.SourceFile): ts.Decorator|null {
     try {
       const decoratorExpr = convertDirectiveMetadataToExpression(
-          directiveMetadata.metadata,
+          this.compilerModule, directiveMetadata.metadata,
           staticSymbol =>
               this.compilerHost
                   .fileNameToModuleName(staticSymbol.filePath, targetSourceFile.fileName)

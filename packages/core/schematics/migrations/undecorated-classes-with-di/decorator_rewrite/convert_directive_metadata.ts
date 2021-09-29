@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StaticSymbol} from '@angular/compiler';
+import type {StaticSymbol} from '@angular/compiler';
 import * as ts from 'typescript';
 
 /** Error that will be thrown if an unexpected value needs to be converted. */
@@ -17,7 +17,8 @@ export class UnexpectedMetadataValueError extends Error {}
  * if metadata cannot be cleanly converted.
  */
 export function convertDirectiveMetadataToExpression(
-    metadata: any, resolveSymbolImport: (symbol: StaticSymbol) => string | null,
+    compilerModule: typeof import('@angular/compiler'), metadata: any,
+    resolveSymbolImport: (symbol: StaticSymbol) => string | null,
     createImport: (moduleName: string, name: string) => ts.Expression,
     convertProperty?: (key: string, value: any) => ts.Expression | null): ts.Expression {
   if (typeof metadata === 'string') {
@@ -25,7 +26,7 @@ export function convertDirectiveMetadataToExpression(
   } else if (Array.isArray(metadata)) {
     return ts.createArrayLiteral(metadata.map(
         el => convertDirectiveMetadataToExpression(
-            el, resolveSymbolImport, createImport, convertProperty)));
+            compilerModule, el, resolveSymbolImport, createImport, convertProperty)));
   } else if (typeof metadata === 'number') {
     return ts.createNumericLiteral(metadata.toString());
   } else if (typeof metadata === 'boolean') {
@@ -38,7 +39,7 @@ export function convertDirectiveMetadataToExpression(
     // In case there is a static symbol object part of the metadata, try to resolve
     // the import expression of the symbol. If no import path could be resolved, an
     // error will be thrown as the symbol cannot be converted into TypeScript AST.
-    if (metadata instanceof StaticSymbol) {
+    if (metadata instanceof compilerModule.StaticSymbol) {
       const resolvedImport = resolveSymbolImport(metadata);
       if (resolvedImport === null) {
         throw new UnexpectedMetadataValueError();
@@ -63,7 +64,7 @@ export function convertDirectiveMetadataToExpression(
       // the resolved metadata value into a TypeScript expression.
       if (propertyValue === null) {
         propertyValue = convertDirectiveMetadataToExpression(
-            metadataValue, resolveSymbolImport, createImport, convertProperty);
+            compilerModule, metadataValue, resolveSymbolImport, createImport, convertProperty);
       }
 
       literalProperties.push(ts.createPropertyAssignment(getPropertyName(key), propertyValue));

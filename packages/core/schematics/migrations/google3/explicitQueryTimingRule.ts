@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as compiler from '@angular/compiler';
 import {Replacement, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
 
@@ -49,7 +50,7 @@ export class Rule extends Rules.TypedRule {
     });
 
     const queries = resolvedQueries.get(sourceFile);
-    const usageStrategy = new QueryUsageStrategy(classMetadata, typeChecker);
+    const usageStrategy = new QueryUsageStrategy(classMetadata, typeChecker, compiler);
 
     // No queries detected for the given source file.
     if (!queries) {
