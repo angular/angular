@@ -1,3 +1,24 @@
+<a name="13.0.0-next.7"></a>
+# 13.0.0-next.7 "linen-lemon" (2021-09-29)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6e1f522d6a](https://github.com/angular/components/commit/6e1f522d6a50d6f589d069775bc771b5590bff4c) | fix | **drag-drop:** allow using cdkDragRootElement w/ comment tag ([#23596](https://github.com/angular/components/pull/23596)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f5883db598](https://github.com/angular/components/commit/f5883db5987a5a8d3bb42f4f15bd82f0daed9836) | fix | **badge:** correctly apply badge description ([#23562](https://github.com/angular/components/pull/23562)) |
+| [d13b8ea010](https://github.com/angular/components/commit/d13b8ea0101e711cd05d23efafca4362f03815c6) | fix | **expansion:** fix header border in high contrast mode ([#23613](https://github.com/angular/components/pull/23613)) |
+| [980f6b2b22](https://github.com/angular/components/commit/980f6b2b228ceff49eef7e08b3b5a048c008f91c) | fix | **stepper:** add styling to stepper for high contrast mode ([#23526](https://github.com/angular/components/pull/23526)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c649f7dfca](https://github.com/angular/components/commit/c649f7dfca3df2cd3a47365a2930718dab4a8a09) | fix | **mdc-typography:** better mappings for 2014 to 2018 typography ([#23618](https://github.com/angular/components/pull/23618)) |
+## Special Thanks
+Amy Sorto, Jeremy Elbourn, Marco Marche, Miles Malerba, Ruslan Lekhman and Zach Arend
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="12.2.8"></a>
 # 12.2.8 "plastic-plant" (2021-09-29)
 ### material
