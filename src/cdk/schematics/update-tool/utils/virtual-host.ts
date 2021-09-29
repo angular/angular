@@ -27,7 +27,8 @@ declare module 'typescript' {
         excludes: readonly string[]|undefined, includes: readonly string[]|undefined,
         useCaseSensitiveFileNames: boolean, currentDirectory: string, depth: number|undefined,
         getFileSystemEntries: (path: string) => FileSystemEntries,
-        realpath: (path: string) => string) => string[]);
+        realpath: (path: string) => string,
+        directoryExists: (path: string) => boolean) => string[]);
 }
 
 /**
@@ -64,7 +65,8 @@ export class FileSystemHost implements ts.ParseConfigHost {
     }
     return ts.matchFiles(
         rootDir, extensions, extensions, includes, this.useCaseSensitiveFileNames, '/', depth,
-        p => this._getFileSystemEntries(p), p => this._fileSystem.resolve(p));
+        p => this._getFileSystemEntries(p), p => this._fileSystem.resolve(p),
+        p => this._fileSystem.directoryExists(this._fileSystem.resolve(p)));
   }
 
   private _getFileSystemEntries(path: string): ts.FileSystemEntries {

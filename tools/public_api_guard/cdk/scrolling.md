@@ -279,7 +279,14 @@ export class ViewportRuler implements OnDestroy {
     constructor(_platform: Platform, ngZone: NgZone, document: any);
     change(throttleTime?: number): Observable<Event>;
     protected _document: Document;
-    getViewportRect(): ClientRect;
+    getViewportRect(): {
+        top: number;
+        left: number;
+        bottom: number;
+        right: number;
+        height: number;
+        width: number;
+    };
     getViewportScrollPosition(): ViewportScrollPosition;
     getViewportSize(): Readonly<{
         width: number;

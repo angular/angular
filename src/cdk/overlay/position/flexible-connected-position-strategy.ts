@@ -38,6 +38,9 @@ export type FlexibleConnectedPositionStrategyOrigin = ElementRef | Element | Poi
   height?: number;
 };
 
+/** Equivalent of `ClientRect` without some of the properties we don't care about. */
+type Dimensions = Omit<ClientRect, 'x' | 'y' | 'toJSON'>;
+
 /**
  * A strategy for positioning overlays. Using this strategy, an overlay is given an
  * implicit position relative some origin element. The relative position is defined in terms of
@@ -71,13 +74,13 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   private _positionLocked = false;
 
   /** Cached origin dimensions */
-  private _originRect: ClientRect;
+  private _originRect: Dimensions;
 
   /** Cached overlay dimensions */
-  private _overlayRect: ClientRect;
+  private _overlayRect: Dimensions;
 
   /** Cached viewport dimensions */
-  private _viewportRect: ClientRect;
+  private _viewportRect: Dimensions;
 
   /** Amount of space that must be maintained between the overlay and the edge of the viewport. */
   private _viewportMargin = 0;
@@ -467,7 +470,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   /**
    * Gets the (x, y) coordinate of a connection point on the origin based on a relative position.
    */
-  private _getOriginPoint(originRect: ClientRect, pos: ConnectedPosition): Point {
+  private _getOriginPoint(originRect: Dimensions, pos: ConnectedPosition): Point {
     let x: number;
     if (pos.originX == 'center') {
       // Note: when centering we should always use the `left`
@@ -496,7 +499,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
    */
   private _getOverlayPoint(
       originPoint: Point,
-      overlayRect: ClientRect,
+      overlayRect: Dimensions,
       pos: ConnectedPosition): Point {
 
     // Calculate the (overlayStartX, overlayStartY), the start of the
@@ -525,7 +528,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   }
 
   /** Gets how well an overlay at the given point will fit within the viewport. */
-  private _getOverlayFit(point: Point, rawOverlayRect: ClientRect, viewport: ClientRect,
+  private _getOverlayFit(point: Point, rawOverlayRect: Dimensions, viewport: Dimensions,
     position: ConnectedPosition): OverlayFit {
 
     // Round the overlay rect when comparing against the
@@ -569,7 +572,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
    * @param point The (x, y) coordinates of the overlat at some position.
    * @param viewport The geometry of the viewport.
    */
-  private _canFitWithFlexibleDimensions(fit: OverlayFit, point: Point, viewport: ClientRect) {
+  private _canFitWithFlexibleDimensions(fit: OverlayFit, point: Point, viewport: Dimensions) {
     if (this._hasFlexibleDimensions) {
       const availableHeight = viewport.bottom - point.y;
       const availableWidth = viewport.right - point.x;
@@ -598,7 +601,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
    *     originPoint.
    */
   private _pushOverlayOnScreen(start: Point,
-                               rawOverlayRect: ClientRect,
+                               rawOverlayRect: Dimensions,
                                scrollPosition: ViewportScrollPosition): Point {
     // If the position is locked and we've pushed the overlay already, reuse the previous push
     // amount, rather than pushing it again. If we were to continue pushing, the element would
@@ -1029,7 +1032,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   }
 
   /** Narrows the given viewport rect by the current _viewportMargin. */
-  private _getNarrowedViewportRect(): ClientRect {
+  private _getNarrowedViewportRect(): Dimensions {
     // We recalculate the viewport rect here ourselves, rather than using the ViewportRuler,
     // because we want to use the `clientWidth` and `clientHeight` as the base. The difference
     // being that the client properties don't include the scrollbar, as opposed to `innerWidth`
@@ -1111,7 +1114,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   }
 
   /** Returns the ClientRect of the current origin. */
-  private _getOriginRect(): ClientRect {
+  private _getOriginRect(): Dimensions {
     const origin = this._origin;
 
     if (origin instanceof ElementRef) {
@@ -1165,7 +1168,7 @@ interface FallbackPosition {
   originPoint: Point;
   overlayPoint: Point;
   overlayFit: OverlayFit;
-  overlayRect: ClientRect;
+  overlayRect: Dimensions;
 }
 
 /** Position and size of the overlay sizing wrapper for a specific position. */
@@ -1182,7 +1185,7 @@ interface BoundingBoxRect {
 interface FlexibleFit {
   position: ConnectedPosition;
   origin: Point;
-  overlayRect: ClientRect;
+  overlayRect: Dimensions;
   boundingBoxRect: BoundingBoxRect;
 }
 
@@ -1232,7 +1235,7 @@ function getPixelValue(input: number|string|null|undefined): number|null {
  * deviations in the `ClientRect` returned by the browser (e.g. when zoomed in with a percentage
  * size, see #21350).
  */
-function getRoundedBoundingClientRect(clientRect: ClientRect): ClientRect {
+function getRoundedBoundingClientRect(clientRect: Dimensions): Dimensions {
   return {
     top: Math.floor(clientRect.top),
     right: Math.floor(clientRect.right),

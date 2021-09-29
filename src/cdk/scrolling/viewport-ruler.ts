@@ -89,7 +89,7 @@ export class ViewportRuler implements OnDestroy {
   }
 
   /** Gets a ClientRect for the viewport's bounds. */
-  getViewportRect(): ClientRect {
+  getViewportRect() {
     // Use the document element's bounding rect rather than the window scroll properties
     // (e.g. pageYOffset, scrollY) due to in issue in Chrome and IE where window scroll
     // properties and client coordinates (boundingClientRect, clientX/Y, etc.) are in different

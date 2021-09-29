@@ -713,7 +713,7 @@ export abstract class _MatTooltipBase<T extends _TooltipComponentBase> implement
       }
 
       style.touchAction = 'none';
-      style.webkitTapHighlightColor = 'transparent';
+      (style as any).webkitTapHighlightColor = 'transparent';
     }
   }
 

@@ -21,25 +21,29 @@ import {
   MatEditClose
 } from './lens-directives';
 
-const EXPORTED_DECLARATIONS = [
-  MatPopoverEdit,
-  MatPopoverEditTabOut,
-  MatRowHoverContent,
-  MatEditLens,
-  MatEditRevert,
-  MatEditClose,
-  MatEditOpen
-];
-
 @NgModule({
   imports: [
     CdkPopoverEditModule,
     MatCommonModule,
   ],
   exports: [
-    ...EXPORTED_DECLARATIONS,
+    MatPopoverEdit,
+    MatPopoverEditTabOut,
+    MatRowHoverContent,
+    MatEditLens,
+    MatEditRevert,
+    MatEditClose,
+    MatEditOpen,
     CdkEditable,
   ],
-  declarations: EXPORTED_DECLARATIONS,
+  declarations: [
+    MatPopoverEdit,
+    MatPopoverEditTabOut,
+    MatRowHoverContent,
+    MatEditLens,
+    MatEditRevert,
+    MatEditClose,
+    MatEditOpen
+  ],
 })
 export class MatPopoverEditModule { }
