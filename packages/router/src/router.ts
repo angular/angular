@@ -1360,12 +1360,11 @@ export class Router {
     const browserNavPrecededByRouterNav = isBrowserTriggeredNavigation(source) && lastNavigation &&
         !isBrowserTriggeredNavigation(lastNavigation.source);
     const navToSameUrl = lastNavigation.rawUrl.toString() === rawUrl.toString();
-    const lastNavigationNotFinished =
-        lastNavigation && lastNavigation.id === this.currentNavigation?.id;
+    const lastNavigationInProgress = lastNavigation.id === this.currentNavigation?.id;
     // We consider duplicates as ones that goes to the same URL while the first
     // is still processing.
-    const duplicateNav = navToSameUrl && lastNavigationNotFinished;
-    if (browserNavPrecededByRouterNav && duplicateNav) {
+    const isDuplicateNav = navToSameUrl && lastNavigationInProgress;
+    if (browserNavPrecededByRouterNav && isDuplicateNav) {
       return Promise.resolve(true);  // return value is not used
     }
 
