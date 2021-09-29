@@ -469,17 +469,18 @@ export class TestBedRender3 implements TestBed {
     }
   }
 
-  private shouldRethrowTeardownErrors() {
+  shouldRethrowTeardownErrors() {
     const instanceOptions = this._instanceTeardownOptions;
     const environmentOptions = TestBedRender3._environmentTeardownOptions;
 
     // If the new teardown behavior hasn't been configured, preserve the old behavior.
     if (!instanceOptions && !environmentOptions) {
-      return false;
+      return TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT;
     }
 
     // Otherwise use the configured behavior or default to rethrowing.
-    return instanceOptions?.rethrowErrors ?? environmentOptions?.rethrowErrors ?? true;
+    return instanceOptions?.rethrowErrors ?? environmentOptions?.rethrowErrors ??
+        this.shouldTearDownTestingModule();
   }
 
   shouldTearDownTestingModule(): boolean {
