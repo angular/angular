@@ -14,7 +14,7 @@ import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
             <div class="contributor-image"
                  [style.background-image]="'url('+pictureBase+(person.picture || noPicture)+')'">
                  <div class="contributor-info">
-                     <div *ngIf="person.bio" mat-button class="info-item">
+                     <div *ngIf="person.bio" class="info-item">
                          <button mat-button>
                              View Bio
                          </button>
