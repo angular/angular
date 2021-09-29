@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PropertyWrite} from '@angular/compiler';
+import type {PropertyWrite} from '@angular/compiler';
 import {ResolvedTemplate} from '../../utils/ng_component_template';
 import {parseHtmlGracefully} from '../../utils/parse_html';
 import {HtmlVariableAssignmentVisitor} from './angular/html_variable_assignment_visitor';
@@ -21,15 +21,16 @@ export interface TemplateVariableAssignment {
  * Analyzes a given resolved template by looking for property assignments to local
  * template variables within bound events.
  */
-export function analyzeResolvedTemplate(template: ResolvedTemplate): TemplateVariableAssignment[]|
-    null {
-  const templateNodes = parseHtmlGracefully(template.content, template.filePath);
+export function analyzeResolvedTemplate(
+    template: ResolvedTemplate,
+    compilerModule: typeof import('@angular/compiler')): TemplateVariableAssignment[]|null {
+  const templateNodes = parseHtmlGracefully(template.content, template.filePath, compilerModule);
 
   if (!templateNodes) {
     return null;
   }
 
-  const visitor = new HtmlVariableAssignmentVisitor();
+  const visitor = new HtmlVariableAssignmentVisitor(compilerModule);
 
   // Analyze the Angular Render3 HTML AST and collect all template variable assignments.
   visitor.visitAll(templateNodes);
