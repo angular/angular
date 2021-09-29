@@ -1,3 +1,20 @@
+<a name="12.2.8"></a>
+# 12.2.8 "plastic-plant" (2021-09-29)
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6b7116902b](https://github.com/angular/components/commit/6b7116902b8148805acde968d7d5460a206a9649) | fix | **badge:** correctly apply badge description ([#23562](https://github.com/angular/components/pull/23562)) |
+| [1c26ae8e8c](https://github.com/angular/components/commit/1c26ae8e8cd33ecb67d19e17a7eb3bdc92fee5f2) | fix | **expansion:** fix header border in high contrast mode ([#23613](https://github.com/angular/components/pull/23613)) |
+| [b026b4ed74](https://github.com/angular/components/commit/b026b4ed749fa747d5dcddb3d4b1567806d03af6) | fix | **stepper:** add styling to stepper for high contrast mode ([#23526](https://github.com/angular/components/pull/23526)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5f9c9d4b19](https://github.com/angular/components/commit/5f9c9d4b198400f562a6e775a81602ec3ffe3832) | fix | **mdc-typography:** better mappings for 2014 to 2018 typography ([#23618](https://github.com/angular/components/pull/23618)) |
+## Special Thanks
+Amy Sorto, Jeremy Elbourn, Marco Marche, Miles Malerba and Zach Arend
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.0.0-next.6"></a>
 # 13.0.0-next.6 "wax-window" (2021-09-23)
 ## Breaking Changes
