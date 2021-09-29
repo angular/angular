@@ -94,7 +94,8 @@ export class SwUpdate {
   }
 
   /**
-   * Checks for an update and waits until the new version is ready for activation.
+   * Checks for an update and waits until the new version is downloaded from the server and ready
+   * for activation.
    *
    * @returns a promise that
    * - resolves to `true` if a new version was found and is ready to be activated.
@@ -110,11 +111,13 @@ export class SwUpdate {
   }
 
   /**
-   * Activates an update that is ready for activation.
+   * Updates the current client (i.e. browser tab) to the latest version that is ready for
+   * activation.
    *
    * @returns a promise that
    *  - resolves to `true` if an update was activated successfully
-   *  - resolves to `false` if no updated was ready for activation
+   *  - resolves to `false` if no update was available (for example, the client was already on the
+   * latest version).
    *  - rejects if any error occurs
    */
   activateUpdate(): Promise<boolean> {
