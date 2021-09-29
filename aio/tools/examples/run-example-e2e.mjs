@@ -311,11 +311,10 @@ function runE2eTestsCLI(appDir, outputFile, bufferOutput, port) {
 function reportStatus(status, outputFile) {
   let log = [''];
 
-  log.push('Suites ignored due to legacy guides:');
-  IGNORED_EXAMPLES.filter(example => !fixmeIvyExamples.find(ex => ex.startsWith(example)))
-      .forEach(function(val) {
-        log.push('  ' + val);
-      });
+  log.push('Suites ignored:');
+  IGNORED_EXAMPLES.forEach(function(val) {
+    log.push('  ' + val);
+  });
 
   log.push('');
   log.push('Suites passed:');
