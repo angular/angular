@@ -25,7 +25,15 @@ const CLI_SPEC_FILENAME = 'e2e/src/app.e2e-spec.ts';
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
 const DEFAULT_CLI_EXAMPLE_PORT = 4200;
 const DEFAULT_CLI_SPECS_CONCURRENCY = 1;
-const IGNORED_EXAMPLES = [];
+const IGNORED_EXAMPLES = [
+  // All of these `@angular/upgrade` related examples are relying on the SystemJS boilerplate.
+  // As of v13, Angular packages no longer include UMD bundles so these examples are no longer
+  // working. We temporarily disable them until we migrate them to actual CLI apps (if possible).
+  // TODO: re-enable examples once they can run with APF v13 package output.
+  "upgrade-module",
+  "upgrade-phonecat-2-hybrid",
+  "upgrade-phonecat-3-final",
+];
 
 /**
  * Run Protractor End-to-End Tests for Doc Samples
