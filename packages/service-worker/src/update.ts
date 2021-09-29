@@ -42,9 +42,15 @@ export class SwUpdate {
    *
    * The of behavior `available` can be rebuild by filtering for the `VersionReadyEvent`:
    * ```
-   * this.versionUpdates.pipe(
-   *   filter((evt: VersionEvent): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
-   * ).subscribe(...)
+   * import {filter, map} from 'rxjs/operators';
+   * // ...
+   * const updatesAvailable = swUpdate.versionUpdates.pipe(
+   *   filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
+   *   map(evt => ({
+   *     type: 'UPDATE_AVAILABLE',
+   *     current: evt.currentVersion,
+   *     available: evt.latestVersion,
+   *   })));
    * ```
    */
   readonly available: Observable<UpdateAvailableEvent>;
