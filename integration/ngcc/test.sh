@@ -209,7 +209,7 @@ ngcc --formats fesm2015
 assertFailed "Expected 'ngcc --formats fesm2015' to fail (since '--formats' is deprecated)."
 
 # Does it timeout if there is another ngcc process running
-LOCKFILE=node_modules/@angular/compiler-cli/ngcc/__ngcc_lock_file__
+LOCKFILE=node_modules/@angular/compiler-cli/bundles/ngcc/__ngcc_lock_file__
 touch $LOCKFILE
 trap "[[ -f $LOCKFILE ]] && rm $LOCKFILE" EXIT
 ngcc
