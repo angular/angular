@@ -8,7 +8,8 @@ import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
   template: `
     <div [ngClass]="{ 'flipped': person.isFlipped }" class="contributor-card">
 
-        <button class="card-front" (click)="flipCard(person)">
+         <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events -->
+        <div class="card-front" (click)="flipCard(person)">
             <h3>{{person.name}}</h3>
 
             <div class="contributor-image"
@@ -30,7 +31,7 @@ import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
                      </a>
                  </div>
             </div>
-        </button>
+        </div>
 
         <button class="card-back" *ngIf="person.isFlipped" (click)="flipCard(person)">
             <h3>{{person.name}}</h3>
