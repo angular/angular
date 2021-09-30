@@ -106,6 +106,14 @@
     "website": "https://github.com/ayazhafiz",
     "bio": "Ayaz is an undergraduate student with interests in free software."
   },
+  "balramchavan": {
+    "name": "Balram Chavan",
+    "picture": "balram_chavan.jpg",
+    "twitter": "uvbrain",
+    "website": "https://balramchavan.com",
+    "bio": "Balram is a Google Developer Expert in Angular. He enjoys building complex web applications and cloud solutions. He is the author of the book Object Oriented Programming with Angular. He loves to write technical blogs mostly about Angular.",
+    "groups": ["GDE"]
+  },
   "bampakoa": {
     "name": "Aristeidis Bampakos",
     "picture": "aristeidis.jpg",
