@@ -41,6 +41,10 @@
       "types": "./private/migrations.d.ts",
       "default": "./bundles/private/migrations.js"
     },
+    "./private/tooling": {
+      "types": "./private/tooling.d.ts",
+      "default": "./bundles/private/tooling.js"
+    },
     "./ngcc/src/execution/cluster/ngcc_cluster_worker": {
       "default": "./bundles/ngcc/src/execution/cluster/ngcc_cluster_worker.js"
     },
