@@ -90,7 +90,7 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  *
  * - `$implicit: T`: The value of the individual items in the iterable (`ngForOf`).
  * - `ngForOf: NgIterable<T>`: The value of the iterable expression. Useful when the expression is
- * more complex then a property access, for example when using the async pipe (`userStreams |
+ * more complex than a property access, for example when using the async pipe (`userStreams |
  * async`).
  * - `index: number`: The index of the current item in the iterable.
  * - `count: number`: The length of the iterable.
