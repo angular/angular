@@ -7,7 +7,7 @@
  */
 
 // Workaround for: https://github.com/bazelbuild/rules_nodejs/issues/1265
-/// <reference types="googlemaps" />
+/// <reference types="google.maps" />
 
 import {
   Directive,
@@ -108,7 +108,7 @@ export class MapKmlLayer implements OnInit, OnDestroy {
    * See
    * developers.google.com/maps/documentation/javascript/reference/kml#KmlLayer.getDefaultViewport
    */
-  getDefaultViewport(): google.maps.LatLngBounds {
+  getDefaultViewport(): google.maps.LatLngBounds | null {
     this._assertInitialized();
     return this.kmlLayer.getDefaultViewport();
   }
@@ -116,7 +116,7 @@ export class MapKmlLayer implements OnInit, OnDestroy {
   /**
    * See developers.google.com/maps/documentation/javascript/reference/kml#KmlLayer.getMetadata
    */
-  getMetadata(): google.maps.KmlLayerMetadata {
+  getMetadata(): google.maps.KmlLayerMetadata | null {
     this._assertInitialized();
     return this.kmlLayer.getMetadata();
   }

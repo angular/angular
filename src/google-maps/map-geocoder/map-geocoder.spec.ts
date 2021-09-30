@@ -33,12 +33,13 @@ describe('MapGeocoder', () => {
 
   it('calls geocode on inputs', () => {
     const results: google.maps.GeocoderResult[] = [];
-    const status = 'OK';
-    geocoderSpy.geocode.and.callFake((_: google.maps.GeocoderRequest, callback: Function) => {
-      callback(results, status);
+    const status = 'OK' as google.maps.GeocoderStatus;
+    geocoderSpy.geocode.and.callFake((_request, callback) => {
+      callback?.(results, status);
+      return Promise.resolve({results});
     });
-    const request: google.maps.DirectionsRequest = {};
-    geocoder.geocode(request).subscribe(response => {
+
+    geocoder.geocode({region: 'Europe'}).subscribe(response => {
       expect(response).toEqual({results, status} as MapGeocoderResponse);
     });
   });

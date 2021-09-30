@@ -7,7 +7,7 @@
  */
 
 // Workaround for: https://github.com/bazelbuild/rules_nodejs/issues/1265
-/// <reference types="googlemaps" />
+/// <reference types="google.maps" />
 
 import {
   ChangeDetectionStrategy,
@@ -370,7 +370,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.getCenter
    */
-  getCenter(): google.maps.LatLng {
+  getCenter(): google.maps.LatLng | undefined {
     this._assertInitialized();
     return this.googleMap.getCenter();
   }
@@ -379,7 +379,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.getClickableIcons
    */
-  getClickableIcons(): boolean {
+  getClickableIcons(): boolean | undefined {
     this._assertInitialized();
     return this.googleMap.getClickableIcons();
   }
@@ -388,7 +388,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.getHeading
    */
-  getHeading(): number {
+  getHeading(): number | undefined {
     this._assertInitialized();
     return this.googleMap.getHeading();
   }
@@ -397,7 +397,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.getMapTypeId
    */
-  getMapTypeId(): google.maps.MapTypeId|string {
+  getMapTypeId(): google.maps.MapTypeId | string | undefined {
     this._assertInitialized();
     return this.googleMap.getMapTypeId();
   }
@@ -406,9 +406,9 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.getProjection
    */
-  getProjection(): google.maps.Projection|null {
+  getProjection(): google.maps.Projection | null {
     this._assertInitialized();
-    return this.googleMap.getProjection();
+    return this.googleMap.getProjection() || null;
   }
 
   /**
@@ -424,7 +424,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.getTilt
    */
-  getTilt(): number {
+  getTilt(): number | undefined {
     this._assertInitialized();
     return this.googleMap.getTilt();
   }
@@ -433,7 +433,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.getZoom
    */
-  getZoom(): number {
+  getZoom(): number | undefined {
     this._assertInitialized();
     return this.googleMap.getZoom();
   }

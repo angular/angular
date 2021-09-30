@@ -7,7 +7,7 @@
  */
 
 // Workaround for: https://github.com/bazelbuild/rules_nodejs/issues/1265
-/// <reference types="googlemaps" />
+/// <reference types="google.maps" />
 
 import {Directive, Input, NgZone, OnDestroy, OnInit, Output} from '@angular/core';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
@@ -129,7 +129,7 @@ export class MapGroundOverlay implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/image-overlay
    * #GroundOverlay.getBounds
    */
-  getBounds(): google.maps.LatLngBounds {
+  getBounds(): google.maps.LatLngBounds | null {
     this._assertInitialized();
     return this.groundOverlay.getBounds();
   }

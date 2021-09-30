@@ -4,7 +4,7 @@
 
 ```ts
 
-/// <reference types="googlemaps" />
+/// <reference types="google.maps" />
 
 import { AfterContentInit } from '@angular/core';
 import { ElementRef } from '@angular/core';
@@ -47,14 +47,14 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
     get data(): google.maps.Data;
     fitBounds(bounds: google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral, padding?: number | google.maps.Padding): void;
     getBounds(): google.maps.LatLngBounds | null;
-    getCenter(): google.maps.LatLng;
-    getClickableIcons(): boolean;
-    getHeading(): number;
-    getMapTypeId(): google.maps.MapTypeId | string;
+    getCenter(): google.maps.LatLng | undefined;
+    getClickableIcons(): boolean | undefined;
+    getHeading(): number | undefined;
+    getMapTypeId(): google.maps.MapTypeId | string | undefined;
     getProjection(): google.maps.Projection | null;
     getStreetView(): google.maps.StreetViewPanorama;
-    getTilt(): number;
-    getZoom(): number;
+    getTilt(): number | undefined;
+    getZoom(): number | undefined;
     googleMap?: google.maps.Map;
     readonly headingChanged: Observable<void>;
     height: string | number | null;
@@ -185,9 +185,9 @@ export class MapCircle implements OnInit, OnDestroy {
     // (undocumented)
     readonly circleRightclick: Observable<google.maps.MapMouseEvent>;
     // (undocumented)
-    getBounds(): google.maps.LatLngBounds;
+    getBounds(): google.maps.LatLngBounds | null;
     // (undocumented)
-    getCenter(): google.maps.LatLng;
+    getCenter(): google.maps.LatLng | null;
     // (undocumented)
     getDraggable(): boolean;
     // (undocumented)
@@ -218,8 +218,8 @@ export class MapDirectionsRenderer implements OnInit, OnChanges, OnDestroy {
     set directions(directions: google.maps.DirectionsResult);
     readonly directionsChanged: Observable<void>;
     directionsRenderer?: google.maps.DirectionsRenderer;
-    getDirections(): google.maps.DirectionsResult;
-    getPanel(): Node;
+    getDirections(): google.maps.DirectionsResult | null;
+    getPanel(): Node | null;
     getRouteIndex(): number;
     // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
@@ -276,7 +276,7 @@ export class MapGroundOverlay implements OnInit, OnDestroy {
     get bounds(): google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral;
     set bounds(bounds: google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral);
     clickable: boolean;
-    getBounds(): google.maps.LatLngBounds;
+    getBounds(): google.maps.LatLngBounds | null;
     getOpacity(): number;
     getUrl(): string;
     groundOverlay?: google.maps.GroundOverlay;
@@ -320,7 +320,7 @@ export class MapInfoWindow implements OnInit, OnDestroy {
     readonly closeclick: Observable<void>;
     readonly contentChanged: Observable<void>;
     readonly domready: Observable<void>;
-    getContent(): string | Node;
+    getContent(): string | Node | null;
     getPosition(): google.maps.LatLng | null;
     getZIndex(): number;
     infoWindow?: google.maps.InfoWindow;
@@ -345,8 +345,8 @@ export class MapInfoWindow implements OnInit, OnDestroy {
 export class MapKmlLayer implements OnInit, OnDestroy {
     constructor(_map: GoogleMap, _ngZone: NgZone);
     readonly defaultviewportChanged: Observable<void>;
-    getDefaultViewport(): google.maps.LatLngBounds;
-    getMetadata(): google.maps.KmlLayerMetadata;
+    getDefaultViewport(): google.maps.LatLngBounds | null;
+    getMetadata(): google.maps.KmlLayerMetadata | null;
     getStatus(): google.maps.KmlLayerStatus;
     getUrl(): string;
     getZIndex(): number;
@@ -598,7 +598,7 @@ export class MapRectangle implements OnInit, OnDestroy {
     // (undocumented)
     set bounds(bounds: google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral);
     readonly boundsChanged: Observable<void>;
-    getBounds(): google.maps.LatLngBounds;
+    getBounds(): google.maps.LatLngBounds | null;
     getDraggable(): boolean;
     getEditable(): boolean;
     getVisible(): boolean;

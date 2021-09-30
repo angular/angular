@@ -58,7 +58,7 @@
     "@angular/core": "13.0.0-next.8",
     "@angular/forms": "13.0.0-next.8",
     "@angular/platform-browser": "13.0.0-next.8",
-    "@types/googlemaps": "^3.43.1",
+    "@types/google.maps": "^3.45.6",
     "@types/youtube": "^0.0.42",
     "core-js-bundle": "^3.8.2",
     "material-components-web": "13.0.0-canary.860ad06a1.0",

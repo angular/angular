@@ -7,7 +7,7 @@
  */
 
 // Workaround for: https://github.com/bazelbuild/rules_nodejs/issues/1265
-/// <reference types="googlemaps" />
+/// <reference types="google.maps" />
 
 import {
   Directive,
@@ -145,9 +145,9 @@ export class MapInfoWindow implements OnInit, OnDestroy {
    * See
    * developers.google.com/maps/documentation/javascript/reference/info-window#InfoWindow.getContent
    */
-  getContent(): string|Node {
+  getContent(): string | Node | null {
     this._assertInitialized();
-    return this.infoWindow.getContent();
+    return this.infoWindow.getContent() || null;
   }
 
   /**
@@ -157,7 +157,7 @@ export class MapInfoWindow implements OnInit, OnDestroy {
    */
   getPosition(): google.maps.LatLng|null {
     this._assertInitialized();
-    return this.infoWindow.getPosition();
+    return this.infoWindow.getPosition() || null;
   }
 
   /**

@@ -7,7 +7,7 @@
  */
 
 // Workaround for: https://github.com/bazelbuild/rules_nodejs/issues/1265
-/// <reference types="googlemaps" />
+/// <reference types="google.maps" />
 
 import {
   Directive,
@@ -106,7 +106,7 @@ export class MapDirectionsRenderer implements OnInit, OnChanges, OnDestroy {
    * See developers.google.com/maps/documentation/javascript/reference/directions
    * #DirectionsRenderer.getDirections
    */
-  getDirections(): google.maps.DirectionsResult {
+  getDirections(): google.maps.DirectionsResult | null {
     this._assertInitialized();
     return this.directionsRenderer.getDirections();
   }
@@ -115,7 +115,7 @@ export class MapDirectionsRenderer implements OnInit, OnChanges, OnDestroy {
    * See developers.google.com/maps/documentation/javascript/reference/directions
    * #DirectionsRenderer.getPanel
    */
-  getPanel(): Node {
+  getPanel(): Node | null {
     this._assertInitialized();
     return this.directionsRenderer.getPanel();
   }

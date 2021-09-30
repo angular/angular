@@ -7,7 +7,7 @@
  */
 
 // Workaround for: https://github.com/bazelbuild/rules_nodejs/issues/1265
-/// <reference types="googlemaps" />
+/// <reference types="google.maps" />
 
 import {Injectable, NgZone} from '@angular/core';
 import {Observable} from 'rxjs';
@@ -40,7 +40,7 @@ export class MapGeocoder {
 
       this._geocoder.geocode(request, (results, status) => {
         this._ngZone.run(() => {
-          observer.next({results, status});
+          observer.next({results: results || [], status});
           observer.complete();
         });
       });

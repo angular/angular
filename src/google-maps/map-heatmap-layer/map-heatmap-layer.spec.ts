@@ -162,5 +162,5 @@ describe('MapHeatmapLayer', () => {
 class TestApp {
   @ViewChild(MapHeatmapLayer) heatmap: MapHeatmapLayer;
   options?: Partial<google.maps.visualization.HeatmapLayerOptions>;
-  data?: HeatmapData;
+  data?: HeatmapData|null;
 }

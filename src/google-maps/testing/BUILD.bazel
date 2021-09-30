@@ -8,7 +8,7 @@ ts_library(
     srcs = glob(["**/*.ts"]),
     deps = [
         "//src/google-maps",
-        "@npm//@types/googlemaps",
+        "@npm//@types/google.maps",
         "@npm//@types/jasmine",
     ],
 )

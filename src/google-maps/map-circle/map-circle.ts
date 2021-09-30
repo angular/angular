@@ -7,7 +7,7 @@
  */
 
 // Workaround for: https://github.com/bazelbuild/rules_nodejs/issues/1265
-/// <reference types="googlemaps" />
+/// <reference types="google.maps" />
 
 import {Directive, Input, NgZone, OnDestroy, OnInit, Output} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
@@ -181,7 +181,7 @@ export class MapCircle implements OnInit, OnDestroy {
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.getBounds
    */
-  getBounds(): google.maps.LatLngBounds {
+  getBounds(): google.maps.LatLngBounds | null {
     this._assertInitialized();
     return this.circle.getBounds();
   }
@@ -190,7 +190,7 @@ export class MapCircle implements OnInit, OnDestroy {
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.getCenter
    */
-  getCenter(): google.maps.LatLng {
+  getCenter(): google.maps.LatLng | null {
     this._assertInitialized();
     return this.circle.getCenter();
   }

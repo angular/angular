@@ -238,10 +238,10 @@ describe('MapMarker', () => {
 })
 class TestApp {
   @ViewChild(MapMarker) marker: MapMarker;
-  title?: string;
-  position?: google.maps.LatLng|google.maps.LatLngLiteral;
-  label?: string|google.maps.MarkerLabel;
-  clickable?: boolean;
+  title?: string|null;
+  position?: google.maps.LatLng|google.maps.LatLngLiteral|null;
+  label?: string|google.maps.MarkerLabel|null;
+  clickable?: boolean|null;
   options?: google.maps.MarkerOptions;
   icon?: string;
   visible?: boolean;

@@ -112,11 +112,13 @@ export class GoogleMapDemo {
   }
 
   handleClick(event: google.maps.MapMouseEvent) {
-    this.markerPositions.push(event.latLng.toJSON());
+    if (event.latLng) {
+      this.markerPositions.push(event.latLng.toJSON());
+    }
   }
 
   handleMove(event: google.maps.MapMouseEvent) {
-    this.display = event.latLng.toJSON();
+    this.display = event.latLng?.toJSON();
   }
 
   clickMarker(marker: MapMarker) {

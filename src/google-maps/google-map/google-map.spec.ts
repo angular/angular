@@ -257,7 +257,7 @@ describe('GoogleMap', () => {
 
     const component = fixture.debugElement.query(By.directive(GoogleMap)).componentInstance;
 
-    mapSpy.getBounds.and.returnValue(null);
+    mapSpy.getBounds.and.returnValue(undefined);
     expect(component.getBounds()).toBe(null);
 
     component.getCenter();
@@ -272,7 +272,7 @@ describe('GoogleMap', () => {
     component.getMapTypeId();
     expect(mapSpy.getMapTypeId).toHaveBeenCalled();
 
-    mapSpy.getProjection.and.returnValue(null);
+    mapSpy.getProjection.and.returnValue(undefined);
     expect(component.getProjection()).toBe(null);
 
     component.getStreetView();

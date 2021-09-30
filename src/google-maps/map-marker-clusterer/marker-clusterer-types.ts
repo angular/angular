@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
- /// <reference types="googlemaps" />
+ /// <reference types="google.maps" />
 
 /**
  * Class for clustering markers on a Google Map.
