@@ -1,0 +1,7 @@
+{
+  "#1": "We maintain a `package.json` file so that all scripts for the integration test are not",
+  "#2": "accidentally treated as ESM when tests run on Windows. On Windows, the scripts are",
+  "#3": "not symlinked into a runfile tree/sandbox, so they accidentally get the `type`: `module`",
+  "#4": "from the compiler-cli package.json file.",
+  "type": "commonjs"
+}
