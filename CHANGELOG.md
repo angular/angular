@@ -1,3 +1,25 @@
+<a name="12.2.8"></a>
+# 12.2.8 (2021-09-30)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c1338bf837](https://github.com/angular/angular/commit/c1338bf837c7fe2bfb10974bd08d1ad013aaebbc) | fix | correctly interpret token arrays in @Injectable `deps` ([#43226](https://github.com/angular/angular/pull/43226)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c8f8d7d3b1](https://github.com/angular/angular/commit/c8f8d7d3b12598eef6f2439ff85a56cdcf1cbf92) | fix | provide dom event completions ([#43299](https://github.com/angular/angular/pull/43299)) |
+### ngcc
+| Commit | Type | Description |
+| -- | -- | -- |
+| [69299f7d4d](https://github.com/angular/angular/commit/69299f7d4d595141dae7a63e4faa35691a2d8887) | fix | do not fail for packages which correspond with `Object` members ([#43589](https://github.com/angular/angular/pull/43589)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3cf41354ae](https://github.com/angular/angular/commit/3cf41354ae6bf988a9477379e0b28afaa6d7ce5b) | fix | do not unassign clients from a broken version ([#43518](https://github.com/angular/angular/pull/43518)) |
+## Special Thanks
+Adrien Crivelli, Alex Rickabaugh, Andrew Scott, Bobby Galli, Chris, Daniel Díaz, Dario Piotrowicz, George Kalpakas, Joe Martin (Crowdstaffing), JoostK, Pete Bacon Darwin, Rafael Santana, Raj Sekhar, Ricardo Chavarria, Teri Glover, Virginia Dooley, dario-piotrowicz, enisfr and wszgrcy
+
+
 <a name="13.0.0-next.8"></a>
 # 13.0.0-next.8 (2021-09-27)
 ### core
