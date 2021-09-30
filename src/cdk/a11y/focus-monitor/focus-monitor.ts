@@ -99,10 +99,10 @@ export class FocusMonitor implements OnDestroy {
   private _windowFocused = false;
 
   /** The timeout id of the window focus timeout. */
-  private _windowFocusTimeoutId: number;
+  private _windowFocusTimeoutId: any;
 
   /** The timeout id of the origin clearing timeout. */
-  private _originTimeoutId: number;
+  private _originTimeoutId: any;
 
   /**
    * Whether the origin was determined via a touch interaction. Necessary as properly attributing

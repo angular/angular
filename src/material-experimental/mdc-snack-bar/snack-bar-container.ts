@@ -69,7 +69,7 @@ export class MatSnackBarContainer extends BasePortalOutlet
   private readonly _announceDelay: number = 150;
 
   /** The timeout for announcing the snack bar's content. */
-  private _announceTimeoutId: number;
+  private _announceTimeoutId: any;
 
   /** Subject for notifying that the snack bar has announced to screen readers. */
   readonly _onAnnounce: Subject<void> = new Subject();

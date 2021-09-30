@@ -17,7 +17,17 @@ declare interface TestGlobals {
   Mocha: unknown;
 }
 
-const testGlobals = (typeof window !== 'undefined' ? window : {}) as {} as TestGlobals;
+let testGlobals: TestGlobals;
+
+// We check the Node-specific `global` first, because tools tend to add a fake
+// `window` in Node environments which won't actually receive global variables.
+if (typeof global !== 'undefined') {
+  testGlobals = global as {} as TestGlobals;
+} else if (typeof window !== 'undefined') {
+  testGlobals = window as {} as TestGlobals;
+} else {
+  testGlobals = {} as TestGlobals;
+}
 
 /** Gets whether the code is currently running in a test environment. */
 export function _isTestEnvironment(): boolean {

@@ -183,7 +183,7 @@ export abstract class _TooltipComponentBase implements OnDestroy {
     _animationStart(): void;
     _handleBodyInteraction(): void;
     hide(delay: number): void;
-    _hideTimeoutId: number | undefined;
+    _hideTimeoutId: any;
     isVisible(): boolean;
     _markForCheck(): void;
     message: string;
@@ -191,7 +191,7 @@ export abstract class _TooltipComponentBase implements OnDestroy {
     ngOnDestroy(): void;
     protected _onShow(): void;
     show(delay: number): void;
-    _showTimeoutId: number | undefined;
+    _showTimeoutId: any;
     tooltipClass: string | string[] | Set<string> | {
         [key: string]: any;
     };

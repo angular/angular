@@ -31,7 +31,7 @@ import {
 export class LiveAnnouncer implements OnDestroy {
   private _liveElement: HTMLElement;
   private _document: Document;
-  private _previousTimeout?: number;
+  private _previousTimeout: any;
 
   constructor(
       @Optional() @Inject(LIVE_ANNOUNCER_ELEMENT_TOKEN) elementToken: any,

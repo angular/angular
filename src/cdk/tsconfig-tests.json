@@ -12,7 +12,7 @@
     "importHelpers": false,
     "module": "umd",
     "target": "es5",
-    "types": ["jasmine"],
+    "types": ["jasmine", "node"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "paths": {

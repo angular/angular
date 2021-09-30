@@ -58,7 +58,7 @@ export class MatDialogContainer extends _MatDialogContainerBase implements OnDes
   private _closeAnimationDuration =
       this._animationsEnabled ? numbers.DIALOG_ANIMATION_CLOSE_TIME_MS : 0;
   /** Current timer for dialog animations. */
-  private _animationTimer: number|null = null;
+  private _animationTimer: any = null;
 
   constructor(
       elementRef: ElementRef,
