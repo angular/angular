@@ -40,5 +40,6 @@ ts_library(
         "@npm//magic-string",
         "@npm//semver",
         "@npm//typescript",
+        "@npm//yargs",
     ],
 )

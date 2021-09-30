@@ -55,7 +55,6 @@
   "dependencies": {
     "@babel/core": "^7.8.6",
     "reflect-metadata": "^0.1.2",
-    "minimist": "^1.2.0",
     "canonical-path": "1.0.0",
     "chokidar": "^3.0.0",
     "convert-source-map": "^1.5.1",

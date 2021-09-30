@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import minimist from 'minimist';
 import ts from 'typescript';
-
 import type {TsickleHost} from 'tsickle';
+import yargs from 'yargs';
 import {Diagnostics, exitCodeFromResult, filterErrorsAndWarnings, formatDiagnostics, ParsedConfiguration, performCompilation, readConfiguration} from './perform_compile';
 import {createPerformWatchHost, performWatchCompilation} from './perform_watch';
 import * as api from './transformers/api';
@@ -136,18 +135,27 @@ export interface NgcParsedConfiguration extends ParsedConfiguration {
 
 export function readNgcCommandLineAndConfiguration(args: string[]): NgcParsedConfiguration {
   const options: api.CompilerOptions = {};
-  const parsedArgs = minimist(args);
+  const parsedArgs =
+      yargs(args)
+          .parserConfiguration({'strip-aliased': true})
+          .option('i18nFile', {type: 'string'})
+          .option('i18nFormat', {type: 'string'})
+          .option('locale', {type: 'string'})
+          .option('missingTranslation', {type: 'string', choices: ['error', 'warning', 'ignore']})
+          .option('outFile', {type: 'string'})
+          .option('watch', {type: 'boolean', alias: ['w']})
+          .parseSync();
+
   if (parsedArgs.i18nFile) options.i18nInFile = parsedArgs.i18nFile;
   if (parsedArgs.i18nFormat) options.i18nInFormat = parsedArgs.i18nFormat;
   if (parsedArgs.locale) options.i18nInLocale = parsedArgs.locale;
-  const mt = parsedArgs.missingTranslation;
-  if (mt === 'error' || mt === 'warning' || mt === 'ignore') {
-    options.i18nInMissingTranslations = mt;
-  }
+  if (parsedArgs.missingTranslation)
+    options.i18nInMissingTranslations =
+        parsedArgs.missingTranslation as api.CompilerOptions['i18nInMissingTranslations'];
+
   const config = readCommandLineAndConfiguration(
       args, options, ['i18nFile', 'i18nFormat', 'locale', 'missingTranslation', 'watch']);
-  const watch = parsedArgs.w || parsedArgs.watch;
-  return {...config, watch};
+  return {...config, watch: parsedArgs.watch};
 }
 
 export function readCommandLineAndConfiguration(
