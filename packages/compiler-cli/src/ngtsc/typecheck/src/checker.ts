@@ -583,10 +583,6 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
                           }));
   }
 
-  getPotentialDomEvents(tagName: string): string[] {
-    return REGISTRY.allKnownEventsOfElement(tagName);
-  }
-
   private getScopeData(component: ts.ClassDeclaration): ScopeData|null {
     if (this.scopeCache.has(component)) {
       return this.scopeCache.get(component)!;

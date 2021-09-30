@@ -155,11 +155,6 @@ export interface TemplateTypeChecker {
   getPotentialDomBindings(tagName: string): {attribute: string, property: string}[];
 
   /**
-   * Retrieve any potential DOM events.
-   */
-  getPotentialDomEvents(tagName: string): string[];
-
-  /**
    * Retrieve the type checking engine's metadata for the given directive class, if available.
    */
   getDirectiveMetadata(dir: ts.ClassDeclaration): TypeCheckableDirectiveMeta|null;
