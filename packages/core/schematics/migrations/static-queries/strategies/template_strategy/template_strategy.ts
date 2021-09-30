@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import type {AotCompiler, CompileDirectiveMetadata, CompileMetadataResolver, CompileNgModuleMetadata, CompileStylesheetMetadata, ElementAst, EmbeddedTemplateAst, NgAnalyzedModules, QueryMatch, StaticSymbol, TemplateAst} from '@angular/compiler';
-import {createProgram, Diagnostic, readConfiguration} from '@angular/compiler-cli';
+import type {AotCompiler, CompileDirectiveMetadata, CompileMetadataResolver, CompileNgModuleMetadata, CompileStylesheetMetadata, NgAnalyzedModules, QueryMatch, StaticSymbol, TemplateAst} from '@angular/compiler';
 import {resolve} from 'path';
 import ts from 'typescript';
 
@@ -25,14 +24,15 @@ export class QueryTemplateStrategy implements TimingStrategy {
 
   constructor(
       private projectPath: string, private classMetadata: ClassMetadataMap,
-      private host: ts.CompilerHost, private compilerModule: typeof import('@angular/compiler')) {}
+      private host: ts.CompilerHost, private compilerModule: typeof import('@angular/compiler'),
+      private compilerCliModule: typeof import('@angular/compiler-cli')) {}
 
   /**
    * Sets up the template strategy by creating the AngularCompilerProgram. Returns false if
    * the AOT compiler program could not be created due to failure diagnostics.
    */
   setup() {
-    const {rootNames, options} = readConfiguration(this.projectPath);
+    const {rootNames, options} = this.compilerCliModule.readConfiguration(this.projectPath);
 
     // https://github.com/angular/angular/commit/ec4381dd401f03bded652665b047b6b90f2b425f made Ivy
     // the default. This breaks the assumption that "createProgram" from compiler-cli returns the
@@ -40,7 +40,7 @@ export class QueryTemplateStrategy implements TimingStrategy {
     // false.
     options.enableIvy = false;
 
-    const aotProgram = createProgram({rootNames, options, host: this.host});
+    const aotProgram = this.compilerCliModule.createProgram({rootNames, options, host: this.host});
 
     // The "AngularCompilerProgram" does not expose the "AotCompiler" instance, nor does it
     // expose the logic that is necessary to analyze the determined modules. We work around
@@ -65,7 +65,7 @@ export class QueryTemplateStrategy implements TimingStrategy {
 
     const ngStructuralDiagnostics = aotProgram.getNgStructuralDiagnostics();
     if (ngStructuralDiagnostics.length) {
-      throw this._createDiagnosticsError(ngStructuralDiagnostics);
+      throw new Error(this.compilerCliModule.formatDiagnostics(ngStructuralDiagnostics, this.host));
     }
 
     analyzedModules.files.forEach(file => {
@@ -178,10 +178,6 @@ export class QueryTemplateStrategy implements TimingStrategy {
     return this
         .compiler!['_parseTemplate'](component, ngModule, ngModule.transitiveModule.directives)
         .template;
-  }
-
-  private _createDiagnosticsError(diagnostics: ReadonlyArray<Diagnostic>) {
-    return new Error(ts.formatDiagnostics(diagnostics as ts.Diagnostic[], this.host));
   }
 
   private _getViewQueryUniqueKey(filePath: string, className: string, propName: string) {

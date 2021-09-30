@@ -7,7 +7,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import type {AotCompiler} from '@angular/compiler';
-import {PartialEvaluator} from '@angular/compiler-cli/private/migrations';
 import ts from 'typescript';
 
 import {ImportManager} from '../../../utils/import_manager';
@@ -35,7 +34,7 @@ export class DecoratorRewriter {
 
   constructor(
       private importManager: ImportManager, private typeChecker: ts.TypeChecker,
-      private evaluator: PartialEvaluator, private compiler: AotCompiler) {}
+      private compiler: AotCompiler) {}
 
   rewrite(ngDecorator: NgDecorator, newSourceFile: ts.SourceFile): ts.Decorator {
     const decorator = ngDecorator.node;

@@ -7,8 +7,6 @@
  */
 
 import type {AotCompiler, AotCompilerHost, CompileMetadataResolver, StaticSymbol, StaticSymbolResolver, SummaryResolver} from '@angular/compiler';
-import {PartialEvaluator} from '@angular/compiler-cli/private/migrations';
-import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 import ts from 'typescript';
 
 import {ImportManager} from '../../utils/import_manager';
@@ -39,7 +37,7 @@ export class UndecoratedClassesTransform {
   private printer = ts.createPrinter({newLine: ts.NewLineKind.LineFeed});
   private importManager = new ImportManager(this.getUpdateRecorder, this.printer);
   private decoratorRewriter =
-      new DecoratorRewriter(this.importManager, this.typeChecker, this.evaluator, this.compiler);
+      new DecoratorRewriter(this.importManager, this.typeChecker, this.compiler);
 
   private compilerHost: AotCompilerHost;
   private symbolResolver: StaticSymbolResolver;
@@ -57,9 +55,9 @@ export class UndecoratedClassesTransform {
 
   constructor(
       private typeChecker: ts.TypeChecker, private compiler: AotCompiler,
-      private evaluator: PartialEvaluator,
       private getUpdateRecorder: (sf: ts.SourceFile) => UpdateRecorder,
-      private compilerModule: typeof import('@angular/compiler')) {
+      private compilerModule: typeof import('@angular/compiler'),
+      private coreModule: typeof import('@angular/core')) {
     this.symbolResolver = compiler['_symbolResolver'];
     this.compilerHost = compiler['_host'];
     this.metadataResolver = compiler['_metadataResolver'];
@@ -349,12 +347,12 @@ export class UndecoratedClassesTransform {
               return ts.createPropertyAccess(
                   this.importManager.addImportToSourceFile(
                       targetSourceFile, 'ChangeDetectionStrategy', '@angular/core'),
-                  ChangeDetectionStrategy[value]);
+                  this.coreModule.ChangeDetectionStrategy[value]);
             } else if (propertyName === 'encapsulation' && typeof value === 'number') {
               return ts.createPropertyAccess(
                   this.importManager.addImportToSourceFile(
                       targetSourceFile, 'ViewEncapsulation', '@angular/core'),
-                  ViewEncapsulation[value]);
+                  this.coreModule.ViewEncapsulation[value]);
             }
             return null;
           });

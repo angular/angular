@@ -5,7 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
+import {forwardRefResolver} from '@angular/compiler-cli/src/ngtsc/annotations';
+import {Reference} from '@angular/compiler-cli/src/ngtsc/imports';
+import {DynamicValue, PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
+import {StaticInterpreter} from '@angular/compiler-cli/src/ngtsc/partial_evaluator/src/interpreter';
+import {reflectObjectLiteral, TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {RuleFailure, Rules} from 'tslint';
 import ts from 'typescript';
 import {TslintUpdateRecorder} from '../undecorated-classes-with-decorated-fields/google3/tslint_update_recorder';
@@ -23,7 +27,15 @@ export class Rule extends Rules.TypedRule {
         s => !s.isDeclarationFile && !program.isSourceFileFromExternalLibrary(s));
     const updateRecorders = new Map<ts.SourceFile, TslintUpdateRecorder>();
     const transform =
-        new UndecoratedClassesWithDecoratedFieldsTransform(typeChecker, getUpdateRecorder);
+        new UndecoratedClassesWithDecoratedFieldsTransform(typeChecker, getUpdateRecorder, {
+          Reference,
+          DynamicValue,
+          PartialEvaluator,
+          StaticInterpreter,
+          TypeScriptReflectionHost,
+          forwardRefResolver,
+          reflectObjectLiteral,
+        });
 
     // Migrate all source files in the project.
     transform.migrate(sourceFiles);

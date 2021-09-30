@@ -10,6 +10,7 @@ import {Rule, SchematicContext, SchematicsException, Tree, UpdateRecorder} from 
 import {relative} from 'path';
 import ts from 'typescript';
 
+import {CompilerCliMigrationsModule, loadCompilerCliMigrationsModule} from '../../utils/load_esm';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
 
@@ -32,8 +33,14 @@ export default function(): Rule {
           'Could not find any tsconfig file. Cannot migrate ModuleWithProviders.');
     }
 
+    // Load ESM `@angular/compiler/private/migrations` using the TypeScript dynamic import
+    // workaround. Once TypeScript provides support for keeping the dynamic import this workaround
+    // can be changed to a direct dynamic import.
+    const compilerCliMigrationsModule = await loadCompilerCliMigrationsModule();
+
     for (const tsconfigPath of allPaths) {
-      failures.push(...runModuleWithProvidersMigration(tree, tsconfigPath, basePath));
+      failures.push(...runModuleWithProvidersMigration(
+          tree, tsconfigPath, basePath, compilerCliMigrationsModule));
     }
 
     if (failures.length) {
@@ -44,7 +51,9 @@ export default function(): Rule {
   };
 }
 
-function runModuleWithProvidersMigration(tree: Tree, tsconfigPath: string, basePath: string) {
+function runModuleWithProvidersMigration(
+    tree: Tree, tsconfigPath: string, basePath: string,
+    compilerCliMigrationsModule: CompilerCliMigrationsModule) {
   const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
   const failures: string[] = [];
   const typeChecker = program.getTypeChecker();
@@ -56,7 +65,8 @@ function runModuleWithProvidersMigration(tree: Tree, tsconfigPath: string, baseP
   sourceFiles.forEach(sourceFile => collector.visitNode(sourceFile));
 
   const {resolvedModules, resolvedNonGenerics} = collector;
-  const transformer = new ModuleWithProvidersTransform(typeChecker, getUpdateRecorder);
+  const transformer =
+      new ModuleWithProvidersTransform(typeChecker, getUpdateRecorder, compilerCliMigrationsModule);
   const updateRecorders = new Map<ts.SourceFile, UpdateRecorder>();
 
   [...resolvedModules.reduce(

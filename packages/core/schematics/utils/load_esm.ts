@@ -9,6 +9,34 @@
 import {URL} from 'url';
 
 /**
+ * This is a temporary interface to represent the migration private exports from
+ * the `@angular/compiler-cli` package that prior to ESM conversion are accessed
+ * via deep imports.
+ *
+ * TODO_ESM: Remove this type once the `@angular/compiler-cli/private/migrations` entry point
+ * is available.
+ */
+export interface CompilerCliMigrationsModule {
+  DynamicValue: typeof import('@angular/compiler-cli/src/ngtsc/partial_evaluator').DynamicValue;
+  PartialEvaluator:
+      typeof import('@angular/compiler-cli/src/ngtsc/partial_evaluator').PartialEvaluator;
+  Reference: typeof import('@angular/compiler-cli/src/ngtsc/imports').Reference;
+  StaticInterpreter:
+      typeof import('@angular/compiler-cli/src/ngtsc/partial_evaluator/src/interpreter')
+          .StaticInterpreter;
+  TypeScriptReflectionHost:
+      typeof import('@angular/compiler-cli/src/ngtsc/reflection').TypeScriptReflectionHost;
+  forwardRefResolver:
+      typeof import('@angular/compiler-cli/src/ngtsc/annotations').forwardRefResolver;
+  reflectObjectLiteral:
+      typeof import('@angular/compiler-cli/src/ngtsc/reflection').reflectObjectLiteral;
+}
+export type ResolvedValue =
+    import('@angular/compiler-cli/src/ngtsc/partial_evaluator').ResolvedValue;
+export type ResolvedValueMap =
+    import('@angular/compiler-cli/src/ngtsc/partial_evaluator').ResolvedValueMap;
+
+/**
  * This uses a dynamic import to load a module which may be ESM.
  * CommonJS code can load ESM code via a dynamic import. Unfortunately, TypeScript
  * will currently, unconditionally downlevel dynamic import into a require call.
@@ -31,5 +59,31 @@ export async function loadEsmModule<T>(modulePath: string|URL): Promise<T> {
     return namespaceObject.default;
   } else {
     return namespaceObject;
+  }
+}
+
+/**
+ * Attempt to load the new `@angular/compiler-cli/private/migrations` entry. If not yet present
+ * the previous deep imports are used to constructor an equivalent object.
+ *
+ * @returns A Promise that resolves to the dynamically imported compiler-cli private migrations
+ * entry or an equivalent object if not available.
+ */
+export async function loadCompilerCliMigrationsModule(): Promise<CompilerCliMigrationsModule> {
+  try {
+    return await loadEsmModule('@angular/compiler-cli/private/migrations');
+  } catch {
+    // If entry point is not yet present, construct the module type.
+    // This can temporarily use require since it will only be called if the ESM entry point
+    // above does not exist in which case `@angular/compiler-cli` will still be CommonJS.
+    // TODO_ESM: This can be removed once the `@angular/compiler-cli/private/migrations` entry
+    // point exists.
+    return {
+      ...require('@angular/compiler-cli/src/ngtsc/annotations'),
+      ...require('@angular/compiler-cli/src/ngtsc/imports'),
+      ...require('@angular/compiler-cli/src/ngtsc/partial_evaluator'),
+      ...require('@angular/compiler-cli/src/ngtsc/partial_evaluator/src/interpreter'),
+      ...require('@angular/compiler-cli/src/ngtsc/reflection'),
+    };
   }
 }

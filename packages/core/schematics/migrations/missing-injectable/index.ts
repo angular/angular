@@ -28,8 +28,14 @@ export default function(): Rule {
           'which don\'t have that decorator set.');
     }
 
+    // Load ESM `@angular/compiler/private/migrations` using the TypeScript dynamic import
+    // workaround. Once TypeScript provides support for keeping the dynamic import this workaround
+    // can be changed to a direct dynamic import.
+    const compilerCliMigrationsModule = await loadCompilerCliMigrationsModule();
+
     for (const tsconfigPath of [...buildPaths, ...testPaths]) {
-      failures.push(...runMissingInjectableMigration(tree, tsconfigPath, basePath));
+      failures.push(...runMissingInjectableMigration(
+          tree, tsconfigPath, basePath, compilerCliMigrationsModule));
     }
 
     if (failures.length) {
@@ -41,7 +47,8 @@ export default function(): Rule {
 }
 
 function runMissingInjectableMigration(
-    tree: Tree, tsconfigPath: string, basePath: string): string[] {
+    tree: Tree, tsconfigPath: string, basePath: string,
+    compilerCliMigrationsModule: typeof import('@angular/compiler-cli/private/migrations')): string[] {
   const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
   const failures: string[] = [];
   const typeChecker = program.getTypeChecker();
@@ -53,7 +60,8 @@ function runMissingInjectableMigration(
   sourceFiles.forEach(sourceFile => definitionCollector.visitNode(sourceFile));
 
   const {resolvedModules, resolvedDirectives} = definitionCollector;
-  const transformer = new MissingInjectableTransform(typeChecker, getUpdateRecorder);
+  const transformer =
+      new MissingInjectableTransform(typeChecker, getUpdateRecorder, compilerCliMigrationsModule);
   const updateRecorders = new Map<ts.SourceFile, UpdateRecorder>();
 
   [...transformer.migrateModules(resolvedModules),
