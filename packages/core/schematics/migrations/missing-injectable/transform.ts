@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DynamicValue, Reference, ResolvedValue, TypeScriptReflectionHost} from '@angular/compiler-cli/private/migrations';
+import type {ResolvedValue} from '@angular/compiler-cli/private/migrations';
 import ts from 'typescript';
 
 import {ImportManager} from '../../utils/import_manager';
 import {getAngularDecorators} from '../../utils/ng_decorators';
 
 import {ResolvedDirective, ResolvedNgModule} from './definition_collector';
-import {ProviderLiteral, ProvidersEvaluator} from './providers_evaluator';
+import {createProvidersEvaluator, ProviderLiteral} from './providers_evaluator';
 import {UpdateRecorder} from './update_recorder';
 
 /**
@@ -33,7 +33,7 @@ export interface AnalysisFailure {
 export class MissingInjectableTransform {
   private printer = ts.createPrinter();
   private importManager = new ImportManager(this.getUpdateRecorder, this.printer);
-  private providersEvaluator: ProvidersEvaluator;
+  private providersEvaluator;
 
   /** Set of provider class declarations which were already checked or migrated. */
   private visitedProviderClasses = new Set<ts.ClassDeclaration>();
@@ -43,9 +43,12 @@ export class MissingInjectableTransform {
 
   constructor(
       private typeChecker: ts.TypeChecker,
-      private getUpdateRecorder: (sf: ts.SourceFile) => UpdateRecorder) {
-    this.providersEvaluator = new ProvidersEvaluator(
-        new TypeScriptReflectionHost(typeChecker), typeChecker, /* dependencyTracker */ null);
+      private getUpdateRecorder: (sf: ts.SourceFile) => UpdateRecorder,
+      private compilerCliMigrationsModule:
+          typeof import('@angular/compiler-cli/private/migrations')) {
+    this.providersEvaluator = createProvidersEvaluator(
+        compilerCliMigrationsModule,
+        new compilerCliMigrationsModule.TypeScriptReflectionHost(typeChecker), typeChecker);
   }
 
   recordChanges() {
@@ -214,7 +217,8 @@ export class MissingInjectableTransform {
    */
   private _visitProviderResolvedValue(value: ResolvedValue, module: ResolvedNgModule):
       AnalysisFailure[] {
-    if (value instanceof Reference && ts.isClassDeclaration(value.node)) {
+    if (value instanceof this.compilerCliMigrationsModule.Reference &&
+        ts.isClassDeclaration(value.node)) {
       this.migrateProviderClass(value.node, module);
     } else if (value instanceof Map) {
       // If a "ClassProvider" has the "deps" property set, then we do not need to
@@ -227,7 +231,7 @@ export class MissingInjectableTransform {
       return value.reduce(
           (res, v) => res.concat(this._visitProviderResolvedValue(v, module)),
           [] as AnalysisFailure[]);
-    } else if (value instanceof DynamicValue) {
+    } else if (value instanceof this.compilerCliMigrationsModule.DynamicValue) {
       return [{node: value.node, message: `Provider is not statically analyzable.`}];
     }
     return [];

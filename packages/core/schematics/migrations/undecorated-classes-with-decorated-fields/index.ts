@@ -10,6 +10,7 @@ import {Rule, SchematicContext, SchematicsException, Tree,} from '@angular-devki
 import {relative} from 'path';
 import ts from 'typescript';
 
+import {loadCompilerCliMigrationsModule, loadEsmModule} from '../../utils/load_esm';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
 
@@ -32,8 +33,20 @@ export default function(): Rule {
           'Could not find any tsconfig file. Cannot add an Angular decorator to undecorated classes.');
     }
 
+    let compilerCliMigrationsModule;
+    try {
+      // Load ESM `@angular/compiler/private/migrations` using the TypeScript dynamic import
+      // workaround. Once TypeScript provides support for keeping the dynamic import this workaround
+      // can be changed to a direct dynamic import.
+      compilerCliMigrationsModule = await loadCompilerCliMigrationsModule();
+    } catch (e) {
+      throw new SchematicsException(
+          `Unable to load the '@angular/compiler-cli' package. Details: ${e.message}`);
+    }
+
     for (const tsconfigPath of allPaths) {
-      failures.push(...runUndecoratedClassesMigration(tree, tsconfigPath, basePath));
+      failures.push(...runUndecoratedClassesMigration(
+          tree, tsconfigPath, basePath, compilerCliMigrationsModule));
     }
 
     if (failures.length) {
@@ -45,15 +58,17 @@ export default function(): Rule {
 }
 
 function runUndecoratedClassesMigration(
-    tree: Tree, tsconfigPath: string, basePath: string): string[] {
+    tree: Tree, tsconfigPath: string, basePath: string,
+    compilerCliMigrationsModule: typeof import('@angular/compiler-cli/private/migrations')):
+    string[] {
   const failures: string[] = [];
   const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
   const typeChecker = program.getTypeChecker();
   const sourceFiles =
       program.getSourceFiles().filter(sourceFile => canMigrateFile(basePath, sourceFile, program));
   const updateRecorders = new Map<ts.SourceFile, UpdateRecorder>();
-  const transform =
-      new UndecoratedClassesWithDecoratedFieldsTransform(typeChecker, getUpdateRecorder);
+  const transform = new UndecoratedClassesWithDecoratedFieldsTransform(
+      typeChecker, getUpdateRecorder, compilerCliMigrationsModule);
 
   // Migrate all source files in the project.
   transform.migrate(sourceFiles).forEach(({node, message}) => {

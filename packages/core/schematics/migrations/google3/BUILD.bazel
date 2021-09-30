@@ -7,6 +7,10 @@ ts_library(
     visibility = ["//packages/core/schematics/test/google3:__pkg__"],
     deps = [
         "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/annotations",
+        "//packages/compiler-cli/src/ngtsc/imports",
+        "//packages/compiler-cli/src/ngtsc/partial_evaluator",
+        "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/core/schematics/migrations/activated-route-snapshot-fragment",
         "//packages/core/schematics/migrations/can-activate-with-redirect-to",
         "//packages/core/schematics/migrations/dynamic-queries",

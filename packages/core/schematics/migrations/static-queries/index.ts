@@ -81,10 +81,22 @@ async function runMigration(tree: Tree, context: SchematicContext) {
         `Unable to load the '@angular/compiler' package. Details: ${e.message}`);
   }
 
+  let compilerCliModule;
+  try {
+    // Load ESM `@angular/compiler-cli` using the TypeScript dynamic import workaround.
+    // Once TypeScript provides support for keeping the dynamic import this workaround can be
+    // changed to a direct dynamic import.
+    compilerCliModule =
+        await loadEsmModule<typeof import('@angular/compiler-cli')>('@angular/compiler-cli');
+  } catch (e) {
+    throw new SchematicsException(
+        `Unable to load the '@angular/compiler' package. Details: ${e.message}`);
+  }
+
   if (buildProjects.size) {
     for (let project of Array.from(buildProjects.values())) {
-      failures.push(
-          ...await runStaticQueryMigration(tree, project, strategy, logger, compilerModule));
+      failures.push(...await runStaticQueryMigration(
+          tree, project, strategy, logger, compilerModule, compilerCliModule));
     }
   }
 
@@ -94,7 +106,7 @@ async function runMigration(tree: Tree, context: SchematicContext) {
     const project = await analyzeProject(tree, tsconfigPath, basePath, analyzedFiles, logger);
     if (project) {
       failures.push(...await runStaticQueryMigration(
-          tree, project, SELECTED_STRATEGY.TESTS, logger, compilerModule));
+          tree, project, SELECTED_STRATEGY.TESTS, logger, compilerModule, compilerCliModule));
     }
   }
 
@@ -163,8 +175,8 @@ function analyzeProject(
  */
 async function runStaticQueryMigration(
     tree: Tree, project: AnalyzedProject, selectedStrategy: SELECTED_STRATEGY,
-    logger: logging.LoggerApi,
-    compilerModule: typeof import('@angular/compiler')): Promise<string[]> {
+    logger: logging.LoggerApi, compilerModule: typeof import('@angular/compiler'),
+    compilerCliModule: typeof import('@angular/compiler-cli')): Promise<string[]> {
   const {sourceFiles, typeChecker, host, queryVisitor, tsconfigPath, basePath} = project;
   const printer = ts.createPrinter();
   const failureMessages: string[] = [];
@@ -195,7 +207,8 @@ async function runStaticQueryMigration(
   } else if (selectedStrategy === SELECTED_STRATEGY.TESTS) {
     strategy = new QueryTestStrategy();
   } else {
-    strategy = new QueryTemplateStrategy(tsconfigPath, classMetadata, host, compilerModule);
+    strategy = new QueryTemplateStrategy(
+        tsconfigPath, classMetadata, host, compilerModule, compilerCliModule);
   }
 
   try {

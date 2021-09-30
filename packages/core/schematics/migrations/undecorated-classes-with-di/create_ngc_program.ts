@@ -7,13 +7,14 @@
  */
 
 import type {AotCompiler} from '@angular/compiler';
-import {CompilerHost, createProgram, readConfiguration} from '@angular/compiler-cli';
+import type {CompilerHost} from '@angular/compiler-cli';
 import ts from 'typescript';
 
 /** Creates an NGC program that can be used to read and parse metadata for files. */
 export function createNgcProgram(
+    compilerCliModule: typeof import('@angular/compiler-cli'),
     createHost: (options: ts.CompilerOptions) => CompilerHost, tsconfigPath: string) {
-  const {rootNames, options} = readConfiguration(tsconfigPath);
+  const {rootNames, options} = compilerCliModule.readConfiguration(tsconfigPath);
 
   // https://github.com/angular/angular/commit/ec4381dd401f03bded652665b047b6b90f2b425f made Ivy
   // the default. This breaks the assumption that "createProgram" from compiler-cli returns the
@@ -42,7 +43,7 @@ export function createNgcProgram(
   host.readResource = () => '';
   host.resourceNameToFileName = () => '$fake-file$';
 
-  const ngcProgram = createProgram({rootNames, options, host});
+  const ngcProgram = compilerCliModule.createProgram({rootNames, options, host});
 
   // The "AngularCompilerProgram" does not expose the "AotCompiler" instance, nor does it
   // expose the logic that is necessary to analyze the determined modules. We work around

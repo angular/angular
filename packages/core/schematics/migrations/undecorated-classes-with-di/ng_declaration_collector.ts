@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PartialEvaluator, Reference, ResolvedValue} from '@angular/compiler-cli/private/migrations';
 import ts from 'typescript';
 
 import {getAngularDecorators, NgDecorator} from '../../utils/ng_decorators';
@@ -28,7 +27,16 @@ export class NgDeclarationCollector {
   /** Set of resolved Angular declarations which are not decorated. */
   undecoratedDeclarations = new Set<ts.ClassDeclaration>();
 
-  constructor(public typeChecker: ts.TypeChecker, private evaluator: PartialEvaluator) {}
+  private evaluator;
+
+  constructor(
+      public typeChecker: ts.TypeChecker,
+      private compilerCliMigrationsModule:
+          typeof import('@angular/compiler-cli/private/migrations')) {
+    this.evaluator = new compilerCliMigrationsModule.PartialEvaluator(
+        new compilerCliMigrationsModule.TypeScriptReflectionHost(typeChecker), typeChecker,
+        /* dependencyTracker */ null);
+  }
 
   visitNode(node: ts.Node) {
     if (ts.isClassDeclaration(node)) {
@@ -80,39 +88,29 @@ export class NgDeclarationCollector {
       }
     });
 
+    const values = [];
+
     // In case the module specifies the "entryComponents" field, walk through all
     // resolved entry components and collect the referenced directives.
     if (entryComponentsNode) {
-      flattenTypeList(this.evaluator.evaluate(entryComponentsNode)).forEach(ref => {
-        if (ts.isClassDeclaration(ref.node) &&
-            !hasNgDeclarationDecorator(ref.node, this.typeChecker)) {
-          this.undecoratedDeclarations.add(ref.node);
-        }
-      });
+      values.push(this.evaluator.evaluate(entryComponentsNode));
     }
 
     // In case the module specifies the "declarations" field, walk through all
     // resolved declarations and collect the referenced directives.
     if (declarationsNode) {
-      flattenTypeList(this.evaluator.evaluate(declarationsNode)).forEach(ref => {
-        if (ts.isClassDeclaration(ref.node) &&
-            !hasNgDeclarationDecorator(ref.node, this.typeChecker)) {
-          this.undecoratedDeclarations.add(ref.node);
-        }
-      });
+      values.push(this.evaluator.evaluate(declarationsNode));
+    }
+
+    // Flatten values and analyze references
+    for (const value of values.flat(Infinity)) {
+      if (value instanceof this.compilerCliMigrationsModule.Reference &&
+          ts.isClassDeclaration(value.node) &&
+          !hasNgDeclarationDecorator(value.node, this.typeChecker)) {
+        this.undecoratedDeclarations.add(value.node);
+      }
     }
   }
-}
-
-/** Flattens a list of type references. */
-function flattenTypeList(value: ResolvedValue): Reference[] {
-  if (Array.isArray(value)) {
-    return <Reference[]>value.reduce(
-        (res: Reference[], v: ResolvedValue) => res.concat(flattenTypeList(v)), []);
-  } else if (value instanceof Reference) {
-    return [value];
-  }
-  return [];
 }
 
 /** Checks whether the given node has the "@Directive" or "@Component" decorator set. */

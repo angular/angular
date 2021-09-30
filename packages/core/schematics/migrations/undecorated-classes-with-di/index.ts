@@ -9,12 +9,11 @@
 import {logging} from '@angular-devkit/core';
 import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import type {AotCompiler} from '@angular/compiler';
-import {Diagnostic as NgDiagnostic} from '@angular/compiler-cli';
-import {PartialEvaluator, TypeScriptReflectionHost} from '@angular/compiler-cli/private/migrations';
+import type {Diagnostic as NgDiagnostic} from '@angular/compiler-cli';
 import {relative} from 'path';
 import ts from 'typescript';
 
-import {loadEsmModule} from '../../utils/load_esm';
+import {loadCompilerCliMigrationsModule, loadEsmModule} from '../../utils/load_esm';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {canMigrateFile, createMigrationCompilerHost} from '../../utils/typescript/compiler_host';
 
@@ -55,9 +54,44 @@ export default function(): Rule {
           `Unable to load the '@angular/compiler' package. Details: ${e.message}`);
     }
 
+    let compilerCliModule;
+    try {
+      // Load ESM `@angular/compiler-cli` using the TypeScript dynamic import workaround.
+      // Once TypeScript provides support for keeping the dynamic import this workaround can be
+      // changed to a direct dynamic import.
+      compilerCliModule =
+          await loadEsmModule<typeof import('@angular/compiler-cli')>('@angular/compiler-cli');
+    } catch (e) {
+      throw new SchematicsException(
+          `Unable to load the '@angular/compiler-cli' package. Details: ${e.message}`);
+    }
+
+    let coreModule;
+    try {
+      // Load ESM `@angular/compiler-cli` using the TypeScript dynamic import workaround.
+      // Once TypeScript provides support for keeping the dynamic import this workaround can be
+      // changed to a direct dynamic import.
+      coreModule = await loadEsmModule<typeof import('@angular/core')>('@angular/core');
+    } catch (e) {
+      throw new SchematicsException(
+          `Unable to load the '@angular/core' package. Details: ${e.message}`);
+    }
+
+    let compilerCliMigrationsModule;
+    try {
+      // Load ESM `@angular/compiler/private/migrations` using the TypeScript dynamic import
+      // workaround. Once TypeScript provides support for keeping the dynamic import this workaround
+      // can be changed to a direct dynamic import.
+      compilerCliMigrationsModule = await loadCompilerCliMigrationsModule();
+    } catch (e) {
+      throw new SchematicsException(
+          `Unable to load the '@angular/compiler-cli' package. Details: ${e.message}`);
+    }
+
     for (const tsconfigPath of buildPaths) {
-      const result =
-          runUndecoratedClassesMigration(tree, tsconfigPath, basePath, ctx.logger, compilerModule);
+      const result = runUndecoratedClassesMigration(
+          tree, tsconfigPath, basePath, ctx.logger, compilerModule, compilerCliModule,
+          compilerCliMigrationsModule, coreModule);
       failures.push(...result.failures);
       programError = programError || !!result.programError;
     }
@@ -83,10 +117,13 @@ export default function(): Rule {
 
 function runUndecoratedClassesMigration(
     tree: Tree, tsconfigPath: string, basePath: string, logger: logging.LoggerApi,
-    compilerModule: typeof import('@angular/compiler')):
-    {failures: string[], programError?: boolean} {
+    compilerModule: typeof import('@angular/compiler'),
+    compilerCliModule: typeof import('@angular/compiler-cli'),
+    compilerCliMigrationsModule: typeof import('@angular/compiler-cli/private/migrations'),
+    coreModule: typeof import('@angular/core')): {failures: string[], programError?: boolean} {
   const failures: string[] = [];
-  const programData = gracefullyCreateProgram(tree, basePath, tsconfigPath, logger);
+  const programData =
+      gracefullyCreateProgram(tree, basePath, tsconfigPath, logger, compilerCliModule);
 
   // Gracefully exit if the program could not be created.
   if (programData === null) {
@@ -95,9 +132,8 @@ function runUndecoratedClassesMigration(
 
   const {program, compiler} = programData;
   const typeChecker = program.getTypeChecker();
-  const partialEvaluator = new PartialEvaluator(
-      new TypeScriptReflectionHost(typeChecker), typeChecker, /* dependencyTracker */ null);
-  const declarationCollector = new NgDeclarationCollector(typeChecker, partialEvaluator);
+
+  const declarationCollector = new NgDeclarationCollector(typeChecker, compilerCliMigrationsModule);
   const sourceFiles =
       program.getSourceFiles().filter(sourceFile => canMigrateFile(basePath, sourceFile, program));
 
@@ -106,7 +142,7 @@ function runUndecoratedClassesMigration(
 
   const {decoratedDirectives, decoratedProviders, undecoratedDeclarations} = declarationCollector;
   const transform = new UndecoratedClassesTransform(
-      typeChecker, compiler, partialEvaluator, getUpdateRecorder, compilerModule);
+      typeChecker, compiler, getUpdateRecorder, compilerModule, coreModule);
   const updateRecorders = new Map<ts.SourceFile, UpdateRecorder>();
 
   // Run the migrations for decorated providers and both decorated and undecorated
@@ -173,11 +209,13 @@ function getErrorDiagnostics(diagnostics: ReadonlyArray<ts.Diagnostic|NgDiagnost
 }
 
 function gracefullyCreateProgram(
-    tree: Tree, basePath: string, tsconfigPath: string,
-    logger: logging.LoggerApi): {compiler: AotCompiler, program: ts.Program}|null {
+    tree: Tree, basePath: string, tsconfigPath: string, logger: logging.LoggerApi,
+    compilerCliModule: typeof import('@angular/compiler-cli')):
+    {compiler: AotCompiler, program: ts.Program}|null {
   try {
     const {ngcProgram, host, program, compiler} = createNgcProgram(
-        (options) => createMigrationCompilerHost(tree, options, basePath), tsconfigPath);
+        compilerCliModule, (options) => createMigrationCompilerHost(tree, options, basePath),
+        tsconfigPath);
     const syntacticDiagnostics = getErrorDiagnostics(ngcProgram.getTsSyntacticDiagnostics());
     const structuralDiagnostics = getErrorDiagnostics(ngcProgram.getNgStructuralDiagnostics());
     const configDiagnostics = getErrorDiagnostics(

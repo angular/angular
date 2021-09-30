@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PartialEvaluator, reflectObjectLiteral, TypeScriptReflectionHost} from '@angular/compiler-cli/private/migrations';
 import ts from 'typescript';
 
 import {ImportManager} from '../../utils/import_manager';
@@ -76,12 +75,16 @@ const AMBIGUOUS_CLASS_TODO = 'Add Angular decorator.';
 export class UndecoratedClassesWithDecoratedFieldsTransform {
   private printer = ts.createPrinter();
   private importManager = new ImportManager(this.getUpdateRecorder, this.printer);
-  private reflectionHost = new TypeScriptReflectionHost(this.typeChecker);
-  private partialEvaluator = new PartialEvaluator(this.reflectionHost, this.typeChecker, null);
+  private reflectionHost =
+      new this.compilerCliMigrationsModule.TypeScriptReflectionHost(this.typeChecker);
+  private partialEvaluator = new this.compilerCliMigrationsModule.PartialEvaluator(
+      this.reflectionHost, this.typeChecker, null);
 
   constructor(
       private typeChecker: ts.TypeChecker,
-      private getUpdateRecorder: (sf: ts.SourceFile) => UpdateRecorder) {}
+      private getUpdateRecorder: (sf: ts.SourceFile) => UpdateRecorder,
+      private compilerCliMigrationsModule:
+          typeof import('@angular/compiler-cli/private/migrations')) {}
 
   /**
    * Migrates the specified source files. The transform adds the abstract `@Directive`
@@ -265,7 +268,7 @@ export class UndecoratedClassesWithDecoratedFieldsTransform {
     if (!ts.isObjectLiteralExpression(metadataExpr)) {
       return false;
     }
-    const metadata = reflectObjectLiteral(metadataExpr);
+    const metadata = this.compilerCliMigrationsModule.reflectObjectLiteral(metadataExpr);
     if (!metadata.has('selector')) {
       return false;
     }

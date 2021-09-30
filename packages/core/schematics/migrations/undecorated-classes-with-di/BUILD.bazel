@@ -12,7 +12,6 @@ ts_library(
     deps = [
         "//packages/compiler",
         "//packages/compiler-cli",
-        "//packages/compiler-cli/private",
         "//packages/core",
         "//packages/core/schematics/utils",
         "@npm//@angular-devkit/core",

@@ -33,3 +33,23 @@ export async function loadEsmModule<T>(modulePath: string|URL): Promise<T> {
     return namespaceObject;
   }
 }
+
+/**
+ * Attempt to load the new `@angular/compiler-cli/private/migrations` entry. If not yet present
+ * the previous deep imports are used to constructor an equivalent object.
+ *
+ * @returns A Promise that resolves to the dynamically imported compiler-cli private migrations
+ * entry or an equivalent object if not available.
+ */
+export async function loadCompilerCliMigrationsModule():
+    Promise<typeof import('@angular/compiler-cli/private/migrations')> {
+  try {
+    return await loadEsmModule('@angular/compiler-cli/private/migrations');
+  } catch {
+    // rules_nodejs currently does not support exports field entries. This is a temporary workaround
+    // that leverages devmode currently being CommonJS. If that changes before rules_nodejs supports
+    // exports then this workaround needs to be reworked.
+    // TODO_ESM: This can be removed once Bazel supports exports fields.
+    return require('@angular/compiler-cli/private/migrations.js');
+  }
+}
