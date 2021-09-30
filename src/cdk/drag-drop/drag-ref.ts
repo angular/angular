@@ -1098,7 +1098,7 @@ export class DragRef<T = any> {
         const handler = ((event: TransitionEvent) => {
           if (!event || (_getEventTarget(event) === this._preview &&
               event.propertyName === 'transform')) {
-            this._preview.removeEventListener('transitionend', handler);
+            this._preview?.removeEventListener('transitionend', handler);
             resolve();
             clearTimeout(timeout);
           }
