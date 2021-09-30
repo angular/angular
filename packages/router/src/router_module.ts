@@ -451,6 +451,9 @@ export function setupRouter(
       console.group?.(`Router Event: ${(<any>e.constructor).name}`);
       console.log(e.toString());
       console.log(e);
+      console?.groupCollapsed('Call Stack');
+      console.trace();
+      console.groupEnd?.();
       console.groupEnd?.();
       // tslint:enable:no-console
     });
