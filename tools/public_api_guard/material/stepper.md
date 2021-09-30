@@ -184,6 +184,8 @@ export interface MatStepperIconContext {
 // @public
 export class MatStepperIntl {
     readonly changes: Subject<void>;
+    completedLabel: string;
+    editableLabel: string;
     optionalLabel: string;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatStepperIntl, never>;

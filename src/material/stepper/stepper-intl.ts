@@ -21,6 +21,12 @@ export class MatStepperIntl {
 
   /** Label that is rendered below optional steps. */
   optionalLabel: string = 'Optional';
+
+  /** Label that is used to indicate step as completed to screen readers. */
+  completedLabel: string = 'Completed';
+
+  /** Label that is used to indicate step as editable to screen readers. */
+  editableLabel: string = 'Editable';
 }
 
 

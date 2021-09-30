@@ -476,6 +476,68 @@ describe('MatStepper', () => {
     }));
   });
 
+  describe('basic stepper with completed label change', () => {
+    let fixture: ComponentFixture<SimpleMatHorizontalStepperApp>;
+
+    beforeEach(() => {
+      fixture = createComponent(SimpleMatHorizontalStepperApp);
+      fixture.detectChanges();
+    });
+
+    it('should re-render when the completed labels change', inject([MatStepperIntl],
+      (intl: MatStepperIntl) => {
+        const stepperDebugElement = fixture.debugElement.query(By.directive(MatStepper))!;
+        const stepperComponent: MatStepper = stepperDebugElement.componentInstance;
+
+        stepperComponent.steps.toArray()[0].editable = false;
+        stepperComponent.next();
+        fixture.detectChanges();
+
+        const header = stepperDebugElement.nativeElement.querySelector('mat-step-header');
+        const completedLabel = header.querySelector('.cdk-visually-hidden');
+
+        expect(completedLabel).toBeTruthy();
+        expect(completedLabel.textContent).toBe('Completed');
+
+        intl.completedLabel = 'Completada';
+        intl.changes.next();
+        fixture.detectChanges();
+
+        expect(completedLabel.textContent).toBe('Completada');
+    }));
+  });
+
+  describe('basic stepper with editable label change', () => {
+    let fixture: ComponentFixture<SimpleMatHorizontalStepperApp>;
+
+    beforeEach(() => {
+      fixture = createComponent(SimpleMatHorizontalStepperApp);
+      fixture.detectChanges();
+    });
+
+    it('should re-render when the editable label changes', inject([MatStepperIntl],
+      (intl: MatStepperIntl) => {
+        const stepperDebugElement = fixture.debugElement.query(By.directive(MatStepper))!;
+        const stepperComponent: MatStepper = stepperDebugElement.componentInstance;
+
+        stepperComponent.steps.toArray()[0].editable = true;
+        stepperComponent.next();
+        fixture.detectChanges();
+
+        const header = stepperDebugElement.nativeElement.querySelector('mat-step-header');
+        const editableLabel = header.querySelector('.cdk-visually-hidden');
+
+        expect(editableLabel).toBeTruthy();
+        expect(editableLabel.textContent).toBe('Editable');
+
+        intl.editableLabel = 'Modificabile';
+        intl.changes.next();
+        fixture.detectChanges();
+
+        expect(editableLabel.textContent).toBe('Modificabile');
+    }));
+  });
+
   describe('icon overrides', () => {
     let fixture: ComponentFixture<IconOverridesStepper>;
 
