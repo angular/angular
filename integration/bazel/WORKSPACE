@@ -12,11 +12,11 @@ http_archive(
 # Fetch sass rules for compiling sass files
 http_archive(
     name = "io_bazel_rules_sass",
-    sha256 = "334b2ad87c13109486a8bfdc8d80d90e4ce6a4528bc6fb090b021ec87c2c3080",
-    strip_prefix = "rules_sass-1.39.0",
+    sha256 = "b17f129f0bec33b6ebefe53d51f0b7b80963835ad940b388eea4628e9d5835e7",
+    strip_prefix = "rules_sass-1.41.1",
     urls = [
-        "https://github.com/bazelbuild/rules_sass/archive/1.39.0.zip",
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_sass/archive/1.39.0.zip",
+        "https://github.com/bazelbuild/rules_sass/archive/1.41.1.zip",
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_sass/archive/1.41.1.zip",
     ],
 )
 
