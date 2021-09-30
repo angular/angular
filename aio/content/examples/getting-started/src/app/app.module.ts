@@ -38,7 +38,7 @@ import { ShippingComponent } from './shipping/shipping.component';
 // #docregion product-details-route, http-client-module, shipping-route, cart-route
     ])
   ],
-  // #enddocregion product-details-route, cart-route
+  // #enddocregion cart-route
   // #docregion declare-product-alerts
   declarations: [
     AppComponent,
@@ -47,12 +47,13 @@ import { ShippingComponent } from './shipping/shipping.component';
     ProductAlertsComponent,
     // #enddocregion declare-product-alerts
     ProductDetailsComponent,
+    // #enddocregion product-details-route
     CartComponent,
 // #enddocregion http-client-module
     ShippingComponent
-  // #docregion declare-product-alerts, http-client-module
+  // #docregion declare-product-alerts, http-client-module, product-details-route
   ],
-  // #enddocregion declare-product-alerts
+  // #enddocregion declare-product-alerts, product-details-route
   bootstrap: [
     AppComponent
   ]
