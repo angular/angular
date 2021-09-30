@@ -428,6 +428,14 @@ export function addAttributeCompletionEntries(
           sortText: completion.propertyName,
           replacementSpan,
         });
+        entries.push({
+          kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+          name: `bind-${completion.propertyName}`,
+          insertText: buildSnippet(insertSnippet, `bind-${completion.propertyName}`),
+          isSnippet: insertSnippet,
+          sortText: completion.propertyName + '_1',
+          replacementSpan,
+        });
         // If the directive supports banana-in-a-box for this input, offer that as well.
         if (completion.twoWayBindingSupported) {
           entries.push({
@@ -436,7 +444,16 @@ export function addAttributeCompletionEntries(
             insertText: buildSnippet(insertSnippet, `[(${completion.propertyName})]`),
             isSnippet: insertSnippet,
             // This completion should sort after the property binding.
-            sortText: completion.propertyName + '_1',
+            sortText: completion.propertyName + '_2',
+            replacementSpan,
+          });
+          entries.push({
+            kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+            name: `bindon-${completion.propertyName}`,
+            insertText: buildSnippet(insertSnippet, `bindon-${completion.propertyName}`),
+            isSnippet: insertSnippet,
+            // This completion should sort after the property binding.
+            sortText: completion.propertyName + '_3',
             replacementSpan,
           });
         }
@@ -447,7 +464,7 @@ export function addAttributeCompletionEntries(
           insertText: buildSnippet(insertSnippet, completion.propertyName),
           isSnippet: insertSnippet,
           // This completion should sort after both property binding options (one-way and two-way).
-          sortText: completion.propertyName + '_2',
+          sortText: completion.propertyName + '_4',
           replacementSpan,
         });
       } else {
@@ -470,6 +487,14 @@ export function addAttributeCompletionEntries(
           insertText: buildSnippet(insertSnippet, `(${completion.eventName})`),
           isSnippet: insertSnippet,
           sortText: completion.eventName,
+          replacementSpan,
+        });
+        entries.push({
+          kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
+          name: `on-${completion.eventName}`,
+          insertText: buildSnippet(insertSnippet, `on-${completion.eventName}`),
+          isSnippet: insertSnippet,
+          sortText: completion.eventName + '_1',
           replacementSpan,
         });
       } else {
@@ -495,6 +520,16 @@ export function addAttributeCompletionEntries(
           // In the case of DOM attributes, the property binding should sort after the attribute
           // binding.
           sortText: completion.attribute + '_1',
+          replacementSpan,
+        });
+        entries.push({
+          kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+          name: `bind-${completion.attribute}`,
+          insertText: buildSnippet(insertSnippet, `bind-${completion.attribute}`),
+          isSnippet: insertSnippet,
+          // In the case of DOM attributes, the property binding should sort after the attribute
+          // binding.
+          sortText: completion.attribute + '_2',
           replacementSpan,
         });
       }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, Call, EmptyExpr, ImplicitReceiver, LiteralPrimitive, ParseSourceSpan, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, ASTWithSource, BindingPipe, Call, EmptyExpr, ImplicitReceiver, LiteralPrimitive, ParseSourceSpan, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {CompletionKind, DirectiveInScope, SymbolKind, TemplateDeclarationSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import {BoundEvent, TextAttribute} from '@angular/compiler/src/render3/r3_ast';
@@ -566,68 +566,45 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
      * sugar in some case. For Example `<div (my¦) />`, the `replacementSpan` is `(my)`, and the
      * `insertText` is `(myOutput)="$0"`.
      */
-    let includebBindingSugar = false;
-    if (options?.includeCompletionsWithSnippetText && options.includeCompletionsWithInsertText) {
+    let includeBindingSugar = false;
+    if (options?.includeCompletionsWithSnippetText === true &&
+        options.includeCompletionsWithInsertText) {
       if (this.node instanceof TmplAstBoundEvent && this.node.keySpan !== undefined) {
-        const nodeStart = this.node.keySpan.start.getContext(1, 1);
-        const nodeEnd = this.node.keySpan.end.getContext(1, 1);
-        switch (nodeStart?.before) {
-          case '(':
-            // (click) -> (click)="¦"
-            if (nodeEnd?.after[1] !== '=' && replacementSpan) {
-              replacementSpan.start--;
-              replacementSpan.length += 2;
-              insertSnippet = true;
-              includebBindingSugar = true;
-            }
-            break;
-          case '-':
-            // on-click -> on-click="¦"
-            if (nodeEnd?.after[0] !== '=') {
-              insertSnippet = true;
-            }
-            break;
+        // TODO(alxhub): modify the parser to generate an `EmptyExpr` instead.
+        let handler: AST = this.node.handler;
+        if (handler instanceof ASTWithSource) {
+          handler = handler.ast;
+        }
+        if (handler instanceof LiteralPrimitive && handler.value === 'ERROR') {
+          replacementSpan = makeReplacementSpanFromParseSourceSpan(this.node.sourceSpan);
+          insertSnippet = true;
+          includeBindingSugar = true;
         }
       }
 
       if (this.node instanceof TmplAstBoundAttribute && this.node.keySpan !== undefined) {
-        const nodeStart = this.node.keySpan.start.getContext(1, 1);
-        const nodeEnd = this.node.keySpan.end.getContext(2, 1);
-        switch (nodeStart?.before) {
-          case '[':
-            // [property] -> [property]="¦"
-            if (nodeEnd?.after[1] !== '=' && replacementSpan) {
-              replacementSpan.start--;
-              replacementSpan.length += 2;
-              insertSnippet = true;
-              includebBindingSugar = true;
-            }
-            break;
-          case '(':
-            // [(property)] -> [(property)]="¦"
-            if (this.nodeContext === CompletionNodeContext.TwoWayBinding &&
-                nodeEnd?.after[2] !== '=' && replacementSpan) {
-              replacementSpan.start -= 2;
-              replacementSpan.length += 4;
-              insertSnippet = true;
-              includebBindingSugar = true;
-            }
-            break;
-          case '-':
-            // bind-property -> bind-property="¦"
-            // bindon-property -> bindon-property="¦"
-            if (nodeEnd?.after[0] !== '=') {
-              insertSnippet = true;
-            }
-            break;
+        if (this.node.valueSpan === undefined ||
+            (this.node.value instanceof ASTWithSource &&
+             this.node.value.ast instanceof EmptyExpr)) {
+          replacementSpan = makeReplacementSpanFromParseSourceSpan(this.node.sourceSpan);
+          insertSnippet = true;
+          includeBindingSugar = true;
         }
       }
 
       if (this.node instanceof TmplAstTextAttribute && this.node.keySpan !== undefined) {
-        const nodeEnd = this.node.keySpan.end.getContext(1, 1);
-        if (nodeEnd?.after[0] !== '=') {
-          // *ngFor -> *ngFor="¦"
-          insertSnippet = true;
+        const nodeStart = this.node.keySpan.start.getContext(1, 1);
+        if (nodeStart?.before[0] === '*') {
+          const nodeEnd = this.node.keySpan.end.getContext(1, 1);
+          if (nodeEnd?.after[0] !== '=') {
+            // *ngFor -> *ngFor="¦"
+            insertSnippet = true;
+          }
+        } else {
+          if (this.node.value === '') {
+            replacementSpan = makeReplacementSpanFromParseSourceSpan(this.node.sourceSpan);
+            insertSnippet = true;
+          }
         }
       }
 
@@ -681,11 +658,12 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       }
 
       // Is the completion in an attribute context (instead of a property context)?
-      const isAttributeContext = includebBindingSugar ||
+      const isAttributeContext = includeBindingSugar ||
           (this.node instanceof TmplAstElement || this.node instanceof TmplAstTextAttribute);
       // Is the completion for an element (not an <ng-template>)?
       const isElementContext =
           this.node instanceof TmplAstElement || this.nodeParent instanceof TmplAstElement;
+
       addAttributeCompletionEntries(
           entries, completion, isAttributeContext, isElementContext, replacementSpan,
           insertSnippet);
