@@ -61,7 +61,6 @@
     "dependency-graph": "^0.11.0",
     "magic-string": "^0.25.0",
     "semver": "^7.0.0",
-    "source-map": "^0.6.1",
     "sourcemap-codec": "^1.4.8",
     "tslib": "^2.3.0",
     "yargs": "^17.2.1"
