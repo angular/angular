@@ -1,8 +1,8 @@
 const {exec} = require('shelljs');
-const minimist = require('minimist');
+const {Parser: parser} = require('yargs/helpers');
 
 // Remove all command line flags from the arguments.
-const argv = minimist(process.argv.slice(2));
+const argv = parser(process.argv.slice(2));
 // The command the user would like to run, either 'accept' or 'test'
 const USER_COMMAND = argv._[0];
 // The shell command to query for all Public API guard tests.
