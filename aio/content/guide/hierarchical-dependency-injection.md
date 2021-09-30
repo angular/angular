@@ -1072,7 +1072,7 @@ the service becomes available only in the `VillainsListComponent` and its sub-co
 `VillainService` is a singleton with respect to `VillainsListComponent`
 because that is where it is declared. As long as `VillainsListComponent`
 does not get destroyed it will be the same instance of `VillainService`
-but if there are multilple instances of `VillainsListComponent`, then each
+but if there are multiple instances of `VillainsListComponent`, then each
 instance of `VillainsListComponent` will have its own instance of `VillainService`.
 
 
