@@ -61,6 +61,7 @@ v12 - v15
 | `@angular/core/testing` | [`aotSummaries` field of the `TestModuleMetadata` type](#testing)                                                                           | <!--v13--> v14         |
 | `@angular/forms`        | [`FormBuilder.group` legacy options parameter](api/forms/FormBuilder#group)                   | <!--v11--> v14        |
 | `@angular/service-worker`| [`SwUpdate.activated`](api/service-worker/SwUpdate#activated)                                | <!--v13--> unspecified |
+| `@angular/service-worker`| [`SwUpdate.available`](api/service-worker/SwUpdate#available)                                | <!--v13--> unspecified |
 | `@angular/router`       | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props)                 | unspecified           |
 | template syntax         | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector)                            | <!--v7--> unspecified |
 
@@ -138,6 +139,7 @@ This section contains a complete list all of the currently-deprecated APIs, with
 | API                                                            | Replacement                                                                            | Deprecation announced    | Notes
 |:---                                                            |:---                                                                                    |:---                      |:---
 | [`SwUpdate.activated`](api/service-worker/SwUpdate#activated)  | [`SwUpdate.activateUpdate` return value](api/service-worker/SwUpdate#activateUpdate)   | v13                      | [`SwUpdate.activateUpdate`](api/service-worker/SwUpdate#activateUpdate)  return value indicates if an update was successfully activated |
+| [`SwUpdate.available`](api/service-worker/SwUpdate#available)  | [`SwUpdate.versionUpdates`](api/service-worker/SwUpdate#versionUpdates)                | v13                      | Behavior of [`SwUpdate.available`](api/service-worker/SwUpdate#available) can be rebuild by filtering for the  [`VersionReadyEvent`](api/service-worker/VersionReadyEvent) |
 
 {@a service-worker}
 
