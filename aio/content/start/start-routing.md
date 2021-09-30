@@ -21,7 +21,7 @@ This section shows you how to define a route to show individual product details.
     In the file list, right-click the `app` folder, choose `Angular Generator` and `Component`.
     Name the component `product-details`.
 
-1. In `app.module.ts`, add a route for product details, with a `path` of `products/:productId` and `ProductDetailsComponent` for the `component`.
+1. In `app.module.ts`, add a route for product details, with a `path` of `products/:productId` and `ProductDetailsComponent` for the `component`, include `ProductDetailsComponent` in `AppModule`'s declarations.
 
     <code-example header="src/app/app.module.ts" path="getting-started/src/app/app.module.ts" region="product-details-route">
     </code-example>
