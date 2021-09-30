@@ -76,7 +76,7 @@ def npm_package_archives():
 """
     for name in npm_packages_to_archive:
         label_name = _npm_package_archive_label(name)
-        last_segment_name = name if name.find("/") == -1 else name.split("/")[-1]
+        last_segment_name = name.split("/")[-1]
         result += """pkg_tar(
     name = "{label_name}",
     srcs = ["//{name}:{last_segment_name}__all_files"],
@@ -143,7 +143,7 @@ def _angular_integration_test(name, **kwargs):
         if pkg in use_view_engine_packages:
             npm_packages["@npm//:" + _npm_package_archive_label("%s-12" % pkg)] = pkg
         else:
-            last_segment_name = pkg if pkg.find("/") == -1 else pkg.split("/")[-1]
+            last_segment_name = pkg.split("/")[-1]
             npm_packages["//packages/%s:npm_package_archive" % last_segment_name] = pkg
 
     npm_integration_test(
