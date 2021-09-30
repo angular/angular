@@ -10,6 +10,7 @@ import {Location, LocationStrategy} from '@angular/common';
 import {MockLocationStrategy, SpyLocation} from '@angular/common/testing';
 import {Compiler, Injector, ModuleWithProviders, NgModule, Optional} from '@angular/core';
 import {ChildrenOutletContexts, ExtraOptions, NoPreloading, PreloadingStrategy, provideRoutes, Route, Router, ROUTER_CONFIGURATION, RouteReuseStrategy, RouterModule, ROUTES, Routes, UrlHandlingStrategy, UrlSerializer, ɵassignExtraOptionsToRouter as assignExtraOptionsToRouter, ɵflatten as flatten, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS} from '@angular/router';
+import {EXTRA_ROUTER_TESTING_PROVIDERS} from './extra_router_testing_providers';
 
 function isUrlHandlingStrategy(opts: ExtraOptions|
                                UrlHandlingStrategy): opts is UrlHandlingStrategy {
@@ -79,8 +80,11 @@ export function setupTestingRouter(
 @NgModule({
   exports: [RouterModule],
   providers: [
-    ROUTER_PROVIDERS, {provide: Location, useClass: SpyLocation},
-    {provide: LocationStrategy, useClass: MockLocationStrategy}, {
+    ROUTER_PROVIDERS,
+    EXTRA_ROUTER_TESTING_PROVIDERS,
+    {provide: Location, useClass: SpyLocation},
+    {provide: LocationStrategy, useClass: MockLocationStrategy},
+    {
       provide: Router,
       useFactory: setupTestingRouter,
       deps: [
@@ -89,7 +93,8 @@ export function setupTestingRouter(
         [RouteReuseStrategy, new Optional()]
       ]
     },
-    {provide: PreloadingStrategy, useExisting: NoPreloading}, provideRoutes([])
+    {provide: PreloadingStrategy, useExisting: NoPreloading},
+    provideRoutes([]),
   ]
 })
 export class RouterTestingModule {
