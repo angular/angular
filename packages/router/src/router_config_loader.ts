@@ -7,6 +7,7 @@
  */
 
 import {Compiler, InjectFlags, InjectionToken, Injector, NgModuleFactory} from '@angular/core';
+import {NgModuleFactoryLoader} from '@angular/core';
 import {ConnectableObservable, from, Observable, of, Subject} from 'rxjs';
 import {catchError, map, mergeMap, refCount, tap} from 'rxjs/operators';
 
@@ -69,6 +70,9 @@ export class RouterConfigLoader {
   }
 
   private loadModuleFactory(loadChildren: LoadChildren): Observable<NgModuleFactory<any>> {
+    if (typeof loadChildren === 'string') {
+      return from(this.injector.get(NgModuleFactoryLoader).load(loadChildren));
+    }
     return wrapIntoObservable(loadChildren()).pipe(mergeMap((t: any) => {
       if (t instanceof NgModuleFactory) {
         return of(t);

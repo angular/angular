@@ -7,4 +7,8 @@
  */
 
 // This file exists to easily patch the SpyNgModuleFactoryLoader into g3
-export const EXTRA_ROUTER_TESTING_PROVIDERS = [];
+import {NgModuleFactoryLoader} from '@angular/core';
+import {SpyNgModuleFactoryLoader} from './spy_ng_module_factory_loader';
+
+export const EXTRA_ROUTER_TESTING_PROVIDERS =
+    [{provide: NgModuleFactoryLoader, useClass: SpyNgModuleFactoryLoader}];
