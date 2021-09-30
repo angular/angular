@@ -6,11 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModuleFactory} from './ng_module_factory';
-
-/**
- * Used to load ng module factories.
- */
-export abstract class NgModuleFactoryLoader {
-  abstract load(path: string): Promise<NgModuleFactory<any>>;
-}
+// This file exists for easily patching NgModuleFactoryLoader in g3
+export default {};
