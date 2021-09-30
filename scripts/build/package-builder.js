@@ -34,7 +34,7 @@ set('-e');
 const baseDir = resolve(`${__dirname}/../..`);
 
 /** @type {string} The command to use for running bazel. */
-const bazelCmd = `yarn --cwd "${baseDir}" --silent bazel`;
+const bazelCmd = process.env.BAZEL ?? `yarn --cwd "${baseDir}" --silent bazel`;
 
 /** @type {string} The absolute path to the bazel-bin directory. */
 const bazelBin = exec(`${bazelCmd} info bazel-bin`, true);
