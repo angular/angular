@@ -10,7 +10,7 @@
  * Extract i18n messages from source code
  */
 
-import minimist from 'minimist';
+import yargs from 'yargs';
 
 import {main, readCommandLineAndConfiguration} from './main';
 import {ParsedConfiguration} from './perform_compile';
@@ -24,7 +24,12 @@ export function mainXi18n(
 
 function readXi18nCommandLineAndConfiguration(args: string[]): ParsedConfiguration {
   const options: api.CompilerOptions = {};
-  const parsedArgs = minimist(args);
+  const parsedArgs = yargs(args)
+                         .option('i18nFormat', {type: 'string'})
+                         .option('locale', {type: 'string'})
+                         .option('outFile', {type: 'string'})
+                         .parseSync();
+
   if (parsedArgs.outFile) options.i18nOutFile = parsedArgs.outFile;
   if (parsedArgs.i18nFormat) options.i18nOutFormat = parsedArgs.i18nFormat;
   if (parsedArgs.locale) options.i18nOutLocale = parsedArgs.locale;

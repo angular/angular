@@ -53,7 +53,7 @@ jasmine_node_test(
         ":extract_i18n_lib",
         "//packages/core",
         "@npm//@angular/common-12",
-        "@npm//minimist",
+        "@npm//yargs",
     ],
 )
 
@@ -91,8 +91,8 @@ jasmine_node_test(
     deps = [
         ":ngc_lib",
         "//packages/core",
-        "@npm//minimist",
         "@npm//rxjs",
+        "@npm//yargs",
     ],
 )
 
