@@ -1,3 +1,54 @@
+<a name="13.0.0-next.9"></a>
+# 13.0.0-next.9 (2021-09-30)
+## Breaking Changes
+### router
+- It is no longer possible to use `Route.loadChildren` using a string
+value. The following supporting classes were removed from
+`@angular/core`:
+
+- `NgModuleFactoryLoader`
+- `SystemJsNgModuleFactoryLoader`
+
+The `@angular/router` package no longer exports these symbols:
+
+- `SpyNgModuleFactoryLoader`
+- `DeprecatedLoadChildren`
+
+The signature of the `setupTestingRouter` function from
+`@angular/core/testing` has been changed to drop its `NgModuleFactoryLoader`
+parameter, as an argument for that parameter can no longer be created.
+### bazel
+| Commit | Type | Description |
+| -- | -- | -- |
+| [62d7005a52](https://github.com/angular/angular/commit/62d7005a52304f41a48f878f176f40e90437a555) | feat | add `strict_templates` and `experimental_extended_template_diagnostics` to `ng_module()` rule ([#43582](https://github.com/angular/angular/pull/43582)) |
+| [e0a72857cc](https://github.com/angular/angular/commit/e0a72857ccda2b21a91875ee714fef608b54c083) | fix | construct a manifest file even when warnings are emitted ([#43582](https://github.com/angular/angular/pull/43582)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8d2b6affcd](https://github.com/angular/angular/commit/8d2b6affcd8c4592ca939109f4f51e65da977652) | fix | correctly interpret token arrays in @Injectable `deps` ([#43226](https://github.com/angular/angular/pull/43226)) |
+| [8f7fdc59af](https://github.com/angular/angular/commit/8f7fdc59af7f1b0a51b07e69044368c223b9f186) | fix | not evaluating new signature for __spreadArray ([#43618](https://github.com/angular/angular/pull/43618)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7dccbdd27b](https://github.com/angular/angular/commit/7dccbdd27be13eb7287f535f482b1de2c13fca74) | feat | add support for Types in ViewContainerRef.createComponent ([#43022](https://github.com/angular/angular/pull/43022)) |
+| [66fb311d20](https://github.com/angular/angular/commit/66fb311d205e51647e2c1f84a6e3adf5ef3cfd64) | fix | incorrect signature for initTestEnvironment ([#43615](https://github.com/angular/angular/pull/43615)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3e37e8979d](https://github.com/angular/angular/commit/3e37e8979d19a1ab41dea56a6b086dd0daa837f1) | fix | provide dom event completions ([#43299](https://github.com/angular/angular/pull/43299)) |
+### ngcc
+| Commit | Type | Description |
+| -- | -- | -- |
+| [988cca7ef5](https://github.com/angular/angular/commit/988cca7ef59df9c740b988eabb94fa084cfa5451) | fix | do not fail for packages which correspond with `Object` members ([#43589](https://github.com/angular/angular/pull/43589)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4f3beffdbf](https://github.com/angular/angular/commit/4f3beffdbfa974b380b2225f163d363dd17e10bd) | feat | emit activate/deactivate events when an outlet gets attached/detached ([#43333](https://github.com/angular/angular/pull/43333)) |
+| [361273fad5](https://github.com/angular/angular/commit/361273fad5030c900c83d333a779f6edbe20c688) | refactor | remove support for `loadChildren` string syntax ([#43591](https://github.com/angular/angular/pull/43591)) |
+## Special Thanks
+Adrien Crivelli, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Bobby Galli, Charles Lyding, Chris, Daniel Díaz, Dmitrij Kuba, Doug Parker, JoostK, Kristiyan Kostadinov, Pete Bacon Darwin, Rafael Santana, Raj Sekhar, Ricardo Chavarria, Teri Glover, dario-piotrowicz, enisfr and wszgrcy
+
+
 <a name="12.2.8"></a>
 # 12.2.8 (2021-09-30)
 ### compiler-cli
