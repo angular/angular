@@ -78,7 +78,7 @@ The following code snippet defines a reusable animation named `slideInAnimation`
 
 <code-example path="animations/src/app/animations.ts" header="src/app/animations.ts" region="route-animations" language="typescript"></code-example>
 
-The animation definition (which we will break down in the next sections) does several things:
+The animation definition performs the following tasks:
 
 * Defines two transitions (a single `trigger` can define multiple states and transitions).
 * Adjusts the styles of the host and child views to control their relative positions during the transition.
@@ -99,7 +99,7 @@ So, let's break down the animation definition and see more closely what it does.
 
 ### Styling the host and child components
 
-During a transition, a new view is inserted directly after the old one and both elements appear on screen at the same time. To prevent this, apply additional styling to the host view, and to the removed and inserted child views. For this the host view uses relative positioning, and the child views use absolute positioning. Adding styling to the views animates the containers in place, without the DOM moving things around.
+During a transition, a new view is inserted directly after the old one and both elements appear on screen at the same time. To prevent this behavior, update the host view to use relative positioning. Then, update the removed and inserted child views to use absolute positioning. Adding these styles to the views animates the containers in place, without manipulating the DOM.
 
 <code-example path="animations/src/app/animations.ts" header="src/app/animations.ts (Break down)" region="style-view" language="typescript"></code-example>
 

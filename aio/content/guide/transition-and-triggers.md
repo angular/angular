@@ -33,7 +33,7 @@ Use a double arrow syntax to specify state-to-state transitions in both directio
 ### Using wildcard state with multiple transition states
 
 In the two-state button example, the wildcard isn't that useful because there are only two possible states, `open` and `closed`.
-Wildcard states are more useful when an element in one particular state has multiple potential states that it can change to.
+In general, use wildcard states when an element in one particular state has multiple potential states that it can change to.
 If the button can change from `open` to either `closed` or something like `inProgress`, using a wildcard state could reduce the amount of coding needed.
 
 <div class="lightbox">
