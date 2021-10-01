@@ -1,10 +1,9 @@
 #!/bin/env node
-'use strict';
 
 /**
  * Usage:
  * ```sh
- * node scripts/audit-web-app <url> <min-scores> [<log-file>]
+ * node scripts/audit-web-app.mjs <url> <min-scores> [<log-file>]
  * ```
  *
  * Runs audits against the specified URL on specific categories (accessibility, best practices, performance, PWA, SEO).
@@ -27,10 +26,10 @@
  */
 
 // Imports
-const lighthouse = require('lighthouse');
-const printer = require('lighthouse/lighthouse-cli/printer');
-const logger = require('lighthouse-logger');
-const puppeteer = require('puppeteer');
+import lighthouse from 'lighthouse';
+import * as printer from 'lighthouse/lighthouse-cli/printer.js';
+import logger from 'lighthouse-logger';
+import puppeteer from 'puppeteer';
 
 // Constants
 const AUDIT_CATEGORIES = ['accessibility', 'best-practices', 'performance', 'pwa', 'seo'];

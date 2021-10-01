@@ -1,10 +1,9 @@
 #!/bin/env node
-'use strict';
 
 /**
  * Usage:
  * ```sh
- * node scripts/test-aio-a11y <origin>
+ * node scripts/test-aio-a11y.mjs <origin>
  * ```
  *
  * Runs accessibility audits on several (pre-defined) pages on the specified origin. It fails, if
@@ -15,7 +14,10 @@
  */
 
 // Imports
-const sh = require('shelljs');
+import {dirname} from 'path';
+import sh from 'shelljs';
+import {fileURLToPath} from 'url';
+
 sh.set('-e');
 
 // Constants
@@ -32,7 +34,8 @@ const MIN_SCORES_PER_PAGE = {
 };
 
 // Run
-const auditWebAppCmd = `"${process.execPath}" "${__dirname}/audit-web-app"`;
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const auditWebAppCmd = `"${process.execPath}" "${__dirname}/audit-web-app.mjs"`;
 const origin = process.argv[2];
 for (const [page, minScore] of Object.entries(MIN_SCORES_PER_PAGE)) {
   sh.exec(`${auditWebAppCmd} ${origin}/${page} accessibility:${minScore}`);
