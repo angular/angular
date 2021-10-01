@@ -205,8 +205,8 @@ describe('Animation Tests', () => {
       const heroesList = filterStagger.getHeroesList();
       const total = await heroesList.count();
 
-      const formInput = filterStagger.getFormInput();
-      await formInput.sendKeys('Mag');
+      const input = filterStagger.getInput();
+      await input.sendKeys('Mag');
 
       await browser.wait(async () => await heroesList.count() === 2, 2000);
 
