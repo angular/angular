@@ -374,3 +374,20 @@ export function getTemplateLocationFromShimLocation(
   }
   return {templateUrl, span};
 }
+
+export function isBoundEventWithSyntheticHandler(event: t.BoundEvent): boolean {
+  // An event binding with no value (e.g. `(event|)`) parses to a `BoundEvent` with a
+  // `LiteralPrimitive` handler with value `'ERROR'`, as opposed to a property binding with no
+  // value which has an `EmptyExpr` as its value. This is a synthetic node created by the binding
+  // parser, and is not suitable to use for Language Service analysis. Skip it.
+  //
+  // TODO(alxhub): modify the parser to generate an `EmptyExpr` instead.
+  let handler: e.AST = event.handler;
+  if (handler instanceof e.ASTWithSource) {
+    handler = handler.ast;
+  }
+  if (handler instanceof e.LiteralPrimitive && handler.value === 'ERROR') {
+    return true;
+  }
+  return false;
+}

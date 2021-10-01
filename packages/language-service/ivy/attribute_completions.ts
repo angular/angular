@@ -428,11 +428,13 @@ export function addAttributeCompletionEntries(
           sortText: completion.propertyName,
           replacementSpan,
         });
+        // Offer a completion of the input binding as an attribute.
         entries.push({
-          kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
-          name: `bind-${completion.propertyName}`,
-          insertText: buildSnippet(insertSnippet, `bind-${completion.propertyName}`),
+          kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
+          name: completion.propertyName,
+          insertText: buildSnippet(insertSnippet, completion.propertyName),
           isSnippet: insertSnippet,
+          // This completion should sort after both property binding options (one-way and two-way).
           sortText: completion.propertyName + '_1',
           replacementSpan,
         });
@@ -457,13 +459,11 @@ export function addAttributeCompletionEntries(
             replacementSpan,
           });
         }
-        // Offer a completion of the input binding as an attribute.
         entries.push({
-          kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
-          name: completion.propertyName,
-          insertText: buildSnippet(insertSnippet, completion.propertyName),
+          kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+          name: `bind-${completion.propertyName}`,
+          insertText: buildSnippet(insertSnippet, `bind-${completion.propertyName}`),
           isSnippet: insertSnippet,
-          // This completion should sort after both property binding options (one-way and two-way).
           sortText: completion.propertyName + '_4',
           replacementSpan,
         });

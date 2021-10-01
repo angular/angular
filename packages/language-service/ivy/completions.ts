@@ -15,7 +15,7 @@ import ts from 'typescript';
 import {addAttributeCompletionEntries, AttributeCompletionKind, buildAttributeCompletionTable, getAttributeCompletionSymbol} from './attribute_completions';
 import {DisplayInfo, DisplayInfoKind, getDirectiveDisplayInfo, getSymbolDisplayInfo, getTsSymbolDisplayInfo, unsafeCastDisplayInfoKindToScriptElementKind} from './display_parts';
 import {TargetContext, TargetNodeKind, TemplateTarget} from './template_target';
-import {filterAliasImports} from './utils';
+import {filterAliasImports, isBoundEventWithSyntheticHandler} from './utils';
 
 type PropertyExpressionCompletionBuilder =
     CompletionBuilder<PropertyRead|PropertyWrite|EmptyExpr|SafePropertyRead|TmplAstBoundEvent>;
@@ -567,29 +567,20 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
      * `insertText` is `(myOutput)="$0"`.
      */
     let includeBindingSugar = false;
-    if (options?.includeCompletionsWithSnippetText === true &&
-        options.includeCompletionsWithInsertText) {
-      if (this.node instanceof TmplAstBoundEvent && this.node.keySpan !== undefined) {
-        // TODO(alxhub): modify the parser to generate an `EmptyExpr` instead.
-        let handler: AST = this.node.handler;
-        if (handler instanceof ASTWithSource) {
-          handler = handler.ast;
-        }
-        if (handler instanceof LiteralPrimitive && handler.value === 'ERROR') {
-          replacementSpan = makeReplacementSpanFromParseSourceSpan(this.node.sourceSpan);
-          insertSnippet = true;
-          includeBindingSugar = true;
-        }
+    if (options?.includeCompletionsWithSnippetText && options.includeCompletionsWithInsertText) {
+      if (this.node instanceof TmplAstBoundEvent && isBoundEventWithSyntheticHandler(this.node)) {
+        replacementSpan = makeReplacementSpanFromParseSourceSpan(this.node.sourceSpan);
+        insertSnippet = true;
+        includeBindingSugar = true;
       }
 
-      if (this.node instanceof TmplAstBoundAttribute && this.node.keySpan !== undefined) {
-        if (this.node.valueSpan === undefined ||
-            (this.node.value instanceof ASTWithSource &&
-             this.node.value.ast instanceof EmptyExpr)) {
-          replacementSpan = makeReplacementSpanFromParseSourceSpan(this.node.sourceSpan);
-          insertSnippet = true;
-          includeBindingSugar = true;
-        }
+      const isBoundAttributeValueEmpty = this.node instanceof TmplAstBoundAttribute &&
+          (this.node.valueSpan === undefined ||
+           (this.node.value instanceof ASTWithSource && this.node.value.ast instanceof EmptyExpr))
+      if (isBoundAttributeValueEmpty) {
+        replacementSpan = makeReplacementSpanFromParseSourceSpan(this.node.sourceSpan);
+        insertSnippet = true;
+        includeBindingSugar = true;
       }
 
       if (this.node instanceof TmplAstTextAttribute && this.node.keySpan !== undefined) {
