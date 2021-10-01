@@ -9,7 +9,7 @@
 import ts from 'typescript';
 import type {TsickleHost} from 'tsickle';
 import yargs from 'yargs';
-import {Diagnostics, exitCodeFromResult, filterErrorsAndWarnings, formatDiagnostics, ParsedConfiguration, performCompilation, readConfiguration} from './perform_compile';
+import {Diagnostics, exitCodeFromResult, formatDiagnostics, ParsedConfiguration, performCompilation, readConfiguration} from './perform_compile';
 import {createPerformWatchHost, performWatchCompilation} from './perform_watch';
 import * as api from './transformers/api';
 import {GENERATED_FILES} from './transformers/util';
@@ -55,11 +55,17 @@ export function main(
 export function mainDiagnosticsForTest(
     args: string[], config?: NgcParsedConfiguration,
     programReuse?: {program: api.Program|undefined}, modifiedResourceFiles?: Set<string>|null,
-    tsickle?: TsickleModule): ReadonlyArray<ts.Diagnostic|api.Diagnostic> {
-  let {project, rootNames, options, errors: configErrors, watch, emitFlags} =
+    tsickle?: TsickleModule): {
+  exitCode: number,
+  diagnostics: ReadonlyArray<ts.Diagnostic|api.Diagnostic>,
+} {
+  let {rootNames, options, errors: configErrors, emitFlags} =
       config || readNgcCommandLineAndConfiguration(args);
   if (configErrors.length) {
-    return configErrors;
+    return {
+      exitCode: exitCodeFromResult(configErrors),
+      diagnostics: configErrors,
+    };
   }
 
   let oldProgram: api.Program|undefined;
@@ -80,7 +86,10 @@ export function mainDiagnosticsForTest(
     programReuse.program = program;
   }
 
-  return compileDiags;
+  return {
+    exitCode: exitCodeFromResult(compileDiags),
+    diagnostics: compileDiags,
+  };
 }
 
 function createEmitCallback(
@@ -216,7 +225,8 @@ function getFormatDiagnosticsHost(options?: api.CompilerOptions): ts.FormatDiagn
 function reportErrorsAndExit(
     allDiagnostics: Diagnostics, options?: api.CompilerOptions,
     consoleError: (s: string) => void = console.error): number {
-  const errorsAndWarnings = filterErrorsAndWarnings(allDiagnostics);
+  const errorsAndWarnings =
+      allDiagnostics.filter(d => d.category !== ts.DiagnosticCategory.Message);
   printDiagnostics(errorsAndWarnings, options, consoleError);
   return exitCodeFromResult(allDiagnostics);
 }
