@@ -61,6 +61,7 @@ v12 - v15
 | `@angular/forms`        | [`FormBuilder.group` legacy options parameter](api/forms/FormBuilder#group)                   | <!--v11--> v14        |
 | `@angular/router`       | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props)                 | unspecified           |
 | template syntax         | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector)                            | <!--v7--> unspecified |
+| template syntax         | [`bind-`, `on-`, `bindon-`, and `ref-`](#bind-syntax)                            | <!--v13--> v15 |
 
 For information about Angular CDK and Angular Material deprecations, see the [changelog](https://github.com/angular/components/blob/master/CHANGELOG.md).
 
@@ -171,6 +172,19 @@ Angular previously supported an integration with the [Web Tracing Framework (WTF
 The shadow-dom-piercing descendant combinator is deprecated and support is being [removed from major browsers and tools](https://developers.google.com/web/updates/2017/10/remove-shadow-piercing). As such, in v4 we deprecated support in Angular for all three of `/deep/`, `>>>`, and `::ng-deep`. Until removal, `::ng-deep` is preferred for broader compatibility with the tools.
 
 For more information, see [/deep/, >>>, and ::ng-deep](guide/component-styles#deprecated-deep--and-ng-deep "Component Styles guide, Deprecated deep and ngdeep") in the Component Styles guide.
+
+{@a bind-syntax}
+
+### `bind-`, `on-`, `bindon-`, and `ref-` prefixes
+
+The template prefixes `bind-`, `on-`, `bindon-`, and `ref-` have been deprecated in v13. Templates
+should use the more widely documented syntaxes for binding and references:
+
+* `[input]="value"` instead of `bind-input="value"`
+* `[@trigger]="value"` instead of	`bind-animate-trigger="value"`
+* `(click)="onClick()"` instead of `on-click="onClick()"`
+* `[(ngModel)]="value"` instead of `bindon-ngModel="value"`
+* `#templateRef` instead of `ref-templateRef`
 
 {@a template-tag}
 

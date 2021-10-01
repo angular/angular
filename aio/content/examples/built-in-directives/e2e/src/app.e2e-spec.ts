@@ -44,7 +44,7 @@ describe('Built-in Directives', () => {
   });
 
   it('should hide app-item-detail', async () => {
-    const hiddenMessage = element.all(by.css('p')).get(11);
+    const hiddenMessage = element.all(by.css('p')).get(10);
     const hiddenDiv = element.all(by.css('app-item-detail')).get(2);
 
     expect(await hiddenMessage.getText()).toContain('in the DOM');
