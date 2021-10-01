@@ -19,10 +19,6 @@ import {createMessageDiagnostic} from './transformers/util';
 
 export type Diagnostics = ReadonlyArray<ts.Diagnostic|api.Diagnostic>;
 
-export function filterErrorsAndWarnings(diagnostics: Diagnostics): Diagnostics {
-  return diagnostics.filter(d => d.category !== ts.DiagnosticCategory.Message);
-}
-
 const defaultFormatHost: ts.FormatDiagnosticsHost = {
   getCurrentDirectory: () => ts.sys.getCurrentDirectory(),
   getCanonicalFileName: fileName => fileName,
@@ -274,7 +270,8 @@ export interface PerformCompilationResult {
 }
 
 export function exitCodeFromResult(diags: Diagnostics|undefined): number {
-  if (!diags || filterErrorsAndWarnings(diags).length === 0) {
+  if (!diags) return 0;
+  if (diags.every((diag) => diag.category !== ts.DiagnosticCategory.Error)) {
     // If we have a result and didn't get any errors, we succeeded.
     return 0;
   }

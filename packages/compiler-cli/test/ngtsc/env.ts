@@ -231,7 +231,7 @@ export class NgtscTestEnvironment {
   /**
    * Run the compiler to completion, and return any `ts.Diagnostic` errors that may have occurred.
    */
-  driveDiagnostics(): ReadonlyArray<ts.Diagnostic> {
+  driveDiagnostics(expectedExitCode?: number): ReadonlyArray<ts.Diagnostic> {
     // ngtsc only produces ts.Diagnostic messages.
     let reuseProgram: {program: Program|undefined}|undefined = undefined;
     if (this.multiCompileHostExt !== null) {
@@ -240,16 +240,21 @@ export class NgtscTestEnvironment {
       };
     }
 
-    const diags = mainDiagnosticsForTest(
+    const {exitCode, diagnostics} = mainDiagnosticsForTest(
         this.commandLineArgs, undefined, reuseProgram, this.changedResources, tsickle);
-
+    if (expectedExitCode !== undefined) {
+      expect(exitCode)
+          .withContext(`Expected program to exit with code ${
+              expectedExitCode}, but it actually exited with code ${exitCode}.`)
+          .toBe(expectedExitCode);
+    }
 
     if (this.multiCompileHostExt !== null) {
       this.oldProgram = reuseProgram!.program!;
     }
 
     // In ngtsc, only `ts.Diagnostic`s are produced.
-    return diags as ReadonlyArray<ts.Diagnostic>;
+    return diagnostics as ReadonlyArray<ts.Diagnostic>;
   }
 
   async driveDiagnosticsAsync(): Promise<ReadonlyArray<ts.Diagnostic>> {
