@@ -576,7 +576,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
 
       const isBoundAttributeValueEmpty = this.node instanceof TmplAstBoundAttribute &&
           (this.node.valueSpan === undefined ||
-           (this.node.value instanceof ASTWithSource && this.node.value.ast instanceof EmptyExpr))
+           (this.node.value instanceof ASTWithSource && this.node.value.ast instanceof EmptyExpr));
       if (isBoundAttributeValueEmpty) {
         replacementSpan = makeReplacementSpanFromParseSourceSpan(this.node.sourceSpan);
         insertSnippet = true;
