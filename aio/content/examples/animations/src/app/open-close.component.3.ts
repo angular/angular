@@ -2,14 +2,14 @@
 // #docregion reusable
 import { Component } from '@angular/core';
 import { transition, trigger, useAnimation } from '@angular/animations';
-import { transAnimation } from './animations';
+import { transitionAnimation } from './animations';
 
 @Component({
   selector: 'app-open-close-reusable',
   animations: [
     trigger('openClose', [
       transition('open => closed', [
-        useAnimation(transAnimation, {
+        useAnimation(transitionAnimation, {
           params: {
             height: 0,
             opacity: 1,

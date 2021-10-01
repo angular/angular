@@ -23,7 +23,6 @@ import { slideInAnimation } from './animations';
 // #enddocregion decorator
     slideInAnimation
 // #docregion decorator
-    // animation triggers go here
   ]
 })
 // #enddocregion decorator, define
@@ -34,7 +33,7 @@ export class AppComponent {
 
 // #docregion prepare-router-outlet
   prepareRoute(outlet: RouterOutlet) {
-    return outlet && outlet.activatedRouteData && outlet.activatedRouteData.animation;
+    return outlet?.activatedRouteData?.animation;
   }
 
 // #enddocregion prepare-router-outlet

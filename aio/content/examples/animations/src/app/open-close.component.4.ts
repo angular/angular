@@ -22,7 +22,7 @@ import { trigger, transition, state, animate, style } from '@angular/animations'
       state('closed', style({
         width: '100px',
         opacity: 0.8,
-        backgroundColor: '#c6ecff'
+        backgroundColor: 'blue'
       })),
       transition('* => *', [
         animate('1s')
