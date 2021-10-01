@@ -48,8 +48,6 @@ You've seen how to add a delay between each successive animation. But you might 
 </div>
 
 The following example, uses <code><a href="api/animations/group" class="code-anchor">group</a></code>s on both `:enter` and `:leave` for two different timing configurations, thus applying two independent animations to the same element in parallel.
-<!-- I find this example a bit confusing, I think you be better to have a simpler example with just one group instead of
-making things more complex -->
 
 <code-example path="animations/src/app/hero-list-groups.component.ts" region="animationdef" header="src/app/hero-list-groups.component.ts (excerpt)" language="typescript"></code-example>
 
@@ -78,7 +76,7 @@ The `filterAnimation` in the component's decorator contains three transitions.
 
 The code in this example performs the following tasks:
 
-* Skips animating elements when the user first opens or navigates to this page (the filter animation narrows what is already there, so it only works on elements that already exist in the DOM).
+* Skips animations when the user first opens or navigates to this page (the filter animation narrows what is already there, so it only works on elements that already exist in the DOM).
 
 * Filters heroes based on the search input's value.
 

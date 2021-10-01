@@ -57,7 +57,7 @@ In addition to `path` and `component`, the `data` property of each route defines
 
 ## Router outlet
 
-After configuring the routes, add a `<router-outlet>` inside the root AppComponent template. The `<router-outlet>` directive tells the Angular router where to render the views when matched with a route.
+After configuring the routes, add a `<router-outlet>` inside the root `AppComponent` template. The `<router-outlet>` directive tells the Angular router where to render the views when matched with a route.
 
 The `<router-outlet>` directive holds the custom data set for the currently active route which can be accessed via the directive's `activatedRouteData` property, we can use such data to animate our routing transitions.
 
@@ -99,7 +99,7 @@ So, let's break down the animation definition and see more closely what it does.
 
 ### Styling the host and child components
 
-During a transition, a new view is inserted directly after the old one and both elements appear on screen at the same time. To prevent this behavior, update the host view to use relative positioning. Then, update the removed and inserted child views to use absolute positioning. Adding these styles to the views animates the containers in place, without manipulating the DOM.
+During a transition, a new view is inserted directly after the old one and both elements appear on screen at the same time. To prevent this behavior, update the host view to use relative positioning. Then, update the removed and inserted child views to use absolute positioning. Adding these styles to the views animates the containers in place and prevents one view from affecting the position of the others on the page.
 
 <code-example path="animations/src/app/animations.ts" header="src/app/animations.ts (Break down)" region="style-view" language="typescript"></code-example>
 
