@@ -15,7 +15,7 @@ The functions that control complex animation sequences are:
 
 * `query()` finds one or more inner HTML elements.
 * `stagger()` applies a cascading delay to animations for multiple elements.
-* <code><a href="api/animations/group" class="code-anchor">group</a>()</code> runs multiple animation steps in parallel.
+* <code>[group](api/animations/group)()</code> runs multiple animation steps in parallel.
 * `sequence()` runs animation steps one after another.
 
 {@a complex-sequence}
@@ -40,20 +40,20 @@ The following example demonstrates how to use the `query()` and `stagger()` func
 
 ## Parallel animation using group() function
 
-You've seen how to add a delay between each successive animation. But you might also want to configure animations that happen in parallel. For example, you might want to animate two CSS properties of the same element but use a different `easing` function for each one. For this, you can use the animation <code><a href="api/animations/group" class="code-anchor">group</a>()</code> function.
+You've seen how to add a delay between each successive animation. But you might also want to configure animations that happen in parallel. For example, you might want to animate two CSS properties of the same element but use a different `easing` function for each one. For this, you can use the animation <code>[group](api/animations/group)()</code> function.
 
 <div class="alert is-helpful">
 
-**Note:** The <code><a href="api/animations/group" class="code-anchor">group</a>()</code> function is used to group animation *steps*, rather than animated elements.
+**Note:** The <code>[group](api/animations/group)()</code> function is used to group animation *steps*, rather than animated elements.
 </div>
 
-The following example, uses <code><a href="api/animations/group" class="code-anchor">group</a></code>s on both `:enter` and `:leave` for two different timing configurations, thus applying two independent animations to the same element in parallel.
+The following example, uses <code>[group](api/animations/group)()</code>s on both `:enter` and `:leave` for two different timing configurations, thus applying two independent animations to the same element in parallel.
 
 <code-example path="animations/src/app/hero-list-groups.component.ts" region="animationdef" header="src/app/hero-list-groups.component.ts (excerpt)" language="typescript"></code-example>
 
 ## Sequential vs. parallel animations
 
-Complex animations can have many things happening at once. But what if you want to create an animation involving several animations happening one after the other? Earlier you used <code><a href="api/animations/group" class="code-anchor">group</a>()</code> to run multiple animations all at the same time, in parallel.
+Complex animations can have many things happening at once. But what if you want to create an animation involving several animations happening one after the other? Earlier you used <code>[group](api/animations/group)()</code> to run multiple animations all at the same time, in parallel.
 
 A second function called `sequence()` lets you run those same animations one after the other. Within `sequence()`, the animation steps consist of either `style()` or `animate()` function calls.
 
@@ -90,7 +90,7 @@ For each change:
 
 ## Animation sequence summary
 
-Angular functions for animating multiple elements start with `query()` to find inner elements, for example gathering all images within a `<div>`. The remaining functions, `stagger()`, <code><a href="api/animations/group" class="code-anchor">group</a>()</code>, and `sequence()`, apply cascades or lets you control how multiple animation steps are applied.
+Angular functions for animating multiple elements start with `query()` to find inner elements, for example gathering all images within a `<div>`. The remaining functions, `stagger()`, <code>[group](api/animations/group)()</code>, and `sequence()`, apply cascades or lets you control how multiple animation steps are applied.
 
 ## More on Angular animations
 

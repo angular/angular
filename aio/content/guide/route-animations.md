@@ -115,8 +115,8 @@ The animation code does the following after styling the views:
 
 * `query(':enter', style({ left: '-100%' }))` matches the view that is added and hides the newly added view by positioning it to the far left.
 * Calls `animateChild()` on the view that is leaving, to run its child animations.
-* Uses <code><a href="api/animations/group" class="code-anchor">group</a>()</code> function to make the inner animations run in parallel.
-* Within the <code><a href="api/animations/group" class="code-anchor">group</a>()</code> function:
+* Uses <code>[group](api/animations/group)()</code> function to make the inner animations run in parallel.
+* Within the <code>[group](api/animations/group)()</code> function:
     * Queries the view that is removed and animates it to slide far to the right.
     * Slides in the new view by animating the view with an easing function and duration. </br>
     This animation results in the `about` view sliding in from the left.
