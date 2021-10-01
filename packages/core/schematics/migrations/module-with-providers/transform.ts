@@ -30,7 +30,8 @@ export class ModuleWithProvidersTransform {
   constructor(
       private typeChecker: ts.TypeChecker,
       private getUpdateRecorder: (sf: ts.SourceFile) => UpdateRecorder,
-      private compilerCliMigrationsModule: typeof import('@angular/compiler-cli/private/migrations')) {}
+      private compilerCliMigrationsModule:
+          typeof import('@angular/compiler-cli/private/migrations')) {}
 
   /** Migrates a given NgModule by walking through the referenced providers and static methods. */
   migrateModule(module: ResolvedNgModule): AnalysisFailure[] {

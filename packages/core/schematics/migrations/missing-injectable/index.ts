@@ -9,6 +9,8 @@
 import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {relative} from 'path';
 import ts from 'typescript';
+
+import {loadCompilerCliMigrationsModule, loadEsmModule} from '../../utils/load_esm';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
 import {NgDefinitionCollector} from './definition_collector';
@@ -28,10 +30,16 @@ export default function(): Rule {
           'which don\'t have that decorator set.');
     }
 
-    // Load ESM `@angular/compiler/private/migrations` using the TypeScript dynamic import
-    // workaround. Once TypeScript provides support for keeping the dynamic import this workaround
-    // can be changed to a direct dynamic import.
-    const compilerCliMigrationsModule = await loadCompilerCliMigrationsModule();
+    let compilerCliMigrationsModule;
+    try {
+      // Load ESM `@angular/compiler/private/migrations` using the TypeScript dynamic import
+      // workaround. Once TypeScript provides support for keeping the dynamic import this workaround
+      // can be changed to a direct dynamic import.
+      compilerCliMigrationsModule = await loadCompilerCliMigrationsModule();
+    } catch (e) {
+      throw new SchematicsException(
+          `Unable to load the '@angular/compiler-cli' package. Details: ${e.message}`);
+    }
 
     for (const tsconfigPath of [...buildPaths, ...testPaths]) {
       failures.push(...runMissingInjectableMigration(
@@ -48,7 +56,8 @@ export default function(): Rule {
 
 function runMissingInjectableMigration(
     tree: Tree, tsconfigPath: string, basePath: string,
-    compilerCliMigrationsModule: typeof import('@angular/compiler-cli/private/migrations')): string[] {
+    compilerCliMigrationsModule: typeof import('@angular/compiler-cli/private/migrations')):
+    string[] {
   const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
   const failures: string[] = [];
   const typeChecker = program.getTypeChecker();

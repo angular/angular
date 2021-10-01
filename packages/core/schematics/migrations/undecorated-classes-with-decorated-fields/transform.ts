@@ -9,7 +9,6 @@
 import ts from 'typescript';
 
 import {ImportManager} from '../../utils/import_manager';
-import {CompilerCliMigrationsModule} from '../../utils/load_esm';
 import {getAngularDecorators, NgDecorator} from '../../utils/ng_decorators';
 import {findBaseClassDeclarations} from '../../utils/typescript/find_base_classes';
 import {unwrapExpression} from '../../utils/typescript/functions';
@@ -84,7 +83,8 @@ export class UndecoratedClassesWithDecoratedFieldsTransform {
   constructor(
       private typeChecker: ts.TypeChecker,
       private getUpdateRecorder: (sf: ts.SourceFile) => UpdateRecorder,
-      private compilerCliMigrationsModule: CompilerCliMigrationsModule) {}
+      private compilerCliMigrationsModule:
+          typeof import('@angular/compiler-cli/private/migrations')) {}
 
   /**
    * Migrates the specified source files. The transform adds the abstract `@Directive`

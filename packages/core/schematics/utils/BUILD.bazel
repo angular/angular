@@ -7,10 +7,7 @@ ts_library(
     visibility = ["//packages/core/schematics:__subpackages__"],
     deps = [
         "//packages/compiler",
-        "//packages/compiler-cli/src/ngtsc/annotations",
-        "//packages/compiler-cli/src/ngtsc/imports",
-        "//packages/compiler-cli/src/ngtsc/partial_evaluator",
-        "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/compiler-cli/private",
         "@npm//@angular-devkit/core",
         "@npm//@angular-devkit/schematics",
         "@npm//@types/inquirer",

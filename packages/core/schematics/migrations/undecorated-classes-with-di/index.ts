@@ -13,7 +13,7 @@ import type {Diagnostic as NgDiagnostic} from '@angular/compiler-cli';
 import {relative} from 'path';
 import ts from 'typescript';
 
-import {CompilerCliMigrationsModule, loadCompilerCliMigrationsModule, loadEsmModule} from '../../utils/load_esm';
+import {loadCompilerCliMigrationsModule, loadEsmModule} from '../../utils/load_esm';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {canMigrateFile, createMigrationCompilerHost} from '../../utils/typescript/compiler_host';
 
@@ -77,10 +77,16 @@ export default function(): Rule {
           `Unable to load the '@angular/core' package. Details: ${e.message}`);
     }
 
-    // Load ESM `@angular/compiler/private/migrations` using the TypeScript dynamic import
-    // workaround. Once TypeScript provides support for keeping the dynamic import this workaround
-    // can be changed to a direct dynamic import.
-    const compilerCliMigrationsModule = await loadCompilerCliMigrationsModule();
+    let compilerCliMigrationsModule;
+    try {
+      // Load ESM `@angular/compiler/private/migrations` using the TypeScript dynamic import
+      // workaround. Once TypeScript provides support for keeping the dynamic import this workaround
+      // can be changed to a direct dynamic import.
+      compilerCliMigrationsModule = await loadCompilerCliMigrationsModule();
+    } catch (e) {
+      throw new SchematicsException(
+          `Unable to load the '@angular/compiler-cli' package. Details: ${e.message}`);
+    }
 
     for (const tsconfigPath of buildPaths) {
       const result = runUndecoratedClassesMigration(
@@ -113,7 +119,7 @@ function runUndecoratedClassesMigration(
     tree: Tree, tsconfigPath: string, basePath: string, logger: logging.LoggerApi,
     compilerModule: typeof import('@angular/compiler'),
     compilerCliModule: typeof import('@angular/compiler-cli'),
-    compilerCliMigrationsModule: CompilerCliMigrationsModule,
+    compilerCliMigrationsModule: typeof import('@angular/compiler-cli/private/migrations'),
     coreModule: typeof import('@angular/core')): {failures: string[], programError?: boolean} {
   const failures: string[] = [];
   const programData =

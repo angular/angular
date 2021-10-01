@@ -10,7 +10,7 @@ import {Rule, SchematicContext, SchematicsException, Tree,} from '@angular-devki
 import {relative} from 'path';
 import ts from 'typescript';
 
-import {CompilerCliMigrationsModule, loadCompilerCliMigrationsModule} from '../../utils/load_esm';
+import {loadCompilerCliMigrationsModule, loadEsmModule} from '../../utils/load_esm';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
 
@@ -33,10 +33,16 @@ export default function(): Rule {
           'Could not find any tsconfig file. Cannot add an Angular decorator to undecorated classes.');
     }
 
-    // Load ESM `@angular/compiler/private/migrations` using the TypeScript dynamic import
-    // workaround. Once TypeScript provides support for keeping the dynamic import this workaround
-    // can be changed to a direct dynamic import.
-    const compilerCliMigrationsModule = await loadCompilerCliMigrationsModule();
+    let compilerCliMigrationsModule;
+    try {
+      // Load ESM `@angular/compiler/private/migrations` using the TypeScript dynamic import
+      // workaround. Once TypeScript provides support for keeping the dynamic import this workaround
+      // can be changed to a direct dynamic import.
+      compilerCliMigrationsModule = await loadCompilerCliMigrationsModule();
+    } catch (e) {
+      throw new SchematicsException(
+          `Unable to load the '@angular/compiler-cli' package. Details: ${e.message}`);
+    }
 
     for (const tsconfigPath of allPaths) {
       failures.push(...runUndecoratedClassesMigration(
@@ -53,7 +59,8 @@ export default function(): Rule {
 
 function runUndecoratedClassesMigration(
     tree: Tree, tsconfigPath: string, basePath: string,
-    compilerCliMigrationsModule: CompilerCliMigrationsModule): string[] {
+    compilerCliMigrationsModule: typeof import('@angular/compiler-cli/private/migrations')):
+    string[] {
   const failures: string[] = [];
   const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
   const typeChecker = program.getTypeChecker();

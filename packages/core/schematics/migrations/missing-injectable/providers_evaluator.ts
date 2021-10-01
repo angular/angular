@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {CompilerCliMigrationsModule, ResolvedValue} from '../../utils/load_esm';
+import type {ResolvedValue, TypeScriptReflectionHost} from '@angular/compiler-cli/private/migrations';
 
 export interface ProviderLiteral {
   node: ts.ObjectLiteralExpression;
@@ -22,9 +22,8 @@ export interface ProviderLiteral {
  * and is therefore not available at module evaluation time.
  */
 export function createProvidersEvaluator(
-    compilerCliMigrationsModule: CompilerCliMigrationsModule,
-    host: InstanceType<CompilerCliMigrationsModule['TypeScriptReflectionHost']>,
-    checker: ts.TypeChecker): {
+    compilerCliMigrationsModule: typeof import('@angular/compiler-cli/private/migrations'),
+    host: TypeScriptReflectionHost, checker: ts.TypeChecker): {
   evaluate:
       (expr: ts.Expression) => {
         resolvedValue: ResolvedValue, literals: ProviderLiteral[]

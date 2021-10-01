@@ -44,7 +44,8 @@ export class MissingInjectableTransform {
   constructor(
       private typeChecker: ts.TypeChecker,
       private getUpdateRecorder: (sf: ts.SourceFile) => UpdateRecorder,
-      private compilerCliMigrationsModule: typeof import('@angular/compiler-cli/private/migrations')) {
+      private compilerCliMigrationsModule:
+          typeof import('@angular/compiler-cli/private/migrations')) {
     this.providersEvaluator = createProvidersEvaluator(
         compilerCliMigrationsModule,
         new compilerCliMigrationsModule.TypeScriptReflectionHost(typeChecker), typeChecker);

@@ -8,7 +8,6 @@
 
 import ts from 'typescript';
 
-import {CompilerCliMigrationsModule} from '../../utils/load_esm';
 import {getAngularDecorators, NgDecorator} from '../../utils/ng_decorators';
 import {getPropertyNameText} from '../../utils/typescript/property_name';
 
@@ -32,7 +31,8 @@ export class NgDeclarationCollector {
 
   constructor(
       public typeChecker: ts.TypeChecker,
-      private compilerCliMigrationsModule: CompilerCliMigrationsModule) {
+      private compilerCliMigrationsModule:
+          typeof import('@angular/compiler-cli/private/migrations')) {
     this.evaluator = new compilerCliMigrationsModule.PartialEvaluator(
         new compilerCliMigrationsModule.TypeScriptReflectionHost(typeChecker), typeChecker,
         /* dependencyTracker */ null);
