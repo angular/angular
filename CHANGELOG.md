@@ -1,3 +1,27 @@
+<a name="13.0.0-next.10"></a>
+# 13.0.0-next.10 (2021-10-01)
+## Breaking Changes
+### core
+- The `WrappedValue` class can no longer be imported from `@angular/core`,
+which may result in compile errors or failures at runtime if outdated
+libraries are used that are still using `WrappedValue`. The usage of
+`WrappedValue` should be removed as no replacement is available.
+### bazel
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4886585875](https://github.com/angular/angular/commit/48865858750bc1607f20db9b6bf9f913870742bc) | feat | create transition for enabling partial compilation ([#43431](https://github.com/angular/angular/pull/43431)) |
+| [49b82ae561](https://github.com/angular/angular/commit/49b82ae56112c1e0d58ac28bcab1705e1f678ab1) | feat | implement partial compilation APF v13 for `ng_package` rule ([#43431](https://github.com/angular/angular/pull/43431)) |
+| [274cb38e0b](https://github.com/angular/angular/commit/274cb38e0bb9a8bff4a48d1d15f4e16e59ec6f88) | feat | switch prodmode output to ES2020 ([#43431](https://github.com/angular/angular/pull/43431)) |
+| [73ac50c447](https://github.com/angular/angular/commit/73ac50c44759c5d3048f11d6f98b98a5e625df58) | feat | wire up partial compilation build setting in `ng_module` ([#43431](https://github.com/angular/angular/pull/43431)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ad6407dcd0](https://github.com/angular/angular/commit/ad6407dcd02881c55b6c44b18a3eefc7fed247f8) | fix | handle invalid constructor parameters in partial factory declarations ([#43619](https://github.com/angular/angular/pull/43619)) |
+| [8878183521](https://github.com/angular/angular/commit/88781835212354d7058a3674a04c2a1dd4b8f9c3) | perf | remove support for the deprecated `WrappedValue` ([#43507](https://github.com/angular/angular/pull/43507)) |
+## Special Thanks
+Daniel Díaz, George Kalpakas, JoostK, Paul Gschwendtner, Pete Bacon Darwin, dario-piotrowicz, little-pinecone and xiaohanxu-nick
+
+
 <a name="13.0.0-next.9"></a>
 # 13.0.0-next.9 (2021-09-30)
 ## Breaking Changes
