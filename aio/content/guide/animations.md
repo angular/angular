@@ -84,7 +84,7 @@ In HTML, these attributes are set using ordinary CSS styles such as color and op
 
 Use Angular's `state()` function to define different states to call at the end of each transition. This function takes two arguments: a unique name like `open` or `closed` and a `style()` function.
 
-Use the `style()` function to define a set of styles to associate with a given state name. You must write style attributes that contain dashes in [*camelCase*](guide/glossary#case-conventions), such as `'backgroundColor'` or denoted as strings, such as `'background-color'`.
+Use the `style()` function to define a set of styles to associate with a given state name. You must use [*camelCase*](guide/glossary#case-conventions) for style attributes that contain dashes, such as `backgroundColor` or wrap them in quotes, such as `'background-color'`.
 
 Let's see how Angular's `state()` function works with the `style⁣­(⁠)` function to set CSS style attributes. In this code snippet, multiple style attributes are set at the same time for the state. In the `open` state, the button has a height of 200 pixels, an opacity of 1, and a yellow background color.
 
