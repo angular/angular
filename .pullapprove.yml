@@ -1170,6 +1170,7 @@ groups:
           'docs/*.md',
           'docs/images/**',
           'goldens/*',
+          'goldens/public-api/manage.js',
           'modules/*',
           'packages/*',
           'packages/examples/test-utils/**',
@@ -1213,7 +1214,7 @@ groups:
       - *no-groups-above-this-rejected
       - *can-be-global-approved
       - >
-        contains_any_globs(files, [
+        contains_any_globs(files.exclude("goldens/public-api/manage.js"), [
           'goldens/public-api/**',
           'docs/NAMING.md',
           'aio/content/errors/*.md',
