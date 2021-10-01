@@ -7569,6 +7569,30 @@ export const Foo = Foo__PRE_R3__;
          expect(diags[0].messageText)
              .toEqual(`Could not find stylesheet file './non-existent-file.css'.`);
        });
+
+    it('passes the build when only warnings are emitted', () => {
+      env.tsconfig({
+        strictTemplates: true,
+        _extendedTemplateDiagnostics: true,
+      });
+
+      env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test-component',
+          // Invalid banana in box (should be \`[(foo)]="bar"\`).
+          template: '<div ([foo])="bar"></div>',
+        })
+        class TestComponent {
+          bar = 'test';
+        }
+      `);
+
+      const diagnostics = env.driveDiagnostics(0 /* expectedExitCode */);
+      const codes = diagnostics.map((diag) => diag.code);
+      expect(codes).toEqual([ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX)]);
+    });
   });
 
   function expectTokenAtPosition<T extends ts.Node>(
@@ -7577,9 +7601,5 @@ export const Foo = Foo__PRE_R3__;
     const node = (ts as any).getTokenAtPosition(sf, pos) as ts.Node;
     expect(guard(node)).toBe(true);
     return node as T;
-  }
-
-  function normalize(input: string): string {
-    return input.replace(/\s+/g, ' ').trim();
   }
 }
