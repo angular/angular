@@ -22,8 +22,8 @@ import { slideInAnimation } from './animations';
   animations: [
 // #enddocregion decorator
     slideInAnimation
-// #enddocregion toggle-app-animations, define
 // #docregion decorator
+// #enddocregion toggle-app-animations, define
     // animation triggers go here
 // #docregion toggle-app-animations, define
   ]
