@@ -33,11 +33,11 @@ Illustrate a router transition animation by navigating between two routes, *Home
 
 To begin, configure a set of routes using methods available in the `RouterModule` class. This route configuration tells the router how to navigate.
 
-Use the `RouterModule.forRoot` method to define a set of routes. Also, import this `RouterModule` to the `imports` array of the main module, `AppModule`.
+Use the `RouterModule.forRoot` method to define a set of routes. Also, add `RouterModule` to the `imports` array of the main module, `AppModule`.
 
 <div class="alert is-helpful">
 
-**Note:** Use the `RouterModule.forRoot` method in the root module, `AppModule`, to register top-level application routes and providers. For feature modules, call the `RouterModule.forChild` method to register additional routes.
+**Note:** Use the `RouterModule.forRoot` method in the root module, `AppModule`, to register top-level application routes and providers. For feature modules, call the `RouterModule.forChild` method instead.
 
 </div>
 
@@ -47,7 +47,7 @@ The following configuration defines the possible routes for the application.
 
 The `home` and `about` paths are associated with the `HomeComponent` and `AboutComponent` views. The route configuration tells the Angular router to instantiate the `HomeComponent` and `AboutComponent` views when the navigation matches the corresponding path.
 
-In addition to `path` and `component`, the `data` property of each route defines the key animation-specific configuration associated with a route. The `data` property value is passed into `AppComponent` when the route changes. You can also pass additional data in route configuration that is consumed within the animation. The data property value has to match the transitions defined in the `routeAnimation` trigger, which we'll define later.
+In addition to `path` and `component`, the `data` property of each route defines the key animation-specific configuration associated with a route. The `data` property value is passed into `AppComponent` when the route changes. You can also pass additional data in route configuration that is consumed within the animation. The data property value has to match the transitions defined in the `routeAnimation` trigger, which we'll define shortly.
 
 <div class="alert is-helpful">
 
@@ -57,9 +57,9 @@ In addition to `path` and `component`, the `data` property of each route defines
 
 ## Router outlet
 
-After configuring the routes, tell the Angular router where to render the views when matched with a route. Set a router outlet by inserting a `<router-outlet>` container inside the root `AppComponent` template.
+After configuring the routes, add a `<router-outlet>` inside the root `AppComponent` template. The `<router-outlet>` directive tells the Angular router where to render the views when matched with a route.
 
-The `<router-outlet>` container has an attribute directive that contains data about active routes and their states, based on the `data` property that you set in the route configuration.
+The `<router-outlet>` directive holds the custom data set for the currently active route which can be accessed via the directive's `activatedRouteData` property, we can use such data to animate our routing transitions.
 
 <code-example path="animations/src/app/app.component.html" header="src/app/app.component.html" region="route-animations-outlet"></code-example>
 
@@ -78,9 +78,9 @@ The following code snippet defines a reusable animation named `slideInAnimation`
 
 <code-example path="animations/src/app/animations.ts" header="src/app/animations.ts" region="route-animations" language="typescript"></code-example>
 
-The animation definition does several things:
+The animation definition performs the following tasks:
 
-* Defines two transitions. A single trigger can define multiple states and transitions.
+* Defines two transitions (a single `trigger` can define multiple states and transitions).
 * Adjusts the styles of the host and child views to control their relative positions during the transition.
 * Uses `query()` to determine which child view is entering and which is leaving the host view.
 
@@ -95,11 +95,13 @@ Make the animation definition available in your application by adding the reusab
 
 <code-example path="animations/src/app/app.component.ts" header="src/app/app.component.ts" region="define" language="typescript"></code-example>
 
+So, let's break down the animation definition and see more closely what it does...
+
 ### Styling the host and child components
 
-During a transition, a new view is inserted directly after the old one and both elements appear on screen at the same time. To prevent this, apply additional styling to the host view, and to the removed and inserted child views. The host view must use relative positioning, and the child views must use absolute positioning. Adding styling to the views animates the containers in place, without the DOM moving things around.
+During a transition, a new view is inserted directly after the old one and both elements appear on screen at the same time. To prevent this behavior, update the host view to use relative positioning. Then, update the removed and inserted child views to use absolute positioning. Adding these styles to the views animates the containers in place and prevents one view from affecting the position of the other on the page.
 
-<code-example path="animations/src/app/animations.ts" header="src/app/animations.ts" region="style-view" language="typescript"></code-example>
+<code-example path="animations/src/app/animations.ts" header="src/app/animations.ts (excerpt)" region="style-view" language="typescript"></code-example>
 
 ### Querying the view containers
 
@@ -107,17 +109,17 @@ Use the `query()` method to find and animate elements within the current host co
 
 Assume that you are routing from the *Home => About*.
 
-<code-example path="animations/src/app/animations.ts" header="src/app/animations.ts (Continuation from above)" region="query" language="typescript"></code-example>
+<code-example path="animations/src/app/animations.ts" header="src/app/animations.ts (excerpt)" region="query" language="typescript"></code-example>
 
 The animation code does the following after styling the views:
 
 * `query(':enter', style({ left: '-100%' }))` matches the view that is added and hides the newly added view by positioning it to the far left.
 * Calls `animateChild()` on the view that is leaving, to run its child animations.
-* Uses `group()` function to make the inner animations run in parallel.
-* Within the `group()` function:
+* Uses <code>[group](api/animations/group)()</code> function to make the inner animations run in parallel.
+* Within the <code>[group](api/animations/group)()</code> function:
     * Queries the view that is removed and animates it to slide far to the right.
     * Slides in the new view by animating the view with an easing function and duration. </br>
-    This animation results in the `about` view sliding from the left to right.
+    This animation results in the `about` view sliding in from the left.
 * Calls the `animateChild()` method on the new view to run its child animations after the main animation completes.
 
 You now have a basic routable animation that animates routing from one view to another.

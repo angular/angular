@@ -11,11 +11,11 @@ Before continuing with this topic, you should be familiar with the following:
 
 ## Creating reusable animations
 
-To create a reusable animation, use the [`animation()`](api/animations/animation) method to define an animation in a separate `.ts` file and declare this animation definition as a `const` export variable. You can then import and reuse this animation in any of your application components using the [`useAnimation()`](api/animations/useAnimation) API.
+To create a reusable animation, use the <code>[animation](api/animations/animation)()</code> function to define an animation in a separate `.ts` file and declare this animation definition as a `const` export variable. You can then import and reuse this animation in any of your application components using the <code>[useAnimation](api/animations/useAnimation)</a>()</code> function.
 
 <code-example path="animations/src/app/animations.1.ts" header="src/app/animations.ts" region="animation-const" language="typescript"></code-example>
 
-In the preceding code snippet, `transAnimation` is made reusable by declaring it as an export variable.
+In the preceding code snippet, `transitionAnimation` is made reusable by declaring it as an export variable.
 
 <div class="alert is-helpful">
 
@@ -26,7 +26,7 @@ You can also export a part of an animation. For example, the following snippet e
 
 <code-example path="animations/src/app/animations.1.ts" header="src/app/animations.1.ts" region="trigger-const" language="typescript"></code-example>
 
-From this point, you can import resuable animation variables in your component class. For example, the following code snippet imports the `transAnimation` variable for use in the `useAnimation()` method.
+From this point, you can import reusable animation variables in your component class. For example, the following code snippet imports the `transitionAnimation` variable and uses it via the `useAnimation()` function.
 
 <code-example path="animations/src/app/open-close.component.3.ts" header="src/app/open-close.component.ts" region="reusable" language="typescript"></code-example>
 
