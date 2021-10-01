@@ -348,6 +348,7 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "enableSummariesForJit": is_legacy_ngc,
         "enableIvy": is_ivy_enabled(ctx),
         "fullTemplateTypeCheck": ctx.attr.type_check,
+        "strictTemplates": ctx.attr.strict_templates,
         "_extendedTemplateDiagnostics": ctx.attr.experimental_extended_template_diagnostics,
         "compilationMode": compilation_mode,
         # In Google3 we still want to use the symbol factory re-exports in order to
@@ -366,12 +367,6 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "_useHostForImportGeneration": (not _is_bazel()),
         "_useManifestPathsAsModuleName": (not _is_bazel()),
     }
-
-    # Only add `strictTemplates` if it is requested, that way an existing patch in components won't
-    # be broken by duplicating the key.
-    # TODO(#42966): Inline this in the above dict once components' patch is removed.
-    if ctx.attr.strict_templates:
-        angular_compiler_options["strictTemplates"] = True
 
     if is_perf_requested(ctx):
         # In Ivy mode, set the `tracePerformance` Angular compiler option to enable performance
