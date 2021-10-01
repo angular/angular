@@ -99,9 +99,9 @@ So, let's break down the animation definition and see more closely what it does.
 
 ### Styling the host and child components
 
-During a transition, a new view is inserted directly after the old one and both elements appear on screen at the same time. To prevent this behavior, update the host view to use relative positioning. Then, update the removed and inserted child views to use absolute positioning. Adding these styles to the views animates the containers in place and prevents one view from affecting the position of the others on the page.
+During a transition, a new view is inserted directly after the old one and both elements appear on screen at the same time. To prevent this behavior, update the host view to use relative positioning. Then, update the removed and inserted child views to use absolute positioning. Adding these styles to the views animates the containers in place and prevents one view from affecting the position of the other on the page.
 
-<code-example path="animations/src/app/animations.ts" header="src/app/animations.ts (Break down)" region="style-view" language="typescript"></code-example>
+<code-example path="animations/src/app/animations.ts" header="src/app/animations.ts (excerpt)" region="style-view" language="typescript"></code-example>
 
 ### Querying the view containers
 
@@ -109,7 +109,7 @@ Use the `query()` method to find and animate elements within the current host co
 
 Assume that you are routing from the *Home => About*.
 
-<code-example path="animations/src/app/animations.ts" header="src/app/animations.ts (Break down)" region="query" language="typescript"></code-example>
+<code-example path="animations/src/app/animations.ts" header="src/app/animations.ts (excerpt)" region="query" language="typescript"></code-example>
 
 The animation code does the following after styling the views:
 
