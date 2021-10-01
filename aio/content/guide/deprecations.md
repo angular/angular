@@ -175,6 +175,8 @@ For more information, see [/deep/, >>>, and ::ng-deep](guide/component-styles#de
 
 {@a bind-syntax}
 
+### `bind-`, `on-`, `bindon-`, and `ref-` prefixes
+
 The template prefixes `bind-`, `on-`, `bindon-`, and `ref-` have been deprecated in v13. Templates
 should use the more widely documented syntaxes for binding and references:
 
