@@ -22,7 +22,10 @@ import { slideInAnimation } from './animations';
   animations: [
 // #enddocregion decorator
     slideInAnimation
+// #enddocregion toggle-app-animations, define
 // #docregion decorator
+    // animation triggers go here
+// #docregion toggle-app-animations, define
   ]
 })
 // #enddocregion decorator, define
