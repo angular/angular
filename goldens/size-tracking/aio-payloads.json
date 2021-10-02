@@ -3,7 +3,7 @@
     "master": {
       "uncompressed": {
         "runtime-es2017": 4841,
-        "main-es2017": 462975,
+        "main-es2017": 463310,
         "polyfills-es2017": 55235,
         "styles": 69772,
         "light-theme": 79025,
@@ -15,7 +15,7 @@
     "master": {
       "uncompressed": {
         "runtime-es2017": 4841,
-        "main-es2017": 463150,
+        "main-es2017": 463344,
         "polyfills-es2017": 55373,
         "styles": 69772,
         "light-theme": 79025,
