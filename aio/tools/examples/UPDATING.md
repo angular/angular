@@ -44,9 +44,6 @@ Any necessary changes to boilerplate files will be done automatically through mi
 - Also ensure that any relevant changes in the [shared/boilerplate/cli/](./shared/boilerplate/cli) directory are copied to the [shared/example-scaffold/](./shared/example-scaffold) directory, which is used when creating new examples (via `yarn create-example ...`).
   Only files that would not be considered boilerplate should be added to the `example-scaffold/` directory.
 
-- Ensure any changes to [cli/tslint.json](./shared/boilerplate/cli/tslint.json) are ported over to [systemjs/tslint.json](./shared/boilerplate/systemjs/tslint.json) and also [aio/content/examples/tslint.json](../../content/examples/tslint.json).
-  This last part is important, since this file is used to lint example code on CI.
-
 - Run the following command to list all the boilerplate files that are overridden in specific examples.
   ```sh
   node example-boilerplate.js list-overrides
