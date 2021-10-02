@@ -9,13 +9,6 @@
 import {ErrorCode} from './error_code';
 
 /**
- * Base URL for the error details page.
- * Keep this value in sync with a similar const in
- * `packages/core/src/render3/error_code.ts`.
- */
-export const ERROR_DETAILS_PAGE_BASE_URL = 'https://angular.io/errors';
-
-/**
  * Contains a set of error messages that have detailed guides at angular.io.
  * Full list of available error guides can be found at https://angular.io/errors
  */
