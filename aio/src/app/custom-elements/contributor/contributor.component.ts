@@ -15,11 +15,9 @@ import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
             <div class="contributor-image"
                  [style.background-image]="'url('+pictureBase+(person.picture || noPicture)+')'">
                  <div class="contributor-info">
-                     <div *ngIf="person.bio" class="info-item">
-                         <button mat-button>
-                             View Bio
-                         </button>
-                     </div>
+                     <button *ngIf="person.bio" mat-button class="info-item">
+                         View Bio
+                     </button>
                      <a *ngIf="person.twitter" mat-icon-button class="info-item icon"
                          href="https://twitter.com/{{person.twitter}}"
                          target="_blank" (click)="$event.stopPropagation()">

@@ -1,5 +1,4 @@
 @use '../../mixins';
-@use '../../constants';
 
 aio-contributor-list {
   .contributor-group {
@@ -87,17 +86,12 @@ aio-contributor {
           }
         }
       }
+    }
 
-      button {
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        color: constants.$white;
-
-        &:hover {
-          color: constants.$lightgray;
-        }
-      }
+    button {
+      background: transparent;
+      border: none;
+      cursor: pointer;
     }
   }
 
