@@ -58,9 +58,9 @@ If you would like to *implement* a new feature, please consider the size of the 
 
 ### <a name="submit-issue"></a> Submitting an Issue
 
-Before you submit an issue, please search the issue tracker, maybe an issue for your problem already exists and the discussion might inform you of workarounds readily available.
+Before you submit an issue, please search the issue tracker. An issue for your problem might already exist and the discussion might inform you of workarounds readily available.
 
-We want to fix all the issues as soon as possible, but before fixing a bug we need to reproduce and confirm it.
+We want to fix all the issues as soon as possible, but before fixing a bug, we need to reproduce and confirm it.
 In order to reproduce bugs, we require that you provide a minimal reproduction.
 Having a minimal reproducible scenario gives us a wealth of important information without going back and forth to you with additional questions.
 
