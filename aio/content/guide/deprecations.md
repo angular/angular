@@ -704,6 +704,18 @@ Find more information about the replacement in the [`LoadChildrenCallback` docum
 
 The supporting classes `NgModuleFactoryLoader`, `SystemJsNgModuleLoader` and `SystemJsNgModuleLoaderConfig` classes were removed from `@angular/core`, as well as `SpyNgModuleFactoryLoader` from `@angular/router`.
 
+### `WrappedValue`
+
+The purpose of `WrappedValue` was to allow the same object instance to be treated as different for the purposes of change detection.
+It was commonly used with the `async` pipe in the case where the `Observable` produces the same instance of the value.
+
+Given that this use case is relatively rare and special handling impacted application performance, the `WrappedValue` API has been removed in Angular 13.
+
+If you rely on the behavior that the same object instance should cause change detection, you have two options:
+
+- Clone the resulting value so that it has a new identity.
+- Explicitly call [`ChangeDetectorRef.detectChanges()`](api/core/ChangeDetectorRef#detectchanges) to force the update.
+
 <!-- links -->
 
 [AioGuideI18nCommonMergeDefineLocalesInTheBuildConfiguration]: guide/i18n-common-merge#define-locales-in-the-build-configuration "Define locales in the build configuration - Common Internationalization task #6: Merge translations into the application | Angular"
