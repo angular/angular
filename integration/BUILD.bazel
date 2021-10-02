@@ -113,24 +113,6 @@ INTEGRATION_TESTS = {
         # The project root uses an older version than the one we want to test here.
         "pinned_npm_packages": ["rxjs"],
     },
-    "typings_test_ts41": {
-        # Special case for `typings_test_ts41` test as we want to pin
-        # `typescript` at version 4.1.x for that test and not link to the
-        # root @npm//typescript package.
-        "pinned_npm_packages": ["typescript"],
-    },
-    "typings_test_ts42": {
-        # Special case for `typings_test_ts42` test as we want to pin
-        # `typescript` at version 4.2.x for that test and not link to the
-        # root @npm//typescript package.
-        "pinned_npm_packages": ["typescript"],
-    },
-    "typings_test_ts43": {
-        # Special case for `typings_test_ts43` test as we want to pin
-        # `typescript` at version 4.3.x for that test and not link to the
-        # root @npm//typescript package.
-        "pinned_npm_packages": ["typescript"],
-    },
     "typings_test_ts44": {
         # Special case for `typings_test_ts44` test as we want to pin
         # `typescript` at version 4.4.x for that test and not link to the
