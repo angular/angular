@@ -385,6 +385,10 @@ function buildSnippet(insertSnippet: true|undefined, text: string): string|undef
  * is generated. Note that this completion does not have the `[]` property binding sugar as its
  * implicitly present in a property binding context (we're already completing within an `[attr|]`
  * expression).
+ *
+ * If the `insertSnippet` is `true`, the completion entries should includes the property or event
+ * binding sugar in some case. For Example `<div (my¦) />`, the `replacementSpan` is `(my)`, and the
+ * `insertText` is `(myOutput)="$0"`.
  */
 export function addAttributeCompletionEntries(
     entries: ts.CompletionEntry[], completion: AttributeCompletion, isAttributeContext: boolean,
@@ -418,7 +422,7 @@ export function addAttributeCompletionEntries(
       break;
     }
     case AttributeCompletionKind.DirectiveInput: {
-      if (isAttributeContext) {
+      if (isAttributeContext || insertSnippet) {
         // Offer a completion of a property binding.
         entries.push({
           kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
@@ -449,24 +453,7 @@ export function addAttributeCompletionEntries(
             sortText: completion.propertyName + '_2',
             replacementSpan,
           });
-          entries.push({
-            kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
-            name: `bindon-${completion.propertyName}`,
-            insertText: buildSnippet(insertSnippet, `bindon-${completion.propertyName}`),
-            isSnippet: insertSnippet,
-            // This completion should sort after the property binding.
-            sortText: completion.propertyName + '_3',
-            replacementSpan,
-          });
         }
-        entries.push({
-          kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
-          name: `bind-${completion.propertyName}`,
-          insertText: buildSnippet(insertSnippet, `bind-${completion.propertyName}`),
-          isSnippet: insertSnippet,
-          sortText: completion.propertyName + '_4',
-          replacementSpan,
-        });
       } else {
         entries.push({
           kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
@@ -480,21 +467,13 @@ export function addAttributeCompletionEntries(
       break;
     }
     case AttributeCompletionKind.DirectiveOutput: {
-      if (isAttributeContext) {
+      if (isAttributeContext || insertSnippet) {
         entries.push({
           kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
           name: `(${completion.eventName})`,
           insertText: buildSnippet(insertSnippet, `(${completion.eventName})`),
           isSnippet: insertSnippet,
           sortText: completion.eventName,
-          replacementSpan,
-        });
-        entries.push({
-          kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
-          name: `on-${completion.eventName}`,
-          insertText: buildSnippet(insertSnippet, `on-${completion.eventName}`),
-          isSnippet: insertSnippet,
-          sortText: completion.eventName + '_1',
           replacementSpan,
         });
       } else {
@@ -510,7 +489,7 @@ export function addAttributeCompletionEntries(
       break;
     }
     case AttributeCompletionKind.DomAttribute: {
-      if (isAttributeContext && completion.isAlsoProperty) {
+      if ((isAttributeContext || insertSnippet) && completion.isAlsoProperty) {
         // Offer a completion of a property binding to the DOM property.
         entries.push({
           kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
@@ -520,16 +499,6 @@ export function addAttributeCompletionEntries(
           // In the case of DOM attributes, the property binding should sort after the attribute
           // binding.
           sortText: completion.attribute + '_1',
-          replacementSpan,
-        });
-        entries.push({
-          kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
-          name: `bind-${completion.attribute}`,
-          insertText: buildSnippet(insertSnippet, `bind-${completion.attribute}`),
-          isSnippet: insertSnippet,
-          // In the case of DOM attributes, the property binding should sort after the attribute
-          // binding.
-          sortText: completion.attribute + '_2',
           replacementSpan,
         });
       }

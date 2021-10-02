@@ -561,17 +561,10 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     }
 
     let insertSnippet: true|undefined;
-    /**
-     * If the `insertText` includes the snippet, it should includes the property or event binding
-     * sugar in some case. For Example `<div (my¦) />`, the `replacementSpan` is `(my)`, and the
-     * `insertText` is `(myOutput)="$0"`.
-     */
-    let includeBindingSugar = false;
     if (options?.includeCompletionsWithSnippetText && options.includeCompletionsWithInsertText) {
       if (this.node instanceof TmplAstBoundEvent && isBoundEventWithSyntheticHandler(this.node)) {
         replacementSpan = makeReplacementSpanFromParseSourceSpan(this.node.sourceSpan);
         insertSnippet = true;
-        includeBindingSugar = true;
       }
 
       const isBoundAttributeValueEmpty = this.node instanceof TmplAstBoundAttribute &&
@@ -580,10 +573,11 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       if (isBoundAttributeValueEmpty) {
         replacementSpan = makeReplacementSpanFromParseSourceSpan(this.node.sourceSpan);
         insertSnippet = true;
-        includeBindingSugar = true;
       }
 
       if (this.node instanceof TmplAstTextAttribute && this.node.keySpan !== undefined) {
+        // The `sourceSpan` only includes `ngFor` and the `valueSpan` is always empty even if there
+        // is something there because we split this up into the desugared AST, `ngFor ngForOf=""`.
         const nodeStart = this.node.keySpan.start.getContext(1, 1);
         if (nodeStart?.before[0] === '*') {
           const nodeEnd = this.node.keySpan.end.getContext(1, 1);
@@ -649,7 +643,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       }
 
       // Is the completion in an attribute context (instead of a property context)?
-      const isAttributeContext = includeBindingSugar ||
+      const isAttributeContext =
           (this.node instanceof TmplAstElement || this.node instanceof TmplAstTextAttribute);
       // Is the completion for an element (not an <ng-template>)?
       const isElementContext =

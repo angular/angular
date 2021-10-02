@@ -932,20 +932,6 @@ describe('completions', () => {
       expectReplacementText(completions, templateFile.contents, '()');
     });
 
-    it('should be able to complete for the event binding via on-', () => {
-      const {templateFile} = setup(`<input dir on-my>`, '', DIR_WITH_OUTPUT);
-      templateFile.moveCursorToText('on-my¦>');
-
-      const completions = templateFile.getCompletionsAtPosition({
-        includeCompletionsWithSnippetText: true,
-        includeCompletionsWithInsertText: true,
-      });
-      expectContainInsertTextWithSnippet(
-          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
-          ['on-myOutput="$0"']);
-      expectReplacementText(completions, templateFile.contents, 'on-my');
-    });
-
     it('should be able to complete for the property binding with the value is empty', () => {
       const {templateFile} = setup(`<input [my]="">`, '', DIR_WITH_SELECTED_INPUT);
       templateFile.moveCursorToText('[my¦]=""');
@@ -972,20 +958,6 @@ describe('completions', () => {
           completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
           ['[myInput]="$0"']);
       expectReplacementText(completions, templateFile.contents, '[my]');
-    });
-
-    it('should be able to complete for the property binding via bind-', () => {
-      const {templateFile} = setup(`<input bind-my>`, '', DIR_WITH_SELECTED_INPUT);
-      templateFile.moveCursorToText('bind-my¦');
-
-      const completions = templateFile.getCompletionsAtPosition({
-        includeCompletionsWithSnippetText: true,
-        includeCompletionsWithInsertText: true,
-      });
-      expectContainInsertTextWithSnippet(
-          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
-          ['bind-myInput="$0"']);
-      expectReplacementText(completions, templateFile.contents, 'bind-my');
     });
 
     it('should be able to complete for the two way binding with the value is empty', () => {
@@ -1016,21 +988,7 @@ describe('completions', () => {
       expectReplacementText(completions, templateFile.contents, '[(mod)]');
     });
 
-    it('should be able to complete for the two way binding via bindon-', () => {
-      const {templateFile} = setup(`<h1 dir bindon-mod></h1>`, ``, DIR_WITH_TWO_WAY_BINDING);
-      templateFile.moveCursorToText('bindon-mod¦');
-
-      const completions = templateFile.getCompletionsAtPosition({
-        includeCompletionsWithSnippetText: true,
-        includeCompletionsWithInsertText: true,
-      });
-      expectContainInsertTextWithSnippet(
-          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
-          ['bindon-model="$0"']);
-      expectReplacementText(completions, templateFile.contents, 'bindon-mod');
-    });
-
-    xit('should be able to complete for the structural directive with the value is empty', () => {
+    it('should be able to complete for the structural directive with the value is empty', () => {
       const {templateFile} = setup(`<input dir *ngFor="">`, '', NG_FOR_DIR);
       templateFile.moveCursorToText('ngFor¦="">');
 
@@ -1038,10 +996,20 @@ describe('completions', () => {
         includeCompletionsWithSnippetText: true,
         includeCompletionsWithInsertText: true,
       });
-      expectContainInsertTextWithSnippet(
-          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
-          ['ngFor="$0"']);
-      expectReplacementText(completions, templateFile.contents, 'ngFor=""');
+      // Now here is using the `=` to check the value of the structural directive. If the
+      // sourceSpan/valueSpan made more sense, it should behave like this `ngFor¦="" -> ngFor="¦"`,
+      // and enable comments below.
+      //
+      // expectContainInsertTextWithSnippet(
+      //     completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
+      //     ['ngFor="$0"']);
+      // expectReplacementText(completions, templateFile.contents, 'ngFor=""');
+      expectContain(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
+          ['ngFor']);
+      expect(completions?.entries[0]).toBeDefined();
+      expect(completions?.entries[0].isSnippet).toBeUndefined();
+      expectReplacementText(completions, templateFile.contents, 'ngFor');
     });
 
     it('should be able to complete for the structural directive', () => {
