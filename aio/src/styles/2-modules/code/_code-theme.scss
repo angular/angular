@@ -87,21 +87,17 @@
   }
 
   .sidenav-content {
-    $link-color: if($is-dark-theme, constants.$cyan, constants.$darkblue);
-    code {
-      a {
-        color: $link-color;
-      }
+    code a,
+    a > code {
+      color: if($is-dark-theme, constants.$cyan, constants.$darkblue);
     }
 
     :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6):not(pre) {
       & > code {
         background-color: if($is-dark-theme, constants.$darkgray, rgba(constants.$lightgray, 0.3));
-        color: if($is-dark-theme, constants.$white, constants.$darkgray);
       }
-
-      &:is(a) > code {
-        color: $link-color;
+      &:not(a) > code {
+        color: if($is-dark-theme, constants.$white, constants.$darkgray);
       }
     }
   }
