@@ -12,9 +12,9 @@ To use the recommended configurations follow the steps below:
 - copy (or link) `.vscode/recommended-tasks.json` to `.vscode/tasks.json`
 - restart the editor
 
-If you already have your custom workspace settings you should instead manually merge the file contents.
+If you already have your custom workspace settings, you should instead manually merge the file contents.
 
-This isn't an automatic process so you will need to repeat it when settings are updated.
+This isn't an automatic process, so you will need to repeat it when settings are updated.
 
 To see the recommended extensions select "Extensions: Show Recommended Extensions" in the [Command Palette](https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette).
 
