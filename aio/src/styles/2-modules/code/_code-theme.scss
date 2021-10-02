@@ -87,16 +87,21 @@
   }
 
   .sidenav-content {
+    $link-color: if($is-dark-theme, constants.$cyan, constants.$darkblue);
     code {
       a {
-        color: if($is-dark-theme, constants.$cyan, constants.$darkblue);
+        color: $link-color;
       }
     }
 
     :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6):not(pre) {
-      > code {
+      & > code {
         background-color: if($is-dark-theme, constants.$darkgray, rgba(constants.$lightgray, 0.3));
         color: if($is-dark-theme, constants.$white, constants.$darkgray);
+      }
+
+      &:is(a) > code {
+        color: $link-color;
       }
     }
   }
