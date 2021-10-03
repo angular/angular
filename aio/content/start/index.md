@@ -116,7 +116,7 @@ This section guides you through editing the HTML, also known as the template.
       <img src="generated/images/guide/start/template-syntax-product-anchor.png" alt="Product name anchor text is product name property">
     </div>
 
-1. Add the product descriptions. On a `<p>` element, use an `*ngIf` directive so that Angular only creates the `<p>` element if the current product has a description.
+1. Add the product description. On a `<p>` element, use an `*ngIf` directive so that Angular only creates the `<p>` element if the current product has a description.
 
     <code-example path="getting-started/src/app/product-list/product-list.component.3.html" header="src/app/product-list/product-list.component.html">
     </code-example>
@@ -190,7 +190,7 @@ This section walks you through creating a child component, `ProductAlertsCompone
 
   <code-example path="getting-started/src/app/product-alerts/product-alerts.component.1.ts" region="imports" header="src/app/product-alerts/product-alerts.component.ts"></code-example>
 
-1. In the `ProductAlertsComponent` class definition, define a property named `product` with an `@Input()` decorator.
+1. In the `ProductAlertsComponent` class definition, define a property named `product` of type `Product` with an `@Input()` decorator.
   The `@Input()` decorator indicates that the property value passes in from the component's parent, `ProductListComponent`.
 
   <code-example path="getting-started/src/app/product-alerts/product-alerts.component.1.ts" region="input-decorator" header="src/app/product-alerts/product-alerts.component.ts"></code-example>
