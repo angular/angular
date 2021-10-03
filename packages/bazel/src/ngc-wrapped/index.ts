@@ -17,6 +17,13 @@ import {pathToFileURL} from 'url';
 type CompilerCliModule =
     typeof import('@angular/compiler-cli')&typeof import('@angular/compiler-cli/private/bazel');
 
+/**
+ * Reference to the previously loaded `compiler-cli` module exports. We cache the exports
+ * as `ngc-wrapped` can run as part of a worker where the Angular compiler should not be
+ * resolved through a dynamic import for every build.
+ */
+let _cachedCompilerCliModule: CompilerCliModule|null = null;
+
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const NGC_GEN_FILES = /^(.*?)\.(ngfactory|ngsummary|ngstyle|shim\.ngstyle)(.*)$/;
 // FIXME: we should be able to add the assets to the tsconfig so FileLoader
@@ -58,11 +65,14 @@ async function loadModuleInterop<T>(moduleName: string): Promise<T> {
   return exports.default ?? exports as T;
 }
 
-export async function runOneBuild(
-    args: string[], inputs?: {[path: string]: string}): Promise<boolean> {
-  if (args[0] === '-p') args.shift();
-  // Strip leading at-signs, used to indicate a params file
-  const project = args[0].replace(/^@+/, '');
+/**
+ * Fetches the Angular compiler CLI module dynamically, allowing for an ESM
+ * variant of the compiler.
+ */
+async function fetchCompilerCliModule(): Promise<CompilerCliModule> {
+  if (_cachedCompilerCliModule !== null) {
+    return _cachedCompilerCliModule;
+  }
 
   // Note: We load the compiler-cli package dynamically using `loadModuleInterop` as
   // this script runs as CommonJS module but the compiler-cli could be built as strict ESM
@@ -75,7 +85,18 @@ export async function runOneBuild(
   const compilerPrivateExports =
       await loadModuleInterop<typeof import('@angular/compiler-cli/private/bazel')>(
           '@angular/compiler-cli/private/bazel');
-  const ng = {...compilerExports, ...compilerPrivateExports};
+  return _cachedCompilerCliModule = {...compilerExports, ...compilerPrivateExports};
+}
+
+export async function runOneBuild(
+    args: string[], inputs?: {[path: string]: string}): Promise<boolean> {
+  if (args[0] === '-p') {
+    args.shift();
+  }
+
+  // Strip leading at-signs, used to indicate a params file
+  const project = args[0].replace(/^@+/, '');
+  const ng = await fetchCompilerCliModule();
 
   const [parsedOptions, errors] = parseTsconfig(project);
   if (errors?.length) {
