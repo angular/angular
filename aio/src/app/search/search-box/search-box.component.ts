@@ -26,7 +26,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
     (click)="doSearch()">
   <mat-icon
     *ngIf="searchBox.value"
-    (click)="searchBox.value = ''">
+    (click)="searchBox.value = ''; searchBox.focus()">
     close
   </mat-icon>
   `

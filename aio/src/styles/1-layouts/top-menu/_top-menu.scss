@@ -165,7 +165,7 @@ mat-toolbar.app-toolbar {
     input {
       border: none;
       border-radius: 100px;
-      padding: 5px 16px;
+      padding: 5px 3rem 5px 16px;
       margin-left: 8px;
       width: 180px;
       max-width: 240px;
@@ -193,6 +193,10 @@ mat-toolbar.app-toolbar {
       }
 
       &::-webkit-search-cancel-button {
+        display: none;
+      }
+
+      &::-ms-clear {
         display: none;
       }
 
