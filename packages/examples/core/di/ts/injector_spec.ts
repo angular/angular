@@ -49,7 +49,8 @@ class MockRootScopeInjector implements Injector {
       const injector =
           Injector.create({providers: [{provide: BASE_URL, useValue: 'http://localhost'}]});
       const url = injector.get(BASE_URL);
-      // here `url` is inferred to be `string` because `BASE_URL` is `InjectionToken<string>`.
+      // Note: since `BASE_URL` is `InjectionToken<string>`
+      // `url` is correctly inferred to be `string`
       expect(url).toBe('http://localhost');
       // #enddocregion
     });
