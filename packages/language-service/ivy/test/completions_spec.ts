@@ -48,6 +48,18 @@ const DIR_WITH_OUTPUT = {
   `
 };
 
+const CUSTOM_BUTTON = {
+  'Button': `
+    @Directive({
+      selector: 'button[mat-button]',
+      inputs: ['color']
+    })
+    export class Button {
+      color!: any;
+    }
+  `
+};
+
 const DIR_WITH_TWO_WAY_BINDING = {
   'Dir': `
     @Directive({
@@ -887,7 +899,7 @@ describe('completions', () => {
       });
       expectContainInsertTextWithSnippet(
           completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
-          ['(myOutput)="$0"']);
+          ['(myOutput)="$1"']);
     });
 
     it('should be able to complete for a partial attribute', () => {
@@ -900,7 +912,7 @@ describe('completions', () => {
       });
       expectContainInsertTextWithSnippet(
           completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
-          ['(myOutput)="$0"']);
+          ['(myOutput)="$1"']);
       expectReplacementText(completions, templateFile.contents, 'my');
     });
 
@@ -914,11 +926,11 @@ describe('completions', () => {
       });
       expectContainInsertTextWithSnippet(
           completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
-          ['(myOutput)="$0"']);
+          ['(myOutput)="$1"']);
       expectReplacementText(completions, templateFile.contents, '()=""');
     });
 
-    it('should be able to complete for the event binding via ()', () => {
+    it('should be able to complete for the event binding', () => {
       const {templateFile} = setup(`<input dir ()>`, '', DIR_WITH_OUTPUT);
       templateFile.moveCursorToText('(¦)>');
 
@@ -928,8 +940,22 @@ describe('completions', () => {
       });
       expectContainInsertTextWithSnippet(
           completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
-          ['(myOutput)="$0"']);
+          ['(myOutput)="$1"']);
       expectReplacementText(completions, templateFile.contents, '()');
+    });
+
+    it('should be able to complete for the dom event binding', () => {
+      const {templateFile} = setup(`<input dir (cli)>`, '', DIR_WITH_OUTPUT);
+      templateFile.moveCursorToText('(cli¦)>');
+
+      const completions = templateFile.getCompletionsAtPosition({
+        includeCompletionsWithSnippetText: true,
+        includeCompletionsWithInsertText: true,
+      });
+      expectContainInsertTextWithSnippet(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
+          ['(click)="$1"']);
+      expectReplacementText(completions, templateFile.contents, '(cli)');
     });
 
     it('should be able to complete for the property binding with the value is empty', () => {
@@ -942,11 +968,11 @@ describe('completions', () => {
       });
       expectContainInsertTextWithSnippet(
           completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
-          ['[myInput]="$0"']);
+          ['[myInput]="$1"']);
       expectReplacementText(completions, templateFile.contents, '[my]=""');
     });
 
-    it('should be able to complete for the property binding via []', () => {
+    it('should be able to complete for the property binding', () => {
       const {templateFile} = setup(`<input [my]>`, '', DIR_WITH_SELECTED_INPUT);
       templateFile.moveCursorToText('[my¦]');
 
@@ -956,8 +982,22 @@ describe('completions', () => {
       });
       expectContainInsertTextWithSnippet(
           completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
-          ['[myInput]="$0"']);
+          ['[myInput]="$1"']);
       expectReplacementText(completions, templateFile.contents, '[my]');
+    });
+
+    it('should be able to complete for the dom property binding', () => {
+      const {templateFile} = setup(`<input [val]>`, '', DIR_WITH_SELECTED_INPUT);
+      templateFile.moveCursorToText('[val¦]');
+
+      const completions = templateFile.getCompletionsAtPosition({
+        includeCompletionsWithSnippetText: true,
+        includeCompletionsWithInsertText: true,
+      });
+      expectContainInsertTextWithSnippet(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+          ['[value]="$1"']);
+      expectReplacementText(completions, templateFile.contents, '[val]');
     });
 
     it('should be able to complete for the two way binding with the value is empty', () => {
@@ -970,11 +1010,11 @@ describe('completions', () => {
       });
       expectContainInsertTextWithSnippet(
           completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
-          ['[(model)]="$0"']);
+          ['[(model)]="$1"']);
       expectReplacementText(completions, templateFile.contents, '[(mod)]=""');
     });
 
-    it('should be able to complete for the two way binding via [()]', () => {
+    it('should be able to complete for the two way binding via', () => {
       const {templateFile} = setup(`<h1 dir [(mod)]></h1>`, ``, DIR_WITH_TWO_WAY_BINDING);
       templateFile.moveCursorToText('[(mod¦)]');
 
@@ -984,7 +1024,7 @@ describe('completions', () => {
       });
       expectContainInsertTextWithSnippet(
           completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
-          ['[(model)]="$0"']);
+          ['[(model)]="$1"']);
       expectReplacementText(completions, templateFile.contents, '[(mod)]');
     });
 
@@ -1002,7 +1042,7 @@ describe('completions', () => {
       //
       // expectContainInsertTextWithSnippet(
       //     completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
-      //     ['ngFor="$0"']);
+      //     ['ngFor="$1"']);
       // expectReplacementText(completions, templateFile.contents, 'ngFor=""');
       expectContain(
           completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
@@ -1022,11 +1062,11 @@ describe('completions', () => {
       });
       expectContainInsertTextWithSnippet(
           completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
-          ['ngFor="$0"']);
+          ['ngFor="$1"']);
       expectReplacementText(completions, templateFile.contents, 'ngFor');
     });
 
-    it('should not be included in the complete for an attribute with a value', () => {
+    it('should not be included in the completion for an attribute with a value', () => {
       const {templateFile} = setup(`<input dir myInput="1">`, '', DIR_WITH_SELECTED_INPUT);
       templateFile.moveCursorToText('myInput¦="1">');
 
@@ -1037,9 +1077,27 @@ describe('completions', () => {
       expectContain(
           completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
           ['myInput']);
-      expect(completions?.entries[0]).toBeDefined();
-      expect(completions?.entries[0].isSnippet).toBeUndefined();
+      expectDoesNotContainInsertTextWithSnippet(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
+          ['myInput="$1"']);
       expectReplacementText(completions, templateFile.contents, 'myInput');
+    });
+
+    it('should not be included in the completion for a directive attribute without input', () => {
+      const {templateFile} = setup(`<button mat-></button>`, '', CUSTOM_BUTTON);
+      templateFile.moveCursorToText('mat-¦>');
+
+      const completions = templateFile.getCompletionsAtPosition({
+        includeCompletionsWithSnippetText: true,
+        includeCompletionsWithInsertText: true,
+      });
+      expectContain(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
+          ['mat-button']);
+      expectDoesNotContainInsertTextWithSnippet(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
+          ['mat-button="$1"']);
+      expectReplacementText(completions, templateFile.contents, 'mat-');
     });
   });
 });
@@ -1060,6 +1118,16 @@ function expectContainInsertTextWithSnippet(
   for (const insertText of insertTexts) {
     expect(completions!.entries)
         .toContain(jasmine.objectContaining({insertText, kind, isSnippet: true} as any));
+  }
+}
+
+function expectDoesNotContainInsertTextWithSnippet(
+    completions: ts.CompletionInfo|undefined, kind: ts.ScriptElementKind|DisplayInfoKind,
+    insertTexts: string[]) {
+  expect(completions).toBeDefined();
+  for (const insertText of insertTexts) {
+    expect(completions!.entries)
+        .not.toContain(jasmine.objectContaining({insertText, kind, isSnippet: true} as any));
   }
 }
 

@@ -371,7 +371,7 @@ export function buildAttributeCompletionTable(
 }
 
 function buildSnippet(insertSnippet: true|undefined, text: string): string|undefined {
-  return insertSnippet ? `${text}="$0"` : undefined;
+  return insertSnippet ? `${text}="$1"` : undefined;
 }
 
 /**
@@ -400,8 +400,6 @@ export function addAttributeCompletionEntries(
         kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
         name: completion.attribute,
         sortText: completion.attribute,
-        insertText: buildSnippet(insertSnippet, completion.attribute),
-        isSnippet: insertSnippet,
         replacementSpan,
       });
       break;
@@ -521,6 +519,8 @@ export function addAttributeCompletionEntries(
       entries.push({
         kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
         name: `(${completion.eventName})`,
+        insertText: buildSnippet(insertSnippet, `(${completion.eventName})`),
+        isSnippet: insertSnippet,
         sortText: completion.eventName,
         replacementSpan,
       });
