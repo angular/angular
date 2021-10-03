@@ -530,6 +530,12 @@
             "desc": "Open Source UI Components library for creating modern, beautiful, and responsive applications in half the time with high-performing and easy-to-customize UI components.",
             "title": "CoreUI for Angular",
             "url": "https://coreui.io/angular"
+          },
+          "poui": {
+            "desc": "PO UI, Brazilian UI Components, focused on ease and productivity to Angular applications.",
+            "rev": true,
+            "title": "PO UI",
+            "url": "https://po-ui.io"
           }
         }
       }
