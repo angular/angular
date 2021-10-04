@@ -102,3 +102,6 @@ upgrade-phonecat-3-final/rollup-config.js
 #angular-compiler-options
 !angular-compiler-options/tsconfig.json
 !angular-compiler-options/tsconfig.app.json
+
+# deprecated-example
+!deprecation-guide/angular.package.json
