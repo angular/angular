@@ -96,7 +96,7 @@ export class OpenBuffer {
     return this.ngLS.getReferencesAtPosition(this.scriptInfo.fileName, this._cursor);
   }
 
-  fineRenameLocations() {
+  findRenameLocations() {
     return this.ngLS.findRenameLocations(this.scriptInfo.fileName, this._cursor);
   }
 
