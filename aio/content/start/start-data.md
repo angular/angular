@@ -105,7 +105,7 @@ For customers to see their cart, you can create the cart view in two steps:
 
     StackBlitz also generates an `ngOnInit()` by default in components.  You can ignore the `CartComponent` `ngOnInit()` for this tutorial.
 
-1. Ensure that the newly created `CartComponent` is added to the module's `declarations` in `app.module.ts`.
+1. Add the newly created `CartComponent` to the list of components declared in the module in `app.module.ts`.
 
     <code-example header="src/app/app.module.ts" path="getting-started/src/app/app.module.ts" region="declare-cart">
     </code-example>
