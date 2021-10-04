@@ -194,9 +194,10 @@ since there's a natural coexistence between the two frameworks during the
 transition period.
 
 <div class="alert is-helpful">
-With the <a href="https://blog.angular.io/finding-a-path-forward-with-angularjs-7e186fdd4429">
-deprecation of AngularJS</a>, ngUpgrade is now in a feature complete state. We will continue
-publishing security and bug fixes until December 31st, 2022.
+The <a href="https://blog.angular.io/finding-a-path-forward-with-angularjs-7e186fdd4429">end of life
+of AngularJS</a> is December 31st, 2021. With this event, ngUpgrade is now in a
+feature complete state. We will continue publishing security and bug fixes for ngUpgrade
+at least until December 31st, 2022.
 </div>
 
 ### How ngUpgrade Works
