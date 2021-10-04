@@ -50,12 +50,6 @@ export async function loadCompilerCliMigrationsModule():
     // that leverages devmode currently being CommonJS. If that changes before rules_nodejs supports
     // exports then this workaround needs to be reworked.
     // TODO_ESM: This can be removed once Bazel supports exports fields.
-    return {
-      ...require('@angular/compiler-cli/src/ngtsc/annotations'),
-      ...require('@angular/compiler-cli/src/ngtsc/imports'),
-      ...require('@angular/compiler-cli/src/ngtsc/partial_evaluator'),
-      ...require('@angular/compiler-cli/src/ngtsc/partial_evaluator/src/interpreter'),
-      ...require('@angular/compiler-cli/src/ngtsc/reflection'),
-    };
+    return require('@angular/compiler-cli/private/migrations.js');
   }
 }
