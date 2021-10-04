@@ -7,6 +7,11 @@
   "engines": {
     "node": "^12.14.1 || >=14.0.0"
   },
+  "exports": {
+    "./schematics/*": {
+      "default": "./schematics/*.js"
+    }
+  },
   "dependencies": {
     "tslib": "^2.3.0"
   },
