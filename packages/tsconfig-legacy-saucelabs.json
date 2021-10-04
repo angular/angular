@@ -1,6 +1,8 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "target": "ES5",
+    "module": "commonjs",
     // The project uses Bazel for TypeScript compilation. Unlike with Bazel, we build all
     // sources as part of a single TypeScript compilation. This results in `@internal`
     // declarations not being omitted between the logical as defined per the Bazel targets.
