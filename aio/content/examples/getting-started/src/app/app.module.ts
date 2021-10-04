@@ -14,13 +14,15 @@ import { ProductListComponent } from './product-list/product-list.component';
 import { ProductAlertsComponent } from './product-alerts/product-alerts.component';
 // #enddocregion declare-product-alerts
 import { ProductDetailsComponent } from './product-details/product-details.component';
+// #docregion declare-cart
 import { CartComponent } from './cart/cart.component';
+// #enddocregion declare-cart
 import { ShippingComponent } from './shipping/shipping.component';
 
-// #docregion product-details-route, http-client-module, shipping-route, cart-route, declare-product-alerts
+// #docregion product-details-route, http-client-module, shipping-route, cart-route, declare-product-alerts, declare-cart
 
 @NgModule({
-  // #enddocregion declare-product-alerts
+  // #enddocregion declare-product-alerts, declare-cart
   imports: [
     BrowserModule,
     // #enddocregion product-details-route, cart-route
@@ -39,7 +41,7 @@ import { ShippingComponent } from './shipping/shipping.component';
     ])
   ],
   // #enddocregion cart-route
-  // #docregion declare-product-alerts
+  // #docregion declare-product-alerts, declare-cart
   declarations: [
     AppComponent,
     TopBarComponent,
@@ -49,11 +51,12 @@ import { ShippingComponent } from './shipping/shipping.component';
     ProductDetailsComponent,
     // #enddocregion product-details-route
     CartComponent,
+    // #enddocregion declare-cart
 // #enddocregion http-client-module
     ShippingComponent
-  // #docregion declare-product-alerts, http-client-module, product-details-route
+  // #docregion declare-product-alerts, http-client-module, product-details-route, declare-cart
   ],
-  // #enddocregion declare-product-alerts, product-details-route
+  // #enddocregion declare-product-alerts, product-details-route, declare-cart
   bootstrap: [
     AppComponent
   ]
