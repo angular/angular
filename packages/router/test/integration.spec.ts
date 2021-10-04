@@ -5959,7 +5959,7 @@ describe('Integration', () => {
           CommonModule,
           RouterTestingModule.withRoutes([
             {path: 'a', component: SimpleCmp},
-            {path: 'b', component: SimpleCmp},
+            {path: 'b', component: BlankCmp},
           ]),
         ],
         providers: [{provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy}]
