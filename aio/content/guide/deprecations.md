@@ -242,17 +242,9 @@ Support for using the `ngModel` input property and `ngModelChange` event with re
 
 Now deprecated:
 
-<code-example language="html">
+<code-example path="deprecation-guide/src/app/app.component.html" region="deprecated-example" language="html"></code-example>
 
-&lt;input [formControl]="control" [(ngModel)]="value"&gt;
-
-</code-example>
-
-<code-example language="typescript">
-
-this.value = 'some value';
-
-</code-example>
+<code-example path="deprecation-guide/src/app/app.component.ts" region="deprecated-example"></code-example>
 
 This support was deprecated for several reasons. First, developers found this pattern confusing. It seems like the actual `ngModel` directive is being used, but in fact it's an input/output property named `ngModel` on the reactive form directive that approximates some, but not all, of the directive's behavior.
 It allows getting and setting a value and intercepting value events, but some of `ngModel`'s other features, such as delaying updates with`ngModelOptions` or exporting the directive, don't work.
@@ -264,41 +256,19 @@ To update your code before support is removed, you'll want to decide whether to 
 
 **After** (choice 1 - use reactive forms):
 
-<code-example language="html">
+<code-example path="deprecation-guide/src/app/app.component.html" region="reactive-form-example" language="html"></code-example>
 
-&lt;input [formControl]="control"&gt;
-
-</code-example>
-
-<code-example language="typescript">
-
-this.control.setValue('some value');
-
-</code-example>
+<code-example path="deprecation-guide/src/app/app.component.ts" region="reactive-form-example"></code-example>
 
 **After** (choice 2 - use template-driven forms):
 
-<code-example language="html">
+<code-example path="deprecation-guide/src/app/app.component.html" region="template-driven-form-example" language="html"></code-example>
 
-&lt;input [(ngModel)]="value"&gt;
-
-</code-example>
-
-<code-example language="typescript">
-
-this.value = 'some value';
-
-</code-example>
+<code-example path="deprecation-guide/src/app/app.component.ts" region="template-driven-form-example"></code-example>
 
 By default, when you use this pattern, you will see a deprecation warning once in dev mode. You can choose to silence this warning by configuring `ReactiveFormsModule` at import time:
 
-<code-example language="typescript">
-
-imports: [
-  ReactiveFormsModule.withConfig({warnOnNgModelWithFormControl: 'never'});
-]
-
-</code-example>
+<code-example path="deprecation-guide/src/app/app.module.ts" region="reactive-form-no-warning"></code-example>
 
 Alternatively, you can choose to surface a separate warning for each instance of this pattern with a configuration value of `"always"`. This may help to track down where in the code the pattern is being used as the code is being updated.
 
@@ -310,19 +280,11 @@ In v5, Angular replaced the `ReflectiveInjector` with the `StaticInjector`. The 
 
 **Before**:
 
-<code-example language="typescript">
-
-ReflectiveInjector.resolveAndCreate(providers);
-
-</code-example>
+<code-example path="deprecation-guide/src/app/app.component.ts" language="typescript" region="reflective-injector-deprecated-example"></code-example>
 
 **After**:
 
-<code-example language="typescript">
-
-Injector.create({providers});
-
-</code-example>
+<code-example path="deprecation-guide/src/app/app.component.ts" language="typescript" region="static-injector-example"></code-example>
 
 {@a loadChildren}
 
@@ -334,27 +296,11 @@ In version 8, the string syntax for the [`loadChildren`](api/router/LoadChildren
 
 **Before**:
 
-<code-example language="typescript">
-
-const routes: Routes = [{
-  path: 'lazy',
-  // The following string syntax for loadChildren is deprecated
-  loadChildren: './lazy/lazy.module#LazyModule'
-}];
-
-</code-example>
+<code-example path="deprecation-guide/src/app/app.module.ts" language="typescript" region="lazyload-deprecated-syntax"></code-example>
 
 **After**:
 
-<code-example language="typescript">
-
-const routes: Routes = [{
-  path: 'lazy',
-  // The new import() syntax
-  loadChildren: () => import('./lazy/lazy.module').then(m => m.LazyModule)
-}];
-
-</code-example>
+<code-example path="deprecation-guide/src/app/app.module.ts" language="typescript" region="lazyload-syntax"></code-example>
 
 <div class="alert is-helpful">
 
@@ -391,21 +337,12 @@ See the [dedicated migration guide for static queries](guide/static-query-migrat
 
 The following pattern is deprecated:
 
-<code-example language="typescript">
-
-@Input() @ContentChild(TemplateRef) tpl !: TemplateRef&lt;any&gt;;
-
-</code-example>
+<code-example path="deprecation-guide/src/app/app.component.ts" language="typescript" region="template-with-input-deprecated"></code-example>
 
 Rather than using this pattern, separate the two decorators into their own
 properties and add fallback logic as in the following example:
 
-<code-example language="typescript">
-
-@Input() tpl !: TemplateRef&lt;any&gt;;
-@ContentChild(TemplateRef) inlineTemplate !: TemplateRef&lt;any&gt;;
-
-</code-example>
+<code-example path="deprecation-guide/src/app/app.component.ts" language="typescript" region="template-with-input"></code-example>
 
 {@a cant-assign-template-vars}
 
@@ -414,19 +351,11 @@ properties and add fallback logic as in the following example:
 In the following example, the two-way binding means that `optionName`
 should be written when the `valueChange` event fires.
 
-<code-example language="html">
-
-&lt;option *ngFor="let optionName of options" [(value)]="optionName"&gt;&lt;/option&gt;
-
-</code-example>
+<code-example path="deprecation-guide/src/app/app.component.1.html" region="two-way-template-deprecated"></code-example>
 
 However, in practice, Angular ignores two-way bindings to template variables. Starting in version 8, attempting to write to template variables is deprecated. In a future version, we will throw to indicate that the write is not supported.
 
-<code-example language="html">
-
-&lt;option *ngFor="let optionName of options" [value]="optionName"&gt;&lt;/option&gt;
-
-</code-example>
+<code-example path="deprecation-guide/src/app/app.component.html" region="valid-template-bind"></code-example>
 
 {@a binding-to-innertext}
 
@@ -467,39 +396,11 @@ For example:
 
 **Before**
 
-<code-example language="typescript">
-
-@NgModule({...})
-export class MyModule {
-  static forRoot(config: SomeConfig): ModuleWithProviders {
-    return {
-      ngModule: SomeModule,
-      providers: [
-        {provide: SomeConfig, useValue: config}
-      ]
-    };
-  }
-}
-
-</code-example>
+<code-example path="deprecation-guide/src/app/app.module.ts" language="typescript" region="ModuleWithProvidersNonGeneric"></code-example>
 
 **After**:
 
-<code-example language="typescript">
-
-@NgModule({...})
-export class MyModule {
-  static forRoot(config: SomeConfig): ModuleWithProviders<SomeModule> {
-    return {
-      ngModule: SomeModule,
-      providers: [
-        {provide: SomeConfig, useValue: config }
-      ]
-    };
-  }
-}
-
-</code-example>
+<code-example path="deprecation-guide/src/app/app.module.ts" language="typescript" region="ModuleWithProvidersGeneric"></code-example>
 
 <!--
 ### Internet Explorer 11
@@ -525,41 +426,11 @@ This means that input coercion fields are no longer needed, as their effects can
 
 For example, the following directive:
 
-```typescript
-@Component({...})
-class SubmitButton {
-  private _disabled: boolean;
-
-  @Input()
-  get disabled(): boolean {
-    return this._disabled;
-  }
-
-  set disabled(value: boolean) {
-    this._disabled = (value === '') || value;
-  }
-
-  static ngAcceptInputType_disabled: boolean|'';
-}
-```
+<code-example path="deprecation-guide/src/app/submit-button/submit-button.component.ts" language="typescript" region="submitButtonNarrow"></code-example>
 
 can be refactored as follows:
 
-```typescript
-@Component({...})
-class SubmitButton {
-  private _disabled: boolean;
-
-  @Input()
-  get disabled(): boolean {
-    return this._disabled;
-  }
-
-  set disabled(value: boolean|'') {
-    this._disabled = (value === '') || value;
-  }
-}
-```
+<code-example path="deprecation-guide/src/app/submit-button/submit-button.component.ts" language="typescript" region="submitButton"></code-example>
 
 {@a full-template-type-check}
 ### `fullTemplateTypeCheck`
@@ -653,39 +524,11 @@ In practical terms, the `package.json` of all `@angular` packages has changed in
 
 **Before**:
 
-<code-example language="json" header="package.app.json">
-
-{
-  "name": "@angular/core",
-  "version": "9.0.0",
-  "main": "./bundles/core.umd.js",
-  "module": "./fesm5/core.js",
-  "es2015": "./fesm2015/core.js",
-  "esm5": "./esm5/core.js",
-  "esm2015": "./esm2015/core.js",
-  "fesm5": "./fesm5/core.js",
-  "fesm2015": "./fesm2015/core.js",
-  ...
-}
-
-</code-example>
+<code-example path="deprecation-guide/angular.package.json" language="json" region="deprecatedPackageJson"></code-example>
 
 **After**:
 
-<code-example language="json" header="package.app.json">
-
-{
-  "name": "@angular/core",
-  "version": "10.0.0",
-  "main": "./bundles/core.umd.js",
-  "module": "./fesm2015/core.js",
-  "es2015": "./fesm2015/core.js",
-  "esm2015": "./esm2015/core.js",
-  "fesm2015": "./fesm2015/core.js",
-  ...
-}
-
-</code-example>
+<code-example path="deprecation-guide/angular.package.json" language="json" region="packageJson"></code-example>
 
 For more information about the npm package format, see the [Angular Package Format spec](https://goo.gl/jB3GVv).
 
