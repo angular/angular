@@ -72,6 +72,9 @@ describe('@angular/core ng_package', () => {
               node: './fesm2015/testing.mjs',
               default: './fesm2020/testing.mjs',
             },
+            './schematics/*': {
+              'default': './schematics/*.js',
+            },
           }
         }));
       });

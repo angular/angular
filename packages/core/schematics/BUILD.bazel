@@ -7,7 +7,10 @@ exports_files([
 
 pkg_npm(
     name = "npm_package",
-    srcs = ["migrations.json"],
+    srcs = [
+        "migrations.json",
+        "package.json",
+    ],
     visibility = ["//packages/core:__pkg__"],
     deps = [
         "//packages/core/schematics/migrations/abstract-control-parent",
