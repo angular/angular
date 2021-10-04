@@ -1628,7 +1628,7 @@ describe('find references and rename locations', () => {
 
   function getRenameLocationsAtPosition(file: OpenBuffer) {
     env.expectNoSourceDiagnostics();
-    const result = file.fineRenameLocations();
+    const result = file.findRenameLocations();
     return result?.map((item) => humanizeDocumentSpanLike(item, env));
   }
 });
