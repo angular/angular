@@ -5941,6 +5941,59 @@ describe('Integration', () => {
          advance(fixture);
          expect(fixture).toContainComponent(Tool2Component, '(e)');
        }));
+
+    it('should not remount a destroyed component', fakeAsync(() => {
+         @Component({
+           selector: 'root-cmp',
+           template: '<div *ngIf="showRouterOutlet"><router-outlet></router-outlet></div>'
+         })
+         class RootCmpWithCondOutlet {
+           public showRouterOutlet: boolean = true;
+         }
+
+         @NgModule({
+           declarations: [RootCmpWithCondOutlet],
+           imports: [
+             CommonModule,
+             RouterTestingModule.withRoutes([
+               {path: 'a', component: SimpleCmp},
+               {path: 'b', component: BlankCmp},
+             ]),
+           ],
+           providers: [{provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy}]
+         })
+         class TestModule {
+         }
+         TestBed.configureTestingModule({imports: [TestModule]});
+
+         const router: Router = TestBed.inject(Router);
+         const fixture = createRoot(router, RootCmpWithCondOutlet);
+
+         // Activate 'a'
+         router.navigate(['a']);
+         advance(fixture);
+         expect(fixture.debugElement.query(By.directive(SimpleCmp))).toBeTruthy();
+
+         // Deactivate 'a' and detach the route
+         router.navigate(['b']);
+         advance(fixture);
+         expect(fixture.debugElement.query(By.directive(SimpleCmp))).toBeNull();
+
+         // Activate 'a' again, the route should be re-attached
+         router.navigate(['a']);
+         advance(fixture);
+         expect(fixture.debugElement.query(By.directive(SimpleCmp))).toBeTruthy();
+
+         // Hide the router-outlet, SimpleCmp should be destroyed
+         fixture.componentInstance.showRouterOutlet = false;
+         advance(fixture);
+         expect(fixture.debugElement.query(By.directive(SimpleCmp))).toBeNull();
+
+         // Show the router-outlet, SimpleCmp should be re-created
+         fixture.componentInstance.showRouterOutlet = true;
+         advance(fixture);
+         expect(fixture.debugElement.query(By.directive(SimpleCmp))).toBeTruthy();
+       }));
   });
 });
 

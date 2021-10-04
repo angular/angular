@@ -50,6 +50,7 @@ export class ChildrenOutletContexts {
     const context = this.getContext(childName);
     if (context) {
       context.outlet = null;
+      context.attachRef = null;
     }
   }
 
