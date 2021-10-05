@@ -37,8 +37,8 @@ Do this with the `checkForUpdate()` method:
 
 <code-example path="service-worker-getting-started/src/app/check-for-update.service.ts" header="check-for-update.service.ts"></code-example>
 
-This method returns a `Promise<boolean>` which indicates if an update is available for activation. The check might fail
-which will cause a rejection of the `Promise`.
+This method returns a `Promise<boolean>` which indicates if an update is available for activation.
+The check might fail, which will cause a rejection of the `Promise`.
 
 <div class="alert is-important">
 
