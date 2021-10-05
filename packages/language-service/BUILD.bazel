@@ -60,6 +60,5 @@ pkg_npm(
         ":api",
         # min bundle is not used at the moment; omit from package to speed up build
         "//packages/language-service/bundles:language-service.js",
-        "//packages/language-service/bundles:ivy.js",
     ],
 )

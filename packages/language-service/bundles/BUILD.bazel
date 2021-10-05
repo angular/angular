@@ -3,27 +3,6 @@ load("@npm//@angular/dev-infra-private/bazel/benchmark/ng_rollup_bundle:ng_rollu
 ng_rollup_bundle(
     name = "language-service",
     build_optimizer = False,
-    entry_point = "//packages/language-service:src/ts_plugin.ts",
-    format = "amd",
-    globals = {
-        "os": "os",
-        "fs": "fs",
-        "path": "path",
-        "typescript": "ts",
-        "typescript/lib/tsserverlibrary": "tss",
-    },
-    license_banner = ":banner",
-    visibility = ["//packages/language-service:__pkg__"],
-    deps = [
-        "//packages/language-service",
-        "@npm//rxjs",
-        "@npm//tslib",
-    ],
-)
-
-ng_rollup_bundle(
-    name = "ivy",
-    build_optimizer = False,
     entry_point = "//packages/language-service/ivy:ts_plugin.ts",
     format = "amd",
     globals = {
