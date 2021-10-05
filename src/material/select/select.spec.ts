@@ -2934,6 +2934,10 @@ describe('MatSelect', () => {
       subscription.unsubscribe();
     }));
 
+    it('should set an asterisk after the label if the FormControl is required', fakeAsync(() => {
+      expect(fixture.nativeElement.querySelector('.mat-form-field-required-marker')).toBeTruthy();
+    }));
+
   });
 
   describe('with custom error behavior', () => {

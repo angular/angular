@@ -2867,6 +2867,11 @@ expect(panel.scrollTop)
       subscription.unsubscribe();
     }));
 
+    it('should set an asterisk after the label if the FormControl is required', fakeAsync(() => {
+      const label = fixture.nativeElement.querySelector('.mat-mdc-form-field label');
+      expect(label.classList).toContain('mdc-floating-label--required');
+    }));
+
   });
 
   describe('with custom error behavior', () => {
@@ -4562,7 +4567,8 @@ class InvalidSelectInForm {
   template: `
     <form [formGroup]="formGroup">
       <mat-form-field>
-        <mat-select placeholder="Food" formControlName="food">
+        <mat-label>Food</mat-label>
+        <mat-select formControlName="food">
           <mat-option *ngFor="let option of options" [value]="option.value">
             {{option.viewValue}}
           </mat-option>

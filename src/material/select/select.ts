@@ -59,7 +59,13 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {ControlValueAccessor, FormGroupDirective, NgControl, NgForm} from '@angular/forms';
+import {
+  ControlValueAccessor,
+  FormGroupDirective,
+  NgControl,
+  NgForm,
+  Validators,
+} from '@angular/forms';
 import {
   _countGroupLabelsBeforeOption,
   _getOptionScrollPosition,
@@ -317,12 +323,14 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
 
   /** Whether the component is required. */
   @Input()
-  get required(): boolean { return this._required; }
+  get required(): boolean {
+    return this._required ?? this.ngControl?.control?.hasValidator(Validators.required) ?? false;
+  }
   set required(value: boolean) {
     this._required = coerceBooleanProperty(value);
     this.stateChanges.next();
   }
-  private _required: boolean = false;
+  private _required: boolean | undefined;
 
   /** Whether the user should be allowed to select multiple options. */
   @Input()
