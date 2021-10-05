@@ -347,17 +347,15 @@ function reportStatus(status, outputFile) {
 // Returns both a promise and the spawned process so that it can be killed if needed.
 function spawnExt(
     command, args, options, ignoreClose = false, printMessage = msg => process.stdout.write(msg)) {
-  let proc;
+  let proc = null;
   const promise = new Promise((resolve, reject) => {
     let descr = command + ' ' + args.join(' ');
-    let processOutput = '';
     printMessage(`running: ${descr}\n`);
     try {
       proc = spawn(command, args, options);
     } catch (e) {
       console.log(e);
-      reject(e);
-      return {proc: null, promise};
+      return reject(e);
     }
     proc.stdout.on('data', printMessage);
     proc.stderr.on('data', printMessage);
