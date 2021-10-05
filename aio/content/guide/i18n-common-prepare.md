@@ -1,24 +1,33 @@
-# Prepare templates for translations
+# Prepare component for translation
 
-{@a template-translations}
+To prepare your project for translation, complete the following actions.
 
-To translate the templates of your application, prepare the text for a translator or translation service by marking text, attributes, and other elements with the Angular `i18n` attribute.
-Complete the following actions to mark text, attributes, and other elements with the Angular `i18n` attribute.
+*   Use the `i18n` attribute to mark text in component templates
+*   Use the `i18n-` attribute to mark attribute text strings in component templates
+*   Use the `$localize` tagged message string to mark test strings in component code
 
-1.  [Mark text for translations][AioGuideI18nCommonPrepareMarkTextForTranslations].
-1.  [Add helpful descriptions and meanings][AioGuideI18nCommonPrepareAddHelpfulDescriptionsAndMeanings] to help the translator with additional information or context.
-1.  [Translate text not for display][AioGuideI18nCommonPrepareTranslateTextNotForDisplay].
-1.  [Mark element attributes for translations][AioGuideI18nCommonPrepareMarkElementAttributesForTranslations], such as the `title` attribute of an image.
-1.  [Mark plurals and alternates for translation][AioGuideI18nCommonPrepareMarkPluralsAndAlternatesForTranslation] in order to comply with the pluralization rules and grammatical constructions of different languages.
+## Mark text in component template
 
-### Mark text for translations
+{@a mark-text-for-translations}
 
-{@a i18n-attribute}
+In a component template, the i18n metadata is the value of the `i18n` attribute.
 
-Mark the static text messages in your component templates for translation using the `i18n` attribute.
-Place it on every element tag with fixed text to be translated.
+```html
+<element i18n="{i18n_metadata}">{string_to_translate}</element>
+```
 
-For example, the following `<h1>` tag displays a simple English language greeting, "Hello i18n!".
+Use the `i18n` attribute to mark a static text message in your component templates for translation.
+Place it on every element tag that contains fixed text you want to translate.
+
+<div class="alert is-helpful">
+
+The `i18n` attribute is a custom attribute that the Angular tools and compilers recognize.
+
+</div>
+
+### `i18n` example
+
+The following `<h1>` tag displays a simple English language greeting, "Hello i18n!".
 
 <code-example path="i18n/doc-files/app.component.html" region="greeting" header="src/app/app.component.html"></code-example>
 
@@ -26,33 +35,140 @@ To mark the greeting for translation, add the `i18n` attribute to the `<h1>` tag
 
 <code-example path="i18n/doc-files/app.component.html" region="i18n-attribute" header="src/app/app.component.html"></code-example>
 
+### Translate inline text without HTML element
+
+Use the `<ng-container>` element to associate a translation behavior for specific text without changing the way text is displayed.
+
 <div class="alert is-helpful">
 
-`i18n` is a custom attribute, recognized by Angular tools and compilers.
-After translation, the compiler removes it.
-It is not an Angular directive.
+Each HTML element creates a new DOM element.
+To avoid creating a new DOM element, wrap the text in an `<ng-container>` element.
+The following example shows the `<ng-container>` element transformed into a non-displayed HTML comment.
+
+<code-example path="i18n/src/app/app.component.html" region="i18n-ng-container"></code-example>
 
 </div>
 
+## Mark element attributes for translations
+
+In a component template, the i18n metadata is the value of the `i18n-{attribute_name}` attribute.
+
+```html
+<element i18n-{attribute_name}="{i18n_metadata}" {attribute_name}="{attribute_value}" />
+```
+
+The attributes of HTML elements include text that should be translated along with the rest of the displayed text in the component template.
+
+Use `i18n-{attribute_name}` with any attribute of any element and replace `{attribute_name}` with the name of the attribute.
+Use the following syntax to assign a meaning, description, and custom ID.
+
+```html
+i18n-{attribute_name}="{meaning}|{description}@@{id}"
+```
+
+### `i18n-title` example
+
+To translate the title of an image, review this example.
+The following example displays an image with a `title` attribute.
+
+<code-example path="i18n/doc-files/app.component.html" region="i18n-title" header="src/app/app.component.html"></code-example>
+
+To mark the title attribute for translation, complete the following action.
+
+1.  Add the `i18n-title` attribute
+
+The following example displays how to mark the `title` attribute on the `img` tag by adding `i18n-title`.
+
+<code-example path="i18n/src/app/app.component.html" region="i18n-title-translate" header="src/app/app.component.html"></code-example>
+
+## Mark text in component code
+
+In component code, the translation source text and the metadata are surrounded by backtick (<code>&#96;</code>) characters.
+
+Use the [`$localize`][AioApiLocalizeInitLocalize] tagged message string to mark a string in your code for translation.
+
+<!--todo: replace with code-example -->
+
+```typescript
+$localize `string_to_translate`;
+```
+
+The i18n metadata is surrounded by colon (`:`) characters and prepends the translation source text.
+
+```typescript
+$localize `:{i18n_metadata}:string_to_translate`
+```
+
+### Include interpolated text
+
+Include [interpolations][AioGuideGlossaryInterpolation] in a [`$localize`][AioApiLocalizeInitLocalize] tagged message string.
+
+<!--todo: replace with code-example -->
+
+```typescript
+$localize `string_to_translate ${variable_name}`;
+```
+
+### Name the interpolation placeholder
+
+```typescript
+localize `string_to_translate ${variable_name}:placeholder_name:;
+```
+
+## i18n metadata for translation
+
+```
+{meaning}|{description}@@{custom_id}
+```
+
+The following parameters provide context and additional information to reduce confusion for your translator.
+
+| Metadata parameter | Details                                                               |
+|:---                |:---                                                                   |
+| Custom ID          | Provide a custom identifier                                           |
+| Description        | Provide additional information or context                             |
+| Meaning            | Provide the meaning or intent of the text within the specific context |
+
+For additional information about custom IDs, see [Manage marked text with custom IDs][AioGuideI18nOptionalManageMarkedText].
+
 ### Add helpful descriptions and meanings
 
-{@a help-translator}
+To translate a text message accurately, provide additional information or context for the translator.
 
-To translate a text message accurately, the translator may need additional information or context.
-Add a *description* of the text message as the value of the `i18n` attribute.
-The following example displays the value of the `i18n` attribute.
+Add a *description* of the text message as the value of the `i18n` attribute or [`$localize`][AioApiLocalizeInitLocalize] tagged message string.
+
+The following example shows the value of the `i18n` attribute.
 
 <code-example path="i18n/doc-files/app.component.html" region="i18n-attribute-desc" header="src/app/app.component.html"></code-example>
 
-The translator may also need to know the meaning or intent of the text message within this particular application context, in order to translate it the same way as other text with the same meaning.
-Start the `i18n` attribute value with the *meaning* and separate it from the *description* with the `|` character: `<meaning>|<description>`.
+The following example shows the value of the [`$localize`][AioApiLocalizeInitLocalize] tagged message string with a description.
 
-For example, you may want to indicate that the `<h1>` tag is a site header that needs to be translated the same way, whether it's used as a header or referenced in another section of text.
-The following example shows how to indicate that the `<h1>` tag needs to be translated as a header or referenced elsewhere.
+<!--todo: replace with code-example -->
+
+```typescript
+$localize `:An introduction header for this sample:Hello i18n!`;
+```
+
+The translator may also need to know the meaning or intent of the text message within this particular application context, in order to translate it the same way as other text with the same meaning.
+Start the `i18n` attribute value with the *meaning* and separate it from the *description* with the `|` character: `{meaning}|{description}`.
+
+#### `h1` example
+
+For example, you may want to specify that the `<h1>` tag is a site header that you need translated the same way, whether it is used as a header or referenced in another section of text.
+
+The following example shows how to specify that the `<h1>` tag must be translated as a header or referenced elsewhere.
 
 <code-example path="i18n/doc-files/app.component.html" region="i18n-attribute-meaning" header="src/app/app.component.html"></code-example>
 
 The result is any text marked with `site header`, as the *meaning* is translated exactly the same way.
+
+The following code example shows the value of the [`$localize`][AioApiLocalizeInitLocalize] tagged message string with a meaning and a description.
+
+<!--todo: replace with code-example -->
+
+```typescript
+$localize `:site header|An introduction header for this sample:Hello i18n!`;
+```
 
 <!-- section break -->
 
@@ -63,13 +179,18 @@ The result is any text marked with `site header`, as the *meaning* is translated
 
 The Angular extraction tool generates a translation unit entry for each `i18n` attribute in a template.
 The Angular extraction tool assigns each translation unit a unique ID based on the *meaning* and *description*.
-For more information about the Angular extraction tool, see [Work with translation files][AioGuideI18nCommonTranslationFiles] in this guide.
+
+<div class="alert is-helpful">
+
+For more information about the Angular extraction tool, see [Work with translation files][AioGuideI18nCommonTranslationFiles].
+
+</div>
 
 The same text elements with different *meanings* are extracted with different IDs.
 For example, if the word "right" uses the following two definitions in two different locations, the word is translated differently and merged back into the application as different translation entries.
 
-*   `correct` as in you are "right"
-*   `direction` as in turn "right"
+*   `correct` as in "you are right"
+*   `direction` as in "turn right"
 
 If the same text elements meet the following conditions, the text elements are extracted only once and use the same ID.
 
@@ -80,39 +201,26 @@ That one translation entry is merged back into the application wherever the same
 
 </div>
 
-### Translate text not for display
+{@a mark-plurals-and-alternates-for-translation}
 
-{@a no-element}
+## ICU expressions
 
-If you translate non-displayed text using the `<span>` tag, you create a new DOM element.
-To avoid creating a new DOM element, wrap the text in an `<ng-container>` element.
-The following example shows the `<ng-container>` element transformed into a non-displayed HTML comment.
+ICU expressions help you mark alternate text in component templates to meet conditions.
+An ICU expression includes a component property, an ICU clause, and the case statements surrounded by open curly brace (`{`) and close curly brace (`}`) characters.
 
-<code-example path="i18n/src/app/app.component.html" region="i18n-ng-container"></code-example>
+```
+{ component_property, icu_clause, case_statements }
+```
 
-### Mark element attributes for translations
+The component property defines the variable
+An ICU clause defines the type of conditional text.
 
-{@a translate-attributes}
+| ICU clause                                                              | Details                                                             |
+|:---                                                                     |:---                                                                 |
+| [`plural`][AioGuideI18nCommonPrepareMarkPlurals]                        | Mark the use of plural numbers                                      |
+| [`select`][AioGuideI18nCommonPrepareMarkAlternatesAndNestedExpressions] | Mark choices for alternate text based on your defined string values |
 
-HTML attributes such as `title` include text that should be translated along with the rest of the displayed text in the template.
-The following example displays an image with a `title` attribute.
-
-<code-example path="i18n/doc-files/app.component.html" region="i18n-title" header="src/app/app.component.html"></code-example>
-
-To mark an attribute for translation, add `i18n-`*attribute* in which *attribute* is the attribute to translate.
-The following example displays how to mark the `title` attribute on the `img` tag by adding `i18n-title`.
-
-<code-example path="i18n/src/app/app.component.html" region="i18n-title-translate" header="src/app/app.component.html"></code-example>
-
-Use `i18n-`*attribute* with any attribute of any element.
-Also, to assign a meaning, description, and custom ID, use the `i18n-`*attribute*`="<meaning>|<description>@@<id>"` syntax.
-
-### Mark plurals and alternates for translation
-
-{@a plurals-alternates}
-
-Different languages have different pluralization rules and grammatical constructions that increase the difficulty of translation.
-To simplify translation, use International Components for Unicode (ICU) clauses with regular expressions, such as `plural` to mark the uses of plural numbers, and `select` to mark alternate text choices.
+To simplify translation, use International Components for Unicode clauses (ICU clauses) with regular expressions.
 
 <div class="alert is-helpful">
 
@@ -120,95 +228,202 @@ The ICU clauses adhere to the [ICU Message Format][GithubUnicodeOrgIcuUserguideF
 
 </div>
 
-#### Mark plurals
+### Mark plurals
 
-{@a plural-ICU}
-
+Different languages have different pluralization rules that increase the difficulty of translation.
+Because other locales express cardinality differently, you may need to set pluralization categories that do not align with English.
 Use the `plural` clause to mark expressions that may not be meaningful if translated word-for-word.
 
-For example, if you want to display "updated x minutes ago" in English, you may want to display "just now", "one minute ago", or "*x* minutes ago" (with *x* as the actual number).
-Other languages might express this cardinality differently.
-The following example displays how to use a `plural` clause to express each of the three situations.
+```
+{ component_property, plural, pluralization_categories }
+```
 
-<code-example path="i18n/src/app/app.component.html" region="i18n-plural" header="src/app/app.component.html"></code-example>
+After the pluralization category, enter the default text (English) surrounded by open curly brace (`{`) and close curly brace (`}`) characters.
 
-Review the following details in the above example.
+```
+pluralization_category { }
+```
 
-*   The first parameter, `minutes`, is bound to the component property (`minutes`), which determines the number of minutes.
-*   The second parameter identifies this as a `plural` translation type.
-*   The third parameter defines a pattern of pluralization categories and the matching values:
-    *   For zero minutes, use `=0 {just now}`.
-    *   For one minute, use `=1 {one minute}`.
-    *   For any unmatched cardinality, use `other {{{minutes}} minutes ago}`.
-        Use HTML markup and [interpolations][AioGuideGlossaryInterpolation], such as `{{{minutes}}` with the `plural` clause in expressions.
-    *   After the pluralization category, put the default text (English) within braces (`{}`).
+The following pluralization categories are available for English and may change based on the locale.
 
-Pluralization categories include (depending on the language):
+| Pluralization category | Details                    | Example                    |
+|:---                    |:---                        |:---                        |
+| `zero`                 | Quantity is zero           | `=0 { }` <br /> `zero { }` |
+| `one`                  | Quantity is 1              | `=1 { }` <br /> `one { }`  |
+| `two`                  | Quantity is 2              | `=2 { }` <br /> `two { }`  |
+| `few`                  | Quantity is 2 or more      | `few { }`                  |
+| `many`                 | Quantity is a large number | `many { }`                 |
+| `other`                | The default quantity       | `other { }`                |
 
-*   `=0` (or any other number)
-*   `zero`
-*   `one`
-*   `two`
-*   `few`
-*   `many`
-*   `other`
+If none of the pluralization categories match, Angular uses `other` to match the standard fallback for a missing category.
 
-<div class="callout is-important">
-<header>Locales may not support some pluralization categories</header>
+```
+other { default_quantity }
+```
 
-Many locales don't support some of the pluralization categories.
-For example, the default locale (`en-US`) and other locales (such as `es`) have very simple `plural()` functions that don't support the `few` category.
-The following code example displays the [en-US][GithubAngularAngularBlobEcffc3557fe1bff9718c01277498e877ca44588dPackagesCoreSrcI18nLocaleEnTsL15L18] `plural()` function.
+<div class="alert is-helpful">
 
-<code-example path="i18n/doc-files/locale_plural_function.ts" class="no-box" hideCopy></code-example>
-
-The function will only ever return 1 (`one`) or 5 (`other`).
-The `few` category will never match.
-If none of the pluralization categories match, Angular will try to match `other`.
-Use `other` as the standard fallback for a missing category.
-
-For more information about pluralization categories, see [Choosing plural category names][UnicodeCldrIndexCldrSpecPluralRulesTocChoosingPluralCategoryNames] in the CLDR - Unicode Common Locale Data Repository.
+For more information about pluralization categories, see [Choosing plural category names][UnicodeCldrIndexCldrSpecPluralRulesTocChoosingPluralCategoryNames] in the [CLDR - Unicode Common Locale Data Repository][UnicodeCldrMain].
 
 </div>
 
+<div class="callout is-important">
+<header>Background: Locales may not support some pluralization categories</header>
+
+Many locales don't support some of the pluralization categories.
+The default locale (`en-US`) uses a very simple `plural()` function that doesn't support the `few` pluralization category.  Another locale with a simple `plural()` function is `es`.
+The following code example shows the [en-US `plural()`][GithubAngularAngularBlobEcffc3557fe1bff9718c01277498e877ca44588dPackagesCoreSrcI18nLocaleEnTsL14L18] function.
+
+<code-example path="i18n/doc-files/locale_plural_function.ts" class="no-box" hideCopy></code-example>
+
+The `plural()` function only returns 1 (`one`) or 5 (`other`).
+The `few` category never matches.
+
+</div>
+
+#### `minutes` example
+
+If you want to display the following phrase in English, where `x` is a number.
+
+<!--todo: replace output code-example with screen capture image --->
+
+```
+updated x minutes ago
+```
+
+And you also want to display the following phrases based on the cardinality of `x`.
+
+<!--todo: replace output code-example with screen capture image --->
+
+```
+updated just now
+```
+
+<!--todo: replace output code-example with screen capture image --->
+
+```
+updated one minute ago
+```
+
+Use HTML markup and [interpolations][AioGuideGlossaryInterpolation].
+The following code example shows how to use the `plural` clause to express the previous three situations in a `<span>` element.
+
+<code-example path="i18n/src/app/app.component.html" region="i18n-plural" header="src/app/app.component.html"></code-example>
+
+Review the following details in the previous code example.
+
+| Parameter | Details|
+|:--- |:--- |
+| `minutes` | The first parameter specifies the component property is `minutes` and determines the number of minutes. |
+| `plural` | The second parameter specifies the ICU clause is `plural`. |
+| `=0 {just now}` | For zero minutes, the pluralization category is `=0`. The value is `just now`. |
+| `=1 {one minute}` | For one minute, the pluralization category is `=1`. The value is `one minute`. |
+| `other {{{minutes}} minutes ago}` | For any unmatched cardinality, the default pluralization category is `other`. The value is `{{minutes}} minutes ago`. |
+
+`{{minutes}}` is an [interpolation][AioGuideGlossaryInterpolation].
+
 ### Mark alternates and nested expressions
 
-{@a select-icu}
-{@a nesting-icus}
+The `select` clause marks choices for alternate text based on your defined string values.
 
-If you need to display alternate text depending on the value of a variable, you need to translate all of the alternates.
+```
+{ component_property, select, selection_categories }
+```
 
-The `select` clause, similar to the `plural` clause, marks choices for alternate text based on your defined string values.
-For example, the following clause in the component template binds to the `gender` property of the component, which outputs one of the following string values: `"male"`, `"female"`, or `"other"`.
-The clause maps the values to the appropriate translations.
+Translate all of the alternates to display alternate text based on the value of a variable.
+
+After the selection category, enter the text (English) surrounded by open curly brace (`{`) and close curly brace (`}`) characters.
+
+```
+selection_category { text }
+```
+
+Different locales have different grammatical constructions that increase the difficulty of translation.
+Use HTML markup.
+If none of the selection categories match, Angular uses `other` to match the standard fallback for a missing category.
+
+```
+other { default_value }
+```
+
+#### `gender` example
+
+If you want to display the following phrase in English.
+
+<!--todo: replace output code-example with screen capture image --->
+
+```
+The author is other
+```
+
+And you also want to display the following phrases based on the `gender` property of the component.
+
+<!--todo: replace output code-example with screen capture image --->
+
+```
+The author is female
+```
+
+<!--todo: replace output code-example with screen capture image --->
+
+```
+The author is male
+```
+
+The following code example shows how to bind the `gender` property of the component and use the `select` clause to express the previous three situations in a `<span>` element.
+
+The `gender` property binds the outputs to each of following string values.
+
+| Value  | English value |
+|:---    |:---           |
+| female | `female`      |
+| male   | `male`        |
+| other  | `other`       |
+
+The `select` clause maps the values to the appropriate translations.
+The following code example shows `gender` property used with the select clause.
 
 <code-example path="i18n/src/app/app.component.html" region="i18n-select" header="src/app/app.component.html"></code-example>
 
-Also, nest different clauses together, such as the `plural` and `select` clauses.
-The following example displays nested clauses.
+#### `gender` and `minutes` example
+
+Combine different clauses together, such as the `plural` and `select` clauses.
+The following code example shows nested clauses based on the `gender` and `minutes` examples.
 
 <code-example path="i18n/src/app/app.component.html" region="i18n-nested" header="src/app/app.component.html"></code-example>
 
+## What's next
+
+*   [Work with translation files][AioGuideI18nCommonTranslationFiles]
+
 <!-- links -->
 
-[AioGuideI18nCommonPrepareAddHelpfulDescriptionsAndMeanings]: guide/i18n-common-prepare#add-helpful-descriptions-and-meanings "Add helpful descriptions and meanings - Prepare templates for translations | Angular"
-[AioGuideI18nCommonPrepareMarkElementAttributesForTranslations]: guide/i18n-common-prepare#mark-element-attributes-for-translations "Mark element attributes for translations - Prepare templates for translations | Angular"
-[AioGuideI18nCommonPrepareMarkPluralsAndAlternatesForTranslation]: guide/i18n-common-prepare#mark-plurals-and-alternates-for-translation "Mark plurals and alternates for translation - Prepare templates for translations | Angular"
-[AioGuideI18nCommonPrepareMarkTextForTranslations]: guide/i18n-common-prepare#mark-text-for-translations "Prepare templates for translations | Angular"
-[AioGuideI18nCommonPrepareTranslateTextNotForDisplay]: guide/i18n-common-prepare#translate-text-not-for-display "Translate text not for display - Prepare templates for translations | Angular"
-[AioGuideI18nCommonTranslationFiles]: guide/i18n-common-translation-files "Work with translation files | Angular"
+[AioApiLocalizeInitLocalize]: api/localize/init/$localize "$localize | init - localize - API  | Angular"
 
 [AioGuideGlossaryInterpolation]: guide/glossary#interpolation "interpolation - Glossary | Angular"
 
+[AioGuideI18nCommonPrepare]: guide/i18n-common-prepare "Prepare templates for translations | Angular"
+[AioGuideI18nCommonPrepareAddHelpfulDescriptionsAndMeanings]: guide/i18n-common-prepare#add-helpful-descriptions-and-meanings "Add helpful descriptions and meanings - Prepare templates for translations | Angular"
+[AioGuideI18nCommonPrepareMarkAlternatesAndNestedExpressions]: guide/i18n-common-prepare#mark-alternates-and-nested-expressions "Mark alternates and nested expressions - Prepare component for translation | Angular"
+[AioGuideI18nCommonPrepareMarkElementAttributesForTranslations]: guide/i18n-common-prepare#mark-element-attributes-for-translations "Mark element attributes for translations - Prepare templates for translations | Angular"
+[AioGuideI18nCommonPrepareMarkPlurals]: guide/i18n-common-prepare#mark-plurals "Mark plurals - Prepare component for translation | Angular"
+[AioGuideI18nCommonPrepareMarkTextForTranslations]: guide/i18n-common-prepare#mark-text-for-translations "Mark text for translations - Prepare templates for translations | Angular"
+[AioGuideI18nCommonPrepareMarkTextInComponentTemplate]: guide/i18n-common-prepare#mark-text-in-component-template "Mark text in component template - Prepare templates for translations | Angular"
+
+[AioGuideI18nCommonTranslationFiles]: guide/i18n-common-translation-files "Work with translation files | Angular"
+
+[AioGuideI18nOptionalManageMarkedText]: guide/i18n-optional-manage-marked-text "Manage marked text with custom IDs | Angular"
+
 <!-- external links -->
 
-[GithubAngularAngularBlobEcffc3557fe1bff9718c01277498e877ca44588dPackagesCoreSrcI18nLocaleEnTsL15L18]: https://github.com/angular/angular/blob/ecffc3557fe1bff9718c01277498e877ca44588d/packages/core/src/i18n/locale_en.ts#L15-L18 "Line 15 to 18 - angular/packages/core/src/i18n/locale_en.ts | angular/angular | GitHub"
+[GithubAngularAngularBlobEcffc3557fe1bff9718c01277498e877ca44588dPackagesCoreSrcI18nLocaleEnTsL14L18]: https://github.com/angular/angular/blob/ecffc3557fe1bff9718c01277498e877ca44588d/packages/core/src/i18n/locale_en.ts#L14-L18 "Line 14 to 18 - angular/packages/core/src/i18n/locale_en.ts | angular/angular | GitHub"
 
 [GithubUnicodeOrgIcuUserguideFormatParseMessages]: https://unicode-org.github.io/icu/userguide/format_parse/messages "ICU Message Format - ICU Documentation | Unicode | GitHub"
 
+[UnicodeCldrMain]: https://cldr.unicode.org "Unicode CLDR Project"
 [UnicodeCldrIndexCldrSpecPluralRules]: http://cldr.unicode.org/index/cldr-spec/plural-rules "Plural Rules | CLDR - Unicode Common Locale Data Repository | Unicode"
 [UnicodeCldrIndexCldrSpecPluralRulesTocChoosingPluralCategoryNames]: http://cldr.unicode.org/index/cldr-spec/plural-rules#TOC-Choosing-Plural-Category-Names "Choosing Plural Category Names - Plural Rules | CLDR - Unicode Common Locale Data Repository | Unicode"
 
 <!-- end links -->
 
-@reviewed 2021-09-15
+@reviewed 2021-10-07

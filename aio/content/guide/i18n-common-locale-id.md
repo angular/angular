@@ -1,42 +1,73 @@
 # Refer to locales by ID
 
-{@a setting-up-locale}
-{@a setting-up-the-locale-of-your-app}
-
-Refer to a locale using the Unicode *locale identifier* (ID), which specifies the language, country, and an optional code for further variants or subdivisions.
+Angular uses the Unicode *locale identifier* (Unicode locale ID) to find the correct locale data for internationalization of text strings.
 
 <div class="callout is-helpful">
-<header>Unicode locale identifiers</header>
+<header>Unicode locale ID</header>
 
-*   For a list of language codes, see [ISO 639-2][LocStandardsIso6392].
-*   IDs conform to the Unicode Common Locale Data Repository (CLDR).
-    For more information about Unicode locale identifiers, see [CLDR core specification][UnicodeCldrCoreSpecUnicodeLanguageAndLocaleIdentifiers].
-*   CLDR and Angular base their identifiers on [BCP47 tags][RfcEditorInfoBcp47].
+*   A locale ID conforms to the [Unicode Common Locale Data Repository (CLDR) core specification][UnicodeCldrDevelopmentCoreSpecification]. For more information about locale IDs, see [Unicode Language and Locale Identifiers][UnicodeCldrDevelopmentCoreSpecificationHVgyyng33o798].
+*   CLDR and Angular use [BCP 47 tags][RfcEditorInfoBcp47] as the base for the locale ID.
 
 </div>
 
-The ID consists of a language identifier, such as `en` for English or `fr` for French, followed by a dash (`-`) and a locale extension, such as `US` for the United States or `CA` for Canada.
-For example, `en-US` refers to English in the United States, and `fr-CA` refers to French in Canada.
-Angular uses this ID to find the correct corresponding locale data.
+A locale ID specifies the language, country, and an optional code for further variants or subdivisions.
+A locale ID consists of the language identifier, a dash (`-`) character, and the locale extension.
+
+```text
+{language_id}-{locale_extension}
+```
 
 <div class="alert is-helpful">
 
-Many countries, such as France and Canada, use the same language (French, identified as `fr`) but differ in grammar, punctuation, and formats for currency, decimal numbers, and dates.
-Use a more specific locale ID, such as French for Canada (`fr-CA`), when localizing your application.
+To accurately translate your Angular project, you must decide which languages and locales you are targeting for internationalization.
+
+Many countries share the same language, but differ in usage.
+The differences include grammar, punctuation, formats for currency, decimal numbers, dates, and so on.
 
 </div>
 
-Angular by default uses `en-US` (English in the United States) as the source locale of your application.
+For the examples in this guide, use the following languages and locales.
+
+| Language | Locale                   | Unicode locale ID |
+|:---      |:---                      |:---               |
+| English  | Canada                   | `en-CA`           |
+| English  | United States of America | `en-US`           |
+| French   | Canada                   | `fr-CA`           |
+| French   | France                   | `fr-FR`           |
 
 The [Angular repository][GithubAngularAngularTreeMasterPackagesCommonLocales] includes common locales.
-To change the source locale of your application for the build, set the source locale in the `sourceLocale` field in the [workspace configuration][AioGuideWorkspaceConfig] file (`angular.json`) of your application.
-The build process (described in [Merge translations into the app][AioGuideI18nCommonMerge] in this guide) uses the `angular.json` file of your application to automatically set the [`LOCALE_ID`][AioApiCoreLocaleId] token and load the locale data.
+
+<div class="callout is-helpful">
+
+For a list of language codes, see [ISO 639-2][LocStandardsIso6392].
+
+<!--todo: Is this accurate.  ISO 639-2 is 3 digit.  ISO 639-1 is 2 digit.  Reference: http://www.loc.gov/standards/iso639-2/php/code_list.php -->
+
+</div>
+
+## Set the source locale ID
+
+Use the Angular CLI to set the source language in which you are writing the component template and code.
+
+<!--todo: These instructions may conflict with the Set the source locale manually topic -->
+
+By default, Angular uses `en-US` as the source locale of your project.
+
+To change the source locale of your project for the build, complete the following actions.
+
+1.  Open the [`angular.json`][AioGuideWorkspaceConfig] workspace build configuration file
+1.  Change the source locale in the `sourceLocale` field
+
+## What's next
+
+*   [Format data based on locale][AioGuideI18nCommonFormatDataLocale]
 
 <!-- links -->
 
-[AioGuideI18nCommonMerge]: guide/i18n-common-merge "Merge translations into the application | Angular"
-
 [AioApiCoreLocaleId]: api/core/LOCALE_ID "LOCALE_ID | Core - API | Angular"
+
+[AioGuideI18nCommonFormatDataLocale]: guide/i18n-common-format-data-locale "Format data based on locale | Angular"
+[AioGuideI18nCommonMerge]: guide/i18n-common-merge "Merge translations into the application | Angular"
 
 [AioGuideWorkspaceConfig]: guide/workspace-config "Angular workspace configuration | Angular"
 
@@ -48,8 +79,9 @@ The build process (described in [Merge translations into the app][AioGuideI18nCo
 
 [RfcEditorInfoBcp47]: https://www.rfc-editor.org/info/bcp47 "BCP 47 | RFC Editor"
 
-[UnicodeCldrCoreSpecUnicodeLanguageAndLocaleIdentifiers]: http://cldr.unicode.org/core-spec#Unicode_Language_and_Locale_Identifiers "Unicode Language and Locale Identifiers - Core Specification | CLDR - Unicode Common Locale Data Repository | Unicode"
+[UnicodeCldrDevelopmentCoreSpecification]: https://cldr.unicode.org/development/core-specification "Core Specification | Unicode CLDR Project"
+[UnicodeCldrDevelopmentCoreSpecificationHVgyyng33o798]: https://cldr.unicode.org/development/core-specification#h.vgyyng33o798 "Unicode Language and Locale Identifiers - Core Specification | Unicode CLDR Project"
 
 <!-- end links -->
 
-@reviewed 2021-09-15
+@reviewed 2021-10-07
