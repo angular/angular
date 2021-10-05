@@ -372,7 +372,7 @@ function spawnExt(
       proc = spawn(command, args, options);
     } catch (e) {
       console.log(e);
-      reject(e);
+      return reject(e);
     }
     proc.stdout.on('data', printMessage);
     proc.stderr.on('data', printMessage);
