@@ -87,7 +87,7 @@ export class SwUpdate {
    * @returns a promise that
    *  - resolves to `true` if an update was activated successfully
    *  - resolves to `false` if no update was available (for example, the client was already on the
-   * latest version).
+   *    latest version).
    *  - rejects if any error occurs
    */
   activateUpdate(): Promise<boolean> {
