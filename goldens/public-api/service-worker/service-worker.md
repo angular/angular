@@ -117,7 +117,7 @@ export interface VersionDetectedEvent {
     };
 }
 
-// @public (undocumented)
+// @public
 export type VersionEvent = VersionDetectedEvent | VersionInstallationFailedEvent | VersionReadyEvent;
 
 // @public

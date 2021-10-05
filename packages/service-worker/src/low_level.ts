@@ -35,7 +35,7 @@ export interface UpdateAvailableEvent {
  * @see {@link guide/service-worker-communications Service worker communication guide}
  *
  * @deprecated
- * This event was only emitted by the deprecated {@link SwUpdate#activated}.
+ * This event is only emitted by the deprecated {@link SwUpdate#activated}.
  * Use the return value of {@link SwUpdate#activateUpdate} instead.
  *
  * @publicApi
@@ -86,6 +86,13 @@ export interface VersionReadyEvent {
   latestVersion: {hash: string; appData?: object;};
 }
 
+
+/**
+ * A union of all event types that can be emitted by
+ * {@link api/service-worker/SwUpdate#versionUpdates SwUpdate#versionUpdates}.
+ *
+ * @publicApi
+ */
 export type VersionEvent = VersionDetectedEvent|VersionInstallationFailedEvent|VersionReadyEvent;
 
 /**
