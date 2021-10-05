@@ -1,3 +1,17 @@
+<a name="13.0.0-next.11"></a>
+# 13.0.0-next.11 (2021-10-04)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a3960846da](https://github.com/angular/angular/commit/a3960846da1f73282306560302daa3a4ddeca0f7) | feat | add `createNgModuleRef` function to create `NgModuleRef` based on NgModule class ([#43580](https://github.com/angular/angular/pull/43580)) |
+| [fe1f6421d2](https://github.com/angular/angular/commit/fe1f6421d2b647adb706e65f69ec2e40e604fac3) | feat | add `getNgModuleById` function to retrieve loaded NgModules by id ([#43580](https://github.com/angular/angular/pull/43580)) |
+| [81c7eb813c](https://github.com/angular/angular/commit/81c7eb813c27f08d2d640f34e165a1b5e487bac2) | feat | add migration to opt out existing apps from new test module teardown behavior ([#43353](https://github.com/angular/angular/pull/43353)) |
+| [94ba59bc9d](https://github.com/angular/angular/commit/94ba59bc9db81ae04f20e8147b5133a0d3d45510) | feat | enable test module teardown by default ([#43353](https://github.com/angular/angular/pull/43353)) |
+## Special Thanks
+Andrew Kushnir, Andrew Scott, Charles Lyding, George Kalpakas, Joey Perrott, JoostK, Kristiyan Kostadinov, dario-piotrowicz, iRealNirmal, mgechev and ultrasonicsoft
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.0.0-next.10"></a>
 # 13.0.0-next.10 (2021-10-01)
 ## Breaking Changes
