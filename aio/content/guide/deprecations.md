@@ -62,6 +62,7 @@ v13 -> v16
 | `@angular/core/testing` | [`aotSummaries` argument in `TestBed.initTestEnvironment`](#testing)                                                                           | <!--v13--> v14         |
 | `@angular/core/testing` | [`aotSummaries` field of the `TestModuleMetadata` type](#testing)                                                                           | <!--v13--> v14         |
 | `@angular/forms`        | [`FormBuilder.group` legacy options parameter](api/forms/FormBuilder#group)                   | <!--v11--> v14        |
+| `@angular/service-worker`| [`SwUpdate.activated`](api/service-worker/SwUpdate#activated)                                | <!--v13--> unspecified |
 | `@angular/router`       | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props)                 | unspecified           |
 | template syntax         | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector)                            | <!--v7--> unspecified |
 | template syntax         | [`bind-`, `on-`, `bindon-`, and `ref-`](#bind-syntax)                            | <!--v13--> v15 |
@@ -134,6 +135,14 @@ This section contains a complete list all of the currently-deprecated APIs, with
 | [`FormBuilder.group` legacy options parameter](api/forms/FormBuilder#group) | [`AbstractControlOptions` parameter value](api/forms/AbstractControlOptions) | v11                   | none  |
 
 {@a upgrade}
+
+### @angular/service-worker
+
+| API                                                            | Replacement                                                                            | Deprecation announced    | Notes
+|:---                                                            |:---                                                                                    |:---                      |:---
+| [`SwUpdate.activated`](api/service-worker/SwUpdate#activated)  | [`SwUpdate.activateUpdate` return value](api/service-worker/SwUpdate#activateUpdate)   | v13                      | [`SwUpdate.activateUpdate`](api/service-worker/SwUpdate#activateUpdate)  return value indicates if an update was successfully activated |
+
+{@a service-worker}
 
 ### @angular/upgrade
 
