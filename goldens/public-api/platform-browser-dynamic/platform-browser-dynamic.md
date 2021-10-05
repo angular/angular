@@ -12,11 +12,11 @@ import { Provider } from '@angular/core';
 import { StaticProvider } from '@angular/core';
 import { Version } from '@angular/core';
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class JitCompilerFactory implements CompilerFactory {
     // (undocumented)
     createCompiler(options?: CompilerOptions[]): Compiler;
-    }
+}
 
 // @public (undocumented)
 export const platformBrowserDynamic: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
@@ -26,7 +26,6 @@ export const RESOURCE_CACHE_PROVIDER: Provider[];
 
 // @public (undocumented)
 export const VERSION: Version;
-
 
 // (No @packageDocumentation comment for this package)
 

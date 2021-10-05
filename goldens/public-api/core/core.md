@@ -135,7 +135,7 @@ export interface ClassSansProvider {
     useClass: Type<any>;
 }
 
-// @public
+// @public @deprecated
 export class Compiler {
     clearCache(): void;
     clearCacheFor(type: Type<any>): void;
@@ -153,7 +153,7 @@ export class Compiler {
 // @public
 export const COMPILER_OPTIONS: InjectionToken<CompilerOptions[]>;
 
-// @public
+// @public @deprecated
 export abstract class CompilerFactory {
     // (undocumented)
     abstract createCompiler(options?: CompilerOptions[]): Compiler;
@@ -785,7 +785,7 @@ export enum MissingTranslationStrategy {
     Warning = 1
 }
 
-// @public
+// @public @deprecated
 export class ModuleWithComponentFactories<T> {
     constructor(ngModuleFactory: NgModuleFactory<T>, componentFactories: ComponentFactory<any>[]);
     // (undocumented)
@@ -829,7 +829,7 @@ export interface NgModuleDecorator {
     new (obj?: NgModule): NgModule;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export abstract class NgModuleFactory<T> {
     // (undocumented)
     abstract create(parentInjector: Injector | null): NgModuleRef<T>;
