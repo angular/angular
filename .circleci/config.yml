@@ -432,7 +432,7 @@ jobs:
   test_aio_local:
     executor: default-executor
     environment:
-      RXJS_VERSION_7: '7.1.0'
+      RXJS_VERSION_7: '7.3.1'
     steps:
       - custom_attach_workspace
       - init_environment
@@ -477,7 +477,7 @@ jobs:
       resource_class: xlarge
     parallelism: 5
     environment:
-      RXJS_VERSION_7: '7.1.0'
+      RXJS_VERSION_7: '7.3.1'
     steps:
       - custom_attach_workspace
       - init_environment
