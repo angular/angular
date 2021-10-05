@@ -8,7 +8,7 @@
 
 import {PLATFORM_ID} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {NgswCommChannel} from '@angular/service-worker/src/low_level';
+import {NgswCommChannel, VersionDetectedEvent} from '@angular/service-worker/src/low_level';
 import {ngswCommChannelFactory, SwRegistrationOptions} from '@angular/service-worker/src/module';
 import {SwPush} from '@angular/service-worker/src/push';
 import {SwUpdate} from '@angular/service-worker/src/update';
@@ -426,11 +426,11 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           done();
         });
         mock.sendMessage({
-          type: 'UPDATE_AVAILABLE',
-          current: {
+          type: 'VERSION_READY',
+          currentVersion: {
             hash: 'A',
           },
-          available: {
+          latestVersion: {
             hash: 'B',
           },
         });
@@ -457,6 +457,19 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           },
           current: {
             hash: 'B',
+          },
+        });
+      });
+      it('process any version update event when sent', done => {
+        update.versionUpdates.subscribe(event => {
+          expect(event.type).toEqual('VERSION_DETECTED');
+          expect((event as VersionDetectedEvent).version).toEqual({hash: 'A'});
+          done();
+        });
+        mock.sendMessage({
+          type: 'VERSION_DETECTED',
+          version: {
+            hash: 'A',
           },
         });
       });
@@ -503,6 +516,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           update.available.toPromise().catch(err => fail(err));
           update.activated.toPromise().catch(err => fail(err));
           update.unrecoverable.toPromise().catch(err => fail(err));
+          update.versionUpdates.toPromise().catch(err => fail(err));
         });
         it('gives an error when checking for updates', done => {
           update = new SwUpdate(comm);

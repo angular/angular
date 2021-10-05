@@ -478,11 +478,17 @@ describe('Driver', () => {
     serverUpdate.assertSawRequestFor('/redirected.txt');
     serverUpdate.assertNoOtherRequests();
 
-    expect(client.messages).toEqual([{
-      type: 'UPDATE_AVAILABLE',
-      current: {hash: manifestHash, appData: {version: 'original'}},
-      available: {hash: manifestUpdateHash, appData: {version: 'update'}},
-    }]);
+    expect(client.messages).toEqual([
+      {
+        type: 'VERSION_DETECTED',
+        version: {hash: manifestUpdateHash, appData: {version: 'update'}},
+      },
+      {
+        type: 'VERSION_READY',
+        currentVersion: {hash: manifestHash, appData: {version: 'original'}},
+        latestVersion: {hash: manifestUpdateHash, appData: {version: 'update'}},
+      },
+    ]);
 
     // Default client is still on the old version of the app.
     expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
@@ -523,10 +529,11 @@ describe('Driver', () => {
     await driver.updateClient(client as any as Client);
 
     expect(client.messages).toEqual([
+      {type: 'VERSION_DETECTED', version: {hash: manifestUpdateHash, appData: {version: 'update'}}},
       {
-        type: 'UPDATE_AVAILABLE',
-        current: {hash: manifestHash, appData: {version: 'original'}},
-        available: {hash: manifestUpdateHash, appData: {version: 'update'}},
+        type: 'VERSION_READY',
+        currentVersion: {hash: manifestHash, appData: {version: 'original'}},
+        latestVersion: {hash: manifestUpdateHash, appData: {version: 'update'}},
       },
       {
         type: 'UPDATE_ACTIVATED',
@@ -636,9 +643,13 @@ describe('Driver', () => {
 
     expect(client.messages).toEqual([
       {
-        type: 'UPDATE_AVAILABLE',
-        current: {hash: manifestHash, appData: {version: 'original'}},
-        available: {hash: manifestUpdateHash, appData: {version: 'update'}},
+        type: 'VERSION_DETECTED',
+        version: {hash: manifestUpdateHash, appData: {version: 'update'}},
+      },
+      {
+        type: 'VERSION_READY',
+        currentVersion: {hash: manifestHash, appData: {version: 'original'}},
+        latestVersion: {hash: manifestUpdateHash, appData: {version: 'update'}},
       },
       {
         type: 'UPDATE_ACTIVATED',
