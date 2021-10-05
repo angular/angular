@@ -25,6 +25,7 @@ const CLI_SPEC_FILENAME = 'e2e/src/app.e2e-spec.ts';
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
 const DEFAULT_CLI_EXAMPLE_PORT = 4200;
 const DEFAULT_CLI_SPECS_CONCURRENCY = 1;
+const MAX_NO_OUTPUT_TIMEOUT = 1000 * 60 * 5;  // 5 minutes
 const IGNORED_EXAMPLES = [
   // All of these `@angular/upgrade` related examples are relying on the SystemJS boilerplate.
   // As of v13, Angular packages no longer include UMD bundles so these examples are no longer
@@ -346,9 +347,28 @@ function reportStatus(status, outputFile) {
 
 // Returns both a promise and the spawned process so that it can be killed if needed.
 function spawnExt(
-    command, args, options, ignoreClose = false, printMessage = msg => process.stdout.write(msg)) {
+    command, args, options, ignoreClose = false, printMessageFn = msg => process.stdout.write(msg)) {
   let proc = null;
-  const promise = new Promise((resolve, reject) => {
+  const promise = new Promise((resolveFn, rejectFn) => {
+    let noOutputTimeoutId;
+    const failDueToNoOutput = () => {
+      treeKill(proc.id);
+      reject(`No output after ${MAX_NO_OUTPUT_TIMEOUT}ms.`);
+    };
+    const printMessage = msg => {
+      clearTimeout(noOutputTimeoutId);
+      noOutputTimeoutId = setTimeout(failDueToNoOutput, MAX_NO_OUTPUT_TIMEOUT);
+      return printMessageFn(msg);
+    };
+    const resolve = val => {
+      clearTimeout(noOutputTimeoutId);
+      resolveFn(val);
+    };
+    const reject = err => {
+      clearTimeout(noOutputTimeoutId);
+      rejectFn(err);
+    };
+
     let descr = command + ' ' + args.join(' ');
     printMessage(`running: ${descr}\n`);
     try {
