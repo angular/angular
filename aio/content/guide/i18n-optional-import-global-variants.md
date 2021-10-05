@@ -1,12 +1,17 @@
 # Import global variants of the locale data
 
-{@a import-locale}
+The [Angular CLI][AioCliMain] automatically includes locale data if you run the [`ng build`][AioCliBuild] command with the `--localize` option.
 
-Angular will automatically include locale data if you configure the locale using the `--localize` option with [`ng build`][AioCliBuild] CLI command.
+<!--todo: replace with code-example -->
 
-The [Angular repository][GithubAngularAngularTreeMasterPackagesCommonLocales] files (`@angular/common/locales`) contain most of the locale data that you need, but some advanced formatting options require additional locale data.
+```shell
+ng build --localize
+```
 
+The `@angular/common` package on npm contains the locale data files.
 Global variants of the locale data are available in [`@angular/common/locales/global`][GithubAngularAngularTreeMasterPackagesCommonLocalesGlobal].
+
+## `import` example for French
 
 The following example imports the global variants for French (`fr`).
 
@@ -14,6 +19,7 @@ The following example imports the global variants for French (`fr`).
 
 <!-- links -->
 
+[AioCliMain]: cli "CLI Overview and Command Reference | Angular"
 [AioCliBuild]: cli/build "ng build | CLI | Angular"
 
 <!-- external links -->
@@ -23,4 +29,4 @@ The following example imports the global variants for French (`fr`).
 
 <!-- end links -->
 
-@reviewed 2021-09-15
+@reviewed 2021-10-07

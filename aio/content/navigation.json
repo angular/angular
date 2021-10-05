@@ -377,16 +377,16 @@
             {
               "url": "guide/i18n-overview",
               "title": "Overview",
-              "tooltip": "Introduces the Angular Internationalization and lists topics that teach you how to localize your applications"
+              "tooltip": "Introduces the Angular internationalization and lists topics that teach you how to localize your applications"
             },
             {
-              "title": "Common Internationalization tasks",
-              "tooltip": "Task-based content on many of the common tasks associated with Angular Internationalization, such as adding the locale package and formatting data for a locale",
+              "title": "Common internationalization tasks",
+              "tooltip": "Task-based content on many of the common tasks associated with Angular internationalization, such as adding the locale package and formatting data for a locale",
               "children": [
                 {
-                  "url": "guide/i18n-common",
-                  "title": "Common Internationalization tasks",
-                  "tooltip": "Introduction"
+                  "url": "guide/i18n-common-overview",
+                  "title": "Overview",
+                  "tooltip": "Introduces the common Angular internationalization tasks and lists topics that teach you how to localize your applications"
                 },
                 {
                   "url": "guide/i18n-common-add-package",
@@ -431,18 +431,18 @@
               "tooltip": "Example of a translated Angular application"
             },
             {
-              "title": "Optional Internationalization practices",
-              "tooltip": "Task-based content on many of the optional pratices associated with Angular Internationalization",
+              "title": "Optional internationalization practices",
+              "tooltip": "Task-based content on many of the optional pratices associated with Angular internationalization",
               "children": [
                 {
-                  "url": "guide/i18n-optional",
-                  "title": "Optional Internationalization practices",
-                  "tooltip": "Introduction"
+                  "url": "guide/i18n-optional-overview",
+                  "title": "Overview",
+                  "tooltip": "Introduces the optional Angular internationalization tasks and lists topics that teach you how to manually configure localization settings for your applications"
                 },
                 {
-                  "url": "guide/i18n-optional-manual-source-locale",
-                  "title": "Set the source locale manually",
-                  "tooltip": "Set the source locale manually"
+                  "url": "guide/i18n-optional-manual-runtime-locale",
+                  "title": "Set the runtime locale manually",
+                  "tooltip": "Set the runtime locale manually"
                 },
                 {
                   "url": "guide/i18n-optional-import-global-variants",
