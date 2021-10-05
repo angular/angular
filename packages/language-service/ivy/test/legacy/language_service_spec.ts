@@ -82,6 +82,7 @@ describe('language service adapter', () => {
       // is enabled.
       expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
         strictTemplates: true,
+        _extendedTemplateDiagnostics: true,
       }));
     });
   });

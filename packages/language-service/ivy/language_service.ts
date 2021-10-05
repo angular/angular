@@ -501,6 +501,7 @@ function parseNgCompilerOptions(
   // regardless of its value in tsconfig.json.
   if (config.forceStrictTemplates === true) {
     options.strictTemplates = true;
+    options._extendedTemplateDiagnostics = true;
   }
 
   return options;
