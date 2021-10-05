@@ -430,16 +430,6 @@ export function addAttributeCompletionEntries(
           sortText: completion.propertyName,
           replacementSpan,
         });
-        // Offer a completion of the input binding as an attribute.
-        entries.push({
-          kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
-          name: completion.propertyName,
-          insertText: buildSnippet(insertSnippet, completion.propertyName),
-          isSnippet: insertSnippet,
-          // This completion should sort after both property binding options (one-way and two-way).
-          sortText: completion.propertyName + '_1',
-          replacementSpan,
-        });
         // If the directive supports banana-in-a-box for this input, offer that as well.
         if (completion.twoWayBindingSupported) {
           entries.push({
@@ -448,10 +438,20 @@ export function addAttributeCompletionEntries(
             insertText: buildSnippet(insertSnippet, `[(${completion.propertyName})]`),
             isSnippet: insertSnippet,
             // This completion should sort after the property binding.
-            sortText: completion.propertyName + '_2',
+            sortText: completion.propertyName + '_1',
             replacementSpan,
           });
         }
+        // Offer a completion of the input binding as an attribute.
+        entries.push({
+          kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
+          name: completion.propertyName,
+          insertText: buildSnippet(insertSnippet, completion.propertyName),
+          isSnippet: insertSnippet,
+          // This completion should sort after both property binding options (one-way and two-way).
+          sortText: completion.propertyName + '_2',
+          replacementSpan,
+        });
       } else {
         entries.push({
           kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
