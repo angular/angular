@@ -773,8 +773,7 @@
     "twitter": "samjulien",
     "website": "https://www.samjulien.com/",
     "bio": "Sam Julien builds software, articles, video courses, and campfires. A developer, speaker, writer, and GDE in the Pacific Northwest, Sam's favorite thing in the world is changing someone's life by teaching them to code.",
-    "groups": ["Collaborators",
-      "GDE"],
+    "groups": ["Collaborators", "GDE"],
     "mentor": "gkalpak"
   },
   "samvloeberghs": {
@@ -976,6 +975,14 @@
     "twitter": "willmendesneto",
     "website": "https://willmendesneto.github.io",
     "bio": "GDE (Google Developer Expert) Angular and Web Technologies, GDG Salvador organizer, passionate about technology and active in communities with a focus on web development, including Angular, JavaScript, HTML5, CSS3, Workflow, web performance, security and Internet of things. Participates in events organization, speaker at conferences in Brazil and other countries and contributes to several open source projects.",
+    "groups": ["GDE"]
+  },
+  "yjaaidi": {
+    "name": "Younes Jaaidi",
+    "picture": "younes.jpg",
+    "twitter": "yjaaidi",
+    "website": "https://marmicode.io",
+    "bio": "Younes is a software cook, trainer, and coach who loves the challenge of boosting teams' efficiency and helping everyone enjoy every part of their job. His experience convinced him that the key to making quality products is collective ownership, passion, and knowledge sharing. In his spare time, you will find him contributing to open-source software, writing articles or speaking at meetups or conferences… and sometimes sailing. His favorite trick? Adding features by removing code. He is also the co-creator of the JSCutlery open-source community.",
     "groups": ["GDE"]
   },
   "yurzui": {
