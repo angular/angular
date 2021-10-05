@@ -19,9 +19,7 @@ const factory: ts.server.PluginModuleFactory = (tsModule): PluginModule => {
 
   return {
     create(info: ts.server.PluginCreateInfo): NgLanguageService {
-      const config: PluginConfig = info.config;
-      const bundleName = config.ivy ? 'ivy.js' : 'language-service.js';
-      plugin = require(`./bundles/${bundleName}`)(tsModule);
+      plugin = require(`./bundles/language-service.js`)(tsModule);
       return plugin.create(info);
     },
     getExternalFiles(project: ts.server.Project): string[] {

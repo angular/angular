@@ -21,11 +21,6 @@ export interface PluginConfig {
    */
   angularOnly: boolean;
   /**
-   * If true, return factory function for Ivy LS during plugin initialization.
-   * Otherwise return factory function for View Engine LS.
-   */
-  ivy: boolean;
-  /**
    * If true, enable `strictTemplates` in Angular compiler options regardless
    * of its value in tsconfig.json.
    */
