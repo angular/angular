@@ -1,6 +1,16 @@
-# Example Angular application: Explore the translated example application
+# Example Angular Internationalization application
 
-{@a app-pre-translation}
+## Explore the translated example application
+
+<div class="alert is-helpful">
+
+<!--todo: update example .zip and github locations to match old files. "i18n" not equal to "i18n-common" or "i18n-overview". -->
+
+To explore the sample application with French translations used in the [Angular Internationalization][AioGuideI18nOverview] guide, see <live-example name="i18n" title="live example"></live-example>.
+
+</div>
+
+## `fr-CA` and `en-US` example
 
 The following tabs display the example application and the associated translation files.
 
@@ -19,8 +29,10 @@ The following tabs display the example application and the associated translatio
 
 <!-- links -->
 
+[AioGuideI18nOverview]: guide/i18n-overview "Angular Internationalization | Angular"  
+
 <!-- external links -->
 
 <!-- end links -->
 
-@reviewed 2021-09-15
+@reviewed 2021-10-07
