@@ -189,6 +189,13 @@ export abstract class AbstractControl {
   // TODO(issue/24571): remove '!'.
   _updateOn!: FormHooks;
 
+  /**
+    * Indicates that a control disable state is in progress.
+    *
+    * @internal
+    */
+  private _disableInProgress: boolean = false;
+
   private _parent: FormGroup|FormArray|null = null;
   private _asyncValidationSubscription: any;
 
@@ -734,6 +741,7 @@ export abstract class AbstractControl {
     // parent's dirtiness based on the children.
     const skipPristineCheck = this._parentMarkedDirty(opts.onlySelf);
 
+    this._disableInProgress = true;
     (this as {status: FormControlStatus}).status = DISABLED;
     (this as {errors: ValidationErrors | null}).errors = null;
     this._forEachChild((control: AbstractControl) => {
@@ -748,6 +756,7 @@ export abstract class AbstractControl {
 
     this._updateAncestors({...opts, skipPristineCheck});
     this._onDisabledChange.forEach((changeFn) => changeFn(true));
+    this._disableInProgress = false;
   }
 
   /**
@@ -831,7 +840,7 @@ export abstract class AbstractControl {
    * When false, no events are emitted.
    */
   updateValueAndValidity(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
-    this._setInitialStatus();
+    if (!this._disableInProgress) this._setInitialStatus();
     this._updateValue();
 
     if (this.enabled) {
@@ -1031,7 +1040,8 @@ export abstract class AbstractControl {
 
   /** @internal */
   _updateControlsErrors(emitEvent: boolean): void {
-    (this as {status: FormControlStatus}).status = this._calculateStatus();
+    (this as {status: FormControlStatus}).status =
+        this._disableInProgress ? DISABLED : this._calculateStatus();
 
     if (emitEvent) {
       (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);

@@ -1751,6 +1751,64 @@ describe('FormGroup', () => {
       expect(validator.calls.count()).toEqual(2);
     });
 
+    describe('retain "DISABLED" status', () => {
+      let logger: string[];
+      let c1: FormControl;
+      let c2: FormControl;
+      let group: FormGroup;
+
+      beforeEach(() => {
+        logger = [];
+        c1 = new FormControl(null);
+        c2 = new FormControl(null);
+        group = new FormGroup({one: c1, two: c2});
+      });
+
+      it('should retain the "DISABLED" status of the group, if the value changes on the child controls in the middle of disable state',
+         () => {
+           expect(group.status).toEqual('VALID');
+
+           c1.valueChanges.subscribe(() => {
+             logger.push(group.status);
+             c2.setValue('new!');
+             logger.push(group.status);
+           });
+
+           group.disable();
+           expect(group.status).toEqual('DISABLED');
+           expect(group.disabled).toEqual(true);
+           expect(logger).toEqual(['DISABLED', 'DISABLED']);
+         });
+
+      it('should change the "VALID" status', () => {
+        group.disable();
+
+        c1.valueChanges.subscribe(() => {
+          logger.push(group.status);
+          c2.setValue('new!');
+          logger.push(group.status);
+        });
+
+        group.enable();
+        expect(group.status).toEqual('VALID');
+        expect(group.enabled).toEqual(true);
+        expect(logger).toEqual(['VALID', 'VALID']);
+      });
+
+      it('should not fire event while changing the status', () => {
+        c1.valueChanges.subscribe(() => {
+          logger.push(group.status);
+          c2.setValue('new!');
+          logger.push(group.status);
+        });
+
+        group.disable({emitEvent: false});
+        expect(group.status).toEqual('DISABLED');
+        expect(group.disabled).toEqual(true);
+        expect(logger).toEqual([]);
+      });
+    });
+
     describe('disabled errors', () => {
       it('should clear out group errors when disabled', () => {
         const g = new FormGroup({'one': new FormControl()}, () => ({'expected': true}));
