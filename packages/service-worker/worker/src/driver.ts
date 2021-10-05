@@ -822,14 +822,6 @@ export class Driver implements Debuggable, UpdateSource {
       // but caches continue to be valid for previous versions. This is unfortunate but unavoidable.
       this.state = DriverReadyState.EXISTING_CLIENTS_ONLY;
       this.stateMessage = `Degraded due to: ${errorToString(err)}`;
-
-      try {
-        await this.sync();
-      } catch (err2) {
-        // We are already in a bad state. No need to make things worse.
-        // Just log the error and move on.
-        this.debugger.log(err2, `Driver.versionFailed(${err.message || err})`);
-      }
     }
   }
 
