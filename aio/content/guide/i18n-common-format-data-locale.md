@@ -1,18 +1,45 @@
 # Format data based on locale
 
-{@a i18n-pipes}
-
 Angular provides the following built-in data transformation [pipes][AioGuideGlossaryPipe].  The data transformation pipes use the [`LOCALE_ID`][AioApiCoreLocaleId] token to format data based on rules of each locale.
 
-*   [`DatePipe`][AioApiCommonDatepipe]: Formats a date value.
-*   [`CurrencyPipe`][AioApiCommonCurrencypipe]: Transforms a number to a currency string.
-*   [`DecimalPipe`][AioApiCommonDecimalpipe]: Transforms a number into a decimal number string.
-*   [`PercentPipe`][AioApiCommonPercentpipe]: Transforms a number to a percentage string.
+| Data transformation pipe | Details |
+|:--- |:--- |
+| [`DatePipe`][AioApiCommonDatepipe] | Formats a date value. |
+| [`CurrencyPipe`][AioApiCommonCurrencypipe] | Transforms a number into a currency string. |
+| [`DecimalPipe`][AioApiCommonDecimalpipe] | Transforms a number into a decimal number string. |
+| [`PercentPipe`][AioApiCommonPercentpipe] | Transforms a number into a percentage string. |
 
-For example, `{{today | date}}` uses `DatePipe` to display the current date in the format for the locale in `LOCALE_ID`.
+## Use DatePipe to display the current date
 
-To override the value of `LOCALE_ID`, add the `locale` parameter.
-For example, to force the currency to use `en-US` no matter which language-locale you set for `LOCALE_ID`, use this form: `{{amount | currency : 'en-US'}}`.
+To display the current date in the format for the current locale, use the following format for the `DatePipe`.
+
+<!--todo: replace with code-example -->
+
+```typescript
+{{ today | date }}
+```
+
+## Override current locale for CurrencyPipe
+
+Add the `locale` parameter to the pipe to override the current value of `LOCALE_ID` token.
+
+To force the currency to use American English (`en-US`), use the following format for the `CurrencyPipe`
+
+<!--todo: replace with code-example -->
+
+```typescript
+{{ amount | currency : 'en-US' }}
+```
+
+<div class="alert is-helpful">
+
+**NOTE**: The language and locale you set for `LOCALE_ID` token is ignored for the `CurrencyPipe`.
+
+</div>
+
+## What's next
+
+*   [Prepare templates for translations][AioGuideI18nCommonPrepare]
 
 <!-- links -->
 
@@ -24,8 +51,10 @@ For example, to force the currency to use `en-US` no matter which language-local
 
 [AioGuideGlossaryPipe]: guide/glossary#pipe "pipe - Glossary | Angular"
 
+[AioGuideI18nCommonPrepare]: guide/i18n-common-prepare "Prepare templates for translations | Angular"
+
 <!-- external links -->
 
 <!-- end links -->
 
-@reviewed 2021-09-15
+@reviewed 2021-10-07
