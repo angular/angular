@@ -30,6 +30,9 @@ export class SwUpdate {
 
   /**
    * Emits an `UpdateActivatedEvent` event whenever the app has been updated to a new version.
+   *
+   * @deprecated Use the return value of {@link SwUpdate#activateUpdate} instead.
+   *
    */
   readonly activated: Observable<UpdateActivatedEvent>;
 
@@ -60,19 +63,38 @@ export class SwUpdate {
     this.unrecoverable = this.sw.eventsOfType<UnrecoverableStateEvent>('UNRECOVERABLE_STATE');
   }
 
-  checkForUpdate(): Promise<void> {
+  /**
+   * Checks for an update and waits until the new version is downloaded from the server and ready
+   * for activation.
+   *
+   * @returns a promise that
+   * - resolves to `true` if a new version was found and is ready to be activated.
+   * - resolves to `false` if no new version was found
+   * - rejects if any error occurs
+   */
+  checkForUpdate(): Promise<boolean> {
     if (!this.sw.isEnabled) {
       return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
     }
-    const statusNonce = this.sw.generateNonce();
-    return this.sw.postMessageWithStatus('CHECK_FOR_UPDATES', {statusNonce}, statusNonce);
+    const nonce = this.sw.generateNonce();
+    return this.sw.postMessageWithOperation('CHECK_FOR_UPDATES', {nonce}, nonce);
   }
 
-  activateUpdate(): Promise<void> {
+  /**
+   * Updates the current client (i.e. browser tab) to the latest version that is ready for
+   * activation.
+   *
+   * @returns a promise that
+   *  - resolves to `true` if an update was activated successfully
+   *  - resolves to `false` if no update was available (for example, the client was already on the
+   *    latest version).
+   *  - rejects if any error occurs
+   */
+  activateUpdate(): Promise<boolean> {
     if (!this.sw.isEnabled) {
       return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
     }
-    const statusNonce = this.sw.generateNonce();
-    return this.sw.postMessageWithStatus('ACTIVATE_UPDATE', {statusNonce}, statusNonce);
+    const nonce = this.sw.generateNonce();
+    return this.sw.postMessageWithOperation('ACTIVATE_UPDATE', {nonce}, nonce);
   }
 }

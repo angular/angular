@@ -37,7 +37,8 @@ Do this with the `checkForUpdate()` method:
 
 <code-example path="service-worker-getting-started/src/app/check-for-update.service.ts" header="check-for-update.service.ts"></code-example>
 
-This method returns a `Promise` which indicates that the update check completed successfully, though it does not indicate whether an update was discovered as a result of the check. Even if one is found, the service worker must still successfully download the changed files, which can fail. If successful, the `available` event indicates availability of a new version of the application.
+This method returns a `Promise<boolean>` which indicates if an update is available for activation.
+The check might fail, which will cause a rejection of the `Promise`.
 
 <div class="alert is-important">
 

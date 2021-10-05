@@ -69,12 +69,14 @@ export interface TypedEvent {
   type: string;
 }
 
-interface StatusEvent {
-  type: 'STATUS';
+type OperationCompletedEvent = {
+  type: 'OPERATION_COMPLETED'; nonce: number; result: boolean;
+}|{
+  type: 'OPERATION_COMPLETED';
   nonce: number;
-  status: boolean;
-  error?: string;
-}
+  result?: undefined;
+  error: string;
+};
 
 
 function errorObservable(message: string): Observable<any> {
@@ -127,10 +129,11 @@ export class NgswCommChannel {
         .then(() => undefined);
   }
 
-  postMessageWithStatus(type: string, payload: Object, nonce: number): Promise<void> {
-    const waitForStatus = this.waitForStatus(nonce);
+  postMessageWithOperation(type: string, payload: Object, operationNonce: number):
+      Promise<boolean> {
+    const waitForOperationCompleted = this.waitForOperationCompleted(operationNonce);
     const postMessage = this.postMessage(type, payload);
-    return Promise.all([waitForStatus, postMessage]).then(() => undefined);
+    return Promise.all([postMessage, waitForOperationCompleted]).then(([, result]) => result);
   }
 
   generateNonce(): number {
@@ -146,11 +149,11 @@ export class NgswCommChannel {
     return this.eventsOfType(type).pipe(take(1));
   }
 
-  waitForStatus(nonce: number): Promise<void> {
-    return this.eventsOfType<StatusEvent>('STATUS')
+  waitForOperationCompleted(nonce: number): Promise<boolean> {
+    return this.eventsOfType<OperationCompletedEvent>('OPERATION_COMPLETED')
         .pipe(filter(event => event.nonce === nonce), take(1), map(event => {
-                if (event.status) {
-                  return undefined;
+                if (event.result !== undefined) {
+                  return event.result;
                 }
                 throw new Error(event.error!);
               }))
