@@ -197,6 +197,9 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 
   setAttribute(el: any, name: string, value: string, namespace?: string): void {
+    if (!el) {
+      throw new Error(`Property "el" is undefined`);
+    }
     if (namespace) {
       name = namespace + ':' + name;
       // TODO(FW-811): Ivy may cause issues here because it's passing around
