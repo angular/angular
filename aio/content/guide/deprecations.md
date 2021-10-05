@@ -64,6 +64,7 @@ v13 -> v16
 | `@angular/forms`          | [`FormBuilder.group` legacy options parameter](api/forms/FormBuilder#group)                   | <!--v11--> v14        |
 | `@angular/router`         | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props)                 | unspecified           |
 | `@angular/service-worker` | [`SwUpdate#activated`](api/service-worker/SwUpdate#activated)                                 | <!--v13--> v16        |
+| `@angular/service-worker` | [`SwUpdate#available`](api/service-worker/SwUpdate#available)                                 | <!--v13--> v16        |
 | template syntax           | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector)                            | <!--v7--> unspecified |
 | template syntax         | [`bind-`, `on-`, `bindon-`, and `ref-`](#bind-syntax)                            | <!--v13--> v15 |
 
@@ -141,6 +142,7 @@ This section contains a complete list all of the currently-deprecated APIs, with
 | API                                                           | Replacement                                                                            | Deprecation announced    | Notes
 |:---                                                           |:---                                                                                    |:---                      |:---
 | [`SwUpdate#activated`](api/service-worker/SwUpdate#activated) | [`SwUpdate#activateUpdate()` return value](api/service-worker/SwUpdate#activateUpdate) | v13                      | The return value of `SwUpdate#activateUpdate()` indicates whether an update was successfully activated. |
+| [`SwUpdate#available`](api/service-worker/SwUpdate#available) | [`SwUpdate#versionUpdates`](api/service-worker/SwUpdate#versionUpdates)                | v13                      | The behavior of `SwUpdate#available` can be rebuilt by filtering for `VersionReadyEvent` events on [`SwUpdate#versionUpdates`](api/service-worker/SwUpdate#versionUpdates) |
 
 {@a upgrade}
 

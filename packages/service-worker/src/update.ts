@@ -8,8 +8,9 @@
 
 import {Injectable} from '@angular/core';
 import {NEVER, Observable} from 'rxjs';
+import {filter, map} from 'rxjs/operators';
 
-import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, UnrecoverableStateEvent, UpdateActivatedEvent, UpdateAvailableEvent} from './low_level';
+import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, UnrecoverableStateEvent, UpdateActivatedEvent, UpdateAvailableEvent, VersionEvent, VersionReadyEvent} from './low_level';
 
 
 
@@ -24,7 +25,33 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, UnrecoverableStateEvent, UpdateAc
 @Injectable()
 export class SwUpdate {
   /**
+   * Emits a `VersionDetectedEvent` event whenever a new version is detected on the server.
+   *
+   * Emits a `VersionInstallationFailedEvent` event whenever checking for or downloading a new
+   * version fails.
+   *
+   * Emits a `VersionReadyEvent` event whenever a new version has been downloaded and is ready for
+   * activation.
+   */
+  readonly versionUpdates: Observable<VersionEvent>;
+
+  /**
    * Emits an `UpdateAvailableEvent` event whenever a new app version is available.
+   *
+   * @deprecated Use {@link versionUpdates} instead.
+   *
+   * The of behavior `available` can be rebuild by filtering for the `VersionReadyEvent`:
+   * ```
+   * import {filter, map} from 'rxjs/operators';
+   * // ...
+   * const updatesAvailable = swUpdate.versionUpdates.pipe(
+   *   filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
+   *   map(evt => ({
+   *     type: 'UPDATE_AVAILABLE',
+   *     current: evt.currentVersion,
+   *     available: evt.latestVersion,
+   *   })));
+   * ```
    */
   readonly available: Observable<UpdateAvailableEvent>;
 
@@ -53,12 +80,21 @@ export class SwUpdate {
 
   constructor(private sw: NgswCommChannel) {
     if (!sw.isEnabled) {
+      this.versionUpdates = NEVER;
       this.available = NEVER;
       this.activated = NEVER;
       this.unrecoverable = NEVER;
       return;
     }
-    this.available = this.sw.eventsOfType<UpdateAvailableEvent>('UPDATE_AVAILABLE');
+    this.versionUpdates = this.sw.eventsOfType<VersionEvent>(
+        ['VERSION_DETECTED', 'VERSION_INSTALLATION_FAILED', 'VERSION_READY']);
+    this.available = this.versionUpdates.pipe(
+        filter((evt: VersionEvent): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
+        map(evt => ({
+              type: 'UPDATE_AVAILABLE',
+              current: evt.currentVersion,
+              available: evt.latestVersion,
+            })));
     this.activated = this.sw.eventsOfType<UpdateActivatedEvent>('UPDATE_ACTIVATED');
     this.unrecoverable = this.sw.eventsOfType<UnrecoverableStateEvent>('UNRECOVERABLE_STATE');
   }

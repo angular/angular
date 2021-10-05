@@ -54,10 +54,12 @@ export class SwUpdate {
     // @deprecated
     readonly activated: Observable<UpdateActivatedEvent>;
     activateUpdate(): Promise<boolean>;
+    // @deprecated
     readonly available: Observable<UpdateAvailableEvent>;
     checkForUpdate(): Promise<boolean>;
     get isEnabled(): boolean;
     readonly unrecoverable: Observable<UnrecoverableStateEvent>;
+    readonly versionUpdates: Observable<VersionEvent>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<SwUpdate, never>;
     // (undocumented)
@@ -88,7 +90,7 @@ export interface UpdateActivatedEvent {
     type: 'UPDATE_ACTIVATED';
 }
 
-// @public
+// @public @deprecated
 export interface UpdateAvailableEvent {
     // (undocumented)
     available: {
@@ -102,6 +104,49 @@ export interface UpdateAvailableEvent {
     };
     // (undocumented)
     type: 'UPDATE_AVAILABLE';
+}
+
+// @public
+export interface VersionDetectedEvent {
+    // (undocumented)
+    type: 'VERSION_DETECTED';
+    // (undocumented)
+    version: {
+        hash: string;
+        appData?: object;
+    };
+}
+
+// @public
+export type VersionEvent = VersionDetectedEvent | VersionInstallationFailedEvent | VersionReadyEvent;
+
+// @public
+export interface VersionInstallationFailedEvent {
+    // (undocumented)
+    error: string;
+    // (undocumented)
+    type: 'VERSION_INSTALLATION_FAILED';
+    // (undocumented)
+    version: {
+        hash: string;
+        appData?: object;
+    };
+}
+
+// @public
+export interface VersionReadyEvent {
+    // (undocumented)
+    currentVersion: {
+        hash: string;
+        appData?: object;
+    };
+    // (undocumented)
+    latestVersion: {
+        hash: string;
+        appData?: object;
+    };
+    // (undocumented)
+    type: 'VERSION_READY';
 }
 
 // (No @packageDocumentation comment for this package)

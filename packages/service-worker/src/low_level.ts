@@ -16,6 +16,11 @@ export const ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not support
  *
  * @see {@link guide/service-worker-communications Service worker communication guide}
  *
+ * @deprecated
+ * This event is only emitted by the deprecated {@link SwUpdate#available}.
+ * Use the {@link VersionReadyEvent} instead, which is emitted by {@link SwUpdate#versionUpdates}.
+ * See {@link SwUpdate#available} docs for an example.
+ *
  * @publicApi
  */
 export interface UpdateAvailableEvent {
@@ -29,6 +34,10 @@ export interface UpdateAvailableEvent {
  *
  * @see {@link guide/service-worker-communications Service worker communication guide}
  *
+ * @deprecated
+ * This event is only emitted by the deprecated {@link SwUpdate#activated}.
+ * Use the return value of {@link SwUpdate#activateUpdate} instead.
+ *
  * @publicApi
  */
 export interface UpdateActivatedEvent {
@@ -36,6 +45,55 @@ export interface UpdateActivatedEvent {
   previous?: {hash: string, appData?: Object};
   current: {hash: string, appData?: Object};
 }
+
+/**
+ * An event emitted when the service worker has detected a new version of the app on the server and
+ * is about to start downloading it.
+ *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
+ *
+ * @publicApi
+ */
+export interface VersionDetectedEvent {
+  type: 'VERSION_DETECTED';
+  version: {hash: string; appData?: object;};
+}
+
+/**
+ * An event emitted when the installation of a new version failed.
+ * It may be used for logging/monitoring purposes.
+ *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
+ *
+ * @publicApi
+ */
+export interface VersionInstallationFailedEvent {
+  type: 'VERSION_INSTALLATION_FAILED';
+  version: {hash: string; appData?: object;};
+  error: string;
+}
+
+/**
+ * An event emitted when a new version of the app is available.
+ *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
+ *
+ * @publicApi
+ */
+export interface VersionReadyEvent {
+  type: 'VERSION_READY';
+  currentVersion: {hash: string; appData?: object;};
+  latestVersion: {hash: string; appData?: object;};
+}
+
+
+/**
+ * A union of all event types that can be emitted by
+ * {@link api/service-worker/SwUpdate#versionUpdates SwUpdate#versionUpdates}.
+ *
+ * @publicApi
+ */
+export type VersionEvent = VersionDetectedEvent|VersionInstallationFailedEvent|VersionReadyEvent;
 
 /**
  * An event emitted when the version of the app used by the service worker to serve this client is
@@ -63,7 +121,7 @@ export interface PushEvent {
   data: any;
 }
 
-export type IncomingEvent = UpdateAvailableEvent|UpdateActivatedEvent|UnrecoverableStateEvent;
+export type IncomingEvent = UpdateActivatedEvent|UnrecoverableStateEvent|VersionEvent;
 
 export interface TypedEvent {
   type: string;
@@ -140,8 +198,13 @@ export class NgswCommChannel {
     return Math.round(Math.random() * 10000000);
   }
 
-  eventsOfType<T extends TypedEvent>(type: T['type']): Observable<T> {
-    const filterFn = (event: TypedEvent): event is T => event.type === type;
+  eventsOfType<T extends TypedEvent>(type: T['type']|T['type'][]): Observable<T> {
+    let filterFn: (event: TypedEvent) => event is T;
+    if (typeof type === 'string') {
+      filterFn = (event: TypedEvent): event is T => event.type === type;
+    } else {
+      filterFn = (event: TypedEvent): event is T => type.includes(event.type);
+    }
     return this.events.pipe(filter(filterFn));
   }
 
