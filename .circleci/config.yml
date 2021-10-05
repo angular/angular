@@ -232,6 +232,15 @@ commands:
           command: |
             notificationJson="{\"text\":\":x: \`$CIRCLE_JOB\` job for $CIRCLE_BRANCH branch failed on build $CIRCLE_BUILD_NUM: $CIRCLE_BUILD_URL :scream:\"}"
             curl --request POST --header "Content-Type: application/json" --data "$notificationJson" ${<< parameters.webhook_url_env_var >>}
+  prepare_and_store_test_results:
+    description: 'Prepare and upload test results'
+    steps:
+      - run:
+          name: Copy JUnit test reports to central folder for upload
+          command: yarn -s ng-dev ci gather-test-results
+          when: always
+      - store_test_results:
+          path: ./test-results
 
 # Job definitions
 # Jobs can include parameters that are passed in the workflow job invocation.
@@ -312,6 +321,7 @@ jobs:
       - run:
           command: yarn bazel test //... --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only
           no_output_timeout: 20m
+      - prepare_and_store_test_results
 
   # Temporary job to test what will happen when we flip the Ivy flag to true
   test_ivy_aot:
@@ -328,6 +338,7 @@ jobs:
       - run:
           command: yarn test-ivy-aot //... --symlink_prefix=dist/
           no_output_timeout: 20m
+      - prepare_and_store_test_results
 
         # Publish bundle artifacts which will be used to calculate the size change. **Note**: Make
         # sure that the size plugin from the Angular robot fetches the artifacts from this CircleCI
@@ -369,6 +380,7 @@ jobs:
             yarn bazel test --config=saucelabs ${TESTS}
             yarn bazel run //tools/saucelabs:sauce_service_stop
           no_output_timeout: 40m
+      - prepare_and_store_test_results
       - notify_webhook_on_fail:
           webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
@@ -393,6 +405,7 @@ jobs:
             yarn bazel test --config=saucelabs --config=ivy ${TESTS}
             yarn bazel run //tools/saucelabs:sauce_service_stop
           no_output_timeout: 40m
+      - prepare_and_store_test_results
       - notify_webhook_on_fail:
           webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
