@@ -351,7 +351,10 @@ function spawnExt(
   let proc = null;
   const promise = new Promise((resolveFn, rejectFn) => {
     let noOutputTimeoutId;
-    const failDueToNoOutput = () => reject(`No output after ${MAX_NO_OUTPUT_TIMEOUT}ms.`);
+    const failDueToNoOutput = () => {
+      treeKill(proc.id);
+      reject(`No output after ${MAX_NO_OUTPUT_TIMEOUT}ms.`);
+    };
     const printMessage = msg => {
       clearTimeout(noOutputTimeoutId);
       noOutputTimeoutId = setTimeout(failDueToNoOutput, MAX_NO_OUTPUT_TIMEOUT);
