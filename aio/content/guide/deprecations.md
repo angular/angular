@@ -130,7 +130,7 @@ This section contains a complete list all of the currently-deprecated APIs, with
 
 | API                                           | Replacement                                         | Deprecation announced | Notes                                         |
 |:---                                           |:---                                                 |:---                   |:---                                           |
-| [[`JitCompilerFactory`](api/platform-browser-dynamic/JitCompilerFactory) | none | v13                    | Ivy JIT mode doesn't require accessing this symbol. See [JIT API changes due to ViewEngine deprecation](#jit-api-changes) for additional context.                  |
+| [`JitCompilerFactory`](api/platform-browser-dynamic/JitCompilerFactory) | none | v13                    | Ivy JIT mode doesn't require accessing this symbol. See [JIT API changes due to ViewEngine deprecation](#jit-api-changes) for additional context.                  |
 
 {@a testing}
 
