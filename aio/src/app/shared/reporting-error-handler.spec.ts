@@ -1,4 +1,4 @@
-import { ErrorHandler, Injector } from '@angular/core';
+import { ErrorHandler, Injector, VERSION } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { WindowToken } from 'app/shared/window';
 import { AppModule } from 'app/app.module';
@@ -46,8 +46,25 @@ describe('ReportingErrorHandler service', () => {
       expect(onerrorSpy.calls.argsFor(0)[4]).toEqual(jasmine.any(Error));
 
       // Then error from initial exception
-      expect(onerrorSpy.calls.argsFor(1)[0]).toEqual('initial error');
+      expect(onerrorSpy.calls.argsFor(1)[0]).toEqual(`[v${VERSION.full}] initial error`);
       expect(onerrorSpy.calls.argsFor(1)[4]).toEqual(error);
+    });
+
+    it('should augment an error object with version info', () => {
+      const originalMessage = 'this is an error message';
+      const error = new Error(originalMessage);
+
+      expect(error.message).toBe(originalMessage);
+      if (error.stack) {
+        expect(error.stack).toContain(originalMessage);
+      }
+
+      handler.handleError(error);
+
+      expect(error.message).toBe(`[v${VERSION.full}] ${originalMessage}`);
+      if (error.stack) {
+        expect(error.stack).toContain(`[v${VERSION.full}] ${originalMessage}`);
+      }
     });
 
     it('should send an error object to window.onerror', () => {
@@ -72,10 +89,10 @@ describe('ReportingErrorHandler service', () => {
       expect(onerrorSpy).toHaveBeenCalledWith('{reason: this is an error message}');
     });
 
-    it('should send an error string to window.onerror', () => {
+    it('should send an error string to window.onerror (prefixed with version info)', () => {
       const error = 'this is an error message';
       handler.handleError(error);
-      expect(onerrorSpy).toHaveBeenCalledWith(error);
+      expect(onerrorSpy).toHaveBeenCalledWith(`[v${VERSION.full}] ${error}`);
     });
 
     it('should send a non-object, non-string error stringified to window.onerror', () => {

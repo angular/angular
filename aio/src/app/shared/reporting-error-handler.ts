@@ -1,4 +1,4 @@
-import { ErrorHandler, Inject, Injectable } from '@angular/core';
+import { ErrorHandler, Inject, Injectable, VERSION } from '@angular/core';
 import { WindowToken } from './window';
 
 /**
@@ -19,12 +19,29 @@ export class ReportingErrorHandler extends ErrorHandler {
    * @param error Information about the error.
    */
   handleError(error: any) {
+    const versionedError = this.prefixErrorWithVersion(error);
+
     try {
-      super.handleError(error);
+      super.handleError(versionedError);
     } catch (e) {
       this.reportError(e);
     }
-    this.reportError(error);
+    this.reportError(versionedError);
+  }
+
+  private prefixErrorWithVersion<T>(error: T): T {
+    const prefix = `[v${VERSION.full}] `;
+
+    if (error instanceof Error) {
+      const oldMessage = error.message;
+      error.message = prefix + oldMessage;
+      error.stack = error.stack?.replace(oldMessage, error.message);
+    } else if (typeof error === 'string') {
+      error = prefix + error as unknown as T;
+    }
+    // If it is a different type, omit the version to avoid altering the original `error` object.
+
+    return error;
   }
 
   private reportError(error: unknown) {
