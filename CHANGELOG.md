@@ -1,3 +1,22 @@
+<a name="12.2.9"></a>
+# 12.2.9 (2021-10-06)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b4b441077a](https://github.com/angular/angular/commit/b4b441077ad3a2991e7c04beb288bee1945a83bd) | fix | handle invalid constructor parameters in partial factory declarations ([#43619](https://github.com/angular/angular/pull/43619)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7f6050587d](https://github.com/angular/angular/commit/7f6050587deb4796b6a0cc93445fab9e6b7ff826) | fix | unset attachRef when router-outlet is destroyed to avoid mounting a destroyed component ([#43697](https://github.com/angular/angular/pull/43697)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c4ecc07838](https://github.com/angular/angular/commit/c4ecc07838de5149a360b11de1c8c4ef18b1fe77) | fix | make `ngsw.json` generation deterministic and correct ([#43679](https://github.com/angular/angular/pull/43679)) |
+## Special Thanks
+Alan Agius, Daniel Díaz, George Kalpakas, JoostK, Kristiyan Kostadinov, Pete Bacon Darwin, Wey-Han Liaw, dario-piotrowicz, iRealNirmal, little-pinecone, mgechev, ultrasonicsoft and xiaohanxu-nick
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.0.0-next.13"></a>
 # 13.0.0-next.13 (2021-10-06)
 ## Breaking Changes
