@@ -213,7 +213,7 @@ code {
           position: relative;
 
           &::after {
-            content: "open_in_new";
+            content: "\e89e"; // codepoint for "open_in_new"
             font-family: "Material Icons";
             position: absolute;
             right: 0;
