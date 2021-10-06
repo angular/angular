@@ -32,6 +32,7 @@ export function createMouseEvent(
   const event = new MouseEvent(type, {
     bubbles: true,
     cancelable: true,
+    composed: true, // Required for shadow DOM events.
     view: window,
     detail: 0,
     relatedTarget: null,
@@ -74,6 +75,7 @@ export function createPointerEvent(
   return new PointerEvent(type, {
     bubbles: true,
     cancelable: true,
+    composed: true, // Required for shadow DOM events.
     view: window,
     clientX,
     clientY,
@@ -116,6 +118,7 @@ export function createKeyboardEvent(
   return new KeyboardEvent(type, {
     bubbles: true,
     cancelable: true,
+    composed: true, // Required for shadow DOM events.
     view: window,
     keyCode: keyCode,
     key: key,
@@ -130,8 +133,8 @@ export function createKeyboardEvent(
  * Creates a fake event object with any desired event type.
  * @docs-private
  */
-export function createFakeEvent(type: string, bubbles = false, cancelable = true) {
-  return new Event(type, {bubbles, cancelable});
+export function createFakeEvent(type: string, bubbles = false, cancelable = true, composed = true) {
+  return new Event(type, {bubbles, cancelable, composed});
 }
 
 /**
