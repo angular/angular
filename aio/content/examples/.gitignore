@@ -28,8 +28,6 @@
 **/tsconfig.json
 **/tsconfig.app.json
 **/tsconfig.spec.json
-# TODO: remove tslint.json after linting has been removed from systemjs examples
-**/tslint.json
 **/karma-test-shim.js
 **/browser-test-shim.js
 **/node_modules
