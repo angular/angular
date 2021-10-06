@@ -1,11 +1,11 @@
 /**
  * Script that goes through each source file that will be included in the
  * release output and checks if any module imports are not part of the
- * specified rollup globals file.
+ * specified package externals Starlark file.
  *
  * This script is used to validate Bazel rollup globals. We use a genrule to
- * convert the Starlark rollup globals dict into a JSON file which then can
- * be passed to this script to ensure that the rollup globals are up-to-date.
+ * convert the Starlark external list into a JSON file which then can
+ * be passed to this script to ensure that the list is up-to-date.
  */
 
 import * as chalk from 'chalk';
@@ -18,11 +18,11 @@ const projectRoot = join(__dirname, '../');
 const args = process.argv.slice(2);
 
 if (args.length !== 1) {
-  console.error(chalk.red('No rollup globals file has been specified.'));
+  console.error(chalk.red('No externals file has been specified.'));
   process.exit(1);
 }
 
-const rollupGlobals = JSON.parse(readFileSync(args[0], 'utf8'));
+const packageExternals = JSON.parse(readFileSync(args[0], 'utf8')) as string[];
 const configFile = ts.readJsonConfigFile(join(projectRoot, 'tsconfig.json'), ts.sys.readFile);
 const parsedConfig = ts.parseJsonSourceFileConfigFileContent(configFile, ts.sys, projectRoot);
 const filesToCheckGlob = [
@@ -51,7 +51,7 @@ parsedConfig.fileNames.forEach(fileName => {
       const isExternal = !module.startsWith('.') && !module.startsWith('/');
 
       // Check whether the module is external and whether it's in our rollup globals.
-      if (isExternal && !rollupGlobals[module]) {
+      if (isExternal && !packageExternals.includes(module)) {
         failures.set(fileName, (failures.get(fileName) || []).concat(module));
       }
     }
@@ -63,13 +63,13 @@ parsedConfig.fileNames.forEach(fileName => {
 });
 
 if (failures.size) {
-  console.error(chalk.red('  ✘   Rollup globals are not up-to-date.'));
+  console.error(chalk.red('  ✘   Package externals are not up-to-date.'));
   console.error();
-  failures.forEach((missingGlobals, fileName) => {
+  failures.forEach((missingExternals, fileName) => {
     console.error(chalk.yellow(`  ⮑   ${fileName}:`));
-    missingGlobals.forEach(g => console.error(`      - ${g}`));
+    missingExternals.forEach(g => console.error(`      - ${g}`));
   });
   process.exit(1);
 } else {
-  console.info(chalk.green('  ✓   Rollup globals are up-to-date.'));
+  console.info(chalk.green('  ✓   Package externals are up-to-date.'));
 }

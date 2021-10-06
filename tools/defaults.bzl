@@ -7,8 +7,8 @@ load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@npm//@bazel/concatjs:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
 load("@npm//@bazel/protractor:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("@npm//@bazel/typescript:index.bzl", _ts_library = "ts_library")
-load("//:packages.bzl", "MDC_PACKAGE_UMD_BUNDLES", "VERSION_PLACEHOLDER_REPLACEMENTS", "getAngularUmdTargets")
-load("//:rollup-globals.bzl", "ROLLUP_GLOBALS")
+load("//:packages.bzl", "VERSION_PLACEHOLDER_REPLACEMENTS")
+load("//:pkg-externals.bzl", "PKG_EXTERNALS")
 load("//tools/markdown-to-html:index.bzl", _markdown_to_html = "markdown_to_html")
 load("//tools/linker-process:index.bzl", "linker_process")
 
@@ -159,12 +159,9 @@ def ng_package(name, data = [], deps = [], globals = ROLLUP_GLOBALS, readme_md =
 
     _ng_package(
         name = name,
-        globals = globals,
+        externals = externals,
         data = data + [":license_copied"],
-        # Tslib needs to be explicitly specified as dependency here, so that the `ng_package`
-        # rollup bundling action can include tslib. Tslib is usually a transitive dependency of
-        # entry-points passed to `ng_package`, but the rule does not collect transitive deps.
-        deps = deps + ["@npm//tslib"],
+        deps = deps,
         # We never set a `package_name` for NPM packages, neither do we enable validation.
         # This is necessary because the source targets of the NPM packages all have
         # package names set and setting a similar `package_name` on the NPM package would

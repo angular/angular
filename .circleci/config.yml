@@ -338,10 +338,10 @@ jobs:
       - *setup_bazel_binary
 
       - run:
-          name: Checking rollup globals
+          name: Checking package externals
           command: |
-            bazel build //:rollup_globals
-            yarn check-rollup-globals $(bazel info bazel-bin)/rollup_globals.json
+            bazel build //:package_externals
+            yarn check-package-externals $(bazel info bazel-bin)/package_externals.json
 
       - run:
           name: Checking entry-points configuration

@@ -28,7 +28,7 @@
     "breaking-changes": "ts-node --project scripts/tsconfig.json scripts/breaking-changes.ts",
     "gulp": "gulp",
     "check-entry-point-setup": "node ./scripts/check-entry-point-setup.js",
-    "check-rollup-globals": "ts-node --project scripts/tsconfig.json scripts/check-rollup-globals.ts",
+    "check-package-externals": "ts-node --project scripts/tsconfig.json scripts/check-package-externals.ts",
     "format": "yarn ng-dev format changed",
     "cherry-pick-patch": "ts-node --project tools/cherry-pick-patch/tsconfig.json tools/cherry-pick-patch/cherry-pick-patch.ts",
     "ownerslint": "ts-node --project scripts/tsconfig.json scripts/ownerslint.ts",

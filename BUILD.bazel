@@ -1,4 +1,4 @@
-load("//:rollup-globals.bzl", "ROLLUP_GLOBALS")
+load("//:pkg-externals.bzl", "PKG_EXTERNALS")
 load("//src/cdk:config.bzl", "CDK_ENTRYPOINTS")
 load("//src/cdk-experimental:config.bzl", "CDK_EXPERIMENTAL_ENTRYPOINTS")
 load("//src/material:config.bzl", "MATERIAL_ENTRYPOINTS", "MATERIAL_TESTING_ENTRYPOINTS")
@@ -11,10 +11,13 @@ exports_files([
     "package.json",
 ])
 
+# Target which writes the list of package externals into a JSON file so that the
+# Starlark-configured externals (for the NPM package bundling) can be passed to
+# the `check-package-externals` Yarn script, which validates our module imports.
 genrule(
-    name = "rollup_globals",
-    outs = ["rollup_globals.json"],
-    cmd = "echo '%s' > $@" % ROLLUP_GLOBALS,
+    name = "package_externals",
+    outs = ["package_externals.json"],
+    cmd = "echo '%s' > $@" % PKG_EXTERNALS,
 )
 
 entryPoints = ["cdk/%s" % e for e in CDK_ENTRYPOINTS] + \
