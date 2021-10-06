@@ -49,11 +49,10 @@ node_repositories(
 
 yarn_install(
     name = "npm",
-    # We add the postinstall patches file, and ngcc main fields update script here so
-    # that Yarn will rerun whenever one of these files has been modified.
+    # We add the postinstall patches file here so that Yarn will rerun whenever
+    # the file is modified.
     data = [
         "//:tools/postinstall/apply-patches.js",
-        "//:tools/postinstall/update-ngcc-main-fields.js",
     ],
     package_json = "//:package.json",
     quiet = False,
