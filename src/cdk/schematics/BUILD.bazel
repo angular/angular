@@ -22,8 +22,8 @@ ts_library(
             "testing/**/*.ts",
         ],
     ),
-    # Schematics do not need to run in browsers and can use `commonjs`
-    # as format instead the default `umd` format.
+    # Schematics can not yet run in ESM module. For now we continue to use CommonJS.
+    # TODO(ESM): remove this once the Angular CLI supports ESM schematics.
     devmode_module = "commonjs",
     prodmode_module = "commonjs",
     tsconfig = ":tsconfig.json",
@@ -73,6 +73,10 @@ ts_library(
             "**/files/**/*.spec.ts",
         ],
     ),
+    # Schematics can not yet run in ESM module. For now we continue to use CommonJS.
+    # TODO(ESM): remove this once the Angular CLI supports ESM schematics.
+    devmode_module = "commonjs",
+    prodmode_module = "commonjs",
     tsconfig = ":tsconfig.json",
     deps = [
         ":schematics",

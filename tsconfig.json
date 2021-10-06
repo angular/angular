@@ -4,10 +4,9 @@
   "compilerOptions": {
     "outDir": "./dist/packages/all",
     "experimentalDecorators": true,
-    // Bazel either uses "umd" or "esnext". We replicate this here for IDE support.
-    // https://github.com/bazelbuild/rules_typescript/blob/master/internal/common/tsconfig.bzl#L199
     "module": "esnext",
     "moduleResolution": "node",
+    "esModuleInterop": true,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": false,
@@ -19,8 +18,8 @@
     "noImplicitThis": true,
     "skipLibCheck": true,
     "strictBindCallApply": true,
-    "target": "es2015",
-    "lib": ["es5", "es2015", "dom"],
+    "target": "es2020",
+    "lib": ["es2020", "dom"],
     "types": ["jasmine"],
     "baseUrl": ".",
     "paths": {

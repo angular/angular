@@ -1,4 +1,4 @@
-import * as minimatch from 'minimatch';
+import minimatch from 'minimatch';
 import * as path from 'path';
 import * as Lint from 'tslint';
 import * as ts from 'typescript';

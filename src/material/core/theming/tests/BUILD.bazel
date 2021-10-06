@@ -44,6 +44,8 @@ ts_library(
     srcs = [
         "theming-api.spec.ts",
     ],
+    # TODO(ESM): remove this once the Bazel NodeJS rules can handle ESM with `nodejs_binary`.
+    devmode_module = "commonjs",
     deps = [
         "//tools/postcss",
         "@npm//@types/jasmine",

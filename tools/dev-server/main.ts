@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as minimist from 'minimist';
+import minimist from 'minimist';
 
 import {DevServer} from './dev-server';
 import {setupBazelWatcherSupport} from './ibazel';

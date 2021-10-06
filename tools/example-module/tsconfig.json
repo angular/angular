@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
-    "lib": ["es2015"],
+    "lib": ["es2020"],
     "module": "commonjs",
-    "target": "es5",
+    "esModuleInterop": true,
+    "target": "es2020",
     "sourceMap": true,
     "types": ["node"]
   },

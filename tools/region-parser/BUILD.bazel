@@ -5,6 +5,8 @@ package(default_visibility = ["//visibility:public"])
 ts_library(
     name = "region-parser",
     srcs = glob(["**/*.ts"]),
+    # TODO(ESM): remove this once the Bazel NodeJS rules can handle ESM with `nodejs_binary`.
+    devmode_module = "commonjs",
     tsconfig = ":tsconfig.json",
     deps = [
         "@npm//@types/node",

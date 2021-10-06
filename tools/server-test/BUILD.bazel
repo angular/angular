@@ -5,6 +5,8 @@ package(default_visibility = ["//visibility:public"])
 ts_library(
     name = "test_runner_lib",
     srcs = ["test-runner.ts"],
+    # TODO(ESM): remove this once the Bazel NodeJS rules can handle ESM with `nodejs_binary`.
+    devmode_module = "commonjs",
     deps = [
         "@npm//@bazel/runfiles",
         "@npm//@types/node",

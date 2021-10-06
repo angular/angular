@@ -7,10 +7,10 @@
  */
 
 import {readFileSync, existsSync} from 'fs';
-import * as browserSync from 'browser-sync';
-import * as http from 'http';
-import * as path from 'path';
-import * as send from 'send';
+import browserSync from 'browser-sync';
+import http from 'http';
+import path from 'path';
+import send from 'send';
 
 /**
  * Dev Server implementation that uses browser-sync internally. This dev server

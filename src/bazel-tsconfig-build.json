@@ -20,6 +20,7 @@
     "noImplicitThis": true,
     "importHelpers": true,
     "strictBindCallApply": true,
+    "esModuleInterop": true,
     "newLine": "lf",
     // Bazel either uses "umd" or "esnext". We replicate this here for IDE support.
     // https://github.com/bazelbuild/rules_typescript/blob/master/internal/common/tsconfig.bzl#L199
@@ -27,16 +28,14 @@
     "moduleResolution": "node",
     "sourceMap": true,
     "inlineSources": true,
-    "target": "es2015",
-    "lib": ["es2015", "dom"],
+    "target": "es2020",
+    "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "types": ["tslib"]
   },
   "bazelOptions": {
     // Note: We can remove this once we fully switched away from Gulp. Currently we still set
     // some options here just in favor of the standard tsconfig's which extending this one.
-    "suppressTsconfigOverrideWarnings": true,
-    // See https://github.com/angular/angular/issues/29107
-    "devmodeTargetOverride": "es5"
+    "suppressTsconfigOverrideWarnings": true
   }
 }

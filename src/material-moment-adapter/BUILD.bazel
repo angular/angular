@@ -1,4 +1,3 @@
-load("@npm//@bazel/typescript:index.bzl", "ts_config")
 load("//tools:defaults.bzl", "ng_module", "ng_package", "ng_test_library", "ng_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
@@ -9,9 +8,6 @@ ng_module(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    # We need a custom tsconfig that allows synthetic default imports. This is
-    # because "moment" does not have a typed default import.
-    tsconfig = ":tsconfig",
     deps = [
         "//src:dev_mode_types",
         "//src/material/core",

@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as ts from 'typescript';
 import * as Lint from 'tslint';
-import * as minimatch from 'minimatch';
+import minimatch from 'minimatch';
 
 /**
  * Rule that enforces certain decorator properties to be defined and to match a pattern.

@@ -1,4 +1,3 @@
-load("@npm//@bazel/typescript:index.bzl", "ts_config")
 load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
@@ -13,7 +12,6 @@ ng_module(
         "**/*.html",
         "**/*.css",
     ]),
-    tsconfig = ":tsconfig",
     deps = [
         "//src/cdk/testing",
         "//src/cdk/testing/testbed",
@@ -31,12 +29,6 @@ ng_module(
         "@npm//@types/jasmine",
         "@npm//moment",
     ],
-)
-
-ts_config(
-    name = "tsconfig",
-    src = "tsconfig-build.json",
-    deps = ["//src:bazel-tsconfig-build.json"],
 )
 
 filegroup(

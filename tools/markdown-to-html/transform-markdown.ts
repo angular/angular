@@ -4,7 +4,7 @@
  */
 
 import {readFileSync, writeFileSync} from 'fs';
-import * as marked from 'marked';
+import marked from 'marked';
 import {join} from 'path';
 import {highlightCodeBlock} from '../highlight-files/highlight-code-block';
 import {DocsMarkdownRenderer} from './docs-marked-renderer';

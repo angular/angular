@@ -11,6 +11,8 @@ ts_library(
             "*.spec.ts",
         ],
     ),
+    # TODO(ESM): remove this once the Bazel NodeJS rules can handle ESM with `nodejs_binary`.
+    devmode_module = "commonjs",
     tsconfig = ":tsconfig.json",
     deps = [
         "//tools/highlight-files:sources",

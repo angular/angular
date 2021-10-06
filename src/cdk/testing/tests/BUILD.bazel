@@ -82,6 +82,8 @@ ts_library(
     name = "webdriver_test_sources",
     testonly = True,
     srcs = ["webdriver.e2e.spec.ts"],
+    # TODO(ESM): remove this once the Bazel NodeJS rules can handle ESM with `nodejs_binary`.
+    devmode_module = "commonjs",
     deps = [
         ":cross_environment_specs",
         ":test_harnesses",

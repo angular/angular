@@ -46,7 +46,7 @@
     "integration-tests:size-test": "bazel test //integration/size-test/...",
     "check-mdc-tests": "ts-node --project scripts/tsconfig.json scripts/check-mdc-tests.ts",
     "check-mdc-exports": "ts-node --project scripts/tsconfig.json scripts/check-mdc-exports.ts",
-    "check-tooling-setup": "yarn tsc --project tools/tsconfig-ci.json && yarn tsc --project .ng-dev/tsconfig.json",
+    "check-tooling-setup": "yarn tsc --project tools/tsconfig.json && yarn tsc --project .ng-dev/tsconfig.json",
     "tsc": "node ./node_modules/typescript/bin/tsc",
     "prepare": "husky install"
   },

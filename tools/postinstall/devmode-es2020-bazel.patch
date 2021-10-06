@@ -1,0 +1,14 @@
+diff --git node_modules/@angular/bazel/src/ng_module/ng_module.bzl node_modules/@angular/bazel//src/ng_module/ng_module.bzl
+index 3520997..adf46e8 100644
+--- node_modules/@angular/bazel//src/ng_module/ng_module.bzl
++++ node_modules/@angular/bazel//src/ng_module/ng_module.bzl
+@@ -401,6 +401,9 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
+     if not is_devmode:
+         # Note: Keep in sync with the `prodmode_target` for `ts_library` in `tools/defaults.bzl`
+         tsconfig["compilerOptions"]["target"] = "es2020"
++    else:
++        tsconfig["compilerOptions"]["target"] = "es2020"
++        tsconfig["compilerOptions"]["module"] = "esnext"
+ 
+     return tsconfig
+ 
