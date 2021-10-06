@@ -35,7 +35,9 @@ describe('MapMarkerClusterer', () => {
     createMapConstructorSpy(mapSpy).and.callThrough();
 
     const markerSpy = createMarkerSpy({});
-    createMarkerConstructorSpy(markerSpy).and.callFake(() => {
+    // The spy target function cannot be an arrow-function as this breaks when created
+    // through `new`.
+    createMarkerConstructorSpy(markerSpy).and.callFake(function() {
       return createMarkerSpy({});
     });
 

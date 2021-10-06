@@ -3,5 +3,5 @@ import {runHarnessTests} from '@angular/material/dialog/testing/shared.spec';
 import {MatDialogHarness} from './dialog-harness';
 
 describe('MDC-based MatDialog', () => {
-  runHarnessTests(MatDialogModule, MatDialogHarness, MatDialog as any);
+  runHarnessTests(MatDialogModule, MatDialogHarness as any, MatDialog as any);
 });

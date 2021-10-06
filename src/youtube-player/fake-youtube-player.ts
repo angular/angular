@@ -44,7 +44,8 @@ export function createFakeYtNamespace(): FakeYtNamespace {
   const boundListeners = new Map<keyof YT.Events, Set<(event: any) => void>>();
   const playerCtorSpy = jasmine.createSpy('Player Constructor');
 
-  playerCtorSpy.and.callFake((_el: Element, config: YT.PlayerOptions) => {
+  // The spy target function cannot be an arrow-function as this breaks when created through `new`.
+  playerCtorSpy.and.callFake(function (_el: Element, config: YT.PlayerOptions) {
     playerConfig = config;
     return playerSpy;
   });

@@ -17,28 +17,14 @@ export const enum MatDialogSection {
   ACTIONS = '.mat-dialog-actions'
 }
 
-// @breaking-change 14.0.0 change generic type to MatDialogSection.
-/** Harness for interacting with a standard `MatDialog` in tests. */
-export class MatDialogHarness extends ContentContainerComponentHarness<MatDialogSection | string> {
-  // Developers can provide a custom component or template for the
-  // dialog. The canonical dialog parent is the "MatDialogContainer".
-  /** The selector for the host element of a `MatDialog` instance. */
-  static hostSelector = '.mat-dialog-container';
+/** Base class for the `MatDialogHarness` implementation. */
+export class _MatDialogHarnessBase extends
+    // @breaking-change 14.0.0 change generic type to MatDialogSection.
+    ContentContainerComponentHarness<MatDialogSection | string> {
 
   protected _title = this.locatorForOptional(MatDialogSection.TITLE);
   protected _content = this.locatorForOptional(MatDialogSection.CONTENT);
   protected _actions = this.locatorForOptional(MatDialogSection.ACTIONS);
-
-
-  /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatDialogHarness` that meets
-   * certain criteria.
-   * @param options Options for filtering which dialog instances are considered a match.
-   * @return a `HarnessPredicate` configured with the given options.
-   */
-  static with(options: DialogHarnessFilters = {}): HarnessPredicate<MatDialogHarness> {
-    return new HarnessPredicate(MatDialogHarness, options);
-  }
 
   /** Gets the id of the dialog. */
   async getId(): Promise<string|null> {
@@ -95,5 +81,23 @@ export class MatDialogHarness extends ContentContainerComponentHarness<MatDialog
   /** Gets the dialog's actions text. This only works if the dialog is using mat-dialog-actions. */
   async getActionsText() {
     return (await this._actions())?.text() ?? '';
+  }
+}
+
+/** Harness for interacting with a standard `MatDialog` in tests. */
+export class MatDialogHarness extends _MatDialogHarnessBase {
+  // Developers can provide a custom component or template for the
+  // dialog. The canonical dialog parent is the "MatDialogContainer".
+  /** The selector for the host element of a `MatDialog` instance. */
+  static hostSelector = '.mat-dialog-container';
+
+  /**
+   * Gets a `HarnessPredicate` that can be used to search for a `MatDialogHarness` that meets
+   * certain criteria.
+   * @param options Options for filtering which dialog instances are considered a match.
+   * @return a `HarnessPredicate` configured with the given options.
+   */
+  static with(options: DialogHarnessFilters = {}): HarnessPredicate<MatDialogHarness> {
+    return new HarnessPredicate(MatDialogHarness, options);
   }
 }
