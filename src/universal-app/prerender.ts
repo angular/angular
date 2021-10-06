@@ -1,20 +1,21 @@
 import 'reflect-metadata';
 import 'zone.js';
 
-import {renderModuleFactory} from '@angular/platform-server';
+import {renderModule} from '@angular/platform-server';
 import {readFileSync, writeFileSync} from 'fs';
 import {join} from 'path';
+import {runfiles} from '@bazel/runfiles';
 
-import {KitchenSinkRootServerModuleNgFactory} from './kitchen-sink-root.ngfactory';
+import {KitchenSinkRootServerModule} from './kitchen-sink-root';
 
 // Do not enable production mode, because otherwise the `MatCommonModule` won't execute
 // the browser related checks that could cause NodeJS issues.
 
 // Resolve the path to the "index.html" through Bazel runfile resolution.
-const indexHtmlPath = require.resolve('./index.html');
+const indexHtmlPath = runfiles.resolvePackageRelative('./index.html');
 
-const result = renderModuleFactory(
-    KitchenSinkRootServerModuleNgFactory, {document: readFileSync(indexHtmlPath, 'utf-8')});
+const result = renderModule(
+    KitchenSinkRootServerModule, {document: readFileSync(indexHtmlPath, 'utf-8')});
 const outDir = process.env.TEST_UNDECLARED_OUTPUTS_DIR as string;
 
 result

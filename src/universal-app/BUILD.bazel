@@ -4,6 +4,8 @@ load("//src/cdk-experimental:config.bzl", "CDK_EXPERIMENTAL_TARGETS")
 load("//src/material:config.bzl", "MATERIAL_TARGETS")
 load("//src/material-experimental:config.bzl", "MATERIAL_EXPERIMENTAL_TARGETS")
 load("//tools:defaults.bzl", "ng_module", "sass_binary", "ts_library")
+load("//tools/esbuild:index.bzl", "esbuild")
+load("//tools/angular:index.bzl", "LINKER_PROCESSED_FW_PACKAGES")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -33,6 +35,7 @@ ts_library(
     deps = [
         ":kitchen-sink",
         "@npm//@angular/platform-server",
+        "@npm//@bazel/runfiles",
         "@npm//@types/node",
         "@npm//reflect-metadata",
         "@npm//zone.js",
@@ -53,14 +56,28 @@ sass_binary(
     ],
 )
 
+esbuild(
+    name = "server_bundle",
+    entry_point = ":prerender.ts",
+    platform = "node",
+    # We cannot use `ES2017` or higher as that would result in `async/await` not being downleveled.
+    # ZoneJS needs to be able to intercept these as otherwise change detection would not work properly.
+    target = "es2016",
+    # Note: We add all linker-processed FW packages as dependencies here so that ESBuild will
+    # map all framework packages to their linker-processed bundles from `tools/angular`.
+    deps = LINKER_PROCESSED_FW_PACKAGES + [
+        ":server",
+    ],
+)
+
 nodejs_test(
     name = "server_test",
     data = [
         "index.html",
-        ":server",
+        ":server_bundle",
         ":theme_scss",
     ],
-    entry_point = ":prerender.ts",
+    entry_point = ":server_bundle.js",
     templated_args = [
         # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
         # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
