@@ -45,7 +45,7 @@ if (module === require.main) {
 
 /** Builds the release packages for NPM. */
 export function performNpmReleaseBuild(): BuiltPackage[] {
-  return buildReleasePackages(false, defaultDistPath, /* isSnapshotBuild */ false);
+  return buildReleasePackages(defaultDistPath, /* isSnapshotBuild */ false);
 }
 
 /**
@@ -53,19 +53,17 @@ export function performNpmReleaseBuild(): BuiltPackage[] {
  * Git HEAD SHA is included in the version (for easier debugging and back tracing).
  */
 export function performDefaultSnapshotBuild(): BuiltPackage[] {
-  return buildReleasePackages(false, defaultDistPath, /* isSnapshotBuild */ true);
+  return buildReleasePackages(defaultDistPath, /* isSnapshotBuild */ true);
 }
 
 /**
  * Builds the release packages with the given compile mode and copies
  * the package output into the given directory.
  */
-function buildReleasePackages(useIvy: boolean, distPath: string,
-                              isSnapshotBuild: boolean): BuiltPackage[] {
+function buildReleasePackages(distPath: string, isSnapshotBuild: boolean): BuiltPackage[] {
 
   console.log('######################################');
   console.log('  Building release packages...');
-  console.log(`  Compiling with Ivy: ${useIvy}`);
   console.log('######################################');
 
   // List of targets to build. e.g. "src/cdk:npm_package", or "src/material:npm_package".
@@ -78,7 +76,6 @@ function buildReleasePackages(useIvy: boolean, distPath: string,
   // runs the workspace stamping script. The stamping script ensures that the
   // version placeholder is populated in the release output.
   const stampConfigArg = `--config=${isSnapshotBuild ? 'snapshot-build' : 'release'}`;
-  const ivySwitchConfigArg = `--config=${useIvy ? 'ivy' : 'view-engine'}`;
 
   // Walk through each release package and clear previous "npm_package" outputs. This is
   // a workaround for: https://github.com/bazelbuild/rules_nodejs/issues/1219. We need to
@@ -91,7 +88,7 @@ function buildReleasePackages(useIvy: boolean, distPath: string,
     }
   });
 
-  exec(`${bazelCmd} build ${stampConfigArg} ${ivySwitchConfigArg} ${targets.join(' ')}`);
+  exec(`${bazelCmd} build ${stampConfigArg} ${targets.join(' ')}`);
 
   // Delete the distribution directory so that the output is guaranteed to be clean. Re-create
   // the empty directory so that we can copy the release packages into it later.

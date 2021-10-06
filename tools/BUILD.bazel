@@ -7,20 +7,6 @@ exports_files([
     "system-rxjs-operators.js",
 ])
 
-config_setting(
-    name = "view_engine_mode",
-    values = {
-        "define": "angular_ivy_enabled=False",
-    },
-)
-
-# Bazel build setting for enabling partial compilation. The partial compilation
-# build setting can be set using `--//tools:partial_compilation=True`.
-bool_flag(
-    name = "partial_compilation",
-    build_setting_default = False,
-)
-
 # Bazel config setting that matches if the partial compilation flag is set to `True`.
 config_setting(
     name = "partial_compilation_enabled",

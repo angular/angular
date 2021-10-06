@@ -197,28 +197,6 @@ jobs:
       - run: bazel build --build_tag_filters=-docs-package,-release-package -- src/...
       - *slack_notify_on_failure
 
-  # -----------------------------------
-  # Job which ensures that all non-test Bazel targets build properly
-  # in View Engine configuration.
-  # -----------------------------------
-  view_engine_build:
-    <<: *job_defaults
-    resource_class: xlarge
-    environment:
-      GCP_DECRYPT_TOKEN: *gcp_decrypt_token
-    steps:
-      - checkout_and_rebase
-      - *restore_cache
-      - *setup_bazel_ci_config
-      - *setup_bazel_remote_execution
-      - *yarn_install
-      - *setup_bazel_binary
-
-      # Exclude release and docs packages here as those will be built within
-      # the "build_release_packages" and "publish_snapshots" jobs.
-      - run: bazel build --build_tag_filters=-docs-package,-release-package --config=view-engine -- src/...
-      - *slack_notify_on_failure
-
   # --------------------------------------------------------------------------------------------
   # Job that runs API golden tests in "tools/public_api_guard".
   # This job fails whenever an API has been updated but not explicitly approved through goldens.
@@ -526,48 +504,6 @@ jobs:
     - *slack_notify_on_failure
 
   # ----------------------------------------------------------------------------
-  # Job that runs all Bazel tests against View Engine with the current Angular version
-  # specified in the project dev dependencies.
-  # ----------------------------------------------------------------------------
-  view_engine_test:
-    <<: *job_defaults
-    resource_class: xlarge
-    environment:
-      GCP_DECRYPT_TOKEN: *gcp_decrypt_token
-    steps:
-      - checkout_and_rebase
-      - *restore_cache
-      - *setup_bazel_ci_config
-      - *setup_bazel_remote_execution
-      - *yarn_install
-      - *setup_bazel_binary
-
-      # Run project tests with NGC and View Engine.
-      - run: bazel test --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --config=view-engine --build_tests_only -- src/...
-      - *slack_notify_on_failure
-
-  # ----------------------------------------------------------------------------
-  # Job that runs all Bazel tests against View Engine from angular/angular#master.
-  # ----------------------------------------------------------------------------
-  view_engine_snapshot_test_cronjob:
-    <<: *job_defaults
-    resource_class: xlarge
-    environment:
-      GCP_DECRYPT_TOKEN: *gcp_decrypt_token
-    steps:
-      - checkout_and_rebase
-      - *restore_cache
-      - *setup_bazel_ci_config
-      - *setup_bazel_remote_execution
-      - *setup_snapshot_builds
-      - *yarn_install_loose_lockfile
-      - *setup_bazel_binary
-
-      # Run project tests with NGC and View Engine.
-      - run: bazel test --build_tag_filters=-docs-package,-e2e --test_tag_filters=-e2e --config=view-engine --build_tests_only -- src/...
-      - *slack_notify_on_failure
-
-  # ----------------------------------------------------------------------------
   # Job that runs all Bazel integration tests.
   # ----------------------------------------------------------------------------
   integration_tests:
@@ -584,7 +520,6 @@ jobs:
       - *setup_bazel_binary
 
       - run: yarn integration-tests:partial-ivy
-      - run: yarn integration-tests:view-engine
       # TODO: Re-enable when there are integration tests that should run with Ivy.
       # Currently this command fails as there are no tests.
       # - run: yarn integration-tests
@@ -654,10 +589,6 @@ workflows:
     jobs:
       - bazel_build:
           filters: *ignore_presubmit_branch_filter
-      - view_engine_build:
-          filters: *ignore_presubmit_branch_filter
-      - view_engine_test:
-          filters: *ignore_presubmit_branch_filter
       - api_golden_checks:
           filters: *ignore_presubmit_branch_filter
       - integration_tests:
@@ -701,8 +632,6 @@ workflows:
       # is no easy way to detect whether a job runs inside of a cronjob or specific
       # workflow. See: https://circleci.com/ideas/?idea=CCI-I-295
       - snapshot_tests_local_browsers:
-          filters: *only_main_branch_filter
-      - view_engine_snapshot_test_cronjob:
           filters: *only_main_branch_filter
       - mdc_snapshot_test_cronjob:
           filters: *only_main_branch_filter

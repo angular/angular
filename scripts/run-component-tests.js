@@ -35,9 +35,9 @@ shelljs.set('-e');
 shelljs.cd(projectDir);
 
 // Extracts the supported command line options.
-const {_: components, local, firefox, watch, 'view-engine': viewEngine} = minimist(args, {
-  boolean: ['local', 'firefox', 'watch', 'view-engine'],
-  default: {watch: true, 'view-engine': false},
+const {_: components, local, firefox, watch} = minimist(args, {
+  boolean: ['local', 'firefox', 'watch'],
+  default: {watch: true},
 });
 
 // Whether tests for all components should be run.
@@ -54,7 +54,6 @@ if (local && (components.length > 1 || all)) {
 
 const browserName = firefox ? 'firefox' : 'chromium';
 const bazelBinary = `yarn -s ${watch ? 'ibazel' : 'bazel'}`;
-const configFlag = viewEngine ? '--config=view-engine' : '';
 
 // If `all` has been specified as component, we run tests for all components
 // in the repository. The `--firefox` flag can be still specified.
@@ -68,7 +67,7 @@ if (all) {
   }
   shelljs.exec(
       `yarn -s bazel test --test_tag_filters=-e2e,browser:${browserName} ` +
-      `--build_tag_filters=browser:${browserName} --build_tests_only ${configFlag} //src/...`);
+      `--build_tag_filters=browser:${browserName} --build_tests_only //src/...`);
   return;
 }
 
@@ -89,7 +88,7 @@ const testLabels = components
     .map(t => `${getBazelPackageOfComponentName(t)}:${getTargetName(t)}`);
 
 // Runs Bazel for the determined test labels.
-shelljs.exec(`${bazelBinary} ${bazelAction} ${testLabels.join(' ')} ${configFlag}`);
+shelljs.exec(`${bazelBinary} ${bazelAction} ${testLabels.join(' ')}`);
 
 /**
  * Gets the Bazel package label for the specified component name. Throws if

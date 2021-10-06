@@ -51,14 +51,11 @@ build:release --stamp
 build:snapshot-build --workspace_status_command="yarn -s ng-dev release build-env-stamp --mode=snapshot"
 build:snapshot-build --stamp
 
-################################
-# View Engine / Ivy toggle     #
-################################
-build:view-engine --define=angular_ivy_enabled=False
-build:ivy --define=angular_ivy_enabled=True
 
-# Set Ivy as the default
-build --config=ivy
+##################################
+# Always enable Ivy compilation  #
+##################################
+build --define=angular_ivy_enabled=True
 
 ################################
 # Remote Execution Setup       #

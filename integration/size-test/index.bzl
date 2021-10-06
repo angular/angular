@@ -48,7 +48,6 @@ def size_test(name, file, deps):
         },
         deps = [
             ":%s_lib" % name,
-            "//tools:angular_ivy_enabled",
             "@npm//rollup-plugin-node-resolve",
             "@npm//@angular-devkit/build-optimizer",
         ],

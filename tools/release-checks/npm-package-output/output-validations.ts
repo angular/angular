@@ -17,7 +17,7 @@ const bazelManifestPath = /(angular_material|external)\//;
  * List of fields which are mandatory in entry-point "package.json" files and refer
  * to files in the release output.
  */
-const packageJsonPathFields = ['main', 'module', 'typings', 'es2015', 'fesm2015', 'esm2015'];
+const packageJsonPathFields = ['module', 'typings', 'fesm2015', 'fesm2020', 'esm2020'];
 
 /**
  * Checks the specified JavaScript file and ensures that it does not
