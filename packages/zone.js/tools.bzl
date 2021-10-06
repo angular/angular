@@ -12,8 +12,8 @@ def zone_rollup_bundle(module_name, entry_point, rollup_config):
         sourcemap = "false",
         deps = [
             "//packages/zone.js/lib",
-            "@npm//rollup-plugin-commonjs",
-            "@npm//rollup-plugin-node-resolve",
+            "@npm//@rollup/plugin-commonjs",
+            "@npm//@rollup/plugin-node-resolve",
         ],
     )
 
