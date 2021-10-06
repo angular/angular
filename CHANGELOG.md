@@ -1,3 +1,23 @@
+<a name="13.0.0-next.13"></a>
+# 13.0.0-next.13 (2021-10-06)
+## Breaking Changes
+### core
+- NodeJS versions older than `v12.20.0` are no longer
+supported due to the Angular packages using the NodeJS package exports
+feature with subpath patterns.
+### bazel
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cd1b52483e](https://github.com/angular/angular/commit/cd1b52483e886f6e2ad6cde23ff8a2225cafa219) | feat | expose `esm2020` and `es2020` conditions in APF package exports ([#43740](https://github.com/angular/angular/pull/43740)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e0a0d05d45](https://github.com/angular/angular/commit/e0a0d05d45bcb93448a8c2fd03f9e1783146cf00) | feat | update node version support range to support v16 ([#43740](https://github.com/angular/angular/pull/43740)) |
+## Special Thanks
+Alan Agius, Andrew Kushnir, George Kalpakas, Kristiyan Kostadinov, Paul Gschwendtner, Pete Bacon Darwin and dario-piotrowicz
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.0.0-next.12"></a>
 # 13.0.0-next.12 (2021-10-05)
 ## Breaking Changes
