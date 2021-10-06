@@ -10,7 +10,7 @@ const utils = require('@bazel/protractor/protractor-utils.js');
  * starting up the devserver and updating the Protractor base URL to the proper port.
  */
 module.exports = async function(config) {
-  const {port} = await utils.runServer(config.workspace, config.server, '-port', []);
+  const {port} = await utils.runServer(config.workspace, config.server, '--port', []);
   const baseUrl = `http://localhost:${port}`;
   const processedConfig = await protractor.browser.getProcessedConfig();
 

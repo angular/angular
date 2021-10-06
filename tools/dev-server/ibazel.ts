@@ -18,6 +18,11 @@ const ibazelNotifySuccessMessage = 'IBAZEL_BUILD_COMPLETED SUCCESS';
  * over "stdin", the devserver can be reloaded.
  */
 export function setupBazelWatcherSupport(server: DevServer) {
+  // If iBazel is not configured for this process, we do not setup the watcher.
+  if (process.env['IBAZEL_NOTIFY_CHANGES'] !== 'y') {
+    return;
+  }
+
   // ibazel communicates via the stdin interface.
   const rl = createInterface({input: process.stdin, terminal: false});
 

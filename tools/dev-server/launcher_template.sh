@@ -14,10 +14,6 @@ source "$(grep -sm1 "^$f " "$0.exe.runfiles_manifest" | cut -f2- -d' ')" 2>/dev/
 { echo>&2 "ERROR: cannot find $f"; exit 1; }; f=; set -e
 # --- end runfiles.bash initialization v2 ---
 
-if [[ ! -z "RUNFILES_DIR" ]]; then
-  export RUNFILES_MANIFEST_ONLY="1"
-fi
-
 # Resolve the path of the dev-server binary. Note: usually we either need to
 # resolve the "nodejs_binary" executable with different file extensions on
 # windows, but since we already run this launcher as part of a "sh_binary", we
@@ -26,4 +22,4 @@ devserverBin=$(rlocation "angular_material/tools/dev-server/dev-server_bin.sh")
 
 # Start the devserver with the given arguments. The arguments will be
 # substituted based on the rule attributes.
-${devserverBin} TEMPLATED_args
+${devserverBin} TEMPLATED_args "$@"

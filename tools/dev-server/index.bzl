@@ -41,7 +41,6 @@ def _dev_server_rule_impl(ctx):
     # into a string representing the command line arguments. It looks like bazel has some
     # internal logic to compute the string representation of "ctx.actions.args()".
     args = '--root_paths="%s" ' % ",".join(root_paths)
-    args += "--port=%s " % ctx.attr.port
 
     if ctx.attr.historyApiFallback:
         args += "--historyApiFallback "
@@ -87,10 +86,6 @@ dev_server_rule = rule(
             This is helpful for single page applications using the HTML history API.
           """,
         ),
-        "port": attr.int(
-            default = 4200,
-            doc = """The port that the devserver will listen on.""",
-        ),
         "srcs": attr.label_list(allow_files = True, doc = """
           Sources that should be available to the dev-server. This attribute can be
           used for explicit files. This attribute only uses the files exposed by the
@@ -110,11 +105,12 @@ dev_server_rule = rule(
   request files through their manifest path: "my_workspace/src/dev-app/my-genfile".
 """
 
-def dev_server(name, testonly = False, tags = [], **kwargs):
+def dev_server(name, testonly = False, port = 4200, tags = [], **kwargs):
     dev_server_rule(
         name = "%s_launcher" % name,
         visibility = ["//visibility:private"],
         tags = tags,
+        testonly = testonly,
         **kwargs
     )
 
@@ -125,5 +121,6 @@ def dev_server(name, testonly = False, tags = [], **kwargs):
         tags = tags + ["ibazel_notify_changes"],
         srcs = ["%s_launcher.sh" % name],
         data = [":%s_launcher" % name],
+        args = ["--port=%s" % port],
         testonly = testonly,
     )
