@@ -81,4 +81,9 @@ describe('Api pages', () => {
     await page.navigateTo('api/core/testing/TestBedStatic');
     expect(await (await page.getInstanceMethodOverloads('initTestEnvironment')).length).toEqual(2);
   });
+
+  it('should show all overloads of pseudo-class methods', async () => {
+    await page.navigateTo('api/core/testing/TestBed');
+    expect(await (await page.getInstanceMethodOverloads('initTestEnvironment')).length).toEqual(2);
+  });
 });
