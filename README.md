@@ -1,3 +1,5 @@
+new team member learning about pull requests
+
 <h1 align="center">Angular - The modern web developer's platform.</h1>
 
 <p align="center">
