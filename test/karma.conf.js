@@ -31,9 +31,6 @@ module.exports = config => {
     files: [
       {pattern: 'node_modules/core-js-bundle/minified.js', included: true, watched: false},
       {pattern: 'node_modules/core-js-bundle/minified.js.map', included: false, watched: false},
-      {pattern: 'node_modules/tslib/tslib.js', included: false, watched: false},
-      {pattern: 'node_modules/systemjs/dist/system.js', included: true, watched: false},
-      {pattern: 'node_modules/systemjs/dist/system.js.map', included: false, watched: false},
       {pattern: 'node_modules/zone.js/dist/zone.min.js', included: true, watched: false},
       {pattern: 'node_modules/zone.js/dist/proxy.min.js', included: true, watched: false},
       {pattern: 'node_modules/zone.js/dist/sync-test.js', included: true, watched: false},
@@ -49,44 +46,26 @@ module.exports = config => {
       {pattern: 'node_modules/@material/*/dist/*', included: false, watched: false},
       {pattern: 'node_modules/kagekiri/**', included: false, watched: false},
 
-      // Include all Angular dependencies
-      {pattern: 'node_modules/@angular/**/*', included: false, watched: false},
-      {pattern: 'node_modules/rxjs/**/*', included: false, watched: false},
-
-      // The Karma system configuration is built by Bazel. The built System config
       // is copied into the "dist/" folder so that the Karma config can use it.
-      {pattern: 'dist/karma-system-config.js', included: true, watched: false},
-      {pattern: 'test/karma-test-shim.js', included: true, watched: false},
-
-      // We transpile the date-fns bundles to AMD manually since they only ship esm bundles.
-      {pattern: 'dist/amd_date_fns.js', included: false, watched: false},
-      {pattern: 'dist/amd_date_fns_locales.js', included: false, watched: false},
-
-      // Needed for exposing the RxJS operators through the RxJS UMD bundle. This
-      // is done for performance reasons since fetching individual files is slow.
-      {pattern: 'tools/system-rxjs-operators.js', included: false, watched: false},
+      {pattern: 'dist/legacy-test-bundle.spec.js', included: true, watched: false},
 
       // Include a Material theme in the test suite. Also include the MDC theme as
       // karma runs tests for the MDC prototype components as well.
       {
-        pattern: 'dist/packages/material/core/theming/prebuilt/indigo-pink.css',
+        pattern: 'src/material/core/theming/prebuilt/indigo-pink.css',
         included: true,
         watched: true
       },
       {
-        pattern: 'dist/packages/material-experimental/mdc-theming/prebuilt/indigo-pink.css',
+        pattern: 'src/material-experimental/mdc-theming/prebuilt/indigo-pink.css',
         included: true,
         watched: true
       },
-
-      // Includes all package tests and source files into karma. Those files will be watched.
-      // This pattern also matches all sourcemap files and TypeScript files for debugging.
-      {pattern: 'dist/packages/**/*', included: false, watched: true},
     ],
 
     customLaunchers: customLaunchers,
 
-    preprocessors: {'dist/packages/**/*.js': ['sourcemap']},
+    preprocessors: {'dist/*.js': ['sourcemap']},
 
     reporters: ['dots'],
     autoWatch: false,

@@ -18,8 +18,11 @@ export SAUCE_ACCESS_KEY=`echo ${SAUCE_ACCESS_KEY} | rev`
 # by the Karma configuration script.
 export TEST_PLATFORM="saucelabs"
 
-# Run the unit tests on Saucelabs with Karma.
-yarn gulp ci:test
+# Build the legacy tests
+node ./scripts/create-legacy-tests-bundle.mjs
+
+# Run Karma
+yarn karma start ./test/karma.conf.js --single-run
 
 # Kill the Saucelabs tunnel. This is necessary in order to avoid rate-limit
 # errors that cause the unit tests to be flaky.

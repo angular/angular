@@ -1,4 +1,3 @@
-load("//tools:create-system-config.bzl", "create_system_config")
 load("//tools:defaults.bzl", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
@@ -16,15 +15,4 @@ ts_library(
         "@npm//@angular/platform-browser-dynamic",
         "@npm//@types/jasmine",
     ],
-)
-
-# Creates a SystemJS configuration file that can be used for the Karma legacy
-# unit tests. This allows us to only have one canonical SystemJS configuration
-# file, and we don't need to repeat package/entry-point configurations.
-create_system_config(
-    name = "system-config",
-    base_url = "base/",
-    node_modules_base_path = "node_modules/",
-    output_name = "system-config.js",
-    packages_dir = "dist/packages",
 )

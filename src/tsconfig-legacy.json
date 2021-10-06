@@ -1,0 +1,32 @@
+{
+  "extends": "./bazel-tsconfig-test.json",
+  "compilerOptions": {
+    "outDir": "../dist/legacy-test-out",
+    "declaration": false,
+    // For the legacy tests, we use ES2016 so that ZoneJS can work with async/await.
+    "target": "es2016",
+    "paths": {
+      "@angular/*": ["./*"]
+    },
+    "types": ["jasmine", "node"],
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
+  },
+  "include": [
+    "**/*.spec.ts",
+    "dev-mode-types.d.ts",
+    "../node_modules/zone.js/zone.d.ts"
+  ],
+  "exclude": [
+    "**/*.e2e.spec.ts",
+    "./cdk/schematics/**/*",
+    "./material/schematics/**/*",
+    "./components-examples/**/*",
+    "./material/core/theming/tests/**/*"
+  ],
+  "angularCompilerOptions": {
+    // This is needed so that test components are not AOT compiled. Ngtsc will
+    // not find an associated module for test components and error out.
+    "compileNonExportedClasses": false
+  }
+}
