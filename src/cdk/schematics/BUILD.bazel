@@ -46,6 +46,7 @@ ts_library(
 # This package is intended to be combined into the main @angular/cdk package as a dep.
 pkg_npm(
     name = "npm_package",
+    srcs = ["package.json"],
     deps = [
         ":schematics",
         ":schematics_assets",

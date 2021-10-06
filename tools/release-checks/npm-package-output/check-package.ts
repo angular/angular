@@ -2,7 +2,7 @@ import {error} from '@angular/dev-infra-private/ng-dev/utils/console';
 import * as chalk from 'chalk';
 import {existsSync} from 'fs';
 import {sync as glob} from 'glob';
-import {join} from 'path';
+import {basename, dirname, join} from 'path';
 
 import {
   checkCdkPackage,
@@ -63,6 +63,12 @@ export function checkReleasePackage(
   // Check each "package.json" file in the release output. We want to ensure
   // that there are no invalid file references in the entry-point definitions.
   packageJsonFiles.forEach(filePath => {
+    // A `package.json` file part of the schematics folder is not considered an
+    // entry-point `package.json` file and does not need to be checked.
+    if (basename(dirname(filePath)) === 'schematics') {
+      return;
+    }
+
     checkEntryPointPackageJsonFile(filePath).forEach(message => addFailure(message, filePath));
   });
 
