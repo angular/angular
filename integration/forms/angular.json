@@ -72,11 +72,9 @@
               "browserTarget": "forms:build:production"
             },
             "ci": {
-              "progress": false
             },
             "ci-production": {
               "browserTarget": "forms:build:production",
-              "progress": false
             }
           }
         },

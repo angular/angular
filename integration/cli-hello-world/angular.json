@@ -72,11 +72,9 @@
               "browserTarget": "cli-hello-world:build:production"
             },
             "ci": {
-              "progress": false
             },
             "ci-production": {
               "browserTarget": "cli-hello-world:build:production",
-              "progress": false
             }
           }
         },
