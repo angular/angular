@@ -10,6 +10,7 @@ import {runfiles} from '@bazel/runfiles';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as shx from 'shelljs';
+import {matchesObjectWithOrder} from './test_utils';
 
 // Resolve the "npm_package" directory by using the runfile resolution. Note that we need to
 // resolve the "package.json" of the package since otherwise NodeJS would resolve the "main"
@@ -82,41 +83,51 @@ describe('@angular/common ng_package', () => {
         fesm2020: `./fesm2020/common.mjs`,
         fesm2015: `./fesm2015/common.mjs`,
         typings: `./common.d.ts`,
-        exports: {
+        exports: matchesObjectWithOrder({
+          './locales/global/*': {default: './locales/global/*.js'},
+          './locales/*': {default: './locales/*.mjs'},
+          './package.json': {default: './package.json'},
           '.': {
             types: './common.d.ts',
+            esm2020: './esm2020/common.mjs',
+            es2020: './fesm2020/common.mjs',
             es2015: './fesm2015/common.mjs',
             node: './fesm2015/common.mjs',
-            default: './fesm2020/common.mjs',
+            default: './fesm2020/common.mjs'
           },
-          './package.json': {default: './package.json'},
           './http': {
             types: './http/http.d.ts',
+            esm2020: './esm2020/http/http.mjs',
+            es2020: './fesm2020/http.mjs',
             es2015: './fesm2015/http.mjs',
             node: './fesm2015/http.mjs',
-            default: './fesm2020/http.mjs',
+            default: './fesm2020/http.mjs'
           },
           './http/testing': {
             types: './http/testing/testing.d.ts',
+            esm2020: './esm2020/http/testing/testing.mjs',
+            es2020: './fesm2020/http/testing.mjs',
             es2015: './fesm2015/http/testing.mjs',
             node: './fesm2015/http/testing.mjs',
-            default: './fesm2020/http/testing.mjs',
+            default: './fesm2020/http/testing.mjs'
           },
           './testing': {
             types: './testing/testing.d.ts',
+            esm2020: './esm2020/testing/testing.mjs',
+            es2020: './fesm2020/testing.mjs',
             es2015: './fesm2015/testing.mjs',
             node: './fesm2015/testing.mjs',
-            default: './fesm2020/testing.mjs',
+            default: './fesm2020/testing.mjs'
           },
           './upgrade': {
             types: './upgrade/upgrade.d.ts',
+            esm2020: './esm2020/upgrade/upgrade.mjs',
+            es2020: './fesm2020/upgrade.mjs',
             es2015: './fesm2015/upgrade.mjs',
             node: './fesm2015/upgrade.mjs',
-            default: './fesm2020/upgrade.mjs',
-          },
-          './locales/global/*': {default: './locales/global/*.js'},
-          './locales/*': {default: './locales/*.mjs'},
-        }
+            default: './fesm2020/upgrade.mjs'
+          }
+        }),
       }));
     });
     // https://github.com/angular/common-builds/blob/master/http/package.json
