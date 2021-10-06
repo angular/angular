@@ -1,3 +1,14 @@
+<a name="13.0.0-next.14"></a>
+# 13.0.0-next.14 (2021-10-06)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [adf4481211](https://github.com/angular/angular/commit/adf4481211ac0a2eabf560f42ef5193ca550ec98) | feat | add injection token for default date pipe timezone ([#43611](https://github.com/angular/angular/pull/43611)) |
+## Special Thanks
+Alex Rickabaugh, Dylan Hunn, Kristiyan Kostadinov and Pete Bacon Darwin
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="12.2.9"></a>
 # 12.2.9 (2021-10-06)
 ### core
