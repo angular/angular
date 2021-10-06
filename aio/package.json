@@ -98,7 +98,7 @@
     "@angular/router": "13.0.0-next.9",
     "@angular/service-worker": "13.0.0-next.9",
     "@webcomponents/custom-elements": "1.5.0",
-    "rxjs": "~7.3.0",
+    "rxjs": "~7.4.0",
     "safevalues": "^0.1.8",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"

@@ -16,7 +16,7 @@
     "tslib": "^2.3.0"
   },
   "peerDependencies": {
-    "rxjs": "^6.5.3 || ^7.0.0",
+    "rxjs": "^6.5.3 || ^7.4.0",
     "zone.js": "~0.11.4"
   },
   "repository": {
