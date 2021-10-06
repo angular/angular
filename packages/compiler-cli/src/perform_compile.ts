@@ -23,6 +23,10 @@ export function filterErrorsAndWarnings(diagnostics: Diagnostics): Diagnostics {
   return diagnostics.filter(d => d.category !== ts.DiagnosticCategory.Message);
 }
 
+export function onlyErrors(diagnostics: Diagnostics): Diagnostics {
+  return diagnostics.filter(d => d.category === ts.DiagnosticCategory.Error);
+}
+
 const defaultFormatHost: ts.FormatDiagnosticsHost = {
   getCurrentDirectory: () => ts.sys.getCurrentDirectory(),
   getCanonicalFileName: fileName => fileName,
@@ -274,7 +278,7 @@ export interface PerformCompilationResult {
 }
 
 export function exitCodeFromResult(diags: Diagnostics|undefined): number {
-  if (!diags || filterErrorsAndWarnings(diags).length === 0) {
+  if (!diags || onlyErrors(diags).length === 0) {
     // If we have a result and didn't get any errors, we succeeded.
     return 0;
   }
