@@ -123,7 +123,7 @@
       </td>
     </tr>
   {%- elseif method.overloads.length < 3 -%}
-    {%- if method.isAbstract or method.containerDoc.docType === 'interface' %}
+    {%- if method.isAbstract or method.containerDoc.docType === 'interface' or method.containerDoc.isPseudoClass %}
     <tr>
       <td>
         {$ renderOverloadInfo(method, cssClass + '-overload', method) $}
