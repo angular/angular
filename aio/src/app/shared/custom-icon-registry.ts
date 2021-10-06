@@ -47,7 +47,7 @@ export class CustomIconRegistry extends MatIconRegistry {
     super(http, sanitizer, document, errorHandler);
   }
 
-  getNamedSvgIcon(iconName: string, namespace?: string) {
+  override getNamedSvgIcon(iconName: string, namespace?: string) {
     const nsIconMap = this.cachedSvgElements[namespace || DEFAULT_NS];
     let preloadedElement: SVGElement | undefined = nsIconMap && nsIconMap[iconName];
     if (!preloadedElement) {

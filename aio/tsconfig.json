@@ -6,6 +6,10 @@
     "outDir": "./out-tsc",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "noImplicitOverride": true,
+    // NOTE: Intentionally deviate from default Angular CLI settings
+    //       (due to many violations and uglier syntax).
+    "noPropertyAccessFromIndexSignature": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
