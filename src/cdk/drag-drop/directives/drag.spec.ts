@@ -1581,6 +1581,26 @@ describe('CdkDrag', () => {
         flush();
       }).toThrowError(/^cdkDragHandle must be attached to an element node/);
     }));
+
+    it('should be able to drag an element using a handle with a shadow DOM child', fakeAsync(() => {
+      if (!_supportsShadowDom()) {
+        return;
+      }
+
+      const fixture = createComponent(
+        StandaloneDraggableWithShadowInsideHandle,
+        undefined,
+        undefined,
+        [ShadowWrapper],
+      );
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+      const handleChild = fixture.componentInstance.handleChild.nativeElement;
+
+      expect(dragElement.style.transform).toBeFalsy();
+      dragElementViaMouse(fixture, handleChild, 50, 100);
+      expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)');
+    }));
   });
 
   describe('in a drop container', () => {
@@ -6459,6 +6479,29 @@ class StandaloneDraggableWithDelayedHandle {
 class StandaloneDraggableWithIndirectHandle {
   @ViewChild('dragElement') dragElement: ElementRef<HTMLElement>;
   @ViewChild('handleElement') handleElement: ElementRef<HTMLElement>;
+}
+
+@Component({
+  selector: 'shadow-wrapper',
+  template: '<ng-content></ng-content>',
+  encapsulation: ViewEncapsulation.ShadowDom,
+})
+class ShadowWrapper {}
+
+@Component({
+  template: `
+    <div #dragElement cdkDrag style="width: 100px; height: 100px; background: red;">
+      <div cdkDragHandle style="width: 10px; height: 10px;">
+        <shadow-wrapper>
+          <div #handleChild style="width: 10px; height: 10px; background: green;"></div>
+        </shadow-wrapper>
+      </div>
+    </div>
+  `,
+})
+class StandaloneDraggableWithShadowInsideHandle {
+  @ViewChild('dragElement') dragElement: ElementRef<HTMLElement>;
+  @ViewChild('handleChild') handleChild: ElementRef<HTMLElement>;
 }
 
 @Component({

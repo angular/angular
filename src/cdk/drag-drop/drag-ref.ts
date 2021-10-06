@@ -629,8 +629,7 @@ export class DragRef<T = any> {
     // Delegate the event based on whether it started from a handle or the element itself.
     if (this._handles.length) {
       const targetHandle = this._handles.find(handle => {
-        const target = _getEventTarget(event);
-        return !!target && (target === handle || handle.contains(target as HTMLElement));
+        return event.target && (event.target === handle || handle.contains(event.target as Node));
       });
 
       if (targetHandle && !this._disabledHandles.has(targetHandle) && !this.disabled) {
