@@ -7,10 +7,20 @@ exports_files(["package.json"])
 # isolation failures.
 
 ts_library(
+    name = "test_utils_lib",
+    testonly = True,
+    srcs = ["test_utils.ts"],
+    deps = [
+        "//packages:types",
+    ],
+)
+
+ts_library(
     name = "core_spec_lib",
     testonly = True,
     srcs = ["core_package.spec.ts"],
     deps = [
+        ":test_utils_lib",
         "//packages:types",
         "@npm//@bazel/runfiles",
         "@npm//@types/shelljs",
@@ -32,6 +42,7 @@ ts_library(
     testonly = True,
     srcs = ["common_package.spec.ts"],
     deps = [
+        ":test_utils_lib",
         "//packages:types",
         "@npm//@bazel/runfiles",
         "@npm//@types/shelljs",

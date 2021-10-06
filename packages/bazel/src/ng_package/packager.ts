@@ -62,10 +62,12 @@ type KnownPackageJsonFormatFields = typeof knownFormatPackageJsonFormatFields[nu
  * https://nodejs.org/api/packages.html#packages_conditional_exports
  */
 type ConditionalExport = {
-  default?: string,
-  types?: string,
   node?: string;
+  types?: string;
+  esm2020?: string;
+  es2020?: string;
   es2015?: string;
+  default?: string;
 };
 
 /** Type describing a `package.json` the packager deals with. */
@@ -430,6 +432,7 @@ function main(args: string[]): void {
     for (const [moduleName, entryPoint] of Object.entries(metadata.entryPoints)) {
       const subpath =
           isSecondaryEntryPoint(moduleName) ? `./${getEntryPointSubpath(moduleName)}` : '.';
+      const esm2020IndexOutRelativePath = getEsm2020OutputRelativePath(entryPoint.index);
       const fesm2020OutRelativePath = getFlatEsmOutputRelativePath(entryPoint.fesm2020Bundle);
       const fesm2015OutRelativePath = getFlatEsmOutputRelativePath(entryPoint.fesm2015Bundle);
       const typesOutRelativePath = getTypingOutputRelativePath(entryPoint.typings);
@@ -439,6 +442,8 @@ function main(args: string[]): void {
       // https://github.com/microsoft/TypeScript/pull/45884.
       insertExportMappingOrError(newPackageJson, subpath, {
         types: normalizePath(typesOutRelativePath),
+        esm2020: normalizePath(esm2020IndexOutRelativePath),
+        es2020: normalizePath(fesm2020OutRelativePath),
         // We also expose a non-standard condition that would allow consumers to resolve
         // to the `ES2015` output outside of NodeJS, if desired.
         // TODO(devversion): remove/replace this if NodeJS v12 is no longer supported.

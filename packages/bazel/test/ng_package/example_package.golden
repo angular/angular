@@ -786,24 +786,32 @@ export { }
     },
     ".": {
       "types": "./example.d.ts",
+      "esm2020": "./esm2020/example.mjs",
+      "es2020": "./fesm2020/waffels.mjs",
       "es2015": "./fesm2015/waffels.mjs",
       "node": "./fesm2015/waffels.mjs",
       "default": "./fesm2020/waffels.mjs"
     },
     "./a11y": {
       "types": "./a11y/a11y.d.ts",
+      "esm2020": "./esm2020/a11y/a11y.mjs",
+      "es2020": "./fesm2020/a11y.mjs",
       "es2015": "./fesm2015/a11y.mjs",
       "node": "./fesm2015/a11y.mjs",
       "default": "./fesm2020/a11y.mjs"
     },
     "./imports": {
       "types": "./imports/imports.d.ts",
+      "esm2020": "./esm2020/imports/imports.mjs",
+      "es2020": "./fesm2020/imports.mjs",
       "es2015": "./fesm2015/imports.mjs",
       "node": "./fesm2015/imports.mjs",
       "default": "./fesm2020/imports.mjs"
     },
     "./secondary": {
       "types": "./secondary/secondary.d.ts",
+      "esm2020": "./esm2020/secondary/secondary.mjs",
+      "es2020": "./fesm2020/secondary.mjs",
       "es2015": "./fesm2015/secondary.mjs",
       "node": "./fesm2015/secondary.mjs",
       "default": "./fesm2020/secondary.mjs"

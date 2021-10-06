@@ -9,6 +9,7 @@
 import {runfiles} from '@bazel/runfiles';
 import * as path from 'path';
 import * as shx from 'shelljs';
+import {matchesObjectWithOrder} from './test_utils';
 
 // Resolve the "npm_package" directory by using the runfile resolution. Note that we need to
 // resolve the "package.json" of the package since otherwise NodeJS would resolve the "main"
@@ -58,24 +59,26 @@ describe('@angular/core ng_package', () => {
           fesm2020: `./fesm2020/core.mjs`,
           fesm2015: `./fesm2015/core.mjs`,
           typings: `./core.d.ts`,
-          exports: {
+          exports: matchesObjectWithOrder({
+            './schematics/*': {default: './schematics/*.js'},
+            './package.json': {default: './package.json'},
             '.': {
               types: './core.d.ts',
+              esm2020: './esm2020/core.mjs',
+              es2020: './fesm2020/core.mjs',
               es2015: './fesm2015/core.mjs',
               node: './fesm2015/core.mjs',
               default: './fesm2020/core.mjs'
             },
-            './package.json': {default: './package.json'},
             './testing': {
               types: './testing/testing.d.ts',
+              esm2020: './esm2020/testing/testing.mjs',
+              es2020: './fesm2020/testing.mjs',
               es2015: './fesm2015/testing.mjs',
               node: './fesm2015/testing.mjs',
-              default: './fesm2020/testing.mjs',
-            },
-            './schematics/*': {
-              'default': './schematics/*.js',
-            },
-          }
+              default: './fesm2020/testing.mjs'
+            }
+          }),
         }));
       });
 

@@ -351,18 +351,24 @@ export declare const VERSION = "0.0.0";
     },
     ".": {
       "types": "./index.d.ts",
+      "esm2020": "./esm2020/index.mjs",
+      "es2020": "./fesm2020/example-with-ts-library.mjs",
       "es2015": "./fesm2015/example-with-ts-library.mjs",
       "node": "./fesm2015/example-with-ts-library.mjs",
       "default": "./fesm2020/example-with-ts-library.mjs"
     },
     "./portal": {
       "types": "./portal/portal.d.ts",
+      "esm2020": "./esm2020/portal/portal.mjs",
+      "es2020": "./fesm2020/portal.mjs",
       "es2015": "./fesm2015/portal.mjs",
       "node": "./fesm2015/portal.mjs",
       "default": "./fesm2020/portal.mjs"
     },
     "./utils": {
       "types": "./utils/index.d.ts",
+      "esm2020": "./esm2020/utils/index.mjs",
+      "es2020": "./fesm2020/utils.mjs",
       "es2015": "./fesm2015/utils.mjs",
       "node": "./fesm2015/utils.mjs",
       "default": "./fesm2020/utils.mjs"
