@@ -18,7 +18,7 @@ export class ReportingErrorHandler extends ErrorHandler {
    *
    * @param error Information about the error.
    */
-  handleError(error: any) {
+  override handleError(error: any) {
     const versionedError = this.prefixErrorWithVersion(error);
 
     try {

@@ -3,7 +3,7 @@
     "master": {
       "uncompressed": {
         "runtime": 4454,
-        "main": 461726,
+        "main": 462483,
         "polyfills": 55658,
         "styles": 69935,
         "light-theme": 77426,
@@ -15,7 +15,7 @@
     "master": {
       "uncompressed": {
         "runtime": 4454,
-        "main": 460478,
+        "main": 461118,
         "polyfills": 55807,
         "styles": 69935,
         "light-theme": 77426,

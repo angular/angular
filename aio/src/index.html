@@ -118,18 +118,6 @@
     </h2>
   </noscript>
 
-  <!--
-    Custom Elements polyfills required for browsers that natively support Custom Elements but not
-    ES2015 modules. (See `custom-elements-es5-polyfills.js` for more info.)
-
-    NOTE:
-    The polyfills here will be loaded before the ones in `polyfills.ts` (including
-    `@webcomponents/custom-elements`). This is fine, because the polyfills here are only needed on
-    browsers that natively support Custom Elements, on which `@webcomponents/custom-elements` will
-    be a no-op (so the order of loading does not matter).
-  -->
-  <script src="generated/js/custom-elements-es5-polyfills.js" nomodule></script>
-
 </body>
 
 </html>
