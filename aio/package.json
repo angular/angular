@@ -74,7 +74,7 @@
     "~~clean-generated": "node --eval \"require('shelljs').rm('-rf', 'src/generated')\"",
     "pre~~build": "node scripts/build-ngsw-config",
     "~~build": "ng build --configuration=stable",
-    "post~~build": "yarn build-404-page",
+    "post~~build": "yarn build-404-page && ngsw-config dist src/generated/ngsw-config.json",
     "~~light-server": "light-server --bind=localhost --historyindex=/index.html --no-reload"
   },
   "//engines-comment": "Keep this in sync with /package.json and /aio/tools/examples/shared/package.json",
