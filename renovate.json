@@ -63,11 +63,6 @@
       "pinVersions": false
     },
     {
-      "packagePatterns": ["^remark-.*", "remark"],
-      "groupName": "remark",
-      "pinVersions": false
-    },
-    {
       "packageNames": ["typescript", "rxjs", "tslib"],
       "separateMinorPatch": true
     },
