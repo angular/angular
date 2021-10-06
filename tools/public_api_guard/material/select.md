@@ -4,7 +4,7 @@
 
 ```ts
 
-import { AbstractConstructor } from '@angular/material/core/common-behaviors/constructor';
+import { _AbstractConstructor } from '@angular/material/core';
 import { ActiveDescendantKeyManager } from '@angular/cdk/a11y';
 import { AfterContentInit } from '@angular/core';
 import { AnimationTriggerMetadata } from '@angular/animations';
@@ -15,7 +15,7 @@ import { CanUpdateErrorState } from '@angular/material/core';
 import { CdkConnectedOverlay } from '@angular/cdk/overlay';
 import { ChangeDetectorRef } from '@angular/core';
 import { ConnectedPosition } from '@angular/cdk/overlay';
-import { Constructor } from '@angular/material/core/common-behaviors/constructor';
+import { _Constructor } from '@angular/material/core';
 import { ControlValueAccessor } from '@angular/forms';
 import { Directionality } from '@angular/cdk/bidi';
 import { DoCheck } from '@angular/core';

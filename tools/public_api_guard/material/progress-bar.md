@@ -4,10 +4,10 @@
 
 ```ts
 
-import { AbstractConstructor } from '@angular/material/core/common-behaviors/constructor';
+import { _AbstractConstructor } from '@angular/material/core';
 import { AfterViewInit } from '@angular/core';
 import { CanColor } from '@angular/material/core';
-import { Constructor } from '@angular/material/core/common-behaviors/constructor';
+import { _Constructor } from '@angular/material/core';
 import { ElementRef } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import * as i0 from '@angular/core';

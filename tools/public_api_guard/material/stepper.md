@@ -4,7 +4,7 @@
 
 ```ts
 
-import { AbstractConstructor } from '@angular/material/core/common-behaviors/constructor';
+import { _AbstractConstructor } from '@angular/material/core';
 import { AfterContentInit } from '@angular/core';
 import { AfterViewInit } from '@angular/core';
 import { AnimationEvent as AnimationEvent_2 } from '@angular/animations';
@@ -16,7 +16,7 @@ import { CdkStepper } from '@angular/cdk/stepper';
 import { CdkStepperNext } from '@angular/cdk/stepper';
 import { CdkStepperPrevious } from '@angular/cdk/stepper';
 import { ChangeDetectorRef } from '@angular/core';
-import { Constructor } from '@angular/material/core/common-behaviors/constructor';
+import { _Constructor } from '@angular/material/core';
 import { Directionality } from '@angular/cdk/bidi';
 import { ElementRef } from '@angular/core';
 import { ErrorStateMatcher } from '@angular/material/core';

@@ -4,7 +4,7 @@
 
 ```ts
 
-import { AbstractConstructor } from '@angular/material/core/common-behaviors/constructor';
+import { _AbstractConstructor } from '@angular/material/core';
 import { AfterContentInit } from '@angular/core';
 import { BooleanInput } from '@angular/cdk/coercion';
 import { CanDisable } from '@angular/material/core';
@@ -16,7 +16,7 @@ import { CdkTreeNodeOutlet } from '@angular/cdk/tree';
 import { CdkTreeNodePadding } from '@angular/cdk/tree';
 import { CdkTreeNodeToggle } from '@angular/cdk/tree';
 import { CollectionViewer } from '@angular/cdk/collections';
-import { Constructor } from '@angular/material/core/common-behaviors/constructor';
+import { _Constructor } from '@angular/material/core';
 import { DataSource } from '@angular/cdk/collections';
 import { DoCheck } from '@angular/core';
 import { ElementRef } from '@angular/core';

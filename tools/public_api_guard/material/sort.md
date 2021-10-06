@@ -4,13 +4,13 @@
 
 ```ts
 
-import { AbstractConstructor } from '@angular/material/core/common-behaviors/constructor';
+import { _AbstractConstructor } from '@angular/material/core';
 import { AfterViewInit } from '@angular/core';
 import { AnimationTriggerMetadata } from '@angular/animations';
 import { BooleanInput } from '@angular/cdk/coercion';
 import { CanDisable } from '@angular/material/core';
 import { ChangeDetectorRef } from '@angular/core';
-import { Constructor } from '@angular/material/core/common-behaviors/constructor';
+import { _Constructor } from '@angular/material/core';
 import { ElementRef } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import { FocusMonitor } from '@angular/cdk/a11y';

@@ -4,11 +4,11 @@
 
 ```ts
 
-import { AbstractConstructor as AbstractConstructor_2 } from '@angular/material/core/common-behaviors/constructor';
+import { _AbstractConstructor as _AbstractConstructor_2 } from '@angular/material/core';
 import { AfterViewChecked } from '@angular/core';
 import { BooleanInput } from '@angular/cdk/coercion';
 import { ChangeDetectorRef } from '@angular/core';
-import { Constructor as Constructor_2 } from '@angular/material/core/common-behaviors/constructor';
+import { _Constructor as _Constructor_2 } from '@angular/material/core';
 import { ElementRef } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import { FocusableOption } from '@angular/cdk/a11y';
@@ -32,6 +32,9 @@ import { Platform } from '@angular/cdk/platform';
 import { QueryList } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Version } from '@angular/core';
+
+// @public
+export type _AbstractConstructor<T = object> = abstract new (...args: any[]) => T;
 
 // @public
 export class AnimationCurves {
@@ -78,6 +81,9 @@ export interface CanUpdateErrorState {
     readonly stateChanges: Subject<void>;
     updateErrorState(): void;
 }
+
+// @public
+export type _Constructor<T> = new (...args: any[]) => T;
 
 // @public
 export function _countGroupLabelsBeforeOption(optionIndex: number, options: QueryList<MatOption>, optionGroups: QueryList<MatOptgroup>): number;
@@ -404,22 +410,22 @@ export class MatRippleModule {
 }
 
 // @public
-export function mixinColor<T extends AbstractConstructor<HasElementRef>>(base: T, defaultColor?: ThemePalette): CanColorCtor & T;
+export function mixinColor<T extends _AbstractConstructor<HasElementRef>>(base: T, defaultColor?: ThemePalette): CanColorCtor & T;
 
 // @public
-export function mixinDisabled<T extends AbstractConstructor<{}>>(base: T): CanDisableCtor & T;
+export function mixinDisabled<T extends _AbstractConstructor<{}>>(base: T): CanDisableCtor & T;
 
 // @public
-export function mixinDisableRipple<T extends AbstractConstructor<{}>>(base: T): CanDisableRippleCtor & T;
+export function mixinDisableRipple<T extends _AbstractConstructor<{}>>(base: T): CanDisableRippleCtor & T;
 
 // @public
-export function mixinErrorState<T extends AbstractConstructor<HasErrorState>>(base: T): CanUpdateErrorStateCtor & T;
+export function mixinErrorState<T extends _AbstractConstructor<HasErrorState>>(base: T): CanUpdateErrorStateCtor & T;
 
 // @public
-export function mixinInitialized<T extends Constructor<{}>>(base: T): HasInitializedCtor & T;
+export function mixinInitialized<T extends _Constructor<{}>>(base: T): HasInitializedCtor & T;
 
 // @public
-export function mixinTabIndex<T extends AbstractConstructor<CanDisable>>(base: T, defaultTabIndex?: number): HasTabIndexCtor & T;
+export function mixinTabIndex<T extends _AbstractConstructor<CanDisable>>(base: T, defaultTabIndex?: number): HasTabIndexCtor & T;
 
 // @public
 export class NativeDateAdapter extends DateAdapter<Date> {

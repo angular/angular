@@ -86,16 +86,11 @@ function getExports(name: string): string[] {
   const typeChecker = program.getTypeChecker();
   const mainSymbol = typeChecker.getSymbolAtLocation(sourceFile);
 
-  return (mainSymbol ? (typeChecker.getExportsOfModule(mainSymbol) || []) : []).map(symbol => {
-    // tslint:disable-next-line:no-bitwise
-    if (symbol.flags & ts.SymbolFlags.Alias) {
-      const resolvedSymbol = typeChecker.getAliasedSymbol(symbol);
-      return (!resolvedSymbol.valueDeclaration && !resolvedSymbol.declarations) ?
-        symbol : resolvedSymbol;
-    } else {
-      return symbol;
-    }
-  }).map(symbol => symbol.name);
+  if (mainSymbol === undefined) {
+    return [];
+  }
+
+  return typeChecker.getExportsOfModule(mainSymbol).map(symbol => symbol.name);
 }
 
 /** Checks whether a particular Material package has an MDC-based equivalent. */

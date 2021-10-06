@@ -12,6 +12,16 @@ export {
   SanityChecks,
   GranularSanityChecks,
 } from './common-module';
+
+// Note: These need to be exposed privately for cross-package type inference. e.g. if the
+// experimental package uses a mixin, TS will try to write an explicit type reference that
+// is equivalent to e.g. `CanColorCtor`. For this it needs these two helpers as otherwise it
+// would generate a deep cross-package import that breaks in the NPM package output.
+export {
+  Constructor as _Constructor,
+  AbstractConstructor as _AbstractConstructor
+} from './constructor';
+
 export {CanDisable, mixinDisabled} from './disabled';
 export {CanColor, mixinColor, ThemePalette} from './color';
 export {CanDisableRipple, mixinDisableRipple} from './disable-ripple';

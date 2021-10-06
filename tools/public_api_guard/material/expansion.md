@@ -4,7 +4,7 @@
 
 ```ts
 
-import { AbstractConstructor } from '@angular/material/core/common-behaviors/constructor';
+import { _AbstractConstructor } from '@angular/material/core';
 import { AfterContentInit } from '@angular/core';
 import { AfterViewInit } from '@angular/core';
 import { AnimationEvent as AnimationEvent_2 } from '@angular/animations';
@@ -13,7 +13,7 @@ import { BooleanInput } from '@angular/cdk/coercion';
 import { CdkAccordion } from '@angular/cdk/accordion';
 import { CdkAccordionItem } from '@angular/cdk/accordion';
 import { ChangeDetectorRef } from '@angular/core';
-import { Constructor } from '@angular/material/core/common-behaviors/constructor';
+import { _Constructor } from '@angular/material/core';
 import { ElementRef } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import { FocusableOption } from '@angular/cdk/a11y';

@@ -16,7 +16,13 @@ export interface DialogHarnessFilters extends BaseHarnessFilters {
 }
 
 // @public
-export class MatDialogHarness extends ContentContainerComponentHarness<MatDialogSection | string> {
+export class MatDialogHarness extends _MatDialogHarnessBase {
+    static hostSelector: string;
+    static with(options?: DialogHarnessFilters): HarnessPredicate<MatDialogHarness>;
+}
+
+// @public
+export class _MatDialogHarnessBase extends ContentContainerComponentHarness<MatDialogSection | string> {
     // (undocumented)
     protected _actions: AsyncFactoryFn<TestElement | null>;
     close(): Promise<void>;
@@ -31,10 +37,8 @@ export class MatDialogHarness extends ContentContainerComponentHarness<MatDialog
     getRole(): Promise<DialogRole | null>;
     getText(): Promise<string>;
     getTitleText(): Promise<string>;
-    static hostSelector: string;
     // (undocumented)
     protected _title: AsyncFactoryFn<TestElement | null>;
-    static with(options?: DialogHarnessFilters): HarnessPredicate<MatDialogHarness>;
 }
 
 // @public

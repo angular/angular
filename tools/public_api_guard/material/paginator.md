@@ -4,11 +4,11 @@
 
 ```ts
 
-import { AbstractConstructor } from '@angular/material/core/common-behaviors/constructor';
+import { _AbstractConstructor } from '@angular/material/core';
 import { BooleanInput } from '@angular/cdk/coercion';
 import { CanDisable } from '@angular/material/core';
 import { ChangeDetectorRef } from '@angular/core';
-import { Constructor } from '@angular/material/core/common-behaviors/constructor';
+import { _Constructor } from '@angular/material/core';
 import { EventEmitter } from '@angular/core';
 import { HasInitialized } from '@angular/material/core';
 import * as i0 from '@angular/core';

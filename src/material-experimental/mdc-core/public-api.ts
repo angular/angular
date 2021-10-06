@@ -56,5 +56,11 @@ export {
   setLines,
   ShowOnDirtyErrorStateMatcher,
   ThemePalette,
-  VERSION
+  VERSION,
+  // Note: These need to be exposed privately for cross-package type inference. e.g. if the
+  // experimental package uses a mixin, TS will try to write an explicit type reference that
+  // is equivalent to e.g. `CanColorCtor`. For this it needs these two helpers as otherwise it
+  // would generate a deep cross-package import that breaks in the NPM package output.
+  _AbstractConstructor,
+  _Constructor,
 } from '@angular/material/core';
