@@ -1,9 +1,9 @@
-load("@npm//@angular/dev-infra-private/bazel:extract_js_module_output.bzl", "extract_js_module_output")
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
-load("//:packages.bzl", "MDC_PACKAGE_UMD_BUNDLES")
-load("//tools:create-system-config.bzl", "create_system_config")
 load("//tools:defaults.bzl", "ng_module", "sass_binary")
 load("//tools/dev-server:index.bzl", "dev_server")
+load("//tools/esbuild:index.bzl", "esbuild", "esbuild_config")
+load("//src/components-examples:config.bzl", "ALL_EXAMPLES")
+load("//tools/angular:index.bzl", "LINKER_PROCESSED_FW_PACKAGES")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -13,6 +13,7 @@ ng_module(
         "dev-app.ts",
         "main.ts",
         "main-module.ts",
+        "routes.ts",
     ],
     deps = [
         "//src/cdk/bidi",
@@ -99,8 +100,30 @@ ng_module(
         "//src/dev-app/virtual-scroll",
         "//src/dev-app/youtube-player",
         "//src/material/core",
+        "@npm//@angular/compiler",
         "@npm//@angular/localize",
         "@npm//@angular/router",
+    ],
+)
+
+esbuild_config(
+    name = "esbuild_config",
+    config_file = "esbuild.config.mjs",
+)
+
+esbuild(
+    name = "bundles",
+    config = ":esbuild_config",
+    entry_points = [":main.ts"] + ["%s:index.ts" % e for e in ALL_EXAMPLES],
+    platform = "browser",
+    splitting = True,
+    # We cannot use `ES2017` or higher as that would result in `async/await` not being downleveled.
+    # ZoneJS needs to be able to intercept these as otherwise change detection would not work properly.
+    target = "es2016",
+    # Note: We add all linker-processed FW packages as dependencies here so that ESBuild will
+    # map all framework packages to their linker-processed bundles from `tools/angular`.
+    deps = LINKER_PROCESSED_FW_PACKAGES + [
+        ":dev-app",
     ],
 )
 
@@ -115,11 +138,6 @@ sass_binary(
         "//src/material-experimental:theming_bundle",
         "//src/material/core:theming_scss_lib",
     ],
-)
-
-create_system_config(
-    name = "system-config",
-    output_name = "system-config.js",
 )
 
 # Variables that are going to be inlined into the dev app index.html.
@@ -138,18 +156,14 @@ filegroup(
     srcs = [
         "favicon.ico",
         "index.html",
-        ":system-config",
         ":theme",
         ":variables",
         "//src/dev-app/icon:icon_demo_assets",
-        "//tools:system-rxjs-operators.js",
         "@npm//:node_modules/core-js-bundle/index.js",
         "@npm//:node_modules/moment/min/moment-with-locales.min.js",
         "@npm//:node_modules/rxjs/bundles/rxjs.umd.min.js",
-        "@npm//:node_modules/systemjs/dist/system.js",
-        "@npm//:node_modules/tslib/tslib.js",
         "@npm//:node_modules/zone.js/dist/zone.js",
-    ] + MDC_PACKAGE_UMD_BUNDLES.values(),
+    ],
 )
 
 dev_server(
@@ -163,23 +177,8 @@ dev_server(
     ],
     tags = ["manual"],
     deps = [
-        ":dev-app",
+        ":bundles",
     ],
-)
-
-# Collects all ES5 JavaScript files which are required to serve the dev-app. By default,
-# ts_library and ng_module targets only expose the type definition files as outputs.
-extract_js_module_output(
-    name = "dev_app_js_sources",
-    include_declarations = False,
-    include_default_files = True,
-    # `JSModuleInfo` resolves to the ES5 sources from TypeScript targets. See:
-    # https://github.com/bazelbuild/rules_nodejs/blob/stable/packages/typescript/internal/build_defs.bzl#L334-L337
-    # Note: We cannot use the named JS module provider because not all dependencies are
-    # necessarily captured as named module. See: https://github.com/angular/components/commit/94289397cac94ca86a292b2cd64945df52bbb7fb.
-    provider = "JSModuleInfo",
-    tags = ["manual"],
-    deps = [":dev-app"],
 )
 
 # Target that builds a static web package of the dev-app. The web package can be
@@ -187,7 +186,7 @@ extract_js_module_output(
 pkg_web(
     name = "web_package",
     srcs = [
-        ":dev_app_js_sources",
+        ":bundles",
         ":dev_app_static_files",
     ],
     additional_root_paths = [

@@ -1,6 +1,8 @@
-load("@npm//@bazel/concatjs:index.bzl", "concatjs_devserver")
-load("//:packages.bzl", "MDC_PACKAGE_UMD_BUNDLES", "getAngularUmdTargets")
+load("//tools/dev-server:index.bzl", "dev_server")
 load("//tools:defaults.bzl", "ng_module", "sass_binary")
+load("//tools/esbuild:index.bzl", "esbuild", "esbuild_config")
+load("//src/components-examples:config.bzl", "ALL_EXAMPLES")
+load("//tools/angular:index.bzl", "LINKER_PROCESSED_FW_PACKAGES")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -10,7 +12,6 @@ devserverIndexHtmlDependencies = [
     "@npm//core-js-bundle",
     "@npm//kagekiri",
     "@npm//material-components-web",
-    "@npm//moment",
     "//src/material/prebuilt-themes:indigo-pink",
     ":index.html",
     ":theme",
@@ -96,23 +97,38 @@ sass_binary(
     ],
 )
 
-concatjs_devserver(
+esbuild_config(
+    name = "esbuild_config",
+    testonly = True,
+    config_file = "esbuild.config.mjs",
+)
+
+esbuild(
+    name = "bundles",
+    testonly = True,
+    config = ":esbuild_config",
+    entry_points = [":main.ts"] + ["%s:index.ts" % e for e in ALL_EXAMPLES],
+    platform = "browser",
+    splitting = True,
+    # We cannot use `ES2017` or higher as that would result in `async/await` not being downleveled.
+    # ZoneJS needs to be able to intercept these as otherwise change detection would not work properly.
+    target = "es2016",
+    # Note: We add all linker-processed FW packages as dependencies here so that ESBuild will
+    # map all framework packages to their linker-processed bundles from `tools/angular`.
+    deps = LINKER_PROCESSED_FW_PACKAGES + [
+        ":e2e-app",
+    ],
+)
+
+dev_server(
     name = "devserver",
     testonly = True,
+    srcs = devserverIndexHtmlDependencies,
     additional_root_paths = [
         "npm/node_modules",
     ],
-    entry_module = "angular_material/src/e2e-app/main",
-    port = 4200,
-    # Scripts which will be included in the serving_path bundle after RequireJS has been loaded.
-    scripts = [
-        ":devserver-configure.js",
-        "//tools/rxjs:rxjs_umd_modules",
-        "@npm//:node_modules/tslib/tslib.js",
-    ] + getAngularUmdTargets() + MDC_PACKAGE_UMD_BUNDLES.values(),
-    # Name of the generated `concatjs` bundle that is built based on the labels in `deps` and `scripts`.
-    serving_path = "/bundle.js",
-    static_files = devserverIndexHtmlDependencies,
     tags = ["manual"],
-    deps = [":e2e-app"],
+    deps = [
+        ":bundles",
+    ],
 )

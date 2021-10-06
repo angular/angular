@@ -13,7 +13,7 @@ import {ComponentHarnessE2eModule} from './component-harness/component-harness-e
 import {DialogE2eModule} from './dialog/dialog-e2e-module';
 import {E2eApp} from './e2e-app';
 import {E2eAppModule} from './e2e-app/e2e-app-module';
-import {E2E_APP_ROUTES} from './e2e-app/routes';
+import {E2E_APP_ROUTES} from './routes';
 import {ExpansionE2eModule} from './expansion/expansion-e2e-module';
 import {GridListE2eModule} from './grid-list/grid-list-e2e-module';
 import {IconE2eModule} from './icon/icon-e2e-module';

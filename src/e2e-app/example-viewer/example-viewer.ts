@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {loadExampleFactory} from '@angular/components-examples/private';
+import {loadExample} from '@angular/components-examples/private';
 import {Component, Injector, Input, OnInit, ViewContainerRef} from '@angular/core';
 
 /** Loads an example component from `@angular/components-examples` */
@@ -26,6 +26,7 @@ export class ExampleViewer implements OnInit {
               private _viewContainerRef: ViewContainerRef) {}
 
   async ngOnInit() {
-    this._viewContainerRef.createComponent(await loadExampleFactory(this.id, this._injector));
+    const {component, injector} = await loadExample(this.id, this._injector);
+    this._viewContainerRef.createComponent(component, {injector});
   }
 }
