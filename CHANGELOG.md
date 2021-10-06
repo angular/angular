@@ -1,3 +1,23 @@
+<a name="12.2.9"></a>
+# 12.2.9 "cobblestone-wind" (2021-10-06)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [85189204ac](https://github.com/angular/components/commit/85189204acdba761675720bcac222f70b7011dd4) | fix | **drag-drop:** error when preview is destroyed before animation completes ([#23662](https://github.com/angular/components/pull/23662)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [544423b227](https://github.com/angular/components/commit/544423b2276529da466e324b97e5410b2b3f320c) | fix | **core:** sanity checks not disabled for node-based test environments ([#23636](https://github.com/angular/components/pull/23636)) |
+| [9056d95e28](https://github.com/angular/components/commit/9056d95e282e50add51ace86f68acfb50f559f2e) | fix | **stepper:** add text for screen readers to indicate when step is complete or editable ([#23519](https://github.com/angular/components/pull/23519)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b72c17759b](https://github.com/angular/components/commit/b72c17759bf37b23c9129f25bcef5cb96df04835) | fix | **mdc-menu:** Use body1 typography for menu content ([#23657](https://github.com/angular/components/pull/23657)) |
+## Special Thanks
+Amy Sorto, Kristiyan Kostadinov, Miles Malerba and Вася
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.0.0-next.7"></a>
 # 13.0.0-next.7 "linen-lemon" (2021-09-29)
 ### cdk
