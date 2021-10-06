@@ -34,6 +34,8 @@
     "angular-mocks-1.7",
     "angular-mocks-1.8",
     "puppeteer",
+    "remark",
+    "remark-html",
     "rollup",
     "selenium-webdriver",
     "watchr"
