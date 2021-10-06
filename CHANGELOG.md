@@ -1,3 +1,61 @@
+<a name="13.0.0-next.12"></a>
+# 13.0.0-next.12 (2021-10-05)
+## Breaking Changes
+### core
+- TypeScript versions older than 4.4.2 are no longer supported.
+### service-worker
+- The return type of `SwUpdate#activateUpdate` and `SwUpdate#checkForUpdate` changed to `Promise<boolean>`.
+
+Although unlikely, it is possible that this change will cause TypeScript type-checking to fail in
+some cases. If necessary, update your types to account for the new
+return type.
+## Deprecations
+### service-worker
+- The `SwUpdate#activated` observable is deprecated.
+
+The `SwUpdate#activated` observable only emits values as a direct response to calling
+`SwUpdate#activateUpdate()` and was only useful for determining whether the call resulted in an
+update or not. Now, the return value of `SwUpdate#activateUpdate()` can be used to determine the
+outcome of the operation and therefore using `SwUpdate#activated` does not offer any benefit.
+
+- The `SwUpdate#availalbe` observable is deprecated.
+
+The new `SwUpdate#versionUpdates` observable provides the same information and more. Therefore, it
+is possible to rebuild the same behavior as `SwUpdate#availalbe` using the events emitted by
+`SwUpdate#versionUpdates` and filtering for `VersionReadyEvent` events.
+As a result, the `SwUpdate#availalbe` observable is now redundant.
+### bazel
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dbe656d1e0](https://github.com/angular/angular/commit/dbe656d1e0569304c7001296ec90cf2e9cc8c91f) | fix | ngc-wrapped should not rely on linker for external workspaces ([#43690](https://github.com/angular/angular/pull/43690)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [263feba5c2](https://github.com/angular/angular/commit/263feba5c2d56e8433068718d1fdcbc3b2ae144c) | fix | handle nullable expressions correctly in the nullish coalescing extended template diagnostic ([#43572](https://github.com/angular/angular/pull/43572)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c14085e434](https://github.com/angular/angular/commit/c14085e43493f0a1eaea1df949cbf6f3b13b72a0) | feat | drop support for TypeScript 4.2 and 4.3 ([#43642](https://github.com/angular/angular/pull/43642)) |
+| [7fd0428aae](https://github.com/angular/angular/commit/7fd0428aae3a7d94bfc8fee764ac24f5fe3fbb41) | fix | don't rethrow errors if test teardown has been disabled ([#43635](https://github.com/angular/angular/pull/43635)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [69957f72e2](https://github.com/angular/angular/commit/69957f72e240e516fe65146c314014fadc43dd1f) | feat | provide snippets for attribute ([#43590](https://github.com/angular/angular/pull/43590)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2ab2a080b6](https://github.com/angular/angular/commit/2ab2a080b638126af9c422282002b7c1bdaced7b) | fix | unset attachRef when router-outlet is destroyed to avoid mounting a destroyed component ([#43697](https://github.com/angular/angular/pull/43697)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [59225f5586](https://github.com/angular/angular/commit/59225f5586f1319a47768cef2e3325d7ab6940af) | feat | `SwUpdate#activeUpdate` and `SwUpdate#checkForUpdate` should have a meaningful outcome ([#43668](https://github.com/angular/angular/pull/43668)) |
+| [0dc45446fe](https://github.com/angular/angular/commit/0dc45446fe487febaefaf68a928c5a249880f2f3) | feat | expose more version update events ([#43668](https://github.com/angular/angular/pull/43668)) |
+| [fddb50b597](https://github.com/angular/angular/commit/fddb50b597ceaacc77f8412dda29f0ae2bd3efbe) | fix | make `ngsw.json` generation deterministic and correct ([#43679](https://github.com/angular/angular/pull/43679)) |
+## Special Thanks
+Alan Agius, Andrew Scott, Doug Parker, George Kalpakas, Kristiyan Kostadinov, Maximilian Köller, Paul Gschwendtner, Wey-Han Liaw and ivanwonder
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.0.0-next.11"></a>
 # 13.0.0-next.11 (2021-10-04)
 ### core
