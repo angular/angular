@@ -13,6 +13,9 @@
     "material design",
     "components"
   ],
+  "exports": {
+    "./fesm2020": {"default": "./fesm2020"}
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/angular/components/issues"
