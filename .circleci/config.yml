@@ -434,54 +434,6 @@ jobs:
       - run: ./scripts/circleci/publish-snapshots.sh
       - *slack_notify_on_failure
 
-  # -----------------------------------------------------------------
-  # Job that ensures that the release output is compatible with ngcc.
-  # -----------------------------------------------------------------
-  ngcc_compatibility:
-    <<: *job_defaults
-    resource_class: xlarge
-    steps:
-      - checkout_and_rebase
-      - *restore_cache
-      - *attach_release_output
-      - *yarn_install
-
-      # Copy the release packages into the node modules so that ngcc can process them.
-      - run: cp -R dist/releases/* node_modules/@angular/
-      # Delete existing ngcc manifests that would prevent the copied packages
-      # from being discovered.
-      - run: rm -f node_modules/__ngcc_entry_points__.json
-      # Ensure that the job fails if an entry-point cannot be compiled. Also disable
-      # tsconfig parsing as that causes the release packages to be incorrectly resolved
-      # to the sources due to path mapping.
-      - run: yarn ngcc --error-on-failed-entry-point --no-tsconfig
-      - *slack_notify_on_failure
-
-  # -----------------------------------------------------------------
-  # Job that ensures that the release output is compatible with the
-  # latest snapshot ngcc changes.
-  # -----------------------------------------------------------------
-  ngcc_compatibility_snapshot:
-    <<: *job_defaults
-    resource_class: xlarge
-    steps:
-      - checkout_and_rebase
-      - *restore_cache
-      - *attach_release_output
-      - *setup_snapshot_builds
-      - *yarn_install_loose_lockfile
-
-      # Copy the release packages into the node modules so that ngcc can process them.
-      - run: cp -R dist/releases/* node_modules/@angular/
-      # Delete existing ngcc manifests that would prevent the copied packages
-      # from being discovered.
-      - run: rm -f node_modules/__ngcc_entry_points__.json
-      # Ensure that the job fails if an entry-point cannot be compiled. Also disable
-      # tsconfig parsing as that causes the release packages to be incorrectly resolved
-      # to the sources due to path mapping.
-      - run: yarn ngcc --error-on-failed-entry-point --no-tsconfig
-      - *slack_notify_on_failure
-
   # ----------------------------------------------------------------------------
   # Job that runs the local browser tests against the Angular Github snapshots
   # ----------------------------------------------------------------------------
@@ -611,14 +563,6 @@ workflows:
             - build_release_packages
       - lint:
           filters: *ignore_presubmit_branch_filter
-      - ngcc_compatibility:
-          filters: *ignore_presubmit_branch_filter
-          requires:
-            - build_release_packages
-      - ngcc_compatibility_snapshot:
-          filters: *only_main_branch_filter
-          requires:
-            - build_release_packages
       - publish_snapshots:
           filters: *publish_branches_filter
           requires:
