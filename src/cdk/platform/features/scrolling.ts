@@ -108,7 +108,7 @@ export function getRtlScrollAxisType(): RtlScrollAxisType {
           scrollContainer.scrollLeft === 0 ? RtlScrollAxisType.NEGATED : RtlScrollAxisType.INVERTED;
     }
 
-    scrollContainer.parentNode!.removeChild(scrollContainer);
+    scrollContainer.remove();
   }
   return rtlScrollAxisType;
 }

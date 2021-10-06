@@ -199,7 +199,7 @@ export class RippleRenderer implements EventListenerObject {
     // Once the ripple faded out, the ripple can be safely removed from the DOM.
     this._runTimeoutOutsideZone(() => {
       rippleRef.state = RippleState.HIDDEN;
-      rippleEl.parentNode!.removeChild(rippleEl);
+      rippleEl.remove();
     }, animationConfig.exitDuration);
   }
 

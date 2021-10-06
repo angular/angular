@@ -142,11 +142,8 @@ export class LiveAnnouncer implements OnDestroy {
 
   ngOnDestroy() {
     clearTimeout(this._previousTimeout);
-
-    if (this._liveElement && this._liveElement.parentNode) {
-      this._liveElement.parentNode.removeChild(this._liveElement);
-      this._liveElement = null!;
-    }
+    this._liveElement?.remove();
+    this._liveElement = null!;
   }
 
   private _createLiveElement(): HTMLElement {
@@ -156,7 +153,7 @@ export class LiveAnnouncer implements OnDestroy {
 
     // Remove any old containers. This can happen when coming in from a server-side-rendered page.
     for (let i = 0; i < previousElements.length; i++) {
-      previousElements[i].parentNode!.removeChild(previousElements[i]);
+      previousElements[i].remove();
     }
 
     liveEl.classList.add(elementClass);

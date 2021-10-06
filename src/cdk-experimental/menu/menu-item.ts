@@ -35,7 +35,7 @@ import {Toggler, MENU_AIM, MenuAim} from './menu-aim';
 /** Removes all icons from within the given element. */
 function removeIcons(element: Element) {
   for (const icon of Array.from(element.querySelectorAll('mat-icon, .material-icons'))) {
-    icon.parentNode?.removeChild(icon);
+    icon.remove();
   }
 }
 

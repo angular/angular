@@ -174,7 +174,7 @@ export class CdkOption<T = unknown> implements ListKeyManagerOption, Highlightab
   private _removeIcons(element: Element) {
     // TODO: make this a configurable function that can removed any desired type of node.
     for (const icon of Array.from(element.querySelectorAll('mat-icon, .material-icons'))) {
-      icon.parentNode?.removeChild(icon);
+      icon.remove();
     }
   }
 

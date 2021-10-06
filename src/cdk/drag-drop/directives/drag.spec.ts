@@ -2336,7 +2336,7 @@ expect(item.style.top)
         const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
 
         expect(preview.parentNode).toBe(fakeDocument.fullscreenElement);
-        fakeDocument.fullscreenElement.parentNode!.removeChild(fakeDocument.fullscreenElement);
+        fakeDocument.fullscreenElement.remove();
       }));
 
     it('should be able to constrain the preview position', fakeAsync(() => {
@@ -5831,7 +5831,7 @@ expect(sourceCanvas.getContext('2d')!
           targetRect.left + 1, targetRect.top + 1);
 
         // Remove the extra node after the element was dropped, but before the animation is over.
-        extraSibling.parentNode!.removeChild(extraSibling);
+        extraSibling.remove();
 
         expect(() => {
           flush();
@@ -7286,7 +7286,7 @@ function makeScrollable(
 
   return () => {
     scrollTo(0, 0);
-    veryTallElement.parentNode!.removeChild(veryTallElement);
+    veryTallElement.remove();
   };
 }
 

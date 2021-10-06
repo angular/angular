@@ -811,7 +811,7 @@ describe('MDC-based MatDialog', () => {
 
        expect(sibling.hasAttribute('aria-hidden'))
         .withContext('Expected sibling to no longer be hidden.').toBe(false);
-       sibling.parentNode!.removeChild(sibling);
+       sibling.remove();
      }));
 
   it('should restore `aria-hidden` to the overlay container siblings on close', fakeAsync(() => {
@@ -833,7 +833,7 @@ describe('MDC-based MatDialog', () => {
 
        expect(sibling.getAttribute('aria-hidden'))
         .withContext('Expected sibling to remain hidden.').toBe('true');
-       sibling.parentNode!.removeChild(sibling);
+       sibling.remove();
      }));
 
   it('should not set `aria-hidden` on `aria-live` elements', fakeAsync(() => {
@@ -848,7 +848,7 @@ describe('MDC-based MatDialog', () => {
 
        expect(sibling.hasAttribute('aria-hidden'))
         .withContext('Expected live element not to be hidden.').toBe(false);
-       sibling.parentNode!.removeChild(sibling);
+       sibling.remove();
      }));
 
   it('should add and remove classes while open', () => {
@@ -1098,7 +1098,7 @@ describe('MDC-based MatDialog', () => {
   describe('focus management', () => {
     // When testing focus, all of the elements must be in the DOM.
     beforeEach(() => document.body.appendChild(overlayContainerElement));
-    afterEach(() => document.body.removeChild(overlayContainerElement));
+    afterEach(() => overlayContainerElement.remove());
 
     it('should focus the first tabbable element of the dialog on open (the default)',
     fakeAsync(() => {
@@ -1204,7 +1204,7 @@ describe('MDC-based MatDialog', () => {
           .withContext('Expected that the trigger was refocused after the dialog is closed.')
           .toBe('dialog-trigger');
 
-         document.body.removeChild(button);
+         button.remove();
        }));
 
     it('should re-focus trigger element inside the shadow DOM when dialog closes', fakeAsync(() => {
@@ -1265,7 +1265,7 @@ describe('MDC-based MatDialog', () => {
           .withContext('Expected the trigger button to be focused via keyboard').toBe('keyboard');
 
          focusMonitor.stopMonitoring(button);
-         document.body.removeChild(button);
+         button.remove();
        }));
 
     it('should re-focus the trigger via mouse when backdrop has been clicked', fakeAsync(() => {
@@ -1301,7 +1301,7 @@ describe('MDC-based MatDialog', () => {
           .withContext('Expected the trigger button to be focused via mouse').toBe('mouse');
 
          focusMonitor.stopMonitoring(button);
-         document.body.removeChild(button);
+         button.remove();
        }));
 
     it('should re-focus via keyboard if the close button has been triggered through keyboard',
@@ -1341,7 +1341,7 @@ describe('MDC-based MatDialog', () => {
           .withContext('Expected the trigger button to be focused via keyboard').toBe('keyboard');
 
          focusMonitor.stopMonitoring(button);
-         document.body.removeChild(button);
+         button.remove();
        }));
 
     it('should re-focus via mouse if the close button has been clicked', fakeAsync(() => {
@@ -1381,7 +1381,7 @@ describe('MDC-based MatDialog', () => {
           .withContext('Expected the trigger button to be focused via mouse').toBe('mouse');
 
          focusMonitor.stopMonitoring(button);
-         document.body.removeChild(button);
+         button.remove();
        }));
 
     it('should allow the consumer to shift focus in afterClosed', fakeAsync(() => {
@@ -1412,8 +1412,8 @@ describe('MDC-based MatDialog', () => {
           .withContext('Expected that the trigger was refocused after the dialog is closed.')
           .toBe('input-to-be-focused');
 
-         document.body.removeChild(button);
-         document.body.removeChild(input);
+         button.remove();
+         input.remove();
          flush();
        }));
 
@@ -1453,7 +1453,7 @@ describe('MDC-based MatDialog', () => {
          expect(document.activeElement!.id)
              .not.toBe('dialog-trigger', 'Expected focus not to have been restored.');
 
-         document.body.removeChild(button);
+         button.remove();
        }));
 
     it('should not move focus if it was moved outside the dialog while animating', fakeAsync(() => {
@@ -1490,8 +1490,8 @@ describe('MDC-based MatDialog', () => {
          expect(document.activeElement!.id)
           .withContext('Expected focus to stay on the alternate button.').toBe('other-button');
 
-         body.removeChild(button);
-         body.removeChild(otherButton);
+         button.remove();
+         otherButton.remove();
        }));
   });
 

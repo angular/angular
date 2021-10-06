@@ -55,7 +55,7 @@ describe('ViewportRuler', () => {
     // successfully constrain its size. As such, skip assertions in environments where the
     // window size has changed since the start of the test.
     if (window.innerWidth > startingWindowWidth || window.innerHeight > startingWindowHeight) {
-      document.body.removeChild(veryLargeElement);
+      veryLargeElement.remove();
       return;
     }
 
@@ -64,7 +64,7 @@ describe('ViewportRuler', () => {
     expect(bounds.bottom).toBe(2000 + window.innerHeight);
     expect(bounds.right).toBe(1500 + window.innerWidth);
 
-    document.body.removeChild(veryLargeElement);
+    veryLargeElement.remove();
   });
 
   it('should get the bounds based on client coordinates when the page is pinch-zoomed', () => {
@@ -89,7 +89,7 @@ describe('ViewportRuler', () => {
     // successfully constrain its size. As such, skip assertions in environments where the
     // window size has changed since the start of the test.
     if (window.innerWidth > startingWindowWidth || window.innerHeight > startingWindowHeight) {
-      document.body.removeChild(veryLargeElement);
+      veryLargeElement.remove();
       return;
     }
 
@@ -97,7 +97,7 @@ describe('ViewportRuler', () => {
     expect(scrollPos.top).toBe(2000);
     expect(scrollPos.left).toBe(1500);
 
-    document.body.removeChild(veryLargeElement);
+    veryLargeElement.remove();
   });
 
   describe('changed event', () => {

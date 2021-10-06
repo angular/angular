@@ -587,7 +587,7 @@ describe('MatBottomSheet', () => {
   describe('focus management', () => {
     // When testing focus, all of the elements must be in the DOM.
     beforeEach(() => document.body.appendChild(overlayContainerElement));
-    afterEach(() => document.body.removeChild(overlayContainerElement));
+    afterEach(() => overlayContainerElement.remove());
 
     it('should focus the bottom sheet container by default', fakeAsync(() => {
       bottomSheet.open(PizzaMsg, {
@@ -708,7 +708,7 @@ describe('MatBottomSheet', () => {
         .withContext('Expected that the trigger was refocused after the sheet is closed.')
         .toBe('bottom-sheet-trigger');
 
-      document.body.removeChild(button);
+      button.remove();
     }));
 
     it('should be able to disable focus restoration', fakeAsync(() => {
@@ -740,7 +740,7 @@ describe('MatBottomSheet', () => {
       expect(document.activeElement!.id).not.toBe('bottom-sheet-trigger',
           'Expected the trigger not to be refocused on close.');
 
-      document.body.removeChild(button);
+      button.remove();
     }));
 
     it('should not move focus if it was moved outside the sheet while animating', fakeAsync(() => {
@@ -777,8 +777,8 @@ describe('MatBottomSheet', () => {
       expect(document.activeElement!.id)
         .withContext('Expected focus to stay on the alternate button.').toBe('other-button');
 
-      body.removeChild(button);
-      body.removeChild(otherButton);
+      button.remove();
+      otherButton.remove();
     }));
 
     it('should re-focus trigger element inside the shadow DOM when the bottom sheet is dismissed',

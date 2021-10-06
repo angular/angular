@@ -216,13 +216,9 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
     this._keydownEvents.complete();
     this._outsidePointerEvents.complete();
     this._outsideClickDispatcher.remove(this);
+    this._host?.remove();
 
-    if (this._host && this._host.parentNode) {
-      this._host.parentNode.removeChild(this._host);
-      this._host = null!;
-    }
-
-    this._previousHostParent = this._pane = null!;
+    this._previousHostParent = this._pane = this._host = null!;
 
     if (isAttached) {
       this._detachments.next();
@@ -487,7 +483,7 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
 
             if (this._host && this._host.parentElement) {
               this._previousHostParent = this._host.parentElement;
-              this._previousHostParent.removeChild(this._host);
+              this._host.remove();
             }
 
             subscription.unsubscribe();
@@ -512,9 +508,7 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
   /** Removes a backdrop element from the DOM. */
   private _disposeBackdrop(backdrop: HTMLElement | null) {
     if (backdrop) {
-      if (backdrop.parentNode) {
-        backdrop.parentNode.removeChild(backdrop);
-      }
+      backdrop.remove();
 
       // It is possible that a new portal has been attached to this overlay since we started
       // removing the backdrop. If that is the case, only clear the backdrop reference if it

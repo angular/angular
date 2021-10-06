@@ -69,7 +69,7 @@ describe('OverlayOutsideClickDispatcher', () => {
     expect(overlayOneSpy).toHaveBeenCalled();
     expect(overlayTwoSpy).toHaveBeenCalled();
 
-    button.parentNode!.removeChild(button);
+    button.remove();
     overlayOne.dispose();
     overlayTwo.dispose();
   });
@@ -96,7 +96,7 @@ describe('OverlayOutsideClickDispatcher', () => {
     expect(overlayOneSpy).toHaveBeenCalled();
     expect(overlayTwoSpy).toHaveBeenCalled();
 
-    button.parentNode!.removeChild(button);
+    button.remove();
     overlayOne.dispose();
     overlayTwo.dispose();
   });
@@ -117,7 +117,7 @@ describe('OverlayOutsideClickDispatcher', () => {
 
       expect(spy).toHaveBeenCalled();
 
-      button.parentNode!.removeChild(button);
+      button.remove();
       overlayRef.dispose();
     });
 
@@ -162,7 +162,7 @@ describe('OverlayOutsideClickDispatcher', () => {
     button.click();
     expect(spy).toHaveBeenCalled();
 
-    button.parentNode!.removeChild(button);
+    button.remove();
     overlayRef.dispose();
   });
 
@@ -193,7 +193,7 @@ describe('OverlayOutsideClickDispatcher', () => {
     dispatchMouseEvent(context, 'contextmenu');
     expect(spy).toHaveBeenCalled();
 
-    context.parentNode!.removeChild(context);
+    context.remove();
     overlayRef.dispose();
   });
 
@@ -236,7 +236,7 @@ describe('OverlayOutsideClickDispatcher', () => {
 
       expect(spy).toHaveBeenCalled();
 
-      backgroundElement.parentNode!.removeChild(backgroundElement);
+      backgroundElement.remove();
       firstOverlayRef.dispose();
       secondOverlayRef.dispose();
       thirdOverlayRef.dispose();

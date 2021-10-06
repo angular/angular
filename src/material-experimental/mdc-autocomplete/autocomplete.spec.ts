@@ -1790,7 +1790,7 @@ expect(scrollContainer.scrollTop)
         .withContext('Expected panel top to match input bottom after scrolling.')
         .toEqual(Math.floor(panelTop));
 
-      document.body.removeChild(spacer);
+      spacer.remove();
       window.scroll(0, 0);
     });
 

@@ -80,8 +80,7 @@ describe('OverlayKeyboardDispatcher', () => {
     dispatchKeyboardEvent(button, 'keydown', ESCAPE);
 
     expect(spy).not.toHaveBeenCalled();
-
-    button.parentNode!.removeChild(button);
+    button.remove();
   });
 
   it('should complete the keydown stream on dispose', () => {

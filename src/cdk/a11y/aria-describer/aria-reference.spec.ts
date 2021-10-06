@@ -9,7 +9,7 @@ describe('AriaReference', () => {
   });
 
   afterEach(() => {
-    document.body.removeChild(testElement!);
+    testElement?.remove();
   });
 
   it('should be able to append/remove aria reference IDs', () => {

@@ -67,11 +67,8 @@ export class CdkTableScrollContainer implements StickyPositioningListener,
   }
 
   ngOnDestroy(): void {
-    // TODO: Use remove() once we're off IE11.
-    if (this._styleElement?.parentNode) {
-      this._styleElement.parentNode.removeChild(this._styleElement);
-      this._styleElement = undefined;
-    }
+    this._styleElement?.remove();
+    this._styleElement = undefined;
   }
 
   stickyColumnsUpdated({sizes}: StickyUpdate): void {

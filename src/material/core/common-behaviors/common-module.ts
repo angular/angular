@@ -137,7 +137,7 @@ export class MatCommonModule {
       );
     }
 
-    this._document.body.removeChild(testElement);
+    testElement.remove();
   }
 
   /** Checks whether the material version matches the cdk version */

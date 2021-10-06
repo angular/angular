@@ -178,11 +178,8 @@ export class CdkFlexTableResizeStrategy extends ResizeStrategy implements OnDest
   }
 
   ngOnDestroy(): void {
-    // TODO: Use remove() once we're off IE11.
-    if (this._styleElement && this._styleElement.parentNode) {
-      this._styleElement.parentNode.removeChild(this._styleElement);
-      this._styleElement = undefined;
-    }
+    this._styleElement?.remove();
+    this._styleElement = undefined;
   }
 
   private _getPropertyValue(cssFriendlyColumnName: string, key: string): string|undefined {

@@ -38,7 +38,7 @@ describe('RepositionScrollStrategy', () => {
 
   afterEach(inject([OverlayContainer], (container: OverlayContainer) => {
     overlayRef.dispose();
-    container.getContainerElement().parentNode!.removeChild(container.getContainerElement());
+    container.getContainerElement().remove();
   }));
 
   it('should update the overlay position when the page is scrolled', () => {

@@ -15,8 +15,7 @@ export function _getTextWithExcludedElements(element: Element, excludeSelector: 
   const clone = element.cloneNode(true) as Element;
   const exclusions = clone.querySelectorAll(excludeSelector);
   for (let i = 0; i < exclusions.length; i++) {
-    let child = exclusions[i];
-    child.parentNode?.removeChild(child);
+    exclusions[i].remove();
   }
   return (clone.textContent || '').trim();
 }

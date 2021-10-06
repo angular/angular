@@ -320,7 +320,7 @@ describe('MatRipple', () => {
       });
 
       afterEach(() => {
-        document.body.removeChild(veryLargeElement);
+        veryLargeElement.remove();
         document.body.scrollTop = 0;
         document.body.scrollLeft = 0;
 

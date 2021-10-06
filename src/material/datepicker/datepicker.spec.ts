@@ -1248,7 +1248,7 @@ expect(firstCalendarCell.textContent!.trim())
             .withContext('Expected alternate focus target to be focused after closing.')
             .toBe(focusTarget);
 
-          focusTarget.parentNode!.removeChild(focusTarget);
+          focusTarget.remove();
           subscription.unsubscribe();
         }));
 

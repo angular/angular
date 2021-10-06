@@ -74,7 +74,7 @@ export class HighContrastModeDetector {
         documentWindow.getComputedStyle(testElement) : null;
     const computedColor =
         (computedStyle && computedStyle.backgroundColor || '').replace(/ /g, '');
-    this._document.body.removeChild(testElement);
+    testElement.remove();
 
     switch (computedColor) {
       case 'rgb(0,0,0)': return HighContrastMode.WHITE_ON_BLACK;

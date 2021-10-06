@@ -43,9 +43,9 @@ describe('BlockScrollStrategy', () => {
 
   afterEach(inject([OverlayContainer], (container: OverlayContainer) => {
     overlayRef.dispose();
-    document.body.removeChild(forceScrollElement);
+    forceScrollElement.remove();
     window.scroll(0, 0);
-    container.getContainerElement().parentNode!.removeChild(container.getContainerElement());
+    container.getContainerElement().remove();
   }));
 
   it('should toggle scroll blocking along the y axis', skipIOS(() => {

@@ -72,7 +72,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
 
     expect(() => attachOverlay({positionStrategy})).toThrow();
 
-    document.body.removeChild(origin);
+    origin.remove();
   });
 
   it('should not throw when trying to apply after being disposed', () => {
@@ -93,7 +93,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
 
     expect(() => positionStrategy.apply()).not.toThrow();
 
-    document.body.removeChild(origin);
+    origin.remove();
   });
 
   it('should not throw when trying to re-apply the last position after being disposed', () => {
@@ -114,7 +114,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
 
     expect(() => positionStrategy.reapplyLastPosition()).not.toThrow();
 
-    document.body.removeChild(origin);
+    origin.remove();
   });
 
   it('should for the virtual keyboard offset when positioning the overlay', () => {
@@ -147,7 +147,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
 
     expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.bottom));
 
-    document.body.removeChild(originElement);
+    originElement.remove();
   });
 
   it('should clean up after itself when disposed', () => {
@@ -190,7 +190,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
     expect(pane.style.transform).toBeFalsy();
 
     overlayRef.dispose();
-    document.body.removeChild(origin);
+    origin.remove();
   });
 
   describe('without flexible dimensions and pushing', () => {
@@ -213,7 +213,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
     });
 
     afterEach(() => {
-      document.body.removeChild(originElement);
+      originElement.remove();
     });
 
     describe('when not near viewport edge, not scrolled', () => {
@@ -254,7 +254,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
 
       afterEach(() => {
         window.scroll(0, 0);
-        document.body.removeChild(veryLargeElement);
+        veryLargeElement.remove();
       });
 
       // Preconditions are set, now just run the full set of simple position tests.
@@ -770,7 +770,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
     });
 
     it('should position the panel correctly when the origin is an SVG element', () => {
-      document.body.removeChild(originElement);
+      originElement.remove();
       originElement = createBlockElement('svg', 'http://www.w3.org/2000/svg');
       document.body.appendChild(originElement);
 
@@ -1155,7 +1155,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
     });
 
     afterEach(() => {
-      document.body.removeChild(originElement);
+      originElement.remove();
     });
 
     it('should be able to push an overlay into the viewport when it goes out on the right', () => {
@@ -1385,7 +1385,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
           .withContext('Expected overlay to stay in the viewport after scrolling.').toBe(0);
 
         window.scroll(0, 0);
-        document.body.removeChild(veryLargeElement);
+        veryLargeElement.remove();
       });
 
       it('should not continue pushing the overlay as the user scrolls, if position ' +
@@ -1431,7 +1431,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
           .toBe(initialOverlayTop - scrollBy);
 
         window.scroll(0, 0);
-        document.body.removeChild(veryLargeElement);
+        veryLargeElement.remove();
       });
 
   });
@@ -1450,7 +1450,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
     });
 
     afterEach(() => {
-      document.body.removeChild(originElement);
+      originElement.remove();
     });
 
     it('should align the overlay to `flex-start` when the content is flowing to the right', () => {
@@ -1711,7 +1711,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
         expect(Math.floor(overlayRect.bottom)).toBe(Math.floor(originRect.bottom));
 
         window.scroll(0, 0);
-        document.body.removeChild(veryLargeElement);
+        veryLargeElement.remove();
       });
 
     it('should set the proper styles when the `bottom` value is exactly zero', () => {
@@ -1876,7 +1876,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
           .toBe(Math.floor(originRect.left - originRect.width / 2));
 
       window.scroll(0, 0);
-      document.body.removeChild(veryLargeElement);
+      veryLargeElement.remove();
     });
 
     it('should size the bounding box correctly when opening downwards on a scrolled page', () => {
@@ -1918,7 +1918,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
           .toBe(Math.floor(viewportHeight - originRect.bottom + viewportMargin));
 
       window.scroll(0, 0);
-      document.body.removeChild(veryLargeElement);
+      veryLargeElement.remove();
     });
 
     it('should not push the overlay if it is exactly as wide as the viewport', () => {
@@ -2004,7 +2004,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
         expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.top));
 
         window.scroll(0, 0);
-        document.body.removeChild(veryLargeElement);
+        veryLargeElement.remove();
       });
 
     it('should size the bounding box that is flowing to the left correctly on a page that is ' +
@@ -2045,7 +2045,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
         expect(Math.floor(originRect.right)).toBe(Math.floor(boundingBoxRect.width));
 
         window.scroll(0, 0);
-        document.body.removeChild(veryLargeElement);
+        veryLargeElement.remove();
       });
 
     it('should set the maxWidth and maxHeight on the bounding box when exact dimension are ' +
@@ -2288,7 +2288,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
 
     afterEach(() => {
       onPositionChangeSubscription.unsubscribe();
-      document.body.removeChild(scrollable);
+      scrollable.remove();
     });
 
     it('should not have origin or overlay clipped or out of view without scroll', () => {
@@ -2348,7 +2348,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
     });
 
     afterEach(() => {
-      document.body.removeChild(originElement);
+      originElement.remove();
     });
 
     describe('in ltr', () => {
@@ -2458,7 +2458,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
     });
 
     afterEach(() => {
-      document.body.removeChild(originElement);
+      originElement.remove();
       positionStrategy.dispose();
     });
 
@@ -2513,7 +2513,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
     });
 
     afterEach(() => {
-      document.body.removeChild(originElement);
+      originElement.remove();
     });
 
     it('should be able to apply a class based on the position', () => {

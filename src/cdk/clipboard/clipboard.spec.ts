@@ -28,9 +28,7 @@ describe('Clipboard', () => {
   });
 
   afterEach(() => {
-    if (focusedInput.parentNode) {
-      focusedInput.parentNode.removeChild(focusedInput);
-    }
+    focusedInput.remove();
   });
 
   describe('#beginCopy', () => {
@@ -79,8 +77,7 @@ describe('Clipboard', () => {
 
       clipboard.copy(COPY_CONTENT);
       expect(document.activeElement).toBe(svg);
-
-      svg.parentNode!.removeChild(svg);
+      svg.remove();
     });
 
     describe('when execCommand fails', () => {

@@ -485,10 +485,10 @@ export class DragRef<T = any> {
     if (this.isDragging()) {
       // Since we move out the element to the end of the body while it's being
       // dragged, we have to make sure that it's removed if it gets destroyed.
-      removeNode(this._rootElement);
+      this._rootElement?.remove();
     }
 
-    removeNode(this._anchor);
+    this._anchor?.remove();
     this._destroyPreview();
     this._destroyPlaceholder();
     this._dragDropRegistry.removeDragItem(this);
@@ -606,27 +606,15 @@ export class DragRef<T = any> {
 
   /** Destroys the preview element and its ViewRef. */
   private _destroyPreview() {
-    if (this._preview) {
-      removeNode(this._preview);
-    }
-
-    if (this._previewRef) {
-      this._previewRef.destroy();
-    }
-
+    this._preview?.remove();
+    this._previewRef?.destroy();
     this._preview = this._previewRef = null!;
   }
 
   /** Destroys the placeholder element and its ViewRef. */
   private _destroyPlaceholder() {
-    if (this._placeholder) {
-      removeNode(this._placeholder);
-    }
-
-    if (this._placeholderRef) {
-      this._placeholderRef.destroy();
-    }
-
+    this._placeholder?.remove();
+    this._placeholderRef?.destroy();
     this._placeholder = this._placeholderRef = null!;
   }
 
@@ -1479,16 +1467,6 @@ function getTransform(x: number, y: number): string {
 /** Clamps a value between a minimum and a maximum. */
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
-}
-
-/**
- * Helper to remove a node from the DOM and to do all the necessary null checks.
- * @param node Node to be removed.
- */
-function removeNode(node: Node | null) {
-  if (node && node.parentNode) {
-    node.parentNode.removeChild(node);
-  }
 }
 
 /** Determines whether an event is a touch event. */

@@ -60,10 +60,7 @@ describe('OverlayContainer', () => {
 
     overlayContainer.getContainerElement();
     expect(document.querySelectorAll('.cdk-overlay-container').length).toBe(1);
-
-    if (extraContainer.parentNode) {
-      extraContainer.parentNode.removeChild(extraContainer);
-    }
+    extraContainer.remove();
   });
 
   it('should remove overlay containers from other unit tests', () => {
@@ -74,10 +71,7 @@ describe('OverlayContainer', () => {
 
     overlayContainer.getContainerElement();
     expect(document.querySelectorAll('.cdk-overlay-container').length).toBe(1);
-
-    if (extraContainer.parentNode) {
-      extraContainer.parentNode.removeChild(extraContainer);
-    }
+    extraContainer.remove();
   });
 
   it('should not remove extra containers that were created on the browser', () => {
@@ -88,8 +82,7 @@ describe('OverlayContainer', () => {
     overlayContainer.getContainerElement();
 
     expect(document.querySelectorAll('.cdk-overlay-container').length).toBe(2);
-
-    extraContainer.parentNode!.removeChild(extraContainer);
+    extraContainer.remove();
   });
 
 });

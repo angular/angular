@@ -67,10 +67,7 @@ export class PendingCopy {
     const textarea = this._textarea;
 
     if (textarea) {
-      if (textarea.parentNode) {
-        textarea.parentNode.removeChild(textarea);
-      }
-
+      textarea.remove();
       this._textarea = undefined;
     }
   }

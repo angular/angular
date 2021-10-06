@@ -21,11 +21,7 @@ export class OverlayContainer implements OnDestroy {
   }
 
   ngOnDestroy() {
-    const container = this._containerElement;
-
-    if (container && container.parentNode) {
-      container.parentNode.removeChild(container);
-    }
+    this._containerElement?.remove();
   }
 
   /**
@@ -60,7 +56,7 @@ export class OverlayContainer implements OnDestroy {
       // Remove any old containers from the opposite platform.
       // This can happen when transitioning from the server to the client.
       for (let i = 0; i < oppositePlatformContainers.length; i++) {
-        oppositePlatformContainers[i].parentNode!.removeChild(oppositePlatformContainers[i]);
+        oppositePlatformContainers[i].remove();
       }
     }
 

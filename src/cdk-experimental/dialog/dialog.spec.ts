@@ -877,7 +877,7 @@ describe('Dialog', () => {
   describe('focus management', () => {
     // When testing focus, all of the elements must be in the DOM.
     beforeEach(() => document.body.appendChild(overlayContainerElement));
-    afterEach(() => document.body.removeChild(overlayContainerElement));
+    afterEach(() => overlayContainerElement.remove());
 
     it('should focus the first tabbable element of the dialog on open (the default)',
       fakeAsync(() => {
@@ -971,7 +971,7 @@ describe('Dialog', () => {
         .withContext('Expected that the trigger was refocused after the dialog is closed.')
         .toBe('dialog-trigger');
 
-      document.body.removeChild(button);
+      button.remove();
     }));
 
     it('should re-focus trigger element inside the shadow DOM when dialog closes', fakeAsync(() => {
@@ -1036,8 +1036,8 @@ describe('Dialog', () => {
       expect(document.activeElement!.id)
         .withContext('Expected focus to stay on the alternate button.').toBe('other-button');
 
-      body.removeChild(button);
-      body.removeChild(otherButton);
+      button.remove();
+      otherButton.remove();
     }));
 
     it('should allow the consumer to shift focus in afterClosed', fakeAsync(() => {
@@ -1069,8 +1069,8 @@ describe('Dialog', () => {
         .withContext('Expected that the trigger was refocused after the dialog is closed.')
         .toBe('input-to-be-focused');
 
-      document.body.removeChild(button);
-      document.body.removeChild(input);
+      button.remove();
+      input.remove();
       flush();
     }));
 

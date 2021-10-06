@@ -76,18 +76,12 @@ export class FocusTrap {
 
     if (startAnchor) {
       startAnchor.removeEventListener('focus', this.startAnchorListener);
-
-      if (startAnchor.parentNode) {
-        startAnchor.parentNode.removeChild(startAnchor);
-      }
+      startAnchor.remove();
     }
 
     if (endAnchor) {
       endAnchor.removeEventListener('focus', this.endAnchorListener);
-
-      if (endAnchor.parentNode) {
-        endAnchor.parentNode.removeChild(endAnchor);
-      }
+      endAnchor.remove();
     }
 
     this._startAnchor = this._endAnchor = null;

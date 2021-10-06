@@ -108,14 +108,8 @@ export abstract class Resizable<HandleComponent extends ResizeOverlayHandle>
   ngOnDestroy(): void {
     this.destroyed.next();
     this.destroyed.complete();
-
-    if (this.inlineHandle) {
-      this.elementRef.nativeElement!.removeChild(this.inlineHandle);
-    }
-
-    if (this.overlayRef) {
-      this.overlayRef.dispose();
-    }
+    this.inlineHandle?.remove();
+    this.overlayRef?.dispose();
   }
 
   protected abstract getInlineHandleCssClassName(): string;

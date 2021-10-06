@@ -44,7 +44,7 @@ describe('CloseScrollStrategy', () => {
 
   afterEach(inject([OverlayContainer], (container: OverlayContainer) => {
     overlayRef.dispose();
-    container.getContainerElement().parentNode!.removeChild(container.getContainerElement());
+    container.getContainerElement().remove();
   }));
 
   it('should detach the overlay as soon as the user scrolls', () => {

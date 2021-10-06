@@ -156,10 +156,7 @@ export class AriaDescriber implements OnDestroy {
   /** Deletes the message element from the global messages container. */
   private _deleteMessageElement(key: string|Element) {
     const registeredMessage = messageRegistry.get(key);
-    const messageElement = registeredMessage && registeredMessage.messageElement;
-    if (messagesContainer && messageElement) {
-      messagesContainer.removeChild(messageElement);
-    }
+    registeredMessage?.messageElement?.remove();
     messageRegistry.delete(key);
   }
 
@@ -172,9 +169,7 @@ export class AriaDescriber implements OnDestroy {
       // already a container on the page, but we don't have a reference to it. Clear the
       // old container so we don't get duplicates. Doing this, instead of emptying the previous
       // container, should be slightly faster.
-      if (preExistingContainer && preExistingContainer.parentNode) {
-        preExistingContainer.parentNode.removeChild(preExistingContainer);
-      }
+      preExistingContainer?.remove();
 
       messagesContainer = this._document.createElement('div');
       messagesContainer.id = MESSAGES_CONTAINER_ID;
@@ -193,8 +188,8 @@ export class AriaDescriber implements OnDestroy {
 
   /** Deletes the global messages container. */
   private _deleteMessagesContainer() {
-    if (messagesContainer && messagesContainer.parentNode) {
-      messagesContainer.parentNode.removeChild(messagesContainer);
+    if (messagesContainer) {
+      messagesContainer.remove();
       messagesContainer = null;
     }
   }

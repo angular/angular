@@ -208,7 +208,7 @@ describe('MDC-based MatMenu', () => {
     tick(500);
 
     expect(document.activeElement).toBe(button);
-    document.body.removeChild(button);
+    button.remove();
     subscription.unsubscribe();
   }));
 

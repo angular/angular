@@ -72,7 +72,7 @@ export class TestMainComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    document.body.removeChild(this._fakeOverlayElement);
+    this._fakeOverlayElement.remove();
   }
 
   click() {

@@ -16,7 +16,7 @@ describe('InteractivityChecker', () => {
   }));
 
   afterEach(() => {
-    document.body.removeChild(testContainerElement);
+    testContainerElement.remove();
     testContainerElement.innerHTML = '';
   });
 
@@ -529,8 +529,7 @@ describe('InteractivityChecker', () => {
     tmpRoot.innerHTML = template;
 
     const element = tmpRoot.firstElementChild!;
-
-    tmpRoot.removeChild(element);
+    element.remove();
 
     if (append) {
       appendElements([element]);
