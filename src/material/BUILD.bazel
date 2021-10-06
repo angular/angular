@@ -43,8 +43,6 @@ ng_package(
         "//src/material/prebuilt-themes:pink-bluegrey",
         "//src/material/prebuilt-themes:purple-green",
     ] + MATERIAL_SCSS_LIBS,
-    entry_point = ":index.ts",
-    entry_point_name = "material",
     nested_packages = ["//src/material/schematics:npm_package"],
     tags = ["release-package"],
     deps = MATERIAL_TARGETS + MATERIAL_TESTING_TARGETS,

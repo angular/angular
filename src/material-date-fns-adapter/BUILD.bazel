@@ -58,7 +58,6 @@ esbuild_amd(
 ng_package(
     name = "npm_package",
     srcs = ["package.json"],
-    entry_point = ":public-api.ts",
     tags = ["release-package"],
     deps = [":material-date-fns-adapter"],
 )

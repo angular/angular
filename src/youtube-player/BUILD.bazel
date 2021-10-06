@@ -29,8 +29,6 @@ ng_module(
 ng_package(
     name = "npm_package",
     srcs = ["package.json"],
-    entry_point = ":public-api.ts",
-    entry_point_name = "youtube-player",
     tags = ["release-package"],
     deps = [":youtube-player"],
 )

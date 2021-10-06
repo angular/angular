@@ -41,7 +41,6 @@ ng_package(
         ":theming_bundle",
         ":theming_scss_lib",
     ],
-    entry_point = ":public-api.ts",
     tags = ["release-package"],
     deps = MATERIAL_EXPERIMENTAL_TARGETS + MATERIAL_EXPERIMENTAL_TESTING_TARGETS,
 )

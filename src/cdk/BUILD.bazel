@@ -51,7 +51,6 @@ ng_package(
     name = "npm_package",
     srcs = ["package.json"],
     data = [":sass_index"] + prebuiltStyleTargets + CDK_SCSS_LIBS,
-    entry_point = ":public-api.ts",
     nested_packages = [
         "//src/cdk/schematics:npm_package",
     ],

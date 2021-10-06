@@ -15,7 +15,6 @@ ts_library(
 ng_package(
     name = "npm_package",
     srcs = ["package.json"],
-    entry_point = ":public-api.ts",
     tags = ["release-package"],
     deps = CDK_EXPERIMENTAL_TARGETS,
 )

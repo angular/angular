@@ -111,7 +111,6 @@ package_docs_content(
 ng_package(
     name = "npm_package",
     srcs = ["package.json"],
-    entry_point = ":public-api.ts",
     # this is a workaround to store a tree artifact in the ng_package.
     # ng_package does not properly handle tree artifacts currently so we escalate to nested_packages
     nested_packages = [":docs-content"],
