@@ -10,7 +10,6 @@ load("@npm//@bazel/typescript:index.bzl", _ts_library = "ts_library")
 load("//:packages.bzl", "VERSION_PLACEHOLDER_REPLACEMENTS")
 load("//:pkg-externals.bzl", "PKG_EXTERNALS")
 load("//tools/markdown-to-html:index.bzl", _markdown_to_html = "markdown_to_html")
-load("//tools/linker-process:index.bzl", "linker_process")
 load("//tools/spec-bundling:index.bzl", "spec_bundle")
 
 _DEFAULT_TSCONFIG_BUILD = "//src:bazel-tsconfig-build.json"
@@ -141,17 +140,14 @@ def ng_module(
         # See: https://github.com/bazelbuild/rules_nodejs/pull/2799.
         package_name = module_name,
         flat_module_out_file = flat_module_out_file,
-        compilation_mode = select({
-            "//tools:partial_compilation_enabled": "partial",
-            "//conditions:default": "",
-        }),
+        strict_templates = True,
         deps = local_deps,
         tsconfig = tsconfig,
         testonly = testonly,
         **kwargs
     )
 
-def ng_package(name, data = [], deps = [], globals = ROLLUP_GLOBALS, readme_md = None, **kwargs):
+def ng_package(name, data = [], deps = [], externals = PKG_EXTERNALS, readme_md = None, **kwargs):
     # If no readme file has been specified explicitly, use the default readme for
     # release packages from "src/README.md".
     if not readme_md:
