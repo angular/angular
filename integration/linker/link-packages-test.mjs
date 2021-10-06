@@ -3,16 +3,15 @@
  * declarations to the corresponding definitions.
  */
 
-const {NodeJSFileSystem} = require('@angular/compiler-cli/src/ngtsc/file_system');
-const {ConsoleLogger, LogLevel} = require('@angular/compiler-cli/src/ngtsc/logging');
-const {createEs2015LinkerPlugin} = require('@angular/compiler-cli/linker/babel');
-const {getNpmPackagesFromRunfiles} = require('../npm-packages-from-runfiles');
-const {readFileSync} = require('fs');
-const {join} = require('path');
-const babel = require('@babel/core');
-const {default: traverse} = require('@babel/traverse');
-const glob = require('glob');
-const chalk = require('chalk');
+import {createEs2015LinkerPlugin} from '@angular/compiler-cli/linker/babel';
+import {NodeJSFileSystem, ConsoleLogger, LogLevel} from '@angular/compiler-cli';
+import {getNpmPackagesFromRunfiles} from '../npm-packages-from-runfiles.mjs';
+import fs from 'fs';
+import path from 'path';
+import babel from '@babel/core';
+import traverse from '@babel/traverse';
+import glob from 'glob';
+import chalk from 'chalk';
 
 /** File system used by the Angular linker plugin. */
 const fileSystem = new NodeJSFileSystem();
@@ -65,9 +64,9 @@ function testPackage(pkg) {
   // Iterate through each entry point and confirm that all partial declarations can be linked
   // to their corresponding Angular definitions without errors.
   for (const fesmFileName of entryPointFesmFiles) {
-    const diskFilePath = join(pkg.pkgPath, fesmFileName);
-    const debugFileName = join(pkg.name, fesmFileName);
-    const fileContent = readFileSync(diskFilePath, 'utf8');
+    const diskFilePath = path.join(pkg.pkgPath, fesmFileName);
+    const debugFileName = path.join(pkg.name, fesmFileName);
+    const fileContent = fs.readFileSync(diskFilePath, 'utf8');
     const linkerPlugin = createEs2015LinkerPlugin({fileSystem, logger});
 
     // Babel throws errors if the transformation fails. We catch these so that we

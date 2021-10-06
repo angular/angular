@@ -6,5 +6,5 @@ package(default_visibility = ["//visibility:public"])
 # available in the runfiles of an action.
 js_library(
     name = "npm-packages-from-runfiles",
-    srcs = ["npm-packages-from-runfiles.js"],
+    srcs = ["npm-packages-from-runfiles.mjs"],
 )
