@@ -69,11 +69,9 @@
               "browserTarget": "cli-hello-world-ivy-compat:build:production"
             },
             "ci": {
-              "progress": false
             },
             "ci-production": {
               "browserTarget": "cli-hello-world-ivy-compat:build:production",
-              "progress": false
             }
           }
         },

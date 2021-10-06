@@ -103,15 +103,12 @@
               "browserTarget": "cli-hello-world-ivy-i18n:build:production"
             },
             "ci": {
-              "progress": false
             },
             "ci-production": {
               "browserTarget": "cli-hello-world-ivy-i18n:build:production",
-              "progress": false
             },
             "runtime-translations": {
               "browserTarget": "cli-hello-world-ivy-i18n:build:runtime-translations",
-              "progress": false
             }
           }
         },
