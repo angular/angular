@@ -13,7 +13,7 @@
  */
 import {AsyncPipe} from './async_pipe';
 import {LowerCasePipe, TitleCasePipe, UpperCasePipe} from './case_conversion_pipes';
-import {DatePipe} from './date_pipe';
+import {DATE_PIPE_DEFAULT_TIMEZONE, DatePipe} from './date_pipe';
 import {I18nPluralPipe} from './i18n_plural_pipe';
 import {I18nSelectPipe} from './i18n_select_pipe';
 import {JsonPipe} from './json_pipe';
@@ -24,6 +24,7 @@ import {SlicePipe} from './slice_pipe';
 export {
   AsyncPipe,
   CurrencyPipe,
+  DATE_PIPE_DEFAULT_TIMEZONE,
   DatePipe,
   DecimalPipe,
   I18nPluralPipe,

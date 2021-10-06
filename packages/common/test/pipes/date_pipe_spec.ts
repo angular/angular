@@ -14,17 +14,17 @@ import {ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
 import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
 
 {
-  let date: Date;
   describe('DatePipe', () => {
     const isoStringWithoutTime = '2015-01-01';
     let pipe: DatePipe;
+    let date: Date;
 
     beforeAll(() => ɵregisterLocaleData(localeEn, localeEnExtra));
     afterAll(() => ɵunregisterLocaleData());
 
     beforeEach(() => {
       date = new Date(2015, 5, 15, 9, 3, 1, 550);
-      pipe = new DatePipe('en-US');
+      pipe = new DatePipe('en-US', null);
     });
 
     it('should be marked as pure', () => {
@@ -99,6 +99,22 @@ import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_refle
         expect(pipe.transform('2020-08-01T23:59:59.999', 'yyyy-MM-dd')).toEqual('2020-08-01');
         expect(pipe.transform('2020-08-01T23:59:59.9999', 'yyyy-MM-dd, h:mm:ss SSS'))
             .toEqual('2020-08-01, 11:59:59 999');
+      });
+
+      it('should take timezone into account', () => {
+        expect(pipe.transform('2017-01-11T00:00:00', 'mediumDate', '-1200'))
+            .toEqual('Jan 10, 2017');
+      });
+
+      it('should take the default timezone into account when no timezone is passed in', () => {
+        pipe = new DatePipe('en-US', '-1200');
+        expect(pipe.transform('2017-01-11T00:00:00', 'mediumDate')).toEqual('Jan 10, 2017');
+      });
+
+      it('should give precedence to the passed in timezone over the default one', () => {
+        pipe = new DatePipe('en-US', '-1200');
+        expect(pipe.transform('2017-01-11T00:00:00', 'mediumDate', '+0100'))
+            .toEqual('Jan 11, 2017');
       });
     });
   });

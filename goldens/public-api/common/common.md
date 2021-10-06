@@ -74,8 +74,11 @@ export class CurrencyPipe implements PipeTransform {
 }
 
 // @public
+export const DATE_PIPE_DEFAULT_TIMEZONE: InjectionToken<string>;
+
+// @public
 export class DatePipe implements PipeTransform {
-    constructor(locale: string);
+    constructor(locale: string, defaultTimezone?: string | null | undefined);
     // (undocumented)
     transform(value: Date | string | number, format?: string, timezone?: string, locale?: string): string | null;
     // (undocumented)
@@ -83,7 +86,7 @@ export class DatePipe implements PipeTransform {
     // (undocumented)
     transform(value: Date | string | number | null | undefined, format?: string, timezone?: string, locale?: string): string | null;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<DatePipe, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<DatePipe, [null, { optional: true; }]>;
     // (undocumented)
     static ɵpipe: i0.ɵɵPipeDeclaration<DatePipe, "date">;
 }
