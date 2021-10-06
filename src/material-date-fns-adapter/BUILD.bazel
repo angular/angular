@@ -1,5 +1,4 @@
 load("//tools:defaults.bzl", "ng_module", "ng_package", "ng_test_library", "ng_web_test_suite")
-load("//tools/esbuild:index.bzl", "esbuild_amd")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -33,26 +32,8 @@ ng_test_library(
 ng_web_test_suite(
     name = "unit_tests",
     deps = [
-        ":amd_date_fns",
-        ":amd_date_fns_locales",
         ":unit_test_sources",
     ],
-)
-
-esbuild_amd(
-    name = "amd_date_fns",
-    testonly = True,
-    entry_point = "@npm//:node_modules/date-fns/esm/index.js",
-    module_name = "date-fns",
-    deps = ["@npm//date-fns"],
-)
-
-esbuild_amd(
-    name = "amd_date_fns_locales",
-    testonly = True,
-    entry_point = "@npm//:node_modules/date-fns/esm/locale/index.js",
-    module_name = "date-fns/locale",
-    deps = ["@npm//date-fns"],
 )
 
 ng_package(

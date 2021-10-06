@@ -13,7 +13,10 @@ import {DEC, FEB, JAN, MAR} from '../../material/testing';
 import {MomentDateModule} from './index';
 import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter} from './moment-date-adapter';
 
-import * as moment from 'moment';
+import moment from 'moment';
+
+// Import all locales for specs relying on non-US locales.
+import 'moment/min/locales';
 
 describe('MomentDateAdapter', () => {
   let adapter: MomentDateAdapter;

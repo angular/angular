@@ -11,7 +11,6 @@ import {PortalModule, CdkPortalOutlet, TemplatePortal} from '@angular/cdk/portal
 import {A11yModule, FocusTrap, CdkTrapFocus} from '../index';
 import {By} from '@angular/platform-browser';
 
-
 describe('FocusTrap', () => {
 
   beforeEach(waitForAsync(() => {

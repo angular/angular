@@ -1,11 +1,20 @@
 load("//tools:defaults.bzl", "jasmine_node_test")
 load("@io_bazel_rules_webtesting//web:web.bzl", "web_test")
 load("//tools/server-test:index.bzl", "server_test")
+load("//tools/spec-bundling:index.bzl", "spec_bundle")
 
-def webdriver_test(name, tags = [], **kwargs):
+def webdriver_test(name, deps, tags = [], **kwargs):
+    spec_bundle(
+        name = "%s_bundle" % name,
+        deps = deps,
+        platform = "node",
+        external = ["selenium-webdriver"],
+    )
+
     jasmine_node_test(
         name = "%s_jasmine_test" % name,
         tags = tags + ["manual"],
+        deps = ["%s_bundle" % name, "@npm//selenium-webdriver"],
         **kwargs
     )
 

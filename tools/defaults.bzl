@@ -11,6 +11,7 @@ load("//:packages.bzl", "VERSION_PLACEHOLDER_REPLACEMENTS")
 load("//:pkg-externals.bzl", "PKG_EXTERNALS")
 load("//tools/markdown-to-html:index.bzl", _markdown_to_html = "markdown_to_html")
 load("//tools/linker-process:index.bzl", "linker_process")
+load("//tools/spec-bundling:index.bzl", "spec_bundle")
 
 _DEFAULT_TSCONFIG_BUILD = "//src:bazel-tsconfig-build.json"
 _DEFAULT_TSCONFIG_TEST = "//src:tsconfig-test"
@@ -244,27 +245,15 @@ def ng_e2e_test_library(deps = [], tsconfig = None, **kwargs):
 
 def karma_web_test_suite(name, **kwargs):
     web_test_args = {}
-    test_deps = ["//tools/rxjs:rxjs_umd_modules"] + kwargs.get("deps", [])
+    test_deps = kwargs.get("deps", [])
 
-    # Note: Ideally we would not add all Angular and MDC UMD files to a test because
-    # some might be unused. This would require some custom tooling to resolve the
-    # correct named AMD files from transitive dependencies and is not worth the effort
-    # given the UMD files being small and most of the packages being used anyway.
-    # TODO(devversion): reconsider this if `rules_nodejs` can recognize named AMD files.
-    kwargs["srcs"] = ["@npm//:node_modules/tslib/tslib.js"] + getAngularUmdTargets() + \
-                     MDC_PACKAGE_UMD_BUNDLES.values() + kwargs.get("srcs", [])
     kwargs["tags"] = ["partial-compilation-integration"] + kwargs.get("tags", [])
-    kwargs["deps"] = select({
-        # Based on whether partial compilation is enabled, use the linker processed dependencies.
-        "//tools:partial_compilation_enabled": ["%s_linker_processed_deps" % name],
-        "//conditions:default": test_deps,
-    })
+    kwargs["deps"] = ["%s_bundle" % name]
 
-    linker_process(
-        name = "%s_linker_processed_deps" % name,
-        srcs = test_deps,
-        testonly = True,
-        tags = ["manual"],
+    spec_bundle(
+        name = "%s_bundle" % name,
+        deps = test_deps,
+        platform = "browser",
     )
 
     # Set up default browsers if no explicit `browsers` have been specified.
@@ -306,13 +295,36 @@ def karma_web_test_suite(name, **kwargs):
         **kwargs
     )
 
-def protractor_web_test_suite(**kwargs):
+def protractor_web_test_suite(name, deps, **kwargs):
+    spec_bundle(
+        name = "%s_bundle" % name,
+        deps = deps,
+        platform = "node",
+        external = ["protractor", "selenium-webdriver"],
+    )
+
     _protractor_web_test_suite(
+        name = name,
         browsers = ["@npm//@angular/dev-infra-private/bazel/browsers/chromium:chromium"],
+        deps = ["%s_bundle" % name],
         **kwargs
     )
 
-def ng_web_test_suite(deps = [], static_css = [], bootstrap = [], exclude_init_script = False, **kwargs):
+def ng_web_test_suite(deps = [], static_css = [], exclude_init_script = False, **kwargs):
+    bootstrap = [
+        # This matches the ZoneJS bundles used in default CLI projects. See:
+        # https://github.com/angular/angular-cli/blob/master/packages/schematics/angular/application/files/src/polyfills.ts.template#L58
+        # https://github.com/angular/angular-cli/blob/master/packages/schematics/angular/application/files/src/test.ts.template#L3
+        # Note `zone.js/dist/zone.js` is aliased in the CLI to point to the evergreen
+        # output that does not include legacy patches. See: https://github.com/angular/angular/issues/35157.
+        # TODO: Consider adding the legacy patches when testing Saucelabs/Browserstack with Bazel.
+        # CLI loads the legacy patches conditionally for ES5 legacy browsers. See:
+        # https://github.com/angular/angular-cli/blob/277bad3895cbce6de80aa10a05c349b10d9e09df/packages/angular_devkit/build_angular/src/angular-cli-files/models/webpack-configs/common.ts#L141
+        "@npm//:node_modules/zone.js/dist/zone-evergreen.js",
+        "@npm//:node_modules/zone.js/dist/zone-testing.js",
+        "@npm//:node_modules/reflect-metadata/Reflect.js",
+    ] + kwargs.pop("bootstrap", [])
+
     # Always include a prebuilt theme in the test suite because otherwise tests, which depend on CSS
     # that is needed for measuring, will unexpectedly fail. Also always adding a prebuilt theme
     # reduces the amount of setup that is needed to create a test suite Bazel target. Note that the
@@ -330,12 +342,12 @@ def ng_web_test_suite(deps = [], static_css = [], bootstrap = [], exclude_init_s
     # loads the given CSS file.
     for css_label in static_css:
         css_id = "static-css-file-%s" % (css_label.replace("/", "_").replace(":", "-"))
-        deps += [":%s" % css_id]
+        bootstrap += [":%s" % css_id]
 
         native.genrule(
             name = css_id,
             srcs = [css_label],
-            outs = ["%s.js" % css_id],
+            outs = ["%s.css.js" % css_id],
             output_to_bindir = True,
             cmd = """
         files=($(execpaths %s))
@@ -354,18 +366,6 @@ def ng_web_test_suite(deps = [], static_css = [], bootstrap = [], exclude_init_s
     karma_web_test_suite(
         # Depend on our custom test initialization script. This needs to be the first dependency.
         deps = deps if exclude_init_script else ["//test:angular_test_init"] + deps,
-        bootstrap = [
-            # This matches the ZoneJS bundles used in default CLI projects. See:
-            # https://github.com/angular/angular-cli/blob/master/packages/schematics/angular/application/files/src/polyfills.ts.template#L58
-            # https://github.com/angular/angular-cli/blob/master/packages/schematics/angular/application/files/src/test.ts.template#L3
-            # Note `zone.js/dist/zone.js` is aliased in the CLI to point to the evergreen
-            # output that does not include legacy patches. See: https://github.com/angular/angular/issues/35157.
-            # TODO: Consider adding the legacy patches when testing Saucelabs/Browserstack with Bazel.
-            # CLI loads the legacy patches conditionally for ES5 legacy browsers. See:
-            # https://github.com/angular/angular-cli/blob/277bad3895cbce6de80aa10a05c349b10d9e09df/packages/angular_devkit/build_angular/src/angular-cli-files/models/webpack-configs/common.ts#L141
-            "@npm//:node_modules/zone.js/dist/zone-evergreen.js",
-            "@npm//:node_modules/zone.js/dist/zone-testing.js",
-            "@npm//:node_modules/reflect-metadata/Reflect.js",
-        ] + bootstrap,
+        bootstrap = bootstrap,
         **kwargs
     )

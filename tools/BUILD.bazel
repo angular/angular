@@ -1,17 +1,15 @@
-load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
-
 package(default_visibility = ["//visibility:public"])
 
 exports_files([
     "system-config-tmpl.js",
-    "system-rxjs-operators.js",
 ])
 
-# Bazel config setting that matches if the partial compilation flag is set to `True`.
+# Bazel config setting that matches if the partial compilation flag
+# for `@angular/bazel` is set to `True`.
 config_setting(
     name = "partial_compilation_enabled",
     flag_values = {
-        ":partial_compilation": "True",
+        "@npm//@angular/bazel/src:partial_compilation": "True",
     },
 )
 
