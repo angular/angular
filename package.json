@@ -146,6 +146,7 @@
     "@rollup/plugin-commonjs": "^20.0.0",
     "@rollup/plugin-node-resolve": "^13.0.5",
     "@schematics/angular": "13.0.0-next.7",
+    "@types/babel__core": "^7.1.16",
     "@types/browser-sync": "^2.26.1",
     "@types/fs-extra": "^9.0.5",
     "@types/glob": "^7.1.3",
