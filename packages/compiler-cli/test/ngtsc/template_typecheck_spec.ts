@@ -1713,7 +1713,11 @@ export declare class AnimationEvent {
           export class FooModule {}
         `);
         const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(0);
+        expect(
+            diags
+                .filter(diag => diag.code !== ngErrorCode(ErrorCode.DEPRECATED_INPUT_TYPE_COERCION))
+                .length)
+            .toBe(0);
       });
 
       it('should apply coercion members of base classes', () => {
@@ -1747,7 +1751,11 @@ export declare class AnimationEvent {
           export class FooModule {}
         `);
         const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(0);
+        expect(
+            diags
+                .filter(diag => diag.code !== ngErrorCode(ErrorCode.DEPRECATED_INPUT_TYPE_COERCION))
+                .length)
+            .toBe(0);
       });
 
       it('should give an error if the binding expression type is not accepted by the coercion function',
@@ -1803,7 +1811,8 @@ export declare class AnimationEvent {
             })
             export class FooModule {}
         `);
-           const diags = env.driveDiagnostics();
+           const diags = env.driveDiagnostics().filter(
+               diag => diag.code !== ngErrorCode(ErrorCode.DEPRECATED_INPUT_TYPE_COERCION));
            expect(diags.length).toBe(1);
            expect(diags[0].messageText)
                .toBe(`Type 'undefined' is not assignable to type 'string'.`);

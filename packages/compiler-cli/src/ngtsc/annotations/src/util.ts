@@ -9,9 +9,10 @@
 import {Expression, ExternalExpr, FactoryTarget, LiteralExpr, ParseLocation, ParseSourceFile, ParseSourceSpan, R3CompiledExpression, R3DependencyMetadata, R3FactoryMetadata, R3Reference, ReadPropExpr, Statement, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
+import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation, makeWarningDiagnostic} from '../../diagnostics';
 import {ImportFlags, Reference, ReferenceEmitter} from '../../imports';
 import {attachDefaultImportDeclaration} from '../../imports/src/default';
+import {extractCoercedInput} from '../../metadata';
 import {ForeignFunctionResolver, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, CtorParameter, Decorator, Import, ImportedTypeValueReference, isNamedClassDeclaration, LocalTypeValueReference, ReflectionHost, TypeValueReference, TypeValueReferenceKind, UnavailableValue, ValueUnavailableKind} from '../../reflection';
 import {DeclarationData} from '../../scope';
@@ -590,4 +591,23 @@ export function toFactoryMetadata(
     deps: meta.deps,
     target
   };
+}
+
+export function getCoercedInputDeprecationWarnings(
+    node: ClassDeclaration, reflector: ReflectionHost): ts.Diagnostic[] {
+  const warnings: ts.Diagnostic[] = [];
+
+  for (const member of reflector.getMembersOfClass(node)) {
+    if (!member.isStatic || extractCoercedInput(member) === null || member.nameNode === null) {
+      continue;
+    }
+
+    warnings.push(makeWarningDiagnostic(
+        ErrorCode.DEPRECATED_INPUT_TYPE_COERCION, member.nameNode,
+        `'ngAcceptInputType_' hints to the template type-checker are deprecated. TypeScript now ` +
+            'supports using different types for getter/setter pairs, so this type can now be ' +
+            'specified directly on the @Input field itself.'));
+  }
+
+  return warnings;
 }

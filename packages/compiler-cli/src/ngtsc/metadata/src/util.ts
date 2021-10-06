@@ -169,7 +169,7 @@ function extractTemplateGuard(member: ClassMember): TemplateGuardMeta|null {
   }
 }
 
-function extractCoercedInput(member: ClassMember): string|null {
+export function extractCoercedInput(member: ClassMember): string|null {
   if (member.kind !== ClassMemberKind.Property || !member.name.startsWith('ngAcceptInputType_')) {
     return null!;
   }

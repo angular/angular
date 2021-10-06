@@ -41,6 +41,23 @@ export function makeDiagnostic(
   };
 }
 
+// TODO(alxhub): refactor `makeDiagnostic` to take an options object and support passing the
+// category.
+export function makeWarningDiagnostic(
+    code: ErrorCode, node: ts.Node, messageText: string|ts.DiagnosticMessageChain,
+    relatedInformation?: ts.DiagnosticRelatedInformation[]): ts.DiagnosticWithLocation {
+  node = ts.getOriginalNode(node);
+  return {
+    category: ts.DiagnosticCategory.Warning,
+    code: ngErrorCode(code),
+    file: ts.getOriginalNode(node).getSourceFile(),
+    start: node.getStart(undefined, false),
+    length: node.getWidth(),
+    messageText,
+    relatedInformation,
+  };
+}
+
 export function makeRelatedInformation(
     node: ts.Node, messageText: string): ts.DiagnosticRelatedInformation {
   node = ts.getOriginalNode(node);

@@ -211,7 +211,11 @@ Here, during type checking of the template for `AppComponent`, the `[user]="sele
 Therefore, Angular assigns the `selectedUser` property to `UserDetailComponent.user`, which would result in an error if their types were incompatible.
 TypeScript checks the assignment according to its type system, obeying flags such as `strictNullChecks` as they are configured in the application.
 
+<<<<<<< HEAD
 Avoid run-time type errors by providing more specific in-template type requirements to the template type checker. Make the input type requirements for your own directives as specific as possible by providing template-guard functions in the directive definition. See [Improving template type checking for custom directives](guide/structural-directives#directive-type-checks) in this guide.
+=======
+Avoid run-time type errors by providing more specific in-template type requirements to the template type checker. Make the input type requirements for your own directives as specific as possible by providing template-guard functions in the directive definition. See [Improving template type checking for custom directives](guide/structural-directives#directive-type-checks).
+>>>>>>> 6a9efe2624 (feat(compiler-cli): deprecate ngAcceptInputType_ and warn when used)
 
 
 ### Strict null checks
@@ -247,12 +251,18 @@ There are two potential workarounds to the preceding issues:
 
 As a library author, you can take several measures to provide an optimal experience for your users.
 First, enabling `strictNullChecks` and including `null` in an input's type, as appropriate, communicates to your consumers whether they can provide a nullable value or not.
-Additionally, it is possible to provide type hints that are specific to the template type checker. See [Improving template type checking for custom directives](guide/structural-directives#directive-type-checks), and [Input setter coercion](#input-setter-coercion).
+Additionally, it is possible to provide type hints that are specific to the template type checker. See [Improving template type checking for custom directives](guide/structural-directives#directive-type-checks).
 
 
 {@a input-setter-coercion}
 
-## Input setter coercion
+## (deprecated) Input setter coercion
+
+<div class="alert is-helpful">
+
+Input setter coercion has been deprecated in Angular v13, as TypeScript 4.3 now supports getter/setter pairs with a wider type for the setter than the getter. The same semantics can now be expressed natively in TypeScript, making this feature unnecessary.
+
+</div>
 
 Occasionally it is desirable for the `@Input()` of a directive or component to alter the value bound to it, typically using a getter/setter pair for the input.
 As an example, consider this custom button component:
@@ -304,6 +314,12 @@ set disabled(value: boolean) {
 
 It would be ideal to change the type of `value` here, from `boolean` to `boolean|''`, to match the set of values which are actually accepted by the setter.
 TypeScript prior to version 4.3 requires that both the getter and setter have the same type, so if the getter should return a `boolean` then the setter is stuck with the narrower type.
+
+<div class="alert is-important">
+
+This is no longer true as of TypeScript version 4.3, which allows setters to have a wider type than getters.
+
+</div>
 
 If the consumer has Angular's strictest type checking for templates enabled, this creates a problem: the empty string `''` is not actually assignable to the `disabled` field, which creates a type error when the attribute form is used.
 

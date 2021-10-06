@@ -23,7 +23,7 @@ import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFl
 import {createValueHasWrongTypeError, getDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic} from './diagnostics';
 import {compileDeclareFactory, compileNgFactoryDefField} from './factory';
 import {extractClassMetadata} from './metadata';
-import {compileResults, createSourceSpan, findAngularDecorator, getConstructorDependencies, isAngularDecorator, readBaseClass, resolveProvidersRequiringFactory, toFactoryMetadata, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
+import {compileResults, createSourceSpan, findAngularDecorator, getCoercedInputDeprecationWarnings, getConstructorDependencies, isAngularDecorator, readBaseClass, resolveProvidersRequiringFactory, toFactoryMetadata, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 const FIELD_DECORATORS = [
@@ -226,6 +226,16 @@ export class DirectiveDecoratorHandler implements
           directiveResult.decorator.get('providers')!, this.reflector, this.evaluator);
     }
 
+    let diagnostics: ts.Diagnostic[]|undefined = undefined;
+    const warnings = getCoercedInputDeprecationWarnings(node, this.reflector);
+    if (warnings.length > 0) {
+      if (diagnostics === undefined) {
+        diagnostics = [];
+      }
+
+      diagnostics.push(...warnings);
+    }
+
     return {
       analysis: {
         inputs: directiveResult.inputs,
@@ -238,7 +248,8 @@ export class DirectiveDecoratorHandler implements
         providersRequiringFactory,
         isPoisoned: false,
         isStructural: directiveResult.isStructural,
-      }
+      },
+      diagnostics,
     };
   }
 

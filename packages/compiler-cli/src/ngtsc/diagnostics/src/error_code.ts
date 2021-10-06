@@ -193,6 +193,16 @@ export enum ErrorCode {
   NULLISH_COALESCING_NOT_NULLABLE = 8102,
 
   /**
+   * A warning due to the use of a deprecated `ngAcceptInputType_` static property on a directive or
+   * component to instruct the template type- checker to accept a wider type for an `@Input` being
+   * set than is configured on the input field.
+   *
+   * This style of template type-checking override is obsolete, since TypeScript now supports a
+   * wider type for a field setter to be specified directly.
+   */
+  DEPRECATED_INPUT_TYPE_COERCION = 8201,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */
@@ -248,6 +258,7 @@ export const COMPILER_ERRORS_WITH_GUIDES = new Set([
   ErrorCode.SCHEMA_INVALID_ATTRIBUTE,
   ErrorCode.MISSING_REFERENCE_TARGET,
   ErrorCode.COMPONENT_INVALID_SHADOW_DOM_SELECTOR,
+  ErrorCode.DEPRECATED_INPUT_TYPE_COERCION,
 ]);
 
 /**

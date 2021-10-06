@@ -8,6 +8,7 @@
 
 import ts from 'typescript';
 
+import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {absoluteFrom} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
@@ -282,9 +283,9 @@ runInEachFileSystem(() => {
           })
           export class Mod {}
         `);
-        const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(1);
-        expect(diags[0].messageText)
+        const diagsBefore = env.driveDiagnostics();
+        expect(diagsBefore.length).toBe(1);
+        expect(diagsBefore[0].messageText)
             .toContain(`Type 'boolean' is not assignable to type 'string'.`);
 
         // Now add an `ngAcceptInputType` static member to the directive such that its `dir` input
@@ -303,7 +304,9 @@ runInEachFileSystem(() => {
             static ngAcceptInputType_dir: string | boolean;
           }
         `);
-        env.driveMain();
+        const diagsAfter = env.driveDiagnostics().filter(
+            diag => diag.code !== ngErrorCode(ErrorCode.DEPRECATED_INPUT_TYPE_COERCION));
+        expect(diagsAfter.length).toBe(0);
       });
 
       it('should type-check correctly when an ngTemplateContextGuard field is declared', () => {

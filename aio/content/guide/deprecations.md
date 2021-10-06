@@ -33,45 +33,32 @@ v12 - v15
 v13 -> v16
 -->
 
-| Area                      | API or Feature                                                                                | May be removed in     |
-|:---                       |:---                                                                                           |:---                   |
-| `@angular/common`         | [`ReflectiveInjector`](#reflectiveinjector)                                                   | <!--v8--> v11         |
-| `@angular/common`         | [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | <!--v9--> v11         |
-| `@angular/common/http`    | [`XhrFactory`](api/common/http/XhrFactory)                                                    | <!--v12--> v15        |
-| `@angular/core`           | [`DefaultIterableDiffer`](#core)                                                              | <!--v7--> v11         |
-| `@angular/core`           | [`ReflectiveKey`](#core)                                                                      | <!--v8--> v11         |
-| `@angular/core`           | [`RenderComponentType`](#core)                                                                | <!--v7--> v11         |
-| `@angular/core`           | [Factory-based signature of `ApplicationRef.bootstrap`](#core)                                | <!--v13--> v15        |
-| `@angular/core`           | [`PlatformRef.bootstrapModuleFactory`](#core)                                                 | <!--v13--> v15        |
-| `@angular/core`         | [`getModuleFactory`](#core)                                                                       | <!--v13--> v16        |
-| `@angular/core`         | [`ModuleWithComponentFactories`](#core)                                                                       | <!--v13--> v16        |
-| `@angular/core`         | [`Compiler`](#core)                                                                       | <!--v13--> v16        |
-| `@angular/core`         | [`CompilerFactory`](#core)                                                                       | <!--v13--> v16        |
-| `@angular/core`         | [`NgModuleFactory`](#core)                                                                       | <!--v13--> v16        |
-| `@angular/platform-browser-dynamic`         | [`JitCompilerFactory`](#platform-browser-dynamic)                                                                       | <!--v13--> v16        |
-| `@angular/forms`          | [`ngModel` with reactive forms](#ngmodel-reactive)                                            | <!--v6--> v11         |
-| `@angular/upgrade`        | [`@angular/upgrade`](#upgrade)                                                                | <!--v8--> v11         |
-| `@angular/upgrade`        | [`getAngularLib`](#upgrade-static)                                                            | <!--v8--> v11         |
-| `@angular/upgrade`        | [`setAngularLib`](#upgrade-static)                                                            | <!--v8--> v11         |
-| template syntax           | [`<template>`](#template-tag)                                                                 | <!--v7--> v11         |
-| polyfills                 | [reflect-metadata](#reflect-metadata)                                                         | <!--v8--> v11         |
-| npm package format        | [`esm5` and `fesm5` entry-points in @angular/* npm packages](guide/deprecations#esm5-fesm5)   | <!-- v9 --> v11       |
-| `@angular/compiler-cli`   | [Input setter coercion](#input-setter-coercion)                                               | <!--v13--> v15        |
-| `@angular/compiler-cli` | [`fullTemplateTypeCheck`](#full-template-type-check)                                          | <!--v13--> v15        |
-| `@angular/core`           | [`defineInjectable`](#core)                                                                   | <!--v8--> v11         |
-| `@angular/core`           | [`entryComponents`](api/core/NgModule#entryComponents)                                        | <!--v9--> v11         |
-| `@angular/core`           | [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS)                       | <!--v9--> v11         |
-| `@angular/core`           | [Factory-based signature of `ViewContainerRef.createComponent`](api/core/ViewContainerRef#createComponent) | <!--v13--> v15         |
-| `@angular/core/testing`   | [`TestBed.get`](#testing)                                                                     | <!--v9--> v12         |
-| `@angular/core/testing`   | [`async`](#testing)                                                                           | <!--v9--> v12         |
-| `@angular/core/testing`   | [`aotSummaries` argument in `TestBed.initTestEnvironment`](#testing)                          | <!--v13--> v14        |
-| `@angular/core/testing`   | [`aotSummaries` field of the `TestModuleMetadata` type](#testing)                             | <!--v13--> v14        |
-| `@angular/forms`          | [`FormBuilder.group` legacy options parameter](api/forms/FormBuilder#group)                   | <!--v11--> v14        |
-| `@angular/router`         | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props)                 | unspecified           |
-| `@angular/service-worker` | [`SwUpdate#activated`](api/service-worker/SwUpdate#activated)                                 | <!--v13--> v16        |
-| `@angular/service-worker` | [`SwUpdate#available`](api/service-worker/SwUpdate#available)                                 | <!--v13--> v16        |
-| template syntax           | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector)                            | <!--v7--> unspecified |
-| template syntax         | [`bind-`, `on-`, `bindon-`, and `ref-`](#bind-syntax)                            | <!--v13--> v15 |
+| Area                    | API or Feature                                                                                | May be removed in     |
+|:---                     |:---                                                                                           |:---                   |
+| `@angular/common`       | [`ReflectiveInjector`](#reflectiveinjector)                                                   | <!--v8--> v11         |
+| `@angular/common`       | [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | <!--v9--> v11         |
+| `@angular/common/http`  | [`XhrFactory`](api/common/http/XhrFactory)                                                    | <!--v12--> v15        |
+| `@angular/core`         | [`DefaultIterableDiffer`](#core)                                                              | <!--v7--> v11         |
+| `@angular/core`         | [`ReflectiveKey`](#core)                                                                      | <!--v8--> v11         |
+| `@angular/core`         | [`RenderComponentType`](#core)                                                                | <!--v7--> v11         |
+| `@angular/core`         | [`WrappedValue`](#core)                                                                       | <!--v10--> v12        |
+| `@angular/core`         | [`ngAcceptInputType`](#core)                                                              | <!--v13--> v16         |
+| `@angular/forms`        | [`ngModel` with reactive forms](#ngmodel-reactive)                                            | <!--v6--> v11         |
+| `@angular/upgrade`      | [`@angular/upgrade`](#upgrade)                                                                | <!--v8--> v11         |
+| `@angular/upgrade`      | [`getAngularLib`](#upgrade-static)                                                            | <!--v8--> v11         |
+| `@angular/upgrade`      | [`setAngularLib`](#upgrade-static)                                                            | <!--v8--> v11         |
+| template syntax         | [`<template>`](#template-tag)                                                                 | <!--v7--> v11         |
+| polyfills               | [reflect-metadata](#reflect-metadata)                                                         | <!--v8--> v11         |
+| npm package format      | [`esm5` and `fesm5` entry-points in @angular/* npm packages](guide/deprecations#esm5-fesm5)   | <!-- v9 --> v11       |
+| `@angular/core`         | [`defineInjectable`](#core)                                                                   | <!--v8--> v11         |
+| `@angular/core`         | [`entryComponents`](api/core/NgModule#entryComponents)                                        | <!--v9--> v11         |
+| `@angular/core`         | [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS)                       | <!--v9--> v11         |
+| `@angular/router`       | [`loadChildren` string syntax](#loadChildren)                                                 | <!--v9--> v11         |
+| `@angular/core/testing` | [`TestBed.get`](#testing)                                                                     | <!--v9--> v12         |
+| `@angular/core/testing` | [`async`](#testing)                                                                           | <!--v9--> v12         |
+| `@angular/forms`        | [`FormBuilder.group` legacy options parameter](api/forms/FormBuilder#group)                   | <!--v11--> v14        |
+| `@angular/router`       | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props)                 | unspecified           |
+| template syntax         | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector)                            | <!--v7--> unspecified |
 
 For information about Angular CDK and Angular Material deprecations, see the [changelog](https://github.com/angular/components/blob/master/CHANGELOG.md).
 
@@ -116,21 +103,7 @@ This section contains a complete list all of the currently-deprecated APIs, with
 | [`async`](api/core/testing/async)                                                  | [`waitForAsync`](api/core/testing/waitForAsync)                                    | v11                   | The [`async`](api/core/testing/async) function from `@angular/core/testing` has been renamed to `waitForAsync` in order to avoid confusion with the native JavaScript <code class="no-auto-link">async</code> syntax. The existing function is deprecated and will be removed in a future version. |
 | [`getModuleFactory`](api/core/getModuleFactory)                                            | [`getNgModuleById`](api/core/getNgModuleById)                                                                               | v13                   | Ivy allows working with NgModule classes directly, without retrieving corresponding factories.                                                                                                                                                                                             |
 | `ViewChildren.emitDistinctChangesOnly` / `ContentChildren.emitDistinctChangesOnly` | none (was part of [issue #40091](https://github.com/angular/angular/issues/40091)) |                       | This is a temporary flag introduced as part of bugfix of [issue #40091](https://github.com/angular/angular/issues/40091) and will be removed.                                                                                            |
-| Factory-based signature of [`ApplicationRef.bootstrap`](api/core/ApplicationRef#bootstrap)                          | Type-based signature of [`ApplicationRef.bootstrap`](api/core/ApplicationRef#bootstrap)                                                                                 | v13                    | With Ivy, there is no need to resolve Component factory and Component Type can be provided directly.                                                                                                                                                                                                                  |
-| [`PlatformRef.bootstrapModuleFactory`](api/core/PlatformRef#bootstrapModuleFactory)                          | [`PlatformRef.bootstrapModule`](api/core/PlatformRef#bootstrapModule)                                                                                 | v13                    | With Ivy, there is no need to resolve NgModule factory and NgModule Type can be provided directly.                                                                                                                                                                                                                  |
-| [`ModuleWithComponentFactories`](api/core/ModuleWithComponentFactories)                          | none                                                                                 | v13                    | Ivy JIT mode doesn't require accessing this symbol. See [JIT API changes due to ViewEngine deprecation](#jit-api-changes) for additional context.                                                                                                                                                                                                                  |
-| [`Compiler`](api/core/Compiler)                          | none                                                                                 | v13                    | Ivy JIT mode doesn't require accessing this symbol. See [JIT API changes due to ViewEngine deprecation](#jit-api-changes) for additional context.                                                                                                                                                                                                                  |
-| [`CompilerFactory`](api/core/CompilerFactory)                          | none                                                                                 | v13                    | Ivy JIT mode doesn't require accessing this symbol. See [JIT API changes due to ViewEngine deprecation](#jit-api-changes) for additional context.                                                                                                                                                                                                                  |
-| [`NgModuleFactory`](api/core/NgModuleFactory)                          | Use non-factory based framework APIs like [PlatformRef.bootstrapModule](api/core/PlatformRef#bootstrapModule) and [createNgModuleRef](api/core/createNgModuleRef)                                                                                 | v13                    | Ivy JIT mode doesn't require accessing this symbol. See [JIT API changes due to ViewEngine deprecation](#jit-api-changes) for additional context.                                                                                                                                                                                                                 |
-| [Factory-based signature of `ViewContainerRef.createComponent`](api/core/ViewContainerRef#createComponent)                                                  | [Type-based signature of `ViewContainerRef.createComponent`](api/core/ViewContainerRef#createComponent)                                    | v13                   | Angular no longer requires component factories to dynamically create components. Use different signature of the `createComponent` method, which allows passing Component class directly. |
-
-{@a platform-browser-dynamic}
-
-### @angular/platform-browser-dynamic
-
-| API                                           | Replacement                                         | Deprecation announced | Notes                                         |
-|:---                                           |:---                                                 |:---                   |:---                                           |
-| [`JitCompilerFactory`](api/platform-browser-dynamic/JitCompilerFactory) | none | v13                    | Ivy JIT mode doesn't require accessing this symbol. See [JIT API changes due to ViewEngine deprecation](#jit-api-changes) for additional context.                  |
+| [`ngAcceptInputType`](guide/template-typecheck#input-setter-coercion) | TypeScript 4.3 getter/setter | v13 | Hint to the template type-checker. |
 
 {@a testing}
 

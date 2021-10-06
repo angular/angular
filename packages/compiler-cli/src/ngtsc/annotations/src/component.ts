@@ -33,7 +33,7 @@ import {DirectiveSymbol, extractDirectiveMetadata, parseFieldArrayValue} from '.
 import {compileDeclareFactory, compileNgFactoryDefField} from './factory';
 import {extractClassMetadata} from './metadata';
 import {NgModuleSymbol} from './ng_module';
-import {compileResults, findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, readBaseClass, resolveProvidersRequiringFactory, toFactoryMetadata, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
+import {compileResults, findAngularDecorator, getCoercedInputDeprecationWarnings, isAngularCoreReference, isExpressionForwardReference, readBaseClass, resolveProvidersRequiringFactory, toFactoryMetadata, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
@@ -478,6 +478,14 @@ export class ComponentDecoratorHandler implements
     }
     if (template.styles.length > 0) {
       styles.push(...template.styles);
+    }
+
+    const warnings = getCoercedInputDeprecationWarnings(node, this.reflector);
+    if (warnings.length > 0) {
+      if (diagnostics === undefined) {
+        diagnostics = [];
+      }
+      diagnostics.push(...warnings);
     }
 
     const output: AnalysisOutput<ComponentAnalysisData> = {

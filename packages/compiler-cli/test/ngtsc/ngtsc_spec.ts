@@ -7569,6 +7569,23 @@ export const Foo = Foo__PRE_R3__;
          expect(diags[0].messageText)
              .toEqual(`Could not find stylesheet file './non-existent-file.css'.`);
        });
+
+    it('should show a warning on an ngAcceptInputType_ field', () => {
+      env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({selector: 'test-cmp', template: ''})
+        export class MyCmp {
+          static ngAcceptInputType_foo: string;
+        }
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      const diag = diags[0];
+      expect(diag.category).toBe(ts.DiagnosticCategory.Warning);
+      expect(diag.code).toBe(ngErrorCode(ErrorCode.DEPRECATED_INPUT_TYPE_COERCION));
+    });
   });
 
   function expectTokenAtPosition<T extends ts.Node>(
