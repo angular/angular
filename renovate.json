@@ -36,7 +36,6 @@
     "puppeteer",
     "remark",
     "remark-html",
-    "rollup",
     "selenium-webdriver",
     "watchr"
   ],
