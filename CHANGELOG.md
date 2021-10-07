@@ -1,3 +1,14 @@
+<a name="13.0.0-next.15"></a>
+# 13.0.0-next.15 (2021-10-07)
+### bazel
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d977701a43](https://github.com/angular/angular/commit/d977701a43866e9f9fae9f83f224e4b6980a8bd4) | feat | allow for custom conditions to be set in `ng_package` targets ([#43764](https://github.com/angular/angular/pull/43764)) |
+## Special Thanks
+Dylan Hunn and Paul Gschwendtner
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.0.0-next.14"></a>
 # 13.0.0-next.14 (2021-10-06)
 ### common
