@@ -74,6 +74,8 @@ export class I18nMetaVisitor implements html.Visitor {
   }
 
   visitElement(element: html.Element): any {
+    let message: i18n.Message|undefined = undefined;
+
     if (hasI18nAttrs(element)) {
       this.hasI18nMeta = true;
       const attrs: html.Attribute[] = [];
@@ -83,11 +85,13 @@ export class I18nMetaVisitor implements html.Visitor {
         if (attr.name === I18N_ATTR) {
           // root 'i18n' node attribute
           const i18n = element.i18n || attr.value;
-          const message = this._generateI18nMessage(element.children, i18n, setI18nRefs);
-          // Capture the message if it is not empty.
-          // Note that we wipe out any previous `i18n` property value to ensure that non-messages do
-          // not bleed through into the subsequent processing.
-          element.i18n = message.nodes.length ? message : undefined;
+          message = this._generateI18nMessage(element.children, i18n, setI18nRefs);
+          if (message.nodes.length === 0) {
+            // Ignore the message if it is empty.
+            message = undefined;
+          }
+          // Store the message on the element
+          element.i18n = message;
         } else if (attr.name.startsWith(I18N_ATTR_PREFIX)) {
           // 'i18n-*' attributes
           const name = attr.name.slice(I18N_ATTR_PREFIX.length);
@@ -120,8 +124,7 @@ export class I18nMetaVisitor implements html.Visitor {
         element.attrs = attrs;
       }
     }
-    html.visitAll(
-        this, element.children, element.i18n instanceof i18n.Message ? element.i18n : undefined);
+    html.visitAll(this, element.children, message);
     return element;
   }
 
