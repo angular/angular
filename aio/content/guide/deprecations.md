@@ -68,6 +68,7 @@ v13 -> v16
 | `@angular/core/testing`   | [`aotSummaries` field of the `TestModuleMetadata` type](#testing)                             | <!--v13--> v14        |
 | `@angular/forms`          | [`FormBuilder.group` legacy options parameter](api/forms/FormBuilder#group)                   | <!--v11--> v14        |
 | `@angular/router`         | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props)                 | unspecified           |
+| `@angular/platform-server`| [`renderModuleFactory`](#platform-server)                                                     | <!--v13--> v15        |
 | `@angular/service-worker` | [`SwUpdate#activated`](api/service-worker/SwUpdate#activated)                                 | <!--v13--> v16        |
 | `@angular/service-worker` | [`SwUpdate#available`](api/service-worker/SwUpdate#available)                                 | <!--v13--> v16        |
 | template syntax           | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector)                            | <!--v7--> unspecified |
@@ -124,14 +125,6 @@ This section contains a complete list all of the currently-deprecated APIs, with
 | [`NgModuleFactory`](api/core/NgModuleFactory)                          | Use non-factory based framework APIs like [PlatformRef.bootstrapModule](api/core/PlatformRef#bootstrapModule) and [createNgModuleRef](api/core/createNgModuleRef)                                                                                 | v13                    | Ivy JIT mode doesn't require accessing this symbol. See [JIT API changes due to ViewEngine deprecation](#jit-api-changes) for additional context.                                                                                                                                                                                                                 |
 | [Factory-based signature of `ViewContainerRef.createComponent`](api/core/ViewContainerRef#createComponent)                                                  | [Type-based signature of `ViewContainerRef.createComponent`](api/core/ViewContainerRef#createComponent)                                    | v13                   | Angular no longer requires component factories to dynamically create components. Use different signature of the `createComponent` method, which allows passing Component class directly. |
 
-{@a platform-browser-dynamic}
-
-### @angular/platform-browser-dynamic
-
-| API                                           | Replacement                                         | Deprecation announced | Notes                                         |
-|:---                                           |:---                                                 |:---                   |:---                                           |
-| [`JitCompilerFactory`](api/platform-browser-dynamic/JitCompilerFactory) | none | v13                    | Ivy JIT mode doesn't require accessing this symbol. See [JIT API changes due to ViewEngine deprecation](#jit-api-changes) for additional context.                  |
-
 {@a testing}
 
 ### @angular/core/testing
@@ -142,6 +135,24 @@ This section contains a complete list all of the currently-deprecated APIs, with
 | [`async`](api/core/testing/async)             | [`waitForAsync`](api/core/testing/waitForAsync)     | v10                   | Same behavior, but rename to avoid confusion. |
 | [`aotSummaries` argument in `TestBed.initTestEnvironment`](api/core/testing/TestBed#inittestenvironment)             | No replacement needed     | v13                   | Summary files are unused in Ivy. |
 | [`aotSummaries` field of the `TestModuleMetadata` type](api/core/testing/TestModuleMetadata)             | No replacement needed     | v13                   | Summary files are unused in Ivy. |
+
+{@a platform-browser-dynamic}
+
+### @angular/platform-browser-dynamic
+
+| API                                           | Replacement                                         | Deprecation announced | Notes                                         |
+|:---                                           |:---                                                 |:---                   |:---                                           |
+| [`JitCompilerFactory`](api/platform-browser-dynamic/JitCompilerFactory) | none | v13                    | This symbol is no longer necessary. See [JIT API changes due to ViewEngine deprecation](#jit-api-changes) for additional context. |
+
+
+{@a platform-server}
+
+### @angular/platform-server
+
+| API                             | Replacement                                     | Deprecation announced | Notes                                          |
+|:---                             |:---                                             |:---                   |:---                                            |
+| [`renderModuleFactory`](api/platform-server/renderModuleFactory) | [`renderModule`](api/platform-server/renderModule) | v13                    | This symbol is no longer necessary. See [JIT API changes due to ViewEngine deprecation](#jit-api-changes) for additional context. |
+
 
 {@a forms}
 
