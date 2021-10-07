@@ -17,6 +17,32 @@
     "url": "https://github.com/angular/components/issues"
   },
   "homepage": "https://github.com/angular/components#readme",
+  "exports": {
+    ".": {
+      "sass": "./_index.scss"
+    },
+    "./theming": {
+      "sass": "./_theming.scss"
+    },
+    "./_theming": {
+      "sass": "./_theming.scss"
+    },
+    "./prebuilt-themes/indigo-pink.css": {
+      "style": "./prebuilt-themes/indigo-pink.css"
+    },
+    "./prebuilt-themes/deeppurple-amber.css": {
+      "style": "./prebuilt-themes/deeppurple-amber.css"
+    },
+    "./prebuilt-themes/pink-bluegrey.css": {
+      "style": "./prebuilt-themes/pink-bluegrey.css"
+    },
+    "./prebuilt-themes/purple-green.css": {
+      "style": "./prebuilt-themes/purple-green.css"
+    },
+    "./prebuilt-themes/*": {
+      "style": "./prebuilt-themes/*.css"
+    }
+  },
   "peerDependencies": {
     "@angular/animations": "0.0.0-NG",
     "@angular/cdk": "0.0.0-PLACEHOLDER",

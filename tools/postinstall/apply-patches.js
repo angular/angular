@@ -14,7 +14,7 @@ const chalk = require('chalk');
  * Version of the post install patch. Needs to be incremented when
  * existing patches or edits have been modified.
  */
-const PATCH_VERSION = 11;
+const PATCH_VERSION = 13;
 
 /** Path to the project directory. */
 const projectDir = path.join(__dirname, '../..');

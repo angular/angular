@@ -11,6 +11,17 @@
     "url": "https://github.com/angular/components/issues"
   },
   "homepage": "https://github.com/angular/components#readme",
+  "exports": {
+    ".": {
+      "sass": "./_index.scss"
+    },
+    "./mdc-theming/prebuilt/indigo-pink.css": {
+      "style": "./mdc-theming/prebuilt/indigo-pink.css"
+    },
+    "./mdc-theming/prebuilt/*": {
+      "style": "./mdc-theming/prebuilt/*.css"
+    }
+  },
   "peerDependencies": {
     "@angular/core": "0.0.0-NG",
     "@angular/material": "0.0.0-PLACEHOLDER",

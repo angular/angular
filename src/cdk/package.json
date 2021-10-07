@@ -18,6 +18,17 @@
     "url": "https://github.com/angular/components/issues"
   },
   "homepage": "https://github.com/angular/components#readme",
+  "exports": {
+    ".": {
+      "sass": "./_index.scss"
+    },
+    "./a11y-prebuilt.css": {"style": "./a11y-prebuilt.css"},
+    "./a11y-prebuilt": {"style": "./a11y-prebuilt.css"},
+    "./overlay-prebuilt.css": {"style": "./overlay-prebuilt.css"},
+    "./overlay-prebuilt": {"style": "./overlay-prebuilt.css"},
+    "./text-field-prebuilt.css": {"style": "./text-field-prebuilt.css"},
+    "./text-field-prebuilt": {"style": "./text-field-prebuilt.css"}
+  },
   "peerDependencies": {
     "@angular/core": "0.0.0-NG",
     "@angular/common": "0.0.0-NG",

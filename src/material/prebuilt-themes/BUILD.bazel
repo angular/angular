@@ -4,6 +4,9 @@ package(default_visibility = ["//visibility:public"])
 # package in the right spot. The *right* thing to do would be to move them, but
 # we would need to update references for Google apps.
 
+## **NOTE**: When adding/removing prebuilt themes from here, make sure to update
+# the `material/package.json` exports field.
+
 genrule(
     name = "indigo-pink",
     srcs = ["//src/material/core:theming/prebuilt/indigo-pink.css"],
