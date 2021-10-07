@@ -620,8 +620,7 @@ export class LocalizedString extends Expression {
     const placeholder = this.placeHolderNames[partIndex - 1];
     const messagePart = this.messageParts[partIndex];
     let metaBlock = placeholder.text;
-    if (placeholder.associatedMessage !== undefined &&
-        placeholder.associatedMessage.legacyIds.length === 0) {
+    if (placeholder.associatedMessage?.legacyIds.length === 0) {
       metaBlock += `${ID_SEPARATOR}${
           computeMsgId(
               placeholder.associatedMessage.messageString, placeholder.associatedMessage.meaning)}`;
