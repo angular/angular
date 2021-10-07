@@ -53,7 +53,7 @@ export function renderModule<T>(module: Type<T>, options: {
     extraProviders?: StaticProvider[];
 }): Promise<string>;
 
-// @public
+// @public @deprecated
 export function renderModuleFactory<T>(moduleFactory: NgModuleFactory<T>, options: {
     document?: string;
     url?: string;
