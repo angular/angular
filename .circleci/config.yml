@@ -7,8 +7,8 @@
 # To validate changes, use an online parser, eg.
 # http://yaml-online-parser.appspot.com/
 
-var_1: &docker_image circleci/node:16.6.0
-var_2: &docker-firefox-image circleci/node:16.6.0-browsers
+var_1: &docker_image circleci/node:16.10.0
+var_2: &docker-firefox-image circleci/node:16.10.0-browsers
 
 # **Note**: When updating the beginning of the cache key, also update the cache key to match
 # the new cache key prefix. This allows us to take advantage of CircleCI's fallback caching.
