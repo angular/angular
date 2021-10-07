@@ -31,7 +31,7 @@ Sass mixin. This mixin accepts a `$zValue` and an optional `$color`. The `$zValu
 box-shadow. You can use the `$color` parameter to further customize the shadow appearance.
 
 ```scss
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 
 .my-class-with-default-shadow {
   // Adds a shadow for elevation level 2 with default color and full opacity:
@@ -57,7 +57,7 @@ have a CSS class matching the pattern `mat-elevation-z#`, as described in
 You can use the `elevation-transition` mixin to add a transition when elevation changes.
 
 ```scss
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 
 .my-class {
   @include mat.elevation-transition();

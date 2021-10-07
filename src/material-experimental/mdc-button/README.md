@@ -60,8 +60,8 @@ the button variants: standard buttons, icon buttons, and floating action buttons
 button variants you are using:
 
    ```scss
-   @use '~@angular/material' as mat;
-   @use '~@angular/material-experimental' as mat-experimental;
+   @use '@angular/material' as mat;
+   @use '@angular/material-experimental' as mat-experimental;
 
    $candy-app-primary: mat.define-palette(mat.$indigo-palette);
    $candy-app-accent:  mat.define-palette(mat.$pink-palette, A200, A100, A400);

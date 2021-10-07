@@ -9,7 +9,7 @@ Below are examples of patterns that generate duplicative theme styles:
 **Example #1**
 
 ```scss
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 
 $light-theme: mat.define-light-theme((color: ...));
 $dark-theme: mat.define-dark-theme((color: ...));
@@ -31,7 +31,7 @@ selector. Replace the `all-component-themes` mixin and include the dark theme us
 `all-component-colors` mixin. For example:
 
 ```scss
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 
 ...
 @include mat.all-component-themes($light-theme);
@@ -49,7 +49,7 @@ Typography can also be configured via Sass mixin; see `all-component-typographie
 Theme styles could also be duplicated if individual theme mixins are used. For example:
 
 ```scss
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 
 @include mat.all-component-themes($my-theme);
 
@@ -63,7 +63,7 @@ To avoid this duplication of styles, use the dedicated mixin for the color syste
 extract the configuration for the color system from the theme.
 
 ```scss
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 
 .my-custom-dark-button {
   // This will only generate the color styles for `mat-button`.
@@ -77,7 +77,7 @@ If your application intentionally duplicates styles, a global Sass variable can 
 set to disable duplication warnings from Angular Material. For example:
 
 ```scss
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 
 mat.$theme-ignore-duplication-warnings: true;
 

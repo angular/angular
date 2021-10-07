@@ -121,7 +121,7 @@ describe('ng-add schematic', () => {
     const buffer = tree.read(expectedStylesPath);
     const themeContent = buffer!.toString();
 
-    expect(themeContent).toContain(`@use '~@angular/material' as mat;`);
+    expect(themeContent).toContain(`@use '@angular/material' as mat;`);
     expect(themeContent).toContain(`$app-primary: mat.define-palette(`);
   });
 

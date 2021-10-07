@@ -22,7 +22,7 @@ export class ThemingApiMigration extends DevkitMigration<null> {
     if (extname(stylesheet.filePath) === '.scss') {
       const content = stylesheet.content;
       const migratedContent = content ? migrateFileContent(content,
-        '~@angular/material/', '~@angular/cdk/', '~@angular/material', '~@angular/cdk',
+        '@angular/material/', '@angular/cdk/', '@angular/material', '@angular/cdk',
         undefined, /material\/prebuilt-themes|cdk\/.*-prebuilt/) : content;
 
       if (migratedContent && migratedContent !== content) {

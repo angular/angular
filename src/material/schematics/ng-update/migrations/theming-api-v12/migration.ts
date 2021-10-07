@@ -44,13 +44,13 @@ const commentPlaceholderEnd = '>>__';
  * APIs, because it allows us to run it inside g3 and to avoid introducing new dependencies.
  * @param fileContent Content of the file.
  * @param oldMaterialPrefix Prefix with which the old Material imports should start.
- *   Has to end with a slash. E.g. if `@import '~@angular/material/theming'` should be
- *   matched, the prefix would be `~@angular/material/`.
+ *   Has to end with a slash. E.g. if `@import '@angular/material/theming'` should be
+ *   matched, the prefix would be `@angular/material/`.
  * @param oldCdkPrefix Prefix with which the old CDK imports should start.
- *   Has to end with a slash. E.g. if `@import '~@angular/cdk/overlay'` should be
- *   matched, the prefix would be `~@angular/cdk/`.
- * @param newMaterialImportPath New import to the Material theming API (e.g. `~@angular/material`).
- * @param newCdkImportPath New import to the CDK Sass APIs (e.g. `~@angular/cdk`).
+ *   Has to end with a slash. E.g. if `@import '@angular/cdk/overlay'` should be
+ *   matched, the prefix would be `@angular/cdk/`.
+ * @param newMaterialImportPath New import to the Material theming API (e.g. `@angular/material`).
+ * @param newCdkImportPath New import to the CDK Sass APIs (e.g. `@angular/cdk`).
  * @param excludedImports Pattern that can be used to exclude imports from being processed.
  */
 export function migrateFileContent(fileContent: string,
@@ -104,7 +104,7 @@ function detectImports(content: string, prefix: string,
   // namespaces as equivalent.
   const namespaces: string[] = [];
   const imports: string[] = [];
-  const pattern = new RegExp(`@(import|use) +['"]${escapeRegExp(prefix)}.*['"].*;?\n`, 'g');
+  const pattern = new RegExp(`@(import|use) +['"]~?${escapeRegExp(prefix)}.*['"].*;?\n`, 'g');
   let match: RegExpExecArray | null = null;
 
   while (match = pattern.exec(content)) {

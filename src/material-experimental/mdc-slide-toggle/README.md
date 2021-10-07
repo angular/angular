@@ -53,8 +53,8 @@ component by following these steps:
    the experimental `<mat-slide-toggle>`):
 
    ```scss
-   @use '~@angular/material' as mat;
-   @use '~@angular/material-experimental' as mat-experimental;
+   @use '@angular/material' as mat;
+   @use '@angular/material-experimental' as mat-experimental;
 
    $my-primary: mat.define-palette(mat.$indigo-palette);
    $my-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);

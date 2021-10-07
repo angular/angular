@@ -51,8 +51,8 @@ Assuming your application is already up and running using Angular Material, you 
 5. Add the theme mixins to your Sass:
 
    ```scss
-   @use '~@angular/material' as mat;
-   @use '~@angular/material-experimental' as mat-experimental;
+   @use '@angular/material' as mat;
+   @use '@angular/material-experimental' as mat-experimental;
 
    $candy-app-primary: mat.define-palette(mat.$indigo-palette);
    $candy-app-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);

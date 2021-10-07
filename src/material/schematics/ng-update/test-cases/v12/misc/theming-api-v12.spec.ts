@@ -32,7 +32,7 @@ describe('v12 theming API migration', () => {
 
   it('should migrate a theme based on the theming API', async () => {
     writeLines(THEME_PATH, [
-      `@import '~@angular/material/theming';`,
+      `@import '@angular/material/theming';`,
 
       `@include mat-core();`,
 
@@ -66,7 +66,7 @@ describe('v12 theming API migration', () => {
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `@use '~@angular/material' as mat;`,
+      `@use '@angular/material' as mat;`,
 
       `@include mat.core();`,
 
@@ -100,7 +100,7 @@ describe('v12 theming API migration', () => {
 
   it('should migrate files using CDK APIs through the theming import', async () => {
     writeLines(THEME_PATH, [
-      `@import '~@angular/material/theming';`,
+      `@import '@angular/material/theming';`,
       ``,
       `@include cdk-overlay();`,
       ``,
@@ -119,7 +119,7 @@ describe('v12 theming API migration', () => {
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `@use '~@angular/cdk' as cdk;`,
+      `@use '@angular/cdk' as cdk;`,
       ``,
       `@include cdk.overlay();`,
       ``,
@@ -138,7 +138,7 @@ describe('v12 theming API migration', () => {
   it('should migrate files using both Material and CDK APIs', async () => {
     writeLines(THEME_PATH, [
       `@import './foo'`,
-      `@import '~@angular/material/theming';`,
+      `@import '@angular/material/theming';`,
       ``,
       `@include cdk-overlay();`,
       `@include mat-core();`,
@@ -162,8 +162,8 @@ describe('v12 theming API migration', () => {
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `@use '~@angular/material' as mat;`,
-      `@use '~@angular/cdk' as cdk;`,
+      `@use '@angular/material' as mat;`,
+      `@use '@angular/cdk' as cdk;`,
       `@import './foo'`,
       ``,
       `@include cdk.overlay();`,
@@ -188,28 +188,28 @@ describe('v12 theming API migration', () => {
 
   it('should detect imports using double quotes', async () => {
     writeLines(THEME_PATH, [
-      `@import "~@angular/material/theming";`,
+      `@import "@angular/material/theming";`,
       `@include mat-core();`,
     ]);
 
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `@use '~@angular/material' as mat;`,
+      `@use '@angular/material' as mat;`,
       `@include mat.core();`,
     ]);
   });
 
   it('should migrate mixins that are invoked without parentheses', async () => {
     writeLines(THEME_PATH, [
-      `@import '~@angular/material/theming';`,
+      `@import '@angular/material/theming';`,
       `@include mat-base-typography;`,
     ]);
 
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `@use '~@angular/material' as mat;`,
+      `@use '@angular/material' as mat;`,
       `@include mat.typography-hierarchy;`,
     ]);
   });
@@ -224,7 +224,7 @@ describe('v12 theming API migration', () => {
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `@use '~@angular/material' as mat;`,
+      `@use '@angular/material' as mat;`,
       `@import 're-exports-material-symbols';`,
       `@include mat.core();`,
       `@include mat.button-theme();`,
@@ -233,14 +233,14 @@ describe('v12 theming API migration', () => {
 
   it('should allow an arbitrary number of spaces after @include and @import', async () => {
     writeLines(THEME_PATH, [
-      `@import                  '~@angular/material/theming';`,
+      `@import                  '@angular/material/theming';`,
       `@include     mat-core;`,
     ]);
 
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `@use '~@angular/material' as mat;`,
+      `@use '@angular/material' as mat;`,
       `@include mat.core;`,
     ]);
   });
@@ -248,7 +248,7 @@ describe('v12 theming API migration', () => {
   it('should insert the new @use statement above other @import statements', async () => {
     writeLines(THEME_PATH, [
       `@import './foo'`,
-      `@import "~@angular/material/theming";`,
+      `@import "@angular/material/theming";`,
       `@import './bar'`,
       `@include mat-core();`,
     ]);
@@ -256,7 +256,7 @@ describe('v12 theming API migration', () => {
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `@use '~@angular/material' as mat;`,
+      `@use '@angular/material' as mat;`,
       `@import './foo'`,
       `@import './bar'`,
       `@include mat.core();`,
@@ -267,14 +267,14 @@ describe('v12 theming API migration', () => {
     writeLines(THEME_PATH, [
       `@use './foo'`,
       `@import './bar'`,
-      `@import "~@angular/material/theming";`,
+      `@import "@angular/material/theming";`,
       `@include mat-core();`,
     ]);
 
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `@use '~@angular/material' as mat;`,
+      `@use '@angular/material' as mat;`,
       `@use './foo'`,
       `@import './bar'`,
       `@include mat.core();`,
@@ -286,7 +286,7 @@ describe('v12 theming API migration', () => {
       writeLines(THEME_PATH, [
         `/** This is a license. */`,
         `@import './foo'`,
-        `@import '~@angular/material/theming';`,
+        `@import '@angular/material/theming';`,
         `@include mat-core();`,
       ]);
 
@@ -294,7 +294,7 @@ describe('v12 theming API migration', () => {
 
       expect(splitFile(THEME_PATH)).toEqual([
         `/** This is a license. */`,
-        `@use '~@angular/material' as mat;`,
+        `@use '@angular/material' as mat;`,
         `@import './foo'`,
         `@include mat.core();`,
       ]);
@@ -305,7 +305,7 @@ describe('v12 theming API migration', () => {
       writeLines(THEME_PATH, [
         `// This is a license.`,
         `@import './foo'`,
-        `@import '~@angular/material/theming';`,
+        `@import '@angular/material/theming';`,
         `@include mat-core();`,
       ]);
 
@@ -313,7 +313,7 @@ describe('v12 theming API migration', () => {
 
       expect(splitFile(THEME_PATH)).toEqual([
         `// This is a license.`,
-        `@use '~@angular/material' as mat;`,
+        `@use '@angular/material' as mat;`,
         `@import './foo'`,
         `@include mat.core();`,
       ]);
@@ -323,12 +323,12 @@ describe('v12 theming API migration', () => {
     const componentPath = join(PROJECT_PATH, 'components/dialog.scss');
 
     writeLines(THEME_PATH, [
-      `@import '~@angular/material/theming';`,
+      `@import '@angular/material/theming';`,
       `@include angular-material-theme();`,
     ]);
 
     writeLines(componentPath, [
-      `@import '~@angular/material/theming';`,
+      `@import '@angular/material/theming';`,
       `.my-dialog {`,
         `z-index: $cdk-z-index-overlay-container + 1;`,
       `}`,
@@ -337,12 +337,12 @@ describe('v12 theming API migration', () => {
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `@use '~@angular/material' as mat;`,
+      `@use '@angular/material' as mat;`,
       `@include mat.all-component-themes();`,
     ]);
 
     expect(splitFile(componentPath)).toEqual([
-      `@use '~@angular/cdk' as cdk;`,
+      `@use '@angular/cdk' as cdk;`,
       `.my-dialog {`,
         `z-index: cdk.$overlay-container-z-index + 1;`,
       `}`,
@@ -351,7 +351,7 @@ describe('v12 theming API migration', () => {
 
   it('should handle variables whose names overlap', async () => {
     writeLines(THEME_PATH, [
-      `@import '~@angular/material/theming';`,
+      `@import '@angular/material/theming';`,
       `$one: $mat-blue-grey;`,
       `$two: $mat-blue;`,
       '$three: $mat-blue',
@@ -361,7 +361,7 @@ describe('v12 theming API migration', () => {
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `@use '~@angular/material' as mat;`,
+      `@use '@angular/material' as mat;`,
       `$one: mat.$blue-grey-palette;`,
       `$two: mat.$blue-palette;`,
       '$three: mat.$blue-palette',
@@ -371,7 +371,7 @@ describe('v12 theming API migration', () => {
 
   it('should migrate individual component themes', async () => {
     writeLines(THEME_PATH, [
-      `@import '~@angular/material/theming';`,
+      `@import '@angular/material/theming';`,
 
       `@include mat-core();`,
 
@@ -394,7 +394,7 @@ describe('v12 theming API migration', () => {
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `@use '~@angular/material' as mat;`,
+      `@use '@angular/material' as mat;`,
 
       `@include mat.core();`,
 
@@ -418,13 +418,13 @@ describe('v12 theming API migration', () => {
 
   it('should migrate deep imports', async () => {
     writeLines(THEME_PATH, [
-      `@import '~@angular/material/core/theming/palette';`,
-      `@import '~@angular/material/core/theming/theming';`,
-      `@import '~@angular/material/button/button-theme';`,
-      `@import '~@angular/material/table/table-theme';`,
-      `@import '~@angular/cdk/overlay';`,
-      `@import '~@angular/material/datepicker/datepicker-theme';`,
-      `@import '~@angular/material/option/option-theme';`,
+      `@import '@angular/material/core/theming/palette';`,
+      `@import '@angular/material/core/theming/theming';`,
+      `@import '@angular/material/button/button-theme';`,
+      `@import '@angular/material/table/table-theme';`,
+      `@import '@angular/cdk/overlay';`,
+      `@import '@angular/material/datepicker/datepicker-theme';`,
+      `@import '@angular/material/option/option-theme';`,
 
       `@include cdk-overlay();`,
 
@@ -446,8 +446,8 @@ describe('v12 theming API migration', () => {
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `@use '~@angular/material' as mat;`,
-      `@use '~@angular/cdk' as cdk;`,
+      `@use '@angular/material' as mat;`,
+      `@use '@angular/cdk' as cdk;`,
 
       `@include cdk.overlay();`,
 
@@ -469,14 +469,14 @@ describe('v12 theming API migration', () => {
 
   it('should migrate usages of @use, with and without namespaces', async () => {
     writeLines(THEME_PATH, [
-      `@use '~@angular/material/core/theming/palette' as palette;`,
-      `@use '~@angular/material/core/theming/theming';`,
-      `@use '~@angular/material/button/button-theme' as button;`,
-      `@use '~@angular/material/table/table-theme' as table;`,
+      `@use '@angular/material/core/theming/palette' as palette;`,
+      `@use '@angular/material/core/theming/theming';`,
+      `@use '@angular/material/button/button-theme' as button;`,
+      `@use '@angular/material/table/table-theme' as table;`,
       // Leave one `@import` here to verify mixed usage.
-      `@import '~@angular/material/option/option-theme';`,
-      `@use '~@angular/cdk/overlay' as cdk;`,
-      `@use '~@angular/material/datepicker/datepicker-theme' as datepicker;`,
+      `@import '@angular/material/option/option-theme';`,
+      `@use '@angular/cdk/overlay' as cdk;`,
+      `@use '@angular/material/datepicker/datepicker-theme' as datepicker;`,
 
       `@include cdk.cdk-overlay();`,
 
@@ -498,8 +498,8 @@ describe('v12 theming API migration', () => {
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `@use '~@angular/material' as mat;`,
-      `@use '~@angular/cdk' as cdk;`,
+      `@use '@angular/material' as mat;`,
+      `@use '@angular/cdk' as cdk;`,
 
       `@include cdk.overlay();`,
 
@@ -521,10 +521,10 @@ describe('v12 theming API migration', () => {
 
   it('should handle edge case inferred Sass import namespaces', async () => {
     writeLines(THEME_PATH, [
-      `@use '~@angular/material/core/index';`,
-      `@use '~@angular/material/button/_button-theme';`,
-      `@use '~@angular/material/table/table-theme.import';`,
-      `@use '~@angular/material/datepicker/datepicker-theme.scss';`,
+      `@use '@angular/material/core/index';`,
+      `@use '@angular/material/button/_button-theme';`,
+      `@use '@angular/material/table/table-theme.import';`,
+      `@use '@angular/material/datepicker/datepicker-theme.scss';`,
 
       `@include core.mat-core();`,
       `@include button-theme.mat-button-theme();`,
@@ -535,7 +535,7 @@ describe('v12 theming API migration', () => {
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `@use '~@angular/material' as mat;`,
+      `@use '@angular/material' as mat;`,
 
       `@include mat.core();`,
       `@include mat.button-theme();`,
@@ -546,7 +546,7 @@ describe('v12 theming API migration', () => {
 
   it('should drop the old import path even if the file is not using any symbols', async () => {
     writeLines(THEME_PATH, [
-      `@import '~@angular/material/theming';`,
+      `@import '@angular/material/theming';`,
       ``,
       `.my-dialog {`,
         `color: red;`,
@@ -564,7 +564,7 @@ describe('v12 theming API migration', () => {
 
   it('should replace removed variables with their values', async () => {
     writeLines(THEME_PATH, [
-      `@import '~@angular/material/theming';`,
+      `@import '@angular/material/theming';`,
       ``,
       `@include mat-button-toggle-theme();`,
       ``,
@@ -584,7 +584,7 @@ describe('v12 theming API migration', () => {
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `@use '~@angular/material' as mat;`,
+      `@use '@angular/material' as mat;`,
       ``,
       `@include mat.button-toggle-theme();`,
       ``,
@@ -604,7 +604,7 @@ describe('v12 theming API migration', () => {
 
   it('should not replace assignments to removed variables', async () => {
     writeLines(THEME_PATH, [
-      `@import '~@angular/material/theming';`,
+      `@import '@angular/material/theming';`,
       ``,
       `$mat-button-toggle-standard-height: 50px;`,
       `$mat-button-toggle-standard-minimum-height   : 12px;`,
@@ -617,7 +617,7 @@ describe('v12 theming API migration', () => {
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `@use '~@angular/material' as mat;`,
+      `@use '@angular/material' as mat;`,
       ``,
       `$mat-button-toggle-standard-height: 50px;`,
       `$mat-button-toggle-standard-minimum-height   : 12px;`,
@@ -630,7 +630,7 @@ describe('v12 theming API migration', () => {
 
   it('should not migrate files in the node_modules', async () => {
     writeLines('/node_modules/theme.scss', [
-      `@import '~@angular/material/theming';`,
+      `@import '@angular/material/theming';`,
       ``,
       `@include mat-button-toggle-theme();`,
       ``,
@@ -639,7 +639,7 @@ describe('v12 theming API migration', () => {
     await runMigration();
 
     expect(splitFile('/node_modules/theme.scss')).toEqual([
-      `@import '~@angular/material/theming';`,
+      `@import '@angular/material/theming';`,
       ``,
       `@include mat-button-toggle-theme();`,
       ``,
@@ -650,7 +650,7 @@ describe('v12 theming API migration', () => {
     const otherTheme = join(PROJECT_PATH, 'other-theme.scss');
 
     writeLines(THEME_PATH, [
-      `@import '~@angular/material/theming';`,
+      `@import '@angular/material/theming';`,
       ``,
       `.my-button {`,
         `z-index: $z-index-fab;`,
@@ -690,7 +690,7 @@ describe('v12 theming API migration', () => {
         `width: 100%;`,
       `}`,
       ``,
-      `@import '~@angular/material/theming';`,
+      `@import '@angular/material/theming';`,
       ``,
       `.button {`,
         `@include mat-elevation(4);`,
@@ -701,7 +701,7 @@ describe('v12 theming API migration', () => {
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `@use '~@angular/material' as mat;`,
+      `@use '@angular/material' as mat;`,
       `:host {`,
         `display: block;`,
         `width: 100%;`,
@@ -717,7 +717,7 @@ describe('v12 theming API migration', () => {
 
   it('should migrate extra given mixins and functions', () => {
     const originalContent = [
-      `@import '~@angular/material/theming';`,
+      `@import '@angular/material/theming';`,
       `$something: mat-mdc-typography-config();`,
       `@include mat-mdc-button-theme();`,
       `$another: $mat-vermillion`
@@ -725,17 +725,17 @@ describe('v12 theming API migration', () => {
 
     const migratedContent = migrateFileContent(
         originalContent,
-        '~@angular/material/',
-        '~@angular/cdk/',
-        '~@angular/material',
-        '~@angular/cdk', {
+        '@angular/material/',
+        '@angular/cdk/',
+        '@angular/material',
+        '@angular/cdk', {
           mixins: {'mat-mdc-button-theme': 'mdc-button-theme'},
           functions: {'mat-mdc-typography-config': 'mdc-typography-config'},
           variables: {'mat-vermillion': 'vermillion-palette'},
         });
 
     expect(migratedContent).toBe([
-      `@use '~@angular/material' as mat;`,
+      `@use '@angular/material' as mat;`,
       `$something: mat.mdc-typography-config();`,
       `@include mat.mdc-button-theme();`,
       `$another: mat.$vermillion-palette`,
@@ -744,26 +744,26 @@ describe('v12 theming API migration', () => {
 
   it('should not drop imports of prebuilt styles', async () => {
     writeLines(THEME_PATH, [
-      `@import '~@angular/material/prebuilt-themes/indigo-pink.css';`,
-      `@import '~@angular/material/theming';`,
-      `@import '~@angular/cdk/overlay-prebuilt.css';`,
+      `@import '@angular/material/prebuilt-themes/indigo-pink.css';`,
+      `@import '@angular/material/theming';`,
+      `@import '@angular/cdk/overlay-prebuilt.css';`,
       `@include mat-core();`,
     ]);
 
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `@use '~@angular/material' as mat;`,
-      `@import '~@angular/material/prebuilt-themes/indigo-pink.css';`,
-      `@import '~@angular/cdk/overlay-prebuilt.css';`,
+      `@use '@angular/material' as mat;`,
+      `@import '@angular/material/prebuilt-themes/indigo-pink.css';`,
+      `@import '@angular/cdk/overlay-prebuilt.css';`,
       `@include mat.core();`,
     ]);
   });
 
   it('should not add duplicate @use statements', async () => {
     writeLines(THEME_PATH, [
-      `@use '~@angular/material' as mat;`,
-      `@import '~@angular/material/theming';`,
+      `@use '@angular/material' as mat;`,
+      `@import '@angular/material/theming';`,
       `$something: mat.$red-palette;`,
       `$another: $mat-pink;`,
     ]);
@@ -771,7 +771,7 @@ describe('v12 theming API migration', () => {
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `@use '~@angular/material' as mat;`,
+      `@use '@angular/material' as mat;`,
       `$something: mat.$red-palette;`,
       `$another: mat.$pink-palette;`,
     ]);
@@ -779,7 +779,7 @@ describe('v12 theming API migration', () => {
 
   it('should insert @use before other code when only Angular imports are first', async () => {
     writeLines(THEME_PATH, [
-      `@import '~@angular/material/theming';`,
+      `@import '@angular/material/theming';`,
       `$something: 123;`,
       `@include mat-core();`,
       `@import 'some/other/file';`,
@@ -788,7 +788,7 @@ describe('v12 theming API migration', () => {
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `@use '~@angular/material' as mat;`,
+      `@use '@angular/material' as mat;`,
       `$something: 123;`,
       `@include mat.core();`,
       `@import 'some/other/file';`,
@@ -797,7 +797,7 @@ describe('v12 theming API migration', () => {
 
   it('should not rename variables appended with extra characters', async () => {
     writeLines(THEME_PATH, [
-      `@import '~@angular/material/theming';`,
+      `@import '@angular/material/theming';`,
       `$mat-light-theme-background-override: 123;`,
       `@include mat-core();`,
     ]);
@@ -805,7 +805,7 @@ describe('v12 theming API migration', () => {
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `@use '~@angular/material' as mat;`,
+      `@use '@angular/material' as mat;`,
       `$mat-light-theme-background-override: 123;`,
       `@include mat.core();`,
     ]);
@@ -829,21 +829,21 @@ describe('v12 theming API migration', () => {
 
   it('should not migrate commented out code', async () => {
     writeLines(THEME_PATH, [
-      `// @import '~@angular/material/theming';`,
+      `// @import '@angular/material/theming';`,
       '/* @include mat-core(); */',
     ]);
 
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `// @import '~@angular/material/theming';`,
+      `// @import '@angular/material/theming';`,
       '/* @include mat-core(); */',
     ]);
   });
 
   it('should not migrate single-line commented code at the end of the file', async () => {
     writeLines(THEME_PATH, [
-      `// @import '~@angular/material/theming';`,
+      `// @import '@angular/material/theming';`,
       '// @include mat-core();',
       '// @include mat-button-theme();',
     ]);
@@ -851,7 +851,7 @@ describe('v12 theming API migration', () => {
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `// @import '~@angular/material/theming';`,
+      `// @import '@angular/material/theming';`,
       '// @include mat-core();',
       '// @include mat-button-theme();',
     ]);
@@ -859,7 +859,7 @@ describe('v12 theming API migration', () => {
 
   it('should handle mixed commented and non-commented content', async () => {
     writeLines(THEME_PATH, [
-      `// @import '~@angular/material/theming';`,
+      `// @import '@angular/material/theming';`,
       '@include mat-core();',
       '@include mat-button-theme();',
     ]);
@@ -867,10 +867,112 @@ describe('v12 theming API migration', () => {
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `// @import '~@angular/material/theming';`,
-      `@use '~@angular/material' as mat;`,
+      `// @import '@angular/material/theming';`,
+      `@use '@angular/material' as mat;`,
       '@include mat.core();',
       '@include mat.button-theme();',
+    ]);
+  });
+
+  it('should migrate files that import using the tilde', async () => {
+    writeLines(THEME_PATH, [
+      `@import './foo'`,
+      `@import '~@angular/material/theming';`,
+      ``,
+      `@include cdk-overlay();`,
+      `@include mat-core();`,
+
+      `$candy-app-primary: mat-palette($mat-indigo);`,
+      `$candy-app-accent: mat-palette($mat-pink, A200, A100, A400);`,
+      `$candy-app-theme: mat-light-theme((`,
+        `color: (`,
+          `primary: $candy-app-primary,`,
+          `accent: $candy-app-accent,`,
+        `)`,
+      `));`,
+
+      `@include angular-material-theme($candy-app-theme);`,
+
+      `.my-dialog {`,
+        `z-index: $cdk-z-index-overlay-container + 1;`,
+      `}`,
+    ]);
+
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
+      `@use '@angular/material' as mat;`,
+      `@use '@angular/cdk' as cdk;`,
+      `@import './foo'`,
+      ``,
+      `@include cdk.overlay();`,
+      `@include mat.core();`,
+
+      `$candy-app-primary: mat.define-palette(mat.$indigo-palette);`,
+      `$candy-app-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);`,
+      `$candy-app-theme: mat.define-light-theme((`,
+        `color: (`,
+          `primary: $candy-app-primary,`,
+          `accent: $candy-app-accent,`,
+        `)`,
+      `));`,
+
+      `@include mat.all-component-themes($candy-app-theme);`,
+
+      `.my-dialog {`,
+        `z-index: cdk.$overlay-container-z-index + 1;`,
+      `}`
+    ]);
+  });
+
+  it('should migrate deep imports using a tilde', async () => {
+    writeLines(THEME_PATH, [
+      `@import '~@angular/material/core/theming/palette';`,
+      `@import '~@angular/material/core/theming/theming';`,
+      `@import '~@angular/material/button/button-theme';`,
+      `@import '~@angular/material/table/table-theme';`,
+      `@import '~@angular/cdk/overlay';`,
+      `@import '~@angular/material/datepicker/datepicker-theme';`,
+      `@import '~@angular/material/option/option-theme';`,
+
+      `@include cdk-overlay();`,
+
+      `$candy-app-primary: mat-palette($mat-indigo);`,
+      `$candy-app-accent: mat-palette($mat-pink, A200, A100, A400);`,
+      `$candy-app-theme: mat-light-theme((`,
+        `color: (`,
+          `primary: $candy-app-primary,`,
+          `accent: $candy-app-accent,`,
+        `)`,
+      `));`,
+
+      `@include mat-button-theme($candy-app-theme);`,
+      `@include mat-table-theme($candy-app-theme);`,
+      `@include mat-datepicker-theme($candy-app-theme);`,
+      `@include mat-option-theme($candy-app-theme);`,
+    ]);
+
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
+      `@use '@angular/material' as mat;`,
+      `@use '@angular/cdk' as cdk;`,
+
+      `@include cdk.overlay();`,
+
+      `$candy-app-primary: mat.define-palette(mat.$indigo-palette);`,
+      `$candy-app-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);`,
+      `$candy-app-theme: mat.define-light-theme((`,
+        `color: (`,
+          `primary: $candy-app-primary,`,
+          `accent: $candy-app-accent,`,
+        `)`,
+      `));`,
+
+      `@include mat.button-theme($candy-app-theme);`,
+      `@include mat.table-theme($candy-app-theme);`,
+      `@include mat.datepicker-theme($candy-app-theme);`,
+      `@include mat.option-theme($candy-app-theme);`,
     ]);
   });
 

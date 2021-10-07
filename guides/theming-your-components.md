@@ -17,7 +17,7 @@ indicating whether dark mode is set.
 
 ```scss
 @use 'sass:map';
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 
 $color-config:    mat.get-color-config($theme);
 $primary-palette: map.get($color-config, 'primary');
@@ -39,7 +39,7 @@ structure and for APIs for reading values from this config.
 [typography-config]: https://material.angular.io/guide/typography#typography-config
 
 ```scss
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 
 $typography-config: mat.get-typography-config($theme);
 $my-font-family: mat.font-family($typography-config);
@@ -123,7 +123,7 @@ theme passed into the mixins.
 // _carousel-theme.scss
 
 @use 'sass:map';
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 
 @mixin color($theme) {
   // Get the color config from the theme.
@@ -158,7 +158,7 @@ have a config specified.
 // _carousel-theme.scss
 
 @use 'sass:map';
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 
 @mixin color($theme) {
   // Get the color config from the theme.
@@ -201,7 +201,7 @@ Now that you've defined the carousel component's theme mixin, you can include th
 the other theme mixins in your application.
 
 ```scss
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 @use './path/to/carousel-theme' as carousel;
 
 @include mat.core();

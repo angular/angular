@@ -7,7 +7,7 @@ using the CDK on its own, you'll have to include the styles yourself. You can do
 the prebuilt styles in your global stylesheet:
 
 ```scss
-@import '~@angular/cdk/overlay-prebuilt.css';
+@import '@angular/cdk/overlay-prebuilt.css';
 ```
 
 ### Creating overlays

@@ -58,8 +58,8 @@ component by following these steps:
 5. Add the theme and typography mixins to your Sass:
 
    ```scss
-   @use '~@angular/material' as mat;
-   @use '~@angular/material-experimental' as mat-experimental;
+   @use '@angular/material' as mat;
+   @use '@angular/material-experimental' as mat-experimental;
 
    $candy-app-primary: mat.define-palette(mat.$indigo-palette);
    $candy-app-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);

@@ -66,7 +66,7 @@ accepts, in order, CSS values for `font-size`, `line-height`, `font-weight`, `fo
 `letter-spacing`. You can also specify the parameters by name, as demonstrated in the example below.
 
 ```scss
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 
 $my-custom-level: mat.define-typography-level(
   $font-family: Roboto,
@@ -86,7 +86,7 @@ a typography config with the `define-typography-config` Sass function. Every par
 baseline if unspecified.
 
 ```scss
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 
 $my-custom-typography-config: mat.define-typography-config(
   $display-4: mat.define-typography-level(112px, 112px, 300, $letter-spacing: -0.05em),
@@ -102,7 +102,7 @@ To customize component typography for your entire application, you can pass your
 config to the `core` mixin described in the [theming guide][theming-system].
 
 ```scss
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 
 $my-custom-typography: mat.define-typography-config(
   $headline:  mat.define-typography-level(3rem, 1, 700),
@@ -128,7 +128,7 @@ the `".kids-theme"` CSS class is present. You can [see the theming guide for mor
 defining multiple themes](https://material.angular.io/guide/theming#defining-multiple-themes).
 
 ```scss
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 
 @include mat.core();
 
@@ -169,7 +169,7 @@ component, based on a provided typography config. The following example demonstr
 typography styles only for the button component.
 
 ```scss
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 
 $kids-typography: mat.define-typography-config(
   // Specify "Comic Sans" as the default font family for all levels.
@@ -249,7 +249,7 @@ Additionally, you can use the `typography-level` Sass mixin to directly emit the
 given typography level.
 
 ```scss
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 
 // Use the default configuration.
 $my-typography: mat.define-typography-config();

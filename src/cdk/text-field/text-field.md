@@ -35,7 +35,7 @@ you are using Angular Material, this CSS is included as part of the `mat-core` m
 using Angular Material, you should include this CSS with the `text-field-autofill` mixin.
 
 ```scss
-@use '~@angular/cdk';
+@use '@angular/cdk';
 
 @include cdk.text-field-autofill();
 ```
@@ -48,7 +48,7 @@ which can be used to set these properties. It takes a `background` value as the 
 an optional `color` value as the second parameter.
 
 ```scss
-@use '~@angular/cdk';
+@use '@angular/cdk';
 
 // Set custom autofill inputs to have no background and red text.
 input.custom-autofill {
