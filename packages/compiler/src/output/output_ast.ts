@@ -530,12 +530,25 @@ export class LiteralPiece {
   constructor(public text: string, public sourceSpan: ParseSourceSpan) {}
 }
 export class PlaceholderPiece {
+  /**
+   * Create a new instance of a `PlaceholderPiece`.
+   *
+   * @param text the name of this placeholder (e.g. `PH_1`).
+   * @param sourceSpan the location of this placeholder in its localized message the source code.
+   * @param associatedMessage reference to another message that this placeholder is associated with.
+   * The `associatedMessage` is mainly used to provide a relationship to an ICU message that has
+   * been extracted out from the message containing the placeholder.
+   */
   constructor(
       public text: string, public sourceSpan: ParseSourceSpan, public associatedMessage?: Message) {
   }
 }
 
 export type MessagePiece = LiteralPiece|PlaceholderPiece;
+
+const MEANING_SEPARATOR = '|';
+const ID_SEPARATOR = '@@';
+const LEGACY_ID_INDICATOR = '␟';
 
 export class LocalizedString extends Expression {
   constructor(
@@ -567,10 +580,6 @@ export class LocalizedString extends Expression {
    * @param messagePart The first part of the tagged string
    */
   serializeI18nHead(): CookedRawString {
-    const MEANING_SEPARATOR = '|';
-    const ID_SEPARATOR = '@@';
-    const LEGACY_ID_INDICATOR = '␟';
-
     let metaBlock = this.metaBlock.description || '';
     if (this.metaBlock.meaning) {
       metaBlock = `${this.metaBlock.meaning}${MEANING_SEPARATOR}${metaBlock}`;
@@ -613,7 +622,7 @@ export class LocalizedString extends Expression {
     let metaBlock = placeholder.text;
     if (placeholder.associatedMessage !== undefined &&
         placeholder.associatedMessage.legacyIds.length === 0) {
-      metaBlock += `@@${
+      metaBlock += `${ID_SEPARATOR}${
           computeMsgId(
               placeholder.associatedMessage.messageString, placeholder.associatedMessage.meaning)}`;
     }

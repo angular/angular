@@ -84,7 +84,9 @@ export class I18nMetaVisitor implements html.Visitor {
           // root 'i18n' node attribute
           const i18n = element.i18n || attr.value;
           const message = this._generateI18nMessage(element.children, i18n, setI18nRefs);
-          // do not assign empty i18n meta
+          // Capture the message if it is not empty.
+          // Note that we wipe out any previous `i18n` property value to ensure that non-messages do
+          // not bleed through into the subsequent processing.
           element.i18n = message.nodes.length ? message : undefined;
         } else if (attr.name.startsWith(I18N_ATTR_PREFIX)) {
           // 'i18n-*' attributes

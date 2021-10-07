@@ -229,8 +229,8 @@ class LocalizeMessageStringVisitor implements Visitor {
   }
 
   visitTagPlaceholder(ph: TagPlaceholder): any {
-    return `{$${ph.startName}}` + ph.children.map(child => child.visit(this)).join('') +
-        `{$${ph.closeName}}`;
+    const children = ph.children.map(child => child.visit(this)).join('');
+    return `{$${ph.startName}}${children}{$${ph.closeName}}`;
   }
 
   visitPlaceholder(ph: Placeholder): any {
