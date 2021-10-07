@@ -1368,6 +1368,15 @@
   resolved "https://registry.yarnpkg.com/@jsdevtools/ono/-/ono-7.1.3.tgz#9df03bbd7c696a5c58885c34aa06da41c8543796"
   integrity sha512-4JQNk+3mVzK3xh2rqd6RB4J46qUR19azEHBneZyTZM+c456qOrbbM/5xcR8huNCCcbVt7+UmizG6GuUvPvKUYg==
 
+"@microsoft/api-extractor-model@7.13.11":
+  version "7.13.11"
+  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor-model/-/api-extractor-model-7.13.11.tgz#36e17b4b43b0260144ad1348a8140e52c9aacc0d"
+  integrity sha512-l38PC3TUaSu77jW8ry8Fxbhab+msUMRQq16gLNl3yu+jvM5dTJ8jxT/Yp/Zrv+T9e161bbOt4buD+nNjeLkeUQ==
+  dependencies:
+    "@microsoft/tsdoc" "0.13.2"
+    "@microsoft/tsdoc-config" "~0.15.2"
+    "@rushstack/node-core-library" "3.42.1"
+
 "@microsoft/api-extractor-model@7.13.9":
   version "7.13.9"
   resolved "https://registry.yarnpkg.com/@microsoft/api-extractor-model/-/api-extractor-model-7.13.9.tgz#018fb37ac0147595832e13db17509f6adafbad9c"
@@ -1388,6 +1397,24 @@
     "@rushstack/node-core-library" "3.41.0"
     "@rushstack/rig-package" "0.3.1"
     "@rushstack/ts-command-line" "4.9.1"
+    colors "~1.2.1"
+    lodash "~4.17.15"
+    resolve "~1.17.0"
+    semver "~7.3.0"
+    source-map "~0.6.1"
+    typescript "~4.4.2"
+
+"@microsoft/api-extractor@7.18.14":
+  version "7.18.14"
+  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.18.14.tgz#a12a8ccfdf51894768a33d5a67563bb97a769b2f"
+  integrity sha512-MLO3WVYkIWkMDz9LMgwIgOQEVDLOyLjngZ72HvqtALoWV/Gf3ftYtl5dIche2Q15ZKpLFF2WpNuW8pBFqt2NFg==
+  dependencies:
+    "@microsoft/api-extractor-model" "7.13.11"
+    "@microsoft/tsdoc" "0.13.2"
+    "@microsoft/tsdoc-config" "~0.15.2"
+    "@rushstack/node-core-library" "3.42.1"
+    "@rushstack/rig-package" "0.3.2"
+    "@rushstack/ts-command-line" "4.10.1"
     colors "~1.2.1"
     lodash "~4.17.15"
     resolve "~1.17.0"
@@ -1789,6 +1816,21 @@
     timsort "~0.3.0"
     z-schema "~3.18.3"
 
+"@rushstack/node-core-library@3.42.1":
+  version "3.42.1"
+  resolved "https://registry.yarnpkg.com/@rushstack/node-core-library/-/node-core-library-3.42.1.tgz#b076cd9af03ab678df35f3172386804677991fc7"
+  integrity sha512-XwCM9UwvWxxA5usz5Qk/qnO5ilIJNBdGTntLbXI3bZW+LR1I9a9iG1BSJWB7dNij2eFs2I2kPm8E6ttOd8ODiw==
+  dependencies:
+    "@types/node" "12.20.24"
+    colors "~1.2.1"
+    fs-extra "~7.0.1"
+    import-lazy "~4.0.0"
+    jju "~1.4.0"
+    resolve "~1.17.0"
+    semver "~7.3.0"
+    timsort "~0.3.0"
+    z-schema "~3.18.3"
+
 "@rushstack/rig-package@0.3.1":
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/@rushstack/rig-package/-/rig-package-0.3.1.tgz#b70ab9ffe3b6347eb799f5c6c5b6f5882039a60f"
@@ -1796,6 +1838,24 @@
   dependencies:
     resolve "~1.17.0"
     strip-json-comments "~3.1.1"
+
+"@rushstack/rig-package@0.3.2":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@rushstack/rig-package/-/rig-package-0.3.2.tgz#128afc04647471b3abf341dc3d03fc1530cf37ed"
+  integrity sha512-lJbud9zBY8+OOjkeQ+4zIVCvt2I8y1C3WcVx3g6NJgjf0pi6IYfbAWXXG+mVzevQmqanNCLyhyXSNP3E6u5OvQ==
+  dependencies:
+    resolve "~1.17.0"
+    strip-json-comments "~3.1.1"
+
+"@rushstack/ts-command-line@4.10.1":
+  version "4.10.1"
+  resolved "https://registry.yarnpkg.com/@rushstack/ts-command-line/-/ts-command-line-4.10.1.tgz#ec2532c4d0ff9fb76f4aabdff96321d95be92324"
+  integrity sha512-FhWnQCjHtxmZr5sVEgoV1VHTFaPfJXQbVwujAaZUzuFfgqX+v2P9o0AXmUi/LED4tmPJp7A1nVgPx0ClyGUbWA==
+  dependencies:
+    "@types/argparse" "1.0.38"
+    argparse "~1.0.9"
+    colors "~1.2.1"
+    string-argv "~0.3.1"
 
 "@rushstack/ts-command-line@4.9.1":
   version "4.9.1"
