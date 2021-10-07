@@ -32,8 +32,8 @@
 <h2>Reference variables, forms, and NgForm</h2>
 <!-- #docregion ngForm -->
 <form #itemForm="ngForm" (ngSubmit)="onSubmit(itemForm)">
-  <label for="name">Name <input class="form-control" name="name" ngModel required />
-  </label>
+  <label for="name">Name</label>
+  <input type="text" id="name" class="form-control" name="name" ngModel required />
   <button type="submit">Submit</button>
 </form>
 
