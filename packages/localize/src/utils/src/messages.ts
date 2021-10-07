@@ -209,7 +209,7 @@ export function parseMessage(
  * `:meaning|description@@custom-id:`
  * `:meaning|@@custom-id:`
  * `:meaning|description:`
- * `description@@custom-id:`
+ * `:description@@custom-id:`
  * `:meaning|:`
  * `:description:`
  * `:@@custom-id:`
