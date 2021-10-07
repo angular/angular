@@ -15,6 +15,7 @@ ng_module(
 ng_package(
     name = "npm_package",
     srcs = [
+        "_index.scss",
         "package.json",
         "some-file.txt",
     ],

@@ -467,17 +467,29 @@ function main(args: string[]): void {
    */
   function insertExportMappingOrError(
       packageJson: PackageJson, subpath: string, mapping: ConditionalExport) {
-    if (packageJson.exports?.[subpath] !== undefined) {
-      throw Error(
-          'Found a conflicting subpath export in the `package.json` file that would be overridden by the ' +
-          `packager. Please unset the mapping for: "${subpath}".`);
-    }
-
     if (packageJson.exports === undefined) {
       packageJson.exports = {};
     }
+    if (packageJson.exports[subpath] === undefined) {
+      packageJson.exports[subpath] = {};
+    }
 
-    packageJson.exports[subpath] = mapping;
+    const subpathExport = packageJson.exports[subpath];
+
+    // Go through all conditions that should be inserted. If the condition is already
+    // manually set of the subpath export, we throw an error. In general, we allow for
+    // additional conditions to be set. These will always precede the generated ones.
+    for (const conditionName of Object.keys(mapping) as [keyof ConditionalExport]) {
+      if (subpathExport[conditionName] !== undefined) {
+        throw Error(
+            `Found a conflicting export condition for "${subpath}". The "${conditionName} ` +
+            `condition would be overridden by the packager. Please unset it.`);
+      }
+
+      // **Note**: The order of the conditions is preserved even though we are setting
+      // the conditions once at a time (the latest assignment will be at the end).
+      subpathExport[conditionName] = mapping[conditionName];
+    }
   }
 
   /** Whether the package explicitly sets any of the format properties (like `main`). */

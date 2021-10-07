@@ -1,4 +1,5 @@
 README.md
+_index.scss
 a11y
   a11y/a11y.d.ts
   a11y/package.json
@@ -61,6 +62,11 @@ The sources for this package are in the main [Angular](https://github.com/angula
 Usage information and reference details can be found in [Angular documentation](https://angular.io/docs).
 
 License: MIT
+
+
+--- _index.scss ---
+
+/// test file which should ship as part of the NPM package.
 
 
 --- a11y/a11y.d.ts ---
@@ -773,24 +779,18 @@ export { }
 {
   "name": "example",
   "version": "0.0.0",
-  "fesm2020": "./fesm2020/waffels.mjs",
-  "fesm2015": "./fesm2015/waffels.mjs",
-  "esm2020": "./esm2020/example.mjs",
-  "typings": "./example.d.ts",
-  "module": "./fesm2015/waffels.mjs",
-  "es2020": "./fesm2020/waffels.mjs",
-  "type": "module",
   "exports": {
-    "./package.json": {
-      "default": "./package.json"
-    },
     ".": {
+      "sass": "./_index.scss",
       "types": "./example.d.ts",
       "esm2020": "./esm2020/example.mjs",
       "es2020": "./fesm2020/waffels.mjs",
       "es2015": "./fesm2015/waffels.mjs",
       "node": "./fesm2015/waffels.mjs",
       "default": "./fesm2020/waffels.mjs"
+    },
+    "./package.json": {
+      "default": "./package.json"
     },
     "./a11y": {
       "types": "./a11y/a11y.d.ts",
@@ -816,7 +816,14 @@ export { }
       "node": "./fesm2015/secondary.mjs",
       "default": "./fesm2020/secondary.mjs"
     }
-  }
+  },
+  "fesm2020": "./fesm2020/waffels.mjs",
+  "fesm2015": "./fesm2015/waffels.mjs",
+  "esm2020": "./esm2020/example.mjs",
+  "typings": "./example.d.ts",
+  "module": "./fesm2015/waffels.mjs",
+  "es2020": "./fesm2020/waffels.mjs",
+  "type": "module"
 }
 
 --- secondary/package.json ---
