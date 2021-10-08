@@ -431,8 +431,6 @@ jobs:
 
   test_aio_local:
     executor: default-executor
-    environment:
-      RXJS_VERSION_7: '7.4.0'
     steps:
       - custom_attach_workspace
       - init_environment
@@ -447,17 +445,6 @@ jobs:
       - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
         # Check the bundle sizes.
       - run: yarn --cwd aio payload-size aio-local
-        # Run tests with RxJS v7.
-      - run: yarn --cwd aio add rxjs@$RXJS_VERSION_7 && yarn --cwd aio aio-use-local
-      - run:
-          name: Ensure we use RxJS v7
-          command: >-
-            node --eval "
-              const expected = process.env.RXJS_VERSION_7;
-              const actual = require('./aio/node_modules/rxjs/package.json').version;
-              assert(actual === expected, 'Expected RxJS v' + expected + ', but found v' + actual + '.');
-            "
-      - run: yarn --cwd aio test --progress=false --watch=false
 
   test_aio_tools:
     executor: default-executor
