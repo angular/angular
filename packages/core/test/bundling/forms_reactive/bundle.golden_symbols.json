@@ -144,9 +144,6 @@
     "name": "DOCUMENT"
   },
   {
-    "name": "DOCUMENT"
-  },
-  {
     "name": "DefaultDomRenderer2"
   },
   {
@@ -276,9 +273,6 @@
     "name": "LOCALE_ID"
   },
   {
-    "name": "LOCALE_ID"
-  },
-  {
     "name": "LifecycleHooksFeature"
   },
   {
@@ -367,9 +361,6 @@
   },
   {
     "name": "NO_CHANGE"
-  },
-  {
-    "name": "NULL_INJECTOR"
   },
   {
     "name": "NgControl"
@@ -627,9 +618,6 @@
     "name": "_chromeNumKeyPadMap"
   },
   {
-    "name": "_currentInjector"
-  },
-  {
     "name": "_enable_super_gross_mode_that_will_cause_bad_things"
   },
   {
@@ -733,6 +721,9 @@
   },
   {
     "name": "coerceToValidator"
+  },
+  {
+    "name": "collectNativeNodes"
   },
   {
     "name": "collectStylingFromDirectives"
@@ -927,6 +918,9 @@
     "name": "generatePropertyAliases"
   },
   {
+    "name": "getBeforeNodeForView"
+  },
+  {
     "name": "getClosureSafeProperty"
   },
   {
@@ -964,6 +958,9 @@
   },
   {
     "name": "getFirstLContainer"
+  },
+  {
+    "name": "getFirstNativeNode"
   },
   {
     "name": "getInjectableDef"
@@ -1314,6 +1311,9 @@
     "name": "mergeHostAttrs"
   },
   {
+    "name": "mergeMap"
+  },
+  {
     "name": "mergeValidators"
   },
   {
@@ -1405,6 +1405,9 @@
   },
   {
     "name": "refreshComponent"
+  },
+  {
+    "name": "refreshContainsDirtyView"
   },
   {
     "name": "refreshContentQueries"

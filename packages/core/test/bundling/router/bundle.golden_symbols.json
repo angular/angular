@@ -189,9 +189,6 @@
     "name": "DOCUMENT"
   },
   {
-    "name": "DOCUMENT"
-  },
-  {
     "name": "DefaultDomRenderer2"
   },
   {
@@ -342,9 +339,6 @@
     "name": "LOCALE_ID"
   },
   {
-    "name": "LOCALE_ID"
-  },
-  {
     "name": "LOCATION_INITIALIZED"
   },
   {
@@ -445,9 +439,6 @@
   },
   {
     "name": "NO_CHANGE"
-  },
-  {
-    "name": "NULL_INJECTOR"
   },
   {
     "name": "Navigation"
@@ -906,9 +897,6 @@
     "name": "_chromeNumKeyPadMap"
   },
   {
-    "name": "_currentInjector"
-  },
-  {
     "name": "_enable_super_gross_mode_that_will_cause_bad_things"
   },
   {
@@ -1017,6 +1005,12 @@
     "name": "cleanUpView"
   },
   {
+    "name": "collectNativeNodes"
+  },
+  {
+    "name": "collectQueryResults"
+  },
+  {
     "name": "compare"
   },
   {
@@ -1042,6 +1036,12 @@
   },
   {
     "name": "connectableObservableDescriptor"
+  },
+  {
+    "name": "containsSegmentGroup"
+  },
+  {
+    "name": "containsSegmentGroupHelper"
   },
   {
     "name": "containsTree"
@@ -1081,6 +1081,9 @@
   },
   {
     "name": "createNewSegmentGroup"
+  },
+  {
+    "name": "createNode"
   },
   {
     "name": "createNodeInjector"
@@ -1254,6 +1257,9 @@
     "name": "flatten"
   },
   {
+    "name": "flatten"
+  },
+  {
     "name": "flattenStyles"
   },
   {
@@ -1284,7 +1290,13 @@
     "name": "getAppInitializer"
   },
   {
+    "name": "getBeforeNodeForView"
+  },
+  {
     "name": "getBootstrapListener"
+  },
+  {
+    "name": "getChildRouteGuards"
   },
   {
     "name": "getClosureSafeProperty"
@@ -1321,6 +1333,9 @@
   },
   {
     "name": "getFirstLContainer"
+  },
+  {
+    "name": "getFirstNativeNode"
   },
   {
     "name": "getFullPath"
@@ -1689,6 +1704,9 @@
     "name": "mergeAll"
   },
   {
+    "name": "mergeEmptyPathMatches"
+  },
+  {
     "name": "mergeHostAttribute"
   },
   {
@@ -1812,6 +1830,9 @@
     "name": "refreshComponent"
   },
   {
+    "name": "refreshContainsDirtyView"
+  },
+  {
     "name": "refreshContentQueries"
   },
   {
@@ -1846,6 +1867,9 @@
   },
   {
     "name": "renderView"
+  },
+  {
+    "name": "replaceSegment"
   },
   {
     "name": "resetPreOrderHookFlags"
@@ -1884,6 +1908,9 @@
     "name": "serializePaths"
   },
   {
+    "name": "serializeSegment"
+  },
+  {
     "name": "setBindingRootForHostBindings"
   },
   {
@@ -1900,6 +1927,9 @@
   },
   {
     "name": "setDirectiveInputsWhichShadowsStyling"
+  },
+  {
+    "name": "setFutureSnapshotsOfActivatedRoutes"
   },
   {
     "name": "setIncludeViewProviders"

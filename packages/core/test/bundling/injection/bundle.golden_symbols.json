@@ -39,9 +39,6 @@
     "name": "NOT_YET"
   },
   {
-    "name": "NULL_INJECTOR"
-  },
-  {
     "name": "NullInjector"
   },
   {
@@ -61,9 +58,6 @@
   },
   {
     "name": "__forward_ref__"
-  },
-  {
-    "name": "_currentInjector"
   },
   {
     "name": "deepForEach"
