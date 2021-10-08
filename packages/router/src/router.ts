@@ -1488,11 +1488,16 @@ export class Router {
   private resetState(t: NavigationTransition): void {
     (this as {routerState: RouterState}).routerState = t.currentRouterState;
     this.currentUrlTree = t.currentUrlTree;
-    // Note here that we use the urlHandlingStrategy to get the reset `rawUrlTree` because it may be
-    // configured to handle only part of the navigation URL. This means we would only want to reset
-    // the part of the navigation handled by the Angular router rather than the whole URL. In
-    // addition, the URLHandlingStrategy may be configured to specifically preserve parts of the URL
-    // when merging, such as the query params so they are not lost on a refresh.
+    // It's unlikely that this piece is load bearing for AngularJS/Angular apps.
+    // Before commit a268c4471f2e1dcaffe3304236d506222adab44c, `resetState` was
+    // only called before resetting the URL on an error. This means that flows like guards
+    // rejecting, would not reset the rawUrlTree with `urlHandlingStrategy.merge`. The part about
+    // this line that's weird is that it merges the activated URL tree into the _attempted_
+    // navigation url. Only one team in g3 implements a custom strategy with `merge` that does not
+    // just return the first argument. It would be best if we could remove this bit so the
+    // `rawUrlTree` represents the full browser URL after a successful navigation (and isn't set
+    // like this on a canceled navigation). For 99% of applications (only ones that implement
+    // `merge` that uses the second argument would be affected), this change would be non-breaking.
     this.rawUrlTree = this.urlHandlingStrategy.merge(this.currentUrlTree, t.rawUrl);
     this.resetUrlToCurrentUrlTree();
   }
