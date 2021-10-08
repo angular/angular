@@ -63,7 +63,7 @@
     "@microsoft/api-extractor": "7.18.11",
     "@rollup/plugin-commonjs": "^20.0.0",
     "@rollup/plugin-node-resolve": "^13.0.4",
-    "@schematics/angular": "13.0.0-next.6",
+    "@schematics/angular": "12.0.4",
     "@types/angular": "^1.6.47",
     "@types/babel__core": "7.1.6",
     "@types/babel__generator": "7.6.1",
