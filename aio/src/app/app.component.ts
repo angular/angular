@@ -19,6 +19,7 @@ import { Deployment } from 'app/shared/deployment.service';
 import { LocationService } from 'app/shared/location.service';
 import { ScrollService } from 'app/shared/scroll.service';
 import { TocService } from 'app/shared/toc.service';
+import { SwUpdatesService } from 'app/sw-updates/sw-updates.service';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { first, map } from 'rxjs/operators';
 
@@ -113,6 +114,7 @@ export class AppComponent implements OnInit {
     private navigationService: NavigationService,
     private scrollService: ScrollService,
     private searchService: SearchService,
+    private swUpdatesService: SwUpdatesService,
     private tocService: TocService
   ) { }
 
@@ -201,6 +203,9 @@ export class AppComponent implements OnInit {
       .subscribe(() => this.updateShell());
 
     this.locationService.currentUrl.subscribe(url => this.currentUrl = url);
+
+    // Start listening for SW version update events.
+    this.swUpdatesService.enable();
   }
 
   onDocReady() {
