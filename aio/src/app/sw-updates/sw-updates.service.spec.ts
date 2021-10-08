@@ -1,7 +1,7 @@
 import { ApplicationRef, ErrorHandler, Injector } from '@angular/core';
 import { discardPeriodicTasks, fakeAsync, tick } from '@angular/core/testing';
 import { SwUpdate } from '@angular/service-worker';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 import { LocationService } from 'app/shared/location.service';
 import { Logger } from 'app/shared/logger.service';
@@ -41,6 +41,8 @@ describe('SwUpdatesService', () => {
     service = injector.get(SwUpdatesService);
     swu = injector.get(SwUpdate) as unknown as MockSwUpdate;
     checkInterval = (service as any).checkInterval;
+
+    service.enable();
   };
   const tearDown = () => service.ngOnDestroy();
   const run = (specFn: VoidFunction, isSwUpdateEnabled = true) => () => {
@@ -54,212 +56,258 @@ describe('SwUpdatesService', () => {
     expect(service).toBeTruthy();
   }));
 
-  it('should start checking for updates when instantiated (once the app stabilizes)', run(() => {
-    expect(swu.checkForUpdate).not.toHaveBeenCalled();
-
-    appRef.isStable.next(false);
-    expect(swu.checkForUpdate).not.toHaveBeenCalled();
-
-    appRef.isStable.next(true);
-    expect(swu.checkForUpdate).toHaveBeenCalled();
-  }));
-
-  it('should periodically check for updates', fakeAsync(run(() => {
-    appRef.isStable.next(true);
-    swu.checkForUpdate.calls.reset();
-
-    tick(checkInterval);
-    expect(swu.checkForUpdate).toHaveBeenCalledTimes(1);
-
-    tick(checkInterval);
-    expect(swu.checkForUpdate).toHaveBeenCalledTimes(2);
-
-    appRef.isStable.next(false);
-
-    tick(checkInterval);
-    expect(swu.checkForUpdate).toHaveBeenCalledTimes(3);
-
-    discardPeriodicTasks();
-  })));
-
-  it('should activate available updates immediately', fakeAsync(run(() => {
-    appRef.isStable.next(true);
-    expect(swu.activateUpdate).not.toHaveBeenCalled();
-
-    swu.$$availableSubj.next({available: {hash: 'foo'}});
-    expect(swu.activateUpdate).toHaveBeenCalled();
-  })));
-
-  it('should keep periodically checking for updates even after one is available/activated', fakeAsync(run(() => {
-    appRef.isStable.next(true);
-    swu.checkForUpdate.calls.reset();
-
-    tick(checkInterval);
-    expect(swu.checkForUpdate).toHaveBeenCalledTimes(1);
-
-    swu.$$availableSubj.next({available: {hash: 'foo'}});
-
-    tick(checkInterval);
-    expect(swu.checkForUpdate).toHaveBeenCalledTimes(2);
-
-    tick(checkInterval);
-    expect(swu.checkForUpdate).toHaveBeenCalledTimes(3);
-
-    discardPeriodicTasks();
-  })));
-
-  it('should request a full page navigation when an update has been activated', run(() => {
-    swu.$$availableSubj.next({available: {hash: 'foo'}});
-    expect(location.fullPageNavigationNeeded).toHaveBeenCalledTimes(0);
-
-    swu.$$activatedSubj.next({current: {hash: 'bar'}});
-    expect(location.fullPageNavigationNeeded).toHaveBeenCalledTimes(1);
-
-    swu.$$availableSubj.next({available: {hash: 'baz'}});
-    expect(location.fullPageNavigationNeeded).toHaveBeenCalledTimes(1);
-
-    swu.$$activatedSubj.next({current: {hash: 'qux'}});
-    expect(location.fullPageNavigationNeeded).toHaveBeenCalledTimes(2);
-  }));
-
-  it('should request a page reload when an unrecoverable state has been detected', run(() => {
-    expect(location.reloadPage).toHaveBeenCalledTimes(0);
-
-    swu.$$unrecoverableSubj.next({reason: 'Something bad happened'});
-    expect(location.reloadPage).toHaveBeenCalledTimes(1);
-
-    swu.$$unrecoverableSubj.next({reason: 'Something worse happened'});
-    expect(location.reloadPage).toHaveBeenCalledTimes(2);
-  }));
-
-  it('should notify the `ErrorHandler` when an unrecoverable state has been detected', run(() => {
-    expect(errorHandler.handleError).not.toHaveBeenCalled();
-
-    swu.$$unrecoverableSubj.next({reason: 'Something bad happened'});
-    expect(errorHandler.handleError).toHaveBeenCalledBefore(location.reloadPage);
-    expect(errorHandler.handleError)
-        .toHaveBeenCalledWith('Unrecoverable state: Something bad happened');
-
-    (errorHandler.handleError as jasmine.Spy).calls.reset();
-    location.reloadPage.calls.reset();
-
-    swu.$$unrecoverableSubj.next({reason: 'Something worse happened'});
-    expect(errorHandler.handleError).toHaveBeenCalledBefore(location.reloadPage);
-    expect(errorHandler.handleError)
-        .toHaveBeenCalledWith('Unrecoverable state: Something worse happened');
-
-  }));
-
-  describe('when `SwUpdate` is not enabled', () => {
-    const runDeactivated = (specFn: VoidFunction) => run(specFn, false);
-
-    it('should not check for updates', fakeAsync(runDeactivated(() => {
-      appRef.isStable.next(true);
-
-      tick(checkInterval);
-      tick(checkInterval);
-
-      swu.$$availableSubj.next({available: {hash: 'foo'}});
-      swu.$$activatedSubj.next({current: {hash: 'bar'}});
-
-      tick(checkInterval);
-      tick(checkInterval);
-
+  describe('when enabled', () => {
+    it('should start checking for updates when instantiated (once the app stabilizes)', run(() => {
       expect(swu.checkForUpdate).not.toHaveBeenCalled();
-    })));
 
-    it('should not activate available updates', fakeAsync(runDeactivated(() => {
-      swu.$$availableSubj.next({available: {hash: 'foo'}});
-      expect(swu.activateUpdate).not.toHaveBeenCalled();
-    })));
+      appRef.isStable.next(false);
+      expect(swu.checkForUpdate).not.toHaveBeenCalled();
 
-    it('should never request a full page navigation', runDeactivated(() => {
-      swu.$$availableSubj.next({available: {hash: 'foo'}});
-      swu.$$activatedSubj.next({current: {hash: 'bar'}});
-      swu.$$availableSubj.next({available: {hash: 'baz'}});
-      swu.$$activatedSubj.next({current: {hash: 'qux'}});
-
-      expect(location.fullPageNavigationNeeded).not.toHaveBeenCalled();
-    }));
-
-    it('should never request a page reload', runDeactivated(() => {
-      swu.$$unrecoverableSubj.next({reason: 'Something bad happened'});
-      swu.$$unrecoverableSubj.next({reason: 'Something worse happened'});
-
-      expect(errorHandler.handleError).not.toHaveBeenCalled();
-      expect(location.reloadPage).not.toHaveBeenCalled();
-    }));
-  });
-
-  describe('when destroyed', () => {
-    it('should not schedule a new check for update (after current check)', fakeAsync(run(() => {
       appRef.isStable.next(true);
       expect(swu.checkForUpdate).toHaveBeenCalled();
+    }));
 
-      service.ngOnDestroy();
+    it('should periodically check for updates', fakeAsync(run(() => {
+      appRef.isStable.next(true);
       swu.checkForUpdate.calls.reset();
 
       tick(checkInterval);
-      tick(checkInterval);
+      expect(swu.checkForUpdate).toHaveBeenCalledTimes(1);
 
-      expect(swu.checkForUpdate).not.toHaveBeenCalled();
+      tick(checkInterval);
+      expect(swu.checkForUpdate).toHaveBeenCalledTimes(2);
+
+      appRef.isStable.next(false);
+
+      tick(checkInterval);
+      expect(swu.checkForUpdate).toHaveBeenCalledTimes(3);
+
+      discardPeriodicTasks();
     })));
 
-    it('should not schedule a new check for update (after activating an update)', fakeAsync(run(() => {
+    it('should activate available updates immediately', fakeAsync(run(() => {
       appRef.isStable.next(true);
-      expect(swu.checkForUpdate).toHaveBeenCalled();
+      expect(swu.activateUpdate).not.toHaveBeenCalled();
 
-      service.ngOnDestroy();
+      swu.$$availableSubj.next({available: {hash: 'foo'}});
+      expect(swu.activateUpdate).toHaveBeenCalled();
+    })));
+
+    it('should keep periodically checking for updates even after one is available/activated', fakeAsync(run(() => {
+      appRef.isStable.next(true);
       swu.checkForUpdate.calls.reset();
 
+      tick(checkInterval);
+      expect(swu.checkForUpdate).toHaveBeenCalledTimes(1);
+
       swu.$$availableSubj.next({available: {hash: 'foo'}});
-      swu.$$activatedSubj.next({current: {hash: 'baz'}});
 
       tick(checkInterval);
+      expect(swu.checkForUpdate).toHaveBeenCalledTimes(2);
+
       tick(checkInterval);
+      expect(swu.checkForUpdate).toHaveBeenCalledTimes(3);
 
-      expect(swu.checkForUpdate).not.toHaveBeenCalled();
+      discardPeriodicTasks();
     })));
 
-    it('should not activate available updates', fakeAsync(run(() => {
-      service.ngOnDestroy();
+    it('should request a full page navigation when an update has been activated', run(() => {
       swu.$$availableSubj.next({available: {hash: 'foo'}});
+      expect(location.fullPageNavigationNeeded).toHaveBeenCalledTimes(0);
 
-      expect(swu.activateUpdate).not.toHaveBeenCalled();
-    })));
-
-    it('should stop requesting full page navigations when updates are activated', run(() => {
-      swu.$$availableSubj.next({available: {hash: 'foo'}});
       swu.$$activatedSubj.next({current: {hash: 'bar'}});
       expect(location.fullPageNavigationNeeded).toHaveBeenCalledTimes(1);
 
-      service.ngOnDestroy();
-      location.fullPageNavigationNeeded.calls.reset();
-
       swu.$$availableSubj.next({available: {hash: 'baz'}});
+      expect(location.fullPageNavigationNeeded).toHaveBeenCalledTimes(1);
+
       swu.$$activatedSubj.next({current: {hash: 'qux'}});
-      expect(location.fullPageNavigationNeeded).not.toHaveBeenCalled();
+      expect(location.fullPageNavigationNeeded).toHaveBeenCalledTimes(2);
     }));
 
-    it('should stop requesting page reloads when unrecoverable states are detected', run(() => {
+    it('should request a page reload when an unrecoverable state has been detected', run(() => {
+      expect(location.reloadPage).toHaveBeenCalledTimes(0);
+
       swu.$$unrecoverableSubj.next({reason: 'Something bad happened'});
-      expect(errorHandler.handleError).toHaveBeenCalledTimes(1);
       expect(location.reloadPage).toHaveBeenCalledTimes(1);
 
-      service.ngOnDestroy();
+      swu.$$unrecoverableSubj.next({reason: 'Something worse happened'});
+      expect(location.reloadPage).toHaveBeenCalledTimes(2);
+    }));
+
+    it('should notify the `ErrorHandler` when an unrecoverable state has been detected', run(() => {
+      expect(errorHandler.handleError).not.toHaveBeenCalled();
+
+      swu.$$unrecoverableSubj.next({reason: 'Something bad happened'});
+      expect(errorHandler.handleError).toHaveBeenCalledBefore(location.reloadPage);
+      expect(errorHandler.handleError)
+          .toHaveBeenCalledWith('Unrecoverable state: Something bad happened');
+
       (errorHandler.handleError as jasmine.Spy).calls.reset();
       location.reloadPage.calls.reset();
 
       swu.$$unrecoverableSubj.next({reason: 'Something worse happened'});
-      expect(errorHandler.handleError).not.toHaveBeenCalled();
-      expect(location.reloadPage).not.toHaveBeenCalled();
+      expect(errorHandler.handleError).toHaveBeenCalledBefore(location.reloadPage);
+      expect(errorHandler.handleError)
+          .toHaveBeenCalledWith('Unrecoverable state: Something worse happened');
+
+    }));
+
+    describe('when `SwUpdate` is not enabled', () => {
+      const runDeactivated = (specFn: VoidFunction) => run(specFn, false);
+
+      it('should not check for updates', fakeAsync(runDeactivated(() => {
+        appRef.isStable.next(true);
+
+        tick(checkInterval);
+        tick(checkInterval);
+
+        swu.$$availableSubj.next({available: {hash: 'foo'}});
+        swu.$$activatedSubj.next({current: {hash: 'bar'}});
+
+        tick(checkInterval);
+        tick(checkInterval);
+
+        expect(swu.checkForUpdate).not.toHaveBeenCalled();
+      })));
+
+      it('should not activate available updates', fakeAsync(runDeactivated(() => {
+        swu.$$availableSubj.next({available: {hash: 'foo'}});
+        expect(swu.activateUpdate).not.toHaveBeenCalled();
+      })));
+
+      it('should never request a full page navigation', runDeactivated(() => {
+        swu.$$availableSubj.next({available: {hash: 'foo'}});
+        swu.$$activatedSubj.next({current: {hash: 'bar'}});
+        swu.$$availableSubj.next({available: {hash: 'baz'}});
+        swu.$$activatedSubj.next({current: {hash: 'qux'}});
+
+        expect(location.fullPageNavigationNeeded).not.toHaveBeenCalled();
+      }));
+
+      it('should never request a page reload', runDeactivated(() => {
+        swu.$$unrecoverableSubj.next({reason: 'Something bad happened'});
+        swu.$$unrecoverableSubj.next({reason: 'Something worse happened'});
+
+        expect(errorHandler.handleError).not.toHaveBeenCalled();
+        expect(location.reloadPage).not.toHaveBeenCalled();
+      }));
+    });
+
+    describe('and then disabled', () => {
+      it('should not schedule a new check for update (after current check)', fakeAsync(run(() => {
+        appRef.isStable.next(true);
+        expect(swu.checkForUpdate).toHaveBeenCalled();
+
+        service.disable();
+        swu.checkForUpdate.calls.reset();
+
+        tick(checkInterval);
+        tick(checkInterval);
+
+        expect(swu.checkForUpdate).not.toHaveBeenCalled();
+      })));
+
+      it('should not schedule a new check for update (after activating an update)', fakeAsync(run(() => {
+        appRef.isStable.next(true);
+        expect(swu.checkForUpdate).toHaveBeenCalled();
+
+        service.disable();
+        swu.checkForUpdate.calls.reset();
+
+        swu.$$availableSubj.next({available: {hash: 'foo'}});
+        swu.$$activatedSubj.next({current: {hash: 'baz'}});
+
+        tick(checkInterval);
+        tick(checkInterval);
+
+        expect(swu.checkForUpdate).not.toHaveBeenCalled();
+      })));
+
+      it('should not activate available updates', fakeAsync(run(() => {
+        service.disable();
+        swu.$$availableSubj.next({available: {hash: 'foo'}});
+
+        expect(swu.activateUpdate).not.toHaveBeenCalled();
+      })));
+
+      it('should stop requesting full page navigations when updates are activated', run(() => {
+        swu.$$availableSubj.next({available: {hash: 'foo'}});
+        swu.$$activatedSubj.next({current: {hash: 'bar'}});
+        expect(location.fullPageNavigationNeeded).toHaveBeenCalledTimes(1);
+
+        service.disable();
+        location.fullPageNavigationNeeded.calls.reset();
+
+        swu.$$availableSubj.next({available: {hash: 'baz'}});
+        swu.$$activatedSubj.next({current: {hash: 'qux'}});
+        expect(location.fullPageNavigationNeeded).not.toHaveBeenCalled();
+      }));
+
+      it('should stop requesting page reloads when unrecoverable states are detected', run(() => {
+        swu.$$unrecoverableSubj.next({reason: 'Something bad happened'});
+        expect(errorHandler.handleError).toHaveBeenCalledTimes(1);
+        expect(location.reloadPage).toHaveBeenCalledTimes(1);
+
+        service.disable();
+        (errorHandler.handleError as jasmine.Spy).calls.reset();
+        location.reloadPage.calls.reset();
+
+        swu.$$unrecoverableSubj.next({reason: 'Something worse happened'});
+        expect(errorHandler.handleError).not.toHaveBeenCalled();
+        expect(location.reloadPage).not.toHaveBeenCalled();
+      }));
+
+      describe('and then enabled again', () => {
+        it('should start scheduling new checks for updates again', fakeAsync(run(() => {
+          appRef.isStable.next(true);
+          service.disable();
+          service.enable();
+          swu.checkForUpdate.calls.reset();
+
+          tick(checkInterval);
+
+          expect(swu.checkForUpdate).toHaveBeenCalled();
+        })));
+
+        it('should start scheduling new checks for updates (after activating an update) again', fakeAsync(run(() => {
+          appRef.isStable.next(true);
+          service.disable();
+          service.enable();
+          swu.checkForUpdate.calls.reset();
+
+          swu.$$availableSubj.next({available: {hash: 'foo'}});
+          swu.$$activatedSubj.next({current: {hash: 'baz'}});
+          tick(checkInterval);
+
+          expect(swu.checkForUpdate).toHaveBeenCalled();
+        })));
+
+        it('should start activating available updates again', fakeAsync(run(() => {
+          service.disable();
+          service.enable();
+
+          swu.$$availableSubj.next({available: {hash: 'foo'}});
+
+          expect(swu.activateUpdate).toHaveBeenCalled();
+        })));
+      });
+    });
+  });
+
+  describe('when destroyed', () => {
+    it('should disable itself', run(() => {
+      const disableSpy = spyOn(service, 'disable');
+
+      service.ngOnDestroy();
+      expect(disableSpy).toHaveBeenCalledOnceWith();
     }));
   });
 });
 
 // Mocks
 class MockApplicationRef {
-  isStable = new Subject<boolean>();
+  isStable = new BehaviorSubject(false);
 }
 
 class MockSwUpdate {
