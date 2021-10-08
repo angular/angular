@@ -649,6 +649,33 @@ describe('TestBed teardown migration', () => {
       `));
      });
 
+  it('should not duplicate comments on initTestEnvironment calls', async () => {
+    writeFile('/index.ts', `
+      import { TestBed } from '@angular/core/testing';
+      import {
+        BrowserDynamicTestingModule,
+        platformBrowserDynamicTesting
+      } from '@angular/platform-browser-dynamic/testing';
+
+      // Hello
+      TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
+    `);
+
+    await runMigration();
+
+    expect(stripWhitespace(tree.readContent('/index.ts'))).toContain(stripWhitespace(`
+      import { TestBed } from '@angular/core/testing';
+      import {
+        BrowserDynamicTestingModule,
+        platformBrowserDynamicTesting
+      } from '@angular/platform-browser-dynamic/testing';
+
+      // Hello
+      TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
+        teardown: { destroyAfterEach: false }
+      });
+    `));
+  });
 
   function writeFile(filePath: string, contents: string) {
     host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));

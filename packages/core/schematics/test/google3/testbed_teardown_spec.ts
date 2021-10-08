@@ -704,4 +704,32 @@ describe('Google3 TestBed teardown TSLint rule', () => {
         }));
       `));
      });
+
+  it('should not duplicate comments on initTestEnvironment calls', () => {
+    writeFile('/index.ts', `
+      import { TestBed } from '@angular/core/testing';
+      import {
+        BrowserDynamicTestingModule,
+        platformBrowserDynamicTesting
+      } from '@angular/platform-browser-dynamic/testing';
+
+      // Hello
+      TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
+    `);
+
+    runTSLint(true);
+
+    expect(stripWhitespace(getFile('/index.ts'))).toContain(stripWhitespace(`
+      import { TestBed } from '@angular/core/testing';
+      import {
+        BrowserDynamicTestingModule,
+        platformBrowserDynamicTesting
+      } from '@angular/platform-browser-dynamic/testing';
+
+      // Hello
+      TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
+        teardown: { destroyAfterEach: false }
+      });
+    `));
+  });
 });
