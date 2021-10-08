@@ -45,7 +45,6 @@ import { WindowToken, windowProvider } from 'app/shared/window';
 import { CustomElementsModule } from 'app/custom-elements/custom-elements.module';
 import { SharedModule } from 'app/shared/shared.module';
 import { ThemeToggleComponent } from 'app/shared/theme-picker/theme-toggle.component';
-import { SwUpdatesModule } from 'app/sw-updates/sw-updates.module';
 
 import { environment } from '../environments/environment';
 
@@ -155,7 +154,6 @@ export const svgIconProviders = [
     MatProgressBarModule,
     MatSidenavModule,
     MatToolbarModule,
-    SwUpdatesModule,
     SharedModule,
     ServiceWorkerModule.register(
         // Make sure service worker is loaded with a TrustedScriptURL
