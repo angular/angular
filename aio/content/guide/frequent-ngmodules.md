@@ -55,7 +55,7 @@ of some of the things they contain:
  <tr>
    <td><code>HttpClientModule</code></td>
    <td><code>@angular/common/http</code></td>
-   <td>When you want to talk to a server</td>
+   <td>When you want to communicate with a server using the HTTP protocol</td>
  </tr>
 
 </table>
