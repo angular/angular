@@ -27,6 +27,35 @@ Amy Sorto, Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner and Вася
 
 <!-- CHANGELOG SPLIT MARKER -->
 
+<a name="13.0.0-next.8"></a>
+# 13.0.0-next.8 "gravel-chicken" (2021-10-08)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [39138836c](https://github.com/angular/components/commit/39138836c53c0afb311ed23a494e233e84fc8d89) | fix | **drag-drop:** error when preview is destroyed before animation completes ([#23662](https://github.com/angular/components/pull/23662)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4f6b9fd50](https://github.com/angular/components/commit/4f6b9fd50e71459e3f5ffc3cc181e86f872aa4a9) | fix | **core:** sanity checks not disabled for node-based test environments ([#23636](https://github.com/angular/components/pull/23636)) |
+| [64ba72f1f](https://github.com/angular/components/commit/64ba72f1fd39623c96589ad00347f895ffb88b8a) | fix | **select:** show required asterisk when using required validator ([#23500](https://github.com/angular/components/pull/23500)) |
+| [2602d2e8a](https://github.com/angular/components/commit/2602d2e8a9c1b210e5a0c60f4fe9869f51972721) | fix | **stepper:** add text for screen readers to indicate when step is complete or editable ([#23519](https://github.com/angular/components/pull/23519)) |
+### google-maps
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7c16258cf](https://github.com/angular/components/commit/7c16258cfb18c2d74b692e53e640e56b5d877e75) | feat | switch to non-deprecated typings ([#23350](https://github.com/angular/components/pull/23350)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [318178020](https://github.com/angular/components/commit/318178020702879f345a649ec8f48ebb316e592a) | fix | **mdc-menu:** Use body1 typography for menu content ([#23657](https://github.com/angular/components/pull/23657)) |
+### multiple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [db18b4093](https://github.com/angular/components/commit/db18b4093f23ae5c0ef76f6a9699c670ee5d55f7) | feat | add support for TypeScript 4.4 ([#23646](https://github.com/angular/components/pull/23646)) |
+## Special Thanks
+Amy Sorto, Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner and Вася
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="12.2.9"></a>
 # 12.2.9 "cobblestone-wind" (2021-10-06)
 ### cdk
