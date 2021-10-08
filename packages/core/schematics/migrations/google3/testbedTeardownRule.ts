@@ -8,7 +8,7 @@
 
 import {Replacement, RuleFailure, Rules} from 'tslint';
 import ts from 'typescript';
-import {findInitTestEnvironmentCalls, findTestModuleMetadataNodes, InitTestEnvironmentAnalysis, migrateInitTestEnvironment, migrateTestModuleMetadataLiteral} from '../testbed-teardown/util';
+import {findInitTestEnvironmentCalls, findTestModuleMetadataNodes, getInitTestEnvironmentLiteralReplacement, InitTestEnvironmentAnalysis, migrateTestModuleMetadataLiteral} from '../testbed-teardown/util';
 
 /** TSLint rule that adds the `teardown` flag to `TestBed` calls. */
 export class Rule extends Rules.TypedRule {
@@ -42,31 +42,31 @@ export class Rule extends Rules.TypedRule {
     if (initTestEnvironmentResult.totalCalls > 0) {
       // Migrate all of the unmigrated calls `initTestEnvironment` in this file. This could be zero
       // if the user has already opted into the new teardown behavior themselves.
-      initTestEnvironmentResult.callsToMigrate.forEach(call => {
+      initTestEnvironmentResult.callsToMigrate.forEach(node => {
         // This analysis is global so we need to check that the call is within this file.
-        if (call.getSourceFile() === sourceFile) {
-          failures.push(this._getFailure(call, migrateInitTestEnvironment, printer));
+        if (node.getSourceFile() === sourceFile) {
+          const {span, text} = getInitTestEnvironmentLiteralReplacement(node, printer);
+
+          failures.push(new RuleFailure(
+              sourceFile, span.start, span.end, 'Teardown behavior has to be configured.',
+              this.ruleName, new Replacement(span.start, span.length, text)));
         }
       });
     } else {
       // Otherwise migrate the metadata passed into the `configureTestingModule` and `withModule`
       // calls. This scenario is less likely, but it could happen if `initTestEnvironment` has been
       // abstracted away or is inside a .js file.
-      findTestModuleMetadataNodes(typeChecker, sourceFile).forEach(literal => {
-        failures.push(this._getFailure(literal, migrateTestModuleMetadataLiteral, printer));
+      findTestModuleMetadataNodes(typeChecker, sourceFile).forEach(node => {
+        const sourceFile = node.getSourceFile();
+        const migrated = migrateTestModuleMetadataLiteral(node);
+        const replacementText = printer.printNode(ts.EmitHint.Unspecified, migrated, sourceFile);
+
+        failures.push(new RuleFailure(
+            sourceFile, node.getStart(), node.getEnd(), 'Teardown behavior has to be configured.',
+            this.ruleName, new Replacement(node.getStart(), node.getWidth(), replacementText)));
       });
     }
 
     return failures;
-  }
-
-  private _getFailure<T extends ts.Node>(node: T, migrator: (node: T) => T, printer: ts.Printer) {
-    const sourceFile = node.getSourceFile();
-    const migrated = migrator(node);
-    const replacementText = printer.printNode(ts.EmitHint.Unspecified, migrated, sourceFile);
-
-    return new RuleFailure(
-        sourceFile, node.getStart(), node.getEnd(), 'Teardown behavior has to be configured.',
-        this.ruleName, new Replacement(node.getStart(), node.getWidth(), replacementText));
   }
 }

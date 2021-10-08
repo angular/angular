@@ -12,7 +12,7 @@ import ts from 'typescript';
 
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
-import {findInitTestEnvironmentCalls, findTestModuleMetadataNodes, migrateInitTestEnvironment, migrateTestModuleMetadataLiteral} from './util';
+import {findInitTestEnvironmentCalls, findTestModuleMetadataNodes, getInitTestEnvironmentLiteralReplacement, migrateTestModuleMetadataLiteral} from './util';
 
 
 /** Migration that adds the `teardown` flag to `TestBed` calls. */
@@ -48,28 +48,30 @@ function runTestbedTeardownMigration(tree: Tree, tsconfigPath: string, basePath:
   if (initTestEnvironmentResult.totalCalls > 0) {
     // Migrate all of the unmigrated calls `initTestEnvironment`. This could be zero
     // if the user has already opted into the new teardown behavior themselves.
-    initTestEnvironmentResult.callsToMigrate.forEach(call => {
-      migrate(call, migrateInitTestEnvironment, tree, basePath, printer);
+    initTestEnvironmentResult.callsToMigrate.forEach(node => {
+      const {span, text} = getInitTestEnvironmentLiteralReplacement(node, printer);
+      const update = tree.beginUpdate(relative(basePath, node.getSourceFile().fileName));
+      // The update appears to break if we try to call `remove` with a zero length.
+      if (span.length > 0) {
+        update.remove(span.start, span.length);
+      }
+      update.insertRight(span.start, text);
+      tree.commitUpdate(update);
     });
   } else {
     // Otherwise migrate the metadata passed into the `configureTestingModule` and `withModule`
     // calls. This scenario is less likely, but it could happen if `initTestEnvironment` has been
     // abstracted away or is inside a .js file.
     sourceFiles.forEach(sourceFile => {
-      findTestModuleMetadataNodes(typeChecker, sourceFile).forEach(literal => {
-        migrate(literal, migrateTestModuleMetadataLiteral, tree, basePath, printer);
+      findTestModuleMetadataNodes(typeChecker, sourceFile).forEach(node => {
+        const migrated = migrateTestModuleMetadataLiteral(node);
+        const update = tree.beginUpdate(relative(basePath, node.getSourceFile().fileName));
+        update.remove(node.getStart(), node.getWidth());
+        update.insertRight(
+            node.getStart(),
+            printer.printNode(ts.EmitHint.Unspecified, migrated, node.getSourceFile()));
+        tree.commitUpdate(update);
       });
     });
   }
-}
-
-
-function migrate<T extends ts.Node>(
-    node: T, migrator: (node: T) => T, tree: Tree, basePath: string, printer: ts.Printer) {
-  const migrated = migrator(node);
-  const update = tree.beginUpdate(relative(basePath, node.getSourceFile().fileName));
-  update.remove(node.getStart(), node.getWidth());
-  update.insertRight(
-      node.getStart(), printer.printNode(ts.EmitHint.Unspecified, migrated, node.getSourceFile()));
-  tree.commitUpdate(update);
 }
