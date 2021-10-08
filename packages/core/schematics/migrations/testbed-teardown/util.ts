@@ -82,26 +82,45 @@ export function findTestModuleMetadataNodes(
   return sortInReverseSourceOrder(Array.from(testModuleMetadataLiterals));
 }
 
-/** Migrates a call to `TestBed.initTestEnvironment`. */
-export function migrateInitTestEnvironment(node: ts.CallExpression): ts.CallExpression {
+/**
+ * Gets data that can be used to migrate a call to `TestBed.initTestEnvironment`.
+ * The returned `span` is used to mark the text that should be replaced while the `text`
+ * is the code that should be inserted instead.
+ */
+export function getInitTestEnvironmentLiteralReplacement(
+    node: ts.CallExpression, printer: ts.Printer) {
   const literalProperties: ts.ObjectLiteralElementLike[] = [];
+  const lastArg = node.arguments[node.arguments.length - 1];
+  let span: {start: number, end: number, length: number};
+  let prefix: string;
 
   if (node.arguments.length > 2) {
-    if (isFunction(node.arguments[2])) {
+    if (isFunction(lastArg)) {
       // If the last argument is a function, add the function as the `aotSummaries` property.
-      literalProperties.push(ts.createPropertyAssignment('aotSummaries', node.arguments[2]));
-    } else if (ts.isObjectLiteralExpression(node.arguments[2])) {
+      literalProperties.push(ts.createPropertyAssignment('aotSummaries', lastArg));
+    } else if (ts.isObjectLiteralExpression(lastArg)) {
       // If the property is an object literal, copy over all the properties.
-      literalProperties.push(...node.arguments[2].properties);
+      literalProperties.push(...lastArg.properties);
     }
+
+    prefix = '';
+    span = {start: lastArg.getStart(), end: lastArg.getEnd(), length: lastArg.getWidth()};
+  } else {
+    const start = lastArg.getEnd();
+    prefix = ', ';
+    span = {start, end: start, length: 0};
   }
 
   // Finally push the teardown object so that it appears last.
   literalProperties.push(createTeardownAssignment());
 
-  return ts.createCall(
-      node.expression, node.typeArguments,
-      [...node.arguments.slice(0, 2), ts.createObjectLiteral(literalProperties, true)]);
+  return {
+    span,
+    text: prefix +
+        printer.printNode(
+            ts.EmitHint.Unspecified, ts.createObjectLiteral(literalProperties, true),
+            node.getSourceFile())
+  };
 }
 
 /** Migrates an object literal that is passed into `configureTestingModule` or `withModule`. */
