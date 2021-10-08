@@ -328,30 +328,6 @@ export interface NavigationTransition {
 }
 
 /**
- * @internal
- */
-export type RouterHook = (snapshot: RouterStateSnapshot, runExtras: {
-  appliedUrlTree: UrlTree,
-  rawUrlTree: UrlTree,
-  skipLocationChange: boolean,
-  replaceUrl: boolean,
-  navigationId: number
-}) => Observable<void>;
-
-/**
- * @internal
- */
-function defaultRouterHook(snapshot: RouterStateSnapshot, runExtras: {
-  appliedUrlTree: UrlTree,
-  rawUrlTree: UrlTree,
-  skipLocationChange: boolean,
-  replaceUrl: boolean,
-  navigationId: number
-}): Observable<void> {
-  return of(null) as any;
-}
-
-/**
  * The equivalent `IsActiveMatchOptions` options for `Router.isActive` is called with `true`
  * (exact = true).
  */
@@ -487,16 +463,12 @@ export class Router {
   private lastSuccessfulId: number = -1;
 
   /**
-   * Hooks that enable you to pause navigation,
-   * either before or after the preactivation phase.
+   * Hook that enables you to pause navigation after the preactivation phase.
    * Used by `RouterModule`.
    *
    * @internal
    */
-  hooks: {
-    beforePreactivation: RouterHook,
-    afterPreactivation: RouterHook
-  } = {beforePreactivation: defaultRouterHook, afterPreactivation: defaultRouterHook};
+  afterPreactivation: () => Observable<void> = () => of(void 0);
 
   /**
    * A strategy for extracting and merging URLs.
@@ -759,24 +731,6 @@ export class Router {
                        }
                      }),
 
-                     // Before Preactivation
-                     switchTap(t => {
-                       const {
-                         targetSnapshot,
-                         id: navigationId,
-                         extractedUrl: appliedUrlTree,
-                         rawUrl: rawUrlTree,
-                         extras: {skipLocationChange, replaceUrl}
-                       } = t;
-                       return this.hooks.beforePreactivation(targetSnapshot!, {
-                         navigationId,
-                         appliedUrlTree,
-                         rawUrlTree,
-                         skipLocationChange: !!skipLocationChange,
-                         replaceUrl: !!replaceUrl,
-                       });
-                     }),
-
                      // --- GUARDS ---
                      tap(t => {
                        const guardsStart = new GuardsCheckStart(
@@ -854,23 +808,7 @@ export class Router {
                        return undefined;
                      }),
 
-                     // --- AFTER PREACTIVATION ---
-                     switchTap((t: NavigationTransition) => {
-                       const {
-                         targetSnapshot,
-                         id: navigationId,
-                         extractedUrl: appliedUrlTree,
-                         rawUrl: rawUrlTree,
-                         extras: {skipLocationChange, replaceUrl}
-                       } = t;
-                       return this.hooks.afterPreactivation(targetSnapshot!, {
-                         navigationId,
-                         appliedUrlTree,
-                         rawUrlTree,
-                         skipLocationChange: !!skipLocationChange,
-                         replaceUrl: !!replaceUrl,
-                       });
-                     }),
+                     switchTap(() => this.afterPreactivation()),
 
                      map((t: NavigationTransition) => {
                        const targetRouterState = createRouterState(

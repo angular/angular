@@ -885,11 +885,14 @@ describe('Integration', () => {
          expect(fixture.nativeElement).toHaveText('team 22 [ , right:  ]');
 
          router.urlUpdateStrategy = 'eager';
-         (router as any).hooks.beforePreactivation = () => {
+         router.events.subscribe(e => {
+           if (!(e instanceof GuardsCheckStart)) {
+             return;
+           }
            expect(location.path()).toEqual('/team/33');
            expect(fixture.nativeElement).toHaveText('team 22 [ , right:  ]');
            return of(null);
-         };
+         });
          router.navigateByUrl('/team/33');
 
          advance(fixture);
