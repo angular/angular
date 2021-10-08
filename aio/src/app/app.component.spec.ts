@@ -855,14 +855,16 @@ describe('AppComponent', () => {
     });
 
     describe('SW updates', () => {
-      it('should be enabled', inject([SwUpdatesService], (swUpdates: TestSwUpdatesService) => {
-        swUpdates.disable();
-        expect(swUpdates.isEnabled).toBeFalse();
+      it('should be enabled when the component is initialized',
+        inject([SwUpdatesService], (swUpdates: TestSwUpdatesService) => {
+          swUpdates.disable();
+          expect(swUpdates.isEnabled).toBeFalse();
 
-        const fixture2 = TestBed.createComponent(AppComponent);
-        fixture2.detectChanges();
-        expect(swUpdates.isEnabled).toBeTrue();
-      }));
+          const fixture2 = TestBed.createComponent(AppComponent);
+          fixture2.detectChanges();
+          expect(swUpdates.isEnabled).toBeTrue();
+        })
+      );
     });
 
     describe('archive redirection', () => {
