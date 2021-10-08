@@ -12,16 +12,16 @@ table {
     table-layout: fixed;
   }
 
-  thead > {
+  thead {
     vertical-align: middle;
     border-color: inherit;
 
-    tr {
+    > tr {
       vertical-align: inherit;
       border-color: inherit;
     }
 
-    tr > th {
+    > tr > th {
       @include mixins.font-size(12);
       font-weight: 500;
       padding: 8px 24px;
@@ -31,9 +31,9 @@ table {
     }
   }
 
-  tbody > tr > {
-    th,
-    td {
+  tbody > tr {
+    > th,
+    > td {
       padding: 16px;
       text-align: left;
       @include mixins.line-height(24);
@@ -48,11 +48,11 @@ table {
 
     }
 
-    td {
+    > td {
       @include mixins.letter-spacing(0.3);
     }
 
-    th {
+    > th {
       font-weight: 600;
       max-width: 100px;
     }
