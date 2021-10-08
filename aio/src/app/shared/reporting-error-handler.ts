@@ -34,8 +34,10 @@ export class ReportingErrorHandler extends ErrorHandler {
 
     if (error instanceof Error) {
       const oldMessage = error.message;
+      const oldStack = error.stack;
+
       error.message = prefix + oldMessage;
-      error.stack = error.stack?.replace(oldMessage, error.message);
+      error.stack = oldStack?.replace(oldMessage, error.message);
     } else if (typeof error === 'string') {
       error = prefix + error as unknown as T;
     }
