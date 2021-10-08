@@ -55,15 +55,19 @@ describe('ReportingErrorHandler service', () => {
       const error = new Error(originalMessage);
 
       expect(error.message).toBe(originalMessage);
-      if (error.stack) {
-        expect(error.stack).toContain(originalMessage);
-      }
+      // NOTE:
+      // Intentionally not checking `error.stack` here, because accessing it causes the property to
+      // be computed and may affect the observed behavior of `handleError()`.
 
       handler.handleError(error);
 
       expect(error.message).toBe(`[v${VERSION.full}] ${originalMessage}`);
       if (error.stack) {
-        expect(error.stack).toContain(`[v${VERSION.full}] ${originalMessage}`);
+        const expected = `Error: [v${VERSION.full}] ${originalMessage}`;
+        const actual = error.stack.split('\n', 1)[0];
+        expect(actual.startsWith(expected))
+            .withContext(`Expected '${actual}' to start with '${expected}'.`)
+            .toBeTrue();
       }
     });
 
