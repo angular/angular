@@ -999,9 +999,6 @@
     "name": "defaultMalformedUriErrorHandler"
   },
   {
-    "name": "defaultRouterHook"
-  },
-  {
     "name": "defaultScheduler"
   },
   {
