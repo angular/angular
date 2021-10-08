@@ -558,7 +558,7 @@ export class RouterInitializer implements OnDestroy {
         router.setUpLocationChangeListener();
         resolve(true);
       } else if (opts.initialNavigation === 'enabledBlocking') {
-        router.hooks.afterPreactivation = () => {
+        router.afterPreactivation = () => {
           // only the initial navigation should be delayed
           if (!this.initNavigation) {
             this.initNavigation = true;
@@ -567,7 +567,7 @@ export class RouterInitializer implements OnDestroy {
 
             // subsequent navigations should not be delayed
           } else {
-            return of(null) as any;
+            return of(void 0);
           }
         };
         router.initialNavigation();
@@ -598,7 +598,7 @@ export class RouterInitializer implements OnDestroy {
     preloader.setUpPreloading();
     routerScroller.init();
     router.resetRootComponentType(ref.componentTypes[0]);
-    this.resultOfPreactivationDone.next(null!);
+    this.resultOfPreactivationDone.next(void 0);
     this.resultOfPreactivationDone.complete();
   }
 
