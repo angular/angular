@@ -42,7 +42,7 @@
     "master": {
       "uncompressed": {
         "runtime": 2843,
-        "main": 238453,
+        "main": 237487,
         "polyfills": 37064,
         "src_app_lazy_lazy_module_ts": 795
       }

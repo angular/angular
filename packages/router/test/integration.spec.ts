@@ -871,7 +871,7 @@ describe('Integration', () => {
     });
 
 
-    it('should eagerly update the URL with urlUpdateStrategy="eagar"',
+    it('should eagerly update the URL with urlUpdateStrategy="eager"',
        fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
          const fixture = TestBed.createComponent(RootCmp);
          advance(fixture);
@@ -885,18 +885,21 @@ describe('Integration', () => {
          expect(fixture.nativeElement).toHaveText('team 22 [ , right:  ]');
 
          router.urlUpdateStrategy = 'eager';
-         (router as any).hooks.beforePreactivation = () => {
+         router.events.subscribe(e => {
+           if (!(e instanceof GuardsCheckStart)) {
+             return;
+           }
            expect(location.path()).toEqual('/team/33');
            expect(fixture.nativeElement).toHaveText('team 22 [ , right:  ]');
            return of(null);
-         };
+         });
          router.navigateByUrl('/team/33');
 
          advance(fixture);
          expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
        })));
 
-    it('should eagerly update the URL with urlUpdateStrategy="eagar"',
+    it('should eagerly update the URL with urlUpdateStrategy="eager"',
        fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
          const fixture = TestBed.createComponent(RootCmp);
          advance(fixture);
@@ -926,7 +929,7 @@ describe('Integration', () => {
          expect(location.path()).toEqual('/login');
        })));
 
-    it('should set browserUrlTree with urlUpdateStrategy="eagar" and false `shouldProcessUrl`',
+    it('should set browserUrlTree with urlUpdateStrategy="eager" and false `shouldProcessUrl`',
        fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
          const fixture = TestBed.createComponent(RootCmp);
          advance(fixture);
@@ -953,7 +956,7 @@ describe('Integration', () => {
          expect((router as any).browserUrlTree.toString()).toBe('/team/22');
        })));
 
-    it('should eagerly update URL after redirects are applied with urlUpdateStrategy="eagar"',
+    it('should eagerly update URL after redirects are applied with urlUpdateStrategy="eager"',
        fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
          const fixture = TestBed.createComponent(RootCmp);
          advance(fixture);
@@ -987,7 +990,7 @@ describe('Integration', () => {
          expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
        })));
 
-    it('should set `state` with urlUpdateStrategy="eagar"',
+    it('should set `state` with urlUpdateStrategy="eager"',
        fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
          router.urlUpdateStrategy = 'eager';
          router.resetConfig([
