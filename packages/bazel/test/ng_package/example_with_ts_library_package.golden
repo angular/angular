@@ -63,7 +63,7 @@ License: MIT
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
     typeof define === 'function' && define.amd ? define('example-with-ts-library/portal', ['exports', '@angular/core'], factory) :
-    (global = global || self, factory((global.exampleWithTsLibrary = global.exampleWithTsLibrary || {}, global.exampleWithTsLibrary.portal = {}), global.ng.core));
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory((global.exampleWithTsLibrary = global.exampleWithTsLibrary || {}, global.exampleWithTsLibrary.portal = {}), global.ng.core));
 }(this, (function (exports, core) { 'use strict';
 
     /**
@@ -115,7 +115,7 @@ License: MIT
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
     typeof define === 'function' && define.amd ? define('example-with-ts-library/utils', ['exports'], factory) :
-    (global = global || self, factory((global.exampleWithTsLibrary = global.exampleWithTsLibrary || {}, global.exampleWithTsLibrary.utils = {})));
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory((global.exampleWithTsLibrary = global.exampleWithTsLibrary || {}, global.exampleWithTsLibrary.utils = {})));
 }(this, (function (exports) { 'use strict';
 
     /**
@@ -156,7 +156,7 @@ License: MIT
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define('example-with-ts-library', ['exports'], factory) :
-	(global = global || self, factory(global.exampleWithTsLibrary = {}));
+	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.exampleWithTsLibrary = {}));
 }(this, (function (exports) { 'use strict';
 
 	/**

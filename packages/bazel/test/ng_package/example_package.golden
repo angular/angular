@@ -158,7 +158,7 @@ Hello
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
     typeof define === 'function' && define.amd ? define('example/a11y', ['exports', '@angular/core'], factory) :
-    (global = global || self, factory((global.example = global.example || {}, global.example.a11y = {}), global.ng.core));
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory((global.example = global.example || {}, global.example.a11y = {}), global.ng.core));
 }(this, (function (exports, core) { 'use strict';
 
     /**
@@ -208,8 +208,30 @@ Hello
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
     typeof define === 'function' && define.amd ? define('example/imports', ['exports', '@angular/core'], factory) :
-    (global = global || self, factory((global.example = global.example || {}, global.example.imports = {}), global.ng.core));
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory((global.example = global.example || {}, global.example.imports = {}), global.ng.core));
 }(this, (function (exports, i0) { 'use strict';
+
+    function _interopNamespace(e) {
+        if (e && e.__esModule) return e;
+        var n = Object.create(null);
+        if (e) {
+            Object.keys(e).forEach(function (k) {
+                if (k !== 'default') {
+                    var d = Object.getOwnPropertyDescriptor(e, k);
+                    Object.defineProperty(n, k, d.get ? d : {
+                        enumerable: true,
+                        get: function () {
+                            return e[k];
+                        }
+                    });
+                }
+            });
+        }
+        n['default'] = e;
+        return Object.freeze(n);
+    }
+
+    var i0__namespace = /*#__PURE__*/_interopNamespace(i0);
 
     /**
      * @license
@@ -223,7 +245,7 @@ Hello
         }
         return MySecondService;
     }());
-    MySecondService.ɵprov = i0.ɵɵdefineInjectable({ factory: function MySecondService_Factory() { return new MySecondService(); }, token: MySecondService, providedIn: "root" });
+    MySecondService.ɵprov = i0__namespace.ɵɵdefineInjectable({ factory: function MySecondService_Factory() { return new MySecondService(); }, token: MySecondService, providedIn: "root" });
     MySecondService.decorators = [
         { type: i0.Injectable, args: [{ providedIn: 'root' },] }
     ];
@@ -241,7 +263,7 @@ Hello
         }
         return MyService;
     }());
-    MyService.ɵprov = i0.ɵɵdefineInjectable({ factory: function MyService_Factory() { return new MyService(i0.ɵɵinject(MySecondService)); }, token: MyService, providedIn: "root" });
+    MyService.ɵprov = i0__namespace.ɵɵdefineInjectable({ factory: function MyService_Factory() { return new MyService(i0__namespace.ɵɵinject(MySecondService)); }, token: MyService, providedIn: "root" });
     MyService.decorators = [
         { type: i0.Injectable, args: [{ providedIn: 'root' },] }
     ];
@@ -281,7 +303,7 @@ Hello
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
     typeof define === 'function' && define.amd ? define('example/secondary', ['exports', '@angular/core'], factory) :
-    (global = global || self, factory((global.example = global.example || {}, global.example.secondary = {}), global.ng.core));
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory((global.example = global.example || {}, global.example.secondary = {}), global.ng.core));
 }(this, (function (exports, core) { 'use strict';
 
     /**
@@ -333,7 +355,7 @@ Hello
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
     typeof define === 'function' && define.amd ? define('example', ['exports', '@angular/core'], factory) :
-    (global = global || self, factory(global.example = {}, global.ng.core));
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.example = {}, global.ng.core));
 }(this, (function (exports, core) { 'use strict';
 
     /**
@@ -664,7 +686,8 @@ export { A11yModule };
  * License: MIT
  */
 
-import { ɵɵdefineInjectable, Injectable, ɵɵinject } from '@angular/core';
+import * as i0 from '@angular/core';
+import { Injectable } from '@angular/core';
 
 /**
  * @license
@@ -675,7 +698,7 @@ import { ɵɵdefineInjectable, Injectable, ɵɵinject } from '@angular/core';
  */
 class MySecondService {
 }
-MySecondService.ɵprov = ɵɵdefineInjectable({ factory: function MySecondService_Factory() { return new MySecondService(); }, token: MySecondService, providedIn: "root" });
+MySecondService.ɵprov = i0.ɵɵdefineInjectable({ factory: function MySecondService_Factory() { return new MySecondService(); }, token: MySecondService, providedIn: "root" });
 MySecondService.decorators = [
     { type: Injectable, args: [{ providedIn: 'root' },] }
 ];
@@ -692,7 +715,7 @@ class MyService {
         this.secondService = secondService;
     }
 }
-MyService.ɵprov = ɵɵdefineInjectable({ factory: function MyService_Factory() { return new MyService(ɵɵinject(MySecondService)); }, token: MyService, providedIn: "root" });
+MyService.ɵprov = i0.ɵɵdefineInjectable({ factory: function MyService_Factory() { return new MyService(i0.ɵɵinject(MySecondService)); }, token: MyService, providedIn: "root" });
 MyService.decorators = [
     { type: Injectable, args: [{ providedIn: 'root' },] }
 ];
