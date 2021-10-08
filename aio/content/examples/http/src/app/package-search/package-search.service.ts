@@ -30,7 +30,7 @@ export class PackageSearchService {
   constructor(
     private http: HttpClient,
     httpErrorHandler: HttpErrorHandler) {
-    this.handleError = httpErrorHandler.createHandleError('HeroesService');
+    this.handleError = httpErrorHandler.createHandleError('PackageSearchService');
   }
 
   search(packageName: string, refresh = false): Observable<NpmPackageInfo[]> {
