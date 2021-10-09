@@ -263,7 +263,7 @@ What it does
 </tr>
 
 <tr>
-<td><code>[state](api/animations/state)()</code></td>
+<td><code><a href="api/animations/state" class="code-anchor">state</a>()</code></td>
 <td>Creates a named set of CSS styles that should be applied on successful transition to a given state. The state can then be referenced by name within other animation functions.</td>
 </tr>
 
@@ -283,7 +283,7 @@ What it does
 </tr>
 
 <tr>
-<td><code>[group](api/animations/group)()</code></td>
+<td><code><a href="api/animations/group" class="code-anchor">group</a>()</code></td>
 <td>Specifies a group of animation steps (<em>inner animations</em>) to be run in parallel. Animation continues only after all inner animation steps have completed. Used within <code>sequence()</code> or <code>transition()</code>.</td>
 </tr>
 
