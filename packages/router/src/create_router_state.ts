@@ -34,7 +34,8 @@ function createNode(
       const detachedRouteHandle = routeReuseStrategy.retrieve(curr.value);
       if (detachedRouteHandle !== null) {
         const tree = (detachedRouteHandle as DetachedRouteHandleInternal).route;
-        setFutureSnapshotsOfActivatedRoutes(curr, tree);
+        tree.value._futureSnapshot = curr.value;
+        tree.children = curr.children.map(c => createNode(routeReuseStrategy, c));
         return tree;
       }
     }
@@ -42,20 +43,6 @@ function createNode(
     const value = createActivatedRoute(curr.value);
     const children = curr.children.map(c => createNode(routeReuseStrategy, c));
     return new TreeNode<ActivatedRoute>(value, children);
-  }
-}
-
-function setFutureSnapshotsOfActivatedRoutes(
-    curr: TreeNode<ActivatedRouteSnapshot>, result: TreeNode<ActivatedRoute>): void {
-  if (curr.value.routeConfig !== result.value.routeConfig) {
-    throw new Error('Cannot reattach ActivatedRouteSnapshot created from a different route');
-  }
-  if (curr.children.length !== result.children.length) {
-    throw new Error('Cannot reattach ActivatedRouteSnapshot with a different number of children');
-  }
-  result.value._futureSnapshot = curr.value;
-  for (let i = 0; i < curr.children.length; ++i) {
-    setFutureSnapshotsOfActivatedRoutes(curr.children[i], result.children[i]);
   }
 }
 
