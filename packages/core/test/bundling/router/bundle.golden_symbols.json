@@ -942,9 +942,6 @@
     "name": "advanceActivatedRoute"
   },
   {
-    "name": "advanceActivatedRouteNodeAndItsChildren"
-  },
-  {
     "name": "allocExpando"
   },
   {
@@ -1921,9 +1918,6 @@
   },
   {
     "name": "setDirectiveInputsWhichShadowsStyling"
-  },
-  {
-    "name": "setFutureSnapshotsOfActivatedRoutes"
   },
   {
     "name": "setIncludeViewProviders"
