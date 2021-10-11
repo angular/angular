@@ -1,8 +1,5 @@
-@use '@material/tab-indicator' as mdc-tab-indicator;
-@use '../mdc-helpers/mdc-helpers';
 @use './tabs-common';
 
-@include mdc-tab-indicator.core-styles($query: mdc-helpers.$mat-base-styles-query);
 @include tabs-common.paginated-tab-header;
 
 .mat-mdc-tab-label-container {
