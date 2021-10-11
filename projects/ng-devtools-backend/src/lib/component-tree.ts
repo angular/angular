@@ -10,7 +10,15 @@ import {
   UpdatedStateData,
 } from 'protocol';
 import { buildDirectiveTree, getLViewFromDirectiveOrElementInstance } from './directive-forest';
-import { ChangeDetectionStrategy } from '@angular/core';
+
+// Need to be kept in sync with Angular framework
+// We can't directly import it from framework now
+// because this also pulls up the security policies
+// for Trusted Types, which we reinstantiate.
+enum ChangeDetectionStrategy {
+  OnPush = 0,
+  Default = 1,
+}
 
 const ngDebug = () => (window as any).ng;
 
