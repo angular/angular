@@ -9,21 +9,28 @@
 @include mdc-radio.without-ripple($query: mdc-helpers.$mat-base-styles-without-animation-query);
 @include mdc-form-field.core-styles($query: mdc-helpers.$mat-base-styles-query);
 
-// This is necessary because we do not depend on MDC's ripple, but have our own that should be
-// positioned correctly. This can be removed once we start using MDC's ripple implementation.
-.mat-mdc-radio-button .mat-radio-ripple {
-  @include layout-common.fill;
-
-  pointer-events: none;
-  border-radius: 50%;
-
-  .mat-ripple-element:not(.mat-radio-persistent-ripple) {
-    opacity: mdc-radio-theme.$ripple-opacity;
+.mat-mdc-radio-button {
+  &:not(._mat-animation-noopable) {
+    @include mdc-radio.without-ripple($query: animation);
   }
-}
 
-.mat-mdc-radio-button:not(._mat-animation-noopable) {
-  @include mdc-radio.without-ripple($query: animation);
+  .mdc-radio {
+    // MDC theme styles also include structural styles so we have to include the theme at least
+    // once here. The values will be overwritten by our own theme file afterwards.
+    @include mdc-radio-theme.theme-styles(mdc-radio-theme.$light-theme);
+  }
+
+  // This is necessary because we do not depend on MDC's ripple, but have our own that should be
+  // positioned correctly. This can be removed once we start using MDC's ripple implementation.
+  .mat-radio-ripple {
+    @include layout-common.fill;
+    pointer-events: none;
+    border-radius: 50%;
+
+    .mat-ripple-element:not(.mat-radio-persistent-ripple) {
+      opacity: mdc-radio-theme.$ripple-opacity;
+    }
+  }
 }
 
 // Element used to provide a larger tap target for users on touch devices.
@@ -42,7 +49,7 @@
 // Note that this creates a square box around the circle, however it's consistent with
 // how IE/Edge treat native radio buttons in high contrast mode. We can't turn the border
 // into a dotted one, because it's too thick which causes the circles to look off.
-@include a11y.high-contrast {
+@include a11y.high-contrast(active, 'off') {
   .mat-mdc-radio-button:not(.mat-radio-disabled) {
     &.cdk-keyboard-focused,
     &.cdk-program-focused {

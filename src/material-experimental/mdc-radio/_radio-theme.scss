@@ -1,3 +1,4 @@
+@use 'sass:map';
 @use '@material/theme/theme-color' as mdc-theme-color;
 @use '@material/radio/radio-theme' as mdc-radio-theme;
 @use '@material/radio/radio' as mdc-radio;
@@ -6,42 +7,59 @@
 @use '../../material/core/typography/typography';
 @use '../../material/core/theming/theming';
 
+@mixin _color-palette($color-palette) {
+  @include mdc-radio-theme.theme((
+    selected-focus-icon-color: $color-palette,
+    selected-focus-state-layer-color: $color-palette,
+    selected-hover-icon-color: $color-palette,
+    selected-hover-state-layer-color: $color-palette,
+    selected-icon-color: $color-palette,
+    selected-pressed-icon-color: $color-palette,
+    selected-pressed-state-layer-color: $color-palette,
+  ));
+
+  // TODO(crisbeto): this should be included by MDC's `theme-styles`, but it isn't currently.
+  @include mdc-radio-theme.focus-indicator-color($color-palette);
+}
+
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
-  // Save original values of MDC global variables. We need to save these so we can restore the
-  // variables to their original values and prevent unintended side effects from using this mixin.
-  $orig-baseline-theme-color: mdc-radio-theme.$baseline-theme-color;
-  $orig-unchecked-color: mdc-radio-theme.$unchecked-color;
-  $orig-disabled-circle-color: mdc-radio-theme.$disabled-circle-color;
+  $primary: theming.get-color-from-palette(map.get($config, primary));
+  $accent: theming.get-color-from-palette(map.get($config, accent));
+  $warn: theming.get-color-from-palette(map.get($config, warn));
 
   @include mdc-helpers.mat-using-mdc-theme($config) {
-    mdc-radio-theme.$baseline-theme-color: primary;
-    mdc-radio-theme.$unchecked-color: rgba(mdc-theme-color.prop-value(on-surface), 0.54);
-    mdc-radio-theme.$disabled-circle-color: rgba(mdc-theme-color.prop-value(on-surface), 0.38);
+    $on-surface: rgba(mdc-theme-color.$on-surface, 0.54);
 
     .mat-mdc-radio-button {
       @include mdc-form-field.core-styles($query: mdc-helpers.$mat-theme-styles-query);
+      @include mdc-radio-theme.theme((
+        // The disabled colors don't use the `rgba` version, because
+        // MDC applies a separate opacity to disabled buttons.
+        disabled-selected-icon-color: mdc-theme-color.$on-surface,
+        disabled-unselected-icon-color: mdc-theme-color.$on-surface,
+        unselected-focus-icon-color: $on-surface,
+        unselected-focus-state-layer-color: $on-surface,
+        unselected-hover-icon-color: $on-surface,
+        unselected-hover-state-layer-color: $on-surface,
+        unselected-icon-color: $on-surface,
+        unselected-pressed-icon-color: $on-surface,
+        unselected-pressed-state-layer-color: $on-surface,
+      ));
 
       &.mat-primary {
-        @include mdc-radio.without-ripple($query: mdc-helpers.$mat-theme-styles-query);
+        @include _color-palette($primary);
       }
 
       &.mat-accent {
-        mdc-radio-theme.$baseline-theme-color: secondary;
-        @include mdc-radio.without-ripple($query: mdc-helpers.$mat-theme-styles-query);
+        @include _color-palette($accent);
       }
 
       &.mat-warn {
-        mdc-radio-theme.$baseline-theme-color: error;
-        @include mdc-radio.without-ripple($query: mdc-helpers.$mat-theme-styles-query);
+        @include _color-palette($warn);
       }
     }
   }
-
-  // Restore original values of MDC global variables.
-  mdc-radio-theme.$baseline-theme-color: $orig-baseline-theme-color;
-  mdc-radio-theme.$unchecked-color: $orig-unchecked-color;
-  mdc-radio-theme.$disabled-circle-color: $orig-disabled-circle-color;
 }
 
 @mixin typography($config-or-theme) {
