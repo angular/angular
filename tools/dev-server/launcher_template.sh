@@ -14,6 +14,14 @@ source "$(grep -sm1 "^$f " "$0.exe.runfiles_manifest" | cut -f2- -d' ')" 2>/dev/
 { echo>&2 "ERROR: cannot find $f"; exit 1; }; f=; set -e
 # --- end runfiles.bash initialization v2 ---
 
+# If we do not run the devserver as part of a test, we always enforce runfile
+# resolution when invoking the devserver NodeJS binary. This is necessary as
+# runfile trees are disabled as part of this repository. The devserver NodeJS
+# binary would not find a relative runfile tree directory and error out.
+if [[ -z "${TEST_SRCDIR:-""}" ]]; then
+  export RUNFILES_MANIFEST_ONLY="1"
+fi
+
 # Resolve the path of the dev-server binary. Note: usually we either need to
 # resolve the "nodejs_binary" executable with different file extensions on
 # windows, but since we already run this launcher as part of a "sh_binary", we
