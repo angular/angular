@@ -36,11 +36,11 @@ You can add a custom user ID to the global configuration, in order to identify u
 If that user enables CLI analytics for their own project, your analytics display tracks and labels their individual usage.
 
 <code-example language="sh">
-ng config --global cli.analyticsSharing.user SOME_USER_NAME
+ng config --global cli.analyticsSharing.uuid SOME_USER_NAME
 </code-example>
 
 To generate a new random user ID, run the following command:
 
 <code-example language="sh">
-ng config --global cli.analyticsSharing.user ""
+ng config --global cli.analyticsSharing.uuid ""
 </code-example>
