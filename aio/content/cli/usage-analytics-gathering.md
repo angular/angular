@@ -27,7 +27,7 @@ ng config --global cli.analyticsSharing.tracking UA-123456-12
 To turn off this feature, run the following command:
 
 <code-example language="sh">
-ng config --global --remove cli.analyticsSharing
+ng config --global cli.analyticsSharing undefined
 </code-example>
 
 ## Per user tracking
