@@ -1,7 +1,7 @@
 import { Type } from '@angular/core';
 
 let overlay: any;
-let overlayContent: any;
+let overlayContent: HTMLElement;
 
 declare const ng: any;
 
@@ -120,7 +120,11 @@ function showOverlay(
   overlay.style.top = ~~top + 'px';
   overlay.style.left = ~~left + 'px';
 
-  overlayContent.innerHTML = '';
+  while (overlayContent.children.length) {
+    const { children } = overlayContent;
+    overlayContent.removeChild(children[children.length - 1]);
+  }
+
   content.forEach((child) => overlayContent.appendChild(child));
 
   document.body.appendChild(overlay);
