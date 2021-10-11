@@ -67,7 +67,6 @@ v13 -> v16
 | `@angular/core/testing`   | [`aotSummaries` argument in `TestBed.initTestEnvironment`](#testing)                          | <!--v13--> v14        |
 | `@angular/core/testing`   | [`aotSummaries` field of the `TestModuleMetadata` type](#testing)                             | <!--v13--> v14        |
 | `@angular/forms`          | [`FormBuilder.group` legacy options parameter](api/forms/FormBuilder#group)                   | <!--v11--> v14        |
-| `@angular/router`         | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props)                 | unspecified           |
 | `@angular/platform-server`| [`renderModuleFactory`](#platform-server)                                                     | <!--v13--> v15        |
 | `@angular/service-worker` | [`SwUpdate#activated`](api/service-worker/SwUpdate#activated)                                 | <!--v13--> v16        |
 | `@angular/service-worker` | [`SwUpdate#available`](api/service-worker/SwUpdate#available)                                 | <!--v13--> v16        |
@@ -369,18 +368,6 @@ const routes: Routes = [{
 
 </div>
 
-{@a activatedroute-props}
-
-### ActivatedRoute params and queryParams properties
-
-[ActivatedRoute](api/router/ActivatedRoute) contains two [properties](api/router/ActivatedRoute#properties) that are less capable than their replacements and may be deprecated in a future Angular version.
-
-| Property | Replacement |
-| -------- | ----------- |
-| `params` | `paramMap` |
-| `queryParams` | `queryParamMap` |
-
-For more information see the [Getting route information](guide/router-reference#activated-route) section of the [Router guide](guide/router).
 
 {@a reflect-metadata}
 
