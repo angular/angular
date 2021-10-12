@@ -656,7 +656,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     element.inputs.forEach(input => {
       const stylingInputWasSet = stylingBuilder.registerBoundInput(input);
       if (!stylingInputWasSet) {
-        if (input.type === BindingType.Property && input.i18n) {
+        if ((input.type === BindingType.Property || input.type === BindingType.Attribute) &&
+            input.i18n) {
           boundI18nAttrs.push(input);
         } else {
           allOtherInputs.push(input);
