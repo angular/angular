@@ -86,6 +86,16 @@ executors:
         type: string
         default: medium
     docker:
+      - image: cimg/node:14.17.6@sha256:589b5e494173bfb48923fa8d29b010b4d17079ac98d08de95dd4a78e57f5aa0b
+    resource_class: << parameters.resource_class >>
+    working_directory: ~/ng
+
+  test-browser-executor:
+    parameters:
+      resource_class:
+        type: string
+        default: medium
+    docker:
       - image: cimg/node:14.17.6-browsers@sha256:aa6d08a04d13dd8aa18ae94be70a703c14dde0e99ea572e885e548f47f95eaa9
     resource_class: << parameters.resource_class >>
     working_directory: ~/ng
@@ -282,7 +292,7 @@ jobs:
 
   test:
     executor:
-      name: default-executor
+      name: test-browser-executor
       # Now that large integration tests are running locally in parallel (they can't run on RBE yet
       # as they require network access for yarn install), this test is running out of memory
       # consistently with the xlarge machine.
@@ -299,7 +309,7 @@ jobs:
   # Temporary job to test what will happen when we flip the Ivy flag to true
   test_ivy_aot:
     executor:
-      name: default-executor
+      name: test-browser-executor
       resource_class: xlarge
     steps:
       - custom_attach_workspace
@@ -379,7 +389,7 @@ jobs:
           webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
   test_aio:
-    executor: default-executor
+    executor: test-browser-executor
     steps:
       - custom_attach_workspace
       - init_environment
@@ -401,7 +411,7 @@ jobs:
       - run: yarn --cwd aio redirects-test
 
   deploy_aio:
-    executor: default-executor
+    executor: test-browser-executor
     steps:
       - custom_attach_workspace
       - init_environment
@@ -410,7 +420,7 @@ jobs:
       - run: yarn --cwd aio deploy-production
 
   test_aio_local:
-    executor: default-executor
+    executor: test-browser-executor
     steps:
       - custom_attach_workspace
       - init_environment
@@ -439,7 +449,7 @@ jobs:
 
   test_docs_examples:
     executor:
-      name: default-executor
+      name: test-browser-executor
       resource_class: xlarge
     parallelism: 5
     environment:
@@ -595,7 +605,7 @@ jobs:
           command: yarn node aio/scripts/test-external-urls.js
 
   aio_monitoring_stable:
-    executor: default-executor
+    executor: test-browser-executor
     steps:
       - custom_attach_workspace
       - init_environment
@@ -617,7 +627,7 @@ jobs:
           webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
   aio_monitoring_next:
-    executor: default-executor
+    executor: test-browser-executor
     steps:
       - custom_attach_workspace
       - init_environment
