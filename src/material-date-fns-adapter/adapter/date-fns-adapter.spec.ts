@@ -9,7 +9,7 @@
 import {TestBed, waitForAsync} from '@angular/core/testing';
 import {DateAdapter, MAT_DATE_LOCALE} from '@angular/material/core';
 import {Locale} from 'date-fns';
-import {ja, enUS, da} from 'date-fns/locale';
+import {ja, enUS, da, de} from 'date-fns/locale';
 import {DateFnsModule} from './index';
 
 const JAN = 0, FEB = 1, MAR = 2, DEC = 11;
@@ -173,6 +173,11 @@ describe('DateFnsAdapter', () => {
 
   it('should parse empty string as null', () => {
     expect(adapter.parse('', 'MM/dd/yyyy')).toBeNull();
+  });
+
+  it('should parse based on the specified locale', () => {
+    adapter.setLocale(de);
+    expect(adapter.parse('02.01.2017', 'P')).toEqual(new Date(2017, JAN, 2));
   });
 
   it('should parse invalid value as invalid', () => {
