@@ -27,7 +27,10 @@
     "./overlay-prebuilt.css": {"style": "./overlay-prebuilt.css"},
     "./overlay-prebuilt": {"style": "./overlay-prebuilt.css"},
     "./text-field-prebuilt.css": {"style": "./text-field-prebuilt.css"},
-    "./text-field-prebuilt": {"style": "./text-field-prebuilt.css"}
+    "./text-field-prebuilt": {"style": "./text-field-prebuilt.css"},
+    "./schematics": {
+      "default": "./schematics/index.js"
+    }
   },
   "peerDependencies": {
     "@angular/core": "0.0.0-NG",
