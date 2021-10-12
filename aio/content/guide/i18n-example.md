@@ -4,8 +4,6 @@
 
 <div class="alert is-helpful">
 
-<!--todo: update example .zip and github locations to match old files. "i18n" not equal to "i18n-common" or "i18n-overview". -->
-
 To explore the sample application with French translations used in the [Angular Internationalization][AioGuideI18nOverview] guide, see <live-example name="i18n" title="live example"></live-example>.
 
 </div>
@@ -35,4 +33,4 @@ The following tabs display the example application and the associated translatio
 
 <!-- end links -->
 
-@reviewed 2021-10-07
+@reviewed 2021-10-13

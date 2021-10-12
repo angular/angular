@@ -5,7 +5,7 @@ The Angular extractor generates a file with a translation unit entry each of the
 *   Each `i18n` attribute in a component template
 *   Each [`$localize`][AioApiLocalizeInitLocalize] tagged message string in component code
 
-As described in [How meanings control text extraction and merging][AioGuideI18nCommonPrepareTransactionUnitIds], Angular assigns each translation unit a unique ID.
+As described in [How meanings control text extraction and merges][AioGuideI18nCommonPrepareHowMeaningsControlTextExtractionAndMerges], Angular assigns each translation unit a unique ID.
 
 The following example displays translation units with unique IDs.
 
@@ -30,9 +30,11 @@ The following example defines the `introductionHeader` custom ID for a variable.
 
 <!--todo: replace with code example -->
 
-```typescript
+<code-example format="typescript" language="typescript">
+
 variableText1 = $localize `:@@introductionHeader:Hello i18n!`;
-```
+
+</code-example>
 
 When you specify a custom ID, the extractor generates a translation unit with the custom ID.
 
@@ -54,9 +56,11 @@ The following example defines the `introductionHeader` custom ID and description
 
 <!--todo: replace with code example -->
 
-```typescript
+<code-example format="typescript" language="typescript">
+
 variableText2 = $localize `:An introduction header for this sample@@introductionHeader:Hello i18n!`;
-```
+
+</code-example>
 
 The following example adds a meaning.
 
@@ -66,9 +70,11 @@ The following example defines the `introductionHeader` custom ID for a variable.
 
 <!--todo: replace with code example -->
 
-```typescript
+<code-example format="typescript" language="typescript">
+
 variableText3 = $localize `:site header|An introduction header for this sample@@introductionHeader:Hello i18n!`;
-```
+
+</code-example>
 
 #### Define unique custom IDs
 
@@ -89,10 +95,12 @@ Both elements now use the same translation (`Bonjour`), because both were define
 
 <!-- links -->
 
-[AioGuideI18nCommonPrepareTransactionUnitIds]: guide/i18n-common-prepare#transaction-unit-ids "How meanings control text extraction and merging - Common Internationalization task #4: Prepare templates for translations | Angular"
+[AioApiLocalizeInitLocalize]: api/localize/init/$localize "$localize | init - localize - API | Angular"
+
+[AioGuideI18nCommonPrepareHowMeaningsControlTextExtractionAndMerges]: guide/i18n-common-prepare#how-meanings-control-text-extraction-and-merges "How meanings control text extraction and merges - Prepare components for translations | Angular"
 
 <!-- external links -->
 
 <!-- end links -->
 
-@reviewed 2021-10-07
+@reviewed 2021-10-13

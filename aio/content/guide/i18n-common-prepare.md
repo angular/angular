@@ -8,13 +8,13 @@ To prepare your project for translation, complete the following actions.
 
 ## Mark text in component template
 
-{@a mark-text-for-translations}
-
 In a component template, the i18n metadata is the value of the `i18n` attribute.
 
-```html
-<element i18n="{i18n_metadata}">{string_to_translate}</element>
-```
+<code-example format="html" language="html">
+
+&lt;element i18n="{i18n_metadata}"&gt;{string_to_translate}&lt;/element&gt;
+
+</code-example>
 
 Use the `i18n` attribute to mark a static text message in your component templates for translation.
 Place it on every element tag that contains fixed text you want to translate.
@@ -53,18 +53,24 @@ The following example shows the `<ng-container>` element transformed into a non-
 
 In a component template, the i18n metadata is the value of the `i18n-{attribute_name}` attribute.
 
-```html
-<element i18n-{attribute_name}="{i18n_metadata}" {attribute_name}="{attribute_value}" />
-```
+<code-example format="html" language="html">
+
+&lt;element i18n-{attribute_name}="{i18n_metadata}" {attribute_name}="{attribute_value}" /&gt;
+
+</code-example>
 
 The attributes of HTML elements include text that should be translated along with the rest of the displayed text in the component template.
 
 Use `i18n-{attribute_name}` with any attribute of any element and replace `{attribute_name}` with the name of the attribute.
 Use the following syntax to assign a meaning, description, and custom ID.
 
-```html
+<!--todo: replace with code-example -->
+
+<code-example format="html" language="html">
+
 i18n-{attribute_name}="{meaning}|{description}@@{id}"
-```
+
+</code-example>
 
 ### `i18n-title` example
 
@@ -89,15 +95,21 @@ Use the [`$localize`][AioApiLocalizeInitLocalize] tagged message string to mark 
 
 <!--todo: replace with code-example -->
 
-```typescript
+<code-example format="typescript" language="typescript">
+
 $localize `string_to_translate`;
-```
+
+</code-example>
 
 The i18n metadata is surrounded by colon (`:`) characters and prepends the translation source text.
 
-```typescript
+<!--todo: replace with code-example -->
+
+<code-example format="typescript" language="typescript">
+
 $localize `:{i18n_metadata}:string_to_translate`
-```
+
+</code-example>
 
 ### Include interpolated text
 
@@ -105,21 +117,29 @@ Include [interpolations][AioGuideGlossaryInterpolation] in a [`$localize`][AioAp
 
 <!--todo: replace with code-example -->
 
-```typescript
+<code-example format="typescript" language="typescript">
+
 $localize `string_to_translate ${variable_name}`;
-```
+
+</code-example>
 
 ### Name the interpolation placeholder
 
-```typescript
-localize `string_to_translate ${variable_name}:placeholder_name:;
-```
+<code-example format="typescript" language="typescript">
+
+$localize `string_to_translate ${variable_name}:placeholder_name:`;
+
+</code-example>
 
 ## i18n metadata for translation
 
-```
+<!--todo: replace with code-example -->
+
+<code-example>
+
 {meaning}|{description}@@{custom_id}
-```
+
+</code-example>
 
 The following parameters provide context and additional information to reduce confusion for your translator.
 
@@ -145,9 +165,11 @@ The following example shows the value of the [`$localize`][AioApiLocalizeInitLoc
 
 <!--todo: replace with code-example -->
 
-```typescript
+<code-example format="typescript" language="typescript">
+
 $localize `:An introduction header for this sample:Hello i18n!`;
-```
+
+</code-example>
 
 The translator may also need to know the meaning or intent of the text message within this particular application context, in order to translate it the same way as other text with the same meaning.
 Start the `i18n` attribute value with the *meaning* and separate it from the *description* with the `|` character: `{meaning}|{description}`.
@@ -166,16 +188,17 @@ The following code example shows the value of the [`$localize`][AioApiLocalizeIn
 
 <!--todo: replace with code-example -->
 
-```typescript
+<code-example format="typescript" language="typescript">
+
 $localize `:site header|An introduction header for this sample:Hello i18n!`;
-```
 
-<!-- section break -->
-
-{@a transaction-unit-ids}
+</code-example>
 
 <div class="callout is-helpful">
-<header>How meanings control text extraction and merging</header>
+
+<header>
+<a name="how-meanings-control-text-extraction-and-merges"></a> How meanings control text extraction and merges
+</header>
 
 The Angular extraction tool generates a translation unit entry for each `i18n` attribute in a template.
 The Angular extraction tool assigns each translation unit a unique ID based on the *meaning* and *description*.
@@ -201,16 +224,18 @@ That one translation entry is merged back into the application wherever the same
 
 </div>
 
-{@a mark-plurals-and-alternates-for-translation}
-
 ## ICU expressions
 
 ICU expressions help you mark alternate text in component templates to meet conditions.
 An ICU expression includes a component property, an ICU clause, and the case statements surrounded by open curly brace (`{`) and close curly brace (`}`) characters.
 
-```
+<!--todo: replace with code-example -->
+
+<code-example>
+
 { component_property, icu_clause, case_statements }
-```
+
+</code-example>
 
 The component property defines the variable
 An ICU clause defines the type of conditional text.
@@ -234,15 +259,23 @@ Different languages have different pluralization rules that increase the difficu
 Because other locales express cardinality differently, you may need to set pluralization categories that do not align with English.
 Use the `plural` clause to mark expressions that may not be meaningful if translated word-for-word.
 
-```
+<!--todo: replace with code-example -->
+
+<code-example>
+
 { component_property, plural, pluralization_categories }
-```
+
+</code-example>
 
 After the pluralization category, enter the default text (English) surrounded by open curly brace (`{`) and close curly brace (`}`) characters.
 
-```
+<!--todo: replace with code-example -->
+
+<code-example>
+
 pluralization_category { }
-```
+
+</code-example>
 
 The following pluralization categories are available for English and may change based on the locale.
 
@@ -257,9 +290,13 @@ The following pluralization categories are available for English and may change 
 
 If none of the pluralization categories match, Angular uses `other` to match the standard fallback for a missing category.
 
-```
+<!--todo: replace with code-example -->
+
+<code-example>
+
 other { default_quantity }
-```
+
+</code-example>
 
 <div class="alert is-helpful">
 
@@ -268,7 +305,10 @@ For more information about pluralization categories, see [Choosing plural catego
 </div>
 
 <div class="callout is-important">
-<header>Background: Locales may not support some pluralization categories</header>
+
+<header>
+<a name="background-locales-may-not-support-some-pluralization-categories"></a> Background: Locales may not support some pluralization categories
+</header>
 
 Many locales don't support some of the pluralization categories.
 The default locale (`en-US`) uses a very simple `plural()` function that doesn't support the `few` pluralization category.  Another locale with a simple `plural()` function is `es`.
@@ -287,23 +327,29 @@ If you want to display the following phrase in English, where `x` is a number.
 
 <!--todo: replace output code-example with screen capture image --->
 
-```
+<code-example>
+
 updated x minutes ago
-```
+
+</code-example>
 
 And you also want to display the following phrases based on the cardinality of `x`.
 
 <!--todo: replace output code-example with screen capture image --->
 
-```
+<code-example>
+
 updated just now
-```
+
+</code-example>
 
 <!--todo: replace output code-example with screen capture image --->
 
-```
+<code-example>
+
 updated one minute ago
-```
+
+</code-example>
 
 Use HTML markup and [interpolations][AioGuideGlossaryInterpolation].
 The following code example shows how to use the `plural` clause to express the previous three situations in a `<span>` element.
@@ -326,25 +372,37 @@ Review the following details in the previous code example.
 
 The `select` clause marks choices for alternate text based on your defined string values.
 
-```
+<!--todo: replace with code-example -->
+
+<code-example>
+
 { component_property, select, selection_categories }
-```
+
+</code-example>
 
 Translate all of the alternates to display alternate text based on the value of a variable.
 
 After the selection category, enter the text (English) surrounded by open curly brace (`{`) and close curly brace (`}`) characters.
 
-```
+<!--todo: replace with code-example -->
+
+<code-example>
+
 selection_category { text }
-```
+
+</code-example>
 
 Different locales have different grammatical constructions that increase the difficulty of translation.
 Use HTML markup.
 If none of the selection categories match, Angular uses `other` to match the standard fallback for a missing category.
 
-```
+<!--todo: replace with code-example -->
+
+<code-example>
+
 other { default_value }
-```
+
+</code-example>
 
 #### `gender` example
 
@@ -352,23 +410,29 @@ If you want to display the following phrase in English.
 
 <!--todo: replace output code-example with screen capture image --->
 
-```
+<code-example>
+
 The author is other
-```
+
+</code-example>
 
 And you also want to display the following phrases based on the `gender` property of the component.
 
 <!--todo: replace output code-example with screen capture image --->
 
-```
+<code-example>
+
 The author is female
-```
+
+</code-example>
 
 <!--todo: replace output code-example with screen capture image --->
 
-```
+<code-example>
+
 The author is male
-```
+
+</code-example>
 
 The following code example shows how to bind the `gender` property of the component and use the `select` clause to express the previous three situations in a `<span>` element.
 
@@ -404,10 +468,9 @@ The following code example shows nested clauses based on the `gender` and `minut
 
 [AioGuideI18nCommonPrepare]: guide/i18n-common-prepare "Prepare templates for translations | Angular"
 [AioGuideI18nCommonPrepareAddHelpfulDescriptionsAndMeanings]: guide/i18n-common-prepare#add-helpful-descriptions-and-meanings "Add helpful descriptions and meanings - Prepare templates for translations | Angular"
-[AioGuideI18nCommonPrepareMarkAlternatesAndNestedExpressions]: guide/i18n-common-prepare#mark-alternates-and-nested-expressions "Mark alternates and nested expressions - Prepare component for translation | Angular"
+[AioGuideI18nCommonPrepareMarkAlternatesAndNestedExpressions]: guide/i18n-common-prepare#mark-alternates-and-nested-expressions "Mark alternates and nested expressions - Prepare templates for translation | Angular"
 [AioGuideI18nCommonPrepareMarkElementAttributesForTranslations]: guide/i18n-common-prepare#mark-element-attributes-for-translations "Mark element attributes for translations - Prepare templates for translations | Angular"
 [AioGuideI18nCommonPrepareMarkPlurals]: guide/i18n-common-prepare#mark-plurals "Mark plurals - Prepare component for translation | Angular"
-[AioGuideI18nCommonPrepareMarkTextForTranslations]: guide/i18n-common-prepare#mark-text-for-translations "Mark text for translations - Prepare templates for translations | Angular"
 [AioGuideI18nCommonPrepareMarkTextInComponentTemplate]: guide/i18n-common-prepare#mark-text-in-component-template "Mark text in component template - Prepare templates for translations | Angular"
 
 [AioGuideI18nCommonTranslationFiles]: guide/i18n-common-translation-files "Work with translation files | Angular"
@@ -426,4 +489,4 @@ The following code example shows nested clauses based on the `gender` and `minut
 
 <!-- end links -->
 
-@reviewed 2021-10-07
+@reviewed 2021-10-13
