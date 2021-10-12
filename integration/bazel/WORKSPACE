@@ -26,7 +26,7 @@ load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories", "yarn_install
 # Setup the Node.js toolchain
 node_repositories(
     # Use same node version as root angular WORKSPACE since
-    node_version = "14.16.1",
+    node_version = "14.17.6",
     yarn_version = "1.12.1",
 )
 
