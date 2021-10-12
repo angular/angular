@@ -100,6 +100,20 @@
       ]
     },
     {
+      "description": "should create translations for interpolated attributes",
+      "inputFiles": [
+        "interpolated_attributes.ts"
+      ],
+      "expectations": [
+        {
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
+    },
+    {
       "description": "should translate static attributes",
       "inputFiles": [
         "static_attributes.ts"
