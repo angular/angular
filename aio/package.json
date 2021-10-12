@@ -77,9 +77,9 @@
     "post~~build": "yarn build-404-page && ngsw-config dist src/generated/ngsw-config.json",
     "~~light-server": "light-server --bind=localhost --historyindex=/index.html --no-reload"
   },
-  "//engines-comment": "Keep this in sync with /package.json and /aio/tools/examples/shared/package.json",
+  "//engines-comment": "If applicable, also update /package.json and /aio/tools/examples/shared/package.json",
   "engines": {
-    "node": ">=14.0.0",
+    "node": ">=14.17.1",
     "yarn": ">=1.22.4 <2",
     "npm": "Please use yarn instead of NPM to install dependencies"
   },
