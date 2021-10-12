@@ -15,9 +15,11 @@ To display the current date in the format for the current locale, use the follow
 
 <!--todo: replace with code-example -->
 
-```typescript
+<code-example format="typescript" language="typescript">
+
 {{ today | date }}
-```
+
+</code-example>
 
 ## Override current locale for CurrencyPipe
 
@@ -27,9 +29,11 @@ To force the currency to use American English (`en-US`), use the following forma
 
 <!--todo: replace with code-example -->
 
-```typescript
+<code-example format="typescript" language="typescript">
+
 {{ amount | currency : 'en-US' }}
-```
+
+</code-example>
 
 <div class="alert is-helpful">
 
@@ -57,4 +61,4 @@ To force the currency to use American English (`en-US`), use the following forma
 
 <!-- end links -->
 
-@reviewed 2021-10-07
+@reviewed 2021-10-13
