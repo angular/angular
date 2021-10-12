@@ -3,12 +3,6 @@
 The following optional topics help you manually configure the internationalization settings of your application.
 The optional practices are meant for advanced or custom Angular applications.
 
-<!--In special cases, the following practices are useful.
-
-*   Change the [`LOCALE_ID`][AioApiCoreLocaleId] token to [set the source locale manually][AioGuideI18nOptionalManualRuntimeLocale] to another locale
-*   To handle extra locale data, [import global variants of the locale data][AioGuideI18nOptionalImportGlobalVariants]
-*   To control the matches for your translations, [manage marked text with custom IDs][AioGuideI18nOptionalManageMarkedText]-->
-
 ## Prerequisites
 
 To prepare your project for translations, you should have a basic understanding of the following subjects.
@@ -58,4 +52,4 @@ To prepare your project for translations, you should have a basic understanding 
 
 <!-- end links -->
 
-@reviewed 2021-10-07
+@reviewed 2021-10-13
