@@ -90,6 +90,16 @@ executors:
     resource_class: << parameters.resource_class >>
     working_directory: ~/ng
 
+  test-browser-executor:
+    parameters:
+      resource_class:
+        type: string
+        default: medium
+    docker:
+      - image: cimg/node:14.17.6-browsers@sha256:aa6d08a04d13dd8aa18ae94be70a703c14dde0e99ea572e885e548f47f95eaa9
+    resource_class: << parameters.resource_class >>
+    working_directory: ~/ng
+
   windows-executor:
     working_directory: ~/ng
     resource_class: windows.2xlarge
@@ -117,22 +127,6 @@ commands:
     steps:
       - attach_workspace:
           at: *workspace_location
-
-  # Install shared libs used by Chrome that is either provisioned by
-  # rules_webtesting or by puppeteer.
-  install_chrome_libs:
-    description: Install shared Chrome libs
-    steps:
-      - run:
-          name: Install shared Chrome libs
-          command: |
-            sudo apt-get update
-            # Install GTK+ graphical user interface (libgtk-3-0), advanced linux sound architecture (libasound2)
-            # and network security service libraries (libnss3) & X11 Screen Saver extension library (libssx1)
-            # which are dependencies of chrome & needed for karma & protractor headless chrome tests.
-            # This is a very small install which takes around 7s in comparing to using the full
-            # cimg/node:x.x.x-browsers image.
-            sudo apt-get -y install libgtk-3-0 libasound2 libnss3 libxss1
 
   # Install java runtime which is required by some integration tests such as
   # //integration:hello_world__closure_test, //integration:i18n_test and
@@ -298,7 +292,7 @@ jobs:
 
   test:
     executor:
-      name: default-executor
+      name: test-browser-executor
       # Now that large integration tests are running locally in parallel (they can't run on RBE yet
       # as they require network access for yarn install), this test is running out of memory
       # consistently with the xlarge machine.
@@ -307,7 +301,6 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-      - install_chrome_libs
       - install_java
       - run:
           command: yarn bazel test //... --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only
@@ -316,12 +309,11 @@ jobs:
   # Temporary job to test what will happen when we flip the Ivy flag to true
   test_ivy_aot:
     executor:
-      name: default-executor
+      name: test-browser-executor
       resource_class: xlarge
     steps:
       - custom_attach_workspace
       - init_environment
-      - install_chrome_libs
       # We need to explicitly specify the --symlink_prefix option because otherwise we would
       # not be able to easily find the output bin directory when uploading artifacts for size
       # measurements.
@@ -397,11 +389,10 @@ jobs:
           webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
   test_aio:
-    executor: default-executor
+    executor: test-browser-executor
     steps:
       - custom_attach_workspace
       - init_environment
-      - install_chrome_libs
         # Build aio
       - run: yarn --cwd aio build --progress=false
         # Lint the code
@@ -420,21 +411,19 @@ jobs:
       - run: yarn --cwd aio redirects-test
 
   deploy_aio:
-    executor: default-executor
+    executor: test-browser-executor
     steps:
       - custom_attach_workspace
       - init_environment
-      - install_chrome_libs
         # Deploy angular.io to production (if necessary)
       - run: setPublicVar_CI_STABLE_BRANCH
       - run: yarn --cwd aio deploy-production
 
   test_aio_local:
-    executor: default-executor
+    executor: test-browser-executor
     steps:
       - custom_attach_workspace
       - init_environment
-      - install_chrome_libs
         # Build aio (with local Angular packages)
       - run: yarn --cwd aio build-local-ci
         # Run unit tests
@@ -460,7 +449,7 @@ jobs:
 
   test_docs_examples:
     executor:
-      name: default-executor
+      name: test-browser-executor
       resource_class: xlarge
     parallelism: 5
     environment:
@@ -468,7 +457,6 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-      - install_chrome_libs
         # Install aio
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
         # Run examples tests. The "CIRCLE_NODE_INDEX" will be set if "parallelism" is enabled.
@@ -506,11 +494,10 @@ jobs:
 
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   test_aio_preview:
-    executor: default-executor
+    executor: test-browser-executor
     steps:
       - custom_attach_workspace
       - init_environment
-      - install_chrome_libs
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
       - run:
           name: Wait for preview and run tests
@@ -618,11 +605,10 @@ jobs:
           command: yarn node aio/scripts/test-external-urls.js
 
   aio_monitoring_stable:
-    executor: default-executor
+    executor: test-browser-executor
     steps:
       - custom_attach_workspace
       - init_environment
-      - install_chrome_libs
       - run: setPublicVar_CI_STABLE_BRANCH
       - run:
           name: Check out `aio/` and yarn from the stable branch
@@ -641,11 +627,10 @@ jobs:
           webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
   aio_monitoring_next:
-    executor: default-executor
+    executor: test-browser-executor
     steps:
       - custom_attach_workspace
       - init_environment
-      - install_chrome_libs
       - run:
           name: Run tests against https://next.angular.io/
           command: ./aio/scripts/test-production.sh https://next.angular.io/ $CI_AIO_MIN_PWA_SCORE
