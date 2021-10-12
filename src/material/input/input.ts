@@ -23,7 +23,7 @@ import {
   Optional,
   Self,
 } from '@angular/core';
-import {FormGroupDirective, NgControl, NgForm} from '@angular/forms';
+import {FormGroupDirective, NgControl, NgForm, Validators} from '@angular/forms';
 import {
   CanUpdateErrorState,
   ErrorStateMatcher,
@@ -174,9 +174,11 @@ export class MatInput extends _MatInputBase implements MatFormFieldControl<any>,
    * @docs-private
    */
   @Input()
-  get required(): boolean { return this._required; }
+  get required(): boolean {
+    return this._required ?? this.ngControl?.control?.hasValidator(Validators.required) ?? false;
+  }
   set required(value: boolean) { this._required = coerceBooleanProperty(value); }
-  protected _required = false;
+  protected _required: boolean | undefined;
 
   /** Input type of the element. */
   @Input()

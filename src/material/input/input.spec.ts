@@ -407,6 +407,15 @@ describe('MatInput without forms', () => {
     expect(labelEl.nativeElement.textContent).toBe('hello *');
   }));
 
+  it('should show the required star when using a FormControl', fakeAsync(() => {
+    const fixture = createComponent(MatInputWithRequiredFormControl);
+    fixture.detectChanges();
+
+    const labelEl = fixture.debugElement.query(By.css('label'))!;
+    expect(labelEl).not.toBeNull();
+    expect(labelEl.nativeElement.textContent).toBe('Hello *');
+  }));
+
   it('should hide the required star if input is disabled', () => {
     const fixture = createComponent(MatInputPlaceholderRequiredTestComponent);
 
@@ -1200,7 +1209,7 @@ describe('MatInput with forms', () => {
 
       expect(testComponent.formControl.invalid)
         .withContext('Expected form control to be invalid').toBe(true);
-      expect(inputEl.value).toBeFalsy();
+      expect(inputEl.value).toBe('incorrect');
       expect(inputEl.getAttribute('aria-invalid'))
         .withContext('Expected aria-invalid to be set to "true".').toBe('true');
 
@@ -1977,7 +1986,10 @@ class MatInputMissingMatInputTestController {}
 })
 class MatInputWithFormErrorMessages {
   @ViewChild('form') form: NgForm;
-  formControl = new FormControl('', [Validators.required, Validators.pattern(/valid value/)]);
+  formControl = new FormControl('incorrect', [
+    Validators.required,
+    Validators.pattern(/valid value/)
+  ]);
   renderError = true;
 }
 
@@ -2020,7 +2032,7 @@ class MatInputWithCustomErrorStateMatcher {
 class MatInputWithFormGroupErrorMessages {
   @ViewChild(FormGroupDirective) formGroupDirective: FormGroupDirective;
   formGroup = new FormGroup({
-    name: new FormControl('', [Validators.required, Validators.pattern(/valid value/)])
+    name: new FormControl('incorrect', [Validators.required, Validators.pattern(/valid value/)])
   });
 }
 
@@ -2267,4 +2279,15 @@ class MatInputWithAnotherNgIf {
 })
 class MatInputWithColor {
   color: ThemePalette;
+}
+
+
+@Component({
+  template: `
+    <mat-form-field>
+      <input matInput placeholder="Hello" [formControl]="formControl">
+    </mat-form-field>`
+})
+class MatInputWithRequiredFormControl {
+  formControl = new FormControl('', [Validators.required]);
 }
