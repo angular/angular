@@ -30,7 +30,7 @@ To create a new workspace and an initial application project:
   2. Run the CLI command `ng new` and provide the name `angular-tour-of-heroes`, as shown here:
 
   <code-example language="sh">
-     ng new angular-tour-of-heroes
+     ng new angular-tour-of-heroes --routing
   </code-example>
 
   3. The `ng new` command prompts you for information about features to include in the initial application project. Accept the defaults by pressing the Enter or Return key.
