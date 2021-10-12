@@ -494,7 +494,7 @@ jobs:
 
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   test_aio_preview:
-    executor: default-executor
+    executor: test-browser-executor
     steps:
       - custom_attach_workspace
       - init_environment
