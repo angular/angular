@@ -33,7 +33,7 @@ To create a new workspace and an initial application project:
      ng new angular-tour-of-heroes
   </code-example>
 
-  3. The `ng new` command prompts you for information about features to include in the initial application project. Accept the defaults by pressing the Enter or Return key.
+  3. The `ng new` command prompts you for information about features to include in the initial application project. Answer 'Yes' for using Angular routing. Accept the defaults for the remaining information by pressing the Enter or Return key.
 
 The Angular CLI installs the necessary Angular `npm` packages and other dependencies. This can take a few minutes.
 
