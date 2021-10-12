@@ -95,14 +95,20 @@ between content within a single page.
 `MatTabNavBar`, implements a navigation interaction pattern by using a `<nav>` element with anchor
 elements as the "tabs". You should use this component when you want your cross-page navigation to
 look like a tabbed interface. As a rule of thumb, you should consider `MatTabNavBar` if changing
-tabs would change the browser URL.
+tabs would change the browser URL. For all navigation, including with `MatTabNavBar`, always move
+browser focus to an element at the beginning of the content to which the user is navgating.
+Furthermore, consider placing your `<router-outlet>` inside of a
+[landmark region](https://www.w3.org/TR/wai-aria-1.1/#dfn-landmark) appropriate to the page.
+
+Avoid mixing both `MatTabGroup` and `MatTabNavBar` in your application. The inconsistent interaction
+patterns applied between the components may confuse users.
 
 #### Labels
 
 Always provide an accessible label via `aria-label` or `aria-describedby` for tabs without
 descriptive text content.
 
-When using `MatTabNavGroup`, you should also specify a label for the `<nav>` element. 
+When using `MatTabNavGroup`, always specify a label for the `<nav>` element.
 
 #### Keyboard interaction
 
