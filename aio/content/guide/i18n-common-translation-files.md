@@ -7,7 +7,7 @@ The marked text includes text marked with `i18n`, attributes marked with `i18n-`
 Complete the following steps to create and update translation files for your project.
 
 1.  [Extract the source language file][AioGuideI18nCommonTranslationFilesExtractTheSourceLanguageFile]
-    Optionally, change the location, format, and name
+    1.  Optionally, change the location, format, and name
 1.  Copy the source language file to [create a translation file for each language][AioGuideI18nCommonTranslationFilesCreateATranslationFileForEachLanguage]
 1.  [Translate each translation file][AioGuideI18nCommonTranslationFilesTranslateEachTranslationFile]
 1.  Translate plurals and alternate expressions separately
@@ -89,15 +89,19 @@ To create a translation file for a locale or language, complete the following ac
 1.  Make a copy of the source language file to create a *translation* file for each language
 1.  Rename the *translation* file to add the locale
 
-    ```file
+    <code-example language="file">
+
     messages.xlf --> message.{locale}.xlf
-    ```
+
+    </code-example>
 
 1.  Create a new directory at your project root named `locale`
 
-    ```file
+    <code-example language="file">
+
     src/locale
-    ```
+
+    </code-example>
 
 1.  Move the *translation* file to the new directory
 1.  Send the *translation* file to your translator
@@ -240,7 +244,6 @@ The following example displays both translation units after translating.
 
 [AioGuideI18nCommonPrepare]: guide/i18n-common-prepare "Prepare templates for translations | Angular"
 [AioGuideI18nCommonPrepareAddHelpfulDescriptionsAndMeanings]: guide/i18n-common-prepare#add-helpful-descriptions-and-meanings "Add helpful descriptions and meanings - Prepare component for translation | Angular"
-[AioGuideI18nCommonPrepareMarkPluralsAndAlternatesForTranslation]: guide/i18n-common-prepare#mark-plurals-and-alternates-for-translation "Mark plurals and alternates for translation - Prepare component for translation | Angular"
 
 [AioGuideI18nCommonTranslationFilesCreateATranslationFileForEachLanguage]: guide/i18n-common-translation-files#create-a-translation-file-for-each-language "Create a translation file for each language - Work with translation files | Angular"
 [AioGuideI18nCommonTranslationFilesExtractTheSourceLanguageFile]: guide/i18n-common-translation-files#extract-the-source-language-file "Extract the source language file - Work with translation files | Angular"
@@ -272,4 +275,4 @@ The following example displays both translation units after translating.
 
 <!-- end links -->
 
-@reviewed 2021-10-07
+@reviewed 2021-10-13

@@ -3,6 +3,7 @@
 Angular uses the Unicode *locale identifier* (Unicode locale ID) to find the correct locale data for internationalization of text strings.
 
 <div class="callout is-helpful">
+
 <header>Unicode locale ID</header>
 
 *   A locale ID conforms to the [Unicode Common Locale Data Repository (CLDR) core specification][UnicodeCldrDevelopmentCoreSpecification]. For more information about locale IDs, see [Unicode Language and Locale Identifiers][UnicodeCldrDevelopmentCoreSpecificationHVgyyng33o798].
@@ -13,9 +14,11 @@ Angular uses the Unicode *locale identifier* (Unicode locale ID) to find the cor
 A locale ID specifies the language, country, and an optional code for further variants or subdivisions.
 A locale ID consists of the language identifier, a dash (`-`) character, and the locale extension.
 
-```text
+<code-example>
+
 {language_id}-{locale_extension}
-```
+
+</code-example>
 
 <div class="alert is-helpful">
 
@@ -48,8 +51,6 @@ For a list of language codes, see [ISO 639-2][LocStandardsIso6392].
 ## Set the source locale ID
 
 Use the Angular CLI to set the source language in which you are writing the component template and code.
-
-<!--todo: These instructions may conflict with the Set the source locale manually topic -->
 
 By default, Angular uses `en-US` as the source locale of your project.
 
@@ -84,4 +85,4 @@ To change the source locale of your project for the build, complete the followin
 
 <!-- end links -->
 
-@reviewed 2021-10-07
+@reviewed 2021-10-13

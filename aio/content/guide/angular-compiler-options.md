@@ -64,7 +64,7 @@ When `true`, the compiler does not check the TypeScript version and does not rep
 ### `enableI18nLegacyMessageIdFormat`
 
 Instructs the Angular template compiler to generate legacy ids for messages that are tagged in templates by the `i18n` attribute.
-See [Mark text for translations][AioGuideI18nCommonPrepareMarkTextForTranslations] for more information about marking messages for localization.
+See [Mark text for translations][AioGuideI18nCommonPrepareMarkTextInComponentTemplate] for more information about marking messages for localization.
 
 Set this option to `false` unless your project relies upon translations that were previously generated using legacy IDs. Default is `true`.
 
@@ -203,8 +203,8 @@ In addition to the configuration file, you can also use [`tsc` command line opti
 
 <!-- links -->
 
-[AioGuideI18nCommonPrepareMarkTextForTranslations]: guide/i18n-common-prepare#mark-text-for-translations "Mark text for translations - Prepare templates for translations | Angular"
+[AioGuideI18nCommonPrepareMarkTextInComponentTemplate]: guide/i18n-common-prepare#mark-text-in-component-template "Mark text in component template - Prepare templates for translations | Angular"
 
 <!-- end links -->
 
-@reviewed 2021-09-15
+@reviewed 2021-10-13
