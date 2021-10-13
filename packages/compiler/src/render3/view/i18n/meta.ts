@@ -107,6 +107,8 @@ export class I18nMetaVisitor implements html.Visitor {
       // set i18n meta for attributes
       if (Object.keys(attrsMeta).length) {
         for (const attr of attrs) {
+          // First try to match the metadata to the attribute name as-is.
+          // If that cannot be found try removing any `attr.` prefix from the attribute name.
           const meta =
               attrsMeta[attr.name] ?? attrsMeta[attr.name.replace(ATTR_BINDING_MATCHER, '')];
           // do not create translation for empty attributes

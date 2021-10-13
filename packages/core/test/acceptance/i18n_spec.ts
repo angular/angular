@@ -1616,6 +1616,17 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       expect(fixture.nativeElement.innerHTML).toEqual(`<div title="bonjour John"></div>`);
     });
 
+    it('interpolated "attr." bindings', () => {
+      loadTranslations({[computeMsgId('hello {$INTERPOLATION}')]: 'bonjour {$INTERPOLATION}'});
+      const fixture =
+          initWithTemplate(AppComp, `<div i18n-attr.title attr.title="hello {{name}}"></div>`);
+      expect(fixture.nativeElement.innerHTML).toEqual(`<div title="bonjour Angular"></div>`);
+
+      fixture.componentRef.instance.name = 'John';
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML).toEqual(`<div title="bonjour John"></div>`);
+    });
+
     it('with pipes', () => {
       loadTranslations({[computeMsgId('hello {$INTERPOLATION}')]: 'bonjour {$INTERPOLATION}'});
       const fixture = initWithTemplate(

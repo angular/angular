@@ -372,8 +372,8 @@ MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: `
   <div
   title="title {{name}}" i18n-title
-  attr.label="label {{name}}" i18n-label
-  attr.lang="lang {{name}}" i18n-attr.lang>
+  attr.label="label {{name}}" i18n-label="@@id1"
+  attr.lang="lang {{name}}" i18n-attr.lang="@@id2">
   </div>
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
@@ -383,8 +383,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
   <div
   title="title {{name}}" i18n-title
-  attr.label="label {{name}}" i18n-label
-  attr.lang="lang {{name}}" i18n-attr.lang>
+  attr.label="label {{name}}" i18n-label="@@id1"
+  attr.lang="lang {{name}}" i18n-attr.lang="@@id2">
   </div>
   `
                 }]

@@ -1,7 +1,7 @@
 consts: function () {
   __i18nMsg__('title {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {})
-  __i18nMsg__('label {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {})
-  __i18nMsg__('lang {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {})
+  __i18nMsg__('label {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {id: 'id1'})
+  __i18nMsg__('lang {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {id: 'id2'})
   return [
     [6, "title", "label", "lang"], ["title", $i18n_1$, "label", $i18n_2$, "lang", $i18n_3$]
   ];

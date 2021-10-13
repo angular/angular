@@ -5,8 +5,8 @@ import {Component, NgModule} from '@angular/core';
   template: `
   <div
   title="title {{name}}" i18n-title
-  attr.label="label {{name}}" i18n-label
-  attr.lang="lang {{name}}" i18n-attr.lang>
+  attr.label="label {{name}}" i18n-label="@@id1"
+  attr.lang="lang {{name}}" i18n-attr.lang="@@id2">
   </div>
   `
 })
