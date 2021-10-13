@@ -16,6 +16,7 @@ The `renderModuleFactory` calls can be replaced with `renderModule`.
 ## Special Thanks
 Alan Agius, Andrew Scott, Daniel Díaz, David Shevitz, Doug Parker, George Kalpakas, Joe Martin (Crowdstaffing), Joey Perrott, Kristiyan Kostadinov, Paul Gschwendtner, Tanguy Nodet, Thomas Turrell-Croft, dario-piotrowicz, hchiam, markostanimirovic and mgechev
 
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="12.2.10"></a>
 # 12.2.10 (2021-10-13)
