@@ -1,3 +1,32 @@
+<a name="13.0.0-rc.0"></a>
+# 13.0.0-rc.0 "aluminum-aardvark" (2021-10-13)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f2ff9e314](https://github.com/angular/components/commit/f2ff9e31425f0e395e6926bcaf48f876688000d8) | fix | **schematics:** drop tilde imports when updating to v13 ([#23732](https://github.com/angular/components/pull/23732)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1568b3597](https://github.com/angular/components/commit/1568b3597236549b0669aee869f5f0875c18db4d) | fix | **input:** show required asterisk when using required validator ([#23362](https://github.com/angular/components/pull/23362)) |
+| [ce683542f](https://github.com/angular/components/commit/ce683542fbe965fe4b760c5ea88d7fc6dce48441) | fix | **sort:** add description input for sort-header ([#23633](https://github.com/angular/components/pull/23633)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1937c3edd](https://github.com/angular/components/commit/1937c3edd9e8d8dcb40426fac37ca91d06f78b17) | fix | **mdc-radio:** switch to new theming API ([#23725](https://github.com/angular/components/pull/23725)) |
+| [08d1acdfa](https://github.com/angular/components/commit/08d1acdfa0bf40fbcbccc32ca43d5dacd50bfbc1) | fix | **mdc-tabs:** switch to new theming API ([#23726](https://github.com/angular/components/pull/23726)) |
+### material-date-fns-adapter
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2a358120f](https://github.com/angular/components/commit/2a358120f4623efdb614017719a79cf3df6ba2fd) | fix | locale not passed into parse function ([#23653](https://github.com/angular/components/pull/23653)) |
+### ng-add
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5c22a1dbf](https://github.com/angular/components/commit/5c22a1dbf0c7e808e28749870415fbba31f2d9e9) | fix | syntax error due to ES2020 being used for ng-add with NodeJS 12.x ([#23744](https://github.com/angular/components/pull/23744)) |
+## Special Thanks
+Charles, Jeremy Elbourn, Joey Perrott, Kristiyan Kostadinov, Marco Marche, Paul Gschwendtner and Zach Arend
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.0.0-next.8"></a>
 # 13.0.0-next.8 "gravel-chicken" (2021-10-08)
 ### cdk
