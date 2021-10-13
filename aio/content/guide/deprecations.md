@@ -489,6 +489,12 @@ This section contains a complete list all of the currently deprecated CLI flags.
 | `showCircularDependencies` | <!--v12--> v14    | The recommended method to detect circular dependencies in project code is to use either a lint rule or other external tooling.                                 |
 | Protractor builder         | <!--v12--> v14    | Deprecate as part of the Protractor deprecation.                                                                                                               |
 
+### @angular-devkit/build-optimizer
+
+The entire NPM package is deprecated. It has always been experimental (never hit `1.0.0`) and has
+been an internal package for the Angular CLI. All the relevant functionality has been moved to
+`@angular-devkit/build-angular`.
+
 {@a removed}
 
 ## Removed APIs
