@@ -227,7 +227,11 @@
       "src/cdk/schematics/ng-update/test-cases/**/*_input.ts",
       "src/cdk/schematics/ng-update/test-cases/**/*_expected_output.ts",
       "src/material/schematics/ng-update/test-cases/**/*_input.ts",
-      "src/material/schematics/ng-update/test-cases/**/*_expected_output.ts"
+      "src/material/schematics/ng-update/test-cases/**/*_expected_output.ts",
+      // These CLI-generated projects are not necessarily compliant with the lint
+      // rules and they should remain as unmodified as possible.
+      "integration/ng-add/**/*",
+      "integration/ng-update-v13/**/*"
     ]
   }
 }

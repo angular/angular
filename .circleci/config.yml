@@ -8,7 +8,7 @@
 # http://yaml-online-parser.appspot.com/
 
 var_1: &docker_image circleci/node:16.10.0
-var_2: &docker-firefox-image circleci/node:16.10.0-browsers
+var_2: &docker-browser-image circleci/node:16.10.0-browsers
 
 # **Note**: When updating the beginning of the cache key, also update the cache key to match
 # the new cache key prefix. This allows us to take advantage of CircleCI's fallback caching.
@@ -439,7 +439,7 @@ jobs:
   # ----------------------------------------------------------------------------
   snapshot_tests_local_browsers:
     docker:
-      - image: *docker-firefox-image
+      - image: *docker-browser-image
     resource_class: xlarge
     environment:
       GCP_DECRYPT_TOKEN: *gcp_decrypt_token
@@ -459,7 +459,8 @@ jobs:
   # Job that runs all Bazel integration tests.
   # ----------------------------------------------------------------------------
   integration_tests:
-    <<: *job_defaults
+    docker:
+      - image: *docker-browser-image
     resource_class: xlarge
     environment:
       GCP_DECRYPT_TOKEN: *gcp_decrypt_token
@@ -472,9 +473,7 @@ jobs:
       - *setup_bazel_binary
 
       - run: yarn integration-tests:partial-ivy
-      # TODO: Re-enable when there are integration tests that should run with Ivy.
-      # Currently this command fails as there are no tests.
-      # - run: yarn integration-tests
+      - run: yarn integration-tests
       - run:
           name: Running size integration tests (failures are reported in Slack only).
           command: |

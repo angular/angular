@@ -1,13 +1,15 @@
 # Re-export of Bazel rules with repository-wide defaults
 
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("@build_bazel_rules_nodejs//:index.bzl", _pkg_npm = "pkg_npm")
 load("@io_bazel_rules_sass//:defs.bzl", _npm_sass_library = "npm_sass_library", _sass_binary = "sass_binary", _sass_library = "sass_library")
 load("@npm//@angular/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
+load("@npm//@angular/dev-infra-private/bazel/integration:index.bzl", _integration_test = "integration_test")
 load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@npm//@bazel/concatjs:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
 load("@npm//@bazel/protractor:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("@npm//@bazel/typescript:index.bzl", _ts_library = "ts_library")
-load("//:packages.bzl", "VERSION_PLACEHOLDER_REPLACEMENTS")
+load("//:packages.bzl", "NO_STAMP_NPM_PACKAGE_SUBSTITUTIONS", "NPM_PACKAGE_SUBSTITUTIONS")
 load("//:pkg-externals.bzl", "PKG_EXTERNALS")
 load("//tools/markdown-to-html:index.bzl", _markdown_to_html = "markdown_to_html")
 load("//tools/spec-bundling:index.bzl", "spec_bundle")
@@ -15,8 +17,14 @@ load("//tools/spec-bundling:index.bzl", "spec_bundle")
 _DEFAULT_TSCONFIG_BUILD = "//src:bazel-tsconfig-build.json"
 _DEFAULT_TSCONFIG_TEST = "//src:tsconfig-test"
 
+npmPackageSubstitutions = select({
+    "//tools:stamp": NPM_PACKAGE_SUBSTITUTIONS,
+    "//conditions:default": NO_STAMP_NPM_PACKAGE_SUBSTITUTIONS,
+})
+
 # Re-exports to simplify build file load statements
 markdown_to_html = _markdown_to_html
+integration_test = _integration_test
 
 def _compute_module_name(testonly):
     current_pkg = native.package_name()
@@ -57,7 +65,15 @@ def sass_library(**kwargs):
 def npm_sass_library(**kwargs):
     _npm_sass_library(**kwargs)
 
-def ts_library(tsconfig = None, deps = [], testonly = False, devmode_module = None, **kwargs):
+def ts_library(
+        tsconfig = None,
+        deps = [],
+        testonly = False,
+        # TODO(devversion): disallow configuration of the target when schematics use ESM.
+        devmode_target = None,
+        prodmode_target = None,
+        devmode_module = None,
+        **kwargs):
     # Add tslib because we use import helpers for all public packages.
     local_deps = ["@npm//tslib"] + deps
 
@@ -77,10 +93,10 @@ def ts_library(tsconfig = None, deps = [], testonly = False, devmode_module = No
         # For prodmode, the target is set to `ES2020`. `@bazel/typecript` sets `ES2015` by default. Note
         # that this should be in sync with the `ng_module` tsconfig generation to emit proper APF v13.
         # https://github.com/bazelbuild/rules_nodejs/blob/901df3868e3ceda177d3ed181205e8456a5592ea/third_party/github.com/bazelbuild/rules_typescript/internal/common/tsconfig.bzl#L195
-        prodmode_target = "es2020",
+        prodmode_target = prodmode_target if prodmode_target != None else "es2020",
         # We also set devmode output to the same settings as prodmode as a first step in combining
         # devmode and prodmode output. We will not rely on AMD output anyway due to the linker processing.
-        devmode_target = "es2020",
+        devmode_target = devmode_target if devmode_target != None else "es2020",
         devmode_module = devmode_module if devmode_module != None else "esnext",
         tsconfig = tsconfig,
         testonly = testonly,
@@ -147,7 +163,7 @@ def ng_module(
         **kwargs
     )
 
-def ng_package(name, data = [], deps = [], externals = PKG_EXTERNALS, readme_md = None, **kwargs):
+def ng_package(name, data = [], deps = [], externals = PKG_EXTERNALS, readme_md = None, visibility = None, **kwargs):
     # If no readme file has been specified explicitly, use the default readme for
     # release packages from "src/README.md".
     if not readme_md:
@@ -183,12 +199,24 @@ def ng_package(name, data = [], deps = [], externals = PKG_EXTERNALS, readme_md 
         package_name = None,
         validate = False,
         readme_md = readme_md,
-        substitutions = VERSION_PLACEHOLDER_REPLACEMENTS,
+        substitutions = npmPackageSubstitutions,
+        visibility = visibility,
         **kwargs
     )
 
-def pkg_npm(**kwargs):
+    pkg_tar(
+        name = name + "_archive",
+        srcs = [":%s" % name],
+        extension = "tar.gz",
+        strip_prefix = "./%s" % name,
+        # Target should not build on CI unless it is explicitly requested.
+        tags = ["manual"],
+        visibility = visibility,
+    )
+
+def pkg_npm(name, visibility = None, **kwargs):
     _pkg_npm(
+        name = name,
         # We never set a `package_name` for NPM packages, neither do we enable validation.
         # This is necessary because the source targets of the NPM packages all have
         # package names set and setting a similar `package_name` on the NPM package would
@@ -204,8 +232,19 @@ def pkg_npm(**kwargs):
         # https://github.com/bazelbuild/rules_nodejs/issues/2810.
         package_name = None,
         validate = False,
-        substitutions = VERSION_PLACEHOLDER_REPLACEMENTS,
+        substitutions = npmPackageSubstitutions,
+        visibility = visibility,
         **kwargs
+    )
+
+    pkg_tar(
+        name = name + "_archive",
+        srcs = [":%s" % name],
+        extension = "tar.gz",
+        strip_prefix = "./%s" % name,
+        # Target should not build on CI unless it is explicitly requested.
+        tags = ["manual"],
+        visibility = visibility,
     )
 
 def jasmine_node_test(**kwargs):
@@ -303,6 +342,23 @@ def protractor_web_test_suite(name, deps, **kwargs):
         name = name,
         browsers = ["@npm//@angular/dev-infra-private/bazel/browsers/chromium:chromium"],
         deps = ["%s_bundle" % name],
+        **kwargs
+    )
+
+def node_integration_test(data = [], tool_mappings = {}, **kwargs):
+    """Macro for defining an integration test with `node` and `yarn` being
+      declared as global tools."""
+
+    integration_test(
+        data = data + [
+            # The Yarn files also need to be part of the integration test as runfiles
+            # because the `yarn_bin` target is not a self-contained standalone binary.
+            "@nodejs//:yarn_files",
+        ],
+        tool_mappings = dict({
+            "@nodejs//:yarn_bin": "yarn",
+            "@nodejs//:node_bin": "node",
+        }, **tool_mappings),
         **kwargs
     )
 

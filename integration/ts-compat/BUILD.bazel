@@ -22,8 +22,8 @@ typescript_version_packages = [
         name = ts_pkg_name,
         args = [ts_pkg_name],
         data = [
-            "helpers.js",
-            "test.js",
+            "helpers.mjs",
+            "test.mjs",
             ":import-all-entry-points-file",
             "//integration:npm-packages-from-runfiles",
             "//src/cdk:npm_package",
@@ -37,7 +37,7 @@ typescript_version_packages = [
             "@npm//%s" % ts_pkg_name,
             "@npm//@types/node",
         ],
-        entry_point = "test.js",
+        entry_point = "test.mjs",
     )
     for ts_pkg_name in typescript_version_packages
 ]

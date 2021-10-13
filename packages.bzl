@@ -6,10 +6,10 @@ MDC_PACKAGE_VERSION = "13.0.0-canary.860ad06a1.0"
 TSLIB_PACKAGE_VERSION = "^2.3.0"
 RXJS_PACKAGE_VERSION = "^6.5.3 || ^7.0.0"
 
-# Each placer holder is used to stamp versions during the build process, replacing the key with it's
+# Each placeholder is used to stamp versions during the build process, replacing the key with it's
 # value pair. These replacements occur during building of `npm_package` and `ng_package` stamping in
 # the peer dependencies and versions, primarily in `package.json`s.
-VERSION_PLACEHOLDER_REPLACEMENTS = {
+NPM_PACKAGE_SUBSTITUTIONS = {
     # Version of `material-components-web`
     "0.0.0-MDC": MDC_PACKAGE_VERSION,
     # Version of `@angular/core`
@@ -21,6 +21,12 @@ VERSION_PLACEHOLDER_REPLACEMENTS = {
     # Version of `rxjs`
     "0.0.0-RXJS": RXJS_PACKAGE_VERSION,
 }
+
+NO_STAMP_NPM_PACKAGE_SUBSTITUTIONS = dict(NPM_PACKAGE_SUBSTITUTIONS, **{
+    # When building NPM packages for tests (where stamping is disabled),
+    # we use `0.0.0` for the version placeholder.
+    "0.0.0-PLACEHOLDER": "0.0.0",
+})
 
 # List of MDC packages.
 MDC_PACKAGES = [

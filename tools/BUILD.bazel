@@ -1,7 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
 exports_files([
-    "system-config-tmpl.js",
+    "multiple-node-versions.patch",
 ])
 
 # Bazel config setting that matches if the partial compilation flag
@@ -11,6 +11,12 @@ config_setting(
     flag_values = {
         "@npm//@angular/bazel/src:partial_compilation": "True",
     },
+)
+
+# Detect if the build is running with stamping enabled.
+config_setting(
+    name = "stamp",
+    values = {"stamp": "true"},
 )
 
 # This file generates the `angular_ivy_enabled.js` file, which exports a truthy value

@@ -10,6 +10,9 @@
 node_modules
 /bower_components
 
+# Angular CLI project cache
+.angular/
+
 # Dart
 /.pub
 /.packages
