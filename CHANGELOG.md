@@ -1,3 +1,10 @@
+<a name="12.2.10"></a>
+# 12.2.10 (2021-10-13)
+## Special Thanks
+Alan Agius, Daniel Díaz, David Shevitz, Doug Parker, George Kalpakas, Joe Martin (Crowdstaffing), Tanguy Nodet, Thomas Turrell-Croft, dario-piotrowicz, hchiam, markostanimirovic and mgechev
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.0.0-next.15"></a>
 # 13.0.0-next.15 (2021-10-07)
 ### bazel
