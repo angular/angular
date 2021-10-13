@@ -622,6 +622,12 @@ This section contains a complete list all of the currently deprecated CLI flags.
 | ------------------------------- | ----------------- |-------------------------------------------------------------------------------- |
 | `lintFix`                       | <!--v11--> v12    | Deprecated as part of TSLint deprecation.                                      |
 
+### @angular-devkit/build-optimizer
+
+The entire NPM package is deprecated. It has always been experimental (never hit `1.0.0`) and has
+been an internal package for the Angular CLI. All the relevant functionality has been moved to
+`@angular-devkit/build-angular`.
+
 {@a removed}
 
 ## Removed APIs
