@@ -5,6 +5,7 @@ const inlineCOnly = require('./region-matchers/inline-c-only');
 const inlineHash = require('./region-matchers/inline-hash');
 const DEFAULT_PLASTER = '. . .';
 const {mapObject} = require('../../helpers/utils');
+const removeEslintComments = require('./removeEslintComments');
 
 module.exports = function regionParser() {
   regionParserImpl.regionMatchers = {
@@ -40,7 +41,7 @@ module.exports = function regionParser() {
 
     if (regionMatcher) {
       let plaster = regionMatcher.createPlasterComment(DEFAULT_PLASTER);
-      const lines = contents.split(/\r?\n/).filter((line, index) => {
+      const lines = removeEslintComments(contents, fileType).split(/\r?\n/).filter((line, index) => {
         const startRegion = line.match(regionMatcher.regionStartMatcher);
         const endRegion = line.match(regionMatcher.regionEndMatcher);
         const updatePlaster = line.match(regionMatcher.plasterMatcher);
