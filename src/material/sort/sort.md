@@ -40,4 +40,19 @@ by default it will use the id of the column.
 <!-- example(table-sorting) -->
 
 ### Accessibility
-The `aria-label` for the sort button can be set in `MatSortHeaderIntl`.
+
+When you apply `MatSortHeader` to a header cell element, the component wraps the content of the
+header cell inside a button. The text content of the header cell then becomes the accessible
+label for the sort button. However, the header cell text typically describes the column and does
+not indicate that interacting with the control performs a sorting action. To clearly communicate
+that the header performs sorting, always use the `sortActionDescription` input to provide a
+description for the button element, such as "Sort by last name".
+
+`MatSortHeader` applies the `aria-sort` attribute to communicate the active sort state to
+assistive technology. However, most screen readers do not announce changes to the value of
+`aria-sort`, meaning that screen reader users do not receive feedback that sorting occured. To
+remedy this, use the `matSortChange` event on the `MatSort` directive to announce state
+updates with the `LiveAnnouncer` service from `@angular/cdk/a11y`.
+
+If your application contains many tables and sort headers, consider creating a custom
+directives to consistently apply `sortActionDescription` and announce sort state changes. 

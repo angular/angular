@@ -411,7 +411,32 @@ describe('MatSort', () => {
 
       expect(container.classList.contains('mat-focus-indicator')).toBe(true);
     });
-  });
+
+    it('should add a default aria description to sort buttons', () => {
+      const sortButton = fixture.nativeElement.querySelector('[role="button"]');
+      const descriptionId = sortButton.getAttribute('aria-describedby');
+      expect(descriptionId).toBeDefined();
+
+      const descriptionElement = document.getElementById(descriptionId);
+      expect(descriptionElement?.textContent).toBe('Sort');
+    });
+
+    it('should add a custom aria description to sort buttons', () => {
+      const sortButton = fixture.nativeElement.querySelector('#defaultB [role="button"]');
+      let descriptionId = sortButton.getAttribute('aria-describedby');
+      expect(descriptionId).toBeDefined();
+
+      let descriptionElement = document.getElementById(descriptionId);
+      expect(descriptionElement?.textContent).toBe('Sort second column');
+
+      fixture.componentInstance.secondColumnDescription = 'Sort 2nd column';
+      fixture.detectChanges();
+      descriptionId = sortButton.getAttribute('aria-describedby');
+      descriptionElement = document.getElementById(descriptionId);
+      expect(descriptionElement?.textContent).toBe('Sort 2nd column');
+
+    });
+ });
 
   describe('with default options', () => {
     let fixture: ComponentFixture<MatSortWithoutExplicitInputs>;
@@ -507,7 +532,8 @@ type SimpleMatSortAppColumnIds = 'defaultA' | 'defaultB' | 'overrideStart' | 'ov
       </div>
       <div id="defaultB"
            #defaultB
-           mat-sort-header="defaultB">
+           mat-sort-header="defaultB"
+           [sortActionDescription]="secondColumnDescription">
         B
       </div>
       <div id="overrideStart"
@@ -533,6 +559,7 @@ class SimpleMatSortApp {
   disableClear: boolean;
   disabledColumnSort = false;
   disableAllSort = false;
+  secondColumnDescription = 'Sort second column';
 
   @ViewChild(MatSort) matSort: MatSort;
   @ViewChild('defaultA') defaultA: MatSortHeader;

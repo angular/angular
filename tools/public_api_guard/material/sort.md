@@ -7,6 +7,7 @@
 import { _AbstractConstructor } from '@angular/material/core';
 import { AfterViewInit } from '@angular/core';
 import { AnimationTriggerMetadata } from '@angular/animations';
+import { AriaDescriber } from '@angular/cdk/a11y';
 import { BooleanInput } from '@angular/cdk/coercion';
 import { CanDisable } from '@angular/material/core';
 import { ChangeDetectorRef } from '@angular/core';
@@ -106,7 +107,8 @@ export interface MatSortDefaultOptions {
 // @public
 export class MatSortHeader extends _MatSortHeaderBase implements CanDisable, MatSortable, OnDestroy, OnInit, AfterViewInit {
     constructor(
-    _intl: MatSortHeaderIntl, _changeDetectorRef: ChangeDetectorRef, _sort: MatSort, _columnDef: MatSortHeaderColumnDef, _focusMonitor: FocusMonitor, _elementRef: ElementRef<HTMLElement>);
+    _intl: MatSortHeaderIntl, _changeDetectorRef: ChangeDetectorRef, _sort: MatSort, _columnDef: MatSortHeaderColumnDef, _focusMonitor: FocusMonitor, _elementRef: ElementRef<HTMLElement>,
+    _ariaDescriber?: AriaDescriber | null | undefined);
     _arrowDirection: SortDirection;
     arrowPosition: 'before' | 'after';
     // (undocumented)
@@ -143,17 +145,19 @@ export class MatSortHeader extends _MatSortHeaderBase implements CanDisable, Mat
     _showIndicatorHint: boolean;
     // (undocumented)
     _sort: MatSort;
+    get sortActionDescription(): string;
+    set sortActionDescription(value: string);
     start: 'asc' | 'desc';
     _toggleOnInteraction(): void;
     _updateArrowDirection(): void;
     _viewState: ArrowViewStateTransition;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatSortHeader, "[mat-sort-header]", ["matSortHeader"], { "disabled": "disabled"; "id": "mat-sort-header"; "arrowPosition": "arrowPosition"; "start": "start"; "disableClear": "disableClear"; }, {}, never, ["*"]>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatSortHeader, "[mat-sort-header]", ["matSortHeader"], { "disabled": "disabled"; "id": "mat-sort-header"; "arrowPosition": "arrowPosition"; "start": "start"; "sortActionDescription": "sortActionDescription"; "disableClear": "disableClear"; }, {}, never, ["*"]>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatSortHeader, [null, null, { optional: true; }, { optional: true; }, null, null]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatSortHeader, [null, null, { optional: true; }, { optional: true; }, null, null, { optional: true; }]>;
 }
 
-// @public @deprecated
+// @public
 export class MatSortHeaderIntl {
     readonly changes: Subject<void>;
     // (undocumented)
