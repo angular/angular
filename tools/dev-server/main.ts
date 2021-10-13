@@ -16,7 +16,8 @@ const {root_paths: _rootPathsRaw, port, historyApiFallback} =
     minimist(args, {boolean: 'historyApiFallback'});
 const rootPaths = _rootPathsRaw ? _rootPathsRaw.split(',') : ['/'];
 
-const server = new DevServer(port, rootPaths, historyApiFallback);
+const bindUi = process.env.TEST_TARGET === undefined;
+const server = new DevServer(port, rootPaths, bindUi, historyApiFallback);
 
 // Setup ibazel support.
 setupBazelWatcherSupport(server);
@@ -24,4 +25,3 @@ setupBazelWatcherSupport(server);
 // Start the devserver. The server will always bind to the loopback and
 // the public interface of the current host.
 server.start();
-

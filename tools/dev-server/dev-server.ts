@@ -38,8 +38,12 @@ export class DevServer {
   };
 
   constructor(
-      readonly port: number, private _rootPaths: string[],
-      private _historyApiFallback: boolean = false) {}
+      readonly port: number, private _rootPaths: string[], bindUi: boolean,
+      private _historyApiFallback: boolean = false) {
+    if (bindUi === false) {
+      this.options.ui = false;
+    }
+  }
 
   /** Starts the server on the given port. */
   start() {
