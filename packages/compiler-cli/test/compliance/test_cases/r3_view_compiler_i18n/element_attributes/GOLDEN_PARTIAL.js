@@ -373,7 +373,9 @@ MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "
   <div
   title="title {{name}}" i18n-title
   attr.label="label {{name}}" i18n-label="@@id1"
-  attr.lang="lang {{name}}" i18n-attr.lang="@@id2">
+  attr.lang="lang {{name}}" i18n-attr.lang="@@id2"
+  attr.dir="dir {{name}}" i18n-attr.dir="@@id3" i18n-dir="@@id4"
+  attr.draggable="draggable {{name}}" i18n-draggable="@@id5" i18n-attr.draggable="@@id6">
   </div>
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
@@ -384,7 +386,9 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
   <div
   title="title {{name}}" i18n-title
   attr.label="label {{name}}" i18n-label="@@id1"
-  attr.lang="lang {{name}}" i18n-attr.lang="@@id2">
+  attr.lang="lang {{name}}" i18n-attr.lang="@@id2"
+  attr.dir="dir {{name}}" i18n-attr.dir="@@id3" i18n-dir="@@id4"
+  attr.draggable="draggable {{name}}" i18n-draggable="@@id5" i18n-attr.draggable="@@id6">
   </div>
   `
                 }]
