@@ -54,6 +54,8 @@ This contains changes before 7.0.0. See [CHANGELOG.md](https://github.com/angula
 * **tooltip:** opening after click on android ([#12250](https://github.com/angular/material2/issues/12250)) ([a6b8a06](https://github.com/angular/material2/commit/a6b8a06)), closes [#12223](https://github.com/angular/material2/issues/12223)
 * ensure all components work with ES2015 in jit mode. ([#12759](https://github.com/angular/material2/issues/12759)) ([0c4a1b4](https://github.com/angular/material2/commit/0c4a1b4)), closes [#12760](https://github.com/angular/material2/issues/12760), [#9329](https://github.com/angular/material2/issues/9329)
 
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="6.4.6"></a>
 ## [6.4.6 argon-aftershave](https://github.com/angular/material2/compare/6.4.5...6.4.6) (2018-08-20)
 
@@ -66,6 +68,7 @@ This contains changes before 7.0.0. See [CHANGELOG.md](https://github.com/angula
 * **selection-list:** do not allow toggling disabled options ([#12617](https://github.com/angular/material2/issues/12617)) ([3c1995d](https://github.com/angular/material2/commit/3c1995d)), closes [#12608](https://github.com/angular/material2/issues/12608)
 * **tabs:** changed after checked error when using isActive in view ([#12206](https://github.com/angular/material2/issues/12206)) ([75632bd](https://github.com/angular/material2/commit/75632bd)), closes [#12197](https://github.com/angular/material2/issues/12197)
 
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.4.5"></a>
 ## [6.4.5 mithril-magnet](https://github.com/angular/material2/compare/6.4.3...6.4.4) (2018-08-13)
@@ -87,6 +90,7 @@ This contains changes before 7.0.0. See [CHANGELOG.md](https://github.com/angula
 * **tabs:** animation running after initialization ([#12549](https://github.com/angular/material2/issues/12549)) ([2798084](https://github.com/angular/material2/commit/2798084))
 * **tree:** include constructors on MatTree classes to allow es6 builds ([#12556](https://github.com/angular/material2/issues/12556)) ([5b0eed3](https://github.com/angular/material2/commit/5b0eed3))
 
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.4.3"></a>
 ## [6.4.3 monelite-meeple](https://github.com/angular/material2/compare/6.4.2...6.4.3) (2018-08-07)
@@ -111,7 +115,7 @@ This contains changes before 7.0.0. See [CHANGELOG.md](https://github.com/angula
 
 * **overlay:** remove detached overlays from the DOM ([#12414](https://github.com/angular/material2/issues/12414)) ([40d8ae4](https://github.com/angular/material2/commit/40d8ae4)), closes [#12341](https://github.com/angular/material2/issues/12341)
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.4.2"></a>
 ## [6.4.2 chalk-window](https://github.com/angular/material2/compare/6.4.1...6.4.2) (2018-07-30)
@@ -131,7 +135,7 @@ This contains changes before 7.0.0. See [CHANGELOG.md](https://github.com/angula
 * **table:** leaking reference through mostRecentCellOutlet ([#12269](https://github.com/angular/material2/issues/12269)) ([7c8e892](https://github.com/angular/material2/commit/7c8e892)), closes [#12259](https://github.com/angular/material2/issues/12259)
 * **tree:** leaking reference through mostRecentTreeNode ([#12334](https://github.com/angular/material2/issues/12334)) ([b6f7205](https://github.com/angular/material2/commit/b6f7205)), closes [#12269](https://github.com/angular/material2/issues/12269)
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.4.1"></a>
 ## [6.4.1 elm-electrode](https://github.com/angular/material2/compare/6.4.0...6.4.1) (2018-07-23)
@@ -162,7 +166,7 @@ This contains changes before 7.0.0. See [CHANGELOG.md](https://github.com/angula
 * **tabs:** selectedIndex being overwritten if tabs are being added / removed ([#12245](https://github.com/angular/material2/issues/12245)) ([641ec85](https://github.com/angular/material2/commit/641ec85))
 * **tooltip:** interfering with native drag&drop ([#12200](https://github.com/angular/material2/issues/12200)) ([8a4f2c3](https://github.com/angular/material2/commit/8a4f2c3))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.4.0"></a>
 # [6.4.0 dimeritium-dandelion](https://github.com/angular/material2/compare/6.3.1...6.4.0) (2018-07-16)
@@ -246,7 +250,7 @@ This contains changes before 7.0.0. See [CHANGELOG.md](https://github.com/angula
 * **tree:** support array of data as children in nested tree ([#10886](https://github.com/angular/material2/issues/10886)) ([825d35c](https://github.com/angular/material2/commit/825d35c))
 * support lazy-loading HammerJS w/ Angular 6.1 ([#11960](https://github.com/angular/material2/issues/11960)) ([eed6110](https://github.com/angular/material2/commit/eed6110))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.3.3"></a>
 ## [6.3.3 chrome-tarantula](https://github.com/angular/material2/compare/6.3.2...6.3.3) (2018-07-09)
@@ -266,6 +270,7 @@ This contains changes before 7.0.0. See [CHANGELOG.md](https://github.com/angula
 
 * **tabs:** don't show focus indication for mouse focus ([#11194](https://github.com/angular/material2/issues/11194)) ([1a83bc0](https://github.com/angular/material2/commit/1a83bc0)), closes [#11184](https://github.com/angular/material2/issues/11184)
 
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.3.2"></a>
 ## [6.3.2 ruby-robot](https://github.com/angular/material2/compare/6.3.0...6.3.2) (2018-07-02)
@@ -313,6 +318,7 @@ This contains changes before 7.0.0. See [CHANGELOG.md](https://github.com/angula
 * **tabs:** unable to set aria-label or aria-labelledby on tab ([#11898](https://github.com/angular/material2/issues/11898)) ([8e44f89](https://github.com/angular/material2/commit/8e44f89))
 * **tree:** fix dynamic tree example and demo not closing children ([#11148](https://github.com/angular/material2/issues/11148)) [#11728](https://github.com/angular/material2/issues/11728) ([128e2a0](https://github.com/angular/material2/commit/128e2a0))
 
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.3.1"></a>
 ## [6.3.1 string-sole](https://github.com/angular/material2/compare/6.3.0...6.3.1) (2018-06-26)
@@ -329,7 +335,7 @@ This contains changes before 7.0.0. See [CHANGELOG.md](https://github.com/angula
 * **table:** use solid color for sorting arrow ([#11533](https://github.com/angular/material2/issues/11533)) ([d083d76](https://github.com/angular/material2/commit/d083d76)), closes [#11340](https://github.com/angular/material2/issues/11340)
 * **tree:** fix dynamic tree example and demo not closing children ([#11148](https://github.com/angular/material2/issues/11148)) [#11728](https://github.com/angular/material2/issues/11728) ([128e2a0](https://github.com/angular/material2/commit/128e2a0))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.3.0"></a>
 # [6.3.0 tourmaline-transom](https://github.com/angular/material2/compare/6.2.0...6.3.0) (2018-06-18)
@@ -388,6 +394,7 @@ This contains changes before 7.0.0. See [CHANGELOG.md](https://github.com/angula
 * **schematics:** add address form schematic ([#11425](https://github.com/angular/material2/issues/11425)) ([9b80a4c](https://github.com/angular/material2/commit/9b80a4c))
 * **snackbar:** switch to providedIn syntax ([a21a4f2](https://github.com/angular/material2/commit/a21a4f2))
 
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.2.1"></a>
 ## [6.2.1 crystal-caribou](https://github.com/angular/material2/compare/6.2.0...6.2.1) (2018-06-04)
@@ -400,7 +407,7 @@ This contains changes before 7.0.0. See [CHANGELOG.md](https://github.com/angula
 * **tooltip:** don't open for mouse and touch focus ([a003b9a](https://github.com/angular/material2/commit/a003b9a)), closes [#10709](https://github.com/angular/material2/issues/10709)
 * **tooltip:** long continuous strings overflowing tooltip container ([#11363](https://github.com/angular/material2/issues/11363)) ([c5f1293](https://github.com/angular/material2/commit/c5f1293))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.2.0"></a>
 # [6.2.0 bamboo-shampoo](https://github.com/angular/material2/compare/6.1.0...6.2.0) (2018-05-29)
@@ -442,7 +449,7 @@ This contains changes before 7.0.0. See [CHANGELOG.md](https://github.com/angula
 
 * **overlay:** only compute and emit position changes if there are subscribers ([#11431](https://github.com/angular/material2/issues/11431)) ([c68ccc9](https://github.com/angular/material2/commit/c68ccc9))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.1.0"></a>
 # [6.1.0 plaster-parliament](https://github.com/angular/material2/compare/6.0.0...6.1.0) (2018-05-21)
@@ -505,7 +512,7 @@ This contains changes before 7.0.0. See [CHANGELOG.md](https://github.com/angula
 
 * **sidenav:** avoid hitting zone continuously when using autosize option ([#11231](https://github.com/angular/material2/issues/11231)) ([c936bc9](https://github.com/angular/material2/commit/c936bc9)), closes [#11215](https://github.com/angular/material2/issues/11215)
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.0.2"></a>
 ## [6.0.2 chocolate-reality](https://github.com/angular/material2/compare/6.0.1...6.0.2) (2018-05-14)
@@ -533,7 +540,7 @@ This contains changes before 7.0.0. See [CHANGELOG.md](https://github.com/angula
 
 * **sidenav:** avoid hitting zone continuously when using autosize option ([#11231](https://github.com/angular/material2/issues/11231)) ([2764ea6](https://github.com/angular/material2/commit/2764ea6)), closes [#11215](https://github.com/angular/material2/issues/11215)
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.0.1"></a>
 ## [6.0.1 glass-spaceship](https://github.com/angular/material2/compare/6.0.0...6.0.1) (2018-05-07)
@@ -550,7 +557,7 @@ This contains changes before 7.0.0. See [CHANGELOG.md](https://github.com/angula
 * **ng-add:** install added packages ([#11163](https://github.com/angular/material2/issues/11163)) ([bf9d5bb](https://github.com/angular/material2/commit/bf9d5bb))
 * **radio:** update set disabled directly on MatRadioButton to trigger change detection ([#11056](https://github.com/angular/material2/issues/11056)) ([a4597c9](https://github.com/angular/material2/commit/a4597c9))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.0.0"></a>
 # [6.0.0 vibranium-vivarium](https://github.com/angular/material2/compare/6.0.0-rc.14...6.0.0) (2018-05-03)
@@ -603,7 +610,7 @@ ng update @angular/material
 * **select:** unable to toggle multi select option after using the mouse ([#11061](https://github.com/angular/material2/issues/11061)) ([01d0993](https://github.com/angular/material2/commit/01d0993))
 * **sidenav:** box shadow visible while closed when rendering on the server ([#10969](https://github.com/angular/material2/issues/10969)) ([cfe6c1d](https://github.com/angular/material2/commit/cfe6c1d))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.0.0-rc.14"></a>
 # [6.0.0-rc.14](https://github.com/angular/material2/compare/6.0.0-rc.12...6.0.0-rc.14) (2018-04-30)
@@ -616,7 +623,7 @@ ng update @angular/material
 * **overlay:** always dispatch keyboard events to top overlay in OverlayKeyboardDispatcher ([#10807](https://github.com/angular/material2/issues/10807)) ([d96fa07](https://github.com/angular/material2/commit/d96fa07)), closes [#10799](https://github.com/angular/material2/issues/10799)
 * **schematics:** allow more tsconfig locations for ng update ([#11058](https://github.com/angular/material2/issues/11058)) ([7bbc040](https://github.com/angular/material2/commit/7bbc040))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.0.0-rc.13"></a>
 # [6.0.0-rc.13](https://github.com/angular/material2/compare/6.0.0-rc.12...6.0.0-rc.13) (2018-04-26)
@@ -666,7 +673,7 @@ ng update @angular/material
 * **table:** add optional footer row ([#10330](https://github.com/angular/material2/issues/10330)) ([6df3709](https://github.com/angular/material2/commit/6df3709))
 * **tree:** add level to tree node context ([#10985](https://github.com/angular/material2/issues/10985)) ([f1589db](https://github.com/angular/material2/commit/f1589db))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.0.0-rc.12"></a>
 # [6.0.0-rc.12](https://github.com/angular/material2/compare/6.0.0-rc.11...6.0.0-rc.12) (2018-04-17)
@@ -691,7 +698,7 @@ ng update @angular/material
 * **tree:** make toggle non-recursive by default ([#10879](https://github.com/angular/material2/issues/10879)) ([5920bc3](https://github.com/angular/material2/commit/5920bc3))
 * **stepper:** add animationDone event ([#10752](https://github.com/angular/material2/issues/10752)) ([358a12d](https://github.com/angular/material2/commit/358a12d)), closes [#9087](https://github.com/angular/material2/issues/9087)
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.0.0-rc.11"></a>
 # [6.0.0-rc.11](https://github.com/angular/material2/compare/6.0.0-rc.5...6.0.0-rc.11) (2018-04-13)
@@ -701,7 +708,7 @@ ng update @angular/material
 
 * **schematics:** Fix a number of issues with ng-update schematic for v5 -> v6 migration
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.0.0-rc.5"></a>
 # [6.0.0-rc.5](https://github.com/angular/material2/compare/6.0.0-rc.4...6.0.0-rc.5) (2018-04-13)
@@ -711,7 +718,7 @@ ng update @angular/material
 
 * **schematics:** move ng-update under correct location ([d98fb35](https://github.com/angular/material2/commit/d98fb35))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.0.0-rc.4"></a>
 # [6.0.0-rc.4](https://github.com/angular/material2/compare/6.0.0-rc.3...6.0.0-rc.4) (2018-04-13)
@@ -721,7 +728,7 @@ ng update @angular/material
 
 * **schematics:** add ng-update config to package.json ([#10844](https://github.com/angular/material2/issues/10844)) ([0a3cfa7](https://github.com/angular/material2/commit/0a3cfa7))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.0.0-rc.3"></a>
 # [6.0.0-rc.3](https://github.com/angular/material2/compare/6.0.0-rc.2...6.0.0-rc.3) (2018-04-12)
@@ -734,7 +741,7 @@ ng update @angular/material
 * **radio:** checked radio button indistinguishable in high contrast mode ([#10753](https://github.com/angular/material2/issues/10753)) ([a74099f](https://github.com/angular/material2/commit/a74099f))
 * **schematics:** schematics now functioning with Angular CLI v6 ([#10703](https://github.com/angular/material2/issues/10703)) ([023e8f4](https://github.com/angular/material2/commit/023e8f4))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.0.0-rc.2"></a>
 # [6.0.0-rc.2](https://github.com/angular/material2/compare/6.0.0-rc.0...6.0.0-rc.2) (2018-04-11)
@@ -782,7 +789,7 @@ ng update @angular/material
 * **tree:** fix nested node cannot expand/collapse multiple times ([#10671](https://github.com/angular/material2/issues/10671)) ([5570beb](https://github.com/angular/material2/commit/5570beb))
 * **tree:** fix nested node is not working ([#10635](https://github.com/angular/material2/issues/10635)) ([7857b92](https://github.com/angular/material2/commit/7857b92))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.0.0-rc.1"></a>
 # [6.0.0-rc.1](https://github.com/angular/material2/compare/6.0.0-rc.0...6.0.0-rc.1) (2018-04-05)
@@ -819,7 +826,7 @@ ng update @angular/material
 * **overlay:** add the ability to set the default offsets on FlexibleConnectedPositionStrategy ([#10555](https://github.com/angular/material2/issues/10555)) ([bcff93e](https://github.com/angular/material2/commit/bcff93e))
 * **table:** support native table selectors ([#10594](https://github.com/angular/material2/issues/10594)) ([7774da2](https://github.com/angular/material2/commit/7774da2))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.0.0-rc.0"></a>
 # [6.0.0-rc.0](https://github.com/angular/material2/compare/6.0.0-beta-5...6.0.0-rc.0) (2018-03-29)
@@ -852,7 +859,7 @@ ng update @angular/material
 * **tabs:** Allow tab ink bar positioning to be determined with a provided method. ([#9972](https://github.com/angular/material2/issues/9972)) ([02f5256](https://github.com/angular/material2/commit/02f5256))
 * **tooltip:** allow for position to be updated while open ([#10362](https://github.com/angular/material2/issues/10362)) ([04045d2](https://github.com/angular/material2/commit/04045d2))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.0.0-beta.5"></a>
 # [6.0.0-beta.5](https://github.com/angular/material2/compare/5.2.4...6.0.0-beta.5) (2018-03-23)
@@ -1001,6 +1008,7 @@ We expect to have the tool ready when we release version 6.0.0.
 * **tooltip:** remove 6.0.0 deletion targets ([#10344](https://github.com/angular/material2/issues/10344)) ([999cb57](https://github.com/angular/material2/commit/999cb57))
 * **typography:** remove deprecated variable ([#10430](https://github.com/angular/material2/issues/10430)) ([9a1ae9c](https://github.com/angular/material2/commit/9a1ae9c))
 
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.0.0-beta.4"></a>
 # [6.0.0-beta.4](https://github.com/angular/material2/compare/6.0.0-beta-2...6.0.0-beta.4) (2018-03-05)
@@ -1042,7 +1050,7 @@ We expect to have the tool ready when we release version 6.0.0.
 * **stepper:** require users to visit non-optional steps ([#10048](https://github.com/angular/material2/issues/10048)) ([77c8d8f](https://github.com/angular/material2/commit/77c8d8f))
 * **tree:** merge tree branch to master ([#9796](https://github.com/angular/material2/issues/9796)) ([c975ca8](https://github.com/angular/material2/commit/c975ca8))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.0.0-beta.3"></a>
 # [6.0.0-beta.3](https://github.com/angular/material2/compare/6.0.0-beta-2...6.0.0-beta.3) (2018-02-27)
@@ -1059,7 +1067,7 @@ We expect to have the tool ready when we release version 6.0.0.
 * **menu:** allow for backdrop class to be customized ([#10097](https://github.com/angular/material2/issues/10097)) ([2ece035](https://github.com/angular/material2/commit/2ece035)), closes [#10062](https://github.com/angular/material2/issues/10062)
 * **tree:** merge tree branch to master ([#9796](https://github.com/angular/material2/issues/9796)) ([c975ca8](https://github.com/angular/material2/commit/c975ca8))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.0.0-beta.2"></a>
 # [6.0.0-beta.2](https://github.com/angular/material2/compare/6.0.0-beta-0...6.0.0-beta.2) (2018-02-21)
@@ -1091,13 +1099,15 @@ We expect to have the tool ready when we release version 6.0.0.
 * **schematics:** add material scaffolding schematic ([#9883](https://github.com/angular/material2/issues/9883)) ([45399c6](https://github.com/angular/material2/commit/45399c6))
 * **typography:** add letter-spacing configuration to typography configs. ([#9932](https://github.com/angular/material2/issues/9932)) ([f30609c](https://github.com/angular/material2/commit/f30609c))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.0.0-beta.1"></a>
 # [6.0.0-beta.1](https://github.com/angular/material2/compare/5.2.0...6.0.0-beta-0) (2018-02-12)
 
 * Fix typo in version name (using a dash instead of a dot)
 * Update Angular peer dependency to 6.0.0-beta.x
+
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="6.0.0-beta-0"></a>
 # [6.0.0-beta-0](https://github.com/angular/material2/compare/5.2.0...6.0.0-beta-0) (2018-02-12)
@@ -1117,7 +1127,7 @@ We expect to have the tool ready when we release version 6.0.0.
 * **schematics:** add initial schematics utils ([#9451](https://github.com/angular/material2/issues/9451)) ([673d56e](https://github.com/angular/material2/commit/673d56e))
 * **tabs:** add ability to lazy load tab content ([#8921](https://github.com/angular/material2/issues/8921)) ([6feaf62](https://github.com/angular/material2/commit/6feaf62))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="5.2.5"></a>
 # [5.2.5 cardboard-kangaroo](https://github.com/angular/material2/compare/5.2.4...5.2.5) (2018-04-17)
@@ -1126,7 +1136,7 @@ We expect to have the tool ready when we release version 6.0.0.
 ### Highlights
 * Tweak peer deps to avoid warnings when updating Angular to 6.0
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="5.2.4"></a>
 # [5.2.4 ash-submarine](https://github.com/angular/material2/compare/5.2.3...5.2.4) (2018-03-06)
@@ -1142,6 +1152,7 @@ We expect to have the tool ready when we release version 6.0.0.
 * **paginator:** first/last icons being thrown off on IE and Edge; simplify icon setup ([#9776](https://github.com/angular/material2/issues/9776)) ([85f9491](https://github.com/angular/material2/commit/85f9491))
 * **selection-list:** improve accessibility of selection list ([#10137](https://github.com/angular/material2/issues/10137)) ([cbe11d4](https://github.com/angular/material2/commit/cbe11d4)), closes [#9995](https://github.com/angular/material2/issues/9995)
 
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="5.2.3"></a>
 # [5.2.3 diamond-silhouette](https://github.com/angular/material2/compare/5.2.2...5.2.3) (2018-02-27)
@@ -1161,6 +1172,7 @@ We expect to have the tool ready when we release version 6.0.0.
 * **selection-list:** repeated preselected items not appearing as selected with OnPush parent ([#10100](https://github.com/angular/material2/issues/10100)) ([f93d0f4](https://github.com/angular/material2/commit/f93d0f4)), closes [#10090](https://github.com/angular/material2/issues/10090)
 * **stepper:** require users to visit non-optional steps ([#10048](https://github.com/angular/material2/issues/10048)) ([d26aa6e](https://github.com/angular/material2/commit/d26aa6e))
 
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="5.2.2"></a>
 # [5.2.2 cork-yacht](https://github.com/angular/material2/compare/5.2.1...5.2.2) (2018-02-21)
@@ -1181,7 +1193,7 @@ We expect to have the tool ready when we release version 6.0.0.
 * **theming:** add aliases for alternate spelling of "grey" ([#9903](https://github.com/angular/material2/issues/9903)) ([36e1bc0](https://github.com/angular/material2/commit/36e1bc0))
 * **viewport-ruler:** fix server-side rendering errors when attempting to measure the viewport ([#9870](https://github.com/angular/material2/issues/9870)) ([ac4cd91](https://github.com/angular/material2/commit/ac4cd91))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="5.2.1"></a>
 # [5.2.1 ghillie-soup](https://github.com/angular/material2/compare/5.2.0...5.2.1) (2018-02-12)
@@ -1201,7 +1213,7 @@ We expect to have the tool ready when we release version 6.0.0.
 * **slider:** unable to reset value by setting it back to undefined ([#9768](https://github.com/angular/material2/issues/9768)) ([c2e2744](https://github.com/angular/material2/commit/c2e2744)), closes [#9740](https://github.com/angular/material2/issues/9740)
 * **radio:** add aria-describedby passthrough to radio button input ([#9741](https://github.com/angular/material2/issues/9741)) ([cd159f5](https://github.com/angular/material2/commit/cd159f5))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="5.2.0"></a>
 # [5.2.0 selenium-scramble](https://github.com/angular/material2/compare/5.1.0...5.2.0) (2018-02-05)
@@ -1320,7 +1332,7 @@ We expect to have the tool ready when we release version 6.0.0.
 
 * **menu,select:** panel repainting on scroll ([#7721](https://github.com/angular/material2/issues/7721)) ([13410bd](https://github.com/angular/material2/commit/13410bd)), closes [#7716](https://github.com/angular/material2/issues/7716)
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="5.2.0-beta.0"></a>
 # [5.2.0-beta.0](https://github.com/angular/material2/compare/5.1.0...5.2.0-beta.0) (2018-01-30)
@@ -1415,7 +1427,7 @@ We expect to have the tool ready when we release version 6.0.0.
 
 * **menu,select:** panel repainting on scroll ([#7721](https://github.com/angular/material2/issues/7721)) ([13410bd](https://github.com/angular/material2/commit/13410bd)), closes [#7716](https://github.com/angular/material2/issues/7716)
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="5.1.1"></a>
 # [5.1.1 silk-xylophone](https://github.com/angular/material2/compare/5.1.0...5.1.1) (2018-01-29)
@@ -1463,7 +1475,7 @@ We expect to have the tool ready when we release version 6.0.0.
 * **theming:** provide text color through mat-app-background ([#9262](https://github.com/angular/material2/issues/9262)) ([6d66a16](https://github.com/angular/material2/commit/6d66a16))
 * **overlay:** make it easier to override backdrop color ([#9114](https://github.com/angular/material2/issues/9114)) ([4ff1fd4](https://github.com/angular/material2/commit/4ff1fd4)), closes [#7855](https://github.com/angular/material2/issues/7855)
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="5.1.0"></a>
 # [5.1.0 burlap-bezel](https://github.com/angular/material2/compare/5.0.1...5.1.0) (2018-01-17)
@@ -1553,7 +1565,7 @@ We expect to have the tool ready when we release version 6.0.0.
 * **ripple:** do not register events if ripples are disabled initially ([#8882](https://github.com/angular/material2/issues/8882)) ([58b93dc](https://github.com/angular/material2/commit/58b93dc))
 * **ripple:** use passive event listeners ([#8719](https://github.com/angular/material2/issues/8719)) ([12feff7](https://github.com/angular/material2/commit/12feff7))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="5.0.4"></a>
 # [5.0.4 linoleum-wormhole](https://github.com/angular/material2/compare/5.0.0...5.0.4) (2018-01-08)
@@ -1591,7 +1603,7 @@ We expect to have the tool ready when we release version 6.0.0.
 
 * **ripple:** do not register events if ripples are disabled initially ([#8882](https://github.com/angular/material2/issues/8882)) ([4838f02](https://github.com/angular/material2/commit/4838f02))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="5.0.3"></a>
 # [5.0.3 concrete-aeroplane](https://github.com/angular/material2/compare/5.0.1...5.0.3) (2018-01-02)
@@ -1602,7 +1614,7 @@ We expect to have the tool ready when we release version 6.0.0.
 * **autocomplete:** panelClosingActions emitting twice in some cases ([#8998](https://github.com/angular/material2/issues/8998)) ([22c3259](https://github.com/angular/material2/commit/22c3259))
 * **dialog:** change order of button actions ([#9021](https://github.com/angular/material2/issues/9021)) ([7b879a5](https://github.com/angular/material2/commit/7b879a5))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="5.0.2"></a>
 # [5.0.2 flannel-battlestar](https://github.com/angular/material2/compare/5.0.0...5.0.2) (2017-12-19)
@@ -1645,7 +1657,7 @@ We expect to have the tool ready when we release version 6.0.0.
 
 * **ripple:** use passive event listeners ([#8719](https://github.com/angular/material2/issues/8719)) ([d67f971](https://github.com/angular/material2/commit/d67f971))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="5.0.1"></a>
 # [5.0.1 ceramic-gravy](https://github.com/angular/material2/compare/5.0.0...5.0.1) (2017-12-11)
@@ -1661,7 +1673,7 @@ We expect to have the tool ready when we release version 6.0.0.
 * **select,input:** inconsistent disabled text color ([#7794](https://github.com/angular/material2/issues/7794)) ([f31be6f](https://github.com/angular/material2/commit/f31be6f)), closes [#7793](https://github.com/angular/material2/issues/7793)
 * **tooltip:** not closing when scrolling away ([#8688](https://github.com/angular/material2/issues/8688)) ([d5a2fca](https://github.com/angular/material2/commit/d5a2fca))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="5.0.0"></a>
 # [5.0.0 velvet-cuttlefish](https://github.com/angular/material2/compare/5.0.0-rc.3...5.0.0) (2017-12-06)
@@ -1677,7 +1689,7 @@ We expect to have the tool ready when we release version 6.0.0.
 
 * **selection-list:** support for ngModel ([#7456](https://github.com/angular/material2/issues/7456)) ([3fbb28a](https://github.com/angular/material2/commit/3fbb28a)), closes [#6896](https://github.com/angular/material2/issues/6896)
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="5.0.0-rc.3"></a>
 # [5.0.0-rc.3 ink-sparkler](https://github.com/angular/material2/compare/5.0.0-rc.2...5.0.0-rc.3) (2017-12-05)
@@ -1732,9 +1744,9 @@ rather than being based on the existing config object.
 * **tooltip:** close tooltip if message is cleared while open ([#8544](https://github.com/angular/material2/issues/8544)) ([d66284d](https://github.com/angular/material2/commit/d66284d))
 * **tooltip:** unable to type in input with tooltip on iOS ([#8534](https://github.com/angular/material2/issues/8534)) ([75c665a](https://github.com/angular/material2/commit/75c665a)), closes [#8331](https://github.com/angular/material2/issues/8331)
 
+<!-- CHANGELOG SPLIT MARKER -->
 
-
-<a name="5.0.0-rc.2 wool-wish"></a>
+<a name="5.0.0-rc.2"></a>
 # [5.0.0-rc.2](https://github.com/angular/material2/compare/5.0.0-rc.1...5.0.0-rc.2) (2017-11-27)
 
 
@@ -1747,8 +1759,9 @@ rather than being based on the existing config object.
 * The examples on [material.angular.io](https://material.angular.io) are now opened externally via
 StackBlitz instead of Plunker.
 
+<!-- CHANGELOG SPLIT MARKER -->
 
-<a name="5.0.0-rc.1 felt-photon"></a>
+<a name="5.0.0-rc.1"></a>
 # [5.0.0-rc.1](https://github.com/angular/material2/compare/5.0.0-rc0...5.0.0-rc.1) (2017-11-20)
 
 
@@ -1803,7 +1816,7 @@ StackBlitz instead of Plunker.
 * **slider:** support specifying tabindex ([#7848](https://github.com/angular/material2/issues/7848)) ([8e9dade](https://github.com/angular/material2/commit/8e9dade))
 * **tab-nav-bar:** allow setting tabindex for links ([#7809](https://github.com/angular/material2/issues/7809)) ([a041253](https://github.com/angular/material2/commit/a041253))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="5.0.0-rc0"></a>
 # [5.0.0-rc0 cesium-cephalopod](https://github.com/angular/material2/compare/2.0.0-beta.12...5.0.0-rc0) (2017-11-06)
@@ -1982,6 +1995,8 @@ StackBlitz instead of Plunker.
 * remove compatibility mode ([#7689](https://github.com/angular/material2/issues/7689)) ([dcef604](https://github.com/angular/material2/commit/dcef604))
 * switch to HttpClient ([#6702](https://github.com/angular/material2/issues/6702)) ([0ea4370](https://github.com/angular/material2/commit/0ea4370))
 
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="2.0.0-beta.12"></a>
 # [2.0.0-beta.12 marble-mustache](https://github.com/angular/material2/compare/2.0.0-beta.11...2.0.0-beta.12) (2017-10-05)
 
@@ -1997,6 +2012,9 @@ StackBlitz instead of Plunker.
     <mat-option *ngFor="let state of states" [value]="state">{{ state }}</mat-option>
   </mat-select>
 </mat-form-field>
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="2.0.0-beta.12"></a>
 # [2.0.0-beta.12 marble-mustache](https://github.com/angular/material2/compare/2.0.0-beta.11...2.0.0-beta.12) (2017-10-05)
 ```
@@ -2092,6 +2110,8 @@ available from @angular/material and instead must be imported from @angular/cdk/
 * **theming:** incorrect green-500 contrast color ([#7492](https://github.com/angular/material2/issues/7492)) ([c1f6ea1](https://github.com/angular/material2/commit/c1f6ea1)), closes [#7490](https://github.com/angular/material2/issues/7490)
 * **tooltip:** ensure tooltip stays within viewport ([#6659](https://github.com/angular/material2/issues/6659)) ([c8ddd39](https://github.com/angular/material2/commit/c8ddd39)), closes [#5428](https://github.com/angular/material2/issues/5428)
 * **tooltip:** minification issue ([#7430](https://github.com/angular/material2/issues/7430)) ([b121e32](https://github.com/angular/material2/commit/b121e32))
+
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="2.0.0-beta.11"></a>
 # [2.0.0-beta.11 carapace-parapet](https://github.com/angular/material2/compare/2.0.0-beta.10...2.0.0-beta.11) (2017-09-21)
@@ -2232,6 +2252,7 @@ to `FocusMonitor` and moved to `@angular/cdk/a11y` (`A11yModule`).
 * **dialog:** avoid repaintin dialog content element on scroll ([#6890](https://github.com/angular/material2/issues/6890)) ([51396d0](https://github.com/angular/material2/commit/51396d0)), closes [#6878](https://github.com/angular/material2/issues/6878)
 * memory leak when subscribing to zone events ([#6918](https://github.com/angular/material2/issues/6918)) ([f6c9172](https://github.com/angular/material2/commit/f6c9172)), closes [#6905](https://github.com/angular/material2/issues/6905)
 
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="2.0.0-beta.10"></a>
 # [2.0.0-beta.10 découpage-panjandrum](https://github.com/angular/material2/compare/2.0.0-beta.8...2.0.0-beta.10) (2017-08-29)
@@ -2545,6 +2566,7 @@ changelog from beta.3 for more information).
 * **table:** cell references not being cleaned up on destroy ([#5809](https://github.com/angular/material2/issues/5809)) ([df1ddee](https://github.com/angular/material2/commit/df1ddee))
 * **tabs:** avoid extra resize handler and reflow ([#6434](https://github.com/angular/material2/issues/6434)) ([1df79e9](https://github.com/angular/material2/commit/1df79e9))
 
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="2.0.0-beta.8"></a>
 # [2.0.0-beta.8 plasma-abacus](https://github.com/angular/material2/compare/2.0.0-beta.7...2.0.0-beta.8) (2017-07-06)
@@ -2614,7 +2636,7 @@ explicitly.
 * move a11y, bidi, platform, rxjs, and portal to cdk ([#5386](https://github.com/angular/material2/issues/5386)) ([fde35e4](https://github.com/angular/material2/commit/fde35e4))
 * move observe-content to cdk ([#5438](https://github.com/angular/material2/issues/5438)) ([b00f838](https://github.com/angular/material2/commit/b00f838))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="2.0.0-beta.7"></a>
 # [2.0.0-beta.7 glass-delicatessen](https://github.com/angular/material2/compare/2.0.0-beta.6...2.0.0-beta.7) (2017-06-19)
@@ -2696,7 +2718,7 @@ a few bugs, but things should mostly work.
 
 * **input:** The `align` input from the `<md-input-container>` component has been removed. Developers instead should use plain CSS to achieve the same effect (using `text-align: end` for example).
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="2.0.0-beta.6"></a>
 # [2.0.0-beta.6 amber-ansible](https://github.com/angular/material2/compare/2.0.0-beta.5...2.0.0-beta.6) (2017-05-25)
@@ -2745,7 +2767,7 @@ a few bugs, but things should mostly work.
 * **overlay:** add scroll blocking strategy ([#4500](https://github.com/angular/material2/issues/4500)) ([6842046](https://github.com/angular/material2/commit/6842046))
 * **snack-bar:** allow setting the layout direction ([#4726](https://github.com/angular/material2/issues/4726)) ([0e24345](https://github.com/angular/material2/commit/0e24345)), closes [#4721](https://github.com/angular/material2/issues/4721)
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="2.0.0-beta.5"></a>
 # [2.0.0-beta.5 taffeta-admiral](https://github.com/angular/material2/compare/2.0.0-beta.4...2.0.0-beta.5) (2017-05-13)
@@ -2755,7 +2777,7 @@ a few bugs, but things should mostly work.
 
 * **list, option:** fix ripples blocking mouse events on user content ([#4503](https://github.com/angular/material2/issues/4503)) ([c4b3625](https://github.com/angular/material2/commit/c4b3625)), closes [#4480](https://github.com/angular/material2/issues/4480)
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="2.0.0-beta.4"></a>
 # [2.0.0-beta.4 unobtainium-sunglasses](https://github.com/angular/material2/compare/g3_v2_0...2.0.0-beta.4) (2017-05-12)
@@ -2868,7 +2890,7 @@ a few bugs, but things should mostly work.
 
 * **dialog:** switch dialog animations to translate3d ([#3905](https://github.com/angular/material2/issues/3905)) ([857c217](https://github.com/angular/material2/commit/857c217))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="2.0.0-beta.3"></a>
 # [2.0.0-beta.3 cesium-cephalopod](https://github.com/angular/material2/compare/2.0.0-beta.2...2.0.0-beta.3) (2017-04-07)
@@ -3061,7 +3083,7 @@ property, you can instead inject that value using the `MD_DIALOG_DATA` of the op
 * **scroll-dispatcher:** avoid triggering change detection on scroll ([#3687](https://github.com/angular/material2/issues/3687)) ([5c2b449](https://github.com/angular/material2/commit/5c2b449))
 * **scroll-dispatcher:** lazily subscribe to global events ([#3270](https://github.com/angular/material2/issues/3270)) ([c1004cb](https://github.com/angular/material2/commit/c1004cb)), closes [#3237](https://github.com/angular/material2/issues/3237)
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="2.0.0-beta.2"></a>
 # [2.0.0-beta.2 flannel-papaya](https://github.com/angular/material2/compare/2.0.0-beta.1...2.0.0-beta.2) (2017-02-15)
@@ -3225,6 +3247,7 @@ See ([#2790](https://github.com/angular/material2/issues/2790)) for the details 
 
 * **tabs:** reduce amount of reflows when aligning the ink bar ([#2372](https://github.com/angular/material2/issues/2372)) ([dab742f](https://github.com/angular/material2/commit/dab742f))
 
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="2.0.0-beta.1"></a>
 # [2.0.0-beta.1 rebar-teacup](https://github.com/angular/material2/compare/2.0.0-beta.0...2.0.0-beta.1) (2016-12-23)
@@ -3233,6 +3256,7 @@ See ([#2790](https://github.com/angular/material2/issues/2790)) for the details 
 * Remove `MdAutocompleteModule` that was accidentally included in beta.0
 * Correct path to umd bundle in package.json ([#2368](https://github.com/angular/material2/issues/2368)) ([d286e6d](https://github.com/angular/material2/commit/d286e6d6472910ab41b8437d405cd3e902c9c848)), closes [#2366](https://github.com/angular/material2/issues/2366)
 
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="2.0.0-beta.0"></a>
 # [2.0.0-beta.0 velvet-pizza](https://github.com/angular/material2/compare/2.0.0-alpha.9...2.0.0-beta.0) (2016-12-22)
@@ -3307,7 +3331,7 @@ should no longer throw an error if it is missing.
 
 * **sidenav:** avoid extra repaints while scrolling ([#2156](https://github.com/angular/material2/issues/2156)) ([b967712](https://github.com/angular/material2/commit/b967712))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="2.0.0-alpha.11"></a>
 # [2.0.0-alpha.11 polyester-golem](https://github.com/angular/material2/compare/2.0.0-alpha.9...2.0.0-alpha.11) (2016-12-08)
@@ -3375,6 +3399,7 @@ should no longer throw an error if it is missing.
 * **tooltip:** show tooltip on longpress; remove delay on mouseleave ([#1819](https://github.com/angular/material2/issues/1819)) ([1552d70](https://github.com/angular/material2/commit/1552d70))
 * **a11y:** add wrap mode to key manager ([#1796](https://github.com/angular/material2/issues/1796)) ([3d4abac](https://github.com/angular/material2/commit/3d4abac))
 
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="2.0.0-alpha.10"></a>
 # [2.0.0-alpha.10 mithril-hoverboard](https://github.com/angular/material2/compare/2.0.0-alpha.9...2.0.0-alpha.10) (2016-11-10)
@@ -3488,7 +3513,7 @@ should no longer throw an error if it is missing.
 
 * **progress-circle:** improved rendering performance ([#1635](https://github.com/angular/material2/issues/1635)) ([0883fb2](https://github.com/angular/material2/commit/0883fb2))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="2.0.0-alpha.9"></a>
 # [2.0.0-alpha.9 cobalt-kraken](https://github.com/angular/material2/compare/2.0.0-alpha.8...2.0.0-alpha.9) (2016-09-26)
@@ -3528,6 +3553,7 @@ application. See the new [theming guide](guides/theming.md) for more information
 * **sidenav:** fix Promise type to match ([#1188](https://github.com/angular/material2/issues/1188)) ([3d5ceab](https://github.com/angular/material2/commit/3d5ceab))
 * **theming:** set input default color to currentColor in input theme ([#1260](https://github.com/angular/material2/issues/1260)) ([#1262](https://github.com/angular/material2/issues/1262)) ([fa78f72](https://github.com/angular/material2/commit/fa78f72))
 
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="2.0.0-alpha.8"></a>
 # [2.0.0-alpha.8 ectoplasm-helicopter](https://github.com/angular/material2/compare/g3_v2_0...2.0.0-alpha.8) (2016-09-01)
@@ -3602,6 +3628,8 @@ Example: `autoComplete` is now `autocomplete`.   See [#1066](https://github.com/
 * **slider:** support ngModel ([#1029](https://github.com/angular/material2/issues/1029)) ([8828358](https://github.com/angular/material2/commit/8828358))
 * **tabs:** support for `disabled` tabs ([#934](https://github.com/angular/material2/issues/934)) ([9d51deb](https://github.com/angular/material2/commit/9d51deb)), closes [#880](https://github.com/angular/material2/issues/880)
 
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="2.0.0-alpha.7"></a>
 # [2.0.0-alpha.7 wax-umpire](https://github.com/angular/material2/compare/2.0.0-alpha.6...2.0.0-alpha.7) (2016-08-09)
 
@@ -3651,7 +3679,7 @@ The MD_XXX_DIRECTIVES constants are now deprecated and will be removed in alpha.
 
 * radio: radio-button will no longer emit change event on de-select.
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="2.0.0-alpha.6"></a>
 # [2.0.0-alpha.6 carbonfiber-discotheque](https://github.com/angular/material2/compare/2.0.0-alpha.5...2.0.0-alpha.6) (2016-06-30)
@@ -3711,7 +3739,7 @@ The MD_XXX_DIRECTIVES constants are now deprecated and will be removed in alpha.
 
 * **progress-circle:** clean up animation on destroy ([#617](https://github.com/angular/material2/issues/617)) ([63f43bd](https://github.com/angular/material2/commit/63f43bd))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="2.0.0-alpha.5"></a>
 # [2.0.0-alpha.5 granite-gouda](https://github.com/angular/material2/compare/2.0.0-alpha.4...2.0.0-alpha.5) (2016-05-25)
@@ -3754,6 +3782,7 @@ The MD_XXX_DIRECTIVES constants are now deprecated and will be removed in alpha.
 * **input:** add support for more input attributes ([#447](https://github.com/angular/material2/issues/447))([911bfae](https://github.com/angular/material2/commit/911bfae))
 * **overlay:** add connected position strategy ([#335](https://github.com/angular/material2/issues/335))([7f3b1bd](https://github.com/angular/material2/commit/7f3b1bd))
 
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="2.0.0-alpha.4"></a>
 # [2.0.0-alpha.4 mahogany-tambourine](https://github.com/angular/material2/compare/2.0.0-alpha.3...2.0.0-alpha.4) (2016-05-04)
@@ -3777,7 +3806,7 @@ The MD_XXX_DIRECTIVES constants are now deprecated and will be removed in alpha.
 * **list:** add icon support([7b3698c](https://github.com/angular/material2/commit/7b3698c))
 * **sidenav:** add fullscreen mode([aa6c740](https://github.com/angular/material2/commit/aa6c740))
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="2.0.0-alpha.3"></a>
 # [2.0.0-alpha.3 cotton-candelabrum](https://github.com/angular/material2/compare/2.0.0-alpha.2...2.0.0-alpha.3) (2016-04-21)
@@ -3799,7 +3828,7 @@ The MD_XXX_DIRECTIVES constants are now deprecated and will be removed in alpha.
 * **list:** syntactic sugar for simple nav lists ([c21c336](https://github.com/angular/material2/commit/c21c336))
 * **a11y:** live-announcer supports using a provided live element (#273) ([1a33a5b](https://github.com/angular/material2/commit/1a33a5b)), closes [#267](https://github.com/angular/material2/issues/267)
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="2.0.0-alpha.2"></a>
 # [2.0.0-alpha.2 diamond-haircut](https://github.com/angular/material2/compare/2.0.0-alpha.1...2.0.0-alpha.2) (2016-04-06)
@@ -3832,7 +3861,7 @@ The MD_XXX_DIRECTIVES constants are now deprecated and will be removed in alpha.
 * **radio:** support ngModel on md-radio-group ([6aff4cc](https://github.com/angular/material2/commit/6aff4cc)), closes [#209](https://github.com/angular/material2/issues/209)
 * **a11y:** add aria live announcer ([e99da66](https://github.com/angular/material2/commit/e99da66)), closes [#106](https://github.com/angular/material2/issues/106)
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="2.0.0-alpha.1"></a>
 # [2.0.0-alpha.1 nylon-hyperdrive](https://github.com/angular/material2/compare/2.0.0-alpha.0...2.0.0-alpha.1) (2016-03-16)
@@ -3842,7 +3871,7 @@ The MD_XXX_DIRECTIVES constants are now deprecated and will be removed in alpha.
 
 * **radio:** Radio button component. ([d76465b](https://github.com/angular/material2/commit/d76465b)), closes [#125](https://github.com/angular/material2/issues/125)
 
-
+<!-- CHANGELOG SPLIT MARKER -->
 
 <a name="2.0.0-alpha.0"></a>
 # [2.0.0-alpha.0 titanium-octopus](https://github.com/angular/material2/releases/tag/2.0.0-alpha.0) (2016-03-15)
