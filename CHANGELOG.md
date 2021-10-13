@@ -1,3 +1,22 @@
+<a name="13.0.0-rc.0"></a>
+# 13.0.0-rc.0 (2021-10-13)
+## Deprecations
+### 
+- The `renderModuleFactory` symbol in `@angular/platform-server` is no longer necessary as of Angular v13.
+
+The `renderModuleFactory` calls can be replaced with `renderModule`.
+### 
+| Commit | Type | Description |
+| -- | -- | -- |
+| [747553dd68](https://github.com/angular/angular/commit/747553dd68209fe25a9704fe7094b4b3fb38bf06) | docs | deprecate ViewEngine-based `renderModuleFactory` ([#43757](https://github.com/angular/angular/pull/43757)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7396021e4b](https://github.com/angular/angular/commit/7396021e4b22faca47b7fc0bab188c838090f3e7) | fix | avoid duplicating comments in TestBed teardown migration ([#43776](https://github.com/angular/angular/pull/43776)) |
+## Special Thanks
+Alan Agius, Andrew Scott, Daniel Díaz, David Shevitz, Doug Parker, George Kalpakas, Joe Martin (Crowdstaffing), Joey Perrott, Kristiyan Kostadinov, Paul Gschwendtner, Tanguy Nodet, Thomas Turrell-Croft, dario-piotrowicz, hchiam, markostanimirovic and mgechev
+
+
 <a name="12.2.10"></a>
 # 12.2.10 (2021-10-13)
 ## Special Thanks
