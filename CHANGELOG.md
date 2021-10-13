@@ -1,3 +1,13 @@
+<a name="12.2.10"></a>
+# 12.2.10 (2021-10-13)
+
+This release contains various API docs improvements.
+
+## Special Thanks
+Alan Agius, Daniel Díaz, David Shevitz, Doug Parker, George Kalpakas, Joe Martin (Crowdstaffing), Tanguy Nodet, Thomas Turrell-Croft, dario-piotrowicz, hchiam, markostanimirovic and mgechev
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="12.2.9"></a>
 # 12.2.9 (2021-10-06)
 ### core
