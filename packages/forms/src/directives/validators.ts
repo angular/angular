@@ -572,50 +572,24 @@ export const MIN_LENGTH_VALIDATOR: any = {
   providers: [MIN_LENGTH_VALIDATOR],
   host: {'[attr.minlength]': 'enabled() ? minlength : null'}
 })
-export class MinLengthValidator implements Validator, OnChanges {
-  private _validator: ValidatorFn = nullValidator;
-  private _onChange?: () => void;
-
+export class MinLengthValidator extends AbstractValidatorDirective implements OnChanges {
   /**
    * @description
    * Tracks changes to the minimum length bound to this directive.
    */
-  @Input()
-  minlength!: string|number|null;  // This input is always defined, since the name matches selector.
+  @Input() minlength!: string|number|null;
+  /** @internal */
+  override inputName = 'minlength';
+
+  /** @internal */
+  override normalizeInput = (input: string|number): number => toInteger(input);
+
+  /** @internal */
+  override createValidator = (minlength: number): ValidatorFn => minLengthValidator(minlength);
 
   /** @nodoc */
   ngOnChanges(changes: SimpleChanges): void {
-    if ('minlength' in changes) {
-      this._createValidator();
-      if (this._onChange) this._onChange();
-    }
-  }
-
-  /**
-   * Method that validates whether the value meets a minimum length requirement.
-   * Returns the validation result if enabled, otherwise null.
-   * @nodoc
-   */
-  validate(control: AbstractControl): ValidationErrors|null {
-    return this.enabled() ? this._validator(control) : null;
-  }
-
-  /**
-   * Registers a callback function to call when the validator inputs change.
-   * @nodoc
-   */
-  registerOnValidatorChange(fn: () => void): void {
-    this._onChange = fn;
-  }
-
-  private _createValidator(): void {
-    this._validator =
-        this.enabled() ? minLengthValidator(toInteger(this.minlength!)) : nullValidator;
-  }
-
-  /** @nodoc */
-  enabled(): boolean {
-    return this.minlength != null /* both `null` and `undefined` */;
+    this.handleChanges(changes);
   }
 }
 
@@ -655,49 +629,24 @@ export const MAX_LENGTH_VALIDATOR: any = {
   providers: [MAX_LENGTH_VALIDATOR],
   host: {'[attr.maxlength]': 'enabled() ? maxlength : null'}
 })
-export class MaxLengthValidator implements Validator, OnChanges {
-  private _validator: ValidatorFn = nullValidator;
-  private _onChange?: () => void;
-
+export class MaxLengthValidator extends AbstractValidatorDirective implements OnChanges {
   /**
    * @description
-   * Tracks changes to the maximum length bound to this directive.
+   * Tracks changes to the minimum length bound to this directive.
    */
-  @Input()
-  maxlength!: string|number|null;  // This input is always defined, since the name matches selector.
+  @Input() maxlength!: string|number|null;
+  /** @internal */
+  override inputName = 'maxlength';
+
+  /** @internal */
+  override normalizeInput = (input: string|number): number => toInteger(input);
+
+  /** @internal */
+  override createValidator = (maxlength: number): ValidatorFn => maxLengthValidator(maxlength);
 
   /** @nodoc */
   ngOnChanges(changes: SimpleChanges): void {
-    if ('maxlength' in changes) {
-      this._createValidator();
-      if (this._onChange) this._onChange();
-    }
-  }
-
-  /**
-   * Method that validates whether the value exceeds the maximum length requirement.
-   * @nodoc
-   */
-  validate(control: AbstractControl): ValidationErrors|null {
-    return this.enabled() ? this._validator(control) : null;
-  }
-
-  /**
-   * Registers a callback function to call when the validator inputs change.
-   * @nodoc
-   */
-  registerOnValidatorChange(fn: () => void): void {
-    this._onChange = fn;
-  }
-
-  private _createValidator(): void {
-    this._validator =
-        this.enabled() ? maxLengthValidator(toInteger(this.maxlength!)) : nullValidator;
-  }
-
-  /** @nodoc */
-  enabled(): boolean {
-    return this.maxlength != null /* both `null` and `undefined` */;
+    this.handleChanges(changes);
   }
 }
 
