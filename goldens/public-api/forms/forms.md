@@ -454,14 +454,10 @@ export class FormsModule {
 }
 
 // @public
-export class MaxLengthValidator implements Validator, OnChanges {
-    // (undocumented)
-    enabled(): boolean;
+export class MaxLengthValidator extends AbstractValidatorDirective implements OnChanges {
     maxlength: string | number | null;
     // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
-    registerOnValidatorChange(fn: () => void): void;
-    validate(control: AbstractControl): ValidationErrors | null;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MaxLengthValidator, "[maxlength][formControlName],[maxlength][formControl],[maxlength][ngModel]", never, { "maxlength": "maxlength"; }, {}, never>;
     // (undocumented)
@@ -479,14 +475,10 @@ export class MaxValidator extends AbstractValidatorDirective implements OnChange
 }
 
 // @public
-export class MinLengthValidator implements Validator, OnChanges {
-    // (undocumented)
-    enabled(): boolean;
+export class MinLengthValidator extends AbstractValidatorDirective implements OnChanges {
     minlength: string | number | null;
     // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
-    registerOnValidatorChange(fn: () => void): void;
-    validate(control: AbstractControl): ValidationErrors | null;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MinLengthValidator, "[minlength][formControlName],[minlength][formControl],[minlength][ngModel]", never, { "minlength": "minlength"; }, {}, never>;
     // (undocumented)
