@@ -184,6 +184,7 @@ export { Event_2 as Event }
 // @public
 export interface ExtraOptions {
     anchorScrolling?: 'disabled' | 'enabled';
+    canceledNavigationResolution?: 'replace' | 'computed';
     enableTracing?: boolean;
     errorHandler?: ErrorHandler;
     initialNavigation?: InitialNavigation;
