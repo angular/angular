@@ -81,7 +81,6 @@ describe('`restoredState#ɵrouterPageId`', () => {
       ]
     });
     const router = TestBed.inject(Router);
-    (router as any).canceledNavigationResolution = 'computed';
     const location = TestBed.inject(Location);
     fixture = createRoot(router, RootCmp);
     router.resetConfig([
@@ -486,7 +485,9 @@ function advance(fixture: ComponentFixture<any>, millis?: number): void {
 }
 
 @NgModule({
-  imports: [RouterTestingModule, CommonModule],
+  imports: [
+    RouterTestingModule.withRoutes([], {canceledNavigationResolution: 'computed'}), CommonModule
+  ],
   exports: [SimpleCmp, RootCmp, ThrowingCmp],
   entryComponents: [SimpleCmp, RootCmp, ThrowingCmp],
   declarations: [SimpleCmp, RootCmp, ThrowingCmp]
