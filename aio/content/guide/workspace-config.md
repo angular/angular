@@ -364,42 +364,11 @@ The `optimization` browser builder option can be either a Boolean or an Object f
 
 There are several options that can be used to fine-tune the optimization of an application.
 
-| Option    | Description                                                                    | Value Type | Dafault Value |
-|:---       |:---                                                                            |:---        |:---           |
-| `scripts` | Enables optimization of the scripts output.                                    | `boolean`  | `true`        |
-| `styles`  | Enables optimization of the styles output.                                     | `boolean`  | `true`        |
-| `fonts`   | Enables optimization for fonts. <br /> **NOTE**: This requires internet access. | `boolean`  | `true`        |
-
-<!--<table class="is-full-width is-fixed-layout">
-<thead>
-<tr>
-<th>Option</th>
-<th width="40%">Description</th>
-<th>Value Type</th>
-<th>Default Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>scripts</code></td>
-<td>Enables optimization of the scripts output.</td>
-<td><code class="no-auto-link">boolean</code></td>
-<td><code>true</code></td>
-</tr>
-<tr>
-<td><code>styles</code></td>
-<td>Enables optimization of the styles output.</td>
-<td><code>boolean|<a href="#styles-optimization-options">Styles optimization options</a></code></td>
-<td><code>true</code></td>
-</tr>
-<tr>
-<td><code>fonts</code></td>
-<td>Enables optimization for fonts.<br><strong>Note:</strong> This requires internet access.</td>
-<td><code class="no-auto-link">boolean|<a href="#fonts-optimization-options">Fonts optimization options</a></code></td>
-<td><code>true</code></td>
-</tr>
-</tbody>
-</table>-->
+| Option    | Description                                                                     | Value Type                                                               | Dafault Value |
+|:---       |:---                                                                             |:---                                                                      |:---           |
+| `scripts` | Enables optimization of the scripts output.                                     | `boolean`                                                                | `true`        |
+| `styles`  | Enables optimization of the styles output.                                      | `boolean` \| [Styles optimization options](#styles-optimization-options) | `true`        |
+| `fonts`   | Enables optimization for fonts. <br /> **NOTE**: This requires internet access. | `boolean` \| [Fonts optimization options](#fonts-optimization-options)   | `true`        |
 
 #### Styles optimization options
 
@@ -408,55 +377,11 @@ There are several options that can be used to fine-tune the optimization of an a
 | `minify`         | Minify CSS definitions by removing extraneous whitespace and comments, merging identifiers and minimizing values.        | `boolean`  | `true`        |
 | `inlineCritical` | Extract and inline critical CSS definitions to improve [First Contentful Paint](https://web.dev/first-contentful-paint). | `boolean`  | `true`        |
 
-<!--<table class="is-full-width is-fixed-layout">
-<thead>
-<tr>
-<th>Option</th>
-<th width="40%">Description</th>
-<th>Value Type</th>
-<th>Default Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>minify</code></td>
-<td>Minify CSS definitions by removing extraneous whitespace and comments, merging identifiers and minimizing values.</td>
-<td><code class="no-auto-link">boolean</code></td>
-<td><code>true</code></td>
-</tr>
-<tr>
-<td><code>inlineCritical</code></td>
-<td>Extract and inline critical CSS definitions to improve <a href="https://web.dev/first-contentful-paint/">First Contentful Paint.</td>
-<td><code class="no-auto-link">boolean</code></td>
-<td><code>true</code></td>
-</tr>
-</tbody>
-</table>-->
-
 #### Fonts optimization options
 
 | Option   | Description                                                                                                                                                                                                                          | Value Type | Dafault Value |
 |:---      |:---                                                                                                                                                                                                                                  |:---        |:---           |
 | `inline` | Reduce [render blocking requests](https://web.dev/render-blocking-resources) by inlining external Google Fonts and Adobe Fonts CSS definitions in the application's HTML index file. <br /> **NOTE**: This requires internet access. | `boolean`  | `true`        |
-
-<!--<table class="is-full-width is-fixed-layout">
-<thead>
-<tr>
-<th>Option</th>
-<th width="40%">Description</th>
-<th>Value Type</th>
-<th>Default Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>inline</code></td>
-<td>Reduce <a href="https://web.dev/render-blocking-resources/">render blocking requests</a> by inlining external Google Fonts and Adobe Fonts CSS definitions in the application's HTML index file.<br><strong>Note:</strong>This requires internet access.</td>
-<td><code class="no-auto-link">boolean</code></td>
-<td><code>true</code></td>
-</tr>
-</tbody>
-</table>-->
 
 You can supply a value such as the following to apply optimization to one or the other:
 
@@ -487,45 +412,8 @@ The `sourceMap` browser builder option can be either a Boolean or an Object for 
 |:---       |:---                                                |:---        |:---           |
 | `scripts` | Output source maps for all scripts.                | `boolean`  | `true`        |
 | `styles`  | Output source maps for all styles.                 | `boolean`  | `true`        |
-| `vendor`  | Resolve vendor packages source maps.               | `boolean`  | `false`        |
-| `hidden`  | Output source maps used for error reporting tools. | `boolean`  | `false`        |
-
-<!--<table class="is-full-width is-fixed-layout">
-<thead>
-<tr>
-<th>Option</th>
-<th width="40%">Description</th>
-<th>Value Type</th>
-<th>Default Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>scripts</code></td>
-<td>Output source maps for all scripts.</td>
-<td><code class="no-auto-link">boolean</code></td>
-<td><code>true</code></td>
-</tr>
-<tr>
-<td><code>styles</code></td>
-<td>Output source maps for all styles.</td>
-<td><code class="no-auto-link">boolean</code></td>
-<td><code>true</code></td>
-</tr>
-<tr>
-<td><code>vendor</code></td>
-<td>Resolve vendor packages source maps.</td>
-<td><code class="no-auto-link">boolean</code></td>
-<td><code>false</code></td>
-</tr>
-<tr>
-<td><code>hidden</code></td>
-<td>Output source maps used for error reporting tools.</td>
-<td><code class="no-auto-link">boolean</code></td>
-<td><code>false</code></td>
-</tr>
-</tbody>
-</table>-->
+| `vendor`  | Resolve vendor packages source maps.               | `boolean`  | `false`       |
+| `hidden`  | Output source maps used for error reporting tools. | `boolean`  | `false`       |
 
 The example below shows how to toggle one or more values to configure the source map outputs:
 
@@ -553,4 +441,4 @@ These are useful if you only want source maps to map error stack traces in error
 
 <!-- end links -->
 
-@reviewed 2021-09-15
+@reviewed 2021-10-14
