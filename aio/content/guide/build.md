@@ -319,35 +319,6 @@ Autoprefixer looks for the `browserslist` configuration when it prefixes your CS
 
 See the [browserslist repo](https://github.com/browserslist/browserslist) for more examples of how to target specific browsers and versions.
 
-### Backward compatibility with Lighthouse
-
-If you want to produce a progressive web application and are using [Lighthouse](https://developers.google.com/web/tools/lighthouse/) to grade the project, add the following `browserslist` entry to your `package.json` file, in order to eliminate the [old flexbox](https://developers.google.com/web/tools/lighthouse/audits/old-flexbox) prefixes:
-
-```
-"browserslist": [
-  "last 2 versions",
-  "not ie <= 10",
-  "not ie_mob <= 10"
-]
-```
-
-### Backward compatibility with CSS grid
-
-CSS grid layout support in Autoprefixer, which was previously on by default, is off by default in Angular 8 and higher.
-
-To use CSS grid with Internet Explorer 10/11, you must explicitly enable it using the `autoplace` option.
-To do this, add the following to the top of the global styles file (or within a specific css selector scope):
-
-```
-/* autoprefixer grid: autoplace */
-```
-or
-```
-/* autoprefixer grid: no-autoplace */
-```
-
-For more information, see [Autoprefixer documentation](https://autoprefixer.github.io/).
-
 {@a proxy}
 
 ## Proxying to a backend server
