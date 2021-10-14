@@ -5,13 +5,14 @@ Path values given in the configuration are relative to the root workspace folder
 
 ## Overall JSON structure
 
-At the top level of `angular.json`, a few properties configure the workspace, and a `projects` section contains the remaining per-project configuration options. CLI defaults set at the workspace level can be overridden by defaults set at the project level, and defaults set at the project level can be overridden on the command line.
+At the top-level of `angular.json`, a few properties configure the workspace and a `projects` section contains the remaining per-project configuration options. You can override CLI defaults set at the workspace level through defaults set at the project level. You can also override defaults set at the project level using the command line.
 
-The following properties, at the top level of the file, configure the workspace.
+The following properties, at the top-level of the file, configure the workspace.
 
 *   `version`: The configuration-file version.
 *   `newProjectRoot`: Path where new projects are created. Absolute or relative to the workspace folder.
 *   `defaultProject`: Default project name to use in commands, where not provided as an argument. When you use `ng new` to create a new application in a new workspace, that application is the default project for the workspace until you change it here.
+*   `cli` : A set of options that customize the [Angular CLI](cli). See the [CLI configuration options](#cli-configuration-options) section.
 *   `schematics` : A set of [schematics](guide/glossary#schematic) that customize the `ng generate` sub-command option defaults for this workspace. See the [Generation schematics](#schematics) section.
 *   `projects` : Contains a subsection for each project (library or application) in the workspace, with the per-project configuration options.
 
@@ -41,6 +42,42 @@ For more information, see [Workspace and project file structure](guide/file-stru
 
 </div>
 
+{@a cli-configuration-options}
+
+## CLI configuration options
+
+The following configuration properties are a set of options that customize the Angular CLI.
+
+| Property            | Description                                                                                      | Value Type                                               |
+| :------------------ | :----------------------------------------------------------------------------------------------- | :------------------------------------------------------- |
+| `analytics`         | Share anonymous [usage data](cli/usage-analytics-gathering) with the Angular Team.               | `boolean` \| `ci`                                        |
+| `analyticsSharing`  | A set of analytics sharing options.                                                              | [Analytics sharing options](#analytics-sharing-options)  |
+| `cache`             | Control [persistent disk cache](cli/cache) used by [Angular CLI Builders](guide/cli-builder).    | [Cache options](#cache-options)                          |
+| `defaultCollection` | The default schematics collection to use.                                                        | `string`                                                 |
+| `packageManager`    | The prefered package manager tool to use.                                                        | `npm` \| `cnpm` \| `pnpm` \| `yarn`                      |
+| `warnings`          | Control CLI specific console warnings.                                                           | [Warnings options](#warnings-options)                    |
+
+### Analytics sharing options
+
+| Property   | Description                                                  | Value Type |
+| :--------- | :----------------------------------------------------------- | :--------- |
+| `tracking` | Analytics sharing info tracking ID.                          | `string`   |
+| `uuid`     | Analytics sharing info UUID (Universally Unique Identifier). | `string`   |
+
+### Cache options
+
+| Property      | Description                                           | Value Type               | Dafault Value    |
+| :------------ | :---------------------------------------------------- | :----------------------- | :--------------- |
+| `enabled`     | Configure whether disk caching is enabled.            | `boolean`                | `true`           |
+| `environment` | Configure in which environment disk cache is enabled. | `local` \| `ci` \| `all` | `local`          |
+| `path`        | The directory used to stored cache results.           | `string`                 | `.angular/cache` |
+
+### Warnings options
+
+| Property          | Description                                                                     | Value Type | Dafault Value |
+| :---------------- | :------------------------------------------------------------------------------ | :--------- | :------------ |
+| `versionMismatch` | Show a warning when the global Angular CLI version is newer than the local one. | `boolean`  | `true`        |
+
 ## Project configuration options
 
 The following top-level configuration properties are available for each project, under `projects:<project_name>`.
@@ -64,7 +101,7 @@ The following top-level configuration properties are available for each project,
 | `sourceRoot`    | The root folder for this project's source files.                                                                                                        |
 | `projectType`   | One of "application" or "library". An application can run independently in a browser, while a library cannot.                                           |
 | `prefix`        | A string that Angular prepends to generated selectors. Can be customized to identify an application or feature area.                                    |
-| `schematics`    | A set of schematics that customize the `ng generate` sub-command option defaults for this project. See the [Generation schematics](#schematics) section.      |
+| `schematics`    | A set of schematics that customize the `ng generate` sub-command option defaults for this project. See the [Generation schematics](#schematics) section.|
 | `architect`     | Configuration defaults for Architect builder targets for this project.                                                                                  |
 
 {@a schematics}
@@ -119,14 +156,14 @@ See the example in [Build target](#build-target) below.
 <code-example language="json">
 
 "architect": {
-  "build": { },
-  "serve": { },
-  "e2e" : { },
-  "test": { },
-  "lint": { },
-  "extract-i18n": { },
-  "server": { },
-  "app-shell": { }
+  "build": {},
+  "serve": {},
+  "e2e" : {},
+  "test": {},
+  "lint": {},
+  "extract-i18n": {},
+  "server": {},
+  "app-shell": {}
 }
 
 </code-example>
