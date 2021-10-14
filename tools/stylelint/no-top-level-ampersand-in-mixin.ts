@@ -3,8 +3,8 @@ import {basename} from 'path';
 
 const ruleName = 'material/no-top-level-ampersand-in-mixin';
 const messages = utils.ruleMessages(ruleName, {
-  expected: () => `Selectors starting with an ampersand ` +
-                  `are not allowed inside top-level mixin rules`
+  expected: () =>
+    `Selectors starting with an ampersand ` + `are not allowed inside top-level mixin rules`,
 });
 
 /** Config options for the rule. */
@@ -32,8 +32,12 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, _options?) => {
 
     root.walkAtRules(node => {
       // Skip non-mixin atrules and internal mixins.
-      if (!node.nodes || node.name !== 'mixin' || node.params.startsWith('_') ||
-        node.params.startsWith('private-')) {
+      if (
+        !node.nodes ||
+        node.name !== 'mixin' ||
+        node.params.startsWith('_') ||
+        node.params.startsWith('private-')
+      ) {
         return;
       }
 
@@ -43,7 +47,7 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, _options?) => {
             result,
             ruleName,
             message: messages.expected(),
-            node: childNode
+            node: childNode,
           });
         }
       });

@@ -42,12 +42,18 @@ export class SortOverviewExample {
     this.sortedData = data.sort((a, b) => {
       const isAsc = sort.direction === 'asc';
       switch (sort.active) {
-        case 'name': return compare(a.name, b.name, isAsc);
-        case 'calories': return compare(a.calories, b.calories, isAsc);
-        case 'fat': return compare(a.fat, b.fat, isAsc);
-        case 'carbs': return compare(a.carbs, b.carbs, isAsc);
-        case 'protein': return compare(a.protein, b.protein, isAsc);
-        default: return 0;
+        case 'name':
+          return compare(a.name, b.name, isAsc);
+        case 'calories':
+          return compare(a.calories, b.calories, isAsc);
+        case 'fat':
+          return compare(a.fat, b.fat, isAsc);
+        case 'carbs':
+          return compare(a.carbs, b.carbs, isAsc);
+        case 'protein':
+          return compare(a.protein, b.protein, isAsc);
+        default:
+          return 0;
       }
     });
   }

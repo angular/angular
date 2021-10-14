@@ -4,12 +4,12 @@ export const config = {
   skippedTests: {
     'mdc-autocomplete': [
       // Tests something that isn't supported by the MDC form field.
-      'should hide the label with a preselected form control value and a disabled floating label'
+      'should hide the label with a preselected form control value and a disabled floating label',
     ],
     'mdc-button': [
       // The MDC button doesn't use `FocusMonitor` so it can't support passing in a focus origin.
       'should be able to focus button with a specific focus origin',
-      'should not change focus origin if origin not specified'
+      'should not change focus origin if origin not specified',
     ],
     'mdc-checkbox': [
       // These tests are verifying implementation details that are not relevant for MDC.
@@ -26,7 +26,7 @@ export const config = {
       'should properly update margin if label content is projected',
 
       // TODO: the focus origin behavior needs to be implemented in the MDC checkbox
-      'should not change focus origin if origin not specified'
+      'should not change focus origin if origin not specified',
     ],
     'mdc-chips': [
       // The chain of events for dispatching the remove event in the MDC
@@ -35,17 +35,17 @@ export const config = {
       'should not remove if parent chip is disabled',
 
       // This test checks something that isn't supported in the MDC form field.
-      'should propagate the dynamic `placeholder` value to the form field'
+      'should propagate the dynamic `placeholder` value to the form field',
     ],
     'mdc-dialog': [
       // These tests are verifying implementation details that are not relevant for MDC.
-      'should set the proper animation states'
+      'should set the proper animation states',
     ],
     'mdc-input': [
       // These tests are verifying either implementation details that aren't relevant
       // for MDC, or features that we've decided not to support in the MDC input.
       'should default to floating label type provided by global default options',
-      'validates there\'s only one placeholder',
+      "validates there's only one placeholder",
       'supports placeholder attribute',
       'should not render the native placeholder when its value is mirrored in the label',
       'supports placeholder element',
@@ -76,7 +76,7 @@ export const config = {
       'should update the outline gap correctly if the direction changes multiple times',
       'should calculate the outline gaps inside the shadow DOM',
       'should be legacy appearance if no default options provided',
-      'should be legacy appearance if empty default options provided'
+      'should be legacy appearance if empty default options provided',
     ],
     'mdc-list': [
       // TODO: these tests need to be double-checked for missing functionality.
@@ -100,15 +100,13 @@ export const config = {
       'should not change focus when pressing HOME with a modifier key',
       'should not change focus when pressing END with a modifier key',
 
-
       // MDC does not support the common CTRL + A keyboard shortcut.
       // Tracked with: https://github.com/material-components/material-components-web/issues/6366
       'should select all items using ctrl + a',
       'should not select disabled items when pressing ctrl + a',
       'should select all items using ctrl + a if some items are selected',
       'should deselect all with ctrl + a if all options are selected',
-      'should dispatch the selectionChange event when selecting via ctrl + a'
-
+      'should dispatch the selectionChange event when selecting via ctrl + a',
     ],
     'mdc-progress-bar': [
       // These tests are verifying implementation details that are not relevant for MDC.
@@ -116,18 +114,18 @@ export const config = {
       'should prefix SVG references with the current path',
       'should account for location hash when prefixing the SVG references',
       'should not be able to tab into the underlying SVG element',
-      'should use latest path when prefixing the SVG references'
+      'should use latest path when prefixing the SVG references',
     ],
     'mdc-progress-spinner': [
       // These tests are verifying implementation details that are not relevant for MDC.
       'should use different `circle` elements depending on the mode',
       'should add a style tag with the indeterminate animation to the document ' +
-          'head when using a non-default diameter',
+        'head when using a non-default diameter',
       'should handle creating animation style tags based on a floating point diameter',
       'should add the indeterminate animation style tag to the Shadow root',
       'should not duplicate style tags inside the Shadow root',
       'should add the indeterminate animation style tag to the Shadow root if the ' +
-          'element is inside an ngIf'
+        'element is inside an ngIf',
     ],
     'mdc-select': [
       // These tests are excluded, because they're verifying the functionality that positions
@@ -163,7 +161,7 @@ export const config = {
       'should adjust for the group padding in rtl',
       'should not adjust if all options are within a group, except the selected one',
       'should align the first option to the trigger, if nothing is selected',
-      'should not adjust if option centering is disabled any option under a group is selected'
+      'should not adjust if option centering is disabled any option under a group is selected',
     ],
     'mdc-slide-toggle': [
       // These tests are verifying implementation details that are not relevant for MDC.
@@ -176,14 +174,14 @@ export const config = {
       'should prevent the form from submit when being required',
 
       // TODO: the focus origin functionality has to be implemeted for the MDC slide toggle.
-      'should not change focus origin if origin not specified'
+      'should not change focus origin if origin not specified',
     ],
     'mdc-snack-bar': [
       // These tests are verifying implementation details that are not relevant for MDC.
       'should set the animation state to visible on entry',
       'should set the animation state to complete on exit',
       'should set the old snack bar animation state to complete and the new snack bar ' +
-          'animation state to visible on entry of new snack bar'
+        'animation state to visible on entry of new snack bar',
     ],
-  } as {[key: string]: string[]}
+  } as {[key: string]: string[]},
 };

@@ -15,7 +15,7 @@ export class StepperIntl extends MatStepperIntl {
   selector: 'stepper-intl-example',
   templateUrl: 'stepper-intl-example.html',
   styleUrls: ['stepper-intl-example.css'],
-  providers: [{ provide: MatStepperIntl, useClass: StepperIntl }]
+  providers: [{provide: MatStepperIntl, useClass: StepperIntl}],
 })
 export class StepperIntlExample implements OnInit {
   firstFormGroup: FormGroup;
@@ -23,10 +23,7 @@ export class StepperIntlExample implements OnInit {
   optionalLabelText: string;
   optionalLabelTextChoices: string[] = ['Option 1', 'Option 2', 'Option 3'];
 
-  constructor(
-    private _formBuilder: FormBuilder,
-    private _matStepperIntl: MatStepperIntl
-  ) {}
+  constructor(private _formBuilder: FormBuilder, private _matStepperIntl: MatStepperIntl) {}
 
   updateOptionalLabel() {
     this._matStepperIntl.optionalLabel = this.optionalLabelText;
@@ -37,10 +34,10 @@ export class StepperIntlExample implements OnInit {
 
   ngOnInit() {
     this.firstFormGroup = this._formBuilder.group({
-      firstCtrl: ['', Validators.required]
+      firstCtrl: ['', Validators.required],
     });
     this.secondFormGroup = this._formBuilder.group({
-      secondCtrl: ['', Validators.required]
+      secondCtrl: ['', Validators.required],
     });
   }
 }

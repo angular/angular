@@ -11,7 +11,7 @@ import {
   MatCellHarness as BaseMatCellHarness,
   MatHeaderCellHarness as BaseMatHeaderCellHarness,
   MatFooterCellHarness as BaseMatFooterCellHarness,
-  CellHarnessFilters
+  CellHarnessFilters,
 } from '@angular/material/table/testing';
 
 /** Harness for interacting with an MDC-based Angular Material table cell. */

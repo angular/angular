@@ -15,7 +15,7 @@ export class CdkDragDropHorizontalSortingExample {
     'Iron age',
     'Middle ages',
     'Early modern period',
-    'Long nineteenth century'
+    'Long nineteenth century',
   ];
 
   drop(event: CdkDragDrop<string[]>) {

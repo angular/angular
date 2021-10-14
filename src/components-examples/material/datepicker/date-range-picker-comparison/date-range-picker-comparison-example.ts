@@ -18,12 +18,12 @@ export class DateRangePickerComparisonExample {
 
     this.campaignOne = new FormGroup({
       start: new FormControl(new Date(year, month, 13)),
-      end: new FormControl(new Date(year, month, 16))
+      end: new FormControl(new Date(year, month, 16)),
     });
 
     this.campaignTwo = new FormGroup({
       start: new FormControl(new Date(year, month, 15)),
-      end: new FormControl(new Date(year, month, 19))
+      end: new FormControl(new Date(year, month, 19)),
     });
   }
 }

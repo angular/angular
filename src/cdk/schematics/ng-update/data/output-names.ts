@@ -17,9 +17,9 @@ export interface OutputNameUpgradeData {
   /** Controls which elements and attributes in which this replacement is made. */
   limitedTo: {
     /** Limit to elements with any of these element tags. */
-    elements?: string[],
+    elements?: string[];
     /** Limit to elements with any of these attributes. */
-    attributes?: string[],
+    attributes?: string[];
   };
 }
 
@@ -27,14 +27,16 @@ export const outputNames: VersionChanges<OutputNameUpgradeData> = {
   [TargetVersion.V10]: [
     {
       pr: 'https://github.com/angular/components/pull/19362',
-      changes: [{
-        replace: 'copied',
-        replaceWith: 'cdkCopyToClipboardCopied',
-        limitedTo: {
-          attributes: ['cdkCopyToClipboard']
-        }
-      }]
-    }
+      changes: [
+        {
+          replace: 'copied',
+          replaceWith: 'cdkCopyToClipboardCopied',
+          limitedTo: {
+            attributes: ['cdkCopyToClipboard'],
+          },
+        },
+      ],
+    },
   ],
   [TargetVersion.V6]: [],
 };

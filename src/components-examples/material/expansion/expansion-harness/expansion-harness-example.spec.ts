@@ -16,14 +16,14 @@ describe('ExpansionHarnessExample', () => {
 
   beforeAll(() => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
-      teardown: {destroyAfterEach: true}
+      teardown: {destroyAfterEach: true},
     });
   });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MatExpansionModule, NoopAnimationsModule],
-      declarations: [ExpansionHarnessExample]
+      declarations: [ExpansionHarnessExample],
     }).compileComponents();
     fixture = TestBed.createComponent(ExpansionHarnessExample);
     fixture.detectChanges();

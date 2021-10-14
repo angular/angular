@@ -32,8 +32,9 @@ export interface InputModalityDetectorOptions {
  * Injectable options for the InputModalityDetector. These are shallowly merged with the default
  * options.
  */
-export const INPUT_MODALITY_DETECTOR_OPTIONS =
-  new InjectionToken<InputModalityDetectorOptions>('cdk-input-modality-detector-options');
+export const INPUT_MODALITY_DETECTOR_OPTIONS = new InjectionToken<InputModalityDetectorOptions>(
+  'cdk-input-modality-detector-options',
+);
 
 /**
  * Default options for the InputModalityDetector.
@@ -125,11 +126,13 @@ export class InputModalityDetector implements OnDestroy {
   private _onKeydown = (event: KeyboardEvent) => {
     // If this is one of the keys we should ignore, then ignore it and don't update the input
     // modality to keyboard.
-    if (this._options?.ignoreKeys?.some(keyCode => keyCode === event.keyCode)) { return; }
+    if (this._options?.ignoreKeys?.some(keyCode => keyCode === event.keyCode)) {
+      return;
+    }
 
     this._modality.next('keyboard');
     this._mostRecentTarget = _getEventTarget(event);
-  }
+  };
 
   /**
    * Handles mousedown events. Must be an arrow function in order to preserve the context when it
@@ -139,13 +142,15 @@ export class InputModalityDetector implements OnDestroy {
     // Touches trigger both touch and mouse events, so we need to distinguish between mouse events
     // that were triggered via mouse vs touch. To do so, check if the mouse event occurs closely
     // after the previous touch event.
-    if (Date.now() - this._lastTouchMs < TOUCH_BUFFER_MS) { return; }
+    if (Date.now() - this._lastTouchMs < TOUCH_BUFFER_MS) {
+      return;
+    }
 
     // Fake mousedown events are fired by some screen readers when controls are activated by the
     // screen reader. Attribute them to keyboard input modality.
     this._modality.next(isFakeMousedownFromScreenReader(event) ? 'keyboard' : 'mouse');
     this._mostRecentTarget = _getEventTarget(event);
-  }
+  };
 
   /**
    * Handles touchstart events. Must be an arrow function in order to preserve the context when it
@@ -165,14 +170,15 @@ export class InputModalityDetector implements OnDestroy {
 
     this._modality.next('touch');
     this._mostRecentTarget = _getEventTarget(event);
-  }
+  };
 
   constructor(
-      private readonly _platform: Platform,
-      ngZone: NgZone,
-      @Inject(DOCUMENT) document: Document,
-      @Optional() @Inject(INPUT_MODALITY_DETECTOR_OPTIONS)
-      options?: InputModalityDetectorOptions,
+    private readonly _platform: Platform,
+    ngZone: NgZone,
+    @Inject(DOCUMENT) document: Document,
+    @Optional()
+    @Inject(INPUT_MODALITY_DETECTOR_OPTIONS)
+    options?: InputModalityDetectorOptions,
   ) {
     this._options = {
       ...INPUT_MODALITY_DETECTOR_DEFAULT_OPTIONS,

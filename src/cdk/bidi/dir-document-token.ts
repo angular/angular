@@ -9,7 +9,6 @@
 import {DOCUMENT} from '@angular/common';
 import {inject, InjectionToken} from '@angular/core';
 
-
 /**
  * Injection token used to inject the document into Directionality.
  * This is used so that the value can be faked in tests.

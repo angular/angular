@@ -13,7 +13,9 @@ import {
   InjectionToken,
   Input,
   ViewEncapsulation,
-  Directive, Inject, Optional
+  Directive,
+  Inject,
+  Optional,
 } from '@angular/core';
 import {CanDisable, mixinDisabled} from '../common-behaviors/disabled';
 import {MatOptionParentComponent, MAT_OPTION_PARENT_COMPONENT} from './option-parent';
@@ -91,5 +93,4 @@ export const MAT_OPTGROUP = new InjectionToken<MatOptgroup>('MatOptgroup');
   },
   providers: [{provide: MAT_OPTGROUP, useExisting: MatOptgroup}],
 })
-export class MatOptgroup extends _MatOptgroupBase {
-}
+export class MatOptgroup extends _MatOptgroupBase {}

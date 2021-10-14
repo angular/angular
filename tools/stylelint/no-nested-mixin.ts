@@ -10,19 +10,25 @@ const messages = utils.ruleMessages(ruleName, {
  */
 const plugin = createPlugin(ruleName, (isEnabled: boolean) => {
   return (root, result) => {
-    if (!isEnabled) { return; }
+    if (!isEnabled) {
+      return;
+    }
 
     root.walkAtRules(rule => {
-      if (rule.name !== 'mixin') { return; }
+      if (rule.name !== 'mixin') {
+        return;
+      }
 
       rule.walkAtRules(childRule => {
-        if (childRule.name !== 'mixin') { return; }
+        if (childRule.name !== 'mixin') {
+          return;
+        }
 
         utils.report({
           result,
           ruleName,
           message: messages.expected(),
-          node: childRule
+          node: childRule,
         });
       });
     });

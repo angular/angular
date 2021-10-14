@@ -21,7 +21,7 @@ export function getDefaultComponentOptions(project: ProjectDefinition): Partial<
   // Note: Not all options which are available when running "ng new" will be stored in the
   // workspace config. List of options which will be available in the configuration:
   // angular/angular-cli/blob/master/packages/schematics/angular/application/index.ts#L109-L131
-  let skipTests = getDefaultComponentOption<boolean|null>(project, ['skipTests'], null);
+  let skipTests = getDefaultComponentOption<boolean | null>(project, ['skipTests'], null);
 
   // In case "skipTests" is not set explicitly, also look for the "spec" option. The "spec"
   // option has been deprecated but can be still used in older Angular CLI projects.
@@ -43,12 +43,17 @@ export function getDefaultComponentOptions(project: ProjectDefinition): Partial<
  * by looking at the stored schematic options for `@schematics/angular:component` in the
  * CLI workspace configuration.
  */
-function getDefaultComponentOption<T>(project: ProjectDefinition, optionNames: string[],
-                                      fallbackValue: T): T {
-  const schematicOptions = isJsonObject(project.extensions.schematics || null) ?
-      project.extensions.schematics as JsonObject : null;
-  const defaultSchematic = schematicOptions ?
-      schematicOptions['@schematics/angular:component'] as JsonObject | null : null;
+function getDefaultComponentOption<T>(
+  project: ProjectDefinition,
+  optionNames: string[],
+  fallbackValue: T,
+): T {
+  const schematicOptions = isJsonObject(project.extensions.schematics || null)
+    ? (project.extensions.schematics as JsonObject)
+    : null;
+  const defaultSchematic = schematicOptions
+    ? (schematicOptions['@schematics/angular:component'] as JsonObject | null)
+    : null;
 
   for (const optionName of optionNames) {
     if (defaultSchematic && defaultSchematic[optionName] != null) {

@@ -8,18 +8,17 @@ import {MatTabGroupHarness} from './tab-group-harness';
 
 /** Shared tests to run on both the original and MDC-based tab-group's. */
 export function runTabGroupHarnessTests(
-    tabsModule: typeof MatTabsModule,
-    tabGroupHarness: typeof MatTabGroupHarness) {
+  tabsModule: typeof MatTabsModule,
+  tabGroupHarness: typeof MatTabGroupHarness,
+) {
   let fixture: ComponentFixture<TabGroupHarnessTest>;
   let loader: HarnessLoader;
 
   beforeEach(async () => {
-    await TestBed
-        .configureTestingModule({
-          imports: [tabsModule, NoopAnimationsModule],
-          declarations: [TabGroupHarnessTest],
-        })
-        .compileComponents();
+    await TestBed.configureTestingModule({
+      imports: [tabsModule, NoopAnimationsModule],
+      declarations: [TabGroupHarnessTest],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(TabGroupHarnessTest);
     fixture.detectChanges();
@@ -32,16 +31,20 @@ export function runTabGroupHarnessTests(
   });
 
   it('should load harness for tab-group with selected tab label', async () => {
-    const tabGroups = await loader.getAllHarnesses(tabGroupHarness.with({
-      selectedTabLabel: 'First',
-    }));
+    const tabGroups = await loader.getAllHarnesses(
+      tabGroupHarness.with({
+        selectedTabLabel: 'First',
+      }),
+    );
     expect(tabGroups.length).toBe(1);
   });
 
   it('should load harness for tab-group with matching tab label regex', async () => {
-    const tabGroups = await loader.getAllHarnesses(tabGroupHarness.with({
-      selectedTabLabel: /f.*st/i,
-    }));
+    const tabGroups = await loader.getAllHarnesses(
+      tabGroupHarness.with({
+        selectedTabLabel: /f.*st/i,
+      }),
+    );
     expect(tabGroups.length).toBe(1);
   });
 
@@ -68,7 +71,8 @@ export function runTabGroupHarnessTests(
   it('should throw error when attempting to select invalid tab', async () => {
     const tabGroup = await loader.getHarness(tabGroupHarness);
     await expectAsync(tabGroup.selectTab({label: 'Fake'})).toBeRejectedWithError(
-        /Cannot find mat-tab matching filter {"label":"Fake"}/);
+      /Cannot find mat-tab matching filter {"label":"Fake"}/,
+    );
   });
 
   it('should be able to get label of tabs', async () => {
@@ -163,7 +167,7 @@ export function runTabGroupHarnessTests(
         <span class="test-tab-content">Content 3</span>
       </mat-tab>
     </mat-tab-group>
-  `
+  `,
 })
 class TabGroupHarnessTest {
   isDisabled = false;

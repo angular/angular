@@ -10,7 +10,7 @@ import {
   checkJavaScriptOutput,
   checkMaterialPackage,
   checkPrimaryPackageJson,
-  checkTypeDefinitionFile
+  checkTypeDefinitionFile,
 } from './output-validations';
 
 /** Glob that matches all JavaScript files within a release package. */
@@ -35,7 +35,10 @@ type PackageFailures = Map<string, string[]>;
  * @returns Whether the package passed all checks or not.
  */
 export function checkReleasePackage(
-    packagePath: string, packageName: string, expectedVersion: string): boolean {
+  packagePath: string,
+  packageName: string,
+  expectedVersion: string,
+): boolean {
   const failures = new Map() as PackageFailures;
   const addFailure = (message: string, filePath?: string) => {
     const filePaths = failures.get(message) || [];
@@ -87,8 +90,9 @@ export function checkReleasePackage(
     addFailure('No "README.md" file found in package output.');
   }
 
-  checkPrimaryPackageJson(join(packagePath, 'package.json'), expectedVersion)
-      .forEach(f => addFailure(f));
+  checkPrimaryPackageJson(join(packagePath, 'package.json'), expectedVersion).forEach(f =>
+    addFailure(f),
+  );
 
   // In case there are failures for this package, we want to print those
   // and return a value that implies that there were failures.

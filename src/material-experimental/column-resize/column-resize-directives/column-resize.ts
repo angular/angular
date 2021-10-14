@@ -23,18 +23,16 @@ import {AbstractMatColumnResize, TABLE_HOST_BINDINGS, TABLE_PROVIDERS} from './c
 @Directive({
   selector: 'table[mat-table][columnResize]',
   host: TABLE_HOST_BINDINGS,
-  providers: [
-    ...TABLE_PROVIDERS,
-    {provide: ColumnResize, useExisting: MatColumnResize},
-  ],
+  providers: [...TABLE_PROVIDERS, {provide: ColumnResize, useExisting: MatColumnResize}],
 })
 export class MatColumnResize extends AbstractMatColumnResize {
   constructor(
-      readonly columnResizeNotifier: ColumnResizeNotifier,
-      readonly elementRef: ElementRef<HTMLElement>,
-      protected readonly eventDispatcher: HeaderRowEventDispatcher,
-      protected readonly ngZone: NgZone,
-      protected readonly notifier: ColumnResizeNotifierSource) {
+    readonly columnResizeNotifier: ColumnResizeNotifier,
+    readonly elementRef: ElementRef<HTMLElement>,
+    protected readonly eventDispatcher: HeaderRowEventDispatcher,
+    protected readonly ngZone: NgZone,
+    protected readonly notifier: ColumnResizeNotifierSource,
+  ) {
     super();
   }
 }

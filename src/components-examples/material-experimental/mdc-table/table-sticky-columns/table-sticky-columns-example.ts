@@ -9,8 +9,16 @@ import {Component} from '@angular/core';
   templateUrl: 'table-sticky-columns-example.html',
 })
 export class TableStickyColumnsExample {
-  displayedColumns =
-      ['name', 'position', 'weight', 'symbol', 'position', 'weight', 'symbol', 'star'];
+  displayedColumns = [
+    'name',
+    'position',
+    'weight',
+    'symbol',
+    'position',
+    'weight',
+    'symbol',
+    'star',
+  ];
   dataSource = ELEMENT_DATA;
 }
 

@@ -15,6 +15,6 @@ describe('Non-MDC-based', () => {
     MatDrawerContentHarness,
     MatSidenavHarness,
     MatSidenavContainerHarness,
-    MatSidenavContentHarness
+    MatSidenavContentHarness,
   );
 });

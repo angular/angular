@@ -3,7 +3,6 @@ import {ILocation, ISize} from 'selenium-webdriver';
 
 declare var window: any;
 
-
 describe('autosize cdk-virtual-scroll', () => {
   let viewport: ElementFinder;
 
@@ -69,31 +68,38 @@ describe('autosize cdk-virtual-scroll', () => {
   });
 });
 
-
 /** Checks if the given element is visible in the given viewport. */
 async function isVisibleInViewport(el: ElementFinder, viewport: ElementFinder): Promise<boolean> {
-  if (!await el.isPresent() || !await el.isDisplayed() || !await viewport.isPresent() ||
-      !await viewport.isDisplayed()) {
+  if (
+    !(await el.isPresent()) ||
+    !(await el.isDisplayed()) ||
+    !(await viewport.isPresent()) ||
+    !(await viewport.isDisplayed())
+  ) {
     return false;
   }
   const viewportRect = getRect(await viewport.getLocation(), await viewport.getSize());
   const elRect = getRect(await el.getLocation(), await el.getSize());
-  return elRect.left < viewportRect.right && elRect.right > viewportRect.left &&
-      elRect.top < viewportRect.bottom && elRect.bottom > viewportRect.top;
+  return (
+    elRect.left < viewportRect.right &&
+    elRect.right > viewportRect.left &&
+    elRect.top < viewportRect.bottom &&
+    elRect.bottom > viewportRect.top
+  );
 }
 
-
 /** Gets the rect for an element given its location ans size. */
-function getRect(location: ILocation, size: ISize):
-    {top: number, left: number, bottom: number, right: number} {
+function getRect(
+  location: ILocation,
+  size: ISize,
+): {top: number; left: number; bottom: number; right: number} {
   return {
     top: location.y,
     left: location.x,
     bottom: location.y + size.height,
-    right: location.x + size.width
+    right: location.x + size.width,
   };
 }
-
 
 /** Immediately scrolls the viewport to the given offset. */
 function scrollViewportTo(viewportEl: any, offset: number, done: () => void) {
@@ -101,17 +107,19 @@ function scrollViewportTo(viewportEl: any, offset: number, done: () => void) {
   window.requestAnimationFrame(() => done());
 }
 
-
 /** Smoothly scrolls the viewport to the given offset, 25px at a time. */
 function smoothScrollViewportTo(viewportEl: any, offset: number, done: () => void) {
   let promise = Promise.resolve();
   let curOffset = viewportEl.scrollTop;
   do {
-    const co = curOffset += Math.min(25, Math.max(-25, offset - curOffset));
-    promise = promise.then(() => new Promise<void>(resolve => {
-      viewportEl.scrollTop = co;
-      window.requestAnimationFrame(() => resolve());
-    }));
+    const co = (curOffset += Math.min(25, Math.max(-25, offset - curOffset)));
+    promise = promise.then(
+      () =>
+        new Promise<void>(resolve => {
+          viewportEl.scrollTop = co;
+          window.requestAnimationFrame(() => resolve());
+        }),
+    );
   } while (curOffset != offset);
   promise.then(() => done());
 }

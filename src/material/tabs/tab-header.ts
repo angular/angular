@@ -39,22 +39,29 @@ import {MatPaginatedTabHeader} from './paginated-tab-header';
  * @docs-private
  */
 @Directive()
-export abstract class _MatTabHeaderBase extends MatPaginatedTabHeader implements
-  AfterContentChecked, AfterContentInit, AfterViewInit, OnDestroy {
-
+export abstract class _MatTabHeaderBase
+  extends MatPaginatedTabHeader
+  implements AfterContentChecked, AfterContentInit, AfterViewInit, OnDestroy
+{
   /** Whether the ripple effect is disabled or not. */
   @Input()
-  get disableRipple() { return this._disableRipple; }
-  set disableRipple(value: any) { this._disableRipple = coerceBooleanProperty(value); }
+  get disableRipple() {
+    return this._disableRipple;
+  }
+  set disableRipple(value: any) {
+    this._disableRipple = coerceBooleanProperty(value);
+  }
   private _disableRipple: boolean = false;
 
-  constructor(elementRef: ElementRef,
-              changeDetectorRef: ChangeDetectorRef,
-              viewportRuler: ViewportRuler,
-              @Optional() dir: Directionality,
-              ngZone: NgZone,
-              platform: Platform,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
+  constructor(
+    elementRef: ElementRef,
+    changeDetectorRef: ChangeDetectorRef,
+    viewportRuler: ViewportRuler,
+    @Optional() dir: Directionality,
+    ngZone: NgZone,
+    platform: Platform,
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
+  ) {
     super(elementRef, changeDetectorRef, viewportRuler, dir, ngZone, platform, animationMode);
   }
 
@@ -93,13 +100,15 @@ export class MatTabHeader extends _MatTabHeaderBase {
   @ViewChild('nextPaginator') _nextPaginator: ElementRef<HTMLElement>;
   @ViewChild('previousPaginator') _previousPaginator: ElementRef<HTMLElement>;
 
-  constructor(elementRef: ElementRef,
-              changeDetectorRef: ChangeDetectorRef,
-              viewportRuler: ViewportRuler,
-              @Optional() dir: Directionality,
-              ngZone: NgZone,
-              platform: Platform,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
+  constructor(
+    elementRef: ElementRef,
+    changeDetectorRef: ChangeDetectorRef,
+    viewportRuler: ViewportRuler,
+    @Optional() dir: Directionality,
+    ngZone: NgZone,
+    platform: Platform,
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
+  ) {
     super(elementRef, changeDetectorRef, viewportRuler, dir, ngZone, platform, animationMode);
   }
 

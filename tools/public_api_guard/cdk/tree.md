@@ -40,7 +40,7 @@ export abstract class BaseTreeControl<T, K = T> implements TreeControl<T, K> {
     abstract expandAll(): void;
     expandDescendants(dataNode: T): void;
     expansionModel: SelectionModel<K>;
-    getChildren: (dataNode: T) => (Observable<T[]> | T[] | undefined | null);
+    getChildren: (dataNode: T) => Observable<T[]> | T[] | undefined | null;
     abstract getDescendants(dataNode: T): T[];
     getLevel: (dataNode: T) => number;
     isExpandable: (dataNode: T) => boolean;
@@ -273,10 +273,10 @@ export function getTreeNoValidDataSourceError(): Error;
 
 // @public
 export class NestedTreeControl<T, K = T> extends BaseTreeControl<T, K> {
-    constructor(getChildren: (dataNode: T) => (Observable<T[]> | T[] | undefined | null), options?: NestedTreeControlOptions<T, K> | undefined);
+    constructor(getChildren: (dataNode: T) => Observable<T[]> | T[] | undefined | null, options?: NestedTreeControlOptions<T, K> | undefined);
     expandAll(): void;
     // (undocumented)
-    getChildren: (dataNode: T) => (Observable<T[]> | T[] | undefined | null);
+    getChildren: (dataNode: T) => Observable<T[]> | T[] | undefined | null;
     getDescendants(dataNode: T): T[];
     protected _getDescendants(descendants: T[], dataNode: T): void;
     // (undocumented)

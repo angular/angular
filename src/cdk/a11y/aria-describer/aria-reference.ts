@@ -15,7 +15,9 @@ const ID_DELIMITER = ' ';
  */
 export function addAriaReferencedId(el: Element, attr: string, id: string) {
   const ids = getAriaReferenceIds(el, attr);
-  if (ids.some(existingId => existingId.trim() == id.trim())) { return; }
+  if (ids.some(existingId => existingId.trim() == id.trim())) {
+    return;
+  }
   ids.push(id.trim());
 
   el.setAttribute(attr, ids.join(ID_DELIMITER));

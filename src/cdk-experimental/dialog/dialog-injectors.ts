@@ -7,18 +7,15 @@
  */
 
 import {InjectionToken} from '@angular/core';
-import {
-  ComponentType,
-  Overlay,
-  ScrollStrategy,
-} from '@angular/cdk/overlay';
+import {ComponentType, Overlay, ScrollStrategy} from '@angular/cdk/overlay';
 import {DialogRef} from './dialog-ref';
 import {CdkDialogContainer} from './dialog-container';
 import {DialogConfig} from './dialog-config';
 
 /** Injection token for the Dialog's ScrollStrategy. */
-export const DIALOG_SCROLL_STRATEGY =
-    new InjectionToken<() => ScrollStrategy>('DialogScrollStrategy');
+export const DIALOG_SCROLL_STRATEGY = new InjectionToken<() => ScrollStrategy>(
+  'DialogScrollStrategy',
+);
 
 /** Injection token for the Dialog's Data. */
 export const DIALOG_DATA = new InjectionToken<any>('DialogData');
@@ -30,12 +27,14 @@ export const DIALOG_REF = new InjectionToken<DialogRef<any>>('DialogRef');
 export const DIALOG_CONFIG = new InjectionToken<DialogConfig>('DialogConfig');
 
 /** Injection token for the Dialog's DialogContainer component. */
-export const DIALOG_CONTAINER =
-    new InjectionToken<ComponentType<CdkDialogContainer>>('DialogContainer');
+export const DIALOG_CONTAINER = new InjectionToken<ComponentType<CdkDialogContainer>>(
+  'DialogContainer',
+);
 
 /** @docs-private */
-export function MAT_DIALOG_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay):
-    () => ScrollStrategy {
+export function MAT_DIALOG_SCROLL_STRATEGY_PROVIDER_FACTORY(
+  overlay: Overlay,
+): () => ScrollStrategy {
   return () => overlay.scrollStrategies.block();
 }
 

@@ -14,5 +14,4 @@ import {MdcTableE2e} from './mdc-table-e2e';
   imports: [MatTableModule],
   declarations: [MdcTableE2e],
 })
-export class MdcTableE2eModule {
-}
+export class MdcTableE2eModule {}

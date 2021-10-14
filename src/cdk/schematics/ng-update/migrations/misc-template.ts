@@ -17,7 +17,6 @@ import {UpgradeData} from '../upgrade-data';
  * instances of outdated Angular CDK API that can't be migrated automatically.
  */
 export class MiscTemplateMigration extends Migration<UpgradeData> {
-
   // Only enable this rule if the migration targets version 6. The rule
   // currently only includes migrations for V6 deprecations.
   enabled = this.targetVersion === TargetVersion.V6;
@@ -28,8 +27,9 @@ export class MiscTemplateMigration extends Migration<UpgradeData> {
       this.failures.push({
         filePath: template.filePath,
         position: template.getCharacterAndLineOfPosition(template.start + offset),
-        message: `Found deprecated element selector "cdk-focus-trap" which has been ` +
-            `changed to an attribute selector "[cdkTrapFocus]".`
+        message:
+          `Found deprecated element selector "cdk-focus-trap" which has been ` +
+          `changed to an attribute selector "[cdkTrapFocus]".`,
       });
     });
   }

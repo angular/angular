@@ -38,8 +38,6 @@ export class PaginatorIntlExample {}
 @NgModule({
   imports: [MatPaginatorModule],
   declarations: [PaginatorIntlExample],
-  providers: [
-    {provide: MatPaginatorIntl, useClass: MyCustomPaginatorIntl}
-  ]
+  providers: [{provide: MatPaginatorIntl, useClass: MyCustomPaginatorIntl}],
 })
 export class PaginatorIntlExampleModule {}

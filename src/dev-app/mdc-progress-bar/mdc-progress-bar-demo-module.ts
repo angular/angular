@@ -26,5 +26,4 @@ import {MdcProgressBarDemo} from './mdc-progress-bar-demo';
   ],
   declarations: [MdcProgressBarDemo],
 })
-export class MdcProgressBarDemoModule {
-}
+export class MdcProgressBarDemoModule {}

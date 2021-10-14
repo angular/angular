@@ -5,7 +5,7 @@ import {
   TemplateRef,
   ViewChild,
   ViewContainerRef,
-  ElementRef
+  ElementRef,
 } from '@angular/core';
 
 /**
@@ -25,20 +25,17 @@ export class CdkPortalOverviewExample implements AfterViewInit {
   templatePortal: TemplatePortal<any>;
   domPortal: DomPortal<any>;
 
-  constructor(private _viewContainerRef: ViewContainerRef) { }
+  constructor(private _viewContainerRef: ViewContainerRef) {}
 
   ngAfterViewInit() {
     this.componentPortal = new ComponentPortal(ComponentPortalExample);
-    this.templatePortal = new TemplatePortal(
-      this.templatePortalContent,
-      this._viewContainerRef
-    );
+    this.templatePortal = new TemplatePortal(this.templatePortalContent, this._viewContainerRef);
     this.domPortal = new DomPortal(this.domPortalContent);
   }
 }
 
 @Component({
   selector: 'component-portal-example',
-  template: 'Hello, this is a component portal'
+  template: 'Hello, this is a component portal',
 })
-export class ComponentPortalExample { }
+export class ComponentPortalExample {}

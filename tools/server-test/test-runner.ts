@@ -34,7 +34,7 @@ async function getRandomFreePort() {
   let port: number;
   do {
     port = Math.floor(Math.random() * (maxPrivatePort - minPrivatePort + 1)) + minPrivatePort;
-  } while (!await isPortFree(port));
+  } while (!(await isPortFree(port)));
   return port;
 }
 
@@ -96,6 +96,6 @@ if (require.main === module) {
   const testBinPath = runfiles.resolveWorkspaceRelative(testRootpath);
 
   runTest(serverBinPath, testBinPath)
-      .then(() => process.exit())
-      .catch(() => process.exit(1));
+    .then(() => process.exit())
+    .catch(() => process.exit(1));
 }

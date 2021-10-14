@@ -8,7 +8,7 @@
 
 /** Create custom theme for the given application configuration. */
 export function createCustomTheme(name: string = 'app') {
-return `
+  return `
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
 @use '@angular/material' as mat;

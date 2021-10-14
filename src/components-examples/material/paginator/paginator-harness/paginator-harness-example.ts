@@ -6,7 +6,7 @@ import {PageEvent} from '@angular/material/paginator';
  */
 @Component({
   selector: 'paginator-harness-example',
-  templateUrl: 'paginator-harness-example.html'
+  templateUrl: 'paginator-harness-example.html',
 })
 export class PaginatorHarnessExample {
   length = 500;

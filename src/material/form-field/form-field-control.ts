@@ -10,7 +10,6 @@ import {Observable} from 'rxjs';
 import {NgControl} from '@angular/forms';
 import {Directive} from '@angular/core';
 
-
 /** An interface which allows a control to work inside of a `MatFormField`. */
 @Directive()
 export abstract class MatFormFieldControl<T> {

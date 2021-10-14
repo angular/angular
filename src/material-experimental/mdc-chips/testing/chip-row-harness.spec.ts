@@ -5,7 +5,6 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatChipsModule} from '../index';
 import {MatChipRowHarness} from './chip-row-harness';
 
-
 describe('MatChipRowHarness', () => {
   let fixture: ComponentFixture<ChipRowHarnessTest>;
   let loader: HarnessLoader;
@@ -34,7 +33,6 @@ describe('MatChipRowHarness', () => {
       <mat-chip-row> Chip Row </mat-chip-row>
       <input [matChipInputFor]="grid" />
     </mat-chip-grid>
-  `
+  `,
 })
 class ChipRowHarnessTest {}
-

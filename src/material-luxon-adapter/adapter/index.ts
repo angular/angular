@@ -15,14 +15,15 @@ export * from './luxon-date-adapter';
 export * from './luxon-date-formats';
 
 @NgModule({
-  providers: [{
-    provide: DateAdapter,
-    useClass: LuxonDateAdapter,
-    deps: [MAT_DATE_LOCALE, MAT_LUXON_DATE_ADAPTER_OPTIONS]
-  }],
+  providers: [
+    {
+      provide: DateAdapter,
+      useClass: LuxonDateAdapter,
+      deps: [MAT_DATE_LOCALE, MAT_LUXON_DATE_ADAPTER_OPTIONS],
+    },
+  ],
 })
 export class LuxonDateModule {}
-
 
 @NgModule({
   imports: [LuxonDateModule],

@@ -8,15 +8,9 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import {CdkSelectionColumnExample} from './cdk-selection-column/cdk-selection-column-example';
 import {CdkSelectionListExample} from './cdk-selection-list/cdk-selection-list-example';
 
-export {
-  CdkSelectionColumnExample,
-  CdkSelectionListExample,
-};
+export {CdkSelectionColumnExample, CdkSelectionListExample};
 
-const EXAMPLES = [
-  CdkSelectionListExample,
-  CdkSelectionColumnExample,
-];
+const EXAMPLES = [CdkSelectionListExample, CdkSelectionColumnExample];
 
 @NgModule({
   imports: [
@@ -26,10 +20,8 @@ const EXAMPLES = [
     FormsModule,
     ReactiveFormsModule,
     MatCheckboxModule,
-
   ],
   declarations: EXAMPLES,
   exports: EXAMPLES,
 })
-export class CdkSelectionExamplesModule {
-}
+export class CdkSelectionExamplesModule {}

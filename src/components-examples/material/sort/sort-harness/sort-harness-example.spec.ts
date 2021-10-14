@@ -16,14 +16,14 @@ describe('SortHarnessExample', () => {
 
   beforeAll(() => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
-      teardown: {destroyAfterEach: true}
+      teardown: {destroyAfterEach: true},
     });
   });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MatSortModule, NoopAnimationsModule],
-      declarations: [SortHarnessExample]
+      declarations: [SortHarnessExample],
     }).compileComponents();
     fixture = TestBed.createComponent(SortHarnessExample);
     fixture.detectChanges();

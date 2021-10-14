@@ -14,7 +14,7 @@ describe('slide toggle performance benchmarks', () => {
     browser.angularAppRoot('#root');
   });
 
-  it('renders a slide toggle', async() => {
+  it('renders a slide toggle', async () => {
     await runBenchmark({
       id: 'slide-toggle-render',
       url: '',
@@ -24,7 +24,7 @@ describe('slide toggle performance benchmarks', () => {
     });
   });
 
-  it('clicks a slide toggle', async() => {
+  it('clicks a slide toggle', async () => {
     await runBenchmark({
       id: 'slide-toggle-click',
       url: '',

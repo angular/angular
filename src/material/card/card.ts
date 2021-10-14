@@ -17,14 +17,13 @@ import {
 } from '@angular/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
-
 /**
  * Content of a card, needed as it's used as a selector in the API.
  * @docs-private
  */
 @Directive({
   selector: 'mat-card-content, [mat-card-content], [matCardContent]',
-  host: {'class': 'mat-card-content'}
+  host: {'class': 'mat-card-content'},
 })
 export class MatCardContent {}
 
@@ -35,8 +34,8 @@ export class MatCardContent {}
 @Directive({
   selector: `mat-card-title, [mat-card-title], [matCardTitle]`,
   host: {
-    'class': 'mat-card-title'
-  }
+    'class': 'mat-card-title',
+  },
 })
 export class MatCardTitle {}
 
@@ -47,8 +46,8 @@ export class MatCardTitle {}
 @Directive({
   selector: `mat-card-subtitle, [mat-card-subtitle], [matCardSubtitle]`,
   host: {
-    'class': 'mat-card-subtitle'
-  }
+    'class': 'mat-card-subtitle',
+  },
 })
 export class MatCardSubtitle {}
 
@@ -62,7 +61,7 @@ export class MatCardSubtitle {}
   host: {
     'class': 'mat-card-actions',
     '[class.mat-card-actions-align-end]': 'align === "end"',
-  }
+  },
 })
 export class MatCardActions {
   /** Position of the actions inside the card. */
@@ -75,7 +74,7 @@ export class MatCardActions {
  */
 @Directive({
   selector: 'mat-card-footer',
-  host: {'class': 'mat-card-footer'}
+  host: {'class': 'mat-card-footer'},
 })
 export class MatCardFooter {}
 
@@ -85,7 +84,7 @@ export class MatCardFooter {}
  */
 @Directive({
   selector: '[mat-card-image], [matCardImage]',
-  host: {'class': 'mat-card-image'}
+  host: {'class': 'mat-card-image'},
 })
 export class MatCardImage {}
 
@@ -95,7 +94,7 @@ export class MatCardImage {}
  */
 @Directive({
   selector: '[mat-card-sm-image], [matCardImageSmall]',
-  host: {'class': 'mat-card-sm-image'}
+  host: {'class': 'mat-card-sm-image'},
 })
 export class MatCardSmImage {}
 
@@ -105,7 +104,7 @@ export class MatCardSmImage {}
  */
 @Directive({
   selector: '[mat-card-md-image], [matCardImageMedium]',
-  host: {'class': 'mat-card-md-image'}
+  host: {'class': 'mat-card-md-image'},
 })
 export class MatCardMdImage {}
 
@@ -115,7 +114,7 @@ export class MatCardMdImage {}
  */
 @Directive({
   selector: '[mat-card-lg-image], [matCardImageLarge]',
-  host: {'class': 'mat-card-lg-image'}
+  host: {'class': 'mat-card-lg-image'},
 })
 export class MatCardLgImage {}
 
@@ -125,7 +124,7 @@ export class MatCardLgImage {}
  */
 @Directive({
   selector: '[mat-card-xl-image], [matCardImageXLarge]',
-  host: {'class': 'mat-card-xl-image'}
+  host: {'class': 'mat-card-xl-image'},
 })
 export class MatCardXlImage {}
 
@@ -135,10 +134,9 @@ export class MatCardXlImage {}
  */
 @Directive({
   selector: '[mat-card-avatar], [matCardAvatar]',
-  host: {'class': 'mat-card-avatar'}
+  host: {'class': 'mat-card-avatar'},
 })
 export class MatCardAvatar {}
-
 
 /**
  * A basic content container component that adds the styles of a Material design card.
@@ -161,13 +159,12 @@ export class MatCardAvatar {}
   host: {
     'class': 'mat-card mat-focus-indicator',
     '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
-  }
+  },
 })
 export class MatCard {
   // @breaking-change 9.0.0 `_animationMode` parameter to be made required.
   constructor(@Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {}
 }
-
 
 /**
  * Component intended to be used within the `<mat-card>` component. It adds styles for a
@@ -179,10 +176,9 @@ export class MatCard {
   templateUrl: 'card-header.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {'class': 'mat-card-header'}
+  host: {'class': 'mat-card-header'},
 })
 export class MatCardHeader {}
-
 
 /**
  * Component intended to be used within the `<mat-card>` component. It adds styles for a preset
@@ -194,6 +190,6 @@ export class MatCardHeader {}
   templateUrl: 'card-title-group.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {'class': 'mat-card-title-group'}
+  host: {'class': 'mat-card-title-group'},
 })
 export class MatCardTitleGroup {}

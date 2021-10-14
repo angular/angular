@@ -16,5 +16,4 @@ import {MatRadioButton, MatRadioGroup} from './radio';
   exports: [MatCommonModule, MatRadioGroup, MatRadioButton],
   declarations: [MatRadioGroup, MatRadioButton],
 })
-export class MatRadioModule {
-}
+export class MatRadioModule {}

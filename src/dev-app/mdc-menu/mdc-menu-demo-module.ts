@@ -28,5 +28,4 @@ import {MdcMenuDemo} from './mdc-menu-demo';
   ],
   declarations: [MdcMenuDemo],
 })
-export class MdcMenuDemoModule {
-}
+export class MdcMenuDemoModule {}

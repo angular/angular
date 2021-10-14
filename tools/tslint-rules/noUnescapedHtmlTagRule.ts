@@ -11,18 +11,17 @@ const ERROR_MESSAGE =
  * detects unescaped HTML tags inside of multi-line comments.
  */
 export class Rule extends Lint.Rules.AbstractRule {
-
   apply(sourceFile: ts.SourceFile) {
     return this.applyWithWalker(new NoUnescapedHtmlTagWalker(sourceFile, this.getOptions()));
   }
 }
 
 class NoUnescapedHtmlTagWalker extends Lint.RuleWalker {
-
   override visitSourceFile(sourceFile: ts.SourceFile) {
     utils.forEachComment(sourceFile, (fullText, commentRange) => {
-      const htmlIsEscaped =
-        this._parseForHtml(fullText.substring(commentRange.pos, commentRange.end));
+      const htmlIsEscaped = this._parseForHtml(
+        fullText.substring(commentRange.pos, commentRange.end),
+      );
       if (commentRange.kind === ts.SyntaxKind.MultiLineCommentTrivia && !htmlIsEscaped) {
         this.addFailureAt(commentRange.pos, commentRange.end - commentRange.pos, ERROR_MESSAGE);
       }

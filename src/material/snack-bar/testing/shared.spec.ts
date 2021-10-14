@@ -11,9 +11,10 @@ import {MatSnackBarHarness} from './snack-bar-harness';
  * the non-MDC or MDC based snack-bar harness.
  */
 export function runHarnessTests(
-    snackBarModule: typeof MatSnackBarModule,
-    snackBarToken: typeof MatSnackBar,
-    snackBarHarness: typeof MatSnackBarHarness) {
+  snackBarModule: typeof MatSnackBarModule,
+  snackBarToken: typeof MatSnackBar,
+  snackBarHarness: typeof MatSnackBarHarness,
+) {
   let fixture: ComponentFixture<SnackbarHarnessTest>;
   let loader: HarnessLoader;
 
@@ -52,9 +53,11 @@ export function runHarnessTests(
 
   it('should load snack-bar harness by selector', async () => {
     fixture.componentInstance.openSimple('Hello!', '', {panelClass: 'my-snack-bar'});
-    const snackBars = await loader.getAllHarnesses(snackBarHarness.with({
-      selector: '.my-snack-bar'
-    }));
+    const snackBars = await loader.getAllHarnesses(
+      snackBarHarness.with({
+        selector: '.my-snack-bar',
+      }),
+    );
     expect(snackBars.length).toBe(1);
   });
 
@@ -116,12 +119,14 @@ export function runHarnessTests(
     snackBarRef.onAction().subscribe(() => actionCount++);
 
     expect(await snackBar.isDismissed())
-      .withContext('The snackbar should be present in the DOM before dismiss').toBe(false);
+      .withContext('The snackbar should be present in the DOM before dismiss')
+      .toBe(false);
 
     await snackBar.dismissWithAction();
     expect(actionCount).toBe(1);
     expect(await snackBar.isDismissed())
-      .withContext('The snackbar should be absent from the DOM after dismiss').toBe(true);
+      .withContext('The snackbar should be absent from the DOM after dismiss')
+      .toBe(true);
 
     fixture.componentInstance.openSimple('No action');
     snackBar = await loader.getHarness(snackBarHarness);
@@ -129,7 +134,7 @@ export function runHarnessTests(
   });
 
   @Component({
-    template: `<ng-template>My custom snack-bar.</ng-template>`
+    template: `<ng-template>My custom snack-bar.</ng-template>`,
   })
   class SnackbarHarnessTest {
     @ViewChild(TemplateRef) customTmpl: TemplateRef<any>;

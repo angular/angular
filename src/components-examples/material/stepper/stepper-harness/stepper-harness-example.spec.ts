@@ -17,7 +17,7 @@ describe('StepperHarnessExample', () => {
 
   beforeAll(() => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
-      teardown: {destroyAfterEach: true}
+      teardown: {destroyAfterEach: true},
     });
   });
 
@@ -45,9 +45,11 @@ describe('StepperHarnessExample', () => {
   it('should be able to get the template-based label of a step', async () => {
     const stepper = await loader.getHarness(MatStepperHarness);
     const steps = await stepper.getSteps();
-    expect(await parallel(() => {
-      return steps.map(step => step.getLabel());
-    })).toEqual(['One', 'Two', 'Three']);
+    expect(
+      await parallel(() => {
+        return steps.map(step => step.getLabel());
+      }),
+    ).toEqual(['One', 'Two', 'Three']);
   });
 
   it('should go forward when pressing the next button', async () => {
@@ -61,7 +63,7 @@ describe('StepperHarnessExample', () => {
     expect(await parallel(() => steps.map(step => step.isSelected()))).toEqual([
       false,
       true,
-      false
+      false,
     ]);
 
     await nextButton.click();
@@ -69,7 +71,7 @@ describe('StepperHarnessExample', () => {
     expect(await parallel(() => steps.map(step => step.isSelected()))).toEqual([
       false,
       false,
-      true
+      true,
     ]);
   });
 });

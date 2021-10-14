@@ -15,7 +15,7 @@ import {CdkStepper} from './stepper';
   selector: 'button[cdkStepperNext]',
   host: {
     '[type]': 'type',
-  }
+  },
 })
 export class CdkStepperNext {
   /** Type of the next button. Defaults to "submit" if not specified. */
@@ -39,7 +39,7 @@ export class CdkStepperNext {
   selector: 'button[cdkStepperPrevious]',
   host: {
     '[type]': 'type',
-  }
+  },
 })
 export class CdkStepperPrevious {
   /** Type of the previous button. Defaults to "button" if not specified. */

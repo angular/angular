@@ -11,12 +11,7 @@ import {MatSliderModule} from '@angular/material-experimental/mdc-slider';
 import {MdcSliderE2e} from './mdc-slider-e2e';
 
 @NgModule({
-  imports: [
-    MatSliderModule,
-  ],
-  declarations: [
-    MdcSliderE2e,
-  ],
+  imports: [MatSliderModule],
+  declarations: [MdcSliderE2e],
 })
-export class MdcSliderE2eModule {
-}
+export class MdcSliderE2eModule {}

@@ -32,10 +32,7 @@ import {ProjectType} from '@schematics/angular/utility/workspace-models';
 import {readFileSync, statSync} from 'fs';
 import {dirname, join, resolve} from 'path';
 import * as ts from 'typescript';
-import {
-  addDeclarationToModule,
-  addExportToModule,
-} from '../utils/vendored-ast-utils';
+import {addDeclarationToModule, addExportToModule} from '../utils/vendored-ast-utils';
 import {getProjectFromWorkspace} from './get-project';
 import {getDefaultComponentOptions} from './schematic-options';
 import {ProjectDefinition} from '@angular-devkit/core/src/workspace';
@@ -45,9 +42,7 @@ import {ProjectDefinition} from '@angular-devkit/core/src/workspace';
  * @param project The project to build the path for.
  */
 function buildDefaultPath(project: ProjectDefinition): string {
-  const root = project.sourceRoot
-    ? `/${project.sourceRoot}/`
-    : `/${project.root}/src/`;
+  const root = project.sourceRoot ? `/${project.sourceRoot}/` : `/${project.root}/src/`;
 
   const projectDirName = project.extensions.projectType === ProjectType.Application ? 'app' : 'lib';
 
@@ -78,10 +73,11 @@ function addDeclarationToNgModule(options: ComponentOptions): Rule {
     const modulePath = options.module;
     let source = readIntoSourceFile(host, modulePath);
 
-    const componentPath = `/${options.path}/`
-      + (options.flat ? '' : strings.dasherize(options.name) + '/')
-      + strings.dasherize(options.name)
-      + '.component';
+    const componentPath =
+      `/${options.path}/` +
+      (options.flat ? '' : strings.dasherize(options.name) + '/') +
+      strings.dasherize(options.name) +
+      '.component';
     const relativePath = buildRelativePath(modulePath, componentPath);
     const classifiedName = strings.classify(`${options.name}Component`);
 
@@ -89,7 +85,8 @@ function addDeclarationToNgModule(options: ComponentOptions): Rule {
       source,
       modulePath,
       classifiedName,
-      relativePath);
+      relativePath,
+    );
 
     const declarationRecorder = host.beginUpdate(modulePath);
     for (const change of declarationChanges) {
@@ -108,7 +105,8 @@ function addDeclarationToNgModule(options: ComponentOptions): Rule {
         source,
         modulePath,
         strings.classify(`${options.name}Component`),
-        relativePath);
+        relativePath,
+      );
 
       for (const change of exportChanges) {
         if (change instanceof InsertChange) {
@@ -121,7 +119,6 @@ function addDeclarationToNgModule(options: ComponentOptions): Rule {
     return host;
   };
 }
-
 
 function buildSelector(options: ComponentOptions, projectPrefix?: string) {
   let selector = strings.dasherize(options.name);
@@ -153,9 +150,10 @@ function indentTextContent(text: string, numSpaces: number): string {
  * This allows inlining the external template or stylesheet files in EJS without having
  * to manually duplicate the file content.
  */
-export function buildComponent(options: ComponentOptions,
-                               additionalFiles: {[key: string]: string} = {}): Rule {
-
+export function buildComponent(
+  options: ComponentOptions,
+  additionalFiles: {[key: string]: string} = {},
+): Rule {
   return async (host, ctx) => {
     const context = ctx as FileSystemSchematicContext;
     const workspace = await getWorkspace(host);
@@ -166,9 +164,9 @@ export function buildComponent(options: ComponentOptions,
     // This handles an unreported breaking change from the @angular-devkit/schematics. Previously
     // the description path resolved to the factory file, but starting from 6.2.0, it resolves
     // to the factory directory.
-    const schematicPath = statSync(context.schematic.description.path).isDirectory() ?
-        context.schematic.description.path :
-        dirname(context.schematic.description.path);
+    const schematicPath = statSync(context.schematic.description.path).isDirectory()
+      ? context.schematic.description.path
+      : dirname(context.schematic.description.path);
 
     const schematicFilesUrl = './files';
     const schematicFilesPath = resolve(schematicPath, schematicFilesUrl);
@@ -176,10 +174,17 @@ export function buildComponent(options: ComponentOptions,
     // Add the default component option values to the options if an option is not explicitly
     // specified but a default component option is available.
     Object.keys(options)
-      .filter(key => options[key as keyof ComponentOptions] == null &&
-                     defaultComponentOptions[key as keyof ComponentOptions])
-      .forEach(key => (options as any)[key] =
-          (defaultComponentOptions as ComponentOptions)[key as keyof ComponentOptions]);
+      .filter(
+        key =>
+          options[key as keyof ComponentOptions] == null &&
+          defaultComponentOptions[key as keyof ComponentOptions],
+      )
+      .forEach(
+        key =>
+          ((options as any)[key] = (defaultComponentOptions as ComponentOptions)[
+            key as keyof ComponentOptions
+          ]),
+      );
 
     if (options.path === undefined) {
       // TODO(jelbourn): figure out if the need for this `as any` is a bug due to two different
@@ -211,7 +216,7 @@ export function buildComponent(options: ComponentOptions,
     // Object that will be used as context for the EJS templates.
     const baseTemplateContext = {
       ...strings,
-      'if-flat': (s: string) => options.flat ? '' : s,
+      'if-flat': (s: string) => (options.flat ? '' : s),
       ...options,
     };
 
@@ -240,11 +245,9 @@ export function buildComponent(options: ComponentOptions,
       move(null as any, parsedPath.path),
     ]);
 
-    return () => chain([
-      branchAndMerge(chain([
-        addDeclarationToNgModule(options),
-        mergeWith(templateSource),
-      ])),
-    ])(host, context);
+    return () =>
+      chain([
+        branchAndMerge(chain([addDeclarationToNgModule(options), mergeWith(templateSource)])),
+      ])(host, context);
   };
 }

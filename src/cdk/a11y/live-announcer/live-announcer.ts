@@ -26,7 +26,6 @@ import {
   LIVE_ANNOUNCER_DEFAULT_OPTIONS,
 } from './live-announcer-tokens';
 
-
 @Injectable({providedIn: 'root'})
 export class LiveAnnouncer implements OnDestroy {
   private _liveElement: HTMLElement;
@@ -34,12 +33,13 @@ export class LiveAnnouncer implements OnDestroy {
   private _previousTimeout: any;
 
   constructor(
-      @Optional() @Inject(LIVE_ANNOUNCER_ELEMENT_TOKEN) elementToken: any,
-      private _ngZone: NgZone,
-      @Inject(DOCUMENT) _document: any,
-      @Optional() @Inject(LIVE_ANNOUNCER_DEFAULT_OPTIONS)
-      private _defaultOptions?: LiveAnnouncerDefaultOptions) {
-
+    @Optional() @Inject(LIVE_ANNOUNCER_ELEMENT_TOKEN) elementToken: any,
+    private _ngZone: NgZone,
+    @Inject(DOCUMENT) _document: any,
+    @Optional()
+    @Inject(LIVE_ANNOUNCER_DEFAULT_OPTIONS)
+    private _defaultOptions?: LiveAnnouncerDefaultOptions,
+  ) {
     // We inject the live element and document as `any` because the constructor signature cannot
     // reference browser globals (HTMLElement, Document) on non-browser environments, since having
     // a class decorator causes TypeScript to preserve the constructor signature types.
@@ -99,7 +99,7 @@ export class LiveAnnouncer implements OnDestroy {
 
     if (!politeness) {
       politeness =
-          (defaultOptions && defaultOptions.politeness) ? defaultOptions.politeness : 'polite';
+        defaultOptions && defaultOptions.politeness ? defaultOptions.politeness : 'polite';
     }
 
     if (duration == null && defaultOptions) {
@@ -166,9 +166,7 @@ export class LiveAnnouncer implements OnDestroy {
 
     return liveEl;
   }
-
 }
-
 
 /**
  * A directive that works similarly to aria-live, but uses the LiveAnnouncer to ensure compatibility
@@ -181,7 +179,9 @@ export class LiveAnnouncer implements OnDestroy {
 export class CdkAriaLive implements OnDestroy {
   /** The aria-live politeness level to use when announcing messages. */
   @Input('cdkAriaLive')
-  get politeness(): AriaLivePoliteness { return this._politeness; }
+  get politeness(): AriaLivePoliteness {
+    return this._politeness;
+  }
   set politeness(value: AriaLivePoliteness) {
     this._politeness = value === 'off' || value === 'assertive' ? value : 'polite';
     if (this._politeness === 'off') {
@@ -191,19 +191,17 @@ export class CdkAriaLive implements OnDestroy {
       }
     } else if (!this._subscription) {
       this._subscription = this._ngZone.runOutsideAngular(() => {
-        return this._contentObserver
-          .observe(this._elementRef)
-          .subscribe(() => {
-            // Note that we use textContent here, rather than innerText, in order to avoid a reflow.
-            const elementText = this._elementRef.nativeElement.textContent;
+        return this._contentObserver.observe(this._elementRef).subscribe(() => {
+          // Note that we use textContent here, rather than innerText, in order to avoid a reflow.
+          const elementText = this._elementRef.nativeElement.textContent;
 
-            // The `MutationObserver` fires also for attribute
-            // changes which we don't want to announce.
-            if (elementText !== this._previousAnnouncedText) {
-              this._liveAnnouncer.announce(elementText, this._politeness);
-              this._previousAnnouncedText = elementText;
-            }
-          });
+          // The `MutationObserver` fires also for attribute
+          // changes which we don't want to announce.
+          if (elementText !== this._previousAnnouncedText) {
+            this._liveAnnouncer.announce(elementText, this._politeness);
+            this._previousAnnouncedText = elementText;
+          }
+        });
       });
     }
   }
@@ -212,8 +210,12 @@ export class CdkAriaLive implements OnDestroy {
   private _previousAnnouncedText?: string;
   private _subscription: Subscription | null;
 
-  constructor(private _elementRef: ElementRef, private _liveAnnouncer: LiveAnnouncer,
-              private _contentObserver: ContentObserver, private _ngZone: NgZone) {}
+  constructor(
+    private _elementRef: ElementRef,
+    private _liveAnnouncer: LiveAnnouncer,
+    private _contentObserver: ContentObserver,
+    private _ngZone: NgZone,
+  ) {}
 
   ngOnDestroy() {
     if (this._subscription) {

@@ -24,5 +24,4 @@ import {MdcCardDemo} from './mdc-card-demo';
   ],
   declarations: [MdcCardDemo],
 })
-export class MdcCardDemoModule {
-}
+export class MdcCardDemoModule {}

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
- /// <reference types="google.maps" />
+/// <reference types="google.maps" />
 
 /**
  * Class for clustering markers on a Google Map.
@@ -16,7 +16,10 @@
  */
 declare class MarkerClusterer {
   constructor(
-      map: google.maps.Map, markers?: google.maps.Marker[], options?: MarkerClustererOptions);
+    map: google.maps.Map,
+    markers?: google.maps.Marker[],
+    options?: MarkerClustererOptions,
+  );
   ariaLabelFn: AriaLabelFn;
   static BATCH_SIZE: number;
   static BATCH_SIZE_IE: number;
@@ -175,5 +178,7 @@ declare type AriaLabelFn = (text: string) => string;
  *
  * See googlemaps.github.io/v3-utility-library/modules/_google_markerclustererplus.html#calculator
  */
-declare type Calculator =
-    (markers: google.maps.Marker[], clusterIconStylesCount: number) => ClusterIconInfo;
+declare type Calculator = (
+  markers: google.maps.Marker[],
+  clusterIconStylesCount: number,
+) => ClusterIconInfo;

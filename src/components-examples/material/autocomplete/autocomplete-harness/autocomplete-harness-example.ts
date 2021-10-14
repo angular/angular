@@ -5,7 +5,7 @@ import {Component} from '@angular/core';
  */
 @Component({
   selector: 'autocomplete-harness-example',
-  templateUrl: 'autocomplete-harness-example.html'
+  templateUrl: 'autocomplete-harness-example.html',
 })
 export class AutocompleteHarnessExample {
   states = [

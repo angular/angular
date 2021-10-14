@@ -50,22 +50,22 @@ export abstract class _MatCheckboxHarnessBase extends ComponentHarness {
   }
 
   /** Gets the checkbox's name. */
-  async getName(): Promise<string|null> {
+  async getName(): Promise<string | null> {
     return (await this._input()).getAttribute('name');
   }
 
   /** Gets the checkbox's value. */
-  async getValue(): Promise<string|null> {
-    return (await this._input()).getProperty<string|null>('value');
+  async getValue(): Promise<string | null> {
+    return (await this._input()).getProperty<string | null>('value');
   }
 
   /** Gets the checkbox's aria-label. */
-  async getAriaLabel(): Promise<string|null> {
+  async getAriaLabel(): Promise<string | null> {
     return (await this._input()).getAttribute('aria-label');
   }
 
   /** Gets the checkbox's aria-labelledby. */
-  async getAriaLabelledby(): Promise<string|null> {
+  async getAriaLabelledby(): Promise<string | null> {
     return (await this._input()).getAttribute('aria-labelledby');
   }
 
@@ -139,14 +139,20 @@ export class MatCheckboxHarness extends _MatCheckboxHarnessBase {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: CheckboxHarnessFilters = {}): HarnessPredicate<MatCheckboxHarness> {
-    return new HarnessPredicate(MatCheckboxHarness, options)
-        .addOption(
-            'label', options.label,
-            (harness, label) => HarnessPredicate.stringMatches(harness.getLabelText(), label))
+    return (
+      new HarnessPredicate(MatCheckboxHarness, options)
+        .addOption('label', options.label, (harness, label) =>
+          HarnessPredicate.stringMatches(harness.getLabelText(), label),
+        )
         // We want to provide a filter option for "name" because the name of the checkbox is
         // only set on the underlying input. This means that it's not possible for developers
         // to retrieve the harness of a specific checkbox with name through a CSS selector.
-        .addOption('name', options.name, async (harness, name) => await harness.getName() === name);
+        .addOption(
+          'name',
+          options.name,
+          async (harness, name) => (await harness.getName()) === name,
+        )
+    );
   }
 
   protected _input = this.locatorFor('input');

@@ -23,12 +23,12 @@ export class SelectReactiveFormExample {
   foods: Food[] = [
     {value: 'steak-0', viewValue: 'Steak'},
     {value: 'pizza-1', viewValue: 'Pizza'},
-    {value: 'tacos-2', viewValue: 'Tacos'}
+    {value: 'tacos-2', viewValue: 'Tacos'},
   ];
   cars: Car[] = [
     {value: 'volvo', viewValue: 'Volvo'},
     {value: 'saab', viewValue: 'Saab'},
-    {value: 'mercedes', viewValue: 'Mercedes'}
+    {value: 'mercedes', viewValue: 'Mercedes'},
   ];
   foodControl = new FormControl(this.foods[2].value);
   carControl = new FormControl(this.cars[1].value);
@@ -36,7 +36,7 @@ export class SelectReactiveFormExample {
   constructor() {
     this.form = new FormGroup({
       food: this.foodControl,
-      car: this.carControl
+      car: this.carControl,
     });
   }
 }

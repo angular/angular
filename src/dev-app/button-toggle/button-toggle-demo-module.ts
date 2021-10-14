@@ -26,5 +26,4 @@ import {ButtonToggleDemo} from './button-toggle-demo';
   ],
   declarations: [ButtonToggleDemo],
 })
-export class ButtonToggleDemoModule {
-}
+export class ButtonToggleDemoModule {}

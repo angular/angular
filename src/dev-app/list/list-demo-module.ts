@@ -28,5 +28,4 @@ import {ListDemo} from './list-demo';
   ],
   declarations: [ListDemo],
 })
-export class ListDemoModule {
-}
+export class ListDemoModule {}

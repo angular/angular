@@ -3,18 +3,18 @@ import {MatDialog, MatDialogRef, MatDialogConfig} from '@angular/material-experi
 
 @Component({
   selector: 'mdc-dialog-e2e',
-  templateUrl: 'mdc-dialog-e2e.html'
+  templateUrl: 'mdc-dialog-e2e.html',
 })
 export class MdcDialogE2E {
   dialogRef: MatDialogRef<TestDialog> | null;
 
   @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
 
-  constructor (private _dialog: MatDialog) { }
+  constructor(private _dialog: MatDialog) {}
 
   private _openDialog(config?: MatDialogConfig) {
     this.dialogRef = this._dialog.open(TestDialog, config);
-    this.dialogRef.afterClosed().subscribe(() => this.dialogRef = null);
+    this.dialogRef.afterClosed().subscribe(() => (this.dialogRef = null));
   }
 
   openDefault() {
@@ -23,7 +23,7 @@ export class MdcDialogE2E {
 
   openDisabled() {
     this._openDialog({
-      disableClose: true
+      disableClose: true,
     });
   }
 
@@ -37,8 +37,8 @@ export class MdcDialogE2E {
   template: `
   <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
   <input/>
-  <button type="button" (click)="dialogRef.close()" id="close">CLOSE</button>`
+  <button type="button" (click)="dialogRef.close()" id="close">CLOSE</button>`,
 })
 export class TestDialog {
-  constructor(public dialogRef: MatDialogRef<TestDialog>) { }
+  constructor(public dialogRef: MatDialogRef<TestDialog>) {}
 }

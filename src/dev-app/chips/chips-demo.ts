@@ -23,7 +23,7 @@ export interface DemoColor {
 @Component({
   selector: 'chips-demo',
   templateUrl: 'chips-demo.html',
-  styleUrls: ['chips-demo.css']
+  styleUrls: ['chips-demo.css'],
 })
 export class ChipsDemo {
   tabIndex = 0;
@@ -45,14 +45,14 @@ export class ChipsDemo {
     {name: 'Topher'},
     {name: 'Elad'},
     {name: 'Kristiyan'},
-    {name: 'Paul'}
+    {name: 'Paul'},
   ];
 
   availableColors: DemoColor[] = [
     {name: 'none', color: undefined},
     {name: 'Primary', color: 'primary'},
     {name: 'Accent', color: 'accent'},
-    {name: 'Warn', color: 'warn'}
+    {name: 'Warn', color: 'warn'},
   ];
 
   displayMessage(message: string): void {
@@ -64,7 +64,7 @@ export class ChipsDemo {
 
     // Add our person
     if (value) {
-      this.people.push({ name: value });
+      this.people.push({name: value});
     }
 
     // Clear the input value

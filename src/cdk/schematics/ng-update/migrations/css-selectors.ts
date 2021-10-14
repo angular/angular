@@ -38,8 +38,8 @@ export class CssSelectorsMigration extends Migration<UpgradeData> {
       }
 
       findAllSubstringIndices(template.content, data.replace)
-          .map(offset => template.start + offset)
-          .forEach(start => this._replaceSelector(template.filePath, start, data));
+        .map(offset => template.start + offset)
+        .forEach(start => this._replaceSelector(template.filePath, start, data));
     });
   }
 
@@ -50,8 +50,8 @@ export class CssSelectorsMigration extends Migration<UpgradeData> {
       }
 
       findAllSubstringIndices(stylesheet.content, data.replace)
-          .map(offset => stylesheet.start + offset)
-          .forEach(start => this._replaceSelector(stylesheet.filePath, start, data));
+        .map(offset => stylesheet.start + offset)
+        .forEach(start => this._replaceSelector(stylesheet.filePath, start, data));
     });
   }
 
@@ -69,13 +69,14 @@ export class CssSelectorsMigration extends Migration<UpgradeData> {
       }
 
       findAllSubstringIndices(textContent, data.replace)
-          .map(offset => node.getStart() + offset)
-          .forEach(start => this._replaceSelector(filePath, start, data));
+        .map(offset => node.getStart() + offset)
+        .forEach(start => this._replaceSelector(filePath, start, data));
     });
   }
 
   private _replaceSelector(filePath: WorkspacePath, start: number, data: CssSelectorUpgradeData) {
-    this.fileSystem.edit(filePath)
+    this.fileSystem
+      .edit(filePath)
       .remove(start, data.replace.length)
       .insertRight(start, data.replaceWith);
   }

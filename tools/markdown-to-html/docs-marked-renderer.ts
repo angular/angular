@@ -9,7 +9,6 @@ const exampleCommentRegex = /<!--\s*example\(([^)]+)\)\s*-->/g;
  * files that can be used in the Angular Material docs.
  */
 export class DocsMarkdownRenderer extends Renderer {
-
   /** Set of fragment links discovered in the currently rendered file. */
   private _referencedFragments = new Set<string>();
 
@@ -79,18 +78,20 @@ export class DocsMarkdownRenderer extends Renderer {
    */
   html(html: string) {
     html = html.replace(exampleCommentRegex, (_match: string, content: string) => {
-        // using [\s\S]* because .* does not match line breaks
-        if (content.match(/\{[\s\S]*\}/g)) {
-          const {example, file, region} = JSON.parse(content) as {
-            example: string, file: string, region: string};
-          return `<div material-docs-example="${example}"
+      // using [\s\S]* because .* does not match line breaks
+      if (content.match(/\{[\s\S]*\}/g)) {
+        const {example, file, region} = JSON.parse(content) as {
+          example: string;
+          file: string;
+          region: string;
+        };
+        return `<div material-docs-example="${example}"
                              ${file ? `file="${file}"` : ''}
                              ${region ? `region="${region}"` : ''}></div>`;
-        } else {
-          return `<div material-docs-example="${content}"></div>`;
-        }
+      } else {
+        return `<div material-docs-example="${content}"></div>`;
       }
-    );
+    });
 
     return super.html(html);
   }

@@ -56,9 +56,10 @@ const _MatMenuItemBase = mixinDisableRipple(mixinDisabled(class {}));
   encapsulation: ViewEncapsulation.None,
   templateUrl: 'menu-item.html',
 })
-export class MatMenuItem extends _MatMenuItemBase
-    implements FocusableOption, CanDisable, CanDisableRipple, AfterViewInit, OnDestroy {
-
+export class MatMenuItem
+  extends _MatMenuItemBase
+  implements FocusableOption, CanDisable, CanDisableRipple, AfterViewInit, OnDestroy
+{
   /** ARIA role for the menu item. */
   @Input() role: 'menuitem' | 'menuitemradio' | 'menuitemcheckbox' = 'menuitem';
 
@@ -87,8 +88,8 @@ export class MatMenuItem extends _MatMenuItemBase
      * @deprecated `_changeDetectorRef` to become a required parameter.
      * @breaking-change 14.0.0
      */
-    private _changeDetectorRef?: ChangeDetectorRef) {
-
+    private _changeDetectorRef?: ChangeDetectorRef,
+  ) {
     // @breaking-change 8.0.0 make `_focusMonitor` and `document` required params.
     super();
 

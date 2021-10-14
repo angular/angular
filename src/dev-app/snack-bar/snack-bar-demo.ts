@@ -15,7 +15,6 @@ import {
   MatSnackBarVerticalPosition,
 } from '@angular/material/snack-bar';
 
-
 @Component({
   selector: 'snack-bar-demo',
   styleUrls: ['snack-bar-demo.css'],

@@ -22,5 +22,4 @@ import {DrawerDemo} from './drawer-demo';
   ],
   declarations: [DrawerDemo],
 })
-export class DrawerDemoModule {
-}
+export class DrawerDemoModule {}

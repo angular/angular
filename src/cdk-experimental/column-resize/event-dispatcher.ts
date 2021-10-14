@@ -22,54 +22,48 @@ export class HeaderRowEventDispatcher {
    * Exposed publicly for events to feed in, but subscribers should use headerCellHoveredDistinct,
    * defined below.
    */
-  readonly headerCellHovered = new Subject<Element|null>();
+  readonly headerCellHovered = new Subject<Element | null>();
 
   /**
    * Emits the header cell for which a user-triggered resize is active or null
    * when no resize is in progress.
    */
-  readonly overlayHandleActiveForCell = new Subject<Element|null>();
+  readonly overlayHandleActiveForCell = new Subject<Element | null>();
 
   constructor(private readonly _ngZone: NgZone) {}
 
   /** Distinct and shared version of headerCellHovered. */
-  readonly headerCellHoveredDistinct = this.headerCellHovered.pipe(
-      distinctUntilChanged(),
-      share(),
-  );
+  readonly headerCellHoveredDistinct = this.headerCellHovered.pipe(distinctUntilChanged(), share());
 
   /**
    * Emits the header that is currently hovered or hosting an active resize event (with active
    * taking precedence).
    */
   readonly headerRowHoveredOrActiveDistinct = combineLatest([
-      this.headerCellHoveredDistinct.pipe(
-          map(cell => _closest(cell, HEADER_ROW_SELECTOR)),
-          startWith(null),
-          distinctUntilChanged(),
-       ),
-      this.overlayHandleActiveForCell.pipe(
-          map(cell => _closest(cell, HEADER_ROW_SELECTOR)),
-          startWith(null),
-          distinctUntilChanged(),
-      ),
-  ]).pipe(
-      skip(1), // Ignore initial [null, null] emission.
-      map(([hovered, active]) => active || hovered),
+    this.headerCellHoveredDistinct.pipe(
+      map(cell => _closest(cell, HEADER_ROW_SELECTOR)),
+      startWith(null),
       distinctUntilChanged(),
-      share(),
+    ),
+    this.overlayHandleActiveForCell.pipe(
+      map(cell => _closest(cell, HEADER_ROW_SELECTOR)),
+      startWith(null),
+      distinctUntilChanged(),
+    ),
+  ]).pipe(
+    skip(1), // Ignore initial [null, null] emission.
+    map(([hovered, active]) => active || hovered),
+    distinctUntilChanged(),
+    share(),
   );
 
   private readonly _headerRowHoveredOrActiveDistinctReenterZone =
-      this.headerRowHoveredOrActiveDistinct.pipe(
-          this._enterZone(),
-          share(),
-      );
+    this.headerRowHoveredOrActiveDistinct.pipe(this._enterZone(), share());
 
   // Optimization: Share row events observable with subsequent callers.
   // At startup, calls will be sequential by row (and typically there's only one).
-  private _lastSeenRow: Element|null = null;
-  private _lastSeenRowHover: Observable<boolean>|null = null;
+  private _lastSeenRow: Element | null = null;
+  private _lastSeenRowHover: Observable<boolean> | null = null;
 
   /**
    * Emits whether the specified row should show its overlay controls.
@@ -90,10 +84,12 @@ export class HeaderRowEventDispatcher {
 
   private _enterZone<T>(): MonoTypeOperatorFunction<T> {
     return (source: Observable<T>) =>
-        new Observable<T>((observer) => source.subscribe({
-          next: (value) => this._ngZone.run(() => observer.next(value)),
-          error: (err) => observer.error(err),
-          complete: () => observer.complete()
-        }));
+      new Observable<T>(observer =>
+        source.subscribe({
+          next: value => this._ngZone.run(() => observer.next(value)),
+          error: err => observer.error(err),
+          complete: () => observer.complete(),
+        }),
+      );
   }
 }

@@ -14,4 +14,3 @@ export {
   MAT_PAGINATOR_INTL_PROVIDER,
   PageEvent,
 } from '@angular/material/paginator';
-

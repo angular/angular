@@ -12,7 +12,7 @@ import {_MatTooltipHarnessBase, TooltipHarnessFilters} from '@angular/material/t
 /** Harness for interacting with a standard mat-tooltip in tests. */
 export class MatTooltipHarness extends _MatTooltipHarnessBase {
   protected _optionalPanel =
-      this.documentRootLocatorFactory().locatorForOptional('.mat-mdc-tooltip');
+    this.documentRootLocatorFactory().locatorForOptional('.mat-mdc-tooltip');
   static hostSelector = '.mat-mdc-tooltip-trigger';
 
   /**

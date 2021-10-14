@@ -81,7 +81,7 @@ export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, 
     private readonly _ngZone: NgZone,
     readonly _elementRef: ElementRef<HTMLElement>,
     @Self() @Optional() @Inject(MENU_AIM) private readonly _menuAim?: MenuAim,
-    @Optional() private readonly _dir?: Directionality
+    @Optional() private readonly _dir?: Directionality,
   ) {
     super();
   }
@@ -270,14 +270,14 @@ export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, 
         mergeMap((list: QueryList<CdkMenuItem>) =>
           list
             .filter(item => item.hasMenu())
-            .map(item => item.getMenuTrigger()!.opened.pipe(mapTo(item), takeUntil(exitCondition)))
+            .map(item => item.getMenuTrigger()!.opened.pipe(mapTo(item), takeUntil(exitCondition))),
         ),
         mergeAll(),
         switchMap((item: CdkMenuItem) => {
           this._openItem = item;
           return item.getMenuTrigger()!.closed;
         }),
-        takeUntil(this._destroyed)
+        takeUntil(this._destroyed),
       )
       .subscribe(() => (this._openItem = undefined));
   }

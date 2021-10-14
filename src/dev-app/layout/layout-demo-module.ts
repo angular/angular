@@ -20,4 +20,4 @@ import {CdkLayoutExamplesModule} from '@angular/components-examples/cdk/layout';
   ],
   declarations: [LayoutDemo],
 })
-export class LayoutDemoModule { }
+export class LayoutDemoModule {}

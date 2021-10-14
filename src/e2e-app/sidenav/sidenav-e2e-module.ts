@@ -14,5 +14,4 @@ import {SidenavE2E} from './sidenav-e2e';
   imports: [MatSidenavModule],
   declarations: [SidenavE2E],
 })
-export class SidenavE2eModule {
-}
+export class SidenavE2eModule {}

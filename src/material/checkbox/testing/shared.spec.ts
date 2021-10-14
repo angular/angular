@@ -12,18 +12,18 @@ import {MatCheckboxHarness} from '@angular/material/checkbox/testing/checkbox-ha
  * MDC based checkbox harness.
  */
 export function runHarnessTests(
-    checkboxModule: typeof MatCheckboxModule, checkboxHarness: typeof MatCheckboxHarness) {
+  checkboxModule: typeof MatCheckboxModule,
+  checkboxHarness: typeof MatCheckboxHarness,
+) {
   let platform: Platform;
   let fixture: ComponentFixture<CheckboxHarnessTest>;
   let loader: HarnessLoader;
 
   beforeEach(async () => {
-    await TestBed
-        .configureTestingModule({
-          imports: [checkboxModule, ReactiveFormsModule],
-          declarations: [CheckboxHarnessTest],
-        })
-        .compileComponents();
+    await TestBed.configureTestingModule({
+      imports: [checkboxModule, ReactiveFormsModule],
+      declarations: [CheckboxHarnessTest],
+    }).compileComponents();
 
     platform = TestBed.inject(Platform);
     fixture = TestBed.createComponent(CheckboxHarnessTest);
@@ -181,7 +181,7 @@ export function runHarnessTests(
         Second
       </mat-checkbox>
       <span id="second-label">Second checkbox</span>
-  `
+  `,
 })
 class CheckboxHarnessTest {
   ctrl = new FormControl(true);

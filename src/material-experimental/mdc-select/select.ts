@@ -38,7 +38,8 @@ export class MatSelectChange {
     /** Reference to the select that emitted the change event. */
     public source: MatSelect,
     /** Current value of the select that emitted the event. */
-    public value: any) { }
+    public value: any,
+  ) {}
 }
 
 /**
@@ -85,7 +86,7 @@ export class MatSelectTrigger {}
   animations: [matSelectAnimations.transformPanel],
   providers: [
     {provide: MatFormFieldControl, useExisting: MatSelect},
-    {provide: MAT_OPTION_PARENT_COMPONENT, useExisting: MatSelect}
+    {provide: MAT_OPTION_PARENT_COMPONENT, useExisting: MatSelect},
   ],
 })
 export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit, AfterViewInit {
@@ -105,7 +106,7 @@ export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit
       originY: 'top',
       overlayX: 'start',
       overlayY: 'bottom',
-      panelClass: 'mat-mdc-select-panel-above'
+      panelClass: 'mat-mdc-select-panel-above',
     },
   ];
 
@@ -123,12 +124,15 @@ export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit
 
   override ngOnInit() {
     super.ngOnInit();
-    this._viewportRuler.change().pipe(takeUntil(this._destroy)).subscribe(() => {
-      if (this.panelOpen) {
-        this._overlayWidth = this._getOverlayWidth();
-        this._changeDetectorRef.detectChanges();
-      }
-    });
+    this._viewportRuler
+      .change()
+      .pipe(takeUntil(this._destroy))
+      .subscribe(() => {
+        if (this.panelOpen) {
+          this._overlayWidth = this._getOverlayWidth();
+          this._changeDetectorRef.detectChanges();
+        }
+      });
   }
 
   ngAfterViewInit() {
@@ -171,7 +175,7 @@ export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit
           element.offsetTop,
           element.offsetHeight,
           panel.scrollTop,
-          panel.offsetHeight
+          panel.offsetHeight,
         );
       }
     }
@@ -187,9 +191,10 @@ export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit
 
   /** Gets how wide the overlay panel should be. */
   private _getOverlayWidth() {
-    const refToMeasure = this._preferredOverlayOrigin instanceof CdkOverlayOrigin ?
-        this._preferredOverlayOrigin.elementRef :
-        this._preferredOverlayOrigin || this._elementRef;
+    const refToMeasure =
+      this._preferredOverlayOrigin instanceof CdkOverlayOrigin
+        ? this._preferredOverlayOrigin.elementRef
+        : this._preferredOverlayOrigin || this._elementRef;
     return refToMeasure.nativeElement.getBoundingClientRect().width;
   }
 }

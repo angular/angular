@@ -7,9 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {
-  MdcFormFieldExamplesModule
-} from '@angular/components-examples/material-experimental/mdc-form-field';
+import {MdcFormFieldExamplesModule} from '@angular/components-examples/material-experimental/mdc-form-field';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';

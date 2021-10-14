@@ -10,11 +10,10 @@ import {InjectionToken} from '@angular/core';
 import {Observable} from 'rxjs';
 import {CdkVirtualScrollViewport} from './virtual-scroll-viewport';
 
-
 /** The injection token used to specify the virtual scrolling strategy. */
-export const VIRTUAL_SCROLL_STRATEGY =
-    new InjectionToken<VirtualScrollStrategy>('VIRTUAL_SCROLL_STRATEGY');
-
+export const VIRTUAL_SCROLL_STRATEGY = new InjectionToken<VirtualScrollStrategy>(
+  'VIRTUAL_SCROLL_STRATEGY',
+);
 
 /** A strategy that dictates which items should be rendered in the viewport. */
 export interface VirtualScrollStrategy {

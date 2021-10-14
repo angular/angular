@@ -11,7 +11,6 @@ import {Subject} from 'rxjs';
 import {ErrorStateMatcher} from '../error/error-options';
 import {AbstractConstructor, Constructor} from './constructor';
 
-
 /** @docs-private */
 export interface CanUpdateErrorState {
   /** Emits whenever the component state changes. */
@@ -25,7 +24,7 @@ export interface CanUpdateErrorState {
 }
 
 type CanUpdateErrorStateCtor = Constructor<CanUpdateErrorState> &
-                               AbstractConstructor<CanUpdateErrorState>;
+  AbstractConstructor<CanUpdateErrorState>;
 
 /** @docs-private */
 export interface HasErrorState {
@@ -39,10 +38,12 @@ export interface HasErrorState {
  * Mixin to augment a directive with updateErrorState method.
  * For component with `errorState` and need to update `errorState`.
  */
-export function mixinErrorState<T extends AbstractConstructor<HasErrorState>>(base: T):
-  CanUpdateErrorStateCtor & T;
-export function mixinErrorState<T extends Constructor<HasErrorState>>(base: T):
-  CanUpdateErrorStateCtor & T {
+export function mixinErrorState<T extends AbstractConstructor<HasErrorState>>(
+  base: T,
+): CanUpdateErrorStateCtor & T;
+export function mixinErrorState<T extends Constructor<HasErrorState>>(
+  base: T,
+): CanUpdateErrorStateCtor & T {
   return class extends base {
     // This class member exists as an interop with `MatFormFieldControl` which expects
     // a public `stateChanges` observable to emit whenever the form field should be updated.
@@ -62,7 +63,7 @@ export function mixinErrorState<T extends Constructor<HasErrorState>>(base: T):
       const oldState = this.errorState;
       const parent = this._parentFormGroup || this._parentForm;
       const matcher = this.errorStateMatcher || this._defaultErrorStateMatcher;
-      const control = this.ngControl ? this.ngControl.control as FormControl : null;
+      const control = this.ngControl ? (this.ngControl.control as FormControl) : null;
       const newState = matcher.isErrorState(control, parent);
 
       if (newState !== oldState) {

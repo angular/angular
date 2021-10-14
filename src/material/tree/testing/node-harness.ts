@@ -75,17 +75,25 @@ export class MatTreeNodeHarness extends ContentContainerComponentHarness<string>
 
 function getNodePredicate<T extends MatTreeNodeHarness>(
   type: ComponentHarnessConstructor<T>,
-  options: TreeNodeHarnessFilters): HarnessPredicate<T> {
+  options: TreeNodeHarnessFilters,
+): HarnessPredicate<T> {
   return new HarnessPredicate(type, options)
-    .addOption('text', options.text,
-      (harness, text) => HarnessPredicate.stringMatches(harness.getText(), text))
+    .addOption('text', options.text, (harness, text) =>
+      HarnessPredicate.stringMatches(harness.getText(), text),
+    )
     .addOption(
-      'disabled', options.disabled,
-      async (harness, disabled) => (await harness.isDisabled()) === disabled)
+      'disabled',
+      options.disabled,
+      async (harness, disabled) => (await harness.isDisabled()) === disabled,
+    )
     .addOption(
-      'expanded', options.expanded,
-      async (harness, expanded) => (await harness.isExpanded()) === expanded)
+      'expanded',
+      options.expanded,
+      async (harness, expanded) => (await harness.isExpanded()) === expanded,
+    )
     .addOption(
-      'level', options.level,
-      async (harness, level) => (await harness.getLevel()) === level);
+      'level',
+      options.level,
+      async (harness, level) => (await harness.getLevel()) === level,
+    );
 }

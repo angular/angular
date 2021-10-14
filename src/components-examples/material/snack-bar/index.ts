@@ -6,7 +6,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {
   PizzaPartyComponent,
-  SnackBarComponentExample
+  SnackBarComponentExample,
 } from './snack-bar-component/snack-bar-component-example';
 import {SnackBarOverviewExample} from './snack-bar-overview/snack-bar-overview-example';
 import {SnackBarPositionExample} from './snack-bar-position/snack-bar-position-example';
@@ -28,16 +28,9 @@ const EXAMPLES = [
 ];
 
 @NgModule({
-  imports: [
-    FormsModule,
-    MatButtonModule,
-    MatInputModule,
-    MatSelectModule,
-    MatSnackBarModule,
-  ],
+  imports: [FormsModule, MatButtonModule, MatInputModule, MatSelectModule, MatSnackBarModule],
   declarations: [...EXAMPLES, PizzaPartyComponent],
   exports: EXAMPLES,
   entryComponents: [...EXAMPLES, PizzaPartyComponent],
 })
-export class SnackBarExamplesModule {
-}
+export class SnackBarExamplesModule {}

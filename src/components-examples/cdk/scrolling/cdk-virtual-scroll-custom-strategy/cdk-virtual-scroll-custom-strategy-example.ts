@@ -13,7 +13,7 @@ export class CustomVirtualScrollStrategy extends FixedSizeVirtualScrollStrategy 
   styleUrls: ['cdk-virtual-scroll-custom-strategy-example.css'],
   templateUrl: 'cdk-virtual-scroll-custom-strategy-example.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [{provide: VIRTUAL_SCROLL_STRATEGY, useClass: CustomVirtualScrollStrategy}]
+  providers: [{provide: VIRTUAL_SCROLL_STRATEGY, useClass: CustomVirtualScrollStrategy}],
 })
 export class CdkVirtualScrollCustomStrategyExample {
   items = Array.from({length: 100000}).map((_, i) => `Item #${i}`);

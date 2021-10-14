@@ -11,15 +11,19 @@ import {
   MatOptgroupHarness,
   MatOptionHarness,
   OptgroupHarnessFilters,
-  OptionHarnessFilters
+  OptionHarnessFilters,
 } from '@angular/material-experimental/mdc-core/testing';
 import {_MatAutocompleteHarnessBase} from '@angular/material/autocomplete/testing';
 import {AutocompleteHarnessFilters} from './autocomplete-harness-filters';
 
 /** Harness for interacting with an MDC-based mat-autocomplete in tests. */
 export class MatAutocompleteHarness extends _MatAutocompleteHarnessBase<
-  typeof MatOptionHarness, MatOptionHarness, OptionHarnessFilters,
-  typeof MatOptgroupHarness, MatOptgroupHarness, OptgroupHarnessFilters
+  typeof MatOptionHarness,
+  MatOptionHarness,
+  OptionHarnessFilters,
+  typeof MatOptgroupHarness,
+  MatOptgroupHarness,
+  OptgroupHarnessFilters
 > {
   protected _prefix = 'mat-mdc';
   protected _optionClass = MatOptionHarness;
@@ -35,8 +39,10 @@ export class MatAutocompleteHarness extends _MatAutocompleteHarnessBase<
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: AutocompleteHarnessFilters = {}): HarnessPredicate<MatAutocompleteHarness> {
-    return new HarnessPredicate(MatAutocompleteHarness, options)
-        .addOption('value', options.value,
-            (harness, value) => HarnessPredicate.stringMatches(harness.getValue(), value));
+    return new HarnessPredicate(MatAutocompleteHarness, options).addOption(
+      'value',
+      options.value,
+      (harness, value) => HarnessPredicate.stringMatches(harness.getValue(), value),
+    );
   }
 }

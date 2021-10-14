@@ -14,7 +14,6 @@ export class AnimationCurves {
   static SHARP_CURVE = 'cubic-bezier(0.4,0.0,0.6,1)';
 }
 
-
 /** @docs-private */
 export class AnimationDurations {
   static COMPLEX = '375ms';

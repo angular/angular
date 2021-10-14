@@ -26,12 +26,14 @@ export function isMaterialExportDeclaration(node: ts.Node) {
 }
 
 /** Whether the declaration is part of Angular Material. */
-function isMaterialDeclaration(declaration: ts.ImportDeclaration|ts.ExportDeclaration) {
+function isMaterialDeclaration(declaration: ts.ImportDeclaration | ts.ExportDeclaration) {
   if (!declaration.moduleSpecifier) {
     return false;
   }
 
   const moduleSpecifier = declaration.moduleSpecifier.getText();
-  return moduleSpecifier.indexOf(materialModuleSpecifier) !== -1 ||
-      moduleSpecifier.indexOf(cdkModuleSpecifier) !== -1;
+  return (
+    moduleSpecifier.indexOf(materialModuleSpecifier) !== -1 ||
+    moduleSpecifier.indexOf(cdkModuleSpecifier) !== -1
+  );
 }

@@ -11,7 +11,6 @@ import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
 import {MatSlider} from './slider';
 
-
 @NgModule({
   imports: [CommonModule, MatCommonModule],
   exports: [MatSlider, MatCommonModule],

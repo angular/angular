@@ -15,7 +15,7 @@ exports.customLaunchers = require('./karma-browsers.json');
 /** Exports a map of configured browsers, which should run in the given platform. */
 exports.platformMap = {
   'saucelabs': buildConfiguration('unitTest', 'saucelabs'),
-  'browserstack': buildConfiguration('unitTest', 'browserstack')
+  'browserstack': buildConfiguration('unitTest', 'browserstack'),
 };
 
 /** Build a list of configuration (custom launcher names). */

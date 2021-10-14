@@ -9,11 +9,13 @@
 import {NgModule} from '@angular/core';
 import {MatLineModule, MatCommonModule} from '@angular/material/core';
 import {
-  MatGridTile, MatGridTileText, MatGridTileFooterCssMatStyler,
-  MatGridTileHeaderCssMatStyler, MatGridAvatarCssMatStyler
+  MatGridTile,
+  MatGridTileText,
+  MatGridTileFooterCssMatStyler,
+  MatGridTileHeaderCssMatStyler,
+  MatGridAvatarCssMatStyler,
 } from './grid-tile';
 import {MatGridList} from './grid-list';
-
 
 @NgModule({
   imports: [MatLineModule, MatCommonModule],
@@ -25,7 +27,7 @@ import {MatGridList} from './grid-list';
     MatCommonModule,
     MatGridTileHeaderCssMatStyler,
     MatGridTileFooterCssMatStyler,
-    MatGridAvatarCssMatStyler
+    MatGridAvatarCssMatStyler,
   ],
   declarations: [
     MatGridList,
@@ -33,7 +35,7 @@ import {MatGridList} from './grid-list';
     MatGridTileText,
     MatGridTileHeaderCssMatStyler,
     MatGridTileFooterCssMatStyler,
-    MatGridAvatarCssMatStyler
+    MatGridAvatarCssMatStyler,
   ],
 })
 export class MatGridListModule {}

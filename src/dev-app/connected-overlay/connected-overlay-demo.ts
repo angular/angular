@@ -12,7 +12,7 @@ import {
   HorizontalConnectionPos,
   Overlay,
   OverlayRef,
-  VerticalConnectionPos
+  VerticalConnectionPos,
 } from '@angular/cdk/overlay';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {
@@ -20,15 +20,14 @@ import {
   TemplateRef,
   ViewChild,
   ViewContainerRef,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
-
 
 @Component({
   selector: 'overlay-demo',
   templateUrl: 'connected-overlay-demo.html',
   styleUrls: ['connected-overlay-demo.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class ConnectedOverlayDemo {
   @ViewChild(CdkOverlayOrigin) _overlayOrigin: CdkOverlayOrigin;
@@ -49,24 +48,27 @@ export class ConnectedOverlayDemo {
   overlayRef: OverlayRef | null;
 
   constructor(
-      public overlay: Overlay,
-      public viewContainerRef: ViewContainerRef,
-      public dir: Directionality) { }
+    public overlay: Overlay,
+    public viewContainerRef: ViewContainerRef,
+    public dir: Directionality,
+  ) {}
 
   openWithConfig() {
-    const positionStrategy = this.overlay.position()
-        .flexibleConnectedTo(this._overlayOrigin.elementRef)
-        .withFlexibleDimensions(this.isFlexible)
-        .withPush(this.canPush)
-        .withViewportMargin(10)
-        .withGrowAfterOpen(true)
-        .withPositions([{
+    const positionStrategy = this.overlay
+      .position()
+      .flexibleConnectedTo(this._overlayOrigin.elementRef)
+      .withFlexibleDimensions(this.isFlexible)
+      .withPush(this.canPush)
+      .withViewportMargin(10)
+      .withGrowAfterOpen(true)
+      .withPositions([
+        {
           originX: this.originX,
           originY: this.originY,
           overlayX: this.overlayX,
           overlayY: this.overlayY,
           offsetX: this.offsetX,
-          offsetY: this.offsetY
+          offsetY: this.offsetY,
         },
         {
           originX: 'start',
@@ -79,7 +81,7 @@ export class ConnectedOverlayDemo {
           originY: 'bottom',
           overlayX: 'start',
           overlayY: 'top',
-        }
+        },
       ]);
 
     this.overlayRef = this.overlay.create({
@@ -87,7 +89,7 @@ export class ConnectedOverlayDemo {
       scrollStrategy: this.overlay.scrollStrategies.reposition(),
       direction: this.dir.value,
       minWidth: 200,
-      minHeight: 50
+      minHeight: 50,
     });
 
     this.itemArray = Array(this.itemCount);

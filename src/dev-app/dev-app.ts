@@ -14,5 +14,4 @@ import {Component, ViewEncapsulation} from '@angular/core';
   template: '<dev-app-layout><router-outlet></router-outlet></dev-app-layout>',
   encapsulation: ViewEncapsulation.None,
 })
-export class DevAppComponent {
-}
+export class DevAppComponent {}

@@ -3,7 +3,7 @@ import {basename} from 'path';
 
 const ruleName = 'material/no-concrete-rules';
 const messages = utils.ruleMessages(ruleName, {
-  expected: pattern => `CSS rules must be placed inside a mixin for files matching '${pattern}'.`
+  expected: pattern => `CSS rules must be placed inside a mixin for files matching '${pattern}'.`,
 });
 
 /** Config options for the rule. */
@@ -38,7 +38,7 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, _options) => {
           result,
           ruleName,
           node,
-          message: messages.expected(filePattern)
+          message: messages.expected(filePattern),
         });
       }
     });

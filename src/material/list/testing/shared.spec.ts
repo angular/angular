@@ -3,7 +3,7 @@ import {
   ComponentHarness,
   ComponentHarnessConstructor,
   HarnessPredicate,
-  parallel
+  parallel,
 } from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component, Type} from '@angular/core';
@@ -17,29 +17,30 @@ import {BaseListItemHarnessFilters} from './list-harness-filters';
 import {
   MatListItemHarnessBase,
   MatListItemSection,
-  MatSubheaderHarness
+  MatSubheaderHarness,
 } from './list-item-harness-base';
 import {MatNavListHarness, MatNavListItemHarness} from './nav-list-harness';
 import {MatListOptionHarness, MatSelectionListHarness} from './selection-list-harness';
 
 /** Tests that apply to all types of mat-list. */
 function runBaseListFunctionalityTests<
-    L extends MatListHarnessBase<
-        ComponentHarnessConstructor<I> & {with: (x?: any) => HarnessPredicate<I>},
-        I,
-        BaseListItemHarnessFilters
-    >,
-    I extends MatListItemHarnessBase,
+  L extends MatListHarnessBase<
+    ComponentHarnessConstructor<I> & {with: (x?: any) => HarnessPredicate<I>},
+    I,
+    BaseListItemHarnessFilters
+  >,
+  I extends MatListItemHarnessBase,
 >(
-    testComponent: Type<{}>,
-    listModule: typeof MatListModule,
-    listHarness: ComponentHarnessConstructor<L> & {
-      with: (config?: BaseHarnessFilters) => HarnessPredicate<L>
-    },
-    listItemHarnessBase: typeof MatListItemHarnessBase,
-    subheaderHarness: typeof MatSubheaderHarness,
-    dividerHarness: typeof MatDividerHarness,
-    selectors: {content: string}) {
+  testComponent: Type<{}>,
+  listModule: typeof MatListModule,
+  listHarness: ComponentHarnessConstructor<L> & {
+    with: (config?: BaseHarnessFilters) => HarnessPredicate<L>;
+  },
+  listItemHarnessBase: typeof MatListItemHarnessBase,
+  subheaderHarness: typeof MatSubheaderHarness,
+  dividerHarness: typeof MatDividerHarness,
+  selectors: {content: string},
+) {
   describe('base list functionality', () => {
     let simpleListHarness: L;
     let emptyListHarness: L;
@@ -54,15 +55,19 @@ function runBaseListFunctionalityTests<
       fixture = TestBed.createComponent(testComponent);
       fixture.detectChanges();
       const loader = TestbedHarnessEnvironment.loader(fixture);
-      simpleListHarness =
-          await loader.getHarness(listHarness.with({selector: '.test-base-list-functionality'}));
+      simpleListHarness = await loader.getHarness(
+        listHarness.with({selector: '.test-base-list-functionality'}),
+      );
       emptyListHarness = await loader.getHarness(listHarness.with({selector: '.test-empty'}));
     });
 
     it('should get all items', async () => {
       const items = await simpleListHarness.getItems();
-      expect(await parallel(() => items.map(i => i.getText())))
-          .toEqual(['Item 1', 'Item 2', 'Item 3']);
+      expect(await parallel(() => items.map(i => i.getText()))).toEqual([
+        'Item 1',
+        'Item 2',
+        'Item 3',
+      ]);
     });
 
     it('should get all items matching text', async () => {
@@ -80,8 +85,10 @@ function runBaseListFunctionalityTests<
       expect(sections[0].heading).toBeUndefined();
       expect(await parallel(() => sections[0].items.map(i => i.getText()))).toEqual(['Item 1']);
       expect(sections[1].heading).toBe('Section 1');
-      expect(await parallel(() => sections[1].items.map(i => i.getText())))
-          .toEqual(['Item 2', 'Item 3']);
+      expect(await parallel(() => sections[1].items.map(i => i.getText()))).toEqual([
+        'Item 2',
+        'Item 3',
+      ]);
       expect(sections[2].heading).toBe('Section 2');
       expect(sections[2].items.length).toEqual(0);
     });
@@ -109,55 +116,75 @@ function runBaseListFunctionalityTests<
 
     it('should get all items, subheaders, and dividers', async () => {
       const itemsSubheadersAndDividers =
-          await simpleListHarness.getItemsWithSubheadersAndDividers();
+        await simpleListHarness.getItemsWithSubheadersAndDividers();
       expect(itemsSubheadersAndDividers.length).toBe(7);
       expect(itemsSubheadersAndDividers[0] instanceof listItemHarnessBase).toBe(true);
-      expect(await (itemsSubheadersAndDividers[0] as MatListItemHarnessBase).getText())
-          .toBe('Item 1');
+      expect(await (itemsSubheadersAndDividers[0] as MatListItemHarnessBase).getText()).toBe(
+        'Item 1',
+      );
       expect(itemsSubheadersAndDividers[1] instanceof subheaderHarness).toBe(true);
-      expect(await (itemsSubheadersAndDividers[1] as MatSubheaderHarness).getText())
-          .toBe('Section 1');
+      expect(await (itemsSubheadersAndDividers[1] as MatSubheaderHarness).getText()).toBe(
+        'Section 1',
+      );
       expect(itemsSubheadersAndDividers[2] instanceof dividerHarness).toBe(true);
       expect(itemsSubheadersAndDividers[3] instanceof listItemHarnessBase).toBe(true);
-      expect(await (itemsSubheadersAndDividers[3] as MatListItemHarnessBase).getText())
-          .toBe('Item 2');
+      expect(await (itemsSubheadersAndDividers[3] as MatListItemHarnessBase).getText()).toBe(
+        'Item 2',
+      );
       expect(itemsSubheadersAndDividers[4] instanceof listItemHarnessBase).toBe(true);
-      expect(await (itemsSubheadersAndDividers[4] as MatListItemHarnessBase).getText())
-          .toBe('Item 3');
+      expect(await (itemsSubheadersAndDividers[4] as MatListItemHarnessBase).getText()).toBe(
+        'Item 3',
+      );
       expect(itemsSubheadersAndDividers[5] instanceof subheaderHarness).toBe(true);
-      expect(await (itemsSubheadersAndDividers[5] as MatSubheaderHarness).getText())
-          .toBe('Section 2');
+      expect(await (itemsSubheadersAndDividers[5] as MatSubheaderHarness).getText()).toBe(
+        'Section 2',
+      );
       expect(itemsSubheadersAndDividers[6] instanceof dividerHarness).toBe(true);
     });
 
     it('should get all items, subheaders, and dividers excluding some harness types', async () => {
-      const items = await simpleListHarness.getItemsWithSubheadersAndDividers(
-          {subheader: false, divider: false});
-      const subheaders = await simpleListHarness.getItemsWithSubheadersAndDividers(
-          {item: false, divider: false});
-      const dividers = await simpleListHarness.getItemsWithSubheadersAndDividers(
-          {item: false, subheader: false});
-      expect(await parallel(() => items.map(i => i.getText())))
-          .toEqual(['Item 1', 'Item 2', 'Item 3']);
-      expect(await parallel(() => subheaders.map(s => s.getText())))
-          .toEqual(['Section 1', 'Section 2']);
-      expect(await parallel(() => dividers.map(d => d.getOrientation())))
-          .toEqual(['horizontal', 'horizontal']);
+      const items = await simpleListHarness.getItemsWithSubheadersAndDividers({
+        subheader: false,
+        divider: false,
+      });
+      const subheaders = await simpleListHarness.getItemsWithSubheadersAndDividers({
+        item: false,
+        divider: false,
+      });
+      const dividers = await simpleListHarness.getItemsWithSubheadersAndDividers({
+        item: false,
+        subheader: false,
+      });
+      expect(await parallel(() => items.map(i => i.getText()))).toEqual([
+        'Item 1',
+        'Item 2',
+        'Item 3',
+      ]);
+      expect(await parallel(() => subheaders.map(s => s.getText()))).toEqual([
+        'Section 1',
+        'Section 2',
+      ]);
+      expect(await parallel(() => dividers.map(d => d.getOrientation()))).toEqual([
+        'horizontal',
+        'horizontal',
+      ]);
     });
 
     it('should get all items, subheaders, and dividers with filters', async () => {
       const itemsSubheadersAndDividers = await simpleListHarness.getItemsWithSubheadersAndDividers({
         item: {text: /1/},
-        subheader: {text: /2/}
+        subheader: {text: /2/},
       });
       expect(itemsSubheadersAndDividers.length).toBe(4);
       expect(itemsSubheadersAndDividers[0] instanceof listItemHarnessBase).toBe(true);
-      expect(await (itemsSubheadersAndDividers[0] as MatListItemHarnessBase).getText())
-          .toBe('Item 1');
+      expect(await (itemsSubheadersAndDividers[0] as MatListItemHarnessBase).getText()).toBe(
+        'Item 1',
+      );
       expect(itemsSubheadersAndDividers[1] instanceof dividerHarness).toBe(true);
       expect(itemsSubheadersAndDividers[2] instanceof subheaderHarness).toBe(true);
-      expect(await (itemsSubheadersAndDividers[2] as MatSubheaderHarness).getText())
-          .toBe('Section 2');
+      expect(await (itemsSubheadersAndDividers[2] as MatSubheaderHarness).getText()).toBe(
+        'Section 2',
+      );
       expect(itemsSubheadersAndDividers[3] instanceof dividerHarness).toBe(true);
     });
 
@@ -199,31 +226,43 @@ function runBaseListFunctionalityTests<
   });
 }
 
-
 /**
  * Function that can be used to run the shared tests for either the non-MDC or MDC based list
  * harness.
  */
 export function runHarnessTests(
-    listModule: typeof MatListModule,
-    listHarness: typeof MatListHarness,
-    actionListHarness: typeof MatActionListHarness,
-    navListHarness: typeof MatNavListHarness,
-    selectionListHarness: typeof MatSelectionListHarness,
-    listItemHarnessBase: typeof MatListItemHarnessBase,
-    subheaderHarness: typeof MatSubheaderHarness,
-    dividerHarness: typeof MatDividerHarness,
-    selectors: {content: string}) {
+  listModule: typeof MatListModule,
+  listHarness: typeof MatListHarness,
+  actionListHarness: typeof MatActionListHarness,
+  navListHarness: typeof MatNavListHarness,
+  selectionListHarness: typeof MatSelectionListHarness,
+  listItemHarnessBase: typeof MatListItemHarnessBase,
+  subheaderHarness: typeof MatSubheaderHarness,
+  dividerHarness: typeof MatDividerHarness,
+  selectors: {content: string},
+) {
   describe('MatListHarness', () => {
     runBaseListFunctionalityTests<MatListHarness, MatListItemHarness>(
-        ListHarnessTest, listModule, listHarness, listItemHarnessBase, subheaderHarness,
-        dividerHarness, selectors);
+      ListHarnessTest,
+      listModule,
+      listHarness,
+      listItemHarnessBase,
+      subheaderHarness,
+      dividerHarness,
+      selectors,
+    );
   });
 
   describe('MatActionListHarness', () => {
     runBaseListFunctionalityTests<MatActionListHarness, MatActionListItemHarness>(
-        ActionListHarnessTest, listModule, actionListHarness, listItemHarnessBase, subheaderHarness,
-        dividerHarness, selectors);
+      ActionListHarnessTest,
+      listModule,
+      actionListHarness,
+      listItemHarnessBase,
+      subheaderHarness,
+      dividerHarness,
+      selectors,
+    );
 
     describe('additional functionality', () => {
       let harness: MatActionListHarness;
@@ -239,7 +278,8 @@ export function runHarnessTests(
         fixture.detectChanges();
         const loader = TestbedHarnessEnvironment.loader(fixture);
         harness = await loader.getHarness(
-            actionListHarness.with({selector: '.test-base-list-functionality'}));
+          actionListHarness.with({selector: '.test-base-list-functionality'}),
+        );
       });
 
       it('should click items', async () => {
@@ -257,8 +297,14 @@ export function runHarnessTests(
 
   describe('MatNavListHarness', () => {
     runBaseListFunctionalityTests<MatNavListHarness, MatNavListItemHarness>(
-        NavListHarnessTest, listModule, navListHarness, listItemHarnessBase, subheaderHarness,
-        dividerHarness, selectors);
+      NavListHarnessTest,
+      listModule,
+      navListHarness,
+      listItemHarnessBase,
+      subheaderHarness,
+      dividerHarness,
+      selectors,
+    );
 
     describe('additional functionality', () => {
       let harness: MatNavListHarness;
@@ -274,7 +320,8 @@ export function runHarnessTests(
         fixture.detectChanges();
         const loader = TestbedHarnessEnvironment.loader(fixture);
         harness = await loader.getHarness(
-            navListHarness.with({selector: '.test-base-list-functionality'}));
+          navListHarness.with({selector: '.test-base-list-functionality'}),
+        );
       });
 
       it('should click items', async () => {
@@ -303,8 +350,14 @@ export function runHarnessTests(
 
   describe('MatSelectionListHarness', () => {
     runBaseListFunctionalityTests<MatSelectionListHarness, MatListOptionHarness>(
-        SelectionListHarnessTest, listModule, selectionListHarness, listItemHarnessBase,
-        subheaderHarness, dividerHarness, selectors);
+      SelectionListHarnessTest,
+      listModule,
+      selectionListHarness,
+      listItemHarnessBase,
+      subheaderHarness,
+      dividerHarness,
+      selectors,
+    );
 
     describe('additional functionality', () => {
       let harness: MatSelectionListHarness;
@@ -321,9 +374,11 @@ export function runHarnessTests(
         fixture.detectChanges();
         const loader = TestbedHarnessEnvironment.loader(fixture);
         harness = await loader.getHarness(
-            selectionListHarness.with({selector: '.test-base-list-functionality'}));
-        emptyHarness =
-            await loader.getHarness(selectionListHarness.with({selector: '.test-empty'}));
+          selectionListHarness.with({selector: '.test-base-list-functionality'}),
+        );
+        emptyHarness = await loader.getHarness(
+          selectionListHarness.with({selector: '.test-empty'}),
+        );
       });
 
       it('should check disabled state of list', async () => {
@@ -342,8 +397,10 @@ export function runHarnessTests(
         expect((await harness.getItems({selected: true})).length).toBe(0);
         await harness.selectItems({text: /1/}, {text: /3/});
         const selected = await harness.getItems({selected: true});
-        expect(await parallel(() => selected.map(item => item.getText())))
-            .toEqual(['Item 1', 'Item 3']);
+        expect(await parallel(() => selected.map(item => item.getText()))).toEqual([
+          'Item 1',
+          'Item 3',
+        ]);
       });
 
       it('should uncheck multiple options', async () => {
@@ -423,7 +480,7 @@ export function runHarnessTests(
       </mat-list>
 
       <mat-list class="test-empty"></mat-list>
-  `
+  `,
 })
 class ListHarnessTest {}
 
@@ -447,7 +504,7 @@ class ListHarnessTest {}
       </mat-action-list>
 
       <mat-action-list class="test-empty"></mat-action-list>
-  `
+  `,
 })
 class ActionListHarnessTest {
   lastClicked: string;
@@ -473,7 +530,7 @@ class ActionListHarnessTest {
       </mat-nav-list>
 
       <mat-nav-list class="test-empty"></mat-nav-list>
-  `
+  `,
 })
 class NavListHarnessTest {
   lastClicked: string;
@@ -504,7 +561,7 @@ class NavListHarnessTest {
     </mat-selection-list>
 
     <mat-selection-list class="test-empty" disabled></mat-selection-list>
-  `
+  `,
 })
 class SelectionListHarnessTest {
   disableItem3 = false;

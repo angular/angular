@@ -20,5 +20,4 @@ import {MdcSlideToggleDemo} from './mdc-slide-toggle-demo';
   ],
   declarations: [MdcSlideToggleDemo],
 })
-export class MdcSlideToggleDemoModule {
-}
+export class MdcSlideToggleDemoModule {}

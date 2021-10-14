@@ -1,10 +1,9 @@
 import {UniqueSelectionDispatcher} from './unique-selection-dispatcher';
 
-
 describe('Unique selection dispatcher', () => {
   let dispatcher: UniqueSelectionDispatcher;
 
-  beforeEach(() => dispatcher = new UniqueSelectionDispatcher());
+  beforeEach(() => (dispatcher = new UniqueSelectionDispatcher()));
 
   it('should notify registered listeners', () => {
     const spy = jasmine.createSpy('listen handler');

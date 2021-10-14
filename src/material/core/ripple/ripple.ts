@@ -45,19 +45,19 @@ export interface RippleGlobalOptions {
 }
 
 /** Injection token that can be used to specify the global ripple options. */
-export const MAT_RIPPLE_GLOBAL_OPTIONS =
-    new InjectionToken<RippleGlobalOptions>('mat-ripple-global-options');
+export const MAT_RIPPLE_GLOBAL_OPTIONS = new InjectionToken<RippleGlobalOptions>(
+  'mat-ripple-global-options',
+);
 
 @Directive({
   selector: '[mat-ripple], [matRipple]',
   exportAs: 'matRipple',
   host: {
     'class': 'mat-ripple',
-    '[class.mat-ripple-unbounded]': 'unbounded'
-  }
+    '[class.mat-ripple-unbounded]': 'unbounded',
+  },
 })
 export class MatRipple implements OnInit, OnDestroy, RippleTarget {
-
   /** Custom color for all ripples. */
   @Input('matRippleColor') color: string;
 
@@ -89,7 +89,9 @@ export class MatRipple implements OnInit, OnDestroy, RippleTarget {
    * by using the `launch()` method.
    */
   @Input('matRippleDisabled')
-  get disabled() { return this._disabled; }
+  get disabled() {
+    return this._disabled;
+  }
   set disabled(value: boolean) {
     if (value) {
       this.fadeOutAllNonPersistent();
@@ -104,7 +106,9 @@ export class MatRipple implements OnInit, OnDestroy, RippleTarget {
    * Defaults to the directive's host element.
    */
   @Input('matRippleTrigger')
-  get trigger() { return this._trigger || this._elementRef.nativeElement; }
+  get trigger() {
+    return this._trigger || this._elementRef.nativeElement;
+  }
   set trigger(trigger: HTMLElement) {
     this._trigger = trigger;
     this._setupTriggerEventsIfEnabled();
@@ -120,12 +124,13 @@ export class MatRipple implements OnInit, OnDestroy, RippleTarget {
   /** Whether ripple directive is initialized and the input bindings are set. */
   private _isInitialized: boolean = false;
 
-  constructor(private _elementRef: ElementRef<HTMLElement>,
-              ngZone: NgZone,
-              platform: Platform,
-              @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS) globalOptions?: RippleGlobalOptions,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) private _animationMode?: string) {
-
+  constructor(
+    private _elementRef: ElementRef<HTMLElement>,
+    ngZone: NgZone,
+    platform: Platform,
+    @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS) globalOptions?: RippleGlobalOptions,
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) private _animationMode?: string,
+  ) {
     this._globalOptions = globalOptions || {};
     this._rippleRenderer = new RippleRenderer(this, ngZone, _elementRef, platform);
   }
@@ -161,7 +166,7 @@ export class MatRipple implements OnInit, OnDestroy, RippleTarget {
       animation: {
         ...this._globalOptions.animation,
         ...(this._animationMode === 'NoopAnimations' ? {enterDuration: 0, exitDuration: 0} : {}),
-        ...this.animation
+        ...this.animation,
       },
       terminateOnPointerUp: this._globalOptions.terminateOnPointerUp,
     };
@@ -207,4 +212,3 @@ export class MatRipple implements OnInit, OnDestroy, RippleTarget {
     }
   }
 }
-

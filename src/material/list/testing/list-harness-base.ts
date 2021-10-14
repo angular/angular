@@ -10,7 +10,7 @@ import {
   ComponentHarness,
   ComponentHarnessConstructor,
   HarnessPredicate,
-  parallel
+  parallel,
 } from '@angular/cdk/testing';
 import {DividerHarnessFilters, MatDividerHarness} from '@angular/material/divider/testing';
 import {BaseListItemHarnessFilters, SubheaderHarnessFilters} from './list-harness-filters';
@@ -32,12 +32,11 @@ export interface ListSection<I> {
  * @template F The filter type used filter list item harness of type `C`.
  * @docs-private
  */
-export abstract class MatListHarnessBase
-    <
-      T extends (ComponentHarnessConstructor<C> & {with: (options?: F) => HarnessPredicate<C>}),
-      C extends ComponentHarness,
-      F extends BaseListItemHarnessFilters
-    > extends ComponentHarness {
+export abstract class MatListHarnessBase<
+  T extends ComponentHarnessConstructor<C> & {with: (options?: F) => HarnessPredicate<C>},
+  C extends ComponentHarness,
+  F extends BaseListItemHarnessFilters,
+> extends ComponentHarness {
   protected _itemHarness: T;
 
   /**
@@ -56,11 +55,13 @@ export abstract class MatListHarnessBase
    * @return The list of items matching the given filters, grouped into sections by subheader.
    */
   async getItemsGroupedBySubheader(filters?: F): Promise<ListSection<C>[]> {
-    type Section = {items: C[], heading?: Promise<string>};
+    type Section = {items: C[]; heading?: Promise<string>};
     const listSections: Section[] = [];
     let currentSection: Section = {items: []};
-    const itemsAndSubheaders =
-        await this.getItemsWithSubheadersAndDividers({item: filters, divider: false});
+    const itemsAndSubheaders = await this.getItemsWithSubheadersAndDividers({
+      item: filters,
+      divider: false,
+    });
     for (const itemOrSubheader of itemsAndSubheaders) {
       if (itemOrSubheader instanceof MatSubheaderHarness) {
         if (currentSection.heading !== undefined || currentSection.items.length) {
@@ -71,14 +72,18 @@ export abstract class MatListHarnessBase
         currentSection.items.push(itemOrSubheader);
       }
     }
-    if (currentSection.heading !== undefined || currentSection.items.length ||
-        !listSections.length) {
+    if (
+      currentSection.heading !== undefined ||
+      currentSection.items.length ||
+      !listSections.length
+    ) {
       listSections.push(currentSection);
     }
 
     // Concurrently wait for all sections to resolve their heading if present.
-    return parallel(() => listSections.map(async (s) =>
-      ({items: s.items, heading: await s.heading})));
+    return parallel(() =>
+      listSections.map(async s => ({items: s.items, heading: await s.heading})),
+    );
   }
 
   /**
@@ -89,8 +94,10 @@ export abstract class MatListHarnessBase
    */
   async getItemsGroupedByDividers(filters?: F): Promise<C[][]> {
     const listSections: C[][] = [[]];
-    const itemsAndDividers =
-        await this.getItemsWithSubheadersAndDividers({item: filters, subheader: false});
+    const itemsAndDividers = await this.getItemsWithSubheadersAndDividers({
+      item: filters,
+      subheader: false,
+    });
     for (const itemOrDivider of itemsAndDividers) {
       if (itemOrDivider instanceof MatDividerHarness) {
         listSections.push([]);
@@ -112,53 +119,55 @@ export abstract class MatListHarnessBase
    *     given filters.
    */
   getItemsWithSubheadersAndDividers(filters: {
-    item: false,
-    subheader: false,
-    divider: false
+    item: false;
+    subheader: false;
+    divider: false;
   }): Promise<[]>;
   getItemsWithSubheadersAndDividers(filters: {
-    item?: F | false,
-    subheader: false,
-    divider: false
+    item?: F | false;
+    subheader: false;
+    divider: false;
   }): Promise<C[]>;
   getItemsWithSubheadersAndDividers(filters: {
-    item: false,
-    subheader?: SubheaderHarnessFilters | false,
-    divider: false
+    item: false;
+    subheader?: SubheaderHarnessFilters | false;
+    divider: false;
   }): Promise<MatSubheaderHarness[]>;
   getItemsWithSubheadersAndDividers(filters: {
-    item: false,
-    subheader: false,
-    divider?: DividerHarnessFilters | false
+    item: false;
+    subheader: false;
+    divider?: DividerHarnessFilters | false;
   }): Promise<MatDividerHarness[]>;
   getItemsWithSubheadersAndDividers(filters: {
-    item?: F | false,
-    subheader?: SubheaderHarnessFilters | false,
-    divider: false
+    item?: F | false;
+    subheader?: SubheaderHarnessFilters | false;
+    divider: false;
   }): Promise<(C | MatSubheaderHarness)[]>;
   getItemsWithSubheadersAndDividers(filters: {
-    item?: F | false,
-    subheader: false,
-    divider?: false | DividerHarnessFilters
+    item?: F | false;
+    subheader: false;
+    divider?: false | DividerHarnessFilters;
   }): Promise<(C | MatDividerHarness)[]>;
   getItemsWithSubheadersAndDividers(filters: {
-    item: false,
-    subheader?: false | SubheaderHarnessFilters,
-    divider?: false | DividerHarnessFilters
+    item: false;
+    subheader?: false | SubheaderHarnessFilters;
+    divider?: false | DividerHarnessFilters;
   }): Promise<(MatSubheaderHarness | MatDividerHarness)[]>;
   getItemsWithSubheadersAndDividers(filters?: {
-    item?: F | false,
-    subheader?: SubheaderHarnessFilters | false,
-    divider?: DividerHarnessFilters | false
+    item?: F | false;
+    subheader?: SubheaderHarnessFilters | false;
+    divider?: DividerHarnessFilters | false;
   }): Promise<(C | MatSubheaderHarness | MatDividerHarness)[]>;
-  async getItemsWithSubheadersAndDividers(filters: {
-    item?: F | false,
-    subheader?: SubheaderHarnessFilters | false,
-    divider?: DividerHarnessFilters | false
-  } = {}): Promise<(C | MatSubheaderHarness | MatDividerHarness)[]> {
+  async getItemsWithSubheadersAndDividers(
+    filters: {
+      item?: F | false;
+      subheader?: SubheaderHarnessFilters | false;
+      divider?: DividerHarnessFilters | false;
+    } = {},
+  ): Promise<(C | MatSubheaderHarness | MatDividerHarness)[]> {
     const query = [];
     if (filters.item !== false) {
-      query.push(this._itemHarness.with(filters.item || {} as F));
+      query.push(this._itemHarness.with(filters.item || ({} as F)));
     }
     if (filters.subheader !== false) {
       query.push(MatSubheaderHarness.with(filters.subheader));

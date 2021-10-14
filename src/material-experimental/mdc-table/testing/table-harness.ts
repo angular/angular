@@ -8,17 +8,16 @@
 
 import {HarnessPredicate} from '@angular/cdk/testing';
 import {TableHarnessFilters, _MatTableHarnessBase} from '@angular/material/table/testing';
-import {
-  MatRowHarness,
-  MatHeaderRowHarness,
-  MatFooterRowHarness,
-} from './row-harness';
+import {MatRowHarness, MatHeaderRowHarness, MatFooterRowHarness} from './row-harness';
 
 /** Harness for interacting with an MDC-based mat-table in tests. */
 export class MatTableHarness extends _MatTableHarnessBase<
-  typeof MatHeaderRowHarness, MatHeaderRowHarness,
-  typeof MatRowHarness, MatRowHarness,
-  typeof MatFooterRowHarness, MatFooterRowHarness
+  typeof MatHeaderRowHarness,
+  MatHeaderRowHarness,
+  typeof MatRowHarness,
+  MatRowHarness,
+  typeof MatFooterRowHarness,
+  MatFooterRowHarness
 > {
   /** The selector for the host element of a `MatTableHarness` instance. */
   static hostSelector = '.mat-mdc-table';

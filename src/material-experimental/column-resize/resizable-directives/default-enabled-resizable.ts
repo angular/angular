@@ -45,21 +45,22 @@ export class MatDefaultResizable extends AbstractMatResizable {
   protected readonly document: Document;
 
   constructor(
-      protected readonly columnDef: CdkColumnDef,
-      protected readonly columnResize: ColumnResize,
-      protected readonly directionality: Directionality,
-      @Inject(DOCUMENT) document: any,
-      protected readonly elementRef: ElementRef,
-      protected readonly eventDispatcher: HeaderRowEventDispatcher,
-      protected readonly injector: Injector,
-      protected readonly ngZone: NgZone,
-      protected readonly overlay: Overlay,
-      protected readonly resizeNotifier: ColumnResizeNotifierSource,
-      protected readonly resizeStrategy: ResizeStrategy,
-      @Inject(_COALESCED_STYLE_SCHEDULER)
-          protected readonly styleScheduler: _CoalescedStyleScheduler,
-      protected readonly viewContainerRef: ViewContainerRef,
-      protected readonly changeDetectorRef: ChangeDetectorRef) {
+    protected readonly columnDef: CdkColumnDef,
+    protected readonly columnResize: ColumnResize,
+    protected readonly directionality: Directionality,
+    @Inject(DOCUMENT) document: any,
+    protected readonly elementRef: ElementRef,
+    protected readonly eventDispatcher: HeaderRowEventDispatcher,
+    protected readonly injector: Injector,
+    protected readonly ngZone: NgZone,
+    protected readonly overlay: Overlay,
+    protected readonly resizeNotifier: ColumnResizeNotifierSource,
+    protected readonly resizeStrategy: ResizeStrategy,
+    @Inject(_COALESCED_STYLE_SCHEDULER)
+    protected readonly styleScheduler: _CoalescedStyleScheduler,
+    protected readonly viewContainerRef: ViewContainerRef,
+    protected readonly changeDetectorRef: ChangeDetectorRef,
+  ) {
     super();
     this.document = document;
   }

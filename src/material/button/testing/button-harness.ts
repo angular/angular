@@ -10,7 +10,6 @@ import {ContentContainerComponentHarness, HarnessPredicate} from '@angular/cdk/t
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ButtonHarnessFilters} from './button-harness-filters';
 
-
 /** Harness for interacting with a standard mat-button in tests. */
 export class MatButtonHarness extends ContentContainerComponentHarness {
   // TODO(jelbourn) use a single class, like `.mat-button-base`
@@ -25,9 +24,11 @@ export class MatButtonHarness extends ContentContainerComponentHarness {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: ButtonHarnessFilters = {}): HarnessPredicate<MatButtonHarness> {
-    return new HarnessPredicate(MatButtonHarness, options)
-        .addOption('text', options.text,
-            (harness, text) => HarnessPredicate.stringMatches(harness.getText(), text));
+    return new HarnessPredicate(MatButtonHarness, options).addOption(
+      'text',
+      options.text,
+      (harness, text) => HarnessPredicate.stringMatches(harness.getText(), text),
+    );
   }
 
   /**

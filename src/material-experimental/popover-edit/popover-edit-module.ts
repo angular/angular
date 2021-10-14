@@ -13,19 +13,12 @@ import {
   MatPopoverEdit,
   MatPopoverEditTabOut,
   MatRowHoverContent,
-  MatEditOpen
+  MatEditOpen,
 } from './table-directives';
-import {
-  MatEditLens,
-  MatEditRevert,
-  MatEditClose
-} from './lens-directives';
+import {MatEditLens, MatEditRevert, MatEditClose} from './lens-directives';
 
 @NgModule({
-  imports: [
-    CdkPopoverEditModule,
-    MatCommonModule,
-  ],
+  imports: [CdkPopoverEditModule, MatCommonModule],
   exports: [
     MatPopoverEdit,
     MatPopoverEditTabOut,
@@ -43,7 +36,7 @@ import {
     MatEditLens,
     MatEditRevert,
     MatEditClose,
-    MatEditOpen
+    MatEditOpen,
   ],
 })
-export class MatPopoverEditModule { }
+export class MatPopoverEditModule {}

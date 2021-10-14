@@ -12,7 +12,6 @@ import {combineLatest, concat, Observable, Observer, Subject} from 'rxjs';
 import {debounceTime, map, skip, startWith, take, takeUntil} from 'rxjs/operators';
 import {MediaMatcher} from './media-matcher';
 
-
 /** The current state of a layout breakpoint. */
 export interface BreakpointState {
   /** Whether the breakpoint is currently matching. */
@@ -79,18 +78,21 @@ export class BreakpointObserver implements OnDestroy {
     // Emit the first state immediately, and then debounce the subsequent emissions.
     stateObservable = concat(
       stateObservable.pipe(take(1)),
-      stateObservable.pipe(skip(1), debounceTime(0)));
-    return stateObservable.pipe(map(breakpointStates => {
-      const response: BreakpointState = {
-        matches: false,
-        breakpoints: {},
-      };
-      breakpointStates.forEach(({matches, query}) => {
-        response.matches = response.matches || matches;
-        response.breakpoints[query] = matches;
-      });
-      return response;
-    }));
+      stateObservable.pipe(skip(1), debounceTime(0)),
+    );
+    return stateObservable.pipe(
+      map(breakpointStates => {
+        const response: BreakpointState = {
+          matches: false,
+          breakpoints: {},
+        };
+        breakpointStates.forEach(({matches, query}) => {
+          response.matches = response.matches || matches;
+          response.breakpoints[query] = matches;
+        });
+        return response;
+      }),
+    );
   }
 
   /** Registers a specific query to be listened for. */
@@ -118,7 +120,7 @@ export class BreakpointObserver implements OnDestroy {
     }).pipe(
       startWith(mql),
       map(({matches}) => ({query, matches})),
-      takeUntil(this._destroySubject)
+      takeUntil(this._destroySubject),
     );
 
     // Add the MediaQueryList to the set of queries.
@@ -133,7 +135,8 @@ export class BreakpointObserver implements OnDestroy {
  * separated.
  */
 function splitQueries(queries: readonly string[]): readonly string[] {
-  return queries.map(query => query.split(','))
-                .reduce((a1, a2) => a1.concat(a2))
-                .map(query => query.trim());
+  return queries
+    .map(query => query.split(','))
+    .reduce((a1, a2) => a1.concat(a2))
+    .map(query => query.trim());
 }

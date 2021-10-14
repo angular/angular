@@ -30,14 +30,20 @@ export type ThemePalette = 'primary' | 'accent' | 'warn' | undefined;
 
 /** Mixin to augment a directive with a `color` property. */
 export function mixinColor<T extends AbstractConstructor<HasElementRef>>(
-    base: T, defaultColor?: ThemePalette): CanColorCtor & T;
+  base: T,
+  defaultColor?: ThemePalette,
+): CanColorCtor & T;
 export function mixinColor<T extends Constructor<HasElementRef>>(
-    base: T, defaultColor?: ThemePalette): CanColorCtor & T {
+  base: T,
+  defaultColor?: ThemePalette,
+): CanColorCtor & T {
   return class extends base {
     private _color: ThemePalette;
     defaultColor = defaultColor;
 
-    get color(): ThemePalette { return this._color; }
+    get color(): ThemePalette {
+      return this._color;
+    }
     set color(value: ThemePalette) {
       const colorPalette = value || this.defaultColor;
 
@@ -61,4 +67,3 @@ export function mixinColor<T extends Constructor<HasElementRef>>(
     }
   };
 }
-

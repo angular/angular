@@ -30,5 +30,4 @@ import {MdcTooltipDemo} from './mdc-tooltip-demo';
   ],
   declarations: [MdcTooltipDemo],
 })
-export class MdcTooltipDemoModule {
-}
+export class MdcTooltipDemoModule {}

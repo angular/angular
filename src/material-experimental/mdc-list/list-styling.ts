@@ -21,11 +21,10 @@ import {LIST_OPTION, ListOption} from './list-option-types';
   host: {
     '[class.mdc-list-item__start]': '_isAlignedAtStart()',
     '[class.mdc-list-item__end]': '!_isAlignedAtStart()',
-  }
+  },
 })
 export class MatListGraphicAlignmentStyler {
-  constructor(
-      @Optional() @Inject(LIST_OPTION) public _listOption: ListOption) {}
+  constructor(@Optional() @Inject(LIST_OPTION) public _listOption: ListOption) {}
 
   _isAlignedAtStart() {
     // By default, in all list items the graphic is aligned at start. In list options,
@@ -40,7 +39,7 @@ export class MatListGraphicAlignmentStyler {
  */
 @Directive({
   selector: '[mat-list-avatar], [matListAvatar]',
-  host: {'class': 'mat-mdc-list-avatar'}
+  host: {'class': 'mat-mdc-list-avatar'},
 })
 export class MatListAvatarCssMatStyler {}
 
@@ -50,7 +49,7 @@ export class MatListAvatarCssMatStyler {}
  */
 @Directive({
   selector: '[mat-list-icon], [matListIcon]',
-  host: {'class': 'mat-mdc-list-icon'}
+  host: {'class': 'mat-mdc-list-icon'},
 })
 export class MatListIconCssMatStyler {}
 
@@ -62,6 +61,6 @@ export class MatListIconCssMatStyler {}
   selector: '[mat-subheader], [matSubheader]',
   // TODO(mmalerba): MDC's subheader font looks identical to the list item font, figure out why and
   //  make a change in one of the repos to visually distinguish.
-  host: {'class': 'mat-mdc-subheader mdc-list-group__subheader'}
+  host: {'class': 'mat-mdc-subheader mdc-list-group__subheader'},
 })
 export class MatListSubheaderCssMatStyler {}

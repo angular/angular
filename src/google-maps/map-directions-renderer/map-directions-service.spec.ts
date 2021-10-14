@@ -3,7 +3,7 @@ import {MapDirectionsResponse, MapDirectionsService} from './map-directions-serv
 import {GoogleMapsModule} from '../google-maps-module';
 import {
   createDirectionsServiceConstructorSpy,
-  createDirectionsServiceSpy
+  createDirectionsServiceSpy,
 } from '../testing/fake-google-map-utils';
 
 describe('MapDirectionsService', () => {
@@ -18,7 +18,7 @@ describe('MapDirectionsService', () => {
 
     directionsServiceSpy = createDirectionsServiceSpy();
     directionsServiceConstructorSpy =
-        createDirectionsServiceConstructorSpy(directionsServiceSpy).and.callThrough();
+      createDirectionsServiceConstructorSpy(directionsServiceSpy).and.callThrough();
     mapDirectionsService = TestBed.inject(MapDirectionsService);
   });
 
@@ -31,11 +31,13 @@ describe('MapDirectionsService', () => {
   });
 
   it('initializes the Google Maps Directions Service when `route` is called', () => {
-    mapDirectionsService.route({
-      origin: 'home',
-      destination: 'work',
-      travelMode: 'BICYCLING' as google.maps.TravelMode
-    }).subscribe();
+    mapDirectionsService
+      .route({
+        origin: 'home',
+        destination: 'work',
+        travelMode: 'BICYCLING' as google.maps.TravelMode,
+      })
+      .subscribe();
 
     expect(directionsServiceConstructorSpy).toHaveBeenCalled();
   });
@@ -48,12 +50,14 @@ describe('MapDirectionsService', () => {
       return Promise.resolve(result);
     });
 
-    mapDirectionsService.route({
-      origin: 'home',
-      destination: 'work',
-      travelMode: 'BICYCLING' as google.maps.TravelMode
-    }).subscribe(response => {
-      expect(response).toEqual({result, status} as MapDirectionsResponse);
-    });
+    mapDirectionsService
+      .route({
+        origin: 'home',
+        destination: 'work',
+        travelMode: 'BICYCLING' as google.maps.TravelMode,
+      })
+      .subscribe(response => {
+        expect(response).toEqual({result, status} as MapDirectionsResponse);
+      });
   });
 });

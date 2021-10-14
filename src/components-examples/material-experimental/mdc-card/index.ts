@@ -3,22 +3,14 @@ import {MatButtonModule} from '@angular/material-experimental/mdc-button';
 import {MatCardModule} from '@angular/material-experimental/mdc-card';
 import {MdcCardFancyExample} from './mdc-card-fancy/mdc-card-fancy-example';
 
-export {
-  MdcCardFancyExample,
-};
+export {MdcCardFancyExample};
 
-const EXAMPLES = [
-  MdcCardFancyExample,
-];
+const EXAMPLES = [MdcCardFancyExample];
 
 @NgModule({
-  imports: [
-    MatButtonModule,
-    MatCardModule,
-  ],
+  imports: [MatButtonModule, MatCardModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
   entryComponents: EXAMPLES,
 })
-export class MdcCardExamplesModule {
-}
+export class MdcCardExamplesModule {}

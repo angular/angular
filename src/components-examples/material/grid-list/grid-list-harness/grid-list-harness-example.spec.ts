@@ -15,14 +15,14 @@ describe('GridListHarnessExample', () => {
 
   beforeAll(() => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
-      teardown: {destroyAfterEach: true}
+      teardown: {destroyAfterEach: true},
     });
   });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MatGridListModule],
-      declarations: [GridListHarnessExample]
+      declarations: [GridListHarnessExample],
     }).compileComponents();
     fixture = TestBed.createComponent(GridListHarnessExample);
     fixture.detectChanges();

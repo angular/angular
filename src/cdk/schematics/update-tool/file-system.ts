@@ -24,7 +24,7 @@ import {UpdateRecorder} from './update-recorder';
  *   1. The update-tool cannot have a dependency on the Angular devkit as that one
  *      is not synced into g3. We want to be able to run migrations in g3 if needed.
  */
-export type WorkspacePath = string&{
+export type WorkspacePath = string & {
   // Brand signature matches the devkit paths so that existing path
   // utilities from the Angular devkit can be conveniently used.
   __PRIVATE_DEVKIT_PATH: void;
@@ -48,7 +48,7 @@ export abstract class FileSystem {
   /** Checks whether the given directory exists. */
   abstract directoryExists(path: WorkspacePath): boolean;
   /** Gets the contents of the given file. */
-  abstract read(filePath: WorkspacePath): string|null;
+  abstract read(filePath: WorkspacePath): string | null;
   /** Reads the given directory to retrieve children. */
   abstract readDirectory(dirPath: WorkspacePath): DirectoryEntry;
   /**

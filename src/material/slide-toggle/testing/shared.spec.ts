@@ -9,8 +9,9 @@ import {MatSlideToggleHarness} from '@angular/material/slide-toggle/testing/slid
 
 /** Shared tests to run on both the original and MDC-based slide-toggles. */
 export function runHarnessTests(
-    slideToggleModule: typeof MatSlideToggleModule,
-    slideToggleHarness: typeof MatSlideToggleHarness) {
+  slideToggleModule: typeof MatSlideToggleModule,
+  slideToggleHarness: typeof MatSlideToggleHarness,
+) {
   let platform: Platform;
   let fixture: ComponentFixture<SlideToggleHarnessTest>;
   let loader: HarnessLoader;
@@ -46,7 +47,8 @@ export function runHarnessTests(
 
   it('should load slide-toggle with name', async () => {
     const slideToggles = await loader.getAllHarnesses(
-        slideToggleHarness.with({name: 'first-name'}));
+      slideToggleHarness.with({name: 'first-name'}),
+    );
     expect(slideToggles.length).toBe(1);
     expect(await slideToggles[0].getLabelText()).toBe('First');
   });
@@ -72,12 +74,15 @@ export function runHarnessTests(
   it('should get valid state', async () => {
     const [requiredToggle, optionalToggle] = await loader.getAllHarnesses(slideToggleHarness);
     expect(await optionalToggle.isValid())
-      .withContext('Expected optional toggle to be valid').toBe(true);
+      .withContext('Expected optional toggle to be valid')
+      .toBe(true);
     expect(await requiredToggle.isValid())
-      .withContext('Expected required checked toggle to be valid').toBe(true);
+      .withContext('Expected required checked toggle to be valid')
+      .toBe(true);
     await requiredToggle.uncheck();
     expect(await requiredToggle.isValid())
-      .withContext('Expected required unchecked toggle to be invalid').toBe(false);
+      .withContext('Expected required unchecked toggle to be invalid')
+      .toBe(false);
   });
 
   it('should get name', async () => {
@@ -171,10 +176,9 @@ export function runHarnessTests(
         Second
       </mat-slide-toggle>
       <span id="second-label">Second slide-toggle</span>
-  `
+  `,
 })
 class SlideToggleHarnessTest {
   ctrl = new FormControl(true);
   disabled = true;
 }
-

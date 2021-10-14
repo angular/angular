@@ -31,7 +31,8 @@ export class MatSnackBarHarness extends BaseMatSnackBarHarness {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static override with(
-      options: SnackBarHarnessFilters = {}): HarnessPredicate<BaseMatSnackBarHarness> {
+    options: SnackBarHarnessFilters = {},
+  ): HarnessPredicate<BaseMatSnackBarHarness> {
     return new HarnessPredicate<BaseMatSnackBarHarness>(MatSnackBarHarness, options);
   }
 

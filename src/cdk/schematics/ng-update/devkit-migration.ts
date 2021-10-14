@@ -12,17 +12,16 @@ import {Constructor, Migration, PostMigrationAction} from '../update-tool/migrat
 
 export type DevkitContext = {
   /** Devkit tree for the current migrations. Can be used to insert/remove files. */
-  tree: Tree,
+  tree: Tree;
   /** Name of the project the migrations run against. */
   projectName: string;
   /** Workspace project the migrations run against. */
-  project: ProjectDefinition,
+  project: ProjectDefinition;
   /** Whether the migrations run for a test target. */
-  isTestTarget: boolean,
+  isTestTarget: boolean;
 };
 
 export abstract class DevkitMigration<Data> extends Migration<Data, DevkitContext> {
-
   /** Prints an informative message with context on the current target. */
   protected printInfo(text: string) {
     const targetName = this.context.isTestTarget ? 'test' : 'build';
@@ -39,4 +38,4 @@ export abstract class DevkitMigration<Data> extends Migration<Data, DevkitContex
 }
 
 export type DevkitMigrationCtor<Data> = Constructor<DevkitMigration<Data>> &
-    {[m in keyof typeof DevkitMigration]: (typeof DevkitMigration)[m]};
+  {[m in keyof typeof DevkitMigration]: typeof DevkitMigration[m]};

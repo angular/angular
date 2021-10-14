@@ -21,13 +21,18 @@ export class MatChipOptionHarness extends MatChipHarness {
   // Note(mmalerba): generics are used as a workaround for lack of polymorphic `this` in static
   // methods. See https://github.com/microsoft/TypeScript/issues/5863
   static override with<T extends typeof MatChipHarness>(
-      this: T, options: ChipOptionHarnessFilters = {}): HarnessPredicate<InstanceType<T>> {
+    this: T,
+    options: ChipOptionHarnessFilters = {},
+  ): HarnessPredicate<InstanceType<T>> {
     return new HarnessPredicate(MatChipOptionHarness, options)
-      .addOption('text', options.text,
-          (harness, label) => HarnessPredicate.stringMatches(harness.getText(), label))
-      .addOption('selected', options.selected,
-          async (harness, selected) => (await harness.isSelected()) === selected) as
-          unknown as HarnessPredicate<InstanceType<T>>;
+      .addOption('text', options.text, (harness, label) =>
+        HarnessPredicate.stringMatches(harness.getText(), label),
+      )
+      .addOption(
+        'selected',
+        options.selected,
+        async (harness, selected) => (await harness.isSelected()) === selected,
+      ) as unknown as HarnessPredicate<InstanceType<T>>;
   }
 
   /** Whether the chip is selected. */

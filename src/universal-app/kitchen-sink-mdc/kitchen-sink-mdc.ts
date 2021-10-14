@@ -22,7 +22,7 @@ import {MatSelectModule} from '@angular/material-experimental/mdc-select';
 import {MatPaginatorModule} from '@angular/material-experimental/mdc-paginator';
 
 @Component({
-  template: `<button>Do the thing</button>`
+  template: `<button>Do the thing</button>`,
 })
 export class TestEntryComponent {}
 
@@ -63,13 +63,15 @@ export class KitchenSinkMdc {
   declarations: [KitchenSinkMdc, TestEntryComponent],
   exports: [KitchenSinkMdc, TestEntryComponent],
   entryComponents: [TestEntryComponent],
-  providers: [{
-    // If an error is thrown asynchronously during server-side rendering it'll get logged to stderr,
-    // but it won't cause the build to fail. We still want to catch these errors so we provide an
-    // `ErrorHandler` that re-throws the error and causes the process to exit correctly.
-    provide: ErrorHandler,
-    useValue: {handleError: ERROR_HANDLER}
-  }]
+  providers: [
+    {
+      // If an error is thrown asynchronously during server-side rendering it'll get logged to stderr,
+      // but it won't cause the build to fail. We still want to catch these errors so we provide an
+      // `ErrorHandler` that re-throws the error and causes the process to exit correctly.
+      provide: ErrorHandler,
+      useValue: {handleError: ERROR_HANDLER},
+    },
+  ],
 })
 export class KitchenSinkMdcModule {
   constructor(snackBar: MatSnackBar) {

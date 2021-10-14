@@ -14,5 +14,4 @@ import {IconE2E} from './icon-e2e';
   imports: [MatIconModule],
   declarations: [IconE2E],
 })
-export class IconE2eModule {
-}
+export class IconE2eModule {}

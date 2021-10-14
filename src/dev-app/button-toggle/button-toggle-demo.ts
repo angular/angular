@@ -8,7 +8,6 @@
 
 import {Component} from '@angular/core';
 
-
 @Component({
   selector: 'button-toggle-demo',
   templateUrl: 'button-toggle-demo.html',
@@ -18,10 +17,5 @@ export class ButtonToggleDemo {
   isVertical = false;
   isDisabled = false;
   favoritePie = 'Apple';
-  pieOptions = [
-    'Apple',
-    'Cherry',
-    'Pecan',
-    'Lemon',
-  ];
+  pieOptions = ['Apple', 'Cherry', 'Pecan', 'Lemon'];
 }

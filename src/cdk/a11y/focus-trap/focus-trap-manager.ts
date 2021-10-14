@@ -31,7 +31,7 @@ export class FocusTrapManager {
    */
   register(focusTrap: ManagedFocusTrap): void {
     // Dedupe focusTraps that register multiple times.
-    this._focusTrapStack = this._focusTrapStack.filter((ft) => ft !== focusTrap);
+    this._focusTrapStack = this._focusTrapStack.filter(ft => ft !== focusTrap);
 
     let stack = this._focusTrapStack;
 

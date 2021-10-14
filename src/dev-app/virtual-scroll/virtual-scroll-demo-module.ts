@@ -32,5 +32,4 @@ import {VirtualScrollDemo} from './virtual-scroll-demo';
   ],
   declarations: [VirtualScrollDemo],
 })
-export class VirtualScrollDemoModule {
-}
+export class VirtualScrollDemoModule {}

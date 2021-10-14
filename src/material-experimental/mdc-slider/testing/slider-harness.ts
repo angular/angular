@@ -22,18 +22,21 @@ export class MatSliderHarness extends ComponentHarness {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: SliderHarnessFilters = {}): HarnessPredicate<MatSliderHarness> {
-    return new HarnessPredicate(MatSliderHarness, options)
-      .addOption('isRange', options.isRange, async (harness, value) => {
+    return new HarnessPredicate(MatSliderHarness, options).addOption(
+      'isRange',
+      options.isRange,
+      async (harness, value) => {
         return (await harness.isRange()) === value;
-      });
+      },
+    );
   }
 
   /** Gets the start thumb of the slider (only applicable for range sliders). */
   async getStartThumb(): Promise<MatSliderThumbHarness> {
-    if (!await this.isRange()) {
+    if (!(await this.isRange())) {
       throw Error(
-        '`getStartThumb` is only applicable for range sliders. '
-        + 'Did you mean to use `getEndThumb`?'
+        '`getStartThumb` is only applicable for range sliders. ' +
+          'Did you mean to use `getEndThumb`?',
       );
     }
     return this.locatorFor(MatSliderThumbHarness.with({position: ThumbPosition.START}))();
@@ -46,12 +49,12 @@ export class MatSliderHarness extends ComponentHarness {
 
   /** Gets whether the slider is a range slider. */
   async isRange(): Promise<boolean> {
-    return (await (await this.host()).hasClass('mdc-slider--range'));
+    return await (await this.host()).hasClass('mdc-slider--range');
   }
 
   /** Gets whether the slider is disabled. */
   async isDisabled(): Promise<boolean> {
-    return (await (await this.host()).hasClass('mdc-slider--disabled'));
+    return await (await this.host()).hasClass('mdc-slider--disabled');
   }
 
   /** Gets the value step increments of the slider. */
@@ -68,7 +71,9 @@ export class MatSliderHarness extends ComponentHarness {
 
   /** Gets the minimum value of the slider. */
   async getMinValue(): Promise<number> {
-    const startThumb = await this.isRange() ? await this.getStartThumb() : await this.getEndThumb();
+    const startThumb = (await this.isRange())
+      ? await this.getStartThumb()
+      : await this.getEndThumb();
     return startThumb.getMinValue();
   }
 }

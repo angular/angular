@@ -15,14 +15,14 @@ describe('AutocompleteHarnessExample', () => {
 
   beforeAll(() => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
-      teardown: {destroyAfterEach: true}
+      teardown: {destroyAfterEach: true},
     });
   });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MatAutocompleteModule],
-      declarations: [AutocompleteHarnessExample]
+      declarations: [AutocompleteHarnessExample],
     }).compileComponents();
     fixture = TestBed.createComponent(AutocompleteHarnessExample);
     fixture.detectChanges();
@@ -30,10 +30,9 @@ describe('AutocompleteHarnessExample', () => {
   });
 
   it('should load all autocomplete harnesses', async () => {
-      const autocompletes = await loader.getAllHarnesses(MatAutocompleteHarness);
-      expect(autocompletes.length).toBe(2);
-    }
-  );
+    const autocompletes = await loader.getAllHarnesses(MatAutocompleteHarness);
+    expect(autocompletes.length).toBe(2);
+  });
 
   it('should get disabled state', async () => {
     const enabled = await loader.getHarness(MatAutocompleteHarness.with({selector: '#plain'}));

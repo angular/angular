@@ -34,5 +34,4 @@ import {ChipsDemo} from './chips-demo';
   ],
   declarations: [ChipsDemo],
 })
-export class ChipsDemoModule {
-}
+export class ChipsDemoModule {}

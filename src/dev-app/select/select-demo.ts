@@ -36,7 +36,7 @@ export class SelectDemo {
   pokemonDisabled = false;
   showSelect = false;
   currentDrink: string;
-  currentDrinkObject: {}|undefined = {value: 'tea-5', viewValue: 'Tea'};
+  currentDrinkObject: {} | undefined = {value: 'tea-5', viewValue: 'Tea'};
   currentPokemon: string[];
   currentPokemonFromGroup: string;
   currentDigimon: string;
@@ -55,7 +55,7 @@ export class SelectDemo {
     {value: null, viewValue: 'None'},
     {value: 'steak-0', viewValue: 'Steak'},
     {value: 'pizza-1', viewValue: 'Pizza'},
-    {value: 'tacos-2', viewValue: 'Tacos'}
+    {value: 'tacos-2', viewValue: 'Tacos'},
   ];
 
   drinks = [
@@ -63,7 +63,7 @@ export class SelectDemo {
     {
       value: 'long-name-1',
       viewValue: 'Decaf Chocolate Brownie Vanilla Gingerbread Frappuccino',
-      disabled: false
+      disabled: false,
     },
     {value: 'water-2', viewValue: 'Water', disabled: false},
     {value: 'pepper-3', viewValue: 'Dr. Pepper', disabled: false},
@@ -85,9 +85,9 @@ export class SelectDemo {
   ];
 
   availableThemes = [
-    {value: 'primary', name: 'Primary' },
-    {value: 'accent', name: 'Accent' },
-    {value: 'warn', name: 'Warn' }
+    {value: 'primary', name: 'Primary'},
+    {value: 'accent', name: 'Accent'},
+    {value: 'warn', name: 'Warn'},
   ];
 
   pokemonGroups = [
@@ -96,16 +96,16 @@ export class SelectDemo {
       pokemon: [
         {value: 'bulbasaur-0', viewValue: 'Bulbasaur'},
         {value: 'oddish-1', viewValue: 'Oddish'},
-        {value: 'bellsprout-2', viewValue: 'Bellsprout'}
-      ]
+        {value: 'bellsprout-2', viewValue: 'Bellsprout'},
+      ],
     },
     {
       name: 'Water',
       pokemon: [
         {value: 'squirtle-3', viewValue: 'Squirtle'},
         {value: 'psyduck-4', viewValue: 'Psyduck'},
-        {value: 'horsea-5', viewValue: 'Horsea'}
-      ]
+        {value: 'horsea-5', viewValue: 'Horsea'},
+      ],
     },
     {
       name: 'Fire',
@@ -113,16 +113,16 @@ export class SelectDemo {
       pokemon: [
         {value: 'charmander-6', viewValue: 'Charmander'},
         {value: 'vulpix-7', viewValue: 'Vulpix'},
-        {value: 'flareon-8', viewValue: 'Flareon'}
-      ]
+        {value: 'flareon-8', viewValue: 'Flareon'},
+      ],
     },
     {
       name: 'Psychic',
       pokemon: [
         {value: 'mew-9', viewValue: 'Mew'},
         {value: 'mewtwo-10', viewValue: 'Mewtwo'},
-      ]
-    }
+      ],
+    },
   ];
 
   digimon = [
@@ -131,7 +131,7 @@ export class SelectDemo {
     {value: 'sinduramon-2', viewValue: 'Sinduramon'},
     {value: 'pajiramon-3', viewValue: 'Pajiramon'},
     {value: 'vajiramon-4', viewValue: 'Vajiramon'},
-    {value: 'indramon-5', viewValue: 'Indramon'}
+    {value: 'indramon-5', viewValue: 'Indramon'},
   ];
 
   constructor(private _dialog: MatDialog) {}

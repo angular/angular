@@ -11,7 +11,8 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'mdc-menu-e2e',
   templateUrl: 'mdc-menu-e2e.html',
-  styles: [`
+  styles: [
+    `
     #before-t, #above-t, #combined-t {
       width: 60px;
       height: 20px;
@@ -20,7 +21,8 @@ import {Component} from '@angular/core';
     .bottom-row {
       margin-top: 5px;
     }
-  `]
+  `,
+  ],
 })
 export class MdcMenuE2e {
   selected: string = '';

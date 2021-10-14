@@ -15,7 +15,7 @@ import {
   InjectionToken,
   NgZone,
   Optional,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
@@ -25,11 +25,10 @@ import {
   MAT_ANCHOR_INPUTS,
   MAT_BUTTON_HOST,
   MAT_BUTTON_INPUTS,
-  MatButtonBase
+  MatButtonBase,
 } from './button-base';
 import {ThemePalette} from '@angular/material-experimental/mdc-core';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
-
 
 /** Default FAB options that can be overridden. */
 export interface MatFabDefaultOptions {
@@ -37,11 +36,13 @@ export interface MatFabDefaultOptions {
 }
 
 /** Injection token to be used to override the default options for FAB. */
-export const MAT_FAB_DEFAULT_OPTIONS =
-  new InjectionToken<MatFabDefaultOptions>('mat-mdc-fab-default-options', {
+export const MAT_FAB_DEFAULT_OPTIONS = new InjectionToken<MatFabDefaultOptions>(
+  'mat-mdc-fab-default-options',
+  {
     providedIn: 'root',
-    factory: MAT_FAB_DEFAULT_OPTIONS_FACTORY
-  });
+    factory: MAT_FAB_DEFAULT_OPTIONS_FACTORY,
+  },
+);
 
 /** @docs-private */
 export function MAT_FAB_DEFAULT_OPTIONS_FACTORY(): MatFabDefaultOptions {
@@ -88,13 +89,20 @@ export class MatFabButton extends MatButtonBase {
   override _isFab = true;
 
   private _extended: boolean;
-  get extended(): boolean { return this._extended; }
-  set extended(value: boolean) { this._extended = coerceBooleanProperty(value); }
+  get extended(): boolean {
+    return this._extended;
+  }
+  set extended(value: boolean) {
+    this._extended = coerceBooleanProperty(value);
+  }
 
   constructor(
-      elementRef: ElementRef, platform: Platform, ngZone: NgZone,
-      @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
-      @Optional() @Inject(MAT_FAB_DEFAULT_OPTIONS) private _options?: MatFabDefaultOptions) {
+    elementRef: ElementRef,
+    platform: Platform,
+    ngZone: NgZone,
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
+    @Optional() @Inject(MAT_FAB_DEFAULT_OPTIONS) private _options?: MatFabDefaultOptions,
+  ) {
     super(elementRef, platform, ngZone, animationMode);
     this._options = this._options || defaults;
     this.color = this.defaultColor = this._options!.color || defaults.color;
@@ -122,15 +130,17 @@ export class MatMiniFabButton extends MatButtonBase {
   override _isFab = true;
 
   constructor(
-    elementRef: ElementRef, platform: Platform, ngZone: NgZone,
+    elementRef: ElementRef,
+    platform: Platform,
+    ngZone: NgZone,
     @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
-    @Optional() @Inject(MAT_FAB_DEFAULT_OPTIONS) private _options?: MatFabDefaultOptions) {
+    @Optional() @Inject(MAT_FAB_DEFAULT_OPTIONS) private _options?: MatFabDefaultOptions,
+  ) {
     super(elementRef, platform, ngZone, animationMode);
     this._options = this._options || defaults;
     this.color = this.defaultColor = this._options!.color || defaults.color;
   }
 }
-
 
 /**
  * Material Design floating action button (FAB) component for anchor elements. Anchor elements
@@ -172,14 +182,20 @@ export class MatFabAnchor extends MatAnchor {
   override _isFab = true;
 
   private _extended: boolean;
-  get extended(): boolean { return this._extended; }
-  set extended(value: boolean) { this._extended = coerceBooleanProperty(value); }
-
+  get extended(): boolean {
+    return this._extended;
+  }
+  set extended(value: boolean) {
+    this._extended = coerceBooleanProperty(value);
+  }
 
   constructor(
-      elementRef: ElementRef, platform: Platform, ngZone: NgZone,
-      @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
-      @Optional() @Inject(MAT_FAB_DEFAULT_OPTIONS) private _options?: MatFabDefaultOptions) {
+    elementRef: ElementRef,
+    platform: Platform,
+    ngZone: NgZone,
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
+    @Optional() @Inject(MAT_FAB_DEFAULT_OPTIONS) private _options?: MatFabDefaultOptions,
+  ) {
     super(elementRef, platform, ngZone, animationMode);
     this._options = this._options || defaults;
     this.color = this.defaultColor = this._options!.color || defaults.color;
@@ -207,9 +223,12 @@ export class MatMiniFabAnchor extends MatAnchor {
   override _isFab = true;
 
   constructor(
-    elementRef: ElementRef, platform: Platform, ngZone: NgZone,
+    elementRef: ElementRef,
+    platform: Platform,
+    ngZone: NgZone,
     @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
-    @Optional() @Inject(MAT_FAB_DEFAULT_OPTIONS) private _options?: MatFabDefaultOptions) {
+    @Optional() @Inject(MAT_FAB_DEFAULT_OPTIONS) private _options?: MatFabDefaultOptions,
+  ) {
     super(elementRef, platform, ngZone, animationMode);
     this._options = this._options || defaults;
     this.color = this.defaultColor = this._options!.color || defaults.color;

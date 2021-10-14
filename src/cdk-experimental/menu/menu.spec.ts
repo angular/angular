@@ -27,7 +27,8 @@ describe('Menu', () => {
     let fixture: ComponentFixture<MenuCheckboxGroup>;
     let menuItems: CdkMenuItemCheckbox[];
 
-    beforeEach(waitForAsync(() => {
+    beforeEach(
+      waitForAsync(() => {
         TestBed.configureTestingModule({
           imports: [CdkMenuModule],
           declarations: [MenuCheckboxGroup],
@@ -43,7 +44,7 @@ describe('Menu', () => {
         menuItems = fixture.debugElement
           .queryAll(By.directive(CdkMenuItemCheckbox))
           .map(element => element.injector.get(CdkMenuItemCheckbox));
-      })
+      }),
     );
 
     it('should toggle menuitemcheckbox', () => {
@@ -64,7 +65,8 @@ describe('Menu', () => {
     let fixture: ComponentFixture<MenuCheckboxGroup>;
     let menuItems: CdkMenuItemCheckbox[];
 
-    beforeEach(waitForAsync(() => {
+    beforeEach(
+      waitForAsync(() => {
         TestBed.configureTestingModule({
           imports: [CdkMenuModule],
           declarations: [MenuCheckboxGroup],
@@ -80,7 +82,7 @@ describe('Menu', () => {
         menuItems = fixture.debugElement
           .queryAll(By.directive(CdkMenuItemCheckbox))
           .map(element => element.injector.get(CdkMenuItemCheckbox));
-      })
+      }),
     );
 
     it('should emit on click', () => {
@@ -99,7 +101,8 @@ describe('Menu', () => {
     let menuItems: CdkMenuItemCheckbox[];
     let menu: CdkMenu;
 
-    beforeEach(waitForAsync(() => {
+    beforeEach(
+      waitForAsync(() => {
         TestBed.configureTestingModule({
           imports: [CdkMenuModule],
           declarations: [MenuWithNestedGroup],
@@ -117,7 +120,7 @@ describe('Menu', () => {
         menuItems = fixture.debugElement
           .queryAll(By.directive(CdkMenuItemCheckbox))
           .map(element => element.injector.get(CdkMenuItemCheckbox));
-      })
+      }),
     );
 
     it('should not emit change from root menu ', () => {
@@ -143,7 +146,8 @@ describe('Menu', () => {
         .map(element => element.injector.get(CdkMenuItemCheckbox));
     };
 
-    beforeEach(waitForAsync(() => {
+    beforeEach(
+      waitForAsync(() => {
         TestBed.configureTestingModule({
           imports: [CdkMenuModule],
           declarations: [MenuWithConditionalGroup],
@@ -158,7 +162,7 @@ describe('Menu', () => {
 
         menu = fixture.debugElement.query(By.directive(CdkMenu)).injector.get(CdkMenu);
         menuItems = getMenuItems();
-      })
+      }),
     );
 
     it('should not emit after the menu group element renders', () => {
@@ -182,12 +186,13 @@ describe('Menu', () => {
     let nativeMenu: HTMLElement;
     let nativeMenuItems: HTMLElement[];
 
-    beforeEach(waitForAsync(() => {
+    beforeEach(
+      waitForAsync(() => {
         TestBed.configureTestingModule({
           imports: [CdkMenuModule],
           declarations: [InlineMenu],
         }).compileComponents();
-      })
+      }),
     );
 
     beforeEach(() => {
@@ -259,12 +264,14 @@ describe('Menu', () => {
 
       let nativeMenus: HTMLElement[];
 
-      beforeEach(waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [CdkMenuModule],
-          declarations: [WithComplexNestedMenus],
-        }).compileComponents();
-      }));
+      beforeEach(
+        waitForAsync(() => {
+          TestBed.configureTestingModule({
+            imports: [CdkMenuModule],
+            declarations: [WithComplexNestedMenus],
+          }).compileComponents();
+        }),
+      );
 
       beforeEach(() => {
         fixture = TestBed.createComponent(WithComplexNestedMenus);
@@ -378,13 +385,13 @@ describe('Menu', () => {
             editPosition,
             {x: printPosition.x + 5, y: printPosition.y + 1},
             nativeMenus[0],
-            100
+            100,
           );
           detectChanges();
 
           expect(numEnterEvents).toBe(4);
           expect(nativeMenus.length).toBe(1);
-        })
+        }),
       );
 
       it('should close the edit menu after moving towards submenu and stopping', fakeAsync(() => {
@@ -403,7 +410,7 @@ describe('Menu', () => {
             y: sharePosition.y + sharePosition.height - 10,
           },
           nativeMenus[0],
-          100
+          100,
         );
         tick(2000);
         detectChanges();
@@ -455,12 +462,14 @@ describe('Menu', () => {
 
       let nativeMenus: HTMLElement[];
 
-      beforeEach(waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [CdkMenuModule],
-          declarations: [WithComplexNestedMenusOnBottom],
-        }).compileComponents();
-      }));
+      beforeEach(
+        waitForAsync(() => {
+          TestBed.configureTestingModule({
+            imports: [CdkMenuModule],
+            declarations: [WithComplexNestedMenusOnBottom],
+          }).compileComponents();
+        }),
+      );
 
       beforeEach(() => {
         fixture = TestBed.createComponent(WithComplexNestedMenusOnBottom);
@@ -584,14 +593,14 @@ describe('Menu', () => {
             {x: editPosition.x + editPosition.width / 2, y: editPosition.y + 5},
             {x: printPosition.x + 10, y: printPosition.y - 10},
             nativeMenus[0],
-            100
+            100,
           );
           detectChanges();
           flush();
 
           expect(numEnterEvents).toBe(4);
           expect(nativeMenus.length).toBe(1);
-        })
+        }),
       );
 
       it('should close the edit menu after moving towards submenu and stopping', fakeAsync(() => {
@@ -607,7 +616,7 @@ describe('Menu', () => {
             y: sharePosition.y + 10,
           },
           nativeMenus[0],
-          100
+          100,
         );
         tick(2000);
         detectChanges();

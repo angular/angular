@@ -50,8 +50,8 @@ export const TOOLTIP_PANEL_CLASS = 'mat-mdc-tooltip-panel';
   selector: '[matTooltip]',
   exportAs: 'matTooltip',
   host: {
-    'class': 'mat-mdc-tooltip-trigger'
-  }
+    'class': 'mat-mdc-tooltip-trigger',
+  },
 })
 export class MatTooltip extends _MatTooltipBase<TooltipComponent> {
   protected override readonly _tooltipComponent = TooltipComponent;
@@ -69,10 +69,22 @@ export class MatTooltip extends _MatTooltipBase<TooltipComponent> {
     @Inject(MAT_TOOLTIP_SCROLL_STRATEGY) scrollStrategy: any,
     @Optional() dir: Directionality,
     @Optional() @Inject(MAT_TOOLTIP_DEFAULT_OPTIONS) defaultOptions: MatTooltipDefaultOptions,
-    @Inject(DOCUMENT) _document: any) {
-
-    super(overlay, elementRef, scrollDispatcher, viewContainerRef, ngZone, platform, ariaDescriber,
-      focusMonitor, scrollStrategy, dir, defaultOptions, _document);
+    @Inject(DOCUMENT) _document: any,
+  ) {
+    super(
+      overlay,
+      elementRef,
+      scrollDispatcher,
+      viewContainerRef,
+      ngZone,
+      platform,
+      ariaDescriber,
+      focusMonitor,
+      scrollStrategy,
+      dir,
+      defaultOptions,
+      _document,
+    );
     this._viewportMargin = numbers.MIN_VIEWPORT_TOOLTIP_THRESHOLD;
   }
 
@@ -110,7 +122,7 @@ export class MatTooltip extends _MatTooltipBase<TooltipComponent> {
     // won't be rendered if the animations are disabled or there is no web animations polyfill.
     '[style.zoom]': '_visibility === "visible" ? 1 : null',
     'aria-hidden': 'true',
-  }
+  },
 })
 export class TooltipComponent extends _TooltipComponentBase {
   /* Whether the tooltip text overflows to multiple lines */

@@ -17,15 +17,16 @@ interface PackageJson {
  * @returns A new object instance with sorted keys
  */
 function sortObjectByKeys(obj: Record<string, string>) {
-  return Object.keys(obj).sort().reduce((result, key) => {
-    result[key] = obj[key];
-    return result;
-  }, {} as Record<string, string>);
+  return Object.keys(obj)
+    .sort()
+    .reduce((result, key) => {
+      result[key] = obj[key];
+      return result;
+    }, {} as Record<string, string>);
 }
 
 /** Adds a package to the package.json in the given host tree. */
 export function addPackageToPackageJson(host: Tree, pkg: string, version: string): Tree {
-
   if (host.exists('package.json')) {
     const sourceText = host.read('package.json')!.toString('utf-8');
     const json = JSON.parse(sourceText) as PackageJson;

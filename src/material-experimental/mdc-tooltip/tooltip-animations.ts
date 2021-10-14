@@ -29,5 +29,5 @@ export const matTooltipAnimations: {
     state('visible', style({transform: 'scale(1)'})),
     transition('* => visible', animate('150ms cubic-bezier(0, 0, 0.2, 1)')),
     transition('* => hidden', animate('75ms cubic-bezier(0.4, 0, 1, 1)')),
-  ])
+  ]),
 };

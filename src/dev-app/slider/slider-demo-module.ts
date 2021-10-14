@@ -22,5 +22,4 @@ import {SliderDemo} from './slider-demo';
   ],
   declarations: [SliderDemo],
 })
-export class SliderDemoModule {
-}
+export class SliderDemoModule {}

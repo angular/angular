@@ -34,20 +34,17 @@ import {
   outputs: ['preservedFormValueChange: matEditLensPreservedFormValueChange'],
   providers: [EditRef],
 })
-export class MatEditLens<FormValue> extends CdkEditControl<FormValue> {
-}
+export class MatEditLens<FormValue> extends CdkEditControl<FormValue> {}
 
 /** Reverts the form to its initial or previously submitted state on click. */
 @Directive({
   selector: 'button[matEditRevert]',
   host: {
     'type': 'button', // Prevents accidental form submits.
-  }
+  },
 })
-export class MatEditRevert<FormValue> extends CdkEditRevert<FormValue> {
-}
+export class MatEditRevert<FormValue> extends CdkEditRevert<FormValue> {}
 
 /** Closes the lens on click. */
 @Directive({selector: '[matEditClose]'})
-export class MatEditClose<FormValue> extends CdkEditClose<FormValue> {
-}
+export class MatEditClose<FormValue> extends CdkEditClose<FormValue> {}

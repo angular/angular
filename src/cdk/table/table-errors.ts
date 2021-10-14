@@ -36,8 +36,10 @@ export function getTableMultipleDefaultRowDefsError() {
  * @docs-private
  */
 export function getTableMissingMatchingRowDefError(data: any) {
-  return Error(`Could not find a matching row definition for the` +
-      `provided row data: ${JSON.stringify(data)}`);
+  return Error(
+    `Could not find a matching row definition for the` +
+      `provided row data: ${JSON.stringify(data)}`,
+  );
 }
 
 /**
@@ -45,8 +47,10 @@ export function getTableMissingMatchingRowDefError(data: any) {
  * @docs-private
  */
 export function getTableMissingRowDefsError() {
-  return Error('Missing definitions for header, footer, and row; ' +
-      'cannot determine which columns should be rendered.');
+  return Error(
+    'Missing definitions for header, footer, and row; ' +
+      'cannot determine which columns should be rendered.',
+  );
 }
 
 /**

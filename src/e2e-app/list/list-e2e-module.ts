@@ -11,10 +11,7 @@ import {ExampleViewerModule} from '../example-viewer/example-viewer-module';
 import {ListE2e} from './list-e2e';
 
 @NgModule({
-  imports: [
-    ExampleViewerModule,
-  ],
+  imports: [ExampleViewerModule],
   declarations: [ListE2e],
 })
-export class ListE2eModule {
-}
+export class ListE2eModule {}

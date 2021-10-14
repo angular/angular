@@ -35,11 +35,42 @@ export const materialMixins: Record<string, string> = {
 
 // The component themes all follow the same pattern so we can spare ourselves some typing.
 [
-  'option', 'optgroup', 'pseudo-checkbox', 'autocomplete', 'badge', 'bottom-sheet', 'button',
-  'button-toggle', 'card', 'checkbox', 'chips', 'divider', 'table', 'datepicker', 'dialog',
-  'grid-list', 'icon', 'input', 'list', 'menu', 'paginator', 'progress-bar', 'progress-spinner',
-  'radio', 'select', 'sidenav', 'slide-toggle', 'slider', 'stepper', 'sort', 'tabs', 'toolbar',
-  'tooltip', 'snack-bar', 'form-field', 'tree'
+  'option',
+  'optgroup',
+  'pseudo-checkbox',
+  'autocomplete',
+  'badge',
+  'bottom-sheet',
+  'button',
+  'button-toggle',
+  'card',
+  'checkbox',
+  'chips',
+  'divider',
+  'table',
+  'datepicker',
+  'dialog',
+  'grid-list',
+  'icon',
+  'input',
+  'list',
+  'menu',
+  'paginator',
+  'progress-bar',
+  'progress-spinner',
+  'radio',
+  'select',
+  'sidenav',
+  'slide-toggle',
+  'slider',
+  'stepper',
+  'sort',
+  'tabs',
+  'toolbar',
+  'tooltip',
+  'snack-bar',
+  'form-field',
+  'tree',
 ].forEach(name => {
   materialMixins[`mat-${name}-theme`] = `${name}-theme`;
   materialMixins[`mat-${name}-color`] = `${name}-color`;
@@ -72,10 +103,28 @@ export const materialVariables: Record<string, string> = {
 
 // The palettes all follow the same pattern.
 [
-  'red', 'pink', 'indigo', 'purple', 'deep-purple', 'blue', 'light-blue', 'cyan', 'teal', 'green',
-  'light-green', 'lime', 'yellow', 'amber', 'orange', 'deep-orange', 'brown', 'grey', 'gray',
-  'blue-grey', 'blue-gray'
-].forEach(name => materialVariables[`mat-${name}`] = `${name}-palette`);
+  'red',
+  'pink',
+  'indigo',
+  'purple',
+  'deep-purple',
+  'blue',
+  'light-blue',
+  'cyan',
+  'teal',
+  'green',
+  'light-green',
+  'lime',
+  'yellow',
+  'amber',
+  'orange',
+  'deep-orange',
+  'brown',
+  'grey',
+  'gray',
+  'blue-grey',
+  'blue-gray',
+].forEach(name => (materialVariables[`mat-${name}`] = `${name}-palette`));
 
 /** Mapping of CDK variables that should be renamed. */
 export const cdkVariables: Record<string, string> = {

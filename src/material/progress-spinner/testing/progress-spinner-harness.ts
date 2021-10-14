@@ -22,13 +22,14 @@ export class MatProgressSpinnerHarness extends ComponentHarness {
    * @param options Options for filtering which progress spinner instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: ProgressSpinnerHarnessFilters = {}):
-      HarnessPredicate<MatProgressSpinnerHarness> {
+  static with(
+    options: ProgressSpinnerHarnessFilters = {},
+  ): HarnessPredicate<MatProgressSpinnerHarness> {
     return new HarnessPredicate(MatProgressSpinnerHarness, options);
   }
 
   /** Gets the progress spinner's value. */
-  async getValue(): Promise<number|null> {
+  async getValue(): Promise<number | null> {
     const host = await this.host();
     const ariaValue = await host.getAttribute('aria-valuenow');
     return ariaValue ? coerceNumberProperty(ariaValue) : null;
@@ -37,6 +38,6 @@ export class MatProgressSpinnerHarness extends ComponentHarness {
   /** Gets the progress spinner's mode. */
   async getMode(): Promise<ProgressSpinnerMode> {
     const modeAttr = (await this.host()).getAttribute('mode');
-    return await modeAttr as ProgressSpinnerMode;
+    return (await modeAttr) as ProgressSpinnerMode;
   }
 }

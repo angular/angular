@@ -10,6 +10,6 @@ export const caretaker: CaretakerConfig = {
     {
       name: 'Triage Queue',
       query: `is:open label:"needs triage"`,
-    }
-  ]
+    },
+  ],
 };

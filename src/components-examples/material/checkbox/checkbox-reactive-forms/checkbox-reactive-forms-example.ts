@@ -5,7 +5,7 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 @Component({
   selector: 'checkbox-reactive-forms-example',
   templateUrl: 'checkbox-reactive-forms-example.html',
-  styleUrls: ['checkbox-reactive-forms-example.css']
+  styleUrls: ['checkbox-reactive-forms-example.css'],
 })
 export class CheckboxReactiveFormsExample {
   toppings: FormGroup;
@@ -14,7 +14,7 @@ export class CheckboxReactiveFormsExample {
     this.toppings = fb.group({
       pepperoni: false,
       extracheese: false,
-      mushroom: false
+      mushroom: false,
     });
   }
 }

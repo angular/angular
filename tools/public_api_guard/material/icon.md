@@ -52,7 +52,7 @@ export interface IconOptions {
 }
 
 // @public
-export type IconResolver = (name: string, namespace: string) => (SafeResourceUrl | SafeResourceUrlWithIconOptions | null);
+export type IconResolver = (name: string, namespace: string) => SafeResourceUrl | SafeResourceUrlWithIconOptions | null;
 
 // @public
 export const MAT_ICON_LOCATION: InjectionToken<MatIconLocation>;

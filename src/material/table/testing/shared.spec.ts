@@ -7,8 +7,9 @@ import {MatTableHarness} from './table-harness';
 
 /** Shared tests to run on both the original and MDC-based table. */
 export function runHarnessTests(
-    tableModule: typeof MatTableModule,
-    tableHarness: typeof MatTableHarness) {
+  tableModule: typeof MatTableModule,
+  tableHarness: typeof MatTableHarness,
+) {
   let fixture: ComponentFixture<TableHarnessTest>;
   let loader: HarnessLoader;
 
@@ -43,12 +44,13 @@ export function runHarnessTests(
     const headerRows = await table.getHeaderRows();
     const footerRows = await table.getFooterRows();
     const rows = await table.getRows();
-    const headerCells = (await parallel(() => headerRows.map(row => row.getCells())))
-      .map(row => row.length);
-    const footerCells = (await parallel(() => footerRows.map(row => row.getCells())))
-      .map(row => row.length);
-    const cells = (await parallel(() => rows.map(row => row.getCells())))
-      .map(row => row.length);
+    const headerCells = (await parallel(() => headerRows.map(row => row.getCells()))).map(
+      row => row.length,
+    );
+    const footerCells = (await parallel(() => footerRows.map(row => row.getCells()))).map(
+      row => row.length,
+    );
+    const cells = (await parallel(() => rows.map(row => row.getCells()))).map(row => row.length);
 
     expect(headerCells).toEqual([4]);
     expect(cells).toEqual([4, 4, 4, 4, 4, 4, 4, 4, 4, 4]);
@@ -103,29 +105,45 @@ export function runHarnessTests(
       position: {
         headerText: ['No.'],
         footerText: ['Number of the element'],
-        text: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+        text: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
       },
       name: {
         headerText: ['Name'],
         footerText: ['Name of the element'],
         text: [
-          'Hydrogen', 'Helium', 'Lithium', 'Beryllium', 'Boron',
-          'Carbon', 'Nitrogen', 'Oxygen', 'Fluorine', 'Neon'
-        ]
+          'Hydrogen',
+          'Helium',
+          'Lithium',
+          'Beryllium',
+          'Boron',
+          'Carbon',
+          'Nitrogen',
+          'Oxygen',
+          'Fluorine',
+          'Neon',
+        ],
       },
       weight: {
         headerText: ['Weight'],
         footerText: ['Weight of the element'],
         text: [
-          '1.0079', '4.0026', '6.941', '9.0122', '10.811',
-          '12.0107', '14.0067', '15.9994', '18.9984', '20.1797'
-        ]
+          '1.0079',
+          '4.0026',
+          '6.941',
+          '9.0122',
+          '10.811',
+          '12.0107',
+          '14.0067',
+          '15.9994',
+          '18.9984',
+          '20.1797',
+        ],
       },
       symbol: {
         headerText: ['Symbol'],
         footerText: ['Symbol of the element'],
-        text: ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne']
-      }
+        text: ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne'],
+      },
     });
   });
 
@@ -143,7 +161,7 @@ export function runHarnessTests(
       ['7', 'Nitrogen', '14.0067', 'N'],
       ['8', 'Oxygen', '15.9994', 'O'],
       ['9', 'Fluorine', '18.9984', 'F'],
-      ['10', 'Neon', '20.1797', 'Ne']
+      ['10', 'Neon', '20.1797', 'Ne'],
     ]);
   });
 
@@ -164,7 +182,7 @@ export function runHarnessTests(
       position: '1',
       name: 'Hydrogen',
       weight: '1.0079',
-      symbol: 'H'
+      symbol: 'H',
     });
   });
 }
@@ -200,7 +218,7 @@ export function runHarnessTests(
       <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
-  `
+  `,
 })
 class TableHarnessTest {
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];

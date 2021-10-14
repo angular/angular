@@ -29,7 +29,6 @@ import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';
   styleUrls: ['//src/material-experimental/mdc-theming/prebuilt/indigo-pink.css'],
 })
 export class CheckboxBenchmarkApp {
-
   // isChecked is used to maintain the buttons checked state even after it has been hidden. This is
   // used, for example, when we want to test the render speed of a checked vs unchecked checkbox.
 
@@ -37,18 +36,23 @@ export class CheckboxBenchmarkApp {
   isVisible = false;
   isIndeterminate = false;
 
-  show() { this.isVisible = true; }
-  hide() { this.isVisible = false; }
-  indeterminate() { this.isIndeterminate = true; }
-  toggleIsChecked() { this.isChecked = !this.isChecked; }
+  show() {
+    this.isVisible = true;
+  }
+  hide() {
+    this.isVisible = false;
+  }
+  indeterminate() {
+    this.isIndeterminate = true;
+  }
+  toggleIsChecked() {
+    this.isChecked = !this.isChecked;
+  }
 }
 
 @NgModule({
   declarations: [CheckboxBenchmarkApp],
-  imports: [
-    BrowserModule,
-    MatCheckboxModule,
-  ],
+  imports: [BrowserModule, MatCheckboxModule],
   bootstrap: [CheckboxBenchmarkApp],
 })
 export class AppModule {}

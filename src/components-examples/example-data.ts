@@ -28,7 +28,7 @@ export class ExampleData {
     }
 
     const {componentName, files, selector, primaryFile, additionalComponents, title} =
-        EXAMPLE_COMPONENTS[example];
+      EXAMPLE_COMPONENTS[example];
     const exampleName = example.replace(/(?:^\w|\b\w)/g, letter => letter.toUpperCase());
 
     this.exampleFiles = files;

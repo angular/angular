@@ -22,5 +22,4 @@ import {ButtonExamplesModule} from '@angular/components-examples/material/button
   ],
   declarations: [ButtonDemo],
 })
-export class ButtonDemoModule {
-}
+export class ButtonDemoModule {}

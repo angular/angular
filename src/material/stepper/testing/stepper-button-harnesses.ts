@@ -34,12 +34,13 @@ export class MatStepperNextHarness extends StepperButtonHarness {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: StepperButtonHarnessFilters = {}): HarnessPredicate<MatStepperNextHarness> {
-    return new HarnessPredicate(MatStepperNextHarness, options)
-        .addOption('text', options.text,
-            (harness, text) => HarnessPredicate.stringMatches(harness.getText(), text));
+    return new HarnessPredicate(MatStepperNextHarness, options).addOption(
+      'text',
+      options.text,
+      (harness, text) => HarnessPredicate.stringMatches(harness.getText(), text),
+    );
   }
 }
-
 
 /** Harness for interacting with a standard Angular Material stepper previous button in tests. */
 export class MatStepperPreviousHarness extends StepperButtonHarness {
@@ -52,10 +53,13 @@ export class MatStepperPreviousHarness extends StepperButtonHarness {
    * @param options Options for filtering which steps are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: StepperButtonHarnessFilters = {}):
-    HarnessPredicate<MatStepperPreviousHarness> {
-    return new HarnessPredicate(MatStepperPreviousHarness, options)
-        .addOption('text', options.text,
-            (harness, text) => HarnessPredicate.stringMatches(harness.getText(), text));
+  static with(
+    options: StepperButtonHarnessFilters = {},
+  ): HarnessPredicate<MatStepperPreviousHarness> {
+    return new HarnessPredicate(MatStepperPreviousHarness, options).addOption(
+      'text',
+      options.text,
+      (harness, text) => HarnessPredicate.stringMatches(harness.getText(), text),
+    );
   }
 }

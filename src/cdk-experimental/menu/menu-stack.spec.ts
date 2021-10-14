@@ -20,12 +20,14 @@ describe('MenuStack', () => {
     menuStack = fixture.componentInstance.menuBar._menuStack;
   }
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [CdkMenuModule],
-      declarations: [MultiMenuWithSubmenu],
-    }).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [CdkMenuModule],
+        declarations: [MultiMenuWithSubmenu],
+      }).compileComponents();
+    }),
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(MultiMenuWithSubmenu);
@@ -59,7 +61,7 @@ describe('MenuStack', () => {
       const callArgs = spy.calls.all().map((v: jasmine.CallInfo<jasmine.Func>) => v.args[0]);
       expect(callArgs).toEqual(menus.reverse());
       expect(menuStack.isEmpty()).toBeTrue();
-    }
+    },
   );
 
   it('should close triggering menu and all menus below it', () => {

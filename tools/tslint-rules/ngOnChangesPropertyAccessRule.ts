@@ -27,15 +27,22 @@ class Walker extends Lint.ProgramAwareRuleWalker {
         const expressionName = node.expression.getText();
         const propName = node.name.getText();
 
-        this.addFailureAtNode(node, 'Accessing properties of SimpleChanges objects directly ' +
-                                    'is not allowed. Use index access instead (e.g. ' +
-                                    `${expressionName}.${propName} should be ` +
-                                    `${expressionName}['${propName}']).`);
+        this.addFailureAtNode(
+          node,
+          'Accessing properties of SimpleChanges objects directly ' +
+            'is not allowed. Use index access instead (e.g. ' +
+            `${expressionName}.${propName} should be ` +
+            `${expressionName}['${propName}']).`,
+        );
       }
 
       // Don't walk calls to `hasOwnProperty` since they can be used for null checking.
-      if (!ts.isCallExpression(node) || !ts.isPropertyAccessExpression(node.expression) ||
-        !ts.isIdentifier(node.expression.name) || node.expression.name.text !== 'hasOwnProperty') {
+      if (
+        !ts.isCallExpression(node) ||
+        !ts.isPropertyAccessExpression(node.expression) ||
+        !ts.isIdentifier(node.expression.name) ||
+        node.expression.name.text !== 'hasOwnProperty'
+      ) {
         node.forEachChild(walkChildren);
       }
     };
@@ -47,16 +54,22 @@ class Walker extends Lint.ProgramAwareRuleWalker {
   /** Checks whether a property access is operating on a `SimpleChanges` object. */
   private _isSimpleChangesAccess(method: ts.MethodDeclaration, node: ts.PropertyAccessExpression) {
     const changesParam = method.parameters[0];
-    const changesName = changesParam && ts.isParameter(changesParam) &&
-        ts.isIdentifier(changesParam.name) ? changesParam.name.text : null;
+    const changesName =
+      changesParam && ts.isParameter(changesParam) && ts.isIdentifier(changesParam.name)
+        ? changesParam.name.text
+        : null;
     const receiverName = ts.isIdentifier(node.expression) ? node.expression.text : null;
 
     // Try to resolve based on the name. This should be quicker and more robust since it doesn't
     // require the type checker to be present and to have been configured correctly. Note that
     // we filter out property accesses inside of other property accesses since we only want to
     // look at top-level ones so that we don't flag something like `foo.bar.changes`.
-    if (changesName && receiverName && changesName === receiverName &&
-        !ts.isPropertyAccessExpression(node.parent)) {
+    if (
+      changesName &&
+      receiverName &&
+      changesName === receiverName &&
+      !ts.isPropertyAccessExpression(node.parent)
+    ) {
       return true;
     }
 

@@ -58,13 +58,15 @@ export class MatTabHeader extends _MatTabHeaderBase implements AfterContentInit 
   @ViewChild('previousPaginator') _previousPaginator: ElementRef<HTMLElement>;
   _inkBar: MatInkBar;
 
-  constructor(elementRef: ElementRef,
-              changeDetectorRef: ChangeDetectorRef,
-              viewportRuler: ViewportRuler,
-              @Optional() dir: Directionality,
-              ngZone: NgZone,
-              platform: Platform,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
+  constructor(
+    elementRef: ElementRef,
+    changeDetectorRef: ChangeDetectorRef,
+    viewportRuler: ViewportRuler,
+    @Optional() dir: Directionality,
+    ngZone: NgZone,
+    platform: Platform,
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
+  ) {
     super(elementRef, changeDetectorRef, viewportRuler, dir, ngZone, platform, animationMode);
   }
 

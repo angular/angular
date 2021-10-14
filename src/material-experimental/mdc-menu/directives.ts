@@ -15,7 +15,7 @@ import {_MatMenuContentBase, _MatMenuTriggerBase, MAT_MENU_CONTENT} from '@angul
   host: {
     'class': 'mat-mdc-menu-trigger',
   },
-  exportAs: 'matMenuTrigger'
+  exportAs: 'matMenuTrigger',
 })
 export class MatMenuTrigger extends _MatMenuTriggerBase {}
 

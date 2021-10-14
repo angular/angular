@@ -23,12 +23,14 @@ const DEFAULT_KML_OPTIONS: google.maps.KmlLayerOptions = {
 describe('MapKmlLayer', () => {
   let mapSpy: jasmine.SpyObj<google.maps.Map>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [GoogleMapsModule],
-      declarations: [TestApp],
-    });
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [GoogleMapsModule],
+        declarations: [TestApp],
+      });
+    }),
+  );
 
   beforeEach(() => {
     TestBed.compileComponents();
@@ -83,8 +85,9 @@ describe('MapKmlLayer', () => {
     createKmlLayerConstructorSpy(kmlLayerSpy).and.callThrough();
 
     const fixture = TestBed.createComponent(TestApp);
-    const kmlLayerComponent = fixture.debugElement.query(By.directive(
-        MapKmlLayer))!.injector.get<MapKmlLayer>(MapKmlLayer);
+    const kmlLayerComponent = fixture.debugElement
+      .query(By.directive(MapKmlLayer))!
+      .injector.get<MapKmlLayer>(MapKmlLayer);
     fixture.detectChanges();
 
     kmlLayerComponent.getDefaultViewport();

@@ -23,7 +23,7 @@ export interface CloseScrollStrategyConfig {
  * Strategy that will close the overlay as soon as the user starts scrolling.
  */
 export class CloseScrollStrategy implements ScrollStrategy {
-  private _scrollSubscription: Subscription|null = null;
+  private _scrollSubscription: Subscription | null = null;
   private _overlayRef: OverlayReference;
   private _initialScrollPosition: number;
 
@@ -31,7 +31,8 @@ export class CloseScrollStrategy implements ScrollStrategy {
     private _scrollDispatcher: ScrollDispatcher,
     private _ngZone: NgZone,
     private _viewportRuler: ViewportRuler,
-    private _config?: CloseScrollStrategyConfig) {}
+    private _config?: CloseScrollStrategyConfig,
+  ) {}
 
   /** Attaches this scroll strategy to an overlay. */
   attach(overlayRef: OverlayReference) {
@@ -87,5 +88,5 @@ export class CloseScrollStrategy implements ScrollStrategy {
     if (this._overlayRef.hasAttached()) {
       this._ngZone.run(() => this._overlayRef.detach());
     }
-  }
+  };
 }

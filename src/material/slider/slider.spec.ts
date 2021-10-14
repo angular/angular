@@ -242,7 +242,6 @@ describe('MatSlider', () => {
     it('should have a focus indicator', () => {
       expect(sliderNativeElement.classList.contains('mat-focus-indicator')).toBe(true);
     });
-
   });
 
   describe('disabled slider', () => {
@@ -309,7 +308,7 @@ describe('MatSlider', () => {
       expect(sliderNativeElement.classList).not.toContain('mat-slider-sliding');
     });
 
-    it ('should leave thumb gap', () => {
+    it('should leave thumb gap', () => {
       expect(trackFillElement.style.transform).toContain('translateX(-7px)');
     });
 
@@ -337,8 +336,9 @@ describe('MatSlider', () => {
       sliderNativeElement = sliderDebugElement.nativeElement;
       sliderInstance = sliderDebugElement.injector.get<MatSlider>(MatSlider);
       trackFillElement = <HTMLElement>sliderNativeElement.querySelector('.mat-slider-track-fill');
-      ticksContainerElement =
-          <HTMLElement>sliderNativeElement.querySelector('.mat-slider-ticks-container');
+      ticksContainerElement = <HTMLElement>(
+        sliderNativeElement.querySelector('.mat-slider-ticks-container')
+      );
       ticksElement = <HTMLElement>sliderNativeElement.querySelector('.mat-slider-ticks');
     });
 
@@ -354,7 +354,7 @@ describe('MatSlider', () => {
 
       // Computed by multiplying the difference between the min and the max by the percentage from
       // the mousedown and adding that to the minimum.
-      const value = Math.round(4 + (0.09 * (6 - 4)));
+      const value = Math.round(4 + 0.09 * (6 - 4));
       expect(sliderInstance.value).toBe(value);
     });
 
@@ -364,7 +364,7 @@ describe('MatSlider', () => {
 
       // Computed by multiplying the difference between the min and the max by the percentage from
       // the mousedown and adding that to the minimum.
-      const value = Math.round(4 + (0.62 * (6 - 4)));
+      const value = Math.round(4 + 0.62 * (6 - 4));
       expect(sliderInstance.value).toBe(value);
     });
 
@@ -415,28 +415,29 @@ describe('MatSlider', () => {
       expect(ticksContainerElement.style.transform).toBe('translateX(-25%)');
     });
 
-    it('should be able to set the min and max values when they are more precise ' +
-      'than the step', () => {
-      // Note that we assign min/max with more decimals than the
-      // step to ensure that the value doesn't get rounded up.
-      testComponent.step = 0.5;
-      testComponent.min = 10.15;
-      testComponent.max = 50.15;
-      fixture.detectChanges();
+    it(
+      'should be able to set the min and max values when they are more precise ' + 'than the step',
+      () => {
+        // Note that we assign min/max with more decimals than the
+        // step to ensure that the value doesn't get rounded up.
+        testComponent.step = 0.5;
+        testComponent.min = 10.15;
+        testComponent.max = 50.15;
+        fixture.detectChanges();
 
-      dispatchSlideEventSequence(sliderNativeElement, 0.5, 0);
-      fixture.detectChanges();
+        dispatchSlideEventSequence(sliderNativeElement, 0.5, 0);
+        fixture.detectChanges();
 
-      expect(sliderInstance.value).toBe(10.15);
-      expect(sliderInstance.percent).toBe(0);
+        expect(sliderInstance.value).toBe(10.15);
+        expect(sliderInstance.percent).toBe(0);
 
-      dispatchSlideEventSequence(sliderNativeElement, 0.5, 1);
-      fixture.detectChanges();
+        dispatchSlideEventSequence(sliderNativeElement, 0.5, 1);
+        fixture.detectChanges();
 
-      expect(sliderInstance.value).toBe(50.15);
-      expect(sliderInstance.percent).toBe(1);
-    });
-
+        expect(sliderInstance.value).toBe(50.15);
+        expect(sliderInstance.percent).toBe(1);
+      },
+    );
   });
 
   describe('slider with set value', () => {
@@ -583,7 +584,6 @@ describe('MatSlider', () => {
 
       expect(sliderNativeElement.getAttribute('aria-valuetext')).toBeFalsy();
     });
-
   });
 
   describe('slider with auto ticks', () => {
@@ -599,8 +599,9 @@ describe('MatSlider', () => {
 
       sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider))!;
       sliderNativeElement = sliderDebugElement.nativeElement;
-      ticksContainerElement =
-          <HTMLElement>sliderNativeElement.querySelector('.mat-slider-ticks-container');
+      ticksContainerElement = <HTMLElement>(
+        sliderNativeElement.querySelector('.mat-slider-ticks-container')
+      );
       ticksElement = <HTMLElement>sliderNativeElement.querySelector('.mat-slider-ticks');
     });
 
@@ -629,8 +630,9 @@ describe('MatSlider', () => {
 
       sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider))!;
       sliderNativeElement = sliderDebugElement.nativeElement;
-      ticksContainerElement =
-          <HTMLElement>sliderNativeElement.querySelector('.mat-slider-ticks-container');
+      ticksContainerElement = <HTMLElement>(
+        sliderNativeElement.querySelector('.mat-slider-ticks-container')
+      );
       ticksElement = <HTMLElement>sliderNativeElement.querySelector('.mat-slider-ticks');
     });
 
@@ -648,13 +650,16 @@ describe('MatSlider', () => {
 
     it('should be able to reset the tick interval after it has been set', () => {
       expect(sliderNativeElement.classList)
-        .withContext('Expected element to have ticks initially.').toContain('mat-slider-has-ticks');
+        .withContext('Expected element to have ticks initially.')
+        .toContain('mat-slider-has-ticks');
 
       fixture.componentInstance.tickInterval = 0;
       fixture.detectChanges();
 
-      expect(sliderNativeElement.classList)
-          .not.toContain('mat-slider-has-ticks', 'Expected element not to have ticks after reset.');
+      expect(sliderNativeElement.classList).not.toContain(
+        'mat-slider-has-ticks',
+        'Expected element not to have ticks after reset.',
+      );
     });
   });
 
@@ -869,36 +874,39 @@ describe('MatSlider', () => {
       expect(testComponent.onChange).toHaveBeenCalledTimes(1);
     });
 
-    it('should dispatch events when changing back to previously emitted value after ' +
-        'programmatically setting value', () => {
-      expect(testComponent.onChange).not.toHaveBeenCalled();
-      expect(testComponent.onInput).not.toHaveBeenCalled();
+    it(
+      'should dispatch events when changing back to previously emitted value after ' +
+        'programmatically setting value',
+      () => {
+        expect(testComponent.onChange).not.toHaveBeenCalled();
+        expect(testComponent.onInput).not.toHaveBeenCalled();
 
-      dispatchMousedownEventSequence(sliderNativeElement, 0.2);
-      fixture.detectChanges();
+        dispatchMousedownEventSequence(sliderNativeElement, 0.2);
+        fixture.detectChanges();
 
-      expect(testComponent.onChange).not.toHaveBeenCalled();
-      expect(testComponent.onInput).toHaveBeenCalledTimes(1);
+        expect(testComponent.onChange).not.toHaveBeenCalled();
+        expect(testComponent.onInput).toHaveBeenCalledTimes(1);
 
-      dispatchSlideEndEvent(sliderNativeElement, 0.2);
-      fixture.detectChanges();
+        dispatchSlideEndEvent(sliderNativeElement, 0.2);
+        fixture.detectChanges();
 
-      expect(testComponent.onChange).toHaveBeenCalledTimes(1);
-      expect(testComponent.onInput).toHaveBeenCalledTimes(1);
+        expect(testComponent.onChange).toHaveBeenCalledTimes(1);
+        expect(testComponent.onInput).toHaveBeenCalledTimes(1);
 
-      testComponent.slider.value = 0;
-      fixture.detectChanges();
+        testComponent.slider.value = 0;
+        fixture.detectChanges();
 
-      expect(testComponent.onChange).toHaveBeenCalledTimes(1);
-      expect(testComponent.onInput).toHaveBeenCalledTimes(1);
+        expect(testComponent.onChange).toHaveBeenCalledTimes(1);
+        expect(testComponent.onInput).toHaveBeenCalledTimes(1);
 
-      dispatchMousedownEventSequence(sliderNativeElement, 0.2);
-      fixture.detectChanges();
-      dispatchSlideEndEvent(sliderNativeElement, 0.2);
+        dispatchMousedownEventSequence(sliderNativeElement, 0.2);
+        fixture.detectChanges();
+        dispatchSlideEndEvent(sliderNativeElement, 0.2);
 
-      expect(testComponent.onChange).toHaveBeenCalledTimes(2);
-      expect(testComponent.onInput).toHaveBeenCalledTimes(2);
-    });
+        expect(testComponent.onChange).toHaveBeenCalledTimes(2);
+        expect(testComponent.onInput).toHaveBeenCalledTimes(2);
+      },
+    );
   });
 
   describe('slider with input event', () => {
@@ -946,7 +954,6 @@ describe('MatSlider', () => {
       expect(testComponent.onInput).toHaveBeenCalledTimes(1);
       expect(testComponent.onChange).toHaveBeenCalledTimes(1);
     });
-
   });
 
   describe('keyboard support', () => {
@@ -1090,21 +1097,19 @@ describe('MatSlider', () => {
     it('should ignore events modifier keys', () => {
       sliderInstance.value = 0;
 
-      [
-        UP_ARROW, DOWN_ARROW, RIGHT_ARROW,
-        LEFT_ARROW, PAGE_DOWN, PAGE_UP, HOME, END
-      ].forEach(key => {
-        const event = createKeyboardEvent('keydown', key, undefined, {alt: true});
-        dispatchEvent(sliderNativeElement, event);
-        fixture.detectChanges();
-        expect(event.defaultPrevented).toBe(false);
-      });
+      [UP_ARROW, DOWN_ARROW, RIGHT_ARROW, LEFT_ARROW, PAGE_DOWN, PAGE_UP, HOME, END].forEach(
+        key => {
+          const event = createKeyboardEvent('keydown', key, undefined, {alt: true});
+          dispatchEvent(sliderNativeElement, event);
+          fixture.detectChanges();
+          expect(event.defaultPrevented).toBe(false);
+        },
+      );
 
       expect(testComponent.onInput).not.toHaveBeenCalled();
       expect(testComponent.onChange).not.toHaveBeenCalled();
       expect(sliderInstance.value).toBe(0);
     });
-
   });
 
   describe('slider with direction and invert', () => {
@@ -1243,7 +1248,8 @@ describe('MatSlider', () => {
       fixture.detectChanges();
 
       expect(sliderNativeElement.classList.contains('mat-slider-hide-last-tick'))
-        .withContext('last tick should be hidden').toBe(true);
+        .withContext('last tick should be hidden')
+        .toBe(true);
     });
   });
 
@@ -1310,7 +1316,6 @@ describe('MatSlider', () => {
   });
 
   describe('tabindex', () => {
-
     it('should allow setting the tabIndex through binding', () => {
       const fixture = createComponent(SliderWithTabIndexBinding);
       fixture.detectChanges();
@@ -1318,13 +1323,13 @@ describe('MatSlider', () => {
       const slider = fixture.debugElement.query(By.directive(MatSlider))!.componentInstance;
 
       expect(slider.tabIndex)
-        .withContext('Expected the tabIndex to be set to 0 by default.').toBe(0);
+        .withContext('Expected the tabIndex to be set to 0 by default.')
+        .toBe(0);
 
       fixture.componentInstance.tabIndex = 3;
       fixture.detectChanges();
 
-      expect(slider.tabIndex)
-        .withContext('Expected the tabIndex to have been changed.').toBe(3);
+      expect(slider.tabIndex).withContext('Expected the tabIndex to have been changed.').toBe(3);
     });
 
     it('should detect the native tabindex attribute', () => {
@@ -1398,7 +1403,6 @@ describe('MatSlider', () => {
 
       expect(testComponent.slider.value).toBe(0);
     }));
-
   });
 
   describe('slider as a custom form control', () => {
@@ -1535,7 +1539,6 @@ describe('MatSlider', () => {
       expect(testComponent.slider.value).toBe(20);
     });
   });
-
 });
 
 // Disable animations and make the slider an even 100px (+ 8px padding on either side)
@@ -1550,13 +1553,13 @@ const styles = `
   template: `<mat-slider></mat-slider>`,
   styles: [styles],
 })
-class StandardSlider { }
+class StandardSlider {}
 
 @Component({
   template: `<mat-slider disabled></mat-slider>`,
   styles: [styles],
 })
-class DisabledSlider { }
+class DisabledSlider {}
 
 @Component({
   template: `<mat-slider [min]="min" [max]="max" [step]="step" tickInterval="6"></mat-slider>`,
@@ -1572,7 +1575,7 @@ class SliderWithMinAndMax {
   template: `<mat-slider value="26"></mat-slider>`,
   styles: [styles],
 })
-class SliderWithValue { }
+class SliderWithValue {}
 
 @Component({
   template: `<mat-slider [step]="step" [valueText]="valueText"></mat-slider>`,
@@ -1587,7 +1590,7 @@ class SliderWithStep {
   template: `<mat-slider step="5" tickInterval="auto"></mat-slider>`,
   styles: [styles],
 })
-class SliderWithAutoTickInterval { }
+class SliderWithAutoTickInterval {}
 
 @Component({
   template: `<mat-slider step="3" [tickInterval]="tickInterval"></mat-slider>`,
@@ -1601,8 +1604,7 @@ class SliderWithSetTickInterval {
   template: `<mat-slider thumbLabel></mat-slider>`,
   styles: [styles],
 })
-class SliderWithThumbLabel { }
-
+class SliderWithThumbLabel {}
 
 @Component({
   template: `<mat-slider min="1" max="100000" [displayWith]="displayWith" thumbLabel></mat-slider>`,
@@ -1611,13 +1613,12 @@ class SliderWithThumbLabel { }
 class SliderWithCustomThumbLabelFormatting {
   displayWith(value: number) {
     if (value >= 1000) {
-      return (value / 1000) + 'k';
+      return value / 1000 + 'k';
     }
 
     return value;
   }
 }
-
 
 @Component({
   template: `<mat-slider [value]="val"></mat-slider>`,
@@ -1648,21 +1649,21 @@ class SliderWithNgModel {
   template: `<mat-slider value="3" min="4" max="6"></mat-slider>`,
   styles: [styles],
 })
-class SliderWithValueSmallerThanMin { }
+class SliderWithValueSmallerThanMin {}
 
 @Component({
   template: `<mat-slider value="7" min="4" max="6"></mat-slider>`,
   styles: [styles],
 })
-class SliderWithValueGreaterThanMax { }
+class SliderWithValueGreaterThanMax {}
 
 @Component({
   template: `<mat-slider (change)="onChange($event)" (input)="onInput($event)"></mat-slider>`,
   styles: [styles],
 })
 class SliderWithChangeHandler {
-  onChange() { }
-  onInput() { }
+  onChange() {}
+  onInput() {}
 
   @ViewChild(MatSlider) slider: MatSlider;
 }
@@ -1717,12 +1718,15 @@ class SliderWithTwoWayBinding {
  * physical location of the pointer.
  * @param button Button that should be held down when starting to drag the slider.
  */
-function dispatchMousedownEventSequence(sliderElement: HTMLElement, percentage: number,
-                                        button = 0): void {
+function dispatchMousedownEventSequence(
+  sliderElement: HTMLElement,
+  percentage: number,
+  button = 0,
+): void {
   const trackElement = sliderElement.querySelector('.mat-slider-wrapper')!;
   const dimensions = trackElement.getBoundingClientRect();
-  const x = dimensions.left + (dimensions.width * percentage);
-  const y = dimensions.top + (dimensions.height * percentage);
+  const x = dimensions.left + dimensions.width * percentage;
+  const y = dimensions.top + dimensions.height * percentage;
 
   dispatchMouseenterEvent(sliderElement);
   dispatchEvent(sliderElement, createMouseEvent('mousedown', x, y, button));
@@ -1734,8 +1738,11 @@ function dispatchMousedownEventSequence(sliderElement: HTMLElement, percentage: 
  * @param startPercent The percentage of the slider where the slide will begin.
  * @param endPercent The percentage of the slider where the slide will end.
  */
-function dispatchSlideEventSequence(sliderElement: HTMLElement, startPercent: number,
-                                    endPercent: number): void {
+function dispatchSlideEventSequence(
+  sliderElement: HTMLElement,
+  startPercent: number,
+  endPercent: number,
+): void {
   dispatchMouseenterEvent(sliderElement);
   dispatchSlideStartEvent(sliderElement, startPercent);
   dispatchSlideEvent(sliderElement, startPercent);
@@ -1751,8 +1758,8 @@ function dispatchSlideEventSequence(sliderElement: HTMLElement, startPercent: nu
 function dispatchSlideEvent(sliderElement: HTMLElement, percent: number): void {
   const trackElement = sliderElement.querySelector('.mat-slider-wrapper')!;
   const dimensions = trackElement.getBoundingClientRect();
-  const x = dimensions.left + (dimensions.width * percent);
-  const y = dimensions.top + (dimensions.height * percent);
+  const x = dimensions.left + dimensions.width * percent;
+  const y = dimensions.top + dimensions.height * percent;
   dispatchMouseEvent(document, 'mousemove', x, y);
 }
 
@@ -1764,8 +1771,8 @@ function dispatchSlideEvent(sliderElement: HTMLElement, percent: number): void {
 function dispatchSlideStartEvent(sliderElement: HTMLElement, percent: number): void {
   const trackElement = sliderElement.querySelector('.mat-slider-wrapper')!;
   const dimensions = trackElement.getBoundingClientRect();
-  const x = dimensions.left + (dimensions.width * percent);
-  const y = dimensions.top + (dimensions.height * percent);
+  const x = dimensions.left + dimensions.width * percent;
+  const y = dimensions.top + dimensions.height * percent;
   dispatchMouseenterEvent(sliderElement);
   dispatchMouseEvent(sliderElement, 'mousedown', x, y);
 }
@@ -1778,8 +1785,8 @@ function dispatchSlideStartEvent(sliderElement: HTMLElement, percent: number): v
 function dispatchSlideEndEvent(sliderElement: HTMLElement, percent: number): void {
   const trackElement = sliderElement.querySelector('.mat-slider-wrapper')!;
   const dimensions = trackElement.getBoundingClientRect();
-  const x = dimensions.left + (dimensions.width * percent);
-  const y = dimensions.top + (dimensions.height * percent);
+  const x = dimensions.left + dimensions.width * percent;
+  const y = dimensions.top + dimensions.height * percent;
   dispatchMouseEvent(document, 'mouseup', x, y);
 }
 

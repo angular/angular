@@ -14,5 +14,4 @@ import {MdcDialogE2E, TestDialog} from './mdc-dialog-e2e';
   imports: [MatDialogModule],
   declarations: [MdcDialogE2E, TestDialog],
 })
-export class MdcDialogE2eModule {
-}
+export class MdcDialogE2eModule {}

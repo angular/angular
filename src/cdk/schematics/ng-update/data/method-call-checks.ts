@@ -12,37 +12,52 @@ import {VersionChanges} from '../../update-tool/version-changes';
 export interface MethodCallUpgradeData {
   className: string;
   method: string;
-  invalidArgCounts: {count: number, message: string}[];
+  invalidArgCounts: {count: number; message: string}[];
 }
 
 export const methodCallChecks: VersionChanges<MethodCallUpgradeData> = {
-  [TargetVersion.V11]: [{
-    pr: 'https://github.com/angular/components/pull/20500',
-    changes: [{
-      className: 'DropListRef',
-      method: 'drop',
-      invalidArgCounts: [{
-        count: 5,
-        message: 'The "previousIndex" parameter is required and the parameter order has changed.'
-      }]
-    }]
-  }],
-  [TargetVersion.V9]: [{
-    pr: 'https://github.com/angular/components/pull/17084',
-    changes: [{
-      className: 'DropListRef',
-      method: 'drop',
-      invalidArgCounts: [{count: 4, message: 'The "distance" parameter is required'}]
-    }]
-  }],
+  [TargetVersion.V11]: [
+    {
+      pr: 'https://github.com/angular/components/pull/20500',
+      changes: [
+        {
+          className: 'DropListRef',
+          method: 'drop',
+          invalidArgCounts: [
+            {
+              count: 5,
+              message:
+                'The "previousIndex" parameter is required and the parameter order has changed.',
+            },
+          ],
+        },
+      ],
+    },
+  ],
+  [TargetVersion.V9]: [
+    {
+      pr: 'https://github.com/angular/components/pull/17084',
+      changes: [
+        {
+          className: 'DropListRef',
+          method: 'drop',
+          invalidArgCounts: [{count: 4, message: 'The "distance" parameter is required'}],
+        },
+      ],
+    },
+  ],
   [TargetVersion.V8]: [],
   [TargetVersion.V7]: [],
-  [TargetVersion.V6]: [{
-    pr: 'https://github.com/angular/components/pull/10325',
-    changes: [{
-      className: 'FocusMonitor',
-      method: 'monitor',
-      invalidArgCounts: [{count: 3, message: 'The "renderer" argument has been removed'}]
-    }]
-  }]
+  [TargetVersion.V6]: [
+    {
+      pr: 'https://github.com/angular/components/pull/10325',
+      changes: [
+        {
+          className: 'FocusMonitor',
+          method: 'monitor',
+          invalidArgCounts: [{count: 3, message: 'The "renderer" argument has been removed'}],
+        },
+      ],
+    },
+  ],
 };

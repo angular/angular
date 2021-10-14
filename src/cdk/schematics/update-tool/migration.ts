@@ -25,7 +25,7 @@ export type PostMigrationAction = void | {
 };
 
 /** Creates a constructor type for the specified type. */
-export type Constructor<T> = (new (...args: any[]) => T);
+export type Constructor<T> = new (...args: any[]) => T;
 /** Gets a constructor type for the passed migration data. */
 export type MigrationCtor<Data, Context = any> = Constructor<Migration<Data, Context>>;
 
@@ -37,20 +37,21 @@ export abstract class Migration<Data, Context = any> {
   abstract enabled: boolean;
 
   constructor(
-      /** TypeScript program for the migration. */
-      public program: ts.Program,
-      /** TypeChecker instance for the analysis program. */
-      public typeChecker: ts.TypeChecker,
-      /** Version for which the migration rule should run. */
-      public targetVersion: TargetVersion,
-      /** Context data for the migration. */
-      public context: Context,
-      /** Upgrade data passed to the migration. */
-      public upgradeData: Data,
-      /** File system that can be used for modifying files. */
-      public fileSystem: FileSystem,
-      /** Logger that can be used to print messages as part of the migration. */
-      public logger: UpdateLogger) {}
+    /** TypeScript program for the migration. */
+    public program: ts.Program,
+    /** TypeChecker instance for the analysis program. */
+    public typeChecker: ts.TypeChecker,
+    /** Version for which the migration rule should run. */
+    public targetVersion: TargetVersion,
+    /** Context data for the migration. */
+    public context: Context,
+    /** Upgrade data passed to the migration. */
+    public upgradeData: Data,
+    /** File system that can be used for modifying files. */
+    public fileSystem: FileSystem,
+    /** Logger that can be used to print messages as part of the migration. */
+    public logger: UpdateLogger,
+  ) {}
 
   /** Method can be used to perform global analysis of the program. */
   init(): void {}

@@ -15,5 +15,4 @@ import {MdcInputE2E} from './mdc-input-e2e';
   imports: [MatFormFieldModule, MatInputModule],
   declarations: [MdcInputE2E],
 })
-export class MdcInputE2eModule {
-}
+export class MdcInputE2eModule {}

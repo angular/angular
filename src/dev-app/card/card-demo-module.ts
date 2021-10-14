@@ -24,5 +24,4 @@ import {CardDemo} from './card-demo';
   ],
   declarations: [CardDemo],
 })
-export class CardDemoModule {
-}
+export class CardDemoModule {}

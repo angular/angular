@@ -31,11 +31,9 @@ import {panelAnimation} from './animations';
   exportAs: 'matAutocomplete',
   inputs: ['disableRipple'],
   host: {
-    'class': 'mat-mdc-autocomplete'
+    'class': 'mat-mdc-autocomplete',
   },
-  providers: [
-    {provide: MAT_OPTION_PARENT_COMPONENT, useExisting: MatAutocomplete}
-  ],
+  providers: [{provide: MAT_OPTION_PARENT_COMPONENT, useExisting: MatAutocomplete}],
   animations: [panelAnimation],
 })
 export class MatAutocomplete extends _MatAutocompleteBase {
@@ -46,4 +44,3 @@ export class MatAutocomplete extends _MatAutocompleteBase {
   protected _visibleClass = 'mat-mdc-autocomplete-visible';
   protected _hiddenClass = 'mat-mdc-autocomplete-hidden';
 }
-

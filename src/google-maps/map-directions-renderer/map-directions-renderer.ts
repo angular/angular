@@ -17,7 +17,7 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
 } from '@angular/core';
 import {Observable} from 'rxjs';
 import {GoogleMap} from '../google-map/google-map';
@@ -62,7 +62,7 @@ export class MapDirectionsRenderer implements OnInit, OnChanges, OnDestroy {
    */
   @Output()
   readonly directionsChanged: Observable<void> =
-      this._eventManager.getLazyEmitter<void>('directions_changed');
+    this._eventManager.getLazyEmitter<void>('directions_changed');
 
   /** The underlying google.maps.DirectionsRenderer object. */
   directionsRenderer?: google.maps.DirectionsRenderer;
@@ -138,19 +138,22 @@ export class MapDirectionsRenderer implements OnInit, OnChanges, OnDestroy {
     };
   }
 
-  private _assertInitialized():
-      asserts this is {directionsRenderer: google.maps.DirectionsRenderer} {
+  private _assertInitialized(): asserts this is {
+    directionsRenderer: google.maps.DirectionsRenderer;
+  } {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       if (!this._googleMap.googleMap) {
         throw Error(
-            'Cannot access Google Map information before the API has been initialized. ' +
-            'Please wait for the API to load before trying to interact with it.');
+          'Cannot access Google Map information before the API has been initialized. ' +
+            'Please wait for the API to load before trying to interact with it.',
+        );
       }
       if (!this.directionsRenderer) {
         throw Error(
-            'Cannot interact with a Google Map Directions Renderer before it has been ' +
+          'Cannot interact with a Google Map Directions Renderer before it has been ' +
             'initialized. Please wait for the Directions Renderer to load before trying ' +
-            'to interact with it.');
+            'to interact with it.',
+        );
       }
     }
   }

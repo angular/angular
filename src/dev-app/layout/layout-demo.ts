@@ -8,10 +8,9 @@
 
 import {Component} from '@angular/core';
 
-
 @Component({
   selector: 'layout-demo',
   templateUrl: 'layout-demo.html',
   styleUrls: ['layout-demo.css'],
 })
-export class LayoutDemo { }
+export class LayoutDemo {}

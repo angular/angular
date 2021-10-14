@@ -7,7 +7,6 @@ import {MatIconHarness} from '@angular/material/icon/testing';
 import {MatChipsModule} from '../index';
 import {MatChipHarness} from './chip-harness';
 
-
 describe('MatChipHarness', () => {
   let fixture: ComponentFixture<ChipHarnessTest>;
   let loader: HarnessLoader;
@@ -58,9 +57,11 @@ describe('MatChipHarness', () => {
   });
 
   it('should find avatar in chip', async () => {
-    const chip = await loader.getHarness(MatChipHarness.with({
-      selector: '.mat-mdc-chip-with-avatar'
-    }));
+    const chip = await loader.getHarness(
+      MatChipHarness.with({
+        selector: '.mat-mdc-chip-with-avatar',
+      }),
+    );
     const avatar = await chip.getAvatar();
     expect(avatar).toBeTruthy();
     const avatarHost = await avatar?.host();
@@ -68,9 +69,11 @@ describe('MatChipHarness', () => {
   });
 
   it('should find icon in chip', async () => {
-    const chip = await loader.getHarness(MatChipHarness.with({
-      selector: '.mat-mdc-chip-with-icon-avatar'
-    }));
+    const chip = await loader.getHarness(
+      MatChipHarness.with({
+        selector: '.mat-mdc-chip-with-icon-avatar',
+      }),
+    );
     expect(chip).toBeTruthy();
     const icon = await chip.getHarness(MatIconHarness);
     expect(icon).toBeTruthy();
@@ -91,7 +94,7 @@ describe('MatChipHarness', () => {
       disabled>Disabled Chip <span matChipRemove>remove_icon</span>
     </mat-chip>
     <mat-chip-row (removed)="removeChip()">Chip Row</mat-chip-row>
-  `
+  `,
 })
 class ChipHarnessTest {
   removeChip() {}

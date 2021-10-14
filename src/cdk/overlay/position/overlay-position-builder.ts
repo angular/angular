@@ -17,13 +17,15 @@ import {
 } from './flexible-connected-position-strategy';
 import {GlobalPositionStrategy} from './global-position-strategy';
 
-
 /** Builder for overlay position strategy. */
 @Injectable({providedIn: 'root'})
 export class OverlayPositionBuilder {
   constructor(
-      private _viewportRuler: ViewportRuler, @Inject(DOCUMENT) private _document: any,
-      private _platform: Platform, private _overlayContainer: OverlayContainer) {}
+    private _viewportRuler: ViewportRuler,
+    @Inject(DOCUMENT) private _document: any,
+    private _platform: Platform,
+    private _overlayContainer: OverlayContainer,
+  ) {}
 
   /**
    * Creates a global position strategy.
@@ -36,10 +38,15 @@ export class OverlayPositionBuilder {
    * Creates a flexible position strategy.
    * @param origin Origin relative to which to position the overlay.
    */
-  flexibleConnectedTo(origin: FlexibleConnectedPositionStrategyOrigin):
-    FlexibleConnectedPositionStrategy {
-    return new FlexibleConnectedPositionStrategy(origin, this._viewportRuler, this._document,
-        this._platform, this._overlayContainer);
+  flexibleConnectedTo(
+    origin: FlexibleConnectedPositionStrategyOrigin,
+  ): FlexibleConnectedPositionStrategy {
+    return new FlexibleConnectedPositionStrategy(
+      origin,
+      this._viewportRuler,
+      this._document,
+      this._platform,
+      this._overlayContainer,
+    );
   }
-
 }

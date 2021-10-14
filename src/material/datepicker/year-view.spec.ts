@@ -21,27 +21,25 @@ import {MatYearView} from './year-view';
 describe('MatYearView', () => {
   let dir: {value: Direction};
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [
-        MatNativeDateModule,
-      ],
-      declarations: [
-        MatCalendarBody,
-        MatYearView,
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [MatNativeDateModule],
+        declarations: [
+          MatCalendarBody,
+          MatYearView,
 
-        // Test components.
-        StandardYearView,
-        YearViewWithDateFilter,
-        YearViewWithDateClass,
-      ],
-      providers: [
-        {provide: Directionality, useFactory: () => dir = {value: 'ltr'}}
-      ]
-    });
+          // Test components.
+          StandardYearView,
+          YearViewWithDateFilter,
+          YearViewWithDateClass,
+        ],
+        providers: [{provide: Directionality, useFactory: () => (dir = {value: 'ltr'})}],
+      });
 
-    TestBed.compileComponents();
-  }));
+      TestBed.compileComponents();
+    }),
+  );
 
   describe('standard year view', () => {
     let fixture: ComponentFixture<StandardYearView>;
@@ -127,8 +125,9 @@ describe('MatYearView', () => {
 
         beforeEach(() => {
           calendarInstance = fixture.componentInstance;
-          calendarBodyEl =
-            fixture.debugElement.nativeElement.querySelector('.mat-calendar-body') as HTMLElement;
+          calendarBodyEl = fixture.debugElement.nativeElement.querySelector(
+            '.mat-calendar-body',
+          ) as HTMLElement;
           expect(calendarBodyEl).not.toBeNull();
           dir.value = 'ltr';
           fixture.componentInstance.date = new Date(2017, JAN, 5);
@@ -311,8 +310,11 @@ describe('MatYearView', () => {
       const fixture = TestBed.createComponent(YearViewWithDateFilter);
       const activeDate = fixture.componentInstance.activeDate;
       const spy = spyOn(fixture.componentInstance, 'dateFilter').and.callThrough();
-      fixture.componentInstance.minDate =
-          new Date(activeDate.getFullYear() + 1, activeDate.getMonth(), activeDate.getDate());
+      fixture.componentInstance.minDate = new Date(
+        activeDate.getFullYear() + 1,
+        activeDate.getMonth(),
+        activeDate.getDate(),
+      );
       fixture.detectChanges();
 
       expect(spy).not.toHaveBeenCalled();
@@ -322,13 +324,15 @@ describe('MatYearView', () => {
       const fixture = TestBed.createComponent(YearViewWithDateFilter);
       const activeDate = fixture.componentInstance.activeDate;
       const spy = spyOn(fixture.componentInstance, 'dateFilter').and.callThrough();
-      fixture.componentInstance.maxDate =
-          new Date(activeDate.getFullYear() - 1, activeDate.getMonth(), activeDate.getDate());
+      fixture.componentInstance.maxDate = new Date(
+        activeDate.getFullYear() - 1,
+        activeDate.getMonth(),
+        activeDate.getDate(),
+      );
       fixture.detectChanges();
 
       expect(spy).not.toHaveBeenCalled();
     });
-
   });
 
   describe('year view with custom date classes', () => {
@@ -355,14 +359,12 @@ describe('MatYearView', () => {
       expect(dateClassSpy).toHaveBeenCalledWith(jasmine.any(Date), 'year');
     });
   });
-
 });
-
 
 @Component({
   template: `
     <mat-year-view [(activeDate)]="date" [(selected)]="selected"
-                   (monthSelected)="selectedMonth=$event"></mat-year-view>`
+                   (monthSelected)="selectedMonth=$event"></mat-year-view>`,
 })
 class StandardYearView {
   date = new Date(2017, JAN, 5);
@@ -372,14 +374,13 @@ class StandardYearView {
   @ViewChild(MatYearView) yearView: MatYearView<Date>;
 }
 
-
 @Component({
   template: `
     <mat-year-view
       [activeDate]="activeDate"
       [dateFilter]="dateFilter"
       [minDate]="minDate"
-      [maxDate]="maxDate"></mat-year-view>`
+      [maxDate]="maxDate"></mat-year-view>`,
 })
 class YearViewWithDateFilter {
   activeDate = new Date(2017, JAN, 1);
@@ -396,9 +397,8 @@ class YearViewWithDateFilter {
   }
 }
 
-
 @Component({
-  template: `<mat-year-view [activeDate]="activeDate" [dateClass]="dateClass"></mat-year-view>`
+  template: `<mat-year-view [activeDate]="activeDate" [dateClass]="dateClass"></mat-year-view>`,
 })
 class YearViewWithDateClass {
   activeDate = new Date(2017, JAN, 1);

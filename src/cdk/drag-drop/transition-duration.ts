@@ -30,8 +30,10 @@ export function getTransformTransitionDurationInMs(element: HTMLElement): number
   const rawDurations = parseCssPropertyValue(computedStyle, 'transition-duration');
   const rawDelays = parseCssPropertyValue(computedStyle, 'transition-delay');
 
-  return parseCssTimeUnitsToMs(rawDurations[propertyIndex]) +
-         parseCssTimeUnitsToMs(rawDelays[propertyIndex]);
+  return (
+    parseCssTimeUnitsToMs(rawDurations[propertyIndex]) +
+    parseCssTimeUnitsToMs(rawDelays[propertyIndex])
+  );
 }
 
 /** Parses out multiple values from a computed style into an array. */

@@ -46,8 +46,6 @@ import {_MatOptgroupBase, MAT_OPTGROUP} from '@angular/material/core';
     '[attr.aria-disabled]': '_inert ? null : disabled.toString()',
     '[attr.aria-labelledby]': '_inert ? null : _labelId',
   },
-  providers: [
-    {provide: MAT_OPTGROUP, useExisting: MatOptgroup}
-  ]
+  providers: [{provide: MAT_OPTGROUP, useExisting: MatOptgroup}],
 })
 export class MatOptgroup extends _MatOptgroupBase {}

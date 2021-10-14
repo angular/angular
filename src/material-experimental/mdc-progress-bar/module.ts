@@ -14,5 +14,4 @@ import {MatProgressBar} from './progress-bar';
   exports: [MatProgressBar, MatCommonModule],
   declarations: [MatProgressBar],
 })
-export class MatProgressBarModule {
-}
+export class MatProgressBarModule {}

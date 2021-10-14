@@ -11,7 +11,7 @@ import {MatChipAvatarHarness} from './chip-avatar-harness';
 import {
   ChipAvatarHarnessFilters,
   ChipHarnessFilters,
-  ChipRemoveHarnessFilters
+  ChipRemoveHarnessFilters,
 } from './chip-harness-filters';
 import {MatChipRemoveHarness} from './chip-remove-harness';
 
@@ -24,18 +24,23 @@ export class MatChipHarness extends ContentContainerComponentHarness {
    */
   // Note(mmalerba): generics are used as a workaround for lack of polymorphic `this` in static
   // methods. See https://github.com/microsoft/TypeScript/issues/5863
-  static with<T extends typeof MatChipHarness>(this: T, options: ChipHarnessFilters = {}):
-      HarnessPredicate<InstanceType<T>> {
-    return new HarnessPredicate(MatChipHarness, options)
-      .addOption('text', options.text, (harness, label) => {
+  static with<T extends typeof MatChipHarness>(
+    this: T,
+    options: ChipHarnessFilters = {},
+  ): HarnessPredicate<InstanceType<T>> {
+    return new HarnessPredicate(MatChipHarness, options).addOption(
+      'text',
+      options.text,
+      (harness, label) => {
         return HarnessPredicate.stringMatches(harness.getText(), label);
-      }) as unknown as HarnessPredicate<InstanceType<T>>;
+      },
+    ) as unknown as HarnessPredicate<InstanceType<T>>;
   }
 
   /** Gets a promise for the text content the option. */
   async getText(): Promise<string> {
     return (await this.host()).text({
-      exclude: '.mat-mdc-chip-avatar, .mat-mdc-chip-trailing-icon, .mat-icon'
+      exclude: '.mat-mdc-chip-avatar, .mat-mdc-chip-trailing-icon, .mat-icon',
     });
   }
 

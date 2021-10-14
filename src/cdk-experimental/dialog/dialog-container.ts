@@ -36,11 +36,9 @@ import {Subject} from 'rxjs';
 import {distinctUntilChanged} from 'rxjs/operators';
 import {DialogConfig} from './dialog-config';
 
-
 export function throwDialogContentAlreadyAttachedError() {
   throw Error('Attempting to attach dialog content after content is already attached');
 }
-
 
 /**
  * Internal component that wraps user-provided dialog content.
@@ -60,7 +58,7 @@ export function throwDialogContentAlreadyAttachedError() {
       state('exit, void', style({opacity: 0})),
       transition('* => enter', animate('{{enterAnimationDuration}}')),
       transition('* => exit, * => void', animate('{{exitAnimationDuration}}')),
-    ])
+    ]),
   ],
   host: {
     '[@dialog]': `{
@@ -83,23 +81,31 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
   /** Element that was focused before the dialog was opened. Save this to restore upon close. */
   private _elementFocusedBeforeDialogWasOpened: HTMLElement | null = null;
 
-   /** The class that traps and manages focus within the dialog. */
+  /** The class that traps and manages focus within the dialog. */
   private _focusTrap = this._focusTrapFactory.create(this._elementRef.nativeElement);
 
   // @HostBinding is used in the class as it is expected to be extended. Since @Component decorator
   // metadata is not inherited by child classes, instead the host binding data is defined in a way
   // that can be inherited.
   // tslint:disable:no-host-decorator-in-concrete no-private-getters
-  @HostBinding('attr.aria-label') get _ariaLabel() { return this._config.ariaLabel || null; }
+  @HostBinding('attr.aria-label') get _ariaLabel() {
+    return this._config.ariaLabel || null;
+  }
 
   @HostBinding('attr.aria-describedby')
-  get _ariaDescribedBy() { return this._config.ariaDescribedBy; }
+  get _ariaDescribedBy() {
+    return this._config.ariaDescribedBy;
+  }
 
-  @HostBinding('attr.role') get _role() { return this._config.role; }
+  @HostBinding('attr.role') get _role() {
+    return this._config.role;
+  }
 
   @HostBinding('attr.aria-modal') _ariaModal: boolean = true;
 
-  @HostBinding('attr.tabindex') get _tabindex() { return -1; }
+  @HostBinding('attr.tabindex') get _tabindex() {
+    return -1;
+  }
   // tslint:disable:no-host-decorator-in-concrete no-private-getters
 
   /** The portal host inside of this container into which the dialog content will be loaded. */
@@ -128,7 +134,8 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
     private readonly _ngZone: NgZone,
     @Optional() @Inject(DOCUMENT) _document: any,
     /** The dialog configuration. */
-    public _config: DialogConfig) {
+    public _config: DialogConfig,
+  ) {
     super();
 
     this._document = _document;
@@ -136,22 +143,26 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
     // We use a Subject with a distinctUntilChanged, rather than a callback attached to .done,
     // because some browsers fire the done event twice and we don't want to emit duplicate events.
     // See: https://github.com/angular/angular/issues/24084
-    this._animationDone.pipe(distinctUntilChanged((x, y) => {
-      return x.fromState === y.fromState && x.toState === y.toState;
-    })).subscribe(event => {
-      // Emit lifecycle events based on animation `done` callback.
-      if (event.toState === 'enter') {
-        this._autoFocus();
-        this._afterEnter.next();
-        this._afterEnter.complete();
-      }
+    this._animationDone
+      .pipe(
+        distinctUntilChanged((x, y) => {
+          return x.fromState === y.fromState && x.toState === y.toState;
+        }),
+      )
+      .subscribe(event => {
+        // Emit lifecycle events based on animation `done` callback.
+        if (event.toState === 'enter') {
+          this._autoFocus();
+          this._afterEnter.next();
+          this._afterEnter.complete();
+        }
 
-      if (event.fromState === 'enter' && (event.toState === 'void' || event.toState === 'exit')) {
-        this._returnFocusAfterDialog();
-        this._afterExit.next();
-        this._afterExit.complete();
-      }
-    });
+        if (event.fromState === 'enter' && (event.toState === 'void' || event.toState === 'exit')) {
+          this._returnFocusAfterDialog();
+          this._afterExit.next();
+          this._afterExit.complete();
+        }
+      });
   }
 
   /** Initializes the dialog container with the attached content. */
@@ -206,7 +217,7 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
     }
 
     return this._portalHost.attachDomPortal(portal);
-  }
+  };
 
   /** Emit lifecycle events based on animation `start` callback. */
   _onAnimationStart(event: AnimationEvent) {
@@ -266,8 +277,9 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
    * @param selector The CSS selector for the element to set focus to.
    */
   private _focusByCssSelector(selector: string, options?: FocusOptions) {
-    let elementToFocus =
-      this._elementRef.nativeElement.querySelector(selector) as HTMLElement | null;
+    let elementToFocus = this._elementRef.nativeElement.querySelector(
+      selector,
+    ) as HTMLElement | null;
     if (elementToFocus) {
       this._forceFocus(elementToFocus, options);
     }
@@ -300,19 +312,18 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
         break;
       case true:
       case 'first-tabbable':
-        this._focusTrap.focusInitialElementWhenReady()
-          .then(hasMovedFocus => {
-            if (!hasMovedFocus) {
-              element.focus();
-            }
-          });
+        this._focusTrap.focusInitialElementWhenReady().then(hasMovedFocus => {
+          if (!hasMovedFocus) {
+            element.focus();
+          }
+        });
         break;
-        case 'first-heading':
-          this._focusByCssSelector('h1, h2, h3, h4, h5, h6, [role="heading"]');
-          break;
-        default:
-          this._focusByCssSelector(this._config.autoFocus!);
-          break;
+      case 'first-heading':
+        this._focusByCssSelector('h1, h2, h3, h4, h5, h6, [role="heading"]');
+        break;
+      default:
+        this._focusByCssSelector(this._config.autoFocus!);
+        break;
     }
   }
 
@@ -328,8 +339,12 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
       // non-focusable element like the backdrop was clicked) before moving it. It's possible that
       // the consumer moved it themselves before the animation was done, in which case we shouldn't
       // do anything.
-      if (!activeElement || activeElement === this._document.body || activeElement === element ||
-        element.contains(activeElement)) {
+      if (
+        !activeElement ||
+        activeElement === this._document.body ||
+        activeElement === element ||
+        element.contains(activeElement)
+      ) {
         toFocus.focus();
       }
     }

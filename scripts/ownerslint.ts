@@ -14,32 +14,42 @@ const ownersFilePath = '.github/CODEOWNERS';
 const gitIgnorePath = '.gitignore';
 
 let errors = 0;
-const ownedPaths = readFileSync(ownersFilePath, 'utf8').split('\n')
-    // Trim lines.
-    .map(line => line.trim())
-    // Remove empty lines and comments.
-    .filter(line => line && !line.startsWith('#'))
-    // Split off just the path glob.
-    .map(line => line.split(/\s+/)[0])
-    // Turn paths into Minimatch objects.
-    .map(path => new Minimatch(path, {dot: true, matchBase: true}));
+const ownedPaths = readFileSync(ownersFilePath, 'utf8')
+  .split('\n')
+  // Trim lines.
+  .map(line => line.trim())
+  // Remove empty lines and comments.
+  .filter(line => line && !line.startsWith('#'))
+  // Split off just the path glob.
+  .map(line => line.split(/\s+/)[0])
+  // Turn paths into Minimatch objects.
+  .map(path => new Minimatch(path, {dot: true, matchBase: true}));
 
-const ignoredPaths = readFileSync(gitIgnorePath, 'utf8').split('\n')
-    // Trim lines.
-    .map(line => line.trim())
-    // Remove empty lines and comments.
-    .filter(line => line && !line.startsWith('#'))
-    // Turn paths into Minimatch objects.
-    .map(path => new Minimatch(path, {dot: true, matchBase: true}));
+const ignoredPaths = readFileSync(gitIgnorePath, 'utf8')
+  .split('\n')
+  // Trim lines.
+  .map(line => line.trim())
+  // Remove empty lines and comments.
+  .filter(line => line && !line.startsWith('#'))
+  // Turn paths into Minimatch objects.
+  .map(path => new Minimatch(path, {dot: true, matchBase: true}));
 
-for (let paths = getChildPaths('.'); paths.length;) {
-  paths = Array.prototype.concat(...paths
+for (let paths = getChildPaths('.'); paths.length; ) {
+  paths = Array.prototype.concat(
+    ...paths
       // Remove ignored paths
-      .filter(path => !ignoredPaths.reduce(
-          (isIgnored, ignoredPath) => isIgnored || ignoredPath.match('/' + path), false))
+      .filter(
+        path =>
+          !ignoredPaths.reduce(
+            (isIgnored, ignoredPath) => isIgnored || ignoredPath.match('/' + path),
+            false,
+          ),
+      )
       // Remove paths that match an owned path.
-      .filter(path => !ownedPaths.reduce(
-          (isOwned, ownedPath) => isOwned || isOwnedBy(path, ownedPath), false))
+      .filter(
+        path =>
+          !ownedPaths.reduce((isOwned, ownedPath) => isOwned || isOwnedBy(path, ownedPath), false),
+      )
       // Report an error for any files that didn't match any owned paths.
       .filter(path => {
         if (statSync(path).isFile()) {
@@ -50,12 +60,15 @@ for (let paths = getChildPaths('.'); paths.length;) {
         return true;
       })
       // Get the next level of children for any directories.
-      .map(path => getChildPaths(path)));
+      .map(path => getChildPaths(path)),
+  );
 }
 
 if (errors) {
-  throw Error(`Found ${errors} files with no owner. Code owners for the files ` +
-              `should be added in the CODEOWNERS file.`);
+  throw Error(
+    `Found ${errors} files with no owner. Code owners for the files ` +
+      `should be added in the CODEOWNERS file.`,
+  );
 }
 
 /** Check if the given path is owned by the given owned path matcher. */

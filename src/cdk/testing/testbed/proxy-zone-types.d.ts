@@ -22,7 +22,7 @@ export interface ProxyZoneStatic {
 }
 
 export interface ProxyZone {
-  lastTaskState: HasTaskState|null;
+  lastTaskState: HasTaskState | null;
   setDelegate(spec: ZoneSpec): void;
   getDelegate(): ZoneSpec;
   onHasTask(delegate: ZoneDelegate, current: Zone, target: Zone, hasTaskState: HasTaskState): void;

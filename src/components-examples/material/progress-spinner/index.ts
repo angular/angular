@@ -5,15 +5,9 @@ import {MatCardModule} from '@angular/material/card';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatSliderModule} from '@angular/material/slider';
-import {
-  ProgressSpinnerConfigurableExample
-} from './progress-spinner-configurable/progress-spinner-configurable-example';
-import {
-  ProgressSpinnerOverviewExample
-} from './progress-spinner-overview/progress-spinner-overview-example';
-import {
-  ProgressSpinnerHarnessExample
-} from './progress-spinner-harness/progress-spinner-harness-example';
+import {ProgressSpinnerConfigurableExample} from './progress-spinner-configurable/progress-spinner-configurable-example';
+import {ProgressSpinnerOverviewExample} from './progress-spinner-overview/progress-spinner-overview-example';
+import {ProgressSpinnerHarnessExample} from './progress-spinner-harness/progress-spinner-harness-example';
 
 export {
   ProgressSpinnerConfigurableExample,
@@ -40,5 +34,4 @@ const EXAMPLES = [
   exports: EXAMPLES,
   entryComponents: EXAMPLES,
 })
-export class ProgressSpinnerExamplesModule {
-}
+export class ProgressSpinnerExamplesModule {}

@@ -21,7 +21,7 @@ import {
 export const MAT_AUTOCOMPLETE_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => MatAutocompleteTrigger),
-  multi: true
+  multi: true,
 };
 
 @Directive({
@@ -43,7 +43,7 @@ export const MAT_AUTOCOMPLETE_VALUE_ACCESSOR: any = {
     '(keydown)': '_handleKeydown($event)',
   },
   exportAs: 'matAutocompleteTrigger',
-  providers: [MAT_AUTOCOMPLETE_VALUE_ACCESSOR]
+  providers: [MAT_AUTOCOMPLETE_VALUE_ACCESSOR],
 })
 export class MatAutocompleteTrigger extends _MatAutocompleteTriggerBase {
   protected _aboveClass = 'mat-mdc-autocomplete-panel-above';

@@ -15,7 +15,7 @@ export class CdkSelectionColumnExample {
   selected: string[] = [];
 
   selectionChanged(event: SelectionChange<PeriodicElement>) {
-    this.selected = event.after.map((select) => select.value.name);
+    this.selected = event.after.map(select => select.value.name);
   }
 }
 

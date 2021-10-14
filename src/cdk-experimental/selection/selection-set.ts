@@ -45,7 +45,7 @@ export interface SelectionChange<T> {
  * expected to be set when calling `isSelected`, `select` and `deselect`.
  */
 export class SelectionSet<T> implements TrackBySelection<T> {
-  private _selectionMap = new Map<T|ReturnType<TrackByFunction<T>>, SelectableWithIndex<T>>();
+  private _selectionMap = new Map<T | ReturnType<TrackByFunction<T>>, SelectableWithIndex<T>>();
   changed = new Subject<SelectionChange<T>>();
 
   constructor(private _multiple = false, private _trackByFn?: TrackByFunction<T>) {}
@@ -101,11 +101,11 @@ export class SelectionSet<T> implements TrackBySelection<T> {
     this.changed.next({before, after});
   }
 
-  private _markSelected(key: T|ReturnType<TrackByFunction<T>>, toSelect: SelectableWithIndex<T>) {
+  private _markSelected(key: T | ReturnType<TrackByFunction<T>>, toSelect: SelectableWithIndex<T>) {
     this._selectionMap.set(key, toSelect);
   }
 
-  private _markDeselected(key: T|ReturnType<TrackByFunction<T>>) {
+  private _markDeselected(key: T | ReturnType<TrackByFunction<T>>) {
     this._selectionMap.delete(key);
   }
 

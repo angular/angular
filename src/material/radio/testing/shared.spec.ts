@@ -8,20 +8,20 @@ import {MatRadioModule} from '@angular/material/radio';
 import {MatRadioButtonHarness, MatRadioGroupHarness} from './radio-harness';
 
 /** Shared tests to run on both the original and MDC-based radio components. */
-export function runHarnessTests(radioModule: typeof MatRadioModule,
-                                radioGroupHarness: typeof MatRadioGroupHarness,
-                                radioButtonHarness: typeof MatRadioButtonHarness) {
+export function runHarnessTests(
+  radioModule: typeof MatRadioModule,
+  radioGroupHarness: typeof MatRadioGroupHarness,
+  radioButtonHarness: typeof MatRadioButtonHarness,
+) {
   let platform: Platform;
   let fixture: ComponentFixture<MultipleRadioButtonsHarnessTest>;
   let loader: HarnessLoader;
 
   beforeEach(async () => {
-    await TestBed
-        .configureTestingModule({
-          imports: [radioModule, ReactiveFormsModule],
-          declarations: [MultipleRadioButtonsHarnessTest],
-        })
-        .compileComponents();
+    await TestBed.configureTestingModule({
+      imports: [radioModule, ReactiveFormsModule],
+      declarations: [MultipleRadioButtonsHarnessTest],
+    }).compileComponents();
 
     platform = TestBed.inject(Platform);
     fixture = TestBed.createComponent(MultipleRadioButtonsHarnessTest);
@@ -37,7 +37,8 @@ export function runHarnessTests(radioModule: typeof MatRadioModule,
 
     it('should load radio-group with exact id', async () => {
       const groups = await loader.getAllHarnesses(
-          radioGroupHarness.with({selector: '#my-group-2'}));
+        radioGroupHarness.with({selector: '#my-group-2'}),
+      );
       expect(groups.length).toBe(1);
     });
 
@@ -51,17 +52,20 @@ export function runHarnessTests(radioModule: typeof MatRadioModule,
       expect(await groups[0].getId()).toBe('my-group-1');
     });
 
-    it('should throw when finding radio-group with specific name that has mismatched ' +
+    it(
+      'should throw when finding radio-group with specific name that has mismatched ' +
         'radio-button names',
-        async () => {
-          fixture.componentInstance.thirdGroupButtonName = 'other-name';
-          fixture.detectChanges();
+      async () => {
+        fixture.componentInstance.thirdGroupButtonName = 'other-name';
+        fixture.detectChanges();
 
-          await expectAsync(
-            loader.getAllHarnesses(radioGroupHarness.with({name: 'third-group-name'})))
-          .toBeRejectedWithError(
-            /locator found a radio-group with name "third-group-name".*have mismatching names/);
-        });
+        await expectAsync(
+          loader.getAllHarnesses(radioGroupHarness.with({name: 'third-group-name'})),
+        ).toBeRejectedWithError(
+          /locator found a radio-group with name "third-group-name".*have mismatching names/,
+        );
+      },
+    );
 
     it('should get name of radio-group', async () => {
       const groups = await loader.getAllHarnesses(radioGroupHarness);
@@ -78,8 +82,9 @@ export function runHarnessTests(radioModule: typeof MatRadioModule,
       fixture.componentInstance.thirdGroupButtonName = 'other-button-name';
       fixture.detectChanges();
 
-      await expectAsync(groups[2].getName())
-        .toBeRejectedWithError(/Radio buttons in radio-group have mismatching names./);
+      await expectAsync(groups[2].getName()).toBeRejectedWithError(
+        /Radio buttons in radio-group have mismatching names./,
+      );
     });
 
     it('should get id of radio-group', async () => {
@@ -139,7 +144,8 @@ export function runHarnessTests(radioModule: typeof MatRadioModule,
     it('should throw error when checking invalid radio button', async () => {
       const group = await loader.getHarness(radioGroupHarness.with({name: 'my-group-1-name'}));
       await expectAsync(group.checkRadioButton({label: 'opt4'})).toBeRejectedWithError(
-          /Could not find radio button matching {"label":"opt4"}/);
+        /Could not find radio button matching {"label":"opt4"}/,
+      );
     });
   });
 
@@ -185,16 +191,18 @@ export function runHarnessTests(radioModule: typeof MatRadioModule,
     });
 
     it('should get label text', async () => {
-      const [firstRadio, secondRadio, thirdRadio] =
-          await loader.getAllHarnesses(radioButtonHarness);
+      const [firstRadio, secondRadio, thirdRadio] = await loader.getAllHarnesses(
+        radioButtonHarness,
+      );
       expect(await firstRadio.getLabelText()).toBe('Option #1');
       expect(await secondRadio.getLabelText()).toBe('Option #2');
       expect(await thirdRadio.getLabelText()).toBe('Option #3');
     });
 
     it('should get value', async () => {
-      const [firstRadio, secondRadio, thirdRadio] =
-          await loader.getAllHarnesses(radioButtonHarness);
+      const [firstRadio, secondRadio, thirdRadio] = await loader.getAllHarnesses(
+        radioButtonHarness,
+      );
       expect(await firstRadio.getValue()).toBe('opt1');
       expect(await secondRadio.getValue()).toBe('opt2');
       expect(await thirdRadio.getValue()).toBe('opt3');
@@ -259,8 +267,9 @@ export function runHarnessTests(radioModule: typeof MatRadioModule,
     });
 
     it('should get required state', async () => {
-      const radioButton =
-          await loader.getHarness(radioButtonHarness.with({selector: '#required-radio'}));
+      const radioButton = await loader.getHarness(
+        radioButtonHarness.with({selector: '#required-radio'}),
+      );
       expect(await radioButton.isRequired()).toBe(true);
     });
   });
@@ -298,12 +307,12 @@ export function runHarnessTests(radioModule: typeof MatRadioModule,
       <mat-radio-button [value]="true">First</mat-radio-button>
       <mat-radio-button [value]="false" [name]="thirdGroupButtonName"></mat-radio-button>
     </mat-radio-group>
-  `
+  `,
 })
 class MultipleRadioButtonsHarnessTest {
   values = ['opt1', 'opt2', 'opt3'];
   disableAll = false;
   secondGroupId = 'my-group-2';
   thirdGroupName: string = 'third-group-name';
-  thirdGroupButtonName: string|undefined = undefined;
+  thirdGroupButtonName: string | undefined = undefined;
 }

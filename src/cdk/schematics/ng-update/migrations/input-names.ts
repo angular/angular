@@ -35,10 +35,15 @@ export class InputNamesMigration extends Migration<UpgradeData> {
       const updatedSelector = `[${name.replaceWith}]`;
 
       findAllSubstringIndices(stylesheet.content, currentSelector)
-          .map(offset => stylesheet.start + offset)
-          .forEach(
-              start => this._replaceInputName(
-                  stylesheet.filePath, start, currentSelector.length, updatedSelector));
+        .map(offset => stylesheet.start + offset)
+        .forEach(start =>
+          this._replaceInputName(
+            stylesheet.filePath,
+            start,
+            currentSelector.length,
+            updatedSelector,
+          ),
+        );
     });
   }
 
@@ -49,25 +54,30 @@ export class InputNamesMigration extends Migration<UpgradeData> {
 
       if (limitedTo.attributes) {
         relativeOffsets.push(
-            ...findInputsOnElementWithAttr(template.content, name.replace, limitedTo.attributes));
+          ...findInputsOnElementWithAttr(template.content, name.replace, limitedTo.attributes),
+        );
       }
 
       if (limitedTo.elements) {
         relativeOffsets.push(
-            ...findInputsOnElementWithTag(template.content, name.replace, limitedTo.elements));
+          ...findInputsOnElementWithTag(template.content, name.replace, limitedTo.elements),
+        );
       }
 
-      relativeOffsets.map(offset => template.start + offset)
-          .forEach(
-              start => this._replaceInputName(
-                  template.filePath, start, name.replace.length, name.replaceWith));
+      relativeOffsets
+        .map(offset => template.start + offset)
+        .forEach(start =>
+          this._replaceInputName(template.filePath, start, name.replace.length, name.replaceWith),
+        );
     });
   }
 
-  private _replaceInputName(filePath: WorkspacePath, start: number, width: number,
-                            newName: string) {
-    this.fileSystem.edit(filePath)
-      .remove(start, width)
-      .insertRight(start, newName);
+  private _replaceInputName(
+    filePath: WorkspacePath,
+    start: number,
+    width: number,
+    newName: string,
+  ) {
+    this.fileSystem.edit(filePath).remove(start, width).insertRight(start, newName);
   }
 }

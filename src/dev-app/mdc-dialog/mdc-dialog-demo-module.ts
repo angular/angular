@@ -32,5 +32,4 @@ import {ContentElementDialog, DialogDemo, IFrameDialog, JazzDialog} from './mdc-
   ],
   declarations: [ContentElementDialog, DialogDemo, IFrameDialog, JazzDialog],
 })
-export class MdcDialogDemoModule {
-}
+export class MdcDialogDemoModule {}

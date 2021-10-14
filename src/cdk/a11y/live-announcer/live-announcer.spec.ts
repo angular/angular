@@ -10,23 +10,26 @@ import {
   LiveAnnouncerDefaultOptions,
 } from './live-announcer-tokens';
 
-
 describe('LiveAnnouncer', () => {
   let announcer: LiveAnnouncer;
   let ariaLiveElement: Element;
   let fixture: ComponentFixture<TestApp>;
 
   describe('with default element', () => {
-    beforeEach(() => TestBed.configureTestingModule({
-      imports: [A11yModule],
-      declarations: [TestApp],
-    }));
+    beforeEach(() =>
+      TestBed.configureTestingModule({
+        imports: [A11yModule],
+        declarations: [TestApp],
+      }),
+    );
 
-    beforeEach(fakeAsync(inject([LiveAnnouncer], (la: LiveAnnouncer) => {
-      announcer = la;
-      ariaLiveElement = getLiveElement();
-      fixture = TestBed.createComponent(TestApp);
-    })));
+    beforeEach(fakeAsync(
+      inject([LiveAnnouncer], (la: LiveAnnouncer) => {
+        announcer = la;
+        ariaLiveElement = getLiveElement();
+        fixture = TestBed.createComponent(TestApp);
+      }),
+    ));
 
     it('should correctly update the announce text', fakeAsync(() => {
       let buttonElement = fixture.debugElement.query(By.css('button'))!.nativeElement;
@@ -159,7 +162,6 @@ describe('LiveAnnouncer', () => {
       // Since we're testing whether the timeouts were flushed, we don't need any
       // assertions here. `fakeAsync` will fail the test if a timer was left over.
     }));
-
   });
 
   describe('with a custom element', () => {
@@ -195,13 +197,15 @@ describe('LiveAnnouncer', () => {
       return TestBed.configureTestingModule({
         imports: [A11yModule],
         declarations: [TestApp],
-        providers: [{
-          provide: LIVE_ANNOUNCER_DEFAULT_OPTIONS,
-          useValue: {
-            politeness: 'assertive',
-            duration: 1337
-          } as LiveAnnouncerDefaultOptions
-        }],
+        providers: [
+          {
+            provide: LIVE_ANNOUNCER_DEFAULT_OPTIONS,
+            useValue: {
+              politeness: 'assertive',
+              duration: 1337,
+            } as LiveAnnouncerDefaultOptions,
+          },
+        ],
       });
     });
 
@@ -227,9 +231,7 @@ describe('LiveAnnouncer', () => {
       tick(1337);
       expect(ariaLiveElement.textContent).toBeFalsy();
     }));
-
   });
-
 });
 
 describe('CdkAriaLive', () => {
@@ -244,29 +246,33 @@ describe('CdkAriaLive', () => {
     TestBed.configureTestingModule({
       imports: [A11yModule],
       declarations: [DivWithCdkAriaLive],
-      providers: [{
-        provide: MutationObserverFactory,
-        useValue: {
-          create: (callback: Function) => {
-            mutationCallbacks.push(callback);
+      providers: [
+        {
+          provide: MutationObserverFactory,
+          useValue: {
+            create: (callback: Function) => {
+              mutationCallbacks.push(callback);
 
-            return {
-              observe: () => {},
-              disconnect: () => {}
-            };
-          }
-        }
-      }]
+              return {
+                observe: () => {},
+                disconnect: () => {},
+              };
+            },
+          },
+        },
+      ],
     });
   }));
 
-  beforeEach(fakeAsync(inject([LiveAnnouncer], (la: LiveAnnouncer) => {
-    announcer = la;
-    announcerSpy = spyOn(la, 'announce').and.callThrough();
-    fixture = TestBed.createComponent(DivWithCdkAriaLive);
-    fixture.detectChanges();
-    flush();
-  })));
+  beforeEach(fakeAsync(
+    inject([LiveAnnouncer], (la: LiveAnnouncer) => {
+      announcer = la;
+      announcerSpy = spyOn(la, 'announce').and.callThrough();
+      fixture = TestBed.createComponent(DivWithCdkAriaLive);
+      fixture.detectChanges();
+      flush();
+    }),
+  ));
 
   it('should default politeness to polite', fakeAsync(() => {
     fixture.componentInstance.content = 'New content';
@@ -318,9 +324,7 @@ describe('CdkAriaLive', () => {
 
     expect(announcer.announce).toHaveBeenCalledTimes(1);
   }));
-
 });
-
 
 function getLiveElement(): Element {
   return document.body.querySelector('.cdk-live-announcer-element')!;
@@ -328,7 +332,7 @@ function getLiveElement(): Element {
 
 @Component({template: `<button (click)="announceText('Test')">Announce</button>`})
 class TestApp {
-  constructor(public live: LiveAnnouncer) { }
+  constructor(public live: LiveAnnouncer) {}
 
   announceText(message: string) {
     this.live.announce(message);

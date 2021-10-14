@@ -45,7 +45,9 @@ export class TileCoordinator {
   rowIndex: number = 0;
 
   /** Gets the total number of rows occupied by tiles */
-  get rowCount(): number { return this.rowIndex + 1; }
+  get rowCount(): number {
+    return this.rowIndex + 1;
+  }
 
   /**
    * Gets the total span of rows occupied by tiles.
@@ -93,8 +95,10 @@ export class TileCoordinator {
   /** Finds the next available space large enough to fit the tile. */
   private _findMatchingGap(tileCols: number): number {
     if (tileCols > this.tracker.length && (typeof ngDevMode === 'undefined' || ngDevMode)) {
-      throw Error(`mat-grid-list: tile with colspan ${tileCols} is wider than ` +
-                      `grid with cols="${this.tracker.length}".`);
+      throw Error(
+        `mat-grid-list: tile with colspan ${tileCols} is wider than ` +
+          `grid with cols="${this.tracker.length}".`,
+      );
     }
 
     // Start index is inclusive, end index is exclusive.
@@ -129,7 +133,7 @@ export class TileCoordinator {
 
       // Continue iterating until we find a gap wide enough for this tile. Since gapEndIndex is
       // exclusive, gapEndIndex is 0 means we didn't find a gap and should continue.
-    } while ((gapEndIndex - gapStartIndex < tileCols) || (gapEndIndex == 0));
+    } while (gapEndIndex - gapStartIndex < tileCols || gapEndIndex == 0);
 
     // If we still didn't manage to find a gap, ensure that the index is
     // at least zero so the tile doesn't get pulled out of the grid.

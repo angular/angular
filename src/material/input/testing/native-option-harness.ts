@@ -22,14 +22,19 @@ export class MatNativeOptionHarness extends ComponentHarness {
    */
   static with(options: NativeOptionHarnessFilters = {}) {
     return new HarnessPredicate(MatNativeOptionHarness, options)
-        .addOption('text', options.text,
-            async (harness, title) =>
-                HarnessPredicate.stringMatches(await harness.getText(), title))
-        .addOption('index', options.index,
-            async (harness, index) => await harness.getIndex() === index)
-        .addOption('isSelected', options.isSelected,
-            async (harness, isSelected) => await harness.isSelected() === isSelected);
-
+      .addOption('text', options.text, async (harness, title) =>
+        HarnessPredicate.stringMatches(await harness.getText(), title),
+      )
+      .addOption(
+        'index',
+        options.index,
+        async (harness, index) => (await harness.getIndex()) === index,
+      )
+      .addOption(
+        'isSelected',
+        options.isSelected,
+        async (harness, isSelected) => (await harness.isSelected()) === isSelected,
+      );
   }
 
   /** Gets the option's label text. */

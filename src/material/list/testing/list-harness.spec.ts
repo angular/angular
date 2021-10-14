@@ -7,13 +7,20 @@ import {MatSelectionListHarness} from './selection-list-harness';
 import {
   MatListItemHarnessBase,
   MatListItemSection,
-  MatSubheaderHarness
+  MatSubheaderHarness,
 } from './list-item-harness-base';
 import {runHarnessTests} from './shared.spec';
 
 describe('Non-MDC-based list harnesses', () => {
   runHarnessTests(
-      MatListModule, MatListHarness, MatActionListHarness, MatNavListHarness,
-      MatSelectionListHarness, MatListItemHarnessBase, MatSubheaderHarness, MatDividerHarness,
-      {content: MatListItemSection.CONTENT});
+    MatListModule,
+    MatListHarness,
+    MatActionListHarness,
+    MatNavListHarness,
+    MatSelectionListHarness,
+    MatListItemHarnessBase,
+    MatSubheaderHarness,
+    MatDividerHarness,
+    {content: MatListItemSection.CONTENT},
+  );
 });

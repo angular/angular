@@ -33,7 +33,7 @@ const noopAnimationsModuleName = 'NoopAnimationsModule';
  *  - Adds pre-built themes to styles.ext
  *  - Adds Browser Animation to app.module
  */
-export default function(options: Schema): Rule {
+export default function (options: Schema): Rule {
   return async (host: Tree, context: SchematicContext) => {
     const workspace = await getWorkspace(host);
     const project = getProjectFromWorkspace(workspace, options.project);
@@ -48,10 +48,11 @@ export default function(options: Schema): Rule {
       ]);
     }
     context.logger.warn(
-        'Angular Material has been set up in your workspace. There is no additional setup ' +
+      'Angular Material has been set up in your workspace. There is no additional setup ' +
         'required for consuming Angular Material in your library project.\n\n' +
         'If you intended to run the schematic on a different project, pass the `--project` ' +
-        'option.');
+        'option.',
+    );
     return;
   };
 }
@@ -74,19 +75,28 @@ function addAnimationsModule(options: Schema) {
       // is already configured, we would cause unexpected behavior and runtime exceptions.
       if (hasNgModuleImport(host, appModulePath, noopAnimationsModuleName)) {
         context.logger.error(
-            `Could not set up "${browserAnimationsModuleName}" ` +
-            `because "${noopAnimationsModuleName}" is already imported.`);
+          `Could not set up "${browserAnimationsModuleName}" ` +
+            `because "${noopAnimationsModuleName}" is already imported.`,
+        );
         context.logger.info(`Please manually set up browser animations.`);
         return;
       }
 
-      addModuleImportToRootModule(host, browserAnimationsModuleName,
-          '@angular/platform-browser/animations', project);
+      addModuleImportToRootModule(
+        host,
+        browserAnimationsModuleName,
+        '@angular/platform-browser/animations',
+        project,
+      );
     } else if (!hasNgModuleImport(host, appModulePath, browserAnimationsModuleName)) {
       // Do not add the NoopAnimationsModule module if the project already explicitly uses
       // the BrowserAnimationsModule.
-      addModuleImportToRootModule(host, noopAnimationsModuleName,
-        '@angular/platform-browser/animations', project);
+      addModuleImportToRootModule(
+        host,
+        noopAnimationsModuleName,
+        '@angular/platform-browser/animations',
+        project,
+      );
     }
   };
 }
@@ -112,14 +122,16 @@ function addMaterialAppStyles(options: Schema) {
     const buffer = host.read(styleFilePath);
 
     if (!buffer) {
-      logger.error(`Could not read the default style file within the project ` +
-        `(${styleFilePath})`);
+      logger.error(
+        `Could not read the default style file within the project ` + `(${styleFilePath})`,
+      );
       logger.info(`Please consider manually setting up the Roboto font.`);
       return;
     }
 
     const htmlContent = buffer.toString();
-    const insertion = '\n' +
+    const insertion =
+      '\n' +
       `html, body { height: 100%; }\n` +
       `body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }\n`;
 

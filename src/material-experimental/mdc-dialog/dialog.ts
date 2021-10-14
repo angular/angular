@@ -18,16 +18,19 @@ import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 export const MAT_DIALOG_DATA = new InjectionToken<any>('MatMdcDialogData');
 
 /** Injection token that can be used to specify default dialog options. */
-export const MAT_DIALOG_DEFAULT_OPTIONS =
-    new InjectionToken<MatDialogConfig>('mat-mdc-dialog-default-options');
+export const MAT_DIALOG_DEFAULT_OPTIONS = new InjectionToken<MatDialogConfig>(
+  'mat-mdc-dialog-default-options',
+);
 
 /** Injection token that determines the scroll handling while the dialog is open. */
-export const MAT_DIALOG_SCROLL_STRATEGY =
-    new InjectionToken<() => ScrollStrategy>('mat-mdc-dialog-scroll-strategy');
+export const MAT_DIALOG_SCROLL_STRATEGY = new InjectionToken<() => ScrollStrategy>(
+  'mat-mdc-dialog-scroll-strategy',
+);
 
 /** @docs-private */
-export function MAT_DIALOG_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay): () =>
-    ScrollStrategy {
+export function MAT_DIALOG_SCROLL_STRATEGY_PROVIDER_FACTORY(
+  overlay: Overlay,
+): () => ScrollStrategy {
   return () => overlay.scrollStrategies.block();
 }
 
@@ -44,20 +47,32 @@ export const MAT_DIALOG_SCROLL_STRATEGY_PROVIDER = {
 @Injectable()
 export class MatDialog extends _MatDialogBase<MatDialogContainer> {
   constructor(
-      overlay: Overlay,
-      injector: Injector,
-      /**
-       * @deprecated `_location` parameter to be removed.
-       * @breaking-change 10.0.0
-       */
-      @Optional() location: Location,
-      @Optional() @Inject(MAT_DIALOG_DEFAULT_OPTIONS) defaultOptions: MatDialogConfig,
-      @Inject(MAT_DIALOG_SCROLL_STRATEGY) scrollStrategy: any,
-      @Optional() @SkipSelf() parentDialog: MatDialog, overlayContainer: OverlayContainer,
-      @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: 'NoopAnimations'|
-      'BrowserAnimations') {
+    overlay: Overlay,
+    injector: Injector,
+    /**
+     * @deprecated `_location` parameter to be removed.
+     * @breaking-change 10.0.0
+     */
+    @Optional() location: Location,
+    @Optional() @Inject(MAT_DIALOG_DEFAULT_OPTIONS) defaultOptions: MatDialogConfig,
+    @Inject(MAT_DIALOG_SCROLL_STRATEGY) scrollStrategy: any,
+    @Optional() @SkipSelf() parentDialog: MatDialog,
+    overlayContainer: OverlayContainer,
+    @Optional()
+    @Inject(ANIMATION_MODULE_TYPE)
+    animationMode?: 'NoopAnimations' | 'BrowserAnimations',
+  ) {
     super(
-        overlay, injector, defaultOptions, parentDialog, overlayContainer, scrollStrategy,
-        MatDialogRef, MatDialogContainer, MAT_DIALOG_DATA, animationMode);
+      overlay,
+      injector,
+      defaultOptions,
+      parentDialog,
+      overlayContainer,
+      scrollStrategy,
+      MatDialogRef,
+      MatDialogContainer,
+      MAT_DIALOG_DATA,
+      animationMode,
+    );
   }
 }

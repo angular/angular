@@ -31,5 +31,4 @@ import {MdcAutocompleteDemo} from './mdc-autocomplete-demo';
   ],
   declarations: [MdcAutocompleteDemo],
 })
-export class MdcAutocompleteDemoModule {
-}
+export class MdcAutocompleteDemoModule {}

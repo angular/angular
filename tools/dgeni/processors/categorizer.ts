@@ -49,19 +49,23 @@ export class Categorizer implements Processor {
 
   constructor(
     /** Shared map that can be used to resolve docs through symbols. */
-    private _exportSymbolsToDocsMap: Map<ts.Symbol, ClassLikeExportDoc>) {}
+    private _exportSymbolsToDocsMap: Map<ts.Symbol, ClassLikeExportDoc>,
+  ) {}
 
   $process(docs: DocCollection) {
-    docs.filter(doc => doc.docType === 'class' || doc.docType === 'interface')
-        .forEach(doc => this._decorateClassLikeDoc(doc));
+    docs
+      .filter(doc => doc.docType === 'class' || doc.docType === 'interface')
+      .forEach(doc => this._decorateClassLikeDoc(doc));
 
-    docs.filter(doc => doc.docType === 'function')
-        .forEach(doc => this._decorateFunctionExportDoc(doc));
+    docs
+      .filter(doc => doc.docType === 'function')
+      .forEach(doc => this._decorateFunctionExportDoc(doc));
 
     docs.filter(doc => doc.docType === 'const').forEach(doc => this._decorateConstExportDoc(doc));
 
-    docs.filter(doc => doc.docType === 'type-alias')
-        .forEach(doc => this._decorateTypeAliasExportDoc(doc));
+    docs
+      .filter(doc => doc.docType === 'type-alias')
+      .forEach(doc => this._decorateTypeAliasExportDoc(doc));
   }
 
   /**
@@ -70,12 +74,13 @@ export class Categorizer implements Processor {
    */
   private _decorateClassLikeDoc(classLikeDoc: CategorizedClassLikeDoc) {
     // Resolve all methods and properties from the classDoc.
-    classLikeDoc.methods = classLikeDoc.members.filter(isMethod).filter(filterDuplicateMembers) as
-        CategorizedMethodMemberDoc[];
+    classLikeDoc.methods = classLikeDoc.members
+      .filter(isMethod)
+      .filter(filterDuplicateMembers) as CategorizedMethodMemberDoc[];
 
-    classLikeDoc.properties =
-        classLikeDoc.members.filter(isProperty).filter(filterDuplicateMembers) as
-        CategorizedPropertyMemberDoc[];
+    classLikeDoc.properties = classLikeDoc.members
+      .filter(isProperty)
+      .filter(filterDuplicateMembers) as CategorizedPropertyMemberDoc[];
 
     // Special decorations for real class documents that don't apply for interfaces.
     if (classLikeDoc.docType === 'class') {
@@ -108,13 +113,17 @@ export class Categorizer implements Processor {
     classDoc.directiveMetadata = getDirectiveMetadata(classDoc);
     classDoc.inheritedDocs = getInheritedDocsOfClass(classDoc, this._exportSymbolsToDocsMap);
 
-    classDoc.methods.push(...classDoc.statics
-      .filter(isMethod)
-      .filter(filterDuplicateMembers) as CategorizedMethodMemberDoc[]);
+    classDoc.methods.push(
+      ...(classDoc.statics
+        .filter(isMethod)
+        .filter(filterDuplicateMembers) as CategorizedMethodMemberDoc[]),
+    );
 
-    classDoc.properties.push(...classDoc.statics
-      .filter(isProperty)
-      .filter(filterDuplicateMembers) as CategorizedPropertyMemberDoc[]);
+    classDoc.properties.push(
+      ...(classDoc.statics
+        .filter(isProperty)
+        .filter(filterDuplicateMembers) as CategorizedPropertyMemberDoc[]),
+    );
 
     // In case the extended document is not public, we don't want to print it in the
     // rendered class API doc. This causes confusion and also is not helpful as the
@@ -178,9 +187,10 @@ export class Categorizer implements Processor {
   private _decoratePropertyDoc(propertyDoc: CategorizedPropertyMemberDoc) {
     decorateDeprecatedDoc(propertyDoc);
 
-    const metadata = propertyDoc.containerDoc.docType === 'class' ?
-        (propertyDoc.containerDoc as CategorizedClassDoc).directiveMetadata :
-        null;
+    const metadata =
+      propertyDoc.containerDoc.docType === 'class'
+        ? (propertyDoc.containerDoc as CategorizedClassDoc).directiveMetadata
+        : null;
 
     const inputMetadata = metadata ? getInputBindingData(propertyDoc, metadata) : null;
     const outputMetadata = metadata ? getOutputBindingData(propertyDoc, metadata) : null;
@@ -204,7 +214,7 @@ export class Categorizer implements Processor {
         // Add each method overload to the methods that will be shown in the docs.
         // Note that we cannot add the overloads immediately to the methods array because
         // that would cause the iteration to visit the new overloads.
-        methodsToAdd.push(...methodDoc.overloads as CategorizedMethodMemberDoc[]);
+        methodsToAdd.push(...(methodDoc.overloads as CategorizedMethodMemberDoc[]));
 
         // Remove the base method for the overloads from the documentation.
         classDoc.methods.splice(index, 1);
@@ -225,5 +235,5 @@ export class Categorizer implements Processor {
 
 /** Filters any duplicate classDoc members from an array */
 function filterDuplicateMembers(item: MemberDoc, _index: number, array: MemberDoc[]) {
-  return array.filter((memberDoc) => memberDoc.name === item.name)[0] === item;
+  return array.filter(memberDoc => memberDoc.name === item.name)[0] === item;
 }

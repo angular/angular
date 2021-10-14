@@ -11,14 +11,15 @@ import {CdkScrollable, ScrollDispatcher, ScrollingModule} from './public-api';
 import {dispatchFakeEvent} from '../testing/private';
 
 describe('ScrollDispatcher', () => {
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [ScrollTestModule],
+      });
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [ScrollTestModule],
-    });
-
-    TestBed.compileComponents();
-  }));
+      TestBed.compileComponents();
+    }),
+  );
 
   describe('Basic usage', () => {
     let scroll: ScrollDispatcher;
@@ -44,8 +45,7 @@ describe('ScrollDispatcher', () => {
       expect(scroll.scrollContainers.has(componentScrollable)).toBe(false);
     });
 
-    it('should notify through the directive and service that a scroll event occurred',
-        fakeAsync(() => {
+    it('should notify through the directive and service that a scroll event occurred', fakeAsync(() => {
       // Listen for notifications from scroll directive
       const scrollable = fixture.componentInstance.scrollable;
       const directiveSpy = jasmine.createSpy('directive scroll callback');
@@ -135,7 +135,6 @@ describe('ScrollDispatcher', () => {
       expect(scrollSpy).not.toHaveBeenCalled();
       scrollSubscription.unsubscribe();
     });
-
   });
 
   describe('Nested scrollables', () => {
@@ -153,16 +152,18 @@ describe('ScrollDispatcher', () => {
 
     it('should be able to identify the containing scrollables of an element', () => {
       const scrollContainers = scroll.getAncestorScrollContainers(element);
-      const scrollableElementIds =
-          scrollContainers.map(scrollable => scrollable.getElementRef().nativeElement.id);
+      const scrollableElementIds = scrollContainers.map(
+        scrollable => scrollable.getElementRef().nativeElement.id,
+      );
 
       expect(scrollableElementIds).toEqual(['scrollable-1', 'scrollable-1a']);
     });
 
     it('allows a raw HTMLElement', () => {
       const scrollContainers = scroll.getAncestorScrollContainers(element.nativeElement);
-      const scrollableElementIds =
-          scrollContainers.map(scrollable => scrollable.getElementRef().nativeElement.id);
+      const scrollableElementIds = scrollContainers.map(
+        scrollable => scrollable.getElementRef().nativeElement.id,
+      );
 
       expect(scrollableElementIds).toEqual(['scrollable-1', 'scrollable-1a']);
     });
@@ -181,21 +182,19 @@ describe('ScrollDispatcher', () => {
       subscription.unsubscribe();
     });
 
-    it('should emit when one of the ancestor scrollable containers is scrolled (HTMLElement API)',
-      () => {
-        const spy = jasmine.createSpy('scroll spy');
-        const subscription = scroll.ancestorScrolled(element.nativeElement, 0).subscribe(spy);
-        const grandparent = fixture.debugElement.nativeElement.querySelector('#scrollable-1');
+    it('should emit when one of the ancestor scrollable containers is scrolled (HTMLElement API)', () => {
+      const spy = jasmine.createSpy('scroll spy');
+      const subscription = scroll.ancestorScrolled(element.nativeElement, 0).subscribe(spy);
+      const grandparent = fixture.debugElement.nativeElement.querySelector('#scrollable-1');
 
-        dispatchFakeEvent(grandparent, 'scroll', false);
-        expect(spy).toHaveBeenCalledTimes(1);
+      dispatchFakeEvent(grandparent, 'scroll', false);
+      expect(spy).toHaveBeenCalledTimes(1);
 
-        dispatchFakeEvent(window.document, 'scroll', false);
-        expect(spy).toHaveBeenCalledTimes(2);
+      dispatchFakeEvent(window.document, 'scroll', false);
+      expect(spy).toHaveBeenCalledTimes(2);
 
-        subscription.unsubscribe();
-      });
-
+      subscription.unsubscribe();
+    });
 
     it('should not emit when a non-ancestor is scrolled', () => {
       const spy = jasmine.createSpy('scroll spy');
@@ -218,17 +217,20 @@ describe('ScrollDispatcher', () => {
 
     it('should lazily add global listeners as service subscriptions are added and removed', () => {
       expect(scroll._globalSubscription)
-        .withContext('Expected no global listeners on init.').toBeNull();
+        .withContext('Expected no global listeners on init.')
+        .toBeNull();
 
       const subscription = scroll.scrolled(0).subscribe(() => {});
 
       expect(scroll._globalSubscription).toBeTruthy(
-          'Expected global listeners after a subscription has been added.');
+        'Expected global listeners after a subscription has been added.',
+      );
 
       subscription.unsubscribe();
 
       expect(scroll._globalSubscription).toBeNull(
-          'Expected global listeners to have been removed after the subscription has stopped.');
+        'Expected global listeners to have been removed after the subscription has stopped.',
+      );
     });
 
     it('should remove global listeners on unsubscribe, despite any other live scrollables', () => {
@@ -249,15 +251,19 @@ describe('ScrollDispatcher', () => {
       subscription.unsubscribe();
 
       expect(scroll._globalSubscription)
-        .withContext('Expected global listeners to have been removed after ' +
-                     'the subscription has stopped.').toBeNull();
+        .withContext(
+          'Expected global listeners to have been removed after ' + 'the subscription has stopped.',
+        )
+        .toBeNull();
       expect(scroll.scrollContainers.size)
-        .withContext('Expected scrollable count to stay the same').toBe(4);
+        .withContext('Expected scrollable count to stay the same')
+        .toBe(4);
     });
 
     it('should remove the global subscription on destroy', () => {
       expect(scroll._globalSubscription)
-        .withContext('Expected no global listeners on init.').toBeNull();
+        .withContext('Expected no global listeners on init.')
+        .toBeNull();
 
       const subscription = scroll.scrolled(0).subscribe(() => {});
 
@@ -268,25 +274,24 @@ describe('ScrollDispatcher', () => {
       scroll.ngOnDestroy();
 
       expect(scroll._globalSubscription)
-        .withContext('Expected global listeners to have been removed after ' +
-                     'the subscription has stopped.').toBeNull();
+        .withContext(
+          'Expected global listeners to have been removed after ' + 'the subscription has stopped.',
+        )
+        .toBeNull();
 
       subscription.unsubscribe();
     });
-
   });
 });
 
-
 /** Simple component that contains a large div and can be scrolled. */
 @Component({
-  template: `<div #scrollingElement cdkScrollable style="height: 9999px"></div>`
+  template: `<div #scrollingElement cdkScrollable style="height: 9999px"></div>`,
 })
 class ScrollingComponent {
   @ViewChild(CdkScrollable) scrollable: CdkScrollable;
   @ViewChild('scrollingElement') scrollingElement: ElementRef<HTMLElement>;
 }
-
 
 /** Component containing nested scrollables. */
 @Component({
@@ -298,7 +303,7 @@ class ScrollingComponent {
       <div id="scrollable-1b" cdkScrollable></div>
     </div>
     <div id="scrollable-2" cdkScrollable></div>
-  `
+  `,
 })
 class NestedScrollingComponent {
   @ViewChild('interestingElement') interestingElement: ElementRef<HTMLElement>;
@@ -312,4 +317,4 @@ const TEST_COMPONENTS = [ScrollingComponent, NestedScrollingComponent];
   declarations: TEST_COMPONENTS,
   entryComponents: TEST_COMPONENTS,
 })
-class ScrollTestModule { }
+class ScrollTestModule {}

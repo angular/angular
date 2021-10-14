@@ -21,5 +21,4 @@ import {GoogleMapDemo} from './google-map-demo';
   ],
   declarations: [GoogleMapDemo],
 })
-export class GoogleMapDemoModule {
-}
+export class GoogleMapDemoModule {}

@@ -3,26 +3,31 @@ import {waitForAsync, inject, TestBed} from '@angular/core/testing';
 import {DEC, FEB, JAN, MAR} from '../../testing';
 import {DateAdapter, MAT_DATE_LOCALE, NativeDateAdapter, NativeDateModule} from './index';
 
-
 describe('NativeDateAdapter', () => {
   let adapter: NativeDateAdapter;
   let assertValidDate: (d: Date | null, valid: boolean) => void;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [NativeDateModule]
-    }).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [NativeDateModule],
+      }).compileComponents();
+    }),
+  );
 
   beforeEach(inject([DateAdapter], (dateAdapter: NativeDateAdapter) => {
     adapter = dateAdapter;
 
     assertValidDate = (d: Date | null, valid: boolean) => {
-      expect(adapter.isDateInstance(d)).not
-        .withContext(`Expected ${d} to be a date instance`).toBeNull();
+      expect(adapter.isDateInstance(d))
+        .not.withContext(`Expected ${d} to be a date instance`)
+        .toBeNull();
       expect(adapter.isValid(d!))
-        .withContext(`Expected ${d} to be ${valid ? 'valid' : 'invalid'}, but ` +
-                     `was ${valid ? 'invalid' : 'valid'}`).toBe(valid);
+        .withContext(
+          `Expected ${d} to be ${valid ? 'valid' : 'invalid'}, but ` +
+            `was ${valid ? 'invalid' : 'valid'}`,
+        )
+        .toBe(valid);
     };
   }));
 
@@ -44,68 +49,184 @@ describe('NativeDateAdapter', () => {
 
   it('should get long month names', () => {
     expect(adapter.getMonthNames('long')).toEqual([
-      'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
-      'October', 'November', 'December'
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ]);
   });
 
   it('should get short month names', () => {
     expect(adapter.getMonthNames('short')).toEqual([
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ]);
   });
 
   it('should get narrow month names', () => {
     expect(adapter.getMonthNames('narrow')).toEqual([
-      'J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'
+      'J',
+      'F',
+      'M',
+      'A',
+      'M',
+      'J',
+      'J',
+      'A',
+      'S',
+      'O',
+      'N',
+      'D',
     ]);
   });
 
   it('should get month names in a different locale', () => {
     adapter.setLocale('ja-JP');
     expect(adapter.getMonthNames('long')).toEqual([
-      '1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'
+      '1月',
+      '2月',
+      '3月',
+      '4月',
+      '5月',
+      '6月',
+      '7月',
+      '8月',
+      '9月',
+      '10月',
+      '11月',
+      '12月',
     ]);
   });
 
   it('should get date names', () => {
     expect(adapter.getDateNames()).toEqual([
-      '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17',
-      '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
+      '8',
+      '9',
+      '10',
+      '11',
+      '12',
+      '13',
+      '14',
+      '15',
+      '16',
+      '17',
+      '18',
+      '19',
+      '20',
+      '21',
+      '22',
+      '23',
+      '24',
+      '25',
+      '26',
+      '27',
+      '28',
+      '29',
+      '30',
+      '31',
     ]);
   });
 
   it('should get date names in a different locale', () => {
     adapter.setLocale('ja-JP');
     expect(adapter.getDateNames()).toEqual([
-      '1日', '2日', '3日', '4日', '5日', '6日', '7日', '8日', '9日', '10日', '11日', '12日',
-      '13日', '14日', '15日', '16日', '17日', '18日', '19日', '20日', '21日', '22日', '23日', '24日',
-      '25日', '26日', '27日', '28日', '29日', '30日', '31日'
+      '1日',
+      '2日',
+      '3日',
+      '4日',
+      '5日',
+      '6日',
+      '7日',
+      '8日',
+      '9日',
+      '10日',
+      '11日',
+      '12日',
+      '13日',
+      '14日',
+      '15日',
+      '16日',
+      '17日',
+      '18日',
+      '19日',
+      '20日',
+      '21日',
+      '22日',
+      '23日',
+      '24日',
+      '25日',
+      '26日',
+      '27日',
+      '28日',
+      '29日',
+      '30日',
+      '31日',
     ]);
   });
 
   it('should get long day of week names', () => {
     expect(adapter.getDayOfWeekNames('long')).toEqual([
-      'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
+      'Sunday',
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
     ]);
   });
 
   it('should get short day of week names', () => {
     expect(adapter.getDayOfWeekNames('short')).toEqual([
-      'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'
+      'Sun',
+      'Mon',
+      'Tue',
+      'Wed',
+      'Thu',
+      'Fri',
+      'Sat',
     ]);
   });
 
   it('should get narrow day of week names', () => {
-    expect(adapter.getDayOfWeekNames('narrow')).toEqual([
-      'S', 'M', 'T', 'W', 'T', 'F', 'S'
-    ]);
+    expect(adapter.getDayOfWeekNames('narrow')).toEqual(['S', 'M', 'T', 'W', 'T', 'F', 'S']);
   });
 
   it('should get day of week names in a different locale', () => {
     adapter.setLocale('ja-JP');
     expect(adapter.getDayOfWeekNames('long')).toEqual([
-      '日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'
+      '日曜日',
+      '月曜日',
+      '火曜日',
+      '水曜日',
+      '木曜日',
+      '金曜日',
+      '土曜日',
     ]);
   });
 
@@ -166,7 +287,8 @@ describe('NativeDateAdapter', () => {
 
   it("should get today's date", () => {
     expect(adapter.sameDate(adapter.today(), new Date()))
-      .withContext("should be equal to today's date").toBe(true);
+      .withContext("should be equal to today's date")
+      .toBe(true);
   });
 
   it('should parse string', () => {
@@ -178,7 +300,7 @@ describe('NativeDateAdapter', () => {
     expect(adapter.parse(timestamp)).toEqual(new Date(timestamp));
   });
 
-  it ('should parse Date', () => {
+  it('should parse Date', () => {
     let date = new Date(2017, JAN, 1);
     expect(adapter.parse(date)).toEqual(date);
     expect(adapter.parse(date)).not.toBe(date);
@@ -188,9 +310,11 @@ describe('NativeDateAdapter', () => {
     let d = adapter.parse('hello');
     expect(d).not.toBeNull();
     expect(adapter.isDateInstance(d))
-      .withContext('Expected string to have been fed through Date.parse').toBe(true);
+      .withContext('Expected string to have been fed through Date.parse')
+      .toBe(true);
     expect(adapter.isValid(d as Date))
-      .withContext('Expected to parse as "invalid date" object').toBe(false);
+      .withContext('Expected to parse as "invalid date" object')
+      .toBe(false);
   });
 
   it('should format', () => {
@@ -198,11 +322,13 @@ describe('NativeDateAdapter', () => {
   });
 
   it('should format with custom format', () => {
-    expect(adapter.format(new Date(2017, JAN, 1), {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })).toEqual('January 1, 2017');
+    expect(
+      adapter.format(new Date(2017, JAN, 1), {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }),
+    ).toEqual('January 1, 2017');
   });
 
   it('should format with a different locale', () => {
@@ -211,8 +337,9 @@ describe('NativeDateAdapter', () => {
   });
 
   it('should throw when attempting to format invalid date', () => {
-    expect(() => adapter.format(new Date(NaN), {}))
-        .toThrowError(/NativeDateAdapter: Cannot format invalid date\./);
+    expect(() => adapter.format(new Date(NaN), {})).toThrowError(
+      /NativeDateAdapter: Cannot format invalid date\./,
+    );
   });
 
   it('should add years', () => {
@@ -263,21 +390,21 @@ describe('NativeDateAdapter', () => {
   });
 
   it('should clamp date at lower bound', () => {
-    expect(adapter.clampDate(
-        new Date(2017, JAN, 1), new Date(2018, JAN, 1), new Date(2019, JAN, 1)))
-        .toEqual(new Date(2018, JAN, 1));
+    expect(
+      adapter.clampDate(new Date(2017, JAN, 1), new Date(2018, JAN, 1), new Date(2019, JAN, 1)),
+    ).toEqual(new Date(2018, JAN, 1));
   });
 
   it('should clamp date at upper bound', () => {
-    expect(adapter.clampDate(
-        new Date(2020, JAN, 1), new Date(2018, JAN, 1), new Date(2019, JAN, 1)))
-        .toEqual(new Date(2019, JAN, 1));
+    expect(
+      adapter.clampDate(new Date(2020, JAN, 1), new Date(2018, JAN, 1), new Date(2019, JAN, 1)),
+    ).toEqual(new Date(2019, JAN, 1));
   });
 
   it('should clamp date already within bounds', () => {
-    expect(adapter.clampDate(
-        new Date(2018, FEB, 1), new Date(2018, JAN, 1), new Date(2019, JAN, 1)))
-        .toEqual(new Date(2018, FEB, 1));
+    expect(
+      adapter.clampDate(new Date(2018, FEB, 1), new Date(2018, JAN, 1), new Date(2019, JAN, 1)),
+    ).toEqual(new Date(2018, FEB, 1));
   });
 
   it('should use UTC for formatting by default', () => {
@@ -341,16 +468,17 @@ describe('NativeDateAdapter', () => {
   });
 });
 
-
 describe('NativeDateAdapter with MAT_DATE_LOCALE override', () => {
   let adapter: NativeDateAdapter;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [NativeDateModule],
-      providers: [{provide: MAT_DATE_LOCALE, useValue: 'da-DK'}]
-    }).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [NativeDateModule],
+        providers: [{provide: MAT_DATE_LOCALE, useValue: 'da-DK'}],
+      }).compileComponents();
+    }),
+  );
 
   beforeEach(inject([DateAdapter], (d: NativeDateAdapter) => {
     adapter = d;
@@ -360,18 +488,19 @@ describe('NativeDateAdapter with MAT_DATE_LOCALE override', () => {
     const expectedValue = ['søndag', 'mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', 'lørdag'];
     expect(adapter.getDayOfWeekNames('long')).toEqual(expectedValue);
   });
-
 });
 
 describe('NativeDateAdapter with LOCALE_ID override', () => {
   let adapter: NativeDateAdapter;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [NativeDateModule],
-      providers: [{provide: LOCALE_ID, useValue: 'da-DK'}]
-    }).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [NativeDateModule],
+        providers: [{provide: LOCALE_ID, useValue: 'da-DK'}],
+      }).compileComponents();
+    }),
+  );
 
   beforeEach(inject([DateAdapter], (d: NativeDateAdapter) => {
     adapter = d;

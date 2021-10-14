@@ -6,9 +6,7 @@ import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
 import {SelectCustomTriggerExample} from './select-custom-trigger/select-custom-trigger-example';
 import {SelectDisabledExample} from './select-disabled/select-disabled-example';
-import {
-  SelectErrorStateMatcherExample
-} from './select-error-state-matcher/select-error-state-matcher-example';
+import {SelectErrorStateMatcherExample} from './select-error-state-matcher/select-error-state-matcher-example';
 import {SelectFormExample} from './select-form/select-form-example';
 import {SelectHintErrorExample} from './select-hint-error/select-hint-error-example';
 import {SelectMultipleExample} from './select-multiple/select-multiple-example';
@@ -73,5 +71,4 @@ const EXAMPLES = [
   exports: EXAMPLES,
   entryComponents: EXAMPLES,
 })
-export class SelectExamplesModule {
-}
+export class SelectExamplesModule {}

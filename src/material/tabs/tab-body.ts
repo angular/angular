@@ -44,7 +44,11 @@ import {startWith, distinctUntilChanged} from 'rxjs/operators';
  * psuedo-prior state.
  */
 export type MatTabBodyPositionState =
-    'left' | 'center' | 'right' | 'left-origin-center' | 'right-origin-center';
+  | 'left'
+  | 'center'
+  | 'right'
+  | 'left-origin-center'
+  | 'right-origin-center';
 
 /**
  * The origin state is an internally used state that is set on a new tab body indicating if it
@@ -59,7 +63,7 @@ export type MatTabBodyOriginState = 'left' | 'right';
  * @docs-private
  */
 @Directive({
-  selector: '[matTabBodyHost]'
+  selector: '[matTabBodyHost]',
 })
 export class MatTabBodyPortal extends CdkPortalOutlet implements OnInit, OnDestroy {
   /** Subscription to events for when the tab body begins centering. */
@@ -71,7 +75,8 @@ export class MatTabBodyPortal extends CdkPortalOutlet implements OnInit, OnDestr
     componentFactoryResolver: ComponentFactoryResolver,
     viewContainerRef: ViewContainerRef,
     @Inject(forwardRef(() => MatTabBody)) private _host: MatTabBody,
-    @Inject(DOCUMENT) _document: any) {
+    @Inject(DOCUMENT) _document: any,
+  ) {
     super(componentFactoryResolver, viewContainerRef, _document);
   }
 
@@ -130,7 +135,7 @@ export abstract class _MatTabBodyBase implements OnInit, OnDestroy {
   /** Event emitted when the tab completes its animation towards the center. */
   @Output() readonly _onCentered: EventEmitter<void> = new EventEmitter<void>(true);
 
-   /** The portal host inside of this container into which the tab body content will be loaded. */
+  /** The portal host inside of this container into which the tab body content will be loaded. */
   abstract _portalHost: CdkPortalOutlet;
 
   /** The tab body content to display. */
@@ -151,10 +156,11 @@ export abstract class _MatTabBodyBase implements OnInit, OnDestroy {
     this._computePositionAnimationState();
   }
 
-  constructor(private _elementRef: ElementRef<HTMLElement>,
-              @Optional() private _dir: Directionality,
-              changeDetectorRef: ChangeDetectorRef) {
-
+  constructor(
+    private _elementRef: ElementRef<HTMLElement>,
+    @Optional() private _dir: Directionality,
+    changeDetectorRef: ChangeDetectorRef,
+  ) {
     if (_dir) {
       this._dirChangeSubscription = _dir.change.subscribe((dir: Direction) => {
         this._computePositionAnimationState(dir);
@@ -164,18 +170,22 @@ export abstract class _MatTabBodyBase implements OnInit, OnDestroy {
 
     // Ensure that we get unique animation events, because the `.done` callback can get
     // invoked twice in some browsers. See https://github.com/angular/angular/issues/24084.
-    this._translateTabComplete.pipe(distinctUntilChanged((x, y) => {
-      return x.fromState === y.fromState && x.toState === y.toState;
-    })).subscribe(event => {
-      // If the transition to the center is complete, emit an event.
-      if (this._isCenterPosition(event.toState) && this._isCenterPosition(this._position)) {
-        this._onCentered.emit();
-      }
+    this._translateTabComplete
+      .pipe(
+        distinctUntilChanged((x, y) => {
+          return x.fromState === y.fromState && x.toState === y.toState;
+        }),
+      )
+      .subscribe(event => {
+        // If the transition to the center is complete, emit an event.
+        if (this._isCenterPosition(event.toState) && this._isCenterPosition(this._position)) {
+          this._onCentered.emit();
+        }
 
-      if (this._isCenterPosition(event.fromState) && !this._isCenterPosition(this._position)) {
-        this._afterLeavingCenter.emit();
-      }
-    });
+        if (this._isCenterPosition(event.fromState) && !this._isCenterPosition(this._position)) {
+          this._afterLeavingCenter.emit();
+        }
+      });
   }
 
   /**
@@ -207,10 +217,10 @@ export abstract class _MatTabBodyBase implements OnInit, OnDestroy {
   }
 
   /** Whether the provided position state is considered center, regardless of origin. */
-  _isCenterPosition(position: MatTabBodyPositionState|string): boolean {
-    return position == 'center' ||
-        position == 'left-origin-center' ||
-        position == 'right-origin-center';
+  _isCenterPosition(position: MatTabBodyPositionState | string): boolean {
+    return (
+      position == 'center' || position == 'left-origin-center' || position == 'right-origin-center'
+    );
   }
 
   /** Computes the position state that will be used for the tab-body animation trigger. */
@@ -253,14 +263,16 @@ export abstract class _MatTabBodyBase implements OnInit, OnDestroy {
   animations: [matTabsAnimations.translateTab],
   host: {
     'class': 'mat-tab-body',
-  }
+  },
 })
 export class MatTabBody extends _MatTabBodyBase {
   @ViewChild(CdkPortalOutlet) _portalHost: CdkPortalOutlet;
 
-  constructor(elementRef: ElementRef<HTMLElement>,
-              @Optional() dir: Directionality,
-              changeDetectorRef: ChangeDetectorRef) {
+  constructor(
+    elementRef: ElementRef<HTMLElement>,
+    @Optional() dir: Directionality,
+    changeDetectorRef: ChangeDetectorRef,
+  ) {
     super(elementRef, dir, changeDetectorRef);
   }
 }

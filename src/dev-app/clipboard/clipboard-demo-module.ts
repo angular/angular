@@ -20,5 +20,4 @@ import {ClipboardDemo} from './clipboard-demo';
   ],
   declarations: [ClipboardDemo],
 })
-export class ClipboardDemoModule {
-}
+export class ClipboardDemoModule {}

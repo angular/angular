@@ -9,9 +9,12 @@ import {STEPPER_GLOBAL_OPTIONS} from '@angular/cdk/stepper';
   selector: 'stepper-errors-example',
   templateUrl: 'stepper-errors-example.html',
   styleUrls: ['stepper-errors-example.css'],
-  providers: [{
-    provide: STEPPER_GLOBAL_OPTIONS, useValue: {showError: true}
-  }]
+  providers: [
+    {
+      provide: STEPPER_GLOBAL_OPTIONS,
+      useValue: {showError: true},
+    },
+  ],
 })
 export class StepperErrorsExample implements OnInit {
   firstFormGroup: FormGroup;
@@ -21,10 +24,10 @@ export class StepperErrorsExample implements OnInit {
 
   ngOnInit() {
     this.firstFormGroup = this._formBuilder.group({
-      firstCtrl: ['', Validators.required]
+      firstCtrl: ['', Validators.required],
     });
     this.secondFormGroup = this._formBuilder.group({
-      secondCtrl: ['', Validators.required]
+      secondCtrl: ['', Validators.required],
     });
   }
 }

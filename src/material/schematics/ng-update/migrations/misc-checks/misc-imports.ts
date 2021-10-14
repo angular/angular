@@ -14,7 +14,6 @@ import * as ts from 'typescript';
  * Angular Material which cannot be updated automatically.
  */
 export class MiscImportsMigration extends Migration<null> {
-
   // Only enable this rule if the migration targets version 6. The rule
   // currently only includes migrations for V6 deprecations.
   enabled = this.targetVersion === TargetVersion.V6;
@@ -26,8 +25,11 @@ export class MiscImportsMigration extends Migration<null> {
   }
 
   private _visitImportDeclaration(node: ts.ImportDeclaration) {
-    if (!isMaterialImportDeclaration(node) || !node.importClause ||
-        !node.importClause.namedBindings) {
+    if (
+      !isMaterialImportDeclaration(node) ||
+      !node.importClause ||
+      !node.importClause.namedBindings
+    ) {
       return;
     }
 
@@ -44,13 +46,17 @@ export class MiscImportsMigration extends Migration<null> {
    * https://github.com/angular/components/commit/9f3bf274c4f15f0b0fbd8ab7dbf1a453076e66d9
    */
   private _checkAnimationConstants(namedImports: ts.NamedImports) {
-    namedImports.elements.filter(element => ts.isIdentifier(element.name)).forEach(element => {
-      const importName = element.name.text;
+    namedImports.elements
+      .filter(element => ts.isIdentifier(element.name))
+      .forEach(element => {
+        const importName = element.name.text;
 
-      if (importName === 'SHOW_ANIMATION' || importName === 'HIDE_ANIMATION') {
-        this.createFailureAtNode(
-            element, `Found deprecated symbol "${importName}" which has been removed`);
-      }
-    });
+        if (importName === 'SHOW_ANIMATION' || importName === 'HIDE_ANIMATION') {
+          this.createFailureAtNode(
+            element,
+            `Found deprecated symbol "${importName}" which has been removed`,
+          );
+        }
+      });
   }
 }

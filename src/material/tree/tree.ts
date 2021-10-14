@@ -7,12 +7,7 @@
  */
 
 import {CdkTree} from '@angular/cdk/tree';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ViewChild,
-  ViewEncapsulation
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ViewChild, ViewEncapsulation} from '@angular/core';
 import {MatTreeNodeOutlet} from './outlet';
 
 /**
@@ -38,7 +33,7 @@ import {MatTreeNodeOutlet} from './outlet';
   // See note on CdkTree for explanation on why this uses the default change detection strategy.
   // tslint:disable-next-line:validate-decorators
   changeDetection: ChangeDetectionStrategy.Default,
-  providers: [{provide: CdkTree, useExisting: MatTree}]
+  providers: [{provide: CdkTree, useExisting: MatTree}],
 })
 export class MatTree<T, K = T> extends CdkTree<T, K> {
   // Outlets within the tree's template where the dataNodes will be inserted.

@@ -26,16 +26,17 @@ export class ButtonBenchmarkApp {
   isChecked = false;
   isVisible = false;
 
-  show() { this.isVisible = true; }
-  hide() { this.isVisible = false; }
+  show() {
+    this.isVisible = true;
+  }
+  hide() {
+    this.isVisible = false;
+  }
 }
 
 @NgModule({
   declarations: [ButtonBenchmarkApp],
-  imports: [
-    BrowserModule,
-    MatButtonModule,
-  ],
+  imports: [BrowserModule, MatButtonModule],
   bootstrap: [ButtonBenchmarkApp],
 })
 export class AppModule {}

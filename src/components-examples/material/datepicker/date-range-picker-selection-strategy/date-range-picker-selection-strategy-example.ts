@@ -33,9 +33,11 @@ export class FiveDayRangeSelectionStrategy<D> implements MatDateRangeSelectionSt
 @Component({
   selector: 'date-range-picker-selection-strategy-example',
   templateUrl: 'date-range-picker-selection-strategy-example.html',
-  providers: [{
-    provide: MAT_DATE_RANGE_SELECTION_STRATEGY,
-    useClass: FiveDayRangeSelectionStrategy
-  }]
+  providers: [
+    {
+      provide: MAT_DATE_RANGE_SELECTION_STRATEGY,
+      useClass: FiveDayRangeSelectionStrategy,
+    },
+  ],
 })
 export class DateRangePickerSelectionStrategyExample {}

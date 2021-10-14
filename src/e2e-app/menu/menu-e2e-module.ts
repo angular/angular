@@ -14,5 +14,4 @@ import {MenuE2E} from './menu-e2e';
   imports: [MatMenuModule],
   declarations: [MenuE2E],
 })
-export class MenuE2eModule {
-}
+export class MenuE2eModule {}

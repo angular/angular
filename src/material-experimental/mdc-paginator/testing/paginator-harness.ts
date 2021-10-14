@@ -13,7 +13,6 @@ import {
   _MatPaginatorHarnessBase,
 } from '@angular/material/paginator/testing';
 
-
 /** Harness for interacting with an MDC-based mat-paginator in tests. */
 export class MatPaginatorHarness extends _MatPaginatorHarnessBase {
   /** Selector used to find paginator instances. */
@@ -22,9 +21,11 @@ export class MatPaginatorHarness extends _MatPaginatorHarnessBase {
   protected _previousButton = this.locatorFor('.mat-mdc-paginator-navigation-previous');
   protected _firstPageButton = this.locatorForOptional('.mat-mdc-paginator-navigation-first');
   protected _lastPageButton = this.locatorForOptional('.mat-mdc-paginator-navigation-last');
-  protected _select = this.locatorForOptional(MatSelectHarness.with({
-    ancestor: '.mat-mdc-paginator-page-size'
-  }));
+  protected _select = this.locatorForOptional(
+    MatSelectHarness.with({
+      ancestor: '.mat-mdc-paginator-page-size',
+    }),
+  );
   protected _pageSizeFallback = this.locatorFor('.mat-mdc-paginator-page-size-value');
   protected _rangeLabel = this.locatorFor('.mat-mdc-paginator-range-label');
 

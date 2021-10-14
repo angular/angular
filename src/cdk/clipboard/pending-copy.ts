@@ -20,10 +20,10 @@
  * called.
  */
 export class PendingCopy {
-  private _textarea: HTMLTextAreaElement|undefined;
+  private _textarea: HTMLTextAreaElement | undefined;
 
   constructor(text: string, private readonly _document: Document) {
-    const textarea = this._textarea = this._document.createElement('textarea');
+    const textarea = (this._textarea = this._document.createElement('textarea'));
     const styles = textarea.style;
 
     // Hide the element for display and accessibility. Set a fixed position so the page layout
@@ -42,7 +42,8 @@ export class PendingCopy {
     const textarea = this._textarea;
     let successful = false;
 
-    try {  // Older browsers could throw if copy is not supported.
+    try {
+      // Older browsers could throw if copy is not supported.
       if (textarea) {
         const currentFocus = this._document.activeElement as HTMLOrSVGElement | null;
 

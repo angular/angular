@@ -31,9 +31,10 @@ export class EditRef<FormValue> implements OnDestroy {
   private _revertFormValue: FormValue;
 
   constructor(
-      @Self() private readonly _form: ControlContainer,
-      private readonly _editEventDispatcher: EditEventDispatcher<EditRef<FormValue>>,
-      private readonly _ngZone: NgZone) {
+    @Self() private readonly _form: ControlContainer,
+    private readonly _editEventDispatcher: EditEventDispatcher<EditRef<FormValue>>,
+    private readonly _ngZone: NgZone,
+  ) {
     this._editEventDispatcher.setActiveEditRef(this);
   }
 
@@ -42,7 +43,7 @@ export class EditRef<FormValue> implements OnDestroy {
    * form and overrides it with persisted state from previous openings, if
    * applicable.
    */
-  init(previousFormValue: FormValue|undefined): void {
+  init(previousFormValue: FormValue | undefined): void {
     // Wait for the zone to stabilize before caching the initial value.
     // This ensures that all form controls have been initialized.
     this._ngZone.onStable.pipe(take(1)).subscribe(() => {
@@ -60,7 +61,7 @@ export class EditRef<FormValue> implements OnDestroy {
   }
 
   /** Whether the attached form is in a valid state. */
-  isValid(): boolean|null {
+  isValid(): boolean | null {
     return this._form.valid;
   }
 

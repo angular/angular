@@ -20,48 +20,56 @@ export const constructorChecks: VersionChanges<ConstructorChecksUpgradeData> = {
   [TargetVersion.V12]: [
     {
       pr: 'https://github.com/angular/components/pull/21876',
-      changes: ['CdkTable', 'StickyStyler']
+      changes: ['CdkTable', 'StickyStyler'],
     },
     {
       pr: 'https://github.com/angular/components/issues/21900',
-      changes: ['CdkStepper']
-    }
+      changes: ['CdkStepper'],
+    },
   ],
   [TargetVersion.V11]: [
     {
       pr: 'https://github.com/angular/components/pull/20454',
-      changes: ['ScrollDispatcher', 'ViewportRuler', 'CdkVirtualScrollViewport']
+      changes: ['ScrollDispatcher', 'ViewportRuler', 'CdkVirtualScrollViewport'],
     },
     {
       pr: 'https://github.com/angular/components/pull/20500',
-      changes: ['CdkDropList']
+      changes: ['CdkDropList'],
     },
     {
       pr: 'https://github.com/angular/components/pull/20572',
-      changes: ['CdkTreeNodePadding']
+      changes: ['CdkTreeNodePadding'],
     },
     {
       pr: 'https://github.com/angular/components/pull/20511',
-      changes: ['OverlayContainer', 'FullscreenOverlayContainer', 'OverlayRef', 'Overlay']
-    }
+      changes: ['OverlayContainer', 'FullscreenOverlayContainer', 'OverlayRef', 'Overlay'],
+    },
   ],
   [TargetVersion.V10]: [
     {
       pr: 'https://github.com/angular/components/pull/19347',
-      changes: ['Platform']
-    }
+      changes: ['Platform'],
+    },
   ],
-  [TargetVersion.V9]: [{
-    pr: 'https://github.com/angular/components/pull/17084',
-    changes: ['DropListRef']
-  }],
-  [TargetVersion.V8]: [{
-    pr: 'https://github.com/angular/components/pull/15647',
-    changes: [
-      'CdkDrag', 'CdkDropList', 'ConnectedPositionStrategy', 'FlexibleConnectedPositionStrategy',
-      'OverlayPositionBuilder', 'CdkTable'
-    ]
-  }],
+  [TargetVersion.V9]: [
+    {
+      pr: 'https://github.com/angular/components/pull/17084',
+      changes: ['DropListRef'],
+    },
+  ],
+  [TargetVersion.V8]: [
+    {
+      pr: 'https://github.com/angular/components/pull/15647',
+      changes: [
+        'CdkDrag',
+        'CdkDropList',
+        'ConnectedPositionStrategy',
+        'FlexibleConnectedPositionStrategy',
+        'OverlayPositionBuilder',
+        'CdkTable',
+      ],
+    },
+  ],
   [TargetVersion.V7]: [],
-  [TargetVersion.V6]: []
+  [TargetVersion.V6]: [],
 };

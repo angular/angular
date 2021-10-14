@@ -11,7 +11,7 @@ import {MatChipAvatarHarness} from './chip-avatar-harness';
 import {
   ChipAvatarHarnessFilters,
   ChipHarnessFilters,
-  ChipRemoveHarnessFilters
+  ChipRemoveHarnessFilters,
 } from './chip-harness-filters';
 import {MatChipRemoveHarness} from './chip-remove-harness';
 
@@ -28,16 +28,20 @@ export class MatChipHarness extends ContentContainerComponentHarness {
    */
   static with(options: ChipHarnessFilters = {}): HarnessPredicate<MatChipHarness> {
     return new HarnessPredicate(MatChipHarness, options)
-        .addOption('text', options.text,
-            (harness, label) => HarnessPredicate.stringMatches(harness.getText(), label))
-        .addOption('selected', options.selected,
-            async (harness, selected) => (await harness.isSelected()) === selected);
+      .addOption('text', options.text, (harness, label) =>
+        HarnessPredicate.stringMatches(harness.getText(), label),
+      )
+      .addOption(
+        'selected',
+        options.selected,
+        async (harness, selected) => (await harness.isSelected()) === selected,
+      );
   }
 
   /** Gets the text of the chip. */
   async getText(): Promise<string> {
     return (await this.host()).text({
-      exclude: '.mat-chip-avatar, .mat-chip-trailing-icon, .mat-icon'
+      exclude: '.mat-chip-avatar, .mat-chip-trailing-icon, .mat-icon',
     });
   }
 

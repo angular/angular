@@ -27,7 +27,7 @@ export const MAT_TAB_LABEL = new InjectionToken<MatTabLabel>('MatTabLabel');
  * Used to provide a tab label to a tab without causing a circular dependency.
  * @docs-private
  */
- export const MAT_TAB = new InjectionToken<any>('MAT_TAB');
+export const MAT_TAB = new InjectionToken<any>('MAT_TAB');
 
 /** Used to flag tab labels for use with the portal directive */
 @Directive({
@@ -38,7 +38,8 @@ export class MatTabLabel extends CdkPortal {
   constructor(
     templateRef: TemplateRef<any>,
     viewContainerRef: ViewContainerRef,
-    @Inject(MAT_TAB) @Optional() public _closestTab: any) {
+    @Inject(MAT_TAB) @Optional() public _closestTab: any,
+  ) {
     super(templateRef, viewContainerRef);
   }
 }

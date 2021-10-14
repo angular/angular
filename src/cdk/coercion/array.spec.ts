@@ -1,7 +1,6 @@
 import {coerceArray} from './array';
 
 describe('coerceArray', () => {
-
   it('should wrap a string in an array', () => {
     let stringVal = 'just a string';
     expect(coerceArray(stringVal)).toEqual([stringVal]);
@@ -13,7 +12,7 @@ describe('coerceArray', () => {
   });
 
   it('should wrap an object in an array', () => {
-    let objectVal = { something: 'clever' };
+    let objectVal = {something: 'clever'};
     expect(coerceArray(objectVal)).toEqual([objectVal]);
   });
 
@@ -31,5 +30,4 @@ describe('coerceArray', () => {
     let arrayVal = [1, 2, 3];
     expect(coerceArray(arrayVal)).toBe(arrayVal);
   });
-
 });

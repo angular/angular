@@ -30,5 +30,4 @@ import {MdcPaginatorDemo} from './mdc-paginator-demo';
   ],
   declarations: [MdcPaginatorDemo],
 })
-export class MdcPaginatorDemoModule {
-}
+export class MdcPaginatorDemoModule {}

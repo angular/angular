@@ -22,6 +22,6 @@ export interface MatOptionParentComponent {
 /**
  * Injection token used to provide the parent component to options.
  */
-export const MAT_OPTION_PARENT_COMPONENT =
-    new InjectionToken<MatOptionParentComponent>('MAT_OPTION_PARENT_COMPONENT');
-
+export const MAT_OPTION_PARENT_COMPONENT = new InjectionToken<MatOptionParentComponent>(
+  'MAT_OPTION_PARENT_COMPONENT',
+);

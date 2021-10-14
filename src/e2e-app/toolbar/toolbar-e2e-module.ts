@@ -11,10 +11,7 @@ import {ExampleViewerModule} from '../example-viewer/example-viewer-module';
 import {ToolbarE2e} from './toolbar-e2e';
 
 @NgModule({
-  imports: [
-    ExampleViewerModule,
-  ],
+  imports: [ExampleViewerModule],
   declarations: [ToolbarE2e],
 })
-export class ToolbarE2eModule {
-}
+export class ToolbarE2eModule {}

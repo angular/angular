@@ -15,7 +15,6 @@ import {RippleGlobalOptions} from '@angular/material/core';
  */
 @Injectable({providedIn: 'root'})
 export class DevAppRippleOptions implements RippleGlobalOptions {
-
   /** Whether ripples should be disabled */
   disabled: boolean = false;
 }

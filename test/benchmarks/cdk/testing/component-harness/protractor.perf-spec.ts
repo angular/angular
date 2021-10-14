@@ -49,7 +49,7 @@ describe('baseline tests for interacting with the page through Protractor direct
   it('(baseline) should click all of the buttons', async () => {
     await benchmark('(baseline) click every button', async () => {
       const buttons = $$('.mat-button');
-      await buttons.each(async (button) => await button!.click());
+      await buttons.each(async button => await button!.click());
     });
   });
 });

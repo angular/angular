@@ -21,28 +21,26 @@ import {MatMultiYearView, yearsPerPage, yearsPerRow} from './multi-year-view';
 describe('MatMultiYearView', () => {
   let dir: {value: Direction};
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [
-        MatNativeDateModule,
-      ],
-      declarations: [
-        MatCalendarBody,
-        MatMultiYearView,
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [MatNativeDateModule],
+        declarations: [
+          MatCalendarBody,
+          MatMultiYearView,
 
-        // Test components.
-        StandardMultiYearView,
-        MultiYearViewWithDateFilter,
-        MultiYearViewWithMinMaxDate,
-        MultiYearViewWithDateClass,
-      ],
-      providers: [
-        {provide: Directionality, useFactory: () => dir = {value: 'ltr'}}
-      ]
-    });
+          // Test components.
+          StandardMultiYearView,
+          MultiYearViewWithDateFilter,
+          MultiYearViewWithMinMaxDate,
+          MultiYearViewWithDateClass,
+        ],
+        providers: [{provide: Directionality, useFactory: () => (dir = {value: 'ltr'})}],
+      });
 
-    TestBed.compileComponents();
-  }));
+      TestBed.compileComponents();
+    }),
+  );
 
   describe('standard multi-year view', () => {
     let fixture: ComponentFixture<StandardMultiYearView>;
@@ -113,8 +111,9 @@ describe('MatMultiYearView', () => {
 
         beforeEach(() => {
           calendarInstance = fixture.componentInstance;
-          calendarBodyEl =
-            fixture.debugElement.nativeElement.querySelector('.mat-calendar-body') as HTMLElement;
+          calendarBodyEl = fixture.debugElement.nativeElement.querySelector(
+            '.mat-calendar-body',
+          ) as HTMLElement;
           expect(calendarBodyEl).not.toBeNull();
           dir.value = 'ltr';
           fixture.componentInstance.date = new Date(2017, JAN, 1);
@@ -150,28 +149,24 @@ describe('MatMultiYearView', () => {
           dispatchKeyboardEvent(calendarBodyEl, 'keydown', UP_ARROW);
           fixture.detectChanges();
 
-          expect(calendarInstance.date)
-            .toEqual(new Date(2017 - yearsPerRow, JAN, 1));
+          expect(calendarInstance.date).toEqual(new Date(2017 - yearsPerRow, JAN, 1));
 
           dispatchKeyboardEvent(calendarBodyEl, 'keydown', UP_ARROW);
           fixture.detectChanges();
 
-          expect(calendarInstance.date)
-            .toEqual(new Date(2017 - yearsPerRow * 2, JAN, 1));
+          expect(calendarInstance.date).toEqual(new Date(2017 - yearsPerRow * 2, JAN, 1));
         });
 
         it('should go down a row on down arrow press', () => {
           dispatchKeyboardEvent(calendarBodyEl, 'keydown', DOWN_ARROW);
           fixture.detectChanges();
 
-          expect(calendarInstance.date)
-            .toEqual(new Date(2017 + yearsPerRow, JAN, 1));
+          expect(calendarInstance.date).toEqual(new Date(2017 + yearsPerRow, JAN, 1));
 
           dispatchKeyboardEvent(calendarBodyEl, 'keydown', DOWN_ARROW);
           fixture.detectChanges();
 
-          expect(calendarInstance.date)
-            .toEqual(new Date(2017 + yearsPerRow * 2, JAN, 1));
+          expect(calendarInstance.date).toEqual(new Date(2017 + yearsPerRow * 2, JAN, 1));
         });
 
         it('should go to first year in current range on home press', () => {
@@ -202,33 +197,27 @@ describe('MatMultiYearView', () => {
           dispatchKeyboardEvent(calendarBodyEl, 'keydown', PAGE_UP);
           fixture.detectChanges();
 
-          expect(calendarInstance.date)
-            .toEqual(new Date(2017 - yearsPerPage, JAN, 1));
+          expect(calendarInstance.date).toEqual(new Date(2017 - yearsPerPage, JAN, 1));
 
           dispatchKeyboardEvent(calendarBodyEl, 'keydown', PAGE_UP);
           fixture.detectChanges();
 
-          expect(calendarInstance.date)
-              .toEqual(new Date(2017 - yearsPerPage * 2, JAN, 1));
+          expect(calendarInstance.date).toEqual(new Date(2017 - yearsPerPage * 2, JAN, 1));
         });
 
         it('should go to same index in next year range on page down press', () => {
           dispatchKeyboardEvent(calendarBodyEl, 'keydown', PAGE_DOWN);
           fixture.detectChanges();
 
-          expect(calendarInstance.date)
-            .toEqual(new Date(2017 + yearsPerPage, JAN, 1));
+          expect(calendarInstance.date).toEqual(new Date(2017 + yearsPerPage, JAN, 1));
 
           dispatchKeyboardEvent(calendarBodyEl, 'keydown', PAGE_DOWN);
           fixture.detectChanges();
 
-          expect(calendarInstance.date)
-            .toEqual(new Date(2017 + yearsPerPage * 2, JAN, 1));
+          expect(calendarInstance.date).toEqual(new Date(2017 + yearsPerPage * 2, JAN, 1));
         });
-
       });
     });
-
   });
 
   describe('multi year view with date filter', () => {
@@ -245,8 +234,11 @@ describe('MatMultiYearView', () => {
       const fixture = TestBed.createComponent(MultiYearViewWithDateFilter);
       const activeDate = fixture.componentInstance.activeDate;
       const spy = spyOn(fixture.componentInstance, 'dateFilter').and.callThrough();
-      fixture.componentInstance.minDate =
-          new Date(activeDate.getFullYear() + 1, activeDate.getMonth(), activeDate.getDate());
+      fixture.componentInstance.minDate = new Date(
+        activeDate.getFullYear() + 1,
+        activeDate.getMonth(),
+        activeDate.getDate(),
+      );
       fixture.detectChanges();
 
       expect(spy).not.toHaveBeenCalled();
@@ -256,13 +248,15 @@ describe('MatMultiYearView', () => {
       const fixture = TestBed.createComponent(MultiYearViewWithDateFilter);
       const activeDate = fixture.componentInstance.activeDate;
       const spy = spyOn(fixture.componentInstance, 'dateFilter').and.callThrough();
-      fixture.componentInstance.maxDate =
-          new Date(activeDate.getFullYear() - 1, activeDate.getMonth(), activeDate.getDate());
+      fixture.componentInstance.maxDate = new Date(
+        activeDate.getFullYear() - 1,
+        activeDate.getMonth(),
+        activeDate.getDate(),
+      );
       fixture.detectChanges();
 
       expect(spy).not.toHaveBeenCalled();
     });
-
   });
 
   describe('multi year view with minDate only', () => {
@@ -326,7 +320,7 @@ describe('MatMultiYearView', () => {
 
     it('should end last page with maxDate', () => {
       testComponent.minDate = new Date(2006, JAN, 1);
-      testComponent.maxDate = new Date (2020, JAN, 1);
+      testComponent.maxDate = new Date(2020, JAN, 1);
       fixture.detectChanges();
 
       const cells = multiYearViewNativeElement.querySelectorAll('.mat-calendar-body-cell');
@@ -335,7 +329,7 @@ describe('MatMultiYearView', () => {
 
     it('should disable dates before minDate', () => {
       testComponent.minDate = new Date(2006, JAN, 1);
-      testComponent.maxDate = new Date (2020, JAN, 1);
+      testComponent.maxDate = new Date(2020, JAN, 1);
       fixture.detectChanges();
 
       const cells = multiYearViewNativeElement.querySelectorAll('.mat-calendar-body-cell');
@@ -369,13 +363,12 @@ describe('MatMultiYearView', () => {
       expect(dateClassSpy).toHaveBeenCalledWith(jasmine.any(Date), 'multi-year');
     });
   });
-
 });
 
 @Component({
   template: `
     <mat-multi-year-view [(activeDate)]="date" [(selected)]="selected"
-                         (yearSelected)="selectedYear=$event"></mat-multi-year-view>`
+                         (yearSelected)="selectedYear=$event"></mat-multi-year-view>`,
 })
 class StandardMultiYearView {
   date = new Date(2017, JAN, 1);
@@ -392,7 +385,7 @@ class StandardMultiYearView {
       [dateFilter]="dateFilter"
       [minDate]="minDate"
       [maxDate]="maxDate"></mat-multi-year-view>
-    `
+    `,
 })
 class MultiYearViewWithDateFilter {
   activeDate = new Date(2017, JAN, 1);
@@ -407,7 +400,7 @@ class MultiYearViewWithDateFilter {
   template: `
     <mat-multi-year-view [(activeDate)]="activeDate" [minDate]="minDate" [maxDate]="maxDate">
     </mat-multi-year-view>
-    `
+    `,
 })
 class MultiYearViewWithMinMaxDate {
   activeDate = new Date(2019, JAN, 1);
@@ -415,11 +408,10 @@ class MultiYearViewWithMinMaxDate {
   maxDate: Date | null;
 }
 
-
 @Component({
   template: `
     <mat-multi-year-view [activeDate]="activeDate" [dateClass]="dateClass"></mat-multi-year-view>
-  `
+  `,
 })
 class MultiYearViewWithDateClass {
   activeDate = new Date(2017, JAN, 1);

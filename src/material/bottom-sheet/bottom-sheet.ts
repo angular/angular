@@ -28,10 +28,10 @@ import {MatBottomSheetContainer} from './bottom-sheet-container';
 import {MatBottomSheetModule} from './bottom-sheet-module';
 import {MatBottomSheetRef} from './bottom-sheet-ref';
 
-
 /** Injection token that can be used to specify default bottom sheet options. */
-export const MAT_BOTTOM_SHEET_DEFAULT_OPTIONS =
-    new InjectionToken<MatBottomSheetConfig>('mat-bottom-sheet-default-options');
+export const MAT_BOTTOM_SHEET_DEFAULT_OPTIONS = new InjectionToken<MatBottomSheetConfig>(
+  'mat-bottom-sheet-default-options',
+);
 
 /**
  * Service to trigger Material Design bottom sheets.
@@ -55,11 +55,13 @@ export class MatBottomSheet implements OnDestroy {
   }
 
   constructor(
-      private _overlay: Overlay,
-      private _injector: Injector,
-      @Optional() @SkipSelf() private _parentBottomSheet: MatBottomSheet,
-      @Optional() @Inject(MAT_BOTTOM_SHEET_DEFAULT_OPTIONS)
-          private _defaultOptions?: MatBottomSheetConfig) {}
+    private _overlay: Overlay,
+    private _injector: Injector,
+    @Optional() @SkipSelf() private _parentBottomSheet: MatBottomSheet,
+    @Optional()
+    @Inject(MAT_BOTTOM_SHEET_DEFAULT_OPTIONS)
+    private _defaultOptions?: MatBottomSheetConfig,
+  ) {}
 
   /**
    * Opens a bottom sheet containing the given component.
@@ -67,8 +69,10 @@ export class MatBottomSheet implements OnDestroy {
    * @param config Extra configuration options.
    * @returns Reference to the newly-opened bottom sheet.
    */
-  open<T, D = any, R = any>(component: ComponentType<T>,
-                   config?: MatBottomSheetConfig<D>): MatBottomSheetRef<T, R>;
+  open<T, D = any, R = any>(
+    component: ComponentType<T>,
+    config?: MatBottomSheetConfig<D>,
+  ): MatBottomSheetRef<T, R>;
 
   /**
    * Opens a bottom sheet containing the given template.
@@ -76,26 +80,36 @@ export class MatBottomSheet implements OnDestroy {
    * @param config Extra configuration options.
    * @returns Reference to the newly-opened bottom sheet.
    */
-  open<T, D = any, R = any>(template: TemplateRef<T>,
-                   config?: MatBottomSheetConfig<D>): MatBottomSheetRef<T, R>;
+  open<T, D = any, R = any>(
+    template: TemplateRef<T>,
+    config?: MatBottomSheetConfig<D>,
+  ): MatBottomSheetRef<T, R>;
 
-  open<T, D = any, R = any>(componentOrTemplateRef: ComponentType<T> | TemplateRef<T>,
-                   config?: MatBottomSheetConfig<D>): MatBottomSheetRef<T, R> {
-
-    const _config =
-        _applyConfigDefaults(this._defaultOptions || new MatBottomSheetConfig(), config);
+  open<T, D = any, R = any>(
+    componentOrTemplateRef: ComponentType<T> | TemplateRef<T>,
+    config?: MatBottomSheetConfig<D>,
+  ): MatBottomSheetRef<T, R> {
+    const _config = _applyConfigDefaults(
+      this._defaultOptions || new MatBottomSheetConfig(),
+      config,
+    );
     const overlayRef = this._createOverlay(_config);
     const container = this._attachContainer(overlayRef, _config);
     const ref = new MatBottomSheetRef<T, R>(container, overlayRef);
 
     if (componentOrTemplateRef instanceof TemplateRef) {
-      container.attachTemplatePortal(new TemplatePortal<T>(componentOrTemplateRef, null!, {
-        $implicit: _config.data,
-        bottomSheetRef: ref
-      } as any));
+      container.attachTemplatePortal(
+        new TemplatePortal<T>(componentOrTemplateRef, null!, {
+          $implicit: _config.data,
+          bottomSheetRef: ref,
+        } as any),
+      );
     } else {
-      const portal = new ComponentPortal(componentOrTemplateRef, undefined,
-            this._createInjector(_config, ref));
+      const portal = new ComponentPortal(
+        componentOrTemplateRef,
+        undefined,
+        this._createInjector(_config, ref),
+      );
       const contentRef = container.attachComponentPortal(portal);
       ref.instance = contentRef.instance;
     }
@@ -142,17 +156,21 @@ export class MatBottomSheet implements OnDestroy {
   /**
    * Attaches the bottom sheet container component to the overlay.
    */
-  private _attachContainer(overlayRef: OverlayRef,
-                           config: MatBottomSheetConfig): MatBottomSheetContainer {
-
+  private _attachContainer(
+    overlayRef: OverlayRef,
+    config: MatBottomSheetConfig,
+  ): MatBottomSheetContainer {
     const userInjector = config && config.viewContainerRef && config.viewContainerRef.injector;
     const injector = Injector.create({
       parent: userInjector || this._injector,
-      providers: [{provide: MatBottomSheetConfig, useValue: config}]
+      providers: [{provide: MatBottomSheetConfig, useValue: config}],
     });
 
-    const containerPortal =
-        new ComponentPortal(MatBottomSheetContainer, config.viewContainerRef, injector);
+    const containerPortal = new ComponentPortal(
+      MatBottomSheetContainer,
+      config.viewContainerRef,
+      injector,
+    );
     const containerRef: ComponentRef<MatBottomSheetContainer> = overlayRef.attach(containerPortal);
     return containerRef.instance;
   }
@@ -168,7 +186,7 @@ export class MatBottomSheet implements OnDestroy {
       disposeOnNavigation: config.closeOnNavigation,
       maxWidth: '100%',
       scrollStrategy: config.scrollStrategy || this._overlay.scrollStrategies.block(),
-      positionStrategy: this._overlay.position().global().centerHorizontally().bottom('0')
+      positionStrategy: this._overlay.position().global().centerHorizontally().bottom('0'),
     });
 
     if (config.backdropClass) {
@@ -183,20 +201,24 @@ export class MatBottomSheet implements OnDestroy {
    * @param config Config that was used to create the bottom sheet.
    * @param bottomSheetRef Reference to the bottom sheet.
    */
-  private _createInjector<T>(config: MatBottomSheetConfig,
-                             bottomSheetRef: MatBottomSheetRef<T>): Injector {
-
+  private _createInjector<T>(
+    config: MatBottomSheetConfig,
+    bottomSheetRef: MatBottomSheetRef<T>,
+  ): Injector {
     const userInjector = config && config.viewContainerRef && config.viewContainerRef.injector;
     const providers: StaticProvider[] = [
       {provide: MatBottomSheetRef, useValue: bottomSheetRef},
-      {provide: MAT_BOTTOM_SHEET_DATA, useValue: config.data}
+      {provide: MAT_BOTTOM_SHEET_DATA, useValue: config.data},
     ];
 
-    if (config.direction && (!userInjector ||
-      !userInjector.get<Directionality | null>(Directionality, null, InjectFlags.Optional))) {
+    if (
+      config.direction &&
+      (!userInjector ||
+        !userInjector.get<Directionality | null>(Directionality, null, InjectFlags.Optional))
+    ) {
       providers.push({
         provide: Directionality,
-        useValue: {value: config.direction, change: observableOf()}
+        useValue: {value: config.direction, change: observableOf()},
       });
     }
 
@@ -210,7 +232,9 @@ export class MatBottomSheet implements OnDestroy {
  * @param config The configuration to which the defaults will be applied.
  * @returns The new configuration object with defaults applied.
  */
-function _applyConfigDefaults(defaults: MatBottomSheetConfig,
-                              config?: MatBottomSheetConfig): MatBottomSheetConfig {
+function _applyConfigDefaults(
+  defaults: MatBottomSheetConfig,
+  config?: MatBottomSheetConfig,
+): MatBottomSheetConfig {
   return {...defaults, ...config};
 }

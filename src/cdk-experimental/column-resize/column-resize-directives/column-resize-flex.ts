@@ -20,19 +20,17 @@ import {FLEX_PROVIDERS} from './constants';
  */
 @Directive({
   selector: 'cdk-table[columnResize]',
-  providers: [
-    ...FLEX_PROVIDERS,
-    {provide: ColumnResize, useExisting: CdkColumnResizeFlex},
-  ],
+  providers: [...FLEX_PROVIDERS, {provide: ColumnResize, useExisting: CdkColumnResizeFlex}],
 })
 export class CdkColumnResizeFlex extends ColumnResize {
   constructor(
-      readonly columnResizeNotifier: ColumnResizeNotifier,
-      readonly elementRef: ElementRef<HTMLElement>,
-      protected readonly eventDispatcher: HeaderRowEventDispatcher,
-      protected readonly ngZone: NgZone,
-      protected readonly notifier: ColumnResizeNotifierSource,
-      protected readonly table: CdkTable<unknown>) {
+    readonly columnResizeNotifier: ColumnResizeNotifier,
+    readonly elementRef: ElementRef<HTMLElement>,
+    protected readonly eventDispatcher: HeaderRowEventDispatcher,
+    protected readonly ngZone: NgZone,
+    protected readonly notifier: ColumnResizeNotifierSource,
+    protected readonly table: CdkTable<unknown>,
+  ) {
     super();
   }
 }

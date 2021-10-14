@@ -18,14 +18,14 @@ describe('DatepickerHarnessExample', () => {
 
   beforeAll(() => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
-      teardown: {destroyAfterEach: true}
+      teardown: {destroyAfterEach: true},
     });
   });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MatDatepickerModule, NoopAnimationsModule, MatNativeDateModule, FormsModule],
-      declarations: [DatepickerHarnessExample]
+      declarations: [DatepickerHarnessExample],
     }).compileComponents();
     fixture = TestBed.createComponent(DatepickerHarnessExample);
     fixture.detectChanges();

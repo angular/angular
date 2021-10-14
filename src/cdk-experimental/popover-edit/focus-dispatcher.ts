@@ -24,7 +24,7 @@ export class FocusDispatcher {
   readonly keyObserver: PartialObserver<KeyboardEvent>;
 
   constructor(protected readonly directionality: Directionality) {
-    this.keyObserver = {next: (event) => this.handleKeyboardEvent(event)};
+    this.keyObserver = {next: event => this.handleKeyboardEvent(event)};
   }
 
   /**
@@ -32,8 +32,9 @@ export class FocusDispatcher {
    * currentCell.
    */
   moveFocusHorizontally(currentCell: HTMLElement, offset: number): void {
-    const cells = Array.from(closest(currentCell, TABLE_SELECTOR)!.querySelectorAll(
-                      EDITABLE_CELL_SELECTOR)) as HTMLElement[];
+    const cells = Array.from(
+      closest(currentCell, TABLE_SELECTOR)!.querySelectorAll(EDITABLE_CELL_SELECTOR),
+    ) as HTMLElement[];
     const currentIndex = cells.indexOf(currentCell);
     const newIndex = currentIndex + offset;
 
@@ -47,13 +48,15 @@ export class FocusDispatcher {
     const currentRow = closest(currentCell, ROW_SELECTOR)!;
     const rows = Array.from(closest(currentRow, TABLE_SELECTOR)!.querySelectorAll(ROW_SELECTOR));
     const currentRowIndex = rows.indexOf(currentRow);
-    const currentIndexWithinRow =
-        Array.from(currentRow.querySelectorAll(EDITABLE_CELL_SELECTOR)).indexOf(currentCell);
+    const currentIndexWithinRow = Array.from(
+      currentRow.querySelectorAll(EDITABLE_CELL_SELECTOR),
+    ).indexOf(currentCell);
     const newRowIndex = currentRowIndex + offset;
 
     if (rows[newRowIndex]) {
-      const rowToFocus =
-          Array.from(rows[newRowIndex].querySelectorAll(EDITABLE_CELL_SELECTOR)) as HTMLElement[];
+      const rowToFocus = Array.from(
+        rows[newRowIndex].querySelectorAll(EDITABLE_CELL_SELECTOR),
+      ) as HTMLElement[];
 
       if (rowToFocus[currentIndexWithinRow]) {
         rowToFocus[currentIndexWithinRow].focus();

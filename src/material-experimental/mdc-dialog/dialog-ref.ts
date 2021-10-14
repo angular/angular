@@ -18,9 +18,10 @@ let uniqueId = 0;
  */
 export class MatDialogRef<T, R = any> extends NonMdcDialogRef<T, R> {
   constructor(
-      overlayRef: OverlayRef,
-      containerInstance: MatDialogContainer,
-      id: string = `mat-mdc-dialog-${uniqueId++}`) {
+    overlayRef: OverlayRef,
+    containerInstance: MatDialogContainer,
+    id: string = `mat-mdc-dialog-${uniqueId++}`,
+  ) {
     super(overlayRef, containerInstance, id);
   }
 }

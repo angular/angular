@@ -9,7 +9,7 @@ import {
  */
 
 TestBed.initTestEnvironment([BrowserDynamicTestingModule], platformBrowserDynamicTesting(), {
-  teardown: {destroyAfterEach: true}
+  teardown: {destroyAfterEach: true},
 });
 
 (window as any).module = {};

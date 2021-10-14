@@ -5,20 +5,15 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {CdkAccordionModule, CdkAccordionItem} from './public-api';
 
 describe('CdkAccordionItem', () => {
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [
-        BrowserAnimationsModule,
-        CdkAccordionModule
-      ],
-      declarations: [
-        SingleItem,
-        ItemGroupWithoutAccordion,
-        ItemGroupWithAccordion
-      ],
-    });
-    TestBed.compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [BrowserAnimationsModule, CdkAccordionModule],
+        declarations: [SingleItem, ItemGroupWithoutAccordion, ItemGroupWithAccordion],
+      });
+      TestBed.compileComponents();
+    }),
+  );
 
   describe('single item', () => {
     let fixture: ComponentFixture<SingleItem>;
@@ -170,7 +165,6 @@ describe('CdkAccordionItem', () => {
 
       subscription.unsubscribe();
     });
-
   });
 
   describe('items without accordion', () => {
@@ -213,7 +207,6 @@ describe('CdkAccordionItem', () => {
     });
   });
 
-
   describe('items in accordion', () => {
     let fixture: ComponentFixture<SingleItem>;
     let firstItem: CdkAccordionItem;
@@ -242,7 +235,7 @@ describe('CdkAccordionItem', () => {
 });
 
 @Component({
-  template: `<cdk-accordion-item #item1></cdk-accordion-item>`
+  template: `<cdk-accordion-item #item1></cdk-accordion-item>`,
 })
 class SingleItem {}
 
@@ -250,7 +243,7 @@ class SingleItem {}
   template: `
     <cdk-accordion-item #item1></cdk-accordion-item>
     <cdk-accordion-item #item2></cdk-accordion-item>
-  `
+  `,
 })
 class ItemGroupWithoutAccordion {}
 
@@ -260,6 +253,6 @@ class ItemGroupWithoutAccordion {}
       <cdk-accordion-item #item1></cdk-accordion-item>
       <cdk-accordion-item #item2></cdk-accordion-item>
     </cdk-accordion>
-  `
+  `,
 })
 class ItemGroupWithAccordion {}

@@ -25,7 +25,6 @@ import {MatChipRow} from './chip-row';
 import {MatChipOption} from './chip-option';
 import {MatChipSet} from './chip-set';
 
-
 const CHIP_DECLARATIONS = [
   MatChip,
   MatChipAvatar,
@@ -50,10 +49,9 @@ const CHIP_DECLARATIONS = [
     {
       provide: MAT_CHIPS_DEFAULT_OPTIONS,
       useValue: {
-        separatorKeyCodes: [ENTER]
-      } as MatChipsDefaultOptions
-    }
-  ]
+        separatorKeyCodes: [ENTER],
+      } as MatChipsDefaultOptions,
+    },
+  ],
 })
-export class MatChipsModule {
-}
+export class MatChipsModule {}

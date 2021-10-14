@@ -16,10 +16,11 @@ export interface Import {
   moduleName: string;
 }
 
-
 /** Resolves the import of the specified identifier. */
-export function getImportOfIdentifier(node: ts.Identifier, typeChecker: ts.TypeChecker): Import|
-    null {
+export function getImportOfIdentifier(
+  node: ts.Identifier,
+  typeChecker: ts.TypeChecker,
+): Import | null {
   // Free standing identifiers which resolve to an import will be handled
   // as direct imports. e.g. "@Component()" where "Component" is an identifier
   // referring to an import specifier.
@@ -54,8 +55,10 @@ export function getImportOfIdentifier(node: ts.Identifier, typeChecker: ts.TypeC
  * Resolves the import of the specified identifier. Expects the identifier to resolve
  * to a fine-grained import declaration with import specifiers.
  */
-function getSpecificImportOfIdentifier(node: ts.Identifier, typeChecker: ts.TypeChecker): Import|
-    null {
+function getSpecificImportOfIdentifier(
+  node: ts.Identifier,
+  typeChecker: ts.TypeChecker,
+): Import | null {
   const symbol = typeChecker.getSymbolAtLocation(node);
   if (!symbol || !symbol.declarations || !symbol.declarations.length) {
     return null;
@@ -72,7 +75,7 @@ function getSpecificImportOfIdentifier(node: ts.Identifier, typeChecker: ts.Type
   }
   return {
     moduleName: importDecl.moduleSpecifier.text,
-    symbolName: declaration.propertyName ? declaration.propertyName.text : declaration.name.text
+    symbolName: declaration.propertyName ? declaration.propertyName.text : declaration.name.text,
   };
 }
 
@@ -80,8 +83,10 @@ function getSpecificImportOfIdentifier(node: ts.Identifier, typeChecker: ts.Type
  * Resolves the import of the specified identifier. Expects the identifier to
  * resolve to a namespaced import declaration. e.g. "import * as core from ...".
  */
-function getImportOfNamespacedIdentifier(node: ts.Identifier, typeChecker: ts.TypeChecker): string|
-    null {
+function getImportOfNamespacedIdentifier(
+  node: ts.Identifier,
+  typeChecker: ts.TypeChecker,
+): string | null {
   const symbol = typeChecker.getSymbolAtLocation(node);
   if (!symbol || !symbol.declarations || !symbol.declarations.length) {
     return null;
@@ -100,12 +105,11 @@ function getImportOfNamespacedIdentifier(node: ts.Identifier, typeChecker: ts.Ty
   return importDecl.moduleSpecifier.text;
 }
 
-
 /**
  * Gets the root identifier of a qualified type chain. For example: "core.GestureConfig"
  * will return the "core" identifier. Allowing us to find the import of "core".
  */
-function getQualifiedNameRoot(name: ts.QualifiedName): ts.Identifier|null {
+function getQualifiedNameRoot(name: ts.QualifiedName): ts.Identifier | null {
   while (ts.isQualifiedName(name.left)) {
     name = name.left;
   }
@@ -116,7 +120,7 @@ function getQualifiedNameRoot(name: ts.QualifiedName): ts.Identifier|null {
  * Gets the root identifier of a property access chain. For example: "core.GestureConfig"
  * will return the "core" identifier. Allowing us to find the import of "core".
  */
-function getPropertyAccessRoot(node: ts.PropertyAccessExpression): ts.Identifier|null {
+function getPropertyAccessRoot(node: ts.PropertyAccessExpression): ts.Identifier | null {
   while (ts.isPropertyAccessExpression(node.expression)) {
     node = node.expression;
   }

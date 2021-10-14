@@ -14,5 +14,4 @@ import {ProgressBarE2E} from './progress-bar-e2e';
   imports: [MatProgressBarModule],
   declarations: [ProgressBarE2E],
 })
-export class ProgressBarE2eModule {
-}
+export class ProgressBarE2eModule {}

@@ -6,7 +6,6 @@ import {OverlayModule, Overlay} from '../index';
 import {OverlayKeyboardDispatcher} from './overlay-keyboard-dispatcher';
 import {ComponentPortal} from '@angular/cdk/portal';
 
-
 describe('OverlayKeyboardDispatcher', () => {
   let keyboardDispatcher: OverlayKeyboardDispatcher;
   let overlay: Overlay;
@@ -31,20 +30,25 @@ describe('OverlayKeyboardDispatcher', () => {
     keyboardDispatcher.add(overlayTwo);
 
     expect(keyboardDispatcher._attachedOverlays.length)
-      .withContext('Expected both overlays to be tracked.').toBe(2);
+      .withContext('Expected both overlays to be tracked.')
+      .toBe(2);
     expect(keyboardDispatcher._attachedOverlays[0])
-      .withContext('Expected one to be first.').toBe(overlayOne);
+      .withContext('Expected one to be first.')
+      .toBe(overlayOne);
     expect(keyboardDispatcher._attachedOverlays[1])
-      .withContext('Expected two to be last.').toBe(overlayTwo);
+      .withContext('Expected two to be last.')
+      .toBe(overlayTwo);
 
     // Detach first one and re-attach it
     keyboardDispatcher.remove(overlayOne);
     keyboardDispatcher.add(overlayOne);
 
     expect(keyboardDispatcher._attachedOverlays[0])
-      .withContext('Expected two to now be first.').toBe(overlayTwo);
+      .withContext('Expected two to now be first.')
+      .toBe(overlayTwo);
     expect(keyboardDispatcher._attachedOverlays[1])
-      .withContext('Expected one to now be last.').toBe(overlayOne);
+      .withContext('Expected one to now be last.')
+      .toBe(overlayOne);
   });
 
   it('should dispatch body keyboard events to the most recently attached overlay', () => {
@@ -174,15 +178,12 @@ describe('OverlayKeyboardDispatcher', () => {
     expect(overlayTwoSpy).not.toHaveBeenCalled();
     expect(overlayOneSpy).toHaveBeenCalled();
   });
-
 });
 
-
 @Component({
-  template: 'Hello'
+  template: 'Hello',
 })
-class TestComponent { }
-
+class TestComponent {}
 
 // Create a real (non-test) NgModule as a workaround for
 // https://github.com/angular/angular/issues/10760
@@ -191,4 +192,4 @@ class TestComponent { }
   declarations: [TestComponent],
   entryComponents: [TestComponent],
 })
-class TestComponentModule { }
+class TestComponentModule {}

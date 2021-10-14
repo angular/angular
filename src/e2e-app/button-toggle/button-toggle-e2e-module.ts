@@ -11,10 +11,7 @@ import {ExampleViewerModule} from '../example-viewer/example-viewer-module';
 import {ButtonToggleE2e} from './button-toggle-e2e';
 
 @NgModule({
-  imports: [
-    ExampleViewerModule,
-  ],
+  imports: [ExampleViewerModule],
   declarations: [ButtonToggleE2e],
 })
-export class ButtonToggleE2eModule {
-}
+export class ButtonToggleE2eModule {}

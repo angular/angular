@@ -18,7 +18,6 @@ import {
   MatChipsModule,
 } from './index';
 
-
 describe('MDC-based Option Chips', () => {
   let fixture: ComponentFixture<any>;
   let chipDebugElement: DebugElement;
@@ -27,22 +26,27 @@ describe('MDC-based Option Chips', () => {
   let globalRippleOptions: RippleGlobalOptions;
   let dir = 'ltr';
 
-  beforeEach(waitForAsync(() => {
-    globalRippleOptions = {};
-    TestBed.configureTestingModule({
-      imports: [MatChipsModule],
-      declarations: [SingleChip],
-      providers: [
-        {provide: MAT_RIPPLE_GLOBAL_OPTIONS, useFactory: () => globalRippleOptions},
-        {provide: Directionality, useFactory: () => ({
-          value: dir,
-          change: new Subject()
-        })},
-      ]
-    });
+  beforeEach(
+    waitForAsync(() => {
+      globalRippleOptions = {};
+      TestBed.configureTestingModule({
+        imports: [MatChipsModule],
+        declarations: [SingleChip],
+        providers: [
+          {provide: MAT_RIPPLE_GLOBAL_OPTIONS, useFactory: () => globalRippleOptions},
+          {
+            provide: Directionality,
+            useFactory: () => ({
+              value: dir,
+              change: new Subject(),
+            }),
+          },
+        ],
+      });
 
-    TestBed.compileComponents();
-  }));
+      TestBed.compileComponents();
+    }),
+  );
 
   describe('MatChipOption', () => {
     let testComponent: SingleChip;
@@ -58,7 +62,6 @@ describe('MDC-based Option Chips', () => {
     });
 
     describe('basic behaviors', () => {
-
       it('adds the `mat-chip` class', () => {
         expect(chipNativeElement.classList).toContain('mat-mdc-chip');
       });
@@ -66,7 +69,7 @@ describe('MDC-based Option Chips', () => {
       it('emits focus only once for multiple clicks', () => {
         let counter = 0;
         chipInstance._onFocus.subscribe(() => {
-          counter ++ ;
+          counter++;
         });
 
         chipNativeElement.focus();
@@ -104,8 +107,11 @@ describe('MDC-based Option Chips', () => {
         fixture.detectChanges();
 
         expect(chipNativeElement.classList).toContain('mat-mdc-chip-selected');
-        expect(testComponent.chipSelectionChange)
-            .toHaveBeenCalledWith({source: chipInstance, isUserInput: false, selected: true});
+        expect(testComponent.chipSelectionChange).toHaveBeenCalledWith({
+          source: chipInstance,
+          isUserInput: false,
+          selected: true,
+        });
       });
 
       it('should not prevent the default click action', () => {
@@ -149,8 +155,10 @@ describe('MDC-based Option Chips', () => {
         subscription.unsubscribe();
       });
 
-      it('should not dispatch `selectionChange` event when selecting a selected chip via ' +
-        'user interaction', () => {
+      it(
+        'should not dispatch `selectionChange` event when selecting a selected chip via ' +
+          'user interaction',
+        () => {
           chipInstance.select();
 
           const spy = jasmine.createSpy('selectionChange spy');
@@ -160,7 +168,8 @@ describe('MDC-based Option Chips', () => {
 
           expect(spy).not.toHaveBeenCalled();
           subscription.unsubscribe();
-        });
+        },
+      );
 
       it('should not dispatch `selectionChange` through setter if the value did not change', () => {
         chipInstance.selected = false;
@@ -176,18 +185,18 @@ describe('MDC-based Option Chips', () => {
 
       it('should be able to disable ripples through ripple global options at runtime', () => {
         expect(chipInstance._isRippleDisabled())
-          .withContext('Expected chip ripples to be enabled.').toBe(false);
+          .withContext('Expected chip ripples to be enabled.')
+          .toBe(false);
 
         globalRippleOptions.disabled = true;
 
         expect(chipInstance._isRippleDisabled())
-          .withContext('Expected chip ripples to be disabled.').toBe(true);
+          .withContext('Expected chip ripples to be disabled.')
+          .toBe(true);
       });
-
     });
 
     describe('keyboard behavior', () => {
-
       describe('when selectable is true', () => {
         beforeEach(() => {
           testComponent.selectable = true;
@@ -199,13 +208,13 @@ describe('MDC-based Option Chips', () => {
           const CHIP_SELECTED_EVENT: MatChipSelectionChange = {
             source: chipInstance,
             isUserInput: true,
-            selected: true
+            selected: true,
           };
 
           const CHIP_DESELECTED_EVENT: MatChipSelectionChange = {
             source: chipInstance,
             isUserInput: true,
-            selected: false
+            selected: false,
           };
 
           spyOn(testComponent, 'chipSelectionChange');
@@ -257,7 +266,6 @@ describe('MDC-based Option Chips', () => {
           const checkmark = chipNativeElement.querySelector('.mdc-chip__checkmark-svg')!;
           expect(checkmark.getAttribute('focusable')).toBe('false');
         }));
-
       });
 
       describe('when selectable is false', () => {
@@ -328,7 +336,7 @@ describe('MDC-based Option Chips', () => {
           {{name}}
         </mat-chip-option>
       </div>
-    </mat-chip-listbox>`
+    </mat-chip-listbox>`,
 })
 class SingleChip {
   @ViewChild(MatChipListbox) chipList: MatChipListbox;

@@ -13,19 +13,25 @@ describe('DocsMarkdownRenderer', () => {
 
   it('creates header link for h3 and h4 headings', () => {
     const heading3 = renderer.heading('heading text', 3, 'link-id');
-    expectEqualIgnoreLeadingWhitespace(heading3, `
+    expectEqualIgnoreLeadingWhitespace(
+      heading3,
+      `
         <h3 id="link-id" class="docs-header-link">
           <span header-link="link-id"></span>
           heading text
         </h3>
-      `);
+      `,
+    );
     const heading4 = renderer.heading('heading text', 4, 'second-link-id');
-    expectEqualIgnoreLeadingWhitespace(heading4, `
+    expectEqualIgnoreLeadingWhitespace(
+      heading4,
+      `
         <h4 id="second-link-id" class="docs-header-link">
           <span header-link="second-link-id"></span>
           heading text
         </h4>
-      `);
+      `,
+    );
   });
 
   it('handles duplicate ids for headings', () => {
@@ -34,14 +40,18 @@ describe('DocsMarkdownRenderer', () => {
   });
 
   it('generates links', () => {
-    expect(renderer.link('something', 'some title', 'some text'))
-        .toEqual('<a href="guide/something" title="some title">some text</a>');
-    expect(renderer.link('guide/something', 'some title', 'some text'))
-        .toEqual('<a href="guide/something" title="some title">some text</a>');
-    expect(renderer.link('#some-hash', 'some title', 'some text'))
-        .toEqual('<a href="#some-hash" title="some title">some text</a>');
-    expect(renderer.link('http://google.com', 'some title', 'some text'))
-        .toEqual('<a href="http://google.com" title="some title">some text</a>');
+    expect(renderer.link('something', 'some title', 'some text')).toEqual(
+      '<a href="guide/something" title="some title">some text</a>',
+    );
+    expect(renderer.link('guide/something', 'some title', 'some text')).toEqual(
+      '<a href="guide/something" title="some title">some text</a>',
+    );
+    expect(renderer.link('#some-hash', 'some title', 'some text')).toEqual(
+      '<a href="#some-hash" title="some title">some text</a>',
+    );
+    expect(renderer.link('http://google.com', 'some title', 'some text')).toEqual(
+      '<a href="http://google.com" title="some title">some text</a>',
+    );
   });
 
   it('generates html using new API', () => {
@@ -52,9 +62,12 @@ describe('DocsMarkdownRenderer', () => {
           "region": "some-region"
          }
         ) -->`);
-    expectEqualIgnoreLeadingWhitespace(result, `<div material-docs-example="exampleName"
+    expectEqualIgnoreLeadingWhitespace(
+      result,
+      `<div material-docs-example="exampleName"
           file="example-html.html"
-          region="some-region"></div>`);
+          region="some-region"></div>`,
+    );
   });
 
   it('generates html using new API with no region', () => {
@@ -64,8 +77,11 @@ describe('DocsMarkdownRenderer', () => {
           "file": "example-html.html",
          }
         ) -->`);
-    expectEqualIgnoreLeadingWhitespace(result, `<div material-docs-example="exampleName"
-          file="example-html.html"></div>`);
+    expectEqualIgnoreLeadingWhitespace(
+      result,
+      `<div material-docs-example="exampleName"
+          file="example-html.html"></div>`,
+    );
   });
 
   it('generates html using new API with no file and no region', () => {
@@ -74,13 +90,13 @@ describe('DocsMarkdownRenderer', () => {
           "example": "exampleName",
          }
         ) -->`);
-    expectEqualIgnoreLeadingWhitespace(result,
-      `<div material-docs-example="exampleName"></div>`);
+    expectEqualIgnoreLeadingWhitespace(result, `<div material-docs-example="exampleName"></div>`);
   });
 
   it('generates html using old API', () => {
-    expect(renderer.html('<!-- example(name) -->'))
-        .toEqual('<div material-docs-example="name"></div>');
+    expect(renderer.html('<!-- example(name) -->')).toEqual(
+      '<div material-docs-example="name"></div>',
+    );
   });
 
   it('allows id links with matching id element', () => {
@@ -97,7 +113,7 @@ describe('DocsMarkdownRenderer', () => {
     renderer.finalizeOutput(output, 'filename.html');
     expect((console.error as jasmine.Spy).calls.allArgs()).toEqual([
       [jasmine.stringMatching(/Could not process file: filename.html.*/)],
-      [jasmine.stringMatching(/.*Found link to "my-id". This heading does not exist./)]
+      [jasmine.stringMatching(/.*Found link to "my-id". This heading does not exist./)],
     ]);
     expect(process.exit).toHaveBeenCalledWith(1);
   });

@@ -9,7 +9,6 @@
 import {ComponentPortal, Portal, CdkPortal, DomPortal} from '@angular/cdk/portal';
 import {Component, QueryList, ViewChildren, ElementRef, ViewChild} from '@angular/core';
 
-
 @Component({
   selector: 'portal-demo',
   templateUrl: 'portal-demo.html',
@@ -38,9 +37,8 @@ export class PortalDemo {
   }
 }
 
-
 @Component({
   selector: 'science-joke',
-  template: `<p> 100 kilopascals go into a bar. </p>`
+  template: `<p> 100 kilopascals go into a bar. </p>`,
 })
-export class ScienceJoke { }
+export class ScienceJoke {}

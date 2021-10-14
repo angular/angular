@@ -14,13 +14,13 @@ import {unwrapExpression} from './utils/functions';
 import {
   computeLineStartsMap,
   getLineAndCharacterFromPosition,
-  LineAndCharacter
+  LineAndCharacter,
 } from './utils/line-mappings';
 import {getPropertyNameText} from './utils/property-name';
 
 export interface ResolvedResource {
   /** Class declaration that contains this resource. */
-  container: ts.ClassDeclaration|null;
+  container: ts.ClassDeclaration | null;
   /** File content of the given template. */
   content: string;
   /** Start offset of the resource content (e.g. in the inline source file) */
@@ -106,7 +106,7 @@ export class ComponentResourceCollector {
               inline: true,
               start: templateStartIdx,
               getCharacterAndLineOfPosition: pos =>
-                  ts.getLineAndCharacterOfPosition(sourceFile, pos + templateStartIdx),
+                ts.getLineAndCharacterOfPosition(sourceFile, pos + templateStartIdx),
             });
           }
         });
@@ -125,7 +125,7 @@ export class ComponentResourceCollector {
           inline: true,
           start: templateStartIdx,
           getCharacterAndLineOfPosition: pos =>
-              ts.getLineAndCharacterOfPosition(sourceFile, pos + templateStartIdx)
+            ts.getLineAndCharacterOfPosition(sourceFile, pos + templateStartIdx),
         });
       }
 
@@ -171,8 +171,10 @@ export class ComponentResourceCollector {
   }
 
   /** Resolves an external stylesheet by reading its content and computing line mappings. */
-  resolveExternalStylesheet(filePath: WorkspacePath, container: ts.ClassDeclaration|null):
-      ResolvedResource|null {
+  resolveExternalStylesheet(
+    filePath: WorkspacePath,
+    container: ts.ClassDeclaration | null,
+  ): ResolvedResource | null {
     const fileContent = this._fileSystem.read(filePath);
 
     if (!fileContent) {

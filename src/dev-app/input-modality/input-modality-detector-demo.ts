@@ -20,13 +20,12 @@ export class InputModalityDetectorDemo implements OnDestroy {
   _modality: InputModality = null;
   _destroyed = new Subject<void>();
 
-  constructor(
-      inputModalityDetector: InputModalityDetector,
-      ngZone: NgZone,
-  ) {
-    inputModalityDetector.modalityChanged
-        .pipe(takeUntil(this._destroyed))
-        .subscribe(modality => ngZone.run(() => { this._modality = modality; }));
+  constructor(inputModalityDetector: InputModalityDetector, ngZone: NgZone) {
+    inputModalityDetector.modalityChanged.pipe(takeUntil(this._destroyed)).subscribe(modality =>
+      ngZone.run(() => {
+        this._modality = modality;
+      }),
+    );
   }
 
   ngOnDestroy() {

@@ -14,5 +14,4 @@ import {CdkCopyToClipboard} from './copy-to-clipboard';
   declarations: [CdkCopyToClipboard],
   exports: [CdkCopyToClipboard],
 })
-export class ClipboardModule {
-}
+export class ClipboardModule {}

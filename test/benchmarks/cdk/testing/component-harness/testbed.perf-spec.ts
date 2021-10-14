@@ -49,8 +49,9 @@ describe('performance for the testbed harness environment', () => {
 
     it('should find a button via text filter', async () => {
       await benchmark('(baseline) find a button via text filter', async () => {
-        return Array.from(document.querySelectorAll('button'))
-            .filter(b => b.innerText === MIDDLE_BUTTON);
+        return Array.from(document.querySelectorAll('button')).filter(
+          b => b.innerText === MIDDLE_BUTTON,
+        );
       });
     });
 
@@ -114,5 +115,5 @@ describe('performance for the testbed harness environment', () => {
   `,
 })
 export class ButtonHarnessTest {
-  vals = Array.from({ length: NUM_BUTTONS }, (_, i) => i);
+  vals = Array.from({length: NUM_BUTTONS}, (_, i) => i);
 }

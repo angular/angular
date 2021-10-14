@@ -14,5 +14,4 @@ import {ProgressSpinnerE2E} from './progress-spinner-e2e';
   imports: [MatProgressSpinnerModule],
   declarations: [ProgressSpinnerE2E],
 })
-export class ProgressSpinnerE2eModule {
-}
+export class ProgressSpinnerE2eModule {}

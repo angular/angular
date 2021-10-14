@@ -6,7 +6,9 @@ import * as chalk from 'chalk';
 
 /** Asserts that the given built packages are valid for public consumption. */
 export async function assertValidNpmPackageOutput(
-    builtPackages: BuiltPackage[], currentVersion: SemVer) {
+  builtPackages: BuiltPackage[],
+  currentVersion: SemVer,
+) {
   let passing = true;
 
   for (const {name, outputPath} of builtPackages) {

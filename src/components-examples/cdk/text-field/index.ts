@@ -4,15 +4,9 @@ import {NgModule} from '@angular/core';
 import {MatButtonModule} from '@angular/material/button';
 import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
-import {
-  TextFieldAutofillDirectiveExample
-} from './text-field-autofill-directive/text-field-autofill-directive-example';
-import {
-  TextFieldAutofillMonitorExample
-} from './text-field-autofill-monitor/text-field-autofill-monitor-example';
-import {
-  TextFieldAutosizeTextareaExample
-} from './text-field-autosize-textarea/text-field-autosize-textarea-example';
+import {TextFieldAutofillDirectiveExample} from './text-field-autofill-directive/text-field-autofill-directive-example';
+import {TextFieldAutofillMonitorExample} from './text-field-autofill-monitor/text-field-autofill-monitor-example';
+import {TextFieldAutosizeTextareaExample} from './text-field-autosize-textarea/text-field-autosize-textarea-example';
 
 export {
   TextFieldAutofillDirectiveExample,
@@ -27,16 +21,9 @@ const EXAMPLES = [
 ];
 
 @NgModule({
-  imports: [
-    CommonModule,
-    TextFieldModule,
-    MatButtonModule,
-    MatInputModule,
-    MatSelectModule,
-  ],
+  imports: [CommonModule, TextFieldModule, MatButtonModule, MatInputModule, MatSelectModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
   entryComponents: EXAMPLES,
 })
-export class CdkTextFieldExamplesModule {
-}
+export class CdkTextFieldExamplesModule {}

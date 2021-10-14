@@ -16,14 +16,14 @@ describe('SlideToggleHarnessExample', () => {
 
   beforeAll(() => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
-      teardown: {destroyAfterEach: true}
+      teardown: {destroyAfterEach: true},
     });
   });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MatSlideToggleModule, ReactiveFormsModule],
-      declarations: [SlideToggleHarnessExample]
+      declarations: [SlideToggleHarnessExample],
     }).compileComponents();
     fixture = TestBed.createComponent(SlideToggleHarnessExample);
     fixture.detectChanges();
@@ -37,7 +37,8 @@ describe('SlideToggleHarnessExample', () => {
 
   it('should load slide-toggle with name', async () => {
     const slideToggles = await loader.getAllHarnesses(
-      MatSlideToggleHarness.with({name: 'first-name'}));
+      MatSlideToggleHarness.with({name: 'first-name'}),
+    );
     expect(slideToggles.length).toBe(1);
     expect(await slideToggles[0].getLabelText()).toBe('First');
   });

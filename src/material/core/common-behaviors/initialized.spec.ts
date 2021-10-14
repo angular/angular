@@ -2,7 +2,7 @@ import {mixinInitialized} from './initialized';
 import {HasInitialized} from '@angular/material/core';
 
 describe('MixinHasInitialized', () => {
-  class EmptyClass { }
+  class EmptyClass {}
   let instance: HasInitialized;
 
   beforeEach(() => {
@@ -39,12 +39,12 @@ describe('MixinHasInitialized', () => {
       }
     }
 
-    instance.initialized.subscribe(onNotified);  // Subscription 1
-    instance.initialized.subscribe(onNotified);  // Subscription 2
+    instance.initialized.subscribe(onNotified); // Subscription 1
+    instance.initialized.subscribe(onNotified); // Subscription 2
 
     instance._markInitialized();
 
-    instance.initialized.subscribe(onNotified);  // Subscription 3
-    instance.initialized.subscribe(onNotified);  // Subscription 4
+    instance.initialized.subscribe(onNotified); // Subscription 3
+    instance.initialized.subscribe(onNotified); // Subscription 4
   });
 });

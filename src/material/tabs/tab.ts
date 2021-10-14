@@ -30,7 +30,6 @@ import {Subject} from 'rxjs';
 import {MAT_TAB_CONTENT} from './tab-content';
 import {MAT_TAB_LABEL, MatTabLabel, MAT_TAB} from './tab-label';
 
-
 // Boilerplate for applying mixins to MatTab.
 /** @docs-private */
 const _MatTabBase = mixinDisabled(class {});
@@ -49,13 +48,17 @@ export const MAT_TAB_GROUP = new InjectionToken<any>('MAT_TAB_GROUP');
   changeDetection: ChangeDetectionStrategy.Default,
   encapsulation: ViewEncapsulation.None,
   exportAs: 'matTab',
-  providers: [{provide: MAT_TAB, useExisting: MatTab}]
+  providers: [{provide: MAT_TAB, useExisting: MatTab}],
 })
 export class MatTab extends _MatTabBase implements OnInit, CanDisable, OnChanges, OnDestroy {
   /** Content for the tab label given by `<ng-template mat-tab-label>`. */
   @ContentChild(MAT_TAB_LABEL)
-  get templateLabel(): MatTabLabel { return this._templateLabel; }
-  set templateLabel(value: MatTabLabel) { this._setTemplateLabelInput(value); }
+  get templateLabel(): MatTabLabel {
+    return this._templateLabel;
+  }
+  set templateLabel(value: MatTabLabel) {
+    this._setTemplateLabelInput(value);
+  }
   protected _templateLabel: MatTabLabel;
 
   /**
@@ -109,7 +112,8 @@ export class MatTab extends _MatTabBase implements OnInit, CanDisable, OnChanges
 
   constructor(
     private _viewContainerRef: ViewContainerRef,
-    @Inject(MAT_TAB_GROUP) @Optional() public _closestTabGroup: any) {
+    @Inject(MAT_TAB_GROUP) @Optional() public _closestTabGroup: any,
+  ) {
     super();
   }
 
@@ -125,7 +129,9 @@ export class MatTab extends _MatTabBase implements OnInit, CanDisable, OnChanges
 
   ngOnInit(): void {
     this._contentPortal = new TemplatePortal(
-        this._explicitContent || this._implicitContent, this._viewContainerRef);
+      this._explicitContent || this._implicitContent,
+      this._viewContainerRef,
+    );
   }
 
   /**
@@ -134,7 +140,7 @@ export class MatTab extends _MatTabBase implements OnInit, CanDisable, OnChanges
    * TS 4.0 doesn't allow properties to override accessors or vice-versa.
    * @docs-private
    */
-  protected _setTemplateLabelInput(value: MatTabLabel|undefined) {
+  protected _setTemplateLabelInput(value: MatTabLabel | undefined) {
     // Only update the label if the query managed to find one. This works around an issue where a
     // user may have manually set `templateLabel` during creation mode, which would then get
     // clobbered by `undefined` when the query resolves. Also note that we check that the closest

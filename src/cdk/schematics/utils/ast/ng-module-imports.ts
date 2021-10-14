@@ -19,8 +19,12 @@ export function hasNgModuleImport(tree: Tree, modulePath: string, className: str
     throw new SchematicsException(`Could not read Angular module file: ${modulePath}`);
   }
 
-  const parsedFile = ts.createSourceFile(modulePath, moduleFileContent.toString(),
-      ts.ScriptTarget.Latest, true);
+  const parsedFile = ts.createSourceFile(
+    modulePath,
+    moduleFileContent.toString(),
+    ts.ScriptTarget.Latest,
+    true,
+  );
   const ngModuleMetadata = findNgModuleMetadata(parsedFile);
 
   if (!ngModuleMetadata) {
@@ -28,8 +32,11 @@ export function hasNgModuleImport(tree: Tree, modulePath: string, className: str
   }
 
   for (let property of ngModuleMetadata!.properties) {
-    if (!ts.isPropertyAssignment(property) || property.name.getText() !== 'imports' ||
-        !ts.isArrayLiteralExpression(property.initializer)) {
+    if (
+      !ts.isPropertyAssignment(property) ||
+      property.name.getText() !== 'imports' ||
+      !ts.isArrayLiteralExpression(property.initializer)
+    ) {
       continue;
     }
 
@@ -66,8 +73,11 @@ function findNgModuleMetadata(rootNode: ts.Node): ts.ObjectLiteralExpression | n
   while (nodeQueue.length) {
     const node = nodeQueue.shift()!;
 
-    if (ts.isDecorator(node) && ts.isCallExpression(node.expression) &&
-        isNgModuleCallExpression(node.expression)) {
+    if (
+      ts.isDecorator(node) &&
+      ts.isCallExpression(node.expression) &&
+      isNgModuleCallExpression(node.expression)
+    ) {
       return node.expression.arguments[0] as ts.ObjectLiteralExpression;
     } else {
       nodeQueue.push(...node.getChildren());
@@ -79,8 +89,10 @@ function findNgModuleMetadata(rootNode: ts.Node): ts.ObjectLiteralExpression | n
 
 /** Whether the specified call expression is referring to a NgModule definition. */
 function isNgModuleCallExpression(callExpression: ts.CallExpression): boolean {
-  if (!callExpression.arguments.length ||
-      !ts.isObjectLiteralExpression(callExpression.arguments[0])) {
+  if (
+    !callExpression.arguments.length ||
+    !ts.isObjectLiteralExpression(callExpression.arguments[0])
+  ) {
     return false;
   }
 

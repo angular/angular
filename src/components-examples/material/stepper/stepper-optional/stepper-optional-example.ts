@@ -7,7 +7,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 @Component({
   selector: 'stepper-optional-example',
   templateUrl: 'stepper-optional-example.html',
-  styleUrls: ['stepper-optional-example.css']
+  styleUrls: ['stepper-optional-example.css'],
 })
 export class StepperOptionalExample implements OnInit {
   firstFormGroup: FormGroup;
@@ -18,10 +18,10 @@ export class StepperOptionalExample implements OnInit {
 
   ngOnInit() {
     this.firstFormGroup = this._formBuilder.group({
-      firstCtrl: ['', Validators.required]
+      firstCtrl: ['', Validators.required],
     });
     this.secondFormGroup = this._formBuilder.group({
-      secondCtrl: ''
+      secondCtrl: '',
     });
   }
 }

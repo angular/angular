@@ -13,7 +13,8 @@ import {
   InjectionToken,
   Input,
   OnInit,
-  Optional} from '@angular/core';
+  Optional,
+} from '@angular/core';
 import {AriaHasPopupValue, CdkComboboxPanel} from './combobox-panel';
 
 export const PANEL = new InjectionToken<CdkComboboxPanel>('CdkComboboxPanel');
@@ -28,8 +29,8 @@ let nextId = 0;
     '[attr.role]': 'role',
     '[id]': 'id',
     'tabindex': '-1',
-    '(focus)': 'focusFirstElement()'
-  }
+    '(focus)': 'focusFirstElement()',
+  },
 })
 export class CdkComboboxPopup<T = unknown> implements OnInit {
   @Input()
@@ -57,7 +58,7 @@ export class CdkComboboxPopup<T = unknown> implements OnInit {
   constructor(
     private readonly _elementRef: ElementRef<HTMLElement>,
     @Optional() @Inject(PANEL) readonly _parentPanel?: CdkComboboxPanel<T>,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.registerWithPanel();

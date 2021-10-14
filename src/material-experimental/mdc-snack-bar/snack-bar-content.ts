@@ -13,7 +13,7 @@ import {Directive} from '@angular/core';
   selector: `[matSnackBarLabel]`,
   host: {
     'class': 'mat-mdc-snack-bar-label mdc-snackbar__label',
-  }
+  },
 })
 export class MatSnackBarLabel {}
 
@@ -22,7 +22,7 @@ export class MatSnackBarLabel {}
   selector: `[matSnackBarActions]`,
   host: {
     'class': 'mat-mdc-snack-bar-actions mdc-snackbar__actions',
-  }
+  },
 })
 export class MatSnackBarActions {}
 
@@ -31,6 +31,6 @@ export class MatSnackBarActions {}
   selector: `[matSnackBarAction]`,
   host: {
     'class': 'mat-mdc-snack-bar-action mdc-snackbar__action',
-  }
+  },
 })
 export class MatSnackBarAction {}

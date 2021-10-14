@@ -25,14 +25,9 @@ const EXAMPLES = [
 ];
 
 @NgModule({
-  imports: [
-    MatButtonModule,
-    MatIconModule,
-    MatMenuModule,
-  ],
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
   entryComponents: EXAMPLES,
 })
-export class MenuExamplesModule {
-}
+export class MenuExamplesModule {}

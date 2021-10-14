@@ -24,14 +24,14 @@ describe('GoogleMap', () => {
   let mapConstructorSpy: jasmine.Spy;
   let mapSpy: jasmine.SpyObj<google.maps.Map>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [
-        GoogleMapsModule,
-      ],
-      declarations: [TestApp],
-    });
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [GoogleMapsModule],
+        declarations: [TestApp],
+      });
+    }),
+  );
 
   beforeEach(() => {
     TestBed.compileComponents();
@@ -46,12 +46,14 @@ describe('GoogleMap', () => {
     mapSpy = createMapSpy(DEFAULT_OPTIONS);
     createMapConstructorSpy(mapSpy, false);
 
-    expect(() => TestBed.createComponent(TestApp))
-        .toThrow(new Error(
-            'Namespace google not found, cannot construct embedded google ' +
-            'map. Please install the Google Maps JavaScript API: ' +
-            'https://developers.google.com/maps/documentation/javascript/' +
-            'tutorial#Loading_the_Maps_API'));
+    expect(() => TestBed.createComponent(TestApp)).toThrow(
+      new Error(
+        'Namespace google not found, cannot construct embedded google ' +
+          'map. Please install the Google Maps JavaScript API: ' +
+          'https://developers.google.com/maps/documentation/javascript/' +
+          'tutorial#Loading_the_Maps_API',
+      ),
+    );
   });
 
   it('initializes a Google map', () => {
@@ -151,7 +153,7 @@ describe('GoogleMap', () => {
       center: {lat: 3, lng: 5},
       zoom: 7,
       draggable: false,
-      mapTypeId: DEFAULT_OPTIONS.mapTypeId
+      mapTypeId: DEFAULT_OPTIONS.mapTypeId,
     };
     mapSpy = createMapSpy(options);
     mapConstructorSpy = createMapConstructorSpy(mapSpy).and.callThrough();
@@ -211,7 +213,7 @@ describe('GoogleMap', () => {
       center: {lat: 12, lng: 15},
       zoom: 5,
       heading: 170,
-      mapTypeId: DEFAULT_OPTIONS.mapTypeId
+      mapTypeId: DEFAULT_OPTIONS.mapTypeId,
     };
     mapSpy = createMapSpy(correctedOptions);
     mapConstructorSpy = createMapConstructorSpy(mapSpy);
@@ -339,8 +341,10 @@ describe('GoogleMap', () => {
     fixture.componentInstance.mapTypeId = 'terrain' as unknown as google.maps.MapTypeId;
     fixture.detectChanges();
 
-    expect(mapConstructorSpy).toHaveBeenCalledWith(jasmine.any(HTMLElement),
-      jasmine.objectContaining({mapTypeId: 'terrain'}));
+    expect(mapConstructorSpy).toHaveBeenCalledWith(
+      jasmine.any(HTMLElement),
+      jasmine.objectContaining({mapTypeId: 'terrain'}),
+    );
 
     fixture.componentInstance.mapTypeId = 'roadmap' as unknown as google.maps.MapTypeId;
     fixture.detectChanges();

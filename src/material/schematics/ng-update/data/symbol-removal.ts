@@ -18,12 +18,12 @@ export const symbolRemoval: VersionChanges<SymbolRemovalUpgradeData> = {
         'CanDisableCtor',
         'CanUpdateErrorStateCtor',
         'HasInitializedCtor',
-        'HasTabIndexCtor'
+        'HasTabIndexCtor',
       ].map(name => ({
         name,
         module: '@angular/material/core',
-        message: `\`${name}\` is no longer necessary and has been removed.`
-      }))
-    }
-  ]
+        message: `\`${name}\` is no longer necessary and has been removed.`,
+      })),
+    },
+  ],
 };

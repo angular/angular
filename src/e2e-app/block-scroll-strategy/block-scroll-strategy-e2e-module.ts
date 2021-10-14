@@ -14,5 +14,4 @@ import {BlockScrollStrategyE2E} from './block-scroll-strategy-e2e';
   imports: [ScrollingModule],
   declarations: [BlockScrollStrategyE2E],
 })
-export class BlockScrollStrategyE2eModule {
-}
+export class BlockScrollStrategyE2eModule {}

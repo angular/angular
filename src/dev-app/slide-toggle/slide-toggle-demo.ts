@@ -8,7 +8,6 @@
 
 import {Component} from '@angular/core';
 
-
 @Component({
   selector: 'slide-toggle-demo',
   templateUrl: 'slide-toggle-demo.html',
@@ -20,5 +19,4 @@ export class SlideToggleDemo {
   onFormSubmit() {
     alert(`You submitted the form.`);
   }
-
 }

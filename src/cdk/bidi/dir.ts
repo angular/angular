@@ -6,14 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  Directive,
-  Output,
-  Input,
-  EventEmitter,
-  AfterContentInit,
-  OnDestroy,
-} from '@angular/core';
+import {Directive, Output, Input, EventEmitter, AfterContentInit, OnDestroy} from '@angular/core';
 
 import {Direction, Directionality} from './directionality';
 
@@ -44,13 +37,15 @@ export class Dir implements Directionality, AfterContentInit, OnDestroy {
 
   /** @docs-private */
   @Input()
-  get dir(): Direction { return this._dir; }
+  get dir(): Direction {
+    return this._dir;
+  }
   set dir(value: Direction) {
     const old = this._dir;
     const normalizedValue = value ? value.toLowerCase() : value;
 
     this._rawDir = value;
-    this._dir = (normalizedValue === 'ltr' || normalizedValue === 'rtl') ? normalizedValue : 'ltr';
+    this._dir = normalizedValue === 'ltr' || normalizedValue === 'rtl' ? normalizedValue : 'ltr';
 
     if (old !== this._dir && this._isInitialized) {
       this.change.emit(this._dir);
@@ -58,7 +53,9 @@ export class Dir implements Directionality, AfterContentInit, OnDestroy {
   }
 
   /** Current layout direction of the element. */
-  get value(): Direction { return this.dir; }
+  get value(): Direction {
+    return this.dir;
+  }
 
   /** Initialize once default value has been set. */
   ngAfterContentInit() {
@@ -69,4 +66,3 @@ export class Dir implements Directionality, AfterContentInit, OnDestroy {
     this.change.complete();
   }
 }
-

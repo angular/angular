@@ -14,7 +14,7 @@ describe('button performance benchmarks', () => {
     browser.angularAppRoot('#root');
   });
 
-  it('renders a basic raised button', async() => {
+  it('renders a basic raised button', async () => {
     await runBenchmark({
       id: 'button-render',
       url: '',
@@ -24,7 +24,7 @@ describe('button performance benchmarks', () => {
     });
   });
 
-  it('clicks a basic raised button', async() => {
+  it('clicks a basic raised button', async () => {
     await runBenchmark({
       id: 'button-click',
       url: '',

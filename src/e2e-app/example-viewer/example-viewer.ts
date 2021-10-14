@@ -22,8 +22,7 @@ export class ExampleViewer implements OnInit {
   /** ID of the material example to display. */
   @Input() id: string;
 
-  constructor(private _injector: Injector,
-              private _viewContainerRef: ViewContainerRef) {}
+  constructor(private _injector: Injector, private _viewContainerRef: ViewContainerRef) {}
 
   async ngOnInit() {
     const {component, injector} = await loadExample(this.id, this._injector);

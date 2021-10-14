@@ -17,13 +17,16 @@ export const defaultTargetBuilders = {
 };
 
 /** Resolves the architect options for the build target of the given project. */
-export function getProjectTargetOptions(project: ProjectDefinition, buildTarget: string):
-  Record<string, JsonValue | undefined> {
+export function getProjectTargetOptions(
+  project: ProjectDefinition,
+  buildTarget: string,
+): Record<string, JsonValue | undefined> {
   const options = project.targets?.get(buildTarget)?.options;
 
   if (!options) {
     throw new SchematicsException(
-      `Cannot determine project target configuration for: ${buildTarget}.`);
+      `Cannot determine project target configuration for: ${buildTarget}.`,
+    );
   }
 
   return options;
@@ -31,8 +34,10 @@ export function getProjectTargetOptions(project: ProjectDefinition, buildTarget:
 
 /** Gets all targets from the given project that match the specified builder name. */
 export function getTargetsByBuilderName(
-    project: ProjectDefinition, builderName: string): TargetDefinition[] {
+  project: ProjectDefinition,
+  builderName: string,
+): TargetDefinition[] {
   return Array.from(project.targets.keys())
-      .filter(name => project.targets.get(name)?.builder === builderName)
-      .map(name => project.targets.get(name)!);
+    .filter(name => project.targets.get(name)?.builder === builderName)
+    .map(name => project.targets.get(name)!);
 }

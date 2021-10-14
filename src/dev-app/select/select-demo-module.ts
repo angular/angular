@@ -35,5 +35,4 @@ import {SelectDemo} from './select-demo';
   ],
   declarations: [SelectDemo],
 })
-export class SelectDemoModule {
-}
+export class SelectDemoModule {}

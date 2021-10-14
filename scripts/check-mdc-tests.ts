@@ -41,8 +41,9 @@ readdirSync(join(srcDirectory, 'material-experimental'), {withFileTypes: true})
       });
       const materialTests = getTestNames(materialTestFiles);
       const mdcTests = getTestNames(mdcTestFiles);
-      const missingTests = materialTests
-          .filter(test => !mdcTests.includes(test) && !skippedTests.includes(test));
+      const missingTests = materialTests.filter(
+        test => !mdcTests.includes(test) && !skippedTests.includes(test),
+      );
 
       if (missingTests.length > 0) {
         const errorMessage = `\nTests from \`${materialPackage}\` missing in \`${mdcPackage}\`:`;
@@ -54,11 +55,13 @@ readdirSync(join(srcDirectory, 'material-experimental'), {withFileTypes: true})
   });
 
 if (hasFailed) {
-  console.log(chalk.redBright(
-    '\nDetected one or more MDC packages that have not implemented all tests from their ' +
-    'non-MDC counterpart.\nEither implement the missing tests or add them to the ' +
-    '`skippedTests` array inside `scripts/check-mdc-tests-config.ts`\n'
-    ));
+  console.log(
+    chalk.redBright(
+      '\nDetected one or more MDC packages that have not implemented all tests from their ' +
+        'non-MDC counterpart.\nEither implement the missing tests or add them to the ' +
+        '`skippedTests` array inside `scripts/check-mdc-tests-config.ts`\n',
+    ),
+  );
   process.exit(1);
 } else {
   console.log(chalk.green('All MDC tests have been implemented.'));
@@ -72,7 +75,7 @@ if (hasFailed) {
 function getUnitTestFiles(name: string): string[] {
   return glob('{,!(testing)/**/}!(*.e2e).spec.ts', {
     absolute: true,
-    cwd: join(srcDirectory, name)
+    cwd: join(srcDirectory, name),
   });
 }
 
@@ -85,8 +88,11 @@ function getTestNames(files: string[]): string[] {
     const sourceFile = ts.createSourceFile(file, content, ts.ScriptTarget.ES2015);
 
     sourceFile.forEachChild(function walk(node: ts.Node) {
-      if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) &&
-          node.expression.text === 'it') {
+      if (
+        ts.isCallExpression(node) &&
+        ts.isIdentifier(node.expression) &&
+        node.expression.text === 'it'
+      ) {
         // Note that this is a little naive since it'll take the literal text of the test
         // name expression which could include things like string concatenation. It's fine
         // for the limited use cases of the script.

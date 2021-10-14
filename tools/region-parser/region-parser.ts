@@ -2,8 +2,8 @@ import {blockC} from './region-matchers/block-c';
 import {html} from './region-matchers/html';
 import {inlineC} from './region-matchers/inline-c';
 
-export type Region = { lines: string[], open: boolean };
-export type RegionMap = { [regionName: string]: Region };
+export type Region = {lines: string[]; open: boolean};
+export type RegionMap = {[regionName: string]: Region};
 
 export function regionParser(contents: string, fileType: string) {
   return regionParserImpl(contents, fileType);
@@ -14,23 +14,25 @@ export function regionParser(contents: string, fileType: string) {
  * @param fileType string
  * @returns {contents: string, regions: {[regionName: string]: string}}
  */
-function regionParserImpl(contents: string, fileType: string)
-  : { contents: string, regions: { [regionName: string]: string } } {
-  const regionMatchers: { [fileType: string]: { [region: string]: RegExp } } = {
+function regionParserImpl(
+  contents: string,
+  fileType: string,
+): {contents: string; regions: {[regionName: string]: string}} {
+  const regionMatchers: {[fileType: string]: {[region: string]: RegExp}} = {
     ts: inlineC,
     js: inlineC,
     es6: inlineC,
     html: html,
     css: blockC,
     json: inlineC,
-    'json.annotated': inlineC
+    'json.annotated': inlineC,
   };
   const regionMatcher = regionMatchers[fileType];
   const openRegions: string[] = [];
   const regionMap: RegionMap = {};
 
   if (regionMatcher) {
-    const lines = contents.split(/\r?\n/).filter((line) => {
+    const lines = contents.split(/\r?\n/).filter(line => {
       // debugger;
       const startRegion = line.match(regionMatcher.regionStartMatcher);
       const endRegion = line.match(regionMatcher.regionEndMatcher);
@@ -47,7 +49,7 @@ function regionParserImpl(contents: string, fileType: string)
           if (region) {
             if (region.open) {
               throw new Error(
-                `Tried to open a region, named "${regionName}", that is already open`
+                `Tried to open a region, named "${regionName}", that is already open`,
               );
             }
             region.open = true;
@@ -71,13 +73,11 @@ function regionParserImpl(contents: string, fileType: string)
         regionNames.forEach(regionName => {
           const region = regionMap[regionName];
           if (!region || !region.open) {
-            throw new Error(
-              `Tried to close a region, named "${regionName}", that is not open`);
+            throw new Error(`Tried to close a region, named "${regionName}", that is not open`);
           }
           region.open = false;
           removeLast(openRegions, regionName);
         });
-
       } else {
         openRegions.forEach(regionName => regionMap[regionName].lines.push(line));
         // do not filter out this line from the content
@@ -93,7 +93,8 @@ function regionParserImpl(contents: string, fileType: string)
     return {
       contents: lines.join('\n'),
       regions: mapObject(regionMap, (regionName: string, region: Region) =>
-        leftAlign(region.lines).join('\n'))
+        leftAlign(region.lines).join('\n'),
+      ),
     };
   } else {
     return {contents, regions: {}};
@@ -101,7 +102,7 @@ function regionParserImpl(contents: string, fileType: string)
 }
 
 function mapObject(obj: RegionMap, mapper: (regionName: string, region: Region) => string) {
-  const mappedObj: { [regionName: string]: string } = {};
+  const mappedObj: {[regionName: string]: string} = {};
   Object.keys(obj).forEach((key: string) => {
     mappedObj[key] = mapper(key, obj[key]);
   });
@@ -109,7 +110,7 @@ function mapObject(obj: RegionMap, mapper: (regionName: string, region: Region) 
 }
 
 function getRegionNames(input: string): string[] {
-  return (input.trim() === '') ? [] : input.split(',').map(name => name.trim());
+  return input.trim() === '' ? [] : input.split(',').map(name => name.trim());
 }
 
 function removeLast(array: string[], item: string) {

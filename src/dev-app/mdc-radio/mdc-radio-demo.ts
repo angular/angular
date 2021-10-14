@@ -18,10 +18,5 @@ export class MdcRadioDemo {
   isDisabled: boolean = false;
   isRequired: boolean = false;
   favoriteSeason: string = 'Autumn';
-  seasonOptions = [
-    'Winter',
-    'Spring',
-    'Summer',
-    'Autumn',
-  ];
+  seasonOptions = ['Winter', 'Spring', 'Summer', 'Autumn'];
 }

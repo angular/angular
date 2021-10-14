@@ -28,5 +28,4 @@ import {RippleDemo} from './ripple-demo';
   ],
   declarations: [RippleDemo],
 })
-export class RippleDemoModule {
-}
+export class RippleDemoModule {}

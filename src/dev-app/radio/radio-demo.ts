@@ -8,7 +8,6 @@
 
 import {Component} from '@angular/core';
 
-
 @Component({
   selector: 'radio-demo',
   templateUrl: 'radio-demo.html',
@@ -19,10 +18,5 @@ export class RadioDemo {
   isDisabled: boolean = false;
   isRequired: boolean = false;
   favoriteSeason: string = 'Autumn';
-  seasonOptions = [
-    'Winter',
-    'Spring',
-    'Summer',
-    'Autumn',
-  ];
+  seasonOptions = ['Winter', 'Spring', 'Summer', 'Autumn'];
 }

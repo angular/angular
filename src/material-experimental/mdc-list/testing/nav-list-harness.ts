@@ -13,7 +13,10 @@ import {getListItemPredicate, MatListItemHarnessBase} from './list-item-harness-
 
 /** Harness for interacting with a MDC-based mat-nav-list in tests. */
 export class MatNavListHarness extends MatListHarnessBase<
-    typeof MatNavListItemHarness, MatNavListItemHarness, NavListItemHarnessFilters> {
+  typeof MatNavListItemHarness,
+  MatNavListItemHarness,
+  NavListItemHarnessFilters
+> {
   /** The selector for the host element of a `MatNavList` instance. */
   static hostSelector = '.mat-mdc-nav-list';
 
@@ -42,14 +45,15 @@ export class MatNavListItemHarness extends MatListItemHarnessBase {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: NavListItemHarnessFilters = {}): HarnessPredicate<MatNavListItemHarness> {
-    return getListItemPredicate(MatNavListItemHarness, options)
-        .addOption(
-            'href', options.href,
-            async (harness, href) => HarnessPredicate.stringMatches(harness.getHref(), href));
+    return getListItemPredicate(MatNavListItemHarness, options).addOption(
+      'href',
+      options.href,
+      async (harness, href) => HarnessPredicate.stringMatches(harness.getHref(), href),
+    );
   }
 
   /** Gets the href for this nav list item. */
-  async getHref(): Promise<string|null> {
+  async getHref(): Promise<string | null> {
     return (await this.host()).getAttribute('href');
   }
 

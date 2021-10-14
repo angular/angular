@@ -26,16 +26,17 @@ import {MatCardModule} from '@angular/material-experimental/mdc-card';
 export class CardBenchmarkApp {
   isVisible = false;
 
-  show() { this.isVisible = true; }
-  hide() { this.isVisible = false; }
+  show() {
+    this.isVisible = true;
+  }
+  hide() {
+    this.isVisible = false;
+  }
 }
 
 @NgModule({
   declarations: [CardBenchmarkApp],
-  imports: [
-    BrowserModule,
-    MatCardModule,
-  ],
+  imports: [BrowserModule, MatCardModule],
   bootstrap: [CardBenchmarkApp],
 })
 export class AppModule {}

@@ -26,10 +26,14 @@ import {EditRef} from './edit-ref';
 @Injectable()
 export class EditServices {
   constructor(
-      readonly directionality: Directionality,
-      readonly editEventDispatcher: EditEventDispatcher<EditRef<unknown>>,
-      readonly focusDispatcher: FocusDispatcher,
-      readonly focusTrapFactory: FocusTrapFactory, readonly ngZone: NgZone,
-      readonly overlay: Overlay, readonly positionFactory: PopoverEditPositionStrategyFactory,
-      readonly scrollDispatcher: ScrollDispatcher, readonly viewportRuler: ViewportRuler) {}
+    readonly directionality: Directionality,
+    readonly editEventDispatcher: EditEventDispatcher<EditRef<unknown>>,
+    readonly focusDispatcher: FocusDispatcher,
+    readonly focusTrapFactory: FocusTrapFactory,
+    readonly ngZone: NgZone,
+    readonly overlay: Overlay,
+    readonly positionFactory: PopoverEditPositionStrategyFactory,
+    readonly scrollDispatcher: ScrollDispatcher,
+    readonly viewportRuler: ViewportRuler,
+  ) {}
 }

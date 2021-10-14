@@ -17,11 +17,13 @@ export interface MatCheckboxDefaultOptions {
 }
 
 /** Injection token to be used to override the default options for `mat-checkbox`. */
-export const MAT_CHECKBOX_DEFAULT_OPTIONS =
-    new InjectionToken<MatCheckboxDefaultOptions>('mat-checkbox-default-options', {
-      providedIn: 'root',
-      factory: MAT_CHECKBOX_DEFAULT_OPTIONS_FACTORY
-    });
+export const MAT_CHECKBOX_DEFAULT_OPTIONS = new InjectionToken<MatCheckboxDefaultOptions>(
+  'mat-checkbox-default-options',
+  {
+    providedIn: 'root',
+    factory: MAT_CHECKBOX_DEFAULT_OPTIONS_FACTORY,
+  },
+);
 
 /** @docs-private */
 export function MAT_CHECKBOX_DEFAULT_OPTIONS_FACTORY(): MatCheckboxDefaultOptions {

@@ -5,7 +5,6 @@ const fs = require('fs');
 const GitHubApi = require('@octokit/rest');
 const github = new GitHubApi();
 
-
 /** CONFIGURATION: change these things if you want to tweak how the runs are made. */
 
 /** Path to the local components repo. By default based on the location of this script. */
@@ -37,16 +36,15 @@ const githubSearchOptions = {
 
 /** END OF CONFIGURATION. */
 
-
 if (explicitPullRequests.length) {
   writeScheduleScript(explicitPullRequests.map(n => ({number: n})));
 } else {
   // Fetch PRs that are merge-ready but not merge-safe
-  github.search.issues(githubSearchOptions)
+  github.search
+    .issues(githubSearchOptions)
     .then(response => writeScheduleScript(response.data.items))
     .catch(error => console.error('Fetching merge-ready PRs failed.', error));
 }
-
 
 function writeScheduleScript(prs) {
   let script =
@@ -59,8 +57,8 @@ function writeScheduleScript(prs) {
   for (const pr of prs) {
     script +=
       `echo '(` +
-        `cd ${localRepo} ; ` +
-        `${presubmitScript} ${pr.number} --global 2>&1 > ${logDir}/pr-${pr.number}.txt ` +
+      `cd ${localRepo} ; ` +
+      `${presubmitScript} ${pr.number} --global 2>&1 > ${logDir}/pr-${pr.number}.txt ` +
       `)' | ` +
       `at ${startTime} today \n`;
   }

@@ -23,9 +23,15 @@ export function mixinDisabled<T extends Constructor<{}>>(base: T): CanDisableCto
   return class extends base {
     private _disabled: boolean = false;
 
-    get disabled() { return this._disabled; }
-    set disabled(value: any) { this._disabled = coerceBooleanProperty(value); }
+    get disabled() {
+      return this._disabled;
+    }
+    set disabled(value: any) {
+      this._disabled = coerceBooleanProperty(value);
+    }
 
-    constructor(...args: any[]) { super(...args); }
+    constructor(...args: any[]) {
+      super(...args);
+    }
   };
 }

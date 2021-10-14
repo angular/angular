@@ -45,8 +45,10 @@ export function normalizeFunctionParameters(doc: DefaultFunctionDoc) {
       doc.params = doc.params || [];
 
       if (!parameterType) {
-        console.warn(`Missing parameter type information (${parameterName}) in ` +
-          `${doc.fileInfo.relativePath}:${doc.startingLine}`);
+        console.warn(
+          `Missing parameter type information (${parameterName}) in ` +
+            `${doc.fileInfo.relativePath}:${doc.startingLine}`,
+        );
         return;
       }
 
@@ -57,7 +59,7 @@ export function normalizeFunctionParameters(doc: DefaultFunctionDoc) {
           name: parameterName,
           type: parameterType.trim(),
           isOptional: isOptional,
-          description: ''
+          description: '',
         });
       } else {
         existingParameterInfo.type = parameterType.trim();

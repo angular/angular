@@ -21,7 +21,6 @@ const moment = _rollupMoment || _moment;
 
 /** Configurable options for {@see MomentDateAdapter}. */
 export interface MatMomentDateAdapterOptions {
-
   /**
    * When enabled, the dates have to match the format exactly.
    * See https://momentjs.com/guides/#/parsing/strict-mode/.
@@ -38,19 +37,19 @@ export interface MatMomentDateAdapterOptions {
 
 /** InjectionToken for moment date adapter to configure options. */
 export const MAT_MOMENT_DATE_ADAPTER_OPTIONS = new InjectionToken<MatMomentDateAdapterOptions>(
-  'MAT_MOMENT_DATE_ADAPTER_OPTIONS', {
+  'MAT_MOMENT_DATE_ADAPTER_OPTIONS',
+  {
     providedIn: 'root',
-    factory: MAT_MOMENT_DATE_ADAPTER_OPTIONS_FACTORY
-});
-
+    factory: MAT_MOMENT_DATE_ADAPTER_OPTIONS_FACTORY,
+  },
+);
 
 /** @docs-private */
 export function MAT_MOMENT_DATE_ADAPTER_OPTIONS_FACTORY(): MatMomentDateAdapterOptions {
   return {
-    useUtc: false
+    useUtc: false,
   };
 }
-
 
 /** Creates an array and fills it with values. */
 function range<T>(length: number, valueFunction: (index: number) => T): T[] {
@@ -61,7 +60,6 @@ function range<T>(length: number, valueFunction: (index: number) => T): T[] {
   return valuesArray;
 }
 
-
 /** Adapts Moment.js Dates for use with Angular Material. */
 @Injectable()
 export class MomentDateAdapter extends DateAdapter<Moment> {
@@ -71,19 +69,21 @@ export class MomentDateAdapter extends DateAdapter<Moment> {
   // input would mutate the object.
 
   private _localeData: {
-    firstDayOfWeek: number,
-    longMonths: string[],
-    shortMonths: string[],
-    dates: string[],
-    longDaysOfWeek: string[],
-    shortDaysOfWeek: string[],
-    narrowDaysOfWeek: string[]
+    firstDayOfWeek: number;
+    longMonths: string[];
+    shortMonths: string[];
+    dates: string[];
+    longDaysOfWeek: string[];
+    shortDaysOfWeek: string[];
+    narrowDaysOfWeek: string[];
   };
 
-  constructor(@Optional() @Inject(MAT_DATE_LOCALE) dateLocale: string,
-    @Optional() @Inject(MAT_MOMENT_DATE_ADAPTER_OPTIONS)
-    private _options?: MatMomentDateAdapterOptions) {
-
+  constructor(
+    @Optional() @Inject(MAT_DATE_LOCALE) dateLocale: string,
+    @Optional()
+    @Inject(MAT_MOMENT_DATE_ADAPTER_OPTIONS)
+    private _options?: MatMomentDateAdapterOptions,
+  ) {
     super();
     this.setLocale(dateLocale || moment.locale());
   }
@@ -96,7 +96,7 @@ export class MomentDateAdapter extends DateAdapter<Moment> {
       firstDayOfWeek: momentLocaleData.firstDayOfWeek(),
       longMonths: momentLocaleData.months(),
       shortMonths: momentLocaleData.monthsShort(),
-      dates: range(31, (i) => this.createDate(2017, 0, i + 1).format('D')),
+      dates: range(31, i => this.createDate(2017, 0, i + 1).format('D')),
       longDaysOfWeek: momentLocaleData.weekdays(),
       shortDaysOfWeek: momentLocaleData.weekdaysShort(),
       narrowDaysOfWeek: momentLocaleData.weekdaysMin(),
@@ -257,8 +257,6 @@ export class MomentDateAdapter extends DateAdapter<Moment> {
   ): Moment {
     const {strict, useUtc}: MatMomentDateAdapterOptions = this._options || {};
 
-    return useUtc
-      ? moment.utc(date, format, locale, strict)
-      : moment(date, format, locale, strict);
+    return useUtc ? moment.utc(date, format, locale, strict) : moment(date, format, locale, strict);
   }
 }

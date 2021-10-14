@@ -25,7 +25,7 @@ export interface MapDirectionsResponse {
  */
 @Injectable({providedIn: 'root'})
 export class MapDirectionsService {
-  private _directionsService: google.maps.DirectionsService|undefined;
+  private _directionsService: google.maps.DirectionsService | undefined;
 
   constructor(private readonly _ngZone: NgZone) {}
 

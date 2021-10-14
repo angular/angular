@@ -25,7 +25,6 @@ import {
 import {MatListOption, MatSelectionList} from './selection-list';
 import {MatDividerModule} from '@angular/material/divider';
 
-
 @NgModule({
   imports: [MatLineModule, MatRippleModule, MatCommonModule, MatPseudoCheckboxModule, CommonModule],
   exports: [
@@ -40,7 +39,7 @@ import {MatDividerModule} from '@angular/material/divider';
     MatPseudoCheckboxModule,
     MatSelectionList,
     MatListOption,
-    MatDividerModule
+    MatDividerModule,
   ],
   declarations: [
     MatList,
@@ -50,7 +49,7 @@ import {MatDividerModule} from '@angular/material/divider';
     MatListIconCssMatStyler,
     MatListSubheaderCssMatStyler,
     MatSelectionList,
-    MatListOption
+    MatListOption,
   ],
 })
 export class MatListModule {}

@@ -12,8 +12,9 @@ import {OverlayRef} from '@angular/cdk/overlay';
 /** Tracks state of resize events in progress. */
 export class ResizeRef {
   constructor(
-      readonly origin: ElementRef,
-      readonly overlayRef: OverlayRef,
-      readonly minWidthPx: number,
-      readonly maxWidthPx: number, ) {}
+    readonly origin: ElementRef,
+    readonly overlayRef: OverlayRef,
+    readonly minWidthPx: number,
+    readonly maxWidthPx: number,
+  ) {}
 }

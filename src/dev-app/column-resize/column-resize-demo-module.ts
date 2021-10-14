@@ -33,5 +33,4 @@ import {
   ],
   declarations: [ColumnResizeHome],
 })
-export class ColumnResizeDemoModule {
-}
+export class ColumnResizeDemoModule {}

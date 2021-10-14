@@ -6,8 +6,9 @@ describe('coerceStringArray', () => {
   });
 
   it('should map values to string in an array', () => {
-    expect(coerceStringArray(['x', 1, true, null, undefined, ['arr', 'ay'], { data: false }]))
-      .toEqual(['x', '1', 'true', 'null', 'undefined', 'arr,ay', '[object Object]']);
+    expect(
+      coerceStringArray(['x', 1, true, null, undefined, ['arr', 'ay'], {data: false}]),
+    ).toEqual(['x', '1', 'true', 'null', 'undefined', 'arr,ay', '[object Object]']);
   });
 
   it('should work with a custom delimiter', () => {

@@ -10,9 +10,10 @@ import {MatCalendarHarness} from './calendar-harness';
 
 /** Shared tests to run on both the original and MDC-based datepicker toggles. */
 export function runDatepickerToggleHarnessTests(
-    datepickerModule: typeof MatDatepickerModule,
-    datepickerToggleHarness: typeof MatDatepickerToggleHarness,
-    calendarHarness: typeof MatCalendarHarness) {
+  datepickerModule: typeof MatDatepickerModule,
+  datepickerToggleHarness: typeof MatDatepickerToggleHarness,
+  calendarHarness: typeof MatCalendarHarness,
+) {
   let fixture: ComponentFixture<DatepickerToggleHarnessTest>;
   let loader: HarnessLoader;
 
@@ -42,9 +43,11 @@ export function runDatepickerToggleHarnessTests(
 
   it('should get whether the toggle has a calendar associated with it', async () => {
     const toggles = await loader.getAllHarnesses(datepickerToggleHarness);
-    expect(await parallel(() => {
-      return toggles.map(toggle => toggle.hasCalendar());
-    })).toEqual([true, false]);
+    expect(
+      await parallel(() => {
+        return toggles.map(toggle => toggle.hasCalendar());
+      }),
+    ).toEqual([true, false]);
   });
 
   it('should be able to open and close a calendar in popup mode', async () => {
@@ -75,7 +78,6 @@ export function runDatepickerToggleHarnessTests(
     await toggle.openCalendar();
     expect(await toggle.getCalendar()).toBeInstanceOf(calendarHarness);
   });
-
 }
 
 @Component({
@@ -85,7 +87,7 @@ export function runDatepickerToggleHarnessTests(
     <mat-datepicker #picker [touchUi]="touchUi"></mat-datepicker>
 
     <mat-datepicker-toggle id="no-calendar"></mat-datepicker-toggle>
-  `
+  `,
 })
 class DatepickerToggleHarnessTest {
   touchUi = false;

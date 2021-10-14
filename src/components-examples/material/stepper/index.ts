@@ -8,9 +8,7 @@ import {MatRadioModule} from '@angular/material/radio';
 import {MatStepperModule} from '@angular/material/stepper';
 import {StepperEditableExample} from './stepper-editable/stepper-editable-example';
 import {StepperErrorsExample} from './stepper-errors/stepper-errors-example';
-import {
-  StepperLabelPositionBottomExample
-} from './stepper-label-position-bottom/stepper-label-position-bottom-example';
+import {StepperLabelPositionBottomExample} from './stepper-label-position-bottom/stepper-label-position-bottom-example';
 import {StepperOptionalExample} from './stepper-optional/stepper-optional-example';
 import {StepperOverviewExample} from './stepper-overview/stepper-overview-example';
 import {StepperStatesExample} from './stepper-states/stepper-states-example';
@@ -63,5 +61,4 @@ const EXAMPLES = [
   exports: EXAMPLES,
   entryComponents: EXAMPLES,
 })
-export class StepperExamplesModule {
-}
+export class StepperExamplesModule {}

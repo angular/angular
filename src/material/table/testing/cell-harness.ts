@@ -9,7 +9,7 @@
 import {
   HarnessPredicate,
   ComponentHarnessConstructor,
-  ContentContainerComponentHarness
+  ContentContainerComponentHarness,
 } from '@angular/cdk/testing';
 import {CellHarnessFilters} from './table-harness-filters';
 
@@ -39,7 +39,10 @@ export class MatCellHarness extends ContentContainerComponentHarness {
 
     if (classAttribute) {
       const prefix = 'mat-column-';
-      const name = classAttribute.split(' ').map(c => c.trim()).find(c => c.startsWith(prefix));
+      const name = classAttribute
+        .split(' ')
+        .map(c => c.trim())
+        .find(c => c.startsWith(prefix));
 
       if (name) {
         return name.split(prefix)[1];
@@ -51,12 +54,15 @@ export class MatCellHarness extends ContentContainerComponentHarness {
 
   protected static _getCellPredicate<T extends MatCellHarness>(
     type: ComponentHarnessConstructor<T>,
-    options: CellHarnessFilters): HarnessPredicate<T> {
+    options: CellHarnessFilters,
+  ): HarnessPredicate<T> {
     return new HarnessPredicate(type, options)
-      .addOption('text', options.text,
-          (harness, text) => HarnessPredicate.stringMatches(harness.getText(), text))
-      .addOption('columnName', options.columnName,
-          (harness, name) => HarnessPredicate.stringMatches(harness.getColumnName(), name));
+      .addOption('text', options.text, (harness, text) =>
+        HarnessPredicate.stringMatches(harness.getText(), text),
+      )
+      .addOption('columnName', options.columnName, (harness, name) =>
+        HarnessPredicate.stringMatches(harness.getColumnName(), name),
+      );
   }
 }
 

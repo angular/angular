@@ -11,7 +11,6 @@ import {FormControl, Validators} from '@angular/forms';
 import {ErrorStateMatcher} from '@angular/material/core';
 import {FloatLabelType} from '@angular/material/form-field';
 
-
 let max = 5;
 
 const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
@@ -40,13 +39,7 @@ export class InputDemo {
   dividerColorExample1: string;
   dividerColorExample2: string;
   dividerColorExample3: string;
-  items: {value: number}[] = [
-    {value: 10},
-    {value: 20},
-    {value: 30},
-    {value: 40},
-    {value: 50},
-  ];
+  items: {value: number}[] = [{value: 10}, {value: 20}, {value: 30}, {value: 40}, {value: 50}];
   rows = 8;
   formControl = new FormControl('hello', Validators.required);
   emailFormControl = new FormControl('', [Validators.required, Validators.pattern(EMAIL_REGEX)]);
@@ -66,7 +59,7 @@ export class InputDemo {
 
   addABunch(n: number) {
     for (let x = 0; x < n; x++) {
-      this.items.push({ value: ++max });
+      this.items.push({value: ++max});
     }
   }
 
@@ -80,7 +73,7 @@ export class InputDemo {
       }
 
       return false;
-    }
+    },
   };
 
   togglePlaceholderTestValue() {
@@ -88,9 +81,9 @@ export class InputDemo {
   }
 
   togglePlaceholderTestTouched() {
-    this.placeholderTestControl.touched ?
-      this.placeholderTestControl.markAsUntouched() :
-      this.placeholderTestControl.markAsTouched();
+    this.placeholderTestControl.touched
+      ? this.placeholderTestControl.markAsUntouched()
+      : this.placeholderTestControl.markAsTouched();
   }
 
   parseNumber(value: string): number {

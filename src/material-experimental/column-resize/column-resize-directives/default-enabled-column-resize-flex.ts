@@ -30,11 +30,12 @@ import {AbstractMatColumnResize, FLEX_HOST_BINDINGS, FLEX_PROVIDERS} from './com
 })
 export class MatDefaultEnabledColumnResizeFlex extends AbstractMatColumnResize {
   constructor(
-      readonly columnResizeNotifier: ColumnResizeNotifier,
-      readonly elementRef: ElementRef<HTMLElement>,
-      protected readonly eventDispatcher: HeaderRowEventDispatcher,
-      protected readonly ngZone: NgZone,
-      protected readonly notifier: ColumnResizeNotifierSource) {
+    readonly columnResizeNotifier: ColumnResizeNotifier,
+    readonly elementRef: ElementRef<HTMLElement>,
+    protected readonly eventDispatcher: HeaderRowEventDispatcher,
+    protected readonly ngZone: NgZone,
+    protected readonly notifier: ColumnResizeNotifierSource,
+  ) {
     super();
   }
 }

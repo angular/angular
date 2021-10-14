@@ -40,7 +40,7 @@ export const MAT_CARD_CONFIG = new InjectionToken<MatCardConfig>('MAT_CARD_CONFI
   styleUrls: ['card.css'],
   host: {
     'class': 'mat-mdc-card mdc-card',
-    '[class.mdc-card--outlined]': 'appearance == "outlined"'
+    '[class.mdc-card--outlined]': 'appearance == "outlined"',
   },
   exportAs: 'matCard',
   encapsulation: ViewEncapsulation.None,
@@ -57,7 +57,6 @@ export class MatCard {
 // TODO(jelbourn): add `MatActionCard`, which is a card that acts like a button (and has a ripple).
 // Supported in MDC with `.mdc-card__primary-action`. Will require additional a11y docs for users.
 
-
 /**
  * Title of a card, intended for use within `<mat-card>`. This component is an optional
  * convenience for one variety of card title; any custom title element may be used in its place.
@@ -66,10 +65,9 @@ export class MatCard {
  */
 @Directive({
   selector: `mat-card-title, [mat-card-title], [matCardTitle]`,
-  host: {'class': 'mat-mdc-card-title'}
+  host: {'class': 'mat-mdc-card-title'},
 })
 export class MatCardTitle {}
-
 
 /**
  * Container intended to be used within the `<mat-card>` component. Can contain exactly one
@@ -81,10 +79,9 @@ export class MatCardTitle {}
   templateUrl: 'card-title-group.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {'class': 'mat-mdc-card-title-group'}
+  host: {'class': 'mat-mdc-card-title-group'},
 })
 export class MatCardTitleGroup {}
-
 
 /**
  * Content of a card, intended for use within `<mat-card>`. This component is an optional
@@ -95,10 +92,9 @@ export class MatCardTitleGroup {}
  */
 @Directive({
   selector: 'mat-card-content',
-  host: {'class': 'mat-mdc-card-content'}
+  host: {'class': 'mat-mdc-card-content'},
 })
 export class MatCardContent {}
-
 
 /**
  * Sub-title of a card, intended for use within `<mat-card>` beneath a `<mat-card-title>`. This
@@ -109,10 +105,9 @@ export class MatCardContent {}
  */
 @Directive({
   selector: `mat-card-subtitle, [mat-card-subtitle], [matCardSubtitle]`,
-  host: {'class': 'mat-mdc-card-subtitle'}
+  host: {'class': 'mat-mdc-card-subtitle'},
 })
 export class MatCardSubtitle {}
-
 
 /**
  * Bottom area of a card that contains action buttons, intended for use within `<mat-card>`.
@@ -127,7 +122,7 @@ export class MatCardSubtitle {}
   host: {
     'class': 'mat-mdc-card-actions mdc-card__actions',
     '[class.mat-mdc-card-actions-align-end]': 'align === "end"',
-  }
+  },
 })
 export class MatCardActions {
   // TODO(jelbourn): deprecate `align` in favor of `actionPositon` or `actionAlignment`
@@ -145,7 +140,6 @@ export class MatCardActions {
   // do implicitly.
 }
 
-
 /**
  * Header region of a card, intended for use within `<mat-card>`. This header captures
  * a card title, subtitle, and avatar.  This component is an optional convenience for use with
@@ -159,10 +153,9 @@ export class MatCardActions {
   templateUrl: 'card-header.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {'class': 'mat-mdc-card-header'}
+  host: {'class': 'mat-mdc-card-header'},
 })
 export class MatCardHeader {}
-
 
 /**
  * Footer area a card, intended for use within `<mat-card>`.
@@ -173,7 +166,7 @@ export class MatCardHeader {}
  */
 @Directive({
   selector: 'mat-card-footer',
-  host: {'class': 'mat-mdc-card-footer'}
+  host: {'class': 'mat-mdc-card-footer'},
 })
 export class MatCardFooter {}
 
@@ -192,44 +185,39 @@ export class MatCardFooter {}
  */
 @Directive({
   selector: '[mat-card-image], [matCardImage]',
-  host: {'class': 'mat-mdc-card-image mdc-card__media'}
+  host: {'class': 'mat-mdc-card-image mdc-card__media'},
 })
 export class MatCardImage {
   // TODO(jelbourn): support `.mdc-card__media--square` and `.mdc-card__media--16-9`.
 }
 
-
 /** Same as `MatCardImage`, but small. */
 @Directive({
   selector: '[mat-card-sm-image], [matCardImageSmall]',
-  host: {'class': 'mat-mdc-card-sm-image mdc-card__media'}
+  host: {'class': 'mat-mdc-card-sm-image mdc-card__media'},
 })
 export class MatCardSmImage {}
-
 
 /** Same as `MatCardImage`, but medium. */
 @Directive({
   selector: '[mat-card-md-image], [matCardImageMedium]',
-  host: {'class': 'mat-mdc-card-md-image mdc-card__media'}
+  host: {'class': 'mat-mdc-card-md-image mdc-card__media'},
 })
 export class MatCardMdImage {}
-
 
 /** Same as `MatCardImage`, but large. */
 @Directive({
   selector: '[mat-card-lg-image], [matCardImageLarge]',
-  host: {'class': 'mat-mdc-card-lg-image mdc-card__media'}
+  host: {'class': 'mat-mdc-card-lg-image mdc-card__media'},
 })
 export class MatCardLgImage {}
-
 
 /** Same as `MatCardImage`, but extra-large. */
 @Directive({
   selector: '[mat-card-xl-image], [matCardImageXLarge]',
-  host: {'class': 'mat-mdc-card-xl-image mdc-card__media'}
+  host: {'class': 'mat-mdc-card-xl-image mdc-card__media'},
 })
 export class MatCardXlImage {}
-
 
 /**
  * Avatar image content for a card, intended for use within `<mat-card>`. Can be applied to
@@ -242,7 +230,6 @@ export class MatCardXlImage {}
  */
 @Directive({
   selector: '[mat-card-avatar], [matCardAvatar]',
-  host: {'class': 'mat-mdc-card-avatar'}
+  host: {'class': 'mat-mdc-card-avatar'},
 })
 export class MatCardAvatar {}
-

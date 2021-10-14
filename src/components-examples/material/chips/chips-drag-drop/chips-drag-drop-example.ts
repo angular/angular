@@ -11,7 +11,7 @@ export interface Vegetable {
 @Component({
   selector: 'chips-drag-drop-example',
   templateUrl: 'chips-drag-drop-example.html',
-  styleUrls: ['chips-drag-drop-example.css']
+  styleUrls: ['chips-drag-drop-example.css'],
 })
 export class ChipsDragDropExample {
   vegetables: Vegetable[] = [

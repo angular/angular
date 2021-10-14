@@ -14,7 +14,7 @@ describe('chip performance benchmarks', () => {
     browser.angularAppRoot('#root');
   });
 
-  it('renders a single chip', async() => {
+  it('renders a single chip', async () => {
     await runBenchmark({
       id: 'single-chip-render',
       url: '',
@@ -24,7 +24,7 @@ describe('chip performance benchmarks', () => {
     });
   });
 
-  it('renders multiple chips', async() => {
+  it('renders multiple chips', async () => {
     await runBenchmark({
       id: 'multiple-chip-render',
       url: '',
@@ -34,12 +34,12 @@ describe('chip performance benchmarks', () => {
     });
   });
 
-  it('clicks a chip', async() => {
+  it('clicks a chip', async () => {
     await runBenchmark({
       id: 'chip-click',
       url: '',
       ignoreBrowserSynchronization: true,
-      setup: async() => await $('#show-single').click(),
+      setup: async () => await $('#show-single').click(),
       work: async () => await $('.mat-chip').click(),
     });
   });

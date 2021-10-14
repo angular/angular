@@ -18,13 +18,17 @@ export function isFakeMousedownFromScreenReader(event: MouseEvent): boolean {
 
 /** Gets whether an event could be a faked `touchstart` event dispatched by a screen reader. */
 export function isFakeTouchstartFromScreenReader(event: TouchEvent): boolean {
-  const touch: Touch | undefined = (event.touches && event.touches[0]) ||
-                                   (event.changedTouches && event.changedTouches[0]);
+  const touch: Touch | undefined =
+    (event.touches && event.touches[0]) || (event.changedTouches && event.changedTouches[0]);
 
   // A fake `touchstart` can be distinguished from a real one by looking at the `identifier`
   // which is typically >= 0 on a real device versus -1 from a screen reader. Just to be safe,
   // we can also look at `radiusX` and `radiusY`. This behavior was observed against a Windows 10
   // device with a touch screen running NVDA v2020.4 and Firefox 85 or Chrome 88.
-  return !!touch && touch.identifier === -1 && (touch.radiusX == null || touch.radiusX === 1) &&
-         (touch.radiusY == null || touch.radiusY === 1);
+  return (
+    !!touch &&
+    touch.identifier === -1 &&
+    (touch.radiusX == null || touch.radiusX === 1) &&
+    (touch.radiusY == null || touch.radiusY === 1)
+  );
 }

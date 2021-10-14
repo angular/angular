@@ -18,8 +18,8 @@ export class DialogDataExample {
   openDialog() {
     this.dialog.open(DialogDataExampleDialog, {
       data: {
-        animal: 'panda'
-      }
+        animal: 'panda',
+      },
     });
   }
 }

@@ -10,7 +10,7 @@ import {dispatchFakeEvent} from './dispatch-events';
 
 function triggerFocusChange(element: HTMLElement, event: 'focus' | 'blur') {
   let eventFired = false;
-  const handler = () => eventFired = true;
+  const handler = () => (eventFired = true);
   element.addEventListener(event, handler);
   element[event]();
   element.removeEventListener(event, handler);

@@ -28,5 +28,4 @@ import {GridListDemo} from './grid-list-demo';
   ],
   declarations: [GridListDemo],
 })
-export class GridListDemoModule {
-}
+export class GridListDemoModule {}

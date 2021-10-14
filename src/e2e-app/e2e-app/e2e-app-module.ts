@@ -13,13 +13,8 @@ import {RouterModule} from '@angular/router';
 import {E2eAppLayout, Home} from './e2e-app-layout';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    MatListModule,
-    RouterModule,
-  ],
+  imports: [CommonModule, MatListModule, RouterModule],
   declarations: [E2eAppLayout, Home],
   exports: [E2eAppLayout],
 })
-export class E2eAppModule {
-}
+export class E2eAppModule {}

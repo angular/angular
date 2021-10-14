@@ -22,18 +22,24 @@ import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
   host: {
     '[class.mat-mdc-tab-disabled]': 'disabled',
     '[attr.aria-disabled]': '!!disabled',
-  }
+  },
 })
-export class MatTabLabelWrapper extends BaseMatTabLabelWrapper
-    implements MatInkBarItem, OnInit, OnDestroy {
+export class MatTabLabelWrapper
+  extends BaseMatTabLabelWrapper
+  implements MatInkBarItem, OnInit, OnDestroy
+{
   private _document: Document;
 
   _foundation: MatInkBarFoundation;
 
   /** Whether the ink bar should fit its width to the size of the tab label content. */
   @Input()
-  get fitInkBarToContent(): boolean { return this._foundation.getFitToContent(); }
-  set fitInkBarToContent(v: boolean) { this._foundation.setFitToContent(coerceBooleanProperty(v)); }
+  get fitInkBarToContent(): boolean {
+    return this._foundation.getFitToContent();
+  }
+  set fitInkBarToContent(v: boolean) {
+    this._foundation.setFitToContent(coerceBooleanProperty(v));
+  }
 
   constructor(elementRef: ElementRef, @Inject(DOCUMENT) _document: any) {
     super(elementRef);

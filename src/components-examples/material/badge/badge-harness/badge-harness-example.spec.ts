@@ -15,14 +15,14 @@ describe('BadgeHarnessExample', () => {
 
   beforeAll(() => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
-      teardown: {destroyAfterEach: true}
+      teardown: {destroyAfterEach: true},
     });
   });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MatBadgeModule],
-      declarations: [BadgeHarnessExample]
+      declarations: [BadgeHarnessExample],
     }).compileComponents();
     fixture = TestBed.createComponent(BadgeHarnessExample);
     fixture.detectChanges();

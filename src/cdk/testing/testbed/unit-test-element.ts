@@ -60,7 +60,7 @@ const keyMap = {
   [TestKey.F10]: {keyCode: keyCodes.F10, key: 'F10'},
   [TestKey.F11]: {keyCode: keyCodes.F11, key: 'F11'},
   [TestKey.F12]: {keyCode: keyCodes.F12, key: 'F12'},
-  [TestKey.META]: {keyCode: keyCodes.META, key: 'Meta'}
+  [TestKey.META]: {keyCode: keyCodes.META, key: 'Meta'},
 };
 
 /** A `TestElement` implementation for unit tests. */
@@ -97,8 +97,9 @@ export class UnitTestElement implements TestElement {
    * @param modifiers Modifier keys held while clicking
    */
   click(relativeX: number, relativeY: number, modifiers?: ModifierKeys): Promise<void>;
-  async click(...args: [ModifierKeys?] | ['center', ModifierKeys?] |
-    [number, number, ModifierKeys?]): Promise<void> {
+  async click(
+    ...args: [ModifierKeys?] | ['center', ModifierKeys?] | [number, number, ModifierKeys?]
+  ): Promise<void> {
     await this._dispatchMouseEventSequence('click', args, 0);
     await this._stabilize();
   }
@@ -110,8 +111,9 @@ export class UnitTestElement implements TestElement {
    * @param modifiers Modifier keys held while clicking
    */
   rightClick(relativeX: number, relativeY: number, modifiers?: ModifierKeys): Promise<void>;
-  async rightClick(...args: [ModifierKeys?] | ['center', ModifierKeys?] |
-    [number, number, ModifierKeys?]): Promise<void> {
+  async rightClick(
+    ...args: [ModifierKeys?] | ['center', ModifierKeys?] | [number, number, ModifierKeys?]
+  ): Promise<void> {
     await this._dispatchMouseEventSequence('contextmenu', args, 2);
     await this._stabilize();
   }
@@ -155,7 +157,7 @@ export class UnitTestElement implements TestElement {
    */
   async sendKeys(modifiers: ModifierKeys, ...keys: (string | TestKey)[]): Promise<void>;
   async sendKeys(...modifiersAndKeys: any[]): Promise<void> {
-    const args = modifiersAndKeys.map(k => typeof k === 'number' ? keyMap[k as TestKey] : k);
+    const args = modifiersAndKeys.map(k => (typeof k === 'number' ? keyMap[k as TestKey] : k));
     typeInElement(this.element as HTMLElement, ...args);
     await this._stabilize();
   }
@@ -173,7 +175,7 @@ export class UnitTestElement implements TestElement {
   }
 
   /** Gets the value for the given attribute from the element. */
-  async getAttribute(name: string): Promise<string|null> {
+  async getAttribute(name: string): Promise<string | null> {
     await this._stabilize();
     return this.element.getAttribute(name);
   }
@@ -231,8 +233,10 @@ export class UnitTestElement implements TestElement {
   async matchesSelector(selector: string): Promise<boolean> {
     await this._stabilize();
     const elementPrototype = Element.prototype as any;
-    return (elementPrototype['matches'] || elementPrototype['msMatchesSelector'])
-        .call(this.element, selector);
+    return (elementPrototype['matches'] || elementPrototype['msMatchesSelector']).call(
+      this.element,
+      selector,
+    );
   }
 
   /** Checks whether the element is focused. */
@@ -265,7 +269,11 @@ export class UnitTestElement implements TestElement {
    * @param button Mouse button that should be pressed when dispatching the event.
    */
   private _dispatchPointerEventIfSupported(
-    name: string, clientX?: number, clientY?: number, button?: number) {
+    name: string,
+    clientX?: number,
+    clientY?: number,
+    button?: number,
+  ) {
     // The latest versions of all browsers we support have the new `PointerEvent` API.
     // Though since we capture the two most recent versions of these browsers, we also
     // need to support Safari 12 at time of writing. Safari 12 does not have support for this,
@@ -279,7 +287,8 @@ export class UnitTestElement implements TestElement {
   private async _dispatchMouseEventSequence(
     name: string,
     args: [ModifierKeys?] | ['center', ModifierKeys?] | [number, number, ModifierKeys?],
-    button?: number) {
+    button?: number,
+  ) {
     let clientX: number | undefined = undefined;
     let clientY: number | undefined = undefined;
     let modifiers: ModifierKeys = {};
@@ -290,8 +299,8 @@ export class UnitTestElement implements TestElement {
 
     if (args.length) {
       const {left, top, width, height} = await this.getDimensions();
-      const relativeX = args[0] === 'center' ? width / 2 : args[0] as number;
-      const relativeY = args[0] === 'center' ? height / 2 : args[1] as number;
+      const relativeX = args[0] === 'center' ? width / 2 : (args[0] as number);
+      const relativeY = args[0] === 'center' ? height / 2 : (args[1] as number);
 
       // Round the computed click position as decimal pixels are not
       // supported by mouse events and could lead to unexpected results.

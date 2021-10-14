@@ -26,11 +26,7 @@ export class _MatSlideToggleRequiredValidatorModule {}
     MatCommonModule,
     ObserversModule,
   ],
-  exports: [
-    _MatSlideToggleRequiredValidatorModule,
-    MatSlideToggle,
-    MatCommonModule
-  ],
+  exports: [_MatSlideToggleRequiredValidatorModule, MatSlideToggle, MatCommonModule],
   declarations: [MatSlideToggle],
 })
 export class MatSlideToggleModule {}

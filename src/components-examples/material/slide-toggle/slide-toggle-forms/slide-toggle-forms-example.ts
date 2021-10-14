@@ -16,7 +16,7 @@ export class SlideToggleFormsExample {
   constructor(formBuilder: FormBuilder) {
     this.formGroup = formBuilder.group({
       enableWifi: '',
-      acceptTerms: ['', Validators.requiredTrue]
+      acceptTerms: ['', Validators.requiredTrue],
     });
   }
 

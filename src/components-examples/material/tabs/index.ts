@@ -12,9 +12,7 @@ import {TabGroupAnimationsExample} from './tab-group-animations/tab-group-animat
 import {TabGroupAsyncExample} from './tab-group-async/tab-group-async-example';
 import {TabGroupBasicExample} from './tab-group-basic/tab-group-basic-example';
 import {TabGroupCustomLabelExample} from './tab-group-custom-label/tab-group-custom-label-example';
-import {
-  TabGroupDynamicHeightExample
-} from './tab-group-dynamic-height/tab-group-dynamic-height-example';
+import {TabGroupDynamicHeightExample} from './tab-group-dynamic-height/tab-group-dynamic-height-example';
 import {TabGroupHarnessExample} from './tab-group-harness/tab-group-harness-example';
 import {TabGroupDynamicExample} from './tab-group-dynamic/tab-group-dynamic-example';
 import {TabGroupHeaderBelowExample} from './tab-group-header-below/tab-group-header-below-example';
@@ -70,5 +68,4 @@ const EXAMPLES = [
   exports: EXAMPLES,
   entryComponents: EXAMPLES,
 })
-export class TabGroupExamplesModule {
-}
+export class TabGroupExamplesModule {}

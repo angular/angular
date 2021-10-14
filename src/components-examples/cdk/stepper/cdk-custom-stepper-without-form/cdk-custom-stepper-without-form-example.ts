@@ -5,7 +5,7 @@ import {CdkStepper} from '@angular/cdk/stepper';
 @Component({
   selector: 'cdk-custom-stepper-without-form-example',
   templateUrl: './cdk-custom-stepper-without-form-example.html',
-  styleUrls: ['./cdk-custom-stepper-without-form-example.css']
+  styleUrls: ['./cdk-custom-stepper-without-form-example.css'],
 })
 export class CdkCustomStepperWithoutFormExample {}
 
@@ -14,7 +14,7 @@ export class CdkCustomStepperWithoutFormExample {}
   selector: 'example-custom-stepper',
   templateUrl: './example-custom-stepper.html',
   styleUrls: ['./example-custom-stepper.css'],
-  providers: [{provide: CdkStepper, useExisting: CustomStepper}]
+  providers: [{provide: CdkStepper, useExisting: CustomStepper}],
 })
 export class CustomStepper extends CdkStepper {
   selectStepByIndex(index: number): void {

@@ -6,7 +6,6 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatChipsModule} from '../index';
 import {MatChipGridHarness} from './chip-grid-harness';
 
-
 describe('MatChipGridHarness', () => {
   let fixture: ComponentFixture<ChipGridHarnessTest>;
   let loader: HarnessLoader;
@@ -66,7 +65,6 @@ describe('MatChipGridHarness', () => {
 
     expect(await harness.isInvalid()).toBe(true);
   });
-
 });
 
 @Component({
@@ -77,10 +75,9 @@ describe('MatChipGridHarness', () => {
       <mat-chip-row>Chip C</mat-chip-row>
       <input [matChipInputFor]="grid"/>
     </mat-chip-grid>
-  `
+  `,
 })
 class ChipGridHarnessTest {
   control = new FormControl('value', [Validators.required]);
   required = false;
 }
-

@@ -53,7 +53,8 @@ export class MatOption extends _MatOptionBase {
     element: ElementRef<HTMLElement>,
     changeDetectorRef: ChangeDetectorRef,
     @Optional() @Inject(MAT_OPTION_PARENT_COMPONENT) parent: MatOptionParentComponent,
-    @Optional() @Inject(MAT_OPTGROUP) group: MatOptgroup) {
+    @Optional() @Inject(MAT_OPTGROUP) group: MatOptgroup,
+  ) {
     super(element, changeDetectorRef, parent, group);
   }
 }

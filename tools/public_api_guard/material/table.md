@@ -179,7 +179,7 @@ export class _MatTableDataSource<T, P extends MatTableDataSourcePaginator = MatT
     set filter(filter: string);
     _filterData(data: T[]): T[];
     filteredData: T[];
-    filterPredicate: ((data: T, filter: string) => boolean);
+    filterPredicate: (data: T, filter: string) => boolean;
     _orderData(data: T[]): T[];
     _pageData(data: T[]): T[];
     get paginator(): P | null;
@@ -187,8 +187,8 @@ export class _MatTableDataSource<T, P extends MatTableDataSourcePaginator = MatT
     _renderChangesSubscription: Subscription | null;
     get sort(): MatSort | null;
     set sort(sort: MatSort | null);
-    sortData: ((data: T[], sort: MatSort) => T[]);
-    sortingDataAccessor: ((data: T, sortHeaderId: string) => string | number);
+    sortData: (data: T[], sort: MatSort) => T[];
+    sortingDataAccessor: (data: T, sortHeaderId: string) => string | number;
     _updateChangeSubscription(): void;
     _updatePaginator(filteredDataLength: number): void;
 }

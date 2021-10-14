@@ -21,12 +21,14 @@ describe('MapGroundOverlay', () => {
   const opacity = 0.5;
   const groundOverlayOptions: google.maps.GroundOverlayOptions = {clickable, opacity};
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [GoogleMapsModule],
-      declarations: [TestApp],
-    });
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [GoogleMapsModule],
+        declarations: [TestApp],
+      });
+    }),
+  );
 
   beforeEach(() => {
     TestBed.compileComponents();
@@ -42,7 +44,7 @@ describe('MapGroundOverlay', () => {
   it('initializes a Google Map Ground Overlay', () => {
     const groundOverlaySpy = createGroundOverlaySpy(url, bounds, groundOverlayOptions);
     const groundOverlayConstructorSpy =
-        createGroundOverlayConstructorSpy(groundOverlaySpy).and.callThrough();
+      createGroundOverlayConstructorSpy(groundOverlaySpy).and.callThrough();
 
     const fixture = TestBed.createComponent(TestApp);
     fixture.componentInstance.url = url;
@@ -60,8 +62,9 @@ describe('MapGroundOverlay', () => {
     createGroundOverlayConstructorSpy(groundOverlaySpy).and.callThrough();
 
     const fixture = TestBed.createComponent(TestApp);
-    const groundOverlayComponent = fixture.debugElement.query(By.directive(
-        MapGroundOverlay))!.injector.get<MapGroundOverlay>(MapGroundOverlay);
+    const groundOverlayComponent = fixture.debugElement
+      .query(By.directive(MapGroundOverlay))!
+      .injector.get<MapGroundOverlay>(MapGroundOverlay);
     fixture.componentInstance.url = url;
     fixture.componentInstance.bounds = bounds;
     fixture.componentInstance.opacity = opacity;
@@ -114,7 +117,7 @@ describe('MapGroundOverlay', () => {
   it('should be able to change the image after init', () => {
     const groundOverlaySpy = createGroundOverlaySpy(url, bounds, groundOverlayOptions);
     const groundOverlayConstructorSpy =
-        createGroundOverlayConstructorSpy(groundOverlaySpy).and.callThrough();
+      createGroundOverlayConstructorSpy(groundOverlaySpy).and.callThrough();
 
     const fixture = TestBed.createComponent(TestApp);
     fixture.componentInstance.url = url;
@@ -151,7 +154,6 @@ describe('MapGroundOverlay', () => {
     expect(newOverlay).toBeTruthy();
     expect(newOverlay).not.toBe(oldOverlay);
   });
-
 });
 
 @Component({

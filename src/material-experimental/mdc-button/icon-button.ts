@@ -14,7 +14,7 @@ import {
   Inject,
   NgZone,
   Optional,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
@@ -24,7 +24,7 @@ import {
   MAT_BUTTON_HOST,
   MAT_BUTTON_INPUTS,
   MatAnchorBase,
-  MatButtonBase
+  MatButtonBase,
 } from './button-base';
 
 /**
@@ -47,8 +47,11 @@ export class MatIconButton extends MatButtonBase {
   override _isRippleCentered = true;
 
   constructor(
-      elementRef: ElementRef, platform: Platform, ngZone: NgZone,
-      @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
+    elementRef: ElementRef,
+    platform: Platform,
+    ngZone: NgZone,
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
+  ) {
     super(elementRef, platform, ngZone, animationMode);
   }
 }
@@ -73,8 +76,11 @@ export class MatIconAnchor extends MatAnchorBase {
   override _isRippleCentered = true;
 
   constructor(
-      elementRef: ElementRef, platform: Platform, ngZone: NgZone,
-      @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
+    elementRef: ElementRef,
+    platform: Platform,
+    ngZone: NgZone,
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
+  ) {
     super(elementRef, platform, ngZone, animationMode);
   }
 }

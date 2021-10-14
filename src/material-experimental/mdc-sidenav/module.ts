@@ -13,5 +13,4 @@ import {MatCommonModule} from '@angular/material-experimental/mdc-core';
   imports: [MatCommonModule],
   exports: [MatCommonModule],
 })
-export class MatSidenavModule {
-}
+export class MatSidenavModule {}

@@ -1,4 +1,6 @@
-const {buildOptimizer} = require('@angular-devkit/build-optimizer/src/build-optimizer/build-optimizer');
+const {
+  buildOptimizer,
+} = require('@angular-devkit/build-optimizer/src/build-optimizer/build-optimizer');
 const node = require('rollup-plugin-node-resolve');
 
 const buildOptimizerPlugin = {

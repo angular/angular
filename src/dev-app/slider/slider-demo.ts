@@ -8,7 +8,6 @@
 
 import {Component} from '@angular/core';
 
-
 @Component({
   selector: 'slider-demo',
   templateUrl: 'slider-demo.html',

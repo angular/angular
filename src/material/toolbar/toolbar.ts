@@ -21,12 +21,13 @@ import {
 } from '@angular/core';
 import {CanColor, mixinColor} from '@angular/material/core';
 
-
 // Boilerplate for applying mixins to MatToolbar.
 /** @docs-private */
-const _MatToolbarBase = mixinColor(class {
-  constructor(public _elementRef: ElementRef) {}
-});
+const _MatToolbarBase = mixinColor(
+  class {
+    constructor(public _elementRef: ElementRef) {}
+  },
+);
 
 @Directive({
   selector: 'mat-toolbar-row',
@@ -58,7 +59,8 @@ export class MatToolbar extends _MatToolbarBase implements CanColor, AfterViewIn
   constructor(
     elementRef: ElementRef,
     private _platform: Platform,
-    @Inject(DOCUMENT) document?: any) {
+    @Inject(DOCUMENT) document?: any,
+  ) {
     super(elementRef);
 
     // TODO: make the document a required param when doing breaking changes.
@@ -96,7 +98,9 @@ export class MatToolbar extends _MatToolbarBase implements CanColor, AfterViewIn
  * @docs-private
  */
 export function throwToolbarMixedModesError() {
-  throw Error('MatToolbar: Attempting to combine different toolbar modes. ' +
-    'Either specify multiple `<mat-toolbar-row>` elements explicitly or just place content ' +
-    'inside of a `<mat-toolbar>` for a single row.');
+  throw Error(
+    'MatToolbar: Attempting to combine different toolbar modes. ' +
+      'Either specify multiple `<mat-toolbar-row>` elements explicitly or just place content ' +
+      'inside of a `<mat-toolbar>` for a single row.',
+  );
 }

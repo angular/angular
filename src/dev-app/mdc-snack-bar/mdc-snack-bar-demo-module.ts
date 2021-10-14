@@ -32,5 +32,4 @@ import {MatSelectModule} from '@angular/material-experimental/mdc-select';
   ],
   declarations: [MdcSnackBarDemo],
 })
-export class MdcSnackBarDemoModule {
-}
+export class MdcSnackBarDemoModule {}

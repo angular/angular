@@ -2,7 +2,7 @@ require('ts-node').register({
   dir: __dirname,
   transpileOnly: true,
   compilerOptions: {module: 'commonjs'},
-})
+});
 
 const {parse} = require('semver');
 const {assertValidFrameworkPeerDependency} = require('./check-framework-peer-dependency');

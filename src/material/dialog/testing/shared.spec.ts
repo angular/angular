@@ -8,8 +8,10 @@ import {MatDialogHarness} from './dialog-harness';
 
 /** Shared tests to run on both the original and MDC-based dialog's. */
 export function runHarnessTests(
-    dialogModule: typeof MatDialogModule, dialogHarness: typeof MatDialogHarness,
-    dialogService: typeof MatDialog) {
+  dialogModule: typeof MatDialogModule,
+  dialogHarness: typeof MatDialogHarness,
+  dialogService: typeof MatDialog,
+) {
   let fixture: ComponentFixture<DialogHarnessTest>;
   let loader: HarnessLoader;
 
@@ -18,15 +20,13 @@ export function runHarnessTests(
     // that is used in the test components below, we provide the `MatDialog` service with
     // the existing instance of the specified dialog service. This allows us to run these
     // tests for the MDC-based version of the dialog too.
-    const providers = dialogService !== MatDialog ?
-        [{provide: MatDialog, useExisting: dialogService}] : undefined;
-    await TestBed
-        .configureTestingModule({
-          imports: [dialogModule, NoopAnimationsModule],
-          declarations: [DialogHarnessTest],
-          providers,
-        })
-        .compileComponents();
+    const providers =
+      dialogService !== MatDialog ? [{provide: MatDialog, useExisting: dialogService}] : undefined;
+    await TestBed.configureTestingModule({
+      imports: [dialogModule, NoopAnimationsModule],
+      declarations: [DialogHarnessTest],
+      providers,
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DialogHarnessTest);
     fixture.detectChanges();
@@ -127,7 +127,7 @@ export function runHarnessTests(
         <button>Ok</button>
       </div>
     </ng-template>
-    `
+    `,
   })
   class DialogHarnessTest {
     @ViewChild(TemplateRef) dialogTmpl: TemplateRef<any>;

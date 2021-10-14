@@ -18,7 +18,13 @@ export interface ModifierKeys {
 
 /** Data that can be attached to a custom event dispatched from a `TestElement`. */
 export type EventData =
-    string | number | boolean | undefined | null | EventData[] | {[key: string]: EventData};
+  | string
+  | number
+  | boolean
+  | undefined
+  | null
+  | EventData[]
+  | {[key: string]: EventData};
 
 /** An enum of non-text keys that can be used with the `sendKeys` method. */
 // NOTE: This is a separate enum from `@angular/cdk/keycodes` because we don't necessarily want to
@@ -57,7 +63,7 @@ export enum TestKey {
   F10,
   F11,
   F12,
-  META
+  META,
 }
 
 /**

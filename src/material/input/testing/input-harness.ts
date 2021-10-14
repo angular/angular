@@ -25,12 +25,12 @@ export class MatInputHarness extends MatFormFieldControlHarness {
    */
   static with(options: InputHarnessFilters = {}): HarnessPredicate<MatInputHarness> {
     return new HarnessPredicate(MatInputHarness, options)
-        .addOption('value', options.value, (harness, value) => {
-          return HarnessPredicate.stringMatches(harness.getValue(), value);
-        })
-        .addOption('placeholder', options.placeholder, (harness, placeholder) => {
-          return HarnessPredicate.stringMatches(harness.getPlaceholder(), placeholder);
-        });
+      .addOption('value', options.value, (harness, value) => {
+        return HarnessPredicate.stringMatches(harness.getValue(), value);
+      })
+      .addOption('placeholder', options.placeholder, (harness, placeholder) => {
+        return HarnessPredicate.stringMatches(harness.getPlaceholder(), placeholder);
+      });
   }
 
   /** Whether the input is disabled. */
@@ -51,13 +51,13 @@ export class MatInputHarness extends MatFormFieldControlHarness {
   /** Gets the value of the input. */
   async getValue(): Promise<string> {
     // The "value" property of the native input is never undefined.
-    return (await (await this.host()).getProperty<string>('value'));
+    return await (await this.host()).getProperty<string>('value');
   }
 
   /** Gets the name of the input. */
   async getName(): Promise<string> {
     // The "name" property of the native input is never undefined.
-    return (await (await this.host()).getProperty<string>('name'));
+    return await (await this.host()).getProperty<string>('name');
   }
 
   /**
@@ -66,7 +66,7 @@ export class MatInputHarness extends MatFormFieldControlHarness {
    */
   async getType(): Promise<string> {
     // The "type" property of the native input is never undefined.
-    return (await (await this.host()).getProperty<string>('type'));
+    return await (await this.host()).getProperty<string>('type');
   }
 
   /** Gets the placeholder of the input. */
@@ -74,7 +74,7 @@ export class MatInputHarness extends MatFormFieldControlHarness {
     const host = await this.host();
     const [nativePlaceholder, fallback] = await parallel(() => [
       host.getProperty('placeholder'),
-      host.getAttribute('data-placeholder')
+      host.getAttribute('data-placeholder'),
     ]);
     return nativePlaceholder || fallback || '';
   }
@@ -83,7 +83,7 @@ export class MatInputHarness extends MatFormFieldControlHarness {
   async getId(): Promise<string> {
     // The input directive always assigns a unique id to the input in
     // case no id has been explicitly specified.
-    return (await (await this.host()).getProperty<string>('id'));
+    return await (await this.host()).getProperty<string>('id');
   }
 
   /**

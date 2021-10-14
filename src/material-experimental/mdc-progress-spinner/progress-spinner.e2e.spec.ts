@@ -8,8 +8,9 @@ describe('MDC-based progress-spinner', () => {
   });
 
   it('should render an indeterminate progress spinner', async () => {
-    expect(await element(by.css('mat-progress-spinner[mode="indeterminate"]')).isPresent())
-      .toBe(true);
+    expect(await element(by.css('mat-progress-spinner[mode="indeterminate"]')).isPresent()).toBe(
+      true,
+    );
   });
 
   it('should render a spinner', async () => {

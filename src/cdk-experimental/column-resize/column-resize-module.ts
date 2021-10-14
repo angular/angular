@@ -10,12 +10,8 @@ import {NgModule} from '@angular/core';
 
 import {CdkColumnResize} from './column-resize-directives/column-resize';
 import {CdkColumnResizeFlex} from './column-resize-directives/column-resize-flex';
-import {
-  CdkDefaultEnabledColumnResize
-} from './column-resize-directives/default-enabled-column-resize';
-import {
-  CdkDefaultEnabledColumnResizeFlex
-} from './column-resize-directives/default-enabled-column-resize-flex';
+import {CdkDefaultEnabledColumnResize} from './column-resize-directives/default-enabled-column-resize';
+import {CdkDefaultEnabledColumnResizeFlex} from './column-resize-directives/default-enabled-column-resize-flex';
 
 /**
  * One of two NgModules for use with CdkColumnResize.

@@ -11,7 +11,6 @@ import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {MatButtonToggleAppearance} from '@angular/material/button-toggle';
 import {ButtonToggleHarnessFilters} from './button-toggle-harness-filters';
 
-
 /** Harness for interacting with a standard mat-button-toggle in tests. */
 export class MatButtonToggleHarness extends ComponentHarness {
   /** The selector for the host element of a `MatButton` instance. */
@@ -28,12 +27,17 @@ export class MatButtonToggleHarness extends ComponentHarness {
    */
   static with(options: ButtonToggleHarnessFilters = {}): HarnessPredicate<MatButtonToggleHarness> {
     return new HarnessPredicate(MatButtonToggleHarness, options)
-        .addOption('text', options.text,
-            (harness, text) => HarnessPredicate.stringMatches(harness.getText(), text))
-        .addOption('name', options.name,
-            (harness, name) => HarnessPredicate.stringMatches(harness.getName(), name))
-        .addOption('checked', options.checked,
-            async (harness, checked) => (await harness.isChecked()) === checked);
+      .addOption('text', options.text, (harness, text) =>
+        HarnessPredicate.stringMatches(harness.getText(), text),
+      )
+      .addOption('name', options.name, (harness, name) =>
+        HarnessPredicate.stringMatches(harness.getName(), name),
+      )
+      .addOption(
+        'checked',
+        options.checked,
+        async (harness, checked) => (await harness.isChecked()) === checked,
+      );
   }
 
   /** Gets a boolean promise indicating if the button toggle is checked. */
@@ -72,7 +76,7 @@ export class MatButtonToggleHarness extends ComponentHarness {
   async getAppearance(): Promise<MatButtonToggleAppearance> {
     const host = await this.host();
     const className = 'mat-button-toggle-appearance-standard';
-    return await host.hasClass(className) ? 'standard' : 'legacy';
+    return (await host.hasClass(className)) ? 'standard' : 'legacy';
   }
 
   /** Focuses the toggle. */

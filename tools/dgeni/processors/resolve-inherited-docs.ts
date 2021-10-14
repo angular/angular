@@ -10,8 +10,7 @@ import {ApiDoc} from 'dgeni-packages/typescript/api-doc-types/ApiDoc';
  * dependency injection for classes. The symbol docs map is provided by the TypeScript
  * dgeni package.
  */
-export function resolveInheritedDocs(
-    exportSymbolsToDocsMap: Map<ts.Symbol, ClassLikeExportDoc>) {
+export function resolveInheritedDocs(exportSymbolsToDocsMap: Map<ts.Symbol, ClassLikeExportDoc>) {
   return new ResolveInheritedDocs(exportSymbolsToDocsMap);
 }
 
@@ -27,7 +26,8 @@ export class ResolveInheritedDocs implements Processor {
 
   constructor(
     /** Shared map that can be used to resolve docs through symbols. */
-    private _exportSymbolsToDocsMap: Map<ts.Symbol, ClassLikeExportDoc>) {}
+    private _exportSymbolsToDocsMap: Map<ts.Symbol, ClassLikeExportDoc>,
+  ) {}
 
   $process(docs: DocCollection) {
     const newDocs = new Set<Document>(docs);

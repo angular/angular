@@ -8,38 +8,32 @@ import {
   MatExpansionPanel,
   MatExpansionPanelHeader,
 } from './index';
-import {
-  dispatchKeyboardEvent,
-  createKeyboardEvent,
-  dispatchEvent,
-} from '../../cdk/testing/private';
+import {dispatchKeyboardEvent, createKeyboardEvent, dispatchEvent} from '../../cdk/testing/private';
 import {DOWN_ARROW, UP_ARROW, HOME, END} from '@angular/cdk/keycodes';
 import {FocusMonitor} from '@angular/cdk/a11y';
-
 
 describe('MatAccordion', () => {
   let focusMonitor: FocusMonitor;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [
-        BrowserAnimationsModule,
-        MatExpansionModule
-      ],
-      declarations: [
-        AccordionWithHideToggle,
-        AccordionWithTogglePosition,
-        NestedPanel,
-        SetOfItems,
-        NestedAccordions,
-      ],
-    });
-    TestBed.compileComponents();
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [BrowserAnimationsModule, MatExpansionModule],
+        declarations: [
+          AccordionWithHideToggle,
+          AccordionWithTogglePosition,
+          NestedPanel,
+          SetOfItems,
+          NestedAccordions,
+        ],
+      });
+      TestBed.compileComponents();
 
-    inject([FocusMonitor], (fm: FocusMonitor) => {
-      focusMonitor = fm;
-    })();
-  }));
+      inject([FocusMonitor], (fm: FocusMonitor) => {
+        focusMonitor = fm;
+      })();
+    }),
+  );
 
   it('should ensure only one item is expanded at a time', () => {
     const fixture = TestBed.createComponent(SetOfItems);
@@ -245,7 +239,10 @@ describe('MatAccordion', () => {
 
     headers.forEach(header => spyOn(header, 'focus'));
     const event = dispatchKeyboardEvent(
-        headerElements[headerElements.length - 1].nativeElement, 'keydown', HOME);
+      headerElements[headerElements.length - 1].nativeElement,
+      'keydown',
+      HOME,
+    );
     fixture.detectChanges();
 
     expect(headers[0].focus).toHaveBeenCalledTimes(1);
@@ -303,17 +300,17 @@ describe('MatAccordion', () => {
     expect(headers[headers.length - 1].focus).not.toHaveBeenCalled();
     expect(event.defaultPrevented).toBe(false);
   });
-
 });
 
-
-@Component({template: `
+@Component({
+  template: `
   <mat-accordion [multi]="multi">
     <mat-expansion-panel *ngFor="let i of [0, 1, 2, 3]">
       <mat-expansion-panel-header>Summary {{i}}</mat-expansion-panel-header>
       <p>Content</p>
     </mat-expansion-panel>
-  </mat-accordion>`})
+  </mat-accordion>`,
+})
 class SetOfItems {
   @ViewChild(MatAccordion) accordion: MatAccordion;
   @ViewChildren(MatExpansionPanel) panels: QueryList<MatExpansionPanel>;
@@ -322,7 +319,8 @@ class SetOfItems {
   multi: boolean = false;
 }
 
-@Component({template: `
+@Component({
+  template: `
   <mat-accordion>
     <mat-expansion-panel>
       <mat-expansion-panel-header>Summary 0</mat-expansion-panel-header>
@@ -338,14 +336,16 @@ class SetOfItems {
       <mat-expansion-panel-header #secondOuterHeader>Summary 1</mat-expansion-panel-header>
       Content 1
     </mat-expansion-panel>
-  </mat-accordion>`})
+  </mat-accordion>`,
+})
 class NestedAccordions {
   @ViewChildren(MatExpansionPanelHeader) headers: QueryList<MatExpansionPanelHeader>;
   @ViewChild('secondOuterHeader') secondOuterHeader: MatExpansionPanelHeader;
   @ViewChild('firstInnerHeader') firstInnerHeader: MatExpansionPanelHeader;
 }
 
-@Component({template: `
+@Component({
+  template: `
   <mat-accordion>
     <mat-expansion-panel #outerPanel="matExpansionPanel">
       <mat-expansion-panel-header>Outer Panel</mat-expansion-panel-header>
@@ -354,32 +354,34 @@ class NestedAccordions {
         <p>Content</p>
       </mat-expansion-panel>
     </mat-expansion-panel>
-  </mat-accordion>`})
+  </mat-accordion>`,
+})
 class NestedPanel {
   @ViewChild('outerPanel') outerPanel: MatExpansionPanel;
   @ViewChild('innerPanel') innerPanel: MatExpansionPanel;
 }
 
-@Component({template: `
+@Component({
+  template: `
   <mat-accordion [hideToggle]="hideToggle">
     <mat-expansion-panel>
       <mat-expansion-panel-header>Header</mat-expansion-panel-header>
       <p>Content</p>
     </mat-expansion-panel>
-  </mat-accordion>`
+  </mat-accordion>`,
 })
 class AccordionWithHideToggle {
   hideToggle = false;
 }
 
-
-@Component({template: `
+@Component({
+  template: `
   <mat-accordion [togglePosition]="togglePosition">
     <mat-expansion-panel>
       <mat-expansion-panel-header>Header</mat-expansion-panel-header>
       <p>Content</p>
     </mat-expansion-panel>
-  </mat-accordion>`
+  </mat-accordion>`,
 })
 class AccordionWithTogglePosition {
   togglePosition = 'after';

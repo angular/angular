@@ -13,7 +13,7 @@ export class CdkDragDropDisabledExample {
   items = [
     {value: 'I can be dragged', disabled: false},
     {value: 'I cannot be dragged', disabled: true},
-    {value: 'I can also be dragged', disabled: false}
+    {value: 'I can also be dragged', disabled: false},
   ];
 
   drop(event: CdkDragDrop<string[]>) {

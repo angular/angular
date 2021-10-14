@@ -10,8 +10,5 @@ import {FormControl, Validators} from '@angular/forms';
   styleUrls: ['input-errors-example.css'],
 })
 export class InputErrorsExample {
-  emailFormControl = new FormControl('', [
-    Validators.required,
-    Validators.email,
-  ]);
+  emailFormControl = new FormControl('', [Validators.required, Validators.email]);
 }

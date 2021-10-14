@@ -28,14 +28,15 @@ export interface RepositionScrollStrategyConfig {
  * Strategy that will update the element position as the user is scrolling.
  */
 export class RepositionScrollStrategy implements ScrollStrategy {
-  private _scrollSubscription: Subscription|null = null;
+  private _scrollSubscription: Subscription | null = null;
   private _overlayRef: OverlayReference;
 
   constructor(
     private _scrollDispatcher: ScrollDispatcher,
     private _viewportRuler: ViewportRuler,
     private _ngZone: NgZone,
-    private _config?: RepositionScrollStrategyConfig) { }
+    private _config?: RepositionScrollStrategyConfig,
+  ) {}
 
   /** Attaches this scroll strategy to an overlay. */
   attach(overlayRef: OverlayReference) {

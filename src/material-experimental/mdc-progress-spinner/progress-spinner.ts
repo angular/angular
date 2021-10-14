@@ -16,25 +16,27 @@ import {
   OnDestroy,
   Optional,
   ViewChild,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
 import {
   MDCCircularProgressAdapter,
-  MDCCircularProgressFoundation
+  MDCCircularProgressFoundation,
 } from '@material/circular-progress';
 import {CanColor, mixinColor} from '@angular/material-experimental/mdc-core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {
   MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS,
-  MatProgressSpinnerDefaultOptions
+  MatProgressSpinnerDefaultOptions,
 } from '@angular/material/progress-spinner';
 import {coerceNumberProperty, NumberInput} from '@angular/cdk/coercion';
 
 // Boilerplate for applying mixins to MatProgressBar.
-const _MatProgressSpinnerBase = mixinColor(class {
-  constructor(public _elementRef: ElementRef) {
-  }
-}, 'primary');
+const _MatProgressSpinnerBase = mixinColor(
+  class {
+    constructor(public _elementRef: ElementRef) {}
+  },
+  'primary',
+);
 
 /** Possible mode for a progress spinner. */
 export type ProgressSpinnerMode = 'determinate' | 'indeterminate';
@@ -72,9 +74,10 @@ const BASE_STROKE_WIDTH = 10;
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class MatProgressSpinner extends _MatProgressSpinnerBase implements AfterViewInit,
-  OnDestroy, CanColor {
-
+export class MatProgressSpinner
+  extends _MatProgressSpinnerBase
+  implements AfterViewInit, OnDestroy, CanColor
+{
   /** Whether the _mat-animation-noopable class should be applied, disabling animations.  */
   _noopAnimations: boolean;
 
@@ -106,13 +109,15 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements After
       this._determinateCircle.nativeElement.setAttribute(attributeName, value),
   };
 
-  constructor(elementRef: ElementRef<HTMLElement>,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode: string,
-              @Inject(MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS)
-                defaults?: MatProgressSpinnerDefaultOptions) {
+  constructor(
+    elementRef: ElementRef<HTMLElement>,
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode: string,
+    @Inject(MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS)
+    defaults?: MatProgressSpinnerDefaultOptions,
+  ) {
     super(elementRef);
-    this._noopAnimations = animationMode === 'NoopAnimations' &&
-      (!!defaults && !defaults._forceAnimations);
+    this._noopAnimations =
+      animationMode === 'NoopAnimations' && !!defaults && !defaults._forceAnimations;
 
     if (defaults) {
       if (defaults.diameter) {
@@ -125,8 +130,10 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements After
     }
   }
 
-  private _mode: ProgressSpinnerMode = this._elementRef.nativeElement.nodeName.toLowerCase() ===
-  'mat-spinner' ? 'indeterminate' : 'determinate';
+  private _mode: ProgressSpinnerMode =
+    this._elementRef.nativeElement.nodeName.toLowerCase() === 'mat-spinner'
+      ? 'indeterminate'
+      : 'determinate';
 
   /**
    * Mode of the progress bar.
@@ -136,7 +143,9 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements After
    * Mirrored to mode attribute.
    */
   @Input()
-  get mode(): ProgressSpinnerMode { return this._mode; }
+  get mode(): ProgressSpinnerMode {
+    return this._mode;
+  }
 
   set mode(value: ProgressSpinnerMode) {
     this._mode = value;
@@ -200,14 +209,14 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements After
   /** The dash offset of the svg circle. */
   _strokeDashOffset() {
     if (this.mode === 'determinate') {
-      return this._strokeCircumference() * (100 - this._value) / 100;
+      return (this._strokeCircumference() * (100 - this._value)) / 100;
     }
     return null;
   }
 
   /** Stroke width of the circle in percent. */
   _circleStrokeWidth() {
-    return this.strokeWidth / this.diameter * 100;
+    return (this.strokeWidth / this.diameter) * 100;
   }
 
   ngAfterViewInit() {

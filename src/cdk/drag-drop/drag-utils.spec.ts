@@ -4,7 +4,7 @@ describe('dragging utilities', () => {
   describe('moveItemInArray', () => {
     let array: number[];
 
-    beforeEach(() => array = [0, 1, 2, 3]);
+    beforeEach(() => (array = [0, 1, 2, 3]));
 
     it('should be able to move an item inside an array', () => {
       moveItemInArray(array, 1, 3);
@@ -64,7 +64,6 @@ describe('dragging utilities', () => {
       expect(a).toEqual([]);
       expect(b).toEqual([3, 4, 5]);
     });
-
   });
 
   describe('copyArrayItem', () => {
@@ -73,7 +72,7 @@ describe('dragging utilities', () => {
       const b = [3, 4, 5];
 
       copyArrayItem(a, b, 1, 2);
-      expect(a).toEqual([0, 1, 2 ]);
+      expect(a).toEqual([0, 1, 2]);
       expect(b).toEqual([3, 4, 1, 5]);
     });
 
@@ -104,7 +103,5 @@ describe('dragging utilities', () => {
       expect(a).toEqual([]);
       expect(b).toEqual([3, 4, 5]);
     });
-
   });
-
 });

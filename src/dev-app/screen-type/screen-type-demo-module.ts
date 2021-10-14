@@ -24,5 +24,4 @@ import {ScreenTypeDemo} from './screen-type-demo';
   ],
   declarations: [ScreenTypeDemo],
 })
-export class ScreenTypeDemoModule {
-}
+export class ScreenTypeDemoModule {}

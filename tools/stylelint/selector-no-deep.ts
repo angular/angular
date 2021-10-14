@@ -8,7 +8,6 @@ const messages = utils.ruleMessages(ruleName, {
   expected: selector => `Usage of the /deep/ in "${selector}" is not allowed`,
 });
 
-
 /**
  * Stylelint plugin that prevents uses of /deep/ in selectors.
  */
@@ -19,16 +18,17 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean) => {
     }
 
     root.walkRules(rule => {
-      if (rule.parent.type === 'rule' &&
-          isStandardSyntaxRule(rule) &&
-          isStandardSyntaxSelector(rule.selector) &&
-          rule.selector.includes('/deep/')) {
-
+      if (
+        rule.parent.type === 'rule' &&
+        isStandardSyntaxRule(rule) &&
+        isStandardSyntaxSelector(rule.selector) &&
+        rule.selector.includes('/deep/')
+      ) {
         utils.report({
           result,
           ruleName,
           message: messages.expected(rule.selector),
-          node: rule
+          node: rule,
         });
       }
     });

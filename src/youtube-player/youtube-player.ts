@@ -88,7 +88,7 @@ interface PendingPlayerState {
   playbackRate?: number;
   volume?: number;
   muted?: boolean;
-  seek?: {seconds: number, allowSeekAhead: boolean};
+  seek?: {seconds: number; allowSeekAhead: boolean};
 }
 
 /**
@@ -115,7 +115,9 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
 
   /** YouTube Video ID to view */
   @Input()
-  get videoId(): string | undefined { return this._videoId.value; }
+  get videoId(): string | undefined {
+    return this._videoId.value;
+  }
   set videoId(videoId: string | undefined) {
     this._videoId.next(videoId);
   }
@@ -123,7 +125,9 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
 
   /** Height of video player */
   @Input()
-  get height(): number | undefined { return this._height.value; }
+  get height(): number | undefined {
+    return this._height.value;
+  }
   set height(height: number | undefined) {
     this._height.next(height || DEFAULT_PLAYER_HEIGHT);
   }
@@ -131,7 +135,9 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
 
   /** Width of video player */
   @Input()
-  get width(): number | undefined { return this._width.value; }
+  get width(): number | undefined {
+    return this._width.value;
+  }
   set width(width: number | undefined) {
     this._width.next(width || DEFAULT_PLAYER_WIDTH);
   }
@@ -156,15 +162,18 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   set suggestedQuality(suggestedQuality: YT.SuggestedVideoQuality | undefined) {
     this._suggestedQuality.next(suggestedQuality);
   }
-  private readonly _suggestedQuality =
-    new BehaviorSubject<YT.SuggestedVideoQuality | undefined>(undefined);
+  private readonly _suggestedQuality = new BehaviorSubject<YT.SuggestedVideoQuality | undefined>(
+    undefined,
+  );
 
   /**
    * Extra parameters used to configure the player. See:
    * https://developers.google.com/youtube/player_parameters.html?playerVersion=HTML5#Parameters
    */
   @Input()
-  get playerVars(): YT.PlayerVars | undefined { return this._playerVars.value; }
+  get playerVars(): YT.PlayerVars | undefined {
+    return this._playerVars.value;
+  }
   set playerVars(playerVars: YT.PlayerVars | undefined) {
     this._playerVars.next(playerVars);
   }
@@ -179,22 +188,22 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
 
   /** Outputs are direct proxies from the player itself. */
   @Output() readonly ready: Observable<YT.PlayerEvent> =
-      this._getLazyEmitter<YT.PlayerEvent>('onReady');
+    this._getLazyEmitter<YT.PlayerEvent>('onReady');
 
   @Output() readonly stateChange: Observable<YT.OnStateChangeEvent> =
-      this._getLazyEmitter<YT.OnStateChangeEvent>('onStateChange');
+    this._getLazyEmitter<YT.OnStateChangeEvent>('onStateChange');
 
   @Output() readonly error: Observable<YT.OnErrorEvent> =
-      this._getLazyEmitter<YT.OnErrorEvent>('onError');
+    this._getLazyEmitter<YT.OnErrorEvent>('onError');
 
   @Output() readonly apiChange: Observable<YT.PlayerEvent> =
-      this._getLazyEmitter<YT.PlayerEvent>('onApiChange');
+    this._getLazyEmitter<YT.PlayerEvent>('onApiChange');
 
   @Output() readonly playbackQualityChange: Observable<YT.OnPlaybackQualityChangeEvent> =
-      this._getLazyEmitter<YT.OnPlaybackQualityChangeEvent>('onPlaybackQualityChange');
+    this._getLazyEmitter<YT.OnPlaybackQualityChangeEvent>('onPlaybackQualityChange');
 
   @Output() readonly playbackRateChange: Observable<YT.OnPlaybackRateChangeEvent> =
-      this._getLazyEmitter<YT.OnPlaybackRateChangeEvent>('onPlaybackRateChange');
+    this._getLazyEmitter<YT.OnPlaybackRateChangeEvent>('onPlaybackRateChange');
 
   /** The element that will be replaced by the iframe. */
   @ViewChild('youtubeContainer')
@@ -213,9 +222,11 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
     let iframeApiAvailableObs: Observable<boolean> = observableOf(true);
     if (!window.YT || !window.YT.Player) {
       if (this.showBeforeIframeApiLoads && (typeof ngDevMode === 'undefined' || ngDevMode)) {
-        throw new Error('Namespace YT not found, cannot construct embedded youtube player. ' +
+        throw new Error(
+          'Namespace YT not found, cannot construct embedded youtube player. ' +
             'Please install the YouTube Player API Reference for iframe Embeds: ' +
-            'https://developers.google.com/youtube/iframe_api_reference');
+            'https://developers.google.com/youtube/iframe_api_reference',
+        );
       }
 
       const iframeApiAvailableSubject = new Subject<boolean>();
@@ -231,25 +242,29 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
     }
 
     // An observable of the currently loaded player.
-    const playerObs =
-      createPlayerObservable(
-        this._youtubeContainer,
-        this._videoId,
-        iframeApiAvailableObs,
-        this._width,
-        this._height,
-        this._playerVars,
-        this._ngZone
-      ).pipe(tap(player => {
+    const playerObs = createPlayerObservable(
+      this._youtubeContainer,
+      this._videoId,
+      iframeApiAvailableObs,
+      this._width,
+      this._height,
+      this._playerVars,
+      this._ngZone,
+    ).pipe(
+      tap(player => {
         // Emit this before the `waitUntilReady` call so that we can bind to
         // events that happen as the player is being initialized (e.g. `onReady`).
         this._playerChanges.next(player);
-      }), waitUntilReady(player => {
+      }),
+      waitUntilReady(player => {
         // Destroy the player if loading was aborted so that we don't end up leaking memory.
         if (!playerIsReady(player)) {
           player.destroy();
         }
-      }), takeUntil(this._destroyed), publish());
+      }),
+      takeUntil(this._destroyed),
+      publish(),
+    );
 
     // Set up side effects to bind inputs to the player.
     playerObs.subscribe(player => {
@@ -272,7 +287,8 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
       this._startSeconds,
       this._endSeconds,
       this._suggestedQuality,
-      this._destroyed);
+      this._destroyed,
+    );
 
     // After all of the subscriptions are set up, connect the observable.
     (playerObs as ConnectableObservable<Player>).connect();
@@ -492,9 +508,15 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
     const {playbackState, playbackRate, volume, muted, seek} = state;
 
     switch (playbackState) {
-      case YT.PlayerState.PLAYING: player.playVideo(); break;
-      case YT.PlayerState.PAUSED: player.pauseVideo(); break;
-      case YT.PlayerState.CUED: player.stopVideo(); break;
+      case YT.PlayerState.PLAYING:
+        player.playVideo();
+        break;
+      case YT.PlayerState.PAUSED:
+        player.pauseVideo();
+        break;
+      case YT.PlayerState.CUED:
+        player.stopVideo();
+        break;
     }
 
     if (playbackRate != null) {
@@ -522,28 +544,36 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
       // Switch to the bound event. `switchMap` ensures that the old event is removed when the
       // player is changed. If there's no player, return an observable that never emits.
       switchMap(player => {
-        return player ? fromEventPattern<T>((listener: (event: T) => void) => {
-          player.addEventListener(name, listener);
-        }, (listener: (event: T) => void) => {
-          // The API seems to throw when we try to unbind from a destroyed player and it doesn't
-          // expose whether the player has been destroyed so we have to wrap it in a try/catch to
-          // prevent the entire stream from erroring out.
-          try {
-            if ((player as Player).removeEventListener!) {
-              (player as Player).removeEventListener(name, listener);
-            }
-          } catch {}
-        }) : observableOf<T>();
+        return player
+          ? fromEventPattern<T>(
+              (listener: (event: T) => void) => {
+                player.addEventListener(name, listener);
+              },
+              (listener: (event: T) => void) => {
+                // The API seems to throw when we try to unbind from a destroyed player and it doesn't
+                // expose whether the player has been destroyed so we have to wrap it in a try/catch to
+                // prevent the entire stream from erroring out.
+                try {
+                  if ((player as Player).removeEventListener!) {
+                    (player as Player).removeEventListener(name, listener);
+                  }
+                } catch {}
+              },
+            )
+          : observableOf<T>();
       }),
       // By default we run all the API interactions outside the zone
       // so we have to bring the events back in manually when they emit.
-      (source: Observable<T>) => new Observable<T>(observer => source.subscribe({
-        next: value => this._ngZone.run(() => observer.next(value)),
-        error: error => observer.error(error),
-        complete: () => observer.complete()
-      })),
+      (source: Observable<T>) =>
+        new Observable<T>(observer =>
+          source.subscribe({
+            next: value => this._ngZone.run(() => observer.next(value)),
+            error: error => observer.error(error),
+            complete: () => observer.complete(),
+          }),
+        ),
       // Ensures that everything is cleared out on destroy.
-      takeUntil(this._destroyed)
+      takeUntil(this._destroyed),
     );
   }
 }
@@ -552,23 +582,22 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
 function bindSizeToPlayer(
   playerObs: Observable<YT.Player | undefined>,
   widthObs: Observable<number>,
-  heightObs: Observable<number>
+  heightObs: Observable<number>,
 ) {
-  return combineLatest([playerObs, widthObs, heightObs])
-      .subscribe(([player, width, height]) => player && player.setSize(width, height));
+  return combineLatest([playerObs, widthObs, heightObs]).subscribe(
+    ([player, width, height]) => player && player.setSize(width, height),
+  );
 }
 
 /** Listens to changes from the suggested quality and sets it on the given player. */
 function bindSuggestedQualityToPlayer(
   playerObs: Observable<YT.Player | undefined>,
-  suggestedQualityObs: Observable<YT.SuggestedVideoQuality | undefined>
+  suggestedQualityObs: Observable<YT.SuggestedVideoQuality | undefined>,
 ) {
-  return combineLatest([
-    playerObs,
-    suggestedQualityObs
-  ]).subscribe(
+  return combineLatest([playerObs, suggestedQualityObs]).subscribe(
     ([player, suggestedQuality]) =>
-        player && suggestedQuality && player.setPlaybackQuality(suggestedQuality));
+      player && suggestedQuality && player.setPlaybackQuality(suggestedQuality),
+  );
 }
 
 /**
@@ -577,11 +606,12 @@ function bindSuggestedQualityToPlayer(
  * @param onAbort Callback function that will be invoked if the player loading was aborted before
  * it was able to complete. Can be used to clean up any loose references.
  */
-function waitUntilReady(onAbort: (player: UninitializedPlayer) => void):
-  OperatorFunction<UninitializedPlayer | undefined, Player | undefined> {
+function waitUntilReady(
+  onAbort: (player: UninitializedPlayer) => void,
+): OperatorFunction<UninitializedPlayer | undefined, Player | undefined> {
   return mergeMap(player => {
     if (!player) {
-      return observableOf<Player|undefined>(undefined);
+      return observableOf<Player | undefined>(undefined);
     }
     if (playerIsReady(player)) {
       return observableOf(player as Player);
@@ -622,23 +652,22 @@ function createPlayerObservable(
   widthObs: Observable<number>,
   heightObs: Observable<number>,
   playerVarsObs: Observable<YT.PlayerVars | undefined>,
-  ngZone: NgZone
+  ngZone: NgZone,
 ): Observable<UninitializedPlayer | undefined> {
-
   const playerOptions = combineLatest([videoIdObs, playerVarsObs]).pipe(
     withLatestFrom(combineLatest([widthObs, heightObs])),
     map(([constructorOptions, sizeOptions]) => {
       const [videoId, playerVars] = constructorOptions;
       const [width, height] = sizeOptions;
-      return videoId ? ({ videoId, playerVars, width, height }) : undefined;
+      return videoId ? {videoId, playerVars, width, height} : undefined;
     }),
   );
 
-  return combineLatest([youtubeContainer, playerOptions, of(ngZone)])
-      .pipe(
-        skipUntilRememberLatest(iframeApiAvailableObs),
-        scan(syncPlayerState, undefined),
-        distinctUntilChanged());
+  return combineLatest([youtubeContainer, playerOptions, of(ngZone)]).pipe(
+    skipUntilRememberLatest(iframeApiAvailableObs),
+    scan(syncPlayerState, undefined),
+    distinctUntilChanged(),
+  );
 }
 
 /** Skips the given observable until the other observable emits true, then emit the latest. */
@@ -646,7 +675,8 @@ function skipUntilRememberLatest<T>(notifier: Observable<boolean>): MonoTypeOper
   return pipe(
     combineLatestOp(notifier),
     skipWhile(([_, doneSkipping]) => !doneSkipping),
-    map(([value]) => value));
+    map(([value]) => value),
+  );
 }
 
 /** Destroy the player if there are no options, or create the player if there are options. */
@@ -669,8 +699,9 @@ function syncPlayerState(
 
   // Important! We need to create the Player object outside of the `NgZone`, because it kicks
   // off a 250ms setInterval which will continually trigger change detection if we don't.
-  const newPlayer: UninitializedPlayer =
-      ngZone.runOutsideAngular(() => new YT.Player(container, videoOptions));
+  const newPlayer: UninitializedPlayer = ngZone.runOutsideAngular(
+    () => new YT.Player(container, videoOptions),
+  );
   newPlayer.videoId = videoOptions.videoId;
   newPlayer.playerVars = videoOptions.playerVars;
   return newPlayer;
@@ -689,25 +720,30 @@ function bindCueVideoCall(
   suggestedQualityObs: Observable<YT.SuggestedVideoQuality | undefined>,
   destroyed: Observable<void>,
 ) {
-  const cueOptionsObs = combineLatest([startSecondsObs, endSecondsObs])
-    .pipe(map(([startSeconds, endSeconds]) => ({startSeconds, endSeconds})));
+  const cueOptionsObs = combineLatest([startSecondsObs, endSecondsObs]).pipe(
+    map(([startSeconds, endSeconds]) => ({startSeconds, endSeconds})),
+  );
 
   // Only respond to changes in cue options if the player is not running.
-  const filteredCueOptions = cueOptionsObs
-    .pipe(filterOnOther(playerObs, player => !!player && !hasPlayerStarted(player)));
+  const filteredCueOptions = cueOptionsObs.pipe(
+    filterOnOther(playerObs, player => !!player && !hasPlayerStarted(player)),
+  );
 
   // If the video id changed, there's no reason to run 'cue' unless the player
   // was initialized with a different video id.
-  const changedVideoId = videoIdObs
-      .pipe(filterOnOther(playerObs, (player, videoId) => !!player && player.videoId !== videoId));
+  const changedVideoId = videoIdObs.pipe(
+    filterOnOther(playerObs, (player, videoId) => !!player && player.videoId !== videoId),
+  );
 
   // If the player changed, there's no reason to run 'cue' unless there are cue options.
   const changedPlayer = playerObs.pipe(
     filterOnOther(
       combineLatest([videoIdObs, cueOptionsObs]),
       ([videoId, cueOptions], player) =>
-          !!player &&
-            (videoId != player.videoId || !!cueOptions.startSeconds || !!cueOptions.endSeconds)));
+        !!player &&
+        (videoId != player.videoId || !!cueOptions.startSeconds || !!cueOptions.endSeconds),
+    ),
+  );
 
   merge(changedPlayer, changedVideoId, filteredCueOptions)
     .pipe(

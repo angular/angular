@@ -31,13 +31,13 @@ export class MatAutocompleteHarness extends _MatAutocompleteHarnessBase<typeof M
 }
 
 // @public (undocumented)
-export abstract class _MatAutocompleteHarnessBase<OptionType extends (ComponentHarnessConstructor<Option> & {
+export abstract class _MatAutocompleteHarnessBase<OptionType extends ComponentHarnessConstructor<Option> & {
     with: (options?: OptionFilters) => HarnessPredicate<Option>;
-}), Option extends ComponentHarness & {
+}, Option extends ComponentHarness & {
     click(): Promise<void>;
-}, OptionFilters extends BaseHarnessFilters, OptionGroupType extends (ComponentHarnessConstructor<OptionGroup> & {
+}, OptionFilters extends BaseHarnessFilters, OptionGroupType extends ComponentHarnessConstructor<OptionGroup> & {
     with: (options?: OptionGroupFilters) => HarnessPredicate<OptionGroup>;
-}), OptionGroup extends ComponentHarness, OptionGroupFilters extends BaseHarnessFilters> extends ComponentHarness {
+}, OptionGroup extends ComponentHarness, OptionGroupFilters extends BaseHarnessFilters> extends ComponentHarness {
     blur(): Promise<void>;
     enterText(value: string): Promise<void>;
     focus(): Promise<void>;

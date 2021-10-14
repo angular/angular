@@ -7,12 +7,8 @@
  */
 
 import {NgModule} from '@angular/core';
-import {
-  CdkPopoverEditExamplesModule
-} from '@angular/components-examples/cdk-experimental/popover-edit';
-import {
-  PopoverEditExamplesModule
-} from '@angular/components-examples/material-experimental/popover-edit';
+import {CdkPopoverEditExamplesModule} from '@angular/components-examples/cdk-experimental/popover-edit';
+import {PopoverEditExamplesModule} from '@angular/components-examples/material-experimental/popover-edit';
 import {FormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
 import {PopoverEditDemo} from './popover-edit-demo';
@@ -26,5 +22,4 @@ import {PopoverEditDemo} from './popover-edit-demo';
   ],
   declarations: [PopoverEditDemo],
 })
-export class PopoverEditDemoModule {
-}
+export class PopoverEditDemoModule {}

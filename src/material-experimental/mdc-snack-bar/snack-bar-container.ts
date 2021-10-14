@@ -11,7 +11,7 @@ import {
   BasePortalOutlet,
   CdkPortalOutlet,
   ComponentPortal,
-  TemplatePortal
+  TemplatePortal,
 } from '@angular/cdk/portal';
 import {
   AfterViewChecked,
@@ -25,7 +25,7 @@ import {
   OnDestroy,
   Optional,
   ViewChild,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
 import {MatSnackBarConfig, _SnackBarContainer} from '@angular/material/snack-bar';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
@@ -61,10 +61,12 @@ const MDC_SNACKBAR_LABEL_CLASS = 'mdc-snackbar__label';
     // test harness.
     '[attr.mat-exit]': `_exiting ? '' : null`,
     '[class._mat-animation-noopable]': `_animationMode === 'NoopAnimations'`,
-  }
+  },
 })
-export class MatSnackBarContainer extends BasePortalOutlet
-    implements _SnackBarContainer, AfterViewChecked, OnDestroy {
+export class MatSnackBarContainer
+  extends BasePortalOutlet
+  implements _SnackBarContainer, AfterViewChecked, OnDestroy
+{
   /** The number of milliseconds to wait before announcing the snack bar's content. */
   private readonly _announceDelay: number = 150;
 
@@ -121,11 +123,12 @@ export class MatSnackBarContainer extends BasePortalOutlet
   @ViewChild('label', {static: true}) _label: ElementRef;
 
   constructor(
-      private _elementRef: ElementRef<HTMLElement>,
-      public snackBarConfig: MatSnackBarConfig,
-      private _platform: Platform,
-      private _ngZone: NgZone,
-      @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
+    private _elementRef: ElementRef<HTMLElement>,
+    public snackBarConfig: MatSnackBarConfig,
+    private _platform: Platform,
+    private _ngZone: NgZone,
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
+  ) {
     super();
 
     // Use aria-live rather than a live role like 'alert' or 'status'
@@ -242,8 +245,10 @@ export class MatSnackBarContainer extends BasePortalOutlet
             // If an element in the snack bar content is focused before being moved
             // track it and restore focus after moving to the live region.
             let focusedElement: HTMLElement | null = null;
-            if (document.activeElement instanceof HTMLElement &&
-                inertElement.contains(document.activeElement)) {
+            if (
+              document.activeElement instanceof HTMLElement &&
+              inertElement.contains(document.activeElement)
+            ) {
               focusedElement = document.activeElement;
             }
 

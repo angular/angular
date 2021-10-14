@@ -54,10 +54,12 @@ async function main() {
 function applyPatches() {
   // Workaround for: https://github.com/angular/angular/pull/32650
   searchAndReplace(
-      'let resolvedEntryPoint = null;', `
+    'let resolvedEntryPoint = null;',
+    `
     let resolvedEntryPoint = tsFiles.find(f => f.endsWith('/public-api.ts')) || null;
   `,
-      'node_modules/@angular/compiler-cli/bundles/index.js');
+    'node_modules/@angular/compiler-cli/bundles/index.js',
+  );
 
   // Switches the devmode output for Angular Bazel to ES2020 target and module.
   applyPatch(path.join(__dirname, './devmode-es2020-bazel.patch'));
@@ -106,7 +108,7 @@ function applyPatches() {
     const patchFunctions = PATCHES_PER_FILE[filePath];
 
     console.info(`Patching file ${filePath} with ${patchFunctions.length} edits..`);
-    patchFunctions.forEach(patchFn => content = patchFn(content));
+    patchFunctions.forEach(patchFn => (content = patchFn(content)));
 
     fs.writeFileSync(filePath, content, 'utf8');
     captureFileAsPatched(filePath);
@@ -140,8 +142,8 @@ function searchAndReplace(search, replacement, relativeFilePath) {
     const newFileContent = originalContent.replace(search, replacement);
     if (originalContent === newFileContent) {
       throw Error(
-          `Could not perform replacement in: ${filePath}.\n` +
-          `Searched for pattern: ${search}`);
+        `Could not perform replacement in: ${filePath}.\n` + `Searched for pattern: ${search}`,
+      );
     }
     return newFileContent;
   });
@@ -195,12 +197,14 @@ async function readAndValidatePatchMarker() {
   // Do not prompt if there is no TTY. Inquirer does not skip in non-tty environments.
   // TODO: Remove once inquirer has been updated to v8.x where TTY is respected.
   if (process.stdin.isTTY) {
-    cleanupModules = (await inquirer.prompt({
-      name: 'result',
-      type: 'confirm',
-      message: 'Clean up node modules automatically?',
-      default: false
-    })).result;
+    cleanupModules = (
+      await inquirer.prompt({
+        name: 'result',
+        type: 'confirm',
+        message: 'Clean up node modules automatically?',
+        default: false,
+      })
+    ).result;
   }
 
   if (cleanupModules) {

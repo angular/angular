@@ -15,14 +15,14 @@ describe('ListHarnessExample', () => {
 
   beforeAll(() => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
-      teardown: {destroyAfterEach: true}
+      teardown: {destroyAfterEach: true},
     });
   });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MatListModule],
-      declarations: [ListHarnessExample]
+      declarations: [ListHarnessExample],
     }).compileComponents();
     fixture = TestBed.createComponent(ListHarnessExample);
     fixture.detectChanges();
@@ -32,8 +32,11 @@ describe('ListHarnessExample', () => {
   it('should get all items', async () => {
     const list = await loader.getHarness(MatListHarness);
     const items = await list.getItems();
-    expect(await parallel(() => items.map(i => i.getText())))
-      .toEqual(['Item 1', 'Item 2', 'Item 3']);
+    expect(await parallel(() => items.map(i => i.getText()))).toEqual([
+      'Item 1',
+      'Item 2',
+      'Item 3',
+    ]);
   });
 
   it('should get all items matching text', async () => {
@@ -49,8 +52,10 @@ describe('ListHarnessExample', () => {
     expect(sections[0].heading).toBeUndefined();
     expect(await parallel(() => sections[0].items.map(i => i.getText()))).toEqual(['Item 1']);
     expect(sections[1].heading).toBe('Section 1');
-    expect(await parallel(() => sections[1].items.map(i => i.getText())))
-      .toEqual(['Item 2', 'Item 3']);
+    expect(await parallel(() => sections[1].items.map(i => i.getText()))).toEqual([
+      'Item 2',
+      'Item 3',
+    ]);
     expect(sections[2].heading).toBe('Section 2');
     expect(sections[2].items.length).toEqual(0);
   });

@@ -34,8 +34,8 @@ export class AttributeSelectorsMigration extends Migration<UpgradeData> {
   override visitTemplate(template: ResolvedResource) {
     this.data.forEach(selector => {
       findAllSubstringIndices(template.content, selector.replace)
-          .map(offset => template.start + offset)
-          .forEach(start => this._replaceSelector(template.filePath, start, selector));
+        .map(offset => template.start + offset)
+        .forEach(start => this._replaceSelector(template.filePath, start, selector));
     });
   }
 
@@ -45,11 +45,13 @@ export class AttributeSelectorsMigration extends Migration<UpgradeData> {
       const updatedSelector = `[${selector.replaceWith}]`;
 
       findAllSubstringIndices(stylesheet.content, currentSelector)
-          .map(offset => stylesheet.start + offset)
-          .forEach(
-              start => this._replaceSelector(
-                  stylesheet.filePath, start,
-                  {replace: currentSelector, replaceWith: updatedSelector}));
+        .map(offset => stylesheet.start + offset)
+        .forEach(start =>
+          this._replaceSelector(stylesheet.filePath, start, {
+            replace: currentSelector,
+            replaceWith: updatedSelector,
+          }),
+        );
     });
   }
 
@@ -63,14 +65,18 @@ export class AttributeSelectorsMigration extends Migration<UpgradeData> {
 
     this.data.forEach(selector => {
       findAllSubstringIndices(literalText, selector.replace)
-          .map(offset => literal.getStart() + offset)
-          .forEach(start => this._replaceSelector(filePath, start, selector));
+        .map(offset => literal.getStart() + offset)
+        .forEach(start => this._replaceSelector(filePath, start, selector));
     });
   }
 
-  private _replaceSelector(filePath: WorkspacePath, start: number,
-                           data: AttributeSelectorUpgradeData) {
-    this.fileSystem.edit(filePath)
+  private _replaceSelector(
+    filePath: WorkspacePath,
+    start: number,
+    data: AttributeSelectorUpgradeData,
+  ) {
+    this.fileSystem
+      .edit(filePath)
       .remove(start, data.replace.length)
       .insertRight(start, data.replaceWith);
   }

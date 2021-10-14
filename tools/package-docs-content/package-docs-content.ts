@@ -30,19 +30,18 @@ if (require.main === module) {
   // Process all file pairs that have been passed to this executable. Each argument will
   // consist of the input file path and the desired output location.
   getBazelActionArguments().forEach(argument => {
-      // Each argument that has been passed consists of an input file path and the expected
-      // output path. e.g. {path_to_input_file},{expected_output_path}
-      const [execFilePath, expectedOutput] = argument.split(',', 2);
+    // Each argument that has been passed consists of an input file path and the expected
+    // output path. e.g. {path_to_input_file},{expected_output_path}
+    const [execFilePath, expectedOutput] = argument.split(',', 2);
 
-      // Ensure the directory exists. Bazel does not create the tree
-      // artifact by default.
-       ensureDirSync(dirname(expectedOutput));
+    // Ensure the directory exists. Bazel does not create the tree
+    // artifact by default.
+    ensureDirSync(dirname(expectedOutput));
 
-      if (statSync(execFilePath).isDirectory()) {
-        copySync(execFilePath, expectedOutput);
-      } else {
-        writeFileSync(expectedOutput, readFileSync(execFilePath, 'utf8'));
-      }
-
+    if (statSync(execFilePath).isDirectory()) {
+      copySync(execFilePath, expectedOutput);
+    } else {
+      writeFileSync(expectedOutput, readFileSync(execFilePath, 'utf8'));
+    }
   });
 }

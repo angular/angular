@@ -8,7 +8,7 @@ describe('MapEventManager', () => {
 
   beforeEach(() => {
     dummyZone = {
-      run: jasmine.createSpy('NgZone.run').and.callFake((callback: () => void) => callback())
+      run: jasmine.createSpy('NgZone.run').and.callFake((callback: () => void) => callback()),
     } as unknown as NgZone;
     target = new TestEventTarget();
     manager = new MapEventManager(dummyZone);
@@ -141,15 +141,15 @@ describe('MapEventManager', () => {
     alternateTarget.triggerListeners('click');
     expect(spy).toHaveBeenCalledTimes(2);
   });
-
 });
 
 /** Imitates a Google Maps event target and keeps track of the registered events. */
 class TestEventTarget {
   events = new Map<string, Set<() => void>>();
 
-  addListener = jasmine.createSpy('addListener').and.callFake(
-    (name: string, listener: () => void) => {
+  addListener = jasmine
+    .createSpy('addListener')
+    .and.callFake((name: string, listener: () => void) => {
       if (!this.events.has(name)) {
         this.events.set(name, new Set());
       }

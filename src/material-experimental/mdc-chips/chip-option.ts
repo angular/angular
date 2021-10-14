@@ -15,12 +15,11 @@ import {
   Input,
   Output,
   ViewEncapsulation,
-  AfterContentInit
+  AfterContentInit,
 } from '@angular/core';
 import {deprecated} from '@material/chips';
 import {take} from 'rxjs/operators';
 import {MatChip} from './chip';
-
 
 /** Event object emitted by MatChipOption when selected or deselected. */
 export class MatChipSelectionChange {
@@ -30,7 +29,8 @@ export class MatChipSelectionChange {
     /** Whether the chip that emitted the event is selected. */
     public selected: boolean,
     /** Whether the selection change was a result of a user interaction. */
-    public isUserInput = false) { }
+    public isUserInput = false,
+  ) {}
 }
 
 /**
@@ -65,7 +65,6 @@ export class MatChipSelectionChange {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatChipOption extends MatChip implements AfterContentInit {
-
   /** Whether the chip list is selectable. */
   chipListSelectable: boolean = true;
 
@@ -108,8 +107,9 @@ export class MatChipOption extends MatChip implements AfterContentInit {
   get ariaSelected(): string | null {
     // Remove the `aria-selected` when the chip is deselected in single-selection mode, because
     // it adds noise to NVDA users where "not selected" will be read out for each chip.
-    return this.selectable && (this._chipListMultiple || this.selected) ?
-        this.selected.toString() : null;
+    return this.selectable && (this._chipListMultiple || this.selected)
+      ? this.selected.toString()
+      : null;
   }
 
   /** The unstyled chip selector for this component. */
@@ -117,7 +117,7 @@ export class MatChipOption extends MatChip implements AfterContentInit {
 
   /** Emitted when the chip is selected or deselected. */
   @Output() readonly selectionChange: EventEmitter<MatChipSelectionChange> =
-      new EventEmitter<MatChipSelectionChange>();
+    new EventEmitter<MatChipSelectionChange>();
 
   override ngAfterContentInit() {
     super.ngAfterContentInit();
@@ -173,7 +173,7 @@ export class MatChipOption extends MatChip implements AfterContentInit {
     this.selectionChange.emit({
       source: this,
       isUserInput,
-      selected: this.selected
+      selected: this.selected,
     });
   }
 
@@ -196,16 +196,13 @@ export class MatChipOption extends MatChip implements AfterContentInit {
     // earlier than usual, causing it to be blurred and throwing off the logic in the chip list
     // that moves focus not the next item. To work around the issue, we defer marking the chip
     // as not focused until the next time the zone stabilizes.
-    this._ngZone.onStable
-      .pipe(take(1))
-      .subscribe(() => {
-        this._ngZone.run(() => {
-          this._hasFocusInternal = false;
-          this._onBlur.next({chip: this});
-        });
+    this._ngZone.onStable.pipe(take(1)).subscribe(() => {
+      this._ngZone.run(() => {
+        this._hasFocusInternal = false;
+        this._onBlur.next({chip: this});
       });
+    });
   }
-
 
   /** Handles click events on the chip. */
   _click(event: MouseEvent) {

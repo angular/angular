@@ -45,5 +45,4 @@ const EXAMPLES = [
   exports: EXAMPLES,
   entryComponents: EXAMPLES,
 })
-export class TreeExamplesModule {
-}
+export class TreeExamplesModule {}

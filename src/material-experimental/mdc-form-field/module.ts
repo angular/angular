@@ -21,20 +21,8 @@ import {MatSuffix} from './directives/suffix';
 import {MatFormField} from './form-field';
 
 @NgModule({
-  imports: [
-    MatCommonModule,
-    CommonModule,
-    ObserversModule
-  ],
-  exports: [
-    MatFormField,
-    MatLabel,
-    MatHint,
-    MatError,
-    MatPrefix,
-    MatSuffix,
-    MatCommonModule
-  ],
+  imports: [MatCommonModule, CommonModule, ObserversModule],
+  exports: [MatFormField, MatLabel, MatHint, MatError, MatPrefix, MatSuffix, MatCommonModule],
   declarations: [
     MatFormField,
     MatLabel,
@@ -44,8 +32,7 @@ import {MatFormField} from './form-field';
     MatSuffix,
     MatFormFieldFloatingLabel,
     MatFormFieldNotchedOutline,
-    MatFormFieldLineRipple
+    MatFormFieldLineRipple,
   ],
 })
-export class MatFormFieldModule {
-}
+export class MatFormFieldModule {}

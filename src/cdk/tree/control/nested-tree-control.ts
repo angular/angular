@@ -18,8 +18,9 @@ export interface NestedTreeControlOptions<T, K> {
 export class NestedTreeControl<T, K = T> extends BaseTreeControl<T, K> {
   /** Construct with nested tree function getChildren. */
   constructor(
-      public override getChildren: (dataNode: T) => (Observable<T[]>| T[] | undefined | null),
-      public options?: NestedTreeControlOptions<T, K>) {
+    public override getChildren: (dataNode: T) => Observable<T[]> | T[] | undefined | null,
+    public options?: NestedTreeControlOptions<T, K>,
+  ) {
     super();
 
     if (this.options) {
@@ -35,8 +36,10 @@ export class NestedTreeControl<T, K = T> extends BaseTreeControl<T, K> {
    */
   expandAll(): void {
     this.expansionModel.clear();
-    const allNodes = this.dataNodes.reduce((accumulator: T[], dataNode) =>
-        [...accumulator, ...this.getDescendants(dataNode), dataNode], []);
+    const allNodes = this.dataNodes.reduce(
+      (accumulator: T[], dataNode) => [...accumulator, ...this.getDescendants(dataNode), dataNode],
+      [],
+    );
     this.expansionModel.select(...allNodes.map(node => this._trackByValue(node)));
   }
 
@@ -58,12 +61,11 @@ export class NestedTreeControl<T, K = T> extends BaseTreeControl<T, K> {
     } else if (isObservable(childrenNodes)) {
       // TypeScript as of version 3.5 doesn't seem to treat `Boolean` like a function that
       // returns a `boolean` specifically in the context of `filter`, so we manually clarify that.
-      childrenNodes.pipe(take(1), filter(Boolean as () => boolean))
-          .subscribe(children => {
-            for (const child of children) {
-              this._getDescendants(descendants, child);
-            }
-          });
+      childrenNodes.pipe(take(1), filter(Boolean as () => boolean)).subscribe(children => {
+        for (const child of children) {
+          this._getDescendants(descendants, child);
+        }
+      });
     }
   }
 }

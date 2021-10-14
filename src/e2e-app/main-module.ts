@@ -2,9 +2,7 @@ import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {RouterModule} from '@angular/router';
-import {
-  BlockScrollStrategyE2eModule
-} from './block-scroll-strategy/block-scroll-strategy-e2e-module';
+import {BlockScrollStrategyE2eModule} from './block-scroll-strategy/block-scroll-strategy-e2e-module';
 import {ButtonToggleE2eModule} from './button-toggle/button-toggle-e2e-module';
 import {ButtonE2eModule} from './button/button-e2e-module';
 import {CardE2eModule} from './card/card-e2e-module';
@@ -87,10 +85,7 @@ import {MdcProgressSpinnerE2eModule} from './mdc-progress-spinner/mdc-progress-s
     ToolbarE2eModule,
     VirtualScrollE2eModule,
   ],
-  declarations: [
-    E2eApp,
-  ],
+  declarations: [E2eApp],
   bootstrap: [E2eApp],
 })
-export class MainModule {
-}
+export class MainModule {}

@@ -14,8 +14,9 @@ import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
  * alternative token to the actual `CdkDropListGroup` class which could cause unnecessary
  * retention of the class and its directive metadata.
  */
-export const CDK_DROP_LIST_GROUP =
-    new InjectionToken<CdkDropListGroup<unknown>>('CdkDropListGroup');
+export const CDK_DROP_LIST_GROUP = new InjectionToken<CdkDropListGroup<unknown>>(
+  'CdkDropListGroup',
+);
 
 /**
  * Declaratively connects sibling `cdkDropList` instances together. All of the `cdkDropList`
@@ -34,7 +35,9 @@ export class CdkDropListGroup<T> implements OnDestroy {
 
   /** Whether starting a dragging sequence from inside this group is disabled. */
   @Input('cdkDropListGroupDisabled')
-  get disabled(): boolean { return this._disabled; }
+  get disabled(): boolean {
+    return this._disabled;
+  }
   set disabled(value: boolean) {
     this._disabled = coerceBooleanProperty(value);
   }

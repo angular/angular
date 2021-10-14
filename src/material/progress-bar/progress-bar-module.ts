@@ -11,7 +11,6 @@ import {CommonModule} from '@angular/common';
 import {MatCommonModule} from '@angular/material/core';
 import {MatProgressBar} from './progress-bar';
 
-
 @NgModule({
   imports: [CommonModule, MatCommonModule],
   exports: [MatProgressBar, MatCommonModule],

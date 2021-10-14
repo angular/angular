@@ -49,22 +49,22 @@ export class TableDataSource extends DataSource<any> {
   disconnect() {}
 }
 
-
 @Component({
-  template: `<button>Do the thing</button>`
+  template: `<button>Do the thing</button>`,
 })
 export class TestEntryComponent {}
-
 
 @Component({
   selector: 'kitchen-sink',
   templateUrl: './kitchen-sink.html',
-  styles: [`
+  styles: [
+    `
     .universal-viewport {
       height: 100px;
       border: 1px solid black;
     }
-  `]
+  `,
+  ],
 })
 export class KitchenSink {
   /** List of columns for the CDK and Material table. */
@@ -82,7 +82,8 @@ export class KitchenSink {
     viewportRuler: ViewportRuler,
     focusMonitor: FocusMonitor,
     elementRef: ElementRef<HTMLElement>,
-    bottomSheet: MatBottomSheet) {
+    bottomSheet: MatBottomSheet,
+  ) {
     focusMonitor.focusVia(elementRef, 'program');
     snackBar.open('Hello there');
     dialog.open(TestEntryComponent);
@@ -94,7 +95,6 @@ export class KitchenSink {
     viewportRuler.getViewportScrollPosition();
   }
 }
-
 
 @NgModule({
   imports: [
@@ -146,16 +146,17 @@ export class KitchenSink {
   declarations: [KitchenSink, TestEntryComponent],
   exports: [KitchenSink, TestEntryComponent],
   entryComponents: [TestEntryComponent],
-  providers: [{
-    // If an error is thrown asynchronously during server-side rendering it'll get logged to stderr,
-    // but it won't cause the build to fail. We still want to catch these errors so we provide an
-    // `ErrorHandler` that re-throws the error and causes the process to exit correctly.
-    provide: ErrorHandler,
-    useValue: {handleError: ERROR_HANDLER}
-  }]
+  providers: [
+    {
+      // If an error is thrown asynchronously during server-side rendering it'll get logged to stderr,
+      // but it won't cause the build to fail. We still want to catch these errors so we provide an
+      // `ErrorHandler` that re-throws the error and causes the process to exit correctly.
+      provide: ErrorHandler,
+      useValue: {handleError: ERROR_HANDLER},
+    },
+  ],
 })
-export class KitchenSinkModule {
-}
+export class KitchenSinkModule {}
 
 export function ERROR_HANDLER(error: Error) {
   throw error;

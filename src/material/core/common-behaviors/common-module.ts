@@ -64,9 +64,10 @@ export class MatCommonModule {
   protected _document: Document;
 
   constructor(
-      highContrastModeDetector: HighContrastModeDetector,
-      @Optional() @Inject(MATERIAL_SANITY_CHECKS) sanityChecks: any,
-      @Inject(DOCUMENT) document: any) {
+    highContrastModeDetector: HighContrastModeDetector,
+    @Optional() @Inject(MATERIAL_SANITY_CHECKS) sanityChecks: any,
+    @Inject(DOCUMENT) document: any,
+  ) {
     this._document = document;
 
     // While A11yModule also does this, we repeat it here to avoid importing A11yModule
@@ -106,7 +107,7 @@ export class MatCommonModule {
     if (this._checkIsEnabled('doctype') && !this._document.doctype) {
       console.warn(
         'Current document does not have a doctype. This may cause ' +
-        'some Angular Material components not to behave as expected.'
+          'some Angular Material components not to behave as expected.',
       );
     }
   }
@@ -114,8 +115,11 @@ export class MatCommonModule {
   private _checkThemeIsPresent(): void {
     // We need to assert that the `body` is defined, because these checks run very early
     // and the `body` won't be defined if the consumer put their scripts in the `head`.
-    if (!this._checkIsEnabled('theme') || !this._document.body ||
-        typeof getComputedStyle !== 'function') {
+    if (
+      !this._checkIsEnabled('theme') ||
+      !this._document.body ||
+      typeof getComputedStyle !== 'function'
+    ) {
       return;
     }
 
@@ -132,8 +136,8 @@ export class MatCommonModule {
     if (computedStyle && computedStyle.display !== 'none') {
       console.warn(
         'Could not find Angular Material core theme. Most Material ' +
-        'components may not work as expected. For more info refer ' +
-        'to the theming guide: https://material.angular.io/guide/theming'
+          'components may not work as expected. For more info refer ' +
+          'to the theming guide: https://material.angular.io/guide/theming',
       );
     }
 
@@ -144,9 +148,13 @@ export class MatCommonModule {
   private _checkCdkVersionMatch(): void {
     if (this._checkIsEnabled('version') && VERSION.full !== CDK_VERSION.full) {
       console.warn(
-          'The Angular Material version (' + VERSION.full + ') does not match ' +
-          'the Angular CDK version (' + CDK_VERSION.full + ').\n' +
-          'Please ensure the versions of these two packages exactly match.'
+        'The Angular Material version (' +
+          VERSION.full +
+          ') does not match ' +
+          'the Angular CDK version (' +
+          CDK_VERSION.full +
+          ').\n' +
+          'Please ensure the versions of these two packages exactly match.',
       );
     }
   }

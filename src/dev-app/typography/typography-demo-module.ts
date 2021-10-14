@@ -11,10 +11,7 @@ import {RouterModule} from '@angular/router';
 import {TypographyDemo} from './typography-demo';
 
 @NgModule({
-  imports: [
-    RouterModule.forChild([{path: '', component: TypographyDemo}]),
-  ],
+  imports: [RouterModule.forChild([{path: '', component: TypographyDemo}])],
   declarations: [TypographyDemo],
 })
-export class TypographyDemoModule {
-}
+export class TypographyDemoModule {}

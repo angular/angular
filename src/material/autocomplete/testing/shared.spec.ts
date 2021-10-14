@@ -11,17 +11,15 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
  * MDC based autocomplete harness.
  */
 export function runHarnessTests(
-    autocompleteModule: typeof MatAutocompleteModule,
-    autocompleteHarness: typeof MatAutocompleteHarness) {
+  autocompleteModule: typeof MatAutocompleteModule,
+  autocompleteHarness: typeof MatAutocompleteHarness,
+) {
   let fixture: ComponentFixture<AutocompleteHarnessTest>;
   let loader: HarnessLoader;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-          NoopAnimationsModule,
-          autocompleteModule
-      ],
+      imports: [NoopAnimationsModule, autocompleteModule],
       declarations: [AutocompleteHarnessTest],
     }).compileComponents();
 
@@ -138,7 +136,8 @@ export function runHarnessTests(
     const input = await loader.getHarness(autocompleteHarness.with({selector: '#plain'}));
     await input.enterText('New');
     await expectAsync(input.selectOption({text: 'Texas'})).toBeRejectedWithError(
-        /Could not find a mat-option matching {"text":"Texas"}/);
+      /Could not find a mat-option matching {"text":"Texas"}/,
+    );
   });
 }
 
@@ -161,7 +160,7 @@ export function runHarnessTests(
     <textarea id="textarea" [matAutocomplete]="autocomplete"></textarea>
     <input id="prefilled" [matAutocomplete]="autocomplete" value="Prefilled value">
     <input id="grouped" [matAutocomplete]="groupedAutocomplete">
-  `
+  `,
 })
 class AutocompleteHarnessTest {
   states = [
@@ -186,8 +185,8 @@ class AutocompleteHarnessTest {
         {code: 'KS', name: 'Kansas'},
         {code: 'KY', name: 'Kentucky'},
         {code: 'LA', name: 'Louisiana'},
-        {code: 'ME', name: 'Maine'}
-      ]
+        {code: 'ME', name: 'Maine'},
+      ],
     },
     {
       name: 'Two',
@@ -197,7 +196,7 @@ class AutocompleteHarnessTest {
         {code: 'SD', name: 'South Dakota'},
         {code: 'TN', name: 'Tennessee'},
         {code: 'TX', name: 'Texas'},
-      ]
+      ],
     },
     {
       name: 'Three',
@@ -205,8 +204,8 @@ class AutocompleteHarnessTest {
         {code: 'UT', name: 'Utah'},
         {code: 'WA', name: 'Washington'},
         {code: 'WV', name: 'West Virginia'},
-        {code: 'WI', name: 'Wisconsin'}
-      ]
-    }
+        {code: 'WI', name: 'Wisconsin'},
+      ],
+    },
   ];
 }

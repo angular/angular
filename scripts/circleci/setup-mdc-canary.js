@@ -3,9 +3,11 @@ const {writeFileSync} = require('fs');
 const {spawn, spawnSync} = require('child_process');
 const packageJsonPath = join(__dirname, '../../package.json');
 const packageJson = require(packageJsonPath);
-const versionsProcess = spawnSync('yarn', [
-  'info', 'material-components-web', 'dist-tags.canary', '--json'
-], {shell: true});
+const versionsProcess = spawnSync(
+  'yarn',
+  ['info', 'material-components-web', 'dist-tags.canary', '--json'],
+  {shell: true},
+);
 let latestCanaryVersion = null;
 
 try {

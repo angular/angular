@@ -10,12 +10,10 @@ import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {ChangeDetectionStrategy, Component, OnDestroy, ViewEncapsulation} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 
-
 type State = {
-  name: string,
-  capital: string
+  name: string;
+  capital: string;
 };
-
 
 @Component({
   selector: 'virtual-scroll-demo',
@@ -30,10 +28,15 @@ export class VirtualScrollDemo implements OnDestroy {
   scrollToBehavior: ScrollBehavior = 'auto';
   scrolledIndex = new Map<CdkVirtualScrollViewport, number>();
   fixedSizeData = Array(10000).fill(50);
-  increasingSizeData = Array(10000).fill(0).map((_, i) => (1 + Math.floor(i / 1000)) * 20);
-  decreasingSizeData = Array(10000).fill(0)
-      .map((_, i) => (1 + Math.floor((10000 - i) / 1000)) * 20);
-  randomData = Array(10000).fill(0).map(() => Math.round(Math.random() * 100));
+  increasingSizeData = Array(10000)
+    .fill(0)
+    .map((_, i) => (1 + Math.floor(i / 1000)) * 20);
+  decreasingSizeData = Array(10000)
+    .fill(0)
+    .map((_, i) => (1 + Math.floor((10000 - i) / 1000)) * 20);
+  randomData = Array(10000)
+    .fill(0)
+    .map(() => Math.round(Math.random() * 100));
   readonly observableData = new BehaviorSubject<number[]>([]);
   states = [
     {name: 'Alabama', capital: 'Montgomery'},
@@ -105,15 +108,20 @@ export class VirtualScrollDemo implements OnDestroy {
   }
 
   sortBy(prop: 'name' | 'capital') {
-    this.statesObservable.next(this.states.map(s => ({...s})).sort((a, b) => {
-      const aProp = a[prop], bProp = b[prop];
-      if (aProp < bProp) {
-        return -1;
-      } else if (aProp > bProp) {
-        return 1;
-      }
-      return 0;
-    }));
+    this.statesObservable.next(
+      this.states
+        .map(s => ({...s}))
+        .sort((a, b) => {
+          const aProp = a[prop],
+            bProp = b[prop];
+          if (aProp < bProp) {
+            return -1;
+          } else if (aProp > bProp) {
+            return 1;
+          }
+          return 0;
+        }),
+    );
   }
 
   scrolled(viewport: CdkVirtualScrollViewport, index: number) {

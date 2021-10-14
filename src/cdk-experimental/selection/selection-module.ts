@@ -17,17 +17,8 @@ import {CdkSelectionColumn} from './selection-column';
 import {CdkSelectionToggle} from './selection-toggle';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    CdkTableModule,
-  ],
-  exports: [
-    CdkSelection,
-    CdkSelectionToggle,
-    CdkSelectAll,
-    CdkSelectionColumn,
-    CdkRowSelection,
-  ],
+  imports: [CommonModule, CdkTableModule],
+  exports: [CdkSelection, CdkSelectionToggle, CdkSelectAll, CdkSelectionColumn, CdkRowSelection],
   declarations: [
     CdkSelection,
     CdkSelectionToggle,
@@ -36,5 +27,4 @@ import {CdkSelectionToggle} from './selection-toggle';
     CdkRowSelection,
   ],
 })
-export class CdkSelectionModule {
-}
+export class CdkSelectionModule {}

@@ -12,11 +12,7 @@ import {RouterModule} from '@angular/router';
 import {PortalDemo, ScienceJoke} from './portal-demo';
 
 @NgModule({
-  imports: [
-    PortalModule,
-    RouterModule.forChild([{path: '', component: PortalDemo}]),
-  ],
+  imports: [PortalModule, RouterModule.forChild([{path: '', component: PortalDemo}])],
   declarations: [PortalDemo, ScienceJoke],
 })
-export class PortalDemoModule {
-}
+export class PortalDemoModule {}

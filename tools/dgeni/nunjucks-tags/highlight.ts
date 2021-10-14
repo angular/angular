@@ -8,7 +8,6 @@ import {highlightCodeBlock} from '../../highlight-files/highlight-code-block';
  * specify the language manually as first tag-block argument.
  */
 export class HighlightNunjucksExtension {
-
   /** Tags that will be parsed by this Nunjucks extension. */
   tags = ['highlight'];
 

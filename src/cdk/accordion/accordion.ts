@@ -40,8 +40,12 @@ export class CdkAccordion implements OnDestroy, OnChanges {
 
   /** Whether the accordion should allow multiple expanded accordion items simultaneously. */
   @Input()
-  get multi(): boolean { return this._multi; }
-  set multi(multi: boolean) { this._multi = coerceBooleanProperty(multi); }
+  get multi(): boolean {
+    return this._multi;
+  }
+  set multi(multi: boolean) {
+    this._multi = coerceBooleanProperty(multi);
+  }
   private _multi: boolean = false;
 
   /** Opens all enabled accordion items in an accordion where multi is enabled. */

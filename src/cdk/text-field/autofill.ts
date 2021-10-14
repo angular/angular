@@ -20,7 +20,6 @@ import {
 import {coerceElement} from '@angular/cdk/coercion';
 import {EMPTY, Observable, Subject} from 'rxjs';
 
-
 /** An event that is emitted when the autofill state of an input changes. */
 export type AutofillEvent = {
   /** The element whose autofill state changes. */
@@ -29,17 +28,14 @@ export type AutofillEvent = {
   isAutofilled: boolean;
 };
 
-
 /** Used to track info about currently monitored elements. */
 type MonitoredElementInfo = {
   readonly subject: Subject<AutofillEvent>;
   unlisten: () => void;
 };
 
-
 /** Options to pass to the animationstart listener. */
 const listenerOptions = normalizePassiveListenerOptions({passive: true});
-
 
 /**
  * An injectable service that can be used to monitor the autofill state of an input.
@@ -84,12 +80,16 @@ export class AutofillMonitor implements OnDestroy {
       // Animation events fire on initial element render, we check for the presence of the autofill
       // CSS class to make sure this is a real change in state, not just the initial render before
       // we fire off events.
-      if (event.animationName === 'cdk-text-field-autofill-start' &&
-          !element.classList.contains(cssClass)) {
+      if (
+        event.animationName === 'cdk-text-field-autofill-start' &&
+        !element.classList.contains(cssClass)
+      ) {
         element.classList.add(cssClass);
         this._ngZone.run(() => result.next({target: event.target as Element, isAutofilled: true}));
-      } else if (event.animationName === 'cdk-text-field-autofill-end' &&
-          element.classList.contains(cssClass)) {
+      } else if (
+        event.animationName === 'cdk-text-field-autofill-end' &&
+        element.classList.contains(cssClass)
+      ) {
         element.classList.remove(cssClass);
         this._ngZone.run(() => result.next({target: event.target as Element, isAutofilled: false}));
       }
@@ -104,7 +104,7 @@ export class AutofillMonitor implements OnDestroy {
       subject: result,
       unlisten: () => {
         element.removeEventListener('animationstart', listener, listenerOptions);
-      }
+      },
     });
 
     return result;
@@ -140,7 +140,6 @@ export class AutofillMonitor implements OnDestroy {
   }
 }
 
-
 /** A directive that can be used to monitor the autofill state of an input. */
 @Directive({
   selector: '[cdkAutofill]',
@@ -149,8 +148,10 @@ export class CdkAutofill implements OnDestroy, OnInit {
   /** Emits when the autofill state of the element changes. */
   @Output() readonly cdkAutofill = new EventEmitter<AutofillEvent>();
 
-  constructor(private _elementRef: ElementRef<HTMLElement>,
-              private _autofillMonitor: AutofillMonitor) {}
+  constructor(
+    private _elementRef: ElementRef<HTMLElement>,
+    private _autofillMonitor: AutofillMonitor,
+  ) {}
 
   ngOnInit() {
     this._autofillMonitor

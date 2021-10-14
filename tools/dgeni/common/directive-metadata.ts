@@ -35,8 +35,11 @@ export function getDirectiveMetadata(classDoc: CategorizedClassDoc): Map<string,
   const expression = declaration.decorators
     .filter(decorator => decorator.expression && isCallExpression(decorator.expression))
     .map(decorator => decorator.expression as CallExpression)
-    .find(callExpression => callExpression.expression.getText() === 'Component' ||
-                            callExpression.expression.getText() === 'Directive');
+    .find(
+      callExpression =>
+        callExpression.expression.getText() === 'Component' ||
+        callExpression.expression.getText() === 'Directive',
+    );
 
   if (!expression) {
     return null;
@@ -54,15 +57,18 @@ export function getDirectiveMetadata(classDoc: CategorizedClassDoc): Map<string,
   (objectExpression.properties as NodeArray<PropertyAssignment>).forEach(prop => {
     // Support ArrayLiteralExpression assignments in the directive metadata.
     if (prop.initializer.kind === SyntaxKind.ArrayLiteralExpression) {
-      const arrayData = (prop.initializer as ArrayLiteralExpression).elements
-          .map(literal => (literal as StringLiteral).text);
+      const arrayData = (prop.initializer as ArrayLiteralExpression).elements.map(
+        literal => (literal as StringLiteral).text,
+      );
 
       resultMetadata.set(prop.name.getText(), arrayData);
     }
 
     // Support normal StringLiteral and NoSubstitutionTemplateLiteral assignments
-    if (prop.initializer.kind === SyntaxKind.StringLiteral ||
-        prop.initializer.kind === SyntaxKind.NoSubstitutionTemplateLiteral) {
+    if (
+      prop.initializer.kind === SyntaxKind.StringLiteral ||
+      prop.initializer.kind === SyntaxKind.NoSubstitutionTemplateLiteral
+    ) {
       resultMetadata.set(prop.name.getText(), (prop.initializer as StringLiteral).text);
     }
   });

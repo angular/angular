@@ -46,7 +46,7 @@ describe('Non-MDC-based MatSnackBarHarness (non-MDC only behavior)', () => {
 });
 
 @Component({
-  template: `<ng-template>My custom snack-bar.</ng-template>`
+  template: `<ng-template>My custom snack-bar.</ng-template>`,
 })
 class SnackbarHarnessTest {
   @ViewChild(TemplateRef) customTmpl: TemplateRef<any>;

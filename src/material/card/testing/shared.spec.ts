@@ -7,9 +7,10 @@ import {MatCardHarness, MatCardSection} from '@angular/material/card/testing/car
 
 /** Shared tests to run on both the original and MDC-based cards. */
 export function runHarnessTests(
-    cardModule: typeof MatCardModule,
-    cardHarness: typeof MatCardHarness,
-    contentSelectors: {header: string, content: string, actions: string, footer: string}) {
+  cardModule: typeof MatCardModule,
+  cardHarness: typeof MatCardHarness,
+  contentSelectors: {header: string; content: string; actions: string; footer: string},
+) {
   let fixture: ComponentFixture<CardHarnessTest>;
   let loader: HarnessLoader;
 
@@ -50,60 +51,54 @@ export function runHarnessTests(
   it('should get card text', async () => {
     const cards = await loader.getAllHarnesses(cardHarness);
     expect(await parallel(() => cards.map(c => c.getText()))).toEqual([
-       '',
-       'Shiba InuDog Breed The Shiba Inu is the smallest of the six original and distinct spitz' +
-       ' breeds of dog from Japan. A small, agile dog that copes very well with mountainous' +
-       ' terrain, the Shiba Inu was originally bred for hunting. LIKESHAREWoof woof!'
+      '',
+      'Shiba InuDog Breed The Shiba Inu is the smallest of the six original and distinct spitz' +
+        ' breeds of dog from Japan. A small, agile dog that copes very well with mountainous' +
+        ' terrain, the Shiba Inu was originally bred for hunting. LIKESHAREWoof woof!',
     ]);
   });
 
   it('should get title text', async () => {
     const cards = await loader.getAllHarnesses(cardHarness);
-    expect(await parallel(() => cards.map(c => c.getTitleText()))).toEqual([
-      '',
-      'Shiba Inu'
-    ]);
+    expect(await parallel(() => cards.map(c => c.getTitleText()))).toEqual(['', 'Shiba Inu']);
   });
 
   it('should get subtitle text', async () => {
     const cards = await loader.getAllHarnesses(cardHarness);
-    expect(await parallel(() => cards.map(c => c.getSubtitleText()))).toEqual([
-      '',
-      'Dog Breed'
-    ]);
+    expect(await parallel(() => cards.map(c => c.getSubtitleText()))).toEqual(['', 'Dog Breed']);
   });
 
   it('should get a harness loader for the card header', async () => {
     const card = await loader.getHarness(cardHarness.with({title: 'Shiba Inu'}));
     const headerLoader = await card.getChildLoader(contentSelectors.header as MatCardSection);
-    const headerSubcomponents = await headerLoader?.getAllHarnesses(DummyHarness) ?? [];
+    const headerSubcomponents = (await headerLoader?.getAllHarnesses(DummyHarness)) ?? [];
     expect(headerSubcomponents.length).toBe(2);
   });
 
   it('should get a harness loader for the card content', async () => {
     const card = await loader.getHarness(cardHarness.with({title: 'Shiba Inu'}));
     const contentLoader = await card.getChildLoader(contentSelectors.content as MatCardSection);
-    const contentSubcomponents = await contentLoader?.getAllHarnesses(DummyHarness) ?? [];
+    const contentSubcomponents = (await contentLoader?.getAllHarnesses(DummyHarness)) ?? [];
     expect(contentSubcomponents.length).toBe(1);
   });
 
   it('should get a harness loader for the card actions', async () => {
     const card = await loader.getHarness(cardHarness.with({title: 'Shiba Inu'}));
     const actionLoader = await card.getChildLoader(contentSelectors.actions as MatCardSection);
-    const actionSubcomponents = await actionLoader?.getAllHarnesses(DummyHarness) ?? [];
+    const actionSubcomponents = (await actionLoader?.getAllHarnesses(DummyHarness)) ?? [];
     expect(actionSubcomponents.length).toBe(2);
   });
 
   it('should get a harness loader for the card footer', async () => {
     const card = await loader.getHarness(cardHarness.with({title: 'Shiba Inu'}));
     const footerLoader = await card.getChildLoader(contentSelectors.footer as MatCardSection);
-    const footerSubcomponents = await footerLoader?.getAllHarnesses(DummyHarness) ?? [];
+    const footerSubcomponents = (await footerLoader?.getAllHarnesses(DummyHarness)) ?? [];
     expect(footerSubcomponents.length).toBe(1);
   });
 
   it('should act as a harness loader for user content', async () => {
     const card = await loader.getHarness(cardHarness.with({title: 'Shiba Inu'}));
-    const footerSubcomponents = await card.getAllHarnesses(DummyHarness) ?? [];
+    const footerSubcomponents = (await card.getAllHarnesses(DummyHarness)) ?? [];
     expect(footerSubcomponents.length).toBe(7);
   });
 }
@@ -133,11 +128,10 @@ export function runHarnessTests(
           <div>Woof woof!</div>
         </mat-card-footer>
       </mat-card>
-  `
+  `,
 })
 class CardHarnessTest {}
 
 export class DummyHarness extends ComponentHarness {
   static hostSelector = 'div, p, button';
 }
-

@@ -99,7 +99,8 @@ export class ClassNamesMigration extends Migration<UpgradeData> {
     const classData = this.data.find(data => data.replace === identifier.text)!;
     const filePath = this.fileSystem.resolve(identifier.getSourceFile().fileName);
 
-    this.fileSystem.edit(filePath)
+    this.fileSystem
+      .edit(filePath)
       .remove(identifier.getStart(), identifier.getWidth())
       .insertRight(identifier.getStart(), classData.replaceWith);
   }

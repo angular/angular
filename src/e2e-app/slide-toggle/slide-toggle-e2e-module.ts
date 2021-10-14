@@ -14,5 +14,4 @@ import {SlideToggleE2E} from './slide-toggle-e2e';
   imports: [MatSlideToggleModule],
   declarations: [SlideToggleE2E],
 })
-export class SlideToggleE2eModule {
-}
+export class SlideToggleE2eModule {}

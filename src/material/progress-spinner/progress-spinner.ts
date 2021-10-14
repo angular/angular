@@ -23,7 +23,6 @@ import {
 import {CanColor, mixinColor} from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
-
 /** Possible mode for a progress spinner. */
 export type ProgressSpinnerMode = 'determinate' | 'indeterminate';
 
@@ -41,9 +40,12 @@ const BASE_STROKE_WIDTH = 10;
 
 // Boilerplate for applying mixins to MatProgressSpinner.
 /** @docs-private */
-const _MatProgressSpinnerBase = mixinColor(class {
-  constructor(public _elementRef: ElementRef) {}
-}, 'primary');
+const _MatProgressSpinnerBase = mixinColor(
+  class {
+    constructor(public _elementRef: ElementRef) {}
+  },
+  'primary',
+);
 
 /** Default `mat-progress-spinner` options that can be overridden. */
 export interface MatProgressSpinnerDefaultOptions {
@@ -60,10 +62,10 @@ export interface MatProgressSpinnerDefaultOptions {
 
 /** Injection token to be used to override the default options for `mat-progress-spinner`. */
 export const MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS =
-    new InjectionToken<MatProgressSpinnerDefaultOptions>('mat-progress-spinner-default-options', {
-      providedIn: 'root',
-      factory: MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY,
-    });
+  new InjectionToken<MatProgressSpinnerDefaultOptions>('mat-progress-spinner-default-options', {
+    providedIn: 'root',
+    factory: MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY,
+  });
 
 /** @docs-private */
 export function MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY(): MatProgressSpinnerDefaultOptions {
@@ -152,7 +154,9 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
 
   /** The diameter of the progress spinner (will set width and height of svg). */
   @Input()
-  get diameter(): number { return this._diameter; }
+  get diameter(): number {
+    return this._diameter;
+  }
   set diameter(size: number) {
     this._diameter = coerceNumberProperty(size);
     this._spinnerAnimationLabel = this._getSpinnerAnimationLabel();
@@ -184,17 +188,18 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
     this._value = Math.max(0, Math.min(100, coerceNumberProperty(newValue)));
   }
 
-  constructor(elementRef: ElementRef<HTMLElement>,
-              /**
-               * @deprecated `_platform` parameter no longer being used.
-               * @breaking-change 14.0.0
-               */
-              _platform: Platform,
-              @Optional() @Inject(DOCUMENT) private _document: any,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode: string,
-              @Inject(MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS)
-                  defaults?: MatProgressSpinnerDefaultOptions) {
-
+  constructor(
+    elementRef: ElementRef<HTMLElement>,
+    /**
+     * @deprecated `_platform` parameter no longer being used.
+     * @breaking-change 14.0.0
+     */
+    _platform: Platform,
+    @Optional() @Inject(DOCUMENT) private _document: any,
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode: string,
+    @Inject(MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS)
+    defaults?: MatProgressSpinnerDefaultOptions,
+  ) {
     super(elementRef);
 
     const trackedDiameters = MatProgressSpinner._diameters;
@@ -206,8 +211,8 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
       trackedDiameters.set(_document.head, new Set<number>([BASE_SIZE]));
     }
 
-    this._noopAnimations = animationMode === 'NoopAnimations' &&
-        (!!defaults && !defaults._forceAnimations);
+    this._noopAnimations =
+      animationMode === 'NoopAnimations' && !!defaults && !defaults._forceAnimations;
 
     if (defaults) {
       if (defaults.diameter) {
@@ -250,7 +255,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
   /** The dash offset of the svg circle. */
   _getStrokeDashOffset() {
     if (this.mode === 'determinate') {
-      return this._getStrokeCircumference() * (100 - this._value) / 100;
+      return (this._getStrokeCircumference() * (100 - this._value)) / 100;
     }
 
     return null;
@@ -258,7 +263,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
 
   /** Stroke width of the circle in percent. */
   _getCircleStrokeWidth() {
-    return this.strokeWidth / this.diameter * 100;
+    return (this.strokeWidth / this.diameter) * 100;
   }
 
   /** Dynamically generates a style tag containing the correct animation for this diameter. */
@@ -286,11 +291,13 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
   /** Generates animation styles adjusted for the spinner's diameter. */
   private _getAnimationText(): string {
     const strokeCircumference = this._getStrokeCircumference();
-    return INDETERMINATE_ANIMATION_TEMPLATE
+    return (
+      INDETERMINATE_ANIMATION_TEMPLATE
         // Animation should begin at 5% and end at 80%
         .replace(/START_VALUE/g, `${0.95 * strokeCircumference}`)
         .replace(/END_VALUE/g, `${0.2 * strokeCircumference}`)
-        .replace(/DIAMETER/g, `${this._spinnerAnimationLabel}`);
+        .replace(/DIAMETER/g, `${this._spinnerAnimationLabel}`)
+    );
   }
 
   /** Returns the circle diameter formatted for use with the animation-name CSS property. */
@@ -304,7 +311,6 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
   static ngAcceptInputType_strokeWidth: NumberInput;
   static ngAcceptInputType_value: NumberInput;
 }
-
 
 /**
  * `<mat-spinner>` component.
@@ -329,11 +335,14 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
   encapsulation: ViewEncapsulation.None,
 })
 export class MatSpinner extends MatProgressSpinner {
-  constructor(elementRef: ElementRef<HTMLElement>, platform: Platform,
-              @Optional() @Inject(DOCUMENT) document: any,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode: string,
-              @Inject(MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS)
-                  defaults?: MatProgressSpinnerDefaultOptions) {
+  constructor(
+    elementRef: ElementRef<HTMLElement>,
+    platform: Platform,
+    @Optional() @Inject(DOCUMENT) document: any,
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode: string,
+    @Inject(MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS)
+    defaults?: MatProgressSpinnerDefaultOptions,
+  ) {
     super(elementRef, platform, document, animationMode, defaults);
     this.mode = 'indeterminate';
   }

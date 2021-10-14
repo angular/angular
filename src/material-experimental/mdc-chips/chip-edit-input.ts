@@ -6,11 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  Directive,
-  ElementRef,
-  Inject,
-} from '@angular/core';
+import {Directive, ElementRef, Inject} from '@angular/core';
 import {DOCUMENT} from '@angular/common';
 
 /**
@@ -29,7 +25,8 @@ import {DOCUMENT} from '@angular/common';
 export class MatChipEditInput {
   constructor(
     private readonly _elementRef: ElementRef,
-    @Inject(DOCUMENT) private readonly _document: any) {}
+    @Inject(DOCUMENT) private readonly _document: any,
+  ) {}
 
   initialize(initialValue: string) {
     this.getNativeElement().focus();

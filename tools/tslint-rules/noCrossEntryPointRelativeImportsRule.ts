@@ -33,8 +33,11 @@ function checkSourceFile(ctx: Lint.WalkContext<string[]>) {
 
   (function visitNode(node: ts.Node) {
     if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) {
-      if (!node.moduleSpecifier || !ts.isStringLiteralLike(node.moduleSpecifier) ||
-          !node.moduleSpecifier.text.startsWith('.')) {
+      if (
+        !node.moduleSpecifier ||
+        !ts.isStringLiteralLike(node.moduleSpecifier) ||
+        !node.moduleSpecifier.text.startsWith('.')
+      ) {
         return;
       }
 
@@ -43,13 +46,17 @@ function checkSourceFile(ctx: Lint.WalkContext<string[]>) {
       const currentPackage = findClosestBazelPackage(basePath);
       const resolvedPackage = findClosestBazelPackage(resolve(basePath, modulePath));
 
-      if (currentPackage && resolvedPackage &&
-          normalize(currentPackage) !== normalize(resolvedPackage)) {
+      if (
+        currentPackage &&
+        resolvedPackage &&
+        normalize(currentPackage) !== normalize(resolvedPackage)
+      ) {
         const humanizedType = ts.isImportDeclaration(node) ? 'Import' : 'Export';
         ctx.addFailureAtNode(
-            node,
-            `${humanizedType} resolves to a different Bazel build package through a relative ` +
-                `path. This is not allowed and can be fixed by using the actual module import.`);
+          node,
+          `${humanizedType} resolves to a different Bazel build package through a relative ` +
+            `path. This is not allowed and can be fixed by using the actual module import.`,
+        );
       }
       return;
     }
@@ -58,7 +65,7 @@ function checkSourceFile(ctx: Lint.WalkContext<string[]>) {
 }
 
 /** Finds the closest Bazel build package for the given path. */
-function findClosestBazelPackage(startPath: string): string|null {
+function findClosestBazelPackage(startPath: string): string | null {
   let currentPath = startPath;
   while (!hasBuildFile(currentPath)) {
     const parentPath = dirname(currentPath);

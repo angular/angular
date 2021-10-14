@@ -32,7 +32,7 @@ describe('menu performance benchmarks', () => {
       work: async () => {
         await trigger.click();
         await closeMenu(trigger);
-      }
+      },
     });
   });
 

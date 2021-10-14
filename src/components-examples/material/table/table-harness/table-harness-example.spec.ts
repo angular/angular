@@ -15,14 +15,14 @@ describe('TableHarnessExample', () => {
 
   beforeAll(() => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
-      teardown: {destroyAfterEach: true}
+      teardown: {destroyAfterEach: true},
     });
   });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MatTableModule],
-      declarations: [TableHarnessExample]
+      declarations: [TableHarnessExample],
     }).compileComponents();
     fixture = TestBed.createComponent(TableHarnessExample);
     fixture.detectChanges();
@@ -49,12 +49,13 @@ describe('TableHarnessExample', () => {
     const headerRows = await table.getHeaderRows();
     const footerRows = await table.getFooterRows();
     const rows = await table.getRows();
-    const headerCells = (await parallel(() => headerRows.map(row => row.getCells())))
-      .map(row => row.length);
-    const footerCells = (await parallel(() => footerRows.map(row => row.getCells())))
-      .map(row => row.length);
-    const cells = (await parallel(() => rows.map(row => row.getCells())))
-      .map(row => row.length);
+    const headerCells = (await parallel(() => headerRows.map(row => row.getCells()))).map(
+      row => row.length,
+    );
+    const footerCells = (await parallel(() => footerRows.map(row => row.getCells()))).map(
+      row => row.length,
+    );
+    const cells = (await parallel(() => rows.map(row => row.getCells()))).map(row => row.length);
 
     expect(headerCells).toEqual([4]);
     expect(cells).toEqual([4, 4, 4, 4, 4, 4, 4, 4, 4, 4]);

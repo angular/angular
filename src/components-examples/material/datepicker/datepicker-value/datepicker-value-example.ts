@@ -9,5 +9,5 @@ import {FormControl} from '@angular/forms';
 })
 export class DatepickerValueExample {
   date = new FormControl(new Date());
-  serializedDate = new FormControl((new Date()).toISOString());
+  serializedDate = new FormControl(new Date().toISOString());
 }

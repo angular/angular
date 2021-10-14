@@ -26,7 +26,8 @@ import {Subscription} from 'rxjs';
 describe('MatDateRangeInput', () => {
   function createComponent<T>(
     component: Type<T>,
-    declarations: Type<any>[] = []): ComponentFixture<T> {
+    declarations: Type<any>[] = [],
+  ): ComponentFixture<T> {
     TestBed.configureTestingModule({
       imports: [
         FormsModule,
@@ -258,35 +259,34 @@ describe('MatDateRangeInput', () => {
     expect(rangeInput.empty).toBe(false);
   });
 
-  it('should mark the range controls as invalid if the start value is after the end value',
-    fakeAsync(() => {
-      const fixture = createComponent(StandardRangePicker);
-      fixture.detectChanges();
-      tick();
-      const {start, end} = fixture.componentInstance.range.controls;
+  it('should mark the range controls as invalid if the start value is after the end value', fakeAsync(() => {
+    const fixture = createComponent(StandardRangePicker);
+    fixture.detectChanges();
+    tick();
+    const {start, end} = fixture.componentInstance.range.controls;
 
-      // The default error state matcher only checks if the controls have been touched.
-      // Set it manually here so we can assert `rangeInput.errorState` correctly.
-      fixture.componentInstance.range.markAllAsTouched();
-      expect(fixture.componentInstance.rangeInput.errorState).toBe(false);
-      expect(start.errors?.matStartDateInvalid).toBeFalsy();
-      expect(end.errors?.matEndDateInvalid).toBeFalsy();
+    // The default error state matcher only checks if the controls have been touched.
+    // Set it manually here so we can assert `rangeInput.errorState` correctly.
+    fixture.componentInstance.range.markAllAsTouched();
+    expect(fixture.componentInstance.rangeInput.errorState).toBe(false);
+    expect(start.errors?.matStartDateInvalid).toBeFalsy();
+    expect(end.errors?.matEndDateInvalid).toBeFalsy();
 
-      start.setValue(new Date(2020, 2, 2));
-      end.setValue(new Date(2020, 1, 2));
-      fixture.detectChanges();
+    start.setValue(new Date(2020, 2, 2));
+    end.setValue(new Date(2020, 1, 2));
+    fixture.detectChanges();
 
-      expect(fixture.componentInstance.rangeInput.errorState).toBe(true);
-      expect(start.errors?.matStartDateInvalid).toBeTruthy();
-      expect(end.errors?.matEndDateInvalid).toBeTruthy();
+    expect(fixture.componentInstance.rangeInput.errorState).toBe(true);
+    expect(start.errors?.matStartDateInvalid).toBeTruthy();
+    expect(end.errors?.matEndDateInvalid).toBeTruthy();
 
-      end.setValue(new Date(2020, 3, 2));
-      fixture.detectChanges();
+    end.setValue(new Date(2020, 3, 2));
+    fixture.detectChanges();
 
-      expect(fixture.componentInstance.rangeInput.errorState).toBe(false);
-      expect(start.errors?.matStartDateInvalid).toBeFalsy();
-      expect(end.errors?.matEndDateInvalid).toBeFalsy();
-    }));
+    expect(fixture.componentInstance.rangeInput.errorState).toBe(false);
+    expect(start.errors?.matStartDateInvalid).toBeFalsy();
+    expect(end.errors?.matEndDateInvalid).toBeFalsy();
+  }));
 
   it('should pass the minimum date from the range input to the inner inputs', () => {
     const fixture = createComponent(StandardRangePicker);
@@ -367,8 +367,10 @@ describe('MatDateRangeInput', () => {
     subscription.unsubscribe();
   });
 
-  it('should not dispatch the change event if a new filter function with the same result ' +
-    'is assigned', () => {
+  it(
+    'should not dispatch the change event if a new filter function with the same result ' +
+      'is assigned',
+    () => {
       const fixture = createComponent(StandardRangePicker);
       fixture.detectChanges();
       const {start, end} = fixture.componentInstance.range.controls;
@@ -391,7 +393,8 @@ describe('MatDateRangeInput', () => {
       expect(spy).toHaveBeenCalledTimes(2);
 
       subscription.unsubscribe();
-    });
+    },
+  );
 
   it('should throw if there is no start input', () => {
     expect(() => {
@@ -421,25 +424,24 @@ describe('MatDateRangeInput', () => {
     expect(startInput.focus).toHaveBeenCalled();
   });
 
-  it('should focus the end input when clicking on the form field when start has a value',
-    fakeAsync(() => {
-      const fixture = createComponent(StandardRangePicker);
-      fixture.detectChanges();
-      tick();
-      const endInput = fixture.componentInstance.end.nativeElement;
-      const formFieldContainer = fixture.nativeElement.querySelector('.mat-form-field-flex');
+  it('should focus the end input when clicking on the form field when start has a value', fakeAsync(() => {
+    const fixture = createComponent(StandardRangePicker);
+    fixture.detectChanges();
+    tick();
+    const endInput = fixture.componentInstance.end.nativeElement;
+    const formFieldContainer = fixture.nativeElement.querySelector('.mat-form-field-flex');
 
-      spyOn(endInput, 'focus').and.callThrough();
+    spyOn(endInput, 'focus').and.callThrough();
 
-      fixture.componentInstance.range.controls.start.setValue(new Date());
-      fixture.detectChanges();
+    fixture.componentInstance.range.controls.start.setValue(new Date());
+    fixture.detectChanges();
 
-      formFieldContainer.click();
-      fixture.detectChanges();
-      tick();
+    formFieldContainer.click();
+    fixture.detectChanges();
+    tick();
 
-      expect(endInput.focus).toHaveBeenCalled();
-    }));
+    expect(endInput.focus).toHaveBeenCalled();
+  }));
 
   it('should revalidate if a validation field changes', () => {
     const fixture = createComponent(StandardRangePicker);
@@ -526,11 +528,15 @@ describe('MatDateRangeInput', () => {
     fixture.detectChanges();
     tick();
 
-    const rangeTexts = Array.from(overlayContainerElement!.querySelectorAll([
-      '.mat-calendar-body-range-start',
-      '.mat-calendar-body-in-range',
-      '.mat-calendar-body-range-end'
-    ].join(','))).map(cell => cell.textContent!.trim());
+    const rangeTexts = Array.from(
+      overlayContainerElement!.querySelectorAll(
+        [
+          '.mat-calendar-body-range-start',
+          '.mat-calendar-body-in-range',
+          '.mat-calendar-body-range-end',
+        ].join(','),
+      ),
+    ).map(cell => cell.textContent!.trim());
 
     expect(rangeTexts).toEqual(['2', '3', '4', '5']);
   }));
@@ -540,8 +546,11 @@ describe('MatDateRangeInput', () => {
     let overlayContainerElement: HTMLElement;
 
     // Set startAt to guarantee that the calendar opens on the proper month.
-    fixture.componentInstance.comparisonStart =
-        fixture.componentInstance.startAt = new Date(2020, 1, 2);
+    fixture.componentInstance.comparisonStart = fixture.componentInstance.startAt = new Date(
+      2020,
+      1,
+      2,
+    );
     fixture.componentInstance.comparisonEnd = new Date(2020, 1, 5);
     inject([OverlayContainer], (overlayContainer: OverlayContainer) => {
       overlayContainerElement = overlayContainer.getContainerElement();
@@ -552,11 +561,15 @@ describe('MatDateRangeInput', () => {
     fixture.detectChanges();
     tick();
 
-    const rangeTexts = Array.from(overlayContainerElement!.querySelectorAll([
-      '.mat-calendar-body-comparison-start',
-      '.mat-calendar-body-in-comparison-range',
-      '.mat-calendar-body-comparison-end'
-    ].join(','))).map(cell => cell.textContent!.trim());
+    const rangeTexts = Array.from(
+      overlayContainerElement!.querySelectorAll(
+        [
+          '.mat-calendar-body-comparison-start',
+          '.mat-calendar-body-in-comparison-range',
+          '.mat-calendar-body-comparison-end',
+        ].join(','),
+      ),
+    ).map(cell => cell.textContent!.trim());
 
     expect(rangeTexts).toEqual(['2', '3', '4', '5']);
   }));
@@ -728,7 +741,7 @@ describe('MatDateRangeInput', () => {
     subscription.unsubscribe();
   });
 
- it('should emit to the dateChange event only when typing in the relevant input', () => {
+  it('should emit to the dateChange event only when typing in the relevant input', () => {
     const fixture = createComponent(StandardRangePicker);
     fixture.detectChanges();
     const {startInput, endInput, start, end} = fixture.componentInstance;
@@ -878,7 +891,6 @@ describe('MatDateRangeInput', () => {
     expect(endInput.errorStateMatcher).toBe(matcher);
   });
 
-
   it('should only update model for input that changed', fakeAsync(() => {
     const fixture = createComponent(RangePickerNgModel);
 
@@ -899,18 +911,22 @@ describe('MatDateRangeInput', () => {
     tick();
 
     expect(fixture.componentInstance.startDateModelChangeCount)
-      .withContext('Start Date set once').toBe(1);
+      .withContext('Start Date set once')
+      .toBe(1);
     expect(fixture.componentInstance.endDateModelChangeCount)
-      .withContext('End Date not set').toBe(0);
+      .withContext('End Date not set')
+      .toBe(0);
 
     fixture.componentInstance.rangePicker.select(toDate);
     fixture.detectChanges();
     tick();
 
     expect(fixture.componentInstance.startDateModelChangeCount)
-      .withContext('Start Date unchanged (set once)').toBe(1);
+      .withContext('Start Date unchanged (set once)')
+      .toBe(1);
     expect(fixture.componentInstance.endDateModelChangeCount)
-      .withContext('End Date set once').toBe(1);
+      .withContext('End Date set once')
+      .toBe(1);
 
     fixture.componentInstance.rangePicker.open();
     fixture.detectChanges();
@@ -923,20 +939,23 @@ describe('MatDateRangeInput', () => {
     tick();
 
     expect(fixture.componentInstance.startDateModelChangeCount)
-      .withContext('Start Date set twice').toBe(2);
+      .withContext('Start Date set twice')
+      .toBe(2);
     expect(fixture.componentInstance.endDateModelChangeCount)
-      .withContext('End Date set twice (nulled)').toBe(2);
+      .withContext('End Date set twice (nulled)')
+      .toBe(2);
 
     fixture.componentInstance.rangePicker.select(toDate2);
     fixture.detectChanges();
     tick();
 
     expect(fixture.componentInstance.startDateModelChangeCount)
-      .withContext('Start Date unchanged (set twice)').toBe(2);
+      .withContext('Start Date unchanged (set twice)')
+      .toBe(2);
     expect(fixture.componentInstance.endDateModelChangeCount)
-      .withContext('End date set three times').toBe(3);
+      .withContext('End date set three times')
+      .toBe(3);
   }));
-
 });
 
 @Component({
@@ -961,7 +980,7 @@ describe('MatDateRangeInput', () => {
         [startAt]="startAt"
         #rangePicker></mat-date-range-picker>
     </mat-form-field>
-  `
+  `,
 })
 class StandardRangePicker {
   @ViewChild('start') start: ElementRef<HTMLInputElement>;
@@ -981,7 +1000,7 @@ class StandardRangePicker {
 
   range = new FormGroup({
     start: new FormControl(),
-    end: new FormControl()
+    end: new FormControl(),
   });
 }
 
@@ -994,10 +1013,9 @@ class StandardRangePicker {
 
       <mat-date-range-picker #rangePicker></mat-date-range-picker>
     </mat-form-field>
-  `
+  `,
 })
 class RangePickerNoStart {}
-
 
 @Component({
   template: `
@@ -1008,10 +1026,9 @@ class RangePickerNoStart {}
 
       <mat-date-range-picker #rangePicker></mat-date-range-picker>
     </mat-form-field>
-  `
+  `,
 })
 class RangePickerNoEnd {}
-
 
 @Component({
   template: `
@@ -1023,7 +1040,7 @@ class RangePickerNoEnd {}
 
       <mat-date-range-picker #rangePicker></mat-date-range-picker>
     </mat-form-field>
-  `
+  `,
 })
 class RangePickerNgModel {
   @ViewChild(MatStartDate, {read: NgModel}) startModel: NgModel;
@@ -1031,26 +1048,25 @@ class RangePickerNgModel {
   @ViewChild(MatStartDate, {read: ElementRef}) startInput: ElementRef<HTMLInputElement>;
   @ViewChild(MatEndDate, {read: ElementRef}) endInput: ElementRef<HTMLInputElement>;
   @ViewChild(MatDateRangePicker) rangePicker: MatDateRangePicker<Date>;
-  private _start: Date|null = null;
-  get start(): Date|null {
+  private _start: Date | null = null;
+  get start(): Date | null {
     return this._start;
   }
-  set start(aStart: Date|null) {
+  set start(aStart: Date | null) {
     this.startDateModelChangeCount++;
     this._start = aStart;
   }
-  private _end: Date|null = null;
-  get end(): Date|null {
+  private _end: Date | null = null;
+  get end(): Date | null {
     return this._end;
   }
-  set end(anEnd: Date|null) {
+  set end(anEnd: Date | null) {
     this.endDateModelChangeCount++;
     this._end = anEnd;
   }
   startDateModelChangeCount = 0;
   endDateModelChangeCount = 0;
 }
-
 
 @Component({
   template: `
@@ -1062,26 +1078,26 @@ class RangePickerNgModel {
 
       <mat-date-range-picker #rangePicker></mat-date-range-picker>
     </mat-form-field>
-  `
+  `,
 })
 class RangePickerNoLabel {
   @ViewChild('start') start: ElementRef<HTMLInputElement>;
   @ViewChild('end') end: ElementRef<HTMLInputElement>;
 }
 
-
 @Directive({
   selector: '[customValidator]',
-  providers: [{
-    provide: NG_VALIDATORS,
-    useExisting: CustomValidator,
-    multi: true
-  }]
+  providers: [
+    {
+      provide: NG_VALIDATORS,
+      useExisting: CustomValidator,
+      multi: true,
+    },
+  ],
 })
 class CustomValidator implements Validator {
   validate = jasmine.createSpy('validate spy').and.returnValue(null);
 }
-
 
 @Component({
   template: `
@@ -1093,7 +1109,7 @@ class CustomValidator implements Validator {
 
       <mat-date-range-picker #rangePicker></mat-date-range-picker>
     </mat-form-field>
-  `
+  `,
 })
 class RangePickerWithCustomValidator {
   @ViewChild(CustomValidator) validator: CustomValidator;
@@ -1102,7 +1118,6 @@ class RangePickerWithCustomValidator {
   min: Date;
   max: Date;
 }
-
 
 @Component({
   template: `
@@ -1114,7 +1129,7 @@ class RangePickerWithCustomValidator {
 
       <mat-date-range-picker #rangePicker></mat-date-range-picker>
     </mat-form-field>
-  `
+  `,
 })
 class RangePickerErrorStateMatcher {
   @ViewChild(MatStartDate) startInput: MatStartDate<Date>;

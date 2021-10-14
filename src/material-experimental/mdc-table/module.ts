@@ -17,7 +17,7 @@ import {
   MatFooterCell,
   MatFooterCellDef,
   MatHeaderCell,
-  MatHeaderCellDef
+  MatHeaderCellDef,
 } from './cell';
 import {
   MatFooterRow,
@@ -26,7 +26,7 @@ import {
   MatHeaderRowDef,
   MatRow,
   MatRowDef,
-  MatNoDataRow
+  MatNoDataRow,
 } from './row';
 import {MatTextColumn} from './text-column';
 
@@ -63,5 +63,4 @@ const EXPORTED_DECLARATIONS = [
   exports: [MatCommonModule, EXPORTED_DECLARATIONS],
   declarations: EXPORTED_DECLARATIONS,
 })
-export class MatTableModule {
-}
+export class MatTableModule {}

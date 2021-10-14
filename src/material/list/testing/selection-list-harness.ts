@@ -12,13 +12,16 @@ import {MatListHarnessBase} from './list-harness-base';
 import {
   ListItemHarnessFilters,
   ListOptionHarnessFilters,
-  SelectionListHarnessFilters
+  SelectionListHarnessFilters,
 } from './list-harness-filters';
 import {getListItemPredicate, MatListItemHarnessBase} from './list-item-harness-base';
 
 /** Harness for interacting with a standard mat-selection-list in tests. */
 export class MatSelectionListHarness extends MatListHarnessBase<
-    typeof MatListOptionHarness, MatListOptionHarness, ListOptionHarnessFilters> {
+  typeof MatListOptionHarness,
+  MatListOptionHarness,
+  ListOptionHarnessFilters
+> {
   /** The selector for the host element of a `MatSelectionList` instance. */
   static hostSelector = '.mat-selection-list';
 
@@ -28,8 +31,9 @@ export class MatSelectionListHarness extends MatListHarnessBase<
    * @param options Options for filtering which selection list instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: SelectionListHarnessFilters = {}):
-      HarnessPredicate<MatSelectionListHarness> {
+  static with(
+    options: SelectionListHarnessFilters = {},
+  ): HarnessPredicate<MatSelectionListHarness> {
     return new HarnessPredicate(MatSelectionListHarness, options);
   }
 
@@ -37,7 +41,7 @@ export class MatSelectionListHarness extends MatListHarnessBase<
 
   /** Whether the selection list is disabled. */
   async isDisabled(): Promise<boolean> {
-    return await (await this.host()).getAttribute('aria-disabled') === 'true';
+    return (await (await this.host()).getAttribute('aria-disabled')) === 'true';
   }
 
   /**
@@ -82,27 +86,30 @@ export class MatListOptionHarness extends MatListItemHarnessBase {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: ListOptionHarnessFilters = {}): HarnessPredicate<MatListOptionHarness> {
-    return getListItemPredicate(MatListOptionHarness, options)
-        .addOption('is selected', options.selected,
-            async (harness, selected) => await harness.isSelected() === selected);
+    return getListItemPredicate(MatListOptionHarness, options).addOption(
+      'is selected',
+      options.selected,
+      async (harness, selected) => (await harness.isSelected()) === selected,
+    );
   }
 
   private _itemContent = this.locatorFor('.mat-list-item-content');
 
   /** Gets the position of the checkbox relative to the list option content. */
   async getCheckboxPosition(): Promise<MatListOptionCheckboxPosition> {
-    return await (await this._itemContent()).hasClass('mat-list-item-content-reverse') ?
-        'after' : 'before';
+    return (await (await this._itemContent()).hasClass('mat-list-item-content-reverse'))
+      ? 'after'
+      : 'before';
   }
 
   /** Whether the list option is selected. */
   async isSelected(): Promise<boolean> {
-    return await (await this.host()).getAttribute('aria-selected') === 'true';
+    return (await (await this.host()).getAttribute('aria-selected')) === 'true';
   }
 
   /** Whether the list option is disabled. */
   async isDisabled(): Promise<boolean> {
-    return await (await this.host()).getAttribute('aria-disabled') === 'true';
+    return (await (await this.host()).getAttribute('aria-disabled')) === 'true';
   }
 
   /** Focuses the list option. */
@@ -130,7 +137,7 @@ export class MatListOptionHarness extends MatListItemHarnessBase {
    * nothing if it is already checked.
    */
   async select() {
-    if (!await this.isSelected()) {
+    if (!(await this.isSelected())) {
       return this.toggle();
     }
   }

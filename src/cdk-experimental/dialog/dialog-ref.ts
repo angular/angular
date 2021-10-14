@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {OverlayRef, GlobalPositionStrategy, OverlaySizeConfig} from '@angular/cdk/overlay';
 import {ESCAPE, hasModifierKey} from '@angular/cdk/keycodes';
 import {Observable} from 'rxjs';
@@ -33,8 +32,8 @@ export class DialogRef<T, R = any> {
   constructor(
     public _overlayRef: OverlayRef,
     protected _containerInstance: CdkDialogContainer,
-    readonly id: string = `dialog-${uniqueId++}`) {
-
+    readonly id: string = `dialog-${uniqueId++}`,
+  ) {
     // If the dialog has a backdrop, handle clicks from the backdrop.
     if (_containerInstance._config.hasBackdrop) {
       _overlayRef.backdropClick().subscribe(() => {
@@ -55,10 +54,13 @@ export class DialogRef<T, R = any> {
     });
 
     // Close when escape keydown event occurs
-    _overlayRef.keydownEvents()
-      .pipe(filter(event => {
-        return event.keyCode === ESCAPE && !this.disableClose && !hasModifierKey(event);
-      }))
+    _overlayRef
+      .keydownEvents()
+      .pipe(
+        filter(event => {
+          return event.keyCode === ESCAPE && !this.disableClose && !hasModifierKey(event);
+        }),
+      )
       .subscribe(event => {
         event.preventDefault();
         this.close();

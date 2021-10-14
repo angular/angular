@@ -15,7 +15,7 @@ import * as ts from 'typescript';
  * is need when printing a node. e.g. it contains information about comma positions in
  * an array literal expression.
  */
-export function getParentSyntaxList(node: ts.Node): ts.SyntaxList|null {
+export function getParentSyntaxList(node: ts.Node): ts.SyntaxList | null {
   if (!node.parent) {
     return null;
   }
@@ -34,7 +34,7 @@ export function getParentSyntaxList(node: ts.Node): ts.SyntaxList|null {
 }
 
 /** Looks for the trailing comma of the given element within the syntax list. */
-function findTrailingCommaToken(list: ts.SyntaxList, element: ts.Node): ts.Node|null {
+function findTrailingCommaToken(list: ts.SyntaxList, element: ts.Node): ts.Node | null {
   let foundElement = false;
   for (let child of list.getChildren()) {
     if (!foundElement && child === element) {

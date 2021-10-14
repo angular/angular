@@ -18,7 +18,8 @@ export function removeElementFromHtml(element: parse5.Element, recorder: UpdateR
   const {startOffset, endOffset} = element.sourceCodeLocation!;
   const parentIndex = element.parentNode.childNodes.indexOf(element);
   const precedingTextSibling = element.parentNode.childNodes.find(
-      (f, i): f is parse5.TextNode => f.nodeName === '#text' && i === parentIndex - 1);
+    (f, i): f is parse5.TextNode => f.nodeName === '#text' && i === parentIndex - 1,
+  );
 
   recorder.remove(startOffset, endOffset - startOffset);
 
@@ -26,7 +27,8 @@ export function removeElementFromHtml(element: parse5.Element, recorder: UpdateR
   if (precedingTextSibling && /^\s+$/.test(precedingTextSibling.value)) {
     const textSiblingLocation = precedingTextSibling.sourceCodeLocation!;
     recorder.remove(
-        textSiblingLocation.startOffset,
-        textSiblingLocation.endOffset - textSiblingLocation.startOffset);
+      textSiblingLocation.startOffset,
+      textSiblingLocation.endOffset - textSiblingLocation.startOffset,
+    );
   }
 }

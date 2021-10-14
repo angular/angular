@@ -12,7 +12,7 @@ import {
   Component,
   ElementRef,
   OnDestroy,
-  ViewChild
+  ViewChild,
 } from '@angular/core';
 
 interface Video {
@@ -59,7 +59,7 @@ export class YouTubePlayerDemo implements AfterViewInit, OnDestroy {
     this.videoWidth = Math.min(this.demoYouTubePlayer.nativeElement.clientWidth, 1200);
     this.videoHeight = this.videoWidth * 0.6;
     this._changeDetectorRef.detectChanges();
-  }
+  };
 
   ngOnDestroy(): void {
     window.removeEventListener('resize', this.onResize);

@@ -17,9 +17,9 @@ export interface InputNameUpgradeData {
   /** Controls which elements and attributes in which this replacement is made. */
   limitedTo: {
     /** Limit to elements with any of these element tags. */
-    elements?: string[],
+    elements?: string[];
     /** Limit to elements with any of these attributes. */
-    attributes?: string[],
+    attributes?: string[];
   };
 }
 
@@ -31,76 +31,88 @@ export const inputNames: VersionChanges<InputNameUpgradeData> = {
         {
           replace: 'origin',
           replaceWith: 'cdkConnectedOverlayOrigin',
-          limitedTo:
-              {attributes: ['cdk-connected-overlay', 'connected-overlay', 'cdkConnectedOverlay']}
+          limitedTo: {
+            attributes: ['cdk-connected-overlay', 'connected-overlay', 'cdkConnectedOverlay'],
+          },
         },
         {
           replace: 'positions',
           replaceWith: 'cdkConnectedOverlayPositions',
-          limitedTo:
-              {attributes: ['cdk-connected-overlay', 'connected-overlay', 'cdkConnectedOverlay']}
+          limitedTo: {
+            attributes: ['cdk-connected-overlay', 'connected-overlay', 'cdkConnectedOverlay'],
+          },
         },
         {
           replace: 'offsetX',
           replaceWith: 'cdkConnectedOverlayOffsetX',
-          limitedTo:
-              {attributes: ['cdk-connected-overlay', 'connected-overlay', 'cdkConnectedOverlay']}
+          limitedTo: {
+            attributes: ['cdk-connected-overlay', 'connected-overlay', 'cdkConnectedOverlay'],
+          },
         },
         {
           replace: 'offsetY',
           replaceWith: 'cdkConnectedOverlayOffsetY',
-          limitedTo:
-              {attributes: ['cdk-connected-overlay', 'connected-overlay', 'cdkConnectedOverlay']}
+          limitedTo: {
+            attributes: ['cdk-connected-overlay', 'connected-overlay', 'cdkConnectedOverlay'],
+          },
         },
         {
           replace: 'width',
           replaceWith: 'cdkConnectedOverlayWidth',
-          limitedTo:
-              {attributes: ['cdk-connected-overlay', 'connected-overlay', 'cdkConnectedOverlay']}
+          limitedTo: {
+            attributes: ['cdk-connected-overlay', 'connected-overlay', 'cdkConnectedOverlay'],
+          },
         },
         {
           replace: 'height',
           replaceWith: 'cdkConnectedOverlayHeight',
-          limitedTo:
-              {attributes: ['cdk-connected-overlay', 'connected-overlay', 'cdkConnectedOverlay']}
+          limitedTo: {
+            attributes: ['cdk-connected-overlay', 'connected-overlay', 'cdkConnectedOverlay'],
+          },
         },
         {
           replace: 'minWidth',
           replaceWith: 'cdkConnectedOverlayMinWidth',
-          limitedTo:
-              {attributes: ['cdk-connected-overlay', 'connected-overlay', 'cdkConnectedOverlay']}
+          limitedTo: {
+            attributes: ['cdk-connected-overlay', 'connected-overlay', 'cdkConnectedOverlay'],
+          },
         },
         {
           replace: 'minHeight',
           replaceWith: 'cdkConnectedOverlayMinHeight',
-          limitedTo:
-              {attributes: ['cdk-connected-overlay', 'connected-overlay', 'cdkConnectedOverlay']}
+          limitedTo: {
+            attributes: ['cdk-connected-overlay', 'connected-overlay', 'cdkConnectedOverlay'],
+          },
         },
         {
           replace: 'backdropClass',
           replaceWith: 'cdkConnectedOverlayBackdropClass',
-          limitedTo:
-              {attributes: ['cdk-connected-overlay', 'connected-overlay', 'cdkConnectedOverlay']}
+          limitedTo: {
+            attributes: ['cdk-connected-overlay', 'connected-overlay', 'cdkConnectedOverlay'],
+          },
         },
         {
           replace: 'scrollStrategy',
           replaceWith: 'cdkConnectedOverlayScrollStrategy',
-          limitedTo:
-              {attributes: ['cdk-connected-overlay', 'connected-overlay', 'cdkConnectedOverlay']}
+          limitedTo: {
+            attributes: ['cdk-connected-overlay', 'connected-overlay', 'cdkConnectedOverlay'],
+          },
         },
         {
           replace: 'open',
           replaceWith: 'cdkConnectedOverlayOpen',
-          limitedTo:
-              {attributes: ['cdk-connected-overlay', 'connected-overlay', 'cdkConnectedOverlay']}
+          limitedTo: {
+            attributes: ['cdk-connected-overlay', 'connected-overlay', 'cdkConnectedOverlay'],
+          },
         },
         {
           replace: 'hasBackdrop',
           replaceWith: 'cdkConnectedOverlayHasBackdrop',
-          limitedTo:
-              {attributes: ['cdk-connected-overlay', 'connected-overlay', 'cdkConnectedOverlay']}
-        }
-      ]
+          limitedTo: {
+            attributes: ['cdk-connected-overlay', 'connected-overlay', 'cdkConnectedOverlay'],
+          },
+        },
+      ],
     },
-  ]
+  ],
 };

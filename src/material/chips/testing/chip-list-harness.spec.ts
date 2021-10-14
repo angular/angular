@@ -19,6 +19,6 @@ describe('Non-MDC-based MatChipListHarness', () => {
     MatChipInputHarness,
     MatChipRemoveHarness,
     MatIconModule,
-    MatIconHarness
+    MatIconHarness,
   );
 });

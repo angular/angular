@@ -11,7 +11,6 @@ import {NgModule} from '@angular/core';
 import {CdkAutofill} from './autofill';
 import {CdkTextareaAutosize} from './autosize';
 
-
 @NgModule({
   declarations: [CdkAutofill, CdkTextareaAutosize],
   imports: [PlatformModule],

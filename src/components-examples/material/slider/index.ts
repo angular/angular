@@ -37,5 +37,4 @@ const EXAMPLES = [
   exports: EXAMPLES,
   entryComponents: EXAMPLES,
 })
-export class SliderExamplesModule {
-}
+export class SliderExamplesModule {}

@@ -15,19 +15,22 @@ import {MatFormFieldHarness} from './form-field-harness';
 import {runHarnessTests} from './shared.spec';
 
 describe('Non-MDC-based MatFormFieldHarness', () => {
-  runHarnessTests([
-    MatFormFieldModule,
-    MatAutocompleteModule,
-    MatInputModule,
-    MatSelectModule,
-    MatNativeDateModule,
-    MatDatepickerModule,
-  ], {
-    formFieldHarness: MatFormFieldHarness,
-    inputHarness: MatInputHarness,
-    selectHarness: MatSelectHarness,
-    datepickerInputHarness: MatDatepickerInputHarness,
-    dateRangeInputHarness: MatDateRangeInputHarness,
-    isMdcImplementation: false,
-  });
+  runHarnessTests(
+    [
+      MatFormFieldModule,
+      MatAutocompleteModule,
+      MatInputModule,
+      MatSelectModule,
+      MatNativeDateModule,
+      MatDatepickerModule,
+    ],
+    {
+      formFieldHarness: MatFormFieldHarness,
+      inputHarness: MatInputHarness,
+      selectHarness: MatSelectHarness,
+      datepickerInputHarness: MatDatepickerInputHarness,
+      dateRangeInputHarness: MatDateRangeInputHarness,
+      isMdcImplementation: false,
+    },
+  );
 });

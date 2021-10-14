@@ -13,5 +13,4 @@ const EXAMPLES = [CdkClipboardOverviewExample];
   exports: EXAMPLES,
   entryComponents: EXAMPLES,
 })
-export class CdkClipboardExamplesModule {
-}
+export class CdkClipboardExamplesModule {}

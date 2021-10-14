@@ -8,7 +8,10 @@
 
 /** Possible states for a ripple element. */
 export const enum RippleState {
-  FADING_IN, VISIBLE, FADING_OUT, HIDDEN
+  FADING_IN,
+  VISIBLE,
+  FADING_OUT,
+  HIDDEN,
 }
 
 export type RippleConfig = {
@@ -35,7 +38,6 @@ export interface RippleAnimationConfig {
  * Reference to a previously launched ripple element.
  */
 export class RippleRef {
-
   /** Current state of the ripple. */
   state: RippleState = RippleState.HIDDEN;
 
@@ -44,8 +46,8 @@ export class RippleRef {
     /** Reference to the ripple HTML element. */
     public element: HTMLElement,
     /** Ripple configuration used for the ripple. */
-    public config: RippleConfig) {
-  }
+    public config: RippleConfig,
+  ) {}
 
   /** Fades out the ripple element. */
   fadeOut() {

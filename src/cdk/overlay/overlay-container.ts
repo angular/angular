@@ -49,9 +49,9 @@ export class OverlayContainer implements OnDestroy {
     // module or Angular starts tearing down the testing `NgModule`. See:
     // https://github.com/angular/angular/issues/18831
     if (this._platform.isBrowser || _isTestEnvironment()) {
-      const oppositePlatformContainers =
-          this._document.querySelectorAll(`.${containerClass}[platform="server"], ` +
-                                          `.${containerClass}[platform="test"]`);
+      const oppositePlatformContainers = this._document.querySelectorAll(
+        `.${containerClass}[platform="server"], ` + `.${containerClass}[platform="test"]`,
+      );
 
       // Remove any old containers from the opposite platform.
       // This can happen when transitioning from the server to the client.

@@ -9,7 +9,6 @@
 import {Component} from '@angular/core';
 import {ThemePalette} from '@angular/material/core';
 
-
 // TODO(josephperrott): Add an automatically filling example progress bar.
 
 @Component({

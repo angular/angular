@@ -1,7 +1,6 @@
 import {coerceBooleanProperty} from './boolean-property';
 
 describe('coerceBooleanProperty', () => {
-
   it('should coerce undefined to false', () => {
     expect(coerceBooleanProperty(undefined)).toBe(false);
   });

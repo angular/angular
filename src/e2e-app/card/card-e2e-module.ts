@@ -11,10 +11,7 @@ import {ExampleViewerModule} from '../example-viewer/example-viewer-module';
 import {CardE2e} from './card-e2e';
 
 @NgModule({
-  imports: [
-    ExampleViewerModule,
-  ],
+  imports: [ExampleViewerModule],
   declarations: [CardE2e],
 })
-export class CardE2eModule {
-}
+export class CardE2eModule {}

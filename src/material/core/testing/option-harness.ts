@@ -25,12 +25,14 @@ export class MatOptionHarness extends ComponentHarness {
    */
   static with(options: OptionHarnessFilters = {}) {
     return new HarnessPredicate(MatOptionHarness, options)
-        .addOption('text', options.text,
-            async (harness, title) =>
-                HarnessPredicate.stringMatches(await harness.getText(), title))
-        .addOption('isSelected', options.isSelected,
-            async (harness, isSelected) => await harness.isSelected() === isSelected);
-
+      .addOption('text', options.text, async (harness, title) =>
+        HarnessPredicate.stringMatches(await harness.getText(), title),
+      )
+      .addOption(
+        'isSelected',
+        options.isSelected,
+        async (harness, isSelected) => (await harness.isSelected()) === isSelected,
+      );
   }
 
   /** Clicks the option. */

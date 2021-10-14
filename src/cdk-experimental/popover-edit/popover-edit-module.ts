@@ -13,15 +13,12 @@ import {
   CdkPopoverEditTabOut,
   CdkRowHoverContent,
   CdkEditable,
-  CdkEditOpen
+  CdkEditOpen,
 } from './table-directives';
-import {CdkEditControl,
-  CdkEditRevert,
-  CdkEditClose
-} from './lens-directives';
+import {CdkEditControl, CdkEditRevert, CdkEditClose} from './lens-directives';
 import {
   DefaultPopoverEditPositionStrategyFactory,
-  PopoverEditPositionStrategyFactory
+  PopoverEditPositionStrategyFactory,
 } from './popover-edit-position-strategy-factory';
 
 const EXPORTED_DECLARATIONS = [
@@ -36,14 +33,14 @@ const EXPORTED_DECLARATIONS = [
 ];
 
 @NgModule({
-  imports: [
-    OverlayModule,
-  ],
+  imports: [OverlayModule],
   exports: EXPORTED_DECLARATIONS,
   declarations: EXPORTED_DECLARATIONS,
-  providers: [{
-    provide: PopoverEditPositionStrategyFactory,
-    useClass: DefaultPopoverEditPositionStrategyFactory
-  }],
+  providers: [
+    {
+      provide: PopoverEditPositionStrategyFactory,
+      useClass: DefaultPopoverEditPositionStrategyFactory,
+    },
+  ],
 })
-export class CdkPopoverEditModule { }
+export class CdkPopoverEditModule {}

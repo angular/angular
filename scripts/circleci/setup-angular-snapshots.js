@@ -20,7 +20,7 @@ const ignorePackages = [
   // version of the dev-infra tooling as that could break tooling from running snapshot
   // tests for the actual snapshot Angular framework code.
   '@angular/dev-infra-private',
-]
+];
 
 const {writeFileSync} = require('fs');
 const {join} = require('path');
@@ -37,10 +37,12 @@ packageJson['resolutions'] = packageJson['resolutions'] || {};
 
 // List of packages which should be updated to their most recent snapshot version, or
 // snapshot version based on the specified tag.
-const snapshotPackages = Object
-  .keys({...packageJson.dependencies, ...packageJson.devDependencies})
-  .filter(packageName =>
-      packageName.startsWith('@angular/') && !ignorePackages.includes(packageName));
+const snapshotPackages = Object.keys({
+  ...packageJson.dependencies,
+  ...packageJson.devDependencies,
+}).filter(
+  packageName => packageName.startsWith('@angular/') && !ignorePackages.includes(packageName),
+);
 
 console.log('Setting up snapshot builds for:\n');
 console.log(`  ${snapshotPackages.map(n => `${n}${packageSuffix}`).join('\n  ')}\n`);

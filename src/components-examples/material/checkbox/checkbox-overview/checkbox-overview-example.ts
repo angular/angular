@@ -24,8 +24,8 @@ export class CheckboxOverviewExample {
     subtasks: [
       {name: 'Primary', completed: false, color: 'primary'},
       {name: 'Accent', completed: false, color: 'accent'},
-      {name: 'Warn', completed: false, color: 'warn'}
-    ]
+      {name: 'Warn', completed: false, color: 'warn'},
+    ],
   };
 
   allComplete: boolean = false;
@@ -46,6 +46,6 @@ export class CheckboxOverviewExample {
     if (this.task.subtasks == null) {
       return;
     }
-    this.task.subtasks.forEach(t => t.completed = completed);
+    this.task.subtasks.forEach(t => (t.completed = completed));
   }
 }

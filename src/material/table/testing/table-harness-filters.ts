@@ -17,9 +17,7 @@ export interface CellHarnessFilters extends BaseHarnessFilters {
 }
 
 /** A set of criteria that can be used to filter a list of row harness instances. */
-export interface RowHarnessFilters extends BaseHarnessFilters {
-}
+export interface RowHarnessFilters extends BaseHarnessFilters {}
 
 /** A set of criteria that can be used to filter a list of table harness instances. */
-export interface TableHarnessFilters extends BaseHarnessFilters {
-}
+export interface TableHarnessFilters extends BaseHarnessFilters {}

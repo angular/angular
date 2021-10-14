@@ -22,7 +22,6 @@ export type StickyDirection = 'top' | 'bottom' | 'left' | 'right';
  */
 export const STICKY_DIRECTIONS: StickyDirection[] = ['top', 'bottom', 'left', 'right'];
 
-
 /**
  * Applies and removes sticky positioning styles to the `CdkTable` rows and columns cells.
  * @docs-private
@@ -45,13 +44,15 @@ export class StickyStyler {
    * @param _positionListener A listener that is notified of changes to sticky rows/columns
    *     and their dimensions.
    */
-  constructor(private _isNativeHtmlTable: boolean,
-              private _stickCellCss: string,
-              public direction: Direction,
-              private _coalescedStyleScheduler: _CoalescedStyleScheduler,
-              private _isBrowser = true,
-              private readonly _needsPositionStickyOnElement = true,
-              private readonly _positionListener?: StickyPositioningListener) {
+  constructor(
+    private _isNativeHtmlTable: boolean,
+    private _stickCellCss: string,
+    public direction: Direction,
+    private _coalescedStyleScheduler: _CoalescedStyleScheduler,
+    private _isBrowser = true,
+    private readonly _needsPositionStickyOnElement = true,
+    private readonly _positionListener?: StickyPositioningListener,
+  ) {
     this._borderCellCss = {
       'top': `${_stickCellCss}-border-elem-top`,
       'bottom': `${_stickCellCss}-border-elem-bottom`,
@@ -101,10 +102,16 @@ export class StickyStyler {
    *     column cell. If `false` cached widths will be used instead.
    */
   updateStickyColumns(
-      rows: HTMLElement[], stickyStartStates: boolean[], stickyEndStates: boolean[],
-      recalculateCellWidths = true) {
-    if (!rows.length || !this._isBrowser || !(stickyStartStates.some(state => state) ||
-        stickyEndStates.some(state => state))) {
+    rows: HTMLElement[],
+    stickyStartStates: boolean[],
+    stickyEndStates: boolean[],
+    recalculateCellWidths = true,
+  ) {
+    if (
+      !rows.length ||
+      !this._isBrowser ||
+      !(stickyStartStates.some(state => state) || stickyEndStates.some(state => state))
+    ) {
       if (this._positionListener) {
         this._positionListener.stickyColumnsUpdated({sizes: []});
         this._positionListener.stickyEndColumnsUpdated({sizes: []});
@@ -144,19 +151,21 @@ export class StickyStyler {
 
       if (this._positionListener) {
         this._positionListener.stickyColumnsUpdated({
-          sizes: lastStickyStart === -1 ?
-            [] :
-            cellWidths
-                .slice(0, lastStickyStart + 1)
-                .map((width, index) => stickyStartStates[index] ? width : null)
+          sizes:
+            lastStickyStart === -1
+              ? []
+              : cellWidths
+                  .slice(0, lastStickyStart + 1)
+                  .map((width, index) => (stickyStartStates[index] ? width : null)),
         });
         this._positionListener.stickyEndColumnsUpdated({
-          sizes: firstStickyEnd === -1 ?
-            [] :
-            cellWidths
-                .slice(firstStickyEnd)
-                .map((width, index) => stickyEndStates[index + firstStickyEnd] ? width : null)
-                .reverse()
+          sizes:
+            firstStickyEnd === -1
+              ? []
+              : cellWidths
+                  .slice(firstStickyEnd)
+                  .map((width, index) => (stickyEndStates[index + firstStickyEnd] ? width : null))
+                  .reverse(),
         });
       }
     });
@@ -187,7 +196,7 @@ export class StickyStyler {
 
     // Measure row heights all at once before adding sticky styles to reduce layout thrashing.
     const stickyOffsets: number[] = [];
-    const stickyCellHeights: (number|undefined)[] = [];
+    const stickyCellHeights: (number | undefined)[] = [];
     const elementsToStick: HTMLElement[][] = [];
     for (let rowIndex = 0, stickyOffset = 0; rowIndex < rows.length; rowIndex++) {
       if (!states[rowIndex]) {
@@ -196,8 +205,9 @@ export class StickyStyler {
 
       stickyOffsets[rowIndex] = stickyOffset;
       const row = rows[rowIndex];
-      elementsToStick[rowIndex] = this._isNativeHtmlTable ?
-          Array.from(row.children) as HTMLElement[] : [row];
+      elementsToStick[rowIndex] = this._isNativeHtmlTable
+        ? (Array.from(row.children) as HTMLElement[])
+        : [row];
 
       const height = row.getBoundingClientRect().height;
       stickyOffset += height;
@@ -222,11 +232,17 @@ export class StickyStyler {
       }
 
       if (position === 'top') {
-        this._positionListener?.stickyHeaderRowsUpdated(
-            {sizes: stickyCellHeights, offsets: stickyOffsets, elements: elementsToStick});
+        this._positionListener?.stickyHeaderRowsUpdated({
+          sizes: stickyCellHeights,
+          offsets: stickyOffsets,
+          elements: elementsToStick,
+        });
       } else {
-        this._positionListener?.stickyFooterRowsUpdated(
-            {sizes: stickyCellHeights, offsets: stickyOffsets, elements: elementsToStick});
+        this._positionListener?.stickyFooterRowsUpdated({
+          sizes: stickyCellHeights,
+          offsets: stickyOffsets,
+          elements: elementsToStick,
+        });
       }
     });
   }
@@ -269,8 +285,9 @@ export class StickyStyler {
     // the sticky CSS class.
     // Short-circuit checking element.style[dir] for stickyDirections as they
     // were already removed above.
-    const hasDirection = STICKY_DIRECTIONS.some(dir =>
-        stickyDirections.indexOf(dir) === -1 && element.style[dir]);
+    const hasDirection = STICKY_DIRECTIONS.some(
+      dir => stickyDirections.indexOf(dir) === -1 && element.style[dir],
+    );
     if (hasDirection) {
       element.style.zIndex = this._getCalculatedZIndex(element);
     } else {
@@ -288,8 +305,12 @@ export class StickyStyler {
    * to be sticky (and -webkit-sticky), setting the appropriate zIndex, and adding a sticky
    * direction and value.
    */
-  _addStickyStyle(element: HTMLElement, dir: StickyDirection, dirValue: number,
-      isBorderElement: boolean) {
+  _addStickyStyle(
+    element: HTMLElement,
+    dir: StickyDirection,
+    dirValue: number,
+    isBorderElement: boolean,
+  ) {
     element.classList.add(this._stickCellCss);
     if (isBorderElement) {
       element.classList.add(this._borderCellCss[dir]);

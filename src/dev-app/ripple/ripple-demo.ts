@@ -9,7 +9,6 @@
 import {Component, ViewChild} from '@angular/core';
 import {MatRipple} from '@angular/material/core';
 
-
 @Component({
   selector: 'ripple-demo',
   templateUrl: 'ripple-demo.html',
@@ -36,7 +35,7 @@ export class RippleDemo {
     const rippleConfig = {
       centered: true,
       persistent: persistent,
-      animation: disableAnimation ? {enterDuration: 0, exitDuration: 0} : undefined
+      animation: disableAnimation ? {enterDuration: 0, exitDuration: 0} : undefined,
     };
 
     this.ripple.launch(0, 0, rippleConfig);
@@ -47,5 +46,4 @@ export class RippleDemo {
       this.ripple.fadeOutAll();
     }
   }
-
 }

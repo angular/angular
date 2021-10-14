@@ -15,7 +15,7 @@ type PropertyNameWithText = Exclude<ts.PropertyName, ts.ComputedPropertyName>;
  * Gets the text of the given property name. Returns null if the property
  * name couldn't be determined statically.
  */
-export function getPropertyNameText(node: ts.PropertyName): string|null {
+export function getPropertyNameText(node: ts.PropertyName): string | null {
   if (ts.isIdentifier(node) || ts.isStringLiteralLike(node)) {
     return node.text;
   }

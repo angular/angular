@@ -14,5 +14,4 @@ import {MdcCheckboxE2e} from './mdc-checkbox-e2e';
   imports: [MatCheckboxModule],
   declarations: [MdcCheckboxE2e],
 })
-export class MdcCheckboxE2eModule {
-}
+export class MdcCheckboxE2eModule {}

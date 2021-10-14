@@ -18,7 +18,7 @@ export class GridFocusKeyManager extends GridKeyManager<HTMLElement> {
    * indices and focuses the newly active cell.
    * @param cell Row and column indices of the cell to be set as active.
    */
-  override setActiveCell(cell: {row: number, column: number}): void;
+  override setActiveCell(cell: {row: number; column: number}): void;
 
   /**
    * Sets the active cell to the cell that is specified and focuses it.

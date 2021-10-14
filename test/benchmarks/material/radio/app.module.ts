@@ -46,19 +46,24 @@ export class RadioBenchmarkApp {
   isTwoVisible = false;
   isTenVisible = false;
 
-  showTwo() { this.isTwoVisible = true; }
-  hideTwo() { this.isTwoVisible = false; }
+  showTwo() {
+    this.isTwoVisible = true;
+  }
+  hideTwo() {
+    this.isTwoVisible = false;
+  }
 
-  showTen() { this.isTenVisible = true; }
-  hideTen() { this.isTenVisible = false; }
+  showTen() {
+    this.isTenVisible = true;
+  }
+  hideTen() {
+    this.isTenVisible = false;
+  }
 }
 
 @NgModule({
   declarations: [RadioBenchmarkApp],
-  imports: [
-    BrowserModule,
-    MatRadioModule,
-  ],
+  imports: [BrowserModule, MatRadioModule],
   bootstrap: [RadioBenchmarkApp],
 })
 export class AppModule {}

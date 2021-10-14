@@ -18,7 +18,7 @@ import {
   OnChanges,
   OnDestroy,
   Optional,
-  Output
+  Output,
 } from '@angular/core';
 import {MatFormField, MAT_FORM_FIELD} from '@angular/material-experimental/mdc-form-field';
 import {MatChipsDefaultOptions, MAT_CHIPS_DEFAULT_OPTIONS} from './chip-default-options';
@@ -70,7 +70,7 @@ let nextUniqueId = 0;
     '[attr.aria-invalid]': '_chipGrid && _chipGrid.ngControl ? _chipGrid.ngControl.invalid : null',
     '[attr.aria-required]': '_chipGrid && _chipGrid.required || null',
     '[attr.required]': '_chipGrid && _chipGrid.required || null',
-  }
+  },
 })
 export class MatChipInput implements MatChipTextControl, AfterContentInit, OnChanges, OnDestroy {
   /** Used to prevent focus moving to chips while user is holding backspace */
@@ -93,8 +93,12 @@ export class MatChipInput implements MatChipTextControl, AfterContentInit, OnCha
    * Whether or not the chipEnd event will be emitted when the input is blurred.
    */
   @Input('matChipInputAddOnBlur')
-  get addOnBlur(): boolean { return this._addOnBlur; }
-  set addOnBlur(value: boolean) { this._addOnBlur = coerceBooleanProperty(value); }
+  get addOnBlur(): boolean {
+    return this._addOnBlur;
+  }
+  set addOnBlur(value: boolean) {
+    this._addOnBlur = coerceBooleanProperty(value);
+  }
   _addOnBlur: boolean = false;
 
   /**
@@ -104,7 +108,7 @@ export class MatChipInput implements MatChipTextControl, AfterContentInit, OnCha
    */
   @Input('matChipInputSeparatorKeyCodes')
   separatorKeyCodes: readonly number[] | ReadonlySet<number> =
-      this._defaultOptions.separatorKeyCodes;
+    this._defaultOptions.separatorKeyCodes;
 
   /** Emitted when a chip is to be added. */
   @Output('matChipInputTokenEnd')
@@ -118,12 +122,18 @@ export class MatChipInput implements MatChipTextControl, AfterContentInit, OnCha
 
   /** Whether the input is disabled. */
   @Input()
-  get disabled(): boolean { return this._disabled || (this._chipGrid && this._chipGrid.disabled); }
-  set disabled(value: boolean) { this._disabled = coerceBooleanProperty(value); }
+  get disabled(): boolean {
+    return this._disabled || (this._chipGrid && this._chipGrid.disabled);
+  }
+  set disabled(value: boolean) {
+    this._disabled = coerceBooleanProperty(value);
+  }
   private _disabled: boolean = false;
 
   /** Whether the input is empty. */
-  get empty(): boolean { return !this.inputElement.value; }
+  get empty(): boolean {
+    return !this.inputElement.value;
+  }
 
   /** The native input element to which this directive is attached. */
   readonly inputElement: HTMLInputElement;
@@ -131,13 +141,14 @@ export class MatChipInput implements MatChipTextControl, AfterContentInit, OnCha
   constructor(
     protected _elementRef: ElementRef<HTMLInputElement>,
     @Inject(MAT_CHIPS_DEFAULT_OPTIONS) private _defaultOptions: MatChipsDefaultOptions,
-    @Optional() @Inject(MAT_FORM_FIELD) formField?: MatFormField) {
-      this.inputElement = this._elementRef.nativeElement as HTMLInputElement;
+    @Optional() @Inject(MAT_FORM_FIELD) formField?: MatFormField,
+  ) {
+    this.inputElement = this._elementRef.nativeElement as HTMLInputElement;
 
-      if (formField) {
-        this.inputElement.classList.add('mat-mdc-form-field-input-control');
-      }
+    if (formField) {
+      this.inputElement.classList.add('mat-mdc-form-field-input-control');
     }
+  }
 
   ngOnChanges() {
     this._chipGrid.stateChanges.next();

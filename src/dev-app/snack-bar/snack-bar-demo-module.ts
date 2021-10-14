@@ -32,5 +32,4 @@ import {SnackBarDemo} from './snack-bar-demo';
   ],
   declarations: [SnackBarDemo],
 })
-export class SnackBarDemoModule {
-}
+export class SnackBarDemoModule {}

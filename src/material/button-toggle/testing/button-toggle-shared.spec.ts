@@ -7,8 +7,9 @@ import {MatButtonToggleHarness} from './button-toggle-harness';
 
 /** Shared tests to run on both the original and MDC-based button toggles. */
 export function runHarnessTests(
-    buttonToggleModule: typeof MatButtonToggleModule,
-    buttonToggleHarness: typeof MatButtonToggleHarness) {
+  buttonToggleModule: typeof MatButtonToggleModule,
+  buttonToggleHarness: typeof MatButtonToggleHarness,
+) {
   let fixture: ComponentFixture<ButtonToggleHarnessTest>;
   let loader: HarnessLoader;
 
@@ -134,9 +135,8 @@ export function runHarnessTests(
         aria-labelledby="second-label"
         appearance="legacy">Second</mat-button-toggle>
       <span id="second-label">Second toggle</span>
-  `
+  `,
 })
 class ButtonToggleHarnessTest {
   disabled = true;
 }
-

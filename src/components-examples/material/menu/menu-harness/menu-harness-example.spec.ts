@@ -16,14 +16,14 @@ describe('MenuHarnessExample', () => {
 
   beforeAll(() => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
-      teardown: {destroyAfterEach: true}
+      teardown: {destroyAfterEach: true},
     });
   });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MatMenuModule, NoopAnimationsModule],
-      declarations: [MenuHarnessExample]
+      declarations: [MenuHarnessExample],
     }).compileComponents();
     fixture = TestBed.createComponent(MenuHarnessExample);
     fixture.detectChanges();

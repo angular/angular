@@ -25,14 +25,16 @@ import {MatStepperIconContext} from './stepper-icon';
 import {CdkStepHeader, StepState} from '@angular/cdk/stepper';
 import {mixinColor, CanColor} from '@angular/material/core';
 
-
 // Boilerplate for applying mixins to MatStepHeader.
 /** @docs-private */
-const _MatStepHeaderBase = mixinColor(class MatStepHeaderBase extends CdkStepHeader {
-  constructor(elementRef: ElementRef) {
-    super(elementRef);
-  }
-}, 'primary');
+const _MatStepHeaderBase = mixinColor(
+  class MatStepHeaderBase extends CdkStepHeader {
+    constructor(elementRef: ElementRef) {
+      super(elementRef);
+    }
+  },
+  'primary',
+);
 
 @Component({
   selector: 'mat-step-header',
@@ -46,8 +48,10 @@ const _MatStepHeaderBase = mixinColor(class MatStepHeaderBase extends CdkStepHea
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatStepHeader extends _MatStepHeaderBase implements AfterViewInit, OnDestroy,
-  CanColor {
+export class MatStepHeader
+  extends _MatStepHeaderBase
+  implements AfterViewInit, OnDestroy, CanColor
+{
   private _intlSubscription: Subscription;
 
   /** State of the given step. */
@@ -81,7 +85,8 @@ export class MatStepHeader extends _MatStepHeaderBase implements AfterViewInit, 
     public _intl: MatStepperIntl,
     private _focusMonitor: FocusMonitor,
     _elementRef: ElementRef<HTMLElement>,
-    changeDetectorRef: ChangeDetectorRef) {
+    changeDetectorRef: ChangeDetectorRef,
+  ) {
     super(_elementRef);
     this._intlSubscription = _intl.changes.subscribe(() => changeDetectorRef.markForCheck());
   }
@@ -124,7 +129,7 @@ export class MatStepHeader extends _MatStepHeaderBase implements AfterViewInit, 
     return {
       index: this.index,
       active: this.active,
-      optional: this.optional
+      optional: this.optional,
     };
   }
 

@@ -12,7 +12,7 @@ import {
   BooleanInput,
   coerceBooleanProperty,
   coerceNumberProperty,
-  NumberInput
+  NumberInput,
 } from '@angular/cdk/coercion';
 import {
   DOWN_ARROW,
@@ -82,7 +82,7 @@ const MIN_VALUE_ACTIVE_THUMB_GAP = 10;
 export const MAT_SLIDER_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => MatSlider),
-  multi: true
+  multi: true,
 };
 
 /** A simple change event emitted by the MatSlider component. */
@@ -96,9 +96,16 @@ export class MatSliderChange {
 
 // Boilerplate for applying mixins to MatSlider.
 /** @docs-private */
-const _MatSliderBase = mixinTabIndex(mixinColor(mixinDisabled(class {
-  constructor(public _elementRef: ElementRef) {}
-}), 'accent'));
+const _MatSliderBase = mixinTabIndex(
+  mixinColor(
+    mixinDisabled(
+      class {
+        constructor(public _elementRef: ElementRef) {}
+      },
+    ),
+    'accent',
+  ),
+);
 
 /**
  * Allows users to select from a range of values by moving the slider thumb. It is similar in
@@ -145,7 +152,7 @@ const _MatSliderBase = mixinTabIndex(mixinColor(mixinDisabled(class {
     '[class.mat-slider-vertical]': 'vertical',
     '[class.mat-slider-min-value]': '_isMinValue()',
     '[class.mat-slider-hide-last-tick]':
-        'disabled || _isMinValue() && _getThumbGap() && _shouldInvertAxis()',
+      'disabled || _isMinValue() && _getThumbGap() && _shouldInvertAxis()',
     '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
   },
   templateUrl: 'slider.html',
@@ -154,11 +161,15 @@ const _MatSliderBase = mixinTabIndex(mixinColor(mixinDisabled(class {
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatSlider extends _MatSliderBase
-    implements ControlValueAccessor, OnDestroy, CanDisable, CanColor, AfterViewInit, HasTabIndex {
+export class MatSlider
+  extends _MatSliderBase
+  implements ControlValueAccessor, OnDestroy, CanDisable, CanColor, AfterViewInit, HasTabIndex
+{
   /** Whether the slider is inverted. */
   @Input()
-  get invert(): boolean { return this._invert; }
+  get invert(): boolean {
+    return this._invert;
+  }
   set invert(value: boolean) {
     this._invert = coerceBooleanProperty(value);
   }
@@ -166,7 +177,9 @@ export class MatSlider extends _MatSliderBase
 
   /** The maximum value that the slider can have. */
   @Input()
-  get max(): number { return this._max; }
+  get max(): number {
+    return this._max;
+  }
   set max(v: number) {
     this._max = coerceNumberProperty(v, this._max);
     this._percent = this._calculatePercentage(this._value);
@@ -178,7 +191,9 @@ export class MatSlider extends _MatSliderBase
 
   /** The minimum value that the slider can have. */
   @Input()
-  get min(): number { return this._min; }
+  get min(): number {
+    return this._min;
+  }
   set min(v: number) {
     this._min = coerceNumberProperty(v, this._min);
     this._percent = this._calculatePercentage(this._value);
@@ -190,7 +205,9 @@ export class MatSlider extends _MatSliderBase
 
   /** The values at which the thumb will snap. */
   @Input()
-  get step(): number { return this._step; }
+  get step(): number {
+    return this._step;
+  }
   set step(v: number) {
     this._step = coerceNumberProperty(v, this._step);
 
@@ -205,8 +222,12 @@ export class MatSlider extends _MatSliderBase
 
   /** Whether or not to show the thumb label. */
   @Input()
-  get thumbLabel(): boolean { return this._thumbLabel; }
-  set thumbLabel(value: boolean) { this._thumbLabel = coerceBooleanProperty(value); }
+  get thumbLabel(): boolean {
+    return this._thumbLabel;
+  }
+  set thumbLabel(value: boolean) {
+    this._thumbLabel = coerceBooleanProperty(value);
+  }
   private _thumbLabel: boolean = false;
 
   /**
@@ -214,7 +235,9 @@ export class MatSlider extends _MatSliderBase
    * Ex: Tick interval of 4 with a step of 3 will draw a tick every 4 steps (every 12 values).
    */
   @Input()
-  get tickInterval() { return this._tickInterval; }
+  get tickInterval() {
+    return this._tickInterval;
+  }
   set tickInterval(value: 'auto' | number) {
     if (value === 'auto') {
       this._tickInterval = 'auto';
@@ -266,7 +289,9 @@ export class MatSlider extends _MatSliderBase
 
   /** Whether the slider is vertical. */
   @Input()
-  get vertical(): boolean { return this._vertical; }
+  get vertical(): boolean {
+    return this._vertical;
+  }
   set vertical(value: boolean) {
     this._vertical = coerceBooleanProperty(value);
   }
@@ -317,7 +342,9 @@ export class MatSlider extends _MatSliderBase
   onTouched: () => any = () => {};
 
   /** The percentage of the slider that coincides with the value. */
-  get percent(): number { return this._clamp(this._percent); }
+  get percent(): number {
+    return this._clamp(this._percent);
+  }
   private _percent: number = 0;
 
   /**
@@ -342,7 +369,6 @@ export class MatSlider extends _MatSliderBase
     return this.vertical ? !this.invert : this.invert;
   }
 
-
   /** Whether the slider is at its minimum value. */
   _isMinValue() {
     return this.percent === 0;
@@ -363,19 +389,19 @@ export class MatSlider extends _MatSliderBase
   }
 
   /** CSS styles for the track background element. */
-  _getTrackBackgroundStyles(): { [key: string]: string } {
+  _getTrackBackgroundStyles(): {[key: string]: string} {
     const axis = this.vertical ? 'Y' : 'X';
     const scale = this.vertical ? `1, ${1 - this.percent}, 1` : `${1 - this.percent}, 1, 1`;
     const sign = this._shouldInvertMouseCoords() ? '-' : '';
 
     return {
       // scale3d avoids some rendering issues in Chrome. See #12071.
-      transform: `translate${axis}(${sign}${this._getThumbGap()}px) scale3d(${scale})`
+      transform: `translate${axis}(${sign}${this._getThumbGap()}px) scale3d(${scale})`,
     };
   }
 
   /** CSS styles for the track fill element. */
-  _getTrackFillStyles(): { [key: string]: string } {
+  _getTrackFillStyles(): {[key: string]: string} {
     const percent = this.percent;
     const axis = this.vertical ? 'Y' : 'X';
     const scale = this.vertical ? `1, ${percent}, 1` : `${percent}, 1, 1`;
@@ -388,24 +414,24 @@ export class MatSlider extends _MatSliderBase
       // something forces a style recalculation on it. Since we'll end up with `scale(0)` when
       // the value of the slider is 0, we can easily get into this situation. We force a
       // recalculation by changing the element's `display` when it goes from 0 to any other value.
-      display: percent === 0 ? 'none' : ''
+      display: percent === 0 ? 'none' : '',
     };
   }
 
   /** CSS styles for the ticks container element. */
-  _getTicksContainerStyles(): { [key: string]: string } {
+  _getTicksContainerStyles(): {[key: string]: string} {
     let axis = this.vertical ? 'Y' : 'X';
     // For a horizontal slider in RTL languages we push the ticks container off the left edge
     // instead of the right edge to avoid causing a horizontal scrollbar to appear.
     let sign = !this.vertical && this._getDirection() == 'rtl' ? '' : '-';
-    let offset = this._tickIntervalPercent / 2 * 100;
+    let offset = (this._tickIntervalPercent / 2) * 100;
     return {
-      'transform': `translate${axis}(${sign}${offset}%)`
+      'transform': `translate${axis}(${sign}${offset}%)`,
     };
   }
 
   /** CSS styles for the ticks element. */
-  _getTicksStyles(): { [key: string]: string } {
+  _getTicksStyles(): {[key: string]: string} {
     let tickSize = this._tickIntervalPercent * 100;
     let backgroundSize = this.vertical ? `2px ${tickSize}%` : `${tickSize}% 2px`;
     let axis = this.vertical ? 'Y' : 'X';
@@ -414,10 +440,10 @@ export class MatSlider extends _MatSliderBase
     // ticks 180 degrees so we're really cutting off the end edge abd not the start.
     let sign = !this.vertical && this._getDirection() == 'rtl' ? '-' : '';
     let rotate = !this.vertical && this._getDirection() == 'rtl' ? ' rotate(180deg)' : '';
-    let styles: { [key: string]: string } = {
+    let styles: {[key: string]: string} = {
       'backgroundSize': backgroundSize,
       // Without translateZ ticks sometimes jitter as the slider moves on Chrome & Firefox.
-      'transform': `translateZ(0) translate${axis}(${sign}${tickSize / 2}%)${rotate}`
+      'transform': `translateZ(0) translate${axis}(${sign}${tickSize / 2}%)${rotate}`,
     };
 
     if (this._isMinValue() && this._getThumbGap()) {
@@ -436,16 +462,16 @@ export class MatSlider extends _MatSliderBase
     return styles;
   }
 
-  _getThumbContainerStyles(): { [key: string]: string } {
+  _getThumbContainerStyles(): {[key: string]: string} {
     const shouldInvertAxis = this._shouldInvertAxis();
     let axis = this.vertical ? 'Y' : 'X';
     // For a horizontal slider in RTL languages we push the thumb container off the left edge
     // instead of the right edge to avoid causing a horizontal scrollbar to appear.
     let invertOffset =
-        (this._getDirection() == 'rtl' && !this.vertical) ? !shouldInvertAxis : shouldInvertAxis;
+      this._getDirection() == 'rtl' && !this.vertical ? !shouldInvertAxis : shouldInvertAxis;
     let offset = (invertOffset ? this.percent : 1 - this.percent) * 100;
     return {
-      'transform': `translate${axis}(-${offset}%)`
+      'transform': `translate${axis}(-${offset}%)`,
     };
   }
 
@@ -475,12 +501,12 @@ export class MatSlider extends _MatSliderBase
    */
   _shouldInvertMouseCoords() {
     const shouldInvertAxis = this._shouldInvertAxis();
-    return (this._getDirection() == 'rtl' && !this.vertical) ? !shouldInvertAxis : shouldInvertAxis;
+    return this._getDirection() == 'rtl' && !this.vertical ? !shouldInvertAxis : shouldInvertAxis;
   }
 
   /** The language direction for this slider element. */
   private _getDirection() {
-    return (this._dir && this._dir.value == 'rtl') ? 'rtl' : 'ltr';
+    return this._dir && this._dir.value == 'rtl' ? 'rtl' : 'ltr';
   }
 
   /** Keeps track of the last pointer event that was captured by the slider. */
@@ -498,14 +524,16 @@ export class MatSlider extends _MatSliderBase
    */
   private _touchId: number | undefined;
 
-  constructor(elementRef: ElementRef,
-              private _focusMonitor: FocusMonitor,
-              private _changeDetectorRef: ChangeDetectorRef,
-              @Optional() private _dir: Directionality,
-              @Attribute('tabindex') tabIndex: string,
-              private _ngZone: NgZone,
-              @Inject(DOCUMENT) _document: any,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
+  constructor(
+    elementRef: ElementRef,
+    private _focusMonitor: FocusMonitor,
+    private _changeDetectorRef: ChangeDetectorRef,
+    @Optional() private _dir: Directionality,
+    @Attribute('tabindex') tabIndex: string,
+    private _ngZone: NgZone,
+    @Inject(DOCUMENT) _document: any,
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
+  ) {
     super(elementRef);
     this._document = _document;
     this.tabIndex = parseInt(tabIndex) || 0;
@@ -518,12 +546,10 @@ export class MatSlider extends _MatSliderBase
   }
 
   ngAfterViewInit() {
-    this._focusMonitor
-        .monitor(this._elementRef, true)
-        .subscribe((origin: FocusOrigin) => {
-          this._isActive = !!origin && origin !== 'keyboard';
-          this._changeDetectorRef.detectChanges();
-        });
+    this._focusMonitor.monitor(this._elementRef, true).subscribe((origin: FocusOrigin) => {
+      this._isActive = !!origin && origin !== 'keyboard';
+      this._changeDetectorRef.detectChanges();
+    });
     if (this._dir) {
       this._dirChangeSubscription = this._dir.change.subscribe(() => {
         this._changeDetectorRef.markForCheck();
@@ -564,8 +590,11 @@ export class MatSlider extends _MatSliderBase
   }
 
   _onKeydown(event: KeyboardEvent) {
-    if (this.disabled || hasModifierKey(event) ||
-        (this._isSliding && this._isSliding !== 'keyboard')) {
+    if (
+      this.disabled ||
+      hasModifierKey(event) ||
+      (this._isSliding && this._isSliding !== 'keyboard')
+    ) {
       return;
     }
 
@@ -634,8 +663,9 @@ export class MatSlider extends _MatSliderBase
     }
 
     this._ngZone.run(() => {
-      this._touchId = isTouchEvent(event) ?
-          getTouchIdForSlider(event, this._elementRef.nativeElement) : undefined;
+      this._touchId = isTouchEvent(event)
+        ? getTouchIdForSlider(event, this._elementRef.nativeElement)
+        : undefined;
       const pointerPosition = getPointerPositionOnPage(event, this._touchId);
 
       if (pointerPosition) {
@@ -656,7 +686,7 @@ export class MatSlider extends _MatSliderBase
         }
       }
     });
-  }
+  };
 
   /**
    * Called when the user has moved their pointer after
@@ -679,15 +709,18 @@ export class MatSlider extends _MatSliderBase
         }
       }
     }
-  }
+  };
 
   /** Called when the user has lifted their pointer. Bound on the document level. */
   private _pointerUp = (event: TouchEvent | MouseEvent) => {
     if (this._isSliding === 'pointer') {
-      if (!isTouchEvent(event) || typeof this._touchId !== 'number' ||
-          // Note that we use `changedTouches`, rather than `touches` because it
-          // seems like in most cases `touches` is empty for `touchend` events.
-          findMatchingTouch(event.changedTouches, this._touchId)) {
+      if (
+        !isTouchEvent(event) ||
+        typeof this._touchId !== 'number' ||
+        // Note that we use `changedTouches`, rather than `touches` because it
+        // seems like in most cases `touches` is empty for `touchend` events.
+        findMatchingTouch(event.changedTouches, this._touchId)
+      ) {
         event.preventDefault();
         this._removeGlobalEvents();
         this._isSliding = null;
@@ -700,7 +733,7 @@ export class MatSlider extends _MatSliderBase
         this._valueOnSlideStart = this._lastPointerEvent = null;
       }
     }
-  }
+  };
 
   /** Called when the window has lost focus. */
   private _windowBlur = () => {
@@ -709,7 +742,7 @@ export class MatSlider extends _MatSliderBase
     if (this._lastPointerEvent) {
       this._pointerUp(this._lastPointerEvent);
     }
-  }
+  };
 
   /** Use defaultView of injected document if available or fallback to global window reference */
   private _getWindow(): Window {
@@ -764,7 +797,7 @@ export class MatSlider extends _MatSliderBase
   }
 
   /** Calculate the new value from the new physical location. The value will always be snapped. */
-  private _updateValueFromPosition(pos: {x: number, y: number}) {
+  private _updateValueFromPosition(pos: {x: number; y: number}) {
     if (!this._sliderDimensions) {
       return;
     }
@@ -820,12 +853,12 @@ export class MatSlider extends _MatSliderBase
 
     if (this.tickInterval == 'auto') {
       let trackSize = this.vertical ? this._sliderDimensions.height : this._sliderDimensions.width;
-      let pixelsPerStep = trackSize * this.step / (this.max - this.min);
+      let pixelsPerStep = (trackSize * this.step) / (this.max - this.min);
       let stepsPerTick = Math.ceil(MIN_AUTO_TICK_SEPARATION / pixelsPerStep);
       let pixelsPerTick = stepsPerTick * this.step;
       this._tickIntervalPercent = pixelsPerTick / trackSize;
     } else {
-      this._tickIntervalPercent = this.tickInterval * this.step / (this.max - this.min);
+      this._tickIntervalPercent = (this.tickInterval * this.step) / (this.max - this.min);
     }
   }
 
@@ -932,8 +965,8 @@ function isTouchEvent(event: MouseEvent | TouchEvent): event is TouchEvent {
 }
 
 /** Gets the coordinates of a touch or mouse event relative to the viewport. */
-function getPointerPositionOnPage(event: MouseEvent | TouchEvent, id: number|undefined) {
-  let point: {clientX: number, clientY: number}|undefined;
+function getPointerPositionOnPage(event: MouseEvent | TouchEvent, id: number | undefined) {
+  let point: {clientX: number; clientY: number} | undefined;
 
   if (isTouchEvent(event)) {
     // The `identifier` could be undefined if the browser doesn't support `TouchEvent.identifier`.
@@ -962,7 +995,6 @@ function findMatchingTouch(touches: TouchList, id: number): Touch | undefined {
 
   return undefined;
 }
-
 
 /** Gets the unique ID of a touch that matches a specific slider. */
 function getTouchIdForSlider(event: TouchEvent, sliderHost: HTMLElement): number | undefined {

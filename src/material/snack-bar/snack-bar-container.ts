@@ -66,11 +66,13 @@ export interface _SnackBarContainer {
   host: {
     'class': 'mat-snack-bar-container',
     '[@state]': '_animationState',
-    '(@state.done)': 'onAnimationEnd($event)'
+    '(@state.done)': 'onAnimationEnd($event)',
   },
 })
-export class MatSnackBarContainer extends BasePortalOutlet
-    implements OnDestroy, _SnackBarContainer {
+export class MatSnackBarContainer
+  extends BasePortalOutlet
+  implements OnDestroy, _SnackBarContainer
+{
   /** The number of milliseconds to wait before announcing the snack bar's content. */
   private readonly _announceDelay: number = 150;
 
@@ -110,8 +112,8 @@ export class MatSnackBarContainer extends BasePortalOutlet
     private _changeDetectorRef: ChangeDetectorRef,
     private _platform: Platform,
     /** The snack bar configuration. */
-    public snackBarConfig: MatSnackBarConfig) {
-
+    public snackBarConfig: MatSnackBarConfig,
+  ) {
     super();
 
     // Use aria-live rather than a live role like 'alert' or 'status'
@@ -159,7 +161,7 @@ export class MatSnackBarContainer extends BasePortalOutlet
     this._assertNotAttached();
     this._applySnackBarClasses();
     return this._portalOutlet.attachDomPortal(portal);
-  }
+  };
 
   /** Handle end of animations, updating the state of the snackbar. */
   onAnimationEnd(event: AnimationEvent) {
@@ -271,9 +273,11 @@ export class MatSnackBarContainer extends BasePortalOutlet
             // If an element in the snack bar content is focused before being moved
             // track it and restore focus after moving to the live region.
             let focusedElement: HTMLElement | null = null;
-            if (this._platform.isBrowser &&
-                document.activeElement instanceof HTMLElement &&
-                inertElement.contains(document.activeElement)) {
+            if (
+              this._platform.isBrowser &&
+              document.activeElement instanceof HTMLElement &&
+              inertElement.contains(document.activeElement)
+            ) {
               focusedElement = document.activeElement;
             }
 

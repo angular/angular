@@ -33,7 +33,6 @@ import {PropertyNamesMigration} from './migrations/property-names';
 import {UpgradeData} from './upgrade-data';
 import {SymbolRemovalMigration} from './migrations/symbol-removal';
 
-
 /** List of migrations which run for the CDK update. */
 export const cdkMigrations: MigrationCtor<UpgradeData>[] = [
   AttributeSelectorsMigration,
@@ -50,18 +49,24 @@ export const cdkMigrations: MigrationCtor<UpgradeData>[] = [
   SymbolRemovalMigration,
 ];
 
-export type NullableDevkitMigration = MigrationCtor<UpgradeData|null, DevkitContext>;
+export type NullableDevkitMigration = MigrationCtor<UpgradeData | null, DevkitContext>;
 
-type PostMigrationFn =
-    (context: SchematicContext, targetVersion: TargetVersion, hasFailure: boolean) => void;
+type PostMigrationFn = (
+  context: SchematicContext,
+  targetVersion: TargetVersion,
+  hasFailure: boolean,
+) => void;
 
 /**
  * Creates a Angular schematic rule that runs the upgrade for the
  * specified target version.
  */
 export function createMigrationSchematicRule(
-    targetVersion: TargetVersion, extraMigrations: NullableDevkitMigration[],
-    upgradeData: UpgradeData, onMigrationCompleteFn?: PostMigrationFn): Rule {
+  targetVersion: TargetVersion,
+  extraMigrations: NullableDevkitMigration[],
+  upgradeData: UpgradeData,
+  onMigrationCompleteFn?: PostMigrationFn,
+): Rule {
   return async (tree: Tree, context: SchematicContext) => {
     const logger = context.logger;
     const workspace = await getWorkspaceConfigGracefully(tree);
@@ -108,8 +113,10 @@ export function createMigrationSchematicRule(
     // Run the global post migration static members for all
     // registered devkit migrations.
     migrations.forEach(m => {
-      const actionResult = isDevkitMigration(m) && m.globalPostMigration !== undefined ?
-          m.globalPostMigration(tree, context) : null;
+      const actionResult =
+        isDevkitMigration(m) && m.globalPostMigration !== undefined
+          ? m.globalPostMigration(tree, context)
+          : null;
       if (actionResult) {
         runPackageManager = runPackageManager || actionResult.runPackageManager;
       }
@@ -128,9 +135,13 @@ export function createMigrationSchematicRule(
     }
 
     /** Runs the migrations for the specified workspace project. */
-    function runMigrations(project: ProjectDefinition, projectName: string,
-                           tsconfigPath: WorkspacePath, additionalStylesheetPaths: string[],
-                           isTestTarget: boolean) {
+    function runMigrations(
+      project: ProjectDefinition,
+      projectName: string,
+      tsconfigPath: WorkspacePath,
+      additionalStylesheetPaths: string[],
+      isTestTarget: boolean,
+    ) {
       const program = UpdateProject.createProgramFromTsconfig(tsconfigPath, fileSystem);
       const updateContext: DevkitContext = {
         isTestTarget,
@@ -147,8 +158,12 @@ export function createMigrationSchematicRule(
         context.logger,
       );
 
-      const result =
-        updateProject.migrate(migrations, targetVersion, upgradeData, additionalStylesheetPaths);
+      const result = updateProject.migrate(
+        migrations,
+        targetVersion,
+        upgradeData,
+        additionalStylesheetPaths,
+      );
 
       // Commit all recorded edits in the update recorder. We apply the edits after all
       // migrations ran because otherwise offsets in the TypeScript program would be
@@ -161,7 +176,8 @@ export function createMigrationSchematicRule(
 }
 
 /** Whether the given migration type refers to a devkit migration */
-export function isDevkitMigration(value: MigrationCtor<any, any>)
-    : value is DevkitMigrationCtor<any> {
+export function isDevkitMigration(
+  value: MigrationCtor<any, any>,
+): value is DevkitMigrationCtor<any> {
   return DevkitMigration.isPrototypeOf(value);
 }

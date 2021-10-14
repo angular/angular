@@ -22,8 +22,8 @@ import {_supportsShadowDom} from '@angular/cdk/platform';
 @Component({
   selector: 'shadow-dom-demo',
   template: '<ng-content></ng-content>',
-  host:     {'class': 'demo-focus-trap-shadow-root'},
-  encapsulation: ViewEncapsulation.ShadowDom
+  host: {'class': 'demo-focus-trap-shadow-root'},
+  encapsulation: ViewEncapsulation.ShadowDom,
 })
 export class FocusTrapShadowDomDemo {}
 
@@ -47,7 +47,7 @@ export class FocusTrapDemo implements AfterViewInit {
     // We want all the traps to be disabled by default, but doing so while using the value in
     // the view will result in "changed after checked" errors so we defer it to the next tick.
     setTimeout(() => {
-      this._focusTraps.forEach(trap => trap.enabled = false);
+      this._focusTraps.forEach(trap => (trap.enabled = false));
     });
   }
 

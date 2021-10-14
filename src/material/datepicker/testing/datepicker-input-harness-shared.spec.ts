@@ -11,9 +11,10 @@ import {MatCalendarHarness} from './calendar-harness';
 
 /** Shared tests to run on both the original and MDC-based datepicker inputs. */
 export function runDatepickerInputHarnessTests(
-    datepickerModule: typeof MatDatepickerModule,
-    datepickerInputHarness: typeof MatDatepickerInputHarness,
-    calendarHarness: typeof MatCalendarHarness) {
+  datepickerModule: typeof MatDatepickerModule,
+  datepickerInputHarness: typeof MatDatepickerInputHarness,
+  calendarHarness: typeof MatCalendarHarness,
+) {
   let fixture: ComponentFixture<DatepickerInputHarnessTest>;
   let loader: HarnessLoader;
 
@@ -40,9 +41,11 @@ export function runDatepickerInputHarnessTests(
   });
 
   it('should filter inputs based on their placeholder', async () => {
-    const inputs = await loader.getAllHarnesses(datepickerInputHarness.with({
-      placeholder: /^Type/
-    }));
+    const inputs = await loader.getAllHarnesses(
+      datepickerInputHarness.with({
+        placeholder: /^Type/,
+      }),
+    );
 
     expect(inputs.length).toBe(1);
   });
@@ -85,9 +88,13 @@ export function runDatepickerInputHarnessTests(
 
   it('should get the input placeholder', async () => {
     const inputs = await loader.getAllHarnesses(datepickerInputHarness);
-    expect(await parallel(() => inputs.map(input => {
-      return input.getPlaceholder();
-    }))).toEqual(['Type a date', '']);
+    expect(
+      await parallel(() =>
+        inputs.map(input => {
+          return input.getPlaceholder();
+        }),
+      ),
+    ).toEqual(['Type a date', '']);
   });
 
   it('should be able to change the input focused state', async () => {
@@ -166,12 +173,12 @@ export function runDatepickerInputHarnessTests(
       placeholder="Type a date">
     <mat-datepicker #picker [touchUi]="touchUi"></mat-datepicker>
     <input id="no-datepicker" matDatepicker>
-  `
+  `,
 })
 class DatepickerInputHarnessTest {
-  date: Date|null = null;
-  minDate: Date|null = null;
-  maxDate: Date|null = null;
+  date: Date | null = null;
+  minDate: Date | null = null;
+  maxDate: Date | null = null;
   touchUi = false;
   disabled = false;
   required = false;

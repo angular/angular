@@ -1,9 +1,5 @@
 import {CollectionViewer, DataSource} from '@angular/cdk/collections';
-import {
-  Component,
-  Type,
-  ViewChild,
-} from '@angular/core';
+import {Component, Type, ViewChild} from '@angular/core';
 import {ComponentFixture, fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
 import {BehaviorSubject, combineLatest} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -23,7 +19,9 @@ describe('CdkTableScrollContainer', () => {
   let footerRows: HTMLElement[];
 
   function createComponent<T>(
-      componentType: Type<T>, declarations: any[] = []): ComponentFixture<T> {
+    componentType: Type<T>,
+    declarations: any[] = [],
+  ): ComponentFixture<T> {
     TestBed.configureTestingModule({
       imports: [CdkTableModule, CdkTableScrollContainerModule],
       declarations: [componentType, ...declarations],
@@ -61,10 +59,8 @@ describe('CdkTableScrollContainer', () => {
       return;
     }
 
-    const scrollerStyle =
-        window.getComputedStyle(scrollerElement, '::-webkit-scrollbar-track');
-    expect(scrollerStyle.getPropertyValue('margin-top'))
-        .toBe(`${headerRows[0].offsetHeight}px`);
+    const scrollerStyle = window.getComputedStyle(scrollerElement, '::-webkit-scrollbar-track');
+    expect(scrollerStyle.getPropertyValue('margin-top')).toBe(`${headerRows[0].offsetHeight}px`);
     expect(scrollerStyle.getPropertyValue('margin-right')).toBe('0px');
     expect(scrollerStyle.getPropertyValue('margin-bottom')).toBe('0px');
     expect(scrollerStyle.getPropertyValue('margin-left')).toBe('0px');
@@ -89,12 +85,10 @@ describe('CdkTableScrollContainer', () => {
       return;
     }
 
-    const scrollerStyle =
-        window.getComputedStyle(scrollerElement, '::-webkit-scrollbar-track');
+    const scrollerStyle = window.getComputedStyle(scrollerElement, '::-webkit-scrollbar-track');
     expect(scrollerStyle.getPropertyValue('margin-top')).toBe('0px');
     expect(scrollerStyle.getPropertyValue('margin-right')).toBe('0px');
-    expect(scrollerStyle.getPropertyValue('margin-bottom'))
-        .toBe(`${footerRows[2].offsetHeight}px`);
+    expect(scrollerStyle.getPropertyValue('margin-bottom')).toBe(`${footerRows[2].offsetHeight}px`);
     expect(scrollerStyle.getPropertyValue('margin-left')).toBe('0px');
 
     component.stickyFooters = [];
@@ -117,13 +111,13 @@ describe('CdkTableScrollContainer', () => {
       return;
     }
 
-    const scrollerStyle =
-        window.getComputedStyle(scrollerElement, '::-webkit-scrollbar-track');
+    const scrollerStyle = window.getComputedStyle(scrollerElement, '::-webkit-scrollbar-track');
     expect(scrollerStyle.getPropertyValue('margin-top')).toBe('0px');
     expect(scrollerStyle.getPropertyValue('margin-right')).toBe('0px');
     expect(scrollerStyle.getPropertyValue('margin-bottom')).toBe('0px');
-    expect(scrollerStyle.getPropertyValue('margin-left'))
-        .toBe(`${getCells(dataRows[0])[0].offsetWidth}px`);
+    expect(scrollerStyle.getPropertyValue('margin-left')).toBe(
+      `${getCells(dataRows[0])[0].offsetWidth}px`,
+    );
 
     component.stickyStartColumns = [];
     fixture.detectChanges();
@@ -145,11 +139,11 @@ describe('CdkTableScrollContainer', () => {
       return;
     }
 
-    const scrollerStyle =
-        window.getComputedStyle(scrollerElement, '::-webkit-scrollbar-track');
+    const scrollerStyle = window.getComputedStyle(scrollerElement, '::-webkit-scrollbar-track');
     expect(scrollerStyle.getPropertyValue('margin-top')).toBe('0px');
-    expect(scrollerStyle.getPropertyValue('margin-right'))
-        .toBe(`${getCells(dataRows[0])[5].offsetWidth}px`);
+    expect(scrollerStyle.getPropertyValue('margin-right')).toBe(
+      `${getCells(dataRows[0])[5].offsetWidth}px`,
+    );
     expect(scrollerStyle.getPropertyValue('margin-bottom')).toBe('0px');
     expect(scrollerStyle.getPropertyValue('margin-left')).toBe('0px');
 
@@ -176,16 +170,15 @@ describe('CdkTableScrollContainer', () => {
       return;
     }
 
-    const scrollerStyle =
-        window.getComputedStyle(scrollerElement, '::-webkit-scrollbar-track');
-    expect(scrollerStyle.getPropertyValue('margin-top'))
-        .toBe(`${headerRows[0].offsetHeight}px`);
-    expect(scrollerStyle.getPropertyValue('margin-right'))
-        .toBe(`${getCells(dataRows[0])[5].offsetWidth}px`);
-    expect(scrollerStyle.getPropertyValue('margin-bottom'))
-        .toBe(`${footerRows[2].offsetHeight}px`);
-    expect(scrollerStyle.getPropertyValue('margin-left'))
-        .toBe(`${getCells(dataRows[0])[0].offsetWidth}px`);
+    const scrollerStyle = window.getComputedStyle(scrollerElement, '::-webkit-scrollbar-track');
+    expect(scrollerStyle.getPropertyValue('margin-top')).toBe(`${headerRows[0].offsetHeight}px`);
+    expect(scrollerStyle.getPropertyValue('margin-right')).toBe(
+      `${getCells(dataRows[0])[5].offsetWidth}px`,
+    );
+    expect(scrollerStyle.getPropertyValue('margin-bottom')).toBe(`${footerRows[2].offsetHeight}px`);
+    expect(scrollerStyle.getPropertyValue('margin-left')).toBe(
+      `${getCells(dataRows[0])[0].offsetWidth}px`,
+    );
 
     component.stickyHeaders = [];
     component.stickyFooters = [];
@@ -227,8 +220,9 @@ class FakeDataSource extends DataSource<TestData> {
 
   connect(collectionViewer: CollectionViewer) {
     this.isConnected = true;
-    return combineLatest([this._dataChange, collectionViewer.viewChange])
-      .pipe(map(data => data[0]));
+    return combineLatest([this._dataChange, collectionViewer.viewChange]).pipe(
+      map(data => data[0]),
+    );
   }
 
   disconnect() {
@@ -242,7 +236,7 @@ class FakeDataSource extends DataSource<TestData> {
     copiedData.push({
       a: `a_${nextIndex}`,
       b: `b_${nextIndex}`,
-      c: `c_${nextIndex}`
+      c: `c_${nextIndex}`,
     });
 
     this.data = copiedData;
@@ -279,13 +273,15 @@ class FakeDataSource extends DataSource<TestData> {
     </table>
     </div>
   `,
-  styles: [`
+  styles: [
+    `
     .cdk-header-cell, .cdk-cell, .cdk-footer-cell {
       display: block;
       width: 20px;
       box-sizing: border-box;
     }
-  `]
+  `,
+  ],
 })
 class StickyNativeLayoutCdkTableApp {
   dataSource: FakeDataSource = new FakeDataSource();

@@ -42,10 +42,13 @@ export class MatCalendarCellHarness extends ComponentHarness {
       .addOption('inRange', options.inRange, async (harness, inRange) => {
         return (await harness.isInRange()) === inRange;
       })
-      .addOption('inComparisonRange', options.inComparisonRange,
-          async (harness, inComparisonRange) => {
-            return (await harness.isInComparisonRange()) === inComparisonRange;
-          })
+      .addOption(
+        'inComparisonRange',
+        options.inComparisonRange,
+        async (harness, inComparisonRange) => {
+          return (await harness.isInComparisonRange()) === inComparisonRange;
+        },
+      )
       .addOption('inPreviewRange', options.inPreviewRange, async (harness, inPreviewRange) => {
         return (await harness.isInPreviewRange()) === inPreviewRange;
       });

@@ -10,7 +10,6 @@ import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
 import {MatDivider} from './divider';
 
-
 @NgModule({
   imports: [MatCommonModule],
   exports: [MatDivider, MatCommonModule],

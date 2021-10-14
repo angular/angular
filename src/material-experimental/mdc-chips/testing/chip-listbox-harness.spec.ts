@@ -5,7 +5,6 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatChipsModule} from '../index';
 import {MatChipListboxHarness} from './chip-listbox-harness';
 
-
 describe('MatChipListboxHarness', () => {
   let fixture: ComponentFixture<ChipListboxHarnessTest>;
   let loader: HarnessLoader;
@@ -28,7 +27,7 @@ describe('MatChipListboxHarness', () => {
 
   it('should get the number of options', async () => {
     const harness = await loader.getHarness(MatChipListboxHarness);
-    expect ((await harness.getChips()).length).toBe(4);
+    expect((await harness.getChips()).length).toBe(4);
   });
 
   it('should get whether the listbox is in multi-selection mode', async () => {
@@ -97,7 +96,6 @@ describe('MatChipListboxHarness', () => {
 
     expect(selectedText).toEqual(['Blue', 'Yellow']);
   });
-
 });
 
 @Component({
@@ -107,7 +105,7 @@ describe('MatChipListboxHarness', () => {
         {{option.text}}
       </mat-chip-option>
     </mat-chip-listbox>
-  `
+  `,
 })
 class ChipListboxHarnessTest {
   isMultiple = false;
@@ -120,4 +118,3 @@ class ChipListboxHarnessTest {
     {text: 'Yellow', selected: false},
   ];
 }
-

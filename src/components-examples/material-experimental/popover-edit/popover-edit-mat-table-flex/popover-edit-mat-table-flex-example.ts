@@ -49,13 +49,17 @@ export class PopoverEditMatTableFlexExample {
   readonly preservedWeightValues = new WeakMap<PeriodicElement, any>();
 
   onSubmitName(element: PeriodicElement, f: NgForm) {
-    if (!f.valid) { return; }
+    if (!f.valid) {
+      return;
+    }
 
     element.name = f.value.name;
   }
 
   onSubmitWeight(element: PeriodicElement, f: NgForm) {
-    if (!f.valid) { return; }
+    if (!f.valid) {
+      return;
+    }
 
     element.weight = f.value.weight;
   }

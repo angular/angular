@@ -14,5 +14,4 @@ import {MdcChipsE2e} from './mdc-chips-e2e';
   imports: [MatChipsModule],
   declarations: [MdcChipsE2e],
 })
-export class MdcChipsE2eModule {
-}
+export class MdcChipsE2eModule {}

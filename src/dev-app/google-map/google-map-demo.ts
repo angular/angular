@@ -14,25 +14,31 @@ import {
   MapMarker,
   MapPolygon,
   MapPolyline,
-  MapRectangle
+  MapRectangle,
 } from '@angular/google-maps';
 
-const POLYLINE_PATH: google.maps.LatLngLiteral[] =
-    [{lat: 25, lng: 26}, {lat: 26, lng: 27}, {lat: 30, lng: 34}];
+const POLYLINE_PATH: google.maps.LatLngLiteral[] = [
+  {lat: 25, lng: 26},
+  {lat: 26, lng: 27},
+  {lat: 30, lng: 34},
+];
 
-const POLYGON_PATH: google.maps.LatLngLiteral[] =
-    [{lat: 20, lng: 21}, {lat: 22, lng: 23}, {lat: 24, lng: 25}];
+const POLYGON_PATH: google.maps.LatLngLiteral[] = [
+  {lat: 20, lng: 21},
+  {lat: 22, lng: 23},
+  {lat: 24, lng: 25},
+];
 
 const RECTANGLE_BOUNDS: google.maps.LatLngBoundsLiteral = {
   east: 30,
   north: 15,
   west: 10,
-  south: -5
+  south: -5,
 };
 
 const CIRCLE_CENTER: google.maps.LatLngLiteral = {
   lat: 19,
-  lng: 20
+  lng: 20,
 };
 const CIRCLE_RADIUS = 500000;
 
@@ -55,39 +61,52 @@ export class GoogleMapDemo {
   zoom = 4;
   display?: google.maps.LatLngLiteral;
   isPolylineDisplayed = false;
-  polylineOptions:
-      google.maps.PolylineOptions = {path: POLYLINE_PATH, strokeColor: 'grey', strokeOpacity: 0.8};
+  polylineOptions: google.maps.PolylineOptions = {
+    path: POLYLINE_PATH,
+    strokeColor: 'grey',
+    strokeOpacity: 0.8,
+  };
 
   heatmapData = this._getHeatmapData(5, 1);
   heatmapOptions = {radius: 50};
   isHeatmapDisplayed = false;
 
   isPolygonDisplayed = false;
-  polygonOptions:
-      google.maps.PolygonOptions = {paths: POLYGON_PATH, strokeColor: 'grey', strokeOpacity: 0.8};
+  polygonOptions: google.maps.PolygonOptions = {
+    paths: POLYGON_PATH,
+    strokeColor: 'grey',
+    strokeOpacity: 0.8,
+  };
   isRectangleDisplayed = false;
-  rectangleOptions: google.maps
-      .RectangleOptions = {bounds: RECTANGLE_BOUNDS, strokeColor: 'grey', strokeOpacity: 0.8};
+  rectangleOptions: google.maps.RectangleOptions = {
+    bounds: RECTANGLE_BOUNDS,
+    strokeColor: 'grey',
+    strokeOpacity: 0.8,
+  };
   isCircleDisplayed = false;
-  circleOptions: google.maps.CircleOptions =
-      {center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, strokeColor: 'grey', strokeOpacity: 0.8};
+  circleOptions: google.maps.CircleOptions = {
+    center: CIRCLE_CENTER,
+    radius: CIRCLE_RADIUS,
+    strokeColor: 'grey',
+    strokeOpacity: 0.8,
+  };
 
   isGroundOverlayDisplayed = false;
   groundOverlayImages = [
     {
       title: 'Red logo',
-      url: 'https://angular.io/assets/images/logos/angular/angular.svg'
+      url: 'https://angular.io/assets/images/logos/angular/angular.svg',
     },
     {
       title: 'Black logo',
-      url: 'https://angular.io/assets/images/logos/angular/angular_solidBlack.svg'
-    }
+      url: 'https://angular.io/assets/images/logos/angular/angular_solidBlack.svg',
+    },
   ];
   groundOverlayUrl = this.groundOverlayImages[0].url;
   groundOverlayBounds = RECTANGLE_BOUNDS;
   isKmlLayerDisplayed = false;
   demoKml =
-      'https://developers.google.com/maps/documentation/javascript/examples/kml/westcampus.kml';
+    'https://developers.google.com/maps/documentation/javascript/examples/kml/westcampus.kml';
   isTrafficLayerDisplayed = false;
   isTransitLayerDisplayed = false;
   isBicyclingLayerDisplayed = false;
@@ -97,11 +116,11 @@ export class GoogleMapDemo {
     google.maps.MapTypeId.HYBRID,
     google.maps.MapTypeId.ROADMAP,
     google.maps.MapTypeId.SATELLITE,
-    google.maps.MapTypeId.TERRAIN
+    google.maps.MapTypeId.TERRAIN,
   ];
 
   markerClustererImagePath =
-      'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m';
+    'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m';
 
   directionsResult?: google.maps.DirectionsResult;
 
@@ -137,7 +156,7 @@ export class GoogleMapDemo {
     this.polylineOptions = {
       ...this.polylineOptions,
       editable: !this.polylineOptions.editable,
-      path: this.polyline.getPath()
+      path: this.polyline.getPath(),
     };
   }
 
@@ -149,7 +168,7 @@ export class GoogleMapDemo {
     this.polygonOptions = {
       ...this.polygonOptions,
       editable: !this.polygonOptions.editable,
-      paths: this.polygon.getPaths()
+      paths: this.polygon.getPaths(),
     };
   }
 
@@ -161,7 +180,7 @@ export class GoogleMapDemo {
     this.rectangleOptions = {
       ...this.rectangleOptions,
       editable: !this.rectangleOptions.editable,
-      bounds: this.rectangle.getBounds()
+      bounds: this.rectangle.getBounds(),
     };
   }
 

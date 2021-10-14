@@ -8,7 +8,6 @@
 
 import {Directive, TemplateRef} from '@angular/core';
 
-
 /** Context provided to the tree node component. */
 export class CdkTreeNodeOutletContext<T> {
   /** Data for the node. */
@@ -34,9 +33,7 @@ export class CdkTreeNodeOutletContext<T> {
  */
 @Directive({
   selector: '[cdkTreeNodeDef]',
-  inputs: [
-    'when: cdkTreeNodeDefWhen'
-  ],
+  inputs: ['when: cdkTreeNodeDefWhen'],
 })
 export class CdkTreeNodeDef<T> {
   /**

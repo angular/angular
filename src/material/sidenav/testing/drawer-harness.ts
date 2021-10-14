@@ -20,13 +20,13 @@ export class MatDrawerHarnessBase extends ContentContainerComponentHarness<strin
   }
 
   /** Gets the position of the drawer inside its container. */
-  async getPosition(): Promise<'start'|'end'> {
+  async getPosition(): Promise<'start' | 'end'> {
     const host = await this.host();
     return (await host.hasClass('mat-drawer-end')) ? 'end' : 'start';
   }
 
   /** Gets the mode that the drawer is in. */
-  async getMode(): Promise<'over'|'push'|'side'> {
+  async getMode(): Promise<'over' | 'push' | 'side'> {
     const host = await this.host();
 
     if (await host.hasClass('mat-drawer-push')) {
@@ -53,8 +53,10 @@ export class MatDrawerHarness extends MatDrawerHarnessBase {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: DrawerHarnessFilters = {}): HarnessPredicate<MatDrawerHarness> {
-    return new HarnessPredicate(MatDrawerHarness, options)
-        .addOption('position', options.position,
-            async (harness, position) => (await harness.getPosition()) === position);
+    return new HarnessPredicate(MatDrawerHarness, options).addOption(
+      'position',
+      options.position,
+      async (harness, position) => (await harness.getPosition()) === position,
+    );
   }
 }

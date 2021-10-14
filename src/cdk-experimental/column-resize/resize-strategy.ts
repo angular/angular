@@ -23,26 +23,29 @@ export abstract class ResizeStrategy {
   protected abstract readonly styleScheduler: _CoalescedStyleScheduler;
   protected abstract readonly table: CdkTable<unknown>;
 
-  private _pendingResizeDelta: number|null = null;
+  private _pendingResizeDelta: number | null = null;
 
   /** Updates the width of the specified column. */
   abstract applyColumnSize(
-      cssFriendlyColumnName: string,
-      columnHeader: HTMLElement,
-      sizeInPx: number,
-      previousSizeInPx?: number): void;
+    cssFriendlyColumnName: string,
+    columnHeader: HTMLElement,
+    sizeInPx: number,
+    previousSizeInPx?: number,
+  ): void;
 
   /** Applies a minimum width to the specified column, updating its current width as needed. */
   abstract applyMinColumnSize(
-      cssFriendlyColumnName: string,
-      columnHeader: HTMLElement,
-      minSizeInPx: number): void;
+    cssFriendlyColumnName: string,
+    columnHeader: HTMLElement,
+    minSizeInPx: number,
+  ): void;
 
   /** Applies a maximum width to the specified column, updating its current width as needed. */
   abstract applyMaxColumnSize(
-      cssFriendlyColumnName: string,
-      columnHeader: HTMLElement,
-      minSizeInPx: number): void;
+    cssFriendlyColumnName: string,
+    columnHeader: HTMLElement,
+    minSizeInPx: number,
+  ): void;
 
   /** Adjusts the width of the table element by the specified delta. */
   protected updateTableWidthAndStickyColumns(delta: number): void {
@@ -75,15 +78,20 @@ export abstract class ResizeStrategy {
 @Injectable()
 export class TableLayoutFixedResizeStrategy extends ResizeStrategy {
   constructor(
-      protected readonly columnResize: ColumnResize,
-      @Inject(_COALESCED_STYLE_SCHEDULER)
-          protected readonly styleScheduler: _CoalescedStyleScheduler,
-      protected readonly table: CdkTable<unknown>) {
+    protected readonly columnResize: ColumnResize,
+    @Inject(_COALESCED_STYLE_SCHEDULER)
+    protected readonly styleScheduler: _CoalescedStyleScheduler,
+    protected readonly table: CdkTable<unknown>,
+  ) {
     super();
   }
 
-  applyColumnSize(_: string, columnHeader: HTMLElement, sizeInPx: number,
-      previousSizeInPx?: number): void {
+  applyColumnSize(
+    _: string,
+    columnHeader: HTMLElement,
+    sizeInPx: number,
+    previousSizeInPx?: number,
+  ): void {
     const delta = sizeInPx - (previousSizeInPx ?? getElementWidth(columnHeader));
 
     if (delta === 0) {
@@ -131,20 +139,27 @@ export class CdkFlexTableResizeStrategy extends ResizeStrategy implements OnDest
   protected readonly defaultMaxSize = Number.MAX_SAFE_INTEGER;
 
   constructor(
-      protected readonly columnResize: ColumnResize,
-      @Inject(_COALESCED_STYLE_SCHEDULER)
-          protected readonly styleScheduler: _CoalescedStyleScheduler,
-      protected readonly table: CdkTable<unknown>,
-      @Inject(DOCUMENT) document: any) {
+    protected readonly columnResize: ColumnResize,
+    @Inject(_COALESCED_STYLE_SCHEDULER)
+    protected readonly styleScheduler: _CoalescedStyleScheduler,
+    protected readonly table: CdkTable<unknown>,
+    @Inject(DOCUMENT) document: any,
+  ) {
     super();
     this._document = document;
   }
 
-  applyColumnSize(cssFriendlyColumnName: string, columnHeader: HTMLElement,
-      sizeInPx: number, previousSizeInPx?: number): void {
+  applyColumnSize(
+    cssFriendlyColumnName: string,
+    columnHeader: HTMLElement,
+    sizeInPx: number,
+    previousSizeInPx?: number,
+  ): void {
     // Optimization: Check applied width first as we probably set it already before reading
     // offsetWidth which triggers layout.
-    const delta = sizeInPx - (previousSizeInPx ??
+    const delta =
+      sizeInPx -
+      (previousSizeInPx ??
         (this._getAppliedWidth(cssFriendlyColumnName) || columnHeader.offsetWidth));
 
     if (delta === 0) {
@@ -160,16 +175,24 @@ export class CdkFlexTableResizeStrategy extends ResizeStrategy implements OnDest
   applyMinColumnSize(cssFriendlyColumnName: string, _: HTMLElement, sizeInPx: number): void {
     const cssSize = coerceCssPixelValue(sizeInPx);
 
-    this._applyProperty(cssFriendlyColumnName, 'min-width', cssSize,
-        sizeInPx !== this.defaultMinSize);
+    this._applyProperty(
+      cssFriendlyColumnName,
+      'min-width',
+      cssSize,
+      sizeInPx !== this.defaultMinSize,
+    );
     this.updateTableWidthAndStickyColumns(0);
   }
 
   applyMaxColumnSize(cssFriendlyColumnName: string, _: HTMLElement, sizeInPx: number): void {
     const cssSize = coerceCssPixelValue(sizeInPx);
 
-    this._applyProperty(cssFriendlyColumnName, 'max-width', cssSize,
-        sizeInPx !== this.defaultMaxSize);
+    this._applyProperty(
+      cssFriendlyColumnName,
+      'max-width',
+      cssSize,
+      sizeInPx !== this.defaultMaxSize,
+    );
     this.updateTableWidthAndStickyColumns(0);
   }
 
@@ -182,7 +205,7 @@ export class CdkFlexTableResizeStrategy extends ResizeStrategy implements OnDest
     this._styleElement = undefined;
   }
 
-  private _getPropertyValue(cssFriendlyColumnName: string, key: string): string|undefined {
+  private _getPropertyValue(cssFriendlyColumnName: string, key: string): string | undefined {
     const properties = this._getColumnPropertiesMap(cssFriendlyColumnName);
     return properties.get(key);
   }
@@ -192,10 +215,11 @@ export class CdkFlexTableResizeStrategy extends ResizeStrategy implements OnDest
   }
 
   private _applyProperty(
-      cssFriendlyColumnName: string,
-      key: string,
-      value: string,
-      enable = true): void {
+    cssFriendlyColumnName: string,
+    key: string,
+    value: string,
+    enable = true,
+  ): void {
     const properties = this._getColumnPropertiesMap(cssFriendlyColumnName);
 
     this.styleScheduler.schedule(() => {
@@ -270,7 +294,7 @@ function getElementWidth(element: HTMLElement) {
  * Converts CSS flex values as set in CdkFlexTableResizeStrategy to numbers,
  * eg "0 0.01 123px" to 123.
  */
-function coercePixelsFromFlexValue(flexValue: string|undefined): number {
+function coercePixelsFromFlexValue(flexValue: string | undefined): number {
   return Number(flexValue?.match(/0 0\.01 (\d+)px/)?.[1]);
 }
 

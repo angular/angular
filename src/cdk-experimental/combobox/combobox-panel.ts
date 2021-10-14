@@ -13,13 +13,12 @@ import {Subject} from 'rxjs';
 
 @Directive({
   host: {
-    'class': 'cdk-combobox-panel'
+    'class': 'cdk-combobox-panel',
   },
   selector: 'ng-template[cdkComboboxPanel]',
   exportAs: 'cdkComboboxPanel',
 })
 export class CdkComboboxPanel<T = unknown> {
-
   valueUpdated: Subject<T | T[]> = new Subject<T | T[]>();
   contentIdUpdated: Subject<string> = new Subject<string>();
   contentTypeUpdated: Subject<AriaHasPopupValue> = new Subject<AriaHasPopupValue>();
@@ -27,9 +26,7 @@ export class CdkComboboxPanel<T = unknown> {
   contentId: string = '';
   contentType: AriaHasPopupValue;
 
-  constructor(
-    readonly _templateRef: TemplateRef<unknown>
-  ) {}
+  constructor(readonly _templateRef: TemplateRef<unknown>) {}
 
   /** Tells the parent combobox to close the panel and sends back the content value. */
   closePanel(data?: T | T[]) {

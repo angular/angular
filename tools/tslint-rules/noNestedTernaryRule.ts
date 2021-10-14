@@ -1,19 +1,22 @@
 import * as Lint from 'tslint';
 import * as ts from 'typescript';
 
-
 /** Rule that enforces that ternary expressions aren't being nested. */
 export class Rule extends Lint.Rules.AbstractRule {
   apply(sourceFile: ts.SourceFile): Lint.RuleFailure[] {
-    return this.applyWithFunction(sourceFile, context => {
-      (function walk(node: ts.Node) {
-        if (!ts.isConditionalExpression(node)) {
-          ts.forEachChild(node, walk);
-        } else if (hasNestedTernary(node)) {
-          context.addFailureAtNode(node, 'Nested ternary expression are not allowed.');
-        }
-      })(context.sourceFile);
-    }, this.getOptions().ruleArguments);
+    return this.applyWithFunction(
+      sourceFile,
+      context => {
+        (function walk(node: ts.Node) {
+          if (!ts.isConditionalExpression(node)) {
+            ts.forEachChild(node, walk);
+          } else if (hasNestedTernary(node)) {
+            context.addFailureAtNode(node, 'Nested ternary expression are not allowed.');
+          }
+        })(context.sourceFile);
+      },
+      this.getOptions().ruleArguments,
+    );
   }
 }
 

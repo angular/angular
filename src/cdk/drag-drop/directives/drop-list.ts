@@ -71,7 +71,7 @@ export const CDK_DROP_LIST = new InjectionToken<CdkDropList>('CdkDropList');
     '[class.cdk-drop-list-disabled]': 'disabled',
     '[class.cdk-drop-list-dragging]': '_dropListRef.isDragging()',
     '[class.cdk-drop-list-receiving]': '_dropListRef.isReceiving()',
-  }
+  },
 })
 export class CdkDropList<T = any> implements OnDestroy {
   /** Emits when the list has been destroyed. */
@@ -132,11 +132,11 @@ export class CdkDropList<T = any> implements OnDestroy {
    * is allowed to be moved into a drop container.
    */
   @Input('cdkDropListEnterPredicate')
-  enterPredicate: (drag: CdkDrag, drop: CdkDropList) => boolean = () => true
+  enterPredicate: (drag: CdkDrag, drop: CdkDropList) => boolean = () => true;
 
   /** Functions that is used to determine whether an item can be sorted into a particular index. */
   @Input('cdkDropListSortPredicate')
-  sortPredicate: (index: number, drag: CdkDrag, drop: CdkDropList) => boolean = () => true
+  sortPredicate: (index: number, drag: CdkDrag, drop: CdkDropList) => boolean = () => true;
 
   /** Whether to auto-scroll the view when the user moves their pointer close to the edges. */
   @Input('cdkDropListAutoScrollDisabled')
@@ -177,15 +177,18 @@ export class CdkDropList<T = any> implements OnDestroy {
   private _unsortedItems = new Set<CdkDrag>();
 
   constructor(
-      /** Element that the drop list is attached to. */
-      public element: ElementRef<HTMLElement>, dragDrop: DragDrop,
-      private _changeDetectorRef: ChangeDetectorRef,
-      private _scrollDispatcher: ScrollDispatcher,
-      @Optional() private _dir?: Directionality,
-      @Optional() @Inject(CDK_DROP_LIST_GROUP) @SkipSelf()
-      private _group?: CdkDropListGroup<CdkDropList>,
-      @Optional() @Inject(CDK_DRAG_CONFIG) config?: DragDropConfig) {
-
+    /** Element that the drop list is attached to. */
+    public element: ElementRef<HTMLElement>,
+    dragDrop: DragDrop,
+    private _changeDetectorRef: ChangeDetectorRef,
+    private _scrollDispatcher: ScrollDispatcher,
+    @Optional() private _dir?: Directionality,
+    @Optional()
+    @Inject(CDK_DROP_LIST_GROUP)
+    @SkipSelf()
+    private _group?: CdkDropListGroup<CdkDropList>,
+    @Optional() @Inject(CDK_DRAG_CONFIG) config?: DragDropConfig,
+  ) {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       assertElementNode(element.nativeElement, 'cdkDropList');
     }
@@ -201,10 +204,13 @@ export class CdkDropList<T = any> implements OnDestroy {
       return this.enterPredicate(drag.data, drop.data);
     };
 
-    this._dropListRef.sortPredicate =
-      (index: number, drag: DragRef<CdkDrag>, drop: DropListRef<CdkDropList>) => {
-        return this.sortPredicate(index, drag.data, drop.data);
-      };
+    this._dropListRef.sortPredicate = (
+      index: number,
+      drag: DragRef<CdkDrag>,
+      drop: DropListRef<CdkDropList>,
+    ) => {
+      return this.sortPredicate(index, drag.data, drop.data);
+    };
 
     this._setupInputSyncSubscription(this._dropListRef);
     this._handleEvents(this._dropListRef);
@@ -236,8 +242,9 @@ export class CdkDropList<T = any> implements OnDestroy {
   /** Gets the registered items in the list, sorted by their position in the DOM. */
   getSortedItems(): CdkDrag[] {
     return Array.from(this._unsortedItems).sort((a: CdkDrag, b: CdkDrag) => {
-      const documentPosition =
-          a._dragRef.getVisibleElement().compareDocumentPosition(b._dragRef.getVisibleElement());
+      const documentPosition = a._dragRef
+        .getVisibleElement()
+        .compareDocumentPosition(b._dragRef.getVisibleElement());
 
       // `compareDocumentPosition` returns a bitmask so we have to use a bitwise operator.
       // https://developer.mozilla.org/en-US/docs/Web/API/Node/compareDocumentPosition
@@ -329,14 +336,14 @@ export class CdkDropList<T = any> implements OnDestroy {
       this.entered.emit({
         container: this,
         item: event.item.data,
-        currentIndex: event.currentIndex
+        currentIndex: event.currentIndex,
       });
     });
 
     ref.exited.subscribe(event => {
       this.exited.emit({
         container: this,
-        item: event.item.data
+        item: event.item.data,
       });
       this._changeDetectorRef.markForCheck();
     });
@@ -346,7 +353,7 @@ export class CdkDropList<T = any> implements OnDestroy {
         previousIndex: event.previousIndex,
         currentIndex: event.currentIndex,
         container: this,
-        item: event.item.data
+        item: event.item.data,
       });
     });
 
@@ -359,7 +366,7 @@ export class CdkDropList<T = any> implements OnDestroy {
         item: event.item.data,
         isPointerOverContainer: event.isPointerOverContainer,
         distance: event.distance,
-        dropPoint: event.dropPoint
+        dropPoint: event.dropPoint,
       });
 
       // Mark for check since all of these events run outside of change
@@ -370,9 +377,8 @@ export class CdkDropList<T = any> implements OnDestroy {
 
   /** Assigns the default input values based on a provided config object. */
   private _assignDefaults(config: DragDropConfig) {
-    const {
-      lockAxis, draggingDisabled, sortingDisabled, listAutoScrollDisabled, listOrientation
-    } = config;
+    const {lockAxis, draggingDisabled, sortingDisabled, listAutoScrollDisabled, listOrientation} =
+      config;
 
     this.disabled = draggingDisabled == null ? false : draggingDisabled;
     this.sortingDisabled = sortingDisabled == null ? false : sortingDisabled;

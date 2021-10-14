@@ -60,7 +60,8 @@ function inlineExampleModuleTemplate(parsedData: AnalyzedExamples): string {
     return result;
   }, {} as any);
 
-  return fs.readFileSync(require.resolve('./example-module.template'), 'utf8')
+  return fs
+    .readFileSync(require.resolve('./example-module.template'), 'utf8')
     .replace(/\${exampleComponents}/g, JSON.stringify(exampleComponents, null, 2));
 }
 
@@ -86,11 +87,13 @@ function analyzeExamples(sourceFiles: string[], baseDir: string): AnalyzedExampl
 
     // Collect all individual example modules.
     if (path.basename(sourceFile) === 'index.ts') {
-      exampleModules.push(...parseExampleModuleFile(sourceFile).map(name => ({
-        name,
-        importPath,
-        packagePath,
-      })));
+      exampleModules.push(
+        ...parseExampleModuleFile(sourceFile).map(name => ({
+          name,
+          importPath,
+          packagePath,
+        })),
+      );
     }
 
     // Avoid parsing non-example files.
@@ -120,8 +123,10 @@ function analyzeExamples(sourceFiles: string[], baseDir: string): AnalyzedExampl
       // the id of the example.
       const expectedSelector = `${exampleId}-example`;
       if (primaryComponent.selector !== expectedSelector) {
-        throw Error(`Example ${exampleId} uses selector: ${primaryComponent.selector}, ` +
-            `but expected: ${expectedSelector}`);
+        throw Error(
+          `Example ${exampleId} uses selector: ${primaryComponent.selector}, ` +
+            `but expected: ${expectedSelector}`,
+        );
       }
 
       example.files.push(path.basename(relativePath));
@@ -151,16 +156,19 @@ function analyzeExamples(sourceFiles: string[], baseDir: string): AnalyzedExampl
       example.files.forEach(f => assertReferencedExampleFileExists(baseDir, packagePath, f));
       exampleMetadata.push(example);
     } else {
-        throw Error(`Could not find a primary example component in ${sourceFile}. ` +
-                    `Ensure that there's a component with an @title annotation.`);
+      throw Error(
+        `Could not find a primary example component in ${sourceFile}. ` +
+          `Ensure that there's a component with an @title annotation.`,
+      );
     }
   }
 
   // Walk through all collected examples and find their parent example module. In View Engine,
   // components cannot be lazy-loaded without the associated module being loaded.
   exampleMetadata.forEach(example => {
-    const parentModule = exampleModules
-      .find(module => example.sourcePath.startsWith(module.packagePath));
+    const parentModule = exampleModules.find(module =>
+      example.sourcePath.startsWith(module.packagePath),
+    );
 
     if (!parentModule) {
       throw Error(`Could not determine example module for: ${example.id}`);
@@ -184,11 +192,15 @@ function analyzeExamples(sourceFiles: string[], baseDir: string): AnalyzedExampl
 }
 
 /** Asserts that the given file exists for the specified example. */
-function assertReferencedExampleFileExists(baseDir: string, examplePackagePath: string,
-                                           relativePath: string) {
+function assertReferencedExampleFileExists(
+  baseDir: string,
+  examplePackagePath: string,
+  relativePath: string,
+) {
   if (!fs.existsSync(path.join(baseDir, examplePackagePath, relativePath))) {
     throw Error(
-        `Example "${examplePackagePath}" references "${relativePath}", but file does not exist.`);
+      `Example "${examplePackagePath}" references "${relativePath}", but file does not exist.`,
+    );
   }
 }
 
@@ -196,8 +208,11 @@ function assertReferencedExampleFileExists(baseDir: string, examplePackagePath: 
  * Generates the example module from the given source files and writes it to a specified output
  * file.
  */
-export function generateExampleModule(sourceFiles: string[], outputFile: string,
-                                      baseDir: string = path.dirname(outputFile)) {
+export function generateExampleModule(
+  sourceFiles: string[],
+  outputFile: string,
+  baseDir: string = path.dirname(outputFile),
+) {
   const analysisData = analyzeExamples(sourceFiles, baseDir);
   const generatedModuleFile = inlineExampleModuleTemplate(analysisData);
 

@@ -13,7 +13,7 @@ module.exports = config => {
   Object.defineProperty(overwrites, 'browsers', {
     get: () => [],
     set: () => {},
-    enumerable: true
+    enumerable: true,
   });
 
   // Ensures that tests start executing once browsers have been manually connected. We need
@@ -39,9 +39,7 @@ module.exports = config => {
 class KarmaPluginArrayWithoutWatchers extends Array {
   // The Bazel Karma rules only register new plugins using `.push`.
   push(...plugins) {
-    plugins
-      .filter(p => typeof p === 'object')
-      .forEach(p => delete p.watcher);
+    plugins.filter(p => typeof p === 'object').forEach(p => delete p.watcher);
 
     super.push(...plugins);
   }

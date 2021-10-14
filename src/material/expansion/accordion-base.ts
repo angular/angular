@@ -36,7 +36,6 @@ export interface MatAccordionBase extends CdkAccordion {
   _handleHeaderFocus: (header: any) => void;
 }
 
-
 /**
  * Token used to provide a `MatAccordion` to `MatExpansionPanel`.
  * Used primarily to avoid circular imports between `MatAccordion` and `MatExpansionPanel`.

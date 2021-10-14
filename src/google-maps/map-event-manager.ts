@@ -10,14 +10,19 @@ import {NgZone} from '@angular/core';
 import {BehaviorSubject, Observable, Subscriber} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 
-type MapEventManagerTarget = {
-  addListener: (name: string, callback: (...args: any[]) => void) => google.maps.MapsEventListener;
-} | undefined;
+type MapEventManagerTarget =
+  | {
+      addListener: (
+        name: string,
+        callback: (...args: any[]) => void,
+      ) => google.maps.MapsEventListener;
+    }
+  | undefined;
 
 /** Manages event on a Google Maps object, ensuring that events are added only when necessary. */
 export class MapEventManager {
   /** Pending listeners that were added before the target was set. */
-  private _pending: {observable: Observable<any>, observer: Subscriber<any>}[] = [];
+  private _pending: {observable: Observable<any>; observer: Subscriber<any>}[] = [];
   private _listeners: google.maps.MapsEventListener[] = [];
   private _targetStream = new BehaviorSubject<MapEventManagerTarget>(undefined);
 
@@ -34,23 +39,25 @@ export class MapEventManager {
 
   /** Gets an observable that adds an event listener to the map when a consumer subscribes to it. */
   getLazyEmitter<T>(name: string): Observable<T> {
-    return this._targetStream.pipe(switchMap(target => {
-      const observable = new Observable<T>(observer => {
-        // If the target hasn't been initialized yet, cache the observer so it can be added later.
-        if (!target) {
-          this._pending.push({observable, observer});
-          return undefined;
-        }
+    return this._targetStream.pipe(
+      switchMap(target => {
+        const observable = new Observable<T>(observer => {
+          // If the target hasn't been initialized yet, cache the observer so it can be added later.
+          if (!target) {
+            this._pending.push({observable, observer});
+            return undefined;
+          }
 
-        const listener = target.addListener(name, (event: T) => {
-          this._ngZone.run(() => observer.next(event));
+          const listener = target.addListener(name, (event: T) => {
+            this._ngZone.run(() => observer.next(event));
+          });
+          this._listeners.push(listener);
+          return () => listener.remove();
         });
-        this._listeners.push(listener);
-        return () => listener.remove();
-      });
 
-      return observable;
-    }));
+        return observable;
+      }),
+    );
   }
 
   /** Sets the current target that the manager should bind events to. */

@@ -16,14 +16,14 @@ describe('BottomSheetHarnessExample', () => {
 
   beforeAll(() => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
-      teardown: {destroyAfterEach: true}
+      teardown: {destroyAfterEach: true},
     });
   });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MatBottomSheetModule, NoopAnimationsModule],
-      declarations: [BottomSheetHarnessExample]
+      declarations: [BottomSheetHarnessExample],
     }).compileComponents();
     fixture = TestBed.createComponent(BottomSheetHarnessExample);
     fixture.detectChanges();

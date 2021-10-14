@@ -12,7 +12,7 @@ import {InjectionToken} from '@angular/core';
  * Type describing possible positions of a checkbox in a list option
  * with respect to the list item's text.
  */
-export type MatListOptionCheckboxPosition = 'before'|'after';
+export type MatListOptionCheckboxPosition = 'before' | 'after';
 
 /**
  * Interface describing a list option. This is used to avoid circular

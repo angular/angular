@@ -21,12 +21,12 @@ export class MatChipInputHarness extends ComponentHarness {
    */
   static with(options: ChipInputHarnessFilters = {}): HarnessPredicate<MatChipInputHarness> {
     return new HarnessPredicate(MatChipInputHarness, options)
-        .addOption('value', options.value, async (harness, value) => {
-          return (await harness.getValue()) === value;
-        })
-        .addOption('placeholder', options.placeholder, async (harness, placeholder) => {
-          return (await harness.getPlaceholder()) === placeholder;
-        });
+      .addOption('value', options.value, async (harness, value) => {
+        return (await harness.getValue()) === value;
+      })
+      .addOption('placeholder', options.placeholder, async (harness, placeholder) => {
+        return (await harness.getPlaceholder()) === placeholder;
+      });
   }
 
   /** Whether the input is disabled. */
@@ -42,12 +42,12 @@ export class MatChipInputHarness extends ComponentHarness {
   /** Gets the value of the input. */
   async getValue(): Promise<string> {
     // The "value" property of the native input is never undefined.
-    return (await (await this.host()).getProperty<string>('value'));
+    return await (await this.host()).getProperty<string>('value');
   }
 
   /** Gets the placeholder of the input. */
   async getPlaceholder(): Promise<string> {
-    return (await (await this.host()).getProperty<string>('placeholder'));
+    return await (await this.host()).getProperty<string>('placeholder');
   }
 
   /**

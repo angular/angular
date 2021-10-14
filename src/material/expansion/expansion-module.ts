@@ -20,7 +20,6 @@ import {
   MatExpansionPanelTitle,
 } from './expansion-panel-header';
 
-
 @NgModule({
   imports: [CommonModule, MatCommonModule, CdkAccordionModule, PortalModule],
   exports: [

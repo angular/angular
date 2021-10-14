@@ -16,8 +16,7 @@ import {DateAdapter, MAT_DATE_LOCALE} from './date-adapter';
  * because the regex will match strings an with out of bounds month, date, etc.
  */
 const ISO_8601_REGEX =
-    /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|(?:(?:\+|-)\d{2}:\d{2}))?)?$/;
-
+  /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|(?:(?:\+|-)\d{2}:\d{2}))?)?$/;
 
 /** Creates an array and fills it with values. */
 function range<T>(length: number, valueFunction: (index: number) => T): T[] {
@@ -37,12 +36,14 @@ export class NativeDateAdapter extends DateAdapter<Date> {
    */
   useUtcForDisplay: boolean = false;
 
-  constructor(@Optional() @Inject(MAT_DATE_LOCALE) matDateLocale: string,
+  constructor(
+    @Optional() @Inject(MAT_DATE_LOCALE) matDateLocale: string,
     /**
      * @deprecated No longer being used. To be removed.
      * @breaking-change 14.0.0
      */
-    _platform?: Platform) {
+    _platform?: Platform,
+  ) {
     super();
     super.setLocale(matDateLocale);
   }
@@ -89,8 +90,9 @@ export class NativeDateAdapter extends DateAdapter<Date> {
   }
 
   getNumDaysInMonth(date: Date): number {
-    return this.getDate(this._createDateWithOverflow(
-        this.getYear(date), this.getMonth(date) + 1, 0));
+    return this.getDate(
+      this._createDateWithOverflow(this.getYear(date), this.getMonth(date) + 1, 0),
+    );
   }
 
   clone(date: Date): Date {
@@ -147,13 +149,16 @@ export class NativeDateAdapter extends DateAdapter<Date> {
 
   addCalendarMonths(date: Date, months: number): Date {
     let newDate = this._createDateWithOverflow(
-        this.getYear(date), this.getMonth(date) + months, this.getDate(date));
+      this.getYear(date),
+      this.getMonth(date) + months,
+      this.getDate(date),
+    );
 
     // It's possible to wind up in the wrong month if the original month has more days than the new
     // month. In this case we want to go to the last day of the desired month.
     // Note: the additional + 12 % 12 ensures we end up with a positive number, since JS % doesn't
     // guarantee this.
-    if (this.getMonth(newDate) != ((this.getMonth(date) + months) % 12 + 12) % 12) {
+    if (this.getMonth(newDate) != (((this.getMonth(date) + months) % 12) + 12) % 12) {
       newDate = this._createDateWithOverflow(this.getYear(newDate), this.getMonth(newDate), 0);
     }
 
@@ -162,14 +167,17 @@ export class NativeDateAdapter extends DateAdapter<Date> {
 
   addCalendarDays(date: Date, days: number): Date {
     return this._createDateWithOverflow(
-        this.getYear(date), this.getMonth(date), this.getDate(date) + days);
+      this.getYear(date),
+      this.getMonth(date),
+      this.getDate(date) + days,
+    );
   }
 
   toIso8601(date: Date): string {
     return [
       date.getUTCFullYear(),
       this._2digit(date.getUTCMonth() + 1),
-      this._2digit(date.getUTCDate())
+      this._2digit(date.getUTCDate()),
     ].join('-');
   }
 

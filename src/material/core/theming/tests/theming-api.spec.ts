@@ -43,7 +43,8 @@ describe('theming api', () => {
   it('should not warn if color styles and density are not duplicated', () => {
     spyOn(process.stderr, 'write').and.callThrough();
 
-    const parsed = parse(transpile(`
+    const parsed = parse(
+      transpile(`
       $theme: mat-light-theme((
         color: (
           primary: $mat-red,
@@ -62,7 +63,8 @@ describe('theming api', () => {
       .dark-theme {
         @include angular-material-color($theme2);
       }
-    `));
+    `),
+    );
 
     expect(hasDensityStyles(parsed, null)).toBe('all');
     expect(hasDensityStyles(parsed, '.dark-theme')).toBe('none');
@@ -72,13 +74,15 @@ describe('theming api', () => {
   it('should warn if default density styles are duplicated', () => {
     spyOn(process.stderr, 'write');
 
-    const parsed = parse(transpile(`
+    const parsed = parse(
+      transpile(`
       @include angular-material-theme((color: null));
 
       .dark-theme {
         @include angular-material-theme((color: null));
       }
-    `));
+    `),
+    );
 
     expect(hasDensityStyles(parsed, null)).toBe('all');
     expect(hasDensityStyles(parsed, '.dark-theme')).toBe('all');
@@ -112,7 +116,6 @@ describe('theming api', () => {
 
     expect(process.stderr.write).toHaveBeenCalledTimes(0);
   });
-
 
   it('should warn if typography styles are duplicated', () => {
     spyOn(process.stderr, 'write');
@@ -165,7 +168,8 @@ describe('theming api', () => {
     });
 
     it('should only generate default density once', () => {
-      const parsed = parse(transpile(`
+      const parsed = parse(
+        transpile(`
         $light-theme: mat-light-theme($mat-red, $mat-blue);
         $dark-theme: mat-dark-theme($mat-red, $mat-blue);
         $third-theme: mat-dark-theme($mat-grey, $mat-blue);
@@ -179,7 +183,8 @@ describe('theming api', () => {
         .third-theme {
           @include angular-material-theme($third-theme);
         }
-      `));
+      `),
+      );
 
       expect(hasDensityStyles(parsed, null)).toBe('all');
       expect(hasDensityStyles(parsed, '.dark-theme')).toBe('none');
@@ -187,13 +192,15 @@ describe('theming api', () => {
     });
 
     it('should always generate default density at root', () => {
-      const parsed = parse(transpile(`
+      const parsed = parse(
+        transpile(`
         $light-theme: mat-light-theme($mat-red, $mat-blue);
 
         .my-app-theme {
           @include angular-material-theme($light-theme);
         }
-      `));
+      `),
+      );
 
       expect(hasDensityStyles(parsed, null)).toBe('all');
       expect(hasDensityStyles(parsed, '.my-app-theme')).toBe('none');
@@ -249,7 +256,7 @@ describe('theming api', () => {
    * a given selector. If the selector is `null`, then density is expected to be
    * generated at top-level.
    */
-  function hasDensityStyles(parsed: Root, baseSelector: string|null): 'all'|'partial'|'none' {
+  function hasDensityStyles(parsed: Root, baseSelector: string | null): 'all' | 'partial' | 'none' {
     expect(parsed.nodes).withContext('Expected CSS to be not empty.').toBeDefined();
     expect(knownDensitySelectors.size).not.toBe(0);
     const missingDensitySelectors = new Set(knownDensitySelectors.keys());
@@ -292,19 +299,18 @@ describe('theming api', () => {
   /** Transpiles given Sass content into CSS. */
   function transpile(content: string) {
     return renderSync({
-             data: `
+      data: `
         @import '../_all-theme.scss';
         @import '../../color/_all-color.scss';
         @import '../../density/private/_all-density.scss';
         @import '../../typography/_all-typography.scss';
         ${content}
       `,
-             // Ensures that files can be resolved through Bazel runfile resolution. This
-             // is necessary because the imported Sass files are not necessarily in the
-             // bazel output directory. e.g. `_all-theme.scss` is a source file.
-             importer: (url) => ({file: require.resolve(url)}),
-           })
-        .css.toString();
+      // Ensures that files can be resolved through Bazel runfile resolution. This
+      // is necessary because the imported Sass files are not necessarily in the
+      // bazel output directory. e.g. `_all-theme.scss` is a source file.
+      importer: url => ({file: require.resolve(url)}),
+    }).css.toString();
   }
 
   /**
@@ -315,9 +321,12 @@ describe('theming api', () => {
    */
   function expectWarning(message: RegExp) {
     const writeSpy = process.stderr.write as jasmine.Spy;
-    const match = writeSpy.calls.all().find(
+    const match = writeSpy.calls
+      .all()
+      .find(
         (s: jasmine.CallInfo<typeof process.stderr.write>) =>
-            typeof s.args[0] === 'string' && message.test(s.args[0]));
+          typeof s.args[0] === 'string' && message.test(s.args[0]),
+      );
     expect(match).withContext('Expected warning to be printed.').toBeDefined();
   }
 });

@@ -6,19 +6,12 @@ import {SortHarnessExample} from './sort-harness/sort-harness-example';
 
 export {SortHarnessExample, SortOverviewExample};
 
-const EXAMPLES = [
-  SortHarnessExample,
-  SortOverviewExample,
-];
+const EXAMPLES = [SortHarnessExample, SortOverviewExample];
 
 @NgModule({
-  imports: [
-    CommonModule,
-    MatSortModule,
-  ],
+  imports: [CommonModule, MatSortModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
   entryComponents: EXAMPLES,
 })
-export class SortExamplesModule {
-}
+export class SortExamplesModule {}

@@ -57,7 +57,7 @@ export const yearsPerRow = 4;
   templateUrl: 'multi-year-view.html',
   exportAs: 'matMultiYearView',
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
   private _rerenderSubscription = Subscription.EMPTY;
@@ -67,17 +67,25 @@ export class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
 
   /** The date to display in this multi-year view (everything other than the year is ignored). */
   @Input()
-  get activeDate(): D { return this._activeDate; }
+  get activeDate(): D {
+    return this._activeDate;
+  }
   set activeDate(value: D) {
     let oldActiveDate = this._activeDate;
     const validDate =
-      this._dateAdapter.getValidDateOrNull(
-        this._dateAdapter.deserialize(value)
-      ) || this._dateAdapter.today();
+      this._dateAdapter.getValidDateOrNull(this._dateAdapter.deserialize(value)) ||
+      this._dateAdapter.today();
     this._activeDate = this._dateAdapter.clampDate(validDate, this.minDate, this.maxDate);
 
-    if (!isSameMultiYearView(
-      this._dateAdapter, oldActiveDate, this._activeDate, this.minDate, this.maxDate)) {
+    if (
+      !isSameMultiYearView(
+        this._dateAdapter,
+        oldActiveDate,
+        this._activeDate,
+        this.minDate,
+        this.maxDate,
+      )
+    ) {
       this._init();
     }
   }
@@ -85,7 +93,9 @@ export class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
 
   /** The currently selected date. */
   @Input()
-  get selected(): DateRange<D> | D | null { return this._selected; }
+  get selected(): DateRange<D> | D | null {
+    return this._selected;
+  }
   set selected(value: DateRange<D> | D | null) {
     if (value instanceof DateRange) {
       this._selected = value;
@@ -97,10 +107,11 @@ export class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
   }
   private _selected: DateRange<D> | D | null;
 
-
   /** The minimum selectable date. */
   @Input()
-  get minDate(): D | null { return this._minDate; }
+  get minDate(): D | null {
+    return this._minDate;
+  }
   set minDate(value: D | null) {
     this._minDate = this._dateAdapter.getValidDateOrNull(this._dateAdapter.deserialize(value));
   }
@@ -108,7 +119,9 @@ export class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
 
   /** The maximum selectable date. */
   @Input()
-  get maxDate(): D | null { return this._maxDate; }
+  get maxDate(): D | null {
+    return this._maxDate;
+  }
   set maxDate(value: D | null) {
     this._maxDate = this._dateAdapter.getValidDateOrNull(this._dateAdapter.deserialize(value));
   }
@@ -141,9 +154,11 @@ export class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
   /** The year of the selected date. Null if the selected date is null. */
   _selectedYear: number | null;
 
-  constructor(private _changeDetectorRef: ChangeDetectorRef,
-              @Optional() public _dateAdapter: DateAdapter<D>,
-              @Optional() private _dir?: Directionality) {
+  constructor(
+    private _changeDetectorRef: ChangeDetectorRef,
+    @Optional() public _dateAdapter: DateAdapter<D>,
+    @Optional() private _dir?: Directionality,
+  ) {
     if (!this._dateAdapter && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw createMissingDateImplError('DateAdapter');
     }
@@ -172,8 +187,8 @@ export class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
     // The offset from the active year to the "slot" for the starting year is the
     // *actual* first rendered year in the multi-year view.
     const activeYear = this._dateAdapter.getYear(this._activeDate);
-    const minYearOfPage = activeYear - getActiveOffset(
-      this._dateAdapter, this.activeDate, this.minDate, this.maxDate);
+    const minYearOfPage =
+      activeYear - getActiveOffset(this._dateAdapter, this.activeDate, this.minDate, this.maxDate);
 
     this._years = [];
     for (let i = 0, row: number[] = []; i < yearsPerPage; i++) {
@@ -191,10 +206,16 @@ export class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
     const year = event.value;
     this.yearSelected.emit(this._dateAdapter.createDate(year, 0, 1));
     let month = this._dateAdapter.getMonth(this.activeDate);
-    let daysInMonth =
-        this._dateAdapter.getNumDaysInMonth(this._dateAdapter.createDate(year, month, 1));
-    this.selectedChange.emit(this._dateAdapter.createDate(year, month,
-        Math.min(this._dateAdapter.getDate(this.activeDate), daysInMonth)));
+    let daysInMonth = this._dateAdapter.getNumDaysInMonth(
+      this._dateAdapter.createDate(year, month, 1),
+    );
+    this.selectedChange.emit(
+      this._dateAdapter.createDate(
+        year,
+        month,
+        Math.min(this._dateAdapter.getDate(this.activeDate), daysInMonth),
+      ),
+    );
   }
 
   /** Handles keydown events on the calendar body when calendar is in multi-year view. */
@@ -216,23 +237,30 @@ export class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
         this.activeDate = this._dateAdapter.addCalendarYears(this._activeDate, yearsPerRow);
         break;
       case HOME:
-        this.activeDate = this._dateAdapter.addCalendarYears(this._activeDate,
-          -getActiveOffset(this._dateAdapter, this.activeDate, this.minDate, this.maxDate));
+        this.activeDate = this._dateAdapter.addCalendarYears(
+          this._activeDate,
+          -getActiveOffset(this._dateAdapter, this.activeDate, this.minDate, this.maxDate),
+        );
         break;
       case END:
-        this.activeDate = this._dateAdapter.addCalendarYears(this._activeDate,
-          yearsPerPage - getActiveOffset(
-            this._dateAdapter, this.activeDate, this.minDate, this.maxDate) - 1);
+        this.activeDate = this._dateAdapter.addCalendarYears(
+          this._activeDate,
+          yearsPerPage -
+            getActiveOffset(this._dateAdapter, this.activeDate, this.minDate, this.maxDate) -
+            1,
+        );
         break;
       case PAGE_UP:
-        this.activeDate =
-            this._dateAdapter.addCalendarYears(
-                this._activeDate, event.altKey ? -yearsPerPage * 10 : -yearsPerPage);
+        this.activeDate = this._dateAdapter.addCalendarYears(
+          this._activeDate,
+          event.altKey ? -yearsPerPage * 10 : -yearsPerPage,
+        );
         break;
       case PAGE_DOWN:
-        this.activeDate =
-            this._dateAdapter.addCalendarYears(
-                this._activeDate, event.altKey ? yearsPerPage * 10 : yearsPerPage);
+        this.activeDate = this._dateAdapter.addCalendarYears(
+          this._activeDate,
+          event.altKey ? yearsPerPage * 10 : yearsPerPage,
+        );
         break;
       case ENTER:
       case SPACE:
@@ -287,9 +315,12 @@ export class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
   /** Whether the given year is enabled. */
   private _shouldEnableYear(year: number) {
     // disable if the year is greater than maxDate lower than minDate
-    if (year === undefined || year === null ||
-        (this.maxDate && year > this._dateAdapter.getYear(this.maxDate)) ||
-        (this.minDate && year < this._dateAdapter.getYear(this.minDate))) {
+    if (
+      year === undefined ||
+      year === null ||
+      (this.maxDate && year > this._dateAdapter.getYear(this.maxDate)) ||
+      (this.minDate && year < this._dateAdapter.getYear(this.minDate))
+    ) {
       return false;
     }
 
@@ -301,8 +332,11 @@ export class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
     const firstOfYear = this._dateAdapter.createDate(year, 0, 1);
 
     // If any date in the year is enabled count the year as enabled.
-    for (let date = firstOfYear; this._dateAdapter.getYear(date) == year;
-      date = this._dateAdapter.addCalendarDays(date, 1)) {
+    for (
+      let date = firstOfYear;
+      this._dateAdapter.getYear(date) == year;
+      date = this._dateAdapter.addCalendarDays(date, 1)
+    ) {
       if (this.dateFilter(date)) {
         return true;
       }
@@ -333,12 +367,19 @@ export class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
 }
 
 export function isSameMultiYearView<D>(
-  dateAdapter: DateAdapter<D>, date1: D, date2: D, minDate: D | null, maxDate: D | null): boolean {
+  dateAdapter: DateAdapter<D>,
+  date1: D,
+  date2: D,
+  minDate: D | null,
+  maxDate: D | null,
+): boolean {
   const year1 = dateAdapter.getYear(date1);
   const year2 = dateAdapter.getYear(date2);
   const startingYear = getStartingYear(dateAdapter, minDate, maxDate);
-  return Math.floor((year1 - startingYear) / yearsPerPage) ===
-          Math.floor((year2 - startingYear) / yearsPerPage);
+  return (
+    Math.floor((year1 - startingYear) / yearsPerPage) ===
+    Math.floor((year2 - startingYear) / yearsPerPage)
+  );
 }
 
 /**
@@ -347,10 +388,13 @@ export function isSameMultiYearView<D>(
  * "startingYear" will render when paged into view.
  */
 export function getActiveOffset<D>(
-  dateAdapter: DateAdapter<D>, activeDate: D, minDate: D | null, maxDate: D | null): number {
+  dateAdapter: DateAdapter<D>,
+  activeDate: D,
+  minDate: D | null,
+  maxDate: D | null,
+): number {
   const activeYear = dateAdapter.getYear(activeDate);
-  return euclideanModulo((activeYear - getStartingYear(dateAdapter, minDate, maxDate)),
-    yearsPerPage);
+  return euclideanModulo(activeYear - getStartingYear(dateAdapter, minDate, maxDate), yearsPerPage);
 }
 
 /**
@@ -358,7 +402,10 @@ export function getActiveOffset<D>(
  * or the minimum year would be at the beginning of a page.
  */
 function getStartingYear<D>(
-  dateAdapter: DateAdapter<D>, minDate: D | null, maxDate: D | null): number {
+  dateAdapter: DateAdapter<D>,
+  minDate: D | null,
+  maxDate: D | null,
+): number {
   let startingYear = 0;
   if (maxDate) {
     const maxYear = dateAdapter.getYear(maxDate);
@@ -370,6 +417,6 @@ function getStartingYear<D>(
 }
 
 /** Gets remainder that is non-negative, even if first number is negative */
-function euclideanModulo (a: number, b: number): number {
-  return (a % b + b) % b;
+function euclideanModulo(a: number, b: number): number {
+  return ((a % b) + b) % b;
 }

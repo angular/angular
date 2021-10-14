@@ -6,12 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  join,
-  Path,
-  relative,
-  dirname
-} from '@angular-devkit/core';
+import {join, Path, relative, dirname} from '@angular-devkit/core';
 import {SchematicContext, Tree} from '@angular-devkit/schematics';
 import {
   addSymbolToNgModuleMetadata,
@@ -50,8 +45,7 @@ const HAMMER_MODULE_IMPORT = '@angular/platform-browser';
 
 const HAMMER_MODULE_SPECIFIER = 'hammerjs';
 
-const CANNOT_REMOVE_REFERENCE_ERROR =
-    `Cannot remove reference to "GestureConfig". Please remove manually.`;
+const CANNOT_REMOVE_REFERENCE_ERROR = `Cannot remove reference to "GestureConfig". Please remove manually.`;
 
 interface IdentifierReference {
   node: ts.Identifier;
@@ -68,12 +62,12 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
   // target. We cannot migrate test targets since they have a limited scope
   // (in regards to source files) and therefore the HammerJS usage detection can be incorrect.
   enabled =
-      (this.targetVersion === TargetVersion.V9 || this.targetVersion === TargetVersion.V10) &&
-      !this.context.isTestTarget;
+    (this.targetVersion === TargetVersion.V9 || this.targetVersion === TargetVersion.V10) &&
+    !this.context.isTestTarget;
 
   private _printer = ts.createPrinter();
   private _importManager = new ImportManager(this.fileSystem, this._printer);
-  private _nodeFailures: {node: ts.Node, message: string}[] = [];
+  private _nodeFailures: {node: ts.Node; message: string}[] = [];
 
   /**
    * Whether custom HammerJS events provided by the Material gesture
@@ -135,8 +129,9 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
   override postAnalysis(): void {
     // Walk through all hammer config token references and check if there
     // is a potential custom gesture config setup.
-    const hasCustomGestureConfigSetup =
-        this._hammerConfigTokenReferences.some(r => this._checkForCustomGestureConfigSetup(r));
+    const hasCustomGestureConfigSetup = this._hammerConfigTokenReferences.some(r =>
+      this._checkForCustomGestureConfigSetup(r),
+    );
     const usedInTemplate = this._standardEventsUsedInTemplate || this._customEventsUsedInTemplate;
 
     /*
@@ -173,22 +168,24 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
         // since events provided by the Material gesture config are guaranteed to be unused.
         this._removeMaterialGestureConfigSetup();
         this.printInfo(
-            'The HammerJS v9 migration for Angular Components detected that HammerJS is ' +
+          'The HammerJS v9 migration for Angular Components detected that HammerJS is ' +
             'manually set up in combination with references to the Angular Material gesture ' +
             'config. This target cannot be migrated completely, but all references to the ' +
             'deprecated Angular Material gesture have been removed. Read more here: ' +
-            'https://git.io/ng-material-v9-hammer-ambiguous-usage');
+            'https://git.io/ng-material-v9-hammer-ambiguous-usage',
+        );
       } else if (usedInTemplate && this._gestureConfigReferences.length) {
         // Since there is a reference to the Angular Material gesture config, and we detected
         // usage of a gesture event that could be provided by Angular Material, we *cannot*
         // automatically remove references. This is because we do *not* know whether the
         // event is actually provided by the custom config or by the Material config.
         this.printInfo(
-            'The HammerJS v9 migration for Angular Components detected that HammerJS is ' +
+          'The HammerJS v9 migration for Angular Components detected that HammerJS is ' +
             'manually set up in combination with references to the Angular Material gesture ' +
             'config. This target cannot be migrated completely. Please manually remove ' +
             'references to the deprecated Angular Material gesture config. Read more here: ' +
-            'https://git.io/ng-material-v9-hammer-ambiguous-usage');
+            'https://git.io/ng-material-v9-hammer-ambiguous-usage',
+        );
       }
     } else if (this._usedInRuntime || usedInTemplate) {
       // We keep track of whether Hammer is used globally. This is necessary because we
@@ -226,10 +223,11 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
     // and we want to print a message that developers might be able to remove Hammer manually.
     if (!hasCustomGestureConfigSetup && !this._usedInRuntime && usedInTemplate) {
       this.printInfo(
-          'The HammerJS v9 migration for Angular Components migrated the ' +
+        'The HammerJS v9 migration for Angular Components migrated the ' +
           'project to keep HammerJS installed, but detected ambiguous usage of HammerJS. Please ' +
           'manually check if you can remove HammerJS from your application. More details: ' +
-          'https://git.io/ng-material-v9-hammer-ambiguous-usage');
+          'https://git.io/ng-material-v9-hammer-ambiguous-usage',
+      );
     }
   }
 
@@ -245,19 +243,23 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
   private _setupHammerWithCustomEvents() {
     const project = this.context.project;
     const sourceRoot = this.fileSystem.resolve(project.sourceRoot || project.root);
-    const newConfigPath =
-        join(sourceRoot, this._getAvailableGestureConfigFileName(sourceRoot));
+    const newConfigPath = join(sourceRoot, this._getAvailableGestureConfigFileName(sourceRoot));
 
     // Copy gesture config template into the CLI project.
     this.fileSystem.create(
-        newConfigPath, readFileSync(require.resolve(GESTURE_CONFIG_TEMPLATE_PATH), 'utf8'));
+      newConfigPath,
+      readFileSync(require.resolve(GESTURE_CONFIG_TEMPLATE_PATH), 'utf8'),
+    );
 
     // Replace all Material gesture config references to resolve to the
     // newly copied gesture config.
     this._gestureConfigReferences.forEach(i => {
       const filePath = this.fileSystem.resolve(i.node.getSourceFile().fileName);
-      return this._replaceGestureConfigReference(i, GESTURE_CONFIG_CLASS_NAME,
-        getModuleSpecifier(newConfigPath, filePath));
+      return this._replaceGestureConfigReference(
+        i,
+        GESTURE_CONFIG_CLASS_NAME,
+        getModuleSpecifier(newConfigPath, filePath),
+      );
     });
 
     // Setup the gesture config provider and the "HammerModule" in the root module
@@ -317,7 +319,10 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
       // through a non-namespaced identifier access.
       if (!isNamespacedIdentifierAccess(node)) {
         this._importManager.deleteNamedBindingImport(
-            sourceFile, HAMMER_MODULE_NAME, importData.moduleName);
+          sourceFile,
+          HAMMER_MODULE_NAME,
+          importData.moduleName,
+        );
       }
 
       // For references from within an import, we do not need to do anything other than
@@ -353,10 +358,16 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
   private _checkForHammerGestureConfigToken(node: ts.Node) {
     if (ts.isIdentifier(node)) {
       const importData = getImportOfIdentifier(node, this.typeChecker);
-      if (importData && importData.symbolName === HAMMER_CONFIG_TOKEN_NAME &&
-          importData.moduleName === HAMMER_CONFIG_TOKEN_MODULE) {
-        this._hammerConfigTokenReferences.push(
-            {node, importData, isImport: ts.isImportSpecifier(node.parent)});
+      if (
+        importData &&
+        importData.symbolName === HAMMER_CONFIG_TOKEN_NAME &&
+        importData.moduleName === HAMMER_CONFIG_TOKEN_MODULE
+      ) {
+        this._hammerConfigTokenReferences.push({
+          node,
+          importData,
+          isImport: ts.isImportSpecifier(node.parent),
+        });
       }
     }
   }
@@ -368,10 +379,16 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
   private _checkForHammerModuleReference(node: ts.Node) {
     if (ts.isIdentifier(node)) {
       const importData = getImportOfIdentifier(node, this.typeChecker);
-      if (importData && importData.symbolName === HAMMER_MODULE_NAME &&
-          importData.moduleName === HAMMER_MODULE_IMPORT) {
-        this._hammerModuleReferences.push(
-            {node, importData, isImport: ts.isImportSpecifier(node.parent)});
+      if (
+        importData &&
+        importData.symbolName === HAMMER_MODULE_NAME &&
+        importData.moduleName === HAMMER_MODULE_IMPORT
+      ) {
+        this._hammerModuleReferences.push({
+          node,
+          importData,
+          isImport: ts.isImportSpecifier(node.parent),
+        });
       }
     }
   }
@@ -382,14 +399,22 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
    * runtime usage of Hammer. e.g. `import {Symbol} from "hammerjs";`.
    */
   private _checkHammerImports(node: ts.Node) {
-    if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier) &&
-        node.moduleSpecifier.text === HAMMER_MODULE_SPECIFIER) {
+    if (
+      ts.isImportDeclaration(node) &&
+      ts.isStringLiteral(node.moduleSpecifier) &&
+      node.moduleSpecifier.text === HAMMER_MODULE_SPECIFIER
+    ) {
       // If there is an import to HammerJS that imports symbols, or is namespaced
       // (e.g. "import {A, B} from ..." or "import * as hammer from ..."), then we
       // assume that some exports are used at runtime.
-      if (node.importClause &&
-          !(node.importClause.namedBindings && ts.isNamedImports(node.importClause.namedBindings) &&
-            node.importClause.namedBindings.elements.length === 0)) {
+      if (
+        node.importClause &&
+        !(
+          node.importClause.namedBindings &&
+          ts.isNamedImports(node.importClause.namedBindings) &&
+          node.importClause.namedBindings.elements.length === 0
+        )
+      ) {
         this._usedInRuntime = true;
       } else {
         this._installImports.push(node);
@@ -416,8 +441,11 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
     }
 
     // Detects usages of "window['Hammer']".
-    if (ts.isElementAccessExpression(node) && ts.isStringLiteral(node.argumentExpression) &&
-        node.argumentExpression.text === 'Hammer') {
+    if (
+      ts.isElementAccessExpression(node) &&
+      ts.isStringLiteral(node.argumentExpression) &&
+      node.argumentExpression.text === 'Hammer'
+    ) {
       const originExpr = unwrapExpression(node.expression);
       if (ts.isIdentifier(originExpr) && originExpr.text === 'window') {
         this._usedInRuntime = true;
@@ -427,11 +455,18 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
 
     // Handles usages of plain identifier with the name "Hammer". These usage
     // are valid if they resolve to "@types/hammerjs". e.g. "new Hammer(myElement)".
-    if (ts.isIdentifier(node) && node.text === 'Hammer' &&
-        !ts.isPropertyAccessExpression(node.parent) && !ts.isElementAccessExpression(node.parent)) {
+    if (
+      ts.isIdentifier(node) &&
+      node.text === 'Hammer' &&
+      !ts.isPropertyAccessExpression(node.parent) &&
+      !ts.isElementAccessExpression(node.parent)
+    ) {
       const symbol = this._getDeclarationSymbolOfNode(node);
-      if (symbol && symbol.valueDeclaration &&
-          symbol.valueDeclaration.getSourceFile().fileName.includes('@types/hammerjs')) {
+      if (
+        symbol &&
+        symbol.valueDeclaration &&
+        symbol.valueDeclaration.getSourceFile().fileName.includes('@types/hammerjs')
+      ) {
         this._usedInRuntime = true;
       }
     }
@@ -444,10 +479,16 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
   private _checkForMaterialGestureConfig(node: ts.Node) {
     if (ts.isIdentifier(node)) {
       const importData = getImportOfIdentifier(node, this.typeChecker);
-      if (importData && importData.symbolName === GESTURE_CONFIG_CLASS_NAME &&
-          importData.moduleName.startsWith('@angular/material/')) {
-        this._gestureConfigReferences.push(
-            {node, importData, isImport: ts.isImportSpecifier(node.parent)});
+      if (
+        importData &&
+        importData.symbolName === GESTURE_CONFIG_CLASS_NAME &&
+        importData.moduleName.startsWith('@angular/material/')
+      ) {
+        this._gestureConfigReferences.push({
+          node,
+          importData,
+          isImport: ts.isImportSpecifier(node.parent),
+        });
       }
     }
   }
@@ -464,8 +505,11 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
       propertyAssignment = propertyAssignment.parent;
     }
 
-    if (!propertyAssignment || !ts.isPropertyAssignment(propertyAssignment) ||
-        getPropertyNameText(propertyAssignment.name) !== 'provide') {
+    if (
+      !propertyAssignment ||
+      !ts.isPropertyAssignment(propertyAssignment) ||
+      getPropertyNameText(propertyAssignment.name) !== 'provide'
+    ) {
       return false;
     }
 
@@ -497,8 +541,10 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
 
   /** Replaces a given gesture config reference with a new import. */
   private _replaceGestureConfigReference(
-      {node, importData, isImport}: IdentifierReference, symbolName: string,
-      moduleSpecifier: string) {
+    {node, importData, isImport}: IdentifierReference,
+    symbolName: string,
+    moduleSpecifier: string,
+  ) {
     const sourceFile = node.getSourceFile();
     const recorder = this.fileSystem.edit(this.fileSystem.resolve(sourceFile.fileName));
 
@@ -515,7 +561,12 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
     // the config has been imported through a namespaced import.
     if (isNamespacedIdentifierAccess(node)) {
       const newExpression = this._importManager.addImportToSourceFile(
-          sourceFile, symbolName, moduleSpecifier, false, gestureIdentifiersInFile);
+        sourceFile,
+        symbolName,
+        moduleSpecifier,
+        false,
+        gestureIdentifiersInFile,
+      );
 
       recorder.remove(node.parent.getStart(), node.parent.getWidth());
       recorder.insertRight(node.parent.getStart(), this._printNode(newExpression, sourceFile));
@@ -524,7 +575,10 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
 
     // Delete the old import to the "GestureConfig".
     this._importManager.deleteNamedBindingImport(
-        sourceFile, GESTURE_CONFIG_CLASS_NAME, importData.moduleName);
+      sourceFile,
+      GESTURE_CONFIG_CLASS_NAME,
+      importData.moduleName,
+    );
 
     // If the current reference is not from inside of a import, we need to add a new
     // import to the copied gesture config and replace the identifier. For references
@@ -532,7 +586,12 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
     // to remove unused imports to the Material gesture config.
     if (!isImport) {
       const newExpression = this._importManager.addImportToSourceFile(
-          sourceFile, symbolName, moduleSpecifier, false, gestureIdentifiersInFile);
+        sourceFile,
+        symbolName,
+        moduleSpecifier,
+        false,
+        gestureIdentifiersInFile,
+      );
 
       recorder.remove(node.getStart(), node.getWidth());
       recorder.insertRight(node.getStart(), this._printNode(newExpression, sourceFile));
@@ -552,7 +611,10 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
     // been accessed through a non-namespaced identifier access.
     if (!isNamespacedIdentifierAccess(node)) {
       this._importManager.deleteNamedBindingImport(
-          sourceFile, GESTURE_CONFIG_CLASS_NAME, importData.moduleName);
+        sourceFile,
+        GESTURE_CONFIG_CLASS_NAME,
+        importData.moduleName,
+      );
     }
 
     // For references from within an import, we do not need to do anything other than
@@ -568,16 +630,19 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
     // analyzable provider definition. We only support the common case of a gesture
     // config provider definition where the config is set up through "useClass".
     // Otherwise, it's not guaranteed that we can safely remove the provider definition.
-    if (!ts.isPropertyAssignment(providerAssignment) ||
-        getPropertyNameText(providerAssignment.name) !== 'useClass') {
+    if (
+      !ts.isPropertyAssignment(providerAssignment) ||
+      getPropertyNameText(providerAssignment.name) !== 'useClass'
+    ) {
       this._nodeFailures.push({node, message: CANNOT_REMOVE_REFERENCE_ERROR});
       return;
     }
 
     const objectLiteralExpr = providerAssignment.parent;
     const provideToken = objectLiteralExpr.properties.find(
-        (p): p is ts.PropertyAssignment =>
-            ts.isPropertyAssignment(p) && getPropertyNameText(p.name) === 'provide');
+      (p): p is ts.PropertyAssignment =>
+        ts.isPropertyAssignment(p) && getPropertyNameText(p.name) === 'provide',
+    );
 
     // Do not remove the reference if the gesture config is not part of a provider definition,
     // or if the provided toke is not referring to the known HAMMER_GESTURE_CONFIG token
@@ -600,8 +665,9 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
       recorder.insertRight(objectLiteralExpr.getStart(), `/* TODO: remove */ {}`);
       this._nodeFailures.push({
         node: objectLiteralExpr,
-        message: `Unable to delete provider definition for "GestureConfig" completely. ` +
-            `Please clean up the provider.`
+        message:
+          `Unable to delete provider definition for "GestureConfig" completely. ` +
+          `Please clean up the provider.`,
       });
       return;
     }
@@ -615,14 +681,21 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
   private _removeHammerConfigTokenImportIfUnused({node, importData}: IdentifierReference) {
     const sourceFile = node.getSourceFile();
     const isTokenUsed = this._hammerConfigTokenReferences.some(
-        r => !r.isImport && !isNamespacedIdentifierAccess(r.node) &&
-            r.node.getSourceFile() === sourceFile && !this._deletedIdentifiers.includes(r.node));
+      r =>
+        !r.isImport &&
+        !isNamespacedIdentifierAccess(r.node) &&
+        r.node.getSourceFile() === sourceFile &&
+        !this._deletedIdentifiers.includes(r.node),
+    );
 
     // We don't want to remove the import for the token if the token is
     // still used somewhere.
     if (!isTokenUsed) {
       this._importManager.deleteNamedBindingImport(
-          sourceFile, HAMMER_CONFIG_TOKEN_NAME, importData.moduleName);
+        sourceFile,
+        HAMMER_CONFIG_TOKEN_NAME,
+        importData.moduleName,
+      );
     }
   }
 
@@ -637,8 +710,9 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
       const htmlContent = this.fileSystem.read(filePath)!;
       const recorder = this.fileSystem.edit(filePath);
 
-      findHammerScriptImportElements(htmlContent)
-          .forEach(el => removeElementFromHtml(el, recorder));
+      findHammerScriptImportElements(htmlContent).forEach(el =>
+        removeElementFromHtml(el, recorder),
+      );
     });
   }
 
@@ -651,15 +725,19 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
     if (rootModuleSymbol === null || rootModuleSymbol.valueDeclaration === undefined) {
       this.failures.push({
         filePath: mainFilePath,
-        message: `Could not setup Hammer gestures in module. Please ` +
-            `manually ensure that the Hammer gesture config is set up.`,
+        message:
+          `Could not setup Hammer gestures in module. Please ` +
+          `manually ensure that the Hammer gesture config is set up.`,
       });
       return;
     }
 
     const sourceFile = rootModuleSymbol.valueDeclaration.getSourceFile();
-    const metadata = getDecoratorMetadata(sourceFile, 'NgModule', '@angular/core') as
-        ts.ObjectLiteralExpression[];
+    const metadata = getDecoratorMetadata(
+      sourceFile,
+      'NgModule',
+      '@angular/core',
+    ) as ts.ObjectLiteralExpression[];
 
     // If no "NgModule" definition is found inside the source file, we just do nothing.
     if (!metadata.length) {
@@ -669,32 +747,48 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
     const filePath = this.fileSystem.resolve(sourceFile.fileName);
     const recorder = this.fileSystem.edit(filePath);
     const providersField = getMetadataField(metadata[0], 'providers')[0];
-    const providerIdentifiers =
-        providersField ? findMatchingChildNodes(providersField, ts.isIdentifier) : null;
+    const providerIdentifiers = providersField
+      ? findMatchingChildNodes(providersField, ts.isIdentifier)
+      : null;
     const gestureConfigExpr = this._importManager.addImportToSourceFile(
-        sourceFile, GESTURE_CONFIG_CLASS_NAME,
-        getModuleSpecifier(gestureConfigPath, filePath), false,
-        this._getGestureConfigIdentifiersOfFile(sourceFile));
+      sourceFile,
+      GESTURE_CONFIG_CLASS_NAME,
+      getModuleSpecifier(gestureConfigPath, filePath),
+      false,
+      this._getGestureConfigIdentifiersOfFile(sourceFile),
+    );
     const hammerConfigTokenExpr = this._importManager.addImportToSourceFile(
-        sourceFile, HAMMER_CONFIG_TOKEN_NAME, HAMMER_CONFIG_TOKEN_MODULE);
+      sourceFile,
+      HAMMER_CONFIG_TOKEN_NAME,
+      HAMMER_CONFIG_TOKEN_MODULE,
+    );
     const newProviderNode = ts.createObjectLiteral([
       ts.createPropertyAssignment('provide', hammerConfigTokenExpr),
-      ts.createPropertyAssignment('useClass', gestureConfigExpr)
+      ts.createPropertyAssignment('useClass', gestureConfigExpr),
     ]);
 
     // If the providers field exists and already contains references to the hammer gesture
     // config token and the gesture config, we naively assume that the gesture config is
     // already set up. We only want to add the gesture config provider if it is not set up.
-    if (!providerIdentifiers ||
-        !(this._hammerConfigTokenReferences.some(r => providerIdentifiers.includes(r.node)) &&
-          this._gestureConfigReferences.some(r => providerIdentifiers.includes(r.node)))) {
+    if (
+      !providerIdentifiers ||
+      !(
+        this._hammerConfigTokenReferences.some(r => providerIdentifiers.includes(r.node)) &&
+        this._gestureConfigReferences.some(r => providerIdentifiers.includes(r.node))
+      )
+    ) {
       const symbolName = this._printNode(newProviderNode, sourceFile);
-      addSymbolToNgModuleMetadata(sourceFile, sourceFile.fileName, 'providers', symbolName, null)
-        .forEach(change => {
-          if (change instanceof InsertChange) {
-            recorder.insertRight(change.pos, change.toAdd);
-          }
-        });
+      addSymbolToNgModuleMetadata(
+        sourceFile,
+        sourceFile.fileName,
+        'providers',
+        symbolName,
+        null,
+      ).forEach(change => {
+        if (change instanceof InsertChange) {
+          recorder.insertRight(change.pos, change.toAdd);
+        }
+      });
     }
   }
 
@@ -702,7 +796,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
    * Gets the TypeScript symbol of the root module by looking for the module
    * bootstrap expression in the specified source file.
    */
-  private _getRootModuleSymbol(mainFilePath: Path): ts.Symbol|null {
+  private _getRootModuleSymbol(mainFilePath: Path): ts.Symbol | null {
     const mainFile = this.program.getSourceFile(mainFilePath);
     if (!mainFile) {
       return null;
@@ -729,37 +823,52 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
     if (rootModuleSymbol === null || rootModuleSymbol.valueDeclaration === undefined) {
       this.failures.push({
         filePath: mainFilePath,
-        message: `Could not setup HammerModule. Please manually set up the "HammerModule" ` +
-            `from "@angular/platform-browser".`,
+        message:
+          `Could not setup HammerModule. Please manually set up the "HammerModule" ` +
+          `from "@angular/platform-browser".`,
       });
       return;
     }
 
     const sourceFile = rootModuleSymbol.valueDeclaration.getSourceFile();
-    const metadata = getDecoratorMetadata(sourceFile, 'NgModule', '@angular/core') as
-        ts.ObjectLiteralExpression[];
+    const metadata = getDecoratorMetadata(
+      sourceFile,
+      'NgModule',
+      '@angular/core',
+    ) as ts.ObjectLiteralExpression[];
     if (!metadata.length) {
       return;
     }
 
     const importsField = getMetadataField(metadata[0], 'imports')[0];
-    const importIdentifiers =
-        importsField ? findMatchingChildNodes(importsField, ts.isIdentifier) : null;
+    const importIdentifiers = importsField
+      ? findMatchingChildNodes(importsField, ts.isIdentifier)
+      : null;
     const recorder = this.fileSystem.edit(this.fileSystem.resolve(sourceFile.fileName));
     const hammerModuleExpr = this._importManager.addImportToSourceFile(
-        sourceFile, HAMMER_MODULE_NAME, HAMMER_MODULE_IMPORT);
+      sourceFile,
+      HAMMER_MODULE_NAME,
+      HAMMER_MODULE_IMPORT,
+    );
 
     // If the "HammerModule" is not already imported in the app module, we set it up
     // by adding it to the "imports" field of the app module.
-    if (!importIdentifiers ||
-        !this._hammerModuleReferences.some(r => importIdentifiers.includes(r.node))) {
+    if (
+      !importIdentifiers ||
+      !this._hammerModuleReferences.some(r => importIdentifiers.includes(r.node))
+    ) {
       const symbolName = this._printNode(hammerModuleExpr, sourceFile);
-      addSymbolToNgModuleMetadata(sourceFile, sourceFile.fileName, 'imports', symbolName, null)
-        .forEach(change => {
-          if (change instanceof InsertChange) {
-            recorder.insertRight(change.pos, change.toAdd);
-          }
-        });
+      addSymbolToNgModuleMetadata(
+        sourceFile,
+        sourceFile.fileName,
+        'imports',
+        symbolName,
+        null,
+      ).forEach(change => {
+        if (change instanceof InsertChange) {
+          recorder.insertRight(change.pos, change.toAdd);
+        }
+      });
     }
   }
 
@@ -770,12 +879,13 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
 
   /** Gets all referenced gesture config identifiers of a given source file */
   private _getGestureConfigIdentifiersOfFile(sourceFile: ts.SourceFile): ts.Identifier[] {
-    return this._gestureConfigReferences.filter(d => d.node.getSourceFile() === sourceFile)
-        .map(d => d.node);
+    return this._gestureConfigReferences
+      .filter(d => d.node.getSourceFile() === sourceFile)
+      .map(d => d.node);
   }
 
   /** Gets the symbol that contains the value declaration of the specified node. */
-  private _getDeclarationSymbolOfNode(node: ts.Node): ts.Symbol|undefined {
+  private _getDeclarationSymbolOfNode(node: ts.Node): ts.Symbol | undefined {
     const symbol = this.typeChecker.getSymbolAtLocation(node);
 
     // Symbols can be aliases of the declaration symbol. e.g. in named import specifiers.
@@ -831,11 +941,13 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
   static override globalPostMigration(tree: Tree, context: SchematicContext): PostMigrationAction {
     // Always notify the developer that the Hammer v9 migration does not migrate tests.
     context.logger.info(
-        '\n⚠  General notice: The HammerJS v9 migration for Angular Components is not able to ' +
+      '\n⚠  General notice: The HammerJS v9 migration for Angular Components is not able to ' +
         'migrate tests. Please manually clean up tests in your project if they rely on ' +
-        (this.globalUsesHammer ? 'the deprecated Angular Material gesture config.' : 'HammerJS.'));
+        (this.globalUsesHammer ? 'the deprecated Angular Material gesture config.' : 'HammerJS.'),
+    );
     context.logger.info(
-        'Read more about migrating tests: https://git.io/ng-material-v9-hammer-migrate-tests');
+      'Read more about migrating tests: https://git.io/ng-material-v9-hammer-migrate-tests',
+    );
 
     if (!this.globalUsesHammer && this._removeHammerFromPackageJson(tree)) {
       // Since Hammer has been removed from the workspace "package.json" file,
@@ -900,7 +1012,7 @@ function getModuleSpecifier(newPath: Path, containingFile: Path) {
  * Gets the text of the given property name.
  * @returns Text of the given property name. Null if not statically analyzable.
  */
-function getPropertyNameText(node: ts.PropertyName): string|null {
+function getPropertyNameText(node: ts.PropertyName): string | null {
   if (ts.isIdentifier(node) || ts.isStringLiteralLike(node)) {
     return node.text;
   }
@@ -917,7 +1029,9 @@ function isNamespacedIdentifierAccess(node: ts.Identifier): boolean {
  * given predicate.
  */
 function findMatchingChildNodes<T extends ts.Node>(
-    parent: ts.Node, predicate: (node: ts.Node) => node is T): T[] {
+  parent: ts.Node,
+  predicate: (node: ts.Node) => node is T,
+): T[] {
   const result: T[] = [];
   const visitNode = (node: ts.Node) => {
     if (predicate(node)) {

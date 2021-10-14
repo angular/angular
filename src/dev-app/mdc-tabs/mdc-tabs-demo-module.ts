@@ -22,5 +22,4 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
   ],
   declarations: [MdcTabsDemo],
 })
-export class MdcTabsDemoModule {
-}
+export class MdcTabsDemoModule {}

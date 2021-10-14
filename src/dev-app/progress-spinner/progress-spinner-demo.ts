@@ -9,7 +9,6 @@
 import {Component} from '@angular/core';
 import {ThemePalette} from '@angular/material/core';
 
-
 @Component({
   selector: 'progress-spinner-demo',
   templateUrl: 'progress-spinner-demo.html',

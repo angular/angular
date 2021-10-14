@@ -6,7 +6,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 @Component({
   selector: 'cdk-linear-stepper-with-form-example',
   templateUrl: './cdk-linear-stepper-with-form-example.html',
-  styleUrls: ['./cdk-linear-stepper-with-form-example.css']
+  styleUrls: ['./cdk-linear-stepper-with-form-example.css'],
 })
 export class CdkLinearStepperWithFormExample {
   isLinear = true;
@@ -14,16 +14,16 @@ export class CdkLinearStepperWithFormExample {
   secondFormGroup: FormGroup;
 
   constructor(private readonly _formBuilder: FormBuilder) {
-      this.firstFormGroup = this._formBuilder.group({
-          firstControl: ['', Validators.required]
-      });
-      this.secondFormGroup = this._formBuilder.group({
-          secondControl: ['', Validators.required]
-      });
+    this.firstFormGroup = this._formBuilder.group({
+      firstControl: ['', Validators.required],
+    });
+    this.secondFormGroup = this._formBuilder.group({
+      secondControl: ['', Validators.required],
+    });
   }
 
   toggleLinearity() {
-      this.isLinear = !this.isLinear;
+    this.isLinear = !this.isLinear;
   }
 }
 
@@ -32,7 +32,7 @@ export class CdkLinearStepperWithFormExample {
   selector: 'example-custom-linear-stepper',
   templateUrl: './example-custom-linear-stepper.html',
   styleUrls: ['./example-custom-linear-stepper.css'],
-  providers: [{provide: CdkStepper, useExisting: CustomLinearStepper}]
+  providers: [{provide: CdkStepper, useExisting: CustomLinearStepper}],
 })
 export class CustomLinearStepper extends CdkStepper {
   selectStepByIndex(index: number): void {

@@ -22,5 +22,4 @@ import {MdcTableExamplesModule} from '@angular/components-examples/material-expe
   ],
   declarations: [MdcTableDemo],
 })
-export class MdcTableDemoModule {
-}
+export class MdcTableDemoModule {}

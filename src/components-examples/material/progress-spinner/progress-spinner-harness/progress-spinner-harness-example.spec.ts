@@ -15,14 +15,14 @@ describe('ProgressSpinnerHarnessExample', () => {
 
   beforeAll(() => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
-      teardown: {destroyAfterEach: true}
+      teardown: {destroyAfterEach: true},
     });
   });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MatProgressSpinnerModule],
-      declarations: [ProgressSpinnerHarnessExample]
+      declarations: [ProgressSpinnerHarnessExample],
     }).compileComponents();
     fixture = TestBed.createComponent(ProgressSpinnerHarnessExample);
     fixture.detectChanges();
@@ -36,19 +36,17 @@ describe('ProgressSpinnerHarnessExample', () => {
 
   it('should get the value', async () => {
     fixture.componentInstance.value = 50;
-    const [
-      determinate,
-      impliedIndeterminate
-    ] = await loader.getAllHarnesses(MatProgressSpinnerHarness);
+    const [determinate, impliedIndeterminate] = await loader.getAllHarnesses(
+      MatProgressSpinnerHarness,
+    );
     expect(await determinate.getValue()).toBe(50);
     expect(await impliedIndeterminate.getValue()).toBe(null);
   });
 
   it('should get the mode', async () => {
-    const [
-      determinate,
-      impliedIndeterminate
-    ] = await loader.getAllHarnesses(MatProgressSpinnerHarness);
+    const [determinate, impliedIndeterminate] = await loader.getAllHarnesses(
+      MatProgressSpinnerHarness,
+    );
     expect(await determinate.getMode()).toBe('determinate');
     expect(await impliedIndeterminate.getMode()).toBe('indeterminate');
   });

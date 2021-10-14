@@ -20,19 +20,17 @@ import {TABLE_PROVIDERS} from './constants';
  */
 @Directive({
   selector: 'table[cdk-table][columnResize]',
-  providers: [
-    ...TABLE_PROVIDERS,
-    {provide: ColumnResize, useExisting: CdkColumnResize},
-  ],
+  providers: [...TABLE_PROVIDERS, {provide: ColumnResize, useExisting: CdkColumnResize}],
 })
 export class CdkColumnResize extends ColumnResize {
   constructor(
-      readonly columnResizeNotifier: ColumnResizeNotifier,
-      readonly elementRef: ElementRef<HTMLElement>,
-      protected readonly eventDispatcher: HeaderRowEventDispatcher,
-      protected readonly ngZone: NgZone,
-      protected readonly notifier: ColumnResizeNotifierSource,
-      protected readonly table: CdkTable<unknown>) {
+    readonly columnResizeNotifier: ColumnResizeNotifier,
+    readonly elementRef: ElementRef<HTMLElement>,
+    protected readonly eventDispatcher: HeaderRowEventDispatcher,
+    protected readonly ngZone: NgZone,
+    protected readonly notifier: ColumnResizeNotifierSource,
+    protected readonly table: CdkTable<unknown>,
+  ) {
     super();
   }
 }

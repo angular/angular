@@ -8,8 +8,7 @@ import * as ts from 'typescript';
 import {MemberDoc} from 'dgeni-packages/typescript/api-doc-types/MemberDoc';
 
 /** Type describing class like documents which have been created through inheritance. */
-export type InheritanceCreatedClassLikeDoc = ClassLikeExportDoc &
-    {_inheritanceCreated?: true};
+export type InheritanceCreatedClassLikeDoc = ClassLikeExportDoc & {_inheritanceCreated?: true};
 
 /** Whether the given API doc has been created through inheritance. */
 export function isInheritanceCreatedDoc(doc: ApiDoc): doc is ClassLikeExportDoc {
@@ -19,14 +18,17 @@ export function isInheritanceCreatedDoc(doc: ApiDoc): doc is ClassLikeExportDoc 
     return isInheritanceCreatedDoc(doc.containerDoc);
   }
 
-  return doc instanceof ClassLikeExportDoc &&
-      (doc as InheritanceCreatedClassLikeDoc)._inheritanceCreated === true;
+  return (
+    doc instanceof ClassLikeExportDoc &&
+    (doc as InheritanceCreatedClassLikeDoc)._inheritanceCreated === true
+  );
 }
 
 /** Gets all class like export documents which the given doc inherits from. */
 export function getInheritedDocsOfClass(
-    doc: ClassLikeExportDoc,
-    exportSymbolsToDocsMap: Map<ts.Symbol, ClassLikeExportDoc>): ClassLikeExportDoc[] {
+  doc: ClassLikeExportDoc,
+  exportSymbolsToDocsMap: Map<ts.Symbol, ClassLikeExportDoc>,
+): ClassLikeExportDoc[] {
   const result: ClassLikeExportDoc[] = [];
   const typeChecker = doc.typeChecker;
   for (let info of doc.extendsClauses) {
@@ -54,9 +56,11 @@ export function getInheritedDocsOfClass(
  * multiple classes will result in multiple Dgeni API documents for each class.
  */
 function getClassLikeDocsFromType(
-    type: ts.Type, baseDoc: ClassLikeExportDoc,
-    exportSymbolsToDocsMap: Map<ts.Symbol, ClassLikeExportDoc>): ClassLikeExportDoc[] {
-  let aliasSymbol: ts.Symbol|undefined = undefined;
+  type: ts.Type,
+  baseDoc: ClassLikeExportDoc,
+  exportSymbolsToDocsMap: Map<ts.Symbol, ClassLikeExportDoc>,
+): ClassLikeExportDoc[] {
+  let aliasSymbol: ts.Symbol | undefined = undefined;
   let symbol: ts.Symbol = type.symbol;
   const typeChecker = baseDoc.typeChecker;
 
@@ -71,8 +75,9 @@ function getClassLikeDocsFromType(
   // class augmentation. e.g. "BaseClass & CanColor".
   if (type.isIntersection()) {
     return type.types.reduce(
-        (res, t) => [...res, ...getClassLikeDocsFromType(t, baseDoc, exportSymbolsToDocsMap)],
-        [] as ClassLikeExportDoc[]);
+      (res, t) => [...res, ...getClassLikeDocsFromType(t, baseDoc, exportSymbolsToDocsMap)],
+      [] as ClassLikeExportDoc[],
+    );
   } else if (symbol) {
     // If the given symbol has already been registered within Dgeni, we use the
     // existing symbol instead of creating a new one. The dgeni typescript package
@@ -81,7 +86,7 @@ function getClassLikeDocsFromType(
     if (exportSymbolsToDocsMap.has(symbol)) {
       return [exportSymbolsToDocsMap.get(symbol)!];
     }
-    let createdDoc: InheritanceCreatedClassLikeDoc|null = null;
+    let createdDoc: InheritanceCreatedClassLikeDoc | null = null;
     if ((symbol.flags & ts.SymbolFlags.Class) !== 0) {
       createdDoc = new ClassExportDoc(baseDoc.host, baseDoc.moduleDoc, symbol, aliasSymbol);
     } else if ((symbol.flags & ts.SymbolFlags.Interface) !== 0) {

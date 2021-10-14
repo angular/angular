@@ -22,7 +22,6 @@ import {MatTabLabel} from './tab-label';
 import {MatTabLabelWrapper} from './tab-label-wrapper';
 import {MatTabLink, MatTabNav} from './tab-nav-bar/tab-nav-bar';
 
-
 @NgModule({
   imports: [
     CommonModule,

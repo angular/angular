@@ -32,5 +32,4 @@ import {ContentElementDialog, DialogDemo, IFrameDialog, JazzDialog} from './dial
   ],
   declarations: [ContentElementDialog, DialogDemo, IFrameDialog, JazzDialog],
 })
-export class DialogDemoModule {
-}
+export class DialogDemoModule {}

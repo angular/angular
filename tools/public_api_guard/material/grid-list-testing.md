@@ -22,7 +22,7 @@ export interface GridTileHarnessFilters extends BaseHarnessFilters {
 // @public
 export class MatGridListHarness extends ComponentHarness {
     getColumns(): Promise<number>;
-    getTileAtPosition({ row, column }: {
+    getTileAtPosition({ row, column, }: {
         row: number;
         column: number;
     }): Promise<MatGridTileHarness>;

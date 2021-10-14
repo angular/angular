@@ -11,8 +11,12 @@ import {MatTableModule} from '@angular/material/table';
 import {BrowserModule} from '@angular/platform-browser';
 import {BasicTable} from './basic-table';
 import {
-  fiveCols, tenCols, twentyCols,
-  tenRows, oneHundredRows, oneThousandRows,
+  fiveCols,
+  tenCols,
+  twentyCols,
+  tenRows,
+  oneHundredRows,
+  oneThousandRows,
 } from './fake-table-data';
 
 /** component: mat-table */
@@ -47,19 +51,26 @@ export class TableBenchmarkApp {
     this.isTenRowsTwentyColsVisible = false;
   }
 
-  showTenRowsFiveCols() { this.isTenRowsFiveColsVisible = true; }
-  showOneHundredRowsFiveCols() { this.isOneHundredRowsFiveColsVisible = true; }
-  showOneThousandRowsFiveCols() { this.isOneThousandRowsFiveColsVisible = true; }
-  showTenRowsTenCols() { this.isTenRowsTenColsVisible = true; }
-  showTenRowsTwentyCols() { this.isTenRowsTwentyColsVisible = true; }
+  showTenRowsFiveCols() {
+    this.isTenRowsFiveColsVisible = true;
+  }
+  showOneHundredRowsFiveCols() {
+    this.isOneHundredRowsFiveColsVisible = true;
+  }
+  showOneThousandRowsFiveCols() {
+    this.isOneThousandRowsFiveColsVisible = true;
+  }
+  showTenRowsTenCols() {
+    this.isTenRowsTenColsVisible = true;
+  }
+  showTenRowsTwentyCols() {
+    this.isTenRowsTwentyColsVisible = true;
+  }
 }
 
 @NgModule({
   declarations: [BasicTable, TableBenchmarkApp],
-  imports: [
-    BrowserModule,
-    MatTableModule,
-  ],
+  imports: [BrowserModule, MatTableModule],
   bootstrap: [TableBenchmarkApp],
 })
 export class AppModule {}

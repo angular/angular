@@ -14,37 +14,35 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {CdkTextareaAutosize} from './autosize';
 import {TextFieldModule} from './text-field-module';
 
-
 describe('CdkTextareaAutosize', () => {
   let fixture: ComponentFixture<AutosizeTextAreaWithContent>;
   let textarea: HTMLTextAreaElement;
   let autosize: CdkTextareaAutosize;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [
-        FormsModule,
-        TextFieldModule,
-        NoopAnimationsModule,
-      ],
-      declarations: [
-        AutosizeTextAreaWithContent,
-        AutosizeTextAreaWithValue,
-        AutosizeTextareaWithNgModel,
-        AutosizeTextareaWithoutAutosize,
-      ],
-    });
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [FormsModule, TextFieldModule, NoopAnimationsModule],
+        declarations: [
+          AutosizeTextAreaWithContent,
+          AutosizeTextAreaWithValue,
+          AutosizeTextareaWithNgModel,
+          AutosizeTextareaWithoutAutosize,
+        ],
+      });
 
-    TestBed.compileComponents();
-  }));
+      TestBed.compileComponents();
+    }),
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AutosizeTextAreaWithContent);
     fixture.detectChanges();
 
     textarea = fixture.nativeElement.querySelector('textarea');
-    autosize = fixture.debugElement.query(
-        By.directive(CdkTextareaAutosize))!.injector.get<CdkTextareaAutosize>(CdkTextareaAutosize);
+    autosize = fixture.debugElement
+      .query(By.directive(CdkTextareaAutosize))!
+      .injector.get<CdkTextareaAutosize>(CdkTextareaAutosize);
   });
 
   it('should resize the textarea based on its content', () => {
@@ -93,8 +91,9 @@ describe('CdkTextareaAutosize', () => {
     fixture = TestBed.createComponent(AutosizeTextAreaWithContent);
 
     textarea = fixture.nativeElement.querySelector('textarea');
-    autosize = fixture.debugElement.query(By.css('textarea'))!
-        .injector.get<CdkTextareaAutosize>(CdkTextareaAutosize);
+    autosize = fixture.debugElement
+      .query(By.css('textarea'))!
+      .injector.get<CdkTextareaAutosize>(CdkTextareaAutosize);
 
     fixture.componentInstance.placeholder = `
     Once upon a midnight dreary, while I pondered, weak and weary,
@@ -119,7 +118,8 @@ describe('CdkTextareaAutosize', () => {
     autosize.resizeToFitContent();
 
     expect(textarea.clientHeight)
-      .withContext('Expected textarea height not to have changed').toBe(previousHeight);
+      .withContext('Expected textarea height not to have changed')
+      .toBe(previousHeight);
   });
 
   it('should set a min-height based on minRows', () => {
@@ -129,7 +129,8 @@ describe('CdkTextareaAutosize', () => {
     fixture.detectChanges();
 
     expect(textarea.style.minHeight)
-      .withContext('Expected a min-height to be set via minRows.').toBeDefined();
+      .withContext('Expected a min-height to be set via minRows.')
+      .toBeDefined();
 
     let previousMinHeight = parseInt(textarea.style.minHeight as string);
     fixture.componentInstance.minRows = 6;
@@ -147,7 +148,8 @@ describe('CdkTextareaAutosize', () => {
     fixture.detectChanges();
 
     expect(textarea.style.maxHeight)
-      .withContext('Expected a max-height to be set via maxRows.').toBeDefined();
+      .withContext('Expected a max-height to be set via maxRows.')
+      .toBeDefined();
 
     let previousMaxHeight = parseInt(textarea.style.maxHeight as string);
     fixture.componentInstance.maxRows = 6;
@@ -165,14 +167,16 @@ describe('CdkTextareaAutosize', () => {
     fixture.detectChanges();
 
     expect(textarea.style.minHeight)
-      .withContext('Expected a min-height to be set via minRows.').toBeDefined();
+      .withContext('Expected a min-height to be set via minRows.')
+      .toBeDefined();
 
     let previousHeight = parseInt(textarea.style.height!);
     fixture.componentInstance.minRows = 3;
     fixture.detectChanges();
 
     expect(parseInt(textarea.style.height!))
-      .withContext('Expected decreased height with minRows decrease.').toBeLessThan(previousHeight);
+      .withContext('Expected decreased height with minRows decrease.')
+      .toBeLessThan(previousHeight);
   });
 
   it('should export the cdkAutosize reference', () => {
@@ -182,13 +186,15 @@ describe('CdkTextareaAutosize', () => {
 
   it('should initially set the rows of a textarea to one', () => {
     expect(textarea.rows)
-      .withContext('Expected the directive to initially set the rows property to one.').toBe(1);
+      .withContext('Expected the directive to initially set the rows property to one.')
+      .toBe(1);
 
     fixture.componentInstance.minRows = 1;
     fixture.detectChanges();
 
     expect(textarea.rows)
-      .withContext('Expected the textarea to have the rows property set to one.').toBe(1);
+      .withContext('Expected the textarea to have the rows property set to one.')
+      .toBe(1);
 
     const previousMinHeight = parseInt(textarea.style.minHeight as string);
 
@@ -196,11 +202,15 @@ describe('CdkTextareaAutosize', () => {
     fixture.detectChanges();
 
     expect(textarea.rows)
-      .withContext('Expected the rows property to be set to one. ' +
-    'The amount of rows will be specified using CSS.').toBe(1);
+      .withContext(
+        'Expected the rows property to be set to one. ' +
+          'The amount of rows will be specified using CSS.',
+      )
+      .toBe(1);
 
     expect(parseInt(textarea.style.minHeight as string))
-      .withContext('Expected the textarea to grow to two rows.').toBeGreaterThan(previousMinHeight);
+      .withContext('Expected the textarea to grow to two rows.')
+      .toBeGreaterThan(previousMinHeight);
   });
 
   it('should calculate the proper height based on the specified amount of max rows', () => {
@@ -225,8 +235,9 @@ describe('CdkTextareaAutosize', () => {
     // detection should be triggered after a multiline content is set.
     fixture = TestBed.createComponent(AutosizeTextAreaWithContent);
     textarea = fixture.nativeElement.querySelector('textarea');
-    autosize = fixture.debugElement.query(By.css('textarea'))!
-        .injector.get<CdkTextareaAutosize>(CdkTextareaAutosize);
+    autosize = fixture.debugElement
+      .query(By.css('textarea'))!
+      .injector.get<CdkTextareaAutosize>(CdkTextareaAutosize);
 
     fixture.componentInstance.content = `
       Line
@@ -247,8 +258,9 @@ describe('CdkTextareaAutosize', () => {
     // detection should be triggered after a multiline placeholder is set.
     fixture = TestBed.createComponent(AutosizeTextAreaWithContent);
     textarea = fixture.nativeElement.querySelector('textarea');
-    autosize = fixture.debugElement.query(By.css('textarea'))!
-        .injector.get<CdkTextareaAutosize>(CdkTextareaAutosize);
+    autosize = fixture.debugElement
+      .query(By.css('textarea'))!
+      .injector.get<CdkTextareaAutosize>(CdkTextareaAutosize);
 
     fixture.componentInstance.placeholder = `
       Line
@@ -316,8 +328,9 @@ describe('CdkTextareaAutosize', () => {
   it('should not trigger a resize when it is disabled', fakeAsync(() => {
     const fixtureWithoutAutosize = TestBed.createComponent(AutosizeTextareaWithoutAutosize);
     textarea = fixtureWithoutAutosize.nativeElement.querySelector('textarea');
-    autosize = fixtureWithoutAutosize.debugElement.query(By.css('textarea'))!
-        .injector.get<CdkTextareaAutosize>(CdkTextareaAutosize);
+    autosize = fixtureWithoutAutosize.debugElement
+      .query(By.css('textarea'))!
+      .injector.get<CdkTextareaAutosize>(CdkTextareaAutosize);
 
     fixtureWithoutAutosize.detectChanges();
 
@@ -334,9 +347,11 @@ describe('CdkTextareaAutosize', () => {
     fixtureWithoutAutosize.detectChanges();
 
     expect(textarea.clientHeight)
-      .withContext('Expected textarea to still have the same size.').toEqual(previousHeight);
+      .withContext('Expected textarea to still have the same size.')
+      .toEqual(previousHeight);
     expect(textarea.clientHeight)
-      .withContext('Expected textarea to a have scrollbar.').toBeLessThan(textarea.scrollHeight);
+      .withContext('Expected textarea to a have scrollbar.')
+      .toBeLessThan(textarea.scrollHeight);
 
     autosize.enabled = true;
     fixtureWithoutAutosize.detectChanges();
@@ -345,15 +360,18 @@ describe('CdkTextareaAutosize', () => {
       .withContext('Expected textarea to have grown after enabling autosize.')
       .toBeGreaterThan(previousHeight);
     expect(textarea.clientHeight)
-      .withContext('Expected textarea not to have a scrollbar').toBe(textarea.scrollHeight);
+      .withContext('Expected textarea not to have a scrollbar')
+      .toBe(textarea.scrollHeight);
 
     autosize.enabled = false;
     fixtureWithoutAutosize.detectChanges();
 
     expect(textarea.clientHeight)
-      .withContext('Expected textarea to have the original size.').toEqual(previousHeight);
+      .withContext('Expected textarea to have the original size.')
+      .toEqual(previousHeight);
     expect(textarea.clientHeight)
-      .withContext('Expected textarea to have a scrollbar.').toBeLessThan(textarea.scrollHeight);
+      .withContext('Expected textarea to have a scrollbar.')
+      .toBeLessThan(textarea.scrollHeight);
   }));
 });
 
@@ -402,4 +420,3 @@ class AutosizeTextareaWithNgModel {
 class AutosizeTextareaWithoutAutosize {
   content: string = '';
 }
-

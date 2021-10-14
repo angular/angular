@@ -4,25 +4,14 @@ import {IconOverviewExample} from './icon-overview/icon-overview-example';
 import {IconSvgExample} from './icon-svg/icon-svg-example';
 import {IconHarnessExample} from './icon-harness/icon-harness-example';
 
-export {
-  IconHarnessExample,
-  IconOverviewExample,
-  IconSvgExample,
-};
+export {IconHarnessExample, IconOverviewExample, IconSvgExample};
 
-const EXAMPLES = [
-  IconHarnessExample,
-  IconOverviewExample,
-  IconSvgExample,
-];
+const EXAMPLES = [IconHarnessExample, IconOverviewExample, IconSvgExample];
 
 @NgModule({
-  imports: [
-    MatIconModule,
-  ],
+  imports: [MatIconModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
   entryComponents: EXAMPLES,
 })
-export class IconExamplesModule {
-}
+export class IconExamplesModule {}

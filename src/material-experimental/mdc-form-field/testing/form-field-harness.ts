@@ -21,7 +21,10 @@ import {
 // TODO(devversion): support support chip list harness
 /** Possible harnesses of controls which can be bound to a form-field. */
 export type FormFieldControlHarness =
-  MatInputHarness|MatSelectHarness|MatDatepickerInputHarness|MatDateRangeInputHarness;
+  | MatInputHarness
+  | MatSelectHarness
+  | MatDatepickerInputHarness
+  | MatDateRangeInputHarness;
 
 /** Harness for interacting with a MDC-based form-field's in tests. */
 export class MatFormFieldHarness extends _MatFormFieldHarnessBase<FormFieldControlHarness> {
@@ -35,10 +38,14 @@ export class MatFormFieldHarness extends _MatFormFieldHarnessBase<FormFieldContr
    */
   static with(options: FormFieldHarnessFilters = {}): HarnessPredicate<MatFormFieldHarness> {
     return new HarnessPredicate(MatFormFieldHarness, options)
-        .addOption('floatingLabelText', options.floatingLabelText,
-            async (harness, text) => HarnessPredicate.stringMatches(await harness.getLabel(), text))
-        .addOption('hasErrors', options.hasErrors,
-            async (harness, hasErrors) => await harness.hasErrors() === hasErrors);
+      .addOption('floatingLabelText', options.floatingLabelText, async (harness, text) =>
+        HarnessPredicate.stringMatches(await harness.getLabel(), text),
+      )
+      .addOption(
+        'hasErrors',
+        options.hasErrors,
+        async (harness, hasErrors) => (await harness.hasErrors()) === hasErrors,
+      );
   }
 
   protected _prefixContainer = this.locatorForOptional('.mat-mdc-form-field-text-prefix');
@@ -53,7 +60,7 @@ export class MatFormFieldHarness extends _MatFormFieldHarnessBase<FormFieldContr
   private _mdcTextField = this.locatorFor('.mat-mdc-text-field-wrapper');
 
   /** Gets the appearance of the form-field. */
-  async getAppearance(): Promise<'fill'|'outline'> {
+  async getAppearance(): Promise<'fill' | 'outline'> {
     const textFieldEl = await this._mdcTextField();
     if (await textFieldEl.hasClass('mdc-text-field--outlined')) {
       return 'outline';

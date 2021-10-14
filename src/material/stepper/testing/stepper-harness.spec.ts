@@ -4,6 +4,10 @@ import {MatStepperHarness} from './stepper-harness';
 import {MatStepperNextHarness, MatStepperPreviousHarness} from './stepper-button-harnesses';
 
 describe('Non-MDC-based MatStepperHarness', () => {
-  runHarnessTests(MatStepperModule, MatStepperHarness, MatStepperNextHarness,
-      MatStepperPreviousHarness);
+  runHarnessTests(
+    MatStepperModule,
+    MatStepperHarness,
+    MatStepperNextHarness,
+    MatStepperPreviousHarness,
+  );
 });

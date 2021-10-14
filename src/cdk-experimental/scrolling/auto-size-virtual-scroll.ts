@@ -11,11 +11,10 @@ import {ListRange} from '@angular/cdk/collections';
 import {
   CdkVirtualScrollViewport,
   VIRTUAL_SCROLL_STRATEGY,
-  VirtualScrollStrategy
+  VirtualScrollStrategy,
 } from '@angular/cdk/scrolling';
 import {Directive, forwardRef, Input, OnChanges} from '@angular/core';
 import {Observable} from 'rxjs';
-
 
 /**
  * A class that tracks the size of items that have been seen and uses it to estimate the average
@@ -51,7 +50,7 @@ export class ItemSizeAverager {
     const newTotalWeight = this._totalWeight + range.end - range.start;
     if (newTotalWeight) {
       const newAverageItemSize =
-          (size + this._averageItemSize * this._totalWeight) / newTotalWeight;
+        (size + this._averageItemSize * this._totalWeight) / newTotalWeight;
       if (newAverageItemSize) {
         this._averageItemSize = newAverageItemSize;
         this._totalWeight = newTotalWeight;
@@ -66,15 +65,16 @@ export class ItemSizeAverager {
   }
 }
 
-
 /** Virtual scrolling strategy for lists with items of unknown or dynamic size. */
 export class AutoSizeVirtualScrollStrategy implements VirtualScrollStrategy {
   /** @docs-private Implemented as part of VirtualScrollStrategy. */
   scrolledIndexChange = new Observable<number>(() => {
     // TODO(mmalerba): Implement.
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
-      throw Error('cdk-virtual-scroll: scrolledIndexChange is currently not supported for the' +
-          ' autosize scroll strategy');
+      throw Error(
+        'cdk-virtual-scroll: scrolledIndexChange is currently not supported for the' +
+          ' autosize scroll strategy',
+      );
     }
   });
 
@@ -168,8 +168,10 @@ export class AutoSizeVirtualScrollStrategy implements VirtualScrollStrategy {
   scrollToIndex(): void {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       // TODO(mmalerba): Implement.
-      throw Error('cdk-virtual-scroll: scrollToIndex is currently not supported for the autosize'
-          + ' scroll strategy');
+      throw Error(
+        'cdk-virtual-scroll: scrollToIndex is currently not supported for the autosize' +
+          ' scroll strategy',
+      );
     }
   }
 
@@ -181,7 +183,7 @@ export class AutoSizeVirtualScrollStrategy implements VirtualScrollStrategy {
    */
   updateBufferSize(minBufferPx: number, maxBufferPx: number) {
     if (maxBufferPx < minBufferPx) {
-      throw('CDK virtual scroll: maxBufferPx must be greater than or equal to minBufferPx');
+      throw 'CDK virtual scroll: maxBufferPx must be greater than or equal to minBufferPx';
     }
     this._minBufferPx = minBufferPx;
     this._maxBufferPx = maxBufferPx;
@@ -218,8 +220,10 @@ export class AutoSizeVirtualScrollStrategy implements VirtualScrollStrategy {
       // The amount of difference to correct during this scroll event. We calculate this as a
       // percentage of the total difference based on the percentage of the distance toward the top
       // that the user scrolled.
-      offsetCorrection = Math.round(offsetDifference *
-          Math.max(0, Math.min(1, scrollMagnitude / (scrollOffset + scrollMagnitude))));
+      offsetCorrection = Math.round(
+        offsetDifference *
+          Math.max(0, Math.min(1, scrollMagnitude / (scrollOffset + scrollMagnitude))),
+      );
 
       // Based on the offset correction above, we pretend that the scroll delta was bigger or
       // smaller than it actually was, this way we can start to eliminate the difference.
@@ -230,12 +234,14 @@ export class AutoSizeVirtualScrollStrategy implements VirtualScrollStrategy {
     // The current amount of buffer past the start of the viewport.
     const startBuffer = this._lastScrollOffset - this._lastRenderedContentOffset;
     // The current amount of buffer past the end of the viewport.
-    const endBuffer = (this._lastRenderedContentOffset + this._lastRenderedContentSize) -
-        (this._lastScrollOffset + viewport.getViewportSize());
+    const endBuffer =
+      this._lastRenderedContentOffset +
+      this._lastRenderedContentSize -
+      (this._lastScrollOffset + viewport.getViewportSize());
     // The amount of unfilled space that should be filled on the side the user is scrolling toward
     // in order to safely absorb the scroll delta.
-    const underscan = scrollMagnitude + this._minBufferPx -
-        (scrollDelta < 0 ? startBuffer : endBuffer);
+    const underscan =
+      scrollMagnitude + this._minBufferPx - (scrollDelta < 0 ? startBuffer : endBuffer);
 
     // Check if there's unfilled space that we need to render new elements to fill.
     if (underscan > 0) {
@@ -250,25 +256,36 @@ export class AutoSizeVirtualScrollStrategy implements VirtualScrollStrategy {
         // The number of new items to render on the side the user is scrolling towards. Rather than
         // just filling the underscan space, we actually fill enough to have a buffer size of
         // `maxBufferPx`. This gives us a little wiggle room in case our item size estimate is off.
-        const addItems = Math.max(0, Math.ceil((underscan - this._minBufferPx + this._maxBufferPx) /
-            this._averager.getAverageItemSize()));
+        const addItems = Math.max(
+          0,
+          Math.ceil(
+            (underscan - this._minBufferPx + this._maxBufferPx) /
+              this._averager.getAverageItemSize(),
+          ),
+        );
         // The amount of filled space beyond what is necessary on the side the user is scrolling
         // away from.
-        const overscan = (scrollDelta < 0 ? endBuffer : startBuffer) - this._minBufferPx +
-            scrollMagnitude;
+        const overscan =
+          (scrollDelta < 0 ? endBuffer : startBuffer) - this._minBufferPx + scrollMagnitude;
         // The number of currently rendered items to remove on the side the user is scrolling away
         // from. If removal has failed in recent cycles we are less aggressive in how much we try to
         // remove.
         const unboundedRemoveItems = Math.floor(
-            overscan / this._averager.getAverageItemSize() / (this._removalFailures + 1));
-        const removeItems =
-            Math.min(renderedRange.end - renderedRange.start, Math.max(0, unboundedRemoveItems));
+          overscan / this._averager.getAverageItemSize() / (this._removalFailures + 1),
+        );
+        const removeItems = Math.min(
+          renderedRange.end - renderedRange.start,
+          Math.max(0, unboundedRemoveItems),
+        );
 
         // The new range we will tell the viewport to render. We first expand it to include the new
         // items we want rendered, we then contract the opposite side to remove items we no longer
         // want rendered.
         const range = this._expandRange(
-            renderedRange, scrollDelta < 0 ? addItems : 0, scrollDelta > 0 ? addItems : 0);
+          renderedRange,
+          scrollDelta < 0 ? addItems : 0,
+          scrollDelta > 0 ? addItems : 0,
+        );
         if (scrollDelta < 0) {
           range.end = Math.max(range.start + 1, range.end - removeItems);
         } else {
@@ -289,7 +306,7 @@ export class AutoSizeVirtualScrollStrategy implements VirtualScrollStrategy {
           // Check that we're not removing too much.
           if (removedSize <= overscan) {
             contentOffset =
-                this._lastRenderedContentOffset + this._lastRenderedContentSize - removedSize;
+              this._lastRenderedContentOffset + this._lastRenderedContentSize - removedSize;
             this._removalFailures = 0;
           } else {
             // If the removal is more than the overscan can absorb just undo it and record the fact
@@ -360,11 +377,16 @@ export class AutoSizeVirtualScrollStrategy implements VirtualScrollStrategy {
     this._removalFailures = 0;
 
     const itemSize = this._averager.getAverageItemSize();
-    const firstVisibleIndex =
-        Math.min(viewport.getDataLength() - 1, Math.floor(scrollOffset / itemSize));
+    const firstVisibleIndex = Math.min(
+      viewport.getDataLength() - 1,
+      Math.floor(scrollOffset / itemSize),
+    );
     const bufferSize = Math.ceil(this._maxBufferPx / itemSize);
     const range = this._expandRange(
-        this._getVisibleRangeForIndex(firstVisibleIndex), bufferSize, bufferSize);
+      this._getVisibleRangeForIndex(firstVisibleIndex),
+      bufferSize,
+      bufferSize,
+    );
 
     viewport.setRenderedRange(range);
     viewport.setRenderedContentOffset(itemSize * range.start);
@@ -383,8 +405,7 @@ export class AutoSizeVirtualScrollStrategy implements VirtualScrollStrategy {
     const viewport = this._viewport!;
     const range: ListRange = {
       start: startIndex,
-      end: startIndex +
-          Math.ceil(viewport.getViewportSize() / this._averager.getAverageItemSize())
+      end: startIndex + Math.ceil(viewport.getViewportSize() / this._averager.getAverageItemSize()),
     };
     const extra = range.end - viewport.getDataLength();
     if (extra > 0) {
@@ -413,8 +434,9 @@ export class AutoSizeVirtualScrollStrategy implements VirtualScrollStrategy {
   private _updateTotalContentSize(renderedContentSize: number) {
     const viewport = this._viewport!;
     const renderedRange = viewport.getRenderedRange();
-    const totalSize = renderedContentSize +
-        (viewport.getDataLength() - (renderedRange.end - renderedRange.start)) *
+    const totalSize =
+      renderedContentSize +
+      (viewport.getDataLength() - (renderedRange.end - renderedRange.start)) *
         this._averager.getAverageItemSize();
     viewport.setTotalContentSize(totalSize);
   }
@@ -430,15 +452,16 @@ export function _autoSizeVirtualScrollStrategyFactory(autoSizeDir: CdkAutoSizeVi
   return autoSizeDir._scrollStrategy;
 }
 
-
 /** A virtual scroll strategy that supports unknown or dynamic size items. */
 @Directive({
   selector: 'cdk-virtual-scroll-viewport[autosize]',
-  providers: [{
-    provide: VIRTUAL_SCROLL_STRATEGY,
-    useFactory: _autoSizeVirtualScrollStrategyFactory,
-    deps: [forwardRef(() => CdkAutoSizeVirtualScroll)],
-  }],
+  providers: [
+    {
+      provide: VIRTUAL_SCROLL_STRATEGY,
+      useFactory: _autoSizeVirtualScrollStrategyFactory,
+      deps: [forwardRef(() => CdkAutoSizeVirtualScroll)],
+    },
+  ],
 })
 export class CdkAutoSizeVirtualScroll implements OnChanges {
   /**
@@ -446,8 +469,12 @@ export class CdkAutoSizeVirtualScroll implements OnChanges {
    * If the amount of buffer dips below this number, more items will be rendered. Defaults to 100px.
    */
   @Input()
-  get minBufferPx(): number { return this._minBufferPx; }
-  set minBufferPx(value: number) { this._minBufferPx = coerceNumberProperty(value); }
+  get minBufferPx(): number {
+    return this._minBufferPx;
+  }
+  set minBufferPx(value: number) {
+    this._minBufferPx = coerceNumberProperty(value);
+  }
   _minBufferPx = 100;
 
   /**
@@ -457,8 +484,12 @@ export class CdkAutoSizeVirtualScroll implements OnChanges {
    * Defaults to 200px.
    */
   @Input()
-  get maxBufferPx(): number { return this._maxBufferPx; }
-  set maxBufferPx(value: number) { this._maxBufferPx = coerceNumberProperty(value); }
+  get maxBufferPx(): number {
+    return this._maxBufferPx;
+  }
+  set maxBufferPx(value: number) {
+    this._maxBufferPx = coerceNumberProperty(value);
+  }
   _maxBufferPx = 200;
 
   /** The scroll strategy used by this directive. */

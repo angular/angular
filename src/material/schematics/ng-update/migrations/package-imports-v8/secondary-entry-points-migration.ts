@@ -10,11 +10,13 @@ import {Migration, TargetVersion} from '@angular/cdk/schematics';
 import * as ts from 'typescript';
 import {materialModuleSpecifier} from '../../../ng-update/typescript/module-specifiers';
 
-const ONLY_SUBPACKAGE_FAILURE_STR = `Importing from "@angular/material" is deprecated. ` +
-    `Instead import from the entry-point the symbol belongs to.`;
+const ONLY_SUBPACKAGE_FAILURE_STR =
+  `Importing from "@angular/material" is deprecated. ` +
+  `Instead import from the entry-point the symbol belongs to.`;
 
-const NO_IMPORT_NAMED_SYMBOLS_FAILURE_STR = `Imports from Angular Material should import ` +
-    `specific symbols rather than importing the entire library.`;
+const NO_IMPORT_NAMED_SYMBOLS_FAILURE_STR =
+  `Imports from Angular Material should import ` +
+  `specific symbols rather than importing the entire library.`;
 
 /**
  * Regex for testing file paths against to determine if the file is from the
@@ -41,8 +43,10 @@ export class SecondaryEntryPointsMigration extends Migration<null> {
 
   override visitNode(declaration: ts.Node): void {
     // Only look at import declarations.
-    if (!ts.isImportDeclaration(declaration) ||
-        !ts.isStringLiteralLike(declaration.moduleSpecifier)) {
+    if (
+      !ts.isImportDeclaration(declaration) ||
+      !ts.isStringLiteralLike(declaration.moduleSpecifier)
+    ) {
       return;
     }
 
@@ -88,40 +92,48 @@ export class SecondaryEntryPointsMigration extends Migration<null> {
       // resolving it from our list of symbol to entry point mappings. Using the type checker is
       // more accurate and doesn't require us to keep a list of symbols, but it won't work if
       // the symbols don't exist anymore (e.g. after we remove the top-level @angular/material).
-      const moduleName = resolveModuleName(elementName, this.typeChecker) ||
-          ENTRY_POINT_MAPPINGS[elementName.text] || null;
+      const moduleName =
+        resolveModuleName(elementName, this.typeChecker) ||
+        ENTRY_POINT_MAPPINGS[elementName.text] ||
+        null;
 
       if (!moduleName) {
         this.createFailureAtNode(
-          element, `"${element.getText()}" was not found in the Material library.`);
+          element,
+          `"${element.getText()}" was not found in the Material library.`,
+        );
         return;
       }
 
-        // The module name where the symbol is defined e.g. card, dialog. The
-        // first capture group is contains the module name.
-        if (importMap.has(moduleName)) {
-          importMap.get(moduleName)!.push(element);
-        } else {
-          importMap.set(moduleName, [element]);
-        }
+      // The module name where the symbol is defined e.g. card, dialog. The
+      // first capture group is contains the module name.
+      if (importMap.has(moduleName)) {
+        importMap.get(moduleName)!.push(element);
+      } else {
+        importMap.set(moduleName, [element]);
+      }
     }
 
     // Transforms the import declaration into multiple import declarations that import
     // the given symbols from the individual secondary entry-points. For example:
     // import {MatCardModule, MatCardTitle} from '@angular/material/card';
     // import {MatRadioModule} from '@angular/material/radio';
-    const newImportStatements =
-        Array.from(importMap.entries())
-            .sort()
-            .map(([name, elements]) => {
-              const newImport = ts.createImportDeclaration(
-                  undefined, undefined,
-                  ts.createImportClause(undefined, ts.createNamedImports(elements)),
-                  createStringLiteral(`${materialModuleSpecifier}/${name}`, singleQuoteImport));
-              return this.printer.printNode(
-                  ts.EmitHint.Unspecified, newImport, declaration.getSourceFile());
-            })
-            .join('\n');
+    const newImportStatements = Array.from(importMap.entries())
+      .sort()
+      .map(([name, elements]) => {
+        const newImport = ts.createImportDeclaration(
+          undefined,
+          undefined,
+          ts.createImportClause(undefined, ts.createNamedImports(elements)),
+          createStringLiteral(`${materialModuleSpecifier}/${name}`, singleQuoteImport),
+        );
+        return this.printer.printNode(
+          ts.EmitHint.Unspecified,
+          newImport,
+          declaration.getSourceFile(),
+        );
+      })
+      .join('\n');
 
     // Without any import statements that were generated, we can assume that this was an empty
     // import declaration. We still want to add a failure in order to make developers aware that
@@ -131,8 +143,7 @@ export class SecondaryEntryPointsMigration extends Migration<null> {
       return;
     }
 
-    const filePath = this.fileSystem.resolve(
-        declaration.moduleSpecifier.getSourceFile().fileName);
+    const filePath = this.fileSystem.resolve(declaration.moduleSpecifier.getSourceFile().fileName);
     const recorder = this.fileSystem.edit(filePath);
 
     // Perform the replacement that switches the primary entry-point import to
@@ -155,7 +166,7 @@ function createStringLiteral(text: string, singleQuotes: boolean): ts.StringLite
 }
 
 /** Gets the symbol that contains the value declaration of the given node. */
-function getDeclarationSymbolOfNode(node: ts.Node, checker: ts.TypeChecker): ts.Symbol|undefined {
+function getDeclarationSymbolOfNode(node: ts.Node, checker: ts.TypeChecker): ts.Symbol | undefined {
   const symbol = checker.getSymbolAtLocation(node);
 
   // Symbols can be aliases of the declaration symbol. e.g. in named import specifiers.
@@ -167,9 +178,8 @@ function getDeclarationSymbolOfNode(node: ts.Node, checker: ts.TypeChecker): ts.
   return symbol;
 }
 
-
 /** Tries to resolve the name of the Material module that a node is imported from. */
-function resolveModuleName(node: ts.Identifier, typeChecker: ts.TypeChecker): string|null {
+function resolveModuleName(node: ts.Identifier, typeChecker: ts.TypeChecker): string | null {
   // Get the symbol for the named binding element. Note that we cannot determine the
   // value declaration based on the type of the element as types are not necessarily
   // specific to a given secondary entry-point (e.g. exports with the type of "string")
@@ -178,8 +188,10 @@ function resolveModuleName(node: ts.Identifier, typeChecker: ts.TypeChecker): st
 
   // If the symbol can't be found, or no declaration could be found within
   // the symbol, add failure to report that the given symbol can't be found.
-  if (!symbol ||
-      !(symbol.valueDeclaration || (symbol.declarations && symbol.declarations.length !== 0))) {
+  if (
+    !symbol ||
+    !(symbol.valueDeclaration || (symbol.declarations && symbol.declarations.length !== 0))
+  ) {
     return null;
   }
 

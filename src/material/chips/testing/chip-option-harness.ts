@@ -20,13 +20,18 @@ export class MatChipOptionHarness extends MatChipHarness {
    * @param options Options for filtering which chip instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static override with(options: ChipOptionHarnessFilters = {}):
-    HarnessPredicate<MatChipOptionHarness> {
+  static override with(
+    options: ChipOptionHarnessFilters = {},
+  ): HarnessPredicate<MatChipOptionHarness> {
     return new HarnessPredicate(MatChipOptionHarness, options)
-        .addOption('text', options.text,
-            (harness, label) => HarnessPredicate.stringMatches(harness.getText(), label))
-        .addOption('selected', options.selected,
-            async (harness, selected) => (await harness.isSelected()) === selected);
+      .addOption('text', options.text, (harness, label) =>
+        HarnessPredicate.stringMatches(harness.getText(), label),
+      )
+      .addOption(
+        'selected',
+        options.selected,
+        async (harness, selected) => (await harness.isSelected()) === selected,
+      );
   }
 
   /** Whether the chip is selected. */

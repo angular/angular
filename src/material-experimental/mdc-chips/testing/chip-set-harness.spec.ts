@@ -39,7 +39,6 @@ describe('MatChipSetHarness', () => {
       <mat-chip> Chip B </mat-chip>
       <mat-chip> Chip C </mat-chip>
     </mat-chip-set>
-  `
+  `,
 })
 class ChipSetHarnessTest {}
-

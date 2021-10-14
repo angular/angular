@@ -40,7 +40,6 @@ import {pairwise, shareReplay, startWith, switchMap, takeUntil} from 'rxjs/opera
 import {CdkVirtualScrollRepeater} from './virtual-scroll-repeater';
 import {CdkVirtualScrollViewport} from './virtual-scroll-viewport';
 
-
 /** The context for an item rendered by `CdkVirtualForOf` */
 export type CdkVirtualForOfContext<T> = {
   /** The item value. */
@@ -60,7 +59,6 @@ export type CdkVirtualForOfContext<T> = {
   /** Whether the index is odd. */
   odd: boolean;
 };
-
 
 /** Helper to extract the offset of a DOM Node in a certain direction. */
 function getOffset(orientation: 'horizontal' | 'vertical', direction: 'start' | 'end', node: Node) {
@@ -83,12 +81,11 @@ function getOffset(orientation: 'horizontal' | 'vertical', direction: 'start' | 
  */
 @Directive({
   selector: '[cdkVirtualFor][cdkVirtualForOf]',
-  providers: [
-    {provide: _VIEW_REPEATER_STRATEGY, useClass: _RecycleViewRepeaterStrategy},
-  ]
+  providers: [{provide: _VIEW_REPEATER_STRATEGY, useClass: _RecycleViewRepeaterStrategy}],
 })
-export class CdkVirtualForOf<T> implements
-    CdkVirtualScrollRepeater<T>, CollectionViewer, DoCheck, OnDestroy {
+export class CdkVirtualForOf<T>
+  implements CdkVirtualScrollRepeater<T>, CollectionViewer, DoCheck, OnDestroy
+{
   /** Emits when the rendered view of the data changes. */
   readonly viewChange = new Subject<ListRange>();
 
@@ -106,8 +103,9 @@ export class CdkVirtualForOf<T> implements
       this._dataSourceChanges.next(value);
     } else {
       // If value is an an NgIterable, convert it to an array.
-      this._dataSourceChanges.next(new ArrayDataSource<T>(
-          isObservable(value) ? value : Array.from(value || [])));
+      this._dataSourceChanges.next(
+        new ArrayDataSource<T>(isObservable(value) ? value : Array.from(value || [])),
+      );
     }
   }
 
@@ -123,9 +121,9 @@ export class CdkVirtualForOf<T> implements
   }
   set cdkVirtualForTrackBy(fn: TrackByFunction<T> | undefined) {
     this._needsUpdate = true;
-    this._cdkVirtualForTrackBy = fn ?
-        (index, item) => fn(index + (this._renderedRange ? this._renderedRange.start : 0), item) :
-        undefined;
+    this._cdkVirtualForTrackBy = fn
+      ? (index, item) => fn(index + (this._renderedRange ? this._renderedRange.start : 0), item)
+      : undefined;
   }
   private _cdkVirtualForTrackBy: TrackByFunction<T> | undefined;
 
@@ -151,18 +149,18 @@ export class CdkVirtualForOf<T> implements
   }
 
   /** Emits whenever the data in the current DataSource changes. */
-  readonly dataStream: Observable<readonly T[]> = this._dataSourceChanges
-  .pipe(
-      // Start off with null `DataSource`.
-      startWith(null),
-      // Bundle up the previous and current data sources so we can work with both.
-      pairwise(),
-      // Use `_changeDataSource` to disconnect from the previous data source and connect to the
-      // new one, passing back a stream of data changes which we run through `switchMap` to give
-      // us a data stream that emits the latest data from whatever the current `DataSource` is.
-      switchMap(([prev, cur]) => this._changeDataSource(prev, cur)),
-      // Replay the last emitted data when someone subscribes.
-      shareReplay(1));
+  readonly dataStream: Observable<readonly T[]> = this._dataSourceChanges.pipe(
+    // Start off with null `DataSource`.
+    startWith(null),
+    // Bundle up the previous and current data sources so we can work with both.
+    pairwise(),
+    // Use `_changeDataSource` to disconnect from the previous data source and connect to the
+    // new one, passing back a stream of data changes which we run through `switchMap` to give
+    // us a data stream that emits the latest data from whatever the current `DataSource` is.
+    switchMap(([prev, cur]) => this._changeDataSource(prev, cur)),
+    // Replay the last emitted data when someone subscribes.
+    shareReplay(1),
+  );
 
   /** The differ used to calculate changes to the data. */
   private _differ: IterableDiffer<T> | null = null;
@@ -182,18 +180,19 @@ export class CdkVirtualForOf<T> implements
   private readonly _destroyed = new Subject<void>();
 
   constructor(
-      /** The view container to add items to. */
-      private _viewContainerRef: ViewContainerRef,
-      /** The template to use when stamping out new items. */
-      private _template: TemplateRef<CdkVirtualForOfContext<T>>,
-      /** The set of available differs. */
-      private _differs: IterableDiffers,
-      /** The strategy used to render items in the virtual scroll viewport. */
-      @Inject(_VIEW_REPEATER_STRATEGY)
-      private _viewRepeater: _RecycleViewRepeaterStrategy<T, T, CdkVirtualForOfContext<T>>,
-      /** The virtual scrolling viewport that these items are being rendered in. */
-      @SkipSelf() private _viewport: CdkVirtualScrollViewport,
-      ngZone: NgZone) {
+    /** The view container to add items to. */
+    private _viewContainerRef: ViewContainerRef,
+    /** The template to use when stamping out new items. */
+    private _template: TemplateRef<CdkVirtualForOfContext<T>>,
+    /** The set of available differs. */
+    private _differs: IterableDiffers,
+    /** The strategy used to render items in the virtual scroll viewport. */
+    @Inject(_VIEW_REPEATER_STRATEGY)
+    private _viewRepeater: _RecycleViewRepeaterStrategy<T, T, CdkVirtualForOfContext<T>>,
+    /** The virtual scrolling viewport that these items are being rendered in. */
+    @SkipSelf() private _viewport: CdkVirtualScrollViewport,
+    ngZone: NgZone,
+  ) {
     this.dataStream.subscribe(data => {
       this._data = data;
       this._onRenderedDataChange();
@@ -215,8 +214,10 @@ export class CdkVirtualForOf<T> implements
     if (range.start >= range.end) {
       return 0;
     }
-    if ((range.start < this._renderedRange.start || range.end > this._renderedRange.end) &&
-      (typeof ngDevMode === 'undefined' || ngDevMode)) {
+    if (
+      (range.start < this._renderedRange.start || range.end > this._renderedRange.end) &&
+      (typeof ngDevMode === 'undefined' || ngDevMode)
+    ) {
       throw Error(`Error: attempted to measure an item that isn't rendered.`);
     }
 
@@ -232,8 +233,9 @@ export class CdkVirtualForOf<T> implements
 
     // Find the first node by starting from the beginning and going forwards.
     for (let i = 0; i < rangeLen; i++) {
-      const view = this._viewContainerRef.get(i + renderedStartIndex) as
-          EmbeddedViewRef<CdkVirtualForOfContext<T>> | null;
+      const view = this._viewContainerRef.get(i + renderedStartIndex) as EmbeddedViewRef<
+        CdkVirtualForOfContext<T>
+      > | null;
       if (view && view.rootNodes.length) {
         firstNode = lastNode = view.rootNodes[0];
         break;
@@ -242,16 +244,18 @@ export class CdkVirtualForOf<T> implements
 
     // Find the last node by starting from the end and going backwards.
     for (let i = rangeLen - 1; i > -1; i--) {
-      const view = this._viewContainerRef.get(i + renderedStartIndex) as
-          EmbeddedViewRef<CdkVirtualForOfContext<T>> | null;
+      const view = this._viewContainerRef.get(i + renderedStartIndex) as EmbeddedViewRef<
+        CdkVirtualForOfContext<T>
+      > | null;
       if (view && view.rootNodes.length) {
         lastNode = view.rootNodes[view.rootNodes.length - 1];
         break;
       }
     }
 
-    return firstNode && lastNode ?
-        getOffset(orientation, 'end', lastNode) - getOffset(orientation, 'start', firstNode) : 0;
+    return firstNode && lastNode
+      ? getOffset(orientation, 'end', lastNode) - getOffset(orientation, 'start', firstNode)
+      : 0;
   }
 
   ngDoCheck() {
@@ -298,9 +302,10 @@ export class CdkVirtualForOf<T> implements
   }
 
   /** Swap out one `DataSource` for another. */
-  private _changeDataSource(oldDs: DataSource<T> | null, newDs: DataSource<T> | null):
-      Observable<readonly T[]> {
-
+  private _changeDataSource(
+    oldDs: DataSource<T> | null,
+    newDs: DataSource<T> | null,
+  ): Observable<readonly T[]> {
     if (oldDs) {
       oldDs.disconnect(this);
     }
@@ -325,17 +330,21 @@ export class CdkVirtualForOf<T> implements
   /** Apply changes to the DOM. */
   private _applyChanges(changes: IterableChanges<T>) {
     this._viewRepeater.applyChanges(
-        changes,
-        this._viewContainerRef,
-        (record: IterableChangeRecord<T>,
-         _adjustedPreviousIndex: number | null,
-         currentIndex: number | null) => this._getEmbeddedViewArgs(record, currentIndex!),
-        (record) => record.item);
+      changes,
+      this._viewContainerRef,
+      (
+        record: IterableChangeRecord<T>,
+        _adjustedPreviousIndex: number | null,
+        currentIndex: number | null,
+      ) => this._getEmbeddedViewArgs(record, currentIndex!),
+      record => record.item,
+    );
 
     // Update $implicit for any items that had an identity change.
     changes.forEachIdentityChange((record: IterableChangeRecord<T>) => {
-      const view = this._viewContainerRef.get(record.currentIndex!) as
-          EmbeddedViewRef<CdkVirtualForOfContext<T>>;
+      const view = this._viewContainerRef.get(record.currentIndex!) as EmbeddedViewRef<
+        CdkVirtualForOfContext<T>
+      >;
       view.context.$implicit = record.item;
     });
 
@@ -358,8 +367,10 @@ export class CdkVirtualForOf<T> implements
     context.odd = !context.even;
   }
 
-  private _getEmbeddedViewArgs(record: IterableChangeRecord<T>, index: number):
-      _ViewRepeaterItemInsertArgs<CdkVirtualForOfContext<T>> {
+  private _getEmbeddedViewArgs(
+    record: IterableChangeRecord<T>,
+    index: number,
+  ): _ViewRepeaterItemInsertArgs<CdkVirtualForOfContext<T>> {
     // Note that it's important that we insert the item directly at the proper index,
     // rather than inserting it and the moving it in place, because if there's a directive
     // on the same node that injects the `ViewContainerRef`, Angular will insert another
@@ -376,7 +387,7 @@ export class CdkVirtualForOf<T> implements
         first: false,
         last: false,
         odd: false,
-        even: false
+        even: false,
       },
       index,
     };

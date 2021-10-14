@@ -72,44 +72,48 @@ export abstract class ColumnResize implements AfterViewInit, OnDestroy {
     this.ngZone.runOutsideAngular(() => {
       const element = this.elementRef.nativeElement!;
 
-      fromEvent<MouseEvent>(element, 'mouseover').pipe(
+      fromEvent<MouseEvent>(element, 'mouseover')
+        .pipe(
           map(event => _closest(event.target, HEADER_CELL_SELECTOR)),
           takeUntil(this.destroyed),
-          ).subscribe(this.eventDispatcher.headerCellHovered);
-      fromEvent<MouseEvent>(element, 'mouseleave').pipe(
-          filter(event => !!event.relatedTarget &&
-              !_matches(event.relatedTarget as Element, RESIZE_OVERLAY_SELECTOR)),
+        )
+        .subscribe(this.eventDispatcher.headerCellHovered);
+      fromEvent<MouseEvent>(element, 'mouseleave')
+        .pipe(
+          filter(
+            event =>
+              !!event.relatedTarget &&
+              !_matches(event.relatedTarget as Element, RESIZE_OVERLAY_SELECTOR),
+          ),
           mapTo(null),
           takeUntil(this.destroyed),
-          ).subscribe(this.eventDispatcher.headerCellHovered);
+        )
+        .subscribe(this.eventDispatcher.headerCellHovered);
     });
   }
 
   private _listenForResizeActivity() {
     merge(
-        this.eventDispatcher.overlayHandleActiveForCell.pipe(mapTo(undefined)),
-        this.notifier.triggerResize.pipe(mapTo(undefined)),
-        this.notifier.resizeCompleted.pipe(mapTo(undefined))
-    ).pipe(
-      take(1),
-      takeUntil(this.destroyed),
-    ).subscribe(() => {
-      this.setResized();
-    });
+      this.eventDispatcher.overlayHandleActiveForCell.pipe(mapTo(undefined)),
+      this.notifier.triggerResize.pipe(mapTo(undefined)),
+      this.notifier.resizeCompleted.pipe(mapTo(undefined)),
+    )
+      .pipe(take(1), takeUntil(this.destroyed))
+      .subscribe(() => {
+        this.setResized();
+      });
   }
 
   private _listenForHoverActivity() {
-    this.eventDispatcher.headerRowHoveredOrActiveDistinct.pipe(
-        startWith(null),
-        pairwise(),
-        takeUntil(this.destroyed),
-    ).subscribe(([previousRow, hoveredRow]) => {
-      if (hoveredRow) {
-        hoveredRow.classList.add(HOVER_OR_ACTIVE_CLASS);
-      }
-      if (previousRow) {
-        previousRow.classList.remove(HOVER_OR_ACTIVE_CLASS);
-      }
-    });
+    this.eventDispatcher.headerRowHoveredOrActiveDistinct
+      .pipe(startWith(null), pairwise(), takeUntil(this.destroyed))
+      .subscribe(([previousRow, hoveredRow]) => {
+        if (hoveredRow) {
+          hoveredRow.classList.add(HOVER_OR_ACTIVE_CLASS);
+        }
+        if (previousRow) {
+          previousRow.classList.remove(HOVER_OR_ACTIVE_CLASS);
+        }
+      });
   }
 }

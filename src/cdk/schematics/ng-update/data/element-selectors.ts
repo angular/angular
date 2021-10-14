@@ -17,5 +17,5 @@ export interface ElementSelectorUpgradeData {
 }
 
 export const elementSelectors: VersionChanges<ElementSelectorUpgradeData> = {
-  [TargetVersion.V6]: []
+  [TargetVersion.V6]: [],
 };

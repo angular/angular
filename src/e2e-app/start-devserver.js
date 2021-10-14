@@ -9,7 +9,7 @@ const utils = require('@bazel/protractor/protractor-utils.js');
  * Called by Protractor before starting any tests. This is script is responsible for
  * starting up the devserver and updating the Protractor base URL to the proper port.
  */
-module.exports = async function(config) {
+module.exports = async function (config) {
   const {port} = await utils.runServer(config.workspace, config.server, '--port', []);
   const baseUrl = `http://localhost:${port}`;
   const processedConfig = await protractor.browser.getProcessedConfig();

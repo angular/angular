@@ -26,5 +26,4 @@ import {ProgressSpinnerDemo} from './progress-spinner-demo';
   ],
   declarations: [ProgressSpinnerDemo],
 })
-export class ProgressSpinnerDemoModule {
-}
+export class ProgressSpinnerDemoModule {}

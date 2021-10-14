@@ -5,28 +5,17 @@ import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field'
 import {MatIconModule} from '@angular/material/icon';
 import {
   MdcFormFieldCustomControlExample,
-  MyTelInput
+  MyTelInput,
 } from './mdc-form-field-custom-control/form-field-custom-control-example';
 
-export {
-  MdcFormFieldCustomControlExample,
-  MyTelInput,
-};
+export {MdcFormFieldCustomControlExample, MyTelInput};
 
-const EXAMPLES = [
-  MdcFormFieldCustomControlExample,
-];
+const EXAMPLES = [MdcFormFieldCustomControlExample];
 
 @NgModule({
-  imports: [
-    CommonModule,
-    MatFormFieldModule,
-    MatIconModule,
-    ReactiveFormsModule,
-  ],
+  imports: [CommonModule, MatFormFieldModule, MatIconModule, ReactiveFormsModule],
   declarations: [...EXAMPLES, MyTelInput],
   exports: [...EXAMPLES, MyTelInput],
   entryComponents: EXAMPLES,
 })
-export class MdcFormFieldExamplesModule {
-}
+export class MdcFormFieldExamplesModule {}

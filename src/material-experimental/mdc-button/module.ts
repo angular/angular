@@ -36,5 +36,4 @@ import {MatIconAnchor, MatIconButton} from './icon-button';
     MatFabButton,
   ],
 })
-export class MatButtonModule {
-}
+export class MatButtonModule {}

@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 /**
  * Benchpress gives us fine-grained metrics on browser interactions. In some cases, we want to
  * just get a whole measurement of how long the entire interaction took.

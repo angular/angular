@@ -41,8 +41,9 @@ export interface MatPaginatorDefaultOptions {
 }
 
 /** Injection token that can be used to provide the default options for the paginator module. */
-export const MAT_PAGINATOR_DEFAULT_OPTIONS =
-    new InjectionToken<MatPaginatorDefaultOptions>('MAT_PAGINATOR_DEFAULT_OPTIONS');
+export const MAT_PAGINATOR_DEFAULT_OPTIONS = new InjectionToken<MatPaginatorDefaultOptions>(
+  'MAT_PAGINATOR_DEFAULT_OPTIONS',
+);
 
 let nextUniqueId = 0;
 
@@ -71,10 +72,11 @@ export class MatPaginator extends _MatPaginatorBase<MatPaginatorDefaultOptions> 
   /** ID for the DOM node containing the pagiators's items per page label. */
   readonly _pageSizeLabelId = `mat-paginator-page-size-label-${nextUniqueId++}`;
 
-
-  constructor(intl: MatPaginatorIntl,
+  constructor(
+    intl: MatPaginatorIntl,
     changeDetectorRef: ChangeDetectorRef,
-    @Optional() @Inject(MAT_PAGINATOR_DEFAULT_OPTIONS) defaults?: MatPaginatorDefaultOptions) {
+    @Optional() @Inject(MAT_PAGINATOR_DEFAULT_OPTIONS) defaults?: MatPaginatorDefaultOptions,
+  ) {
     super(intl, changeDetectorRef, defaults);
     this._formFieldAppearance = defaults?.formFieldAppearance || 'outline';
   }

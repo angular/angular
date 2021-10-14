@@ -10,7 +10,6 @@ import {NgModule} from '@angular/core';
 import {MatCommonModule, MatRippleModule} from '@angular/material/core';
 import {MatRadioButton, MatRadioGroup} from './radio';
 
-
 @NgModule({
   imports: [MatRippleModule, MatCommonModule],
   exports: [MatRadioGroup, MatRadioButton, MatCommonModule],

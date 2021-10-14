@@ -14,5 +14,4 @@ import {MdcRadioE2e} from './mdc-radio-e2e';
   imports: [MatRadioModule],
   declarations: [MdcRadioE2e],
 })
-export class MdcRadioE2eModule {
-}
+export class MdcRadioE2eModule {}

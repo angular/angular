@@ -36,14 +36,16 @@ export class ViewportRuler implements OnDestroy {
   /** Event listener that will be used to handle the viewport change events. */
   private _changeListener = (event: Event) => {
     this._change.next(event);
-  }
+  };
 
   /** Used to reference correct document/window */
   protected _document: Document;
 
-  constructor(private _platform: Platform,
-              ngZone: NgZone,
-              @Optional() @Inject(DOCUMENT) document: any) {
+  constructor(
+    private _platform: Platform,
+    ngZone: NgZone,
+    @Optional() @Inject(DOCUMENT) document: any,
+  ) {
     this._document = document;
 
     ngZone.runOutsideAngular(() => {
@@ -58,7 +60,7 @@ export class ViewportRuler implements OnDestroy {
 
       // Clear the cached position so that the viewport is re-measured next time it is required.
       // We don't need to keep track of the subscription, because it is completed on destroy.
-      this.change().subscribe(() => this._viewportSize = null);
+      this.change().subscribe(() => (this._viewportSize = null));
     });
   }
 
@@ -73,7 +75,7 @@ export class ViewportRuler implements OnDestroy {
   }
 
   /** Returns the viewport's width and height. */
-  getViewportSize(): Readonly<{width: number, height: number}> {
+  getViewportSize(): Readonly<{width: number; height: number}> {
     if (!this._viewportSize) {
       this._updateViewportSize();
     }
@@ -131,11 +133,19 @@ export class ViewportRuler implements OnDestroy {
     const documentElement = document.documentElement!;
     const documentRect = documentElement.getBoundingClientRect();
 
-    const top = -documentRect.top || document.body.scrollTop || window.scrollY ||
-                 documentElement.scrollTop || 0;
+    const top =
+      -documentRect.top ||
+      document.body.scrollTop ||
+      window.scrollY ||
+      documentElement.scrollTop ||
+      0;
 
-    const left = -documentRect.left || document.body.scrollLeft || window.scrollX ||
-                  documentElement.scrollLeft || 0;
+    const left =
+      -documentRect.left ||
+      document.body.scrollLeft ||
+      window.scrollX ||
+      documentElement.scrollLeft ||
+      0;
 
     return {top, left};
   }
@@ -157,8 +167,8 @@ export class ViewportRuler implements OnDestroy {
   /** Updates the cached viewport size. */
   private _updateViewportSize() {
     const window = this._getWindow();
-    this._viewportSize = this._platform.isBrowser ?
-        {width: window.innerWidth, height: window.innerHeight} :
-        {width: 0, height: 0};
+    this._viewportSize = this._platform.isBrowser
+      ? {width: window.innerWidth, height: window.innerHeight}
+      : {width: 0, height: 0};
   }
 }

@@ -28,5 +28,4 @@ import {SidenavDemo} from './sidenav-demo';
   ],
   declarations: [SidenavDemo],
 })
-export class SidenavDemoModule {
-}
+export class SidenavDemoModule {}

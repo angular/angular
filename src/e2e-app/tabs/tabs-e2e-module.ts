@@ -16,5 +16,4 @@ import {BasicTabs} from './tabs-e2e';
   imports: [MatTabsModule, MatFormFieldModule, MatInputModule],
   declarations: [BasicTabs],
 })
-export class TabsE2eModule {
-}
+export class TabsE2eModule {}

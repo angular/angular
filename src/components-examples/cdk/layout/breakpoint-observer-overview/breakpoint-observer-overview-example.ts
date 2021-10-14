@@ -7,7 +7,7 @@ import {takeUntil} from 'rxjs/operators';
 @Component({
   selector: 'breakpoint-observer-overview-example',
   templateUrl: 'breakpoint-observer-overview-example.html',
-  styleUrls: ['breakpoint-observer-overview-example.css']
+  styleUrls: ['breakpoint-observer-overview-example.css'],
 })
 export class BreakpointObserverOverviewExample implements OnDestroy {
   destroyed = new Subject<void>();
@@ -23,19 +23,22 @@ export class BreakpointObserverOverviewExample implements OnDestroy {
   ]);
 
   constructor(breakpointObserver: BreakpointObserver) {
-    breakpointObserver.observe([
-      Breakpoints.XSmall,
-      Breakpoints.Small,
-      Breakpoints.Medium,
-      Breakpoints.Large,
-      Breakpoints.XLarge,
-    ]).pipe(takeUntil(this.destroyed)).subscribe(result => {
+    breakpointObserver
+      .observe([
+        Breakpoints.XSmall,
+        Breakpoints.Small,
+        Breakpoints.Medium,
+        Breakpoints.Large,
+        Breakpoints.XLarge,
+      ])
+      .pipe(takeUntil(this.destroyed))
+      .subscribe(result => {
         for (const query of Object.keys(result.breakpoints)) {
           if (result.breakpoints[query]) {
             this.currentScreenSize = this.displayNameMap.get(query) ?? 'Unknown';
           }
         }
-    });
+      });
   }
 
   ngOnDestroy() {

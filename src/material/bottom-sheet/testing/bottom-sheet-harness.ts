@@ -26,7 +26,7 @@ export class MatBottomSheetHarness extends ContentContainerComponentHarness<stri
   }
 
   /** Gets the value of the bottom sheet's "aria-label" attribute. */
-  async getAriaLabel(): Promise<string|null> {
+  async getAriaLabel(): Promise<string | null> {
     return (await this.host()).getAttribute('aria-label');
   }
 

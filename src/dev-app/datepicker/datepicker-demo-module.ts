@@ -42,5 +42,4 @@ import {
   ],
   declarations: [CustomHeader, CustomHeaderNgContent, DatepickerDemo, CustomRangeStrategy],
 })
-export class DatepickerDemoModule {
-}
+export class DatepickerDemoModule {}

@@ -14,12 +14,14 @@ describe('MapTrafficLayer', () => {
   let mapSpy: jasmine.SpyObj<google.maps.Map>;
   const trafficLayerOptions: google.maps.TrafficLayerOptions = {autoRefresh: false};
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [GoogleMapsModule],
-      declarations: [TestApp],
-    });
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [GoogleMapsModule],
+        declarations: [TestApp],
+      });
+    }),
+  );
 
   beforeEach(() => {
     TestBed.compileComponents();
@@ -35,7 +37,7 @@ describe('MapTrafficLayer', () => {
   it('initializes a Google Map Traffic Layer', () => {
     const trafficLayerSpy = createTrafficLayerSpy(trafficLayerOptions);
     const trafficLayerConstructorSpy =
-        createTrafficLayerConstructorSpy(trafficLayerSpy).and.callThrough();
+      createTrafficLayerConstructorSpy(trafficLayerSpy).and.callThrough();
 
     const fixture = TestBed.createComponent(TestApp);
     fixture.componentInstance.autoRefresh = false;

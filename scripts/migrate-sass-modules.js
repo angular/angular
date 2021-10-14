@@ -18,7 +18,7 @@ const migratedFiles = new Set();
 const ignorePatterns = [
   '**/*.import.scss',
   '**/test-theming-bundle.scss',
-  'material/_theming.scss'
+  'material/_theming.scss',
 ];
 const materialPrefixes = [
   ...getPrefixes('material', 'mat'),
@@ -27,14 +27,14 @@ const materialPrefixes = [
   'mat-pseudo-checkbox-',
   'mat-elevation-',
   'mat-optgroup-',
-  'mat-expansion-panel-'
+  'mat-expansion-panel-',
 ];
 const mdcPrefixes = [
   ...getPrefixes('material-experimental', 'mat'),
   ...getPrefixes('material-experimental/mdc-core', 'mat'),
   // Outliers that don't have a directory of their own.
-  'mat-mdc-optgroup-'
-].map(prefix => prefix === 'mat-' ? 'mat-mdc-' : prefix);
+  'mat-mdc-optgroup-',
+].map(prefix => (prefix === 'mat-' ? 'mat-mdc-' : prefix));
 const cdkPrefixes = getPrefixes('cdk', 'cdk');
 const cdkExperimentalPrefixes = getPrefixes('cdk-experimental', 'cdk');
 
@@ -104,8 +104,9 @@ function migrate(pattern, prefixes = [], forward = false, ignore = []) {
 
   // Note that while the migrator allows for multiple files to be passed in, we start getting
   // some assertion errors along the way. Running it on a file-by-file basis works fine.
-  const files = glob(pattern, {cwd: directory, ignore: [...ignore, ...ignorePatterns]})
-    .filter(file => !migratedFiles.has(file));
+  const files = glob(pattern, {cwd: directory, ignore: [...ignore, ...ignorePatterns]}).filter(
+    file => !migratedFiles.has(file),
+  );
   const message = `Migrating ${files.length} unmigrated files matching ${pattern}.`;
   console.log(ignore.length ? message + ` Ignoring ${ignore.join(', ')}.` : message);
   run('sass-migrator', [...args, ...files]);
@@ -118,16 +119,17 @@ function run(name, args, canFail = false, silent = false) {
   !silent && output.length && console.log(output);
 
   if (result.status !== 0 && !canFail) {
-    console.error(`Script error: ${(result.stderr || result.stdout)}`);
+    console.error(`Script error: ${result.stderr || result.stdout}`);
     process.exit(1);
   }
 }
 
 function getPrefixes(package, prefix) {
-  return fs.readdirSync(path.join(directory, package), {withFileTypes: true})
-      .filter(current => current.isDirectory())
-      .map(current => current.name)
-      .reduce((output, current) => [`${prefix}-${current}-`, ...output], [`${prefix}-`]);
+  return fs
+    .readdirSync(path.join(directory, package), {withFileTypes: true})
+    .filter(current => current.isDirectory())
+    .map(current => current.name)
+    .reduce((output, current) => [`${prefix}-${current}-`, ...output], [`${prefix}-`]);
 }
 
 function commentOutMdc(pattern) {
@@ -136,14 +138,18 @@ function commentOutMdc(pattern) {
   files.forEach(file => {
     const content = fs.readFileSync(file, 'utf8');
     // Prefix the content with a marker so we know what to restore later.
-    fs.writeFileSync(file, content.replace(/(@use|@import) '@material/g, m => '//🚀 ' + m));
+    fs.writeFileSync(
+      file,
+      content.replace(/(@use|@import) '@material/g, m => '//🚀 ' + m),
+    );
   });
 }
 
 function restoreAndSortMdc(pattern) {
   const files = glob(pattern, {cwd: directory, absolute: true});
-  console.log(`Re-adding and sorting @material imports from ${files.length} ` +
-              `files matching ${pattern}.`);
+  console.log(
+    `Re-adding and sorting @material imports from ${files.length} ` + `files matching ${pattern}.`,
+  );
 
   files.forEach(file => {
     // Remove the commented out lines with the marker from `commentOutMdc`.
@@ -167,7 +173,7 @@ function restoreAndSortMdc(pattern) {
     if (headerStartIndex > -1 && headerEndIndex > -1) {
       const headers = lines
         .splice(headerStartIndex, headerEndIndex - headerStartIndex)
-        .sort((a, b) => a.startsWith('@use') && !b.startsWith('@use') ? -1 : 0);
+        .sort((a, b) => (a.startsWith('@use') && !b.startsWith('@use') ? -1 : 0));
       lines.splice(headerStartIndex, 0, ...headers);
     }
 
@@ -202,19 +208,17 @@ function extractImports() {
   }, {});
 }
 
-
 function reAddImports(mapping) {
   Object.keys(mapping).forEach(fileName => {
     const importEquivalentName = fileName.replace('.scss', '.import.scss');
 
     if (fs.existsSync(importEquivalentName)) {
       let content = fs.readFileSync(importEquivalentName, 'utf8');
-      mapping[fileName].forEach(importedFile => content += `\n${importedFile}`);
+      mapping[fileName].forEach(importedFile => (content += `\n${importedFile}`));
       fs.writeFileSync(importEquivalentName, content);
     }
   });
 }
-
 
 function fixSomeLongLines(pattern, limit) {
   const files = glob(pattern, {cwd: directory, absolute: true});

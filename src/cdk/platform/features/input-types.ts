@@ -55,10 +55,12 @@ export function getSupportedInputTypes(): Set<string> {
   }
 
   let featureTestInput = document.createElement('input');
-  supportedInputTypes = new Set(candidateInputTypes.filter(value => {
-    featureTestInput.setAttribute('type', value);
-    return featureTestInput.type === value;
-  }));
+  supportedInputTypes = new Set(
+    candidateInputTypes.filter(value => {
+      featureTestInput.setAttribute('type', value);
+      return featureTestInput.type === value;
+    }),
+  );
 
   return supportedInputTypes;
 }

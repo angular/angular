@@ -48,7 +48,7 @@ export class CdkMenuItemRadio extends CdkMenuItemSelectable implements OnDestroy
     /** Reference to the CdkMenuItemTrigger directive if one is added to the same element */
     // `CdkMenuItemRadio` is commonly used in combination with a `CdkMenuItemTrigger`.
     // tslint:disable-next-line: lightweight-tokens
-    @Self() @Optional() menuTrigger?: CdkMenuItemTrigger
+    @Self() @Optional() menuTrigger?: CdkMenuItemTrigger,
   ) {
     super(element, ngZone, parentMenu, menuAim, dir, menuTrigger);
 
@@ -58,7 +58,7 @@ export class CdkMenuItemRadio extends CdkMenuItemSelectable implements OnDestroy
   /** Configure the unique selection dispatcher listener in order to toggle the checked state  */
   private _registerDispatcherListener() {
     this._removeDispatcherListener = this._selectionDispatcher.listen(
-      (id: string, name: string) => (this.checked = this.id === id && this.name === name)
+      (id: string, name: string) => (this.checked = this.id === id && this.name === name),
     );
   }
 

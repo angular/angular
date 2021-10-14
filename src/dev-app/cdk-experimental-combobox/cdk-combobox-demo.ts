@@ -11,5 +11,4 @@ import {Component} from '@angular/core';
 @Component({
   templateUrl: 'cdk-combobox-demo.html',
 })
-export class CdkComboboxDemo {
-}
+export class CdkComboboxDemo {}

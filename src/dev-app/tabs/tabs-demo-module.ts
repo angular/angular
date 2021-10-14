@@ -20,5 +20,4 @@ import {TabsDemo} from './tabs-demo';
   ],
   declarations: [TabsDemo],
 })
-export class TabsDemoModule {
-}
+export class TabsDemoModule {}

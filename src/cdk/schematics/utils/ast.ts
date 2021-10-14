@@ -26,8 +26,12 @@ export function parseSourceFile(host: Tree, path: string): ts.SourceFile {
 }
 
 /** Import and add module to root app module. */
-export function addModuleImportToRootModule(host: Tree, moduleName: string, src: string,
-                                            project: ProjectDefinition) {
+export function addModuleImportToRootModule(
+  host: Tree,
+  moduleName: string,
+  src: string,
+  project: ProjectDefinition,
+) {
   const modulePath = getAppModulePath(host, getProjectMainFile(project));
   addModuleImportToModule(host, modulePath, moduleName, src);
 }
@@ -39,9 +43,12 @@ export function addModuleImportToRootModule(host: Tree, moduleName: string, src:
  * @param moduleName name of module to import
  * @param src src location to import
  */
-export function addModuleImportToModule(host: Tree, modulePath: string, moduleName: string,
-                                        src: string) {
-
+export function addModuleImportToModule(
+  host: Tree,
+  modulePath: string,
+  moduleName: string,
+  src: string,
+) {
   const moduleSource = parseSourceFile(host, modulePath);
 
   if (!moduleSource) {
@@ -61,8 +68,10 @@ export function addModuleImportToModule(host: Tree, modulePath: string, moduleNa
 }
 
 /** Wraps the internal find module from options with undefined path handling  */
-export async function findModuleFromOptions(host: Tree, options: ComponentOptions):
-  Promise<string | undefined> {
+export async function findModuleFromOptions(
+  host: Tree,
+  options: ComponentOptions,
+): Promise<string | undefined> {
   const workspace = await getWorkspace(host);
 
   if (!options.project) {

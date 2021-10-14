@@ -5,6 +5,6 @@ import {Component} from '@angular/core';
  */
 @Component({
   selector: 'card-actions-example',
-  templateUrl: 'card-actions-example.html'
+  templateUrl: 'card-actions-example.html',
 })
 export class CardActionsExample {}

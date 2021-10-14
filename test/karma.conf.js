@@ -10,23 +10,24 @@ module.exports = config => {
       require('karma-jasmine'),
       require('karma-browserstack-launcher'),
       require('karma-sauce-launcher'),
-      require('karma-sourcemap-loader'), {
+      require('karma-sourcemap-loader'),
+      {
         'middleware:fake-url': [
           'factory',
-          function() {
+          function () {
             // Middleware that avoids triggering 404s during tests that need to reference
             // image paths. Assumes that the image path will start with `/$`.
-            return function(request, response, next) {
+            return function (request, response, next) {
               if (request.url.indexOf('/$') === 0) {
                 response.writeHead(200);
                 return response.end();
               }
 
               next();
-            }
-          }
-        ]
-      }
+            };
+          },
+        ],
+      },
     ],
     files: [
       {pattern: 'node_modules/core-js-bundle/minified.js', included: true, watched: false},
@@ -40,7 +41,7 @@ module.exports = config => {
       {
         pattern: 'node_modules/moment/min/moment-with-locales.min.js',
         included: false,
-        watched: false
+        watched: false,
       },
       {pattern: 'node_modules/luxon/build/amd/**/*', included: false, watched: false},
       {pattern: 'node_modules/@material/*/dist/*', included: false, watched: false},
@@ -54,12 +55,12 @@ module.exports = config => {
       {
         pattern: 'src/material/core/theming/prebuilt/indigo-pink.css',
         included: true,
-        watched: true
+        watched: true,
       },
       {
         pattern: 'src/material-experimental/mdc-theming/prebuilt/indigo-pink.css',
         included: true,
-        watched: true
+        watched: true,
       },
     ],
 
@@ -102,16 +103,15 @@ module.exports = config => {
     client: {
       jasmine: {
         // TODO(jelbourn): re-enable random test order once we can de-flake existing issues.
-        random: false
-      }
+        random: false,
+      },
     },
   });
 
   if (process.env['CIRCLECI']) {
     const containerInstanceIndex = Number(process.env['CIRCLE_NODE_INDEX']);
     const maxParallelContainerInstances = Number(process.env['CIRCLE_NODE_TOTAL']);
-    const tunnelIdentifier =
-        `angular-material-${process.env['CIRCLE_BUILD_NUM']}-${containerInstanceIndex}`;
+    const tunnelIdentifier = `angular-material-${process.env['CIRCLE_BUILD_NUM']}-${containerInstanceIndex}`;
     const buildIdentifier = `circleci-${tunnelIdentifier}`;
     const testPlatform = process.env['TEST_PLATFORM'];
 
@@ -127,7 +127,7 @@ module.exports = config => {
       config.parallelOptions = {
         executors: parallelBrowserInstances,
         shardStrategy: 'round-robin',
-      }
+      };
     }
 
     if (testPlatform === 'browserstack') {
@@ -152,7 +152,9 @@ module.exports = config => {
 
     const platformBrowsers = platformMap[testPlatform];
     const browserInstanceChunks = splitBrowsersIntoInstances(
-        platformBrowsers, maxParallelContainerInstances);
+      platformBrowsers,
+      maxParallelContainerInstances,
+    );
 
     // Configure Karma to launch the browsers that belong to the given test platform and
     // container instance.

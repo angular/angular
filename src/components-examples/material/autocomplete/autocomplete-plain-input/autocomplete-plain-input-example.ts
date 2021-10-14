@@ -19,7 +19,7 @@ export class AutocompletePlainInputExample implements OnInit {
   ngOnInit() {
     this.filteredStreets = this.control.valueChanges.pipe(
       startWith(''),
-      map(value => this._filter(value))
+      map(value => this._filter(value)),
     );
   }
 

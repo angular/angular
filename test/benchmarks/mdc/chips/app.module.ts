@@ -24,10 +24,18 @@ export class ChipsBenchmarkApp {
   isGridVisible = false;
   isListboxVisible = false;
 
-  showSingleChip() { this.isSingleChipVisible = true; }
-  showSet() { this.isSetVisible = true; }
-  showGrid() { this.isGridVisible = true; }
-  showListbox() { this.isListboxVisible = true; }
+  showSingleChip() {
+    this.isSingleChipVisible = true;
+  }
+  showSet() {
+    this.isSetVisible = true;
+  }
+  showGrid() {
+    this.isGridVisible = true;
+  }
+  showListbox() {
+    this.isListboxVisible = true;
+  }
 
   hide() {
     this.isSingleChipVisible = false;
@@ -39,10 +47,7 @@ export class ChipsBenchmarkApp {
 
 @NgModule({
   declarations: [ChipsBenchmarkApp],
-  imports: [
-    BrowserModule,
-    MatChipsModule,
-  ],
+  imports: [BrowserModule, MatChipsModule],
   bootstrap: [ChipsBenchmarkApp],
 })
 export class AppModule {}

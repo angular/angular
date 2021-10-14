@@ -15,5 +15,6 @@ export interface MatChipsDefaultOptions {
 }
 
 /** Injection token to be used to override the default options for the chips module. */
-export const MAT_CHIPS_DEFAULT_OPTIONS =
-    new InjectionToken<MatChipsDefaultOptions>('mat-chips-default-options');
+export const MAT_CHIPS_DEFAULT_OPTIONS = new InjectionToken<MatChipsDefaultOptions>(
+  'mat-chips-default-options',
+);

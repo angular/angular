@@ -27,16 +27,17 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 })
 export class SlideToggleBenchmarkApp {
   isVisible = false;
-  show() { this.isVisible = true; }
-  hide() { this.isVisible = false; }
+  show() {
+    this.isVisible = true;
+  }
+  hide() {
+    this.isVisible = false;
+  }
 }
 
 @NgModule({
   declarations: [SlideToggleBenchmarkApp],
-  imports: [
-    BrowserModule,
-    MatSlideToggleModule,
-  ],
-  bootstrap: [SlideToggleBenchmarkApp]
+  imports: [BrowserModule, MatSlideToggleModule],
+  bootstrap: [SlideToggleBenchmarkApp],
 })
 export class AppModule {}

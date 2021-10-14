@@ -10,7 +10,7 @@ import {ElementRef, QueryList} from '@angular/core';
 import {
   MDCSlidingTabIndicatorFoundation,
   MDCTabIndicatorAdapter,
-  MDCTabIndicatorFoundation
+  MDCTabIndicatorFoundation,
 } from '@material/tab-indicator';
 
 /**
@@ -28,7 +28,7 @@ export interface MatInkBarItem {
  */
 export class MatInkBar {
   /** Item to which the ink bar is aligned currently. */
-  private _currentItem: MatInkBarItem|undefined;
+  private _currentItem: MatInkBarItem | undefined;
 
   constructor(private _items: QueryList<MatInkBarItem>) {}
 
@@ -47,8 +47,9 @@ export class MatInkBar {
     }
 
     if (correspondingItem) {
-      const clientRect = currentItem ?
-          currentItem._foundation.computeContentClientRect() : undefined;
+      const clientRect = currentItem
+        ? currentItem._foundation.computeContentClientRect()
+        : undefined;
 
       // The ink bar won't animate unless we give it the `ClientRect` of the previous item.
       correspondingItem._foundation.activate(clientRect);
@@ -83,10 +84,19 @@ export class MatInkBarFoundation {
     },
     computeContentClientRect: () => {
       // `getBoundingClientRect` isn't available on the server.
-      return this._destroyed || !this._inkBarContentElement.getBoundingClientRect ? {
-        width: 0, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0
-      } as ClientRect : this._inkBarContentElement.getBoundingClientRect();
-    }
+      return this._destroyed || !this._inkBarContentElement.getBoundingClientRect
+        ? ({
+            width: 0,
+            height: 0,
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            x: 0,
+            y: 0,
+          } as ClientRect)
+        : this._inkBarContentElement.getBoundingClientRect();
+    },
   };
 
   constructor(private _hostElement: HTMLElement, private _document: Document) {
@@ -135,12 +145,13 @@ export class MatInkBarFoundation {
     }
   }
 
-
   /**
    * Gets whether the ink bar should be appended to the content, which will cause the ink bar
    * to match the width of the content rather than the tab host element.
    */
-  getFitToContent(): boolean { return this._fitToContent; }
+  getFitToContent(): boolean {
+    return this._fitToContent;
+  }
 
   /** Creates and appends the ink bar element. */
   private _createInkBarElement() {
@@ -148,8 +159,8 @@ export class MatInkBarFoundation {
     this._inkBarContentElement = this._document.createElement('span');
 
     this._inkBarElement.className = 'mdc-tab-indicator';
-    this._inkBarContentElement.className = 'mdc-tab-indicator__content' +
-        ' mdc-tab-indicator__content--underline';
+    this._inkBarContentElement.className =
+      'mdc-tab-indicator__content' + ' mdc-tab-indicator__content--underline';
 
     this._inkBarElement.appendChild(this._inkBarContentElement);
     this._appendInkBarElement();
@@ -164,9 +175,9 @@ export class MatInkBarFoundation {
       throw Error('Ink bar element has not been created and cannot be appended');
     }
 
-    const parentElement = this._fitToContent ?
-        this._hostElement.querySelector('.mdc-tab__content') :
-        this._hostElement;
+    const parentElement = this._fitToContent
+      ? this._hostElement.querySelector('.mdc-tab__content')
+      : this._hostElement;
 
     if (!parentElement && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('Missing element to host the ink bar');

@@ -39,19 +39,24 @@ export class ChipsBenchmarkApp {
   isSingleVisible = false;
   isMultipleVisible = false;
 
-  showSingle() { this.isSingleVisible = true; }
-  hideSingle() { this.isSingleVisible = false; }
+  showSingle() {
+    this.isSingleVisible = true;
+  }
+  hideSingle() {
+    this.isSingleVisible = false;
+  }
 
-  showMultiple() { this.isMultipleVisible = true; }
-  hideMultiple() { this.isMultipleVisible = false; }
+  showMultiple() {
+    this.isMultipleVisible = true;
+  }
+  hideMultiple() {
+    this.isMultipleVisible = false;
+  }
 }
 
 @NgModule({
   declarations: [ChipsBenchmarkApp],
-  imports: [
-    BrowserModule,
-    MatChipsModule,
-  ],
+  imports: [BrowserModule, MatChipsModule],
   bootstrap: [ChipsBenchmarkApp],
 })
 export class AppModule {}

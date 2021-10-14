@@ -1,10 +1,6 @@
 import {Directionality} from '@angular/cdk/bidi';
 import {BACKSPACE, DELETE, RIGHT_ARROW, ENTER} from '@angular/cdk/keycodes';
-import {
-  createKeyboardEvent,
-  dispatchEvent,
-  dispatchFakeEvent,
-} from '../../cdk/testing/private';
+import {createKeyboardEvent, dispatchEvent, dispatchFakeEvent} from '../../cdk/testing/private';
 import {Component, DebugElement, ElementRef, ViewChild} from '@angular/core';
 import {waitForAsync, ComponentFixture, TestBed, flush, fakeAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -19,7 +15,6 @@ import {
   MatChipsModule,
 } from './index';
 
-
 describe('MDC-based Row Chips', () => {
   let fixture: ComponentFixture<any>;
   let chipDebugElement: DebugElement;
@@ -29,20 +24,25 @@ describe('MDC-based Row Chips', () => {
 
   let dir = 'ltr';
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [MatChipsModule],
-      declarations: [SingleChip],
-      providers: [
-        {provide: Directionality, useFactory: () => ({
-          value: dir,
-          change: new Subject()
-        })},
-      ]
-    });
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [MatChipsModule],
+        declarations: [SingleChip],
+        providers: [
+          {
+            provide: Directionality,
+            useFactory: () => ({
+              value: dir,
+              change: new Subject(),
+            }),
+          },
+        ],
+      });
 
-    TestBed.compileComponents();
-  }));
+      TestBed.compileComponents();
+    }),
+  );
 
   describe('MatChipRow', () => {
     let testComponent: SingleChip;
@@ -61,7 +61,6 @@ describe('MDC-based Row Chips', () => {
     });
 
     describe('basic behaviors', () => {
-
       it('adds the `mat-mdc-chip` class', () => {
         expect(chipNativeElement.classList).toContain('mat-mdc-chip');
       });
@@ -198,7 +197,7 @@ describe('MDC-based Row Chips', () => {
         it('emits focus only once for multiple focus() calls', () => {
           let counter = 0;
           chipInstance._onFocus.subscribe(() => {
-            counter ++ ;
+            counter++;
           });
 
           chipInstance.focus();
@@ -349,7 +348,7 @@ describe('MDC-based Row Chips', () => {
         </mat-chip-row>
         <input matInput [matChipInputFor]="chipGrid" #chipInput>
       </div>
-    </mat-chip-grid>`
+    </mat-chip-grid>`,
 })
 class SingleChip {
   @ViewChild(MatChipGrid) chipList: MatChipGrid;

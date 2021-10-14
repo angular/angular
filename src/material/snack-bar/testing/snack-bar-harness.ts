@@ -36,8 +36,8 @@ export class MatSnackBarHarness extends ContentContainerComponentHarness<string>
    * @deprecated Use `getAriaLive` instead.
    * @breaking-change 13.0.0
    */
-  async getRole(): Promise<'alert'|'status'|null> {
-    return (await this.host()).getAttribute('role') as Promise<'alert'|'status'|null>;
+  async getRole(): Promise<'alert' | 'status' | null> {
+    return (await this.host()).getAttribute('role') as Promise<'alert' | 'status' | null>;
   }
 
   /**
@@ -45,8 +45,9 @@ export class MatSnackBarHarness extends ContentContainerComponentHarness<string>
    * determined based on the ARIA politeness specified in the snack-bar config.
    */
   async getAriaLive(): Promise<AriaLivePoliteness> {
-    return (await this._snackBarLiveRegion())
-        .getAttribute('aria-live') as Promise<AriaLivePoliteness>;
+    return (await this._snackBarLiveRegion()).getAttribute(
+      'aria-live',
+    ) as Promise<AriaLivePoliteness>;
   }
 
   /**
@@ -65,7 +66,6 @@ export class MatSnackBarHarness extends ContentContainerComponentHarness<string>
     await this._assertHasAction();
     return (await this._getActionButton())!.text();
   }
-
 
   /**
    * Dismisses the snack-bar by clicking the action button. Method cannot be used for snack-bar's
@@ -105,7 +105,7 @@ export class MatSnackBarHarness extends ContentContainerComponentHarness<string>
    * if content is not annotated.
    */
   protected async _assertContentAnnotated(): Promise<void> {
-    if (!await this._isSimpleSnackBar()) {
+    if (!(await this._isSimpleSnackBar())) {
       throw Error('Method cannot be used for snack-bar with custom content.');
     }
   }
@@ -116,14 +116,14 @@ export class MatSnackBarHarness extends ContentContainerComponentHarness<string>
    */
   protected async _assertHasAction(): Promise<void> {
     await this._assertContentAnnotated();
-    if (!await this.hasAction()) {
+    if (!(await this.hasAction())) {
       throw Error('Method cannot be used for a snack-bar without an action.');
     }
   }
 
   /** Whether the snack-bar is using the default content template. */
   private async _isSimpleSnackBar(): Promise<boolean> {
-    return await this.locatorForOptional('.mat-simple-snackbar')() !== null;
+    return (await this.locatorForOptional('.mat-simple-snackbar')()) !== null;
   }
 
   /** Gets the simple snack bar action button. */

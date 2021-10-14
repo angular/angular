@@ -62,7 +62,11 @@ export class ColumnResizeNotifier {
 
   /** Instantly resizes the specified column. */
   resize(columnId: string, size: number): void {
-    this._source.triggerResize.next(
-        {columnId, size, completeImmediately: true, isStickyColumn: true});
+    this._source.triggerResize.next({
+      columnId,
+      size,
+      completeImmediately: true,
+      isStickyColumn: true,
+    });
   }
 }

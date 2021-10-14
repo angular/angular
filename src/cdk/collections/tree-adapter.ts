@@ -8,7 +8,6 @@
 
 import {SelectionModel} from './selection-model';
 
-
 /**
  * Interface for a class that can flatten hierarchical structured data and re-expand the flattened
  * data back into its original structure. Should be used in conjunction with the cdk-tree.

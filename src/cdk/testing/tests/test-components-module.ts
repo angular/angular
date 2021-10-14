@@ -16,6 +16,6 @@ import {TestSubComponent} from './test-sub-component';
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
   declarations: [TestMainComponent, TestSubComponent, TestShadowBoundary, TestSubShadowBoundary],
-  exports: [TestMainComponent, TestSubComponent, TestShadowBoundary, TestSubShadowBoundary]
+  exports: [TestMainComponent, TestSubComponent, TestShadowBoundary, TestSubShadowBoundary],
 })
 export class TestComponentsModule {}

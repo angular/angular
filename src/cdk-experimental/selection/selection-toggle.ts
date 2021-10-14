@@ -7,15 +7,7 @@
  */
 
 import {coerceNumberProperty, NumberInput} from '@angular/cdk/coercion';
-import {
-  Directive,
-  Inject,
-  Input,
-  OnDestroy,
-  OnInit,
-  Optional,
-  Self
-} from '@angular/core';
+import {Directive, Inject, Input, OnDestroy, OnInit, Optional, Self} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {Observable, of as observableOf, Subject} from 'rxjs';
 import {distinctUntilChanged, switchMap, takeUntil} from 'rxjs/operators';
@@ -42,14 +34,18 @@ export class CdkSelectionToggle<T> implements OnDestroy, OnInit {
 
   /** The index of the value in the list. Required when used with `trackBy` */
   @Input('cdkSelectionToggleIndex')
-  get index(): number|undefined { return this._index; }
-  set index(index: number|undefined) { this._index = coerceNumberProperty(index); }
+  get index(): number | undefined {
+    return this._index;
+  }
+  set index(index: number | undefined) {
+    this._index = coerceNumberProperty(index);
+  }
   protected _index?: number;
 
   /** The checked state of the selection toggle */
   readonly checked: Observable<boolean> = this._selection.change.pipe(
-      switchMap(() => observableOf(this._isSelected())),
-      distinctUntilChanged(),
+    switchMap(() => observableOf(this._isSelected())),
+    distinctUntilChanged(),
   );
 
   /** Toggles the selection */
@@ -60,9 +56,11 @@ export class CdkSelectionToggle<T> implements OnDestroy, OnInit {
   private _destroyed = new Subject<void>();
 
   constructor(
-      @Optional() @Inject(CdkSelection) private _selection: CdkSelection<T>,
-      @Optional() @Self() @Inject(NG_VALUE_ACCESSOR) private _controlValueAccessors:
-          ControlValueAccessor[],
+    @Optional() @Inject(CdkSelection) private _selection: CdkSelection<T>,
+    @Optional()
+    @Self()
+    @Inject(NG_VALUE_ACCESSOR)
+    private _controlValueAccessors: ControlValueAccessor[],
   ) {}
 
   ngOnInit() {
@@ -89,7 +87,7 @@ export class CdkSelectionToggle<T> implements OnDestroy, OnInit {
         }
       });
 
-      this.checked.pipe(takeUntil(this._destroyed)).subscribe((state) => {
+      this.checked.pipe(takeUntil(this._destroyed)).subscribe(state => {
         this._controlValueAccessors[0].writeValue(state);
       });
     }

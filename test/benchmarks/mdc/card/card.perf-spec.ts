@@ -14,13 +14,13 @@ describe('card performance benchmarks', () => {
     browser.angularAppRoot('#root');
   });
 
-  it('renders a simple card', async() => {
+  it('renders a simple card', async () => {
     await runBenchmark({
       id: 'card-render',
       url: '',
       ignoreBrowserSynchronization: true,
       prepare: async () => await $('#hide').click(),
-      work: async () => await $('#show').click()
+      work: async () => await $('#show').click(),
     });
   });
 });

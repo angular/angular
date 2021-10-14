@@ -8,5 +8,4 @@
 
 import {BaseHarnessFilters} from '@angular/cdk/testing';
 
-export interface DividerHarnessFilters extends BaseHarnessFilters {
-}
+export interface DividerHarnessFilters extends BaseHarnessFilters {}

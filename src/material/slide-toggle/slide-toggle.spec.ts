@@ -40,10 +40,10 @@ describe('MatSlideToggle without forms', () => {
             create: (callback: Function) => {
               mutationObserverCallbacks.push(callback);
               return {observe: () => {}, disconnect: () => {}};
-            }
-          }
-        }
-      ]
+            },
+          },
+        },
+      ],
     });
 
     TestBed.compileComponents();
@@ -328,8 +328,9 @@ describe('MatSlideToggle without forms', () => {
       expect(document.activeElement).toBe(inputElement);
     }));
 
-    it('should not manually move focus to underlying when focus comes from mouse or touch',
-      inject([FocusMonitor], (focusMonitor: FocusMonitor) => {
+    it('should not manually move focus to underlying when focus comes from mouse or touch', inject(
+      [FocusMonitor],
+      (focusMonitor: FocusMonitor) => {
         expect(document.activeElement).not.toBe(inputElement);
 
         focusMonitor.focusVia(slideToggleElement, 'mouse');
@@ -339,7 +340,8 @@ describe('MatSlideToggle without forms', () => {
         focusMonitor.focusVia(slideToggleElement, 'touch');
         fixture.detectChanges();
         expect(document.activeElement).not.toBe(inputElement);
-      }));
+      },
+    ));
 
     it('should set a element class if labelPosition is set to before', fakeAsync(() => {
       expect(slideToggleElement.classList).not.toContain('mat-slide-toggle-label-before');
@@ -377,8 +379,9 @@ describe('MatSlideToggle without forms', () => {
     }));
 
     it('should have a focus indicator', fakeAsync(() => {
-      const slideToggleRippleNativeElement =
-          slideToggleElement.querySelector('.mat-slide-toggle-ripple')!;
+      const slideToggleRippleNativeElement = slideToggleElement.querySelector(
+        '.mat-slide-toggle-ripple',
+      )!;
 
       expect(slideToggleRippleNativeElement.classList.contains('mat-focus-indicator')).toBe(true);
     }));
@@ -399,8 +402,8 @@ describe('MatSlideToggle without forms', () => {
 
       fixture.detectChanges();
 
-      const slideToggle = fixture.debugElement
-        .query(By.directive(MatSlideToggle))!.componentInstance as MatSlideToggle;
+      const slideToggle = fixture.debugElement.query(By.directive(MatSlideToggle))!
+        .componentInstance as MatSlideToggle;
 
       expect(slideToggle.tabIndex)
         .withContext('Expected tabIndex property to have been set based on the native attribute')
@@ -428,69 +431,66 @@ describe('MatSlideToggle without forms', () => {
   });
 
   describe('default options', () => {
-    it('should not change value on click when click action is noop when using custom a ' +
-      'action configuration', fakeAsync(() => {
-      TestBed
-        .resetTestingModule()
-        .configureTestingModule({
+    it(
+      'should not change value on click when click action is noop when using custom a ' +
+        'action configuration',
+      fakeAsync(() => {
+        TestBed.resetTestingModule().configureTestingModule({
           imports: [MatSlideToggleModule],
           declarations: [SlideToggleBasic],
           providers: [
             {provide: MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS, useValue: {disableToggleValue: true}},
-          ]
+          ],
         });
-      const fixture = TestBed.createComponent(SlideToggleBasic);
-      fixture.detectChanges();
+        const fixture = TestBed.createComponent(SlideToggleBasic);
+        fixture.detectChanges();
 
-      const testComponent = fixture.debugElement.componentInstance;
-      const slideToggleDebug = fixture.debugElement.query(By.css('mat-slide-toggle'))!;
+        const testComponent = fixture.debugElement.componentInstance;
+        const slideToggleDebug = fixture.debugElement.query(By.css('mat-slide-toggle'))!;
 
-      const slideToggle = slideToggleDebug.componentInstance;
-      const inputElement = fixture.debugElement.query(By.css('input'))!.nativeElement;
-      const labelElement = fixture.debugElement.query(By.css('label'))!.nativeElement;
+        const slideToggle = slideToggleDebug.componentInstance;
+        const inputElement = fixture.debugElement.query(By.css('input'))!.nativeElement;
+        const labelElement = fixture.debugElement.query(By.css('label'))!.nativeElement;
 
-      expect(testComponent.toggleTriggered).toBe(0);
-      expect(testComponent.dragTriggered).toBe(0);
-      expect(slideToggle.checked)
-        .withContext('Expect slide toggle value not changed').toBe(false);
+        expect(testComponent.toggleTriggered).toBe(0);
+        expect(testComponent.dragTriggered).toBe(0);
+        expect(slideToggle.checked)
+          .withContext('Expect slide toggle value not changed')
+          .toBe(false);
 
-      labelElement.click();
-      fixture.detectChanges();
-      flush();
+        labelElement.click();
+        fixture.detectChanges();
+        flush();
 
-      expect(slideToggle.checked)
-        .withContext('Expect slide toggle value not changed').toBe(false);
-      expect(testComponent.toggleTriggered)
-        .withContext('Expect toggle once').toBe(1);
-      expect(testComponent.dragTriggered).toBe(0);
+        expect(slideToggle.checked)
+          .withContext('Expect slide toggle value not changed')
+          .toBe(false);
+        expect(testComponent.toggleTriggered).withContext('Expect toggle once').toBe(1);
+        expect(testComponent.dragTriggered).toBe(0);
 
-      inputElement.click();
-      fixture.detectChanges();
-      flush();
+        inputElement.click();
+        fixture.detectChanges();
+        flush();
 
-      expect(slideToggle.checked)
-        .withContext('Expect slide toggle value not changed').toBe(false);
-      expect(testComponent.toggleTriggered)
-        .withContext('Expect toggle twice').toBe(2);
-      expect(testComponent.dragTriggered).toBe(0);
-    }));
+        expect(slideToggle.checked)
+          .withContext('Expect slide toggle value not changed')
+          .toBe(false);
+        expect(testComponent.toggleTriggered).withContext('Expect toggle twice').toBe(2);
+        expect(testComponent.dragTriggered).toBe(0);
+      }),
+    );
 
     it('should be able to change the default color', fakeAsync(() => {
-      TestBed
-        .resetTestingModule()
-        .configureTestingModule({
-          imports: [MatSlideToggleModule],
-          declarations: [SlideToggleWithForm],
-          providers: [
-            {provide: MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS, useValue: {color: 'warn'}},
-          ]
-        });
+      TestBed.resetTestingModule().configureTestingModule({
+        imports: [MatSlideToggleModule],
+        declarations: [SlideToggleWithForm],
+        providers: [{provide: MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS, useValue: {color: 'warn'}}],
+      });
       const fixture = TestBed.createComponent(SlideToggleWithForm);
       fixture.detectChanges();
       const slideToggle = fixture.nativeElement.querySelector('.mat-slide-toggle');
       expect(slideToggle.classList).toContain('mat-warn');
     }));
-
   });
 
   describe('without label', () => {
@@ -504,38 +504,35 @@ describe('MatSlideToggle without forms', () => {
       const slideToggleDebugEl = fixture.debugElement.query(By.directive(MatSlideToggle))!;
 
       testComponent = fixture.componentInstance;
-      slideToggleBarElement = slideToggleDebugEl
-          .query(By.css('.mat-slide-toggle-bar'))!.nativeElement;
+      slideToggleBarElement = slideToggleDebugEl.query(
+        By.css('.mat-slide-toggle-bar'),
+      )!.nativeElement;
     }));
 
     it('should remove margin for slide-toggle without a label', fakeAsync(() => {
       fixture.detectChanges();
 
-      expect(slideToggleBarElement.classList)
-        .toContain('mat-slide-toggle-bar-no-side-margin');
+      expect(slideToggleBarElement.classList).toContain('mat-slide-toggle-bar-no-side-margin');
     }));
 
     it('should not remove margin if initial label is set through binding', fakeAsync(() => {
       testComponent.label = 'Some content';
       fixture.detectChanges();
 
-      expect(slideToggleBarElement.classList)
-        .not.toContain('mat-slide-toggle-bar-no-side-margin');
+      expect(slideToggleBarElement.classList).not.toContain('mat-slide-toggle-bar-no-side-margin');
     }));
 
     it('should re-add margin if label is added asynchronously', fakeAsync(() => {
       fixture.detectChanges();
 
-      expect(slideToggleBarElement.classList)
-        .toContain('mat-slide-toggle-bar-no-side-margin');
+      expect(slideToggleBarElement.classList).toContain('mat-slide-toggle-bar-no-side-margin');
 
       testComponent.label = 'Some content';
       fixture.detectChanges();
       flushMutationObserver();
       fixture.detectChanges();
 
-      expect(slideToggleBarElement.classList)
-        .not.toContain('mat-slide-toggle-bar-no-side-margin');
+      expect(slideToggleBarElement.classList).not.toContain('mat-slide-toggle-bar-no-side-margin');
     }));
   });
 
@@ -545,8 +542,9 @@ describe('MatSlideToggle without forms', () => {
 
     beforeEach(fakeAsync(() => {
       fixture = TestBed.createComponent(SlideToggleProjectedLabel);
-      slideToggleBarElement = fixture.debugElement
-        .query(By.css('.mat-slide-toggle-bar'))!.nativeElement;
+      slideToggleBarElement = fixture.debugElement.query(
+        By.css('.mat-slide-toggle-bar'),
+      )!.nativeElement;
 
       fixture.detectChanges();
     }));
@@ -557,8 +555,7 @@ describe('MatSlideToggle without forms', () => {
       // output fires outside of the zone.
       flushMutationObserver();
 
-      expect(slideToggleBarElement.classList).not
-        .toContain('mat-slide-toggle-bar-no-side-margin');
+      expect(slideToggleBarElement.classList).not.toContain('mat-slide-toggle-bar-no-side-margin');
     }));
   });
 
@@ -573,7 +570,6 @@ describe('MatSlideToggle without forms', () => {
 });
 
 describe('MatSlideToggle with forms', () => {
-
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatSlideToggleModule, FormsModule, ReactiveFormsModule],
@@ -582,7 +578,7 @@ describe('MatSlideToggle with forms', () => {
         SlideToggleWithModel,
         SlideToggleWithFormControl,
         SlideToggleWithModelAndChangeEvent,
-      ]
+      ],
     });
 
     TestBed.compileComponents();
@@ -675,9 +671,7 @@ describe('MatSlideToggle with forms', () => {
       }).not.toThrow();
     }));
 
-    it('should not set the control to touched when changing the state programmatically',
-        fakeAsync(() => {
-
+    it('should not set the control to touched when changing the state programmatically', fakeAsync(() => {
       // The control should start off with being untouched.
       expect(slideToggleModel.touched).toBe(false);
 
@@ -732,7 +726,8 @@ describe('MatSlideToggle with forms', () => {
       fixture.detectChanges();
 
       expect(slideToggle.checked)
-        .withContext('Expected slide-toggle to be checked initially').toBe(true);
+        .withContext('Expected slide-toggle to be checked initially')
+        .toBe(true);
 
       labelElement.click();
       fixture.detectChanges();
@@ -768,7 +763,6 @@ describe('MatSlideToggle with forms', () => {
       fixture.detectChanges();
       expect(testComponent.modelValue).toBe(true);
     }));
-
   });
 
   describe('with a FormControl', () => {
@@ -950,7 +944,7 @@ class SlideToggleBasic {
   dragTriggered: number = 0;
 
   onSlideClick: (event?: Event) => void = () => {};
-  onSlideChange = (event: MatSlideToggleChange) => this.lastEvent = event;
+  onSlideChange = (event: MatSlideToggleChange) => (this.lastEvent = event);
   onSlideToggleChange = () => this.toggleTriggered++;
   onSlideDragChange = () => this.dragTriggered++;
 }
@@ -960,7 +954,7 @@ class SlideToggleBasic {
     <form ngNativeValidate (ngSubmit)="isSubmitted = true">
       <mat-slide-toggle name="slide" ngModel [required]="isRequired">Required</mat-slide-toggle>
       <button type="submit"></button>
-    </form>`
+    </form>`,
 })
 class SlideToggleWithForm {
   isSubmitted: boolean = false;
@@ -968,7 +962,7 @@ class SlideToggleWithForm {
 }
 
 @Component({
-  template: `<mat-slide-toggle [(ngModel)]="modelValue"></mat-slide-toggle>`
+  template: `<mat-slide-toggle [(ngModel)]="modelValue"></mat-slide-toggle>`,
 })
 class SlideToggleWithModel {
   modelValue = false;
@@ -990,14 +984,14 @@ class SlideToggleWithTabindexAttr {
 }
 
 @Component({
-  template: `<mat-slide-toggle>{{label}}</mat-slide-toggle>`
+  template: `<mat-slide-toggle>{{label}}</mat-slide-toggle>`,
 })
 class SlideToggleWithoutLabel {
   label: string;
 }
 
 @Component({
-  template: `<mat-slide-toggle [(ngModel)]="checked" (change)="onChange()"></mat-slide-toggle>`
+  template: `<mat-slide-toggle [(ngModel)]="checked" (change)="onChange()"></mat-slide-toggle>`,
 })
 class SlideToggleWithModelAndChangeEvent {
   checked: boolean;
@@ -1005,13 +999,13 @@ class SlideToggleWithModelAndChangeEvent {
 }
 
 @Component({
-  template: `<mat-slide-toggle><some-text></some-text></mat-slide-toggle>`
+  template: `<mat-slide-toggle><some-text></some-text></mat-slide-toggle>`,
 })
 class SlideToggleProjectedLabel {}
 
 @Component({
   selector: 'some-text',
-  template: `<span>{{text}}</span>`
+  template: `<span>{{text}}</span>`,
 })
 class TextBindingComponent {
   text: string = 'Some text';
@@ -1020,6 +1014,6 @@ class TextBindingComponent {
 @Component({
   template: `
     <mat-slide-toggle aria-label="Slide toggle" aria-labelledby="something"></mat-slide-toggle>
-  `
+  `,
 })
 class SlideToggleWithStaticAriaAttributes {}

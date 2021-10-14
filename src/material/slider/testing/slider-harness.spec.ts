@@ -180,7 +180,7 @@ class SliderHarnessTest {
   invertSliders = false;
   dir = 'ltr';
 
-  displayFn(value: number|null) {
+  displayFn(value: number | null) {
     if (!value) {
       return 'Null';
     }

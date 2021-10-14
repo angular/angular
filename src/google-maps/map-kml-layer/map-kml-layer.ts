@@ -9,14 +9,7 @@
 // Workaround for: https://github.com/bazelbuild/rules_nodejs/issues/1265
 /// <reference types="google.maps" />
 
-import {
-  Directive,
-  Input,
-  NgZone,
-  OnDestroy,
-  OnInit,
-  Output,
-} from '@angular/core';
+import {Directive, Input, NgZone, OnDestroy, OnInit, Output} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {map, take, takeUntil} from 'rxjs/operators';
 
@@ -60,7 +53,7 @@ export class MapKmlLayer implements OnInit, OnDestroy {
    * See developers.google.com/maps/documentation/javascript/reference/kml#KmlLayer.click
    */
   @Output() readonly kmlClick: Observable<google.maps.KmlMouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.KmlMouseEvent>('click');
+    this._eventManager.getLazyEmitter<google.maps.KmlMouseEvent>('click');
 
   /**
    * See
@@ -68,27 +61,29 @@ export class MapKmlLayer implements OnInit, OnDestroy {
    * #KmlLayer.defaultviewport_changed
    */
   @Output() readonly defaultviewportChanged: Observable<void> =
-      this._eventManager.getLazyEmitter<void>('defaultviewport_changed');
+    this._eventManager.getLazyEmitter<void>('defaultviewport_changed');
 
   /**
    * See developers.google.com/maps/documentation/javascript/reference/kml#KmlLayer.status_changed
    */
   @Output() readonly statusChanged: Observable<void> =
-      this._eventManager.getLazyEmitter<void>('status_changed');
+    this._eventManager.getLazyEmitter<void>('status_changed');
 
   constructor(private readonly _map: GoogleMap, private _ngZone: NgZone) {}
 
   ngOnInit() {
     if (this._map._isBrowser) {
-      this._combineOptions().pipe(take(1)).subscribe(options => {
-        // Create the object outside the zone so its events don't trigger change detection.
-        // We'll bring it back in inside the `MapEventManager` only for the events that the
-        // user has subscribed to.
-        this._ngZone.runOutsideAngular(() => this.kmlLayer = new google.maps.KmlLayer(options));
-        this._assertInitialized();
-        this.kmlLayer.setMap(this._map.googleMap!);
-        this._eventManager.setTarget(this.kmlLayer);
-      });
+      this._combineOptions()
+        .pipe(take(1))
+        .subscribe(options => {
+          // Create the object outside the zone so its events don't trigger change detection.
+          // We'll bring it back in inside the `MapEventManager` only for the events that the
+          // user has subscribed to.
+          this._ngZone.runOutsideAngular(() => (this.kmlLayer = new google.maps.KmlLayer(options)));
+          this._assertInitialized();
+          this.kmlLayer.setMap(this._map.googleMap!);
+          this._eventManager.setTarget(this.kmlLayer);
+        });
 
       this._watchForOptionsChanges();
       this._watchForUrlChanges();
@@ -146,13 +141,15 @@ export class MapKmlLayer implements OnInit, OnDestroy {
   }
 
   private _combineOptions(): Observable<google.maps.KmlLayerOptions> {
-    return combineLatest([this._options, this._url]).pipe(map(([options, url]) => {
-      const combinedOptions: google.maps.KmlLayerOptions = {
-        ...options,
-        url: url || options.url,
-      };
-      return combinedOptions;
-    }));
+    return combineLatest([this._options, this._url]).pipe(
+      map(([options, url]) => {
+        const combinedOptions: google.maps.KmlLayerOptions = {
+          ...options,
+          url: url || options.url,
+        };
+        return combinedOptions;
+      }),
+    );
   }
 
   private _watchForOptionsChanges() {
@@ -173,17 +170,19 @@ export class MapKmlLayer implements OnInit, OnDestroy {
     });
   }
 
-  private _assertInitialized(): asserts this is { kmlLayer: google.maps.KmlLayer } {
+  private _assertInitialized(): asserts this is {kmlLayer: google.maps.KmlLayer} {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       if (!this._map.googleMap) {
         throw Error(
-            'Cannot access Google Map information before the API has been initialized. ' +
-            'Please wait for the API to load before trying to interact with it.');
+          'Cannot access Google Map information before the API has been initialized. ' +
+            'Please wait for the API to load before trying to interact with it.',
+        );
       }
       if (!this.kmlLayer) {
         throw Error(
-            'Cannot interact with a Google Map KmlLayer before it has been ' +
-            'initialized. Please wait for the KmlLayer to load before trying to interact with it.');
+          'Cannot interact with a Google Map KmlLayer before it has been ' +
+            'initialized. Please wait for the KmlLayer to load before trying to interact with it.',
+        );
       }
     }
   }

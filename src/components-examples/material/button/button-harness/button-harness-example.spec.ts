@@ -16,14 +16,14 @@ describe('ButtonHarnessExample', () => {
 
   beforeAll(() => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
-      teardown: {destroyAfterEach: true}
+      teardown: {destroyAfterEach: true},
     });
   });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MatButtonModule],
-      declarations: [ButtonHarnessExample]
+      declarations: [ButtonHarnessExample],
     }).compileComponents();
     fixture = TestBed.createComponent(ButtonHarnessExample);
     fixture.detectChanges();
@@ -31,10 +31,9 @@ describe('ButtonHarnessExample', () => {
   });
 
   it('should load all button harnesses', async () => {
-      const buttons = await loader.getAllHarnesses(MatButtonHarness);
-      expect(buttons.length).toBe(1);
-    }
-  );
+    const buttons = await loader.getAllHarnesses(MatButtonHarness);
+    expect(buttons.length).toBe(1);
+  });
 
   it('should load button with exact text', async () => {
     const buttons = await loader.getAllHarnesses(buttonHarness.with({text: 'Basic button'}));

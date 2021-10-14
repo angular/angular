@@ -15,15 +15,8 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatPaginator} from './paginator';
 import {MAT_PAGINATOR_INTL_PROVIDER} from './paginator-intl';
 
-
 @NgModule({
-  imports: [
-    CommonModule,
-    MatButtonModule,
-    MatSelectModule,
-    MatTooltipModule,
-    MatCommonModule,
-  ],
+  imports: [CommonModule, MatButtonModule, MatSelectModule, MatTooltipModule, MatCommonModule],
   exports: [MatPaginator],
   declarations: [MatPaginator],
   providers: [MAT_PAGINATOR_INTL_PROVIDER],

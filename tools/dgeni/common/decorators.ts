@@ -16,11 +16,13 @@ export function isGenericTypeParameter(doc: MemberDoc) {
 }
 
 export function isProperty(doc: MemberDoc) {
-  if (doc instanceof PropertyMemberDoc ||
-      // The latest Dgeni version no longer treats getters or setters as properties.
-      // From a user perspective, these are still properties and should be handled the same
-      // way as normal properties.
-      (!isMethod(doc) && (doc.isGetAccessor || doc.isSetAccessor))) {
+  if (
+    doc instanceof PropertyMemberDoc ||
+    // The latest Dgeni version no longer treats getters or setters as properties.
+    // From a user perspective, these are still properties and should be handled the same
+    // way as normal properties.
+    (!isMethod(doc) && (doc.isGetAccessor || doc.isSetAccessor))
+  ) {
     return !isGenericTypeParameter(doc);
   }
   return false;
@@ -39,13 +41,14 @@ export function isNgModule(doc: ClassExportDoc) {
 }
 
 export function isDeprecatedDoc(doc: any) {
-  return (doc.tags && doc.tags.tags || []).some((tag: any) => tag.tagName === 'deprecated');
+  return ((doc.tags && doc.tags.tags) || []).some((tag: any) => tag.tagName === 'deprecated');
 }
 
 /** Whether the given document is annotated with the "@docs-primary-export" jsdoc tag. */
 export function isPrimaryExportDoc(doc: any) {
-  return (doc.tags && doc.tags.tags || [])
-      .some((tag: any) => tag.tagName === 'docs-primary-export');
+  return ((doc.tags && doc.tags.tags) || []).some(
+    (tag: any) => tag.tagName === 'docs-primary-export',
+  );
 }
 
 export function getDirectiveSelectors(classDoc: CategorizedClassDoc) {
@@ -53,7 +56,10 @@ export function getDirectiveSelectors(classDoc: CategorizedClassDoc) {
     const directiveSelectors: string = classDoc.directiveMetadata.get('selector');
 
     if (directiveSelectors) {
-      return directiveSelectors.replace(/[\r\n]/g, '').split(/\s*,\s*/).filter(s => s !== '');
+      return directiveSelectors
+        .replace(/[\r\n]/g, '')
+        .split(/\s*,\s*/)
+        .filter(s => s !== '');
     }
   }
   return undefined;
@@ -68,9 +74,11 @@ export function hasClassDecorator(doc: ClassExportDoc, decoratorName: string) {
 }
 
 export function hasDecorator(doc: HasDecoratorsDoc, decoratorName: string) {
-  return !!doc.decorators &&
+  return (
+    !!doc.decorators &&
     doc.decorators.length > 0 &&
-    doc.decorators.some(d => d.name == decoratorName);
+    doc.decorators.some(d => d.name == decoratorName)
+  );
 }
 
 export function getBreakingChange(doc: any): string | null {

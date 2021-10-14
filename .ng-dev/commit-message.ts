@@ -113,6 +113,6 @@ export const commitMessage: CommitMessageConfig = {
     'material/toolbar',
     'material/tooltip',
     'material/tree',
-    'youtube-player'
+    'youtube-player',
   ],
 };

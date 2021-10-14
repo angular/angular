@@ -5,14 +5,13 @@ import {ChangeDetectorRef, Component, NgZone} from '@angular/core';
 @Component({
   selector: 'focus-monitor-directives-example',
   templateUrl: 'focus-monitor-directives-example.html',
-  styleUrls: ['focus-monitor-directives-example.css']
+  styleUrls: ['focus-monitor-directives-example.css'],
 })
 export class FocusMonitorDirectivesExample {
   elementOrigin = this.formatOrigin(null);
   subtreeOrigin = this.formatOrigin(null);
 
   constructor(private _ngZone: NgZone, private _cdr: ChangeDetectorRef) {}
-
 
   formatOrigin(origin: FocusOrigin): string {
     return origin ? origin + ' focused' : 'blurred';

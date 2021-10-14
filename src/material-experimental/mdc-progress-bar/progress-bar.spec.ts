@@ -5,14 +5,15 @@ import {dispatchFakeEvent} from '../../cdk/testing/private';
 import {MatProgressBarModule, MAT_PROGRESS_BAR_DEFAULT_OPTIONS} from './index';
 import {MatProgressBar} from './progress-bar';
 
-
 describe('MDC-based MatProgressBar', () => {
-  function createComponent<T>(componentType: Type<T>,
-                              providers: Provider[] = []): ComponentFixture<T> {
+  function createComponent<T>(
+    componentType: Type<T>,
+    providers: Provider[] = [],
+  ): ComponentFixture<T> {
     TestBed.configureTestingModule({
       imports: [MatProgressBarModule],
       declarations: [componentType],
-      providers
+      providers,
     }).compileComponents();
 
     return TestBed.createComponent<T>(componentType);
@@ -80,10 +81,12 @@ describe('MDC-based MatProgressBar', () => {
 
         const progressElement = fixture.debugElement.query(By.css('mat-progress-bar'))!;
         const progressComponent = progressElement.componentInstance;
-        const primaryStyles =
-            progressElement.nativeElement.querySelector('.mdc-linear-progress__primary-bar').style;
-        const bufferStyles =
-          progressElement.nativeElement.querySelector('.mdc-linear-progress__buffer-bar').style;
+        const primaryStyles = progressElement.nativeElement.querySelector(
+          '.mdc-linear-progress__primary-bar',
+        ).style;
+        const bufferStyles = progressElement.nativeElement.querySelector(
+          '.mdc-linear-progress__buffer-bar',
+        ).style;
 
         // Parse out and round the value since different
         // browsers return the value with a different precision.
@@ -123,13 +126,15 @@ describe('MDC-based MatProgressBar', () => {
         fixture.detectChanges();
 
         expect(progressElement.nativeElement.getAttribute('aria-valuenow'))
-          .withContext('Expected aria-valuenow to be set in determinate mode.').toBe('50');
+          .withContext('Expected aria-valuenow to be set in determinate mode.')
+          .toBe('50');
 
         progressComponent.mode = 'indeterminate';
         fixture.detectChanges();
 
         expect(progressElement.nativeElement.hasAttribute('aria-valuenow'))
-          .withContext('Expect aria-valuenow to be cleared in indeterminate mode.').toBe(false);
+          .withContext('Expect aria-valuenow to be cleared in indeterminate mode.')
+          .toBe(false);
       });
 
       it('should remove the `aria-valuenow` attribute in query mode', () => {
@@ -144,29 +149,32 @@ describe('MDC-based MatProgressBar', () => {
         fixture.detectChanges();
 
         expect(progressElement.nativeElement.getAttribute('aria-valuenow'))
-          .withContext('Expected aria-valuenow to be set in determinate mode.').toBe('50');
+          .withContext('Expected aria-valuenow to be set in determinate mode.')
+          .toBe('50');
 
         progressComponent.mode = 'query';
         fixture.detectChanges();
 
         expect(progressElement.nativeElement.hasAttribute('aria-valuenow'))
-          .withContext('Expect aria-valuenow to be cleared in query mode.').toBe(false);
+          .withContext('Expect aria-valuenow to be cleared in query mode.')
+          .toBe(false);
       });
 
       it('should be able to configure the default progress bar options via DI', () => {
-        const fixture = createComponent(BasicProgressBar, [{
-          provide: MAT_PROGRESS_BAR_DEFAULT_OPTIONS,
-          useValue: {
-            mode: 'buffer',
-            color: 'warn'
-          }
-        }]);
+        const fixture = createComponent(BasicProgressBar, [
+          {
+            provide: MAT_PROGRESS_BAR_DEFAULT_OPTIONS,
+            useValue: {
+              mode: 'buffer',
+              color: 'warn',
+            },
+          },
+        ]);
         fixture.detectChanges();
         const progressElement = fixture.debugElement.query(By.css('mat-progress-bar'))!;
         expect(progressElement.componentInstance.mode).toBe('buffer');
         expect(progressElement.componentInstance.color).toBe('warn');
       });
-
     });
 
     describe('animation trigger on determinate setting', () => {
@@ -191,7 +199,7 @@ describe('MDC-based MatProgressBar', () => {
 
         // On animation end, output should be emitted.
         dispatchFakeEvent(primaryValueBar.nativeElement, 'transitionend');
-        expect(progressComponent.animationEnd.next).toHaveBeenCalledWith({ value: 40 });
+        expect(progressComponent.animationEnd.next).toHaveBeenCalledWith({value: 40});
       });
     });
 
@@ -213,8 +221,9 @@ describe('MDC-based MatProgressBar', () => {
         fixture.detectChanges();
 
         expect(primaryValueBar.nativeElement.addEventListener).toHaveBeenCalled();
-        expect(primaryValueBar.nativeElement.addEventListener
-               .calls.mostRecent().args[0]).toBe('transitionend');
+        expect(primaryValueBar.nativeElement.addEventListener.calls.mostRecent().args[0]).toBe(
+          'transitionend',
+        );
       });
 
       it('should trigger output event on primary value bar animation end', () => {
@@ -226,7 +235,7 @@ describe('MDC-based MatProgressBar', () => {
 
         // On animation end, output should be emitted.
         dispatchFakeEvent(primaryValueBar.nativeElement, 'transitionend');
-        expect(progressComponent.animationEnd.next).toHaveBeenCalledWith({ value: 40 });
+        expect(progressComponent.animationEnd.next).toHaveBeenCalledWith({value: 40});
       });
 
       it('should trigger output event with value not bufferValue', () => {
@@ -239,15 +248,14 @@ describe('MDC-based MatProgressBar', () => {
 
         // On animation end, output should be emitted.
         dispatchFakeEvent(primaryValueBar.nativeElement, 'transitionend');
-        expect(progressComponent.animationEnd.next).toHaveBeenCalledWith({ value: 40 });
+        expect(progressComponent.animationEnd.next).toHaveBeenCalledWith({value: 40});
       });
     });
   });
-
 });
 
 @Component({template: '<mat-progress-bar></mat-progress-bar>'})
 class BasicProgressBar {}
 
 @Component({template: '<mat-progress-bar mode="buffer"></mat-progress-bar>'})
-class BufferProgressBar { }
+class BufferProgressBar {}

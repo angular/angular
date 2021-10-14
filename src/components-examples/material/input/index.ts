@@ -5,9 +5,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {InputClearableExample} from './input-clearable/input-clearable-example';
-import {
-  InputErrorStateMatcherExample
-} from './input-error-state-matcher/input-error-state-matcher-example';
+import {InputErrorStateMatcherExample} from './input-error-state-matcher/input-error-state-matcher-example';
 import {InputErrorsExample} from './input-errors/input-errors-example';
 import {InputFormExample} from './input-form/input-form-example';
 import {InputHintExample} from './input-hint/input-hint-example';
@@ -50,5 +48,4 @@ const EXAMPLES = [
   exports: EXAMPLES,
   entryComponents: EXAMPLES,
 })
-export class InputExamplesModule {
-}
+export class InputExamplesModule {}

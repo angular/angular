@@ -21,7 +21,6 @@
 // tslint:disable:no-console
 const {execSync: execSync_} = require('child_process');
 
-
 /** A regex to select a ref that matches our semver refs. */
 const semverRegex = /^(\d+)\.(\d+)\.x$/;
 
@@ -34,7 +33,9 @@ function exec(command, allowStderr = true) {
   let output = new String();
   output.code = 0;
   try {
-    output += execSync_(command, {stdio: ['pipe', 'pipe', 'pipe']}).toString().trim();
+    output += execSync_(command, {stdio: ['pipe', 'pipe', 'pipe']})
+      .toString()
+      .trim();
   } catch (err) {
     allowStderr && console.error(err.stderr.toString());
     output.code = err.status;
@@ -43,7 +44,6 @@ function exec(command, allowStderr = true) {
 }
 
 // Run
-
 
 // Helpers
 async function _main() {
@@ -59,12 +59,16 @@ async function _main() {
   console.log();
 
   // Get the count of commits between the latest commit from origin and the common ancestor SHA.
-  const commitCount = exec(`git rev-list --count origin/${refs.base.ref}...${refs.commonAncestorSha}`);
+  const commitCount = exec(
+    `git rev-list --count origin/${refs.base.ref}...${refs.commonAncestorSha}`,
+  );
   console.log(`Checking ${commitCount} commits for changes in the CircleCI config file.`);
 
   // Check if the files changed between the latest commit from origin and the common ancestor SHA
   // includes the CircleCI config.
-  const circleCIConfigChanged = exec(`git diff --name-only origin/${refs.base.ref} ${refs.commonAncestorSha} -- .circleci/config.yml`);
+  const circleCIConfigChanged = exec(
+    `git diff --name-only origin/${refs.base.ref} ${refs.commonAncestorSha} -- .circleci/config.yml`,
+  );
 
   if (!!circleCIConfigChanged) {
     throw Error(`
@@ -90,8 +94,6 @@ async function _main() {
   console.log(`Rebased current branch onto ${refs.base.ref}.`);
 }
 
-
-
 /**
  * Sort a list of fullpath refs into a list and then provide the first entry.
  *
@@ -116,8 +118,11 @@ function getRefFromBranchList(gitOutput) {
     if (aIsSemver && bIsSemver) {
       const [, aMajor, aMinor] = a.match(semverRegex);
       const [, bMajor, bMinor] = b.match(semverRegex);
-      return parseInt(bMajor, 10) - parseInt(aMajor, 10) ||
-          parseInt(aMinor, 10) - parseInt(bMinor, 10) || 0;
+      return (
+        parseInt(bMajor, 10) - parseInt(aMajor, 10) ||
+        parseInt(aMinor, 10) - parseInt(bMinor, 10) ||
+        0
+      );
     }
     if (aIsSemver) {
       return -1;
@@ -168,7 +173,6 @@ function addAndFetchRemote(owner, name) {
   return remoteName;
 }
 
-
 /** Get the ref and latest shas for the provided sha on a specific remote. */
 function getRefAndShas(sha, owner, name) {
   const remoteName = addAndFetchRemote(owner, name);
@@ -181,19 +185,18 @@ function getRefAndShas(sha, owner, name) {
   return {remote: remoteName, ref, latestSha, sha};
 }
 
-
 /** Gets the refs and shas for the base and target of the current environment. */
 function getRefsAndShasForChange() {
   const base = getRefAndShas(
     process.env['CIRCLE_GIT_BASE_REVISION'],
     process.env['CIRCLE_PROJECT_USERNAME'],
-    process.env['CIRCLE_PROJECT_REPONAME']
+    process.env['CIRCLE_PROJECT_REPONAME'],
   );
 
   const target = getRefAndShas(
     process.env['CIRCLE_GIT_REVISION'],
     process.env['CIRCLE_PR_USERNAME'],
-    process.env['CIRCLE_PR_REPONAME']
+    process.env['CIRCLE_PR_REPONAME'],
   );
 
   const commonAncestorSha = getCommonAncestorSha(base.sha, target.sha);
@@ -203,7 +206,6 @@ function getRefsAndShasForChange() {
     commonAncestorSha,
   };
 }
-
 
 _main().catch(err => {
   console.log('Failed to rebase on top of target branch.\n');

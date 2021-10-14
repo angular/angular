@@ -13,24 +13,33 @@ describe('stepper', () => {
       const previousButton = element.all(by.buttonText('Back'));
       const nextButton = element.all(by.buttonText('Next'));
 
-      expect(await element(by.css('mat-step-header[aria-selected="true"]')).getText())
-          .toBe('1\nFill out your name');
+      expect(await element(by.css('mat-step-header[aria-selected="true"]')).getText()).toBe(
+        '1\nFill out your name',
+      );
 
       await nextButton.get(0).click();
 
-      expect(await element(by.css('mat-step-header[aria-selected="true"]')).getText())
-          .toBe('2\nFill out your address');
+      expect(await element(by.css('mat-step-header[aria-selected="true"]')).getText()).toBe(
+        '2\nFill out your address',
+      );
 
-      await browser.wait(ExpectedConditions.not(
-          ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))));
+      await browser.wait(
+        ExpectedConditions.not(
+          ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element'))),
+        ),
+      );
 
       await previousButton.get(0).click();
 
-      expect(await element(by.css('mat-step-header[aria-selected="true"]')).getText())
-          .toBe('1\nFill out your name');
+      expect(await element(by.css('mat-step-header[aria-selected="true"]')).getText()).toBe(
+        '1\nFill out your name',
+      );
 
-      await browser.wait(ExpectedConditions.not(
-          ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))));
+      await browser.wait(
+        ExpectedConditions.not(
+          ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element'))),
+        ),
+      );
     });
 
     it('should change focus with keyboard interaction', async () => {
@@ -68,8 +77,9 @@ describe('stepper', () => {
       const nextButton = element.all(by.buttonText('Next'));
       await nextButton.get(0).click();
 
-      expect(await element(by.css('mat-step-header[aria-selected="true"]')).getText())
-          .toBe('1\nFill out your name');
+      expect(await element(by.css('mat-step-header[aria-selected="true"]')).getText()).toBe(
+        '1\nFill out your name',
+      );
     });
   });
 });

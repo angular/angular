@@ -14,14 +14,8 @@ import {MatSelectModule} from '@angular/material-experimental/mdc-select';
 import {MatTooltipModule} from '@angular/material-experimental/mdc-tooltip';
 import {MatPaginator} from './paginator';
 
-
 @NgModule({
-  imports: [
-    CommonModule,
-    MatButtonModule,
-    MatSelectModule,
-    MatTooltipModule,
-  ],
+  imports: [CommonModule, MatButtonModule, MatSelectModule, MatTooltipModule],
   exports: [MatPaginator],
   declarations: [MatPaginator],
   providers: [MAT_PAGINATOR_INTL_PROVIDER],

@@ -26,14 +26,16 @@ export class ScrollDispatcher implements OnDestroy {
   /** Used to reference correct document/window */
   protected _document: Document;
 
-  constructor(private _ngZone: NgZone,
-              private _platform: Platform,
-              @Optional() @Inject(DOCUMENT) document: any) {
+  constructor(
+    private _ngZone: NgZone,
+    private _platform: Platform,
+    @Optional() @Inject(DOCUMENT) document: any,
+  ) {
     this._document = document;
   }
 
   /** Subject for notifying that a registered scrollable reference element has been scrolled. */
-  private readonly _scrolled = new Subject<CdkScrollable|void>();
+  private readonly _scrolled = new Subject<CdkScrollable | void>();
 
   /** Keeps track of the global `scroll` and `resize` subscriptions. */
   _globalSubscription: Subscription | null = null;
@@ -54,8 +56,10 @@ export class ScrollDispatcher implements OnDestroy {
    */
   register(scrollable: CdkScrollable): void {
     if (!this.scrollContainers.has(scrollable)) {
-      this.scrollContainers.set(scrollable, scrollable.elementScrolled()
-          .subscribe(() => this._scrolled.next(scrollable)));
+      this.scrollContainers.set(
+        scrollable,
+        scrollable.elementScrolled().subscribe(() => this._scrolled.next(scrollable)),
+      );
     }
   }
 
@@ -82,21 +86,22 @@ export class ScrollDispatcher implements OnDestroy {
    * If you need to update any data bindings as a result of a scroll event, you have
    * to run the callback using `NgZone.run`.
    */
-  scrolled(auditTimeInMs: number = DEFAULT_SCROLL_TIME): Observable<CdkScrollable|void> {
+  scrolled(auditTimeInMs: number = DEFAULT_SCROLL_TIME): Observable<CdkScrollable | void> {
     if (!this._platform.isBrowser) {
       return observableOf<void>();
     }
 
-    return new Observable((observer: Observer<CdkScrollable|void>) => {
+    return new Observable((observer: Observer<CdkScrollable | void>) => {
       if (!this._globalSubscription) {
         this._addGlobalListener();
       }
 
       // In the case of a 0ms delay, use an observable without auditTime
       // since it does add a perceptible delay in processing overhead.
-      const subscription = auditTimeInMs > 0 ?
-        this._scrolled.pipe(auditTime(auditTimeInMs)).subscribe(observer) :
-        this._scrolled.subscribe(observer);
+      const subscription =
+        auditTimeInMs > 0
+          ? this._scrolled.pipe(auditTime(auditTimeInMs)).subscribe(observer)
+          : this._scrolled.subscribe(observer);
 
       this._scrolledCount++;
 
@@ -124,17 +129,20 @@ export class ScrollDispatcher implements OnDestroy {
    * @param auditTimeInMs Time to throttle the scroll events.
    */
   ancestorScrolled(
-      elementOrElementRef: ElementRef|HTMLElement,
-      auditTimeInMs?: number): Observable<CdkScrollable|void> {
+    elementOrElementRef: ElementRef | HTMLElement,
+    auditTimeInMs?: number,
+  ): Observable<CdkScrollable | void> {
     const ancestors = this.getAncestorScrollContainers(elementOrElementRef);
 
-    return this.scrolled(auditTimeInMs).pipe(filter(target => {
-      return !target || ancestors.indexOf(target) > -1;
-    }));
+    return this.scrolled(auditTimeInMs).pipe(
+      filter(target => {
+        return !target || ancestors.indexOf(target) > -1;
+      }),
+    );
   }
 
   /** Returns all registered Scrollables that contain the provided element. */
-  getAncestorScrollContainers(elementOrElementRef: ElementRef|HTMLElement): CdkScrollable[] {
+  getAncestorScrollContainers(elementOrElementRef: ElementRef | HTMLElement): CdkScrollable[] {
     const scrollingContainers: CdkScrollable[] = [];
 
     this.scrollContainers.forEach((_subscription: Subscription, scrollable: CdkScrollable) => {
@@ -153,16 +161,19 @@ export class ScrollDispatcher implements OnDestroy {
 
   /** Returns true if the element is contained within the provided Scrollable. */
   private _scrollableContainsElement(
-      scrollable: CdkScrollable,
-      elementOrElementRef: ElementRef|HTMLElement): boolean {
+    scrollable: CdkScrollable,
+    elementOrElementRef: ElementRef | HTMLElement,
+  ): boolean {
     let element: HTMLElement | null = coerceElement(elementOrElementRef);
     let scrollableElement = scrollable.getElementRef().nativeElement;
 
     // Traverse through the element parents until we reach null, checking if any of the elements
     // are the scrollable's element.
     do {
-      if (element == scrollableElement) { return true; }
-    } while (element = element!.parentElement);
+      if (element == scrollableElement) {
+        return true;
+      }
+    } while ((element = element!.parentElement));
 
     return false;
   }

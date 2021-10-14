@@ -48,8 +48,9 @@ export class MapTransitLayer extends MapBaseLayer {
   private _assertLayerInitialized(): asserts this is {transitLayer: google.maps.TransitLayer} {
     if (!this.transitLayer) {
       throw Error(
-          'Cannot interact with a Google Map Transit Layer before it has been initialized. ' +
-          'Please wait for the Transit Layer to load before trying to interact with it.');
+        'Cannot interact with a Google Map Transit Layer before it has been initialized. ' +
+          'Please wait for the Transit Layer to load before trying to interact with it.',
+      );
     }
   }
 }

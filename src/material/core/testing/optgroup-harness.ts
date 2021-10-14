@@ -24,10 +24,11 @@ export class MatOptgroupHarness extends ComponentHarness {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: OptgroupHarnessFilters = {}) {
-    return new HarnessPredicate(MatOptgroupHarness, options)
-        .addOption('labelText', options.labelText,
-            async (harness, title) =>
-                HarnessPredicate.stringMatches(await harness.getLabelText(), title));
+    return new HarnessPredicate(MatOptgroupHarness, options).addOption(
+      'labelText',
+      options.labelText,
+      async (harness, title) => HarnessPredicate.stringMatches(await harness.getLabelText(), title),
+    );
   }
 
   /** Gets the option group's label text. */
@@ -48,4 +49,3 @@ export class MatOptgroupHarness extends ComponentHarness {
     return this.locatorForAll(MatOptionHarness.with(filter))();
   }
 }
-

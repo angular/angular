@@ -28,13 +28,13 @@ export class MatSelectHarness extends _MatSelectHarnessBase<typeof MatOptionHarn
 }
 
 // @public (undocumented)
-export abstract class _MatSelectHarnessBase<OptionType extends (ComponentHarnessConstructor<Option> & {
+export abstract class _MatSelectHarnessBase<OptionType extends ComponentHarnessConstructor<Option> & {
     with: (options?: OptionFilters) => HarnessPredicate<Option>;
-}), Option extends ComponentHarness & {
+}, Option extends ComponentHarness & {
     click(): Promise<void>;
-}, OptionFilters extends BaseHarnessFilters, OptionGroupType extends (ComponentHarnessConstructor<OptionGroup> & {
+}, OptionFilters extends BaseHarnessFilters, OptionGroupType extends ComponentHarnessConstructor<OptionGroup> & {
     with: (options?: OptionGroupFilters) => HarnessPredicate<OptionGroup>;
-}), OptionGroup extends ComponentHarness, OptionGroupFilters extends BaseHarnessFilters> extends MatFormFieldControlHarness {
+}, OptionGroup extends ComponentHarness, OptionGroupFilters extends BaseHarnessFilters> extends MatFormFieldControlHarness {
     blur(): Promise<void>;
     clickOptions(filter?: OptionFilters): Promise<void>;
     close(): Promise<void>;

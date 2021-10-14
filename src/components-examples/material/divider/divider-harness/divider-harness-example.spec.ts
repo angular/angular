@@ -15,14 +15,14 @@ describe('DividerHarnessExample', () => {
 
   beforeAll(() => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
-      teardown: {destroyAfterEach: true}
+      teardown: {destroyAfterEach: true},
     });
   });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MatDividerModule],
-      declarations: [DividerHarnessExample]
+      declarations: [DividerHarnessExample],
     }).compileComponents();
     fixture = TestBed.createComponent(DividerHarnessExample);
     fixture.detectChanges();

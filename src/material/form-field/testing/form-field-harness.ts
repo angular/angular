@@ -13,7 +13,7 @@ import {
   HarnessPredicate,
   HarnessQuery,
   parallel,
-  TestElement
+  TestElement,
 } from '@angular/cdk/testing';
 import {
   MatDatepickerInputHarness,
@@ -27,19 +27,23 @@ import {FormFieldHarnessFilters} from './form-field-harness-filters';
 // TODO(devversion): support support chip list harness
 /** Possible harnesses of controls which can be bound to a form-field. */
 export type FormFieldControlHarness =
-  MatInputHarness|MatSelectHarness|MatDatepickerInputHarness|MatDateRangeInputHarness;
+  | MatInputHarness
+  | MatSelectHarness
+  | MatDatepickerInputHarness
+  | MatDateRangeInputHarness;
 
-export abstract class _MatFormFieldHarnessBase<ControlHarness extends MatFormFieldControlHarness>
-  extends ComponentHarness {
-  protected abstract _prefixContainer: AsyncFactoryFn<TestElement|null>;
-  protected abstract _suffixContainer: AsyncFactoryFn<TestElement|null>;
-  protected abstract _label: AsyncFactoryFn<TestElement|null>;
+export abstract class _MatFormFieldHarnessBase<
+  ControlHarness extends MatFormFieldControlHarness,
+> extends ComponentHarness {
+  protected abstract _prefixContainer: AsyncFactoryFn<TestElement | null>;
+  protected abstract _suffixContainer: AsyncFactoryFn<TestElement | null>;
+  protected abstract _label: AsyncFactoryFn<TestElement | null>;
   protected abstract _errors: AsyncFactoryFn<TestElement[]>;
   protected abstract _hints: AsyncFactoryFn<TestElement[]>;
-  protected abstract _inputControl: AsyncFactoryFn<ControlHarness|null>;
-  protected abstract _selectControl: AsyncFactoryFn<ControlHarness|null>;
-  protected abstract _datepickerInputControl: AsyncFactoryFn<ControlHarness|null>;
-  protected abstract _dateRangeInputControl: AsyncFactoryFn<ControlHarness|null>;
+  protected abstract _inputControl: AsyncFactoryFn<ControlHarness | null>;
+  protected abstract _selectControl: AsyncFactoryFn<ControlHarness | null>;
+  protected abstract _datepickerInputControl: AsyncFactoryFn<ControlHarness | null>;
+  protected abstract _dateRangeInputControl: AsyncFactoryFn<ControlHarness | null>;
 
   /** Gets the appearance of the form-field. */
   abstract getAppearance(): Promise<string>;
@@ -51,7 +55,7 @@ export abstract class _MatFormFieldHarnessBase<ControlHarness extends MatFormFie
   abstract hasLabel(): Promise<boolean>;
 
   /** Gets the label of the form-field. */
-  async getLabel(): Promise<string|null> {
+  async getLabel(): Promise<string | null> {
     const labelEl = await this._label();
     return labelEl ? labelEl.text() : null;
   }
@@ -76,21 +80,23 @@ export abstract class _MatFormFieldHarnessBase<ControlHarness extends MatFormFie
    * default controls such as "MatInputHarness" and "MatSelectHarness" are
    * supported.
    */
-  async getControl(): Promise<ControlHarness|null>;
+  async getControl(): Promise<ControlHarness | null>;
 
   /**
    * Gets the harness of the control that is bound to the form-field. Searches
    * for a control that matches the specified harness type.
    */
-  async getControl<X extends MatFormFieldControlHarness>(type: ComponentHarnessConstructor<X>):
-      Promise<X|null>;
+  async getControl<X extends MatFormFieldControlHarness>(
+    type: ComponentHarnessConstructor<X>,
+  ): Promise<X | null>;
 
   /**
    * Gets the harness of the control that is bound to the form-field. Searches
    * for a control that matches the specified harness predicate.
    */
-  async getControl<X extends MatFormFieldControlHarness>(type: HarnessPredicate<X>):
-      Promise<X|null>;
+  async getControl<X extends MatFormFieldControlHarness>(
+    type: HarnessPredicate<X>,
+  ): Promise<X | null>;
 
   // Implementation of the "getControl" method overload signatures.
   async getControl<X extends MatFormFieldControlHarness>(type?: HarnessQuery<X>) {
@@ -101,7 +107,7 @@ export abstract class _MatFormFieldHarnessBase<ControlHarness extends MatFormFie
       this._selectControl(),
       this._inputControl(),
       this._datepickerInputControl(),
-      this._dateRangeInputControl()
+      this._dateRangeInputControl(),
     ]);
 
     // Match the datepicker inputs first since they can also have a `MatInput`.
@@ -109,7 +115,7 @@ export abstract class _MatFormFieldHarnessBase<ControlHarness extends MatFormFie
   }
 
   /** Gets the theme color of the form-field. */
-  async getThemeColor(): Promise<'primary'|'accent'|'warn'> {
+  async getThemeColor(): Promise<'primary' | 'accent' | 'warn'> {
     const hostEl = await this.host();
     const [isAccent, isWarn] = await parallel(() => {
       return [hostEl.hasClass('mat-accent'), hostEl.hasClass('mat-warn')];
@@ -150,8 +156,8 @@ export abstract class _MatFormFieldHarnessBase<ControlHarness extends MatFormFie
    * Whether the form control has been touched. Returns "null"
    * if no form control is set up.
    */
-  async isControlTouched(): Promise<boolean|null> {
-    if (!await this._hasFormControl()) {
+  async isControlTouched(): Promise<boolean | null> {
+    if (!(await this._hasFormControl())) {
       return null;
     }
     return (await this.host()).hasClass('ng-touched');
@@ -161,8 +167,8 @@ export abstract class _MatFormFieldHarnessBase<ControlHarness extends MatFormFie
    * Whether the form control is dirty. Returns "null"
    * if no form control is set up.
    */
-  async isControlDirty(): Promise<boolean|null> {
-    if (!await this._hasFormControl()) {
+  async isControlDirty(): Promise<boolean | null> {
+    if (!(await this._hasFormControl())) {
       return null;
     }
     return (await this.host()).hasClass('ng-dirty');
@@ -172,8 +178,8 @@ export abstract class _MatFormFieldHarnessBase<ControlHarness extends MatFormFie
    * Whether the form control is valid. Returns "null"
    * if no form control is set up.
    */
-  async isControlValid(): Promise<boolean|null> {
-    if (!await this._hasFormControl()) {
+  async isControlValid(): Promise<boolean | null> {
+    if (!(await this._hasFormControl())) {
       return null;
     }
     return (await this.host()).hasClass('ng-valid');
@@ -183,8 +189,8 @@ export abstract class _MatFormFieldHarnessBase<ControlHarness extends MatFormFie
    * Whether the form control is pending validation. Returns "null"
    * if no form control is set up.
    */
-  async isControlPending(): Promise<boolean|null> {
-    if (!await this._hasFormControl()) {
+  async isControlPending(): Promise<boolean | null> {
+    if (!(await this._hasFormControl())) {
       return null;
     }
     return (await this.host()).hasClass('ng-pending');
@@ -196,8 +202,10 @@ export abstract class _MatFormFieldHarnessBase<ControlHarness extends MatFormFie
     // If no form "NgControl" is bound to the form-field control, the form-field
     // is not able to forward any control status classes. Therefore if either the
     // "ng-touched" or "ng-untouched" class is set, we know that it has a form control
-    const [isTouched, isUntouched] =
-        await parallel(() => [hostEl.hasClass('ng-touched'), hostEl.hasClass('ng-untouched')]);
+    const [isTouched, isUntouched] = await parallel(() => [
+      hostEl.hasClass('ng-touched'),
+      hostEl.hasClass('ng-untouched'),
+    ]);
     return isTouched || isUntouched;
   }
 }
@@ -215,9 +223,13 @@ export class MatFormFieldHarness extends _MatFormFieldHarnessBase<FormFieldContr
   static with(options: FormFieldHarnessFilters = {}): HarnessPredicate<MatFormFieldHarness> {
     return new HarnessPredicate(MatFormFieldHarness, options)
       .addOption('floatingLabelText', options.floatingLabelText, async (harness, text) =>
-          HarnessPredicate.stringMatches(await harness.getLabel(), text))
-      .addOption('hasErrors', options.hasErrors, async (harness, hasErrors) =>
-          await harness.hasErrors() === hasErrors);
+        HarnessPredicate.stringMatches(await harness.getLabel(), text),
+      )
+      .addOption(
+        'hasErrors',
+        options.hasErrors,
+        async (harness, hasErrors) => (await harness.hasErrors()) === hasErrors,
+      );
   }
 
   protected _prefixContainer = this.locatorForOptional('.mat-form-field-prefix');
@@ -231,11 +243,12 @@ export class MatFormFieldHarness extends _MatFormFieldHarnessBase<FormFieldContr
   protected _dateRangeInputControl = this.locatorForOptional(MatDateRangeInputHarness);
 
   /** Gets the appearance of the form-field. */
-  async getAppearance(): Promise<'legacy'|'standard'|'fill'|'outline'> {
+  async getAppearance(): Promise<'legacy' | 'standard' | 'fill' | 'outline'> {
     const hostClasses = await (await this.host()).getAttribute('class');
     if (hostClasses !== null) {
-      const appearanceMatch =
-          hostClasses.match(/mat-form-field-appearance-(legacy|standard|fill|outline)(?:$| )/);
+      const appearanceMatch = hostClasses.match(
+        /mat-form-field-appearance-(legacy|standard|fill|outline)(?:$| )/,
+      );
       if (appearanceMatch) {
         return appearanceMatch[1] as 'legacy' | 'standard' | 'fill' | 'outline';
       }

@@ -10,13 +10,15 @@ import {
   CDK_TABLE_TEMPLATE,
   CdkTable,
   CDK_TABLE,
-  _CoalescedStyleScheduler, _COALESCED_STYLE_SCHEDULER, STICKY_POSITIONING_LISTENER
+  _CoalescedStyleScheduler,
+  _COALESCED_STYLE_SCHEDULER,
+  STICKY_POSITIONING_LISTENER,
 } from '@angular/cdk/table';
 import {ChangeDetectionStrategy, Component, Directive, ViewEncapsulation} from '@angular/core';
 import {
   _DisposeViewRepeaterStrategy,
   _RecycleViewRepeaterStrategy,
-  _VIEW_REPEATER_STRATEGY
+  _VIEW_REPEATER_STRATEGY,
 } from '@angular/cdk/collections';
 
 /**
@@ -25,9 +27,7 @@ import {
  */
 @Directive({
   selector: 'mat-table[recycleRows], table[mat-table][recycleRows]',
-  providers: [
-    {provide: _VIEW_REPEATER_STRATEGY, useClass: _RecycleViewRepeaterStrategy},
-  ],
+  providers: [{provide: _VIEW_REPEATER_STRATEGY, useClass: _RecycleViewRepeaterStrategy}],
 })
 export class MatRecycleRows {}
 

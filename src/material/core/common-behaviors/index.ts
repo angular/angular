@@ -19,7 +19,7 @@ export {
 // would generate a deep cross-package import that breaks in the NPM package output.
 export {
   Constructor as _Constructor,
-  AbstractConstructor as _AbstractConstructor
+  AbstractConstructor as _AbstractConstructor,
 } from './constructor';
 
 export {CanDisable, mixinDisabled} from './disabled';

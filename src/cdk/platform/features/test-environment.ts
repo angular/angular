@@ -31,8 +31,10 @@ if (typeof global !== 'undefined') {
 
 /** Gets whether the code is currently running in a test environment. */
 export function _isTestEnvironment(): boolean {
-  return (typeof testGlobals.__karma__ !== 'undefined' && !!testGlobals.__karma__) ||
-         (typeof testGlobals.jasmine !== 'undefined' && !!testGlobals.jasmine) ||
-         (typeof testGlobals.jest !== 'undefined' && !!testGlobals.jest) ||
-         (typeof testGlobals.Mocha !== 'undefined' && !!testGlobals.Mocha);
+  return (
+    (typeof testGlobals.__karma__ !== 'undefined' && !!testGlobals.__karma__) ||
+    (typeof testGlobals.jasmine !== 'undefined' && !!testGlobals.jasmine) ||
+    (typeof testGlobals.jest !== 'undefined' && !!testGlobals.jest) ||
+    (typeof testGlobals.Mocha !== 'undefined' && !!testGlobals.Mocha)
+  );
 }

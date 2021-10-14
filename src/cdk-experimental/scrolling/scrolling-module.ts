@@ -9,7 +9,6 @@
 import {NgModule} from '@angular/core';
 import {CdkAutoSizeVirtualScroll} from './auto-size-virtual-scroll';
 
-
 @NgModule({
   exports: [CdkAutoSizeVirtualScroll],
   declarations: [CdkAutoSizeVirtualScroll],

@@ -28,7 +28,7 @@ export class MatChipGridHarness extends ComponentHarness {
 
   /** Gets whether the chip grid is disabled. */
   async isDisabled(): Promise<boolean> {
-    return await (await this.host()).getAttribute('aria-disabled') === 'true';
+    return (await (await this.host()).getAttribute('aria-disabled')) === 'true';
   }
 
   /** Gets whether the chip grid is required. */
@@ -38,7 +38,7 @@ export class MatChipGridHarness extends ComponentHarness {
 
   /** Gets whether the chip grid is invalid. */
   async isInvalid(): Promise<boolean> {
-    return await (await this.host()).getAttribute('aria-invalid') === 'true';
+    return (await (await this.host()).getAttribute('aria-invalid')) === 'true';
   }
 
   /** Gets promise of the harnesses for the chip rows. */
@@ -47,7 +47,7 @@ export class MatChipGridHarness extends ComponentHarness {
   }
 
   /** Gets promise of the chip text input harness. */
-  getInput(filter: ChipInputHarnessFilters = {}): Promise<MatChipInputHarness|null> {
+  getInput(filter: ChipInputHarnessFilters = {}): Promise<MatChipInputHarness | null> {
     return this.locatorFor(MatChipInputHarness.with(filter))();
   }
 }

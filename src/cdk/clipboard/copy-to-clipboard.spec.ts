@@ -69,7 +69,7 @@ describe('CdkCopyToClipboard', () => {
     let attempts = 0;
     spyOn(clipboard, 'beginCopy').and.returnValue({
       copy: () => ++attempts >= maxAttempts,
-      destroy: () => {}
+      destroy: () => {},
     } as PendingCopy);
     fixture.componentInstance.attempts = maxAttempts;
     fixture.detectChanges();
@@ -91,7 +91,7 @@ describe('CdkCopyToClipboard', () => {
         attempts++;
         return false;
       },
-      destroy: () => {}
+      destroy: () => {},
     } as PendingCopy);
     fixture.componentInstance.attempts = maxAttempts;
     fixture.detectChanges();
@@ -108,7 +108,7 @@ describe('CdkCopyToClipboard', () => {
   it('should destroy any pending copies when the directive is destroyed', fakeAsync(() => {
     const fakeCopy = {
       copy: jasmine.createSpy('copy spy').and.returnValue(false) as () => boolean,
-      destroy: jasmine.createSpy('destroy spy') as () => void
+      destroy: jasmine.createSpy('destroy spy') as () => void,
     } as PendingCopy;
 
     fixture.componentInstance.attempts = 10;
@@ -130,5 +130,4 @@ describe('CdkCopyToClipboard', () => {
     expect(fakeCopy.copy).toHaveBeenCalledTimes(2);
     expect(fakeCopy.destroy).toHaveBeenCalledTimes(1);
   }));
-
 });

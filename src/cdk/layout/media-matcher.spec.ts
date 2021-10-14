@@ -21,8 +21,9 @@ describe('MediaMatcher', () => {
     expect(mediaMatcher.matchMedia('(max-width: 1px)').matches).toBeFalsy();
   });
 
-  it('should add CSS rules for provided queries when the platform is webkit or blink',
-    inject([Platform], (platform: Platform) => {
+  it('should add CSS rules for provided queries when the platform is webkit or blink', inject(
+    [Platform],
+    (platform: Platform) => {
       const width = '123456px';
 
       expect(getStyleTagByString(width)).toBeFalsy();
@@ -40,5 +41,6 @@ describe('MediaMatcher', () => {
           return !!rules.find(rule => rule.cssText.includes(str));
         });
       }
-  }));
+    },
+  ));
 });

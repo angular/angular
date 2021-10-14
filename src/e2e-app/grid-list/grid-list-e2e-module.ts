@@ -14,5 +14,4 @@ import {GridListE2E} from './grid-list-e2e';
   imports: [MatGridListModule],
   declarations: [GridListE2E],
 })
-export class GridListE2eModule {
-}
+export class GridListE2eModule {}

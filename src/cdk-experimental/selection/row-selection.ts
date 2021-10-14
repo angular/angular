@@ -29,8 +29,12 @@ export class CdkRowSelection<T> {
   @Input('cdkRowSelectionValue') value: T;
 
   @Input('cdkRowSelectionIndex')
-  get index(): number|undefined { return this._index; }
-  set index(index: number|undefined) { this._index = coerceNumberProperty(index); }
+  get index(): number | undefined {
+    return this._index;
+  }
+  set index(index: number | undefined) {
+    this._index = coerceNumberProperty(index);
+  }
   protected _index?: number;
 
   constructor(readonly _selection: CdkSelection<T>) {}

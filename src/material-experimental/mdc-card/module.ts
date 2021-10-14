@@ -26,7 +26,6 @@ import {
   MatCardXlImage,
 } from './card';
 
-
 const CARD_DIRECTIVES = [
   MatCard,
   MatCardActions,
@@ -41,7 +40,7 @@ const CARD_DIRECTIVES = [
   MatCardSubtitle,
   MatCardTitle,
   MatCardTitleGroup,
-  MatCardXlImage
+  MatCardXlImage,
 ];
 
 @NgModule({
@@ -49,5 +48,4 @@ const CARD_DIRECTIVES = [
   exports: [CARD_DIRECTIVES, MatCommonModule],
   declarations: CARD_DIRECTIVES,
 })
-export class MatCardModule {
-}
+export class MatCardModule {}

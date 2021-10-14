@@ -11,7 +11,6 @@ import {FormControl, NgModel} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 
-
 export interface State {
   code: string;
   name: string;
@@ -25,7 +24,7 @@ export interface StateGroup {
 @Component({
   selector: 'autocomplete-demo',
   templateUrl: 'autocomplete-demo.html',
-  styleUrls: ['autocomplete-demo.css']
+  styleUrls: ['autocomplete-demo.css'],
 })
 export class AutocompleteDemo {
   stateCtrl: FormControl;
@@ -98,26 +97,27 @@ export class AutocompleteDemo {
   constructor() {
     this.tdStates = this.states;
     this.stateCtrl = new FormControl({code: 'CA', name: 'California'});
-    this.reactiveStates = this.stateCtrl.valueChanges
-      .pipe(
-        startWith(this.stateCtrl.value),
-        map(val => this.displayFn(val)),
-        map(name => this.filterStates(name))
-      );
+    this.reactiveStates = this.stateCtrl.valueChanges.pipe(
+      startWith(this.stateCtrl.value),
+      map(val => this.displayFn(val)),
+      map(name => this.filterStates(name)),
+    );
 
-    this.filteredGroupedStates = this.groupedStates =
-        this.states.reduce<StateGroup[]>((groups, state) => {
-          let group = groups.find(g => g.letter === state.name[0]);
+    this.filteredGroupedStates = this.groupedStates = this.states.reduce<StateGroup[]>(
+      (groups, state) => {
+        let group = groups.find(g => g.letter === state.name[0]);
 
-          if (!group) {
-            group = { letter: state.name[0], states: [] };
-            groups.push(group);
-          }
+        if (!group) {
+          group = {letter: state.name[0], states: []};
+          groups.push(group);
+        }
 
-          group.states.push({ code: state.code, name: state.name });
+        group.states.push({code: state.code, name: state.name});
 
-          return groups;
-        }, []);
+        return groups;
+      },
+      [],
+    );
   }
 
   displayFn(value: any): string {
@@ -131,7 +131,7 @@ export class AutocompleteDemo {
   filterStateGroups(val: string) {
     if (val) {
       return this.groupedStates
-        .map(group => ({ letter: group.letter, states: this._filter(group.states, val) }))
+        .map(group => ({letter: group.letter, states: this._filter(group.states, val)}))
         .filter(group => group.states.length > 0);
     }
 

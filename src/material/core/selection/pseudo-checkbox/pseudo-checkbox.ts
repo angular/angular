@@ -56,5 +56,5 @@ export class MatPseudoCheckbox {
   /** Whether the checkbox is disabled. */
   @Input() disabled: boolean = false;
 
-  constructor(@Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) { }
+  constructor(@Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {}
 }

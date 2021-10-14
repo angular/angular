@@ -4,7 +4,7 @@ import {hasModifierKey} from './modifiers';
 describe('keyboard modifiers', () => {
   it('should check whether the alt key is pressed', () => {
     const event = createKeyboardEvent('keydown', 0);
-    const altEvent = createKeyboardEvent('keydown', 0, '',  {alt: true});
+    const altEvent = createKeyboardEvent('keydown', 0, '', {alt: true});
 
     expect(hasModifierKey(event)).toBe(false);
     expect(hasModifierKey(altEvent)).toBe(true);
@@ -36,8 +36,7 @@ describe('keyboard modifiers', () => {
 
   it('should check if a particular modifier key is pressed', () => {
     const ctrlEvent = createKeyboardEvent('keydown', 0, '', {control: true});
-    const ctrlAltEvent = createKeyboardEvent(
-        'keydown', 0, '', {control: true, alt: true});
+    const ctrlAltEvent = createKeyboardEvent('keydown', 0, '', {control: true, alt: true});
 
     expect(hasModifierKey(ctrlEvent, 'altKey')).toBe(false);
     expect(hasModifierKey(ctrlAltEvent, 'altKey')).toBe(true);
@@ -45,8 +44,11 @@ describe('keyboard modifiers', () => {
 
   it('should check if multiple specific modifier keys are pressed', () => {
     const ctrlEvent = createKeyboardEvent('keydown', 0, '', {control: true});
-    const ctrlAltShiftEvent = createKeyboardEvent(
-        'keydown', 0, '', {control: true, alt: true, shift: true});
+    const ctrlAltShiftEvent = createKeyboardEvent('keydown', 0, '', {
+      control: true,
+      alt: true,
+      shift: true,
+    });
 
     expect(hasModifierKey(ctrlEvent, 'altKey', 'shiftKey')).toBe(false);
     expect(hasModifierKey(ctrlAltShiftEvent, 'altKey', 'shiftKey')).toBe(true);

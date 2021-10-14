@@ -25,7 +25,8 @@ describe('expansion', () => {
   it('should emit events for expanding and collapsing', async () => {
     const panelHeader = element.all(by.css('.mat-expansion-panel-header')).get(1);
     const panelDescription = element
-      .all(by.css('.mat-expansion-panel-header mat-panel-description')).get(1);
+      .all(by.css('.mat-expansion-panel-header mat-panel-description'))
+      .get(1);
 
     await panelHeader.click();
 

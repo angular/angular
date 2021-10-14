@@ -30,11 +30,12 @@ import {AbstractMatColumnResize, TABLE_HOST_BINDINGS, TABLE_PROVIDERS} from './c
 })
 export class MatDefaultEnabledColumnResize extends AbstractMatColumnResize {
   constructor(
-      readonly columnResizeNotifier: ColumnResizeNotifier,
-      readonly elementRef: ElementRef<HTMLElement>,
-      protected readonly eventDispatcher: HeaderRowEventDispatcher,
-      protected readonly ngZone: NgZone,
-      protected readonly notifier: ColumnResizeNotifierSource) {
+    readonly columnResizeNotifier: ColumnResizeNotifier,
+    readonly elementRef: ElementRef<HTMLElement>,
+    protected readonly eventDispatcher: HeaderRowEventDispatcher,
+    protected readonly ngZone: NgZone,
+    protected readonly notifier: ColumnResizeNotifierSource,
+  ) {
     super();
   }
 }

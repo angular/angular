@@ -14,14 +14,12 @@ import {MatCommonModule} from '../common-behaviors/common-module';
 import {MatOption} from './option';
 import {MatOptgroup} from './optgroup';
 
-
 @NgModule({
   imports: [MatRippleModule, CommonModule, MatCommonModule, MatPseudoCheckboxModule],
   exports: [MatOption, MatOptgroup],
-  declarations: [MatOption, MatOptgroup]
+  declarations: [MatOption, MatOptgroup],
 })
 export class MatOptionModule {}
-
 
 export * from './option';
 export * from './optgroup';

@@ -126,7 +126,7 @@ export class CdkMenuItemTrigger implements OnDestroy {
     private readonly _ngZone: NgZone,
     @Optional() @Inject(CDK_MENU) private readonly _parentMenu?: Menu,
     @Optional() @Inject(MENU_AIM) private readonly _menuAim?: MenuAim,
-    @Optional() private readonly _directionality?: Directionality
+    @Optional() private readonly _directionality?: Directionality,
   ) {
     this._registerCloseHandler();
     this._subscribeToMouseEnter();
@@ -194,7 +194,7 @@ export class CdkMenuItemTrigger implements OnDestroy {
       fromEvent(this._elementRef.nativeElement, 'mouseenter')
         .pipe(
           filter(() => !this._getMenuStack()?.isEmpty() && !this.isMenuOpen()),
-          takeUntil(this._destroyed)
+          takeUntil(this._destroyed),
         )
         .subscribe(() => {
           if (this._menuAim) {

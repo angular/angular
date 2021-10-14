@@ -14,5 +14,4 @@ import {MdcProgressBarE2E} from './mdc-progress-bar-e2e';
   imports: [MatProgressBarModule],
   declarations: [MdcProgressBarE2E],
 })
-export class MdcProgressBarE2eModule {
-}
+export class MdcProgressBarE2eModule {}

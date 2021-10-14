@@ -1,16 +1,15 @@
 import {Component} from '@angular/core';
 import {ComponentHarness, HarnessLoader} from '@angular/cdk/testing';
 import {MatToolbarModule} from '@angular/material/toolbar';
-import {
-  MatToolbarHarness,
-  MatToolbarSection
-} from '@angular/material/toolbar/testing';
+import {MatToolbarHarness, MatToolbarSection} from '@angular/material/toolbar/testing';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 
 /** Shared tests to run on both the original and MDC-based toolbars. */
 export function runHarnessTests(
-  toolbarModule: typeof MatToolbarModule, toolbarHarness: typeof MatToolbarHarness) {
+  toolbarModule: typeof MatToolbarModule,
+  toolbarHarness: typeof MatToolbarHarness,
+) {
   let fixture: ComponentFixture<ToolbarHarnessTest>;
   let loader: HarnessLoader;
 
@@ -49,10 +48,7 @@ export function runHarnessTests(
     const toolbars = await loader.getAllHarnesses(toolbarHarness);
 
     expect(await toolbars[0].getRowsAsText()).toEqual(['My App']);
-    expect(await toolbars[1].getRowsAsText()).toEqual([
-      'Row 1',
-      'Row 2 Button 1  Button 2'
-    ]);
+    expect(await toolbars[1].getRowsAsText()).toEqual(['Row 1', 'Row 2 Button 1  Button 2']);
   });
 
   it('should get harness loaders for toolbar row', async () => {
@@ -82,10 +78,9 @@ export function runHarnessTests(
         </button>
       </mat-toolbar-row>
     </mat-toolbar>
-  `
+  `,
 })
-class ToolbarHarnessTest {
-}
+class ToolbarHarnessTest {}
 
 export class DummyHarness extends ComponentHarness {
   static hostSelector = 'span, button';

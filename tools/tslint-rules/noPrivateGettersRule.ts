@@ -26,13 +26,18 @@ class Walker extends Lint.RuleWalker {
   override visitGetAccessor(getter: ts.GetAccessorDeclaration) {
     const getterName = getter.name.getText();
     const matchesPattern = !this._pattern || this._pattern.test(getterName);
-    const isPrivate = getter.modifiers && getter.modifiers.some(modifier => {
-      return modifier.kind === ts.SyntaxKind.PrivateKeyword;
-    });
+    const isPrivate =
+      getter.modifiers &&
+      getter.modifiers.some(modifier => {
+        return modifier.kind === ts.SyntaxKind.PrivateKeyword;
+      });
 
     // Verify that the getter either matches the configured or is private and it's part of a class.
-    if ((!matchesPattern && !isPrivate) || !getter.parent ||
-        !tsutils.isClassDeclaration(getter.parent)) {
+    if (
+      (!matchesPattern && !isPrivate) ||
+      !getter.parent ||
+      !tsutils.isClassDeclaration(getter.parent)
+    ) {
       return super.visitGetAccessor(getter);
     }
 
@@ -42,8 +47,10 @@ class Walker extends Lint.RuleWalker {
 
     // Only log a failure if it doesn't have a corresponding setter.
     if (!setter) {
-      this.addFailureAtNode(getter.name, 'Private getters generate unnecessary ' +
-                                         'code. Use a function instead.');
+      this.addFailureAtNode(
+        getter.name,
+        'Private getters generate unnecessary ' + 'code. Use a function instead.',
+      );
     }
 
     return super.visitGetAccessor(getter);

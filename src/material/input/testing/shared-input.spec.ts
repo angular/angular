@@ -10,17 +10,17 @@ import {MatInputHarness} from './input-harness';
 
 /** Shared tests to run on both the original and MDC-based input's. */
 export function runInputHarnessTests(
-    inputModule: typeof MatInputModule, inputHarness: typeof MatInputHarness) {
+  inputModule: typeof MatInputModule,
+  inputHarness: typeof MatInputHarness,
+) {
   let fixture: ComponentFixture<InputHarnessTest>;
   let loader: HarnessLoader;
 
   beforeEach(async () => {
-    await TestBed
-        .configureTestingModule({
-          imports: [NoopAnimationsModule, inputModule, ReactiveFormsModule],
-          declarations: [InputHarnessTest],
-        })
-        .compileComponents();
+    await TestBed.configureTestingModule({
+      imports: [NoopAnimationsModule, inputModule, ReactiveFormsModule],
+      declarations: [InputHarnessTest],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(InputHarnessTest);
     fixture.detectChanges();
@@ -39,7 +39,8 @@ export function runInputHarnessTests(
 
   it('should load input with specific name', async () => {
     const inputs = await loader.getAllHarnesses(
-        inputHarness.with({selector: '[name="favorite-food"]'}));
+      inputHarness.with({selector: '[name="favorite-food"]'}),
+    );
     expect(inputs.length).toBe(1);
   });
 
@@ -250,7 +251,7 @@ export function runInputHarnessTests(
     <mat-form-field>
       <input matNativeControl placeholder="Color control" id="colorControl" type="color">
     </mat-form-field>
-  `
+  `,
 })
 class InputHarnessTest {
   inputType = 'number';

@@ -9,18 +9,18 @@ import {MatGridTileHarness} from './grid-tile-harness';
 
 /** Shared tests to run on both the original and MDC-based grid-list. */
 export function runHarnessTests(
-    gridListModule: typeof MatGridListModule, gridListHarness: typeof MatGridListHarness,
-    gridTileHarness: typeof MatGridTileHarness) {
+  gridListModule: typeof MatGridListModule,
+  gridListHarness: typeof MatGridListHarness,
+  gridTileHarness: typeof MatGridTileHarness,
+) {
   let fixture: ComponentFixture<GridListHarnessTest>;
   let loader: HarnessLoader;
 
   beforeEach(async () => {
-    await TestBed
-        .configureTestingModule({
-          imports: [gridListModule, NoopAnimationsModule],
-          declarations: [GridListHarnessTest],
-        })
-        .compileComponents();
+    await TestBed.configureTestingModule({
+      imports: [gridListModule, NoopAnimationsModule],
+      declarations: [GridListHarnessTest],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(GridListHarnessTest);
     fixture.detectChanges();
@@ -44,8 +44,9 @@ export function runHarnessTests(
   });
 
   it('should be able to load grid-tile harness by footer text', async () => {
-    const harnesses =
-        await loader.getAllHarnesses(gridTileHarness.with({footerText: 'Tile 3 footer'}));
+    const harnesses = await loader.getAllHarnesses(
+      gridTileHarness.with({footerText: 'Tile 3 footer'}),
+    );
     expect(harnesses.length).toBe(1);
     expect(await harnesses[0].getHeaderText()).toBe('Tile 3');
   });
@@ -90,8 +91,9 @@ export function runHarnessTests(
     ]);
     expect(await tiles[0].getHeaderText()).toBe('Three');
     expect(await tiles[1].getHeaderText()).toBe('Three');
-    await expectAsync(gridList.getTileAtPosition({row: 2, column: 0}))
-      .toBeRejectedWithError(/Could not find tile/);
+    await expectAsync(gridList.getTileAtPosition({row: 2, column: 0})).toBeRejectedWithError(
+      /Could not find tile/,
+    );
 
     // Update the fourth tile to span over two rows. The previous position
     // should now be valid and the fourth tile should be returned.
@@ -183,7 +185,7 @@ export function runHarnessTests(
         <mat-grid-tile-header>Tile 4</mat-grid-tile-header>
       </mat-grid-tile>
     </mat-grid-list>
-  `
+  `,
 })
 class GridListHarnessTest {
   firstTileText = 'One';

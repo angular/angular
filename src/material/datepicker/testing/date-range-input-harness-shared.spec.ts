@@ -15,11 +15,12 @@ import {
 
 /** Shared tests to run on both the original and MDC-based date range inputs. */
 export function runDateRangeInputHarnessTests(
-    datepickerModule: typeof MatDatepickerModule,
-    dateRangeInputHarness: typeof MatDateRangeInputHarness,
-    startInputHarness: typeof MatStartDateHarness,
-    endInputHarness: typeof MatEndDateHarness,
-    calendarHarness: typeof MatCalendarHarness) {
+  datepickerModule: typeof MatDatepickerModule,
+  dateRangeInputHarness: typeof MatDateRangeInputHarness,
+  startInputHarness: typeof MatStartDateHarness,
+  endInputHarness: typeof MatEndDateHarness,
+  calendarHarness: typeof MatCalendarHarness,
+) {
   let fixture: ComponentFixture<DateRangeInputHarnessTest>;
   let loader: HarnessLoader;
 
@@ -132,9 +133,11 @@ export function runDateRangeInputHarnessTests(
     fixture.componentInstance.startDate = new Date(2020, 0, 1, 12, 0, 0);
     fixture.componentInstance.endDate = new Date(2020, 1, 2, 12, 0, 0);
 
-    expect(await parallel(() => {
-      return [start.getValue(), end.getValue()];
-    })).toEqual(['1/1/2020', '2/2/2020']);
+    expect(
+      await parallel(() => {
+        return [start.getValue(), end.getValue()];
+      }),
+    ).toEqual(['1/1/2020', '2/2/2020']);
   });
 
   it('should set the values of the inner inputs', async () => {
@@ -145,9 +148,11 @@ export function runDateRangeInputHarnessTests(
 
     await parallel(() => [start.setValue('1/1/2020'), end.setValue('2/2/2020')]);
 
-    expect(await parallel(() => {
-      return [start.getValue(), end.getValue()];
-    })).toEqual(['1/1/2020', '2/2/2020']);
+    expect(
+      await parallel(() => {
+        return [start.getValue(), end.getValue()];
+      }),
+    ).toEqual(['1/1/2020', '2/2/2020']);
   });
 
   it('should get the placeholders of the inner inputs', async () => {
@@ -156,7 +161,7 @@ export function runDateRangeInputHarnessTests(
 
     expect(await parallel(() => [start.getPlaceholder(), end.getPlaceholder()])).toEqual([
       'Start date',
-      'End date'
+      'End date',
     ]);
   });
 
@@ -184,9 +189,11 @@ export function runDateRangeInputHarnessTests(
     expect(await parallel(() => [start.getMin(), end.getMin()])).toEqual([null, null]);
 
     fixture.componentInstance.minDate = new Date(2020, 0, 1, 12, 0, 0);
-    expect(await parallel(() => {
-      return [start.getMin(), end.getMin()];
-    })).toEqual(['2020-01-01', '2020-01-01']);
+    expect(
+      await parallel(() => {
+        return [start.getMin(), end.getMin()];
+      }),
+    ).toEqual(['2020-01-01', '2020-01-01']);
   });
 
   it('should get the maximum date of the inner inputs', async () => {
@@ -197,9 +204,11 @@ export function runDateRangeInputHarnessTests(
 
     fixture.componentInstance.maxDate = new Date(2020, 0, 1, 12, 0, 0);
 
-    expect(await parallel(() => {
-      return [start.getMax(), end.getMax()];
-    })).toEqual(['2020-01-01', '2020-01-01']);
+    expect(
+      await parallel(() => {
+        return [start.getMax(), end.getMax()];
+      }),
+    ).toEqual(['2020-01-01', '2020-01-01']);
   });
 
   it('should dispatch the dateChange event when the inner input values have changed', async () => {
@@ -246,13 +255,13 @@ export function runDateRangeInputHarnessTests(
       <input matStartDate>
       <input matEndDate>
     </mat-date-range-input>
-  `
+  `,
 })
 class DateRangeInputHarnessTest {
-  startDate: Date|null = null;
-  endDate: Date|null = null;
-  minDate: Date|null = null;
-  maxDate: Date|null = null;
+  startDate: Date | null = null;
+  endDate: Date | null = null;
+  minDate: Date | null = null;
+  maxDate: Date | null = null;
   touchUi = false;
   disabled = false;
   required = false;

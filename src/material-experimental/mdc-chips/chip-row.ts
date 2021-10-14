@@ -25,7 +25,7 @@ import {
   Optional,
   Output,
   ViewChild,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
 import {DOCUMENT} from '@angular/common';
 import {
@@ -35,7 +35,6 @@ import {
 import {MatChip, MatChipEvent} from './chip';
 import {MatChipEditInput} from './chip-edit-input';
 import {GridKeyManagerRow} from './grid-key-manager';
-
 
 /** Represents an event fired on an individual `mat-chip` when it is edited. */
 export interface MatChipEditedEvent extends MatChipEvent {
@@ -68,21 +67,23 @@ export interface MatChipEditedEvent extends MatChipEvent {
     '(dblclick)': '_dblclick($event)',
     '(keydown)': '_keydown($event)',
     '(focusin)': '_focusin($event)',
-    '(focusout)': '_focusout($event)'
+    '(focusout)': '_focusout($event)',
   },
   providers: [{provide: MatChip, useExisting: MatChipRow}],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatChipRow extends MatChip implements AfterContentInit, AfterViewInit,
-  GridKeyManagerRow<HTMLElement> {
+export class MatChipRow
+  extends MatChip
+  implements AfterContentInit, AfterViewInit, GridKeyManagerRow<HTMLElement>
+{
   protected override basicChipAttrName = 'mat-basic-chip-row';
 
   @Input() editable: boolean = false;
 
   /** Emitted when the chip is edited. */
   @Output() readonly edited: EventEmitter<MatChipEditedEvent> =
-      new EventEmitter<MatChipEditedEvent>();
+    new EventEmitter<MatChipEditedEvent>();
 
   /**
    * The focusable wrapper element in the first gridcell, which contains all
@@ -108,11 +109,14 @@ export class MatChipRow extends MatChip implements AfterContentInit, AfterViewIn
   constructor(
     @Inject(DOCUMENT) private readonly _document: any,
     changeDetectorRef: ChangeDetectorRef,
-    elementRef: ElementRef, ngZone: NgZone,
+    elementRef: ElementRef,
+    ngZone: NgZone,
     @Optional() dir: Directionality,
     @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
-    @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS)
-        globalRippleOptions?: RippleGlobalOptions) {
+    @Optional()
+    @Inject(MAT_RIPPLE_GLOBAL_OPTIONS)
+    globalRippleOptions?: RippleGlobalOptions,
+  ) {
     super(changeDetectorRef, elementRef, ngZone, dir, animationMode, globalRippleOptions);
   }
 
@@ -132,9 +136,9 @@ export class MatChipRow extends MatChip implements AfterContentInit, AfterViewIn
 
   override ngAfterViewInit() {
     super.ngAfterViewInit();
-    this.cells = this.removeIcon ?
-      [this.chipContent.nativeElement, this.removeIcon._elementRef.nativeElement] :
-      [this.chipContent.nativeElement];
+    this.cells = this.removeIcon
+      ? [this.chipContent.nativeElement, this.removeIcon._elementRef.nativeElement]
+      : [this.chipContent.nativeElement];
   }
 
   /**
@@ -235,8 +239,10 @@ export class MatChipRow extends MatChip implements AfterContentInit, AfterViewIn
   protected override _onEditFinish() {
     // If the edit input is still focused or focus was returned to the body after it was destroyed,
     // return focus to the chip contents.
-    if (this._document.activeElement === this._getEditInput().getNativeElement() ||
-        this._document.activeElement === this._document.body) {
+    if (
+      this._document.activeElement === this._getEditInput().getNativeElement() ||
+      this._document.activeElement === this._document.body
+    ) {
       this.chipContent.nativeElement.focus();
     }
     this.edited.emit({chip: this, value: this._getEditInput().getValue()});

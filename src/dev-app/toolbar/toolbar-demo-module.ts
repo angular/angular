@@ -30,5 +30,4 @@ import {ToolbarExamplesModule} from '@angular/components-examples/material/toolb
   ],
   declarations: [ToolbarDemo],
 })
-export class ToolbarDemoModule {
-}
+export class ToolbarDemoModule {}

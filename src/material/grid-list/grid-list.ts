@@ -31,7 +31,6 @@ import {Directionality} from '@angular/cdk/bidi';
 import {coerceNumberProperty, NumberInput} from '@angular/cdk/coercion';
 import {MAT_GRID_LIST, MatGridListBase} from './grid-list-base';
 
-
 // TODO(kara): Conditional (responsive) column count / row size.
 // TODO(kara): Re-layout on window resize / media change (debounced).
 // TODO(kara): gridTileHeader and gridTileFooter.
@@ -49,10 +48,12 @@ const MAT_FIT_MODE = 'fit';
     // needed for the grid-list harness.
     '[attr.cols]': 'cols',
   },
-  providers: [{
-    provide: MAT_GRID_LIST,
-    useExisting: MatGridList
-  }],
+  providers: [
+    {
+      provide: MAT_GRID_LIST,
+      useExisting: MatGridList,
+    },
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
@@ -80,24 +81,34 @@ export class MatGridList implements MatGridListBase, OnInit, AfterContentChecked
   /** Query list of tiles that are being rendered. */
   @ContentChildren(MatGridTile, {descendants: true}) _tiles: QueryList<MatGridTile>;
 
-  constructor(private _element: ElementRef<HTMLElement>,
-              @Optional() private _dir: Directionality) {}
+  constructor(
+    private _element: ElementRef<HTMLElement>,
+    @Optional() private _dir: Directionality,
+  ) {}
 
   /** Amount of columns in the grid list. */
   @Input()
-  get cols(): number { return this._cols; }
+  get cols(): number {
+    return this._cols;
+  }
   set cols(value: number) {
     this._cols = Math.max(1, Math.round(coerceNumberProperty(value)));
   }
 
   /** Size of the grid list's gutter in pixels. */
   @Input()
-  get gutterSize(): string { return this._gutter; }
-  set gutterSize(value: string) { this._gutter = `${value == null ? '' : value}`; }
+  get gutterSize(): string {
+    return this._gutter;
+  }
+  set gutterSize(value: string) {
+    this._gutter = `${value == null ? '' : value}`;
+  }
 
   /** Set internal representation of row height from the user-provided value. */
   @Input()
-  get rowHeight(): string | number { return this._rowHeight; }
+  get rowHeight(): string | number {
+    return this._rowHeight;
+  }
   set rowHeight(value: string | number) {
     const newValue = `${value == null ? '' : value}`;
 
@@ -123,8 +134,9 @@ export class MatGridList implements MatGridListBase, OnInit, AfterContentChecked
   /** Throw a friendly error if cols property is missing */
   private _checkCols() {
     if (!this.cols && (typeof ngDevMode === 'undefined' || ngDevMode)) {
-      throw Error(`mat-grid-list: must pass in number of columns. ` +
-                  `Example: <mat-grid-list cols="3">`);
+      throw Error(
+        `mat-grid-list: must pass in number of columns. ` + `Example: <mat-grid-list cols="3">`,
+      );
     }
   }
 
@@ -155,7 +167,6 @@ export class MatGridList implements MatGridListBase, OnInit, AfterContentChecked
     if (!this._tileCoordinator) {
       this._tileCoordinator = new TileCoordinator();
     }
-
 
     const tracker = this._tileCoordinator;
     const tiles = this._tiles.filter(tile => !tile._gridList || tile._gridList === this);

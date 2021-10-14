@@ -21,7 +21,7 @@ let nextId = 0;
 export abstract class CdkMenuItemSelectable extends CdkMenuItem {
   /** Event emitted when the selectable item is clicked */
   @Output('cdkMenuItemToggled') readonly toggled: EventEmitter<CdkMenuItemSelectable> =
-      new EventEmitter();
+    new EventEmitter();
 
   /** Whether the element is checked */
   @Input()

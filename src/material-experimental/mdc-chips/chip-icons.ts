@@ -32,13 +32,15 @@ export const MAT_CHIP_AVATAR = new InjectionToken<MatChipAvatar>('MatChipAvatar'
   selector: 'mat-chip-avatar, [matChipAvatar]',
   host: {
     'class': 'mat-mdc-chip-avatar mdc-chip__icon mdc-chip__icon--leading',
-    'role': 'img'
+    'role': 'img',
   },
   providers: [{provide: MAT_CHIP_AVATAR, useExisting: MatChipAvatar}],
 })
 export class MatChipAvatar {
-  constructor(private _changeDetectorRef: ChangeDetectorRef,
-              private _elementRef: ElementRef<HTMLElement>) {}
+  constructor(
+    private _changeDetectorRef: ChangeDetectorRef,
+    private _elementRef: ElementRef<HTMLElement>,
+  ) {}
 
   /** Sets whether the given CSS class should be applied to the leading icon. */
   setClass(cssClass: string, active: boolean) {
@@ -52,8 +54,9 @@ export class MatChipAvatar {
  * alternative token to the actual `MatChipTrailingIcon` class which could cause unnecessary
  * retention of the class and its directive metadata.
  */
-export const MAT_CHIP_TRAILING_ICON =
-  new InjectionToken<MatChipTrailingIcon>('MatChipTrailingIcon');
+export const MAT_CHIP_TRAILING_ICON = new InjectionToken<MatChipTrailingIcon>(
+  'MatChipTrailingIcon',
+);
 
 /**
  * Directive to add CSS classes to and configure attributes for chip trailing icon.
@@ -62,8 +65,7 @@ export const MAT_CHIP_TRAILING_ICON =
 @Directive({
   selector: 'mat-chip-trailing-icon, [matChipTrailingIcon]',
   host: {
-    'class':
-        'mat-mdc-chip-trailing-icon mdc-chip__icon mdc-chip__icon--trailing',
+    'class': 'mat-mdc-chip-trailing-icon mdc-chip__icon mdc-chip__icon--trailing',
     'tabindex': '-1',
     'aria-hidden': 'true',
   },
@@ -73,35 +75,31 @@ export class MatChipTrailingIcon implements OnDestroy {
   private _foundation: deprecated.MDCChipTrailingActionFoundation;
   private _adapter: deprecated.MDCChipTrailingActionAdapter = {
     focus: () => this._elementRef.nativeElement.focus(),
-    getAttribute: (name: string) =>
-        this._elementRef.nativeElement.getAttribute(name),
-    setAttribute:
-        (name: string, value: string) => {
-          this._elementRef.nativeElement.setAttribute(name, value);
-        },
+    getAttribute: (name: string) => this._elementRef.nativeElement.getAttribute(name),
+    setAttribute: (name: string, value: string) => {
+      this._elementRef.nativeElement.setAttribute(name, value);
+    },
     // TODO(crisbeto): there's also a `trigger` parameter that the chip isn't
     // handling yet. Consider passing it along once MDC start using it.
-    notifyInteraction:
-        () => {
-          // TODO(crisbeto): uncomment this code once we've inverted the
-          // dependency on `MatChip`. this._chip._notifyInteraction();
-        },
+    notifyInteraction: () => {
+      // TODO(crisbeto): uncomment this code once we've inverted the
+      // dependency on `MatChip`. this._chip._notifyInteraction();
+    },
 
     // TODO(crisbeto): there's also a `key` parameter that the chip isn't
     // handling yet. Consider passing it along once MDC start using it.
-    notifyNavigation:
-        () => {
-          // TODO(crisbeto): uncomment this code once we've inverted the
-          // dependency on `MatChip`. this._chip._notifyNavigation();
-        }
+    notifyNavigation: () => {
+      // TODO(crisbeto): uncomment this code once we've inverted the
+      // dependency on `MatChip`. this._chip._notifyNavigation();
+    },
   };
 
   constructor(
-      public _elementRef: ElementRef,
-      // TODO(crisbeto): currently the chip needs a reference to the trailing
-      // icon for the deprecated `setTrailingActionAttr` method. Until the
-      // method is removed, we can't use the chip here, because it causes a
-      // circular import. private _chip: MatChip
+    // TODO(crisbeto): currently the chip needs a reference to the trailing
+    // icon for the deprecated `setTrailingActionAttr` method. Until the
+    // method is removed, we can't use the chip here, because it causes a
+    // circular import. private _chip: MatChip
+    public _elementRef: ElementRef,
   ) {
     this._foundation = new deprecated.MDCChipTrailingActionFoundation(this._adapter);
   }

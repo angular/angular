@@ -18,7 +18,7 @@ const scrollBehaviorSupported = supportsScrollBehavior();
  */
 export class BlockScrollStrategy implements ScrollStrategy {
   private _previousHTMLStyles = {top: '', left: ''};
-  private _previousScrollPosition: {top: number, left: number};
+  private _previousScrollPosition: {top: number; left: number};
   private _isEnabled = false;
   private _document: Document;
 

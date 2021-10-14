@@ -1,4 +1,3 @@
-
 /** Regular expression that matches TypeScript mixin names inside of the project. */
 const mixinNameRegex = /_\w+Base/;
 
@@ -17,7 +16,7 @@ const mixinNameRegex = /_\w+Base/;
 export function patchLogService(log: any) {
   const _warnFn = log.warn;
 
-  log.warn = function(message: string) {
+  log.warn = function (message: string) {
     if (message.includes('Unresolved TypeScript symbol') && mixinNameRegex.test(message)) {
       return;
     }

@@ -14,7 +14,7 @@ export {
   _MatTabBodyBase,
   MatTabBodyOriginState,
   MatTabBodyPositionState,
-  MatTabBodyPortal
+  MatTabBodyPortal,
 } from './tab-body';
 export {MatTabHeader, _MatTabHeaderBase} from './tab-header';
 export {MatTabLabelWrapper} from './tab-label-wrapper';

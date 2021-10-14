@@ -16,7 +16,7 @@ export class MatSelectionListExample {
   selected4: string[] = [];
 
   getCurrentSelected(event: SelectionChange<string>) {
-    return event.after.map((select) => select.value);
+    return event.after.map(select => select.value);
   }
 
   trackByFn(index: number, value: string) {
@@ -33,12 +33,47 @@ export class MatSelectionListExample {
 }
 
 const ELEMENT_NAMES = [
-  'Hydrogen',   'Helium',   'Lithium',  'Beryllium', 'Boron',     'Carbon',   'Nitrogen',
-  'Oxygen',     'Fluorine', 'Neon',     'Sodium',    'Magnesium', 'Aluminum', 'Silicon',
-  'Phosphorus', 'Sulfur',   'Chlorine', 'Argon',     'Potassium', 'Calcium',
+  'Hydrogen',
+  'Helium',
+  'Lithium',
+  'Beryllium',
+  'Boron',
+  'Carbon',
+  'Nitrogen',
+  'Oxygen',
+  'Fluorine',
+  'Neon',
+  'Sodium',
+  'Magnesium',
+  'Aluminum',
+  'Silicon',
+  'Phosphorus',
+  'Sulfur',
+  'Chlorine',
+  'Argon',
+  'Potassium',
+  'Calcium',
 ];
 
 const ELEMENT_SYMBOLS = [
-  'H',  'He', 'Li', 'Be', 'B', 'C', 'N',  'O',  'F', 'Ne',
-  'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'Ar', 'K', 'Ca'
+  'H',
+  'He',
+  'Li',
+  'Be',
+  'B',
+  'C',
+  'N',
+  'O',
+  'F',
+  'Ne',
+  'Na',
+  'Mg',
+  'Al',
+  'Si',
+  'P',
+  'S',
+  'Cl',
+  'Ar',
+  'K',
+  'Ca',
 ];

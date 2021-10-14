@@ -8,8 +8,9 @@ import {MatTabNavBarHarness} from './tab-nav-bar-harness';
 
 /** Shared tests to run on both the original and MDC-based tab nav bars. */
 export function runTabNavBarHarnessTests(
-    tabsModule: typeof MatTabsModule,
-    tabNavBarHarness: typeof MatTabNavBarHarness) {
+  tabsModule: typeof MatTabsModule,
+  tabNavBarHarness: typeof MatTabNavBarHarness,
+) {
   let fixture: ComponentFixture<TabNavBarHarnessTest>;
   let loader: HarnessLoader;
 
@@ -52,7 +53,8 @@ export function runTabNavBarHarnessTests(
   it('should throw error when attempting to click invalid link', async () => {
     const navBar = await loader.getHarness(tabNavBarHarness);
     await expectAsync(navBar.clickLink({label: 'Fake'})).toBeRejectedWithError(
-        /Cannot find mat-tab-link matching filter {"label":"Fake"}/);
+      /Cannot find mat-tab-link matching filter {"label":"Fake"}/,
+    );
   });
 
   it('should be able to get label of links', async () => {
@@ -104,7 +106,7 @@ export function runTabNavBarHarnessTests(
         [disabled]="isDisabled"
         matTabLink>Third</a>
     </nav>
-  `
+  `,
 })
 class TabNavBarHarnessTest {
   activeLink = 0;

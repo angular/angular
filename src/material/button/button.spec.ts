@@ -4,17 +4,17 @@ import {By} from '@angular/platform-browser';
 import {MatButtonModule, MatButton} from './index';
 import {MatRipple, ThemePalette} from '@angular/material/core';
 
-
 describe('MatButton', () => {
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [MatButtonModule],
+        declarations: [TestApp],
+      });
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [MatButtonModule],
-      declarations: [TestApp],
-    });
-
-    TestBed.compileComponents();
-  }));
+      TestBed.compileComponents();
+    }),
+  );
 
   // General button tests
   it('should apply class based on color attribute', () => {
@@ -155,14 +155,15 @@ describe('MatButton', () => {
       const fixture = TestBed.createComponent(TestApp);
       const buttonNativeElement = fixture.nativeElement.querySelector('button');
       expect(buttonNativeElement.disabled)
-        .withContext('Expected button not to be disabled').toBeFalsy();
+        .withContext('Expected button not to be disabled')
+        .toBeFalsy();
 
       fixture.componentInstance.isDisabled = true;
       fixture.detectChanges();
       expect(buttonNativeElement.disabled)
-        .withContext('Expected button to be disabled').toBeTruthy();
+        .withContext('Expected button to be disabled')
+        .toBeTruthy();
     });
-
   });
 
   // Anchor button tests
@@ -207,7 +208,8 @@ describe('MatButton', () => {
       const buttonDebugElement = fixture.debugElement.query(By.css('a'))!;
       fixture.detectChanges();
       expect(buttonDebugElement.nativeElement.getAttribute('aria-disabled'))
-        .withContext('Expect aria-disabled="false"').toBe('false');
+        .withContext('Expect aria-disabled="false"')
+        .toBe('false');
       expect(buttonDebugElement.nativeElement.getAttribute('disabled'))
         .withContext('Expect disabled="false"')
         .toBeNull();
@@ -215,7 +217,8 @@ describe('MatButton', () => {
       testComponent.isDisabled = false;
       fixture.detectChanges();
       expect(buttonDebugElement.nativeElement.getAttribute('aria-disabled'))
-        .withContext('Expect no aria-disabled').toBe('false');
+        .withContext('Expect no aria-disabled')
+        .toBe('false');
       expect(buttonDebugElement.nativeElement.getAttribute('disabled'))
         .withContext('Expect no disabled')
         .toBeNull();
@@ -230,13 +233,15 @@ describe('MatButton', () => {
       fixture.detectChanges();
 
       expect(buttonElement.getAttribute('tabIndex'))
-        .withContext('Expected custom tabindex to be set').toBe('3');
+        .withContext('Expected custom tabindex to be set')
+        .toBe('3');
 
       testComponent.isDisabled = true;
       fixture.detectChanges();
 
       expect(buttonElement.getAttribute('tabIndex'))
-        .withContext('Expected custom tabindex to be overwritten when disabled.').toBe('-1');
+        .withContext('Expected custom tabindex to be overwritten when disabled.')
+        .toBe('-1');
     });
   });
 
@@ -277,31 +282,33 @@ describe('MatButton', () => {
 
     it('should disable the ripple when the button is disabled', () => {
       expect(buttonRippleInstance.disabled).toBeFalsy(
-        'Expected an enabled button[mat-button] to have an enabled ripple'
+        'Expected an enabled button[mat-button] to have an enabled ripple',
       );
       expect(anchorRippleInstance.disabled).toBeFalsy(
-        'Expected an enabled a[mat-button] to have an enabled ripple'
+        'Expected an enabled a[mat-button] to have an enabled ripple',
       );
 
       testComponent.isDisabled = true;
       fixture.detectChanges();
 
       expect(buttonRippleInstance.disabled).toBeTruthy(
-        'Expected a disabled button[mat-button] not to have an enabled ripple'
+        'Expected a disabled button[mat-button] not to have an enabled ripple',
       );
       expect(anchorRippleInstance.disabled).toBeTruthy(
-        'Expected a disabled a[mat-button] not to have an enabled ripple'
+        'Expected a disabled a[mat-button] not to have an enabled ripple',
       );
     });
   });
 
   it('should have a focus indicator', () => {
     const fixture = TestBed.createComponent(TestApp);
-    const buttonNativeElements =
-        [...fixture.debugElement.nativeElement.querySelectorAll('a, button')];
+    const buttonNativeElements = [
+      ...fixture.debugElement.nativeElement.querySelectorAll('a, button'),
+    ];
 
-    expect(buttonNativeElements.every(element => element.classList.contains('mat-focus-indicator')))
-        .toBe(true);
+    expect(
+      buttonNativeElements.every(element => element.classList.contains('mat-focus-indicator')),
+    ).toBe(true);
   });
 });
 
@@ -319,7 +326,7 @@ describe('MatButton', () => {
     </a>
     <button mat-fab>Fab Button</button>
     <button mat-mini-fab>Mini Fab Button</button>
-  `
+  `,
 })
 class TestApp {
   clickCount: number = 0;

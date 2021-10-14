@@ -15,16 +15,14 @@ const checkedPages = [];
  */
 function onPageStable() {
   return new Promise((resolve, reject) => {
-    new AxeBuilder(browser.driver)
-      .configure(this.config || {})
-      .analyze((err, results) => {
-        if (err) {
-          reject(err);
-        } else {
-          handleResults(this, results);
-          resolve(results);
-        }
-      });
+    new AxeBuilder(browser.driver).configure(this.config || {}).analyze((err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        handleResults(this, results);
+        resolve(results);
+      }
+    });
   });
 }
 

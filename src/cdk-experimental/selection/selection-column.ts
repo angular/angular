@@ -71,8 +71,8 @@ export class CdkSelectionColumn<T> implements OnInit, OnDestroy {
   @ViewChild(CdkHeaderCellDef, {static: true}) private readonly _headerCell: CdkHeaderCellDef;
 
   constructor(
-      @Optional() @Inject(CdkTable) private _table: CdkTable<T>,
-      @Optional() @Inject(CdkSelection) readonly selection: CdkSelection<T>,
+    @Optional() @Inject(CdkTable) private _table: CdkTable<T>,
+    @Optional() @Inject(CdkSelection) readonly selection: CdkSelection<T>,
   ) {}
 
   ngOnInit() {
@@ -86,7 +86,7 @@ export class CdkSelectionColumn<T> implements OnInit, OnDestroy {
       this._columnDef.cell = this._cell;
       this._columnDef.headerCell = this._headerCell;
       this._table.addColumnDef(this._columnDef);
-    } else if ((typeof ngDevMode === 'undefined' || ngDevMode)) {
+    } else if (typeof ngDevMode === 'undefined' || ngDevMode) {
       throw Error('CdkSelectionColumn: missing parent table');
     }
   }

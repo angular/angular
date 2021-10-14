@@ -13,7 +13,8 @@ import {Directive, ElementRef} from '@angular/core';
 export abstract class _MatAutocompleteOriginBase {
   constructor(
     /** Reference to the element on which the directive is applied. */
-    public elementRef: ElementRef<HTMLElement>) {}
+    public elementRef: ElementRef<HTMLElement>,
+  ) {}
 }
 
 /**

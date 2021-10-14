@@ -10,7 +10,7 @@ import {
   BooleanInput,
   coerceBooleanProperty,
   coerceNumberProperty,
-  NumberInput
+  NumberInput,
 } from '@angular/cdk/coercion';
 import {
   Directive,
@@ -61,7 +61,9 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
 
   /** Minimum amount of rows in the textarea. */
   @Input('cdkAutosizeMinRows')
-  get minRows(): number { return this._minRows; }
+  get minRows(): number {
+    return this._minRows;
+  }
   set minRows(value: number) {
     this._minRows = coerceNumberProperty(value);
     this._setMinHeight();
@@ -69,7 +71,9 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
 
   /** Maximum amount of rows in the textarea. */
   @Input('cdkAutosizeMaxRows')
-  get maxRows(): number { return this._maxRows; }
+  get maxRows(): number {
+    return this._maxRows;
+  }
   set maxRows(value: number) {
     this._maxRows = coerceNumberProperty(value);
     this._setMaxHeight();
@@ -77,7 +81,9 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
 
   /** Whether autosizing is enabled or not */
   @Input('cdkTextareaAutosize')
-  get enabled(): boolean { return this._enabled; }
+  get enabled(): boolean {
+    return this._enabled;
+  }
   set enabled(value: boolean) {
     value = coerceBooleanProperty(value);
 
@@ -89,13 +95,14 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
   }
 
   @Input()
-  get placeholder(): string { return this._textareaElement.placeholder; }
+  get placeholder(): string {
+    return this._textareaElement.placeholder;
+  }
   set placeholder(value: string) {
     this._cachedPlaceholderHeight = undefined;
     this._textareaElement.placeholder = value;
     this._cacheTextareaPlaceholderHeight();
   }
-
 
   /** Cached height of a textarea with a single row. */
   private _cachedLineHeight: number;
@@ -109,11 +116,13 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
 
   private _isViewInited = false;
 
-  constructor(private _elementRef: ElementRef<HTMLElement>,
-              private _platform: Platform,
-              private _ngZone: NgZone,
-              /** @breaking-change 11.0.0 make document required */
-              @Optional() @Inject(DOCUMENT) document?: any) {
+  constructor(
+    private _elementRef: ElementRef<HTMLElement>,
+    private _platform: Platform,
+    private _ngZone: NgZone,
+    /** @breaking-change 11.0.0 make document required */
+    @Optional() @Inject(DOCUMENT) document?: any,
+  ) {
     this._document = document;
 
     this._textareaElement = this._elementRef.nativeElement as HTMLTextAreaElement;
@@ -121,18 +130,18 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
 
   /** Sets the minimum height of the textarea as determined by minRows. */
   _setMinHeight(): void {
-    const minHeight = this.minRows && this._cachedLineHeight ?
-        `${this.minRows * this._cachedLineHeight}px` : null;
+    const minHeight =
+      this.minRows && this._cachedLineHeight ? `${this.minRows * this._cachedLineHeight}px` : null;
 
-    if (minHeight)  {
+    if (minHeight) {
       this._textareaElement.style.minHeight = minHeight;
     }
   }
 
   /** Sets the maximum height of the textarea as determined by maxRows. */
   _setMaxHeight(): void {
-    const maxHeight = this.maxRows && this._cachedLineHeight ?
-        `${this.maxRows * this._cachedLineHeight}px` : null;
+    const maxHeight =
+      this.maxRows && this._cachedLineHeight ? `${this.maxRows * this._cachedLineHeight}px` : null;
 
     if (maxHeight) {
       this._textareaElement.style.maxHeight = maxHeight;
@@ -216,9 +225,9 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
     const previousMargin = element.style.marginBottom || '';
     const isFirefox = this._platform.FIREFOX;
     const needsMarginFiller = isFirefox && this._hasFocus;
-    const measuringClass = isFirefox ?
-      'cdk-textarea-autosize-measuring-firefox' :
-      'cdk-textarea-autosize-measuring';
+    const measuringClass = isFirefox
+      ? 'cdk-textarea-autosize-measuring-firefox'
+      : 'cdk-textarea-autosize-measuring';
 
     // In some cases the page might move around while we're measuring the `textarea` on Firefox. We
     // work around it by assigning a temporary margin with the same height as the `textarea` so that
@@ -261,7 +270,7 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
   /** Handles `focus` and `blur` events. */
   private _handleFocusEvent = (event: FocusEvent) => {
     this._hasFocus = event.type === 'focus';
-  }
+  };
 
   ngDoCheck() {
     if (this._platform.isBrowser) {

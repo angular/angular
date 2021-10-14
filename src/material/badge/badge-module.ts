@@ -11,12 +11,8 @@ import {MatCommonModule} from '@angular/material/core';
 import {A11yModule} from '@angular/cdk/a11y';
 import {MatBadge} from './badge';
 
-
 @NgModule({
-  imports: [
-    A11yModule,
-    MatCommonModule
-  ],
+  imports: [A11yModule, MatCommonModule],
   exports: [MatBadge, MatCommonModule],
   declarations: [MatBadge],
 })

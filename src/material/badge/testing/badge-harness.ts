@@ -10,7 +10,6 @@ import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {MatBadgePosition, MatBadgeSize} from '@angular/material/badge';
 import {BadgeHarnessFilters} from './badge-harness-filters';
 
-
 /** Harness for interacting with a standard Material badge in tests. */
 export class MatBadgeHarness extends ComponentHarness {
   static hostSelector = '.mat-badge';
@@ -22,9 +21,11 @@ export class MatBadgeHarness extends ComponentHarness {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: BadgeHarnessFilters = {}): HarnessPredicate<MatBadgeHarness> {
-    return new HarnessPredicate(MatBadgeHarness, options)
-        .addOption('text', options.text,
-            (harness, text) => HarnessPredicate.stringMatches(harness.getText(), text));
+    return new HarnessPredicate(MatBadgeHarness, options).addOption(
+      'text',
+      options.text,
+      (harness, text) => HarnessPredicate.stringMatches(harness.getText(), text),
+    );
   }
 
   private _badgeElement = this.locatorFor('.mat-badge-content');

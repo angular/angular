@@ -4,18 +4,21 @@ import {MIGRATION_PATH} from '../../../paths';
 import {createTestCaseSetup} from '../../../testing';
 
 describe('global stylesheets migration', () => {
-
   it('should not check stylesheet twice if referenced in component', async () => {
     const {runFixers, writeFile, appTree} = await createTestCaseSetup(
-      'migration-v6', MIGRATION_PATH,
-      [resolveBazelPath(__dirname, './global-stylesheets_input.ts')]);
+      'migration-v6',
+      MIGRATION_PATH,
+      [resolveBazelPath(__dirname, './global-stylesheets_input.ts')],
+    );
 
     const testStylesheetPath = 'projects/cdk-testing/src/test-cases/global-stylesheets-test.scss';
 
     // Copy the test stylesheets file into the test CLI application. That way it will
     // be picked up by the update-tool.
-    writeFile(testStylesheetPath,
-        readFileSync(resolveBazelPath(__dirname, './global-stylesheets-test.scss'), 'utf8'));
+    writeFile(
+      testStylesheetPath,
+      readFileSync(resolveBazelPath(__dirname, './global-stylesheets-test.scss'), 'utf8'),
+    );
     writeFile('/projects/cdk-testing/third_party/materialize.css/bundle.css', '');
 
     await runFixers();
@@ -23,13 +26,15 @@ describe('global stylesheets migration', () => {
     // if the external stylesheet would have been checked multiple times, the migrated
     // stylesheet would not match the expected output and the devkit would throw that
     // the same replacements were recorded for the same source file.
-    expect(appTree.readContent(testStylesheetPath))
-        .toBe(`[cdkPortalOutlet] {\n  color: red;\n}\n`);
+    expect(appTree.readContent(testStylesheetPath)).toBe(`[cdkPortalOutlet] {\n  color: red;\n}\n`);
   });
 
   it('should not check stylesheets outside of project target', async () => {
     const {runFixers, writeFile, appTree} = await createTestCaseSetup(
-      'migration-v6', MIGRATION_PATH, []);
+      'migration-v6',
+      MIGRATION_PATH,
+      [],
+    );
     const subProjectStylesheet = '[cdkPortalHost] {\n  color: red;\n}\n';
 
     writeFile('/sub_project/node_modules/materialize.css/package.json', '');

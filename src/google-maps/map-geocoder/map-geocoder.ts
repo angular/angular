@@ -23,7 +23,7 @@ export interface MapGeocoderResponse {
  */
 @Injectable({providedIn: 'root'})
 export class MapGeocoder {
-  private _geocoder: google.maps.Geocoder|undefined;
+  private _geocoder: google.maps.Geocoder | undefined;
 
   constructor(private readonly _ngZone: NgZone) {}
 

@@ -46,14 +46,14 @@ export class MdcChipsDemo {
     {name: 'Topher'},
     {name: 'Elad'},
     {name: 'Kristiyan'},
-    {name: 'Paul'}
+    {name: 'Paul'},
   ];
 
   availableColors: DemoColor[] = [
     {name: 'none', color: undefined},
     {name: 'Primary', color: 'primary'},
     {name: 'Accent', color: 'accent'},
-    {name: 'Warn', color: 'warn'}
+    {name: 'Warn', color: 'warn'},
   ];
 
   displayMessage(message: string): void {
@@ -65,7 +65,7 @@ export class MdcChipsDemo {
 
     // Add our person
     if (value) {
-      this.people.push({ name: value });
+      this.people.push({name: value});
     }
 
     // Clear the input value

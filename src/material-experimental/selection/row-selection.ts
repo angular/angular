@@ -10,7 +10,6 @@ import {coerceNumberProperty} from '@angular/cdk/coercion';
 import {CdkRowSelection} from '@angular/cdk-experimental/selection';
 import {Input, Directive} from '@angular/core';
 
-
 /**
  * Applies `mat-selected` class and `aria-selected` to an element.
  *
@@ -24,7 +23,7 @@ import {Input, Directive} from '@angular/core';
     '[class.mat-selected]': '_selection.isSelected(this.value, this.index)',
     '[attr.aria-selected]': '_selection.isSelected(this.value, this.index)',
   },
-  providers: [{provide: CdkRowSelection, useExisting: MatRowSelection}]
+  providers: [{provide: CdkRowSelection, useExisting: MatRowSelection}],
 })
 // tslint:disable-next-line: coercion-types
 export class MatRowSelection<T> extends CdkRowSelection<T> {
@@ -33,8 +32,10 @@ export class MatRowSelection<T> extends CdkRowSelection<T> {
 
   /** The index of the value in the list. Required when used with `trackBy` */
   @Input('matRowSelectionIndex')
-  override get index(): number|undefined { return this._index; }
-  override set index(index: number|undefined) {
+  override get index(): number | undefined {
+    return this._index;
+  }
+  override set index(index: number | undefined) {
     // TODO: when we remove support for ViewEngine, change this setter to an input
     // alias in the decorator metadata.
     this._index = coerceNumberProperty(index);

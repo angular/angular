@@ -23,14 +23,14 @@ export class MatProgressBarHarness extends ComponentHarness {
   }
 
   /** Gets a promise for the progress bar's value. */
-  async getValue(): Promise<number|null> {
+  async getValue(): Promise<number | null> {
     const host = await this.host();
     const ariaValue = await host.getAttribute('aria-valuenow');
     return ariaValue ? coerceNumberProperty(ariaValue) : null;
   }
 
   /** Gets a promise for the progress bar's mode. */
-  async getMode(): Promise<string|null> {
+  async getMode(): Promise<string | null> {
     return (await this.host()).getAttribute('mode');
   }
 }

@@ -5,7 +5,6 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatChipsModule} from '../index';
 import {MatChipOptionHarness} from './chip-option-harness';
 
-
 describe('MatChipOptionHarness', () => {
   let fixture: ComponentFixture<ChipOptionHarnessTest>;
   let loader: HarnessLoader;
@@ -73,7 +72,6 @@ describe('MatChipOptionHarness', () => {
     await harness.toggle();
     expect(await harness.isSelected()).toBe(false);
   });
-
 });
 
 @Component({
@@ -90,7 +88,6 @@ describe('MatChipOptionHarness', () => {
         <span matChipRemove>remove_icon</span>
       </mat-chip-option>
     </mat-chip-listbox>
-  `
+  `,
 })
 class ChipOptionHarnessTest {}
-

@@ -26,7 +26,7 @@ import {
   Output,
   QueryList,
   ViewChild,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
 import {
   MatLine,
@@ -55,7 +55,7 @@ export interface SelectionList extends MatListBase {
   color: ThemePalette;
   selectedOptions: SelectionModel<MatListOption>;
   compareWith: (o1: any, o2: any) => boolean;
-  _value: string[]|null;
+  _value: string[] | null;
   _reportValueChange: () => void;
   _onTouched: () => void;
 }
@@ -91,7 +91,7 @@ export interface SelectionList extends MatListBase {
   providers: [
     {provide: MatListItemBase, useExisting: MatListOption},
     {provide: LIST_OPTION, useExisting: MatListOption},
-  ]
+  ],
 })
 export class MatListOption extends MatListItemBase implements ListOption, OnInit, OnDestroy {
   /**
@@ -110,21 +110,28 @@ export class MatListOption extends MatListItemBase implements ListOption, OnInit
 
   @ViewChild('text') _itemText: ElementRef<HTMLElement>;
 
-  @ContentChildren(MatLine, {read: ElementRef, descendants: true}) lines:
-    QueryList<ElementRef<Element>>;
+  @ContentChildren(MatLine, {read: ElementRef, descendants: true}) lines: QueryList<
+    ElementRef<Element>
+  >;
 
   /** Whether the label should appear before or after the checkbox. Defaults to 'after' */
   @Input() checkboxPosition: MatListOptionCheckboxPosition = 'after';
 
   /** Theme color of the list option. This sets the color of the checkbox. */
   @Input()
-  get color(): ThemePalette { return this._color || this._selectionList.color; }
-  set color(newValue: ThemePalette) { this._color = newValue; }
+  get color(): ThemePalette {
+    return this._color || this._selectionList.color;
+  }
+  set color(newValue: ThemePalette) {
+    this._color = newValue;
+  }
   private _color: ThemePalette;
 
   /** Value of the option */
   @Input()
-  get value(): any { return this._value; }
+  get value(): any {
+    return this._value;
+  }
   set value(newValue: any) {
     if (this.selected && newValue !== this.value && this._inputsInitialized) {
       this.selected = false;
@@ -136,7 +143,9 @@ export class MatListOption extends MatListItemBase implements ListOption, OnInit
 
   /** Whether the option is selected. */
   @Input()
-  get selected(): boolean { return this._selectionList.selectedOptions.isSelected(this); }
+  get selected(): boolean {
+    return this._selectionList.selectedOptions.isSelected(this);
+  }
   set selected(value: boolean) {
     const isSelected = coerceBooleanProperty(value);
 
@@ -151,13 +160,14 @@ export class MatListOption extends MatListItemBase implements ListOption, OnInit
   private _selected = false;
 
   constructor(
-      element: ElementRef,
-      ngZone: NgZone,
-      platform: Platform,
-      @Inject(SELECTION_LIST) public _selectionList: SelectionList,
-      private _changeDetectorRef: ChangeDetectorRef,
-      @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS) globalRippleOptions?: RippleGlobalOptions,
-      @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
+    element: ElementRef,
+    ngZone: NgZone,
+    platform: Platform,
+    @Inject(SELECTION_LIST) public _selectionList: SelectionList,
+    private _changeDetectorRef: ChangeDetectorRef,
+    @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS) globalRippleOptions?: RippleGlobalOptions,
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
+  ) {
     super(element, ngZone, _selectionList, platform, globalRippleOptions, animationMode);
 
     // By default, we mark all options as unselected. The MDC list foundation will
@@ -216,16 +226,18 @@ export class MatListOption extends MatListItemBase implements ListOption, OnInit
   }
 
   /** Whether icons or avatars are shown at the given position. */
-  _hasIconsOrAvatarsAt(position: 'before'|'after'): boolean {
+  _hasIconsOrAvatarsAt(position: 'before' | 'after'): boolean {
     return this._hasProjected('icons', position) || this._hasProjected('avatars', position);
   }
 
   /** Gets whether the given type of element is projected at the specified position. */
-  _hasProjected(type: 'icons'|'avatars', position: 'before'|'after'): boolean {
+  _hasProjected(type: 'icons' | 'avatars', position: 'before' | 'after'): boolean {
     // If the checkbox is shown at the specified position, neither icons or
     // avatars can be shown at the position.
-    return this._getCheckboxPosition() !== position &&
-      (type === 'avatars' ? this._avatars.length !== 0 : this._icons.length !== 0);
+    return (
+      this._getCheckboxPosition() !== position &&
+      (type === 'avatars' ? this._avatars.length !== 0 : this._icons.length !== 0)
+    );
   }
 
   _handleBlur() {

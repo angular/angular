@@ -16,5 +16,3 @@ export class MdcButtonE2e {
   isDisabled: boolean = false;
   clickCounter: number = 0;
 }
-
-

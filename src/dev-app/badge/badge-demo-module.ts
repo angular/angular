@@ -26,5 +26,4 @@ import {BadgeDemo} from './badge-demo';
   ],
   declarations: [BadgeDemo],
 })
-export class BadgeDemoModule {
-}
+export class BadgeDemoModule {}

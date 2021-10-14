@@ -10,7 +10,7 @@ import {
   createHeatmapLayerConstructorSpy,
   createHeatmapLayerSpy,
   createLatLngSpy,
-  createLatLngConstructorSpy
+  createLatLngConstructorSpy,
 } from '../testing/fake-google-map-utils';
 import {HeatmapData, MapHeatmapLayer} from './map-heatmap-layer';
 
@@ -18,12 +18,14 @@ describe('MapHeatmapLayer', () => {
   let mapSpy: jasmine.SpyObj<google.maps.Map>;
   let latLngSpy: jasmine.SpyObj<google.maps.LatLng>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [GoogleMapsModule],
-      declarations: [TestApp],
-    });
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [GoogleMapsModule],
+        declarations: [TestApp],
+      });
+    }),
+  );
 
   beforeEach(() => {
     TestBed.compileComponents();
@@ -66,8 +68,8 @@ describe('MapHeatmapLayer', () => {
       data: [
         new google.maps.LatLng(37.782, -122.447),
         new google.maps.LatLng(37.782, -122.445),
-        new google.maps.LatLng(37.782, -122.443)
-      ]
+        new google.maps.LatLng(37.782, -122.443),
+      ],
     };
     const heatmapSpy = createHeatmapLayerSpy();
     const heatmapConstructorSpy = createHeatmapLayerConstructorSpy(heatmapSpy).and.callThrough();
@@ -82,12 +84,12 @@ describe('MapHeatmapLayer', () => {
   it('sets heatmap options, ignoring map', () => {
     const options: Partial<google.maps.visualization.HeatmapLayerOptions> = {
       radius: 5,
-      dissipating: true
+      dissipating: true,
     };
     const data = [
       new google.maps.LatLng(37.782, -122.447),
       new google.maps.LatLng(37.782, -122.445),
-      new google.maps.LatLng(37.782, -122.443)
+      new google.maps.LatLng(37.782, -122.443),
     ];
     const heatmapSpy = createHeatmapLayerSpy();
     const heatmapConstructorSpy = createHeatmapLayerConstructorSpy(heatmapSpy).and.callThrough();
@@ -118,7 +120,7 @@ describe('MapHeatmapLayer', () => {
     let data = [
       new google.maps.LatLng(1, 2),
       new google.maps.LatLng(3, 4),
-      new google.maps.LatLng(5, 6)
+      new google.maps.LatLng(5, 6),
     ];
 
     const fixture = TestBed.createComponent(TestApp);
@@ -129,7 +131,7 @@ describe('MapHeatmapLayer', () => {
     data = [
       new google.maps.LatLng(7, 8),
       new google.maps.LatLng(9, 10),
-      new google.maps.LatLng(11, 12)
+      new google.maps.LatLng(11, 12),
     ];
     fixture.componentInstance.data = data;
     fixture.detectChanges();
@@ -141,14 +143,16 @@ describe('MapHeatmapLayer', () => {
     const latLngConstructor = createLatLngConstructorSpy(latLngSpy).and.callThrough();
     createHeatmapLayerConstructorSpy(createHeatmapLayerSpy()).and.callThrough();
     const fixture = TestBed.createComponent(TestApp);
-    fixture.componentInstance.data = [{lat: 1, lng: 2}, {lat: 3, lng: 4}];
+    fixture.componentInstance.data = [
+      {lat: 1, lng: 2},
+      {lat: 3, lng: 4},
+    ];
     fixture.detectChanges();
 
     expect(latLngConstructor).toHaveBeenCalledWith(1, 2);
     expect(latLngConstructor).toHaveBeenCalledWith(3, 4);
     expect(latLngConstructor).toHaveBeenCalledTimes(2);
   });
-
 });
 
 @Component({
@@ -162,5 +166,5 @@ describe('MapHeatmapLayer', () => {
 class TestApp {
   @ViewChild(MapHeatmapLayer) heatmap: MapHeatmapLayer;
   options?: Partial<google.maps.visualization.HeatmapLayerOptions>;
-  data?: HeatmapData|null;
+  data?: HeatmapData | null;
 }

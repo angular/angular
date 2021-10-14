@@ -10,7 +10,6 @@ import {Platform} from '@angular/cdk/platform';
 import {DOCUMENT} from '@angular/common';
 import {Inject, Injectable} from '@angular/core';
 
-
 /** Set of possible high-contrast mode backgrounds. */
 export const enum HighContrastMode {
   NONE,
@@ -70,15 +69,21 @@ export class HighContrastModeDetector {
     // via the document so we can fake it in tests. Note that we have extra null checks, because
     // this logic will likely run during app bootstrap and throwing can break the entire app.
     const documentWindow = this._document.defaultView || window;
-    const computedStyle = (documentWindow && documentWindow.getComputedStyle) ?
-        documentWindow.getComputedStyle(testElement) : null;
-    const computedColor =
-        (computedStyle && computedStyle.backgroundColor || '').replace(/ /g, '');
+    const computedStyle =
+      documentWindow && documentWindow.getComputedStyle
+        ? documentWindow.getComputedStyle(testElement)
+        : null;
+    const computedColor = ((computedStyle && computedStyle.backgroundColor) || '').replace(
+      / /g,
+      '',
+    );
     testElement.remove();
 
     switch (computedColor) {
-      case 'rgb(0,0,0)': return HighContrastMode.WHITE_ON_BLACK;
-      case 'rgb(255,255,255)': return HighContrastMode.BLACK_ON_WHITE;
+      case 'rgb(0,0,0)':
+        return HighContrastMode.WHITE_ON_BLACK;
+      case 'rgb(255,255,255)':
+        return HighContrastMode.BLACK_ON_WHITE;
     }
     return HighContrastMode.NONE;
   }

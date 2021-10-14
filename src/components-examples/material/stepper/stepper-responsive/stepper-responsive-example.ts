@@ -15,18 +15,19 @@ import {map} from 'rxjs/operators';
 })
 export class StepperResponsiveExample {
   firstFormGroup = this._formBuilder.group({
-    firstCtrl: ['', Validators.required]
+    firstCtrl: ['', Validators.required],
   });
   secondFormGroup = this._formBuilder.group({
-    secondCtrl: ['', Validators.required]
+    secondCtrl: ['', Validators.required],
   });
   thirdFormGroup = this._formBuilder.group({
-    thirdCtrl: ['', Validators.required]
+    thirdCtrl: ['', Validators.required],
   });
   stepperOrientation: Observable<StepperOrientation>;
 
   constructor(private _formBuilder: FormBuilder, breakpointObserver: BreakpointObserver) {
-    this.stepperOrientation = breakpointObserver.observe('(min-width: 800px)')
-      .pipe(map(({matches}) => matches ? 'horizontal' : 'vertical'));
+    this.stepperOrientation = breakpointObserver
+      .observe('(min-width: 800px)')
+      .pipe(map(({matches}) => (matches ? 'horizontal' : 'vertical')));
   }
 }

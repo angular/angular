@@ -41,17 +41,20 @@ export class DefaultPopoverEditPositionStrategyFactory extends PopoverEditPositi
   }
 
   positionStrategyForCells(cells: HTMLElement[]): PositionStrategy {
-    return this.overlay.position()
-        .flexibleConnectedTo(cells[0])
-        .withGrowAfterOpen()
-        .withPush()
-        .withViewportMargin(16)
-        .withPositions([{
+    return this.overlay
+      .position()
+      .flexibleConnectedTo(cells[0])
+      .withGrowAfterOpen()
+      .withPush()
+      .withViewportMargin(16)
+      .withPositions([
+        {
           originX: 'start',
           originY: 'top',
           overlayX: 'start',
           overlayY: 'top',
-        }]);
+        },
+      ]);
   }
 
   sizeConfigForCells(cells: HTMLElement[]): OverlaySizeConfig {

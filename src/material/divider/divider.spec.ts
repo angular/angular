@@ -3,9 +3,7 @@ import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MatDividerModule} from './divider-module';
 
-
 describe('MatDivider', () => {
-
   let fixture: ComponentFixture<MatDividerTestComponent>;
 
   beforeEach(fakeAsync(() => {
@@ -66,7 +64,7 @@ describe('MatDivider', () => {
 });
 
 @Component({
-  template: `<mat-divider [vertical]="vertical" [inset]="inset"></mat-divider>`
+  template: `<mat-divider [vertical]="vertical" [inset]="inset"></mat-divider>`,
 })
 class MatDividerTestComponent {
   vertical: boolean;

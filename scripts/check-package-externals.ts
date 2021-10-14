@@ -41,8 +41,12 @@ parsedConfig.fileNames.forEach(fileName => {
     return;
   }
 
-  const sourceFile =
-      ts.createSourceFile(fileName, readFileSync(fileName, 'utf8'), ts.ScriptTarget.Latest, true);
+  const sourceFile = ts.createSourceFile(
+    fileName,
+    readFileSync(fileName, 'utf8'),
+    ts.ScriptTarget.Latest,
+    true,
+  );
 
   const visitNode = (node: ts.Node) => {
     if (ts.isImportDeclaration(node)) {

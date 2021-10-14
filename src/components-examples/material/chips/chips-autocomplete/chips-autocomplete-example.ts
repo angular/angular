@@ -27,8 +27,9 @@ export class ChipsAutocompleteExample {
 
   constructor() {
     this.filteredFruits = this.fruitCtrl.valueChanges.pipe(
-        startWith(null),
-        map((fruit: string | null) => fruit ? this._filter(fruit) : this.allFruits.slice()));
+      startWith(null),
+      map((fruit: string | null) => (fruit ? this._filter(fruit) : this.allFruits.slice())),
+    );
   }
 
   add(event: MatChipInputEvent): void {

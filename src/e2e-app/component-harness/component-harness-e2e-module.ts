@@ -15,5 +15,4 @@ import {ComponentHarnessE2e} from './component-harness-e2e';
   imports: [CommonModule, FormsModule, TestComponentsModule],
   declarations: [ComponentHarnessE2e],
 })
-export class ComponentHarnessE2eModule {
-}
+export class ComponentHarnessE2eModule {}

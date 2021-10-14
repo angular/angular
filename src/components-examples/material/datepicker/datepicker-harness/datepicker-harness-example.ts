@@ -8,6 +8,6 @@ import {Component} from '@angular/core';
   templateUrl: 'datepicker-harness-example.html',
 })
 export class DatepickerHarnessExample {
-  date: Date|null = null;
-  minDate: Date|null = null;
+  date: Date | null = null;
+  minDate: Date | null = null;
 }

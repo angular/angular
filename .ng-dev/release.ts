@@ -4,9 +4,7 @@ import {SemVer} from 'semver';
 import {assertValidNpmPackageOutput} from '../tools/release-checks/npm-package-output';
 import {fork} from 'child_process';
 import {join} from 'path';
-import {
-  FatalReleaseActionError
-} from '@angular/dev-infra-private/ng-dev/release/publish/actions-error';
+import {FatalReleaseActionError} from '@angular/dev-infra-private/ng-dev/release/publish/actions-error';
 
 const actionProto = ReleaseAction.prototype as any;
 const _origStageFn = actionProto.stageVersionForBranchAndCreatePullRequest;
@@ -20,8 +18,9 @@ async function runStagingReleaseChecks(newVersion: SemVer) {
     // directly call into the release checks, the `.ng-dev/release` config would be
     // cached by NodeJS and release checks would potentially check for packages which
     // no longer exist in the publish branch (or the other way around).
-    const releaseChecksProcess = fork(
-      join(__dirname, '../tools/release-checks/index.js'), [newVersion.format()]);
+    const releaseChecksProcess = fork(join(__dirname, '../tools/release-checks/index.js'), [
+      newVersion.format(),
+    ]);
 
     releaseChecksProcess.on('close', code => {
       if (code !== 0) {
@@ -37,7 +36,7 @@ async function runStagingReleaseChecks(newVersion: SemVer) {
 // before staging a release. This is temporary until the dev-infra team has implemented
 // a more generic solution to running sanity checks before releasing (potentially building
 // some of the checks we have in the components repository into the release tool).
-actionProto.stageVersionForBranchAndCreatePullRequest = async function(newVersion: SemVer) {
+actionProto.stageVersionForBranchAndCreatePullRequest = async function (newVersion: SemVer) {
   await runStagingReleaseChecks(newVersion);
 
   return await _origStageFn.apply(this, arguments);
@@ -45,8 +44,10 @@ actionProto.stageVersionForBranchAndCreatePullRequest = async function(newVersio
 
 // Patches the `@angular/dev-infra-private` release tool to perform sanity
 // checks of the NPM package output, before publishing to NPM.
-actionProto._verifyPackageVersions =
-    async function(newVersion: SemVer, builtPackages: BuiltPackage[]) {
+actionProto._verifyPackageVersions = async function (
+  newVersion: SemVer,
+  builtPackages: BuiltPackage[],
+) {
   await assertValidNpmPackageOutput(builtPackages, newVersion);
 
   return await _origVerifyFn.apply(this, arguments);

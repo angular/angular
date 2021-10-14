@@ -11,10 +11,7 @@ import {ExampleViewerModule} from '../example-viewer/example-viewer-module';
 import {StepperE2e} from './stepper-e2e';
 
 @NgModule({
-  imports: [
-    ExampleViewerModule,
-  ],
+  imports: [ExampleViewerModule],
   declarations: [StepperE2e],
 })
-export class StepperE2eModule {
-}
+export class StepperE2eModule {}

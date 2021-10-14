@@ -7,6 +7,6 @@ import {Component} from '@angular/core';
   selector: 'button-harness-example',
   templateUrl: 'button-harness-example.html',
 })
-export class ButtonHarnessExample  {
+export class ButtonHarnessExample {
   clicked = false;
 }

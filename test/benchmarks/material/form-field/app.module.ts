@@ -48,9 +48,15 @@ export class FormFieldBenchmarkApp {
   isSelectVisible = false;
   isTextareaVisible = false;
 
-  showInput() { this.isInputVisible = true; }
-  showSelect() { this.isSelectVisible = true; }
-  showTextarea() { this.isTextareaVisible = true; }
+  showInput() {
+    this.isInputVisible = true;
+  }
+  showSelect() {
+    this.isSelectVisible = true;
+  }
+  showTextarea() {
+    this.isTextareaVisible = true;
+  }
 
   hide() {
     this.isInputVisible = false;
@@ -61,12 +67,7 @@ export class FormFieldBenchmarkApp {
 
 @NgModule({
   declarations: [FormFieldBenchmarkApp],
-  imports: [
-    BrowserModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatInputModule,
-  ],
+  imports: [BrowserModule, MatFormFieldModule, MatSelectModule, MatInputModule],
   bootstrap: [FormFieldBenchmarkApp],
 })
 export class AppModule {}

@@ -34,8 +34,6 @@ import {DragDrop} from './drag-drop';
     CdkDragPreview,
     CdkDragPlaceholder,
   ],
-  providers: [
-    DragDrop,
-  ]
+  providers: [DragDrop],
 })
 export class DragDropModule {}

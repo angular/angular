@@ -15,5 +15,4 @@ import {InputE2E} from './input-e2e';
   imports: [MatFormFieldModule, MatInputModule],
   declarations: [InputE2E],
 })
-export class InputE2eModule {
-}
+export class InputE2eModule {}

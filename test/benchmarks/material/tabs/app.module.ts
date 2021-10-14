@@ -34,9 +34,15 @@ export class TabsBenchmarkApp {
   areTenTabsVisible = false;
   areTwentyTabsVisible = false;
 
-  showThreeTabs() { this.areThreeTabsVisible = true; }
-  showTenTabs() { this.areTenTabsVisible = true; }
-  showTwentyTabs() { this.areTwentyTabsVisible = true; }
+  showThreeTabs() {
+    this.areThreeTabsVisible = true;
+  }
+  showTenTabs() {
+    this.areTenTabsVisible = true;
+  }
+  showTwentyTabs() {
+    this.areTwentyTabsVisible = true;
+  }
 
   hide() {
     this.areThreeTabsVisible = false;
@@ -47,11 +53,7 @@ export class TabsBenchmarkApp {
 
 @NgModule({
   declarations: [TabsBenchmarkApp],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    MatTabsModule,
-  ],
+  imports: [BrowserModule, BrowserAnimationsModule, MatTabsModule],
   bootstrap: [TabsBenchmarkApp],
 })
 export class AppModule {}

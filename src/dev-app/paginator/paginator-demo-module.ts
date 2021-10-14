@@ -30,5 +30,4 @@ import {PaginatorDemo} from './paginator-demo';
   ],
   declarations: [PaginatorDemo],
 })
-export class PaginatorDemoModule {
-}
+export class PaginatorDemoModule {}

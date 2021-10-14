@@ -42,5 +42,5 @@ export class TableTextColumnAdvancedExample {
   getWeight = (data: PeriodicElement): string => {
     const result = this.decimalPipe.transform(data.weight, '1.0-2');
     return result === null ? '' : result;
-  }
+  };
 }

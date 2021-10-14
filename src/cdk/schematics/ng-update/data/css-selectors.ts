@@ -20,14 +20,14 @@ export interface CssSelectorUpgradeData {
    */
   replaceIn?: {
     /** Replace this name in stylesheet files. */
-    stylesheet?: boolean,
+    stylesheet?: boolean;
     /** Replace this name in HTML files. */
-    html?: boolean,
+    html?: boolean;
     /** Replace this name in TypeScript strings. */
-    tsStringLiterals?: boolean
+    tsStringLiterals?: boolean;
   };
 }
 
 export const cssSelectors: VersionChanges<CssSelectorUpgradeData> = {
-  [TargetVersion.V6]: []
+  [TargetVersion.V6]: [],
 };

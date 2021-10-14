@@ -8,10 +8,7 @@
 
 import {HarnessPredicate, parallel} from '@angular/cdk/testing';
 import {MatChipOptionHarness} from './chip-option-harness';
-import {
-  ChipListboxHarnessFilters,
-  ChipOptionHarnessFilters,
-} from './chip-harness-filters';
+import {ChipListboxHarnessFilters, ChipOptionHarnessFilters} from './chip-harness-filters';
 import {_MatChipListHarnessBase} from './chip-list-harness';
 
 /** Harness for interacting with a standard selectable chip list in tests. */
@@ -25,8 +22,7 @@ export class MatChipListboxHarness extends _MatChipListHarnessBase {
    * @param options Options for filtering which chip list instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: ChipListboxHarnessFilters = {}):
-    HarnessPredicate<MatChipListboxHarness> {
+  static with(options: ChipListboxHarnessFilters = {}): HarnessPredicate<MatChipListboxHarness> {
     return new HarnessPredicate(MatChipListboxHarness, options);
   }
 

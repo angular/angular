@@ -8,7 +8,9 @@ import {MatMenuHarness} from './menu-harness';
 
 /** Shared tests to run on both the original and MDC-based menues. */
 export function runHarnessTests(
-    menuModule: typeof MatMenuModule, menuHarness: typeof MatMenuHarness) {
+  menuModule: typeof MatMenuModule,
+  menuHarness: typeof MatMenuHarness,
+) {
   describe('single-level menu', () => {
     let fixture: ComponentFixture<MenuHarnessTest>;
     let loader: HarnessLoader;
@@ -138,7 +140,8 @@ export function runHarnessTests(
     it('should throw when item is not found', async () => {
       const menu1 = await loader.getHarness(menuHarness.with({triggerText: 'Menu 1'}));
       await expectAsync(menu1.clickItem({text: 'Fake Item'})).toBeRejectedWithError(
-          /Could not find item matching {"text":"Fake Item"}/);
+        /Could not find item matching {"text":"Fake Item"}/,
+      );
     });
 
     it('should select item in nested menu', async () => {
@@ -150,7 +153,8 @@ export function runHarnessTests(
     it('should throw when intermediate item does not have submenu', async () => {
       const menu1 = await loader.getHarness(menuHarness.with({triggerText: 'Menu 1'}));
       await expectAsync(menu1.clickItem({text: 'Leaf Item 1'}, {})).toBeRejectedWithError(
-          /Item matching {"text":"Leaf Item 1"} does not have a submenu/);
+        /Item matching {"text":"Leaf Item 1"} does not have a submenu/,
+      );
     });
   });
 }
@@ -164,9 +168,9 @@ export function runHarnessTests(
         <menu mat-menu-item>Profile</menu>
         <menu mat-menu-item>Account</menu>
       </mat-menu>
-  `
+  `,
 })
-class MenuHarnessTest { }
+class MenuHarnessTest {}
 
 @Component({
   template: `
@@ -189,7 +193,7 @@ class MenuHarnessTest { }
       <mat-menu #menu4>
         <button mat-menu-item (click)="lastClickedLeaf = 3">Leaf Item 3</button>
       </mat-menu>
-  `
+  `,
 })
 class NestedMenuHarnessTest {
   lastClickedLeaf = 0;

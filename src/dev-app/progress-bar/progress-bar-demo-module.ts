@@ -24,5 +24,4 @@ import {ProgressBarDemo} from './progress-bar-demo';
   ],
   declarations: [ProgressBarDemo],
 })
-export class ProgressBarDemoModule {
-}
+export class ProgressBarDemoModule {}

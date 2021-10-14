@@ -15,7 +15,7 @@ import {
   Input,
   OnChanges,
   OnDestroy,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
 import {MDCNotchedOutline} from '@material/notched-outline';
 
@@ -48,7 +48,7 @@ export class MatFormFieldNotchedOutline implements AfterViewInit, OnChanges, OnD
   @Input('matFormFieldNotchedOutlineOpen') open: boolean = false;
 
   /** Instance of the MDC notched outline. */
-  private _mdcNotchedOutline: MDCNotchedOutline|null = null;
+  private _mdcNotchedOutline: MDCNotchedOutline | null = null;
 
   constructor(private _elementRef: ElementRef, private _platform: Platform) {}
 

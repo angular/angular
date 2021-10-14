@@ -21,10 +21,7 @@ const signatureErrorDiagnostics = [
   // Type not assignable error diagnostic.
   2345,
   // Constructor argument length invalid diagnostics
-  2554,
-  2555,
-  2556,
-  2557,
+  2554, 2555, 2556, 2557,
 ];
 
 /**
@@ -57,10 +54,10 @@ export class ConstructorSignatureMigration extends Migration<UpgradeData> {
    */
   private _visitSourceFile(sourceFile: ts.SourceFile) {
     // List of classes of which the constructor signature has changed.
-    const diagnostics =
-        ts.getPreEmitDiagnostics(this.program, sourceFile)
-            .filter(diagnostic => signatureErrorDiagnostics.includes(diagnostic.code))
-            .filter(diagnostic => diagnostic.start !== undefined);
+    const diagnostics = ts
+      .getPreEmitDiagnostics(this.program, sourceFile)
+      .filter(diagnostic => signatureErrorDiagnostics.includes(diagnostic.code))
+      .filter(diagnostic => diagnostic.start !== undefined);
 
     for (const diagnostic of diagnostics) {
       const node = findConstructorNode(diagnostic, sourceFile);
@@ -77,44 +74,53 @@ export class ConstructorSignatureMigration extends Migration<UpgradeData> {
       // the diagnostic refers to a constructor of the actual expression. In case the constructor
       // is inherited, we need to detect that the owner-class of the constructor is added to the
       // constructor checks upgrade data. e.g. `class CustomCalendar extends MatCalendar {}`.
-      const signatureClassNames =
-          classType.getConstructSignatures()
-              .map(signature => getClassDeclarationOfSignature(signature))
-              .map(declaration => declaration && declaration.name ? declaration.name.text : null)
-              .filter(Boolean);
+      const signatureClassNames = classType
+        .getConstructSignatures()
+        .map(signature => getClassDeclarationOfSignature(signature))
+        .map(declaration => (declaration && declaration.name ? declaration.name.text : null))
+        .filter(Boolean);
 
       // Besides checking the signature class names, we need to check the actual class name because
       // there can be classes without an explicit constructor.
-      if (!this.data.includes(className) &&
-          !signatureClassNames.some(name => this.data.includes(name!))) {
+      if (
+        !this.data.includes(className) &&
+        !signatureClassNames.some(name => this.data.includes(name!))
+      ) {
         continue;
       }
 
-      const classSignatures = classType.getConstructSignatures().map(
-          signature => getParameterTypesFromSignature(signature, this.typeChecker));
+      const classSignatures = classType
+        .getConstructSignatures()
+        .map(signature => getParameterTypesFromSignature(signature, this.typeChecker));
 
       const expressionName = isNewExpression ? `new ${className}` : 'super';
       const signatures = classSignatures
-          .map(signature =>
-              signature.map(t => t === null ? 'any' : this.typeChecker.typeToString(t)))
-          .map(signature => `${expressionName}(${signature.join(', ')})`)
-          .join(' or ');
+        .map(signature =>
+          signature.map(t => (t === null ? 'any' : this.typeChecker.typeToString(t))),
+        )
+        .map(signature => `${expressionName}(${signature.join(', ')})`)
+        .join(' or ');
 
       this.createFailureAtNode(
-          node,
-          `Found "${className}" constructed with ` +
-              `an invalid signature. Please manually update the ${expressionName} expression to ` +
-              `match the new signature${classSignatures.length > 1 ? 's' : ''}: ${signatures}`);
+        node,
+        `Found "${className}" constructed with ` +
+          `an invalid signature. Please manually update the ${expressionName} expression to ` +
+          `match the new signature${classSignatures.length > 1 ? 's' : ''}: ${signatures}`,
+      );
     }
   }
 }
 
-
 /** Resolves the type for each parameter in the specified signature. */
 function getParameterTypesFromSignature(
-    signature: ts.Signature, typeChecker: ts.TypeChecker): (ts.Type|null)[] {
-  return signature.getParameters().map(
-      param => param.declarations ? typeChecker.getTypeAtLocation(param.declarations[0]) : null);
+  signature: ts.Signature,
+  typeChecker: ts.TypeChecker,
+): (ts.Type | null)[] {
+  return signature
+    .getParameters()
+    .map(param =>
+      param.declarations ? typeChecker.getTypeAtLocation(param.declarations[0]) : null,
+    );
 }
 
 /**
@@ -122,15 +128,19 @@ function getParameterTypesFromSignature(
  * expression node that is captured by the specified diagnostic.
  */
 function findConstructorNode(
-    diagnostic: ts.Diagnostic, sourceFile: ts.SourceFile): ts.CallExpression|ts.NewExpression|null {
-  let resolvedNode: ts.Node|null = null;
+  diagnostic: ts.Diagnostic,
+  sourceFile: ts.SourceFile,
+): ts.CallExpression | ts.NewExpression | null {
+  let resolvedNode: ts.Node | null = null;
 
   const _visitNode = (node: ts.Node) => {
     // Check whether the current node contains the diagnostic. If the node contains the diagnostic,
     // walk deeper in order to find all constructor expression nodes.
     if (node.getStart() <= diagnostic.start! && node.getEnd() >= diagnostic.start!) {
-      if (ts.isNewExpression(node) ||
-          (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.SuperKeyword)) {
+      if (
+        ts.isNewExpression(node) ||
+        (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.SuperKeyword)
+      ) {
         resolvedNode = node;
       }
 
@@ -144,14 +154,14 @@ function findConstructorNode(
 }
 
 /** Determines the class declaration of the specified construct signature. */
-function getClassDeclarationOfSignature(signature: ts.Signature): ts.ClassDeclaration|null {
+function getClassDeclarationOfSignature(signature: ts.Signature): ts.ClassDeclaration | null {
   let node: ts.Node = signature.getDeclaration();
   // Handle signatures which don't have an actual declaration. This happens if a class
   // does not have an explicitly written constructor.
   if (!node) {
     return null;
   }
-  while (!ts.isSourceFile(node = node.parent)) {
+  while (!ts.isSourceFile((node = node.parent))) {
     if (ts.isClassDeclaration(node)) {
       return node;
     }

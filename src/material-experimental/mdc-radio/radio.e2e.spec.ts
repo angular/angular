@@ -1,6 +1,5 @@
 import {browser, by, element} from 'protractor';
 
-
 describe('radio', () => {
   describe('disabling behavior', () => {
     beforeEach(async () => await browser.get('/mdc-radio'));

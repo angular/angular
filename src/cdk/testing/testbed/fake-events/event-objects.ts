@@ -16,7 +16,12 @@ let uniqueIds = 0;
  * @docs-private
  */
 export function createMouseEvent(
-  type: string, clientX = 0, clientY = 0, button = 0, modifiers: ModifierKeys = {}) {
+  type: string,
+  clientX = 0,
+  clientY = 0,
+  button = 0,
+  modifiers: ModifierKeys = {},
+) {
   // Note: We cannot determine the position of the mouse event based on the screen
   // because the dimensions and position of the browser window are not available
   // To provide reasonable `screenX` and `screenY` coordinates, we simply use the
@@ -60,8 +65,12 @@ export function createMouseEvent(
  *
  * @docs-private
  */
-export function createPointerEvent(type: string, clientX = 0, clientY = 0,
-                                   options: PointerEventInit = {isPrimary: true}) {
+export function createPointerEvent(
+  type: string,
+  clientX = 0,
+  clientY = 0,
+  options: PointerEventInit = {isPrimary: true},
+) {
   return new PointerEvent(type, {
     bubbles: true,
     cancelable: true,
@@ -98,8 +107,12 @@ export function createTouchEvent(type: string, pageX = 0, pageY = 0, clientX = 0
  * Creates a keyboard event with the specified key and modifiers.
  * @docs-private
  */
-export function createKeyboardEvent(type: string, keyCode: number = 0, key: string = '',
-                                    modifiers: ModifierKeys = {}) {
+export function createKeyboardEvent(
+  type: string,
+  keyCode: number = 0,
+  key: string = '',
+  modifiers: ModifierKeys = {},
+) {
   return new KeyboardEvent(type, {
     bubbles: true,
     cancelable: true,

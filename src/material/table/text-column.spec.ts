@@ -7,14 +7,14 @@ describe('MatTextColumn', () => {
   let fixture: ComponentFixture<BasicTextColumnApp>;
   let tableElement: HTMLElement;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [MatTableModule],
-      declarations: [
-        BasicTextColumnApp,
-      ],
-    }).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [MatTableModule],
+        declarations: [BasicTextColumnApp],
+      }).compileComponents();
+    }),
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(BasicTextColumnApp);
@@ -48,7 +48,7 @@ interface TestData {
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
       <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
     </mat-table>
-  `
+  `,
 })
 class BasicTextColumnApp {
   displayedColumns = ['propertyA', 'propertyB', 'propertyC'];

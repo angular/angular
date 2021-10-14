@@ -71,16 +71,18 @@ describe('MDC-based MatSliderHarness', () => {
   it('should throw when trying to get the start thumb from a single point slider', async () => {
     const slider = await loader.getHarness(MatSliderHarness.with({isRange: false}));
     await expectAsync(slider.getStartThumb()).toBeRejectedWithError(
-        '`getStartThumb` is only applicable for range sliders. '
-        + 'Did you mean to use `getEndThumb`?',
-      );
+      '`getStartThumb` is only applicable for range sliders. ' +
+        'Did you mean to use `getEndThumb`?',
+    );
   });
 
   it('should get the step of a slider', async () => {
     const sliders = await loader.getAllHarnesses(MatSliderHarness);
-    expect(await parallel(() => {
-      return sliders.map(slider => slider.getStep());
-    })).toEqual([1, fixture.componentInstance.rangeSliderStep]);
+    expect(
+      await parallel(() => {
+        return sliders.map(slider => slider.getStep());
+      }),
+    ).toEqual([1, fixture.componentInstance.rangeSliderStep]);
   });
 
   it('should get the position of a slider thumb in a range slider', async () => {
@@ -169,7 +171,6 @@ describe('MDC-based MatSliderHarness', () => {
     await thumb.blur();
     expect(await thumb.isFocused()).toBe(false);
   });
-
 });
 
 @Component({

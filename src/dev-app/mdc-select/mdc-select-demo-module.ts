@@ -33,5 +33,4 @@ import {MdcSelectDemo} from './mdc-select-demo';
   ],
   declarations: [MdcSelectDemo],
 })
-export class MdcSelectDemoModule {
-}
+export class MdcSelectDemoModule {}

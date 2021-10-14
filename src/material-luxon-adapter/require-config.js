@@ -2,6 +2,6 @@
 // load AMD modules which are not explicitly named in their output bundle.
 require.config({
   paths: {
-    'luxon': '/base/npm/node_modules/luxon/build/amd/luxon'
-  }
+    'luxon': '/base/npm/node_modules/luxon/build/amd/luxon',
+  },
 });

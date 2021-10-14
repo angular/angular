@@ -21,10 +21,13 @@ export abstract class _MatPaginatorHarnessBase extends ComponentHarness {
   protected abstract _previousButton: AsyncFactoryFn<TestElement>;
   protected abstract _firstPageButton: AsyncFactoryFn<TestElement | null>;
   protected abstract _lastPageButton: AsyncFactoryFn<TestElement | null>;
-  protected abstract _select: AsyncFactoryFn<ComponentHarness & {
-    getValueText(): Promise<string>;
-    clickOptions(...filters: unknown[]): Promise<void>;
-  } | null>;
+  protected abstract _select: AsyncFactoryFn<
+    | (ComponentHarness & {
+        getValueText(): Promise<string>;
+        clickOptions(...filters: unknown[]): Promise<void>;
+      })
+    | null
+  >;
   protected abstract _pageSizeFallback: AsyncFactoryFn<TestElement>;
   protected abstract _rangeLabel: AsyncFactoryFn<TestElement>;
 
@@ -44,8 +47,10 @@ export abstract class _MatPaginatorHarnessBase extends ComponentHarness {
 
     // The first page button isn't enabled by default so we need to check for it.
     if (!button) {
-      throw Error('Could not find first page button inside paginator. ' +
-                  'Make sure that `showFirstLastButtons` is enabled.');
+      throw Error(
+        'Could not find first page button inside paginator. ' +
+          'Make sure that `showFirstLastButtons` is enabled.',
+      );
     }
 
     return button.click();
@@ -57,8 +62,10 @@ export abstract class _MatPaginatorHarnessBase extends ComponentHarness {
 
     // The last page button isn't enabled by default so we need to check for it.
     if (!button) {
-      throw Error('Could not find last page button inside paginator. ' +
-                  'Make sure that `showFirstLastButtons` is enabled.');
+      throw Error(
+        'Could not find last page button inside paginator. ' +
+          'Make sure that `showFirstLastButtons` is enabled.',
+      );
     }
 
     return button.click();
@@ -74,8 +81,10 @@ export abstract class _MatPaginatorHarnessBase extends ComponentHarness {
     // The select is only available if the `pageSizeOptions` are
     // set to an array with more than one item.
     if (!select) {
-      throw Error('Cannot find page size selector in paginator. ' +
-                  'Make sure that the `pageSizeOptions` have been configured.');
+      throw Error(
+        'Cannot find page size selector in paginator. ' +
+          'Make sure that the `pageSizeOptions` have been configured.',
+      );
     }
 
     return select.clickOptions({text: `${size}`});
@@ -102,9 +111,11 @@ export class MatPaginatorHarness extends _MatPaginatorHarnessBase {
   protected _previousButton = this.locatorFor('.mat-paginator-navigation-previous');
   protected _firstPageButton = this.locatorForOptional('.mat-paginator-navigation-first');
   protected _lastPageButton = this.locatorForOptional('.mat-paginator-navigation-last');
-  protected _select = this.locatorForOptional(MatSelectHarness.with({
-    ancestor: '.mat-paginator-page-size'
-  }));
+  protected _select = this.locatorForOptional(
+    MatSelectHarness.with({
+      ancestor: '.mat-paginator-page-size',
+    }),
+  );
   protected _pageSizeFallback = this.locatorFor('.mat-paginator-page-size-value');
   protected _rangeLabel = this.locatorFor('.mat-paginator-range-label');
 

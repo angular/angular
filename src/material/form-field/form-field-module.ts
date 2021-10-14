@@ -19,20 +19,8 @@ import {MatPrefix} from './prefix';
 import {MatSuffix} from './suffix';
 
 @NgModule({
-  declarations: [
-    MatError,
-    MatFormField,
-    MatHint,
-    MatLabel,
-    MatPlaceholder,
-    MatPrefix,
-    MatSuffix,
-  ],
-  imports: [
-    CommonModule,
-    MatCommonModule,
-    ObserversModule,
-  ],
+  declarations: [MatError, MatFormField, MatHint, MatLabel, MatPlaceholder, MatPrefix, MatSuffix],
+  imports: [CommonModule, MatCommonModule, ObserversModule],
   exports: [
     MatCommonModule,
     MatError,

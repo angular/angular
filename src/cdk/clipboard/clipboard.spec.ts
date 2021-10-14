@@ -3,7 +3,6 @@ import {TestBed} from '@angular/core/testing';
 import {Clipboard} from './clipboard';
 import {PendingCopy} from './pending-copy';
 
-
 const COPY_CONTENT = 'copy content';
 
 describe('Clipboard', () => {

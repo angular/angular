@@ -26,5 +26,4 @@ import {RadioDemo} from './radio-demo';
   ],
   declarations: [RadioDemo],
 })
-export class RadioDemoModule {
-}
+export class RadioDemoModule {}

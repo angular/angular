@@ -19,11 +19,14 @@ export class SubComponentHarness extends ComponentHarness {
 
   static with(options: SubComponentHarnessFilters = {}) {
     return new HarnessPredicate(SubComponentHarness, options)
-        .addOption('title', options.title,
-            async (harness, title) =>
-                HarnessPredicate.stringMatches((await harness.title()).text(), title))
-        .addOption('item count', options.itemCount,
-            async (harness, count) => (await harness.getItems()).length === count);
+      .addOption('title', options.title, async (harness, title) =>
+        HarnessPredicate.stringMatches((await harness.title()).text(), title),
+      )
+      .addOption(
+        'item count',
+        options.itemCount,
+        async (harness, count) => (await harness.getItems()).length === count,
+      );
   }
 
   readonly title = this.locatorFor('h2');

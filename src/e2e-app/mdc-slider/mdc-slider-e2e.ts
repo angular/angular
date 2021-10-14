@@ -25,5 +25,4 @@ import {Component} from '@angular/core';
     </mat-slider>
     `,
 })
-export class MdcSliderE2e {
-}
+export class MdcSliderE2e {}

@@ -14,5 +14,4 @@ import {SimpleRadioButtons} from './radio-e2e';
   imports: [MatRadioModule],
   declarations: [SimpleRadioButtons],
 })
-export class RadioE2eModule {
-}
+export class RadioE2eModule {}

@@ -33,7 +33,7 @@ export class CdkSelectAll<T> implements OnDestroy, OnInit {
    * Resolves to `true` if all the values are selected, `false` if no value is selected.
    */
   readonly checked: Observable<boolean> = this._selection.change.pipe(
-      switchMap(() => observableOf(this._selection.isAllSelected())),
+    switchMap(() => observableOf(this._selection.isAllSelected())),
   );
 
   /**
@@ -42,7 +42,7 @@ export class CdkSelectAll<T> implements OnDestroy, OnInit {
    * value at all are selected.
    */
   readonly indeterminate: Observable<boolean> = this._selection.change.pipe(
-      switchMap(() => observableOf(this._selection.isPartialSelected())),
+    switchMap(() => observableOf(this._selection.isPartialSelected())),
   );
 
   /**
@@ -67,9 +67,12 @@ export class CdkSelectAll<T> implements OnDestroy, OnInit {
   private readonly _destroyed = new Subject<void>();
 
   constructor(
-      @Optional() @Inject(CdkSelection) private readonly _selection: CdkSelection<T>,
-      @Optional() @Self() @Inject(NG_VALUE_ACCESSOR) private readonly _controlValueAccessor:
-          ControlValueAccessor[]) {}
+    @Optional() @Inject(CdkSelection) private readonly _selection: CdkSelection<T>,
+    @Optional()
+    @Self()
+    @Inject(NG_VALUE_ACCESSOR)
+    private readonly _controlValueAccessor: ControlValueAccessor[],
+  ) {}
 
   ngOnInit() {
     this._assertValidParentSelection();
@@ -83,7 +86,7 @@ export class CdkSelectAll<T> implements OnDestroy, OnInit {
           this.toggle();
         }
       });
-      this.checked.pipe(takeUntil(this._destroyed)).subscribe((state) => {
+      this.checked.pipe(takeUntil(this._destroyed)).subscribe(state => {
         this._controlValueAccessor[0].writeValue(state);
       });
     }

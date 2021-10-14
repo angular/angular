@@ -18,5 +18,5 @@ export {
   MAT_SELECT_TRIGGER,
   _MatSelectBase,
   MatSelect,
-  MatSelectTrigger
+  MatSelectTrigger,
 } from './select';

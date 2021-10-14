@@ -9,9 +9,7 @@
 import {EventEmitter, Inject, Injectable, Optional, OnDestroy} from '@angular/core';
 import {DIR_DOCUMENT} from './dir-document-token';
 
-
 export type Direction = 'ltr' | 'rtl';
-
 
 /**
  * The directionality (LTR / RTL) context for the application (or a subtree of it).
@@ -34,7 +32,7 @@ export class Directionality implements OnDestroy {
       const bodyDir = _document.body ? _document.body.dir : null;
       const htmlDir = _document.documentElement ? _document.documentElement.dir : null;
       const value = bodyDir || htmlDir;
-      this.value = (value === 'ltr' || value === 'rtl') ? value : 'ltr';
+      this.value = value === 'ltr' || value === 'rtl' ? value : 'ltr';
     }
   }
 

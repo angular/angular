@@ -30,8 +30,12 @@ export class CdkDragPreview<T = any> {
 
   /** Whether the preview should preserve the same size as the item that is being dragged. */
   @Input()
-  get matchSize(): boolean { return this._matchSize; }
-  set matchSize(value: boolean) { this._matchSize = coerceBooleanProperty(value); }
+  get matchSize(): boolean {
+    return this._matchSize;
+  }
+  set matchSize(value: boolean) {
+    this._matchSize = coerceBooleanProperty(value);
+  }
   private _matchSize = false;
 
   constructor(public templateRef: TemplateRef<T>) {}

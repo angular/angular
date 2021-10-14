@@ -77,24 +77,30 @@ export class MatStep extends CdkStep implements ErrorStateMatcher, AfterContentI
   /** Currently-attached portal containing the lazy content. */
   _portal: TemplatePortal;
 
-  constructor(@Inject(forwardRef(() => MatStepper)) stepper: MatStepper,
-              @SkipSelf() private _errorStateMatcher: ErrorStateMatcher,
-              private _viewContainerRef: ViewContainerRef,
-              @Optional() @Inject(STEPPER_GLOBAL_OPTIONS) stepperOptions?: StepperOptions) {
+  constructor(
+    @Inject(forwardRef(() => MatStepper)) stepper: MatStepper,
+    @SkipSelf() private _errorStateMatcher: ErrorStateMatcher,
+    private _viewContainerRef: ViewContainerRef,
+    @Optional() @Inject(STEPPER_GLOBAL_OPTIONS) stepperOptions?: StepperOptions,
+  ) {
     super(stepper, stepperOptions);
   }
 
   ngAfterContentInit() {
-    this._isSelected = this._stepper.steps.changes.pipe(switchMap(() => {
-      return this._stepper.selectionChange.pipe(
-        map(event => event.selectedStep === this),
-        startWith(this._stepper.selected === this)
-      );
-    })).subscribe(isSelected => {
-      if (isSelected && this._lazyContent && !this._portal) {
-        this._portal = new TemplatePortal(this._lazyContent._template, this._viewContainerRef!);
-      }
-    });
+    this._isSelected = this._stepper.steps.changes
+      .pipe(
+        switchMap(() => {
+          return this._stepper.selectionChange.pipe(
+            map(event => event.selectedStep === this),
+            startWith(this._stepper.selected === this),
+          );
+        }),
+      )
+      .subscribe(isSelected => {
+        if (isSelected && this._lazyContent && !this._portal) {
+          this._portal = new TemplatePortal(this._lazyContent._template, this._viewContainerRef!);
+        }
+      });
   }
 
   ngOnDestroy() {
@@ -144,7 +150,6 @@ export class MatHorizontalStepper extends _MatProxyStepperBase {}
 @Directive({selector: 'mat-vertical-stepper'})
 export class MatVerticalStepper extends _MatProxyStepperBase {}
 
-
 @Component({
   selector: 'mat-stepper, mat-vertical-stepper, mat-horizontal-stepper, [matStepper]',
   exportAs: 'matStepper, matVerticalStepper, matHorizontalStepper',
@@ -155,9 +160,9 @@ export class MatVerticalStepper extends _MatProxyStepperBase {}
     '[class.mat-stepper-horizontal]': 'orientation === "horizontal"',
     '[class.mat-stepper-vertical]': 'orientation === "vertical"',
     '[class.mat-stepper-label-position-end]':
-        'orientation === "horizontal" && labelPosition == "end"',
+      'orientation === "horizontal" && labelPosition == "end"',
     '[class.mat-stepper-label-position-bottom]':
-        'orientation === "horizontal" && labelPosition == "bottom"',
+      'orientation === "horizontal" && labelPosition == "bottom"',
     '[attr.aria-orientation]': 'orientation',
     'role': 'tablist',
   },
@@ -212,7 +217,8 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
     @Optional() dir: Directionality,
     changeDetectorRef: ChangeDetectorRef,
     elementRef: ElementRef<HTMLElement>,
-    @Inject(DOCUMENT) _document: any) {
+    @Inject(DOCUMENT) _document: any,
+  ) {
     super(dir, changeDetectorRef, elementRef, _document);
     const nodeName = elementRef.nativeElement.nodeName.toLowerCase();
     this.orientation = nodeName === 'mat-vertical-stepper' ? 'vertical' : 'horizontal';
@@ -220,24 +226,26 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
 
   override ngAfterContentInit() {
     super.ngAfterContentInit();
-    this._icons.forEach(({name, templateRef}) => this._iconOverrides[name] = templateRef);
+    this._icons.forEach(({name, templateRef}) => (this._iconOverrides[name] = templateRef));
 
     // Mark the component for change detection whenever the content children query changes
     this.steps.changes.pipe(takeUntil(this._destroyed)).subscribe(() => {
       this._stateChanged();
     });
 
-    this._animationDone.pipe(
-      // This needs a `distinctUntilChanged` in order to avoid emitting the same event twice due
-      // to a bug in animations where the `.done` callback gets invoked twice on some browsers.
-      // See https://github.com/angular/angular/issues/24084
-      distinctUntilChanged((x, y) => x.fromState === y.fromState && x.toState === y.toState),
-      takeUntil(this._destroyed)
-    ).subscribe(event => {
-      if ((event.toState as StepContentPositionState) === 'current') {
-        this.animationDone.emit();
-      }
-    });
+    this._animationDone
+      .pipe(
+        // This needs a `distinctUntilChanged` in order to avoid emitting the same event twice due
+        // to a bug in animations where the `.done` callback gets invoked twice on some browsers.
+        // See https://github.com/angular/angular/issues/24084
+        distinctUntilChanged((x, y) => x.fromState === y.fromState && x.toState === y.toState),
+        takeUntil(this._destroyed),
+      )
+      .subscribe(event => {
+        if ((event.toState as StepContentPositionState) === 'current') {
+          this.animationDone.emit();
+        }
+      });
   }
 
   _stepIsNavigable(index: number, step: MatStep): boolean {

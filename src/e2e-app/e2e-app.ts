@@ -14,5 +14,4 @@ import {Component, ViewEncapsulation} from '@angular/core';
   template: '<e2e-app-layout><router-outlet></router-outlet></e2e-app-layout>',
   encapsulation: ViewEncapsulation.None,
 })
-export class E2eApp {
-}
+export class E2eApp {}

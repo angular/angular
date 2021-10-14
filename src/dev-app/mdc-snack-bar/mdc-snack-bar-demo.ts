@@ -12,7 +12,7 @@ import {MatSnackBar} from '@angular/material-experimental/mdc-snack-bar';
 import {
   MatSnackBarConfig,
   MatSnackBarHorizontalPosition,
-  MatSnackBarVerticalPosition
+  MatSnackBarVerticalPosition,
 } from '@angular/material/snack-bar';
 
 @Component({
@@ -22,7 +22,6 @@ import {
   encapsulation: ViewEncapsulation.None,
 })
 export class MdcSnackBarDemo {
-
   @ViewChild('template') template: TemplateRef<any>;
   message = 'Snack Bar opened.';
   actionButtonLabel = 'Retry';

@@ -8,7 +8,6 @@
 import {InjectionToken} from '@angular/core';
 import {ThemePalette} from '@angular/material/core';
 
-
 /** Default `mat-slide-toggle` options that can be overridden. */
 export interface MatSlideToggleDefaultOptions {
   /** Whether toggle action triggers value changes in slide toggle. */
@@ -19,8 +18,10 @@ export interface MatSlideToggleDefaultOptions {
 }
 
 /** Injection token to be used to override the default options for `mat-slide-toggle`. */
-export const MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS =
-  new InjectionToken<MatSlideToggleDefaultOptions>('mat-slide-toggle-default-options', {
+export const MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS = new InjectionToken<MatSlideToggleDefaultOptions>(
+  'mat-slide-toggle-default-options',
+  {
     providedIn: 'root',
-    factory: () => ({disableToggleValue: false})
-  });
+    factory: () => ({disableToggleValue: false}),
+  },
+);

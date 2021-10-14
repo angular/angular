@@ -32,9 +32,9 @@ const CHIP_DECLARATIONS = [
     {
       provide: MAT_CHIPS_DEFAULT_OPTIONS,
       useValue: {
-        separatorKeyCodes: [ENTER]
-      } as MatChipsDefaultOptions
-    }
-  ]
+        separatorKeyCodes: [ENTER],
+      } as MatChipsDefaultOptions,
+    },
+  ],
 })
 export class MatChipsModule {}

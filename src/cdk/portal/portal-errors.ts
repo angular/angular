@@ -35,8 +35,10 @@ export function throwPortalOutletAlreadyDisposedError() {
  * @docs-private
  */
 export function throwUnknownPortalTypeError() {
-  throw Error('Attempting to attach an unknown Portal type. BasePortalOutlet accepts either ' +
-              'a ComponentPortal or a TemplatePortal.');
+  throw Error(
+    'Attempting to attach an unknown Portal type. BasePortalOutlet accepts either ' +
+      'a ComponentPortal or a TemplatePortal.',
+  );
 }
 
 /**

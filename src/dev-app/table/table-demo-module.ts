@@ -20,5 +20,4 @@ import {TableDemo} from './table-demo';
   ],
   declarations: [TableDemo],
 })
-export class TableDemoModule {
-}
+export class TableDemoModule {}

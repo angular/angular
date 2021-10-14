@@ -10,7 +10,7 @@ import {
   EmbeddedViewRef,
   IterableChangeRecord,
   IterableChanges,
-  ViewContainerRef
+  ViewContainerRef,
 } from '@angular/core';
 import {
   _ViewRepeater,
@@ -19,9 +19,8 @@ import {
   _ViewRepeaterItemContextFactory,
   _ViewRepeaterItemInsertArgs,
   _ViewRepeaterItemValueResolver,
-  _ViewRepeaterOperation
+  _ViewRepeaterOperation,
 } from './view-repeater';
-
 
 /**
  * A repeater that caches views when they are removed from a
@@ -35,7 +34,8 @@ import {
  * @template C The type for the context passed to each embedded view.
  */
 export class _RecycleViewRepeaterStrategy<T, R, C extends _ViewRepeaterItemContext<T>>
-    implements _ViewRepeater<T, R, C> {
+  implements _ViewRepeater<T, R, C>
+{
   /**
    * The size of the cache used to store unused views.
    * Setting the cache size to `0` will disable caching. Defaults to 20 views.
@@ -52,40 +52,57 @@ export class _RecycleViewRepeaterStrategy<T, R, C extends _ViewRepeaterItemConte
   private _viewCache: EmbeddedViewRef<C>[] = [];
 
   /** Apply changes to the DOM. */
-  applyChanges(changes: IterableChanges<R>,
-               viewContainerRef: ViewContainerRef,
-               itemContextFactory: _ViewRepeaterItemContextFactory<T, R, C>,
-               itemValueResolver: _ViewRepeaterItemValueResolver<T, R>,
-               itemViewChanged?: _ViewRepeaterItemChanged<R, C>) {
+  applyChanges(
+    changes: IterableChanges<R>,
+    viewContainerRef: ViewContainerRef,
+    itemContextFactory: _ViewRepeaterItemContextFactory<T, R, C>,
+    itemValueResolver: _ViewRepeaterItemValueResolver<T, R>,
+    itemViewChanged?: _ViewRepeaterItemChanged<R, C>,
+  ) {
     // Rearrange the views to put them in the right location.
-    changes.forEachOperation((record: IterableChangeRecord<R>,
-                              adjustedPreviousIndex: number | null,
-                              currentIndex: number | null) => {
-      let view: EmbeddedViewRef<C> | undefined;
-      let operation: _ViewRepeaterOperation;
-      if (record.previousIndex == null) {  // Item added.
-        const viewArgsFactory = () => itemContextFactory(
-            record, adjustedPreviousIndex, currentIndex);
-        view = this._insertView(viewArgsFactory, currentIndex!, viewContainerRef,
-            itemValueResolver(record));
-        operation = view ? _ViewRepeaterOperation.INSERTED : _ViewRepeaterOperation.REPLACED;
-      } else if (currentIndex == null) {  // Item removed.
-        this._detachAndCacheView(adjustedPreviousIndex!, viewContainerRef);
-        operation = _ViewRepeaterOperation.REMOVED;
-      } else {  // Item moved.
-        view = this._moveView(adjustedPreviousIndex!, currentIndex!, viewContainerRef,
-            itemValueResolver(record));
-        operation = _ViewRepeaterOperation.MOVED;
-      }
+    changes.forEachOperation(
+      (
+        record: IterableChangeRecord<R>,
+        adjustedPreviousIndex: number | null,
+        currentIndex: number | null,
+      ) => {
+        let view: EmbeddedViewRef<C> | undefined;
+        let operation: _ViewRepeaterOperation;
+        if (record.previousIndex == null) {
+          // Item added.
+          const viewArgsFactory = () =>
+            itemContextFactory(record, adjustedPreviousIndex, currentIndex);
+          view = this._insertView(
+            viewArgsFactory,
+            currentIndex!,
+            viewContainerRef,
+            itemValueResolver(record),
+          );
+          operation = view ? _ViewRepeaterOperation.INSERTED : _ViewRepeaterOperation.REPLACED;
+        } else if (currentIndex == null) {
+          // Item removed.
+          this._detachAndCacheView(adjustedPreviousIndex!, viewContainerRef);
+          operation = _ViewRepeaterOperation.REMOVED;
+        } else {
+          // Item moved.
+          view = this._moveView(
+            adjustedPreviousIndex!,
+            currentIndex!,
+            viewContainerRef,
+            itemValueResolver(record),
+          );
+          operation = _ViewRepeaterOperation.MOVED;
+        }
 
-      if (itemViewChanged) {
-        itemViewChanged({
-          context: view?.context,
-          operation,
-          record,
-        });
-      }
-    });
+        if (itemViewChanged) {
+          itemViewChanged({
+            context: view?.context,
+            operation,
+            record,
+          });
+        }
+      },
+    );
   }
 
   detach() {
@@ -99,9 +116,12 @@ export class _RecycleViewRepeaterStrategy<T, R, C extends _ViewRepeaterItemConte
    * Inserts a view for a new item, either from the cache or by creating a new
    * one. Returns `undefined` if the item was inserted into a cached view.
    */
-  private _insertView(viewArgsFactory: () => _ViewRepeaterItemInsertArgs<C>, currentIndex: number,
-                      viewContainerRef: ViewContainerRef,
-                      value: T): EmbeddedViewRef<C> | undefined {
+  private _insertView(
+    viewArgsFactory: () => _ViewRepeaterItemInsertArgs<C>,
+    currentIndex: number,
+    viewContainerRef: ViewContainerRef,
+    value: T,
+  ): EmbeddedViewRef<C> | undefined {
     const cachedView = this._insertViewFromCache(currentIndex!, viewContainerRef);
     if (cachedView) {
       cachedView.context.$implicit = value;
@@ -110,7 +130,10 @@ export class _RecycleViewRepeaterStrategy<T, R, C extends _ViewRepeaterItemConte
 
     const viewArgs = viewArgsFactory();
     return viewContainerRef.createEmbeddedView(
-        viewArgs.templateRef, viewArgs.context, viewArgs.index);
+      viewArgs.templateRef,
+      viewArgs.context,
+      viewArgs.index,
+    );
   }
 
   /** Detaches the view at the given index and inserts into the view cache. */
@@ -120,8 +143,12 @@ export class _RecycleViewRepeaterStrategy<T, R, C extends _ViewRepeaterItemConte
   }
 
   /** Moves view at the previous index to the current index. */
-  private _moveView(adjustedPreviousIndex: number, currentIndex: number,
-                    viewContainerRef: ViewContainerRef, value: T): EmbeddedViewRef<C> {
+  private _moveView(
+    adjustedPreviousIndex: number,
+    currentIndex: number,
+    viewContainerRef: ViewContainerRef,
+    value: T,
+  ): EmbeddedViewRef<C> {
     const view = viewContainerRef.get(adjustedPreviousIndex!) as EmbeddedViewRef<C>;
     viewContainerRef.move(view, currentIndex);
     view.context.$implicit = value;
@@ -151,8 +178,10 @@ export class _RecycleViewRepeaterStrategy<T, R, C extends _ViewRepeaterItemConte
   }
 
   /** Inserts a recycled view from the cache at the given index. */
-  private _insertViewFromCache(index: number,
-                               viewContainerRef: ViewContainerRef): EmbeddedViewRef<C> | null {
+  private _insertViewFromCache(
+    index: number,
+    viewContainerRef: ViewContainerRef,
+  ): EmbeddedViewRef<C> | null {
     const cachedView = this._viewCache.pop();
     if (cachedView) {
       viewContainerRef.insert(cachedView, index);

@@ -56,12 +56,12 @@ export class PointerFocusTracker<T extends FocusableElement> {
           list.map(element =>
             fromEvent(element._elementRef.nativeElement, 'mouseenter').pipe(
               mapTo(element),
-              takeUntil(this._items.changes)
-            )
-          )
+              takeUntil(this._items.changes),
+            ),
+          ),
         ),
-        mergeAll()
-      )
+        mergeAll(),
+      ),
     );
   }
 
@@ -77,12 +77,12 @@ export class PointerFocusTracker<T extends FocusableElement> {
           list.map(element =>
             fromEvent(element._elementRef.nativeElement, 'mouseout').pipe(
               mapTo(element),
-              takeUntil(this._items.changes)
-            )
-          )
+              takeUntil(this._items.changes),
+            ),
+          ),
         ),
-        mergeAll()
-      )
+        mergeAll(),
+      ),
     );
   }
 

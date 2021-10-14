@@ -32,7 +32,7 @@ export const CDK_DRAG_HANDLE = new InjectionToken<CdkDragHandle>('CdkDragHandle'
 @Directive({
   selector: '[cdkDragHandle]',
   host: {
-    'class': 'cdk-drag-handle'
+    'class': 'cdk-drag-handle',
   },
   providers: [{provide: CDK_DRAG_HANDLE, useExisting: CdkDragHandle}],
 })
@@ -45,7 +45,9 @@ export class CdkDragHandle implements OnDestroy {
 
   /** Whether starting to drag through this handle is disabled. */
   @Input('cdkDragHandleDisabled')
-  get disabled(): boolean { return this._disabled; }
+  get disabled(): boolean {
+    return this._disabled;
+  }
   set disabled(value: boolean) {
     this._disabled = coerceBooleanProperty(value);
     this._stateChanges.next(this);
@@ -54,8 +56,8 @@ export class CdkDragHandle implements OnDestroy {
 
   constructor(
     public element: ElementRef<HTMLElement>,
-    @Inject(CDK_DRAG_PARENT) @Optional() @SkipSelf() parentDrag?: any) {
-
+    @Inject(CDK_DRAG_PARENT) @Optional() @SkipSelf() parentDrag?: any,
+  ) {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       assertElementNode(element.nativeElement, 'cdkDragHandle');
     }

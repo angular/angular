@@ -7,7 +7,9 @@ import {MatDividerHarness} from './divider-harness';
 
 /** Shared tests to run on both the original and MDC-based dividers. */
 export function runHarnessTests(
-    dividerModule: typeof MatDividerModule, dividerHarness: typeof MatDividerHarness) {
+  dividerModule: typeof MatDividerModule,
+  dividerHarness: typeof MatDividerHarness,
+) {
   let fixture: ComponentFixture<DividerHarnessTest>;
   let loader: HarnessLoader;
 
@@ -44,6 +46,6 @@ export function runHarnessTests(
   template: `
     <mat-divider></mat-divider>
     <mat-divider inset vertical></mat-divider>
-  `
+  `,
 })
 class DividerHarnessTest {}

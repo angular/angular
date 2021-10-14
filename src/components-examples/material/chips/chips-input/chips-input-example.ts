@@ -19,11 +19,7 @@ export class ChipsInputExample {
   removable = true;
   addOnBlur = true;
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
-  fruits: Fruit[] = [
-    {name: 'Lemon'},
-    {name: 'Lime'},
-    {name: 'Apple'},
-  ];
+  fruits: Fruit[] = [{name: 'Lemon'}, {name: 'Lime'}, {name: 'Apple'}];
 
   add(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();

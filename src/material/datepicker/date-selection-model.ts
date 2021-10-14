@@ -23,7 +23,8 @@ export class DateRange<D> {
     /** The start date of the range. */
     readonly start: D | null,
     /** The end date of the range. */
-    readonly end: D | null) {}
+    readonly end: D | null,
+  ) {}
 }
 
 /**
@@ -53,7 +54,8 @@ export interface DateSelectionModelChange<S> {
  */
 @Injectable()
 export abstract class MatDateSelectionModel<S, D = ExtractDateTypeFromSelection<S>>
-    implements OnDestroy {
+  implements OnDestroy
+{
   private readonly _selectionChanged = new Subject<DateSelectionModelChange<S>>();
 
   /** Emits when the selection has changed. */
@@ -62,7 +64,8 @@ export abstract class MatDateSelectionModel<S, D = ExtractDateTypeFromSelection<
   protected constructor(
     /** The current selection. */
     readonly selection: S,
-    protected _adapter: DateAdapter<D>) {
+    protected _adapter: DateAdapter<D>,
+  ) {
     this.selection = selection;
   }
 
@@ -178,13 +181,18 @@ export class MatRangeDateSelectionModel<D> extends MatDateSelectionModel<DateRan
 
     // Complete ranges are only valid if both dates are valid and the start is before the end.
     if (start != null && end != null) {
-      return this._isValidDateInstance(start) && this._isValidDateInstance(end) &&
-             this._adapter.compareDate(start, end) <= 0;
+      return (
+        this._isValidDateInstance(start) &&
+        this._isValidDateInstance(end) &&
+        this._adapter.compareDate(start, end) <= 0
+      );
     }
 
     // Partial ranges are valid if the start/end is valid.
-    return (start == null || this._isValidDateInstance(start)) &&
-           (end == null || this._isValidDateInstance(end));
+    return (
+      (start == null || this._isValidDateInstance(start)) &&
+      (end == null || this._isValidDateInstance(end))
+    );
   }
 
   /**
@@ -205,7 +213,9 @@ export class MatRangeDateSelectionModel<D> extends MatDateSelectionModel<DateRan
 
 /** @docs-private */
 export function MAT_SINGLE_DATE_SELECTION_MODEL_FACTORY(
-    parent: MatSingleDateSelectionModel<unknown>, adapter: DateAdapter<unknown>) {
+  parent: MatSingleDateSelectionModel<unknown>,
+  adapter: DateAdapter<unknown>,
+) {
   return parent || new MatSingleDateSelectionModel(adapter);
 }
 
@@ -219,10 +229,11 @@ export const MAT_SINGLE_DATE_SELECTION_MODEL_PROVIDER: FactoryProvider = {
   useFactory: MAT_SINGLE_DATE_SELECTION_MODEL_FACTORY,
 };
 
-
 /** @docs-private */
 export function MAT_RANGE_DATE_SELECTION_MODEL_FACTORY(
-    parent: MatSingleDateSelectionModel<unknown>, adapter: DateAdapter<unknown>) {
+  parent: MatSingleDateSelectionModel<unknown>,
+  adapter: DateAdapter<unknown>,
+) {
   return parent || new MatRangeDateSelectionModel(adapter);
 }
 

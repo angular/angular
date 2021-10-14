@@ -5,7 +5,6 @@ interface Transaction {
   cost: number;
 }
 
-
 /**
  * @title Table with multiple header and footer rows
  */

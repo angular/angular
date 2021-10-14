@@ -8,7 +8,6 @@ import {By} from '@angular/platform-browser';
 import {Subject} from 'rxjs';
 import {MatChip, MatChipEvent, MatChipSelectionChange, MatChipsModule, MatChipList} from './index';
 
-
 describe('MatChip', () => {
   let fixture: ComponentFixture<any>;
   let chipDebugElement: DebugElement;
@@ -17,27 +16,32 @@ describe('MatChip', () => {
   let globalRippleOptions: RippleGlobalOptions;
   let dir = 'ltr';
 
-  beforeEach(waitForAsync(() => {
-    globalRippleOptions = {};
-    TestBed.configureTestingModule({
-      imports: [MatChipsModule],
-      declarations: [
-        BasicChip,
-        SingleChip,
-        BasicChipWithStaticTabindex,
-        BasicChipWithBoundTabindex,
-      ],
-      providers: [
-        {provide: MAT_RIPPLE_GLOBAL_OPTIONS, useFactory: () => globalRippleOptions},
-        {provide: Directionality, useFactory: () => ({
-          value: dir,
-          change: new Subject()
-        })},
-      ]
-    });
+  beforeEach(
+    waitForAsync(() => {
+      globalRippleOptions = {};
+      TestBed.configureTestingModule({
+        imports: [MatChipsModule],
+        declarations: [
+          BasicChip,
+          SingleChip,
+          BasicChipWithStaticTabindex,
+          BasicChipWithBoundTabindex,
+        ],
+        providers: [
+          {provide: MAT_RIPPLE_GLOBAL_OPTIONS, useFactory: () => globalRippleOptions},
+          {
+            provide: Directionality,
+            useFactory: () => ({
+              value: dir,
+              change: new Subject(),
+            }),
+          },
+        ],
+      });
 
-    TestBed.compileComponents();
-  }));
+      TestBed.compileComponents();
+    }),
+  );
 
   describe('MatBasicChip', () => {
     it('adds a class to indicate that it is a basic chip', () => {
@@ -71,7 +75,6 @@ describe('MatChip', () => {
     });
   });
 
-
   describe('MatChip', () => {
     let testComponent: SingleChip;
 
@@ -86,7 +89,6 @@ describe('MatChip', () => {
     });
 
     describe('basic behaviors', () => {
-
       it('adds the `mat-chip` class', () => {
         expect(chipNativeElement.classList).toContain('mat-chip');
       });
@@ -98,7 +100,7 @@ describe('MatChip', () => {
       it('emits focus only once for multiple clicks', () => {
         let counter = 0;
         chipInstance._onFocus.subscribe(() => {
-          counter ++ ;
+          counter++;
         });
 
         chipNativeElement.focus();
@@ -136,8 +138,11 @@ describe('MatChip', () => {
         fixture.detectChanges();
 
         expect(chipNativeElement.classList).toContain('mat-chip-selected');
-        expect(testComponent.chipSelectionChange)
-            .toHaveBeenCalledWith({source: chipInstance, isUserInput: false, selected: true});
+        expect(testComponent.chipSelectionChange).toHaveBeenCalledWith({
+          source: chipInstance,
+          isUserInput: false,
+          selected: true,
+        });
       });
 
       it('allows removal', () => {
@@ -190,8 +195,10 @@ describe('MatChip', () => {
         subscription.unsubscribe();
       });
 
-      it('should not dispatch `selectionChange` event when selecting a selected chip via ' +
-        'user interaction', () => {
+      it(
+        'should not dispatch `selectionChange` event when selecting a selected chip via ' +
+          'user interaction',
+        () => {
           chipInstance.select();
 
           const spy = jasmine.createSpy('selectionChange spy');
@@ -201,7 +208,8 @@ describe('MatChip', () => {
 
           expect(spy).not.toHaveBeenCalled();
           subscription.unsubscribe();
-        });
+        },
+      );
 
       it('should not dispatch `selectionChange` through setter if the value did not change', () => {
         chipInstance.selected = false;
@@ -217,12 +225,14 @@ describe('MatChip', () => {
 
       it('should be able to disable ripples through ripple global options at runtime', () => {
         expect(chipInstance.rippleDisabled)
-          .withContext('Expected chip ripples to be enabled.').toBe(false);
+          .withContext('Expected chip ripples to be enabled.')
+          .toBe(false);
 
         globalRippleOptions.disabled = true;
 
         expect(chipInstance.rippleDisabled)
-          .withContext('Expected chip ripples to be disabled.').toBe(true);
+          .withContext('Expected chip ripples to be disabled.')
+          .toBe(true);
       });
 
       it('should return the chip text if value is undefined', () => {
@@ -245,7 +255,6 @@ describe('MatChip', () => {
     });
 
     describe('keyboard behavior', () => {
-
       describe('when selectable is true', () => {
         beforeEach(() => {
           testComponent.selectable = true;
@@ -257,13 +266,13 @@ describe('MatChip', () => {
           const CHIP_SELECTED_EVENT: MatChipSelectionChange = {
             source: chipInstance,
             isUserInput: true,
-            selected: true
+            selected: true,
           };
 
           const CHIP_DESELECTED_EVENT: MatChipSelectionChange = {
             source: chipInstance,
             isUserInput: true,
-            selected: false
+            selected: false,
           };
 
           spyOn(testComponent, 'chipSelectionChange');
@@ -305,7 +314,6 @@ describe('MatChip', () => {
 
           expect(chipNativeElement.getAttribute('aria-selected')).toBe('true');
         });
-
       });
 
       describe('when selectable is false', () => {
@@ -411,7 +419,6 @@ describe('MatChip', () => {
 
         expect(chipNativeElement.getAttribute('tabindex')).toBeFalsy();
       });
-
     });
 
     it('should have a focus indicator', () => {
@@ -432,7 +439,7 @@ describe('MatChip', () => {
           {{name}}
         </mat-chip>
       </div>
-    </mat-chip-list>`
+    </mat-chip-list>`,
 })
 class SingleChip {
   @ViewChild(MatChipList) chipList: MatChipList;
@@ -452,19 +459,17 @@ class SingleChip {
 }
 
 @Component({
-  template: `<mat-basic-chip>Hello</mat-basic-chip>`
+  template: `<mat-basic-chip>Hello</mat-basic-chip>`,
 })
-class BasicChip {
-}
+class BasicChip {}
 
 @Component({
-  template: `<mat-basic-chip tabindex="3">Hello</mat-basic-chip>`
+  template: `<mat-basic-chip tabindex="3">Hello</mat-basic-chip>`,
 })
-class BasicChipWithStaticTabindex {
-}
+class BasicChipWithStaticTabindex {}
 
 @Component({
-  template: `<mat-basic-chip [tabIndex]="tabindex">Hello</mat-basic-chip>`
+  template: `<mat-basic-chip [tabIndex]="tabindex">Hello</mat-basic-chip>`,
 })
 class BasicChipWithBoundTabindex {
   tabindex = 12;

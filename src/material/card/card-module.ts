@@ -25,7 +25,6 @@ import {
   MatCardXlImage,
 } from './card';
 
-
 @NgModule({
   imports: [MatCommonModule],
   exports: [
@@ -46,9 +45,20 @@ import {
     MatCommonModule,
   ],
   declarations: [
-    MatCard, MatCardHeader, MatCardTitleGroup, MatCardContent, MatCardTitle, MatCardSubtitle,
-    MatCardActions, MatCardFooter, MatCardSmImage, MatCardMdImage, MatCardLgImage, MatCardImage,
-    MatCardXlImage, MatCardAvatar,
+    MatCard,
+    MatCardHeader,
+    MatCardTitleGroup,
+    MatCardContent,
+    MatCardTitle,
+    MatCardSubtitle,
+    MatCardActions,
+    MatCardFooter,
+    MatCardSmImage,
+    MatCardMdImage,
+    MatCardLgImage,
+    MatCardImage,
+    MatCardXlImage,
+    MatCardAvatar,
   ],
 })
 export class MatCardModule {}

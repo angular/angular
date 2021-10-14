@@ -23,13 +23,15 @@ const validStyleFileRegex = /\.(c|le|sc)ss/;
 export function getProjectStyleFile(project: ProjectDefinition, extension?: string): string | null {
   const buildOptions = getProjectTargetOptions(project, 'build');
   if (buildOptions.styles && isJsonArray(buildOptions.styles) && buildOptions.styles.length) {
-    const styles =
-        buildOptions.styles.map(s => typeof s === 'string' ? s : (s as {input: string}).input);
+    const styles = buildOptions.styles.map(s =>
+      typeof s === 'string' ? s : (s as {input: string}).input,
+    );
 
     // Look for the default style file that is generated for new projects by the Angular CLI. This
     // default style file is usually called `styles.ext` unless it has been changed explicitly.
-    const defaultMainStylePath = styles
-      .find(file => extension ? file === `styles.${extension}` : defaultStyleFileRegex.test(file));
+    const defaultMainStylePath = styles.find(file =>
+      extension ? file === `styles.${extension}` : defaultStyleFileRegex.test(file),
+    );
 
     if (defaultMainStylePath) {
       return normalize(defaultMainStylePath);
@@ -38,8 +40,9 @@ export function getProjectStyleFile(project: ProjectDefinition, extension?: stri
     // If no default style file could be found, use the first style file that matches the given
     // extension. If no extension specified explicitly, we look for any file with a valid style
     // file extension.
-    const fallbackStylePath = styles
-      .find(file => extension ? file.endsWith(`.${extension}`) : validStyleFileRegex.test(file));
+    const fallbackStylePath = styles.find(file =>
+      extension ? file.endsWith(`.${extension}`) : validStyleFileRegex.test(file),
+    );
 
     if (fallbackStylePath) {
       return normalize(fallbackStylePath);

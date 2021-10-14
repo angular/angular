@@ -12,7 +12,7 @@ import {
   CdkPopoverEdit,
   CdkPopoverEditTabOut,
   CdkRowHoverContent,
-  CdkEditOpen
+  CdkEditOpen,
 } from '@angular/cdk-experimental/popover-edit';
 
 const POPOVER_EDIT_HOST_BINDINGS = {
@@ -85,8 +85,9 @@ export class MatRowHoverContent extends CdkRowHoverContent {
   }
 
   protected override makeElementVisible(element: HTMLElement): void {
-    _closest(this.elementRef.nativeElement!, _CELL_SELECTOR)!
-        .classList.add(MAT_ROW_HOVER_CELL_CLASS);
+    _closest(this.elementRef.nativeElement!, _CELL_SELECTOR)!.classList.add(
+      MAT_ROW_HOVER_CELL_CLASS,
+    );
 
     if (this.services.directionality.value === 'rtl') {
       element.classList.add(MAT_ROW_HOVER_RTL_CLASS);
@@ -110,5 +111,4 @@ export class MatRowHoverContent extends CdkRowHoverContent {
 @Directive({
   selector: '[matEditOpen]',
 })
-export class MatEditOpen extends CdkEditOpen {
-}
+export class MatEditOpen extends CdkEditOpen {}

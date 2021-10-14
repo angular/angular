@@ -23,7 +23,7 @@ import {Directive, Input} from '@angular/core';
 @Directive({
   selector: '[matSelectionToggle]',
   exportAs: 'matSelectionToggle',
-  providers: [{provide: CdkSelectionToggle, useExisting: MatSelectionToggle}]
+  providers: [{provide: CdkSelectionToggle, useExisting: MatSelectionToggle}],
 })
 // tslint:disable-next-line: coercion-types
 export class MatSelectionToggle<T> extends CdkSelectionToggle<T> {
@@ -32,8 +32,10 @@ export class MatSelectionToggle<T> extends CdkSelectionToggle<T> {
 
   /** The index of the value in the list. Required when used with `trackBy` */
   @Input('matSelectionToggleIndex')
-  override get index(): number|undefined { return this._index; }
-  override set index(index: number|undefined) {
+  override get index(): number | undefined {
+    return this._index;
+  }
+  override set index(index: number | undefined) {
     // TODO: when we remove support for ViewEngine, change this setter to an input
     // alias in the decorator metadata.
     this._index = coerceNumberProperty(index);

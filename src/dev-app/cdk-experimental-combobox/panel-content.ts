@@ -18,19 +18,16 @@ let id = 0;
   exportAs: 'panelContent',
   host: {
     'role': 'role',
-    '[id]': 'dialogId'
-  }
+    '[id]': 'dialogId',
+  },
 })
 export class PanelContent<V> implements OnInit {
-
   dialogId = `dialog-${id++}`;
   role = 'dialog';
 
   @Input('parentPanel') private readonly _explicitPanel: CdkComboboxPanel;
 
-  constructor(
-    @Optional() @Inject(PANEL) readonly _parentPanel?: CdkComboboxPanel<V>,
-  ) { }
+  constructor(@Optional() @Inject(PANEL) readonly _parentPanel?: CdkComboboxPanel<V>) {}
 
   ngOnInit() {
     this.registerWithPanel();

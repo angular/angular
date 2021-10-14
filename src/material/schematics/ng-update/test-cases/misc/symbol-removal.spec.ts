@@ -3,21 +3,22 @@ import {MIGRATION_PATH} from '../../../paths';
 
 describe('symbol removal check', () => {
   it('should report symbols that have been removed', async () => {
-    const {runFixers} = await createTestCaseSetup(
-        'migration-v13', MIGRATION_PATH,
-        [resolveBazelPath(__dirname, './symbol-removal_input.ts')]);
+    const {runFixers} = await createTestCaseSetup('migration-v13', MIGRATION_PATH, [
+      resolveBazelPath(__dirname, './symbol-removal_input.ts'),
+    ]);
 
     const {logOutput} = await runFixers();
 
     expect(logOutput)
-      .not
-      .withContext('Expected check not to report symbols that have not been removed.')
+      .not.withContext('Expected check not to report symbols that have not been removed.')
       .toContain('MatRipple');
 
     expect(logOutput)
-      .not
-      .withContext('Expected check not to report symbols with the same name as a ' +
-                   'removed symbol, but from a different module.').toContain('HasInitializedCtor');
+      .not.withContext(
+        'Expected check not to report symbols with the same name as a ' +
+          'removed symbol, but from a different module.',
+      )
+      .toContain('HasInitializedCtor');
 
     expect(logOutput)
       .withContext('Expected check to report a removed symbol')

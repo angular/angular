@@ -7,7 +7,9 @@ import {MatOptgroupHarness} from './optgroup-harness';
 
 /** Shared tests to run on both the original and MDC-based option groups. */
 export function runHarnessTests(
-    optionModule: typeof MatOptionModule, optionGroupHarness: typeof MatOptgroupHarness) {
+  optionModule: typeof MatOptionModule,
+  optionGroupHarness: typeof MatOptgroupHarness,
+) {
   let fixture: ComponentFixture<OptgroupHarnessTest>;
   let loader: HarnessLoader;
 
@@ -28,9 +30,11 @@ export function runHarnessTests(
   });
 
   it('should filter groups based on their text', async () => {
-    const groups = await loader.getAllHarnesses(optionGroupHarness.with({
-      labelText: 'Disabled group'
-    }));
+    const groups = await loader.getAllHarnesses(
+      optionGroupHarness.with({
+        labelText: 'Disabled group',
+      }),
+    );
 
     expect(groups.length).toBe(1);
   });
@@ -62,7 +66,6 @@ export function runHarnessTests(
   });
 }
 
-
 @Component({
   template: `
     <mat-optgroup label="Plain group">
@@ -73,8 +76,6 @@ export function runHarnessTests(
     <mat-optgroup label="Disabled group" disabled>
       <mat-option>Disabled option 1</mat-option>
     </mat-optgroup>
-  `
+  `,
 })
-class OptgroupHarnessTest {
-}
-
+class OptgroupHarnessTest {}

@@ -7,7 +7,9 @@ import {MatBadgeHarness} from '@angular/material/badge/testing/badge-harness';
 
 /** Shared tests to run on both the original and MDC-based badges. */
 export function runHarnessTests(
-    badgeModule: typeof MatBadgeModule, badgeHarness: typeof MatBadgeHarness) {
+  badgeModule: typeof MatBadgeModule,
+  badgeHarness: typeof MatBadgeHarness,
+) {
   let fixture: ComponentFixture<BadgeHarnessTest>;
   let loader: HarnessLoader;
 
@@ -105,7 +107,6 @@ export function runHarnessTests(
   });
 }
 
-
 @Component({
   template: `
     <button id="simple" [matBadge]="simpleContent">Simple</button>
@@ -129,7 +130,7 @@ export function runHarnessTests(
       id="disabled"
       matBadge="Disabled badge"
       [matBadgeDisabled]="disabled">Disabled</button>
-  `
+  `,
 })
 class BadgeHarnessTest {
   simpleContent = 'Simple badge';
@@ -139,4 +140,3 @@ class BadgeHarnessTest {
   hidden = true;
   disabled = true;
 }
-

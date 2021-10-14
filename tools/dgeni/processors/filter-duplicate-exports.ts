@@ -44,12 +44,9 @@ export class FilterDuplicateExports implements Processor {
         // If there are multiple docs that refer to the same TypeScript symbol, but have a
         // different name than the resolved symbol, we can remove those documents, since they
         // are just aliasing an already existing export.
-        similarDocs
-          .filter(d => d.symbol.name !== d.name)
-          .forEach(d => duplicates.add(d));
+        similarDocs.filter(d => d.symbol.name !== d.name).forEach(d => duplicates.add(d));
 
-        const docsWithSameName = similarDocs
-          .filter(d => d.symbol.name === d.name);
+        const docsWithSameName = similarDocs.filter(d => d.symbol.name === d.name);
 
         // If there are multiple docs that refer to the same TypeScript symbol and have
         // the same name, we need to remove all of those duplicates except one.

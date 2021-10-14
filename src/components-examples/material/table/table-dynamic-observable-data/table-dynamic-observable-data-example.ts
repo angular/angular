@@ -38,10 +38,7 @@ export class TableDynamicObservableDataExample {
 
   addData() {
     const randomElementIndex = Math.floor(Math.random() * ELEMENT_DATA.length);
-    this.dataToDisplay = [
-      ...this.dataToDisplay,
-      ELEMENT_DATA[randomElementIndex]
-    ];
+    this.dataToDisplay = [...this.dataToDisplay, ELEMENT_DATA[randomElementIndex]];
     this.dataSource.setData(this.dataToDisplay);
   }
 

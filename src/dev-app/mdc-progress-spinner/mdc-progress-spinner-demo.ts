@@ -9,7 +9,6 @@
 import {Component} from '@angular/core';
 import {ThemePalette} from '@angular/material/core';
 
-
 @Component({
   selector: 'mdc-progress-spinner-demo',
   templateUrl: 'mdc-progress-spinner-demo.html',

@@ -13,7 +13,7 @@ import {
   HarnessEnvironment,
   HarnessLoader,
   stopHandlingAutoChangeDetectionStatus,
-  TestElement
+  TestElement,
 } from '@angular/cdk/testing';
 import {ComponentFixture, flush} from '@angular/core/testing';
 import {Observable} from 'rxjs';
@@ -29,7 +29,7 @@ export interface TestbedHarnessEnvironmentOptions {
 
 /** The default environment options. */
 const defaultEnvironmentOptions: TestbedHarnessEnvironmentOptions = {
-  queryFn: (selector: string, root: Element) => root.querySelectorAll(selector)
+  queryFn: (selector: string, root: Element) => root.querySelectorAll(selector),
 };
 
 /** Whether auto change detection is currently disabled. */
@@ -96,8 +96,11 @@ export class TestbedHarnessEnvironment extends HarnessEnvironment<Element> {
   /** The options for this environment. */
   private _options: TestbedHarnessEnvironmentOptions;
 
-  protected constructor(rawRootElement: Element, private _fixture: ComponentFixture<unknown>,
-      options?: TestbedHarnessEnvironmentOptions) {
+  protected constructor(
+    rawRootElement: Element,
+    private _fixture: ComponentFixture<unknown>,
+    options?: TestbedHarnessEnvironmentOptions,
+  ) {
     super(rawRootElement);
     this._options = {...defaultEnvironmentOptions, ...options};
     this._taskState = TaskStateZoneInterceptor.setup();
@@ -109,8 +112,10 @@ export class TestbedHarnessEnvironment extends HarnessEnvironment<Element> {
   }
 
   /** Creates a `HarnessLoader` rooted at the given fixture's root element. */
-  static loader(fixture: ComponentFixture<unknown>, options?: TestbedHarnessEnvironmentOptions):
-      HarnessLoader {
+  static loader(
+    fixture: ComponentFixture<unknown>,
+    options?: TestbedHarnessEnvironmentOptions,
+  ): HarnessLoader {
     return new TestbedHarnessEnvironment(fixture.nativeElement, fixture, options);
   }
 
@@ -118,8 +123,10 @@ export class TestbedHarnessEnvironment extends HarnessEnvironment<Element> {
    * Creates a `HarnessLoader` at the document root. This can be used if harnesses are
    * located outside of a fixture (e.g. overlays appended to the document body).
    */
-  static documentRootLoader(fixture: ComponentFixture<unknown>,
-      options?: TestbedHarnessEnvironmentOptions): HarnessLoader {
+  static documentRootLoader(
+    fixture: ComponentFixture<unknown>,
+    options?: TestbedHarnessEnvironmentOptions,
+  ): HarnessLoader {
     return new TestbedHarnessEnvironment(document.body, fixture, options);
   }
 
@@ -138,8 +145,10 @@ export class TestbedHarnessEnvironment extends HarnessEnvironment<Element> {
    * of the fixture.
    */
   static async harnessForFixture<T extends ComponentHarness>(
-      fixture: ComponentFixture<unknown>, harnessType: ComponentHarnessConstructor<T>,
-      options?: TestbedHarnessEnvironmentOptions): Promise<T> {
+    fixture: ComponentFixture<unknown>,
+    harnessType: ComponentHarnessConstructor<T>,
+    options?: TestbedHarnessEnvironmentOptions,
+  ): Promise<T> {
     const environment = new TestbedHarnessEnvironment(fixture.nativeElement, fixture, options);
     await environment.forceStabilize();
     return environment.createComponentHarness(harnessType, fixture.nativeElement);

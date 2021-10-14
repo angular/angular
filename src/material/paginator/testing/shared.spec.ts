@@ -8,7 +8,9 @@ import {MatPaginatorHarness} from './paginator-harness';
 
 /** Shared tests to run on both the original and MDC-based paginator. */
 export function runHarnessTests(
-    paginatorModule: typeof MatPaginatorModule, paginatorHarness: typeof MatPaginatorHarness) {
+  paginatorModule: typeof MatPaginatorModule,
+  paginatorHarness: typeof MatPaginatorHarness,
+) {
   let fixture: ComponentFixture<PaginatorHarnessTest>;
   let loader: HarnessLoader;
   let instance: PaginatorHarnessTest;
@@ -91,7 +93,8 @@ export function runHarnessTests(
     fixture.detectChanges();
 
     await expectAsync(paginator.goToFirstPage()).toBeRejectedWithError(
-        /Could not find first page button inside paginator/);
+      /Could not find first page button inside paginator/,
+    );
   });
 
   it('should throw an error if the last page button is not available', async () => {
@@ -101,7 +104,8 @@ export function runHarnessTests(
     fixture.detectChanges();
 
     await expectAsync(paginator.goToLastPage()).toBeRejectedWithError(
-        /Could not find last page button inside paginator/);
+      /Could not find last page button inside paginator/,
+    );
   });
 
   it('should throw an error if the page size selector is not available', async () => {
@@ -111,7 +115,8 @@ export function runHarnessTests(
     fixture.detectChanges();
 
     await expectAsync(paginator.setPageSize(10)).toBeRejectedWithError(
-        /Cannot find page size selector in paginator/);
+      /Cannot find page size selector in paginator/,
+    );
   });
 }
 
@@ -125,7 +130,7 @@ export function runHarnessTests(
       [pageSizeOptions]="pageSizeOptions"
       [pageIndex]="pageIndex">
     </mat-paginator>
-  `
+  `,
 })
 class PaginatorHarnessTest {
   length = 500;
@@ -140,4 +145,3 @@ class PaginatorHarnessTest {
     this.pageIndex = event.pageIndex;
   }
 }
-

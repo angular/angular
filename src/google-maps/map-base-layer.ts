@@ -37,8 +37,9 @@ export class MapBaseLayer implements OnInit, OnDestroy {
   private _assertInitialized() {
     if (!this._map.googleMap) {
       throw Error(
-          'Cannot access Google Map information before the API has been initialized. ' +
-          'Please wait for the API to load before trying to interact with it.');
+        'Cannot access Google Map information before the API has been initialized. ' +
+          'Please wait for the API to load before trying to interact with it.',
+      );
     }
   }
 

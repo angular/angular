@@ -5,6 +5,6 @@ import {Component} from '@angular/core';
  */
 @Component({
   selector: 'tab-group-harness-example',
-  templateUrl: 'tab-group-harness-example.html'
+  templateUrl: 'tab-group-harness-example.html',
 })
 export class TabGroupHarnessExample {}

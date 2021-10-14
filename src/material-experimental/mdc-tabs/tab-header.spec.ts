@@ -26,30 +26,27 @@ import {MatTabLabelWrapper} from './tab-label-wrapper';
 import {Subject} from 'rxjs';
 import {ObserversModule, MutationObserverFactory} from '@angular/cdk/observers';
 
-
 describe('MDC-based MatTabHeader', () => {
   let dir: Direction = 'ltr';
   let change = new Subject();
   let fixture: ComponentFixture<SimpleTabHeaderApp>;
   let appComponent: SimpleTabHeaderApp;
 
-  beforeEach(waitForAsync(() => {
-    dir = 'ltr';
-    TestBed.configureTestingModule({
-      imports: [CommonModule, PortalModule, MatRippleModule, ScrollingModule, ObserversModule],
-      declarations: [
-        MatTabHeader,
-        MatTabLabelWrapper,
-        SimpleTabHeaderApp,
-      ],
-      providers: [
-        ViewportRuler,
-        {provide: Directionality, useFactory: () => ({value: dir, change: change})},
-      ]
-    });
+  beforeEach(
+    waitForAsync(() => {
+      dir = 'ltr';
+      TestBed.configureTestingModule({
+        imports: [CommonModule, PortalModule, MatRippleModule, ScrollingModule, ObserversModule],
+        declarations: [MatTabHeader, MatTabLabelWrapper, SimpleTabHeaderApp],
+        providers: [
+          ViewportRuler,
+          {provide: Directionality, useFactory: () => ({value: dir, change: change})},
+        ],
+      });
 
-    TestBed.compileComponents();
-  }));
+      TestBed.compileComponents();
+    }),
+  );
 
   describe('focusing', () => {
     let tabListContainer: HTMLElement;
@@ -236,7 +233,6 @@ describe('MDC-based MatTabHeader', () => {
       expect(appComponent.selectedIndex).toBe(0);
       expect(enterEvent.defaultPrevented).toBe(false);
     });
-
   });
 
   describe('pagination', () => {
@@ -268,8 +264,9 @@ describe('MDC-based MatTabHeader', () => {
         // Focus on the last tab, expect this to be the maximum scroll distance.
         appComponent.tabHeader.focusIndex = appComponent.tabs.length - 1;
         fixture.detectChanges();
-        expect(appComponent.tabHeader.scrollDistance)
-            .toBe(appComponent.tabHeader._getMaxScrollDistance());
+        expect(appComponent.tabHeader.scrollDistance).toBe(
+          appComponent.tabHeader._getMaxScrollDistance(),
+        );
 
         // Focus on the first tab, expect this to be the maximum scroll distance.
         appComponent.tabHeader.focusIndex = 0;
@@ -283,17 +280,20 @@ describe('MDC-based MatTabHeader', () => {
 
         expect(appComponent.tabHeader._showPaginationControls).toBe(true);
 
-        const buttonAfter =
-            fixture.debugElement.query(By.css('.mat-mdc-tab-header-pagination-after'));
+        const buttonAfter = fixture.debugElement.query(
+          By.css('.mat-mdc-tab-header-pagination-after'),
+        );
 
         expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
-          .withContext('Expected no ripple to show up initially.').toBe(0);
+          .withContext('Expected no ripple to show up initially.')
+          .toBe(0);
 
         dispatchFakeEvent(buttonAfter.nativeElement, 'mousedown');
         dispatchFakeEvent(buttonAfter.nativeElement, 'mouseup');
 
         expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
-          .withContext('Expected one ripple to show up after mousedown').toBe(1);
+          .withContext('Expected one ripple to show up after mousedown')
+          .toBe(1);
       });
 
       it('should allow disabling ripples for pagination buttons', () => {
@@ -303,19 +303,21 @@ describe('MDC-based MatTabHeader', () => {
 
         expect(appComponent.tabHeader._showPaginationControls).toBe(true);
 
-        const buttonAfter =
-            fixture.debugElement.query(By.css('.mat-mdc-tab-header-pagination-after'));
+        const buttonAfter = fixture.debugElement.query(
+          By.css('.mat-mdc-tab-header-pagination-after'),
+        );
 
         expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
-          .withContext('Expected no ripple to show up initially.').toBe(0);
+          .withContext('Expected no ripple to show up initially.')
+          .toBe(0);
 
         dispatchFakeEvent(buttonAfter.nativeElement, 'mousedown');
         dispatchFakeEvent(buttonAfter.nativeElement, 'mouseup');
 
         expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
-          .withContext('Expected no ripple to show up after mousedown').toBe(0);
+          .withContext('Expected no ripple to show up after mousedown')
+          .toBe(0);
       });
-
     });
 
     describe('rtl', () => {
@@ -336,8 +338,9 @@ describe('MDC-based MatTabHeader', () => {
         // Focus on the last tab, expect this to be the maximum scroll distance.
         appComponent.tabHeader.focusIndex = appComponent.tabs.length - 1;
         fixture.detectChanges();
-        expect(appComponent.tabHeader.scrollDistance)
-            .toBe(appComponent.tabHeader._getMaxScrollDistance());
+        expect(appComponent.tabHeader.scrollDistance).toBe(
+          appComponent.tabHeader._getMaxScrollDistance(),
+        );
 
         // Focus on the first tab, expect this to be the maximum scroll distance.
         appComponent.tabHeader.focusIndex = 0;
@@ -366,29 +369,24 @@ describe('MDC-based MatTabHeader', () => {
         headerElement = fixture.nativeElement.querySelector('.mat-mdc-tab-header');
       });
 
-      it('should scroll towards the end while holding down the next button using a mouse',
-        fakeAsync(() => {
-          assertNextButtonScrolling('mousedown', 'click');
-        }));
+      it('should scroll towards the end while holding down the next button using a mouse', fakeAsync(() => {
+        assertNextButtonScrolling('mousedown', 'click');
+      }));
 
-      it('should scroll towards the start while holding down the prev button using a mouse',
-        fakeAsync(() => {
-          assertPrevButtonScrolling('mousedown', 'click');
-        }));
+      it('should scroll towards the start while holding down the prev button using a mouse', fakeAsync(() => {
+        assertPrevButtonScrolling('mousedown', 'click');
+      }));
 
-      it('should scroll towards the end while holding down the next button using touch',
-        fakeAsync(() => {
-          assertNextButtonScrolling('touchstart', 'touchend');
-        }));
+      it('should scroll towards the end while holding down the next button using touch', fakeAsync(() => {
+        assertNextButtonScrolling('touchstart', 'touchend');
+      }));
 
-      it('should scroll towards the start while holding down the prev button using touch',
-        fakeAsync(() => {
-          assertPrevButtonScrolling('touchstart', 'touchend');
-        }));
+      it('should scroll towards the start while holding down the prev button using touch', fakeAsync(() => {
+        assertPrevButtonScrolling('touchstart', 'touchend');
+      }));
 
       it('should not scroll if the sequence is interrupted quickly', fakeAsync(() => {
-        expect(header.scrollDistance)
-          .withContext('Expected to start off not scrolled.').toBe(0);
+        expect(header.scrollDistance).withContext('Expected to start off not scrolled.').toBe(0);
 
         dispatchFakeEvent(nextButton, 'mousedown');
         fixture.detectChanges();
@@ -401,7 +399,8 @@ describe('MDC-based MatTabHeader', () => {
         tick(3000);
 
         expect(header.scrollDistance)
-          .withContext('Expected not to have scrolled after a while.').toBe(0);
+          .withContext('Expected not to have scrolled after a while.')
+          .toBe(0);
       }));
 
       it('should clear the timeouts on destroy', fakeAsync(() => {
@@ -456,20 +455,21 @@ describe('MDC-based MatTabHeader', () => {
       }));
 
       it('should stop scrolling if the pointer leaves the header', fakeAsync(() => {
-        expect(header.scrollDistance)
-          .withContext('Expected to start off not scrolled.').toBe(0);
+        expect(header.scrollDistance).withContext('Expected to start off not scrolled.').toBe(0);
 
         dispatchFakeEvent(nextButton, 'mousedown');
         fixture.detectChanges();
         tick(300);
 
         expect(header.scrollDistance)
-          .withContext('Expected not to scroll after short amount of time.').toBe(0);
+          .withContext('Expected not to scroll after short amount of time.')
+          .toBe(0);
 
         tick(1000);
 
         expect(header.scrollDistance)
-          .withContext('Expected to scroll after some time.').toBeGreaterThan(0);
+          .withContext('Expected to scroll after some time.')
+          .toBeGreaterThan(0);
 
         let previousDistance = header.scrollDistance;
 
@@ -481,15 +481,15 @@ describe('MDC-based MatTabHeader', () => {
       }));
 
       it('should not scroll when pressing the right mouse button', fakeAsync(() => {
-        expect(header.scrollDistance)
-          .withContext('Expected to start off not scrolled.').toBe(0);
+        expect(header.scrollDistance).withContext('Expected to start off not scrolled.').toBe(0);
 
         dispatchEvent(nextButton, createMouseEvent('mousedown', undefined, undefined, 2));
         fixture.detectChanges();
         tick(3000);
 
         expect(header.scrollDistance)
-          .withContext('Expected not to have scrolled after a while.').toBe(0);
+          .withContext('Expected not to have scrolled after a while.')
+          .toBe(0);
       }));
 
       /**
@@ -498,20 +498,21 @@ describe('MDC-based MatTabHeader', () => {
        * @param endEventName Name of the event that is supposed to end the scrolling.
        */
       function assertNextButtonScrolling(startEventName: string, endEventName: string) {
-        expect(header.scrollDistance)
-          .withContext('Expected to start off not scrolled.').toBe(0);
+        expect(header.scrollDistance).withContext('Expected to start off not scrolled.').toBe(0);
 
         dispatchFakeEvent(nextButton, startEventName);
         fixture.detectChanges();
         tick(300);
 
         expect(header.scrollDistance)
-          .withContext('Expected not to scroll after short amount of time.').toBe(0);
+          .withContext('Expected not to scroll after short amount of time.')
+          .toBe(0);
 
         tick(1000);
 
         expect(header.scrollDistance)
-          .withContext('Expected to scroll after some time.').toBeGreaterThan(0);
+          .withContext('Expected to scroll after some time.')
+          .toBeGreaterThan(0);
 
         let previousDistance = header.scrollDistance;
 
@@ -535,20 +536,21 @@ describe('MDC-based MatTabHeader', () => {
 
         let currentScroll = header.scrollDistance;
 
-        expect(currentScroll)
-          .withContext('Expected to start off scrolled.').toBeGreaterThan(0);
+        expect(currentScroll).withContext('Expected to start off scrolled.').toBeGreaterThan(0);
 
         dispatchFakeEvent(prevButton, startEventName);
         fixture.detectChanges();
         tick(300);
 
         expect(header.scrollDistance)
-          .withContext('Expected not to scroll after short amount of time.').toBe(currentScroll);
+          .withContext('Expected not to scroll after short amount of time.')
+          .toBe(currentScroll);
 
         tick(1000);
 
         expect(header.scrollDistance)
-          .withContext('Expected to scroll after some time.').toBeLessThan(currentScroll);
+          .withContext('Expected to scroll after some time.')
+          .toBeLessThan(currentScroll);
 
         currentScroll = header.scrollDistance;
 
@@ -560,7 +562,6 @@ describe('MDC-based MatTabHeader', () => {
 
         dispatchFakeEvent(nextButton, endEventName);
       }
-
     });
 
     describe('disabling pagination', () => {
@@ -649,20 +650,21 @@ describe('MDC-based MatTabHeader', () => {
       TestBed.overrideProvider(MutationObserverFactory, {
         useValue: {
           // Stub out the MutationObserver since the native one is async.
-          create: function(callback: Function) {
+          create: function (callback: Function) {
             mutationCallbacks.push(callback);
             return {observe: () => {}, disconnect: () => {}};
-          }
-        }
+          },
+        },
       });
 
       fixture = TestBed.createComponent(SimpleTabHeaderApp);
       fixture.detectChanges();
 
       const tabHeaderElement: HTMLElement =
-          fixture.nativeElement.querySelector('.mat-mdc-tab-header');
-      const labels =
-          Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('.label-content'));
+        fixture.nativeElement.querySelector('.mat-mdc-tab-header');
+      const labels = Array.from<HTMLElement>(
+        fixture.nativeElement.querySelectorAll('.label-content'),
+      );
       const extraText = new Array(100).fill('w').join();
       const enabledClass = 'mat-mdc-tab-header-pagination-controls-enabled';
 
@@ -678,7 +680,6 @@ describe('MDC-based MatTabHeader', () => {
 
       expect(tabHeaderElement.classList).toContain(enabledClass);
     });
-
   });
 });
 
@@ -703,11 +704,13 @@ interface Tab {
     </mat-tab-header>
   </div>
   `,
-  styles: [`
+  styles: [
+    `
     :host {
       width: 130px;
     }
-  `]
+  `,
+  ],
 })
 class SimpleTabHeaderApp {
   disableRipple: boolean = false;

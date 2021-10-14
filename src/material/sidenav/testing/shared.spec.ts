@@ -12,13 +12,15 @@ import {MatSidenavContentHarness} from './sidenav-content-harness';
 import {MatSidenavHarness} from './sidenav-harness';
 
 /** Shared tests to run on both the original and MDC-based drawer & sidenav. */
-export function runHarnessTests(sidenavModule: typeof MatSidenavModule,
-                                drawerHarness: typeof MatDrawerHarness,
-                                drawerContainerHarness: typeof MatDrawerContainerHarness,
-                                drawerContentHarness: typeof MatDrawerContentHarness,
-                                sidenavHarness: typeof MatSidenavHarness,
-                                sidenavContainerHarness: typeof MatSidenavContainerHarness,
-                                sidenavContentHarness: typeof MatSidenavContentHarness) {
+export function runHarnessTests(
+  sidenavModule: typeof MatSidenavModule,
+  drawerHarness: typeof MatDrawerHarness,
+  drawerContainerHarness: typeof MatDrawerContainerHarness,
+  drawerContentHarness: typeof MatDrawerContentHarness,
+  sidenavHarness: typeof MatSidenavHarness,
+  sidenavContainerHarness: typeof MatSidenavContainerHarness,
+  sidenavContentHarness: typeof MatSidenavContentHarness,
+) {
   describe('drawer', () => {
     let fixture: ComponentFixture<DrawerHarnessTest>;
     let loader: HarnessLoader;
@@ -87,13 +89,17 @@ export function runHarnessTests(sidenavModule: typeof MatSidenavModule,
         return containers.map(container => container.getDrawers());
       });
 
-      expect(await parallel(() => {
-        return firstContainerDrawers.map(async container => (await container.host()).text());
-      })).toEqual(['One', 'Two']);
+      expect(
+        await parallel(() => {
+          return firstContainerDrawers.map(async container => (await container.host()).text());
+        }),
+      ).toEqual(['One', 'Two']);
 
-      expect(await parallel(() => {
-        return secondContainerDrawers.map(async container => (await container.host()).text());
-      })).toEqual(['Three']);
+      expect(
+        await parallel(() => {
+          return secondContainerDrawers.map(async container => (await container.host()).text());
+        }),
+      ).toEqual(['Three']);
     });
 
     it('should get the content of a container', async () => {
@@ -106,7 +112,6 @@ export function runHarnessTests(sidenavModule: typeof MatSidenavModule,
       const contentElements = await loader.getAllHarnesses(drawerContentHarness);
       expect(contentElements.length).toBe(2);
     });
-
   });
 
   describe('sidenav', () => {
@@ -143,13 +148,17 @@ export function runHarnessTests(sidenavModule: typeof MatSidenavModule,
         return containers.map(container => container.getSidenavs());
       });
 
-      expect(await parallel(() => {
-        return firstContainerSidenavs.map(async container => (await container.host()).text());
-      })).toEqual(['One', 'Two']);
+      expect(
+        await parallel(() => {
+          return firstContainerSidenavs.map(async container => (await container.host()).text());
+        }),
+      ).toEqual(['One', 'Two']);
 
-      expect(await parallel(() => {
-        return secondContainerSidenavs.map(async container => (await container.host()).text());
-      })).toEqual(['Three']);
+      expect(
+        await parallel(() => {
+          return secondContainerSidenavs.map(async container => (await container.host()).text());
+        }),
+      ).toEqual(['Three']);
     });
 
     it('should get the content of a container', async () => {
@@ -162,7 +171,6 @@ export function runHarnessTests(sidenavModule: typeof MatSidenavModule,
       const contentElements = await loader.getAllHarnesses(sidenavContentHarness);
       expect(contentElements.length).toBe(2);
     });
-
   });
 }
 
@@ -178,7 +186,7 @@ export function runHarnessTests(sidenavModule: typeof MatSidenavModule,
       <mat-drawer id="three" mode="push" [opened]="threeOpened">Three</mat-drawer>
       <mat-drawer-content>Content</mat-drawer-content>
     </mat-drawer-container>
-  `
+  `,
 })
 class DrawerHarnessTest {
   threeOpened = true;
@@ -196,6 +204,6 @@ class DrawerHarnessTest {
       <mat-sidenav id="three" fixedInViewport>Three</mat-sidenav>
       <mat-sidenav-content>Content</mat-sidenav-content>
     </mat-sidenav-container>
-  `
+  `,
 })
 class SidenavHarnessTest {}

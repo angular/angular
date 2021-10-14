@@ -30,5 +30,4 @@ import {DragAndDropDemo} from './drag-drop-demo';
   ],
   declarations: [DragAndDropDemo],
 })
-export class DragDropDemoModule {
-}
+export class DragDropDemoModule {}

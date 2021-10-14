@@ -15,7 +15,7 @@ import {
   Injector,
   Input,
   OnInit,
-  ViewContainerRef
+  ViewContainerRef,
 } from '@angular/core';
 
 @Component({
@@ -30,7 +30,8 @@ import {
       Could not find example {{id}}
     </div>
   `,
-  styles: [`
+  styles: [
+    `
     .label {
       display: flex;
       justify-content: space-between;
@@ -49,22 +50,29 @@ import {
       color: #666;
       white-space: pre;
     }
-  `]
+  `,
+  ],
 })
 export class Example implements OnInit {
   /** ID of the material example to display. */
   @Input() id: string;
 
   @Input()
-  get showLabel(): boolean { return this._showLabel; }
-  set showLabel(v: boolean) { this._showLabel = coerceBooleanProperty(v); }
+  get showLabel(): boolean {
+    return this._showLabel;
+  }
+  set showLabel(v: boolean) {
+    this._showLabel = coerceBooleanProperty(v);
+  }
   _showLabel: boolean;
 
   title: string;
 
-  constructor(private _injector: Injector,
-              private _viewContainerRef: ViewContainerRef,
-              private _changeDetectorRef: ChangeDetectorRef) {}
+  constructor(
+    private _injector: Injector,
+    private _viewContainerRef: ViewContainerRef,
+    private _changeDetectorRef: ChangeDetectorRef,
+  ) {}
 
   async ngOnInit() {
     this.title = EXAMPLE_COMPONENTS[this.id].title;

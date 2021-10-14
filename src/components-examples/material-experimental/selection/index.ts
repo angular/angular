@@ -8,15 +8,9 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatSelectionColumnExample} from './mat-selection-column/mat-selection-column-example';
 import {MatSelectionListExample} from './mat-selection-list/mat-selection-list-example';
 
-export {
-  MatSelectionListExample,
-  MatSelectionColumnExample,
-};
+export {MatSelectionListExample, MatSelectionColumnExample};
 
-const EXAMPLES = [
-  MatSelectionListExample,
-  MatSelectionColumnExample,
-];
+const EXAMPLES = [MatSelectionListExample, MatSelectionColumnExample];
 
 @NgModule({
   imports: [
@@ -30,5 +24,4 @@ const EXAMPLES = [
   declarations: EXAMPLES,
   exports: EXAMPLES,
 })
-export class MatSelectionExamplesModule {
-}
+export class MatSelectionExamplesModule {}

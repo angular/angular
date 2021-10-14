@@ -20,14 +20,17 @@ export class TildeImportMigration extends DevkitMigration<null> {
 
     if (extension === '.scss' || extension === '.css') {
       const content = stylesheet.content;
-      const migratedContent = content.replace(/@(?:import|use) +['"]~@angular\/.*['"].*;?/g,
-        (match) => {
+      const migratedContent = content.replace(
+        /@(?:import|use) +['"]~@angular\/.*['"].*;?/g,
+        match => {
           const index = match.indexOf('~@angular');
           return match.slice(0, index) + match.slice(index + 1);
-        });
+        },
+      );
 
       if (migratedContent && migratedContent !== content) {
-        this.fileSystem.edit(stylesheet.filePath)
+        this.fileSystem
+          .edit(stylesheet.filePath)
           .remove(0, stylesheet.content.length)
           .insertLeft(0, migratedContent);
       }

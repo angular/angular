@@ -1,9 +1,10 @@
 import * as Lint from 'tslint';
 import * as ts from 'typescript';
 
-const RULE_FAILURE = `Class inherits constructor using dependency injection from ` +
-    `undecorated base class. This breaks dependency injection with Ivy and can be fixed ` +
-    `by creating an explicit pass-through constructor.`;
+const RULE_FAILURE =
+  `Class inherits constructor using dependency injection from ` +
+  `undecorated base class. This breaks dependency injection with Ivy and can be fixed ` +
+  `by creating an explicit pass-through constructor.`;
 
 /**
  * Rule that doesn't allow inheriting a constructor using dependency injection from an
@@ -14,13 +15,17 @@ const RULE_FAILURE = `Class inherits constructor using dependency injection from
 export class Rule extends Lint.Rules.TypedRule {
   applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): Lint.RuleFailure[] {
     return this.applyWithWalker(
-        new Walker(sourceFile, this.getOptions(), program.getTypeChecker()));
+      new Walker(sourceFile, this.getOptions(), program.getTypeChecker()),
+    );
   }
 }
 
 class Walker extends Lint.RuleWalker {
   constructor(
-      sourceFile: ts.SourceFile, options: Lint.IOptions, private _typeChecker: ts.TypeChecker) {
+    sourceFile: ts.SourceFile,
+    options: Lint.IOptions,
+    private _typeChecker: ts.TypeChecker,
+  ) {
     super(sourceFile, options);
   }
 
@@ -50,21 +55,24 @@ class Walker extends Lint.RuleWalker {
 
   /** Checks if the specified node has a "@Directive" or "@Component" decorator. */
   hasDirectiveDecorator(node: ts.ClassDeclaration): boolean {
-    return !!node.decorators && node.decorators.some(d => {
-      if (!ts.isCallExpression(d.expression)) {
-        return false;
-      }
+    return (
+      !!node.decorators &&
+      node.decorators.some(d => {
+        if (!ts.isCallExpression(d.expression)) {
+          return false;
+        }
 
-      const decoratorText = d.expression.expression.getText();
-      return decoratorText === 'Directive' || decoratorText === 'Component';
-    });
+        const decoratorText = d.expression.expression.getText();
+        return decoratorText === 'Directive' || decoratorText === 'Component';
+      })
+    );
   }
 
   /**
    * Gets the first inherited class of the specified class that has an
    * explicit constructor.
    */
-  getConstructorBaseClass(node: ts.ClassDeclaration): ts.ClassDeclaration|null {
+  getConstructorBaseClass(node: ts.ClassDeclaration): ts.ClassDeclaration | null {
     let currentClass = node;
     while (currentClass) {
       const baseTypes = this.getBaseTypeIdentifiers(currentClass);
@@ -72,8 +80,10 @@ class Walker extends Lint.RuleWalker {
         return null;
       }
       const symbol = this._typeChecker.getTypeAtLocation(baseTypes[0]).getSymbol();
-      if (symbol?.valueDeclaration === undefined ||
-          !ts.isClassDeclaration(symbol.valueDeclaration)) {
+      if (
+        symbol?.valueDeclaration === undefined ||
+        !ts.isClassDeclaration(symbol.valueDeclaration)
+      ) {
         return null;
       }
       if (this.hasExplicitConstructor(symbol.valueDeclaration)) {
@@ -85,15 +95,15 @@ class Walker extends Lint.RuleWalker {
   }
 
   /** Determines the base type identifiers of a specified class declaration. */
-  getBaseTypeIdentifiers(node: ts.ClassDeclaration): ts.Identifier[]|null {
+  getBaseTypeIdentifiers(node: ts.ClassDeclaration): ts.Identifier[] | null {
     if (!node.heritageClauses) {
       return null;
     }
 
-    return node.heritageClauses.filter(clause => clause.token === ts.SyntaxKind.ExtendsKeyword)
-        .reduce(
-            (types, clause) => types.concat(clause.types), [] as ts.ExpressionWithTypeArguments[])
-        .map(typeExpression => typeExpression.expression)
-        .filter(ts.isIdentifier);
+    return node.heritageClauses
+      .filter(clause => clause.token === ts.SyntaxKind.ExtendsKeyword)
+      .reduce((types, clause) => types.concat(clause.types), [] as ts.ExpressionWithTypeArguments[])
+      .map(typeExpression => typeExpression.expression)
+      .filter(ts.isIdentifier);
   }
 }

@@ -13,5 +13,4 @@ import {Component} from '@angular/core';
   templateUrl: 'mdc-sidenav-demo.html',
   styleUrls: ['mdc-sidenav-demo.css'],
 })
-export class MdcSidenavDemo {
-}
+export class MdcSidenavDemo {}

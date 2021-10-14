@@ -4,11 +4,13 @@ const path = require('path');
 const proc = require('child_process');
 const fs = require('fs');
 
-const findResult = proc.spawnSync('find', ['.', '-iname', '"_*.scss"'], {
-  cwd: __dirname,
-  shell: true,
-  env: process.env,
-}).stdout.toString();
+const findResult = proc
+  .spawnSync('find', ['.', '-iname', '"_*.scss"'], {
+    cwd: __dirname,
+    shell: true,
+    env: process.env,
+  })
+  .stdout.toString();
 
 const sassFiles = findResult.trim().split('\n');
 for (const f of sassFiles) {
@@ -17,8 +19,9 @@ for (const f of sassFiles) {
   const originalFileName = path.basename(f);
   const originalDirectory = path.dirname(f);
 
-  let importFileContent =
-      `@forward '${originalFileName.replace(/^_/, '').replace('.scss', '')}';\n`;
+  let importFileContent = `@forward '${originalFileName
+    .replace(/^_/, '')
+    .replace('.scss', '')}';\n`;
   const originalImportLines = originalFileContent.matchAll(/@import '(.+)';/g);
   for (const match of originalImportLines) {
     const importPath = match[1];

@@ -22,7 +22,7 @@ import {
   Optional,
   Output,
   QueryList,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {deprecated} from '@material/chips';
@@ -32,14 +32,14 @@ import {MatChip, MatChipEvent} from './chip';
 import {MatChipOption, MatChipSelectionChange} from './chip-option';
 import {MatChipSet} from './chip-set';
 
-
 /** Change event object that is emitted when the chip listbox value has changed. */
 export class MatChipListboxChange {
   constructor(
     /** Chip listbox that emitted the event. */
     public source: MatChipListbox,
     /** Value of the chip listbox when the event was emitted. */
-    public value: any) { }
+    public value: any,
+  ) {}
 }
 
 /**
@@ -50,7 +50,7 @@ export class MatChipListboxChange {
 export const MAT_CHIP_LISTBOX_CONTROL_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => MatChipListbox),
-  multi: true
+  multi: true,
 };
 
 /**
@@ -84,7 +84,6 @@ export const MAT_CHIP_LISTBOX_CONTROL_VALUE_ACCESSOR: any = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatChipListbox extends MatChipSet implements AfterContentInit, ControlValueAccessor {
-
   /** Subscription to selection changes in the chips. */
   private _chipSelectionSubscription: Subscription | null;
 
@@ -110,11 +109,15 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
   _onChange: (value: any) => void = () => {};
 
   /** The ARIA role applied to the chip listbox. */
-  override get role(): string | null { return this.empty ? null : 'listbox'; }
+  override get role(): string | null {
+    return this.empty ? null : 'listbox';
+  }
 
   /** Whether the user should be allowed to select multiple chips. */
   @Input()
-  get multiple(): boolean { return this._multiple; }
+  get multiple(): boolean {
+    return this._multiple;
+  }
   set multiple(value: boolean) {
     this._multiple = coerceBooleanProperty(value);
     this._updateMdcSelectionClasses();
@@ -123,7 +126,7 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
   private _multiple: boolean = false;
 
   /** The array of selected chips inside the chip listbox. */
-  get selected(): MatChipOption[] | MatChipOption  {
+  get selected(): MatChipOption[] | MatChipOption {
     const selectedChips = this._chips.toArray().filter(chip => chip.selected);
     return this.multiple ? selectedChips : selectedChips[0];
   }
@@ -138,7 +141,9 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
    * the chips inside the chip listbox are always ignored.
    */
   @Input()
-  get selectable(): boolean { return this._selectable; }
+  get selectable(): boolean {
+    return this._selectable;
+  }
   set selectable(value: boolean) {
     this._selectable = coerceBooleanProperty(value);
     this._updateMdcSelectionClasses();
@@ -152,17 +157,20 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
    * should be returned.
    */
   @Input()
-  get compareWith(): (o1: any, o2: any) => boolean { return this._compareWith; }
+  get compareWith(): (o1: any, o2: any) => boolean {
+    return this._compareWith;
+  }
   set compareWith(fn: (o1: any, o2: any) => boolean) {
     this._compareWith = fn;
     this._initializeSelection();
   }
   private _compareWith = (o1: any, o2: any) => o1 === o2;
 
-
   /** Whether this chip listbox is required. */
   @Input()
-  get required(): boolean { return this._required; }
+  get required(): boolean {
+    return this._required;
+  }
   set required(value: boolean) {
     this._required = coerceBooleanProperty(value);
   }
@@ -185,7 +193,9 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
 
   /** The value of the listbox, which is the combined value of the selected chips. */
   @Input()
-  get value(): any { return this._value; }
+  get value(): any {
+    return this._value;
+  }
   set value(value: any) {
     this.writeValue(value);
     this._value = value;
@@ -194,18 +204,20 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
 
   /** Event emitted when the selected chip listbox value has been changed by the user. */
   @Output() readonly change: EventEmitter<MatChipListboxChange> =
-      new EventEmitter<MatChipListboxChange>();
+    new EventEmitter<MatChipListboxChange>();
 
   @ContentChildren(MatChipOption, {
     // We need to use `descendants: true`, because Ivy will no longer match
     // indirect descendants if it's left as false.
-    descendants: true
+    descendants: true,
   })
   override _chips: QueryList<MatChipOption>;
 
-  constructor(elementRef: ElementRef,
-              changeDetectorRef: ChangeDetectorRef,
-              @Optional() _dir: Directionality) {
+  constructor(
+    elementRef: ElementRef,
+    changeDetectorRef: ChangeDetectorRef,
+    @Optional() _dir: Directionality,
+  ) {
     super(elementRef, changeDetectorRef, _dir);
     this._chipSetAdapter.selectChipAtIndex = (index: number, selected: boolean) => {
       this._setSelected(index, selected);
@@ -363,7 +375,7 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
     this._changeDetectorRef.markForCheck();
   }
 
- /** Emits change event to set the model value. */
+  /** Emits change event to set the model value. */
   private _propagateChanges(fallbackValue?: any): void {
     let valueToEmit: any = null;
 
@@ -410,9 +422,8 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
    * @returns Chip that has the corresponding value.
    */
   private _selectValue(value: any, isUserInput: boolean = true): MatChip | undefined {
-
     const correspondingChip = this._chips.find(chip => {
-      return chip.value != null && this._compareWith(chip.value,  value);
+      return chip.value != null && this._compareWith(chip.value, value);
     });
 
     if (correspondingChip) {
@@ -523,12 +534,13 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
         this._chipSetFoundation.handleChipSelection({
           chipId: chipSelectionChange.source.id,
           selected: chipSelectionChange.selected,
-          shouldIgnore: false
+          shouldIgnore: false,
         });
         if (chipSelectionChange.isUserInput) {
           this._propagateChanges();
         }
-    });
+      },
+    );
   }
 
   /**

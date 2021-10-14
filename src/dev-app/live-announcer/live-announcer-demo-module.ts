@@ -20,5 +20,4 @@ import {LiveAnnouncerDemo} from './live-announcer-demo';
   ],
   declarations: [LiveAnnouncerDemo],
 })
-export class LiveAnnouncerDemoModule {
-}
+export class LiveAnnouncerDemoModule {}

@@ -15,12 +15,14 @@ describe('MenuItemTrigger', () => {
     let menuItem: CdkMenuItem;
     let menuItemElement: HTMLButtonElement;
 
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [CdkMenuModule],
-        declarations: [TriggerForEmptyMenu],
-      }).compileComponents();
-    }));
+    beforeEach(
+      waitForAsync(() => {
+        TestBed.configureTestingModule({
+          imports: [CdkMenuModule],
+          declarations: [TriggerForEmptyMenu],
+        }).compileComponents();
+      }),
+    );
 
     beforeEach(() => {
       fixture = TestBed.createComponent(TriggerForEmptyMenu);
@@ -82,12 +84,14 @@ describe('MenuItemTrigger', () => {
 
     const setDocumentDirection = (dir: 'ltr' | 'rtl') => (document.dir = dir);
 
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [CdkMenuModule],
-        declarations: [MenuBarWithNestedSubMenus],
-      }).compileComponents();
-    }));
+    beforeEach(
+      waitForAsync(() => {
+        TestBed.configureTestingModule({
+          imports: [CdkMenuModule],
+          declarations: [MenuBarWithNestedSubMenus],
+        }).compileComponents();
+      }),
+    );
 
     beforeEach(() => {
       fixture = TestBed.createComponent(MenuBarWithNestedSubMenus);
@@ -227,7 +231,7 @@ describe('MenuItemTrigger', () => {
         expect(Math.floor(nativeTriggers[0].getBoundingClientRect().top))
           .withContext('trigger button position set to the bottom of the viewport')
           .toEqual(Math.floor(nativeMenus[0].getBoundingClientRect().bottom));
-      }
+      },
     );
 
     it('should position nested submenu overlay to right by default in ltr layout', () => {
@@ -237,7 +241,7 @@ describe('MenuItemTrigger', () => {
       detectChanges();
 
       expect(Math.floor(nativeTriggers[1].getBoundingClientRect().right)).toEqual(
-        Math.floor(nativeMenus[1].getBoundingClientRect().left)
+        Math.floor(nativeMenus[1].getBoundingClientRect().left),
       );
     });
 
@@ -263,7 +267,7 @@ describe('MenuItemTrigger', () => {
       detectChanges();
 
       expect(Math.floor(nativeTriggers[1].getBoundingClientRect().left)).toEqual(
-        Math.floor(nativeMenus[1].getBoundingClientRect().right)
+        Math.floor(nativeMenus[1].getBoundingClientRect().right),
       );
     });
 
@@ -314,13 +318,13 @@ describe('MenuItemTrigger', () => {
 
     it('should throw an error if two triggers in different menubars open the same menu', () => {
       expect(createComponent(TriggersWithSameMenuDifferentMenuBars)).toThrowError(
-        /CdkMenuPanel is already referenced by different CdkMenuTrigger/
+        /CdkMenuPanel is already referenced by different CdkMenuTrigger/,
       );
     });
 
     it('should throw an error if two triggers in the same menubar open the same menu', () => {
       expect(createComponent(TriggersWithSameMenuSameMenuBar)).toThrowError(
-        /CdkMenuPanel is already referenced by different CdkMenuTrigger/
+        /CdkMenuPanel is already referenced by different CdkMenuTrigger/,
       );
     });
 
@@ -351,12 +355,14 @@ describe('MenuItemTrigger', () => {
       grabElementsForTesting();
     };
 
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [CdkMenuModule],
-        declarations: [StandaloneTriggerWithInlineMenu],
-      }).compileComponents();
-    }));
+    beforeEach(
+      waitForAsync(() => {
+        TestBed.configureTestingModule({
+          imports: [CdkMenuModule],
+          declarations: [StandaloneTriggerWithInlineMenu],
+        }).compileComponents();
+      }),
+    );
 
     beforeEach(() => {
       fixture = TestBed.createComponent(StandaloneTriggerWithInlineMenu);

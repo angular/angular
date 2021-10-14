@@ -15,7 +15,7 @@ function runFormFieldRenderBenchmark(testId: string, showBtnId: string) {
     url: '',
     ignoreBrowserSynchronization: true,
     prepare: async () => await $('#hide').click(),
-    work: async () => await $(showBtnId).click()
+    work: async () => await $(showBtnId).click(),
   });
 }
 
@@ -24,15 +24,15 @@ describe('form field performance benchmarks', () => {
     browser.angularAppRoot('#root');
   });
 
-  it('renders an input in a form field', async() => {
+  it('renders an input in a form field', async () => {
     await runFormFieldRenderBenchmark('input-form-field-render', '#show-input');
   });
 
-  it('renders an select in a form field', async() => {
+  it('renders an select in a form field', async () => {
     await runFormFieldRenderBenchmark('select-form-field-render', '#show-select');
   });
 
-  it('renders an textarea in a form field', async() => {
+  it('renders an textarea in a form field', async () => {
     await runFormFieldRenderBenchmark('textarea-form-field-render', '#show-textarea');
   });
 });

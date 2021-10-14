@@ -35,5 +35,4 @@ import {MdcChipsDemo} from './mdc-chips-demo';
   ],
   declarations: [MdcChipsDemo],
 })
-export class MdcChipsDemoModule {
-}
+export class MdcChipsDemoModule {}

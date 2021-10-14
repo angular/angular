@@ -19,11 +19,11 @@ export interface MaterialCssSelectorData {
    */
   replaceIn?: {
     /** Replace this name in stylesheet files. */
-    stylesheet?: boolean,
+    stylesheet?: boolean;
     /** Replace this name in HTML files. */
-    html?: boolean,
+    html?: boolean;
     /** Replace this name in TypeScript strings. */
-    tsStringLiterals?: boolean
+    tsStringLiterals?: boolean;
   };
 }
 
@@ -46,19 +46,21 @@ export const cssSelectors: VersionChanges<MaterialCssSelectorData> = {
         {replace: '.mat-input-subscript-wrapper', replaceWith: '.mat-form-field-subscript-wrapper'},
         {replace: '.mat-input-suffix', replaceWith: '.mat-form-field-suffix'},
         {replace: '.mat-input-underline', replaceWith: '.mat-form-field-underline'},
-        {replace: '.mat-input-wrapper', replaceWith: '.mat-form-field-wrapper'}
-      ]
+        {replace: '.mat-input-wrapper', replaceWith: '.mat-form-field-wrapper'},
+      ],
     },
 
     // TODO(devversion): this shouldn't be here because it's not a CSS selector. Move into misc
     // rule.
     {
       pr: 'https://github.com/angular/components/pull/10430',
-      changes: [{
-        replace: '$mat-font-family',
-        replaceWith: 'Roboto, \'Helvetica Neue\', sans-serif',
-        replaceIn: {stylesheet: true}
-      }]
-    }
-  ]
+      changes: [
+        {
+          replace: '$mat-font-family',
+          replaceWith: "Roboto, 'Helvetica Neue', sans-serif",
+          replaceIn: {stylesheet: true},
+        },
+      ],
+    },
+  ],
 };

@@ -14,7 +14,6 @@ export interface DialogData {
   templateUrl: 'dialog-overview-example.html',
 })
 export class DialogOverviewExample {
-
   animal: string;
   name: string;
 
@@ -23,7 +22,7 @@ export class DialogOverviewExample {
   openDialog(): void {
     const dialogRef = this.dialog.open(DialogOverviewExampleDialog, {
       width: '250px',
-      data: {name: this.name, animal: this.animal}
+      data: {name: this.name, animal: this.animal},
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -31,7 +30,6 @@ export class DialogOverviewExample {
       this.animal = result;
     });
   }
-
 }
 
 @Component({
@@ -39,13 +37,12 @@ export class DialogOverviewExample {
   templateUrl: 'dialog-overview-example-dialog.html',
 })
 export class DialogOverviewExampleDialog {
-
   constructor(
     public dialogRef: MatDialogRef<DialogOverviewExampleDialog>,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData) {}
+    @Inject(MAT_DIALOG_DATA) public data: DialogData,
+  ) {}
 
   onNoClick(): void {
     this.dialogRef.close();
   }
-
 }

@@ -18,8 +18,10 @@ import {
 } from './datepicker-trigger-harness-base';
 
 /** Harness for interacting with a standard Material datepicker inputs in tests. */
-export class MatDatepickerInputHarness extends MatDatepickerInputHarnessBase implements
-  DatepickerTrigger {
+export class MatDatepickerInputHarness
+  extends MatDatepickerInputHarnessBase
+  implements DatepickerTrigger
+{
   static hostSelector = '.mat-datepicker-input';
 
   /**
@@ -28,8 +30,9 @@ export class MatDatepickerInputHarness extends MatDatepickerInputHarnessBase imp
    * @param options Options for filtering which input instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: DatepickerInputHarnessFilters = {}):
-    HarnessPredicate<MatDatepickerInputHarness> {
+  static with(
+    options: DatepickerInputHarnessFilters = {},
+  ): HarnessPredicate<MatDatepickerInputHarness> {
     return getInputPredicate(MatDatepickerInputHarness, options);
   }
 

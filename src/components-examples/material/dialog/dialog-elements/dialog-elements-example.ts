@@ -16,7 +16,6 @@ export class DialogElementsExample {
   }
 }
 
-
 @Component({
   selector: 'dialog-elements-example-dialog',
   templateUrl: 'dialog-elements-example-dialog.html',

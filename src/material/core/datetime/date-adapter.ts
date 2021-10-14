@@ -195,14 +195,14 @@ export abstract class DateAdapter<D, L = any> {
    */
   abstract invalid(): D;
 
- /**
-  * Given a potential date object, returns that same date object if it is
-  * a valid date, or `null` if it's not a valid date.
-  * @param obj The object to check.
-  * @returns A date or `null`.
-  */
+  /**
+   * Given a potential date object, returns that same date object if it is
+   * a valid date, or `null` if it's not a valid date.
+   * @param obj The object to check.
+   * @returns A date or `null`.
+   */
   getValidDateOrNull(obj: unknown): D | null {
-    return this.isDateInstance(obj) && this.isValid(obj as D) ? obj as D : null;
+    return this.isDateInstance(obj) && this.isValid(obj as D) ? (obj as D) : null;
   }
 
   /**
@@ -218,7 +218,7 @@ export abstract class DateAdapter<D, L = any> {
    *     deserialized into a null date (e.g. the empty string), or an invalid date.
    */
   deserialize(value: any): D | null {
-    if (value == null || this.isDateInstance(value) && this.isValid(value)) {
+    if (value == null || (this.isDateInstance(value) && this.isValid(value))) {
       return value;
     }
     return this.invalid();
@@ -241,9 +241,11 @@ export abstract class DateAdapter<D, L = any> {
    *     a number greater than 0 if the first date is later.
    */
   compareDate(first: D, second: D): number {
-    return this.getYear(first) - this.getYear(second) ||
-        this.getMonth(first) - this.getMonth(second) ||
-        this.getDate(first) - this.getDate(second);
+    return (
+      this.getYear(first) - this.getYear(second) ||
+      this.getMonth(first) - this.getMonth(second) ||
+      this.getDate(first) - this.getDate(second)
+    );
   }
 
   /**

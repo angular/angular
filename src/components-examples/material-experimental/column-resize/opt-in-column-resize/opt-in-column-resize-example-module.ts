@@ -13,12 +13,8 @@ import {MatColumnResizeModule} from '@angular/material-experimental/column-resiz
 import {OptInColumnResizeExample} from './opt-in-column-resize-example';
 
 @NgModule({
-  imports: [
-    MatColumnResizeModule,
-    MatTableModule,
-  ],
+  imports: [MatColumnResizeModule, MatTableModule],
   declarations: [OptInColumnResizeExample],
   exports: [OptInColumnResizeExample],
 })
-export class OptInColumnResizeExampleModule {
-}
+export class OptInColumnResizeExampleModule {}

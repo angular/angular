@@ -19,13 +19,8 @@ import {
   MatDialogTitle,
 } from './dialog-content-directives';
 
-
 @NgModule({
-  imports: [
-    OverlayModule,
-    PortalModule,
-    MatCommonModule,
-  ],
+  imports: [OverlayModule, PortalModule, MatCommonModule],
   exports: [
     MatDialogContainer,
     MatDialogClose,
@@ -41,10 +36,7 @@ import {
     MatDialogActions,
     MatDialogContent,
   ],
-  providers: [
-    MatDialog,
-    MAT_DIALOG_SCROLL_STRATEGY_PROVIDER,
-  ],
+  providers: [MatDialog, MAT_DIALOG_SCROLL_STRATEGY_PROVIDER],
   entryComponents: [MatDialogContainer],
 })
 export class MatDialogModule {}

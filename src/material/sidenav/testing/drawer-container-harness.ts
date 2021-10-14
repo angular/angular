@@ -22,8 +22,9 @@ export class MatDrawerContainerHarness extends ContentContainerComponentHarness<
    * @param options Options for filtering which container instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: DrawerContainerHarnessFilters = {}):
-    HarnessPredicate<MatDrawerContainerHarness> {
+  static with(
+    options: DrawerContainerHarnessFilters = {},
+  ): HarnessPredicate<MatDrawerContainerHarness> {
     return new HarnessPredicate(MatDrawerContainerHarness, options);
   }
 

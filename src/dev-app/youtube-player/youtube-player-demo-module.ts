@@ -24,5 +24,4 @@ import {YouTubePlayerDemo} from './youtube-player-demo';
   ],
   declarations: [YouTubePlayerDemo],
 })
-export class YouTubePlayerDemoModule {
-}
+export class YouTubePlayerDemoModule {}

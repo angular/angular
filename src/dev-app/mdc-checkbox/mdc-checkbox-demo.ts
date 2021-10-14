@@ -11,7 +11,6 @@ import {MAT_CHECKBOX_DEFAULT_OPTIONS} from '@angular/material/checkbox';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {ThemePalette} from '@angular/material-experimental/mdc-core';
 
-
 export interface Task {
   name: string;
   completed: boolean;
@@ -22,30 +21,29 @@ export interface Task {
   selector: '[clickActionNoop]',
   providers: [{provide: MAT_CHECKBOX_DEFAULT_OPTIONS, useValue: {clickAction: 'noop'}}],
 })
-export class ClickActionNoop {
-}
+export class ClickActionNoop {}
 
 @Directive({
   selector: '[clickActionCheck]',
   providers: [{provide: MAT_CHECKBOX_DEFAULT_OPTIONS, useValue: {clickAction: 'check'}}],
 })
-export class ClickActionCheck {
-}
+export class ClickActionCheck {}
 
 @Directive({
   selector: '[animationsNoop]',
   providers: [{provide: ANIMATION_MODULE_TYPE, useValue: 'NoopAnimations'}],
 })
-export class AnimationsNoop {
-}
+export class AnimationsNoop {}
 
 @Component({
   selector: 'mat-checkbox-demo-nested-checklist',
-  styles: [`
+  styles: [
+    `
     li {
       margin-bottom: 4px;
     }
-  `],
+  `,
+  ],
   templateUrl: 'nested-checklist.html',
 })
 export class MatCheckboxDemoNestedChecklist {
@@ -53,22 +51,21 @@ export class MatCheckboxDemoNestedChecklist {
     {
       name: 'Reminders',
       completed: false,
-      subtasks:
-          [
-            {name: 'Cook Dinner', completed: false},
-            {name: 'Read the Material Design Spec', completed: false},
-            {name: 'Upgrade Application to Angular', completed: false}
-          ]
+      subtasks: [
+        {name: 'Cook Dinner', completed: false},
+        {name: 'Read the Material Design Spec', completed: false},
+        {name: 'Upgrade Application to Angular', completed: false},
+      ],
     },
     {
       name: 'Groceries',
       completed: false,
-      subtasks:
-          [
-            {name: 'Organic Eggs', completed: false}, {name: 'Protein Powder', completed: false},
-            {name: 'Almond Meal Flour', completed: false}
-          ]
-    }
+      subtasks: [
+        {name: 'Organic Eggs', completed: false},
+        {name: 'Protein Powder', completed: false},
+        {name: 'Almond Meal Flour', completed: false},
+      ],
+    },
   ];
 
   allComplete(task: Task): boolean {
@@ -89,7 +86,7 @@ export class MatCheckboxDemoNestedChecklist {
     if (tasks == null) {
       return;
     }
-    tasks.forEach(t => t.completed = completed);
+    tasks.forEach(t => (t.completed = completed));
   }
 }
 

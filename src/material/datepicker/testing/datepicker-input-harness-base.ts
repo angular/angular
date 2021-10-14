@@ -6,18 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  ComponentHarnessConstructor,
-  HarnessPredicate,
-} from '@angular/cdk/testing';
+import {ComponentHarnessConstructor, HarnessPredicate} from '@angular/cdk/testing';
 import {MatFormFieldControlHarness} from '@angular/material/form-field/testing/control';
 import {DatepickerInputHarnessFilters} from './datepicker-harness-filters';
 
 /** Sets up the filter predicates for a datepicker input harness. */
 export function getInputPredicate<T extends MatDatepickerInputHarnessBase>(
   type: ComponentHarnessConstructor<T>,
-  options: DatepickerInputHarnessFilters): HarnessPredicate<T> {
-
+  options: DatepickerInputHarnessFilters,
+): HarnessPredicate<T> {
   return new HarnessPredicate(type, options)
     .addOption('value', options.value, (harness, value) => {
       return HarnessPredicate.stringMatches(harness.getValue(), value);
@@ -42,7 +39,7 @@ export abstract class MatDatepickerInputHarnessBase extends MatFormFieldControlH
   /** Gets the value of the input. */
   async getValue(): Promise<string> {
     // The "value" property of the native input is always defined.
-    return (await (await this.host()).getProperty<string>('value'));
+    return await (await this.host()).getProperty<string>('value');
   }
 
   /**
@@ -65,7 +62,7 @@ export abstract class MatDatepickerInputHarnessBase extends MatFormFieldControlH
 
   /** Gets the placeholder of the input. */
   async getPlaceholder(): Promise<string> {
-    return (await (await this.host()).getProperty<string>('placeholder'));
+    return await (await this.host()).getProperty<string>('placeholder');
   }
 
   /**

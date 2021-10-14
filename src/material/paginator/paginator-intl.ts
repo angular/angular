@@ -9,7 +9,6 @@
 import {Injectable, Optional, SkipSelf} from '@angular/core';
 import {Subject} from 'rxjs';
 
-
 /**
  * To modify the labels and text displayed, create a new instance of MatPaginatorIntl and
  * include it in a custom provider
@@ -38,21 +37,25 @@ export class MatPaginatorIntl {
   lastPageLabel: string = 'Last page';
 
   /** A label for the range of items within the current page and the length of the whole list. */
-  getRangeLabel: (page: number, pageSize: number, length: number) => string =
-    (page: number, pageSize: number, length: number) => {
-      if (length == 0 || pageSize == 0) { return `0 of ${length}`; }
-
-      length = Math.max(length, 0);
-
-      const startIndex = page * pageSize;
-
-      // If the start index exceeds the list length, do not try and fix the end index to the end.
-      const endIndex = startIndex < length ?
-          Math.min(startIndex + pageSize, length) :
-          startIndex + pageSize;
-
-      return `${startIndex + 1} – ${endIndex} of ${length}`;
+  getRangeLabel: (page: number, pageSize: number, length: number) => string = (
+    page: number,
+    pageSize: number,
+    length: number,
+  ) => {
+    if (length == 0 || pageSize == 0) {
+      return `0 of ${length}`;
     }
+
+    length = Math.max(length, 0);
+
+    const startIndex = page * pageSize;
+
+    // If the start index exceeds the list length, do not try and fix the end index to the end.
+    const endIndex =
+      startIndex < length ? Math.min(startIndex + pageSize, length) : startIndex + pageSize;
+
+    return `${startIndex + 1} – ${endIndex} of ${length}`;
+  };
 }
 
 /** @docs-private */
@@ -65,5 +68,5 @@ export const MAT_PAGINATOR_INTL_PROVIDER = {
   // If there is already an MatPaginatorIntl available, use that. Otherwise, provide a new one.
   provide: MatPaginatorIntl,
   deps: [[new Optional(), new SkipSelf(), MatPaginatorIntl]],
-  useFactory: MAT_PAGINATOR_INTL_PROVIDER_FACTORY
+  useFactory: MAT_PAGINATOR_INTL_PROVIDER_FACTORY,
 };

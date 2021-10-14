@@ -22,13 +22,9 @@ import {DomPortalOutlet} from './dom-portal-outlet';
 import {ComponentPortal, DomPortal, Portal, TemplatePortal} from './portal';
 import {CdkPortal, CdkPortalOutlet, PortalModule} from './portal-directives';
 
-
 describe('Portals', () => {
-
   beforeEach(() => {
-    TestBed
-      .configureTestingModule({imports: [PortalModule, PortalTestModule]})
-      .compileComponents();
+    TestBed.configureTestingModule({imports: [PortalModule, PortalTestModule]}).compileComponents();
   });
 
   describe('CdkPortalOutlet', () => {
@@ -57,8 +53,9 @@ describe('Portals', () => {
       expect(hostContainer.textContent).toContain('Pizza');
       expect(testAppComponent.portalOutlet.portal).toBe(componentPortal);
       expect(testAppComponent.portalOutlet.attachedRef instanceof ComponentRef).toBe(true);
-      expect(testAppComponent.attachedSpy)
-          .toHaveBeenCalledWith(testAppComponent.portalOutlet.attachedRef);
+      expect(testAppComponent.attachedSpy).toHaveBeenCalledWith(
+        testAppComponent.portalOutlet.attachedRef,
+      );
     });
 
     it('should load a template into the portal', () => {
@@ -77,8 +74,9 @@ describe('Portals', () => {
       // we verify that it's defined and that it's not a ComponentRef.
       expect(testAppComponent.portalOutlet.attachedRef instanceof ComponentRef).toBe(false);
       expect(testAppComponent.portalOutlet.attachedRef).toBeTruthy();
-      expect(testAppComponent.attachedSpy)
-          .toHaveBeenCalledWith(testAppComponent.portalOutlet.attachedRef);
+      expect(testAppComponent.attachedSpy).toHaveBeenCalledWith(
+        testAppComponent.portalOutlet.attachedRef,
+      );
     });
 
     it('should load a DOM portal', () => {
@@ -88,20 +86,24 @@ describe('Portals', () => {
       const domPortal = new DomPortal(testAppComponent.domPortalContent);
       const initialParent = domPortal.element.parentNode!;
 
-      expect(innerContent)
-        .withContext('Expected portal content to be rendered.').toBeTruthy();
+      expect(innerContent).withContext('Expected portal content to be rendered.').toBeTruthy();
       expect(domPortal.element.contains(innerContent))
-        .withContext('Expected content to be inside portal on init.').toBe(true);
+        .withContext('Expected content to be inside portal on init.')
+        .toBe(true);
       expect(hostContainer.contains(innerContent))
-        .withContext('Expected content to be outside of portal outlet.').toBe(false);
+        .withContext('Expected content to be outside of portal outlet.')
+        .toBe(false);
 
       testAppComponent.selectedPortal = domPortal;
       fixture.detectChanges();
 
-      expect(domPortal.element.parentNode)
-          .not.toBe(initialParent, 'Expected portal to be out of the initial parent on attach.');
+      expect(domPortal.element.parentNode).not.toBe(
+        initialParent,
+        'Expected portal to be out of the initial parent on attach.',
+      );
       expect(hostContainer.contains(innerContent))
-        .withContext('Expected content to be inside the outlet on attach.').toBe(true);
+        .withContext('Expected content to be inside the outlet on attach.')
+        .toBe(true);
       expect(testAppComponent.portalOutlet.hasAttached()).toBe(true);
 
       testAppComponent.selectedPortal = undefined;
@@ -111,7 +113,8 @@ describe('Portals', () => {
         .withContext('Expected portal to be back inside initial parent on detach.')
         .toBe(initialParent);
       expect(hostContainer.contains(innerContent))
-        .withContext('Expected content to be removed from outlet on detach.').toBe(false);
+        .withContext('Expected content to be removed from outlet on detach.')
+        .toBe(false);
       expect(testAppComponent.portalOutlet.hasAttached()).toBe(false);
     });
 
@@ -163,8 +166,9 @@ describe('Portals', () => {
       expect(hostContainer.textContent).toContain('Banana - rotten!');
 
       // using TemplatePortal constructor to set the context
-      templatePortal =
-        new TemplatePortal(testAppComponent.templateRef, null!, {$implicit: {status: 'fresh'}});
+      templatePortal = new TemplatePortal(testAppComponent.templateRef, null!, {
+        $implicit: {status: 'fresh'},
+      });
       testAppComponent.selectedPortal = templatePortal;
       fixture.detectChanges();
       // Expect that the content of the attached portal is present and context given via the
@@ -360,8 +364,9 @@ describe('Portals', () => {
       unboundFixture.componentInstance.portalOutlet.attach(new ComponentPortal(PizzaMsg));
       unboundFixture.detectChanges();
 
-      expect(unboundFixture.nativeElement.querySelector('.portal-container').textContent)
-        .toContain('Pizza');
+      expect(unboundFixture.nativeElement.querySelector('.portal-container').textContent).toContain(
+        'Pizza',
+      );
     });
 
     it('should be considered attached when attaching using `attach`', () => {
@@ -389,7 +394,7 @@ describe('Portals', () => {
         resolveComponentFactory: <T>(...args: [Type<T>]) => {
           spy();
           return componentFactoryResolver.resolveComponentFactory(...args);
-        }
+        },
       });
 
       fixture.componentInstance.portalOutlet.attachComponentPortal(portal);
@@ -405,7 +410,6 @@ describe('Portals', () => {
 
       expect(hostContainer.textContent).toContain('Pizza');
     });
-
   });
 
   describe('DomPortalOutlet', () => {
@@ -427,8 +431,13 @@ describe('Portals', () => {
 
     beforeEach(() => {
       someDomElement = document.createElement('div');
-      host = new DomPortalOutlet(someDomElement, componentFactoryResolver, appRef, injector,
-                                 document);
+      host = new DomPortalOutlet(
+        someDomElement,
+        componentFactoryResolver,
+        appRef,
+        injector,
+        document,
+      );
 
       someFixture = TestBed.createComponent(ArbitraryViewContainerRefComponent);
       someViewContainerRef = someFixture.componentInstance.viewContainerRef;
@@ -455,8 +464,9 @@ describe('Portals', () => {
       host.attachTemplatePortal(portal);
       someFixture.detectChanges();
 
-      expect(someFixture.componentInstance.saveParentNodeOnInit.parentOnViewInit)
-          .toBe(someDomElement);
+      expect(someFixture.componentInstance.saveParentNodeOnInit.parentOnViewInit).toBe(
+        someDomElement,
+      );
 
       host.dispose();
     });
@@ -552,7 +562,8 @@ describe('Portals', () => {
       let componentInstance: PizzaMsg = portal.attach(host).instance;
 
       expect(componentInstance instanceof PizzaMsg)
-        .withContext('Expected a PizzaMsg component to be created').toBe(true);
+        .withContext('Expected a PizzaMsg component to be created')
+        .toBe(true);
       expect(someDomElement.textContent)
         .withContext('Expected the static string "Pizza" in the DomPortalOutlet.')
         .toContain('Pizza');
@@ -566,14 +577,16 @@ describe('Portals', () => {
       host.detach();
 
       expect(someDomElement.innerHTML)
-        .withContext('Expected the DomPortalOutlet to be empty after detach').toBe('');
+        .withContext('Expected the DomPortalOutlet to be empty after detach')
+        .toBe('');
     });
 
     it('should call the dispose function even if the host has no attached content', () => {
       let spy = jasmine.createSpy('host dispose spy');
 
       expect(host.hasAttached())
-        .withContext('Expected host not to have attached content.').toBe(false);
+        .withContext('Expected host not to have attached content.')
+        .toBe(false);
 
       host.setDisposeFn(spy);
       host.dispose();
@@ -587,7 +600,7 @@ describe('Portals', () => {
         resolveComponentFactory: <T>(...args: [Type<T>]) => {
           spy();
           return componentFactoryResolver.resolveComponentFactory(...args);
-        }
+        },
       });
 
       host.attachComponentPortal(portal);
@@ -645,7 +658,8 @@ describe('Portals', () => {
       expect(host.hasAttached()).toBe(false);
 
       host.attachTemplatePortal(
-          new TemplatePortal(fixture.componentInstance.templateRef, viewContainerRef));
+        new TemplatePortal(fixture.componentInstance.templateRef, viewContainerRef),
+      );
       expect(host.hasAttached()).toBe(true);
 
       host.detach();
@@ -654,10 +668,8 @@ describe('Portals', () => {
       host.attachDomPortal(new DomPortal(fixture.componentInstance.domPortalContent));
       expect(host.hasAttached()).toBe(true);
     });
-
   });
 });
-
 
 class Chocolate {
   toString() {
@@ -666,7 +678,7 @@ class Chocolate {
 }
 
 class ChocolateInjector {
-  constructor(public parentInjector: Injector) { }
+  constructor(public parentInjector: Injector) {}
 
   get(token: any) {
     return token === Chocolate ? new Chocolate() : this.parentInjector.get<any>(token);
@@ -679,7 +691,7 @@ class ChocolateInjector {
   template: '<p>Pizza</p><p>{{snack}}</p>',
 })
 class PizzaMsg {
-  constructor(@Optional() public snack: Chocolate) { }
+  constructor(@Optional() public snack: Chocolate) {}
 }
 
 /**
@@ -687,7 +699,7 @@ class PizzaMsg {
  * Useful to see where the element was in the DOM when it was first attached.
  */
 @Directive({
-  selector: '[savesParentNodeOnInit]'
+  selector: '[savesParentNodeOnInit]',
 })
 class SaveParentNodeOnInit implements AfterViewInit {
   parentOnViewInit: HTMLElement;
@@ -708,15 +720,14 @@ class SaveParentNodeOnInit implements AfterViewInit {
     <ng-template #template>
       <div savesParentNodeOnInit></div>
     </ng-template>
-  `
+  `,
 })
 class ArbitraryViewContainerRefComponent {
   @ViewChild('template') template: TemplateRef<any>;
   @ViewChild(SaveParentNodeOnInit) saveParentNodeOnInit: SaveParentNodeOnInit;
 
-  constructor(public viewContainerRef: ViewContainerRef, public injector: Injector) { }
+  constructor(public viewContainerRef: ViewContainerRef, public injector: Injector) {}
 }
-
 
 /** Test-bed component that contains a portal outlet and a couple of template portals. */
 @Component({
@@ -756,12 +767,12 @@ class PortalTestApp {
   @ViewChild('alternateContainer', {read: ViewContainerRef})
   alternateContainer: ViewContainerRef;
 
-  selectedPortal: Portal<any>|undefined;
+  selectedPortal: Portal<any> | undefined;
   fruit: string = 'Banana';
   fruits = ['Apple', 'Pineapple', 'Durian'];
   attachedSpy = jasmine.createSpy('attached spy');
 
-  constructor(public viewContainerRef: ViewContainerRef, public injector: Injector) { }
+  constructor(public viewContainerRef: ViewContainerRef, public injector: Injector) {}
 
   get cakePortal() {
     return this.portals.first;
@@ -778,7 +789,6 @@ class PortalTestApp {
   get portalWithTemplate() {
     return this.portals.toArray()[3];
   }
-
 }
 
 /** Test-bed component that contains a portal outlet and a couple of template portals. */
@@ -799,7 +809,7 @@ const TEST_COMPONENTS = [
   PortalTestApp,
   UnboundPortalTestApp,
   ArbitraryViewContainerRefComponent,
-  PizzaMsg
+  PizzaMsg,
 ];
 
 @NgModule({
@@ -808,4 +818,4 @@ const TEST_COMPONENTS = [
   declarations: [...TEST_COMPONENTS, SaveParentNodeOnInit],
   entryComponents: TEST_COMPONENTS,
 })
-class PortalTestModule { }
+class PortalTestModule {}

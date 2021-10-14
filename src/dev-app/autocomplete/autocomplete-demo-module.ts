@@ -31,5 +31,4 @@ import {AutocompleteDemo} from './autocomplete-demo';
   ],
   declarations: [AutocompleteDemo],
 })
-export class AutocompleteDemoModule {
-}
+export class AutocompleteDemoModule {}

@@ -8,10 +8,9 @@
 
 import {Component} from '@angular/core';
 
-
 @Component({
   selector: 'typography-demo',
   templateUrl: 'typography-demo.html',
   styleUrls: ['typography-demo.css'],
 })
-export class TypographyDemo { }
+export class TypographyDemo {}

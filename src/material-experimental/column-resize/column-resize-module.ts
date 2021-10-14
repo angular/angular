@@ -12,19 +12,13 @@ import {OverlayModule} from '@angular/cdk/overlay';
 
 import {MatColumnResize} from './column-resize-directives/column-resize';
 import {MatColumnResizeFlex} from './column-resize-directives/column-resize-flex';
-import {
-  MatDefaultEnabledColumnResize
-} from './column-resize-directives/default-enabled-column-resize';
-import {
-  MatDefaultEnabledColumnResizeFlex
-} from './column-resize-directives/default-enabled-column-resize-flex';
+import {MatDefaultEnabledColumnResize} from './column-resize-directives/default-enabled-column-resize';
+import {MatDefaultEnabledColumnResizeFlex} from './column-resize-directives/default-enabled-column-resize-flex';
 import {MatDefaultResizable} from './resizable-directives/default-enabled-resizable';
 import {MatResizable} from './resizable-directives/resizable';
 import {MatColumnResizeOverlayHandle} from './overlay-handle';
 
-const ENTRY_COMMON_COMPONENTS = [
-  MatColumnResizeOverlayHandle,
-];
+const ENTRY_COMMON_COMPONENTS = [MatColumnResizeOverlayHandle];
 
 @NgModule({
   declarations: ENTRY_COMMON_COMPONENTS,
@@ -33,11 +27,7 @@ const ENTRY_COMMON_COMPONENTS = [
 })
 export class MatColumnResizeCommonModule {}
 
-const IMPORTS = [
-  MatCommonModule,
-  OverlayModule,
-  MatColumnResizeCommonModule,
-];
+const IMPORTS = [MatCommonModule, OverlayModule, MatColumnResizeCommonModule];
 
 @NgModule({
   imports: IMPORTS,
@@ -46,25 +36,13 @@ const IMPORTS = [
     MatDefaultEnabledColumnResizeFlex,
     MatDefaultResizable,
   ],
-  exports: [
-    MatDefaultEnabledColumnResize,
-    MatDefaultEnabledColumnResizeFlex,
-    MatDefaultResizable,
-  ],
+  exports: [MatDefaultEnabledColumnResize, MatDefaultEnabledColumnResizeFlex, MatDefaultResizable],
 })
 export class MatDefaultEnabledColumnResizeModule {}
 
 @NgModule({
   imports: IMPORTS,
-  declarations: [
-    MatColumnResize,
-    MatColumnResizeFlex,
-    MatResizable,
-  ],
-  exports: [
-    MatColumnResize,
-    MatColumnResizeFlex,
-    MatResizable,
-  ],
+  declarations: [MatColumnResize, MatColumnResizeFlex, MatResizable],
+  exports: [MatColumnResize, MatColumnResizeFlex, MatResizable],
 })
 export class MatColumnResizeModule {}

@@ -24,17 +24,17 @@ export class MatChipListboxHarness extends ComponentHarness {
 
   /** Gets whether the chip listbox is disabled. */
   async isDisabled(): Promise<boolean> {
-    return await (await this.host()).getAttribute('aria-disabled') === 'true';
+    return (await (await this.host()).getAttribute('aria-disabled')) === 'true';
   }
 
   /** Gets whether the chip listbox is required. */
   async isRequired(): Promise<boolean> {
-    return await (await this.host()).getAttribute('aria-required') === 'true';
+    return (await (await this.host()).getAttribute('aria-required')) === 'true';
   }
 
   /** Gets whether the chip listbox is in multi selection mode. */
   async isMultiple(): Promise<boolean> {
-    return await (await this.host()).getAttribute('aria-multiselectable') === 'true';
+    return (await (await this.host()).getAttribute('aria-multiselectable')) === 'true';
   }
 
   /** Gets whether the orientation of the chip list. */

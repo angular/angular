@@ -13,7 +13,7 @@
 export function throwExistingMenuStackError() {
   throw Error(
     'CdkMenuPanel is already referenced by different CdkMenuTrigger. Ensure that a menu is' +
-      ' opened by a single trigger only.'
+      ' opened by a single trigger only.',
   );
 }
 

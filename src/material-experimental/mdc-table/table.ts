@@ -11,7 +11,7 @@ import {
   Component,
   Directive,
   OnInit,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
 import {
   CDK_TABLE_TEMPLATE,
@@ -24,7 +24,7 @@ import {
 import {
   _DisposeViewRepeaterStrategy,
   _RecycleViewRepeaterStrategy,
-  _VIEW_REPEATER_STRATEGY
+  _VIEW_REPEATER_STRATEGY,
 } from '@angular/cdk/collections';
 
 /**
@@ -33,9 +33,7 @@ import {
  */
 @Directive({
   selector: 'mat-table[recycleRows], table[mat-table][recycleRows]',
-  providers: [
-    {provide: _VIEW_REPEATER_STRATEGY, useClass: _RecycleViewRepeaterStrategy},
-  ],
+  providers: [{provide: _VIEW_REPEATER_STRATEGY, useClass: _RecycleViewRepeaterStrategy}],
 })
 export class MatRecycleRows {}
 

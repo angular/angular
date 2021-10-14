@@ -14,11 +14,13 @@ import {InjectionToken} from '@angular/core';
 /** Possible politeness levels. */
 export type AriaLivePoliteness = 'off' | 'polite' | 'assertive';
 
-export const LIVE_ANNOUNCER_ELEMENT_TOKEN =
-    new InjectionToken<HTMLElement | null>('liveAnnouncerElement', {
-      providedIn: 'root',
-      factory: LIVE_ANNOUNCER_ELEMENT_TOKEN_FACTORY,
-    });
+export const LIVE_ANNOUNCER_ELEMENT_TOKEN = new InjectionToken<HTMLElement | null>(
+  'liveAnnouncerElement',
+  {
+    providedIn: 'root',
+    factory: LIVE_ANNOUNCER_ELEMENT_TOKEN_FACTORY,
+  },
+);
 
 /** @docs-private */
 export function LIVE_ANNOUNCER_ELEMENT_TOKEN_FACTORY(): null {
@@ -35,5 +37,6 @@ export interface LiveAnnouncerDefaultOptions {
 }
 
 /** Injection token that can be used to configure the default options for the LiveAnnouncer. */
-export const LIVE_ANNOUNCER_DEFAULT_OPTIONS =
-    new InjectionToken<LiveAnnouncerDefaultOptions>('LIVE_ANNOUNCER_DEFAULT_OPTIONS');
+export const LIVE_ANNOUNCER_DEFAULT_OPTIONS = new InjectionToken<LiveAnnouncerDefaultOptions>(
+  'LIVE_ANNOUNCER_DEFAULT_OPTIONS',
+);

@@ -3,8 +3,8 @@ import {basename} from 'path';
 
 const ruleName = 'material/single-line-comment-only';
 const messages = utils.ruleMessages(ruleName, {
-  expected: () => 'Multi-line comments are not allowed (e.g. /* */). ' +
-                  'Use single-line comments instead (//).',
+  expected: () =>
+    'Multi-line comments are not allowed (e.g. /* */). ' + 'Use single-line comments instead (//).',
 });
 
 /**
@@ -31,7 +31,7 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, options?: {filePatter
           result,
           ruleName,
           message: messages.expected(),
-          node: comment
+          node: comment,
         });
       }
     });

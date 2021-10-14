@@ -10,7 +10,6 @@ import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {CdkSelection, SelectionChange} from '@angular/cdk-experimental/selection';
 import {Directive, Input, Output, EventEmitter} from '@angular/core';
 
-
 /**
  * Manages the selection states of the items and provides methods to check and update the selection
  * states.
@@ -20,14 +19,18 @@ import {Directive, Input, Output, EventEmitter} from '@angular/core';
 @Directive({
   selector: '[matSelection]',
   exportAs: 'matSelection',
-  providers: [{provide: CdkSelection, useExisting: MatSelection}]
+  providers: [{provide: CdkSelection, useExisting: MatSelection}],
 })
 // tslint:disable-next-line: coercion-types
 export class MatSelection<T> extends CdkSelection<T> {
   /** Whether to support multiple selection */
   @Input('matSelectionMultiple')
-  override get multiple(): boolean { return this._multiple; }
-  override set multiple(multiple: boolean) { this._multiple = coerceBooleanProperty(multiple); }
+  override get multiple(): boolean {
+    return this._multiple;
+  }
+  override set multiple(multiple: boolean) {
+    this._multiple = coerceBooleanProperty(multiple);
+  }
 
   /** Emits when selection changes. */
   @Output('matSelectionChange') override readonly change = new EventEmitter<SelectionChange<T>>();

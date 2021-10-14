@@ -12,17 +12,19 @@ describe('MenuItem', () => {
     let menuItem: CdkMenuItem;
     let nativeButton: HTMLButtonElement;
 
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [CdkMenuModule],
-        declarations: [SingleMenuItem],
-        providers: [
-          {provide: CDK_MENU, useClass: CdkMenu},
-          // View engine can't figure out the ElementRef to inject so we need to provide a fake
-          {provide: ElementRef, useValue: new ElementRef<null>(null)},
-        ],
-      }).compileComponents();
-    }));
+    beforeEach(
+      waitForAsync(() => {
+        TestBed.configureTestingModule({
+          imports: [CdkMenuModule],
+          declarations: [SingleMenuItem],
+          providers: [
+            {provide: CDK_MENU, useClass: CdkMenu},
+            // View engine can't figure out the ElementRef to inject so we need to provide a fake
+            {provide: ElementRef, useValue: new ElementRef<null>(null)},
+          ],
+        }).compileComponents();
+      }),
+    );
 
     beforeEach(() => {
       fixture = TestBed.createComponent(SingleMenuItem);
@@ -106,7 +108,7 @@ describe('MenuItem', () => {
       () => {
         createComponent(MenuItemWithIconClass);
         expect(menuItem.getLabel()).toEqual('Click me!');
-      }
+      },
     );
 
     it('should get the text for a menu item with bold marked text', () => {
@@ -120,7 +122,7 @@ describe('MenuItem', () => {
       () => {
         createComponent(MenuItemWithMultipleNestings);
         expect(menuItem.getLabel()).toEqual('Click me!');
-      }
+      },
     );
   });
 });

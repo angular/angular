@@ -43,10 +43,12 @@ import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   inputs: ['color', 'disableRipple'],
-  providers: [{
-    provide: MAT_TAB_GROUP,
-    useExisting: MatTabGroup
-  }],
+  providers: [
+    {
+      provide: MAT_TAB_GROUP,
+      useExisting: MatTabGroup,
+    },
+  ],
   host: {
     'class': 'mat-mdc-tab-group',
     '[class.mat-mdc-tab-group-dynamic-height]': 'dynamicHeight',
@@ -60,20 +62,26 @@ export class MatTabGroup extends _MatTabGroupBase {
 
   /** Whether the ink bar should fit its width to the size of the tab label content. */
   @Input()
-  get fitInkBarToContent(): boolean { return this._fitInkBarToContent; }
+  get fitInkBarToContent(): boolean {
+    return this._fitInkBarToContent;
+  }
   set fitInkBarToContent(v: boolean) {
     this._fitInkBarToContent = coerceBooleanProperty(v);
     this._changeDetectorRef.markForCheck();
   }
   private _fitInkBarToContent = false;
 
-  constructor(elementRef: ElementRef,
-              changeDetectorRef: ChangeDetectorRef,
-              @Inject(MAT_TABS_CONFIG) @Optional() defaultConfig?: MatTabsConfig,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
+  constructor(
+    elementRef: ElementRef,
+    changeDetectorRef: ChangeDetectorRef,
+    @Inject(MAT_TABS_CONFIG) @Optional() defaultConfig?: MatTabsConfig,
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
+  ) {
     super(elementRef, changeDetectorRef, defaultConfig, animationMode);
-    this.fitInkBarToContent = defaultConfig && defaultConfig.fitInkBarToContent != null ?
-        defaultConfig.fitInkBarToContent : false;
+    this.fitInkBarToContent =
+      defaultConfig && defaultConfig.fitInkBarToContent != null
+        ? defaultConfig.fitInkBarToContent
+        : false;
   }
 
   static ngAcceptInputType_fitInkBarToContent: BooleanInput;

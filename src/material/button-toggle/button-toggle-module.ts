@@ -10,7 +10,6 @@ import {NgModule} from '@angular/core';
 import {MatCommonModule, MatRippleModule} from '@angular/material/core';
 import {MatButtonToggle, MatButtonToggleGroup} from './button-toggle';
 
-
 @NgModule({
   imports: [MatCommonModule, MatRippleModule],
   exports: [MatCommonModule, MatButtonToggleGroup, MatButtonToggle],

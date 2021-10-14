@@ -6,7 +6,7 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'card-media-size-example',
   templateUrl: 'card-media-size-example.html',
-  styleUrls: ['card-media-size-example.css']
+  styleUrls: ['card-media-size-example.css'],
 })
 export class CardMediaSizeExample {
   longText = `The Shiba Inu is the smallest of the six original and distinct spitz breeds of dog

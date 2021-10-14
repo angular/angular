@@ -9,7 +9,6 @@
 import {Component} from '@angular/core';
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 
-
 @Component({
   selector: 'toolbar-demo',
   templateUrl: 'live-announcer-demo.html',

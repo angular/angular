@@ -7,6 +7,6 @@ describe('Non-MDC-based datepicker input harness', () => {
   runDatepickerInputHarnessTests(
     MatDatepickerModule,
     MatDatepickerInputHarness,
-    MatCalendarHarness
+    MatCalendarHarness,
   );
 });

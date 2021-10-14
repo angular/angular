@@ -25,24 +25,31 @@ readdirSync(join(__dirname, '../src/material'), {withFileTypes: true})
   });
 
 if (hasFailed) {
-  console.log(chalk.redBright(
-    '\nDetected one or more MDC packages that do not export the same set of symbols from\n' +
-    'public-api.ts as their non-MDC counterpart.\nEither implement the missing symbols or ' +
-    're-export them from the Material package,\nor add them to the `skippedExports` list in ' +
-    `scripts/check-mdc-exports-config.ts.`
-    ));
+  console.log(
+    chalk.redBright(
+      '\nDetected one or more MDC packages that do not export the same set of symbols from\n' +
+        'public-api.ts as their non-MDC counterpart.\nEither implement the missing symbols or ' +
+        're-export them from the Material package,\nor add them to the `skippedExports` list in ' +
+        `scripts/check-mdc-exports-config.ts.`,
+    ),
+  );
   process.exit(1);
 } else {
-  console.log(chalk.green(
-    'All MDC packages export the same public API symbols as their non-MDC counterparts.'));
+  console.log(
+    chalk.green(
+      'All MDC packages export the same public API symbols as their non-MDC counterparts.',
+    ),
+  );
   process.exit(0);
 }
 
 /** Checks whether the public API of a package matches up with its MDC counterpart. */
 function checkPackage(name: string) {
-  const missingSymbols = getMissingSymbols(name,
-      config.skippedExports[`mdc-${name}`] || [],
-      config.skippedSymbols || []);
+  const missingSymbols = getMissingSymbols(
+    name,
+    config.skippedExports[`mdc-${name}`] || [],
+    config.skippedSymbols || [],
+  );
 
   if (missingSymbols.length) {
     console.log(chalk.redBright(`\nMissing symbols from mdc-${name}:`));
@@ -68,8 +75,11 @@ function getMissingSymbols(name: string, skipped: string[], skippedPatterns: Reg
   }
 
   return materialExports.filter(exportName => {
-    return !skipped.includes(exportName) && !mdcExports.includes(exportName) &&
-           !skippedPatterns.some(pattern => pattern.test(exportName));
+    return (
+      !skipped.includes(exportName) &&
+      !mdcExports.includes(exportName) &&
+      !skippedPatterns.some(pattern => pattern.test(exportName))
+    );
   });
 }
 
@@ -80,7 +90,7 @@ function getExports(name: string): string[] {
   const entryPoint = join(__dirname, '../src', name, 'public-api.ts');
   const program = ts.createProgram([entryPoint], {
     // This is a bit faster than the default and seems to produce identical results.
-    moduleResolution: ts.ModuleResolutionKind.Classic
+    moduleResolution: ts.ModuleResolutionKind.Classic,
   });
   const sourceFile = program.getSourceFiles().find(f => f.fileName.endsWith('public-api.ts'))!;
   const typeChecker = program.getTypeChecker();

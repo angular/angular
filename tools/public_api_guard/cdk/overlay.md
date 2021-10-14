@@ -212,10 +212,10 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
 }
 
 // @public
-export type FlexibleConnectedPositionStrategyOrigin = ElementRef | Element | Point & {
+export type FlexibleConnectedPositionStrategyOrigin = ElementRef | Element | (Point & {
     width?: number;
     height?: number;
-};
+});
 
 // @public
 export class FullscreenOverlayContainer extends OverlayContainer implements OnDestroy {

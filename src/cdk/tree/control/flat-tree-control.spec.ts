@@ -19,29 +19,33 @@ describe('CdkFlatTreeControl', () => {
 
       treeControl.expand(secondNode);
 
-
       expect(treeControl.isExpanded(secondNode))
         .withContext('Expect second node to be expanded')
         .toBeTruthy();
       expect(treeControl.expansionModel.selected)
-        .withContext('Expect second node in expansionModel').toContain(secondNode);
+        .withContext('Expect second node in expansionModel')
+        .toContain(secondNode);
       expect(treeControl.expansionModel.selected.length)
-        .withContext('Expect only second node in expansionModel').toBe(1);
+        .withContext('Expect only second node in expansionModel')
+        .toBe(1);
 
       treeControl.toggle(sixthNode);
 
       expect(treeControl.isExpanded(secondNode))
-          .withContext('Expect second node to stay expanded')
-          .toBeTruthy();
+        .withContext('Expect second node to stay expanded')
+        .toBeTruthy();
       expect(treeControl.isExpanded(sixthNode))
         .withContext('Expect sixth node to be expanded')
         .toBeTruthy();
       expect(treeControl.expansionModel.selected)
-        .withContext('Expect sixth node in expansionModel').toContain(sixthNode);
+        .withContext('Expect sixth node in expansionModel')
+        .toContain(sixthNode);
       expect(treeControl.expansionModel.selected)
-        .withContext('Expect second node in expansionModel').toContain(secondNode);
+        .withContext('Expect second node in expansionModel')
+        .toContain(secondNode);
       expect(treeControl.expansionModel.selected.length)
-        .withContext('Expect two dataNodes in expansionModel').toBe(2);
+        .withContext('Expect two dataNodes in expansionModel')
+        .toBe(2);
 
       treeControl.collapse(secondNode);
 
@@ -49,11 +53,14 @@ describe('CdkFlatTreeControl', () => {
         .withContext('Expect second node to be collapsed')
         .toBeFalsy();
       expect(treeControl.expansionModel.selected.length)
-        .withContext('Expect one node in expansionModel').toBe(1);
+        .withContext('Expect one node in expansionModel')
+        .toBe(1);
       expect(treeControl.isExpanded(sixthNode))
-        .withContext('Expect sixth node to stay expanded').toBeTruthy();
+        .withContext('Expect sixth node to stay expanded')
+        .toBeTruthy();
       expect(treeControl.expansionModel.selected)
-        .withContext('Expect sixth node in expansionModel').toContain(sixthNode);
+        .withContext('Expect sixth node in expansionModel')
+        .toContain(sixthNode);
     });
 
     it('should return correct expandable values', () => {
@@ -82,15 +89,18 @@ describe('CdkFlatTreeControl', () => {
 
       for (let i = 0; i < numNodes; i++) {
         expect(treeControl.getLevel(nodes[i]))
-          .withContext(`Expec node[${i}]'s level to be 1`).toBe(1);
+          .withContext(`Expec node[${i}]'s level to be 1`)
+          .toBe(1);
 
         for (let j = 0; j < numChildren; j++) {
           expect(treeControl.getLevel(nodes[i].children[j]))
-            .withContext(`Expect node[${i}]'s child[${j}] to be not expandable`).toBe(2);
+            .withContext(`Expect node[${i}]'s child[${j}] to be not expandable`)
+            .toBe(2);
 
           for (let k = 0; k < numGrandChildren; k++) {
             expect(treeControl.getLevel(nodes[i].children[j].children[k]))
-              .withContext(`Expect node[${i}]'s child[${j}] to be not expandable`).toBe(3);
+              .withContext(`Expect node[${i}]'s child[${j}] to be not expandable`)
+              .toBe(3);
           }
         }
       }
@@ -109,13 +119,13 @@ describe('CdkFlatTreeControl', () => {
 
       const expandedNodesNum = 1 + numChildren + numChildren * numGrandChildren;
       expect(treeControl.expansionModel.selected.length)
-        .withContext(`Expect expanded ${expandedNodesNum} nodes`).toBe(expandedNodesNum);
+        .withContext(`Expect expanded ${expandedNodesNum} nodes`)
+        .toBe(expandedNodesNum);
 
       expect(treeControl.isExpanded(nodes[1]))
         .withContext('Expect second node to be expanded')
         .toBeTruthy();
       for (let i = 0; i < numChildren; i++) {
-
         expect(treeControl.isExpanded(nodes[1].children[i]))
           .withContext(`Expect second node's children to be expanded`)
           .toBeTruthy();
@@ -125,7 +135,6 @@ describe('CdkFlatTreeControl', () => {
             .toBeTruthy();
         }
       }
-
     });
 
     it('should be able to expand/collapse all the dataNodes', () => {
@@ -142,14 +151,16 @@ describe('CdkFlatTreeControl', () => {
       treeControl.collapseAll();
 
       expect(treeControl.expansionModel.selected.length)
-        .withContext(`Expect no expanded nodes`).toBe(0);
+        .withContext(`Expect no expanded nodes`)
+        .toBe(0);
 
       treeControl.expandAll();
 
-      const totalNumber = numNodes + numNodes * numChildren
-          + numNodes * numChildren * numGrandChildren;
+      const totalNumber =
+        numNodes + numNodes * numChildren + numNodes * numChildren * numGrandChildren;
       expect(treeControl.expansionModel.selected.length)
-        .withContext(`Expect ${totalNumber} expanded nodes`).toBe(totalNumber);
+        .withContext(`Expect ${totalNumber} expanded nodes`)
+        .toBe(totalNumber);
     });
   });
 
@@ -163,13 +174,20 @@ describe('CdkFlatTreeControl', () => {
 
     treeControl.expand(secondNode);
     expect(treeControl.isExpanded(secondNode))
-      .withContext('Expect second node to be expanded').toBeTruthy();
+      .withContext('Expect second node to be expanded')
+      .toBeTruthy();
 
     // Replace the second node with a brand new instance with same hash
     nodes[1] = new TestData(
-        secondNode.a, secondNode.b, secondNode.c, secondNode.level, secondNode.children);
+      secondNode.a,
+      secondNode.b,
+      secondNode.c,
+      secondNode.level,
+      secondNode.children,
+    );
     expect(treeControl.isExpanded(nodes[1]))
-      .withContext('Expect second node to still be expanded').toBeTruthy();
+      .withContext('Expect second node to still be expanded')
+      .toBeTruthy();
   });
 });
 
@@ -189,8 +207,11 @@ export class TestData {
   }
 }
 
-function generateData(dataLength: number, childLength: number, grandChildLength: number = 0)
-    : TestData[] {
+function generateData(
+  dataLength: number,
+  childLength: number,
+  grandChildLength: number = 0,
+): TestData[] {
   let data = <any>[];
   let nextIndex = 0;
   for (let i = 0; i < dataLength; i++) {
@@ -201,7 +222,8 @@ function generateData(dataLength: number, childLength: number, grandChildLength:
         grandChildren.push(new TestData(`a_${nextIndex}`, `b_${nextIndex}`, `c_${nextIndex++}`, 3));
       }
       children.push(
-          new TestData(`a_${nextIndex}`, `b_${nextIndex}`, `c_${nextIndex++}`, 2, grandChildren));
+        new TestData(`a_${nextIndex}`, `b_${nextIndex}`, `c_${nextIndex++}`, 2, grandChildren),
+      );
     }
     data.push(new TestData(`a_${nextIndex}`, `b_${nextIndex}`, `c_${nextIndex++}`, 1, children));
   }

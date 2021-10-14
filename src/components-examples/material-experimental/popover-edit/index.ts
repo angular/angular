@@ -9,16 +9,10 @@ import {MatInputModule} from '@angular/material/input';
 import {MatListModule} from '@angular/material/list';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTableModule} from '@angular/material/table';
-import {
-  PopoverEditCellSpanMatTableExample
-} from './popover-edit-cell-span-mat-table/popover-edit-cell-span-mat-table-example';
-import {
-  PopoverEditMatTableFlexExample
-} from './popover-edit-mat-table-flex/popover-edit-mat-table-flex-example';
+import {PopoverEditCellSpanMatTableExample} from './popover-edit-cell-span-mat-table/popover-edit-cell-span-mat-table-example';
+import {PopoverEditMatTableFlexExample} from './popover-edit-mat-table-flex/popover-edit-mat-table-flex-example';
 import {PopoverEditMatTableExample} from './popover-edit-mat-table/popover-edit-mat-table-example';
-import {
-  PopoverEditTabOutMatTableExample
-} from './popover-edit-tab-out-mat-table/popover-edit-tab-out-mat-table-example';
+import {PopoverEditTabOutMatTableExample} from './popover-edit-tab-out-mat-table/popover-edit-tab-out-mat-table-example';
 
 export {
   PopoverEditCellSpanMatTableExample,
@@ -51,5 +45,4 @@ const EXAMPLES = [
   exports: EXAMPLES,
   entryComponents: EXAMPLES,
 })
-export class PopoverEditExamplesModule {
-}
+export class PopoverEditExamplesModule {}

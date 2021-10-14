@@ -14,7 +14,6 @@ import {CdkTrapFocus} from './focus-trap/focus-trap';
 import {HighContrastModeDetector} from './high-contrast-mode/high-contrast-mode-detector';
 import {CdkAriaLive} from './live-announcer/live-announcer';
 
-
 @NgModule({
   imports: [PlatformModule, ObserversModule],
   declarations: [CdkAriaLive, CdkTrapFocus, CdkMonitorFocus],

@@ -10,7 +10,6 @@ import {coerceNumberProperty} from '@angular/cdk/coercion';
 import {ComponentHarness, HarnessPredicate, parallel} from '@angular/cdk/testing';
 import {SliderThumbHarnessFilters, ThumbPosition} from './slider-harness-filters';
 
-
 /** Harness for interacting with a thumb inside of a Material slider in tests. */
 export class MatSliderThumbHarness extends ComponentHarness {
   static hostSelector =
@@ -23,10 +22,13 @@ export class MatSliderThumbHarness extends ComponentHarness {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: SliderThumbHarnessFilters = {}): HarnessPredicate<MatSliderThumbHarness> {
-    return new HarnessPredicate(MatSliderThumbHarness, options)
-        .addOption('position', options.position, async (harness, value) => {
-          return (await harness.getPosition()) === value;
-        });
+    return new HarnessPredicate(MatSliderThumbHarness, options).addOption(
+      'position',
+      options.position,
+      async (harness, value) => {
+        return (await harness.getPosition()) === value;
+      },
+    );
   }
 
   /** Gets the position of the thumb inside the slider. */
@@ -38,7 +40,7 @@ export class MatSliderThumbHarness extends ComponentHarness {
 
   /** Gets the value of the thumb. */
   async getValue(): Promise<number> {
-    return (await (await this.host()).getProperty<number>('valueAsNumber'));
+    return await (await this.host()).getProperty<number>('valueAsNumber');
   }
 
   /** Sets the value of the thumb. */
@@ -57,7 +59,7 @@ export class MatSliderThumbHarness extends ComponentHarness {
     const [value, min, max] = await parallel(() => [
       this.getValue(),
       this.getMinValue(),
-      this.getMaxValue()
+      this.getMaxValue(),
     ]);
 
     return (value - min) / (max - min);
@@ -85,12 +87,12 @@ export class MatSliderThumbHarness extends ComponentHarness {
 
   /** Gets the name of the thumb. */
   async getName(): Promise<string> {
-    return (await (await this.host()).getProperty<string>('name'));
+    return await (await this.host()).getProperty<string>('name');
   }
 
   /** Gets the id of the thumb. */
   async getId(): Promise<string> {
-    return (await (await this.host()).getProperty<string>('id'));
+    return await (await this.host()).getProperty<string>('id');
   }
 
   /**

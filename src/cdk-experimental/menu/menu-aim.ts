@@ -163,13 +163,13 @@ export class TargetMenuAim implements MenuAim, OnDestroy {
     // Wait for some period of time before determining if the previous menu should close in
     // cases where the user may have moved towards the submenu but stopped on a sibling menu
     // item intentionally.
-    const timeoutId = (setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       // Resolve if the user is currently moused over some element in the root menu
       if (this._pointerTracker!.activeElement && timeoutId === this._timeoutId) {
         doToggle();
       }
       this._timeoutId = null;
-    }, CLOSE_DELAY) as any) as number;
+    }, CLOSE_DELAY) as any as number;
 
     this._timeoutId = timeoutId;
   }
@@ -223,7 +223,7 @@ export class TargetMenuAim implements MenuAim, OnDestroy {
       fromEvent<MouseEvent>(this._menu._elementRef.nativeElement, 'mousemove')
         .pipe(
           filter((_: MouseEvent, index: number) => index % MOUSE_MOVE_SAMPLE_FREQUENCY === 0),
-          takeUntil(this._destroyed)
+          takeUntil(this._destroyed),
         )
         .subscribe((event: MouseEvent) => {
           this._points.push({x: event.clientX, y: event.clientY});

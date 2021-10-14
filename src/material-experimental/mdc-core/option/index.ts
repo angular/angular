@@ -12,14 +12,12 @@ import {MatRippleModule, MatPseudoCheckboxModule} from '@angular/material/core';
 import {MatOption} from './option';
 import {MatOptgroup} from './optgroup';
 
-
 @NgModule({
   imports: [MatRippleModule, CommonModule, MatPseudoCheckboxModule],
   exports: [MatOption, MatOptgroup],
-  declarations: [MatOption, MatOptgroup]
+  declarations: [MatOption, MatOptgroup],
 })
 export class MatOptionModule {}
-
 
 export * from './option';
 export * from './optgroup';
@@ -28,5 +26,5 @@ export {
   MatOptionParentComponent,
   MAT_OPTION_PARENT_COMPONENT,
   _countGroupLabelsBeforeOption,
-  _getOptionScrollPosition
+  _getOptionScrollPosition,
 } from '@angular/material/core';

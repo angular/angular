@@ -41,5 +41,4 @@ import {InputDemo} from './input-demo';
   ],
   declarations: [InputDemo],
 })
-export class InputDemoModule {
-}
+export class InputDemoModule {}

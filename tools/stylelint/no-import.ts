@@ -25,9 +25,9 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, options?: {exclude?: 
           result,
           ruleName,
           message: messages.expected(),
-          node: rule
+          node: rule,
         });
-       }
+      }
     });
   };
 });

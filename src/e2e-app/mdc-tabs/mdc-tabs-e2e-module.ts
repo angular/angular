@@ -16,5 +16,4 @@ import {MdcTabsE2e} from './mdc-tabs-e2e';
   imports: [MatTabsModule, MatFormFieldModule, MatInputModule],
   declarations: [MdcTabsE2e],
 })
-export class MdcTabsE2eModule {
-}
+export class MdcTabsE2eModule {}

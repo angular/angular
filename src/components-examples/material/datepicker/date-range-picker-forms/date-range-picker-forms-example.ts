@@ -9,6 +9,6 @@ import {FormGroup, FormControl} from '@angular/forms';
 export class DateRangePickerFormsExample {
   range = new FormGroup({
     start: new FormControl(),
-    end: new FormControl()
+    end: new FormControl(),
   });
 }

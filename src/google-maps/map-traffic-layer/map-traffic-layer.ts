@@ -47,14 +47,16 @@ export class MapTrafficLayer implements OnInit, OnDestroy {
 
   ngOnInit() {
     if (this._map._isBrowser) {
-      this._combineOptions().pipe(take(1)).subscribe(options => {
-        // Create the object outside the zone so its events don't trigger change detection.
-        this._ngZone.runOutsideAngular(() => {
-          this.trafficLayer = new google.maps.TrafficLayer(options);
+      this._combineOptions()
+        .pipe(take(1))
+        .subscribe(options => {
+          // Create the object outside the zone so its events don't trigger change detection.
+          this._ngZone.runOutsideAngular(() => {
+            this.trafficLayer = new google.maps.TrafficLayer(options);
+          });
+          this._assertInitialized();
+          this.trafficLayer.setMap(this._map.googleMap!);
         });
-        this._assertInitialized();
-        this.trafficLayer.setMap(this._map.googleMap!);
-      });
 
       this._watchForAutoRefreshChanges();
     }
@@ -69,29 +71,35 @@ export class MapTrafficLayer implements OnInit, OnDestroy {
   }
 
   private _combineOptions(): Observable<google.maps.TrafficLayerOptions> {
-    return this._autoRefresh.pipe(map(autoRefresh => {
-      const combinedOptions: google.maps.TrafficLayerOptions = {autoRefresh};
-      return combinedOptions;
-    }));
+    return this._autoRefresh.pipe(
+      map(autoRefresh => {
+        const combinedOptions: google.maps.TrafficLayerOptions = {autoRefresh};
+        return combinedOptions;
+      }),
+    );
   }
 
   private _watchForAutoRefreshChanges() {
-    this._combineOptions().pipe(takeUntil(this._destroyed)).subscribe(options => {
-      this._assertInitialized();
-      this.trafficLayer.setOptions(options);
-    });
+    this._combineOptions()
+      .pipe(takeUntil(this._destroyed))
+      .subscribe(options => {
+        this._assertInitialized();
+        this.trafficLayer.setOptions(options);
+      });
   }
 
   private _assertInitialized(): asserts this is {trafficLayer: google.maps.TrafficLayer} {
     if (!this._map.googleMap) {
       throw Error(
-          'Cannot access Google Map information before the API has been initialized. ' +
-          'Please wait for the API to load before trying to interact with it.');
+        'Cannot access Google Map information before the API has been initialized. ' +
+          'Please wait for the API to load before trying to interact with it.',
+      );
     }
     if (!this.trafficLayer) {
       throw Error(
-          'Cannot interact with a Google Map Traffic Layer before it has been initialized. ' +
-          'Please wait for the Traffic Layer to load before trying to interact with it.');
+        'Cannot interact with a Google Map Traffic Layer before it has been initialized. ' +
+          'Please wait for the Traffic Layer to load before trying to interact with it.',
+      );
     }
   }
 }

@@ -26,5 +26,4 @@ import {MdcListDemo} from './mdc-list-demo';
   ],
   declarations: [MdcListDemo],
 })
-export class MdcListDemoModule {
-}
+export class MdcListDemoModule {}

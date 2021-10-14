@@ -19,10 +19,13 @@ interface ScrollPosition {
 /** Keeps track of the scroll position and dimensions of the parents of an element. */
 export class ParentPositionTracker {
   /** Cached positions of the scrollable parent elements. */
-  readonly positions = new Map<Document|HTMLElement, {
-    scrollPosition: ScrollPosition,
-    clientRect?: ClientRect
-  }>();
+  readonly positions = new Map<
+    Document | HTMLElement,
+    {
+      scrollPosition: ScrollPosition;
+      clientRect?: ClientRect;
+    }
+  >();
 
   constructor(private _document: Document, private _viewportRuler: ViewportRuler) {}
 
@@ -41,14 +44,14 @@ export class ParentPositionTracker {
     elements.forEach(element => {
       this.positions.set(element, {
         scrollPosition: {top: element.scrollTop, left: element.scrollLeft},
-        clientRect: getMutableClientRect(element)
+        clientRect: getMutableClientRect(element),
       });
     });
   }
 
   /** Handles scrolling while a drag is taking place. */
   handleScroll(event: Event): ScrollPosition | null {
-    const target = _getEventTarget<HTMLElement|Document>(event)!;
+    const target = _getEventTarget<HTMLElement | Document>(event)!;
     const cachedPosition = this.positions.get(target);
 
     if (!cachedPosition) {

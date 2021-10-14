@@ -13,7 +13,7 @@ import {
   cdkMixins,
   cdkVariables,
   removedMaterialVariables,
-  unprefixedRemovedVariables
+  unprefixedRemovedVariables,
 } from './config';
 
 /** The result of a search for imports and namespaces in a file. */
@@ -30,7 +30,10 @@ interface ExtraSymbols {
 }
 
 /** Possible pairs of comment characters in a Sass file. */
-const commentPairs = new Map<string, string>([['/*', '*/'], ['//', '\n']]);
+const commentPairs = new Map<string, string>([
+  ['/*', '*/'],
+  ['//', '\n'],
+]);
 
 /** Prefix for the placeholder that will be used to escape comments. */
 const commentPlaceholderStart = '__<<ngThemingMigrationEscapedComment';
@@ -53,13 +56,15 @@ const commentPlaceholderEnd = '>>__';
  * @param newCdkImportPath New import to the CDK Sass APIs (e.g. `@angular/cdk`).
  * @param excludedImports Pattern that can be used to exclude imports from being processed.
  */
-export function migrateFileContent(fileContent: string,
-                                   oldMaterialPrefix: string,
-                                   oldCdkPrefix: string,
-                                   newMaterialImportPath: string,
-                                   newCdkImportPath: string,
-                                   extraMaterialSymbols: ExtraSymbols = {},
-                                   excludedImports?: RegExp): string {
+export function migrateFileContent(
+  fileContent: string,
+  oldMaterialPrefix: string,
+  oldCdkPrefix: string,
+  newMaterialImportPath: string,
+  newCdkImportPath: string,
+  extraMaterialSymbols: ExtraSymbols = {},
+  excludedImports?: RegExp,
+): string {
   let {content, placeholders} = escapeComments(fileContent);
   const materialResults = detectImports(content, oldMaterialPrefix, excludedImports);
   const cdkResults = detectImports(content, oldCdkPrefix, excludedImports);
@@ -68,7 +73,12 @@ export function migrateFileContent(fileContent: string,
   // to cover the case where the Components symbols were used transitively.
   content = migrateCdkSymbols(content, newCdkImportPath, placeholders, cdkResults);
   content = migrateMaterialSymbols(
-      content, newMaterialImportPath, materialResults, placeholders, extraMaterialSymbols);
+    content,
+    newMaterialImportPath,
+    materialResults,
+    placeholders,
+    extraMaterialSymbols,
+  );
   content = replaceRemovedVariables(content, removedMaterialVariables);
 
   // We can assume that the migration has taken care of any Components symbols that were
@@ -92,8 +102,11 @@ export function migrateFileContent(fileContent: string,
  * @param prefix Prefix that the imports should start with.
  * @param excludedImports Pattern that can be used to exclude imports from being processed.
  */
-function detectImports(content: string, prefix: string,
-                       excludedImports?: RegExp): DetectImportResult {
+function detectImports(
+  content: string,
+  prefix: string,
+  excludedImports?: RegExp,
+): DetectImportResult {
   if (prefix[prefix.length - 1] !== '/') {
     // Some of the logic further down makes assumptions about the import depth.
     throw Error(`Prefix "${prefix}" has to end in a slash.`);
@@ -107,7 +120,7 @@ function detectImports(content: string, prefix: string,
   const pattern = new RegExp(`@(import|use) +['"]~?${escapeRegExp(prefix)}.*['"].*;?\n`, 'g');
   let match: RegExpExecArray | null = null;
 
-  while (match = pattern.exec(content)) {
+  while ((match = pattern.exec(content))) {
     const [fullImport, type] = match;
 
     if (excludedImports?.test(fullImport)) {
@@ -129,27 +142,45 @@ function detectImports(content: string, prefix: string,
 }
 
 /** Migrates the Material symbols in a file. */
-function migrateMaterialSymbols(content: string, importPath: string,
-                                detectedImports: DetectImportResult,
-                                commentPlaceholders: Record<string, string>,
-                                extraMaterialSymbols: ExtraSymbols = {}): string {
+function migrateMaterialSymbols(
+  content: string,
+  importPath: string,
+  detectedImports: DetectImportResult,
+  commentPlaceholders: Record<string, string>,
+  extraMaterialSymbols: ExtraSymbols = {},
+): string {
   const initialContent = content;
   const namespace = 'mat';
 
   // Migrate the mixins.
   const mixinsToUpdate = {...materialMixins, ...extraMaterialSymbols.mixins};
-  content = renameSymbols(content, mixinsToUpdate, detectedImports.namespaces, mixinKeyFormatter,
-    getMixinValueFormatter(namespace));
+  content = renameSymbols(
+    content,
+    mixinsToUpdate,
+    detectedImports.namespaces,
+    mixinKeyFormatter,
+    getMixinValueFormatter(namespace),
+  );
 
   // Migrate the functions.
   const functionsToUpdate = {...materialFunctions, ...extraMaterialSymbols.functions};
-  content = renameSymbols(content, functionsToUpdate, detectedImports.namespaces,
-    functionKeyFormatter, getFunctionValueFormatter(namespace));
+  content = renameSymbols(
+    content,
+    functionsToUpdate,
+    detectedImports.namespaces,
+    functionKeyFormatter,
+    getFunctionValueFormatter(namespace),
+  );
 
   // Migrate the variables.
   const variablesToUpdate = {...materialVariables, ...extraMaterialSymbols.variables};
-  content = renameSymbols(content, variablesToUpdate, detectedImports.namespaces,
-    variableKeyFormatter, getVariableValueFormatter(namespace));
+  content = renameSymbols(
+    content,
+    variablesToUpdate,
+    detectedImports.namespaces,
+    variableKeyFormatter,
+    getVariableValueFormatter(namespace),
+  );
 
   if (content !== initialContent) {
     // Add an import to the new API only if any of the APIs were being used.
@@ -160,19 +191,32 @@ function migrateMaterialSymbols(content: string, importPath: string,
 }
 
 /** Migrates the CDK symbols in a file. */
-function migrateCdkSymbols(content: string, importPath: string,
-                           commentPlaceholders: Record<string, string>,
-                           detectedImports: DetectImportResult): string {
+function migrateCdkSymbols(
+  content: string,
+  importPath: string,
+  commentPlaceholders: Record<string, string>,
+  detectedImports: DetectImportResult,
+): string {
   const initialContent = content;
   const namespace = 'cdk';
 
   // Migrate the mixins.
-  content = renameSymbols(content, cdkMixins, detectedImports.namespaces, mixinKeyFormatter,
-    getMixinValueFormatter(namespace));
+  content = renameSymbols(
+    content,
+    cdkMixins,
+    detectedImports.namespaces,
+    mixinKeyFormatter,
+    getMixinValueFormatter(namespace),
+  );
 
   // Migrate the variables.
-  content = renameSymbols(content, cdkVariables, detectedImports.namespaces, variableKeyFormatter,
-    getVariableValueFormatter(namespace));
+  content = renameSymbols(
+    content,
+    cdkVariables,
+    detectedImports.namespaces,
+    variableKeyFormatter,
+    getVariableValueFormatter(namespace),
+  );
 
   // Previously the CDK symbols were exposed through `material/theming`, but now we have a
   // dedicated entrypoint for the CDK. Only add an import for it if any of the symbols are used.
@@ -192,11 +236,13 @@ function migrateCdkSymbols(content: string, importPath: string,
  * @param formatValue Formats the value that will replace any matches of the pattern returned by
  *  `getKeyPattern`.
  */
-function renameSymbols(content: string,
-                       mapping: Record<string, string>,
-                       namespaces: string[],
-                       getKeyPattern: (namespace: string|null, key: string) => RegExp,
-                       formatValue: (key: string) => string): string {
+function renameSymbols(
+  content: string,
+  mapping: Record<string, string>,
+  namespaces: string[],
+  getKeyPattern: (namespace: string | null, key: string) => RegExp,
+  formatValue: (key: string) => string,
+): string {
   // The null at the end is so that we make one last pass to cover non-namespaced symbols.
   [...namespaces.slice(), null].forEach(namespace => {
     Object.keys(mapping).forEach(key => {
@@ -215,8 +261,12 @@ function renameSymbols(content: string,
 }
 
 /** Inserts an `@use` statement in a string. */
-function insertUseStatement(content: string, importPath: string, namespace: string,
-                            commentPlaceholders: Record<string, string>): string {
+function insertUseStatement(
+  content: string,
+  importPath: string,
+  namespace: string,
+  commentPlaceholders: Record<string, string>,
+): string {
   // If the content already has the `@use` import, we don't need to add anything.
   if (new RegExp(`@use +['"]${importPath}['"]`, 'g').test(content)) {
     return content;
@@ -232,8 +282,8 @@ function insertUseStatement(content: string, importPath: string, namespace: stri
   // One special case is if the file starts with a license header which we want to preserve on top.
   if (content.trim().startsWith(commentPlaceholderStart)) {
     const commentStartIndex = content.indexOf(commentPlaceholderStart);
-    newImportIndex = content.indexOf(commentPlaceholderEnd, commentStartIndex + 1) +
-        commentPlaceholderEnd.length;
+    newImportIndex =
+      content.indexOf(commentPlaceholderEnd, commentStartIndex + 1) + commentPlaceholderEnd.length;
     // If the leading comment doesn't end with a newline,
     // we need to insert the import at the next line.
     if (!commentPlaceholders[content.slice(commentStartIndex, newImportIndex)].endsWith('\n')) {
@@ -241,12 +291,15 @@ function insertUseStatement(content: string, importPath: string, namespace: stri
     }
   }
 
-  return content.slice(0, newImportIndex) + `@use '${importPath}' as ${namespace};\n` +
-         content.slice(newImportIndex);
+  return (
+    content.slice(0, newImportIndex) +
+    `@use '${importPath}' as ${namespace};\n` +
+    content.slice(newImportIndex)
+  );
 }
 
 /** Formats a migration key as a Sass mixin invocation. */
-function mixinKeyFormatter(namespace: string|null, name: string): RegExp {
+function mixinKeyFormatter(namespace: string | null, name: string): RegExp {
   // Note that adding a `(` at the end of the pattern would be more accurate, but mixin
   // invocations don't necessarily have to include the parentheses. We could add `[(;]`,
   // but then we won't know which character to include in the replacement string.
@@ -261,7 +314,7 @@ function getMixinValueFormatter(namespace: string): (name: string) => string {
 }
 
 /** Formats a migration key as a Sass function invocation. */
-function functionKeyFormatter(namespace: string|null, name: string): RegExp {
+function functionKeyFormatter(namespace: string | null, name: string): RegExp {
   const functionName = escapeRegExp(`${namespace ? namespace + '.' : ''}${name}(`);
   return new RegExp(`(?<![-_a-zA-Z0-9])${functionName}`, 'g');
 }
@@ -272,7 +325,7 @@ function getFunctionValueFormatter(namespace: string): (name: string) => string 
 }
 
 /** Formats a migration key as a Sass variable. */
-function variableKeyFormatter(namespace: string|null, name: string): RegExp {
+function variableKeyFormatter(namespace: string | null, name: string): RegExp {
   const variableName = escapeRegExp(`${namespace ? namespace + '.' : ''}$${name}`);
   return new RegExp(`${variableName}(?![-_a-zA-Z0-9])`, 'g');
 }
@@ -304,14 +357,18 @@ function extractNamespaceFromUseStatement(fullImport: string): string {
 
     // If we found an ` as ` expression, we consider the rest of the text as the namespace.
     if (asIndex > -1) {
-      return fullImport.slice(asIndex + asExpression.length).split(';')[0].trim();
+      return fullImport
+        .slice(asIndex + asExpression.length)
+        .split(';')[0]
+        .trim();
     }
 
     // Otherwise the namespace is the name of the file that is being imported.
     const lastSlashIndex = fullImport.lastIndexOf('/', closeQuoteIndex);
 
     if (lastSlashIndex > -1) {
-      const fileName = fullImport.slice(lastSlashIndex + 1, closeQuoteIndex)
+      const fileName = fullImport
+        .slice(lastSlashIndex + 1, closeQuoteIndex)
         // Sass allows for leading underscores to be omitted and it technically supports .scss.
         .replace(/^_|(\.import)?\.scss$|\.import$/g, '');
 
@@ -347,18 +404,17 @@ function replaceRemovedVariables(content: string, variables: Record<string, stri
   return content;
 }
 
-
 /**
  * Replaces all of the comments in a Sass file with placeholders and
  * returns the list of placeholders so they can be restored later.
  */
-function escapeComments(content: string): {content: string, placeholders: Record<string, string>} {
+function escapeComments(content: string): {content: string; placeholders: Record<string, string>} {
   const placeholders: Record<string, string> = {};
   let commentCounter = 0;
   let [openIndex, closeIndex] = findComment(content);
 
   while (openIndex > -1 && closeIndex > -1) {
-    const placeholder = commentPlaceholderStart + (commentCounter++) + commentPlaceholderEnd;
+    const placeholder = commentPlaceholderStart + commentCounter++ + commentPlaceholderEnd;
     placeholders[placeholder] = content.slice(openIndex, closeIndex);
     content = content.slice(0, openIndex) + placeholder + content.slice(closeIndex);
     [openIndex, closeIndex] = findComment(content);
@@ -388,6 +444,6 @@ function findComment(content: string): [openIndex: number, closeIndex: number] {
 
 /** Restores the comments that have been escaped by `escapeComments`. */
 function restoreComments(content: string, placeholders: Record<string, string>): string {
-  Object.keys(placeholders).forEach(key => content = content.replace(key, placeholders[key]));
+  Object.keys(placeholders).forEach(key => (content = content.replace(key, placeholders[key])));
   return content;
 }

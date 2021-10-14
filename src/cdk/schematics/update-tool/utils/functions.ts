@@ -13,6 +13,6 @@ import * as ts from 'typescript';
  * parentheses. e.g. "(((({exp}))))()". The function should return the TypeScript node
  * referring to the inner expression. e.g "exp".
  */
-export function unwrapExpression(node: ts.Expression|ts.ParenthesizedExpression): ts.Expression {
+export function unwrapExpression(node: ts.Expression | ts.ParenthesizedExpression): ts.Expression {
   return ts.isParenthesizedExpression(node) ? unwrapExpression(node.expression) : node;
 }

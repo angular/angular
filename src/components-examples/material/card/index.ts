@@ -18,7 +18,7 @@ export {
   CardActionsExample,
   CardMediaSizeExample,
   CardSubtitleExample,
-  CardFooterExample
+  CardFooterExample,
 };
 
 const EXAMPLES = [
@@ -28,19 +28,13 @@ const EXAMPLES = [
   CardActionsExample,
   CardMediaSizeExample,
   CardSubtitleExample,
-  CardFooterExample
+  CardFooterExample,
 ];
 
 @NgModule({
-  imports: [
-    MatButtonModule,
-    MatCardModule,
-    MatDividerModule,
-    MatProgressBarModule
-  ],
+  imports: [MatButtonModule, MatCardModule, MatDividerModule, MatProgressBarModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
   entryComponents: EXAMPLES,
 })
-export class CardExamplesModule {
-}
+export class CardExamplesModule {}

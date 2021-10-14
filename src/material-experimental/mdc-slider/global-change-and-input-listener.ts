@@ -21,8 +21,7 @@ import {finalize, share, takeUntil} from 'rxjs/operators';
  * listener once the last observer unsubscribes.
  */
 @Injectable({providedIn: 'root'})
-export class GlobalChangeAndInputListener<K extends 'change'|'input'> implements OnDestroy {
-
+export class GlobalChangeAndInputListener<K extends 'change' | 'input'> implements OnDestroy {
   /** The injected document if available or fallback to the global document reference. */
   private _document: Document;
 
@@ -50,9 +49,9 @@ export class GlobalChangeAndInputListener<K extends 'change'|'input'> implements
     }
 
     return this._ngZone.runOutsideAngular(() =>
-      this._observables.get(type)!.subscribe((event: Event) =>
-        this._ngZone.run(() => callback(event))
-      )
+      this._observables
+        .get(type)!
+        .subscribe((event: Event) => this._ngZone.run(() => callback(event))),
     );
   }
 

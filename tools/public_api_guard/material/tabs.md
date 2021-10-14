@@ -193,8 +193,8 @@ export class MatTabChangeEvent {
 
 // @public
 export class MatTabContent {
-    constructor(
-    template: TemplateRef<any>);
+    constructor(template: TemplateRef<any>);
+    // (undocumented)
     template: TemplateRef<any>;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatTabContent, "[matTabContent]", never, {}, {}, never>;

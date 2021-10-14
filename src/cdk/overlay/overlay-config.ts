@@ -10,7 +10,6 @@ import {PositionStrategy} from './position/position-strategy';
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {ScrollStrategy, NoopScrollStrategy} from './scroll/index';
 
-
 /** Initial configuration used when creating an overlay. */
 export class OverlayConfig {
   /** Strategy with which to position the overlay. */
@@ -64,8 +63,8 @@ export class OverlayConfig {
       // Use `Iterable` instead of `Array` because TypeScript, as of 3.6.3,
       // loses the array generic type in the `for of`. But we *also* have to use `Array` because
       // typescript won't iterate over an `Iterable` unless you compile with `--downlevelIteration`
-      const configKeys =
-          Object.keys(config) as Iterable<keyof OverlayConfig> & (keyof OverlayConfig)[];
+      const configKeys = Object.keys(config) as Iterable<keyof OverlayConfig> &
+        (keyof OverlayConfig)[];
       for (const key of configKeys) {
         if (config[key] !== undefined) {
           // TypeScript, as of version 3.5, sees the left-hand-side of this expression

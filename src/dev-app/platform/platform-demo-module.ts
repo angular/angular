@@ -20,5 +20,4 @@ import {PlatformDemo} from './platform-demo';
   ],
   declarations: [PlatformDemo],
 })
-export class PlatformDemoModule {
-}
+export class PlatformDemoModule {}

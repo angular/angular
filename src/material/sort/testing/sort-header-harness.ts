@@ -21,11 +21,12 @@ export class MatSortHeaderHarness extends ComponentHarness {
    */
   static with(options: SortHeaderHarnessFilters = {}): HarnessPredicate<MatSortHeaderHarness> {
     return new HarnessPredicate(MatSortHeaderHarness, options)
-        .addOption('label', options.label,
-            (harness, label) => HarnessPredicate.stringMatches(harness.getLabel(), label))
-        .addOption('sortDirection', options.sortDirection, (harness, sortDirection) => {
-          return HarnessPredicate.stringMatches(harness.getSortDirection(), sortDirection);
-        });
+      .addOption('label', options.label, (harness, label) =>
+        HarnessPredicate.stringMatches(harness.getLabel(), label),
+      )
+      .addOption('sortDirection', options.sortDirection, (harness, sortDirection) => {
+        return HarnessPredicate.stringMatches(harness.getSortDirection(), sortDirection);
+      });
   }
 
   /** Gets the label of the sort header. */

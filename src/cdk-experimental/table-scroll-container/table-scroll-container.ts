@@ -35,12 +35,9 @@ let nextId = 0;
   host: {
     'class': 'cdk-table-scroll-container',
   },
-  providers: [
-    {provide: STICKY_POSITIONING_LISTENER, useExisting: CdkTableScrollContainer},
-  ],
+  providers: [{provide: STICKY_POSITIONING_LISTENER, useExisting: CdkTableScrollContainer}],
 })
-export class CdkTableScrollContainer implements StickyPositioningListener,
-    OnDestroy, OnInit {
+export class CdkTableScrollContainer implements StickyPositioningListener, OnDestroy, OnInit {
   private readonly _uniqueClassName: string;
   private _styleRoot!: Node;
   private _styleElement?: HTMLStyleElement;
@@ -52,9 +49,10 @@ export class CdkTableScrollContainer implements StickyPositioningListener,
   private _footerSizes: StickySize[] = [];
 
   constructor(
-      private readonly _elementRef: ElementRef<HTMLElement>,
-      @Inject(DOCUMENT) private readonly _document: Document,
-      @Optional() private readonly _directionality?: Directionality) {
+    private readonly _elementRef: ElementRef<HTMLElement>,
+    @Inject(DOCUMENT) private readonly _document: Document,
+    @Optional() private readonly _directionality?: Directionality,
+  ) {
     this._uniqueClassName = `cdk-table-scroll-container-${++nextId}`;
     _elementRef.nativeElement.classList.add(this._uniqueClassName);
   }
@@ -138,7 +136,7 @@ export class CdkTableScrollContainer implements StickyPositioningListener,
   }
 }
 
-function computeMargin(sizes: (number|null|undefined)[]): number {
+function computeMargin(sizes: (number | null | undefined)[]): number {
   let margin = 0;
   for (const size of sizes) {
     if (size == null) {

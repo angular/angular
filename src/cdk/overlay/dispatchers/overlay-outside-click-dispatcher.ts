@@ -95,5 +95,5 @@ export class OverlayOutsideClickDispatcher extends BaseOverlayDispatcher {
 
       overlayRef._outsidePointerEvents.next(event);
     }
-  }
+  };
 }

@@ -13,14 +13,14 @@ const Prefixes = require('autoprefixer/lib/prefixes');
  */
 export class NeedsPrefix {
   private _prefixes: {
-    add: Record<string, any>,
-    browsers: {selected: string[]}
+    add: Record<string, any>;
+    browsers: {selected: string[]};
   };
 
   constructor(browsers: string[]) {
     this._prefixes = new Prefixes(
       autoprefixer.data.prefixes,
-      new Browsers(autoprefixer.data.browsers, browsers)
+      new Browsers(autoprefixer.data.browsers, browsers),
     );
   }
 
@@ -58,8 +58,9 @@ export class NeedsPrefix {
 
     const needsPrefix = autoprefixer.data.prefixes[identifier.toLowerCase()];
     const browsersThatNeedPrefix = (needsPrefix as {browsers: string[]} | null)?.browsers || [];
-    return browsersThatNeedPrefix
-      .filter(browser => this._prefixes.browsers.selected.includes(browser));
+    return browsersThatNeedPrefix.filter(browser =>
+      this._prefixes.browsers.selected.includes(browser),
+    );
   }
 
   /** Checks whether a CSS property value needs to be prefixed. */
@@ -68,11 +69,14 @@ export class NeedsPrefix {
       return false;
     }
 
-    const possiblePrefixableValues = this._prefixes.add[prop.toLowerCase()] &&
-        this._prefixes.add[prop.toLowerCase()].values;
+    const possiblePrefixableValues =
+      this._prefixes.add[prop.toLowerCase()] && this._prefixes.add[prop.toLowerCase()].values;
 
-    return !!possiblePrefixableValues && possiblePrefixableValues.some((valueObj: any) => {
-      return value.toLowerCase() === valueObj.name;
-    });
+    return (
+      !!possiblePrefixableValues &&
+      possiblePrefixableValues.some((valueObj: any) => {
+        return value.toLowerCase() === valueObj.name;
+      })
+    );
   }
 }

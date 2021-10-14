@@ -21,7 +21,6 @@ import {MatStepperIcon} from './stepper-icon';
 import {MAT_STEPPER_INTL_PROVIDER} from './stepper-intl';
 import {MatStepContent} from './step-content';
 
-
 @NgModule({
   imports: [
     MatCommonModule,

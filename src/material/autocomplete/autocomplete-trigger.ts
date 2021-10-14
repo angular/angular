@@ -52,14 +52,14 @@ import {delay, filter, map, switchMap, take, tap} from 'rxjs/operators';
 import {
   _MatAutocompleteBase,
   MAT_AUTOCOMPLETE_DEFAULT_OPTIONS,
-  MatAutocompleteDefaultOptions
+  MatAutocompleteDefaultOptions,
 } from './autocomplete';
 import {_MatAutocompleteOriginBase} from './autocomplete-origin';
 
-
 /** Injection token that determines the scroll handling while the autocomplete panel is open. */
-export const MAT_AUTOCOMPLETE_SCROLL_STRATEGY =
-    new InjectionToken<() => ScrollStrategy>('mat-autocomplete-scroll-strategy');
+export const MAT_AUTOCOMPLETE_SCROLL_STRATEGY = new InjectionToken<() => ScrollStrategy>(
+  'mat-autocomplete-scroll-strategy',
+);
 
 /** @docs-private */
 export function MAT_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY(overlay: Overlay): () => ScrollStrategy {
@@ -80,7 +80,7 @@ export const MAT_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY_PROVIDER = {
 export const MAT_AUTOCOMPLETE_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => MatAutocompleteTrigger),
-  multi: true
+  multi: true,
 };
 
 /**
@@ -88,16 +88,18 @@ export const MAT_AUTOCOMPLETE_VALUE_ACCESSOR: any = {
  * @docs-private
  */
 export function getMatAutocompleteMissingPanelError(): Error {
-  return Error('Attempting to open an undefined instance of `mat-autocomplete`. ' +
-               'Make sure that the id passed to the `matAutocomplete` is correct and that ' +
-               'you\'re attempting to open it after the ngAfterContentInit hook.');
+  return Error(
+    'Attempting to open an undefined instance of `mat-autocomplete`. ' +
+      'Make sure that the id passed to the `matAutocomplete` is correct and that ' +
+      "you're attempting to open it after the ngAfterContentInit hook.",
+  );
 }
 
 /** Base class with all of the `MatAutocompleteTrigger` functionality. */
 @Directive()
-export abstract class _MatAutocompleteTriggerBase implements ControlValueAccessor, AfterViewInit,
-  OnChanges, OnDestroy {
-
+export abstract class _MatAutocompleteTriggerBase
+  implements ControlValueAccessor, AfterViewInit, OnChanges, OnDestroy
+{
   private _overlayRef: OverlayRef | null;
   private _portal: TemplatePortal;
   private _componentDestroyed = false;
@@ -138,8 +140,8 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
     // refocused when they come back. In this case we want to skip the first focus event, if the
     // pane was closed, in order to avoid reopening it unintentionally.
     this._canOpenOnNextFocus =
-        this._document.activeElement !== this._element.nativeElement || this.panelOpen;
-  }
+      this._document.activeElement !== this._element.nativeElement || this.panelOpen;
+  };
 
   /** `View -> model callback called when value changes` */
   _onChange: (value: any) => void = () => {};
@@ -176,22 +178,28 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
    * act as a regular input and the user won't be able to open the panel.
    */
   @Input('matAutocompleteDisabled')
-  get autocompleteDisabled(): boolean { return this._autocompleteDisabled; }
+  get autocompleteDisabled(): boolean {
+    return this._autocompleteDisabled;
+  }
   set autocompleteDisabled(value: boolean) {
     this._autocompleteDisabled = coerceBooleanProperty(value);
   }
 
-  constructor(private _element: ElementRef<HTMLInputElement>, private _overlay: Overlay,
-              private _viewContainerRef: ViewContainerRef,
-              private _zone: NgZone,
-              private _changeDetectorRef: ChangeDetectorRef,
-              @Inject(MAT_AUTOCOMPLETE_SCROLL_STRATEGY) scrollStrategy: any,
-              @Optional() private _dir: Directionality,
-              @Optional() @Inject(MAT_FORM_FIELD) @Host() private _formField: MatFormField,
-              @Optional() @Inject(DOCUMENT) private _document: any,
-              private _viewportRuler: ViewportRuler,
-              @Optional() @Inject(MAT_AUTOCOMPLETE_DEFAULT_OPTIONS)
-              private _defaults?: MatAutocompleteDefaultOptions) {
+  constructor(
+    private _element: ElementRef<HTMLInputElement>,
+    private _overlay: Overlay,
+    private _viewContainerRef: ViewContainerRef,
+    private _zone: NgZone,
+    private _changeDetectorRef: ChangeDetectorRef,
+    @Inject(MAT_AUTOCOMPLETE_SCROLL_STRATEGY) scrollStrategy: any,
+    @Optional() private _dir: Directionality,
+    @Optional() @Inject(MAT_FORM_FIELD) @Host() private _formField: MatFormField,
+    @Optional() @Inject(DOCUMENT) private _document: any,
+    private _viewportRuler: ViewportRuler,
+    @Optional()
+    @Inject(MAT_AUTOCOMPLETE_DEFAULT_OPTIONS)
+    private _defaults?: MatAutocompleteDefaultOptions,
+  ) {
     this._scrollStrategy = scrollStrategy;
   }
 
@@ -286,18 +294,18 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
    * A stream of actions that should close the autocomplete panel, including
    * when an option is selected, on blur, and when TAB is pressed.
    */
-  get panelClosingActions(): Observable<MatOptionSelectionChange|null> {
+  get panelClosingActions(): Observable<MatOptionSelectionChange | null> {
     return merge(
       this.optionSelections,
       this.autocomplete._keyManager.tabOut.pipe(filter(() => this._overlayAttached)),
       this._closeKeyEventStream,
       this._getOutsideClickStream(),
-      this._overlayRef ?
-          this._overlayRef.detachments().pipe(filter(() => this._overlayAttached)) :
-          observableOf()
+      this._overlayRef
+        ? this._overlayRef.detachments().pipe(filter(() => this._overlayAttached))
+        : observableOf(),
     ).pipe(
       // Normalize the output so we return a consistent type.
-      map(event => event instanceof MatOptionSelectionChange ? event : null)
+      map(event => (event instanceof MatOptionSelectionChange ? event : null)),
     );
   }
 
@@ -309,8 +317,10 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
 
     // If there are any subscribers before `ngAfterViewInit`, the `autocomplete` will be undefined.
     // Return a stream that we'll replace with the real one once everything is in place.
-    return this._zone.onStable
-        .pipe(take(1), switchMap(() => this.optionSelections));
+    return this._zone.onStable.pipe(
+      take(1),
+      switchMap(() => this.optionSelections),
+    );
   }) as Observable<MatOptionSelectionChange>;
 
   /** The currently active option, coerced to MatOption type. */
@@ -325,21 +335,27 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
   /** Stream of clicks outside of the autocomplete panel. */
   private _getOutsideClickStream(): Observable<any> {
     return merge(
-            fromEvent(this._document, 'click') as Observable<MouseEvent>,
-            fromEvent(this._document, 'auxclick') as Observable<MouseEvent>,
-            fromEvent(this._document, 'touchend') as Observable<TouchEvent>)
-        .pipe(filter(event => {
-          // If we're in the Shadow DOM, the event target will be the shadow root, so we have to
-          // fall back to check the first element in the path of the click event.
-          const clickTarget = _getEventTarget<HTMLElement>(event)!;
-          const formField = this._formField ? this._formField._elementRef.nativeElement : null;
-          const customOrigin = this.connectedTo ? this.connectedTo.elementRef.nativeElement : null;
+      fromEvent(this._document, 'click') as Observable<MouseEvent>,
+      fromEvent(this._document, 'auxclick') as Observable<MouseEvent>,
+      fromEvent(this._document, 'touchend') as Observable<TouchEvent>,
+    ).pipe(
+      filter(event => {
+        // If we're in the Shadow DOM, the event target will be the shadow root, so we have to
+        // fall back to check the first element in the path of the click event.
+        const clickTarget = _getEventTarget<HTMLElement>(event)!;
+        const formField = this._formField ? this._formField._elementRef.nativeElement : null;
+        const customOrigin = this.connectedTo ? this.connectedTo.elementRef.nativeElement : null;
 
-          return this._overlayAttached && clickTarget !== this._element.nativeElement &&
-              (!formField || !formField.contains(clickTarget)) &&
-              (!customOrigin || !customOrigin.contains(clickTarget)) &&
-              (!!this._overlayRef && !this._overlayRef.overlayElement.contains(clickTarget));
-        }));
+        return (
+          this._overlayAttached &&
+          clickTarget !== this._element.nativeElement &&
+          (!formField || !formField.contains(clickTarget)) &&
+          (!customOrigin || !customOrigin.contains(clickTarget)) &&
+          !!this._overlayRef &&
+          !this._overlayRef.overlayElement.contains(clickTarget)
+        );
+      }),
+    );
   }
 
   // Implemented as part of ControlValueAccessor.
@@ -446,7 +462,7 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
   }
 
   /** If the label has been manually elevated, return it to its normal state. */
-  private _resetLabel(): void  {
+  private _resetLabel(): void {
     if (this._manuallyFloatingLabel) {
       this._formField.floatLabel = 'auto';
       this._manuallyFloatingLabel = false;
@@ -463,37 +479,40 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
       tap(() => this._positionStrategy.reapplyLastPosition()),
       // Defer emitting to the stream until the next tick, because changing
       // bindings in here will cause "changed after checked" errors.
-      delay(0)
+      delay(0),
     );
 
     // When the zone is stable initially, and when the option list changes...
-    return merge(firstStable, optionChanges)
+    return (
+      merge(firstStable, optionChanges)
         .pipe(
-            // create a new stream of panelClosingActions, replacing any previous streams
-            // that were created, and flatten it so our stream only emits closing events...
-            switchMap(() => {
-              const wasOpen = this.panelOpen;
-              this._resetActiveItem();
-              this.autocomplete._setVisibility();
+          // create a new stream of panelClosingActions, replacing any previous streams
+          // that were created, and flatten it so our stream only emits closing events...
+          switchMap(() => {
+            const wasOpen = this.panelOpen;
+            this._resetActiveItem();
+            this.autocomplete._setVisibility();
 
-              if (this.panelOpen) {
-                this._overlayRef!.updatePosition();
+            if (this.panelOpen) {
+              this._overlayRef!.updatePosition();
 
-                // If the `panelOpen` state changed, we need to make sure to emit the `opened`
-                // event, because we may not have emitted it when the panel was attached. This
-                // can happen if the users opens the panel and there are no options, but the
-                // options come in slightly later or as a result of the value changing.
-                if (wasOpen !== this.panelOpen) {
-                  this.autocomplete.opened.emit();
-                }
+              // If the `panelOpen` state changed, we need to make sure to emit the `opened`
+              // event, because we may not have emitted it when the panel was attached. This
+              // can happen if the users opens the panel and there are no options, but the
+              // options come in slightly later or as a result of the value changing.
+              if (wasOpen !== this.panelOpen) {
+                this.autocomplete.opened.emit();
               }
+            }
 
-              return this.panelClosingActions;
-            }),
-            // when the first closing event occurs...
-            take(1))
+            return this.panelClosingActions;
+          }),
+          // when the first closing event occurs...
+          take(1),
+        )
         // set the value, close the panel, and complete.
-        .subscribe(event => this._setValueAndClose(event));
+        .subscribe(event => this._setValueAndClose(event))
+    );
   }
 
   /** Destroys the autocomplete suggestion panel. */
@@ -506,9 +525,10 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
   }
 
   private _setTriggerValue(value: any): void {
-    const toDisplay = this.autocomplete && this.autocomplete.displayWith ?
-      this.autocomplete.displayWith(value) :
-      value;
+    const toDisplay =
+      this.autocomplete && this.autocomplete.displayWith
+        ? this.autocomplete.displayWith(value)
+        : value;
 
     // Simply falling back to an empty string if the display value is falsy does not work properly.
     // The display value can also be the number zero and shouldn't fall back to an empty string.
@@ -561,9 +581,9 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
     let overlayRef = this._overlayRef;
 
     if (!overlayRef) {
-      this._portal = new TemplatePortal(this.autocomplete.template,
-        this._viewContainerRef,
-        {id: this._formField?.getLabelId()});
+      this._portal = new TemplatePortal(this.autocomplete.template, this._viewContainerRef, {
+        id: this._formField?.getLabelId(),
+      });
       overlayRef = this._overlay.create(this._getOverlayConfig());
       this._overlayRef = overlayRef;
 
@@ -572,8 +592,10 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
       overlayRef.keydownEvents().subscribe(event => {
         // Close when pressing ESCAPE or ALT + UP_ARROW, based on the a11y guidelines.
         // See: https://www.w3.org/TR/wai-aria-practices-1.1/#textbox-keyboard-interaction
-        if ((event.keyCode === ESCAPE && !hasModifierKey(event)) ||
-            (event.keyCode === UP_ARROW && hasModifierKey(event, 'altKey'))) {
+        if (
+          (event.keyCode === ESCAPE && !hasModifierKey(event)) ||
+          (event.keyCode === UP_ARROW && hasModifierKey(event, 'altKey'))
+        ) {
           this._closeKeyEventStream.next();
           this._resetActiveItem();
 
@@ -623,7 +645,8 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
   }
 
   private _getOverlayPosition(): PositionStrategy {
-    const strategy = this._overlay.position()
+    const strategy = this._overlay
+      .position()
       .flexibleConnectedTo(this._getConnectedElement())
       .withFlexibleDimensions(false)
       .withPush(false);
@@ -639,7 +662,7 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
     // width matches the input, because consumers can override the width. See #18854.
     const belowPositions: ConnectedPosition[] = [
       {originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top'},
-      {originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top'}
+      {originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top'},
     ];
 
     // The overlay edge connected to the trigger should have squared corners, while
@@ -648,7 +671,7 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
     const panelClass = this._aboveClass;
     const abovePositions: ConnectedPosition[] = [
       {originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom', panelClass},
-      {originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom', panelClass}
+      {originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom', panelClass},
     ];
 
     let positions: ConnectedPosition[];
@@ -718,8 +741,11 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
     // will become the offset. If that offset is visible within the panel already, the scrollTop is
     // not adjusted.
     const autocomplete = this.autocomplete;
-    const labelCount = _countGroupLabelsBeforeOption(index,
-      autocomplete.options, autocomplete.optionGroups);
+    const labelCount = _countGroupLabelsBeforeOption(
+      index,
+      autocomplete.options,
+      autocomplete.optionGroups,
+    );
 
     if (index === 0 && labelCount === 1) {
       // If we've got one group label before the option and we're at the top option,
@@ -735,7 +761,7 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
           element.offsetTop,
           element.offsetHeight,
           autocomplete._getScrollTop(),
-          autocomplete.panel.nativeElement.offsetHeight
+          autocomplete.panel.nativeElement.offsetHeight,
         );
 
         autocomplete._setScrollTop(newScrollPosition);
@@ -745,7 +771,6 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
 
   static ngAcceptInputType_autocompleteDisabled: BooleanInput;
 }
-
 
 @Directive({
   selector: `input[matAutocomplete], textarea[matAutocomplete]`,
@@ -766,7 +791,7 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
     '(keydown)': '_handleKeydown($event)',
   },
   exportAs: 'matAutocompleteTrigger',
-  providers: [MAT_AUTOCOMPLETE_VALUE_ACCESSOR]
+  providers: [MAT_AUTOCOMPLETE_VALUE_ACCESSOR],
 })
 export class MatAutocompleteTrigger extends _MatAutocompleteTriggerBase {
   protected _aboveClass = 'mat-autocomplete-panel-above';

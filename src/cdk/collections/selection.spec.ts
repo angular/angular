@@ -1,11 +1,10 @@
 import {getMultipleValuesInSingleSelectionError, SelectionModel} from './selection-model';
 
-
 describe('SelectionModel', () => {
   describe('single selection', () => {
     let model: SelectionModel<any>;
 
-    beforeEach(() => model = new SelectionModel());
+    beforeEach(() => (model = new SelectionModel()));
 
     it('should be able to select a single value', () => {
       model.select(1);
@@ -38,7 +37,7 @@ describe('SelectionModel', () => {
   describe('multiple selection', () => {
     let model: SelectionModel<any>;
 
-    beforeEach(() => model = new SelectionModel(true));
+    beforeEach(() => (model = new SelectionModel(true)));
 
     it('should be able to select multiple options', () => {
       const changedSpy = jasmine.createSpy('changed spy');
@@ -206,7 +205,6 @@ describe('SelectionModel', () => {
         expect(spy).toHaveBeenCalledTimes(1);
         expect(event.removed).toEqual([1, 2, 3]);
       });
-
     });
   });
 

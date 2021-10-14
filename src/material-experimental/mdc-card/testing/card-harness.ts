@@ -14,7 +14,7 @@ export const enum MatCardSection {
   HEADER = '.mat-mdc-card-header',
   CONTENT = '.mat-mdc-card-content',
   ACTIONS = '.mat-mdc-card-actions',
-  FOOTER = '.mat-mdc-card-footer'
+  FOOTER = '.mat-mdc-card-footer',
 }
 
 /** Harness for interacting with an MDC-based mat-card in tests. */
@@ -30,13 +30,15 @@ export class MatCardHarness extends ContentContainerComponentHarness<MatCardSect
    */
   static with(options: CardHarnessFilters = {}): HarnessPredicate<MatCardHarness> {
     return new HarnessPredicate(MatCardHarness, options)
-        .addOption('text', options.text,
-            (harness, text) => HarnessPredicate.stringMatches(harness.getText(), text))
-        .addOption('title', options.title,
-            (harness, title) => HarnessPredicate.stringMatches(harness.getTitleText(), title))
-        .addOption('subtitle', options.subtitle,
-            (harness, subtitle) =>
-                HarnessPredicate.stringMatches(harness.getSubtitleText(), subtitle));
+      .addOption('text', options.text, (harness, text) =>
+        HarnessPredicate.stringMatches(harness.getText(), text),
+      )
+      .addOption('title', options.title, (harness, title) =>
+        HarnessPredicate.stringMatches(harness.getTitleText(), title),
+      )
+      .addOption('subtitle', options.subtitle, (harness, subtitle) =>
+        HarnessPredicate.stringMatches(harness.getSubtitleText(), subtitle),
+      );
   }
 
   private _title = this.locatorForOptional('.mat-mdc-card-title');

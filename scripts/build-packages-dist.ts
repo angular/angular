@@ -25,8 +25,8 @@ const bazelCmd = process.env.BAZEL_COMMAND || `bazel`;
 
 /** Command that queries Bazel for all release package targets. */
 const queryPackagesCmd =
-    `${bazelCmd} query --output=label "attr('tags', '\\[.*${releaseTargetTag}.*\\]', //src/...) ` +
-    `intersect kind('.*_package', //src/...)"`;
+  `${bazelCmd} query --output=label "attr('tags', '\\[.*${releaseTargetTag}.*\\]', //src/...) ` +
+  `intersect kind('.*_package', //src/...)"`;
 
 /** Path for the default distribution output directory. */
 const defaultDistPath = join(projectDir, 'dist/releases');
@@ -61,7 +61,6 @@ export function performDefaultSnapshotBuild(): BuiltPackage[] {
  * the package output into the given directory.
  */
 function buildReleasePackages(distPath: string, isSnapshotBuild: boolean): BuiltPackage[] {
-
   console.log('######################################');
   console.log('  Building release packages...');
   console.log('######################################');
@@ -108,7 +107,7 @@ function buildReleasePackages(distPath: string, isSnapshotBuild: boolean): Built
     const outputPath = getOutputPath(pkg);
     return {
       name: `@angular/${pkg}`,
-      outputPath
+      outputPath,
     };
   });
 }
@@ -121,8 +120,10 @@ function getPackageNamesOfTargets(targets: string[]): string[] {
   return targets.map(targetName => {
     const matches = targetName.match(/\/\/src\/(.*):npm_package/);
     if (matches === null) {
-      throw Error(`Found Bazel target with "${releaseTargetTag}" tag, but could not ` +
-        `determine release output name: ${targetName}`);
+      throw Error(
+        `Found Bazel target with "${releaseTargetTag}" tag, but could not ` +
+          `determine release output name: ${targetName}`,
+      );
     }
     return matches[1];
   });

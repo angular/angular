@@ -14,5 +14,4 @@ import {DialogE2E, TestDialog} from './dialog-e2e';
   imports: [MatDialogModule],
   declarations: [DialogE2E, TestDialog],
 })
-export class DialogE2eModule {
-}
+export class DialogE2eModule {}

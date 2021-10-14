@@ -18,8 +18,9 @@ export class MatDividerHarness extends ComponentHarness {
   }
 
   async getOrientation(): Promise<'horizontal' | 'vertical'> {
-    return (await this.host()).getAttribute('aria-orientation') as
-        Promise<'horizontal' | 'vertical'>;
+    return (await this.host()).getAttribute('aria-orientation') as Promise<
+      'horizontal' | 'vertical'
+    >;
   }
 
   async isInset(): Promise<boolean> {

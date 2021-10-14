@@ -6,14 +6,14 @@ import {
   ElementRef,
   NgZone,
   OnDestroy,
-  ViewChild
+  ViewChild,
 } from '@angular/core';
 
 /** @title Monitoring focus with FocusMonitor */
 @Component({
   selector: 'focus-monitor-overview-example',
   templateUrl: 'focus-monitor-overview-example.html',
-  styleUrls: ['focus-monitor-overview-example.css']
+  styleUrls: ['focus-monitor-overview-example.css'],
 })
 export class FocusMonitorOverviewExample implements OnDestroy, AfterViewInit {
   @ViewChild('element') element: ElementRef<HTMLElement>;
@@ -22,21 +22,25 @@ export class FocusMonitorOverviewExample implements OnDestroy, AfterViewInit {
   elementOrigin = this.formatOrigin(null);
   subtreeOrigin = this.formatOrigin(null);
 
-  constructor(private _focusMonitor: FocusMonitor,
-              private _cdr: ChangeDetectorRef,
-              private _ngZone: NgZone) {}
+  constructor(
+    private _focusMonitor: FocusMonitor,
+    private _cdr: ChangeDetectorRef,
+    private _ngZone: NgZone,
+  ) {}
 
   ngAfterViewInit() {
-    this._focusMonitor.monitor(this.element)
-        .subscribe(origin => this._ngZone.run(() => {
-          this.elementOrigin = this.formatOrigin(origin);
-          this._cdr.markForCheck();
-        }));
-    this._focusMonitor.monitor(this.subtree, true)
-        .subscribe(origin => this._ngZone.run(() => {
-          this.subtreeOrigin = this.formatOrigin(origin);
-          this._cdr.markForCheck();
-        }));
+    this._focusMonitor.monitor(this.element).subscribe(origin =>
+      this._ngZone.run(() => {
+        this.elementOrigin = this.formatOrigin(origin);
+        this._cdr.markForCheck();
+      }),
+    );
+    this._focusMonitor.monitor(this.subtree, true).subscribe(origin =>
+      this._ngZone.run(() => {
+        this.subtreeOrigin = this.formatOrigin(origin);
+        this._cdr.markForCheck();
+      }),
+    );
   }
 
   ngOnDestroy() {

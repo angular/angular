@@ -45,4 +45,3 @@ import {MatInput as BaseMatInput} from '@angular/material/input';
   providers: [{provide: MatFormFieldControl, useExisting: MatInput}],
 })
 export class MatInput extends BaseMatInput {}
-

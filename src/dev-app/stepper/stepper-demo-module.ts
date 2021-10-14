@@ -33,5 +33,4 @@ import {StepperDemo} from './stepper-demo';
   ],
   declarations: [StepperDemo],
 })
-export class StepperDemoModule {
-}
+export class StepperDemoModule {}

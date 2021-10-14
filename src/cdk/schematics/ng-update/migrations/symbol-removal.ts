@@ -30,8 +30,9 @@ export class SymbolRemovalMigration extends Migration<UpgradeData> {
       return;
     }
 
-    const moduleNameMatches = this.data.filter(entry =>
-        (node.moduleSpecifier as ts.StringLiteral).text === entry.module);
+    const moduleNameMatches = this.data.filter(
+      entry => (node.moduleSpecifier as ts.StringLiteral).text === entry.module,
+    );
 
     if (!moduleNameMatches.length) {
       return;

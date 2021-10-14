@@ -8,18 +8,18 @@ export const config = {
     'mdc-chips': [
       // These components haven't been implemented for MDC due to a different accessibility pattern.
       'MatChipListChange',
-      'MatChipList'
+      'MatChipList',
     ],
     'mdc-chips/testing': [
       // Test harness code for a component that hasn't been implemented for MDC.
       'MatChipListHarness',
-      'ChipListHarnessFilters'
+      'ChipListHarnessFilters',
     ],
     'mdc-slider': [
       // ControlValueAccessor implementation detail.
       'MAT_SLIDER_VALUE_ACCESSOR',
       // Irrelevant for the MDC implementation, because the slider doesn't dispatch any events.
-      'MatSliderChange'
-    ]
-  } as {[entryPointName: string]: string[]}
+      'MatSliderChange',
+    ],
+  } as {[entryPointName: string]: string[]},
 };

@@ -5,18 +5,18 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatProgressBarHarness} from './progress-bar-harness';
 
-export function runHarnessTests(progressBarModule: typeof MatProgressBarModule,
-                                progressBarHarness: typeof MatProgressBarHarness) {
+export function runHarnessTests(
+  progressBarModule: typeof MatProgressBarModule,
+  progressBarHarness: typeof MatProgressBarHarness,
+) {
   let fixture: ComponentFixture<ProgressBarHarnessTest>;
   let loader: HarnessLoader;
 
   beforeEach(async () => {
-    await TestBed
-        .configureTestingModule({
-          imports: [progressBarModule],
-          declarations: [ProgressBarHarnessTest],
-        })
-        .compileComponents();
+    await TestBed.configureTestingModule({
+      imports: [progressBarModule],
+      declarations: [ProgressBarHarnessTest],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ProgressBarHarnessTest);
     fixture.detectChanges();
@@ -47,7 +47,7 @@ export function runHarnessTests(progressBarModule: typeof MatProgressBarModule,
   template: `
     <mat-progress-bar mode="determinate" [value]="value"></mat-progress-bar>
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-  `
+  `,
 })
 class ProgressBarHarnessTest {
   value: number;

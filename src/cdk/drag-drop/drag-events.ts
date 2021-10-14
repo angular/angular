@@ -26,9 +26,9 @@ export interface CdkDragEnd<T = any> {
   /** Draggable that emitted the event. */
   source: CdkDrag<T>;
   /** Distance in pixels that the user has dragged since the drag sequence started. */
-  distance: {x: number, y: number};
+  distance: {x: number; y: number};
   /** Position where the pointer was when the item was dropped */
-  dropPoint: {x: number, y: number};
+  dropPoint: {x: number; y: number};
 }
 
 /** Event emitted when the user moves an item into a new drop container. */
@@ -52,7 +52,6 @@ export interface CdkDragExit<T = any, I = T> {
   item: CdkDrag<I>;
 }
 
-
 /** Event emitted when the user drops a draggable item inside a drop container. */
 export interface CdkDragDrop<T, O = T, I = any> {
   /** Index of the item when it was picked up. */
@@ -68,9 +67,9 @@ export interface CdkDragDrop<T, O = T, I = any> {
   /** Whether the user's pointer was over the container when the item was dropped. */
   isPointerOverContainer: boolean;
   /** Distance in pixels that the user has dragged since the drag sequence started. */
-  distance: {x: number, y: number};
+  distance: {x: number; y: number};
   /** Position where the pointer was when the item was dropped */
-  dropPoint: {x: number, y: number};
+  dropPoint: {x: number; y: number};
 }
 
 /** Event emitted as the user is dragging a draggable item. */
@@ -78,18 +77,18 @@ export interface CdkDragMove<T = any> {
   /** Item that is being dragged. */
   source: CdkDrag<T>;
   /** Position of the user's pointer on the page. */
-  pointerPosition: {x: number, y: number};
+  pointerPosition: {x: number; y: number};
   /** Native event that is causing the dragging. */
   event: MouseEvent | TouchEvent;
   /** Distance in pixels that the user has dragged since the drag sequence started. */
-  distance: {x: number, y: number};
+  distance: {x: number; y: number};
   /**
    * Indicates the direction in which the user is dragging the element along each axis.
    * `1` means that the position is increasing (e.g. the user is moving to the right or downwards),
    * whereas `-1` means that it's decreasing (they're moving to the left or upwards). `0` means
    * that the position hasn't changed.
    */
-  delta: {x: -1 | 0 | 1, y: -1 | 0 | 1};
+  delta: {x: -1 | 0 | 1; y: -1 | 0 | 1};
 }
 
 /** Event emitted when the user swaps the position of two drag items. */

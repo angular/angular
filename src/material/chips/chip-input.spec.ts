@@ -13,7 +13,6 @@ import {MatChipInput, MatChipInputEvent} from './chip-input';
 import {MatChipList} from './chip-list';
 import {MatChipsModule} from './index';
 
-
 describe('MatChipInput', () => {
   let fixture: ComponentFixture<any>;
   let testChipInput: TestChipInput;
@@ -22,32 +21,39 @@ describe('MatChipInput', () => {
   let chipInputDirective: MatChipInput;
   const dir = 'ltr';
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [PlatformModule, MatChipsModule, MatFormFieldModule, NoopAnimationsModule],
-      declarations: [TestChipInput],
-      providers: [{
-        provide: Directionality, useFactory: () => {
-          return {
-            value: dir.toLowerCase(),
-            change: new Subject()
-          };
-        }
-      }]
-    });
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [PlatformModule, MatChipsModule, MatFormFieldModule, NoopAnimationsModule],
+        declarations: [TestChipInput],
+        providers: [
+          {
+            provide: Directionality,
+            useFactory: () => {
+              return {
+                value: dir.toLowerCase(),
+                change: new Subject(),
+              };
+            },
+          },
+        ],
+      });
 
-    TestBed.compileComponents();
-  }));
+      TestBed.compileComponents();
+    }),
+  );
 
-  beforeEach(waitForAsync(() => {
-    fixture = TestBed.createComponent(TestChipInput);
-    testChipInput = fixture.debugElement.componentInstance;
-    fixture.detectChanges();
+  beforeEach(
+    waitForAsync(() => {
+      fixture = TestBed.createComponent(TestChipInput);
+      testChipInput = fixture.debugElement.componentInstance;
+      fixture.detectChanges();
 
-    inputDebugElement = fixture.debugElement.query(By.directive(MatChipInput))!;
-    chipInputDirective = inputDebugElement.injector.get<MatChipInput>(MatChipInput);
-    inputNativeElement = inputDebugElement.nativeElement;
-  }));
+      inputDebugElement = fixture.debugElement.query(By.directive(MatChipInput))!;
+      chipInputDirective = inputDebugElement.injector.get<MatChipInput>(MatChipInput);
+      inputNativeElement = inputDebugElement.nativeElement;
+    }),
+  );
 
   describe('basic behavior', () => {
     it('emits the (chipEnd) on enter keyup', () => {
@@ -79,10 +85,10 @@ describe('MatChipInput', () => {
       expect(label).toBeTruthy();
       expect(label.textContent).toContain('add a chip');
 
-      fixture.componentInstance.placeholder = 'or don\'t';
+      fixture.componentInstance.placeholder = "or don't";
       fixture.detectChanges();
 
-      expect(label.textContent).toContain('or don\'t');
+      expect(label.textContent).toContain("or don't");
     });
 
     it('should become disabled if the list is disabled', () => {
@@ -105,13 +111,15 @@ describe('MatChipInput', () => {
       fixture.detectChanges();
 
       expect(listElement.getAttribute('tabindex'))
-        .withContext('Expected tabIndex to be set to -1 temporarily.').toBe('-1');
+        .withContext('Expected tabIndex to be set to -1 temporarily.')
+        .toBe('-1');
 
       tick();
       fixture.detectChanges();
 
       expect(listElement.getAttribute('tabindex'))
-        .withContext('Expected tabIndex to be reset back to 0').toBe('0');
+        .withContext('Expected tabIndex to be reset back to 0')
+        .toBe('0');
     }));
 
     it('should not allow focus to escape when tabbing backwards', fakeAsync(() => {
@@ -123,13 +131,15 @@ describe('MatChipInput', () => {
       fixture.detectChanges();
 
       expect(listElement.getAttribute('tabindex'))
-        .withContext('Expected tabindex to remain 0').toBe('0');
+        .withContext('Expected tabindex to remain 0')
+        .toBe('0');
 
       tick();
       fixture.detectChanges();
 
       expect(listElement.getAttribute('tabindex'))
-        .withContext('Expected tabindex to remain 0').toBe('0');
+        .withContext('Expected tabindex to remain 0')
+        .toBe('0');
     }));
 
     it('should be aria-required if the list is required', () => {
@@ -145,7 +155,6 @@ describe('MatChipInput', () => {
       expect(inputNativeElement.classList).toContain('mat-input-element');
       expect(inputNativeElement.classList).toContain('mat-chip-input');
     });
-
   });
 
   describe('[addOnBlur]', () => {
@@ -204,15 +213,16 @@ describe('MatChipInput', () => {
     it('emits (chipEnd) when the separator keys are configured globally', () => {
       fixture.destroy();
 
-      TestBed
-        .resetTestingModule()
+      TestBed.resetTestingModule()
         .configureTestingModule({
           imports: [MatChipsModule, MatFormFieldModule, PlatformModule, NoopAnimationsModule],
           declarations: [TestChipInput],
-          providers: [{
-            provide: MAT_CHIPS_DEFAULT_OPTIONS,
-            useValue: ({separatorKeyCodes: [COMMA]} as MatChipsDefaultOptions)
-          }]
+          providers: [
+            {
+              provide: MAT_CHIPS_DEFAULT_OPTIONS,
+              useValue: {separatorKeyCodes: [COMMA]} as MatChipsDefaultOptions,
+            },
+          ],
         })
         .compileComponents();
 
@@ -240,7 +250,6 @@ describe('MatChipInput', () => {
       dispatchKeyboardEvent(inputNativeElement, 'keydown', ENTER, undefined, {shift: true});
       expect(testChipInput.add).not.toHaveBeenCalled();
     });
-
   });
 });
 
@@ -255,7 +264,7 @@ describe('MatChipInput', () => {
                   [placeholder]="placeholder" />
       </mat-chip-list>
     </mat-form-field>
-  `
+  `,
 })
 class TestChipInput {
   @ViewChild(MatChipList) chipListInstance: MatChipList;
@@ -263,6 +272,5 @@ class TestChipInput {
   required = false;
   placeholder = '';
 
-  add(_: MatChipInputEvent) {
-  }
+  add(_: MatChipInputEvent) {}
 }

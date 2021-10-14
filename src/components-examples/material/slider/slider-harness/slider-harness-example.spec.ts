@@ -15,14 +15,14 @@ describe('SliderHarnessExample', () => {
 
   beforeAll(() => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
-      teardown: {destroyAfterEach: true}
+      teardown: {destroyAfterEach: true},
     });
   });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MatSliderModule],
-      declarations: [SliderHarnessExample]
+      declarations: [SliderHarnessExample],
     }).compileComponents();
     fixture = TestBed.createComponent(SliderHarnessExample);
     fixture.detectChanges();
@@ -48,7 +48,6 @@ describe('SliderHarnessExample', () => {
     const slider = await loader.getHarness(MatSliderHarness);
     expect(await slider.getMaxValue()).toBe(100);
   });
-
 
   it('should be able to set value of slider', async () => {
     const slider = await loader.getHarness(MatSliderHarness);

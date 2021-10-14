@@ -87,7 +87,9 @@ export class CdkEditControl<FormValue> implements OnDestroy, OnInit {
   // tslint:disable-next-line:no-host-decorator-in-concrete
   @HostListener('ngSubmit')
   handleFormSubmit(): void {
-    if (this.ignoreSubmitUnlessValid && !this.editRef.isValid()) { return; }
+    if (this.ignoreSubmitUnlessValid && !this.editRef.isValid()) {
+      return;
+    }
 
     this.editRef.updateRevertValue();
     this.editRef.close();
@@ -110,7 +112,9 @@ export class CdkEditControl<FormValue> implements OnDestroy, OnInit {
   // tslint:disable-next-line:no-host-decorator-in-concrete
   @HostListener('document:click', ['$event'])
   handlePossibleClickOut(evt: Event): void {
-    if (closest(evt.target, EDIT_PANE_SELECTOR)) { return; }
+    if (closest(evt.target, EDIT_PANE_SELECTOR)) {
+      return;
+    }
     switch (this.clickOutBehavior) {
       case 'submit':
         // Manually cause the form to submit before closing.
@@ -155,14 +159,13 @@ export class CdkEditControl<FormValue> implements OnDestroy, OnInit {
   selector: 'button[cdkEditRevert]',
   host: {
     'type': 'button', // Prevents accidental form submits.
-  }
+  },
 })
 export class CdkEditRevert<FormValue> {
   /** Type of the button. Defaults to `button` to avoid accident form submits. */
   @Input() type: string = 'button';
 
-  constructor(
-      protected readonly editRef: EditRef<FormValue>) {}
+  constructor(protected readonly editRef: EditRef<FormValue>) {}
 
   // In Ivy the `host` metadata will be merged, whereas in ViewEngine it is overridden. In order
   // to avoid double event listeners, we need to use `HostListener`. Once Ivy is the default, we
@@ -178,9 +181,9 @@ export class CdkEditRevert<FormValue> {
 @Directive({selector: '[cdkEditClose]'})
 export class CdkEditClose<FormValue> {
   constructor(
-      protected readonly elementRef: ElementRef<HTMLElement>,
-      protected readonly editRef: EditRef<FormValue>) {
-
+    protected readonly elementRef: ElementRef<HTMLElement>,
+    protected readonly editRef: EditRef<FormValue>,
+  ) {
     const nativeElement = elementRef.nativeElement;
 
     // Prevent accidental form submits.
@@ -193,7 +196,11 @@ export class CdkEditClose<FormValue> {
   // to avoid double event listeners, we need to use `HostListener`. Once Ivy is the default, we
   // can move this back into `host`.
   // tslint:disable-next-line:no-host-decorator-in-concrete
-  @HostListener('click') @HostListener('keydown.enter') @HostListener('keydown.space')
+  @HostListener('click')
+  // tslint:disable-next-line:no-host-decorator-in-concrete
+  @HostListener('keydown.enter')
+  // tslint:disable-next-line:no-host-decorator-in-concrete
+  @HostListener('keydown.space')
   closeEdit(): void {
     // Note that we use `click` here, rather than a keyboard event, because some screen readers
     // will emit a fake click event instead of an enter keyboard event on buttons. For the keyboard

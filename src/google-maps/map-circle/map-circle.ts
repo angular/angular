@@ -27,9 +27,10 @@ import {MapEventManager} from '../map-event-manager';
 export class MapCircle implements OnInit, OnDestroy {
   private _eventManager = new MapEventManager(this._ngZone);
   private readonly _options = new BehaviorSubject<google.maps.CircleOptions>({});
-  private readonly _center =
-      new BehaviorSubject<google.maps.LatLng|google.maps.LatLngLiteral|undefined>(undefined);
-  private readonly _radius = new BehaviorSubject<number|undefined>(undefined);
+  private readonly _center = new BehaviorSubject<
+    google.maps.LatLng | google.maps.LatLngLiteral | undefined
+  >(undefined);
+  private readonly _radius = new BehaviorSubject<number | undefined>(undefined);
 
   private readonly _destroyed = new Subject<void>();
 
@@ -38,7 +39,7 @@ export class MapCircle implements OnInit, OnDestroy {
    *
    * @see developers.google.com/maps/documentation/javascript/reference/polygon#Circle
    */
-  circle?: google.maps.Circle;  // initialized in ngOnInit
+  circle?: google.maps.Circle; // initialized in ngOnInit
 
   @Input()
   set options(options: google.maps.CircleOptions) {
@@ -46,7 +47,7 @@ export class MapCircle implements OnInit, OnDestroy {
   }
 
   @Input()
-  set center(center: google.maps.LatLng|google.maps.LatLngLiteral) {
+  set center(center: google.maps.LatLng | google.maps.LatLngLiteral) {
     this._center.next(center);
   }
 
@@ -60,107 +61,109 @@ export class MapCircle implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.center_changed
    */
   @Output() readonly centerChanged: Observable<void> =
-      this._eventManager.getLazyEmitter<void>('center_changed');
+    this._eventManager.getLazyEmitter<void>('center_changed');
 
   /**
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.click
    */
   @Output() readonly circleClick: Observable<google.maps.MapMouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('click');
+    this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('click');
 
   /**
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.dblclick
    */
   @Output() readonly circleDblclick: Observable<google.maps.MapMouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('dblclick');
+    this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('dblclick');
 
   /**
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.drag
    */
   @Output() readonly circleDrag: Observable<google.maps.MapMouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('drag');
+    this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('drag');
 
   /**
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.dragend
    */
   @Output() readonly circleDragend: Observable<google.maps.MapMouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('dragend');
+    this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('dragend');
 
   /**
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.dragstart
    */
   @Output() readonly circleDragstart: Observable<google.maps.MapMouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('dragstart');
+    this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('dragstart');
 
   /**
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.mousedown
    */
   @Output() readonly circleMousedown: Observable<google.maps.MapMouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mousedown');
+    this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mousedown');
 
   /**
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.mousemove
    */
   @Output() readonly circleMousemove: Observable<google.maps.MapMouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mousemove');
+    this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mousemove');
 
   /**
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.mouseout
    */
   @Output() readonly circleMouseout: Observable<google.maps.MapMouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mouseout');
+    this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mouseout');
 
   /**
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.mouseover
    */
   @Output() readonly circleMouseover: Observable<google.maps.MapMouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mouseover');
+    this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mouseover');
 
   /**
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.mouseup
    */
   @Output() readonly circleMouseup: Observable<google.maps.MapMouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mouseup');
+    this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mouseup');
 
   /**
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.radius_changed
    */
   @Output() readonly radiusChanged: Observable<void> =
-      this._eventManager.getLazyEmitter<void>('radius_changed');
+    this._eventManager.getLazyEmitter<void>('radius_changed');
 
   /**
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.rightclick
    */
   @Output() readonly circleRightclick: Observable<google.maps.MapMouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('rightclick');
+    this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('rightclick');
 
   constructor(private readonly _map: GoogleMap, private readonly _ngZone: NgZone) {}
 
   ngOnInit() {
     if (this._map._isBrowser) {
-      this._combineOptions().pipe(take(1)).subscribe(options => {
-        // Create the object outside the zone so its events don't trigger change detection.
-        // We'll bring it back in inside the `MapEventManager` only for the events that the
-        // user has subscribed to.
-        this._ngZone.runOutsideAngular(() => {
-          this.circle = new google.maps.Circle(options);
+      this._combineOptions()
+        .pipe(take(1))
+        .subscribe(options => {
+          // Create the object outside the zone so its events don't trigger change detection.
+          // We'll bring it back in inside the `MapEventManager` only for the events that the
+          // user has subscribed to.
+          this._ngZone.runOutsideAngular(() => {
+            this.circle = new google.maps.Circle(options);
+          });
+          this._assertInitialized();
+          this.circle.setMap(this._map.googleMap!);
+          this._eventManager.setTarget(this.circle);
         });
-        this._assertInitialized();
-        this.circle.setMap(this._map.googleMap!);
-        this._eventManager.setTarget(this.circle);
-      });
 
       this._watchForOptionsChanges();
       this._watchForCenterChanges();
@@ -232,15 +235,16 @@ export class MapCircle implements OnInit, OnDestroy {
   }
 
   private _combineOptions(): Observable<google.maps.CircleOptions> {
-    return combineLatest([this._options, this._center, this._radius])
-        .pipe(map(([options, center, radius]) => {
-          const combinedOptions: google.maps.CircleOptions = {
-            ...options,
-            center: center || options.center,
-            radius: radius !== undefined ? radius : options.radius,
-          };
-          return combinedOptions;
-        }));
+    return combineLatest([this._options, this._center, this._radius]).pipe(
+      map(([options, center, radius]) => {
+        const combinedOptions: google.maps.CircleOptions = {
+          ...options,
+          center: center || options.center,
+          radius: radius !== undefined ? radius : options.radius,
+        };
+        return combinedOptions;
+      }),
+    );
   }
 
   private _watchForOptionsChanges() {
@@ -273,12 +277,14 @@ export class MapCircle implements OnInit, OnDestroy {
       if (!this._map.googleMap) {
         throw Error(
           'Cannot access Google Map information before the API has been initialized. ' +
-          'Please wait for the API to load before trying to interact with it.');
+            'Please wait for the API to load before trying to interact with it.',
+        );
       }
       if (!this.circle) {
         throw Error(
           'Cannot interact with a Google Map Circle before it has been ' +
-          'initialized. Please wait for the Circle to load before trying to interact with it.');
+            'initialized. Please wait for the Circle to load before trying to interact with it.',
+        );
       }
     }
   }

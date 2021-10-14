@@ -32,6 +32,5 @@ export const MAT_SORT_HEADER_INTL_PROVIDER = {
   // If there is already an MatSortHeaderIntl available, use that. Otherwise, provide a new one.
   provide: MatSortHeaderIntl,
   deps: [[new Optional(), new SkipSelf(), MatSortHeaderIntl]],
-  useFactory: MAT_SORT_HEADER_INTL_PROVIDER_FACTORY
+  useFactory: MAT_SORT_HEADER_INTL_PROVIDER_FACTORY,
 };
-

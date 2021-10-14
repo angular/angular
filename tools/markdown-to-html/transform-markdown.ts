@@ -28,7 +28,9 @@ if (require.main === module) {
   inputFiles.forEach(inputPath => {
     const outputPath = join(bazelBinPath, inputPath.replace(markdownExtension, '.html'));
     const htmlOutput = markdownRenderer.finalizeOutput(
-        marked(readFileSync(inputPath, 'utf8')), inputPath);
+      marked(readFileSync(inputPath, 'utf8')),
+      inputPath,
+    );
 
     writeFileSync(outputPath, htmlOutput);
   });

@@ -10,7 +10,7 @@ import {
   EmbeddedViewRef,
   IterableChangeRecord,
   IterableChanges,
-  ViewContainerRef
+  ViewContainerRef,
 } from '@angular/core';
 import {
   _ViewRepeater,
@@ -18,7 +18,7 @@ import {
   _ViewRepeaterItemContext,
   _ViewRepeaterItemContextFactory,
   _ViewRepeaterItemValueResolver,
-  _ViewRepeaterOperation
+  _ViewRepeaterOperation,
 } from './view-repeater';
 
 /**
@@ -31,42 +31,50 @@ import {
  * @template C The type for the context passed to each embedded view.
  */
 export class _DisposeViewRepeaterStrategy<T, R, C extends _ViewRepeaterItemContext<T>>
-    implements _ViewRepeater<T, R, C> {
-  applyChanges(changes: IterableChanges<R>,
-               viewContainerRef: ViewContainerRef,
-               itemContextFactory: _ViewRepeaterItemContextFactory<T, R, C>,
-               itemValueResolver: _ViewRepeaterItemValueResolver<T, R>,
-               itemViewChanged?: _ViewRepeaterItemChanged<R, C>) {
+  implements _ViewRepeater<T, R, C>
+{
+  applyChanges(
+    changes: IterableChanges<R>,
+    viewContainerRef: ViewContainerRef,
+    itemContextFactory: _ViewRepeaterItemContextFactory<T, R, C>,
+    itemValueResolver: _ViewRepeaterItemValueResolver<T, R>,
+    itemViewChanged?: _ViewRepeaterItemChanged<R, C>,
+  ) {
     changes.forEachOperation(
-        (record: IterableChangeRecord<R>,
-         adjustedPreviousIndex: number | null,
-         currentIndex: number | null) => {
-          let view: EmbeddedViewRef<C> | undefined;
-          let operation: _ViewRepeaterOperation;
-          if (record.previousIndex == null) {
-            const insertContext = itemContextFactory(record, adjustedPreviousIndex, currentIndex);
-            view = viewContainerRef.createEmbeddedView(
-                insertContext.templateRef, insertContext.context, insertContext.index);
-            operation = _ViewRepeaterOperation.INSERTED;
-          } else if (currentIndex == null) {
-            viewContainerRef.remove(adjustedPreviousIndex!);
-            operation = _ViewRepeaterOperation.REMOVED;
-          } else {
-            view = viewContainerRef.get(adjustedPreviousIndex!) as EmbeddedViewRef<C>;
-            viewContainerRef.move(view!, currentIndex);
-            operation = _ViewRepeaterOperation.MOVED;
-          }
+      (
+        record: IterableChangeRecord<R>,
+        adjustedPreviousIndex: number | null,
+        currentIndex: number | null,
+      ) => {
+        let view: EmbeddedViewRef<C> | undefined;
+        let operation: _ViewRepeaterOperation;
+        if (record.previousIndex == null) {
+          const insertContext = itemContextFactory(record, adjustedPreviousIndex, currentIndex);
+          view = viewContainerRef.createEmbeddedView(
+            insertContext.templateRef,
+            insertContext.context,
+            insertContext.index,
+          );
+          operation = _ViewRepeaterOperation.INSERTED;
+        } else if (currentIndex == null) {
+          viewContainerRef.remove(adjustedPreviousIndex!);
+          operation = _ViewRepeaterOperation.REMOVED;
+        } else {
+          view = viewContainerRef.get(adjustedPreviousIndex!) as EmbeddedViewRef<C>;
+          viewContainerRef.move(view!, currentIndex);
+          operation = _ViewRepeaterOperation.MOVED;
+        }
 
-          if (itemViewChanged) {
-            itemViewChanged({
-              context: view?.context,
-              operation,
-              record,
-            });
-          }
-        });
+        if (itemViewChanged) {
+          itemViewChanged({
+            context: view?.context,
+            operation,
+            record,
+          });
+        }
+      },
+    );
   }
 
-  detach() {
-  }
+  detach() {}
 }

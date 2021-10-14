@@ -7,11 +7,13 @@ describe('OverlayContainer', () => {
   let overlay: Overlay;
   let overlayContainer: OverlayContainer;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [OverlayTestModule]
-    }).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [OverlayTestModule],
+      }).compileComponents();
+    }),
+  );
 
   beforeEach(inject([Overlay, OverlayContainer], (o: Overlay, oc: OverlayContainer) => {
     overlay = o;
@@ -25,8 +27,8 @@ describe('OverlayContainer', () => {
     overlayRef.attach(fixture.componentInstance.templatePortal);
     fixture.detectChanges();
 
-    expect(document.querySelector('.cdk-overlay-container')).not
-      .withContext('Expected the overlay container to be in the DOM after opening an overlay')
+    expect(document.querySelector('.cdk-overlay-container'))
+      .not.withContext('Expected the overlay container to be in the DOM after opening an overlay')
       .toBeNull();
 
     // Manually call `ngOnDestroy` because there is no way to force Angular to destroy an
@@ -43,7 +45,8 @@ describe('OverlayContainer', () => {
 
     const containerElement = document.querySelector('.cdk-overlay-container')!;
     expect(containerElement.classList.contains('commander-shepard'))
-      .withContext('Expected the overlay container to have class "commander-shepard"').toBe(true);
+      .withContext('Expected the overlay container to have class "commander-shepard"')
+      .toBe(true);
 
     overlayContainer.getContainerElement().classList.remove('commander-shepard');
 
@@ -84,7 +87,6 @@ describe('OverlayContainer', () => {
     expect(document.querySelectorAll('.cdk-overlay-container').length).toBe(2);
     extraContainer.remove();
   });
-
 });
 
 /** Test-bed component that contains a TempatePortal and an ElementRef. */
@@ -95,11 +97,11 @@ describe('OverlayContainer', () => {
 class TestComponentWithTemplatePortals {
   @ViewChild(CdkPortal) templatePortal: CdkPortal;
 
-  constructor(public viewContainerRef: ViewContainerRef) { }
+  constructor(public viewContainerRef: ViewContainerRef) {}
 }
 
 @NgModule({
   imports: [OverlayModule, PortalModule],
-  declarations: [TestComponentWithTemplatePortals]
+  declarations: [TestComponentWithTemplatePortals],
 })
-class OverlayTestModule { }
+class OverlayTestModule {}

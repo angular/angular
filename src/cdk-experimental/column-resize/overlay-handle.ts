@@ -60,21 +60,25 @@ export abstract class ResizeOverlayHandle implements AfterViewInit, OnDestroy {
 
   private _listenForMouseEvents() {
     this.ngZone.runOutsideAngular(() => {
-      fromEvent<MouseEvent>(this.elementRef.nativeElement!, 'mouseenter').pipe(
-          mapTo(this.resizeRef.origin.nativeElement!),
-          takeUntil(this.destroyed),
-      ).subscribe(cell => this.eventDispatcher.headerCellHovered.next(cell));
+      fromEvent<MouseEvent>(this.elementRef.nativeElement!, 'mouseenter')
+        .pipe(mapTo(this.resizeRef.origin.nativeElement!), takeUntil(this.destroyed))
+        .subscribe(cell => this.eventDispatcher.headerCellHovered.next(cell));
 
-      fromEvent<MouseEvent>(this.elementRef.nativeElement!, 'mouseleave').pipe(
-          map(event => event.relatedTarget &&
-              _closest(event.relatedTarget as Element, HEADER_CELL_SELECTOR)),
-          takeUntil(this.destroyed)
-      ).subscribe(cell => this.eventDispatcher.headerCellHovered.next(cell));
+      fromEvent<MouseEvent>(this.elementRef.nativeElement!, 'mouseleave')
+        .pipe(
+          map(
+            event =>
+              event.relatedTarget && _closest(event.relatedTarget as Element, HEADER_CELL_SELECTOR),
+          ),
+          takeUntil(this.destroyed),
+        )
+        .subscribe(cell => this.eventDispatcher.headerCellHovered.next(cell));
 
       fromEvent<MouseEvent>(this.elementRef.nativeElement!, 'mousedown')
-          .pipe(takeUntil(this.destroyed)).subscribe(mousedownEvent => {
-        this._dragStarted(mousedownEvent);
-      });
+        .pipe(takeUntil(this.destroyed))
+        .subscribe(mousedownEvent => {
+          this._dragStarted(mousedownEvent);
+        });
     });
   }
 
@@ -86,8 +90,9 @@ export abstract class ResizeOverlayHandle implements AfterViewInit, OnDestroy {
 
     const mouseup = fromEvent<MouseEvent>(this.document, 'mouseup');
     const mousemove = fromEvent<MouseEvent>(this.document, 'mousemove');
-    const escape = fromEvent<KeyboardEvent>(this.document, 'keyup')
-        .pipe(filter(event => event.keyCode === ESCAPE));
+    const escape = fromEvent<KeyboardEvent>(this.document, 'keyup').pipe(
+      filter(event => event.keyCode === ESCAPE),
+    );
 
     const startX = mousedownEvent.screenX;
 
@@ -109,63 +114,68 @@ export abstract class ResizeOverlayHandle implements AfterViewInit, OnDestroy {
       this._notifyResizeEnded(initialSize);
     });
 
-    mousemove.pipe(
+    mousemove
+      .pipe(
         map(({screenX}) => screenX),
         startWith(startX),
         distinctUntilChanged(),
         pairwise(),
-        takeUntil(merge(mouseup, escape, this.destroyed))
-    ).subscribe(([prevX, currX]) => {
-      let deltaX = currX - prevX;
+        takeUntil(merge(mouseup, escape, this.destroyed)),
+      )
+      .subscribe(([prevX, currX]) => {
+        let deltaX = currX - prevX;
 
-      // If the mouse moved further than the resize was able to match, limit the
-      // movement of the overlay to match the actual size and position of the origin.
-      if (overshot !== 0) {
-        if (overshot < 0 && deltaX < 0 || overshot > 0 && deltaX > 0) {
-          overshot += deltaX;
-          return;
-        } else {
-          const remainingOvershot = overshot + deltaX;
-          overshot = overshot > 0 ?
-              Math.max(remainingOvershot, 0) : Math.min(remainingOvershot, 0);
-          deltaX = remainingOvershot - overshot;
-
-          if (deltaX === 0) {
+        // If the mouse moved further than the resize was able to match, limit the
+        // movement of the overlay to match the actual size and position of the origin.
+        if (overshot !== 0) {
+          if ((overshot < 0 && deltaX < 0) || (overshot > 0 && deltaX > 0)) {
+            overshot += deltaX;
             return;
+          } else {
+            const remainingOvershot = overshot + deltaX;
+            overshot =
+              overshot > 0 ? Math.max(remainingOvershot, 0) : Math.min(remainingOvershot, 0);
+            deltaX = remainingOvershot - overshot;
+
+            if (deltaX === 0) {
+              return;
+            }
           }
         }
-      }
 
-      let computedNewSize: number = size + (this._isLtr() ? deltaX : -deltaX);
-      computedNewSize = Math.min(
-          Math.max(computedNewSize, this.resizeRef.minWidthPx, 0), this.resizeRef.maxWidthPx);
+        let computedNewSize: number = size + (this._isLtr() ? deltaX : -deltaX);
+        computedNewSize = Math.min(
+          Math.max(computedNewSize, this.resizeRef.minWidthPx, 0),
+          this.resizeRef.maxWidthPx,
+        );
 
-      this.resizeNotifier.triggerResize.next({
-        columnId: this.columnDef.name,
-        size: computedNewSize,
-        previousSize: size,
-        isStickyColumn: this.columnDef.sticky || this.columnDef.stickyEnd,
+        this.resizeNotifier.triggerResize.next({
+          columnId: this.columnDef.name,
+          size: computedNewSize,
+          previousSize: size,
+          isStickyColumn: this.columnDef.sticky || this.columnDef.stickyEnd,
+        });
+
+        this.styleScheduler.scheduleEnd(() => {
+          const originNewSize = this._getOriginWidth();
+          const originNewOffset = this._getOriginOffset();
+          const originOffsetDeltaX = originNewOffset - originOffset;
+          const originSizeDeltaX = originNewSize - size;
+          size = originNewSize;
+          originOffset = originNewOffset;
+
+          overshot += deltaX + (this._isLtr() ? -originSizeDeltaX : originSizeDeltaX);
+          overlayOffset += originOffsetDeltaX + (this._isLtr() ? originSizeDeltaX : 0);
+
+          this._updateOverlayOffset(overlayOffset);
+        });
       });
-
-      this.styleScheduler.scheduleEnd(() => {
-        const originNewSize = this._getOriginWidth();
-        const originNewOffset = this._getOriginOffset();
-        const originOffsetDeltaX = originNewOffset - originOffset;
-        const originSizeDeltaX = originNewSize - size;
-        size = originNewSize;
-        originOffset = originNewOffset;
-
-        overshot += deltaX + (this._isLtr() ? -originSizeDeltaX : originSizeDeltaX);
-        overlayOffset += originOffsetDeltaX + (this._isLtr() ? originSizeDeltaX : 0);
-
-        this._updateOverlayOffset(overlayOffset);
-      });
-    });
   }
 
   protected updateResizeActive(active: boolean): void {
     this.eventDispatcher.overlayHandleActiveForCell.next(
-        active ? this.resizeRef.origin.nativeElement! : null);
+      active ? this.resizeRef.origin.nativeElement! : null,
+    );
   }
 
   private _getOriginWidth(): number {
@@ -177,8 +187,9 @@ export abstract class ResizeOverlayHandle implements AfterViewInit, OnDestroy {
   }
 
   private _updateOverlayOffset(offset: number): void {
-    this.resizeRef.overlayRef.overlayElement.style.transform =
-        `translateX(${coerceCssPixelValue(offset)})`;
+    this.resizeRef.overlayRef.overlayElement.style.transform = `translateX(${coerceCssPixelValue(
+      offset,
+    )})`;
   }
 
   private _isLtr(): boolean {

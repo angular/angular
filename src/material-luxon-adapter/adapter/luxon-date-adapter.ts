@@ -25,17 +25,18 @@ export interface MatLuxonDateAdapterOptions {
 }
 
 /** InjectionToken for LuxonDateAdapter to configure options. */
-export const MAT_LUXON_DATE_ADAPTER_OPTIONS =
-  new InjectionToken<MatLuxonDateAdapterOptions>('MAT_LUXON_DATE_ADAPTER_OPTIONS', {
+export const MAT_LUXON_DATE_ADAPTER_OPTIONS = new InjectionToken<MatLuxonDateAdapterOptions>(
+  'MAT_LUXON_DATE_ADAPTER_OPTIONS',
+  {
     providedIn: 'root',
-    factory: MAT_LUXON_DATE_ADAPTER_OPTIONS_FACTORY
-  });
-
+    factory: MAT_LUXON_DATE_ADAPTER_OPTIONS_FACTORY,
+  },
+);
 
 /** @docs-private */
 export function MAT_LUXON_DATE_ADAPTER_OPTIONS_FACTORY(): MatLuxonDateAdapterOptions {
   return {
-    useUtc: false
+    useUtc: false,
   };
 }
 
@@ -53,10 +54,12 @@ function range<T>(length: number, valueFunction: (index: number) => T): T[] {
 export class LuxonDateAdapter extends DateAdapter<LuxonDateTime> {
   private _useUTC: boolean;
 
-  constructor(@Optional() @Inject(MAT_DATE_LOCALE) dateLocale: string,
-    @Optional() @Inject(MAT_LUXON_DATE_ADAPTER_OPTIONS)
-    options?: MatLuxonDateAdapterOptions) {
-
+  constructor(
+    @Optional() @Inject(MAT_DATE_LOCALE) dateLocale: string,
+    @Optional()
+    @Inject(MAT_LUXON_DATE_ADAPTER_OPTIONS)
+    options?: MatLuxonDateAdapterOptions,
+  ) {
     super();
     this._useUTC = !!options?.useUtc;
     this.setLocale(dateLocale || LuxonDateTime.local().locale);
@@ -128,8 +131,9 @@ export class LuxonDateAdapter extends DateAdapter<LuxonDateTime> {
     }
 
     // Luxon uses 1-indexed months so we need to add one to the month.
-    const result = this._useUTC ? LuxonDateTime.utc(year, month + 1, date) :
-                                  LuxonDateTime.local(year, month + 1, date);
+    const result = this._useUTC
+      ? LuxonDateTime.utc(year, month + 1, date)
+      : LuxonDateTime.local(year, month + 1, date);
 
     if (!this.isValid(result)) {
       throw Error(`Invalid date "${date}". Reason: "${result.invalidReason}".`);
@@ -183,8 +187,8 @@ export class LuxonDateAdapter extends DateAdapter<LuxonDateTime> {
       throw Error('LuxonDateAdapter: Cannot format invalid date.');
     }
     return date
-        .setLocale(this.locale)
-        .toFormat(displayFormat, {timeZone: this._useUTC ? 'utc' : undefined});
+      .setLocale(this.locale)
+      .toFormat(displayFormat, {timeZone: this._useUTC ? 'utc' : undefined});
   }
 
   addCalendarYears(date: LuxonDateTime, years: number): LuxonDateTime {
@@ -242,7 +246,7 @@ export class LuxonDateAdapter extends DateAdapter<LuxonDateTime> {
   private _getOptions(): LuxonDateTimeOptions {
     return {
       zone: this._useUTC ? 'utc' : undefined,
-      locale: this.locale
+      locale: this.locale,
     };
   }
 }

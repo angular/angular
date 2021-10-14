@@ -9,7 +9,6 @@
 import {CdkSelectAll} from '@angular/cdk-experimental/selection';
 import {Directive} from '@angular/core';
 
-
 /**
  * Makes the element a select-all toggle.
  *
@@ -23,7 +22,6 @@ import {Directive} from '@angular/core';
 @Directive({
   selector: '[matSelectAll]',
   exportAs: 'matSelectAll',
-  providers: [{provide: CdkSelectAll, useExisting: MatSelectAll}]
+  providers: [{provide: CdkSelectAll, useExisting: MatSelectAll}],
 })
-export class MatSelectAll<T> extends CdkSelectAll<T> {
-}
+export class MatSelectAll<T> extends CdkSelectAll<T> {}

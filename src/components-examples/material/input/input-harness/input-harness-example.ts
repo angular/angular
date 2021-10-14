@@ -5,7 +5,7 @@ import {Component} from '@angular/core';
  */
 @Component({
   selector: 'input-harness-example',
-  templateUrl: 'input-harness-example.html'
+  templateUrl: 'input-harness-example.html',
 })
 export class InputHarnessExample {
   inputType = 'number';

@@ -29,7 +29,7 @@ const fallbackMaterialVersionRange = `~0.0.0-PLACEHOLDER`;
  * Since the Angular Material schematics depend on the schematic utility functions from the CDK,
  * we need to install the CDK before loading the schematic files that import from the CDK.
  */
-export default function(options: Schema): Rule {
+export default function (options: Schema): Rule {
   return (host: Tree, context: SchematicContext) => {
     // Version tag of the `@angular/core` dependency that has been loaded from the `package.json`
     // of the CLI project. This tag should be preferred because all Angular dependencies should
@@ -48,7 +48,10 @@ export default function(options: Schema): Rule {
     }
 
     addPackageToPackageJson(
-        host, '@angular/cdk', materialVersionRange || fallbackMaterialVersionRange);
+      host,
+      '@angular/cdk',
+      materialVersionRange || fallbackMaterialVersionRange,
+    );
     addPackageToPackageJson(host, '@angular/forms', angularDependencyVersion);
     addPackageToPackageJson(host, '@angular/animations', angularDependencyVersion);
 

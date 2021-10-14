@@ -17,16 +17,11 @@ import {MatCheckboxRequiredValidator} from './checkbox-required-validator';
   exports: [MatCheckboxRequiredValidator],
   declarations: [MatCheckboxRequiredValidator],
 })
-export class _MatCheckboxRequiredValidatorModule {
-}
+export class _MatCheckboxRequiredValidatorModule {}
 
 @NgModule({
-  imports: [
-    MatRippleModule, MatCommonModule, ObserversModule,
-    _MatCheckboxRequiredValidatorModule
-  ],
+  imports: [MatRippleModule, MatCommonModule, ObserversModule, _MatCheckboxRequiredValidatorModule],
   exports: [MatCheckbox, MatCommonModule, _MatCheckboxRequiredValidatorModule],
   declarations: [MatCheckbox],
 })
-export class MatCheckboxModule {
-}
+export class MatCheckboxModule {}

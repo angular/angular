@@ -14,7 +14,6 @@ import {
   NativeSelectHarnessFilters,
 } from './native-select-harness-filters';
 
-
 /** Harness for interacting with a native `select` in tests. */
 export class MatNativeSelectHarness extends MatFormFieldControlHarness {
   static hostSelector = 'select[matNativeControl]';
@@ -47,13 +46,13 @@ export class MatNativeSelectHarness extends MatFormFieldControlHarness {
   /** Gets the name of the select. */
   async getName(): Promise<string> {
     // The "name" property of the native select is never undefined.
-    return (await (await this.host()).getProperty<string>('name'));
+    return await (await this.host()).getProperty<string>('name');
   }
 
   /** Gets the id of the select. */
   async getId(): Promise<string> {
     // We're guaranteed to have an id, because the `matNativeControl` always assigns one.
-    return (await (await this.host()).getProperty<string>('id'));
+    return await (await this.host()).getProperty<string>('id');
   }
 
   /** Focuses the select and returns a void promise that indicates when the action is complete. */
@@ -72,8 +71,7 @@ export class MatNativeSelectHarness extends MatFormFieldControlHarness {
   }
 
   /** Gets the options inside the select panel. */
-  async getOptions(filter: NativeOptionHarnessFilters = {}):
-    Promise<MatNativeOptionHarness[]> {
+  async getOptions(filter: NativeOptionHarnessFilters = {}): Promise<MatNativeOptionHarness[]> {
     return this.locatorForAll(MatNativeOptionHarness.with(filter))();
   }
 
@@ -92,7 +90,7 @@ export class MatNativeSelectHarness extends MatFormFieldControlHarness {
 
     const [host, optionIndexes] = await parallel(() => [
       this.host(),
-      parallel(() => options.slice(0, isMultiple ? undefined : 1).map(option => option.getIndex()))
+      parallel(() => options.slice(0, isMultiple ? undefined : 1).map(option => option.getIndex())),
     ]);
 
     await host.selectOptions(...optionIndexes);

@@ -22,15 +22,12 @@ import {NUM_BUTTONS} from './constants';
   styleUrls: ['../../../../../src/material/core/theming/prebuilt/indigo-pink.css'],
 })
 export class ButtonHarnessTest {
-  vals = Array.from({ length: NUM_BUTTONS }, (_, i) => i);
+  vals = Array.from({length: NUM_BUTTONS}, (_, i) => i);
 }
 
 @NgModule({
   declarations: [ButtonHarnessTest],
-  imports: [
-    BrowserModule,
-    MatButtonModule,
-  ],
+  imports: [BrowserModule, MatButtonModule],
   bootstrap: [ButtonHarnessTest],
 })
 export class AppModule {}

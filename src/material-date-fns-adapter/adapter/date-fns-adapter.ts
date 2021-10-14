@@ -40,13 +40,13 @@ function range<T>(length: number, valueFunction: (index: number) => T): T[] {
 const MONTH_FORMATS = {
   long: 'LLLL',
   short: 'LLL',
-  narrow: 'LLLLL'
+  narrow: 'LLLLL',
 };
 
 const DAY_OF_WEEK_FORMATS = {
   long: 'EEEE',
   short: 'EEE',
-  narrow: 'EEEEE'
+  narrow: 'EEEEE',
 };
 
 /** Adds date-fns support to Angular Material. */
@@ -79,10 +79,13 @@ export class DateFnsAdapter extends DateAdapter<Date, Locale> {
   }
 
   getDateNames(): string[] {
-    const dtf = typeof Intl !== 'undefined' ? new Intl.DateTimeFormat(this.locale.code, {
-      day: 'numeric',
-      timeZone: 'utc'
-    }) : null;
+    const dtf =
+      typeof Intl !== 'undefined'
+        ? new Intl.DateTimeFormat(this.locale.code, {
+            day: 'numeric',
+            timeZone: 'utc',
+          })
+        : null;
 
     return range(31, i => {
       if (dtf) {

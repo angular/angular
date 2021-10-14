@@ -7,6 +7,6 @@ describe('MDC-based MatCardHarness', () => {
     header: MatCardSection.HEADER,
     content: MatCardSection.CONTENT,
     actions: MatCardSection.ACTIONS,
-    footer: MatCardSection.FOOTER
+    footer: MatCardSection.FOOTER,
   });
 });

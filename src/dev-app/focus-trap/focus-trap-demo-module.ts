@@ -28,5 +28,4 @@ import {FocusTrapDemo, FocusTrapShadowDomDemo, FocusTrapDialogDemo} from './focu
   ],
   declarations: [FocusTrapDemo, FocusTrapShadowDomDemo, FocusTrapDialogDemo],
 })
-export class FocusTrapDemoModule {
-}
+export class FocusTrapDemoModule {}

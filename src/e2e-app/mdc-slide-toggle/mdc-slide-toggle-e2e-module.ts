@@ -14,5 +14,4 @@ import {MdcSlideToggleE2e} from './mdc-slide-toggle-e2e';
   imports: [MatSlideToggleModule],
   declarations: [MdcSlideToggleE2e],
 })
-export class MdcSlideToggleE2eModule {
-}
+export class MdcSlideToggleE2eModule {}

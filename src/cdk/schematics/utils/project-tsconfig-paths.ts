@@ -20,14 +20,18 @@ import {WorkspacePath} from '../update-tool/file-system';
 const defaultWorkspaceConfigPaths = ['/angular.json', '/.angular.json'];
 
 /** Gets the tsconfig path from the given target within the specified project. */
-export function getTargetTsconfigPath(project: ProjectDefinition,
-                                      targetName: string): WorkspacePath|null {
+export function getTargetTsconfigPath(
+  project: ProjectDefinition,
+  targetName: string,
+): WorkspacePath | null {
   const tsconfig = project.targets?.get(targetName)?.options?.tsConfig;
   return tsconfig ? normalize(tsconfig as string) : null;
 }
 
 /** Resolve the workspace configuration of the specified tree gracefully. */
-export async function getWorkspaceConfigGracefully(tree: Tree): Promise<WorkspaceDefinition|null> {
+export async function getWorkspaceConfigGracefully(
+  tree: Tree,
+): Promise<WorkspaceDefinition | null> {
   const path = defaultWorkspaceConfigPaths.find(filePath => tree.exists(filePath));
   const configBuffer = tree.read(path!);
 
@@ -37,7 +41,7 @@ export async function getWorkspaceConfigGracefully(tree: Tree): Promise<Workspac
 
   try {
     return await readJsonWorkspace(path, {
-      readFile: async filePath => tree.read(filePath)!.toString()
+      readFile: async filePath => tree.read(filePath)!.toString(),
     } as WorkspaceHost);
   } catch (e) {
     return null;

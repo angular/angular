@@ -10,7 +10,6 @@ import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
 import {MatToolbar, MatToolbarRow} from './toolbar';
 
-
 @NgModule({
   imports: [MatCommonModule],
   exports: [MatToolbar, MatToolbarRow, MatCommonModule],

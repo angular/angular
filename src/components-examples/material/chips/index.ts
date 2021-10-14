@@ -22,7 +22,7 @@ export {
   ChipsOverviewExample,
   ChipsStackedExample,
   ChipsHarnessExample,
-  ChipsFormControlExample
+  ChipsFormControlExample,
 };
 
 const EXAMPLES = [
@@ -50,5 +50,4 @@ const EXAMPLES = [
   exports: EXAMPLES,
   entryComponents: EXAMPLES,
 })
-export class ChipsExamplesModule {
-}
+export class ChipsExamplesModule {}

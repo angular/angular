@@ -22,19 +22,13 @@ import {
   MatListAvatarCssMatStyler,
   MatListGraphicAlignmentStyler,
   MatListIconCssMatStyler,
-  MatListSubheaderCssMatStyler
+  MatListSubheaderCssMatStyler,
 } from './list-styling';
 import {MatNavList} from './nav-list';
 import {MatSelectionList} from './selection-list';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    MatCommonModule,
-    MatLineModule,
-    MatRippleModule,
-    MatPseudoCheckboxModule,
-  ],
+  imports: [CommonModule, MatCommonModule, MatLineModule, MatRippleModule, MatPseudoCheckboxModule],
   exports: [
     MatList,
     MatActionList,
@@ -60,6 +54,6 @@ import {MatSelectionList} from './selection-list';
     MatListIconCssMatStyler,
     MatListSubheaderCssMatStyler,
     MatListGraphicAlignmentStyler,
-  ]
+  ],
 })
 export class MatListModule {}

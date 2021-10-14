@@ -36,9 +36,7 @@ export function appendHtmlElementToHead(host: Tree, htmlFilePath: string, elemen
   const indentationOffset = getChildElementIndentation(headTag);
   const insertion = `${' '.repeat(indentationOffset)}${elementHtml}`;
 
-  const recordedChange = host
-    .beginUpdate(htmlFilePath)
-    .insertRight(endTagOffset, `${insertion}\n`);
+  const recordedChange = host.beginUpdate(htmlFilePath).insertRight(endTagOffset, `${insertion}\n`);
 
   host.commitUpdate(recordedChange);
 }
@@ -66,7 +64,10 @@ export function addBodyClass(host: Tree, htmlFilePath: string, className: string
   const classAttribute = body.attrs.find(attribute => attribute.name === 'class');
 
   if (classAttribute) {
-    const hasClass = classAttribute.value.split(' ').map(part => part.trim()).includes(className);
+    const hasClass = classAttribute.value
+      .split(' ')
+      .map(part => part.trim())
+      .includes(className);
 
     if (!hasClass) {
       const classAttributeLocation = body.sourceCodeLocation!.attrs.class;
@@ -84,8 +85,7 @@ export function addBodyClass(host: Tree, htmlFilePath: string, className: string
 }
 
 /** Finds an element by its tag name. */
-function getElementByTagName(tagName: string, htmlContent: string):
-  Element | null {
+function getElementByTagName(tagName: string, htmlContent: string): Element | null {
   const document = parseHtml(htmlContent, {sourceCodeLocationInfo: true});
   const nodeQueue = [...document.childNodes];
 

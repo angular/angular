@@ -7,5 +7,4 @@ import {Component} from '@angular/core';
   selector: 'icon-harness-example',
   templateUrl: 'icon-harness-example.html',
 })
-export class IconHarnessExample {
-}
+export class IconHarnessExample {}

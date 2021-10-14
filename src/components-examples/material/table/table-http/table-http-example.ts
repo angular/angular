@@ -31,7 +31,7 @@ export class TableHttpExample implements AfterViewInit {
     this.exampleDatabase = new ExampleHttpDatabase(this._httpClient);
 
     // If the user changes the sort order, reset back to the first page.
-    this.sort.sortChange.subscribe(() => this.paginator.pageIndex = 0);
+    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
 
     merge(this.sort.sortChange, this.paginator.page)
       .pipe(
@@ -39,8 +39,10 @@ export class TableHttpExample implements AfterViewInit {
         switchMap(() => {
           this.isLoadingResults = true;
           return this.exampleDatabase!.getRepoIssues(
-              this.sort.active, this.sort.direction, this.paginator.pageIndex)
-            .pipe(catchError(() => observableOf(null)));
+            this.sort.active,
+            this.sort.direction,
+            this.paginator.pageIndex,
+          ).pipe(catchError(() => observableOf(null)));
         }),
         map(data => {
           // Flip flag to show that loading has finished.
@@ -56,8 +58,9 @@ export class TableHttpExample implements AfterViewInit {
           // would prevent users from re-triggering requests.
           this.resultsLength = data.total_count;
           return data.items;
-        })
-      ).subscribe(data => this.data = data);
+        }),
+      )
+      .subscribe(data => (this.data = data));
   }
 }
 
@@ -79,8 +82,9 @@ export class ExampleHttpDatabase {
 
   getRepoIssues(sort: string, order: SortDirection, page: number): Observable<GithubApi> {
     const href = 'https://api.github.com/search/issues';
-    const requestUrl =
-        `${href}?q=repo:angular/components&sort=${sort}&order=${order}&page=${page + 1}`;
+    const requestUrl = `${href}?q=repo:angular/components&sort=${sort}&order=${order}&page=${
+      page + 1
+    }`;
 
     return this._httpClient.get<GithubApi>(requestUrl);
   }

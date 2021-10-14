@@ -16,7 +16,7 @@ import {
   MatNoDataRow,
   MatRowDef,
   MatTable,
-  MatTableDataSource
+  MatTableDataSource,
 } from '@angular/material/table';
 
 export interface PeriodicElement {
@@ -73,11 +73,13 @@ export class TableWrappedExample implements AfterViewInit {
 @Component({
   selector: 'wrapper-table',
   templateUrl: 'wrapper-table.html',
-  styles: [`
+  styles: [
+    `
     table {
       width: 100%;
     }
-  `]
+  `,
+  ],
 })
 export class WrapperTable<T> implements AfterContentInit {
   @ContentChildren(MatHeaderRowDef) headerRowDefs: QueryList<MatHeaderRowDef>;

@@ -1,13 +1,14 @@
 import {
   Component,
   DebugElement,
-  Directive, ElementRef,
+  Directive,
+  ElementRef,
   Inject,
   InjectionToken,
   Input,
   OnInit,
   Optional,
-  ViewChild
+  ViewChild,
 } from '@angular/core';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -16,7 +17,8 @@ import {CdkCombobox} from './combobox';
 import {dispatchKeyboardEvent, dispatchMouseEvent} from '../../cdk/testing/private';
 import {
   AriaHasPopupValue,
-  CdkComboboxPanel} from '@angular/cdk-experimental/combobox/combobox-panel';
+  CdkComboboxPanel,
+} from '@angular/cdk-experimental/combobox/combobox-panel';
 import {DOWN_ARROW, ESCAPE} from '@angular/cdk/keycodes';
 
 describe('Combobox', () => {
@@ -35,12 +37,14 @@ describe('Combobox', () => {
     let applyButton: DebugElement;
     let applyButtonElement: HTMLElement;
 
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [CdkComboboxModule],
-        declarations: [ComboboxToggle, FakeDialogContent],
-      }).compileComponents();
-    }));
+    beforeEach(
+      waitForAsync(() => {
+        TestBed.configureTestingModule({
+          imports: [CdkComboboxModule],
+          declarations: [ComboboxToggle, FakeDialogContent],
+        }).compileComponents();
+      }),
+    );
 
     beforeEach(() => {
       fixture = TestBed.createComponent(ComboboxToggle);
@@ -190,7 +194,6 @@ describe('Combobox', () => {
       fixture.destroy();
       expect(document.querySelectorAll('.cdk-overlay-pane').length).toBe(0);
     });
-
   });
 
   describe('with a coerce open action property function', () => {
@@ -200,12 +203,14 @@ describe('Combobox', () => {
     let combobox: DebugElement;
     let comboboxInstance: CdkCombobox<unknown>;
 
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [CdkComboboxModule],
-        declarations: [ComboboxToggle, FakeDialogContent],
-      }).compileComponents();
-    }));
+    beforeEach(
+      waitForAsync(() => {
+        TestBed.configureTestingModule({
+          imports: [CdkComboboxModule],
+          declarations: [ComboboxToggle, FakeDialogContent],
+        }).compileComponents();
+      }),
+    );
 
     beforeEach(() => {
       fixture = TestBed.createComponent(ComboboxToggle);
@@ -271,12 +276,14 @@ describe('Combobox', () => {
     let comboboxInstance: CdkCombobox<unknown>;
     let comboboxElement: HTMLElement;
 
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [CdkComboboxModule],
-        declarations: [ComboboxToggle, FakeDialogContent],
-      }).compileComponents();
-    }));
+    beforeEach(
+      waitForAsync(() => {
+        TestBed.configureTestingModule({
+          imports: [CdkComboboxModule],
+          declarations: [ComboboxToggle, FakeDialogContent],
+        }).compileComponents();
+      }),
+    );
 
     beforeEach(() => {
       fixture = TestBed.createComponent(ComboboxToggle);
@@ -415,19 +422,16 @@ let id = 0;
   host: {
     '[attr.role]': 'role',
     '[id]': 'dialogId',
-    'tabIndex': '-1'
-  }
+    'tabIndex': '-1',
+  },
 })
 export class FakeDialogContent<V> implements OnInit {
-
   dialogId = `dialog-${id++}`;
   role = 'dialog';
 
   @Input('parentPanel') private readonly _explicitPanel: CdkComboboxPanel;
 
-  constructor(
-      @Optional() @Inject(PANEL) readonly _parentPanel?: CdkComboboxPanel<V>,
-  ) { }
+  constructor(@Optional() @Inject(PANEL) readonly _parentPanel?: CdkComboboxPanel<V>) {}
 
   ngOnInit() {
     this.registerWithPanel();

@@ -9,8 +9,9 @@ import {MatNativeSelectHarness} from './native-select-harness';
 
 /** Shared tests to run on both the original and MDC-based native selects. */
 export function runNativeSelectHarnessTests(
-    inputModule: typeof MatInputModule,
-    selectHarness: typeof MatNativeSelectHarness) {
+  inputModule: typeof MatInputModule,
+  selectHarness: typeof MatNativeSelectHarness,
+) {
   let fixture: ComponentFixture<SelectHarnessTest>;
   let loader: HarnessLoader;
 
@@ -40,15 +41,17 @@ export function runNativeSelectHarnessTests(
 
     expect(await parallel(() => selects.map(select => select.getName()))).toEqual([
       'favorite-food',
-      'favorite-drink'
+      'favorite-drink',
     ]);
   });
 
   it('should get whether a select is disabled', async () => {
     const selects = await loader.getAllHarnesses(selectHarness);
-    expect(await parallel(() => {
-      return selects.map(select => select.isDisabled());
-    })).toEqual([false, false]);
+    expect(
+      await parallel(() => {
+        return selects.map(select => select.isDisabled());
+      }),
+    ).toEqual([false, false]);
 
     fixture.componentInstance.favoriteDrinkDisabled = true;
     expect(await parallel(() => selects.map(select => select.isDisabled()))).toEqual([false, true]);
@@ -61,9 +64,11 @@ export function runNativeSelectHarnessTests(
 
   it('should get whether a select is required', async () => {
     const selects = await loader.getAllHarnesses(selectHarness);
-    expect(await parallel(() => {
-      return selects.map(select => select.isRequired());
-    })).toEqual([false, false]);
+    expect(
+      await parallel(() => {
+        return selects.map(select => select.isRequired());
+      }),
+    ).toEqual([false, false]);
 
     fixture.componentInstance.favoriteFoodRequired = true;
     expect(await parallel(() => selects.map(select => select.isRequired()))).toEqual([true, false]);
@@ -118,7 +123,7 @@ export function runNativeSelectHarnessTests(
       'Water',
       'Soda',
       'Coffee',
-      'Juice'
+      'Juice',
     ]);
   });
 
@@ -136,7 +141,7 @@ export function runNativeSelectHarnessTests(
     expect(await parallel(() => options.map(option => option.isDisabled()))).toEqual([
       false,
       false,
-      false
+      false,
     ]);
 
     fixture.componentInstance.pastaDisabled = true;
@@ -144,7 +149,7 @@ export function runNativeSelectHarnessTests(
     expect(await parallel(() => options.map(option => option.isDisabled()))).toEqual([
       false,
       true,
-      false
+      false,
     ]);
   });
 
@@ -155,7 +160,7 @@ export function runNativeSelectHarnessTests(
     expect(await parallel(() => options.map(option => option.isSelected()))).toEqual([
       false,
       false,
-      false
+      false,
     ]);
 
     await select.selectOptions({index: 2});
@@ -163,7 +168,7 @@ export function runNativeSelectHarnessTests(
     expect(await parallel(() => options.map(option => option.isSelected()))).toEqual([
       false,
       false,
-      true
+      true,
     ]);
   });
 
@@ -175,7 +180,7 @@ export function runNativeSelectHarnessTests(
       false,
       false,
       false,
-      false
+      false,
     ]);
 
     await select.selectOptions({text: /Water|Coffee/});
@@ -184,10 +189,9 @@ export function runNativeSelectHarnessTests(
       true,
       false,
       true,
-      false
+      false,
     ]);
   });
-
 }
 
 @Component({
@@ -219,7 +223,7 @@ export function runNativeSelectHarnessTests(
         <option value="juice">Juice</option>
       </select>
     </mat-form-field>
-  `
+  `,
 })
 class SelectHarnessTest {
   favoriteFood: string;

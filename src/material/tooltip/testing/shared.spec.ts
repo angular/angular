@@ -8,7 +8,9 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 /** Shared tests to run on both the original and MDC-based tooltips. */
 export function runHarnessTests(
-    tooltipModule: typeof MatTooltipModule, tooltipHarness: typeof MatTooltipHarness) {
+  tooltipModule: typeof MatTooltipModule,
+  tooltipHarness: typeof MatTooltipHarness,
+) {
   let fixture: ComponentFixture<TooltipHarnessTest>;
   let loader: HarnessLoader;
 
@@ -60,7 +62,7 @@ export function runHarnessTests(
   template: `
     <button [matTooltip]="message" id="one">Trigger 1</button>
     <button matTooltip="Static message" id="two">Trigger 2</button>
-  `
+  `,
 })
 class TooltipHarnessTest {
   message = 'Tooltip message';

@@ -10,7 +10,6 @@ import {DOCUMENT} from '@angular/common';
 import {Inject, Injectable, OnDestroy} from '@angular/core';
 import {OverlayReference} from '../overlay-reference';
 
-
 /**
  * Service for dispatching events that land on the body to appropriate overlay ref,
  * if any. It maintains a list of attached overlays to determine best suited overlay based
@@ -18,7 +17,6 @@ import {OverlayReference} from '../overlay-reference';
  */
 @Injectable({providedIn: 'root'})
 export abstract class BaseOverlayDispatcher implements OnDestroy {
-
   /** Currently attached overlays in the order they were attached. */
   _attachedOverlays: OverlayReference[] = [];
 

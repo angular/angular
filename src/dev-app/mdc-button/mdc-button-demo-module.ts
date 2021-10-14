@@ -20,5 +20,4 @@ import {MdcButtonDemo} from './mdc-button-demo';
   ],
   declarations: [MdcButtonDemo],
 })
-export class MdcButtonDemoModule {
-}
+export class MdcButtonDemoModule {}

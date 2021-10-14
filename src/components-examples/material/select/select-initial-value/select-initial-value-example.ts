@@ -21,12 +21,12 @@ export class SelectInitialValueExample {
   foods: Food[] = [
     {value: 'steak-0', viewValue: 'Steak'},
     {value: 'pizza-1', viewValue: 'Pizza'},
-    {value: 'tacos-2', viewValue: 'Tacos'}
+    {value: 'tacos-2', viewValue: 'Tacos'},
   ];
   cars: Car[] = [
     {value: 'ford', viewValue: 'Ford'},
     {value: 'chevrolet', viewValue: 'Chevrolet'},
-    {value: 'dodge', viewValue: 'Dodge'}
+    {value: 'dodge', viewValue: 'Dodge'},
   ];
   selectedFood = this.foods[2].value;
   selectedCar = this.cars[0].value;

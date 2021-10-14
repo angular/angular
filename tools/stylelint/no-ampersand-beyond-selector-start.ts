@@ -36,15 +36,17 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, _options?) => {
     }
 
     root.walkRules(rule => {
-      if (rule.parent.type === 'rule' &&
-          isStandardSyntaxRule(rule) &&
-          isStandardSyntaxSelector(rule.selector) &&
-          hasInvalidAmpersandUsage(rule.selector)) {
+      if (
+        rule.parent.type === 'rule' &&
+        isStandardSyntaxRule(rule) &&
+        isStandardSyntaxSelector(rule.selector) &&
+        hasInvalidAmpersandUsage(rule.selector)
+      ) {
         utils.report({
           result,
           ruleName,
           message: messages.expected(),
-          node: rule
+          node: rule,
         });
       }
     });

@@ -42,7 +42,9 @@ describe('CDK ng-add', () => {
 
     expect(dependencies['@angular/cdk']).toBe('^9.0.0');
     expect(runner.tasks.some(task => task.name === 'node-package'))
-      .withContext('Expected the package manager to not run since the CDK version ' +
-                   'was already inserted.').toBe(false);
+      .withContext(
+        'Expected the package manager to not run since the CDK version ' + 'was already inserted.',
+      )
+      .toBe(false);
   });
 });

@@ -50,7 +50,9 @@ if (builtPackages.length > 1) {
 
 for (const pkg of builtPackages) {
   console.info(`Creating archive for package: ${pkg.name}`);
-  exec(`tar --create --gzip --directory ${pkg.path} --file ${archivesDir}/${pkg.name}-${suffix}.tgz .`);
+  exec(
+    `tar --create --gzip --directory ${pkg.path} --file ${archivesDir}/${pkg.name}-${suffix}.tgz .`,
+  );
 }
 
 console.info(green(`Created package archives in: ${archivesDir}`));

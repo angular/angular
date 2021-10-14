@@ -3,11 +3,12 @@ import {MIGRATION_PATH} from '../../../paths';
 import {createTestCaseSetup} from '../../../testing';
 
 describe('ng-update external resource resolution', () => {
-
   it('should properly resolve referenced resources in components', async () => {
     const {runFixers, writeFile, appTree} = await createTestCaseSetup(
-      'migration-v6', MIGRATION_PATH,
-      [resolveBazelPath(__dirname, './external-resource-resolution_input.ts')]);
+      'migration-v6',
+      MIGRATION_PATH,
+      [resolveBazelPath(__dirname, './external-resource-resolution_input.ts')],
+    );
 
     const testContent = `<div cdk-connected-overlay [origin]="test"></div>`;
     const expected = `<div cdk-connected-overlay [cdkConnectedOverlayOrigin]="test"></div>`;
@@ -19,10 +20,13 @@ describe('ng-update external resource resolution', () => {
     await runFixers();
 
     expect(appTree.readContent('/projects/material/test.html'))
-      .withContext('Expected absolute devkit tree paths to work.').toBe(expected);
+      .withContext('Expected absolute devkit tree paths to work.')
+      .toBe(expected);
     expect(appTree.readContent('/projects/cdk-testing/src/some-tmpl.html'))
-      .withContext('Expected relative paths with parent segments to work.').toBe(expected);
+      .withContext('Expected relative paths with parent segments to work.')
+      .toBe(expected);
     expect(appTree.readContent('/projects/cdk-testing/src/test-cases/local.html'))
-      .withContext('Expected relative paths without explicit dot to work.').toBe(expected);
+      .withContext('Expected relative paths without explicit dot to work.')
+      .toBe(expected);
   });
 });

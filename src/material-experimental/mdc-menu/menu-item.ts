@@ -18,8 +18,8 @@ import {MatMenuItem as BaseMatMenuItem} from '@angular/material/menu';
   inputs: ['disabled', 'disableRipple'],
   host: {
     '[attr.role]': 'role',
-     // The MatMenuItem parent class adds `mat-menu-item` and `mat-focus-indicator` to the CSS
-     // classlist, but these should not be added for this MDC equivalent menu item.
+    // The MatMenuItem parent class adds `mat-menu-item` and `mat-focus-indicator` to the CSS
+    // classlist, but these should not be added for this MDC equivalent menu item.
     '[class.mat-menu-item]': 'false',
     '[class.mat-focus-indicator]': 'false',
     'class': 'mat-mdc-menu-item mat-mdc-focus-indicator',
@@ -32,8 +32,6 @@ import {MatMenuItem as BaseMatMenuItem} from '@angular/material/menu';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   templateUrl: 'menu-item.html',
-  providers: [
-    {provide: BaseMatMenuItem, useExisting: MatMenuItem},
-  ]
+  providers: [{provide: BaseMatMenuItem, useExisting: MatMenuItem}],
 })
 export class MatMenuItem extends BaseMatMenuItem {}

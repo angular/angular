@@ -16,8 +16,9 @@ const calendarDate = new Date(2020, 7, 1);
 
 /** Shared tests to run on both the original and MDC-based calendars. */
 export function runCalendarHarnessTests(
-    datepickerModule: typeof MatDatepickerModule,
-    calendarHarness: typeof MatCalendarHarness) {
+  datepickerModule: typeof MatDatepickerModule,
+  calendarHarness: typeof MatCalendarHarness,
+) {
   let fixture: ComponentFixture<CalendarHarnessTest>;
   let loader: HarnessLoader;
 
@@ -25,12 +26,14 @@ export function runCalendarHarnessTests(
     await TestBed.configureTestingModule({
       imports: [MatNativeDateModule, datepickerModule],
       declarations: [CalendarHarnessTest],
-      providers: [{
-        // Usually it's the date range picker that provides the default range selection strategy,
-        // but since we're testing the calendar on its own, we have to provide it manually.
-        provide: MAT_DATE_RANGE_SELECTION_STRATEGY,
-        useClass: DefaultMatCalendarRangeStrategy
-      }]
+      providers: [
+        {
+          // Usually it's the date range picker that provides the default range selection strategy,
+          // but since we're testing the calendar on its own, we have to provide it manually.
+          provide: MAT_DATE_RANGE_SELECTION_STRATEGY,
+          useClass: DefaultMatCalendarRangeStrategy,
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CalendarHarnessTest);
@@ -108,8 +111,11 @@ export function runCalendarHarnessTests(
   });
 
   it('should get the disabled state of a cell', async () => {
-    fixture.componentInstance.minDate =
-        new Date(calendarDate.getFullYear(), calendarDate.getMonth(), 20);
+    fixture.componentInstance.minDate = new Date(
+      calendarDate.getFullYear(),
+      calendarDate.getMonth(),
+      20,
+    );
 
     const calendar = await loader.getHarness(calendarHarness.with({selector: '#single'}));
     const cells = await calendar.getCells();
@@ -142,7 +148,7 @@ export function runCalendarHarnessTests(
     const [initialStartStates, initialInRangeStates, initialEndStates] = await parallel(() => [
       parallel(() => allCells.map(cell => cell.isRangeStart())),
       parallel(() => allCells.map(cell => cell.isInRange())),
-      parallel(() => allCells.map(cell => cell.isRangeEnd()))
+      parallel(() => allCells.map(cell => cell.isRangeEnd())),
     ]);
 
     expect(initialStartStates.every(state => state === false)).toBe(true);
@@ -175,17 +181,23 @@ export function runCalendarHarnessTests(
     const [initialStartStates, initialInRangeStates, initialEndStates] = await parallel(() => [
       parallel(() => allCells.map(cell => cell.isComparisonRangeStart())),
       parallel(() => allCells.map(cell => cell.isInComparisonRange())),
-      parallel(() => allCells.map(cell => cell.isComparisonRangeEnd()))
+      parallel(() => allCells.map(cell => cell.isComparisonRangeEnd())),
     ]);
 
     expect(initialStartStates.every(state => state === false)).toBe(true);
     expect(initialInRangeStates.every(state => state === false)).toBe(true);
     expect(initialEndStates.every(state => state === false)).toBe(true);
 
-    fixture.componentInstance.comparisonStart =
-        new Date(calendarDate.getFullYear(), calendarDate.getMonth(), 5);
-    fixture.componentInstance.comparisonEnd =
-        new Date(calendarDate.getFullYear(), calendarDate.getMonth(), 8);
+    fixture.componentInstance.comparisonStart = new Date(
+      calendarDate.getFullYear(),
+      calendarDate.getMonth(),
+      5,
+    );
+    fixture.componentInstance.comparisonEnd = new Date(
+      calendarDate.getFullYear(),
+      calendarDate.getMonth(),
+      8,
+    );
 
     expect(await allCells[4].isComparisonRangeStart()).toBe(true);
     expect(await allCells[4].isInComparisonRange()).toBe(true);
@@ -210,7 +222,7 @@ export function runCalendarHarnessTests(
     const [initialStartStates, initialInRangeStates, initialEndStates] = await parallel(() => [
       parallel(() => allCells.map(cell => cell.isPreviewRangeStart())),
       parallel(() => allCells.map(cell => cell.isInPreviewRange())),
-      parallel(() => allCells.map(cell => cell.isPreviewRangeEnd()))
+      parallel(() => allCells.map(cell => cell.isPreviewRangeEnd())),
     ]);
 
     expect(initialStartStates.every(state => state === false)).toBe(true);
@@ -260,8 +272,11 @@ export function runCalendarHarnessTests(
   });
 
   it('should filter cells by their disabled state', async () => {
-    fixture.componentInstance.minDate =
-        new Date(calendarDate.getFullYear(), calendarDate.getMonth(), 3);
+    fixture.componentInstance.minDate = new Date(
+      calendarDate.getFullYear(),
+      calendarDate.getMonth(),
+      3,
+    );
 
     const calendar = await loader.getHarness(calendarHarness.with({selector: '#single'}));
     const cells = await calendar.getCells({disabled: true});
@@ -271,10 +286,16 @@ export function runCalendarHarnessTests(
   it('should filter cells based on whether they are inside the comparison range', async () => {
     const calendar = await loader.getHarness(calendarHarness.with({selector: '#range'}));
 
-    fixture.componentInstance.comparisonStart =
-        new Date(calendarDate.getFullYear(), calendarDate.getMonth(), 5);
-    fixture.componentInstance.comparisonEnd =
-        new Date(calendarDate.getFullYear(), calendarDate.getMonth(), 8);
+    fixture.componentInstance.comparisonStart = new Date(
+      calendarDate.getFullYear(),
+      calendarDate.getMonth(),
+      5,
+    );
+    fixture.componentInstance.comparisonEnd = new Date(
+      calendarDate.getFullYear(),
+      calendarDate.getMonth(),
+      8,
+    );
 
     const cells = await calendar.getCells({inComparisonRange: true});
     expect(await parallel(() => cells.map(cell => cell.getText()))).toEqual(['5', '6', '7', '8']);
@@ -289,7 +310,6 @@ export function runCalendarHarnessTests(
     const cells = await calendar.getCells({inPreviewRange: true});
     expect(await parallel(() => cells.map(cell => cell.getText()))).toEqual(['5', '6', '7', '8']);
   });
-
 }
 
 @Component({
@@ -309,17 +329,17 @@ export function runCalendarHarnessTests(
       [comparisonStart]="comparisonStart"
       [comparisonEnd]="comparisonEnd"
       (selectedChange)="rangeChanged($event)"></mat-calendar>
-  `
+  `,
 })
 class CalendarHarnessTest {
   // Start the datepickers off at a specific date so tests
   // run consistently no matter what the current date is.
   readonly startAt = new Date(calendarDate);
-  minDate: Date|null;
-  singleValue: Date|null = null;
+  minDate: Date | null;
+  singleValue: Date | null = null;
   rangeValue = new DateRange<Date>(null, null);
-  comparisonStart: Date|null = null;
-  comparisonEnd: Date|null = null;
+  comparisonStart: Date | null = null;
+  comparisonEnd: Date | null = null;
 
   rangeChanged(selectedDate: Date) {
     let {start, end} = this.rangeValue;

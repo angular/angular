@@ -11,5 +11,4 @@ import {Component} from '@angular/core';
 @Component({
   templateUrl: 'mdc-table-demo.html',
 })
-export class MdcTableDemo {
-}
+export class MdcTableDemo {}

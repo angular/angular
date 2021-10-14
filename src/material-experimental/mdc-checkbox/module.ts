@@ -17,5 +17,4 @@ import {MatCheckbox} from './checkbox';
   exports: [MatCheckbox, MatCommonModule, _MatCheckboxRequiredValidatorModule],
   declarations: [MatCheckbox],
 })
-export class MatCheckboxModule {
-}
+export class MatCheckboxModule {}

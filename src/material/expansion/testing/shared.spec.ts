@@ -12,18 +12,18 @@ import {MatExpansionPanelHarness} from './expansion-harness';
  * the non-MDC or MDC based expansion harness.
  */
 export function runHarnessTests(
-    expansionModule: typeof MatExpansionModule, accordionHarness: typeof MatAccordionHarness,
-    expansionPanelHarness: typeof MatExpansionPanelHarness) {
+  expansionModule: typeof MatExpansionModule,
+  accordionHarness: typeof MatAccordionHarness,
+  expansionPanelHarness: typeof MatExpansionPanelHarness,
+) {
   let fixture: ComponentFixture<ExpansionHarnessTestComponent>;
   let loader: HarnessLoader;
 
   beforeEach(async () => {
-    await TestBed
-        .configureTestingModule({
-          imports: [expansionModule, NoopAnimationsModule],
-          declarations: [ExpansionHarnessTestComponent],
-        })
-        .compileComponents();
+    await TestBed.configureTestingModule({
+      imports: [expansionModule, NoopAnimationsModule],
+      declarations: [ExpansionHarnessTestComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ExpansionHarnessTestComponent);
     fixture.detectChanges();
@@ -36,8 +36,9 @@ export function runHarnessTests(
   });
 
   it('should be able to load an accordion by selector', async () => {
-    const accordions =
-        await loader.getAllHarnesses(accordionHarness.with({selector: '#accordion2'}));
+    const accordions = await loader.getAllHarnesses(
+      accordionHarness.with({selector: '#accordion2'}),
+    );
     expect(accordions.length).toBe(1);
   });
 
@@ -53,8 +54,9 @@ export function runHarnessTests(
   });
 
   it('should be able to load expansion panel by title matching exact text', async () => {
-    const panels =
-        await loader.getAllHarnesses(expansionPanelHarness.with({title: 'Standalone Panel Title'}));
+    const panels = await loader.getAllHarnesses(
+      expansionPanelHarness.with({title: 'Standalone Panel Title'}),
+    );
     expect(panels.length).toBe(1);
     expect(await panels[0].getTitle()).toBe('Standalone Panel Title');
   });
@@ -65,15 +67,17 @@ export function runHarnessTests(
   });
 
   it('should be able to load expansion panel by description matching regex', async () => {
-    const panels =
-        await loader.getAllHarnesses(expansionPanelHarness.with({description: /Panel#2/}));
+    const panels = await loader.getAllHarnesses(
+      expansionPanelHarness.with({description: /Panel#2/}),
+    );
     expect(panels.length).toBe(1);
     expect(await panels[0].getDescription()).toBe('Description of Panel#2');
   });
 
   it('should be able to load expansion panel by description matching exact text', async () => {
     const panels = await loader.getAllHarnesses(
-        expansionPanelHarness.with({description: 'Description of Panel#1'}));
+      expansionPanelHarness.with({description: 'Description of Panel#1'}),
+    );
     expect(panels.length).toBe(1);
     expect(await panels[0].getDescription()).toBe('Description of Panel#1');
   });
@@ -99,15 +103,17 @@ export function runHarnessTests(
   });
 
   it('should be able to load expansion panel by content matching regex', async () => {
-    const panels =
-        await loader.getAllHarnesses(expansionPanelHarness.with({content: /Accordion #2/}));
+    const panels = await loader.getAllHarnesses(
+      expansionPanelHarness.with({content: /Accordion #2/}),
+    );
     expect(panels.length).toBe(1);
     expect(await panels[0].getTextContent()).toBe('Accordion #2 - Content');
   });
 
   it('should be able to load expansion panel by content matching exact string', async () => {
-    const panels =
-        await loader.getAllHarnesses(expansionPanelHarness.with({content: 'Content of Panel#2'}));
+    const panels = await loader.getAllHarnesses(
+      expansionPanelHarness.with({content: 'Content of Panel#2'}),
+    );
     expect(panels.length).toBe(1);
     expect(await panels[0].getTextContent()).toBe('Content of Panel#2');
   });
@@ -185,8 +191,9 @@ export function runHarnessTests(
   });
 
   it('should be able to get harness loader for content of panel', async () => {
-    const panel =
-        await loader.getHarness(expansionPanelHarness.with({selector: '#standalonePanel'}));
+    const panel = await loader.getHarness(
+      expansionPanelHarness.with({selector: '#standalonePanel'}),
+    );
     const matchedHarnesses = await panel.getAllHarnesses(TestContentHarness);
     expect(matchedHarnesses.length).toBe(1);
     expect(await matchedHarnesses[0].getText()).toBe('Part of expansion panel');
@@ -209,9 +216,10 @@ export function runHarnessTests(
 
   it('should be able to check if expansion panel has toggle indicator', async () => {
     const accordion = await loader.getHarness(accordionHarness);
-    const standalonePanel =
-        await loader.getHarness(expansionPanelHarness.with({selector: '#standalonePanel'}));
-    const expansionPanels = [standalonePanel, ...await accordion.getExpansionPanels()];
+    const standalonePanel = await loader.getHarness(
+      expansionPanelHarness.with({selector: '#standalonePanel'}),
+    );
+    const expansionPanels = [standalonePanel, ...(await accordion.getExpansionPanels())];
     let toggleIndicatorChecks = await parallel(() => {
       return expansionPanels.map(p => p.hasToggleIndicator());
     });
@@ -223,11 +231,13 @@ export function runHarnessTests(
 
   it('should be able to get toggle indicator position of panels', async () => {
     const accordion = await loader.getHarness(accordionHarness);
-    const standalonePanel =
-        await loader.getHarness(expansionPanelHarness.with({selector: '#standalonePanel'}));
-    const expansionPanels = [standalonePanel, ...await accordion.getExpansionPanels()];
-    let togglePositions =
-        await parallel(() => expansionPanels.map(p => p.getToggleIndicatorPosition()));
+    const standalonePanel = await loader.getHarness(
+      expansionPanelHarness.with({selector: '#standalonePanel'}),
+    );
+    const expansionPanels = [standalonePanel, ...(await accordion.getExpansionPanels())];
+    let togglePositions = await parallel(() =>
+      expansionPanels.map(p => p.getToggleIndicatorPosition()),
+    );
     expect(togglePositions.every(p => p === 'after')).toBe(true);
     fixture.componentInstance.toggleIndicatorsPosition = 'before';
     togglePositions = await parallel(() => {

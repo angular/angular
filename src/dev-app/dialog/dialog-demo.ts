@@ -10,7 +10,6 @@ import {DOCUMENT} from '@angular/common';
 import {Component, Inject, TemplateRef, ViewChild, ViewEncapsulation} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 
-
 const defaultDialogConfig = new MatDialogConfig();
 
 @Component({
@@ -38,11 +37,11 @@ export class DialogDemo {
       top: '',
       bottom: '',
       left: '',
-      right: ''
+      right: '',
     },
     data: {
-      message: 'Jazzy jazz jazz'
-    }
+      message: 'Jazzy jazz jazz',
+    },
   };
   numTemplateOpens = 0;
 
@@ -85,7 +84,6 @@ export class DialogDemo {
   }
 }
 
-
 @Component({
   selector: 'demo-jazz-dialog',
   template: `
@@ -104,26 +102,23 @@ export class DialogDemo {
     </div>
   `,
   encapsulation: ViewEncapsulation.None,
-  styles: [`.hidden-dialog { opacity: 0; }`]
+  styles: [`.hidden-dialog { opacity: 0; }`],
 })
 export class JazzDialog {
   private _dimesionToggle = false;
 
   constructor(
     public dialogRef: MatDialogRef<JazzDialog>,
-    @Inject(MAT_DIALOG_DATA) public data: any) { }
+    @Inject(MAT_DIALOG_DATA) public data: any,
+  ) {}
 
   togglePosition(): void {
     this._dimesionToggle = !this._dimesionToggle;
 
     if (this._dimesionToggle) {
-      this.dialogRef
-        .updateSize('500px', '500px')
-        .updatePosition({ top: '25px', left: '25px' });
+      this.dialogRef.updateSize('500px', '500px').updatePosition({top: '25px', left: '25px'});
     } else {
-      this.dialogRef
-        .updateSize()
-        .updatePosition();
+      this.dialogRef.updateSize().updatePosition();
     }
   }
 
@@ -135,14 +130,15 @@ export class JazzDialog {
   }
 }
 
-
 @Component({
   selector: 'demo-content-element-dialog',
-  styles: [`
+  styles: [
+    `
     img {
       max-width: 100%;
     }
-  `],
+  `,
+  ],
   template: `
     <h2 mat-dialog-title>Neptune</h2>
 
@@ -178,12 +174,12 @@ export class JazzDialog {
         (click)="showInStackedDialog()">
         Show in Dialog</button>
     </mat-dialog-actions>
-  `
+  `,
 })
 export class ContentElementDialog {
   actionsAlignment: string;
 
-  constructor(public dialog: MatDialog) { }
+  constructor(public dialog: MatDialog) {}
 
   showInStackedDialog() {
     this.dialog.open(IFrameDialog);
@@ -192,11 +188,13 @@ export class ContentElementDialog {
 
 @Component({
   selector: 'demo-iframe-dialog',
-  styles: [`
+  styles: [
+    `
     iframe {
       width: 800px;
     }
-  `],
+  `,
+  ],
   template: `
     <h2 mat-dialog-title>Neptune</h2>
 
@@ -210,6 +208,6 @@ export class ContentElementDialog {
         color="primary"
         mat-dialog-close>Close</button>
     </mat-dialog-actions>
-  `
+  `,
 })
 export class IFrameDialog {}

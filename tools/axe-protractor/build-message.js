@@ -4,7 +4,6 @@
  * @param {!axe.Violation} violation
  */
 exports.buildMessage = violation => {
-
   let selectors = violation.nodes.map(node => {
     return node.target.join(' ');
   });
@@ -12,5 +11,4 @@ exports.buildMessage = violation => {
   return selectors.reduce((content, selector) => {
     return content + '- ' + selector + '\n';
   }, '');
-
 };

@@ -15,5 +15,4 @@ import {VirtualScrollE2E} from './virtual-scroll-e2e';
   imports: [ScrollingModule, ExperimentalScrollingModule],
   declarations: [VirtualScrollE2E],
 })
-export class VirtualScrollE2eModule {
-}
+export class VirtualScrollE2eModule {}

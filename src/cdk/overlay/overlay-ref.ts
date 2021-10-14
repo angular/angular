@@ -20,7 +20,6 @@ import {OverlayReference} from './overlay-reference';
 import {PositionStrategy} from './position/position-strategy';
 import {ScrollStrategy} from './scroll';
 
-
 /** An object where all of its properties cannot be written. */
 export type ImmutableObject<T> = {
   readonly [P in keyof T]: T[P];
@@ -53,16 +52,16 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
   readonly _outsidePointerEvents = new Subject<MouseEvent>();
 
   constructor(
-      private _portalOutlet: PortalOutlet,
-      private _host: HTMLElement,
-      private _pane: HTMLElement,
-      private _config: ImmutableObject<OverlayConfig>,
-      private _ngZone: NgZone,
-      private _keyboardDispatcher: OverlayKeyboardDispatcher,
-      private _document: Document,
-      private _location: Location,
-      private _outsideClickDispatcher: OverlayOutsideClickDispatcher) {
-
+    private _portalOutlet: PortalOutlet,
+    private _host: HTMLElement,
+    private _pane: HTMLElement,
+    private _config: ImmutableObject<OverlayConfig>,
+    private _ngZone: NgZone,
+    private _keyboardDispatcher: OverlayKeyboardDispatcher,
+    private _document: Document,
+    private _location: Location,
+    private _outsideClickDispatcher: OverlayOutsideClickDispatcher,
+  ) {
     if (_config.scrollStrategy) {
       this._scrollStrategy = _config.scrollStrategy;
       this._scrollStrategy.attach(this);
@@ -124,14 +123,12 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
     // Update the position once the zone is stable so that the overlay will be fully rendered
     // before attempting to position it, as the position may depend on the size of the rendered
     // content.
-    this._ngZone.onStable
-      .pipe(take(1))
-      .subscribe(() => {
-        // The overlay could've been detached before the zone has stabilized.
-        if (this.hasAttached()) {
-          this.updatePosition();
-        }
-      });
+    this._ngZone.onStable.pipe(take(1)).subscribe(() => {
+      // The overlay could've been detached before the zone has stabilized.
+      if (this.hasAttached()) {
+        this.updatePosition();
+      }
+    });
 
     // Enable pointer events for the overlay pane element.
     this._togglePointerEvents(true);
@@ -519,7 +516,6 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
     }
   }
 }
-
 
 /** Size properties for an overlay. */
 export interface OverlaySizeConfig {

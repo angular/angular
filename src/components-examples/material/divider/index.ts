@@ -6,19 +6,12 @@ import {DividerHarnessExample} from './divider-harness/divider-harness-example';
 
 export {DividerHarnessExample, DividerOverviewExample};
 
-const EXAMPLES = [
-  DividerHarnessExample,
-  DividerOverviewExample,
-];
+const EXAMPLES = [DividerHarnessExample, DividerOverviewExample];
 
 @NgModule({
-  imports: [
-    MatDividerModule,
-    MatListModule,
-  ],
+  imports: [MatDividerModule, MatListModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
   entryComponents: EXAMPLES,
 })
-export class DividerExamplesModule {
-}
+export class DividerExamplesModule {}

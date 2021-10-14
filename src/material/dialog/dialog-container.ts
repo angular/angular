@@ -12,7 +12,7 @@ import {
   FocusOrigin,
   FocusTrap,
   FocusTrapFactory,
-  InteractivityChecker
+  InteractivityChecker,
 } from '@angular/cdk/a11y';
 import {_getFocusedElementPierceShadowDom} from '@angular/cdk/platform';
 import {
@@ -20,7 +20,7 @@ import {
   CdkPortalOutlet,
   ComponentPortal,
   DomPortal,
-  TemplatePortal
+  TemplatePortal,
 } from '@angular/cdk/portal';
 import {DOCUMENT} from '@angular/common';
 import {
@@ -81,7 +81,7 @@ export abstract class _MatDialogContainerBase extends BasePortalOutlet {
    * whether the focus style will be applied when returning focus to its original location
    * after the dialog is closed.
    */
-  _closeInteractionType: FocusOrigin|null = null;
+  _closeInteractionType: FocusOrigin | null = null;
 
   /** ID of the element that should be considered as the dialog's label. */
   _ariaLabelledBy: string | null;
@@ -98,8 +98,8 @@ export abstract class _MatDialogContainerBase extends BasePortalOutlet {
     public _config: MatDialogConfig,
     private readonly _interactivityChecker: InteractivityChecker,
     private readonly _ngZone: NgZone,
-    private _focusMonitor?: FocusMonitor) {
-
+    private _focusMonitor?: FocusMonitor,
+  ) {
     super();
     this._ariaLabelledBy = _config.ariaLabelledBy || null;
     this._document = _document;
@@ -152,7 +152,7 @@ export abstract class _MatDialogContainerBase extends BasePortalOutlet {
     }
 
     return this._portalOutlet.attachDomPortal(portal);
-  }
+  };
 
   /** Moves focus back into the dialog if it was moved out. */
   _recaptureFocus() {
@@ -183,8 +183,9 @@ export abstract class _MatDialogContainerBase extends BasePortalOutlet {
    * @param selector The CSS selector for the element to set focus to.
    */
   private _focusByCssSelector(selector: string, options?: FocusOptions) {
-    let elementToFocus =
-      this._elementRef.nativeElement.querySelector(selector) as HTMLElement | null;
+    let elementToFocus = this._elementRef.nativeElement.querySelector(
+      selector,
+    ) as HTMLElement | null;
     if (elementToFocus) {
       this._forceFocus(elementToFocus, options);
     }
@@ -237,8 +238,11 @@ export abstract class _MatDialogContainerBase extends BasePortalOutlet {
     const previousElement = this._elementFocusedBeforeDialogWasOpened;
 
     // We need the extra check, because IE can set the `activeElement` to null in some cases.
-    if (this._config.restoreFocus && previousElement &&
-        typeof previousElement.focus === 'function') {
+    if (
+      this._config.restoreFocus &&
+      previousElement &&
+      typeof previousElement.focus === 'function'
+    ) {
       const activeElement = _getFocusedElementPierceShadowDom();
       const element = this._elementRef.nativeElement;
 
@@ -246,8 +250,12 @@ export abstract class _MatDialogContainerBase extends BasePortalOutlet {
       // non-focusable element like the backdrop was clicked) before moving it. It's possible that
       // the consumer moved it themselves before the animation was done, in which case we shouldn't
       // do anything.
-      if (!activeElement || activeElement === this._document.body || activeElement === element ||
-          element.contains(activeElement)) {
+      if (
+        !activeElement ||
+        activeElement === this._document.body ||
+        activeElement === element ||
+        element.contains(activeElement)
+      ) {
         if (this._focusMonitor) {
           this._focusMonitor.focusVia(previousElement, this._closeInteractionType);
           this._closeInteractionType = null;

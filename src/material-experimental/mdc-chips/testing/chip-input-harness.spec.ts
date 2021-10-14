@@ -5,7 +5,6 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatChipsModule} from '../index';
 import {MatChipInputHarness} from './chip-input-harness';
 
-
 describe('MatChipInputHarness', () => {
   let fixture: ComponentFixture<ChipInputHarnessTest>;
   let loader: HarnessLoader;
@@ -63,7 +62,6 @@ describe('MatChipInputHarness', () => {
     await harness.blur();
     expect(await harness.isFocused()).toBe(false);
   });
-
 });
 
 @Component({
@@ -75,9 +73,8 @@ describe('MatChipInputHarness', () => {
     <mat-chip-grid #grid2>
       <input [matChipInputFor]="grid2" disabled />
     </mat-chip-grid>
-  `
+  `,
 })
 class ChipInputHarnessTest {
   required = false;
 }
-

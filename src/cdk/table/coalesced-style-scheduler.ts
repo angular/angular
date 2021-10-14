@@ -19,8 +19,9 @@ export class _Schedule {
 }
 
 /** Injection token used to provide a coalesced style scheduler. */
-export const _COALESCED_STYLE_SCHEDULER =
-    new InjectionToken<_CoalescedStyleScheduler>('_COALESCED_STYLE_SCHEDULER');
+export const _COALESCED_STYLE_SCHEDULER = new InjectionToken<_CoalescedStyleScheduler>(
+  '_COALESCED_STYLE_SCHEDULER',
+);
 
 /**
  * Allows grouping up CSSDom mutations after the current execution context.
@@ -31,7 +32,7 @@ export const _COALESCED_STYLE_SCHEDULER =
  */
 @Injectable()
 export class _CoalescedStyleScheduler implements OnDestroy {
-  private _currentSchedule: _Schedule|null = null;
+  private _currentSchedule: _Schedule | null = null;
   private readonly _destroyed = new Subject<void>();
 
   constructor(private readonly _ngZone: NgZone) {}
@@ -62,37 +63,39 @@ export class _CoalescedStyleScheduler implements OnDestroy {
   }
 
   private _createScheduleIfNeeded() {
-    if (this._currentSchedule) { return; }
+    if (this._currentSchedule) {
+      return;
+    }
 
     this._currentSchedule = new _Schedule();
 
-    this._getScheduleObservable().pipe(
-        takeUntil(this._destroyed),
-    ).subscribe(() => {
-      while (this._currentSchedule!.tasks.length || this._currentSchedule!.endTasks.length) {
-        const schedule = this._currentSchedule!;
+    this._getScheduleObservable()
+      .pipe(takeUntil(this._destroyed))
+      .subscribe(() => {
+        while (this._currentSchedule!.tasks.length || this._currentSchedule!.endTasks.length) {
+          const schedule = this._currentSchedule!;
 
-        // Capture new tasks scheduled by the current set of tasks.
-        this._currentSchedule = new _Schedule();
+          // Capture new tasks scheduled by the current set of tasks.
+          this._currentSchedule = new _Schedule();
 
-        for (const task of schedule.tasks) {
-          task();
+          for (const task of schedule.tasks) {
+            task();
+          }
+
+          for (const task of schedule.endTasks) {
+            task();
+          }
         }
 
-        for (const task of schedule.endTasks) {
-          task();
-        }
-      }
-
-      this._currentSchedule = null;
-    });
+        this._currentSchedule = null;
+      });
   }
 
   private _getScheduleObservable() {
     // Use onStable when in the context of an ongoing change detection cycle so that we
     // do not accidentally trigger additional cycles.
-    return this._ngZone.isStable ?
-        from(Promise.resolve(undefined)) :
-        this._ngZone.onStable.pipe(take(1));
+    return this._ngZone.isStable
+      ? from(Promise.resolve(undefined))
+      : this._ngZone.onStable.pipe(take(1));
   }
 }

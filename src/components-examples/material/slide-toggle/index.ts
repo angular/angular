@@ -5,9 +5,7 @@ import {MatCardModule} from '@angular/material/card';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
-import {
-  SlideToggleConfigurableExample
-} from './slide-toggle-configurable/slide-toggle-configurable-example';
+import {SlideToggleConfigurableExample} from './slide-toggle-configurable/slide-toggle-configurable-example';
 import {SlideToggleFormsExample} from './slide-toggle-forms/slide-toggle-forms-example';
 import {SlideToggleOverviewExample} from './slide-toggle-overview/slide-toggle-overview-example';
 import {SlideToggleHarnessExample} from './slide-toggle-harness/slide-toggle-harness-example';
@@ -40,5 +38,4 @@ const EXAMPLES = [
   exports: EXAMPLES,
   entryComponents: EXAMPLES,
 })
-export class SlideToggleExamplesModule {
-}
+export class SlideToggleExamplesModule {}

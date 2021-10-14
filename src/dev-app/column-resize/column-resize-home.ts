@@ -12,5 +12,4 @@ import {Component} from '@angular/core';
 @Component({
   templateUrl: 'column-resize-home.html',
 })
-export class ColumnResizeHome {
-}
+export class ColumnResizeHome {}

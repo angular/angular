@@ -14,5 +14,4 @@ import {MdcMenuE2e} from './mdc-menu-e2e';
   imports: [MatMenuModule],
   declarations: [MdcMenuE2e],
 })
-export class MdcMenuE2eModule {
-}
+export class MdcMenuE2eModule {}

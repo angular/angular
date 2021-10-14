@@ -14,7 +14,6 @@ import * as ts from 'typescript';
  * have changed their API.
  */
 export class MiscClassInheritanceMigration extends Migration<null> {
-
   // Only enable this rule if the migration targets version 6. The rule
   // currently only includes migrations for V6 deprecations.
   enabled = this.targetVersion === TargetVersion.V6;
@@ -35,16 +34,17 @@ export class MiscClassInheritanceMigration extends Migration<null> {
 
     // Migration for: https://github.com/angular/components/pull/10293 (v6)
     if (baseTypes.includes('MatFormFieldControl')) {
-      const hasFloatLabelMember =
-          node.members.filter(member => member.name)
-              .find(member => member.name!.getText() === 'shouldLabelFloat');
+      const hasFloatLabelMember = node.members
+        .filter(member => member.name)
+        .find(member => member.name!.getText() === 'shouldLabelFloat');
 
       if (!hasFloatLabelMember) {
         this.createFailureAtNode(
-            node,
-            `Found class "${className}" which extends ` +
-                `"${'MatFormFieldControl'}". This class must define ` +
-                `"${'shouldLabelFloat'}" which is now a required property.`);
+          node,
+          `Found class "${className}" which extends ` +
+            `"${'MatFormFieldControl'}". This class must define ` +
+            `"${'shouldLabelFloat'}" which is now a required property.`,
+        );
       }
     }
   }

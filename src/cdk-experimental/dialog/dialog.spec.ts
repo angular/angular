@@ -17,7 +17,7 @@ import {
   TemplateRef,
   ViewChild,
   ViewContainerRef,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -46,20 +46,20 @@ describe('Dialog', () => {
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
       imports: [DialogModule, DialogTestModule],
-      providers: [
-        {provide: Location, useClass: SpyLocation}
-      ],
+      providers: [{provide: Location, useClass: SpyLocation}],
     });
 
     TestBed.compileComponents();
   }));
 
-  beforeEach(inject([Dialog, Location, OverlayContainer],
-      (d: Dialog, l: Location, o: OverlayContainer) => {
-    dialog = d;
-    mockLocation = l as SpyLocation;
-    overlayContainerElement = o.getContainerElement();
-  }));
+  beforeEach(inject(
+    [Dialog, Location, OverlayContainer],
+    (d: Dialog, l: Location, o: OverlayContainer) => {
+      dialog = d;
+      mockLocation = l as SpyLocation;
+      overlayContainerElement = o.getContainerElement();
+    },
+  ));
 
   beforeEach(() => {
     viewContainerFixture = TestBed.createComponent(ComponentWithChildViewContainer);
@@ -70,7 +70,7 @@ describe('Dialog', () => {
 
   it('should open a dialog with a component', () => {
     let dialogRef = dialog.openFromComponent(PizzaMsg, {
-      viewContainerRef: testViewContainerRef
+      viewContainerRef: testViewContainerRef,
     });
 
     viewContainerFixture.detectChanges();
@@ -93,8 +93,9 @@ describe('Dialog', () => {
 
     const data = {value: 'Knees'};
 
-    let dialogRef = dialog.openFromTemplate(
-      templateRefFixture.componentInstance.templateRef, { data });
+    let dialogRef = dialog.openFromTemplate(templateRefFixture.componentInstance.templateRef, {
+      data,
+    });
 
     viewContainerFixture.detectChanges();
 
@@ -127,7 +128,7 @@ describe('Dialog', () => {
 
   it('should use injector from viewContainerRef for DialogInjector', () => {
     let dialogRef = dialog.openFromComponent(PizzaMsg, {
-      viewContainerRef: testViewContainerRef
+      viewContainerRef: testViewContainerRef,
     });
 
     viewContainerFixture.detectChanges();
@@ -136,7 +137,7 @@ describe('Dialog', () => {
 
     expect(dialogRef.componentInstance.dialogRef).toBe(dialogRef);
     expect(dialogInjector.get<DirectiveWithViewContainer>(DirectiveWithViewContainer)).toBeTruthy(
-      'Expected the dialog component to be created with the injector from the viewContainerRef.'
+      'Expected the dialog component to be created with the injector from the viewContainerRef.',
     );
   });
 
@@ -155,7 +156,7 @@ describe('Dialog', () => {
   });
 
   it('should apply the configured role to the dialog element', () => {
-    dialog.openFromComponent(PizzaMsg, { role: 'alertdialog' });
+    dialog.openFromComponent(PizzaMsg, {role: 'alertdialog'});
 
     viewContainerFixture.detectChanges();
 
@@ -164,7 +165,7 @@ describe('Dialog', () => {
   });
 
   it('should apply the specified `aria-describedby`', () => {
-    dialog.openFromComponent(PizzaMsg, { ariaDescribedBy: 'description-element' });
+    dialog.openFromComponent(PizzaMsg, {ariaDescribedBy: 'description-element'});
 
     viewContainerFixture.detectChanges();
 
@@ -173,7 +174,7 @@ describe('Dialog', () => {
   });
 
   it('should close a dialog and get back a result', fakeAsync(() => {
-    let dialogRef = dialog.openFromComponent(PizzaMsg, { viewContainerRef: testViewContainerRef });
+    let dialogRef = dialog.openFromComponent(PizzaMsg, {viewContainerRef: testViewContainerRef});
     let afterCloseCallback = jasmine.createSpy('afterClose callback');
 
     viewContainerFixture.detectChanges();
@@ -187,7 +188,7 @@ describe('Dialog', () => {
   }));
 
   it('should only emit the afterCloseEvent once when closed', fakeAsync(() => {
-    let dialogRef = dialog.openFromComponent(PizzaMsg, { viewContainerRef: testViewContainerRef });
+    let dialogRef = dialog.openFromComponent(PizzaMsg, {viewContainerRef: testViewContainerRef});
     let afterCloseCallback = jasmine.createSpy('afterClose callback');
 
     viewContainerFixture.detectChanges();
@@ -205,8 +206,9 @@ describe('Dialog', () => {
 
     // beforeClose should emit before dialog container is destroyed
     const beforeCloseHandler = jasmine.createSpy('beforeClose callback').and.callFake(() => {
-      expect(overlayContainerElement.querySelector('cdk-dialog-container')).not
-        .withContext('dialog container exists when beforeClose is called').toBeNull();
+      expect(overlayContainerElement.querySelector('cdk-dialog-container'))
+        .not.withContext('dialog container exists when beforeClose is called')
+        .toBeNull();
     });
 
     dialogRef.beforeClosed().subscribe(beforeCloseHandler);
@@ -249,7 +251,7 @@ describe('Dialog', () => {
     onPushFixture.detectChanges();
 
     const dialogRef = dialog.openFromComponent(PizzaMsg, {
-      viewContainerRef: onPushFixture.componentInstance.viewContainerRef
+      viewContainerRef: onPushFixture.componentInstance.viewContainerRef,
     });
 
     flushMicrotasks();
@@ -257,7 +259,8 @@ describe('Dialog', () => {
     flushMicrotasks();
 
     expect(overlayContainerElement.querySelectorAll('cdk-dialog-container').length)
-      .withContext('Expected one open dialog.').toBe(1);
+      .withContext('Expected one open dialog.')
+      .toBe(1);
 
     dialogRef.close();
     flushMicrotasks();
@@ -265,7 +268,8 @@ describe('Dialog', () => {
     tick(500);
 
     expect(overlayContainerElement.querySelectorAll('cdk-dialog-container').length)
-      .withContext('Expected no open dialogs.').toBe(0);
+      .withContext('Expected no open dialogs.')
+      .toBe(0);
   }));
 
   it('should close when clicking on the overlay backdrop', fakeAsync(() => {
@@ -320,16 +324,19 @@ describe('Dialog', () => {
 
   it('should notify the observers if a dialog has been opened', () => {
     dialog.afterOpened.subscribe(ref => {
-      expect(dialog.openFromComponent(PizzaMsg, {
-        viewContainerRef: testViewContainerRef
-      })).toBe(ref);
+      expect(
+        dialog.openFromComponent(PizzaMsg, {
+          viewContainerRef: testViewContainerRef,
+        }),
+      ).toBe(ref);
     });
   });
 
   it('should notify the observers if all open dialogs have finished closing', fakeAsync(() => {
-    const ref1 = dialog.openFromComponent(PizzaMsg, { viewContainerRef: testViewContainerRef });
-    const ref2 = dialog.openFromComponent(
-      ContentElementDialog, { viewContainerRef: testViewContainerRef });
+    const ref1 = dialog.openFromComponent(PizzaMsg, {viewContainerRef: testViewContainerRef});
+    const ref2 = dialog.openFromComponent(ContentElementDialog, {
+      viewContainerRef: testViewContainerRef,
+    });
     const spy = jasmine.createSpy('afterAllClosed spy');
 
     viewContainerFixture.detectChanges();
@@ -358,7 +365,7 @@ describe('Dialog', () => {
 
   it('should override the width of the overlay pane', () => {
     dialog.openFromComponent(PizzaMsg, {
-      width: '500px'
+      width: '500px',
     });
 
     viewContainerFixture.detectChanges();
@@ -370,7 +377,7 @@ describe('Dialog', () => {
 
   it('should override the height of the overlay pane', () => {
     dialog.openFromComponent(PizzaMsg, {
-      height: '100px'
+      height: '100px',
     });
 
     viewContainerFixture.detectChanges();
@@ -382,7 +389,7 @@ describe('Dialog', () => {
 
   it('should override the min-width of the overlay pane', () => {
     dialog.openFromComponent(PizzaMsg, {
-      minWidth: '500px'
+      minWidth: '500px',
     });
 
     viewContainerFixture.detectChanges();
@@ -400,7 +407,8 @@ describe('Dialog', () => {
     let overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
 
     expect(overlayPane.style.maxWidth)
-      .withContext('Expected dialog to set a default max-width on overlay pane').toBe('80vw');
+      .withContext('Expected dialog to set a default max-width on overlay pane')
+      .toBe('80vw');
 
     dialogRef.close();
 
@@ -409,7 +417,7 @@ describe('Dialog', () => {
     flushMicrotasks();
 
     dialogRef = dialog.openFromComponent(PizzaMsg, {
-      maxWidth: '100px'
+      maxWidth: '100px',
     });
 
     tick(500);
@@ -422,7 +430,7 @@ describe('Dialog', () => {
 
   it('should override the min-height of the overlay pane', () => {
     dialog.openFromComponent(PizzaMsg, {
-      minHeight: '300px'
+      minHeight: '300px',
     });
 
     viewContainerFixture.detectChanges();
@@ -434,7 +442,7 @@ describe('Dialog', () => {
 
   it('should override the max-height of the overlay pane', () => {
     dialog.openFromComponent(PizzaMsg, {
-      maxHeight: '100px'
+      maxHeight: '100px',
     });
 
     viewContainerFixture.detectChanges();
@@ -447,8 +455,8 @@ describe('Dialog', () => {
   it('should override the top offset of the overlay pane', () => {
     dialog.openFromComponent(PizzaMsg, {
       position: {
-        top: '100px'
-      }
+        top: '100px',
+      },
     });
 
     viewContainerFixture.detectChanges();
@@ -461,8 +469,8 @@ describe('Dialog', () => {
   it('should override the bottom offset of the overlay pane', () => {
     dialog.openFromComponent(PizzaMsg, {
       position: {
-        bottom: '200px'
-      }
+        bottom: '200px',
+      },
     });
 
     viewContainerFixture.detectChanges();
@@ -475,8 +483,8 @@ describe('Dialog', () => {
   it('should override the left offset of the overlay pane', () => {
     dialog.openFromComponent(PizzaMsg, {
       position: {
-        left: '250px'
-      }
+        left: '250px',
+      },
     });
 
     viewContainerFixture.detectChanges();
@@ -489,8 +497,8 @@ describe('Dialog', () => {
   it('should override the right offset of the overlay pane', () => {
     dialog.openFromComponent(PizzaMsg, {
       position: {
-        right: '125px'
-      }
+        right: '125px',
+      },
     });
 
     viewContainerFixture.detectChanges();
@@ -503,8 +511,8 @@ describe('Dialog', () => {
   it('should allow for the position to be updated', () => {
     let dialogRef = dialog.openFromComponent(PizzaMsg, {
       position: {
-        left: '250px'
-      }
+        left: '250px',
+      },
     });
 
     viewContainerFixture.detectChanges();
@@ -513,13 +521,13 @@ describe('Dialog', () => {
 
     expect(overlayPane.style.marginLeft).toBe('250px');
 
-    dialogRef.updatePosition({ left: '500px' });
+    dialogRef.updatePosition({left: '500px'});
 
     expect(overlayPane.style.marginLeft).toBe('500px');
   });
 
   it('should allow for the dimensions to be updated', () => {
-    let dialogRef = dialog.openFromComponent(PizzaMsg, { width: '100px' });
+    let dialogRef = dialog.openFromComponent(PizzaMsg, {width: '100px'});
 
     viewContainerFixture.detectChanges();
 
@@ -533,7 +541,7 @@ describe('Dialog', () => {
   });
 
   it('should allow setting the layout direction', () => {
-    dialog.openFromComponent(PizzaMsg, { direction: 'rtl' });
+    dialog.openFromComponent(PizzaMsg, {direction: 'rtl'});
 
     viewContainerFixture.detectChanges();
 
@@ -543,7 +551,7 @@ describe('Dialog', () => {
   });
 
   it('should inject the correct layout direction in the component instance', () => {
-    const dialogRef = dialog.openFromComponent(PizzaMsg, { direction: 'rtl' });
+    const dialogRef = dialog.openFromComponent(PizzaMsg, {direction: 'rtl'});
 
     viewContainerFixture.detectChanges();
 
@@ -576,10 +584,10 @@ describe('Dialog', () => {
   }));
 
   it('should set the proper animation states', () => {
-    let dialogRef = dialog.openFromComponent(PizzaMsg, { viewContainerRef: testViewContainerRef });
-    let dialogContainer: CdkDialogContainer =
-        viewContainerFixture.debugElement.query(By.directive(CdkDialogContainer))!
-        .componentInstance;
+    let dialogRef = dialog.openFromComponent(PizzaMsg, {viewContainerRef: testViewContainerRef});
+    let dialogContainer: CdkDialogContainer = viewContainerFixture.debugElement.query(
+      By.directive(CdkDialogContainer),
+    )!.componentInstance;
 
     expect(dialogContainer._state).toBe('enter');
 
@@ -641,8 +649,8 @@ describe('Dialog', () => {
   }));
 
   it('should close all open dialogs on destroy', fakeAsync(() => {
-    dialog.openFromComponent(PizzaMsg, { viewContainerRef: testViewContainerRef });
-    dialog.openFromComponent(PizzaMsg, { viewContainerRef: testViewContainerRef });
+    dialog.openFromComponent(PizzaMsg, {viewContainerRef: testViewContainerRef});
+    dialog.openFromComponent(PizzaMsg, {viewContainerRef: testViewContainerRef});
 
     viewContainerFixture.detectChanges();
     expect(overlayContainerElement.querySelectorAll('cdk-dialog-container').length).toBe(2);
@@ -655,7 +663,7 @@ describe('Dialog', () => {
   }));
 
   it('should complete the various lifecycle streams on destroy', fakeAsync(() => {
-    let dialogRef = dialog.openFromComponent(PizzaMsg, { viewContainerRef: testViewContainerRef });
+    let dialogRef = dialog.openFromComponent(PizzaMsg, {viewContainerRef: testViewContainerRef});
     let beforeOpenedComplete = jasmine.createSpy('before opened complete spy');
     let afterOpenedComplete = jasmine.createSpy('after opened complete spy');
     let beforeClosedComplete = jasmine.createSpy('before closed complete spy');
@@ -682,8 +690,8 @@ describe('Dialog', () => {
       let config = {
         data: {
           stringParam: 'hello',
-          dateParam: new Date()
-        }
+          dateParam: new Date(),
+        },
       };
 
       let instance = dialog.openFromComponent(DialogWithInjectedData, config).componentInstance;
@@ -713,7 +721,8 @@ describe('Dialog', () => {
     flush();
 
     expect(dialogRef.componentInstance)
-      .withContext('Expected reference to have been cleared.').toBeFalsy();
+      .withContext('Expected reference to have been cleared.')
+      .toBeFalsy();
   }));
 
   it('should assign a unique id to each dialog', () => {
@@ -726,18 +735,17 @@ describe('Dialog', () => {
   });
 
   it('should allow for the id to be overwritten', () => {
-    const dialogRef = dialog.openFromComponent(PizzaMsg, { id: 'pizza' });
+    const dialogRef = dialog.openFromComponent(PizzaMsg, {id: 'pizza'});
     expect(dialogRef.id).toBe('pizza');
   });
 
   it('should throw when trying to open a dialog with the same id as another dialog', () => {
-    dialog.openFromComponent(PizzaMsg, { id: 'pizza' });
-    expect(() => dialog.openFromComponent(PizzaMsg, { id: 'pizza' }))
-        .toThrowError(/must be unique/g);
+    dialog.openFromComponent(PizzaMsg, {id: 'pizza'});
+    expect(() => dialog.openFromComponent(PizzaMsg, {id: 'pizza'})).toThrowError(/must be unique/g);
   });
 
   it('should be able to find a dialog by id', () => {
-    const dialogRef = dialog.openFromComponent(PizzaMsg, { id: 'pizza' });
+    const dialogRef = dialog.openFromComponent(PizzaMsg, {id: 'pizza'});
     expect(dialog.getById('pizza')).toBe(dialogRef);
   });
 
@@ -745,7 +753,7 @@ describe('Dialog', () => {
     it('should prevent closing via clicks on the backdrop', fakeAsync(() => {
       dialog.openFromComponent(PizzaMsg, {
         disableClose: true,
-        viewContainerRef: testViewContainerRef
+        viewContainerRef: testViewContainerRef,
       });
 
       viewContainerFixture.detectChanges();
@@ -761,7 +769,7 @@ describe('Dialog', () => {
     it('should prevent closing via the escape key', fakeAsync(() => {
       dialog.openFromComponent(PizzaMsg, {
         disableClose: true,
-        viewContainerRef: testViewContainerRef
+        viewContainerRef: testViewContainerRef,
       });
 
       viewContainerFixture.detectChanges();
@@ -775,7 +783,7 @@ describe('Dialog', () => {
     it('should allow for the disableClose option to be updated while open', fakeAsync(() => {
       let dialogRef = dialog.openFromComponent(PizzaMsg, {
         disableClose: true,
-        viewContainerRef: testViewContainerRef
+        viewContainerRef: testViewContainerRef,
       });
 
       viewContainerFixture.detectChanges();
@@ -798,7 +806,7 @@ describe('Dialog', () => {
       templateRefFixture.detectChanges();
 
       dialog.openFromTemplate(templateRefFixture.componentInstance.templateRef, {
-        disableClose: true
+        disableClose: true,
       });
 
       templateRefFixture.detectChanges();
@@ -810,14 +818,13 @@ describe('Dialog', () => {
 
       expect(overlayContainerElement.querySelector('cdk-dialog-container')).toBeTruthy();
     }));
-
   });
 
   describe('hasBackdrop option', () => {
     it('should have a backdrop', () => {
       dialog.openFromComponent(PizzaMsg, {
         hasBackdrop: true,
-        viewContainerRef: testViewContainerRef
+        viewContainerRef: testViewContainerRef,
       });
 
       viewContainerFixture.detectChanges();
@@ -828,7 +835,7 @@ describe('Dialog', () => {
     it('should not have a backdrop', () => {
       dialog.openFromComponent(PizzaMsg, {
         hasBackdrop: false,
-        viewContainerRef: testViewContainerRef
+        viewContainerRef: testViewContainerRef,
       });
 
       viewContainerFixture.detectChanges();
@@ -841,7 +848,7 @@ describe('Dialog', () => {
     it('should have custom panel class', () => {
       dialog.openFromComponent(PizzaMsg, {
         panelClass: 'custom-panel-class',
-        viewContainerRef: testViewContainerRef
+        viewContainerRef: testViewContainerRef,
       });
 
       viewContainerFixture.detectChanges();
@@ -854,7 +861,7 @@ describe('Dialog', () => {
     it('should have default backdrop class', () => {
       dialog.openFromComponent(PizzaMsg, {
         backdropClass: '',
-        viewContainerRef: testViewContainerRef
+        viewContainerRef: testViewContainerRef,
       });
 
       viewContainerFixture.detectChanges();
@@ -865,7 +872,7 @@ describe('Dialog', () => {
     it('should have custom backdrop class', () => {
       dialog.openFromComponent(PizzaMsg, {
         backdropClass: 'custom-backdrop-class',
-        viewContainerRef: testViewContainerRef
+        viewContainerRef: testViewContainerRef,
       });
 
       viewContainerFixture.detectChanges();
@@ -879,10 +886,9 @@ describe('Dialog', () => {
     beforeEach(() => document.body.appendChild(overlayContainerElement));
     afterEach(() => overlayContainerElement.remove());
 
-    it('should focus the first tabbable element of the dialog on open (the default)',
-      fakeAsync(() => {
+    it('should focus the first tabbable element of the dialog on open (the default)', fakeAsync(() => {
       dialog.openFromComponent(PizzaMsg, {
-        viewContainerRef: testViewContainerRef
+        viewContainerRef: testViewContainerRef,
       });
 
       viewContainerFixture.detectChanges();
@@ -896,50 +902,55 @@ describe('Dialog', () => {
     it('should focus the dialog element on open', fakeAsync(() => {
       dialog.openFromComponent(PizzaMsg, {
         viewContainerRef: testViewContainerRef,
-        autoFocus: 'dialog'
+        autoFocus: 'dialog',
       });
 
       viewContainerFixture.detectChanges();
       flushMicrotasks();
 
-      let container =
-        overlayContainerElement.querySelector('cdk-dialog-container') as HTMLInputElement;
+      let container = overlayContainerElement.querySelector(
+        'cdk-dialog-container',
+      ) as HTMLInputElement;
 
       expect(document.activeElement)
-        .withContext('Expected container to be focused on open').toBe(container);
+        .withContext('Expected container to be focused on open')
+        .toBe(container);
     }));
 
     it('should focus the first header element on open', fakeAsync(() => {
       dialog.openFromComponent(ContentElementDialog, {
         viewContainerRef: testViewContainerRef,
-        autoFocus: 'first-heading'
+        autoFocus: 'first-heading',
       });
 
       viewContainerFixture.detectChanges();
       flushMicrotasks();
 
-      let firstHeader =
-        overlayContainerElement.querySelector('h1[tabindex="-1"]') as HTMLInputElement;
+      let firstHeader = overlayContainerElement.querySelector(
+        'h1[tabindex="-1"]',
+      ) as HTMLInputElement;
 
       expect(document.activeElement)
-        .withContext('Expected first header to be focused on open').toBe(firstHeader);
+        .withContext('Expected first header to be focused on open')
+        .toBe(firstHeader);
     }));
 
-    it('should focus the first element that matches the css selector from autoFocus on open',
-      fakeAsync(() => {
+    it('should focus the first element that matches the css selector from autoFocus on open', fakeAsync(() => {
       dialog.openFromComponent(PizzaMsg, {
         viewContainerRef: testViewContainerRef,
-        autoFocus: 'p'
+        autoFocus: 'p',
       });
 
       viewContainerFixture.detectChanges();
       flushMicrotasks();
 
-      let firstParagraph =
-        overlayContainerElement.querySelector('p[tabindex="-1"]') as HTMLInputElement;
+      let firstParagraph = overlayContainerElement.querySelector(
+        'p[tabindex="-1"]',
+      ) as HTMLInputElement;
 
       expect(document.activeElement)
-        .withContext('Expected first paragraph to be focused on open').toBe(firstParagraph);
+        .withContext('Expected first paragraph to be focused on open')
+        .toBe(firstParagraph);
     }));
 
     it('should re-focus trigger element when dialog closes', fakeAsync(() => {
@@ -949,19 +960,22 @@ describe('Dialog', () => {
       document.body.appendChild(button);
       button.focus();
 
-      let dialogRef = dialog.openFromComponent(
-        PizzaMsg, { viewContainerRef: testViewContainerRef });
+      let dialogRef = dialog.openFromComponent(PizzaMsg, {viewContainerRef: testViewContainerRef});
 
       flushMicrotasks();
       viewContainerFixture.detectChanges();
       flushMicrotasks();
 
-      expect(document.activeElement!.id)
-          .not.toBe('dialog-trigger', 'Expected the focus to change when dialog was opened.');
+      expect(document.activeElement!.id).not.toBe(
+        'dialog-trigger',
+        'Expected the focus to change when dialog was opened.',
+      );
 
       dialogRef.close();
-      expect(document.activeElement!.id).not.toBe('dialog-trigger',
-          'Expcted the focus not to have changed before the animation finishes.');
+      expect(document.activeElement!.id).not.toBe(
+        'dialog-trigger',
+        'Expcted the focus not to have changed before the animation finishes.',
+      );
 
       flushMicrotasks();
       viewContainerFixture.detectChanges();
@@ -1012,29 +1026,33 @@ describe('Dialog', () => {
       button.focus();
 
       const dialogRef = dialog.openFromComponent(PizzaMsg, {
-        viewContainerRef: testViewContainerRef
+        viewContainerRef: testViewContainerRef,
       });
 
       flushMicrotasks();
       viewContainerFixture.detectChanges();
       flushMicrotasks();
 
-      expect(document.activeElement!.id)
-          .not.toBe('dialog-trigger', 'Expected the focus to change when dialog was opened.');
+      expect(document.activeElement!.id).not.toBe(
+        'dialog-trigger',
+        'Expected the focus to change when dialog was opened.',
+      );
 
       // Start the closing sequence and move focus out of dialog.
       dialogRef.close();
       otherButton.focus();
 
       expect(document.activeElement!.id)
-        .withContext('Expected focus to be on the alternate button.').toBe('other-button');
+        .withContext('Expected focus to be on the alternate button.')
+        .toBe('other-button');
 
       flushMicrotasks();
       viewContainerFixture.detectChanges();
       flush();
 
       expect(document.activeElement!.id)
-        .withContext('Expected focus to stay on the alternate button.').toBe('other-button');
+        .withContext('Expected focus to stay on the alternate button.')
+        .toBe('other-button');
 
       button.remove();
       otherButton.remove();
@@ -1052,8 +1070,7 @@ describe('Dialog', () => {
       document.body.appendChild(input);
       button.focus();
 
-      let dialogRef = dialog.openFromComponent(
-        PizzaMsg, { viewContainerRef: testViewContainerRef });
+      let dialogRef = dialog.openFromComponent(PizzaMsg, {viewContainerRef: testViewContainerRef});
 
       tick(500);
       viewContainerFixture.detectChanges();
@@ -1074,24 +1091,23 @@ describe('Dialog', () => {
       flush();
     }));
 
-    it('should move focus to the container if there are no focusable elements in the dialog',
-      fakeAsync(() => {
-        dialog.openFromComponent(DialogWithoutFocusableElements);
+    it('should move focus to the container if there are no focusable elements in the dialog', fakeAsync(() => {
+      dialog.openFromComponent(DialogWithoutFocusableElements);
 
-        viewContainerFixture.detectChanges();
-        flushMicrotasks();
+      viewContainerFixture.detectChanges();
+      flushMicrotasks();
 
-        expect(document.activeElement!.tagName.toLowerCase())
-          .withContext('Expected dialog container to be focused.').toBe('cdk-dialog-container');
-      }));
-
+      expect(document.activeElement!.tagName.toLowerCase())
+        .withContext('Expected dialog container to be focused.')
+        .toBe('cdk-dialog-container');
+    }));
   });
 
   describe('aria-label', () => {
     it('should be able to set a custom aria-label', () => {
       dialog.openFromComponent(PizzaMsg, {
         ariaLabel: 'Hello there',
-        viewContainerRef: testViewContainerRef
+        viewContainerRef: testViewContainerRef,
       });
       viewContainerFixture.detectChanges();
 
@@ -1102,7 +1118,7 @@ describe('Dialog', () => {
     it('should not set the aria-labelledby automatically if it has an aria-label', fakeAsync(() => {
       dialog.openFromComponent(ContentElementDialog, {
         ariaLabel: 'Hello there',
-        viewContainerRef: testViewContainerRef
+        viewContainerRef: testViewContainerRef,
       });
       viewContainerFixture.detectChanges();
       tick();
@@ -1125,11 +1141,14 @@ describe('Dialog with a parent Dialog', () => {
       imports: [DialogModule, DialogTestModule],
       declarations: [ComponentThatProvidesMatDialog],
       providers: [
-        {provide: OverlayContainer, useFactory: () => {
-          overlayContainerElement = document.createElement('div');
-          return {getContainerElement: () => overlayContainerElement};
-        }},
-        {provide: Location, useClass: SpyLocation}
+        {
+          provide: OverlayContainer,
+          useFactory: () => {
+            overlayContainerElement = document.createElement('div');
+            return {getContainerElement: () => overlayContainerElement};
+          },
+        },
+        {provide: Location, useClass: SpyLocation},
       ],
     });
 
@@ -1148,38 +1167,40 @@ describe('Dialog with a parent Dialog', () => {
     overlayContainerElement.innerHTML = '';
   });
 
-  it('should close dialogs opened by a parent when calling closeAll on a child Dialog',
-    fakeAsync(() => {
-      parentDialog.openFromComponent(PizzaMsg);
-      fixture.detectChanges();
-      flush();
+  it('should close dialogs opened by a parent when calling closeAll on a child Dialog', fakeAsync(() => {
+    parentDialog.openFromComponent(PizzaMsg);
+    fixture.detectChanges();
+    flush();
 
-      expect(overlayContainerElement.textContent)
-        .withContext('Expected a dialog to be opened').toContain('Pizza');
+    expect(overlayContainerElement.textContent)
+      .withContext('Expected a dialog to be opened')
+      .toContain('Pizza');
 
-      childDialog.closeAll();
-      fixture.detectChanges();
-      flush();
+    childDialog.closeAll();
+    fixture.detectChanges();
+    flush();
 
-      expect(overlayContainerElement.textContent!.trim())
-        .withContext('Expected closeAll on child Dialog to close dialog opened by parent').toBe('');
-    }));
+    expect(overlayContainerElement.textContent!.trim())
+      .withContext('Expected closeAll on child Dialog to close dialog opened by parent')
+      .toBe('');
+  }));
 
-  it('should close dialogs opened by a child when calling closeAll on a parent Dialog',
-    fakeAsync(() => {
-      childDialog.openFromComponent(PizzaMsg);
-      fixture.detectChanges();
+  it('should close dialogs opened by a child when calling closeAll on a parent Dialog', fakeAsync(() => {
+    childDialog.openFromComponent(PizzaMsg);
+    fixture.detectChanges();
 
-      expect(overlayContainerElement.textContent)
-        .withContext('Expected a dialog to be opened').toContain('Pizza');
+    expect(overlayContainerElement.textContent)
+      .withContext('Expected a dialog to be opened')
+      .toContain('Pizza');
 
-      parentDialog.closeAll();
-      fixture.detectChanges();
-      flush();
+    parentDialog.closeAll();
+    fixture.detectChanges();
+    flush();
 
-      expect(overlayContainerElement.textContent!.trim())
-        .withContext('Expected closeAll on parent Dialog to close dialog opened by child').toBe('');
-    }));
+    expect(overlayContainerElement.textContent!.trim())
+      .withContext('Expected closeAll on parent Dialog to close dialog opened by child')
+      .toBe('');
+  }));
 
   it('should not close the parent dialogs, when a child is destroyed', fakeAsync(() => {
     parentDialog.openFromComponent(PizzaMsg);
@@ -1187,14 +1208,16 @@ describe('Dialog with a parent Dialog', () => {
     flush();
 
     expect(overlayContainerElement.textContent)
-      .withContext('Expected a dialog to be opened').toContain('Pizza');
+      .withContext('Expected a dialog to be opened')
+      .toContain('Pizza');
 
     childDialog.ngOnDestroy();
     fixture.detectChanges();
     flush();
 
     expect(overlayContainerElement.textContent)
-      .withContext('Expected a dialog to remain opened').toContain('Pizza');
+      .withContext('Expected a dialog to remain opened')
+      .toContain('Pizza');
   }));
 
   it('should close the top dialog via the escape key', fakeAsync(() => {
@@ -1209,10 +1232,9 @@ describe('Dialog with a parent Dialog', () => {
   }));
 });
 
-
 @Directive({selector: 'dir-with-view-container'})
 class DirectiveWithViewContainer {
-  constructor(public viewContainerRef: ViewContainerRef) { }
+  constructor(public viewContainerRef: ViewContainerRef) {}
 }
 
 @Component({
@@ -1220,7 +1242,7 @@ class DirectiveWithViewContainer {
   template: 'hello',
 })
 class ComponentWithOnPushViewContainer {
-  constructor(public viewContainerRef: ViewContainerRef) { }
+  constructor(public viewContainerRef: ViewContainerRef) {}
 }
 
 @Component({
@@ -1255,15 +1277,17 @@ class ComponentWithTemplateRef {
 /** Simple component for testing ComponentPortal. */
 @Component({template: '<p>Pizza</p> <input> <button>Close</button>'})
 class PizzaMsg {
-  constructor(public dialogRef: DialogRef<PizzaMsg>,
-              public dialogInjector: Injector,
-              public directionality: Directionality) {}
+  constructor(
+    public dialogRef: DialogRef<PizzaMsg>,
+    public dialogInjector: Injector,
+    public directionality: Directionality,
+  ) {}
 }
 
 @Component({
   template: `
     <h1>This is the title</h1>
-  `
+  `,
 })
 class ContentElementDialog {
   closeButtonAriaLabel: string;
@@ -1271,7 +1295,7 @@ class ContentElementDialog {
 
 @Component({
   template: '',
-  providers: [Dialog]
+  providers: [Dialog],
 })
 class ComponentThatProvidesMatDialog {
   constructor(public dialog: Dialog) {}
@@ -1280,7 +1304,7 @@ class ComponentThatProvidesMatDialog {
 /** Simple component for testing ComponentPortal. */
 @Component({template: ''})
 class DialogWithInjectedData {
-  constructor(@Inject(DIALOG_DATA) public data: any) { }
+  constructor(@Inject(DIALOG_DATA) public data: any) {}
 }
 
 @Component({template: '<p>Pasta</p>'})
@@ -1288,7 +1312,7 @@ class DialogWithoutFocusableElements {}
 
 @Component({
   template: `<button>I'm a button</button>`,
-  encapsulation: ViewEncapsulation.ShadowDom
+  encapsulation: ViewEncapsulation.ShadowDom,
 })
 class ShadowDomComponent {}
 
@@ -1319,4 +1343,4 @@ const TEST_DIRECTIVES = [
     DialogWithoutFocusableElements,
   ],
 })
-class DialogTestModule { }
+class DialogTestModule {}

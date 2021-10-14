@@ -14,7 +14,7 @@ describe('radio button performance benchmarks', () => {
     browser.angularAppRoot('#root');
   });
 
-  it('renders two radio buttons', async() => {
+  it('renders two radio buttons', async () => {
     await runBenchmark({
       id: 'render-two-radio-buttons',
       url: '',
@@ -24,7 +24,7 @@ describe('radio button performance benchmarks', () => {
     });
   });
 
-  it('renders ten radio buttons', async() => {
+  it('renders ten radio buttons', async () => {
     await runBenchmark({
       id: 'render-ten-radio-buttons',
       url: '',
@@ -34,13 +34,13 @@ describe('radio button performance benchmarks', () => {
     });
   });
 
-  it('changing between radio buttons', async() => {
+  it('changing between radio buttons', async () => {
     await runBenchmark({
       id: 'click-radio-button',
       url: '',
       ignoreBrowserSynchronization: true,
-      setup: async() => await $('#show-two').click(),
-      prepare: async() => await $('#btn-1').click(),
+      setup: async () => await $('#show-two').click(),
+      prepare: async () => await $('#btn-1').click(),
       work: async () => await $('#btn-2').click(),
     });
   });

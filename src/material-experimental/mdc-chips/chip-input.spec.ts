@@ -14,9 +14,8 @@ import {
   MatChipInput,
   MatChipInputEvent,
   MatChipsDefaultOptions,
-  MatChipsModule
+  MatChipsModule,
 } from './index';
-
 
 describe('MDC-based MatChipInput', () => {
   let fixture: ComponentFixture<any>;
@@ -26,32 +25,39 @@ describe('MDC-based MatChipInput', () => {
   let chipInputDirective: MatChipInput;
   let dir = 'ltr';
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [PlatformModule, MatChipsModule, MatFormFieldModule, NoopAnimationsModule],
-      declarations: [TestChipInput],
-      providers: [{
-        provide: Directionality, useFactory: () => {
-          return {
-            value: dir.toLowerCase(),
-            change: new Subject()
-          };
-        }
-      }]
-    });
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [PlatformModule, MatChipsModule, MatFormFieldModule, NoopAnimationsModule],
+        declarations: [TestChipInput],
+        providers: [
+          {
+            provide: Directionality,
+            useFactory: () => {
+              return {
+                value: dir.toLowerCase(),
+                change: new Subject(),
+              };
+            },
+          },
+        ],
+      });
 
-    TestBed.compileComponents();
-  }));
+      TestBed.compileComponents();
+    }),
+  );
 
-  beforeEach(waitForAsync(() => {
-    fixture = TestBed.createComponent(TestChipInput);
-    testChipInput = fixture.debugElement.componentInstance;
-    fixture.detectChanges();
+  beforeEach(
+    waitForAsync(() => {
+      fixture = TestBed.createComponent(TestChipInput);
+      testChipInput = fixture.debugElement.componentInstance;
+      fixture.detectChanges();
 
-    inputDebugElement = fixture.debugElement.query(By.directive(MatChipInput))!;
-    chipInputDirective = inputDebugElement.injector.get<MatChipInput>(MatChipInput);
-    inputNativeElement = inputDebugElement.nativeElement;
-  }));
+      inputDebugElement = fixture.debugElement.query(By.directive(MatChipInput))!;
+      chipInputDirective = inputDebugElement.injector.get<MatChipInput>(MatChipInput);
+      inputNativeElement = inputDebugElement.nativeElement;
+    }),
+  );
 
   describe('basic behavior', () => {
     it('emits the (chipEnd) on enter keyup', () => {
@@ -112,13 +118,15 @@ describe('MDC-based MatChipInput', () => {
       fixture.detectChanges();
 
       expect(gridElement.getAttribute('tabindex'))
-        .withContext('Expected tabIndex to be set to -1 temporarily.').toBe('-1');
+        .withContext('Expected tabIndex to be set to -1 temporarily.')
+        .toBe('-1');
 
       tick();
       fixture.detectChanges();
 
       expect(gridElement.getAttribute('tabindex'))
-        .withContext('Expected tabIndex to be reset back to 0').toBe('0');
+        .withContext('Expected tabIndex to be reset back to 0')
+        .toBe('0');
     }));
 
     it('should not allow focus to escape when tabbing backwards', fakeAsync(() => {
@@ -130,13 +138,15 @@ describe('MDC-based MatChipInput', () => {
       fixture.detectChanges();
 
       expect(gridElement.getAttribute('tabindex'))
-        .withContext('Expected tabindex to remain 0').toBe('0');
+        .withContext('Expected tabindex to remain 0')
+        .toBe('0');
 
       tick();
       fixture.detectChanges();
 
       expect(gridElement.getAttribute('tabindex'))
-        .withContext('Expected tabindex to remain 0').toBe('0');
+        .withContext('Expected tabindex to remain 0')
+        .toBe('0');
     }));
 
     it('should set input styling classes', () => {
@@ -145,7 +155,6 @@ describe('MDC-based MatChipInput', () => {
       expect(inputNativeElement.classList).toContain('mat-mdc-chip-input');
       expect(inputNativeElement.classList).toContain('mdc-text-field__input');
     });
-
   });
 
   describe('[addOnBlur]', () => {
@@ -204,15 +213,16 @@ describe('MDC-based MatChipInput', () => {
     it('emits (chipEnd) when the separator keys are configured globally', () => {
       fixture.destroy();
 
-      TestBed
-        .resetTestingModule()
+      TestBed.resetTestingModule()
         .configureTestingModule({
           imports: [MatChipsModule, MatFormFieldModule, PlatformModule, NoopAnimationsModule],
           declarations: [TestChipInput],
-          providers: [{
-            provide: MAT_CHIPS_DEFAULT_OPTIONS,
-            useValue: ({separatorKeyCodes: [COMMA]} as MatChipsDefaultOptions)
-          }]
+          providers: [
+            {
+              provide: MAT_CHIPS_DEFAULT_OPTIONS,
+              useValue: {separatorKeyCodes: [COMMA]} as MatChipsDefaultOptions,
+            },
+          ],
         })
         .compileComponents();
 
@@ -240,7 +250,6 @@ describe('MDC-based MatChipInput', () => {
       dispatchKeyboardEvent(inputNativeElement, 'keydown', ENTER, undefined, {shift: true});
       expect(testChipInput.add).not.toHaveBeenCalled();
     });
-
   });
 });
 
@@ -255,7 +264,7 @@ describe('MDC-based MatChipInput', () => {
                   [placeholder]="placeholder" />
       </mat-chip-grid>
     </mat-form-field>
-  `
+  `,
 })
 class TestChipInput {
   @ViewChild(MatChipGrid) chipGridInstance: MatChipGrid;
@@ -263,6 +272,5 @@ class TestChipInput {
   placeholder = '';
   required = false;
 
-  add(_: MatChipInputEvent) {
-  }
+  add(_: MatChipInputEvent) {}
 }

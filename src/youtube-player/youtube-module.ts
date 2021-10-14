@@ -16,5 +16,4 @@ const COMPONENTS = [YouTubePlayer];
   declarations: COMPONENTS,
   exports: COMPONENTS,
 })
-export class YouTubePlayerModule {
-}
+export class YouTubePlayerModule {}

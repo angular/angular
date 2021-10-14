@@ -12,11 +12,7 @@ import {RouterModule} from '@angular/router';
 import {TooltipDemo} from './tooltip-demo';
 
 @NgModule({
-  imports: [
-    TooltipExamplesModule,
-    RouterModule.forChild([{path: '', component: TooltipDemo}]),
-  ],
+  imports: [TooltipExamplesModule, RouterModule.forChild([{path: '', component: TooltipDemo}])],
   declarations: [TooltipDemo],
 })
-export class TooltipDemoModule {
-}
+export class TooltipDemoModule {}

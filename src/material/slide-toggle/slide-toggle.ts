@@ -39,7 +39,7 @@ import {
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {
   MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS,
-  MatSlideToggleDefaultOptions
+  MatSlideToggleDefaultOptions,
 } from './slide-toggle-config';
 
 // Increasing integer for generating unique ids for slide-toggle components.
@@ -49,7 +49,7 @@ let nextUniqueId = 0;
 export const MAT_SLIDE_TOGGLE_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => MatSlideToggle),
-  multi: true
+  multi: true,
 };
 
 /** Change event object emitted by a MatSlideToggle. */
@@ -58,15 +58,23 @@ export class MatSlideToggleChange {
     /** The source MatSlideToggle of the event. */
     public source: MatSlideToggle,
     /** The new `checked` value of the MatSlideToggle. */
-    public checked: boolean) { }
+    public checked: boolean,
+  ) {}
 }
 
 // Boilerplate for applying mixins to MatSlideToggle.
 /** @docs-private */
-const _MatSlideToggleBase =
-  mixinTabIndex(mixinColor(mixinDisableRipple(mixinDisabled(class {
-    constructor(public _elementRef: ElementRef) {}
-  }))));
+const _MatSlideToggleBase = mixinTabIndex(
+  mixinColor(
+    mixinDisableRipple(
+      mixinDisabled(
+        class {
+          constructor(public _elementRef: ElementRef) {}
+        },
+      ),
+    ),
+  ),
+);
 
 /** Represents a slidable "switch" toggle that can be moved between on and off. */
 @Component({
@@ -91,11 +99,17 @@ const _MatSlideToggleBase =
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatSlideToggle extends _MatSlideToggleBase implements OnDestroy, AfterContentInit,
-                                                                   ControlValueAccessor,
-                                                                   CanDisable, CanColor,
-                                                                   HasTabIndex,
-                                                                   CanDisableRipple {
+export class MatSlideToggle
+  extends _MatSlideToggleBase
+  implements
+    OnDestroy,
+    AfterContentInit,
+    ControlValueAccessor,
+    CanDisable,
+    CanColor,
+    HasTabIndex,
+    CanDisableRipple
+{
   private _onChange = (_: any) => {};
   private _onTouched = () => {};
 
@@ -132,19 +146,25 @@ export class MatSlideToggle extends _MatSlideToggleBase implements OnDestroy, Af
 
   /** Whether the slide-toggle is required. */
   @Input()
-  get required(): boolean { return this._required; }
-  set required(value) { this._required = coerceBooleanProperty(value); }
+  get required(): boolean {
+    return this._required;
+  }
+  set required(value) {
+    this._required = coerceBooleanProperty(value);
+  }
 
   /** Whether the slide-toggle element is checked or not. */
   @Input()
-  get checked(): boolean { return this._checked; }
+  get checked(): boolean {
+    return this._checked;
+  }
   set checked(value) {
     this._checked = coerceBooleanProperty(value);
     this._changeDetectorRef.markForCheck();
   }
   /** An event will be dispatched each time the slide-toggle changes its value. */
   @Output() readonly change: EventEmitter<MatSlideToggleChange> =
-      new EventEmitter<MatSlideToggleChange>();
+    new EventEmitter<MatSlideToggleChange>();
 
   /**
    * An event will be dispatched each time the slide-toggle input is toggled.
@@ -154,18 +174,22 @@ export class MatSlideToggle extends _MatSlideToggleBase implements OnDestroy, Af
   @Output() readonly toggleChange: EventEmitter<void> = new EventEmitter<void>();
 
   /** Returns the unique id for the visual hidden input. */
-  get inputId(): string { return `${this.id || this._uniqueId}-input`; }
+  get inputId(): string {
+    return `${this.id || this._uniqueId}-input`;
+  }
 
   /** Reference to the underlying input element. */
   @ViewChild('input') _inputElement: ElementRef<HTMLInputElement>;
 
-  constructor(elementRef: ElementRef,
-              private _focusMonitor: FocusMonitor,
-              private _changeDetectorRef: ChangeDetectorRef,
-              @Attribute('tabindex') tabIndex: string,
-              @Inject(MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS)
-                  public defaults: MatSlideToggleDefaultOptions,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
+  constructor(
+    elementRef: ElementRef,
+    private _focusMonitor: FocusMonitor,
+    private _changeDetectorRef: ChangeDetectorRef,
+    @Attribute('tabindex') tabIndex: string,
+    @Inject(MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS)
+    public defaults: MatSlideToggleDefaultOptions,
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
+  ) {
     super(elementRef);
     this.tabIndex = parseInt(tabIndex) || 0;
     this.color = this.defaultColor = defaults.color || 'accent';
@@ -173,24 +197,22 @@ export class MatSlideToggle extends _MatSlideToggleBase implements OnDestroy, Af
   }
 
   ngAfterContentInit() {
-    this._focusMonitor
-      .monitor(this._elementRef, true)
-      .subscribe(focusOrigin => {
-        // Only forward focus manually when it was received programmatically or through the
-        // keyboard. We should not do this for mouse/touch focus for two reasons:
-        // 1. It can prevent clicks from landing in Chrome (see #18269).
-        // 2. They're already handled by the wrapping `label` element.
-        if (focusOrigin === 'keyboard' || focusOrigin === 'program') {
-          this._inputElement.nativeElement.focus();
-        } else if (!focusOrigin) {
-          // When a focused element becomes disabled, the browser *immediately* fires a blur event.
-          // Angular does not expect events to be raised during change detection, so any state
-          // change (such as a form control's 'ng-touched') will cause a changed-after-checked
-          // error. See https://github.com/angular/angular/issues/17793. To work around this,
-          // we defer telling the form control it has been touched until the next tick.
-          Promise.resolve().then(() => this._onTouched());
-        }
-      });
+    this._focusMonitor.monitor(this._elementRef, true).subscribe(focusOrigin => {
+      // Only forward focus manually when it was received programmatically or through the
+      // keyboard. We should not do this for mouse/touch focus for two reasons:
+      // 1. It can prevent clicks from landing in Chrome (see #18269).
+      // 2. They're already handled by the wrapping `label` element.
+      if (focusOrigin === 'keyboard' || focusOrigin === 'program') {
+        this._inputElement.nativeElement.focus();
+      } else if (!focusOrigin) {
+        // When a focused element becomes disabled, the browser *immediately* fires a blur event.
+        // Angular does not expect events to be raised during change detection, so any state
+        // change (such as a form control's 'ng-touched') will cause a changed-after-checked
+        // error. See https://github.com/angular/angular/issues/17793. To work around this,
+        // we defer telling the form control it has been touched until the next tick.
+        Promise.resolve().then(() => this._onTouched());
+      }
+    });
   }
 
   ngOnDestroy() {

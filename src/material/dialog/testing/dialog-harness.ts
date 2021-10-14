@@ -14,20 +14,20 @@ import {DialogHarnessFilters} from './dialog-harness-filters';
 export const enum MatDialogSection {
   TITLE = '.mat-dialog-title',
   CONTENT = '.mat-dialog-content',
-  ACTIONS = '.mat-dialog-actions'
+  ACTIONS = '.mat-dialog-actions',
 }
 
 /** Base class for the `MatDialogHarness` implementation. */
-export class _MatDialogHarnessBase extends
-    // @breaking-change 14.0.0 change generic type to MatDialogSection.
-    ContentContainerComponentHarness<MatDialogSection | string> {
-
+export class _MatDialogHarnessBase
+  // @breaking-change 14.0.0 change generic type to MatDialogSection.
+  extends ContentContainerComponentHarness<MatDialogSection | string>
+{
   protected _title = this.locatorForOptional(MatDialogSection.TITLE);
   protected _content = this.locatorForOptional(MatDialogSection.CONTENT);
   protected _actions = this.locatorForOptional(MatDialogSection.ACTIONS);
 
   /** Gets the id of the dialog. */
-  async getId(): Promise<string|null> {
+  async getId(): Promise<string | null> {
     const id = await (await this.host()).getAttribute('id');
     // In case no id has been specified, the "id" property always returns
     // an empty string. To make this method more explicit, we return null.
@@ -35,22 +35,22 @@ export class _MatDialogHarnessBase extends
   }
 
   /** Gets the role of the dialog. */
-  async getRole(): Promise<DialogRole|null> {
-    return (await this.host()).getAttribute('role') as Promise<DialogRole|null>;
+  async getRole(): Promise<DialogRole | null> {
+    return (await this.host()).getAttribute('role') as Promise<DialogRole | null>;
   }
 
   /** Gets the value of the dialog's "aria-label" attribute. */
-  async getAriaLabel(): Promise<string|null> {
+  async getAriaLabel(): Promise<string | null> {
     return (await this.host()).getAttribute('aria-label');
   }
 
   /** Gets the value of the dialog's "aria-labelledby" attribute. */
-  async getAriaLabelledby(): Promise<string|null> {
+  async getAriaLabelledby(): Promise<string | null> {
     return (await this.host()).getAttribute('aria-labelledby');
   }
 
   /** Gets the value of the dialog's "aria-describedby" attribute. */
-  async getAriaDescribedby(): Promise<string|null> {
+  async getAriaDescribedby(): Promise<string | null> {
     return (await this.host()).getAttribute('aria-describedby');
   }
 

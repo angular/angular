@@ -6,20 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  Directive,
-  forwardRef,
-  Provider,
-} from '@angular/core';
-import {
-  CheckboxRequiredValidator,
-  NG_VALIDATORS,
-} from '@angular/forms';
+import {Directive, forwardRef, Provider} from '@angular/core';
+import {CheckboxRequiredValidator, NG_VALIDATORS} from '@angular/forms';
 
 export const MAT_CHECKBOX_REQUIRED_VALIDATOR: Provider = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => MatCheckboxRequiredValidator),
-  multi: true
+  multi: true,
 };
 
 /**

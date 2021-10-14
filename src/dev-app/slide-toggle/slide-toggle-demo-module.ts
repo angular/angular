@@ -22,5 +22,4 @@ import {SlideToggleDemo} from './slide-toggle-demo';
   ],
   declarations: [SlideToggleDemo],
 })
-export class SlideToggleDemoModule {
-}
+export class SlideToggleDemoModule {}

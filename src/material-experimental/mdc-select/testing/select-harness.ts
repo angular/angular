@@ -16,11 +16,14 @@ import {
 } from '@angular/material-experimental/mdc-core/testing';
 import {SelectHarnessFilters} from './select-harness-filters';
 
-
 /** Harness for interacting with an MDC-based mat-select in tests. */
-export class MatSelectHarness extends  _MatSelectHarnessBase<
-  typeof MatOptionHarness, MatOptionHarness, OptionHarnessFilters,
-  typeof MatOptgroupHarness, MatOptgroupHarness, OptgroupHarnessFilters
+export class MatSelectHarness extends _MatSelectHarnessBase<
+  typeof MatOptionHarness,
+  MatOptionHarness,
+  OptionHarnessFilters,
+  typeof MatOptgroupHarness,
+  MatOptgroupHarness,
+  OptgroupHarnessFilters
 > {
   static hostSelector = '.mat-mdc-select';
   protected _prefix = 'mat-mdc';

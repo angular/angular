@@ -19,7 +19,6 @@ import {
 import {CanStick, CanStickCtor, mixinHasStickyInput} from './can-stick';
 import {CDK_TABLE} from './tokens';
 
-
 /** Base interface for a cell definition. Captures a column's cell template definition. */
 export interface CellDef {
   template: TemplateRef<any>;
@@ -55,8 +54,8 @@ export class CdkFooterCellDef implements CellDef {
 // Boilerplate for applying mixins to CdkColumnDef.
 /** @docs-private */
 class CdkColumnDefBase {}
-const _CdkColumnDefBase: CanStickCtor&typeof CdkColumnDefBase =
-    mixinHasStickyInput(CdkColumnDefBase);
+const _CdkColumnDefBase: CanStickCtor & typeof CdkColumnDefBase =
+  mixinHasStickyInput(CdkColumnDefBase);
 
 /**
  * Column definition for the CDK table.
@@ -70,8 +69,12 @@ const _CdkColumnDefBase: CanStickCtor&typeof CdkColumnDefBase =
 export class CdkColumnDef extends _CdkColumnDefBase implements CanStick {
   /** Unique name for this column. */
   @Input('cdkColumnDef')
-  get name(): string { return this._name; }
-  set name(name: string) { this._setNameInput(name); }
+  get name(): string {
+    return this._name;
+  }
+  set name(name: string) {
+    this._setNameInput(name);
+  }
   protected _name: string;
 
   /**
@@ -138,7 +141,7 @@ export class CdkColumnDef extends _CdkColumnDefBase implements CanStick {
     // trigger with an empty string and should not overwrite the programmatically set value.
     if (value) {
       this._name = value;
-      this.cssClassFriendlyName = value.replace(/[^a-z0-9_-]/ig, '-');
+      this.cssClassFriendlyName = value.replace(/[^a-z0-9_-]/gi, '-');
       this._updateColumnCssClassName();
     }
   }
@@ -184,9 +187,8 @@ export class CdkFooterCell extends BaseCdkCell {
   constructor(columnDef: CdkColumnDef, elementRef: ElementRef) {
     super(columnDef, elementRef);
     if (columnDef._table?._elementRef.nativeElement.nodeType === 1) {
-      const tableRole = columnDef._table._elementRef.nativeElement
-        .getAttribute('role');
-      const role = (tableRole === 'grid' || tableRole === 'treegrid') ? 'gridcell' : 'cell';
+      const tableRole = columnDef._table._elementRef.nativeElement.getAttribute('role');
+      const role = tableRole === 'grid' || tableRole === 'treegrid' ? 'gridcell' : 'cell';
       elementRef.nativeElement.setAttribute('role', role);
     }
   }
@@ -203,9 +205,8 @@ export class CdkCell extends BaseCdkCell {
   constructor(columnDef: CdkColumnDef, elementRef: ElementRef) {
     super(columnDef, elementRef);
     if (columnDef._table?._elementRef.nativeElement.nodeType === 1) {
-      const tableRole = columnDef._table._elementRef.nativeElement
-        .getAttribute('role');
-      const role = (tableRole === 'grid' || tableRole === 'treegrid') ? 'gridcell' : 'cell';
+      const tableRole = columnDef._table._elementRef.nativeElement.getAttribute('role');
+      const role = tableRole === 'grid' || tableRole === 'treegrid' ? 'gridcell' : 'cell';
       elementRef.nativeElement.setAttribute('role', role);
     }
   }

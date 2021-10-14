@@ -25,10 +25,11 @@ export class FocusEscapeNotifier extends FocusTrap {
   private readonly _escapeSubject = new Subject<FocusEscapeNotifierDirection>();
 
   constructor(
-      element: HTMLElement,
-      checker: InteractivityChecker,
-      ngZone: NgZone,
-      document: Document) {
+    element: HTMLElement,
+    checker: InteractivityChecker,
+    ngZone: NgZone,
+    document: Document,
+  ) {
     super(element, checker, ngZone, document, true /* deferAnchors */);
 
     // The focus trap adds "anchors" at the beginning and end of a trapped region that redirect
@@ -56,10 +57,10 @@ export class FocusEscapeNotifierFactory {
   private _document: Document;
 
   constructor(
-      private _checker: InteractivityChecker,
-      private _ngZone: NgZone,
-      @Inject(DOCUMENT) _document: any) {
-
+    private _checker: InteractivityChecker,
+    private _ngZone: NgZone,
+    @Inject(DOCUMENT) _document: any,
+  ) {
     this._document = _document;
   }
 

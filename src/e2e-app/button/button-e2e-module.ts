@@ -12,11 +12,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {ButtonE2E} from './button-e2e';
 
 @NgModule({
-  imports: [
-    MatButtonModule,
-    MatIconModule,
-  ],
+  imports: [MatButtonModule, MatIconModule],
   declarations: [ButtonE2E],
 })
-export class ButtonE2eModule {
-}
+export class ButtonE2eModule {}

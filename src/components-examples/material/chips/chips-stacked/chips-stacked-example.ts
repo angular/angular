@@ -19,6 +19,6 @@ export class ChipsStackedExample {
     {name: 'none', color: undefined},
     {name: 'Primary', color: 'primary'},
     {name: 'Accent', color: 'accent'},
-    {name: 'Warn', color: 'warn'}
+    {name: 'Warn', color: 'warn'},
   ];
 }

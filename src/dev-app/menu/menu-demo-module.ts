@@ -28,5 +28,4 @@ import {MenuDemo} from './menu-demo';
   ],
   declarations: [MenuDemo],
 })
-export class MenuDemoModule {
-}
+export class MenuDemoModule {}

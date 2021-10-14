@@ -63,7 +63,7 @@ import {MatBottomSheetConfig} from './bottom-sheet-config';
     '[attr.aria-label]': 'bottomSheetConfig?.ariaLabel',
     '[@state]': '_animationState',
     '(@state.start)': '_onAnimationStart($event)',
-    '(@state.done)': '_onAnimationDone($event)'
+    '(@state.done)': '_onAnimationDone($event)',
   },
 })
 export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestroy {
@@ -99,19 +99,26 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
     breakpointObserver: BreakpointObserver,
     @Optional() @Inject(DOCUMENT) document: any,
     /** The bottom sheet configuration. */
-    public bottomSheetConfig: MatBottomSheetConfig) {
+    public bottomSheetConfig: MatBottomSheetConfig,
+  ) {
     super();
 
     this._document = document;
     this._breakpointSubscription = breakpointObserver
       .observe([Breakpoints.Medium, Breakpoints.Large, Breakpoints.XLarge])
       .subscribe(() => {
-        this._toggleClass('mat-bottom-sheet-container-medium',
-            breakpointObserver.isMatched(Breakpoints.Medium));
-        this._toggleClass('mat-bottom-sheet-container-large',
-            breakpointObserver.isMatched(Breakpoints.Large));
-        this._toggleClass('mat-bottom-sheet-container-xlarge',
-            breakpointObserver.isMatched(Breakpoints.XLarge));
+        this._toggleClass(
+          'mat-bottom-sheet-container-medium',
+          breakpointObserver.isMatched(Breakpoints.Medium),
+        );
+        this._toggleClass(
+          'mat-bottom-sheet-container-large',
+          breakpointObserver.isMatched(Breakpoints.Large),
+        );
+        this._toggleClass(
+          'mat-bottom-sheet-container-xlarge',
+          breakpointObserver.isMatched(Breakpoints.XLarge),
+        );
       });
   }
 
@@ -141,7 +148,7 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
     this._setPanelClass();
     this._savePreviouslyFocusedElement();
     return this._portalOutlet.attachDomPortal(portal);
-  }
+  };
 
   /** Begin animation of bottom sheet entrance into view. */
   enter(): void {
@@ -215,8 +222,9 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
    * @param selector The CSS selector for the element to set focus to.
    */
   private _focusByCssSelector(selector: string, options?: FocusOptions) {
-    let elementToFocus =
-      this._elementRef.nativeElement.querySelector(selector) as HTMLElement | null;
+    let elementToFocus = this._elementRef.nativeElement.querySelector(
+      selector,
+    ) as HTMLElement | null;
     if (elementToFocus) {
       this._forceFocus(elementToFocus, options);
     }
@@ -277,8 +285,12 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
       // non-focusable element like the backdrop was clicked) before moving it. It's possible that
       // the consumer moved it themselves before the animation was done, in which case we shouldn't
       // do anything.
-      if (!activeElement || activeElement === this._document.body || activeElement === element ||
-        element.contains(activeElement)) {
+      if (
+        !activeElement ||
+        activeElement === this._document.body ||
+        activeElement === element ||
+        element.contains(activeElement)
+      ) {
         toFocus.focus();
       }
     }

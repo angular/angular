@@ -40,7 +40,7 @@ export interface WebDriverHarnessEnvironmentOptions {
 /** The default environment options. */
 const defaultEnvironmentOptions: WebDriverHarnessEnvironmentOptions = {
   queryFn: async (selector: string, root: () => webdriver.WebElement) =>
-      root().findElements(webdriver.By.css(selector))
+    root().findElements(webdriver.By.css(selector)),
 };
 
 /**
@@ -48,8 +48,9 @@ const defaultEnvironmentOptions: WebDriverHarnessEnvironmentOptions = {
  * and invokes the specified `callback` when the application is stable (no more pending tasks).
  */
 function whenStable(callback: (didWork: boolean[]) => void): void {
-  Promise.all(window.frameworkStabilizers.map(stabilizer => new Promise(stabilizer)))
-      .then(callback);
+  Promise.all(window.frameworkStabilizers.map(stabilizer => new Promise(stabilizer))).then(
+    callback,
+  );
 }
 
 /**
@@ -67,13 +68,16 @@ export async function waitForAngularReady(wd: webdriver.WebDriver) {
 }
 
 /** A `HarnessEnvironment` implementation for WebDriver. */
-export class SeleniumWebDriverHarnessEnvironment extends
-    HarnessEnvironment<() => webdriver.WebElement> {
+export class SeleniumWebDriverHarnessEnvironment extends HarnessEnvironment<
+  () => webdriver.WebElement
+> {
   /** The options for this environment. */
   private _options: WebDriverHarnessEnvironmentOptions;
 
   protected constructor(
-      rawRootElement: () => webdriver.WebElement, options?: WebDriverHarnessEnvironmentOptions) {
+    rawRootElement: () => webdriver.WebElement,
+    options?: WebDriverHarnessEnvironmentOptions,
+  ) {
     super(rawRootElement);
     this._options = {...defaultEnvironmentOptions, ...options};
   }
@@ -87,10 +91,14 @@ export class SeleniumWebDriverHarnessEnvironment extends
   }
 
   /** Creates a `HarnessLoader` rooted at the document root. */
-  static loader(driver: webdriver.WebDriver, options?: WebDriverHarnessEnvironmentOptions):
-      HarnessLoader {
+  static loader(
+    driver: webdriver.WebDriver,
+    options?: WebDriverHarnessEnvironmentOptions,
+  ): HarnessLoader {
     return new SeleniumWebDriverHarnessEnvironment(
-        () => driver.findElement(webdriver.By.css('body')), options);
+      () => driver.findElement(webdriver.By.css('body')),
+      options,
+    );
   }
 
   /**
@@ -119,8 +127,9 @@ export class SeleniumWebDriverHarnessEnvironment extends
   }
 
   /** Creates a `HarnessLoader` rooted at the given raw element. */
-  protected createEnvironment(element: () => webdriver.WebElement):
-      HarnessEnvironment<() => webdriver.WebElement> {
+  protected createEnvironment(
+    element: () => webdriver.WebElement,
+  ): HarnessEnvironment<() => webdriver.WebElement> {
     return new SeleniumWebDriverHarnessEnvironment(element, this._options);
   }
 

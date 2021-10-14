@@ -17,10 +17,12 @@ describe('ViewportRuler', () => {
   veryLargeElement.style.width = '6000px';
   veryLargeElement.style.height = '6000px';
 
-  beforeEach(() => TestBed.configureTestingModule({
-    imports: [ScrollingModule],
-    providers: [ViewportRuler]
-  }));
+  beforeEach(() =>
+    TestBed.configureTestingModule({
+      imports: [ScrollingModule],
+      providers: [ViewportRuler],
+    }),
+  );
 
   beforeEach(inject([ViewportRuler, NgZone], (v: ViewportRuler, n: NgZone) => {
     viewportRuler = v;
@@ -153,6 +155,5 @@ describe('ViewportRuler', () => {
       expect(spy).toHaveBeenCalledWith(false);
       subscription!.unsubscribe();
     });
-
   });
 });

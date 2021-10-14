@@ -38,9 +38,8 @@ describe('DragDrop', () => {
   });
 });
 
-
 @Component({
-  template: '<div></div>'
+  template: '<div></div>',
 })
 class TestComponent {
   constructor(public elementRef: ElementRef<HTMLElement>) {}

@@ -1,8 +1,4 @@
-import {
-  dispatchKeyboardEvent,
-  createKeyboardEvent,
-  dispatchEvent,
-} from '../../cdk/testing/private';
+import {dispatchKeyboardEvent, createKeyboardEvent, dispatchEvent} from '../../cdk/testing/private';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
@@ -15,25 +11,27 @@ describe('MDC-based Chip Remove', () => {
   let chipDebugElement: DebugElement;
   let chipNativeElement: HTMLElement;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [MatChipsModule],
-      declarations: [
-        TestChip
-      ]
-    });
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [MatChipsModule],
+        declarations: [TestChip],
+      });
 
-    TestBed.compileComponents();
-  }));
+      TestBed.compileComponents();
+    }),
+  );
 
-  beforeEach(waitForAsync(() => {
-    fixture = TestBed.createComponent(TestChip);
-    testChip = fixture.debugElement.componentInstance;
-    fixture.detectChanges();
+  beforeEach(
+    waitForAsync(() => {
+      fixture = TestBed.createComponent(TestChip);
+      testChip = fixture.debugElement.componentInstance;
+      fixture.detectChanges();
 
-    chipDebugElement = fixture.debugElement.query(By.directive(MatChip))!;
-    chipNativeElement = chipDebugElement.nativeElement;
-  }));
+      chipDebugElement = fixture.debugElement.query(By.directive(MatChip))!;
+      chipNativeElement = chipDebugElement.nativeElement;
+    }),
+  );
 
   describe('basic behavior', () => {
     it('should apply a CSS class to the remove icon', () => {
@@ -137,7 +135,7 @@ describe('MDC-based Chip Remove', () => {
       expect(event.defaultPrevented).toBe(false);
     });
 
-    it ('should not remove on any key press', () => {
+    it('should not remove on any key press', () => {
       let buttonElement = chipNativeElement.querySelector('button')!;
 
       testChip.removable = true;
@@ -167,7 +165,7 @@ describe('MDC-based Chip Remove', () => {
       <button matChipRemove></button>
       <span matChipRemove></span>
     </mat-chip>
-  `
+  `,
 })
 class TestChip {
   removable: boolean;
@@ -175,4 +173,3 @@ class TestChip {
 
   didRemove() {}
 }
-

@@ -10,7 +10,6 @@ import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
 import {MatIcon} from './icon';
 
-
 @NgModule({
   imports: [MatCommonModule],
   exports: [MatIcon, MatCommonModule],

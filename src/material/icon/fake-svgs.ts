@@ -58,5 +58,5 @@ export const FAKE_SVGS = {
         <svg id="left-arrow" name="left-arrow"><path name="left"></path></svg>
         <svg id="right-arrow" name="right-arrow"><path name="right"></path></svg>
       </defs>
-    </svg>  `
+    </svg>  `,
 };

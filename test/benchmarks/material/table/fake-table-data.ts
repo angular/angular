@@ -11,11 +11,15 @@ function numToChar(num: number): string {
 }
 
 function generateTableColumnNames(numColumns: number) {
-  return Array(numColumns).fill(null).map((_, index) => numToChar(index));
+  return Array(numColumns)
+    .fill(null)
+    .map((_, index) => numToChar(index));
 }
 
 function generateTableData(numRows: number, cols: string[]): Record<string, string>[] {
-  return Array(numRows).fill(null).map((_, index) => generateTableDataRow(cols, `${index + 1}`));
+  return Array(numRows)
+    .fill(null)
+    .map((_, index) => generateTableDataRow(cols, `${index + 1}`));
 }
 
 function generateTableDataRow(cols: string[], value: string): Record<string, string> {

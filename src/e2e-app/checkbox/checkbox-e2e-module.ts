@@ -14,5 +14,4 @@ import {SimpleCheckboxes} from './checkbox-e2e';
   imports: [MatCheckboxModule],
   declarations: [SimpleCheckboxes],
 })
-export class CheckboxE2eModule {
-}
+export class CheckboxE2eModule {}

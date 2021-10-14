@@ -12,7 +12,7 @@ const hooks = new Set([
   'ngAfterViewInit',
   'ngAfterViewChecked',
   'ngOnDestroy',
-  'ngDoBootstrap'
+  'ngDoBootstrap',
 ]);
 
 /** Rule that prevents direct calls of the Angular lifecycle hooks */
@@ -36,8 +36,12 @@ class Walker extends Lint.RuleWalker {
   override visitPropertyAccessExpression(node: ts.PropertyAccessExpression) {
     // Flag any accesses of the lifecycle hooks that are
     // inside function call and don't match the allowed criteria.
-    if (this._enabled && ts.isCallExpression(node.parent) && hooks.has(node.name.text) &&
-        !this._isAllowedAccessor(node)) {
+    if (
+      this._enabled &&
+      ts.isCallExpression(node.parent) &&
+      hooks.has(node.name.text) &&
+      !this._isAllowedAccessor(node)
+    ) {
       this.addFailureAtNode(node, 'Manually invoking Angular lifecycle hooks is not allowed.');
     }
 

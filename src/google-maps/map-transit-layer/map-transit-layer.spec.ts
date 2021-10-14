@@ -13,12 +13,14 @@ import {
 describe('MapTransitLayer', () => {
   let mapSpy: jasmine.SpyObj<google.maps.Map>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [GoogleMapsModule],
-      declarations: [TestApp],
-    });
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [GoogleMapsModule],
+        declarations: [TestApp],
+      });
+    }),
+  );
 
   beforeEach(() => {
     TestBed.compileComponents();
@@ -34,7 +36,7 @@ describe('MapTransitLayer', () => {
   it('initializes a Google Map Transit Layer', () => {
     const transitLayerSpy = createTransitLayerSpy();
     const transitLayerConstructorSpy =
-        createTransitLayerConstructorSpy(transitLayerSpy).and.callThrough();
+      createTransitLayerConstructorSpy(transitLayerSpy).and.callThrough();
 
     const fixture = TestBed.createComponent(TestApp);
     fixture.detectChanges();
@@ -50,5 +52,4 @@ describe('MapTransitLayer', () => {
                 <map-transit-layer></map-transit-layer>
             </google-map>`,
 })
-class TestApp {
-}
+class TestApp {}

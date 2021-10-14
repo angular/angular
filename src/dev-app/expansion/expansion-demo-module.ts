@@ -36,5 +36,4 @@ import {ExpansionDemo} from './expansion-demo';
   ],
   declarations: [ExpansionDemo],
 })
-export class ExpansionDemoModule {
-}
+export class ExpansionDemoModule {}

@@ -14,9 +14,8 @@ import {
   MatTreeFlatDataSource,
   MatTreeFlattener,
   MatTreeModule,
-  MatTreeNestedDataSource
+  MatTreeNestedDataSource,
 } from './index';
-
 
 describe('MatTree', () => {
   /** Represents an indent for expectNestedTreeToMatch */
@@ -36,7 +35,6 @@ describe('MatTree', () => {
     describe('should initialize', () => {
       let fixture: ComponentFixture<SimpleMatTreeApp>;
       let component: SimpleMatTreeApp;
-
 
       beforeEach(() => {
         configureMatTreeTestingModule([SimpleMatTreeApp]);
@@ -80,35 +78,45 @@ describe('MatTree', () => {
         const data = underlyingDataSource.data;
         underlyingDataSource.addChild(data[2]);
         fixture.detectChanges();
-        expect(getNodes(treeElement).every(node => {
-          return node.getAttribute('aria-expanded') === 'false';
-        })).toBe(true);
+        expect(
+          getNodes(treeElement).every(node => {
+            return node.getAttribute('aria-expanded') === 'false';
+          }),
+        ).toBe(true);
 
         component.treeControl.expandAll();
         fixture.detectChanges();
 
-        expect(getNodes(treeElement).every(node => {
-          return node.getAttribute('aria-expanded') === 'true';
-        })).toBe(true);
+        expect(
+          getNodes(treeElement).every(node => {
+            return node.getAttribute('aria-expanded') === 'true';
+          }),
+        ).toBe(true);
       });
 
       it('with the right data', () => {
         expect(underlyingDataSource.data.length).toBe(3);
 
         const data = underlyingDataSource.data;
-        expectFlatTreeToMatch(treeElement, 28,
-            [`topping_1 - cheese_1 + base_1`],
-            [`topping_2 - cheese_2 + base_2`],
-            [`topping_3 - cheese_3 + base_3`]);
+        expectFlatTreeToMatch(
+          treeElement,
+          28,
+          [`topping_1 - cheese_1 + base_1`],
+          [`topping_2 - cheese_2 + base_2`],
+          [`topping_3 - cheese_3 + base_3`],
+        );
 
         underlyingDataSource.addChild(data[2]);
         fixture.detectChanges();
 
-        expectFlatTreeToMatch(treeElement, 28,
-            [`topping_1 - cheese_1 + base_1`],
-            [`topping_2 - cheese_2 + base_2`],
-            [`topping_3 - cheese_3 + base_3`],
-            [`_, topping_4 - cheese_4 + base_4`]);
+        expectFlatTreeToMatch(
+          treeElement,
+          28,
+          [`topping_1 - cheese_1 + base_1`],
+          [`topping_2 - cheese_2 + base_2`],
+          [`topping_3 - cheese_3 + base_3`],
+          [`_, topping_4 - cheese_4 + base_4`],
+        );
       });
     });
 
@@ -131,7 +139,8 @@ describe('MatTree', () => {
         expect(underlyingDataSource.data.length).toBe(3);
 
         expect(component.treeControl.expansionModel.selected.length)
-          .withContext(`Expect no expanded node`).toBe(0);
+          .withContext(`Expect no expanded node`)
+          .toBe(0);
 
         component.toggleRecursively = false;
         const data = underlyingDataSource.data;
@@ -139,83 +148,107 @@ describe('MatTree', () => {
         underlyingDataSource.addChild(child);
         fixture.detectChanges();
 
-        expectFlatTreeToMatch(treeElement, 40,
-            [`topping_1 - cheese_1 + base_1`],
-            [`topping_2 - cheese_2 + base_2`],
-            [`topping_3 - cheese_3 + base_3`]);
-
+        expectFlatTreeToMatch(
+          treeElement,
+          40,
+          [`topping_1 - cheese_1 + base_1`],
+          [`topping_2 - cheese_2 + base_2`],
+          [`topping_3 - cheese_3 + base_3`],
+        );
 
         (getNodes(treeElement)[2] as HTMLElement).click();
         fixture.detectChanges();
 
         expect(component.treeControl.expansionModel.selected.length)
-          .withContext(`Expect node expanded one level`).toBe(1);
-        expectFlatTreeToMatch(treeElement, 40,
-            [`topping_1 - cheese_1 + base_1`],
-            [`topping_2 - cheese_2 + base_2`],
-            [`topping_3 - cheese_3 + base_3`],
-            [_, `topping_4 - cheese_4 + base_4`]);
+          .withContext(`Expect node expanded one level`)
+          .toBe(1);
+        expectFlatTreeToMatch(
+          treeElement,
+          40,
+          [`topping_1 - cheese_1 + base_1`],
+          [`topping_2 - cheese_2 + base_2`],
+          [`topping_3 - cheese_3 + base_3`],
+          [_, `topping_4 - cheese_4 + base_4`],
+        );
 
         (getNodes(treeElement)[3] as HTMLElement).click();
         fixture.detectChanges();
 
         expect(component.treeControl.expansionModel.selected.length)
-          .withContext(`Expect node expanded`).toBe(2);
-        expectFlatTreeToMatch(treeElement, 40,
-            [`topping_1 - cheese_1 + base_1`],
-            [`topping_2 - cheese_2 + base_2`],
-            [`topping_3 - cheese_3 + base_3`],
-            [_, `topping_4 - cheese_4 + base_4`],
-            [_, _, `topping_5 - cheese_5 + base_5`]);
+          .withContext(`Expect node expanded`)
+          .toBe(2);
+        expectFlatTreeToMatch(
+          treeElement,
+          40,
+          [`topping_1 - cheese_1 + base_1`],
+          [`topping_2 - cheese_2 + base_2`],
+          [`topping_3 - cheese_3 + base_3`],
+          [_, `topping_4 - cheese_4 + base_4`],
+          [_, _, `topping_5 - cheese_5 + base_5`],
+        );
 
         (getNodes(treeElement)[2] as HTMLElement).click();
         fixture.detectChanges();
 
-        expectFlatTreeToMatch(treeElement, 40,
-            [`topping_1 - cheese_1 + base_1`],
-            [`topping_2 - cheese_2 + base_2`],
-            [`topping_3 - cheese_3 + base_3`]);
+        expectFlatTreeToMatch(
+          treeElement,
+          40,
+          [`topping_1 - cheese_1 + base_1`],
+          [`topping_2 - cheese_2 + base_2`],
+          [`topping_3 - cheese_3 + base_3`],
+        );
       });
 
       it('should expand/collapse the node recursively', () => {
         expect(underlyingDataSource.data.length).toBe(3);
 
         expect(component.treeControl.expansionModel.selected.length)
-          .withContext(`Expect no expanded node`).toBe(0);
+          .withContext(`Expect no expanded node`)
+          .toBe(0);
 
         const data = underlyingDataSource.data;
         const child = underlyingDataSource.addChild(data[2]);
         underlyingDataSource.addChild(child);
         fixture.detectChanges();
 
-        expectFlatTreeToMatch(treeElement, 40,
-            [`topping_1 - cheese_1 + base_1`],
-            [`topping_2 - cheese_2 + base_2`],
-            [`topping_3 - cheese_3 + base_3`]);
-
-        (getNodes(treeElement)[2] as HTMLElement).click();
-        fixture.detectChanges();
-
-        expect(component.treeControl.expansionModel.selected.length)
-          .withContext(`Expect nodes expanded`).toBe(3);
-        expectFlatTreeToMatch(treeElement, 40,
-            [`topping_1 - cheese_1 + base_1`],
-            [`topping_2 - cheese_2 + base_2`],
-            [`topping_3 - cheese_3 + base_3`],
-            [_, `topping_4 - cheese_4 + base_4`],
-            [_, _, `topping_5 - cheese_5 + base_5`]);
-
-
-        (getNodes(treeElement)[2] as HTMLElement).click();
-        fixture.detectChanges();
-
-        expect(component.treeControl.expansionModel.selected.length)
-          .withContext(`Expect node collapsed`).toBe(0);
-
-        expectFlatTreeToMatch(treeElement, 40,
+        expectFlatTreeToMatch(
+          treeElement,
+          40,
           [`topping_1 - cheese_1 + base_1`],
           [`topping_2 - cheese_2 + base_2`],
-          [`topping_3 - cheese_3 + base_3`]);
+          [`topping_3 - cheese_3 + base_3`],
+        );
+
+        (getNodes(treeElement)[2] as HTMLElement).click();
+        fixture.detectChanges();
+
+        expect(component.treeControl.expansionModel.selected.length)
+          .withContext(`Expect nodes expanded`)
+          .toBe(3);
+        expectFlatTreeToMatch(
+          treeElement,
+          40,
+          [`topping_1 - cheese_1 + base_1`],
+          [`topping_2 - cheese_2 + base_2`],
+          [`topping_3 - cheese_3 + base_3`],
+          [_, `topping_4 - cheese_4 + base_4`],
+          [_, _, `topping_5 - cheese_5 + base_5`],
+        );
+
+        (getNodes(treeElement)[2] as HTMLElement).click();
+        fixture.detectChanges();
+
+        expect(component.treeControl.expansionModel.selected.length)
+          .withContext(`Expect node collapsed`)
+          .toBe(0);
+
+        expectFlatTreeToMatch(
+          treeElement,
+          40,
+          [`topping_1 - cheese_1 + base_1`],
+          [`topping_2 - cheese_2 + base_2`],
+          [`topping_3 - cheese_3 + base_3`],
+        );
       });
     });
 
@@ -235,22 +268,25 @@ describe('MatTree', () => {
       });
 
       it('with the right data', () => {
-        expectFlatTreeToMatch(treeElement, 28,
+        expectFlatTreeToMatch(
+          treeElement,
+          28,
           [`topping_1 - cheese_1 + base_1`],
           [`topping_2 - cheese_2 + base_2`],
           [`topping_3 - cheese_3 + base_3`],
-          [`>>> topping_4 - cheese_4 + base_4`]);
+          [`>>> topping_4 - cheese_4 + base_4`],
+        );
       });
     });
   });
 
   describe('flat tree with undefined or null children', () => {
     describe('should initialize', () => {
-      let fixture: ComponentFixture<MatTreeWithNullOrUndefinedChild >;
+      let fixture: ComponentFixture<MatTreeWithNullOrUndefinedChild>;
 
       beforeEach(() => {
-        configureMatTreeTestingModule([MatTreeWithNullOrUndefinedChild ]);
-        fixture = TestBed.createComponent(MatTreeWithNullOrUndefinedChild );
+        configureMatTreeTestingModule([MatTreeWithNullOrUndefinedChild]);
+        fixture = TestBed.createComponent(MatTreeWithNullOrUndefinedChild);
         treeElement = fixture.nativeElement.querySelector('mat-tree');
 
         fixture.detectChanges();
@@ -267,7 +303,7 @@ describe('MatTree', () => {
 
   describe('nested tree with undefined or null children', () => {
     describe('should initialize', () => {
-      let fixture: ComponentFixture<MatNestedTreeWithNullOrUndefinedChild >;
+      let fixture: ComponentFixture<MatNestedTreeWithNullOrUndefinedChild>;
 
       beforeEach(() => {
         configureMatTreeTestingModule([MatNestedTreeWithNullOrUndefinedChild]);
@@ -320,10 +356,12 @@ describe('MatTree', () => {
         expect(underlyingDataSource.data.length).toBe(3);
 
         let data = underlyingDataSource.data;
-        expectNestedTreeToMatch(treeElement,
+        expectNestedTreeToMatch(
+          treeElement,
           [`${data[0].pizzaTopping} - ${data[0].pizzaCheese} + ${data[0].pizzaBase}`],
           [`${data[1].pizzaTopping} - ${data[1].pizzaCheese} + ${data[1].pizzaBase}`],
-          [`${data[2].pizzaTopping} - ${data[2].pizzaCheese} + ${data[2].pizzaBase}`]);
+          [`${data[2].pizzaTopping} - ${data[2].pizzaCheese} + ${data[2].pizzaBase}`],
+        );
 
         underlyingDataSource.addChild(data[1]);
         fixture.detectChanges();
@@ -331,11 +369,13 @@ describe('MatTree', () => {
         treeElement = fixture.nativeElement.querySelector('mat-tree');
         data = underlyingDataSource.data;
         expect(data.length).toBe(3);
-        expectNestedTreeToMatch(treeElement,
+        expectNestedTreeToMatch(
+          treeElement,
           [`topping_1 - cheese_1 + base_1`],
           [`topping_2 - cheese_2 + base_2`],
           [_, `topping_4 - cheese_4 + base_4`],
-          [`topping_3 - cheese_3 + base_3`]);
+          [`topping_3 - cheese_3 + base_3`],
+        );
       });
 
       it('with nested child data', () => {
@@ -347,30 +387,36 @@ describe('MatTree', () => {
         fixture.detectChanges();
 
         expect(data.length).toBe(3);
-        expectNestedTreeToMatch(treeElement,
+        expectNestedTreeToMatch(
+          treeElement,
           [`topping_1 - cheese_1 + base_1`],
           [`topping_2 - cheese_2 + base_2`],
           [_, `topping_4 - cheese_4 + base_4`],
           [_, _, `topping_5 - cheese_5 + base_5`],
-          [`topping_3 - cheese_3 + base_3`]);
+          [`topping_3 - cheese_3 + base_3`],
+        );
 
         underlyingDataSource.addChild(child);
         fixture.detectChanges();
 
         expect(data.length).toBe(3);
-        expectNestedTreeToMatch(treeElement,
+        expectNestedTreeToMatch(
+          treeElement,
           [`topping_1 - cheese_1 + base_1`],
           [`topping_2 - cheese_2 + base_2`],
           [_, `topping_4 - cheese_4 + base_4`],
           [_, _, `topping_5 - cheese_5 + base_5`],
           [_, _, `topping_6 - cheese_6 + base_6`],
-          [`topping_3 - cheese_3 + base_3`]);
+          [`topping_3 - cheese_3 + base_3`],
+        );
       });
 
       it('with correct aria-level on nodes', () => {
-        expect(getNodes(treeElement).every(node => {
-          return node.getAttribute('aria-level') === '1';
-        })).toBe(true);
+        expect(
+          getNodes(treeElement).every(node => {
+            return node.getAttribute('aria-level') === '1';
+          }),
+        ).toBe(true);
 
         const data = underlyingDataSource.data;
         const child = underlyingDataSource.addChild(data[1]);
@@ -398,11 +444,13 @@ describe('MatTree', () => {
       });
 
       it('with the right data', () => {
-        expectNestedTreeToMatch(treeElement,
+        expectNestedTreeToMatch(
+          treeElement,
           [`topping_1 - cheese_1 + base_1`],
           [`topping_2 - cheese_2 + base_2`],
           [`topping_3 - cheese_3 + base_3`],
-          [`>>> topping_4 - cheese_4 + base_4`]);
+          [`>>> topping_4 - cheese_4 + base_4`],
+        );
       });
     });
 
@@ -422,9 +470,11 @@ describe('MatTree', () => {
       });
 
       it('with the right aria-expanded attrs', () => {
-        expect(getNodes(treeElement).every(node => {
-          return node.getAttribute('aria-expanded') === 'false';
-        })).toBe(true);
+        expect(
+          getNodes(treeElement).every(node => {
+            return node.getAttribute('aria-expanded') === 'false';
+          }),
+        ).toBe(true);
 
         component.toggleRecursively = false;
         const data = underlyingDataSource.data;
@@ -447,10 +497,12 @@ describe('MatTree', () => {
 
         fixture.detectChanges();
 
-        expectNestedTreeToMatch(treeElement,
+        expectNestedTreeToMatch(
+          treeElement,
           [`topping_1 - cheese_1 + base_1`],
           [`topping_2 - cheese_2 + base_2`],
-          [`topping_3 - cheese_3 + base_3`]);
+          [`topping_3 - cheese_3 + base_3`],
+        );
 
         fixture.detectChanges();
 
@@ -458,22 +510,28 @@ describe('MatTree', () => {
         fixture.detectChanges();
 
         expect(component.treeControl.expansionModel.selected.length)
-          .withContext(`Expect node expanded`).toBe(1);
-        expectNestedTreeToMatch(treeElement,
+          .withContext(`Expect node expanded`)
+          .toBe(1);
+        expectNestedTreeToMatch(
+          treeElement,
           [`topping_1 - cheese_1 + base_1`],
           [`topping_2 - cheese_2 + base_2`],
           [_, `topping_4 - cheese_4 + base_4`],
-          [`topping_3 - cheese_3 + base_3`]);
+          [`topping_3 - cheese_3 + base_3`],
+        );
 
         (getNodes(treeElement)[1] as HTMLElement).click();
         fixture.detectChanges();
 
-        expectNestedTreeToMatch(treeElement,
+        expectNestedTreeToMatch(
+          treeElement,
           [`topping_1 - cheese_1 + base_1`],
           [`topping_2 - cheese_2 + base_2`],
-          [`topping_3 - cheese_3 + base_3`]);
+          [`topping_3 - cheese_3 + base_3`],
+        );
         expect(component.treeControl.expansionModel.selected.length)
-          .withContext(`Expect node collapsed`).toBe(0);
+          .withContext(`Expect node collapsed`)
+          .toBe(0);
       });
 
       it('should expand/collapse the node recursively', () => {
@@ -482,32 +540,40 @@ describe('MatTree', () => {
         underlyingDataSource.addChild(child);
         fixture.detectChanges();
 
-        expectNestedTreeToMatch(treeElement,
+        expectNestedTreeToMatch(
+          treeElement,
           [`topping_1 - cheese_1 + base_1`],
           [`topping_2 - cheese_2 + base_2`],
-          [`topping_3 - cheese_3 + base_3`]);
+          [`topping_3 - cheese_3 + base_3`],
+        );
 
         (getNodes(treeElement)[1] as HTMLElement).click();
         fixture.detectChanges();
 
         expect(component.treeControl.expansionModel.selected.length)
-          .withContext(`Expect node expanded`).toBe(3);
-        expectNestedTreeToMatch(treeElement,
+          .withContext(`Expect node expanded`)
+          .toBe(3);
+        expectNestedTreeToMatch(
+          treeElement,
           [`topping_1 - cheese_1 + base_1`],
           [`topping_2 - cheese_2 + base_2`],
           [_, `topping_4 - cheese_4 + base_4`],
           [_, _, `topping_5 - cheese_5 + base_5`],
-          [`topping_3 - cheese_3 + base_3`]);
+          [`topping_3 - cheese_3 + base_3`],
+        );
 
         (getNodes(treeElement)[1] as HTMLElement).click();
         fixture.detectChanges();
 
         expect(component.treeControl.expansionModel.selected.length)
-          .withContext(`Expect node collapsed`).toBe(0);
-        expectNestedTreeToMatch(treeElement,
+          .withContext(`Expect node collapsed`)
+          .toBe(0);
+        expectNestedTreeToMatch(
+          treeElement,
           [`topping_1 - cheese_1 + base_1`],
           [`topping_2 - cheese_2 + base_2`],
-          [`topping_3 - cheese_3 + base_3`]);
+          [`topping_3 - cheese_3 + base_3`],
+        );
       });
     });
   });
@@ -522,8 +588,13 @@ export class TestData {
   observableChildren: BehaviorSubject<TestData[]>;
   isSpecial: boolean;
 
-  constructor(pizzaTopping: string, pizzaCheese: string, pizzaBase: string,
-              children: TestData[] = [], isSpecial: boolean = false) {
+  constructor(
+    pizzaTopping: string,
+    pizzaCheese: string,
+    pizzaBase: string,
+    children: TestData[] = [],
+    isSpecial: boolean = false,
+  ) {
     this.pizzaTopping = pizzaTopping;
     this.pizzaCheese = pizzaCheese;
     this.pizzaBase = pizzaBase;
@@ -536,8 +607,12 @@ export class TestData {
 class FakeDataSource {
   dataIndex = 0;
   _dataChange = new BehaviorSubject<TestData[]>([]);
-  get data() { return this._dataChange.getValue(); }
-  set data(data: TestData[]) { this._dataChange.next(data); }
+  get data() {
+    return this._dataChange.getValue();
+  }
+  set data(data: TestData[]) {
+    this._dataChange.next(data);
+  }
 
   connect(): Observable<TestData[]> {
     return this._dataChange;
@@ -558,7 +633,12 @@ class FakeDataSource {
     const index = this.data.indexOf(parent);
     if (index > -1) {
       parent = new TestData(
-          parent.pizzaTopping, parent.pizzaCheese, parent.pizzaBase, parent.children, isSpecial);
+        parent.pizzaTopping,
+        parent.pizzaCheese,
+        parent.pizzaBase,
+        parent.children,
+        isSpecial,
+      );
     }
     parent.children.push(child);
     parent.observableChildren.next(parent.children);
@@ -574,8 +654,15 @@ class FakeDataSource {
   addData(isSpecial: boolean = false) {
     const nextIndex = ++this.dataIndex;
     let copiedData = this.data.slice();
-    copiedData.push(new TestData(
-      `topping_${nextIndex}`, `cheese_${nextIndex}`, `base_${nextIndex}`, [], isSpecial));
+    copiedData.push(
+      new TestData(
+        `topping_${nextIndex}`,
+        `cheese_${nextIndex}`,
+        `base_${nextIndex}`,
+        [],
+        isSpecial,
+      ),
+    );
 
     this.data = copiedData;
   }
@@ -585,8 +672,11 @@ function getNodes(treeElement: Element): Element[] {
   return [].slice.call(treeElement.querySelectorAll('.mat-tree-node, .mat-nested-tree-node'))!;
 }
 
-function expectFlatTreeToMatch(treeElement: Element, expectedPaddingIndent: number = 28,
-                               ...expectedTree: any[]) {
+function expectFlatTreeToMatch(
+  treeElement: Element,
+  expectedPaddingIndent: number = 28,
+  ...expectedTree: any[]
+) {
   const missedExpectations: string[] = [];
 
   function checkNode(node: Element, expectedNode: any[]) {
@@ -594,7 +684,8 @@ function expectFlatTreeToMatch(treeElement: Element, expectedPaddingIndent: numb
     const expectedTextContent = expectedNode[expectedNode.length - 1];
     if (actualTextContent !== expectedTextContent) {
       missedExpectations.push(
-        `Expected node contents to be ${expectedTextContent} but was ${actualTextContent}`);
+        `Expected node contents to be ${expectedTextContent} but was ${actualTextContent}`,
+      );
     }
   }
 
@@ -605,22 +696,20 @@ function expectFlatTreeToMatch(treeElement: Element, expectedPaddingIndent: numb
     const actualLevel = rawLevel === '0' ? '0px' : rawLevel;
     if (expectedNode.length === 1) {
       if (actualLevel !== `` && actualLevel !== '0px') {
-        missedExpectations.push(
-          `Expected node level to be 0px but was ${actualLevel}`);
+        missedExpectations.push(`Expected node level to be 0px but was ${actualLevel}`);
       }
     } else {
       const expectedLevel = `${(expectedNode.length - 1) * expectedPaddingIndent}px`;
       if (actualLevel != expectedLevel) {
         missedExpectations.push(
-          `Expected node level to be ${expectedLevel} but was ${actualLevel}`);
+          `Expected node level to be ${expectedLevel} but was ${actualLevel}`,
+        );
       }
     }
   }
 
   getNodes(treeElement).forEach((node, index) => {
-    const expected = expectedTree ?
-      expectedTree[index] :
-      null;
+    const expected = expectedTree ? expectedTree[index] : null;
 
     checkLevel(node, expected);
     checkNode(node, expected);
@@ -638,7 +727,8 @@ function expectNestedTreeToMatch(treeElement: Element, ...expectedTree: any[]) {
     const actualTextContent = node.childNodes.item(0).textContent!.trim();
     if (actualTextContent !== expectedTextContent) {
       missedExpectations.push(
-        `Expected node contents to be ${expectedTextContent} but was ${actualTextContent}`);
+        `Expected node contents to be ${expectedTextContent} but was ${actualTextContent}`,
+      );
     }
   }
 
@@ -656,15 +746,13 @@ function expectNestedTreeToMatch(treeElement: Element, ...expectedTree: any[]) {
     const actualDescendant = getNodes(node).length;
     if (actualDescendant !== expectedDescendant) {
       missedExpectations.push(
-        `Expected node descendant num to be ${expectedDescendant} but was ${actualDescendant}`);
+        `Expected node descendant num to be ${expectedDescendant} but was ${actualDescendant}`,
+      );
     }
   }
 
   getNodes(treeElement).forEach((node, index) => {
-
-    const expected = expectedTree ?
-      expectedTree[index] :
-      null;
+    const expected = expectedTree ? expectedTree[index] : null;
 
     checkNodeDescendants(node, expected, index);
     checkNodeContent(node, expected);
@@ -684,7 +772,7 @@ function expectNestedTreeToMatch(treeElement: Element, ...expectedTree: any[]) {
                      {{node.pizzaTopping}} - {{node.pizzaCheese}} + {{node.pizzaBase}}
       </mat-tree-node>
     </mat-tree>
-  `
+  `,
 })
 class SimpleMatTreeApp {
   getLevel = (node: TestData) => node.level;
@@ -693,10 +781,14 @@ class SimpleMatTreeApp {
   transformer = (node: TestData, level: number) => {
     node.level = level;
     return node;
-  }
+  };
 
   treeFlattener = new MatTreeFlattener<TestData, TestData>(
-    this.transformer, this.getLevel, this.isExpandable, this.getChildren);
+    this.transformer,
+    this.getLevel,
+    this.isExpandable,
+    this.getChildren,
+  );
 
   treeControl = new FlatTreeControl(this.getLevel, this.isExpandable);
 
@@ -732,29 +824,20 @@ interface ExampleFlatNode {
 const TREE_DATA: FoodNode[] = [
   {
     name: 'Fruit',
-    children: [
-      {name: 'Apple'},
-      {name: 'Banana'},
-      {name: 'Fruit loops',
-       children: null},
-    ]
-  }, {
+    children: [{name: 'Apple'}, {name: 'Banana'}, {name: 'Fruit loops', children: null}],
+  },
+  {
     name: 'Vegetables',
     children: [
       {
         name: 'Green',
-        children: [
-          {name: 'Broccoli'},
-          {name: 'Brussels sprouts'},
-        ]
-      }, {
-        name: 'Orange',
-        children: [
-          {name: 'Pumpkins'},
-          {name: 'Carrots'},
-        ]
+        children: [{name: 'Broccoli'}, {name: 'Brussels sprouts'}],
       },
-    ]
+      {
+        name: 'Orange',
+        children: [{name: 'Pumpkins'}, {name: 'Carrots'}],
+      },
+    ],
   },
 ];
 
@@ -766,7 +849,7 @@ const TREE_DATA: FoodNode[] = [
         {{node.name}}
       </mat-tree-node>
     </mat-tree>
-  `
+  `,
 })
 class MatTreeWithNullOrUndefinedChild {
   private _transformer = (node: FoodNode, level: number) => {
@@ -775,13 +858,19 @@ class MatTreeWithNullOrUndefinedChild {
       name: node.name,
       level: level,
     };
-  }
+  };
 
   treeControl = new FlatTreeControl<ExampleFlatNode>(
-    node => node.level, node => node.expandable);
+    node => node.level,
+    node => node.expandable,
+  );
 
   treeFlattener = new MatTreeFlattener(
-     this._transformer, node => node.level, node => node.expandable, node => node.children);
+    this._transformer,
+    node => node.level,
+    node => node.expandable,
+    node => node.children,
+  );
 
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener, TREE_DATA);
 
@@ -796,7 +885,7 @@ class MatTreeWithNullOrUndefinedChild {
         <ng-template matTreeNodeOutlet></ng-template>
       </mat-nested-tree-node>
     </mat-tree>
-  `
+  `,
 })
 class MatNestedTreeWithNullOrUndefinedChild {
   treeControl: NestedTreeControl<FoodNode>;
@@ -819,7 +908,7 @@ class MatNestedTreeWithNullOrUndefinedChild {
          <ng-template matTreeNodeOutlet></ng-template>
       </mat-nested-tree-node>
     </mat-tree>
-  `
+  `,
 })
 class NestedMatTreeApp {
   getChildren = (node: TestData) => node.observableChildren;
@@ -853,10 +942,10 @@ class NestedMatTreeApp {
          </div>
       </mat-nested-tree-node>
     </mat-tree>
-  `
+  `,
 })
 class WhenNodeNestedMatTreeApp {
-  isSpecial = (_: number, node: TestData) =>  node.isSpecial;
+  isSpecial = (_: number, node: TestData) => node.isSpecial;
 
   getChildren = (node: TestData) => node.observableChildren;
 
@@ -874,7 +963,6 @@ class WhenNodeNestedMatTreeApp {
   }
 }
 
-
 @Component({
   template: `
     <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
@@ -884,7 +972,7 @@ class WhenNodeNestedMatTreeApp {
                      {{node.pizzaTopping}} - {{node.pizzaCheese}} + {{node.pizzaBase}}
       </mat-tree-node>
     </mat-tree>
-  `
+  `,
 })
 class MatTreeAppWithToggle {
   toggleRecursively: boolean = true;
@@ -895,10 +983,14 @@ class MatTreeAppWithToggle {
   transformer = (node: TestData, level: number) => {
     node.level = level;
     return node;
-  }
+  };
 
   treeFlattener = new MatTreeFlattener<TestData, TestData>(
-    this.transformer, this.getLevel, this.isExpandable, this.getChildren);
+    this.transformer,
+    this.getLevel,
+    this.isExpandable,
+    this.getChildren,
+  );
 
   treeControl = new FlatTreeControl(this.getLevel, this.isExpandable);
 
@@ -925,7 +1017,7 @@ class MatTreeAppWithToggle {
         </div>
       </mat-nested-tree-node>
     </mat-tree>
-  `
+  `,
 })
 class NestedMatTreeAppWithToggle {
   toggleRecursively: boolean = true;
@@ -959,7 +1051,7 @@ class NestedMatTreeAppWithToggle {
                      >>> {{node.pizzaTopping}} - {{node.pizzaCheese}} + {{node.pizzaBase}}
       </mat-tree-node>
     </mat-tree>
-  `
+  `,
 })
 class WhenNodeMatTreeApp {
   isSpecial = (_: number, node: TestData) => node.isSpecial;
@@ -970,10 +1062,14 @@ class WhenNodeMatTreeApp {
   transformer = (node: TestData, level: number) => {
     node.level = level;
     return node;
-  }
+  };
 
   treeFlattener = new MatTreeFlattener<TestData, TestData>(
-    this.transformer, this.getLevel, this.isExpandable, this.getChildren);
+    this.transformer,
+    this.getLevel,
+    this.isExpandable,
+    this.getChildren,
+  );
 
   treeControl = new FlatTreeControl(this.getLevel, this.isExpandable);
 

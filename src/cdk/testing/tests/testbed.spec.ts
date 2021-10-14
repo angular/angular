@@ -1,7 +1,5 @@
 import {_supportsShadowDom} from '@angular/cdk/platform';
-import {
-  HarnessLoader, manualChangeDetection, parallel,
-} from '@angular/cdk/testing';
+import {HarnessLoader, manualChangeDetection, parallel} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {waitForAsync, ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
 import {querySelectorAll as piercingQuerySelectorAll} from 'kagekiri';
@@ -32,15 +30,17 @@ describe('TestbedHarnessEnvironment', () => {
       });
 
       it('should create ComponentHarness for fixture', async () => {
-        const harness =
-          await TestbedHarnessEnvironment.harnessForFixture(fixture, MainComponentHarness);
+        const harness = await TestbedHarnessEnvironment.harnessForFixture(
+          fixture,
+          MainComponentHarness,
+        );
         expect(harness).not.toBeNull();
       });
 
       it('should be able to load harness through document root loader', async () => {
-        const documentRootHarnesses =
-            await TestbedHarnessEnvironment.documentRootLoader(fixture).getAllHarnesses(
-                FakeOverlayHarness);
+        const documentRootHarnesses = await TestbedHarnessEnvironment.documentRootLoader(
+          fixture,
+        ).getAllHarnesses(FakeOverlayHarness);
         const fixtureHarnesses = await loader.getAllHarnesses(FakeOverlayHarness);
         expect(fixtureHarnesses.length).toBe(0);
         expect(documentRootHarnesses.length).toBe(1);
@@ -52,8 +52,7 @@ describe('TestbedHarnessEnvironment', () => {
       let harness: MainComponentHarness;
 
       beforeEach(async () => {
-        harness =
-          await TestbedHarnessEnvironment.harnessForFixture(fixture, MainComponentHarness);
+        harness = await TestbedHarnessEnvironment.harnessForFixture(fixture, MainComponentHarness);
       });
 
       it('can get elements outside of host', async () => {
@@ -64,18 +63,18 @@ describe('TestbedHarnessEnvironment', () => {
         expect(await globalEl.text()).toBe('Hello Yi from Angular 2!');
       });
 
-      it('should be able to wait for tasks outside of Angular within native async/await',
-          async () => {
+      it('should be able to wait for tasks outside of Angular within native async/await', async () => {
         expect(await harness.getTaskStateResult()).toBe('result');
       });
 
-      it('should be able to wait for tasks outside of Angular within async test zone',
-          waitForAsync(() => {
-        harness.getTaskStateResult().then(res => expect(res).toBe('result'));
-      }));
+      it(
+        'should be able to wait for tasks outside of Angular within async test zone',
+        waitForAsync(() => {
+          harness.getTaskStateResult().then(res => expect(res).toBe('result'));
+        }),
+      );
 
-      it('should be able to wait for tasks outside of Angular within fakeAsync test zone',
-          fakeAsync(async () => {
+      it('should be able to wait for tasks outside of Angular within fakeAsync test zone', fakeAsync(async () => {
         expect(await harness.getTaskStateResult()).toBe('result');
       }));
 
@@ -95,8 +94,10 @@ describe('TestbedHarnessEnvironment', () => {
     describe('change detection behavior', () => {
       it('manualChangeDetection should prevent auto change detection', async () => {
         const detectChangesSpy = spyOn(fixture, 'detectChanges').and.callThrough();
-        const harness =
-            await TestbedHarnessEnvironment.harnessForFixture(fixture, MainComponentHarness);
+        const harness = await TestbedHarnessEnvironment.harnessForFixture(
+          fixture,
+          MainComponentHarness,
+        );
         detectChangesSpy.calls.reset();
         await manualChangeDetection(async () => {
           const button = await harness.button();
@@ -108,8 +109,10 @@ describe('TestbedHarnessEnvironment', () => {
 
       it('parallel should only auto detect changes once before and after', async () => {
         const detectChangesSpy = spyOn(fixture, 'detectChanges').and.callThrough();
-        const harness =
-            await TestbedHarnessEnvironment.harnessForFixture(fixture, MainComponentHarness);
+        const harness = await TestbedHarnessEnvironment.harnessForFixture(
+          fixture,
+          MainComponentHarness,
+        );
 
         // Run them in "parallel" (though the order is guaranteed because of how we constructed the
         // promises.
@@ -118,10 +121,12 @@ describe('TestbedHarnessEnvironment', () => {
         await parallel(() => {
           // Chain together our promises to ensure the before clause runs first and the after clause
           // runs last.
-          const before =
-              Promise.resolve().then(() => expect(detectChangesSpy).toHaveBeenCalledTimes(1));
-          const actions = before.then(() => Promise.all(Array.from({length: 5},
-              () => harness.button().then(b => b.click()))));
+          const before = Promise.resolve().then(() =>
+            expect(detectChangesSpy).toHaveBeenCalledTimes(1),
+          );
+          const actions = before.then(() =>
+            Promise.all(Array.from({length: 5}, () => harness.button().then(b => b.click()))),
+          );
           const after = actions.then(() => expect(detectChangesSpy).toHaveBeenCalledTimes(1));
 
           return [before, actions, after];
@@ -131,11 +136,14 @@ describe('TestbedHarnessEnvironment', () => {
 
       it('parallel inside manualChangeDetection should not cause change detection', async () => {
         const detectChangesSpy = spyOn(fixture, 'detectChanges').and.callThrough();
-        const harness =
-            await TestbedHarnessEnvironment.harnessForFixture(fixture, MainComponentHarness);
+        const harness = await TestbedHarnessEnvironment.harnessForFixture(
+          fixture,
+          MainComponentHarness,
+        );
         detectChangesSpy.calls.reset();
-        await manualChangeDetection(() => parallel(
-            () => Array.from({length: 5}, () => harness.button().then(b => b.click()))));
+        await manualChangeDetection(() =>
+          parallel(() => Array.from({length: 5}, () => harness.button().then(b => b.click()))),
+        );
         expect(detectChangesSpy).toHaveBeenCalledTimes(0);
       });
     });
@@ -143,24 +151,32 @@ describe('TestbedHarnessEnvironment', () => {
     if (_supportsShadowDom()) {
       describe('shadow DOM interaction', () => {
         it('should not pierce shadow boundary by default', async () => {
-          const harness = await TestbedHarnessEnvironment
-              .harnessForFixture(fixture, MainComponentHarness);
+          const harness = await TestbedHarnessEnvironment.harnessForFixture(
+            fixture,
+            MainComponentHarness,
+          );
           expect(await harness.shadows()).toEqual([]);
         });
 
         it('should pierce shadow boundary when using piercing query', async () => {
           const harness = await TestbedHarnessEnvironment.harnessForFixture(
-            fixture, MainComponentHarness, {queryFn: piercingQuerySelectorAll},
+            fixture,
+            MainComponentHarness,
+            {queryFn: piercingQuerySelectorAll},
           );
           const shadows = await harness.shadows();
-          expect(await parallel(() => {
-            return shadows.map(el => el.text());
-          })).toEqual(['Shadow 1', 'Shadow 2']);
+          expect(
+            await parallel(() => {
+              return shadows.map(el => el.text());
+            }),
+          ).toEqual(['Shadow 1', 'Shadow 2']);
         });
 
         it('should allow querying across shadow boundary', async () => {
           const harness = await TestbedHarnessEnvironment.harnessForFixture(
-            fixture, MainComponentHarness, {queryFn: piercingQuerySelectorAll},
+            fixture,
+            MainComponentHarness,
+            {queryFn: piercingQuerySelectorAll},
           );
           expect(await (await harness.deepShadow()).text()).toBe('Shadow 2');
         });
@@ -168,9 +184,10 @@ describe('TestbedHarnessEnvironment', () => {
     }
   });
 
-  describe('environment independent', () => crossEnvironmentSpecs(
-    () => TestbedHarnessEnvironment.loader(fixture),
-    () => TestbedHarnessEnvironment.harnessForFixture(fixture, MainComponentHarness),
-    () => Promise.resolve(document.activeElement!.id),
-  ));
+  describe('environment independent', () =>
+    crossEnvironmentSpecs(
+      () => TestbedHarnessEnvironment.loader(fixture),
+      () => TestbedHarnessEnvironment.harnessForFixture(fixture, MainComponentHarness),
+      () => Promise.resolve(document.activeElement!.id),
+    ));
 });

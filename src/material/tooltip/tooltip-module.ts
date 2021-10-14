@@ -19,15 +19,10 @@ import {
 } from './tooltip';
 
 @NgModule({
-  imports: [
-    A11yModule,
-    CommonModule,
-    OverlayModule,
-    MatCommonModule,
-  ],
+  imports: [A11yModule, CommonModule, OverlayModule, MatCommonModule],
   exports: [MatTooltip, TooltipComponent, MatCommonModule, CdkScrollableModule],
   declarations: [MatTooltip, TooltipComponent],
   entryComponents: [TooltipComponent],
-  providers: [MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER]
+  providers: [MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER],
 })
 export class MatTooltipModule {}

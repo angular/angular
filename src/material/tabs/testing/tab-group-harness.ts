@@ -22,11 +22,14 @@ export class MatTabGroupHarness extends ComponentHarness {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: TabGroupHarnessFilters = {}): HarnessPredicate<MatTabGroupHarness> {
-    return new HarnessPredicate(MatTabGroupHarness, options)
-        .addOption('selectedTabLabel', options.selectedTabLabel, async (harness, label) => {
-          const selectedTab = await harness.getSelectedTab();
-          return HarnessPredicate.stringMatches(await selectedTab.getLabel(), label);
-        });
+    return new HarnessPredicate(MatTabGroupHarness, options).addOption(
+      'selectedTabLabel',
+      options.selectedTabLabel,
+      async (harness, label) => {
+        const selectedTab = await harness.getSelectedTab();
+        return HarnessPredicate.stringMatches(await selectedTab.getLabel(), label);
+      },
+    );
   }
 
   /**

@@ -37,7 +37,7 @@ export const MAT_BUTTON_HOST = {
 };
 
 /** List of classes to add to buttons instances based on host attribute selector. */
-const HOST_SELECTOR_MDC_CLASS_PAIR: {selector: string, mdcClasses: string[]}[] = [
+const HOST_SELECTOR_MDC_CLASS_PAIR: {selector: string; mdcClasses: string[]}[] = [
   {
     selector: 'mat-button',
     mdcClasses: ['mdc-button', 'mat-mdc-button'],
@@ -65,19 +65,27 @@ const HOST_SELECTOR_MDC_CLASS_PAIR: {selector: string, mdcClasses: string[]}[] =
   {
     selector: 'mat-icon-button',
     mdcClasses: ['mdc-icon-button', 'mat-mdc-icon-button'],
-  }
+  },
 ];
 
 // Boilerplate for applying mixins to MatButton.
 /** @docs-private */
-export const _MatButtonMixin = mixinColor(mixinDisabled(mixinDisableRipple(class {
-  constructor(public _elementRef: ElementRef) {}
-})));
+export const _MatButtonMixin = mixinColor(
+  mixinDisabled(
+    mixinDisableRipple(
+      class {
+        constructor(public _elementRef: ElementRef) {}
+      },
+    ),
+  ),
+);
 
 /** Base class for all buttons.  */
 @Directive()
-export class MatButtonBase extends _MatButtonMixin implements CanDisable, CanColor,
-                                                              CanDisableRipple {
+export class MatButtonBase
+  extends _MatButtonMixin
+  implements CanDisable, CanColor, CanDisableRipple
+{
   /** Whether the ripple is centered on the button. */
   _isRippleCentered = false;
 
@@ -88,8 +96,11 @@ export class MatButtonBase extends _MatButtonMixin implements CanDisable, CanCol
   @ViewChild(MatRipple) ripple: MatRipple;
 
   constructor(
-      elementRef: ElementRef, public _platform: Platform, public _ngZone: NgZone,
-      public _animationMode?: string) {
+    elementRef: ElementRef,
+    public _platform: Platform,
+    public _ngZone: NgZone,
+    public _animationMode?: string,
+  ) {
     super(elementRef);
 
     const classList = (elementRef.nativeElement as HTMLElement).classList;
@@ -152,8 +163,7 @@ export const MAT_ANCHOR_HOST = {
 export class MatAnchorBase extends MatButtonBase {
   tabIndex: number;
 
-  constructor(elementRef: ElementRef, platform: Platform, ngZone: NgZone,
-              animationMode?: string) {
+  constructor(elementRef: ElementRef, platform: Platform, ngZone: NgZone, animationMode?: string) {
     super(elementRef, platform, ngZone, animationMode);
   }
 

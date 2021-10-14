@@ -12,5 +12,4 @@ import {Component} from '@angular/core';
   selector: 'mdc-card-e2e',
   template: `<mdc-card-fancy-example></mdc-card-fancy-example>`,
 })
-export class MdcCardE2e {
-}
+export class MdcCardE2e {}

@@ -22,7 +22,6 @@ export interface Highlightable extends ListKeyManagerOption {
 }
 
 export class ActiveDescendantKeyManager<T> extends ListKeyManager<Highlightable & T> {
-
   /**
    * Sets the active item to the item at the specified index and adds the
    * active styles to the newly active item. Also removes active styles
@@ -48,5 +47,4 @@ export class ActiveDescendantKeyManager<T> extends ListKeyManager<Highlightable 
       this.activeItem.setActiveStyles();
     }
   }
-
 }

@@ -12,11 +12,7 @@ import {RouterModule} from '@angular/router';
 import {FocusOriginDemo} from './focus-origin-demo';
 
 @NgModule({
-  imports: [
-    A11yModule,
-    RouterModule.forChild([{path: '', component: FocusOriginDemo}]),
-  ],
+  imports: [A11yModule, RouterModule.forChild([{path: '', component: FocusOriginDemo}])],
   declarations: [FocusOriginDemo],
 })
-export class FocusOriginDemoModule {
-}
+export class FocusOriginDemoModule {}

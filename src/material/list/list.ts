@@ -63,7 +63,7 @@ export const MAT_NAV_LIST = new InjectionToken<MatNavList>('MatNavList');
   exportAs: 'matNavList',
   host: {
     'role': 'navigation',
-    'class': 'mat-nav-list mat-list-base'
+    'class': 'mat-nav-list mat-list-base',
   },
   templateUrl: 'list.html',
   styleUrls: ['list.css'],
@@ -72,8 +72,10 @@ export const MAT_NAV_LIST = new InjectionToken<MatNavList>('MatNavList');
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{provide: MAT_NAV_LIST, useExisting: MatNavList}],
 })
-export class MatNavList extends _MatListBase implements CanDisable, CanDisableRipple,
-  OnChanges, OnDestroy {
+export class MatNavList
+  extends _MatListBase
+  implements CanDisable, CanDisableRipple, OnChanges, OnDestroy
+{
   /** Emits when the state of the list changes. */
   readonly _stateChanges = new Subject<void>();
 
@@ -94,7 +96,7 @@ export class MatNavList extends _MatListBase implements CanDisable, CanDisableRi
   exportAs: 'matList',
   templateUrl: 'list.html',
   host: {
-    'class': 'mat-list mat-list-base'
+    'class': 'mat-list mat-list-base',
   },
   styleUrls: ['list.css'],
   inputs: ['disableRipple', 'disabled'],
@@ -102,8 +104,10 @@ export class MatNavList extends _MatListBase implements CanDisable, CanDisableRi
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{provide: MAT_LIST, useExisting: MatList}],
 })
-export class MatList extends _MatListBase implements CanDisable, CanDisableRipple, OnChanges,
-  OnDestroy {
+export class MatList
+  extends _MatListBase
+  implements CanDisable, CanDisableRipple, OnChanges, OnDestroy
+{
   /** Emits when the state of the list changes. */
   readonly _stateChanges = new Subject<void>();
 
@@ -147,7 +151,7 @@ export class MatList extends _MatListBase implements CanDisable, CanDisableRippl
  */
 @Directive({
   selector: '[mat-list-avatar], [matListAvatar]',
-  host: {'class': 'mat-list-avatar'}
+  host: {'class': 'mat-list-avatar'},
 })
 export class MatListAvatarCssMatStyler {}
 
@@ -157,7 +161,7 @@ export class MatListAvatarCssMatStyler {}
  */
 @Directive({
   selector: '[mat-list-icon], [matListIcon]',
-  host: {'class': 'mat-list-icon'}
+  host: {'class': 'mat-list-icon'},
 })
 export class MatListIconCssMatStyler {}
 
@@ -167,7 +171,7 @@ export class MatListIconCssMatStyler {}
  */
 @Directive({
   selector: '[mat-subheader], [matSubheader]',
-  host: {'class': 'mat-subheader'}
+  host: {'class': 'mat-subheader'},
 })
 export class MatListSubheaderCssMatStyler {}
 
@@ -187,8 +191,10 @@ export class MatListSubheaderCssMatStyler {}
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatListItem extends _MatListItemMixinBase implements AfterContentInit,
-    CanDisableRipple, OnDestroy {
+export class MatListItem
+  extends _MatListItemMixinBase
+  implements AfterContentInit, CanDisableRipple, OnDestroy
+{
   private _isInteractiveList: boolean = false;
   private _list?: MatNavList | MatList;
   private readonly _destroyed = new Subject<void>();
@@ -197,10 +203,12 @@ export class MatListItem extends _MatListItemMixinBase implements AfterContentIn
   @ContentChild(MatListAvatarCssMatStyler) _avatar: MatListAvatarCssMatStyler;
   @ContentChild(MatListIconCssMatStyler) _icon: MatListIconCssMatStyler;
 
-  constructor(private _element: ElementRef<HTMLElement>,
-              _changeDetectorRef: ChangeDetectorRef,
-              @Optional() @Inject(MAT_NAV_LIST) navList?: MatNavList,
-              @Optional() @Inject(MAT_LIST) list?: MatList) {
+  constructor(
+    private _element: ElementRef<HTMLElement>,
+    _changeDetectorRef: ChangeDetectorRef,
+    @Optional() @Inject(MAT_NAV_LIST) navList?: MatNavList,
+    @Optional() @Inject(MAT_LIST) list?: MatList,
+  ) {
     super();
     this._isInteractiveList = !!(navList || (list && list._getListType() === 'action-list'));
     this._list = navList || list;
@@ -224,7 +232,9 @@ export class MatListItem extends _MatListItemMixinBase implements AfterContentIn
 
   /** Whether the option is disabled. */
   @Input()
-  get disabled() { return this._disabled || !!(this._list && this._list.disabled); }
+  get disabled() {
+    return this._disabled || !!(this._list && this._list.disabled);
+  }
   set disabled(value: boolean) {
     this._disabled = coerceBooleanProperty(value);
   }
@@ -241,8 +251,9 @@ export class MatListItem extends _MatListItemMixinBase implements AfterContentIn
 
   /** Whether this list item should show a ripple effect when clicked. */
   _isRippleDisabled() {
-    return !this._isInteractiveList || this.disableRipple ||
-           !!(this._list && this._list.disableRipple);
+    return (
+      !this._isInteractiveList || this.disableRipple || !!(this._list && this._list.disableRipple)
+    );
   }
 
   /** Retrieves the DOM element of the component host. */

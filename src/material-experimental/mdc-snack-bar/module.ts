@@ -15,20 +15,10 @@ import {MatCommonModule} from '@angular/material-experimental/mdc-core';
 
 import {MatSimpleSnackBar} from './simple-snack-bar';
 import {MatSnackBarContainer} from './snack-bar-container';
-import {
-  MatSnackBarAction,
-  MatSnackBarActions,
-  MatSnackBarLabel
-} from './snack-bar-content';
+import {MatSnackBarAction, MatSnackBarActions, MatSnackBarLabel} from './snack-bar-content';
 
 @NgModule({
-  imports: [
-    OverlayModule,
-    PortalModule,
-    CommonModule,
-    MatButtonModule,
-    MatCommonModule,
-  ],
+  imports: [OverlayModule, PortalModule, CommonModule, MatButtonModule, MatCommonModule],
   exports: [
     MatCommonModule,
     MatSnackBarContainer,
@@ -43,10 +33,6 @@ import {
     MatSnackBarActions,
     MatSnackBarAction,
   ],
-  entryComponents: [
-    MatSimpleSnackBar,
-    MatSnackBarContainer,
-  ],
+  entryComponents: [MatSimpleSnackBar, MatSnackBarContainer],
 })
-export class MatSnackBarModule {
-}
+export class MatSnackBarModule {}

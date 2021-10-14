@@ -26,7 +26,7 @@ export class ListSectionsExample {
     {
       name: 'Work',
       updated: new Date('1/28/16'),
-    }
+    },
   ];
   notes: Section[] = [
     {
@@ -36,6 +36,6 @@ export class ListSectionsExample {
     {
       name: 'Kitchen Remodel',
       updated: new Date('1/18/16'),
-    }
+    },
   ];
 }

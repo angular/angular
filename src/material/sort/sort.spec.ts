@@ -19,7 +19,7 @@ import {
   MatSortHeader,
   MatSortModule,
   Sort,
-  SortDirection
+  SortDirection,
 } from './index';
 import {
   getSortDuplicateSortableIdError,
@@ -28,26 +28,27 @@ import {
   getSortInvalidDirectionError,
 } from './sort-errors';
 
-
 describe('MatSort', () => {
- describe('without default options', () => {
-   let fixture: ComponentFixture<SimpleMatSortApp>;
-   let component: SimpleMatSortApp;
+  describe('without default options', () => {
+    let fixture: ComponentFixture<SimpleMatSortApp>;
+    let component: SimpleMatSortApp;
 
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatSortModule, MatTableModule, CdkTableModule, NoopAnimationsModule],
-        declarations: [
-          SimpleMatSortApp,
-          CdkTableMatSortApp,
-          MatTableMatSortApp,
-          MatSortHeaderMissingMatSortApp,
-          MatSortDuplicateMatSortableIdsApp,
-          MatSortableMissingIdApp,
-          MatSortableInvalidDirection
-        ],
-      }).compileComponents();
-    }));
+    beforeEach(
+      waitForAsync(() => {
+        TestBed.configureTestingModule({
+          imports: [MatSortModule, MatTableModule, CdkTableModule, NoopAnimationsModule],
+          declarations: [
+            SimpleMatSortApp,
+            CdkTableMatSortApp,
+            MatTableMatSortApp,
+            MatSortHeaderMissingMatSortApp,
+            MatSortDuplicateMatSortableIdsApp,
+            MatSortableMissingIdApp,
+            MatSortableInvalidDirection,
+          ],
+        }).compileComponents();
+      }),
+    );
 
     beforeEach(() => {
       fixture = TestBed.createComponent(SimpleMatSortApp);
@@ -67,7 +68,7 @@ describe('MatSort', () => {
 
     it('should mark itself as initialized', fakeAsync(() => {
       let isMarkedInitialized = false;
-      component.matSort.initialized.subscribe(() => isMarkedInitialized = true);
+      component.matSort.initialized.subscribe(() => (isMarkedInitialized = true));
 
       tick();
       expect(isMarkedInitialized).toBeTruthy();
@@ -102,12 +103,12 @@ describe('MatSort', () => {
     });
 
     describe('checking correct arrow direction and view state for its various states', () => {
-      let expectedStates: Map<string, {viewState: string, arrowDirection: string}>;
+      let expectedStates: Map<string, {viewState: string; arrowDirection: string}>;
 
       beforeEach(() => {
         // Starting state for the view and directions - note that overrideStart is reversed to be
         // desc
-        expectedStates = new Map<string, {viewState: string, arrowDirection: string}>([
+        expectedStates = new Map<string, {viewState: string; arrowDirection: string}>([
           ['defaultA', {viewState: 'asc', arrowDirection: 'asc'}],
           ['defaultB', {viewState: 'asc', arrowDirection: 'asc'}],
           ['overrideStart', {viewState: 'desc', arrowDirection: 'desc'}],
@@ -207,7 +208,6 @@ describe('MatSort', () => {
         expectedStates.set('defaultB', {viewState: 'asc-to-active', arrowDirection: 'active-asc'});
         component.expectViewAndDirectionStates(expectedStates);
       });
-
     });
 
     it('should be able to cycle from asc -> desc from either start point', () => {
@@ -282,36 +282,39 @@ describe('MatSort', () => {
       expect(component.matSort.direction).toBe('asc');
     });
 
-    it('should throw an error if an MatSortable is not contained within an MatSort ' +
-        'directive', () => {
-      expect(() => TestBed.createComponent(MatSortHeaderMissingMatSortApp).detectChanges())
-      .toThrowError(wrappedErrorMessage(getSortHeaderNotContainedWithinSortError()));
-    });
+    it(
+      'should throw an error if an MatSortable is not contained within an MatSort ' + 'directive',
+      () => {
+        expect(() =>
+          TestBed.createComponent(MatSortHeaderMissingMatSortApp).detectChanges(),
+        ).toThrowError(wrappedErrorMessage(getSortHeaderNotContainedWithinSortError()));
+      },
+    );
 
     it('should throw an error if two MatSortables have the same id', () => {
-      expect(() => TestBed.createComponent(MatSortDuplicateMatSortableIdsApp).detectChanges())
-      .toThrowError(wrappedErrorMessage(getSortDuplicateSortableIdError('duplicateId')));
+      expect(() =>
+        TestBed.createComponent(MatSortDuplicateMatSortableIdsApp).detectChanges(),
+      ).toThrowError(wrappedErrorMessage(getSortDuplicateSortableIdError('duplicateId')));
     });
 
     it('should throw an error if an MatSortable is missing an id', () => {
-      expect(() => TestBed.createComponent(MatSortableMissingIdApp).detectChanges())
-      .toThrowError(wrappedErrorMessage(getSortHeaderMissingIdError()));
+      expect(() => TestBed.createComponent(MatSortableMissingIdApp).detectChanges()).toThrowError(
+        wrappedErrorMessage(getSortHeaderMissingIdError()),
+      );
     });
 
     it('should throw an error if the provided direction is invalid', () => {
-      expect(() => TestBed.createComponent(MatSortableInvalidDirection).detectChanges())
-      .toThrowError(wrappedErrorMessage(getSortInvalidDirectionError('ascending')));
+      expect(() =>
+        TestBed.createComponent(MatSortableInvalidDirection).detectChanges(),
+      ).toThrowError(wrappedErrorMessage(getSortInvalidDirectionError('ascending')));
     });
 
     it('should allow let MatSortable override the default sort parameters', () => {
-      testSingleColumnSortDirectionSequence(
-          fixture, ['asc', 'desc', '']);
+      testSingleColumnSortDirectionSequence(fixture, ['asc', 'desc', '']);
 
-      testSingleColumnSortDirectionSequence(
-          fixture, ['desc', 'asc', ''], 'overrideStart');
+      testSingleColumnSortDirectionSequence(fixture, ['desc', 'asc', ''], 'overrideStart');
 
-      testSingleColumnSortDirectionSequence(
-          fixture, ['asc', 'desc'], 'overrideDisableClear');
+      testSingleColumnSortDirectionSequence(fixture, ['asc', 'desc'], 'overrideDisableClear');
     });
 
     it('should toggle indicator hint on button focus/blur and hide on click', () => {
@@ -405,8 +408,9 @@ describe('MatSort', () => {
     }));
 
     it('should have a focus indicator', () => {
-      const headerNativeElement =
-          fixture.debugElement.query(By.directive(MatSortHeader))!.nativeElement;
+      const headerNativeElement = fixture.debugElement.query(
+        By.directive(MatSortHeader),
+      )!.nativeElement;
       const container = headerNativeElement.querySelector('.mat-sort-header-container');
 
       expect(container.classList.contains('mat-focus-indicator')).toBe(true);
@@ -434,30 +438,29 @@ describe('MatSort', () => {
       descriptionId = sortButton.getAttribute('aria-describedby');
       descriptionElement = document.getElementById(descriptionId);
       expect(descriptionElement?.textContent).toBe('Sort 2nd column');
-
     });
- });
+  });
 
   describe('with default options', () => {
     let fixture: ComponentFixture<MatSortWithoutExplicitInputs>;
     let component: MatSortWithoutExplicitInputs;
 
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatSortModule, MatTableModule, CdkTableModule, NoopAnimationsModule],
-        declarations: [
-          MatSortWithoutExplicitInputs
-        ],
-        providers: [
-          {
-            provide: MAT_SORT_DEFAULT_OPTIONS,
-            useValue: {
-              disableClear: true,
+    beforeEach(
+      waitForAsync(() => {
+        TestBed.configureTestingModule({
+          imports: [MatSortModule, MatTableModule, CdkTableModule, NoopAnimationsModule],
+          declarations: [MatSortWithoutExplicitInputs],
+          providers: [
+            {
+              provide: MAT_SORT_DEFAULT_OPTIONS,
+              useValue: {
+                disableClear: true,
+              },
             },
-          }
-        ],
-      }).compileComponents();
-    }));
+          ],
+        }).compileComponents();
+      }),
+    );
 
     beforeEach(() => {
       fixture = TestBed.createComponent(MatSortWithoutExplicitInputs);
@@ -482,9 +485,10 @@ describe('MatSort', () => {
  * the inputs and resets the MatSort to remove any side effects from previous tests.
  */
 function testSingleColumnSortDirectionSequence(
-    fixture: ComponentFixture<SimpleMatSortApp|MatSortWithoutExplicitInputs>,
-    expectedSequence: SortDirection[],
-    id: SimpleMatSortAppColumnIds = 'defaultA') {
+  fixture: ComponentFixture<SimpleMatSortApp | MatSortWithoutExplicitInputs>,
+  expectedSequence: SortDirection[],
+  id: SimpleMatSortAppColumnIds = 'defaultA',
+) {
   // Detect any changes that were made in preparation for this sort sequence
   fixture.detectChanges();
 
@@ -548,7 +552,7 @@ type SimpleMatSortAppColumnIds = 'defaultA' | 'defaultB' | 'overrideStart' | 'ov
         E
       </div>
     </div>
-  `
+  `,
 })
 class SimpleMatSortApp {
   latestSortEvent: Sort;
@@ -567,7 +571,7 @@ class SimpleMatSortApp {
   @ViewChild('overrideStart') overrideStart: MatSortHeader;
   @ViewChild('overrideDisableClear') overrideDisableClear: MatSortHeader;
 
-  constructor (public elementRef: ElementRef<HTMLElement>) { }
+  constructor(public elementRef: ElementRef<HTMLElement>) {}
 
   sort(id: SimpleMatSortAppColumnIds) {
     this.dispatchMouseEvent(id, 'click');
@@ -584,12 +588,13 @@ class SimpleMatSortApp {
    * states.
    */
   expectViewAndDirectionStates(
-      viewStates: Map<string, {viewState: string, arrowDirection: string}>) {
+    viewStates: Map<string, {viewState: string; arrowDirection: string}>,
+  ) {
     const sortHeaders = new Map([
       ['defaultA', this.defaultA],
       ['defaultB', this.defaultB],
       ['overrideStart', this.overrideStart],
-      ['overrideDisableClear', this.overrideDisableClear]
+      ['overrideDisableClear', this.overrideDisableClear],
     ]);
 
     viewStates.forEach((viewState, id) => {
@@ -598,7 +603,6 @@ class SimpleMatSortApp {
     });
   }
 }
-
 
 class FakeDataSource extends DataSource<any> {
   connect(collectionViewer: CollectionViewer): Observable<any[]> {
@@ -628,7 +632,7 @@ class FakeDataSource extends DataSource<any> {
       <cdk-header-row *cdkHeaderRowDef="columnsToRender"></cdk-header-row>
       <cdk-row *cdkRowDef="let row; columns: columnsToRender"></cdk-row>
     </cdk-table>
-  `
+  `,
 })
 class CdkTableMatSortApp {
   @ViewChild(MatSort) matSort: MatSort;
@@ -658,7 +662,7 @@ class CdkTableMatSortApp {
       <mat-header-row *matHeaderRowDef="columnsToRender"></mat-header-row>
       <mat-row *matRowDef="let row; columns: columnsToRender"></mat-row>
     </mat-table>
-  `
+  `,
 })
 class MatTableMatSortApp {
   @ViewChild(MatSort) matSort: MatSort;
@@ -667,12 +671,10 @@ class MatTableMatSortApp {
   columnsToRender = ['column_a', 'column_b', 'column_c'];
 }
 
-
 @Component({
-  template: `<div mat-sort-header="a"> A </div>`
+  template: `<div mat-sort-header="a"> A </div>`,
 })
-class MatSortHeaderMissingMatSortApp { }
-
+class MatSortHeaderMissingMatSortApp {}
 
 @Component({
   template: `
@@ -680,29 +682,27 @@ class MatSortHeaderMissingMatSortApp { }
       <div mat-sort-header="duplicateId"> A </div>
       <div mat-sort-header="duplicateId"> A </div>
     </div>
-  `
+  `,
 })
-class MatSortDuplicateMatSortableIdsApp { }
-
+class MatSortDuplicateMatSortableIdsApp {}
 
 @Component({
   template: `
     <div matSort>
       <div mat-sort-header> A </div>
     </div>
-  `
+  `,
 })
-class MatSortableMissingIdApp { }
-
+class MatSortableMissingIdApp {}
 
 @Component({
   template: `
     <div matSort matSortDirection="ascending">
       <div mat-sort-header="a"> A </div>
     </div>
-  `
+  `,
 })
-class MatSortableInvalidDirection { }
+class MatSortableInvalidDirection {}
 
 @Component({
   template: `
@@ -714,7 +714,7 @@ class MatSortableInvalidDirection { }
         A
       </div>
     </div>
-  `
+  `,
 })
 class MatSortWithoutExplicitInputs {
   latestSortEvent: Sort;
@@ -725,7 +725,7 @@ class MatSortWithoutExplicitInputs {
   @ViewChild(MatSort) matSort: MatSort;
   @ViewChild('defaultA') defaultA: MatSortHeader;
 
-  constructor (public elementRef: ElementRef<HTMLElement>) { }
+  constructor(public elementRef: ElementRef<HTMLElement>) {}
 
   sort(id: SimpleMatSortAppColumnIds) {
     this.dispatchMouseEvent(id, 'click');

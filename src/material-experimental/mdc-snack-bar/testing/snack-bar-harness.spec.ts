@@ -1,7 +1,7 @@
 import {
   MatSnackBar,
   MatSnackBarConfig,
-  MatSnackBarModule
+  MatSnackBarModule,
 } from '@angular/material-experimental/mdc-snack-bar';
 import {runHarnessTests} from '@angular/material/snack-bar/testing/shared.spec';
 import {MatSnackBarHarness} from './snack-bar-harness';
@@ -70,7 +70,7 @@ describe('MDC-based MatSnackBarHarness (MDC only behavior)', () => {
       <span matSnackBarLabel>My custom snack-bar with action.</span>
       <div matSnackBarActions><button matSnackBarAction>Ok</button></div>
     </ng-template>
-  `
+  `,
 })
 class SnackbarHarnessTest {
   @ViewChild('custom') customTmpl: TemplateRef<any>;

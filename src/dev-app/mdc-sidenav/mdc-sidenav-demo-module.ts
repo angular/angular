@@ -12,11 +12,7 @@ import {RouterModule} from '@angular/router';
 import {MdcSidenavDemo} from './mdc-sidenav-demo';
 
 @NgModule({
-  imports: [
-    MatSidenavModule,
-    RouterModule.forChild([{path: '', component: MdcSidenavDemo}]),
-  ],
+  imports: [MatSidenavModule, RouterModule.forChild([{path: '', component: MdcSidenavDemo}])],
   declarations: [MdcSidenavDemo],
 })
-export class MdcSidenavDemoModule {
-}
+export class MdcSidenavDemoModule {}

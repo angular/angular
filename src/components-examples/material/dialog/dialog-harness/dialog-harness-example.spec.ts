@@ -16,19 +16,21 @@ describe('DialogHarnessExample', () => {
 
   beforeAll(() => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
-      teardown: {destroyAfterEach: true}
+      teardown: {destroyAfterEach: true},
     });
   });
 
-  beforeEach(waitForAsync(async () => {
-    await TestBed.configureTestingModule({
-      imports: [MatDialogModule, NoopAnimationsModule],
-      declarations: [DialogHarnessExample]
-    }).compileComponents();
-    fixture = TestBed.createComponent(DialogHarnessExample);
-    fixture.detectChanges();
-    loader = TestbedHarnessEnvironment.documentRootLoader(fixture);
-  }));
+  beforeEach(
+    waitForAsync(async () => {
+      await TestBed.configureTestingModule({
+        imports: [MatDialogModule, NoopAnimationsModule],
+        declarations: [DialogHarnessExample],
+      }).compileComponents();
+      fixture = TestBed.createComponent(DialogHarnessExample);
+      fixture.detectChanges();
+      loader = TestbedHarnessEnvironment.documentRootLoader(fixture);
+    }),
+  );
 
   it('should load harness for dialog', async () => {
     fixture.componentInstance.open();
@@ -53,7 +55,6 @@ describe('DialogHarnessExample', () => {
     expect(await dialogs[0].getRole()).toBe('alertdialog');
     expect(await dialogs[1].getRole()).toBe('dialog');
   });
-
 
   it('should be able to close dialog', async () => {
     fixture.componentInstance.open({disableClose: true});

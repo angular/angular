@@ -25,8 +25,9 @@ export class MatAccordionHarness extends ComponentHarness {
   }
 
   /** Gets all expansion panels which are part of the accordion. */
-  async getExpansionPanels(filter: ExpansionPanelHarnessFilters = {}):
-      Promise<MatExpansionPanelHarness[]> {
+  async getExpansionPanels(
+    filter: ExpansionPanelHarnessFilters = {},
+  ): Promise<MatExpansionPanelHarness[]> {
     return this.locatorForAll(MatExpansionPanelHarness.with(filter))();
   }
 

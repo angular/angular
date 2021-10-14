@@ -12,10 +12,8 @@ export const classNames: VersionChanges<ClassNameUpgradeData> = {
   [TargetVersion.V10]: [
     {
       pr: 'https://github.com/angular/components/pull/19289',
-      changes: [
-        {replace: 'MatButtonToggleGroupMultiple', replaceWith: 'MatButtonToggleGroup'}
-      ]
-    }
+      changes: [{replace: 'MatButtonToggleGroupMultiple', replaceWith: 'MatButtonToggleGroup'}],
+    },
   ],
   [TargetVersion.V6]: [
     {
@@ -23,8 +21,8 @@ export const classNames: VersionChanges<ClassNameUpgradeData> = {
       changes: [
         {replace: 'FloatPlaceholderType', replaceWith: 'FloatLabelType'},
         {replace: 'MAT_PLACEHOLDER_GLOBAL_OPTIONS', replaceWith: 'MAT_LABEL_GLOBAL_OPTIONS'},
-        {replace: 'PlaceholderOptions', replaceWith: 'LabelOptions'}
-      ]
+        {replace: 'PlaceholderOptions', replaceWith: 'LabelOptions'},
+      ],
     },
-  ]
+  ],
 };

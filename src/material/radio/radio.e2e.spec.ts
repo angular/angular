@@ -1,6 +1,5 @@
 import {browser, by, element, ExpectedConditions} from 'protractor';
 
-
 describe('radio', () => {
   describe('disabling behavior', () => {
     beforeEach(async () => await browser.get('/radio'));

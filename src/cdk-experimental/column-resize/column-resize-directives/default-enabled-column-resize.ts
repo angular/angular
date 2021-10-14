@@ -27,12 +27,13 @@ import {TABLE_PROVIDERS} from './constants';
 })
 export class CdkDefaultEnabledColumnResize extends ColumnResize {
   constructor(
-      readonly columnResizeNotifier: ColumnResizeNotifier,
-      readonly elementRef: ElementRef<HTMLElement>,
-      protected readonly eventDispatcher: HeaderRowEventDispatcher,
-      protected readonly ngZone: NgZone,
-      protected readonly notifier: ColumnResizeNotifierSource,
-      protected readonly table: CdkTable<unknown>) {
+    readonly columnResizeNotifier: ColumnResizeNotifier,
+    readonly elementRef: ElementRef<HTMLElement>,
+    protected readonly eventDispatcher: HeaderRowEventDispatcher,
+    protected readonly ngZone: NgZone,
+    protected readonly notifier: ColumnResizeNotifierSource,
+    protected readonly table: CdkTable<unknown>,
+  ) {
     super();
   }
 }

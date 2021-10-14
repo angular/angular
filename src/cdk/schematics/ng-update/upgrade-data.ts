@@ -31,7 +31,6 @@ import {
   symbolRemoval,
 } from './data';
 
-
 /** Upgrade data for the Angular CDK. */
 export const cdkUpgradeData: UpgradeData = {
   attributeSelectors,
@@ -68,10 +67,13 @@ export interface UpgradeData {
  * target version and upgrade data object from the migration and resolves the specified
  * data portion that is specifically tied to the target version.
  */
-export function
-getVersionUpgradeData<T extends keyof UpgradeData, U = ValueOfChanges<UpgradeData[T]>>(
-    migration: Migration<UpgradeData>, dataName: T): U[] {
+export function getVersionUpgradeData<
+  T extends keyof UpgradeData,
+  U = ValueOfChanges<UpgradeData[T]>,
+>(migration: Migration<UpgradeData>, dataName: T): U[] {
   // Note that below we need to cast to `unknown` first TS doesn't infer the type of T correctly.
   return getChangesForTarget<U>(
-      migration.targetVersion, migration.upgradeData[dataName] as unknown as VersionChanges<U>);
+    migration.targetVersion,
+    migration.upgradeData[dataName] as unknown as VersionChanges<U>,
+  );
 }

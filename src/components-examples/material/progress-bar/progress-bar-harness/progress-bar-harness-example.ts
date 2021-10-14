@@ -5,9 +5,8 @@ import {Component} from '@angular/core';
  */
 @Component({
   selector: 'progress-bar-harness-example',
-  templateUrl: 'progress-bar-harness-example.html'
+  templateUrl: 'progress-bar-harness-example.html',
 })
 export class ProgressBarHarnessExample {
   value: number;
 }
-

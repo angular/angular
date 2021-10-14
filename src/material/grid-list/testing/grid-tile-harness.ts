@@ -12,7 +12,7 @@ import {GridTileHarnessFilters} from './grid-list-harness-filters';
 /** Selectors for the various `mat-grid-tile` sections that may contain user content. */
 export const enum MatGridTileSection {
   HEADER = '.mat-grid-tile-header',
-  FOOTER = '.mat-grid-tile-footer'
+  FOOTER = '.mat-grid-tile-footer',
 }
 
 /** Harness for interacting with a standard `MatGridTitle` in tests. */
@@ -28,12 +28,12 @@ export class MatGridTileHarness extends ContentContainerComponentHarness<MatGrid
    */
   static with(options: GridTileHarnessFilters = {}): HarnessPredicate<MatGridTileHarness> {
     return new HarnessPredicate(MatGridTileHarness, options)
-        .addOption(
-            'headerText', options.headerText,
-            (harness, pattern) => HarnessPredicate.stringMatches(harness.getHeaderText(), pattern))
-        .addOption(
-            'footerText', options.footerText,
-            (harness, pattern) => HarnessPredicate.stringMatches(harness.getFooterText(), pattern));
+      .addOption('headerText', options.headerText, (harness, pattern) =>
+        HarnessPredicate.stringMatches(harness.getHeaderText(), pattern),
+      )
+      .addOption('footerText', options.footerText, (harness, pattern) =>
+        HarnessPredicate.stringMatches(harness.getFooterText(), pattern),
+      );
   }
 
   private _header = this.locatorForOptional(MatGridTileSection.HEADER);
@@ -66,7 +66,7 @@ export class MatGridTileHarness extends ContentContainerComponentHarness<MatGrid
   }
 
   /** Gets the text of the header if present. */
-  async getHeaderText(): Promise<string|null> {
+  async getHeaderText(): Promise<string | null> {
     // For performance reasons, we do not use "hasHeader" as
     // we would then need to query twice for the header.
     const headerEl = await this._header();
@@ -74,7 +74,7 @@ export class MatGridTileHarness extends ContentContainerComponentHarness<MatGrid
   }
 
   /** Gets the text of the footer if present. */
-  async getFooterText(): Promise<string|null> {
+  async getFooterText(): Promise<string | null> {
     // For performance reasons, we do not use "hasFooter" as
     // we would then need to query twice for the footer.
     const headerEl = await this._footer();

@@ -30,9 +30,9 @@ export class MapGroundOverlay implements OnInit, OnDestroy {
 
   private readonly _opacity = new BehaviorSubject<number>(1);
   private readonly _url = new BehaviorSubject<string>('');
-  private readonly _bounds =
-      new BehaviorSubject<google.maps.LatLngBounds|google.maps.LatLngBoundsLiteral|undefined>(
-          undefined);
+  private readonly _bounds = new BehaviorSubject<
+    google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral | undefined
+  >(undefined);
   private readonly _destroyed = new Subject<void>();
 
   /**
@@ -50,10 +50,10 @@ export class MapGroundOverlay implements OnInit, OnDestroy {
 
   /** Bounds for the overlay. */
   @Input()
-  get bounds(): google.maps.LatLngBounds|google.maps.LatLngBoundsLiteral {
+  get bounds(): google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral {
     return this._bounds.value!;
   }
-  set bounds(bounds: google.maps.LatLngBounds|google.maps.LatLngBoundsLiteral) {
+  set bounds(bounds: google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral) {
     this._bounds.next(bounds);
   }
 
@@ -71,7 +71,7 @@ export class MapGroundOverlay implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/image-overlay#GroundOverlay.click
    */
   @Output() readonly mapClick: Observable<google.maps.MapMouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('click');
+    this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('click');
 
   /**
    * See
@@ -79,7 +79,7 @@ export class MapGroundOverlay implements OnInit, OnDestroy {
    * #GroundOverlay.dblclick
    */
   @Output() readonly mapDblclick: Observable<google.maps.MapMouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('dblclick');
+    this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('dblclick');
 
   constructor(private readonly _map: GoogleMap, private readonly _ngZone: NgZone) {}
 
@@ -179,13 +179,15 @@ export class MapGroundOverlay implements OnInit, OnDestroy {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       if (!this._map.googleMap) {
         throw Error(
-            'Cannot access Google Map information before the API has been initialized. ' +
-            'Please wait for the API to load before trying to interact with it.');
+          'Cannot access Google Map information before the API has been initialized. ' +
+            'Please wait for the API to load before trying to interact with it.',
+        );
       }
       if (!this.groundOverlay) {
         throw Error(
-            'Cannot interact with a Google Map GroundOverlay before it has been initialized. ' +
-            'Please wait for the GroundOverlay to load before trying to interact with it.');
+          'Cannot interact with a Google Map GroundOverlay before it has been initialized. ' +
+            'Please wait for the GroundOverlay to load before trying to interact with it.',
+        );
       }
     }
   }

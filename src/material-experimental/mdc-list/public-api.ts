@@ -16,8 +16,4 @@ export * from './list-styling';
 export {MatListOptionCheckboxPosition} from './list-option-types';
 export {MatListOption} from './list-option';
 
-export {
-  MAT_LIST,
-  MAT_NAV_LIST,
-  MAT_SELECTION_LIST_VALUE_ACCESSOR,
-} from '@angular/material/list';
+export {MAT_LIST, MAT_NAV_LIST, MAT_SELECTION_LIST_VALUE_ACCESSOR} from '@angular/material/list';

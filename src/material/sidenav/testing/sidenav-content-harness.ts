@@ -20,8 +20,9 @@ export class MatSidenavContentHarness extends ContentContainerComponentHarness<s
    * @param options Options for filtering which sidenav content instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: DrawerContentHarnessFilters = {}):
-    HarnessPredicate<MatSidenavContentHarness> {
+  static with(
+    options: DrawerContentHarnessFilters = {},
+  ): HarnessPredicate<MatSidenavContentHarness> {
     return new HarnessPredicate(MatSidenavContentHarness, options);
   }
 }

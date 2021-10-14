@@ -6,7 +6,7 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'card-subtitle-example',
   templateUrl: 'card-subtitle-example.html',
-  styleUrls: ['card-subtitle-example.css']
+  styleUrls: ['card-subtitle-example.css'],
 })
 export class CardSubtitleExample {
   longText = `The Shiba Inu is the smallest of the six original and distinct spitz breeds of dog

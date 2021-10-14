@@ -48,5 +48,4 @@ const COMPONENTS = [
   declarations: COMPONENTS,
   exports: COMPONENTS,
 })
-export class GoogleMapsModule {
-}
+export class GoogleMapsModule {}

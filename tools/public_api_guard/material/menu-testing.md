@@ -20,9 +20,9 @@ export class MatMenuHarness extends _MatMenuHarnessBase<typeof MatMenuItemHarnes
 }
 
 // @public (undocumented)
-export abstract class _MatMenuHarnessBase<ItemType extends (ComponentHarnessConstructor<Item> & {
+export abstract class _MatMenuHarnessBase<ItemType extends ComponentHarnessConstructor<Item> & {
     with: (options?: ItemFilters) => HarnessPredicate<Item>;
-}), Item extends ComponentHarness & {
+}, Item extends ComponentHarness & {
     click(): Promise<void>;
     getSubmenu(): Promise<_MatMenuHarnessBase<ItemType, Item, ItemFilters> | null>;
 }, ItemFilters extends BaseHarnessFilters> extends ContentContainerComponentHarness<string> {

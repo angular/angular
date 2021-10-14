@@ -25,7 +25,7 @@ const cssUnitPattern = /([A-Za-z%]+)$/;
 })
 export class CdkTreeNodePadding<T, K = T> implements OnDestroy {
   /** Current padding value applied to the element. Used to avoid unnecessarily hitting the DOM. */
-  private _currentPadding: string|null;
+  private _currentPadding: string | null;
 
   /** Subject that emits when the component has been destroyed. */
   private readonly _destroyed = new Subject<void>();
@@ -35,8 +35,12 @@ export class CdkTreeNodePadding<T, K = T> implements OnDestroy {
 
   /** The level of depth of the tree node. The padding will be `level * indent` pixels. */
   @Input('cdkTreeNodePadding')
-  get level(): number { return this._level; }
-  set level(value: number) { this._setLevelInput(value); }
+  get level(): number {
+    return this._level;
+  }
+  set level(value: number) {
+    this._setLevelInput(value);
+  }
   _level: number;
 
   /**
@@ -44,14 +48,20 @@ export class CdkTreeNodePadding<T, K = T> implements OnDestroy {
    * Default number 40px from material design menu sub-menu spec.
    */
   @Input('cdkTreeNodePaddingIndent')
-  get indent(): number | string { return this._indent; }
-  set indent(indent: number | string) { this._setIndentInput(indent); }
+  get indent(): number | string {
+    return this._indent;
+  }
+  set indent(indent: number | string) {
+    this._setIndentInput(indent);
+  }
   _indent: number = 40;
 
-  constructor(private _treeNode: CdkTreeNode<T, K>,
-              private _tree: CdkTree<T, K>,
-              private _element: ElementRef<HTMLElement>,
-              @Optional() private _dir: Directionality) {
+  constructor(
+    private _treeNode: CdkTreeNode<T, K>,
+    private _tree: CdkTree<T, K>,
+    private _element: ElementRef<HTMLElement>,
+    @Optional() private _dir: Directionality,
+  ) {
     this._setPadding();
     if (_dir) {
       _dir.change.pipe(takeUntil(this._destroyed)).subscribe(() => this._setPadding(true));
@@ -69,10 +79,11 @@ export class CdkTreeNodePadding<T, K = T> implements OnDestroy {
   }
 
   /** The padding indent value for the tree node. Returns a string with px numbers if not null. */
-  _paddingIndent(): string|null {
-    const nodeLevel = (this._treeNode.data && this._tree.treeControl.getLevel)
-      ? this._tree.treeControl.getLevel(this._treeNode.data)
-      : null;
+  _paddingIndent(): string | null {
+    const nodeLevel =
+      this._treeNode.data && this._tree.treeControl.getLevel
+        ? this._tree.treeControl.getLevel(this._treeNode.data)
+        : null;
     const level = this._level == null ? nodeLevel : this._level;
     return typeof level === 'number' ? `${level * this._indent}${this.indentUnits}` : null;
   }

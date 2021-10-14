@@ -14,12 +14,15 @@ export const Breakpoints = {
   Large: '(min-width: 1280px) and (max-width: 1919.98px)',
   XLarge: '(min-width: 1920px)',
 
-  Handset: '(max-width: 599.98px) and (orientation: portrait), ' +
-           '(max-width: 959.98px) and (orientation: landscape)',
-  Tablet: '(min-width: 600px) and (max-width: 839.98px) and (orientation: portrait), ' +
-          '(min-width: 960px) and (max-width: 1279.98px) and (orientation: landscape)',
-  Web: '(min-width: 840px) and (orientation: portrait), ' +
-       '(min-width: 1280px) and (orientation: landscape)',
+  Handset:
+    '(max-width: 599.98px) and (orientation: portrait), ' +
+    '(max-width: 959.98px) and (orientation: landscape)',
+  Tablet:
+    '(min-width: 600px) and (max-width: 839.98px) and (orientation: portrait), ' +
+    '(min-width: 960px) and (max-width: 1279.98px) and (orientation: landscape)',
+  Web:
+    '(min-width: 840px) and (orientation: portrait), ' +
+    '(min-width: 1280px) and (orientation: landscape)',
 
   HandsetPortrait: '(max-width: 599.98px) and (orientation: portrait)',
   TabletPortrait: '(min-width: 600px) and (max-width: 839.98px) and (orientation: portrait)',

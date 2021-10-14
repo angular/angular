@@ -42,5 +42,4 @@ import {TreeDemo} from './tree-demo';
   ],
   declarations: [TreeDemo],
 })
-export class TreeDemoModule {
-}
+export class TreeDemoModule {}

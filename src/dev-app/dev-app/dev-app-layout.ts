@@ -119,9 +119,12 @@ export class DevAppLayout {
   animationsDisabled = localStorage.getItem(ANIMATIONS_STORAGE_KEY) === 'true';
 
   constructor(
-      private _element: ElementRef<HTMLElement>, public rippleOptions: DevAppRippleOptions,
-      @Inject(Directionality) public dir: DevAppDirectionality, cdr: ChangeDetectorRef,
-      @Inject(DOCUMENT) private _document: Document) {
+    private _element: ElementRef<HTMLElement>,
+    public rippleOptions: DevAppRippleOptions,
+    @Inject(Directionality) public dir: DevAppDirectionality,
+    cdr: ChangeDetectorRef,
+    @Inject(DOCUMENT) private _document: Document,
+  ) {
     dir.change.subscribe(() => cdr.markForCheck());
     try {
       const isDark = localStorage.getItem(isDarkThemeKey);
@@ -189,7 +192,7 @@ export class DevAppLayout {
   }
 
   toggleAnimations() {
-    localStorage.setItem(ANIMATIONS_STORAGE_KEY, (!this.animationsDisabled) + '');
+    localStorage.setItem(ANIMATIONS_STORAGE_KEY, !this.animationsDisabled + '');
     location.reload();
   }
 

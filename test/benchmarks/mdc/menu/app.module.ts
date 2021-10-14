@@ -18,16 +18,11 @@ import {MatMenuModule} from '@angular/material-experimental/mdc-menu';
   encapsulation: ViewEncapsulation.None,
   styleUrls: ['//src/material-experimental/mdc-theming/prebuilt/indigo-pink.css'],
 })
-export class MenuBenchmarkApp {
-}
-
+export class MenuBenchmarkApp {}
 
 @NgModule({
   declarations: [MenuBenchmarkApp],
-  imports: [
-    BrowserModule,
-    MatMenuModule,
-  ],
-  bootstrap: [MenuBenchmarkApp]
+  imports: [BrowserModule, MatMenuModule],
+  bootstrap: [MenuBenchmarkApp],
 })
 export class AppModule {}

@@ -22,7 +22,7 @@ import {
   MAT_ACCORDION,
   MatAccordionBase,
   MatAccordionDisplayMode,
-  MatAccordionTogglePosition
+  MatAccordionTogglePosition,
 } from './accordion-base';
 import {MatExpansionPanelHeader} from './expansion-panel-header';
 
@@ -33,19 +33,23 @@ import {MatExpansionPanelHeader} from './expansion-panel-header';
   selector: 'mat-accordion',
   exportAs: 'matAccordion',
   inputs: ['multi'],
-  providers: [{
-    provide: MAT_ACCORDION,
-    useExisting: MatAccordion
-  }],
+  providers: [
+    {
+      provide: MAT_ACCORDION,
+      useExisting: MatAccordion,
+    },
+  ],
   host: {
     class: 'mat-accordion',
     // Class binding which is only used by the test harness as there is no other
     // way for the harness to detect if multiple panel support is enabled.
     '[class.mat-accordion-multi]': 'this.multi',
-  }
+  },
 })
-export class MatAccordion extends CdkAccordion implements MatAccordionBase,
-  AfterContentInit, OnDestroy {
+export class MatAccordion
+  extends CdkAccordion
+  implements MatAccordionBase, AfterContentInit, OnDestroy
+{
   private _keyManager: FocusKeyManager<MatExpansionPanelHeader>;
 
   /** Headers belonging to this accordion. */
@@ -57,8 +61,12 @@ export class MatAccordion extends CdkAccordion implements MatAccordionBase,
 
   /** Whether the expansion indicator should be hidden. */
   @Input()
-  get hideToggle(): boolean { return this._hideToggle; }
-  set hideToggle(show: boolean) { this._hideToggle = coerceBooleanProperty(show); }
+  get hideToggle(): boolean {
+    return this._hideToggle;
+  }
+  set hideToggle(show: boolean) {
+    this._hideToggle = coerceBooleanProperty(show);
+  }
   private _hideToggle: boolean = false;
 
   /**

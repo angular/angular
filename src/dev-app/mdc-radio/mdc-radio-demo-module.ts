@@ -26,5 +26,4 @@ import {CommonModule} from '@angular/common';
   ],
   declarations: [MdcRadioDemo],
 })
-export class MdcRadioDemoModule {
-}
+export class MdcRadioDemoModule {}

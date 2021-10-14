@@ -1,8 +1,6 @@
 import {Component} from '@angular/core';
 
-
 const itemSizeSample = [100, 25, 50, 50, 100, 200, 75, 100, 50, 250];
-
 
 @Component({
   selector: 'virtual-scroll-e2e',
@@ -11,5 +9,7 @@ const itemSizeSample = [100, 25, 50, 50, 100, 200, 75, 100, 50, 250];
 })
 export class VirtualScrollE2E {
   uniformItems = Array(1000).fill(50);
-  variableItems = Array(100).fill(0).reduce(acc => acc.concat(itemSizeSample), []);
+  variableItems = Array(100)
+    .fill(0)
+    .reduce(acc => acc.concat(itemSizeSample), []);
 }

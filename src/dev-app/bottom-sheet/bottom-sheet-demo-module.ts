@@ -38,5 +38,4 @@ import {BottomSheetDemo, ExampleBottomSheet} from './bottom-sheet-demo';
   ],
   declarations: [BottomSheetDemo, ExampleBottomSheet],
 })
-export class BottomSheetDemoModule {
-}
+export class BottomSheetDemoModule {}

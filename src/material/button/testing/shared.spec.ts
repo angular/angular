@@ -10,7 +10,9 @@ import {MatIconHarness} from '@angular/material/icon/testing/icon-harness';
 
 /** Shared tests to run on both the original and MDC-based buttons. */
 export function runHarnessTests(
-    buttonModule: typeof MatButtonModule, buttonHarness: typeof MatButtonHarness) {
+  buttonModule: typeof MatButtonModule,
+  buttonHarness: typeof MatButtonHarness,
+) {
   let fixture: ComponentFixture<ButtonHarnessTest>;
   let loader: HarnessLoader;
   let platform: Platform;
@@ -50,10 +52,12 @@ export function runHarnessTests(
 
   it('should get disabled state', async () => {
     // Grab each combination of [enabled, disabled] ⨯ [button, anchor]
-    const [disabledFlatButton, enabledFlatAnchor] =
-        await loader.getAllHarnesses(buttonHarness.with({text: /flat/i}));
-    const [enabledRaisedButton, disabledRaisedAnchor] =
-        await loader.getAllHarnesses(buttonHarness.with({text: /raised/i}));
+    const [disabledFlatButton, enabledFlatAnchor] = await loader.getAllHarnesses(
+      buttonHarness.with({text: /flat/i}),
+    );
+    const [enabledRaisedButton, disabledRaisedAnchor] = await loader.getAllHarnesses(
+      buttonHarness.with({text: /raised/i}),
+    );
 
     expect(await enabledFlatAnchor.isDisabled()).toBe(false);
     expect(await disabledFlatButton.isDisabled()).toBe(true);
@@ -139,10 +143,9 @@ export function runHarnessTests(
     <a id="anchor-icon" mat-icon-button>Icon anchor</a>
     <a id="anchor-fab" mat-fab>Fab anchor</a>
     <a id="anchor-mini-fab" mat-mini-fab>Mini Fab anchor</a>
-  `
+  `,
 })
 class ButtonHarnessTest {
   disabled = true;
   clicked = false;
 }
-

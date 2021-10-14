@@ -16,15 +16,9 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
   templateUrl: 'select-error-state-matcher-example.html',
 })
 export class SelectErrorStateMatcherExample {
-  selected = new FormControl('valid', [
-    Validators.required,
-    Validators.pattern('valid'),
-  ]);
+  selected = new FormControl('valid', [Validators.required, Validators.pattern('valid')]);
 
-  selectFormControl = new FormControl('valid', [
-    Validators.required,
-    Validators.pattern('valid'),
-  ]);
+  selectFormControl = new FormControl('valid', [Validators.required, Validators.pattern('valid')]);
 
   nativeSelectFormControl = new FormControl('valid', [
     Validators.required,

@@ -10,7 +10,7 @@ import {BaseHarnessFilters} from '@angular/cdk/testing';
 /** Possible positions of a slider thumb. */
 export const enum ThumbPosition {
   START,
-  END
+  END,
 }
 
 /** A set of criteria that can be used to filter a list of `MatSliderHarness` instances. */

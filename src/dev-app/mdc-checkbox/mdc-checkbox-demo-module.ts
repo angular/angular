@@ -21,7 +21,7 @@ import {
   ClickActionCheck,
   ClickActionNoop,
   MatCheckboxDemoNestedChecklist,
-  MdcCheckboxDemo
+  MdcCheckboxDemo,
 } from './mdc-checkbox-demo';
 
 @NgModule({
@@ -37,9 +37,11 @@ import {
     RouterModule.forChild([{path: '', component: MdcCheckboxDemo}]),
   ],
   declarations: [
-    MdcCheckboxDemo, MatCheckboxDemoNestedChecklist, ClickActionCheck, ClickActionNoop,
-    AnimationsNoop
+    MdcCheckboxDemo,
+    MatCheckboxDemoNestedChecklist,
+    ClickActionCheck,
+    ClickActionNoop,
+    AnimationsNoop,
   ],
 })
-export class MdcCheckboxDemoModule {
-}
+export class MdcCheckboxDemoModule {}

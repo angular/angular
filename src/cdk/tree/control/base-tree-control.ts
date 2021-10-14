@@ -11,7 +11,6 @@ import {TreeControl} from './tree-control';
 
 /** Base tree control. It has basic toggle/expand/collapse operations on a single data node. */
 export abstract class BaseTreeControl<T, K = T> implements TreeControl<T, K> {
-
   /** Gets a list of descendent data nodes of a subtree rooted at given data node recursively. */
   abstract getDescendants(dataNode: T): T[];
 
@@ -42,7 +41,7 @@ export abstract class BaseTreeControl<T, K = T> implements TreeControl<T, K> {
   isExpandable: (dataNode: T) => boolean;
 
   /** Gets a stream that emits whenever the given data node's children change. */
-  getChildren: (dataNode: T) => (Observable<T[]> | T[] | undefined | null);
+  getChildren: (dataNode: T) => Observable<T[]> | T[] | undefined | null;
 
   /** Toggles one single data node's expanded/collapsed state. */
   toggle(dataNode: T): void {
@@ -66,9 +65,9 @@ export abstract class BaseTreeControl<T, K = T> implements TreeControl<T, K> {
 
   /** Toggles a subtree rooted at `node` recursively. */
   toggleDescendants(dataNode: T): void {
-    this.expansionModel.isSelected(this._trackByValue(dataNode)) ?
-        this.collapseDescendants(dataNode) :
-        this.expandDescendants(dataNode);
+    this.expansionModel.isSelected(this._trackByValue(dataNode))
+      ? this.collapseDescendants(dataNode)
+      : this.expandDescendants(dataNode);
   }
 
   /** Collapse all dataNodes in the tree. */
@@ -90,7 +89,7 @@ export abstract class BaseTreeControl<T, K = T> implements TreeControl<T, K> {
     this.expansionModel.deselect(...toBeProcessed.map(value => this._trackByValue(value)));
   }
 
-  protected _trackByValue(value: T|K): K {
-    return this.trackBy ? this.trackBy(value as T) : value as K;
+  protected _trackByValue(value: T | K): K {
+    return this.trackBy ? this.trackBy(value as T) : (value as K);
   }
 }

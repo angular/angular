@@ -23,5 +23,4 @@ import {Component} from '@angular/core';
     <mat-selection-column-example></mat-selection-column-example>
   `,
 })
-export class SelectionDemo {
-}
+export class SelectionDemo {}

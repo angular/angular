@@ -27,5 +27,4 @@ import {TableScrollContainerDemo} from './table-scroll-container-demo';
   ],
   declarations: [TableScrollContainerDemo],
 })
-export class TableScrollContainerDemoModule {
-}
+export class TableScrollContainerDemoModule {}

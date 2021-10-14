@@ -14,7 +14,7 @@ import {
   CdkHeaderRowDef,
   CdkRow,
   CdkRowDef,
-  CdkNoDataRow
+  CdkNoDataRow,
 } from '@angular/cdk/table';
 import {ChangeDetectionStrategy, Component, Directive, ViewEncapsulation} from '@angular/core';
 
@@ -50,8 +50,7 @@ export class MatFooterRowDef extends CdkFooterRowDef {}
   providers: [{provide: CdkRowDef, useExisting: MatRowDef}],
   inputs: ['columns: matRowDefColumns', 'when: matRowDefWhen'],
 })
-export class MatRowDef<T> extends CdkRowDef<T> {
-}
+export class MatRowDef<T> extends CdkRowDef<T> {}
 
 /** Footer template container that contains the cell outlet. Adds the right class and role. */
 @Component({
@@ -68,8 +67,7 @@ export class MatRowDef<T> extends CdkRowDef<T> {
   exportAs: 'matHeaderRow',
   providers: [{provide: CdkHeaderRow, useExisting: MatHeaderRow}],
 })
-export class MatHeaderRow extends CdkHeaderRow {
-}
+export class MatHeaderRow extends CdkHeaderRow {}
 
 /** Footer template container that contains the cell outlet. Adds the right class and role. */
 @Component({
@@ -86,8 +84,7 @@ export class MatHeaderRow extends CdkHeaderRow {
   exportAs: 'matFooterRow',
   providers: [{provide: CdkFooterRow, useExisting: MatFooterRow}],
 })
-export class MatFooterRow extends CdkFooterRow {
-}
+export class MatFooterRow extends CdkFooterRow {}
 
 /** Data row template container that contains the cell outlet. Adds the right class and role. */
 @Component({
@@ -104,13 +101,11 @@ export class MatFooterRow extends CdkFooterRow {
   exportAs: 'matRow',
   providers: [{provide: CdkRow, useExisting: MatRow}],
 })
-export class MatRow extends CdkRow {
-}
+export class MatRow extends CdkRow {}
 
 /** Row that can be used to display a message when no data is shown in the table. */
 @Directive({
   selector: 'ng-template[matNoDataRow]',
   providers: [{provide: CdkNoDataRow, useExisting: MatNoDataRow}],
 })
-export class MatNoDataRow extends CdkNoDataRow {
-}
+export class MatNoDataRow extends CdkNoDataRow {}

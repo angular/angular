@@ -22,7 +22,6 @@ import {
 import {CanDisable, mixinDisabled, ThemePalette} from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
-
 let nextId = 0;
 
 // Boilerplate for applying mixins to MatBadge.
@@ -31,8 +30,14 @@ const _MatBadgeBase = mixinDisabled(class {});
 
 /** Allowed position options for matBadgePosition */
 export type MatBadgePosition =
-    'above after' | 'above before' | 'below before' | 'below after' |
-    'before' | 'after' | 'above' | 'below';
+  | 'above after'
+  | 'above before'
+  | 'below before'
+  | 'below after'
+  | 'before'
+  | 'after'
+  | 'above'
+  | 'below';
 
 /** Allowed size options for matBadgeSize */
 export type MatBadgeSize = 'small' | 'medium' | 'large';
@@ -60,7 +65,9 @@ const BADGE_CONTENT_CLASS = 'mat-badge-content';
 export class MatBadge extends _MatBadgeBase implements OnInit, OnDestroy, CanDisable {
   /** The color of the badge. Can be `primary`, `accent`, or `warn`. */
   @Input('matBadgeColor')
-  get color(): ThemePalette { return this._color; }
+  get color(): ThemePalette {
+    return this._color;
+  }
   set color(value: ThemePalette) {
     this._setColor(value);
     this._color = value;
@@ -69,7 +76,9 @@ export class MatBadge extends _MatBadgeBase implements OnInit, OnDestroy, CanDis
 
   /** Whether the badge should overlap its contents or not */
   @Input('matBadgeOverlap')
-  get overlap(): boolean { return this._overlap; }
+  get overlap(): boolean {
+    return this._overlap;
+  }
   set overlap(val: boolean) {
     this._overlap = coerceBooleanProperty(val);
   }
@@ -93,7 +102,9 @@ export class MatBadge extends _MatBadgeBase implements OnInit, OnDestroy, CanDis
 
   /** Message used to describe the decorated element via aria-describedby */
   @Input('matBadgeDescription')
-  get description(): string { return this._description; }
+  get description(): string {
+    return this._description;
+  }
   set description(newDescription: string) {
     this._updateHostAriaDescription(newDescription);
   }
@@ -104,7 +115,9 @@ export class MatBadge extends _MatBadgeBase implements OnInit, OnDestroy, CanDis
 
   /** Whether the badge is hidden. */
   @Input('matBadgeHidden')
-  get hidden(): boolean { return this._hidden; }
+  get hidden(): boolean {
+    return this._hidden;
+  }
   set hidden(val: boolean) {
     this._hidden = coerceBooleanProperty(val);
   }
@@ -120,20 +133,21 @@ export class MatBadge extends _MatBadgeBase implements OnInit, OnDestroy, CanDis
   private _isInitialized = false;
 
   constructor(
-      private _ngZone: NgZone,
-      private _elementRef: ElementRef<HTMLElement>,
-      private _ariaDescriber: AriaDescriber,
-      private _renderer: Renderer2,
-      @Optional() @Inject(ANIMATION_MODULE_TYPE) private _animationMode?: string) {
-      super();
+    private _ngZone: NgZone,
+    private _elementRef: ElementRef<HTMLElement>,
+    private _ariaDescriber: AriaDescriber,
+    private _renderer: Renderer2,
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) private _animationMode?: string,
+  ) {
+    super();
 
-      if (typeof ngDevMode === 'undefined' || ngDevMode) {
-        const nativeElement = _elementRef.nativeElement;
-        if (nativeElement.nodeType !== nativeElement.ELEMENT_NODE) {
-          throw Error('matBadge must be attached to an element node.');
-        }
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      const nativeElement = _elementRef.nativeElement;
+      if (nativeElement.nodeType !== nativeElement.ELEMENT_NODE) {
+        throw Error('matBadge must be attached to an element node.');
       }
     }
+  }
 
   /** Whether the badge is above the host or not */
   isAbove(): boolean {
@@ -249,8 +263,9 @@ export class MatBadge extends _MatBadgeBase implements OnInit, OnDestroy, CanDis
   private _clearExistingBadges() {
     // Only check direct children of this host element in order to avoid deleting
     // any badges that might exist in descendant elements.
-    const badges =
-        this._elementRef.nativeElement.querySelectorAll(`:scope > .${BADGE_CONTENT_CLASS}`);
+    const badges = this._elementRef.nativeElement.querySelectorAll(
+      `:scope > .${BADGE_CONTENT_CLASS}`,
+    );
     for (const badgeElement of Array.from(badges)) {
       if (badgeElement !== this._badgeElement) {
         badgeElement.remove();

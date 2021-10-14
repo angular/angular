@@ -16,9 +16,13 @@ let supportsPassiveEvents: boolean;
 export function supportsPassiveEventListeners(): boolean {
   if (supportsPassiveEvents == null && typeof window !== 'undefined') {
     try {
-      window.addEventListener('test', null!, Object.defineProperty({}, 'passive', {
-        get: () => supportsPassiveEvents = true
-      }));
+      window.addEventListener(
+        'test',
+        null!,
+        Object.defineProperty({}, 'passive', {
+          get: () => (supportsPassiveEvents = true),
+        }),
+      );
     } finally {
       supportsPassiveEvents = supportsPassiveEvents || false;
     }
@@ -33,7 +37,8 @@ export function supportsPassiveEventListeners(): boolean {
  * `options` parameter.
  * @param options Object to be normalized.
  */
-export function normalizePassiveListenerOptions(options: AddEventListenerOptions):
-  AddEventListenerOptions | boolean {
+export function normalizePassiveListenerOptions(
+  options: AddEventListenerOptions,
+): AddEventListenerOptions | boolean {
   return supportsPassiveEventListeners() ? options : !!options.capture;
 }

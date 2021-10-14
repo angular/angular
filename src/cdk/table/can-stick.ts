@@ -9,7 +9,7 @@
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 
 /** @docs-private */
-export type Constructor<T> = new(...args: any[]) => T;
+export type Constructor<T> = new (...args: any[]) => T;
 
 /**
  * Interface for a mixin to provide a directive with a function that checks if the sticky input has
@@ -43,7 +43,9 @@ export type CanStickCtor = Constructor<CanStick>;
 export function mixinHasStickyInput<T extends Constructor<{}>>(base: T): CanStickCtor & T {
   return class extends base {
     /** Whether sticky positioning should be applied. */
-    get sticky(): boolean { return this._sticky; }
+    get sticky(): boolean {
+      return this._sticky;
+    }
     set sticky(v: boolean) {
       const prevValue = this._sticky;
       this._sticky = coerceBooleanProperty(v);
@@ -66,6 +68,8 @@ export function mixinHasStickyInput<T extends Constructor<{}>>(base: T): CanStic
       this._hasStickyChanged = false;
     }
 
-    constructor(...args: any[]) { super(...args); }
+    constructor(...args: any[]) {
+      super(...args);
+    }
   };
 }

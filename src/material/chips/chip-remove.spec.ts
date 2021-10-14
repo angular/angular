@@ -9,25 +9,27 @@ describe('Chip Remove', () => {
   let chipDebugElement: DebugElement;
   let chipNativeElement: HTMLElement;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [MatChipsModule],
-      declarations: [
-        TestChip
-      ]
-    });
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [MatChipsModule],
+        declarations: [TestChip],
+      });
 
-    TestBed.compileComponents();
-  }));
+      TestBed.compileComponents();
+    }),
+  );
 
-  beforeEach(waitForAsync(() => {
-    fixture = TestBed.createComponent(TestChip);
-    testChip = fixture.debugElement.componentInstance;
-    fixture.detectChanges();
+  beforeEach(
+    waitForAsync(() => {
+      fixture = TestBed.createComponent(TestChip);
+      testChip = fixture.debugElement.componentInstance;
+      fixture.detectChanges();
 
-    chipDebugElement = fixture.debugElement.query(By.directive(MatChip))!;
-    chipNativeElement = chipDebugElement.nativeElement;
-  }));
+      chipDebugElement = fixture.debugElement.query(By.directive(MatChip))!;
+      chipNativeElement = chipDebugElement.nativeElement;
+    }),
+  );
 
   describe('basic behavior', () => {
     it('should apply a CSS class to the remove icon', () => {
@@ -76,7 +78,6 @@ describe('Chip Remove', () => {
 
       expect(testChip.didRemove).not.toHaveBeenCalled();
     });
-
   });
 });
 
@@ -89,7 +90,7 @@ describe('Chip Remove', () => {
       <button matChipRemove></button>
       <span matChipRemove></span>
     </mat-chip>
-  `
+  `,
 })
 class TestChip {
   removable: boolean;

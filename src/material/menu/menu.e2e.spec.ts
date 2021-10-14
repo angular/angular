@@ -158,11 +158,9 @@ describe('menu', () => {
       await pressKeys(shiftTab, Key.ENTER, shiftTab);
       await expectFocusOn(page.start());
     });
-
   });
 
   describe('position - ', () => {
-
     it('should default menu alignment to "after below" when not set', async () => {
       await page.trigger().click();
 
@@ -203,6 +201,5 @@ describe('menu', () => {
       // trigger.y (top corner) - 44px (menu above trigger) = expected menu.y
       await expectLocation(page.combinedMenu(), {x: trigger.x - 52, y: trigger.y - 44});
     });
-
   });
 });

@@ -12,7 +12,6 @@ import {ButtonToggleGroupHarnessFilters} from './button-toggle-group-harness-fil
 import {ButtonToggleHarnessFilters} from './button-toggle-harness-filters';
 import {MatButtonToggleHarness} from './button-toggle-harness';
 
-
 /** Harness for interacting with a standard mat-button-toggle in tests. */
 export class MatButtonToggleGroupHarness extends ComponentHarness {
   /** The selector for the host element of a `MatButton` instance. */
@@ -24,8 +23,9 @@ export class MatButtonToggleGroupHarness extends ComponentHarness {
    * @param options Options for filtering which button toggle instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: ButtonToggleGroupHarnessFilters = {}):
-    HarnessPredicate<MatButtonToggleGroupHarness> {
+  static with(
+    options: ButtonToggleGroupHarnessFilters = {},
+  ): HarnessPredicate<MatButtonToggleGroupHarness> {
     return new HarnessPredicate(MatButtonToggleGroupHarness, options);
   }
 
@@ -39,7 +39,7 @@ export class MatButtonToggleGroupHarness extends ComponentHarness {
 
   /** Gets whether the button toggle group is disabled. */
   async isDisabled(): Promise<boolean> {
-    return await (await this.host()).getAttribute('aria-disabled') === 'true';
+    return (await (await this.host()).getAttribute('aria-disabled')) === 'true';
   }
 
   /** Gets whether the button toggle group is laid out vertically. */
@@ -51,6 +51,6 @@ export class MatButtonToggleGroupHarness extends ComponentHarness {
   async getAppearance(): Promise<MatButtonToggleAppearance> {
     const host = await this.host();
     const className = 'mat-button-toggle-group-appearance-standard';
-    return await host.hasClass(className) ? 'standard' : 'legacy';
+    return (await host.hasClass(className)) ? 'standard' : 'legacy';
   }
 }

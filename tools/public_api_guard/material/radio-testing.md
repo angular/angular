@@ -49,9 +49,9 @@ export class MatRadioGroupHarness extends _MatRadioGroupHarnessBase<typeof MatRa
 }
 
 // @public (undocumented)
-export abstract class _MatRadioGroupHarnessBase<ButtonType extends (ComponentHarnessConstructor<Button> & {
+export abstract class _MatRadioGroupHarnessBase<ButtonType extends ComponentHarnessConstructor<Button> & {
     with: (options?: ButtonFilters) => HarnessPredicate<Button>;
-}), Button extends ComponentHarness & {
+}, Button extends ComponentHarness & {
     isChecked(): Promise<boolean>;
     getValue(): Promise<string | null>;
     getName(): Promise<string | null>;

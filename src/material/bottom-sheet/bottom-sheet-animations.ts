@@ -23,9 +23,13 @@ export const matBottomSheetAnimations: {
   bottomSheetState: trigger('state', [
     state('void, hidden', style({transform: 'translateY(100%)'})),
     state('visible', style({transform: 'translateY(0%)'})),
-    transition('visible => void, visible => hidden',
-        animate(`${AnimationDurations.COMPLEX} ${AnimationCurves.ACCELERATION_CURVE}`)),
-    transition('void => visible',
-        animate(`${AnimationDurations.EXITING} ${AnimationCurves.DECELERATION_CURVE}`)),
-  ])
+    transition(
+      'visible => void, visible => hidden',
+      animate(`${AnimationDurations.COMPLEX} ${AnimationCurves.ACCELERATION_CURVE}`),
+    ),
+    transition(
+      'void => visible',
+      animate(`${AnimationDurations.EXITING} ${AnimationCurves.DECELERATION_CURVE}`),
+    ),
+  ]),
 };

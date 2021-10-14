@@ -22,5 +22,4 @@ import {MdcSliderDemo} from './mdc-slider-demo';
   ],
   declarations: [MdcSliderDemo],
 })
-export class MdcSliderDemoModule {
-}
+export class MdcSliderDemoModule {}

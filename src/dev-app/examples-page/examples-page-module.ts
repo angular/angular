@@ -12,11 +12,7 @@ import {ExampleModule} from '../example/example-module';
 import {ExamplesPage} from './examples-page';
 
 @NgModule({
-  imports: [
-    ExampleModule,
-    RouterModule.forChild([{path: '', component: ExamplesPage}]),
-  ],
+  imports: [ExampleModule, RouterModule.forChild([{path: '', component: ExamplesPage}])],
   declarations: [ExamplesPage],
 })
-export class ExamplesPageModule {
-}
+export class ExamplesPageModule {}

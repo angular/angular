@@ -7,12 +7,7 @@ import {ToolbarMultirowExample} from './toolbar-multirow/toolbar-multirow-exampl
 import {ToolbarOverviewExample} from './toolbar-overview/toolbar-overview-example';
 import {ToolbarHarnessExample} from './toolbar-harness/toolbar-harness-example';
 
-export {
-  ToolbarBasicExample,
-  ToolbarHarnessExample,
-  ToolbarMultirowExample,
-  ToolbarOverviewExample,
-};
+export {ToolbarBasicExample, ToolbarHarnessExample, ToolbarMultirowExample, ToolbarOverviewExample};
 
 const EXAMPLES = [
   ToolbarBasicExample,
@@ -22,14 +17,9 @@ const EXAMPLES = [
 ];
 
 @NgModule({
-  imports: [
-    MatButtonModule,
-    MatIconModule,
-    MatToolbarModule,
-  ],
+  imports: [MatButtonModule, MatIconModule, MatToolbarModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
   entryComponents: EXAMPLES,
 })
-export class ToolbarExamplesModule {
-}
+export class ToolbarExamplesModule {}

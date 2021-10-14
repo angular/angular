@@ -11,7 +11,7 @@ const messages = utils.ruleMessages(ruleName, {
   value: (property, value) => `Unprefixed value in "${property}: ${value}".`,
   atRule: name => `Unprefixed @rule "${name}".`,
   mediaFeature: value => `Unprefixed media feature "${value}".`,
-  selector: selector => `Unprefixed selector "${selector}".`
+  selector: selector => `Unprefixed selector "${selector}".`,
 });
 
 /** Config options for the rule. */
@@ -48,7 +48,7 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, _options?) => {
           ruleName,
           message: messages.property(decl.prop, propertyPrefixes),
           node: decl,
-          index: (decl.raws.before || '').length
+          index: (decl.raws.before || '').length,
         });
       } else if (needsPrefix.value(decl.prop, decl.value)) {
         utils.report({
@@ -56,7 +56,7 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, _options?) => {
           ruleName,
           message: messages.value(decl.prop, decl.value),
           node: decl,
-          index: (decl.raws.before || '').length
+          index: (decl.raws.before || '').length,
         });
       }
     });
@@ -68,14 +68,14 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, _options?) => {
           result,
           ruleName,
           message: messages.atRule(rule.name),
-          node: rule
+          node: rule,
         });
       } else if (needsPrefix.mediaFeature(rule.params)) {
         utils.report({
           result,
           ruleName,
           message: messages.mediaFeature(rule.name),
-          node: rule
+          node: rule,
         });
       }
     });
@@ -84,7 +84,7 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, _options?) => {
     root.walkRules(rule => {
       // Silence warnings for Sass selectors. Stylelint does this in their own rules as well:
       // https://github.com/stylelint/stylelint/blob/master/lib/utils/isStandardSyntaxSelector.js
-      parseSelector(rule.selector, { warn: () => {} }, rule, (selectorTree: any) => {
+      parseSelector(rule.selector, {warn: () => {}}, rule, (selectorTree: any) => {
         selectorTree.walkPseudos((pseudoNode: any) => {
           if (needsPrefix.selector(pseudoNode.value)) {
             utils.report({
@@ -98,10 +98,8 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, _options?) => {
         });
       });
     });
-
   };
 });
-
 
 plugin.ruleName = ruleName;
 plugin.messages = messages;

@@ -12,11 +12,7 @@ import {RouterModule} from '@angular/router';
 import {IconDemo} from './icon-demo';
 
 @NgModule({
-  imports: [
-    MatIconModule,
-    RouterModule.forChild([{path: '', component: IconDemo}]),
-  ],
+  imports: [MatIconModule, RouterModule.forChild([{path: '', component: IconDemo}])],
   declarations: [IconDemo],
 })
-export class IconDemoModule {
-}
+export class IconDemoModule {}

@@ -32,5 +32,4 @@ import {BaselineDemo} from './baseline-demo';
   ],
   declarations: [BaselineDemo],
 })
-export class BaselineDemoModule {
-}
+export class BaselineDemoModule {}
