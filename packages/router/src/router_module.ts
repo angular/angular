@@ -527,7 +527,7 @@ export class RouterInitializer implements OnDestroy {
       } else if (
           // TODO: enabled is deprecated as of v11, can be removed in v13
           opts.initialNavigation === 'enabled' || opts.initialNavigation === 'enabledBlocking') {
-        router.afterPreactivation = () => {
+        router.hooks.afterPreactivation = () => {
           // only the initial navigation should be delayed
           if (!this.initNavigation) {
             this.initNavigation = true;
@@ -536,7 +536,7 @@ export class RouterInitializer implements OnDestroy {
 
             // subsequent navigations should not be delayed
           } else {
-            return of(void 0);
+            return of(null) as any;
           }
         };
         router.initialNavigation();
@@ -567,7 +567,7 @@ export class RouterInitializer implements OnDestroy {
     preloader.setUpPreloading();
     routerScroller.init();
     router.resetRootComponentType(ref.componentTypes[0]);
-    this.resultOfPreactivationDone.next(void 0);
+    this.resultOfPreactivationDone.next(null!);
     this.resultOfPreactivationDone.complete();
   }
 
