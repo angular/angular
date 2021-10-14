@@ -536,6 +536,38 @@ module.exports = setupForCorporateProxy(proxyConfig);
 
 {@a browser-compat}
 
+## Persistent disk cache
+Angular CLI by default will save a number of cachable operations on disk.
+
+When the same build is re-run, the state of the previous build is restored from disk and re-uses previously performed operations which causes a decrease in the time taken to build and test your applications and libraries.
+
+To amend the default cache settings, add the `cli.cache` object to your [Workspace Configuration](guide/workspace-config).
+The object goes under `cli.cache` at the top level of the file, outside the `projects` sections.
+
+<code-example language="json">
+
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "cache": {
+      ...
+    }
+  },
+  "projects": {}
+}
+
+</code-example>
+
+To learn more, see [cache options](guide/workspace-config#cache-options).
+
+<div class="alert is-important">
+
+By default, disk cache is not enabled on Continuous integration (CI) servers.
+The Angular CLI, checks for the presence and value of the `CI` environment variable to determine in which environment it is running.
+
+</div>
+
 ## Configuring browser compatibility
 
 See [browser support guide](guide/browser-support).
