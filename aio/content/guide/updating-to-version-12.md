@@ -95,10 +95,3 @@ For more information about distributing libraries with View Engine and Ivy, see 
   - Libraries compiled in partial compilation mode will not contain legacy `i18n` message IDs.
     If the library was previously compiled by View Engine, and contained legacy `i18n` message IDs, then applications may have translation files that you'll need to migrate to the new message ID format. For more information, see [Migrating legacy localization IDs](guide/migration-legacy-message-id).
   - For context, see [Issue #38366](https://github.com/angular/angular/issues/38366).
-
-<div class="alert is-helpful">
-
-Since version 9, Angular Ivy is the default rendering engine.
-For more information about Ivy, see [Angular Ivy](guide/ivy).
-
-</div>

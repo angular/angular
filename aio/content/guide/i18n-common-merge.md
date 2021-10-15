@@ -3,7 +3,7 @@
 To merge the completed translations into your project, complete the following actions
 
 1.  Use the [Angular CLI][AioCliMain] to build a copy of the distributable files of your project
-1.  Use the `"localize"` option to replace all of the i18n messages with the valid translations and build a localized variant application.  
+1.  Use the `"localize"` option to replace all of the i18n messages with the valid translations and build a localized variant application.
     A variant application is a complete a copy of the distributable files of your application translated for a single locale.
 
 After you merge the translations, serve each distributable copy of the application using server-side language detection or different subdirectories.
@@ -194,8 +194,6 @@ Compile once, then translate for each locale.
 [AioGuideI18nCommonMergeGenerateApplicationVariantsForEachLocale]: guide/i18n-common-merge#generate-application-variants-for-each-locale "Generate application variants for each locale - Merge translations into the application | Angular"
 
 [AioGuideI18nCommonTranslationFilesChangeTheSourceLanguageFileFormat]: guide/i18n-common-translation-files#change-the-source-language-file-format "Change the source language file format - Work with translation files | Angular"
-
-[AioGuideIvyOptingOutOfIvyInVersion9]: guide/ivy#opting-out-of-ivy-in-version-9 "Opting out of Ivy in version 9 - Angular Ivy | Angular"
 
 [AioGuideWorkspaceConfig]: guide/workspace-config "Angular workspace configuration | Angular"
 
