@@ -303,24 +303,11 @@ jobs:
       - init_environment
       - install_java
       - run:
-          command: yarn test //...
+          # We need to explicitly specify the --symlink_prefix option because otherwise we would
+          # not be able to easily find the output bin directory when uploading artifacts for size
+          # measurements.
+          command: yarn test  --symlink_prefix=dist/ //...
           no_output_timeout: 20m
-
-  # Temporary job to test what will happen when we flip the Ivy flag to true
-  test_ivy_aot:
-    executor:
-      name: test-browser-executor
-      resource_class: xlarge
-    steps:
-      - custom_attach_workspace
-      - init_environment
-      # We need to explicitly specify the --symlink_prefix option because otherwise we would
-      # not be able to easily find the output bin directory when uploading artifacts for size
-      # measurements.
-      - run:
-          command: yarn test-ivy-aot //... --symlink_prefix=dist/
-          no_output_timeout: 20m
-
         # Publish bundle artifacts which will be used to calculate the size change. **Note**: Make
         # sure that the size plugin from the Angular robot fetches the artifacts from this CircleCI
         # job (see .github/angular-robot.yml). Additionally any artifacts need to be stored with the
@@ -773,9 +760,6 @@ workflows:
       - test:
           requires:
             - setup
-      - test_ivy_aot:
-          requires:
-            - setup
       - build-npm-packages:
           requires:
             - setup
@@ -813,7 +797,6 @@ workflows:
           requires:
             # Only publish if tests and integration tests pass
             - test
-            - test_ivy_aot
             # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
             - test_aio_local
             - test_docs_examples
