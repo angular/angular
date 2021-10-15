@@ -255,7 +255,7 @@ export interface Navigation {
     extras: NavigationExtras;
     finalUrl?: UrlTree;
     id: number;
-    initialUrl: string | UrlTree;
+    initialUrl: UrlTree;
     previousNavigation: Navigation | null;
     trigger: 'imperative' | 'popstate' | 'hashchange';
 }
