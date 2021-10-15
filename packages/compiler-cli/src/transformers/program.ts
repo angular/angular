@@ -38,6 +38,12 @@ import {createMessageDiagnostic, DTS, GENERATED_FILES, isInRootDir, ngToTsDiagno
  */
 const MAX_FILE_COUNT_FOR_SINGLE_FILE_EMIT = 20;
 
+/** Error message to show when attempting to build View Engine. */
+const VE_DISABLED_MESSAGE = `
+This compilation is using the View Engine compiler which is no longer supported by the Angular team
+and is being removed. Please upgrade to the Ivy compiler by switching to \`NgtscProgram\`. See
+https://angular.io/guide/ivy for more information.
+`.trim().split('\n').join(' ');
 
 /**
  * Fields to lower within metadata in render2 mode.
@@ -110,6 +116,10 @@ class AngularCompilerProgram implements Program {
   constructor(
       rootNames: ReadonlyArray<string>, private options: CompilerOptions,
       private host: CompilerHost, oldProgram?: Program) {
+    if (true as boolean) {
+      throw new Error(VE_DISABLED_MESSAGE);
+    }
+
     this.rootNames = [...rootNames];
 
     if (!options.disableTypeScriptVersionCheck) {
