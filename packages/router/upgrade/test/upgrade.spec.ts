@@ -7,31 +7,87 @@
  */
 
 import {Location} from '@angular/common';
-import {TestBed} from '@angular/core/testing';
+import {$locationShim, UrlCodec} from '@angular/common/upgrade';
+import {fakeAsync, flush, TestBed} from '@angular/core/testing';
 import {Router} from '@angular/router';
+import {RouterTestingModule} from '@angular/router/testing';
 import {setUpLocationSync} from '@angular/router/upgrade';
 import {UpgradeModule} from '@angular/upgrade/static';
 
+import {LocationUpgradeTestModule} from './upgrade_location_test_module';
+
+export function injectorFactory() {
+  const rootScopeMock = new $rootScopeMock();
+  const rootElementMock = {on: () => undefined};
+  return function $injectorGet(provider: string) {
+    if (provider === '$rootScope') {
+      return rootScopeMock;
+    } else if (provider === '$rootElement') {
+      return rootElementMock;
+    } else {
+      throw new Error(`Unsupported injectable mock: ${provider}`);
+    }
+  };
+}
+
+export class $rootScopeMock {
+  private watchers: any[] = [];
+  private events: {[k: string]: any[]} = {};
+
+  $watch(fn: any) {
+    this.watchers.push(fn);
+  }
+
+  $broadcast(evt: string, ...args: any[]) {
+    if (this.events[evt]) {
+      this.events[evt].forEach(fn => {
+        fn.apply(fn, [/** angular.IAngularEvent*/ {}, ...args]);
+      });
+    }
+    return {
+      defaultPrevented: false,
+      preventDefault() {
+        this.defaultPrevented = true;
+      }
+    };
+  }
+
+  $on(evt: string, fn: any) {
+    if (!this.events[evt]) {
+      this.events[evt] = [];
+    }
+    this.events[evt].push(fn);
+  }
+
+  $evalAsync(fn: any) {
+    fn();
+  }
+
+  $digest() {
+    this.watchers.forEach(fn => fn());
+  }
+}
+
 describe('setUpLocationSync', () => {
   let upgradeModule: UpgradeModule;
-  let RouterMock: any;
-  let LocationMock: any;
+  let router: any;
+  let location: any;
 
   beforeEach(() => {
-    RouterMock = jasmine.createSpyObj('Router', ['navigateByUrl']);
-    LocationMock = jasmine.createSpyObj('Location', ['normalize']);
-
     TestBed.configureTestingModule({
-      providers: [
-        UpgradeModule, {provide: Router, useValue: RouterMock},
-        {provide: Location, useValue: LocationMock}
+      imports: [
+        RouterTestingModule.withRoutes([{path: '1', children: []}, {path: '2', children: []}]),
+        UpgradeModule,
+        LocationUpgradeTestModule.config(),
       ],
     });
 
     upgradeModule = TestBed.inject(UpgradeModule);
-    upgradeModule.$injector = {
-      get: jasmine.createSpy('$injector.get').and.returnValue({'$on': () => undefined})
-    };
+    router = TestBed.inject(Router);
+    location = TestBed.inject(Location);
+    spyOn(router, 'navigateByUrl').and.callThrough();
+    spyOn(location, 'normalize').and.callThrough();
+    upgradeModule.$injector = {get: injectorFactory()};
   });
 
   it('should throw an error if the UpgradeModule.bootstrap has not been called', () => {
@@ -45,10 +101,8 @@ describe('setUpLocationSync', () => {
 
   it('should get the $rootScope from AngularJS and set an $on watch on $locationChangeStart',
      () => {
-       const $rootScope = jasmine.createSpyObj('$rootScope', ['$on']);
-
-       upgradeModule.$injector.get.and.callFake(
-           (name: string) => (name === '$rootScope') && $rootScope);
+       const $rootScope = upgradeModule.$injector.get('$rootScope');
+       spyOn($rootScope, '$on');
 
        setUpLocationSync(upgradeModule);
 
@@ -62,21 +116,21 @@ describe('setUpLocationSync', () => {
     const normalizedPathname = 'foo';
     const query = '?query=1&query2=3';
     const hash = '#new/hash';
-    const $rootScope = jasmine.createSpyObj('$rootScope', ['$on']);
+    const $rootScope = upgradeModule.$injector.get('$rootScope');
+    spyOn($rootScope, '$on');
 
-    upgradeModule.$injector.get.and.returnValue($rootScope);
-    LocationMock.normalize.and.returnValue(normalizedPathname);
+    location.normalize.and.returnValue(normalizedPathname);
 
     setUpLocationSync(upgradeModule);
 
     const callback = $rootScope.$on.calls.argsFor(0)[1];
     callback({}, url + pathname + query + hash, '');
 
-    expect(LocationMock.normalize).toHaveBeenCalledTimes(1);
-    expect(LocationMock.normalize).toHaveBeenCalledWith(pathname);
+    expect(location.normalize).toHaveBeenCalledTimes(1);
+    expect(location.normalize).toHaveBeenCalledWith(pathname);
 
-    expect(RouterMock.navigateByUrl).toHaveBeenCalledTimes(1);
-    expect(RouterMock.navigateByUrl).toHaveBeenCalledWith(normalizedPathname + query + hash);
+    expect(router.navigateByUrl).toHaveBeenCalledTimes(1);
+    expect(router.navigateByUrl).toHaveBeenCalledWith(normalizedPathname + query + hash);
   });
 
   it('should allow configuration to work with hash-based routing', () => {
@@ -86,21 +140,20 @@ describe('setUpLocationSync', () => {
     const query = '?query=1&query2=3';
     const hash = '#new/hash';
     const combinedUrl = url + '#' + pathname + query + hash;
-    const $rootScope = jasmine.createSpyObj('$rootScope', ['$on']);
-
-    upgradeModule.$injector.get.and.returnValue($rootScope);
-    LocationMock.normalize.and.returnValue(normalizedPathname);
+    const $rootScope = upgradeModule.$injector.get('$rootScope');
+    spyOn($rootScope, '$on');
+    location.normalize.and.returnValue(normalizedPathname);
 
     setUpLocationSync(upgradeModule, 'hash');
 
     const callback = $rootScope.$on.calls.argsFor(0)[1];
     callback({}, combinedUrl, '');
 
-    expect(LocationMock.normalize).toHaveBeenCalledTimes(1);
-    expect(LocationMock.normalize).toHaveBeenCalledWith(pathname);
+    expect(location.normalize).toHaveBeenCalledTimes(1);
+    expect(location.normalize).toHaveBeenCalledWith(pathname);
 
-    expect(RouterMock.navigateByUrl).toHaveBeenCalledTimes(1);
-    expect(RouterMock.navigateByUrl).toHaveBeenCalledWith(normalizedPathname + query + hash);
+    expect(router.navigateByUrl).toHaveBeenCalledTimes(1);
+    expect(router.navigateByUrl).toHaveBeenCalledWith(normalizedPathname + query + hash);
   });
 
   it('should work correctly on browsers that do not start pathname with `/`', () => {
@@ -109,15 +162,15 @@ describe('setUpLocationSync', () => {
     Object.defineProperty(anchorProto, 'pathname', {get: () => 'foo/bar'});
 
     try {
-      const $rootScope = jasmine.createSpyObj('$rootScope', ['$on']);
-      upgradeModule.$injector.get.and.returnValue($rootScope);
+      const $rootScope = upgradeModule.$injector.get('$rootScope');
+      spyOn($rootScope, '$on');
 
       setUpLocationSync(upgradeModule);
 
       const callback = $rootScope.$on.calls.argsFor(0)[1];
       callback({}, '', '');
 
-      expect(LocationMock.normalize).toHaveBeenCalledWith('/foo/bar');
+      expect(location.normalize).toHaveBeenCalledWith('/foo/bar');
     } finally {
       Object.defineProperty(anchorProto, 'pathname', originalDescriptor!);
     }
