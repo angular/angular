@@ -78,10 +78,8 @@ Bazel is used as the primary tool for building and testing Angular. Building and
 incremental with Bazel, and it's possible to only run tests for an individual package instead
 of for all packages. Read more about this in the [BAZEL.md](./BAZEL.md) document.
 
-You should execute all test suites before submitting a PR to GitHub. Note that not all tests
-support both Ivy and View Engine, so they need to be run separately:
-- `yarn test-ivy-aot //packages/...`
-- `yarn test-non-ivy //packages/...`
+You should execute all test suites before submitting a PR to GitHub.
+- `yarn test //packages/...`
 
 **Note**: The first test run will be much slower than future runs. This is because future runs will
 benefit from Bazel's capability to do incremental builds.
