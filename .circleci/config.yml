@@ -341,7 +341,7 @@ jobs:
           destination: core/todo/bundle.br
 
   # NOTE: This is currently limited to master builds only. See the `monitoring` configuration.
-  saucelabs_view_engine:
+  saucelabs:
     executor:
       name: default-executor
       # In order to avoid the bottleneck of having a slow host machine, we acquire a better
@@ -353,35 +353,11 @@ jobs:
       - init_environment
       - init_saucelabs_environment
       - run:
-          name: Run Bazel tests on Saucelabs with ViewEngine
+          name: Run Bazel tests on Saucelabs
           # See /tools/saucelabs/README.md for more info
           command: |
             yarn bazel run //tools/saucelabs:sauce_service_setup
-            TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "ivy-only", ...) except attr("tags", "fixme-saucelabs-ve", ...)')
-            yarn bazel test --config=saucelabs --config=view-engine ${TESTS}
-            yarn bazel run //tools/saucelabs:sauce_service_stop
-          no_output_timeout: 40m
-      - notify_webhook_on_fail:
-          webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
-
-  # NOTE: This is currently limited to master builds only. See the `monitoring` configuration.
-  saucelabs_ivy:
-    executor:
-      name: default-executor
-      # In order to avoid the bottleneck of having a slow host machine, we acquire a better
-      # container for this job. This is necessary because we launch a lot of browsers concurrently
-      # and therefore the tunnel and Karma need to process a lot of file requests and tests.
-      resource_class: xlarge
-    steps:
-      - custom_attach_workspace
-      - init_environment
-      - init_saucelabs_environment
-      - run:
-          name: Run Bazel tests on Saucelabs with Ivy
-          # See /tools/saucelabs/README.md for more info
-          command: |
-            yarn bazel run //tools/saucelabs:sauce_service_setup
-            TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "view-engine-only", ...) except attr("tags", "fixme-saucelabs-ivy", ...)')
+            TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "view-engine-only", ...) except attr("tags", "fixme-saucelabs", ...)')
             yarn bazel test --config=saucelabs ${TESTS}
             yarn bazel run //tools/saucelabs:sauce_service_stop
           no_output_timeout: 40m
@@ -888,16 +864,7 @@ workflows:
       - aio_monitoring_next:
           requires:
             - setup
-      - saucelabs_ivy:
-          # Testing saucelabs via Bazel currently taking longer than the legacy saucelabs job as it
-          # each karma_web_test target is provisioning and tearing down browsers which is adding
-          # a lot of overhead. Running once daily on master only to avoid wasting resources and
-          # slowing down CI for PRs.
-          # TODO: Run this job on all branches (including PRs) once karma_web_test targets can
-          # share provisioned browsers and we can remove the legacy saucelabs job.
-          requires:
-            - setup
-      - saucelabs_view_engine:
+      - saucelabs:
           # Testing saucelabs via Bazel currently taking longer than the legacy saucelabs job as it
           # each karma_web_test target is provisioning and tearing down browsers which is adding
           # a lot of overhead. Running once daily on master only to avoid wasting resources and
