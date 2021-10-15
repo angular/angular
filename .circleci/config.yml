@@ -472,8 +472,6 @@ jobs:
   # the bazel packages more than once. Even though we have a remote cache, these jobs will
   # typically run in parallel so up-to-date outputs will not be available at the time the build
   # starts.
-
-  # Build the view engine npm packages. No new jobs should depend on this.
   build-npm-packages:
     executor:
       name: default-executor
