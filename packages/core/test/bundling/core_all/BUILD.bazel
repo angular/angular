@@ -1,7 +1,7 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ng_rollup_bundle", "ts_library")
 load("//tools/size-tracking:index.bzl", "js_size_tracking_test")
+
+package(default_visibility = ["//visibility:public"])
 
 ts_library(
     name = "core_all",
@@ -60,6 +60,6 @@ js_size_tracking_test(
     source_map = "angular/packages/core/test/bundling/core_all/bundle.min.js.map",
     tags = [
         "manual",
-        "no-ivy-aot",
+        "view-engine-only",
     ],
 )

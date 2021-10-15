@@ -85,7 +85,7 @@ jasmine_node_test(
     ],
     tags = [
         # Disabled as these tests pertain to the old ngc compilation and are not relevant in Ivy.
-        "no-ivy-aot",
+        "view-engine-only",
     ],
     deps = [
         ":test_lib",
@@ -99,7 +99,7 @@ karma_web_test_suite(
     name = "test_web",
     tags = [
         # Disabled as these tests pertain to the old ngc compilation and are not relevant in Ivy.
-        "no-ivy-aot",
+        "view-engine-only",
     ],
     deps = [
         ":test_lib",

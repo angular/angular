@@ -30,7 +30,7 @@ jasmine_node_test(
     tags = [
         # Disabled as these tests pertain to the old compiler and not ngtsc, which doesn't use any
         # of these transformer utilities.
-        "no-ivy-aot",
+        "view-engine-only",
     ],
     deps = [
         ":test_lib",

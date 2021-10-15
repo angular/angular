@@ -78,7 +78,7 @@ jasmine_node_test(
     ],
     tags = [
         # the language service is not yet compatible with Ivy
-        "no-ivy-aot",
+        "view-engine-only",
     ],
     deps = [
         ":features_test_lib",
@@ -94,7 +94,7 @@ jasmine_node_test(
     ],
     tags = [
         # the language service is not yet compatible with Ivy
-        "no-ivy-aot",
+        "view-engine-only",
     ],
     deps = [
         ":infra_test_lib",
@@ -128,7 +128,7 @@ jasmine_node_test(
     tags = [
         # Disabled as these tests pertain to diagnostics in the old ngc compiler. The Ivy ngtsc
         # compiler has its own tests for diagnostics.
-        "no-ivy-aot",
+        "view-engine-only",
     ],
     deps = [
         ":diagnostics_lib",

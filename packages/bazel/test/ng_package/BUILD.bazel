@@ -81,7 +81,7 @@ jasmine_node_test(
     # We don't want to run the example_package golden test with Ivy yet. Currently the golden
     # file is based on non-ivy output and therefore won't work for ngc and Ivy at the same time.
     # TODO: We should be able to have another golden for ivy-aot as well.
-    tags = ["no-ivy-aot"],
+    tags = ["view-engine-only"],
     deps = ["@npm//diff"],
 )
 
