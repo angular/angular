@@ -752,30 +752,12 @@ jobs:
       - setup_win
       - run:
           name: Build all windows CI targets
-          command: bazel build --config=view-engine --build_tag_filters=view-engine-only //packages/compiler-cli/...
-          no_output_timeout: 15m
-      - run:
-          name: Test all windows CI targets
-          command: bazel test --config=view-engine --test_tag_filters="view-engine-only,-browser:chromium-local" //packages/compiler-cli/...
-          no_output_timeout: 15m
-
-  test_ivy_aot_win:
-    executor: windows-executor
-    steps:
-      - setup_win
-      - run:
-          name: Build all windows CI targets
           command: bazel build --build_tag_filters=-view-engine-only //packages/compiler-cli/...
           no_output_timeout: 15m
       - run:
           name: Test all windows CI targets
-          command: bazel test --test_tag_filters="-view-engine-only,-browser:chromium-local" //packages/compiler-cli/... //packages/localize/...
+          command: bazel test --test_tag_filters="-view-engine-only,-browser:chromium-local" //packages/compiler-cli/...
           no_output_timeout: 15m
-      # Save dependencies to use on subsequent runs.
-      - save_cache:
-          key: *cache_key_win
-          paths:
-            - ~/.cache/yarn
 
 workflows:
   version: 2
@@ -846,9 +828,6 @@ workflows:
           requires:
             - setup
       - test_win:
-          requires:
-            - setup
-      - test_ivy_aot_win:
           requires:
             - setup
 
