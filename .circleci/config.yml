@@ -789,11 +789,11 @@ jobs:
       - setup_win
       - run:
           name: Build all windows CI targets
-          command: bazel build --config=ivy --build_tag_filters=-view-engine-only,-fixme-ivy-aot //packages/compiler-cli/...
+          command: bazel build --build_tag_filters=-view-engine-only //packages/compiler-cli/...
           no_output_timeout: 15m
       - run:
           name: Test all windows CI targets
-          command: bazel test --config=ivy --test_tag_filters="-view-engine-only,-fixme-ivy-aot,-browser:chromium-local" //packages/compiler-cli/... //packages/localize/...
+          command: bazel test --test_tag_filters="-view-engine-only,-browser:chromium-local" //packages/compiler-cli/... //packages/localize/...
           no_output_timeout: 15m
       # Save dependencies to use on subsequent runs.
       - save_cache:
