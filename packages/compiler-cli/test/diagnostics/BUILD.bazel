@@ -23,7 +23,7 @@ jasmine_node_test(
     tags = [
         # Disabled as these tests pertain to typechecking in the old ngc compiler. The Ivy ngtsc
         # compiler has its own typechecking implementation and tests.
-        "no-ivy-aot",
+        "view-engine-only",
     ],
     deps = [
         ":check_types_lib",

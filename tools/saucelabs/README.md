@@ -59,7 +59,7 @@ Running all Ivy karma tests in Saucelabs:
 
 ``` bash
 yarn bazel run //tools/saucelabs:sauce_service_setup
-TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "no-ivy-aot", ...) except attr("tags", "fixme-saucelabs-ivy", ...)')
+TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "view-engine-only", ...) except attr("tags", "fixme-saucelabs-ivy", ...)')
 yarn bazel test --config=saucelabs ${TESTS}
 ```
 
