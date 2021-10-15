@@ -74,12 +74,6 @@ These message formats have a number of issues, such as whitespace handling and r
 The new message format is more resilient to whitespace changes, is the same across all translation file formats, and can be generated directly from calls to `$localize`.
 This allows `$localize` messages in application code to use the same ID as identical `i18n` messages in component templates.
 
-### `enableIvy`
-
-Enables the [Ivy](guide/ivy) compilation and rendering pipeline. Default is `true`, as of version 9. In version 9, you can [opt out of Ivy](guide/ivy#opting-out-of-angular-ivy) to continue using the previous compiler, View Engine.
-
-For library projects generated with the CLI, the production configuration default is `false` in version 9.
-
 ### `enableResourceInlining`
 
 When `true`, replaces the `templateUrl` and `styleUrls` property in all `@Component` decorators with inlined contents in `template` and `styles` properties.
@@ -180,7 +174,7 @@ When you use the CLI command `ng new --strict`, it is set to `true` in the gener
 
 ### `strictTemplates`
 
-When `true`, enables [strict template type checking](guide/template-typecheck#strict-mode). Strict mode is only available when using [Ivy](guide/ivy) (Angular version 9 and later).
+When `true`, enables [strict template type checking](guide/template-typecheck#strict-mode).
 
 Additional strictness flags allow you to enable and disable specific types of strict template type checking. See [troubleshooting template errors](guide/template-typecheck#troubleshooting-template-errors).
 

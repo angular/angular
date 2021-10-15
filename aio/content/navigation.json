@@ -774,11 +774,6 @@
               "tooltip": "Everything you need to know for updating your application from version 11 to 12."
             },
             {
-              "url": "guide/ivy-compatibility",
-              "title": "Ivy Compatibility Guide",
-              "tooltip": "Details to help you make sure your application is compatible with Ivy."
-            },
-            {
               "url": "guide/migration-legacy-message-id",
               "title": "Migration: Legacy Localization IDs",
               "tooltip": "Learn how to migrate legacy IDs for localization to new, more stable ones."
@@ -789,11 +784,6 @@
           "url": "guide/deprecations",
           "title": "Deprecations",
           "tooltip": "Summary of Angular APIs and features that are deprecated."
-        },
-        {
-          "url": "guide/ivy",
-          "title": "Angular Ivy",
-          "tooltip": "About the Angular Ivy compilation and rendering pipeline."
         },
         {
           "title": "Upgrading from AngularJS",
@@ -1246,7 +1236,7 @@
           "title": "한국어",
           "url": "https://angular.kr/"
         },
-        { 
+        {
           "title": "Complete language list",
           "url": "guide/localized-documentation"
         }
