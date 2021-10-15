@@ -4,7 +4,7 @@
 size:
   disabled: false
   maxSizeIncrease: 2000
-  circleCiStatusName: 'ci/circleci: test_ivy_aot'
+  circleCiStatusName: 'ci/circleci: test'
 
 # options for the merge plugin
 merge:
