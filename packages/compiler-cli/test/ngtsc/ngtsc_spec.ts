@@ -3691,7 +3691,7 @@ function allTests(os: string) {
     });
 
     it('should use proper default value for i18nUseExternalIds config param', () => {
-      env.tsconfig();  // default is `true`
+      env.tsconfig();  // default value of `i18nUseExternalIds` is `true`
       env.write(`test.ts`, `
       import {Component} from '@angular/core';
        @Component({
@@ -3702,7 +3702,7 @@ function allTests(os: string) {
     `);
       env.driveMain();
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('MSG_EXTERNAL_8321000940098097247$$TEST_TS_1');
+      expect(jsContents).toContain('MSG_EXTERNAL_8321000940098097247$$7296664567837709624_1');
     });
 
     it('should take i18nUseExternalIds config option into account', () => {
@@ -3719,6 +3719,29 @@ function allTests(os: string) {
       const jsContents = env.getContents('test.js');
       expect(jsContents).not.toContain('MSG_EXTERNAL_');
     });
+
+    it('should produce hash-based suffix for Closure const names when `i18nUseExternalIds` is true (default)',
+       () => {
+         env.tsconfig();  // default value of `i18nUseExternalIds` is `true`
+         env.write(`test.ts`, `
+            import {Component} from '@angular/core';
+            @Component({
+              selector: 'test',
+              template: \`
+                <div i18n="@@idA" i18n-title="@@idB" title="Some title">
+                  Some content
+                </div>
+              \`
+            })
+            class FooCmp {}
+          `);
+         env.driveMain();
+         const jsContents = env.getContents('test.js');
+         expect(jsContents)
+             .toContain('MSG_EXTERNAL_idB$$7296664567837709624_1 = goog.getMsg("Some title")');
+         expect(jsContents)
+             .toContain('MSG_EXTERNAL_idA$$7296664567837709624_3 = goog.getMsg(" Some content ")');
+       });
 
     it('should render legacy ids when `enableI18nLegacyMessageIdFormat` is not false', () => {
       env.tsconfig({});

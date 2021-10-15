@@ -11,6 +11,7 @@ import {BindingForm, convertPropertyBinding} from '../../compiler_util/expressio
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
 import {AST, ParsedEvent, ParsedEventType, ParsedProperty} from '../../expression_parser/ast';
+import {computeMsgId} from '../../i18n/digest';
 import * as o from '../../output/output_ast';
 import {ParseError, ParseSourceSpan, sanitizeIdentifier} from '../../parse_util';
 import {CssSelector, SelectorMatcher} from '../../selector';
@@ -169,10 +170,16 @@ export function compileComponentFromMetadata(
   const changeDetection = meta.changeDetection;
 
   const template = meta.template;
+
+  // Use relative context file path to compute a hash that would be added to all
+  // Closure-specific i18n `MSG_` const names to make sure they are unique in the final bundle
+  // (this is a Closure requirement).
+  const i18nUniqueClosureSuffix = computeMsgId(meta.relativeContextFilePath ?? '');
+
   const templateBuilder = new TemplateDefinitionBuilder(
       constantPool, BindingScope.createRootScope(), 0, templateTypeName, null, null, templateName,
       directiveMatcher, directivesUsed, meta.pipes, pipesUsed, R3.namespaceHTML,
-      meta.relativeContextFilePath, meta.i18nUseExternalIds);
+      i18nUniqueClosureSuffix, meta.i18nUseExternalIds);
 
   const templateFunctionExpression = templateBuilder.buildTemplateFunction(template.nodes, []);
 

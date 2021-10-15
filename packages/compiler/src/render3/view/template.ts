@@ -183,8 +183,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   // Number of binding slots
   private _bindingSlots = 0;
 
-  private fileBasedI18nSuffix: string;
-
   // Projection slots found in the template. Projection slots can distribute projected
   // nodes based on a selector, or can just use the wildcard selector to match
   // all nodes which aren't matching any selector.
@@ -204,15 +202,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       private templateIndex: number|null, private templateName: string|null,
       private directiveMatcher: SelectorMatcher|null, private directives: Set<o.Expression>,
       private pipeTypeByName: Map<string, o.Expression>, private pipes: Set<o.Expression>,
-      private _namespace: o.ExternalReference, relativeContextFilePath: string,
+      private _namespace: o.ExternalReference, private i18nUniqueClosureSuffix: string,
       private i18nUseExternalIds: boolean,
       private _constants: ComponentDefConsts = createComponentDefConsts()) {
     this._bindingScope = parentBindingScope.nestedScope(level);
-
-    // Turn the relative context file path into an identifier by replacing non-alphanumeric
-    // characters with underscores.
-    this.fileBasedI18nSuffix = relativeContextFilePath.replace(/[^A-Za-z0-9]/g, '_') + '_';
-
     this._valueConverter = new ValueConverter(
         constantPool, () => this.allocateDataSlot(),
         (numSlots: number) => this.allocatePureFunctionSlots(numSlots),
@@ -421,7 +414,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   // Generates vars with Closure-specific names for i18n blocks (i.e. `MSG_XXX`).
   private i18nGenerateClosureVar(messageId: string): o.ReadVarExpr {
     let name: string;
-    const suffix = this.fileBasedI18nSuffix.toUpperCase();
+    const suffix = this.i18nUniqueClosureSuffix + '_';
     if (this.i18nUseExternalIds) {
       const prefix = getTranslationConstPrefix(`EXTERNAL_`);
       const uniqueSuffix = this.constantPool.uniqueName(suffix);
@@ -913,7 +906,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const templateVisitor = new TemplateDefinitionBuilder(
         this.constantPool, this._bindingScope, this.level + 1, contextName, this.i18n,
         templateIndex, templateName, this.directiveMatcher, this.directives, this.pipeTypeByName,
-        this.pipes, this._namespace, this.fileBasedI18nSuffix, this.i18nUseExternalIds,
+        this.pipes, this._namespace, this.i18nUniqueClosureSuffix, this.i18nUseExternalIds,
         this._constants);
 
     // Nested templates must not be visited until after their parent templates have completed
