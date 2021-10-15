@@ -29,10 +29,8 @@ yarn bazel run //tools/saucelabs:sauce_service_setup
 For example, `packages/core/test:test_web` becomes `packages/core/test:saucelabs_test_web`.
 
 ```
-yarn bazel test //packages/core/test:saucelabs_test_web --config=saucelabs --config=ivy
+yarn bazel test //packages/core/test:saucelabs_test_web --config=saucelabs
 ```
-
-Remove the `--config=ivy` if you want to run through View Engine instead. 
 
 5. Sauce service log may be tailed or dumped with the following targets:
 
@@ -54,7 +52,7 @@ Running all ViewEngine karma tests in Saucelabs:
 ``` bash
 yarn bazel run //tools/saucelabs:sauce_service_setup
 TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "ivy-only", ...) except attr("tags", "fixme-saucelabs-ve", ...)')
-yarn bazel test --config=saucelabs ${TESTS}
+yarn bazel test --config=saucelabs --config=view-engine ${TESTS}
 ```
 
 Running all Ivy karma tests in Saucelabs:
@@ -62,7 +60,7 @@ Running all Ivy karma tests in Saucelabs:
 ``` bash
 yarn bazel run //tools/saucelabs:sauce_service_setup
 TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "no-ivy-aot", ...) except attr("tags", "fixme-saucelabs-ivy", ...)')
-yarn bazel test --config=saucelabs --config=ivy ${TESTS}
+yarn bazel test --config=saucelabs ${TESTS}
 ```
 
 ## Under the hood

@@ -20,7 +20,7 @@ node ./scripts/ci/update-framework-deps-to-dist-packages.js {COMPONENTS_REPO}/pa
 following command:
 
 ```bash
-yarn test --deleted_packages=//src/dev-app --config=ivy
+yarn test --deleted_packages=//src/dev-app
 ```
 
 ### Running tests for individual entry-points

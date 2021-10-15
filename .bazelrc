@@ -84,9 +84,8 @@ query --deleted_packages=integration/bazel,integration/bazel/src,integration/baz
 ################################
 # Temporary Settings for Ivy   #
 ################################
-# To determine if the compiler used should be Ivy instead of ViewEngine, one can use `--config=ivy`
-# on any bazel target. This is a temporary flag until codebase is permanently switched to Ivy.
-build --define=angular_ivy_enabled=False
+# Set the default compiler used for bazel builds to be Ivy.
+build --define=angular_ivy_enabled=True
 
 build:view-engine --define=angular_ivy_enabled=False
 build:ivy --define=angular_ivy_enabled=True

@@ -39,7 +39,6 @@
       "program": "${workspaceFolder}/node_modules/.bin/bazelisk",
       "args": [
         "test",
-        "--config=ivy",
         "packages/core/test/acceptance",
         "--config=debug"
       ],
@@ -57,7 +56,6 @@
       "program": "${workspaceFolder}/node_modules/.bin/bazelisk",
       "args": [
         "test",
-        "--config=ivy",
         "packages/core/test/render3",
         "--config=debug"
       ],
@@ -75,7 +73,6 @@
       "program": "${workspaceFolder}/node_modules/.bin/bazelisk",
       "args": [
         "test",
-        "--config=ivy",
         "packages/core/test",
         "--config=debug"
       ],

@@ -92,8 +92,7 @@ function buildTargetPackages(destDir, description, isRelease = false) {
 
   // Use either `--config=snapshot` or `--config=release` so that builds are created with the
   // correct embedded version info.
-  exec(`${bazelCmd} build --config=${isRelease ? 'release' : 'snapshot'} --config=ivy ${
-      targets.join(' ')}`);
+  exec(`${bazelCmd} build --config=${isRelease ? 'release' : 'snapshot'} ${targets.join(' ')}`);
 
   // Create the output directory.
   const absDestDir = resolve(baseDir, destDir);
