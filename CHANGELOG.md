@@ -1,3 +1,19 @@
+<a name="12.2.10"></a>
+# 12.2.10 "plastic-monkey" (2021-10-15)
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [47c4710739](https://github.com/angular/components/commit/47c4710739436cd0bbfdd7a49674ff569bb621cd) | fix | **sort:** correctly specify AriaDesciber token ([#23751](https://github.com/angular/components/pull/23751)) |
+| [7727d9e28c](https://github.com/angular/components/commit/7727d9e28c11774cfb7bf9545a5584bd0e37996b) | fix | **sort:** add description input for sort-header ([#23633](https://github.com/angular/components/pull/23633)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [261cb86c43](https://github.com/angular/components/commit/261cb86c43706e4239a79bb3debeacf98ca0967d) | fix | **mdc-tabs:** switch to new theming API ([#23726](https://github.com/angular/components/pull/23726)) |
+| [509cd3919d](https://github.com/angular/components/commit/509cd3919db450a0d6b6e2abbce87f37f8373f51) | fix | **mdc-radio:** switch to new theming API ([#23725](https://github.com/angular/components/pull/23725)) |
+## Special Thanks
+Jeremy Elbourn, Joey Perrott, Marco Marche and Zach Arend
+
+
 <a name="13.0.0-rc.0"></a>
 # 13.0.0-rc.0 "aluminum-aardvark" (2021-10-13)
 ### cdk
