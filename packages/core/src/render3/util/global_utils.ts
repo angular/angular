@@ -19,8 +19,7 @@ import {getComponent, getContext, getDirectiveMetadata, getDirectives, getHostEl
  *
  * To see this in action run the following command:
  *
- *   bazel run --config=ivy
- *   //packages/core/test/bundling/todo:devserver
+ *   bazel run //packages/core/test/bundling/todo:devserver
  *
  *  Then load `localhost:5432` and start using the console tools.
  */
