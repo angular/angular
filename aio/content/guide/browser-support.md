@@ -37,8 +37,7 @@ Angular supports most recent browsers. This includes the following specific vers
 <div class="alert is-helpful">
 
 Angular's continuous integration process runs unit tests of the framework on all of these browsers for every pull request,
-using [Sauce Labs](https://saucelabs.com/) and
-[BrowserStack](https://www.browserstack.com/).
+using [Sauce Labs](https://saucelabs.com/).
 
 </div>
 
