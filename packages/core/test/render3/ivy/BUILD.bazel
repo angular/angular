@@ -20,9 +20,6 @@ jasmine_node_test(
         "//packages/core/test/render3:domino_es5",
         "//tools/testing:node_es5",
     ],
-    tags = [
-        "ivy-only",
-    ],
     deps = [
         ":ivy_lib",
         "//packages/zone.js/lib",

@@ -5,14 +5,14 @@ ts_library(
     name = "ng_module_ivy_test_lib",
     testonly = True,
     srcs = ["ng_module_ivy_test.ts"],
-    tags = ["ivy-only"],
+    tags = [],
     deps = ["@npm//@bazel/runfiles"],
 )
 
 ng_module(
     name = "test_module_default_compilation",
     srcs = ["test_module_default_compilation.ts"],
-    tags = ["ivy-only"],
+    tags = [],
     deps = ["//packages/core"],
 )
 
@@ -22,7 +22,7 @@ jasmine_node_test(
     data = [
         ":test_module_default_compilation",
     ],
-    tags = ["ivy-only"],
+    tags = [],
 )
 
 ng_module(
@@ -30,12 +30,12 @@ ng_module(
     srcs = ["test_module_warnings.ts"],
     experimental_extended_template_diagnostics = True,
     strict_templates = True,
-    tags = ["ivy-only"],
+    tags = [],
     deps = ["//packages/core"],
 )
 
 build_test(
     name = "test_module_warnings",
-    tags = ["ivy-only"],
+    tags = [],
     targets = [":test_module_warnings_lib"],
 )

@@ -33,33 +33,25 @@ INTEGRATION_TESTS = {
             "manual",
         ],
     },
-    "cli-elements-universal": {
-        "tags": ["ivy-only"],
-    },
+    "cli-elements-universal": {},
     "cli-hello-world": {
         "commands": "payload_size_tracking",
-        "tags": ["ivy-only"],
     },
     "cli-hello-world-ivy-compat": {
         "commands": "payload_size_tracking",
-        "tags": ["ivy-only"],
     },
     "cli-hello-world-ivy-i18n": {
         "commands": "payload_size_tracking",
-        "tags": ["ivy-only"],
     },
     "cli-hello-world-ivy-minimal": {
         "commands": "payload_size_tracking",
-        "tags": ["ivy-only"],
     },
     "cli-hello-world-lazy": {
         "commands": "payload_size_tracking",
-        "tags": ["ivy-only"],
     },
     "dynamic-compiler": {},
     "forms": {
         "commands": "payload_size_tracking",
-        "tags": ["ivy-only"],
     },
     "hello_world__closure": {
         # TODO: Re-enable the payload_size_tracking command:
