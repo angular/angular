@@ -381,7 +381,7 @@ jobs:
           # See /tools/saucelabs/README.md for more info
           command: |
             yarn bazel run //tools/saucelabs:sauce_service_setup
-            TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "no-ivy-aot", ...) except attr("tags", "fixme-saucelabs-ivy", ...)')
+            TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "view-engine-only", ...) except attr("tags", "fixme-saucelabs-ivy", ...)')
             yarn bazel test --config=saucelabs ${TESTS}
             yarn bazel run //tools/saucelabs:sauce_service_stop
           no_output_timeout: 40m
@@ -789,11 +789,11 @@ jobs:
       - setup_win
       - run:
           name: Build all windows CI targets
-          command: bazel build --build_tag_filters=-no-ivy-aot,-fixme-ivy-aot //packages/compiler-cli/...
+          command: bazel build --config=ivy --build_tag_filters=-view-engine-only,-fixme-ivy-aot //packages/compiler-cli/...
           no_output_timeout: 15m
       - run:
           name: Test all windows CI targets
-          command: bazel test --test_tag_filters="-no-ivy-aot,-fixme-ivy-aot,-browser:chromium-local" //packages/compiler-cli/... //packages/localize/...
+          command: bazel test --config=ivy --test_tag_filters="-view-engine-only,-fixme-ivy-aot,-browser:chromium-local" //packages/compiler-cli/... //packages/localize/...
           no_output_timeout: 15m
       # Save dependencies to use on subsequent runs.
       - save_cache:

@@ -21,7 +21,7 @@ load(":angular_integration_test.bzl", "angular_integration_test")
 
 # Map of integration tests to tags.
 # A subset of these tests fail or are not meant to be run with ivy bundles. These are tagged
-# "no-ivy-aot".
+# "view-engine-only".
 INTEGRATION_TESTS = {
     "bazel": {
         "tags": [

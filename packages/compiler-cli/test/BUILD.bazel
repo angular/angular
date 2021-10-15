@@ -47,7 +47,7 @@ jasmine_node_test(
     tags = [
         # Disabled as the tests pertain to the old extraction tool only, whereas the Ivy extraction
         # tool will likely work differently.
-        "no-ivy-aot",
+        "view-engine-only",
     ],
     deps = [
         ":extract_i18n_lib",
@@ -86,7 +86,7 @@ jasmine_node_test(
     tags = [
         # Disabled as these tests are specific to the old ngc compiler, and not ngtsc which has its
         # own tests under //packages/compiler-cli/test/ngtsc.
-        "no-ivy-aot",
+        "view-engine-only",
     ],
     deps = [
         ":ngc_lib",
