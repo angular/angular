@@ -154,15 +154,15 @@ Note:
 The simplest way to run all the compliance tests is:
 
 ```sh
-yarn test-ivy-aot //packages/compiler-cli/test/compliance/...
+yarn test //packages/compiler-cli/test/compliance/...
 ```
 
 If you only want to run one of the three types of test you can be more specific:
 
 ```sh
-yarn test-ivy-aot //packages/compiler-cli/test/compliance/full
-yarn test-ivy-aot //packages/compiler-cli/test/compliance/linked
-yarn test-ivy-aot //packages/compiler-cli/test/compliance/test_cases/...
+yarn test //packages/compiler-cli/test/compliance/full
+yarn test //packages/compiler-cli/test/compliance/linked
+yarn test //packages/compiler-cli/test/compliance/test_cases/...
 ```
 
 (The last command runs the partial compilation tests.)
@@ -201,8 +201,8 @@ to the Bazel test command.
 For example:
 
 ```sg
-yarn test-ivy-aot //packages/compiler-cli/test/compliance/full --config=debug
-yarn test-ivy-aot //packages/compiler-cli/test/compliance/linked --config=debug
+yarn test //packages/compiler-cli/test/compliance/full --config=debug
+yarn test //packages/compiler-cli/test/compliance/linked --config=debug
 ```
 
 To debug generating the partial golden output use the following form of Bazel command:
