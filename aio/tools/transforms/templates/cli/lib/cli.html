@@ -1,6 +1,6 @@
 {% macro renderSyntax(container, prefix) -%}
 {% for name in container.names %}
-<code-example hideCopy="true" class="no-box api-heading no-auto-link{% if container.deprecated %} deprecated-api-item{% endif %}">ng {%if prefix %}{$ prefix $} {% endif %}<span class="cli-name">{$ name $}</span>
+<code-example hideCopy="true" class="api-heading no-auto-link{% if container.deprecated %} deprecated-api-item{% endif %}">ng {%if prefix %}{$ prefix $} {% endif %}<span class="cli-name">{$ name $}</span>
   {%- for arg in container.positionalOptions %} &lt;<var>{$ arg.name $}</var>&gt;{% endfor %}
   {%- if container.namedOptions.length %} [<var>options</var>]{% endif -%}
 </code-example>
