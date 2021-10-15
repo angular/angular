@@ -32,7 +32,7 @@ MDC Web is a library created by Google's Material Design team that provides reus
 
 We're evaluating components in Angular Material against accessibility standards such as WCAG and working to fix any issues that arise from this process.
 
-### Remove legacy [View Engine](guide/ivy)
+### Remove legacy [View Engine](guide/glossary#ve)
 
 After the transition of all our internal tooling to Ivy is completed, we will remove the legacy View Engine for reduced Angular conceptual overhead, smaller package size, lower maintenance cost, and lower codebase complexity.
 
