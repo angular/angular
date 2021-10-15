@@ -6,7 +6,7 @@ package(default_visibility = ["//visibility:public"])
 ts_library(
     name = "core_all",
     srcs = ["index.ts"],
-    tags = ["ivy-only"],
+    tags = [],
     deps = [
         "//packages/core",
     ],
@@ -15,9 +15,6 @@ ts_library(
 ng_rollup_bundle(
     name = "bundle",
     entry_point = ":index.ts",
-    tags = [
-        "ivy-only",
-    ],
     deps = [
         ":core_all",
         "//packages/core",
@@ -38,7 +35,6 @@ js_size_tracking_test(
     max_percentage_diff = 15,
     source_map = "angular/packages/core/test/bundling/core_all/bundle.min.js.map",
     tags = [
-        "ivy-only",
         "manual",
     ],
 )

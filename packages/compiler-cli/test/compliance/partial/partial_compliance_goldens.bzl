@@ -54,9 +54,6 @@ def partial_compliance_golden(filePath):
 
     generated_file_test(
         visibility = ["//visibility:public"],
-        tags = [
-            "ivy-only",
-        ],
         name = "%s.golden" % path,
         src = "//packages/compiler-cli/test/compliance/test_cases:%s/GOLDEN_PARTIAL.js" % path,
         generated = "_generated_%s" % path,

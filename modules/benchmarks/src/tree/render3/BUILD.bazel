@@ -10,7 +10,6 @@ ng_module(
         "index_aot.ts",
         "tree.ts",
     ],
-    tags = ["ivy-only"],
     deps = [
         "//modules/benchmarks/src/tree:util_lib",
         "//packages:types",
@@ -22,7 +21,6 @@ ng_module(
 ng_rollup_bundle(
     name = "bundle",
     entry_point = ":index_aot.ts",
-    tags = ["ivy-only"],
     deps = [
         ":tree_lib",
         "@npm//rxjs",
@@ -33,14 +31,12 @@ ts_devserver(
     name = "devserver",
     port = 4200,
     static_files = ["index.html"],
-    tags = ["ivy-only"],
     deps = [":bundle.min_debug.js"],
 )
 
 benchmark_test(
     name = "perf",
     server = ":devserver",
-    tags = ["ivy-only"],
     deps = [
         "//modules/benchmarks/src/tree:detect_changes_perf_tests_lib",
         "//modules/benchmarks/src/tree:perf_tests_lib",
@@ -50,7 +46,6 @@ benchmark_test(
 e2e_test(
     name = "e2e",
     server = ":devserver",
-    tags = ["ivy-only"],
     deps = [
         "//modules/benchmarks/src/tree:detect_changes_e2e_tests_lib",
         "//modules/benchmarks/src/tree:e2e_tests_lib",
