@@ -118,6 +118,10 @@ jasmine_node_test(
     data = [
         "@npm//@angular/core-12",
     ],
+    tags = [
+        # TODO: Reenable tests after determining if they appropriately rely on ViewEngine
+        "view-engine-only",
+    ],
     deps = [
         ":perform_watch_lib",
         "//packages/core",
