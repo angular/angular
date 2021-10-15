@@ -303,7 +303,7 @@ jobs:
       - init_environment
       - install_java
       - run:
-          command: yarn bazel test //... --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only
+          command: yarn test //...
           no_output_timeout: 20m
 
   # Temporary job to test what will happen when we flip the Ivy flag to true
@@ -776,11 +776,11 @@ jobs:
       - setup_win
       - run:
           name: Build all windows CI targets
-          command: bazel build --config=view-engine --build_tag_filters=-ivy-only //packages/compiler-cli/...
+          command: bazel build --config=view-engine --build_tag_filters=view-engine-only //packages/compiler-cli/...
           no_output_timeout: 15m
       - run:
           name: Test all windows CI targets
-          command: bazel test --config=view-engine --test_tag_filters="-ivy-only,-browser:chromium-local" //packages/compiler-cli/...
+          command: bazel test --config=view-engine --test_tag_filters="view-engine-only,-browser:chromium-local" //packages/compiler-cli/...
           no_output_timeout: 15m
 
   test_ivy_aot_win:

@@ -574,16 +574,10 @@ def rollup_bundle(name, testonly = False, sourcemap = "true", **kwargs):
 
 def api_golden_test(**kwargs):
     _api_golden_test(
-        tags = [
-            "ivy-only",
-        ],
         **kwargs
     )
 
 def api_golden_test_npm_package(**kwargs):
     _api_golden_test_npm_package(
-        tags = [
-            "ivy-only",
-        ],
         **kwargs
     )

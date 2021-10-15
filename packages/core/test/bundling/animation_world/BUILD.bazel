@@ -1,14 +1,11 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle", "ts_devserver")
 load("@npm//http-server:index.bzl", "http_server")
+
+package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "animation_world",
     srcs = ["index.ts"],
-    tags = [
-        "ivy-only",
-    ],
     type_check = False,  # see #26462
     deps = [
         "//packages/common",
@@ -20,9 +17,6 @@ ng_module(
 ng_rollup_bundle(
     name = "bundle",
     entry_point = ":index.ts",
-    tags = [
-        "ivy-only",
-    ],
     deps = [
         ":animation_world",
         "//packages/core",
@@ -48,9 +42,6 @@ ts_devserver(
         "index.html",
         "@npm//tslib",
     ],
-    tags = [
-        "ivy-only",
-    ],
     deps = [":animation_world"],
 )
 
@@ -62,8 +53,5 @@ http_server(
         "index.html",
         ":bundle.min.js",
         ":bundle.min_debug.js",
-    ],
-    tags = [
-        "ivy-only",
     ],
 )
