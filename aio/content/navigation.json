@@ -1034,6 +1034,11 @@
               "url": "cli"
             },
             {
+              "title": "Persistent Disk Cache",
+              "tooltip": "Details on the Angular CLI persistent disk cache.",
+              "url": "cli/cache"
+            },
+            {
               "title": "Usage Analytics",
               "tooltip": "For administrators, guide to gathering usage analytics from your users.",
               "url": "cli/usage-analytics-gathering"
