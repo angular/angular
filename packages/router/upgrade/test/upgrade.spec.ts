@@ -175,4 +175,38 @@ describe('setUpLocationSync', () => {
       Object.defineProperty(anchorProto, 'pathname', originalDescriptor!);
     }
   });
+
+  it('should not duplicate navigations triggered by Angular router', fakeAsync(() => {
+       spyOn(TestBed.inject(UrlCodec), 'parse').and.returnValue({
+         pathname: '',
+         href: '',
+         protocol: '',
+         host: '',
+         search: '',
+         hash: '',
+         hostname: '',
+         port: '',
+       });
+       const $rootScope = upgradeModule.$injector.get('$rootScope');
+       spyOn($rootScope, '$broadcast').and.callThrough();
+       setUpLocationSync(upgradeModule);
+       // Inject location shim so its urlChangeListener subscribes
+       TestBed.inject($locationShim);
+
+       router.navigateByUrl('/1');
+       location.normalize.and.returnValue('/1');
+       flush();
+       expect(router.navigateByUrl).toHaveBeenCalledTimes(1);
+       expect($rootScope.$broadcast.calls.argsFor(0)[0]).toEqual('$locationChangeStart');
+       expect($rootScope.$broadcast.calls.argsFor(1)[0]).toEqual('$locationChangeSuccess');
+       $rootScope.$broadcast.calls.reset();
+       router.navigateByUrl.calls.reset();
+
+       location.go('/2');
+       location.normalize.and.returnValue('/2');
+       flush();
+       expect($rootScope.$broadcast.calls.argsFor(0)[0]).toEqual('$locationChangeStart');
+       expect($rootScope.$broadcast.calls.argsFor(1)[0]).toEqual('$locationChangeSuccess');
+       expect(router.navigateByUrl).toHaveBeenCalledTimes(1);
+     }));
 });

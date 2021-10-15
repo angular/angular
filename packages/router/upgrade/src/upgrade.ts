@@ -8,7 +8,7 @@
 
 import {Location} from '@angular/common';
 import {APP_BOOTSTRAP_LISTENER, ComponentRef, InjectionToken} from '@angular/core';
-import {Router} from '@angular/router';
+import {Router, ɵRestoredState as RestoredState} from '@angular/router';
 import {UpgradeModule} from '@angular/upgrade/static';
 
 /**
@@ -74,20 +74,35 @@ export function setUpLocationSync(ngUpgrade: UpgradeModule, urlType: 'path'|'has
   const location: Location = ngUpgrade.injector.get(Location);
 
   ngUpgrade.$injector.get('$rootScope')
-      .$on('$locationChangeStart', (_: any, next: string, __: string) => {
-        let url;
-        if (urlType === 'path') {
-          url = resolveUrl(next);
-        } else if (urlType === 'hash') {
-          // Remove the first hash from the URL
-          const hashIdx = next.indexOf('#');
-          url = resolveUrl(next.substring(0, hashIdx) + next.substring(hashIdx + 1));
-        } else {
-          throw 'Invalid URLType passed to setUpLocationSync: ' + urlType;
-        }
-        const path = location.normalize(url.pathname);
-        router.navigateByUrl(path + url.search + url.hash);
-      });
+      .$on(
+          '$locationChangeStart',
+          (event: any, newUrl: string, oldUrl: string,
+           newState?: {[k: string]: unknown}|RestoredState,
+           oldState?: {[k: string]: unknown}|RestoredState) => {
+            // Navigations coming from Angular router have a navigationId state
+            // property. Don't trigger Angular router navigation again if it is
+            // caused by a URL change from the current Angular router
+            // navigation.
+            const currentNavigationId = router.getCurrentNavigation()?.id;
+            const newStateNavigationId = newState?.navigationId;
+            if (newStateNavigationId !== undefined &&
+                newStateNavigationId === currentNavigationId) {
+              return;
+            }
+
+            let url;
+            if (urlType === 'path') {
+              url = resolveUrl(newUrl);
+            } else if (urlType === 'hash') {
+              // Remove the first hash from the URL
+              const hashIdx = newUrl.indexOf('#');
+              url = resolveUrl(newUrl.substring(0, hashIdx) + newUrl.substring(hashIdx + 1));
+            } else {
+              throw 'Invalid URLType passed to setUpLocationSync: ' + urlType;
+            }
+            const path = location.normalize(url.pathname);
+            router.navigateByUrl(path + url.search + url.hash);
+          });
 }
 
 /**
