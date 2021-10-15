@@ -1307,6 +1307,31 @@ describe('Integration', () => {
            [NavigationEnd, '/simple'],
          ]);
        }));
+
+    it('should accurately track currentNavigation', fakeAsync(() => {
+         const router = TestBed.inject(Router);
+         router.resetConfig([
+           {path: 'one', component: SimpleCmp, canActivate: ['in1Second']},
+           {path: 'two', component: BlankCmp, canActivate: ['in1Second']},
+         ]);
+
+         router.events.subscribe((e) => {
+           if (e instanceof NavigationStart) {
+             if (e.url === '/one') {
+               router.navigateByUrl('two');
+             }
+             router.events.subscribe((e) => {
+               if (e instanceof GuardsCheckEnd) {
+                 expect(router.getCurrentNavigation()?.extractedUrl.toString()).toEqual('/two');
+                 expect(router.getCurrentNavigation()?.extras).toBeDefined();
+               }
+             });
+           }
+         });
+
+         router.navigateByUrl('one');
+         tick(1000);
+       }));
   });
 
   it('should support secondary routes', fakeAsync(inject([Router], (router: Router) => {

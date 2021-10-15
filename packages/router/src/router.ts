@@ -958,10 +958,11 @@ export class Router {
                            // id.
                          }
                        }
-                       // currentNavigation should always be reset to null here. If navigation was
-                       // successful, lastSuccessfulTransition will have already been set. Therefore
-                       // we can safely set currentNavigation to null here.
-                       this.currentNavigation = null;
+                       // Only clear current navigation if it is still set to the one that
+                       // finalized.
+                       if (this.currentNavigation?.id === t.id) {
+                         this.currentNavigation = null;
+                       }
                      }),
                      catchError((e) => {
                        // TODO(atscott): The NavigationTransition `t` used here does not accurately
