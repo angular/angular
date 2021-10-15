@@ -28,7 +28,7 @@
       @include mixins.font-size(20);
       @include mixins.line-height(24);
       margin: 0;
-      padding: 2.7rem 0 2.1rem;
+      padding: 2.7rem 1.5rem 2.1rem;
       text-transform: none;
       text-align: center;
     }
@@ -46,7 +46,7 @@
       margin-bottom: 0;
       box-sizing: border-box;
       @include mixins.line-height(24);
-      padding: 1.3rem 15px;
+      padding: 1.3rem 1.5rem;
       text-align: right;
 
       a {
