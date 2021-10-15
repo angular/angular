@@ -63,12 +63,8 @@ See also: [`//.bazelrc`](https://github.com/angular/angular/blob/master/.bazelrc
 
 - `--config=debug`: build and launch in debug mode (see [debugging](#debugging) instructions below)
 - `--test_arg=--node_options=--inspect=9228`: change the inspector port.
-- `--config=ivy` Enables ivy mode if present, otherwise ViewEngine is used. This switches which compiler is used (ngc or ngtsc)
-- `--config=view-engine` Enables ViewEngine mode if present, currently this the default mode. This switches which compiler is used (ngc or ngtsc)
+- `--config=view-engine` Enables ViewEngine mode if present, otherwise Ivy is used. This switches which compiler is used (ngc or ngtsc)
 - `--test_tag_filters=<tag>`: filter tests down to tags defined in the `tag` config of your rules in any given `BUILD.bazel`.
-    - `no-ivy-aot`: Useful for excluding build and test targets that are not meant to be executed in Ivy AOT mode (`--config=ivy`).
-    - `ivy-only`: Useful for excluding all Ivy build and tests targets with `--config=view-engine`.
-    - `fixme-ivy-aot`: Useful for including/excluding build and test targets that are currently broken in Ivy AOT mode (`--config=ivy`).
 
 
 ### Debugging a Node Test
@@ -276,7 +272,7 @@ Require stack:
 
 `bazel run` only works in Bazel Windows with non-test targets. Ensure that you are using `bazel test` instead.
 
-e.g: `yarn bazel test packages/core/test/bundling/forms:symbol_test --config=ivy`
+e.g: `yarn bazel test packages/core/test/bundling/forms:symbol_test`
 
 #### mkdir missing
 If you see the following error::

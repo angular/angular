@@ -9,7 +9,6 @@
       "command": "${workspaceFolder}/node_modules/.bin/bazelisk",
       "args": [
         "test",
-        "--config=ivy",
         "packages/core/test",
         "packages/core/test/acceptance",
         "packages/core/test/render3",
@@ -42,7 +41,6 @@
       "command": "${workspaceFolder}/node_modules/.bin/bazelisk",
       "args": [
         "test",
-        "--config=ivy",
         "packages/core/test/acceptance",
       ],
       "group": "test",
@@ -71,7 +69,6 @@
       "command": "${workspaceFolder}/node_modules/.bin/bazelisk",
       "args": [
         "test",
-        "--config=ivy",
         "packages/core/test",
       ],
       "group": "test",
@@ -100,7 +97,6 @@
       "command": "${workspaceFolder}/node_modules/.bin/bazelisk",
       "args": [
         "test",
-        "--config=ivy",
         "packages/core/test/render3",
       ],
       "group": "test",

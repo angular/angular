@@ -28,9 +28,6 @@ ng_rollup_bundle(
 js_size_tracking_test(
     name = "size_test",
     src = "angular/packages/core/test/bundling/core_all/bundle.min.js",
-    # Ensures that this target runs with "--config=ivy" (aka Ivy). This is necessary
-    # because we don't run this test on CI currently, but if we run it manually, we need to
-    # ensure that it runs with Ivy for proper size comparisons.
     angular_ivy_enabled = "True",
     data = [
         "bundle.golden_size_map_ivy.json",

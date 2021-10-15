@@ -39,8 +39,7 @@ const ALL_ACCEPT_TARGETS = ALL_TEST_TARGETS.map(test => `${test}.accept`);
 function runBazelCommandOnTargets(command, targets, present) {
   for (const target of targets) {
     process.stdout.write(`${present}: ${target}`);
-    const commandResult =
-        spawnSync('yarn', ['-s', 'bazel', command, '--config=ivy', target], {encoding: 'utf8'});
+    const commandResult = spawnSync('yarn', ['-s', 'bazel', command, target], {encoding: 'utf8'});
     process.stdout.clearLine();
     process.stdout.cursorTo(0);
     if (commandResult.status) {
