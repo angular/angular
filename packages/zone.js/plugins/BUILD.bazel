@@ -7,6 +7,8 @@ filegroup(
         "//packages/zone.js/plugins:async-test/package.json",
         "//packages/zone.js/plugins:fake-async-test.min/package.json",
         "//packages/zone.js/plugins:fake-async-test/package.json",
+        "//packages/zone.js/plugins:fake-time-test.min/package.json",
+        "//packages/zone.js/plugins:fake-time-test/package.json",
         "//packages/zone.js/plugins:jasmine-patch.min/package.json",
         "//packages/zone.js/plugins:jasmine-patch/package.json",
         "//packages/zone.js/plugins:long-stack-trace-zone.min/package.json",

@@ -22,6 +22,9 @@ BUNDLES_ENTRY_POINTS = {
     "fake-async-test": {
         "entrypoint": _DIR + "testing/fake-async",
     },
+    "fake-time-test": {
+        "entrypoint": _DIR + "testing/fake-async",
+    },
     "long-stack-trace-zone": {
         "entrypoint": _DIR + "zone-spec/long-stack-trace",
     },

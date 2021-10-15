@@ -21,6 +21,7 @@ import './wtf_mock';
 
 import '../lib/zone-spec/async-test';
 import '../lib/zone-spec/fake-async-test';
+import '../lib/zone-spec/fake-time-test';
 import '../lib/zone-spec/long-stack-trace';
 import '../lib/zone-spec/proxy';
 import '../lib/zone-spec/sync-test';

@@ -1,5 +1,5 @@
 import { Injector, NgZone } from '@angular/core';
-import { fakeAsync, tick } from '@angular/core/testing';
+import { fakeTime, tickClock } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { SearchService } from './search.service';
 import { WebWorkerClient } from 'app/shared/web-worker';
@@ -27,11 +27,11 @@ describe('SearchService', () => {
   });
 
   describe('initWorker', () => {
-    it('should create the worker and load the index after the specified delay', fakeAsync(() => {
+    it('should create the worker and load the index after the specified delay', fakeTime(async () => {
       service.initWorker(100);
       expect(WebWorkerClient.create).not.toHaveBeenCalled();
       expect(mockWorker.sendMessage).not.toHaveBeenCalled();
-      tick(100);
+      await tickClock(100);
       expect(WebWorkerClient.create).toHaveBeenCalledWith(jasmine.any(Worker), jasmine.any(NgZone));
       expect(mockWorker.sendMessage).toHaveBeenCalledWith('load-index');
     }));

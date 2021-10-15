@@ -1,0 +1,7 @@
+{
+  "name": "zone.js/fake-time-test",
+  "main": "../../bundles/fake-time-test.umd.js",
+  "fesm2015": "../../fesm2015/fake-time-test.js",
+  "es2015": "../../fesm2015/fake-time-test.js",
+  "module": "../../fesm2015/fake-time-test.js"
+}

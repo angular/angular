@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ComponentFixture, fakeAsync, inject, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeTime, inject, TestBed, tickClock } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { SearchBoxComponent } from './search-box.component';
 import { LocationService } from 'app/shared/location.service';
@@ -36,57 +36,57 @@ describe('SearchBoxComponent', () => {
 
   describe('initialisation', () => {
     it('should get the current search query from the location service',
-          fakeAsync(inject([LocationService], (location: MockLocationService) => {
+          fakeTime(inject([LocationService], async (location: MockLocationService) => {
       location.search.and.returnValue({ search: 'initial search' });
       component.ngAfterViewInit();
       expect(location.search).toHaveBeenCalled();
-      tick(300);
+      await tickClock(300);
       expect(host.searchHandler).toHaveBeenCalledWith('initial search');
       expect(component.searchBox.nativeElement.value).toEqual('initial search');
     })));
 
     it('should decode the search query from the location service (chrome search provider format)',
-          fakeAsync(inject([LocationService], (location: MockLocationService) => {
+          fakeTime(inject([LocationService], async (location: MockLocationService) => {
       location.search.and.returnValue({ search: 'initial+search' });
       component.ngAfterViewInit();
       expect(location.search).toHaveBeenCalled();
-      tick(300);
+      await tickClock(300);
       expect(host.searchHandler).toHaveBeenCalledWith('initial search');
       expect(component.searchBox.nativeElement.value).toEqual('initial search');
     })));
   });
 
   describe('onSearch', () => {
-    it('should debounce by 300ms', fakeAsync(() => {
+    it('should debounce by 300ms', fakeTime(async () => {
       component.doSearch();
       expect(host.searchHandler).not.toHaveBeenCalled();
-      tick(300);
+      await tickClock(300);
       expect(host.searchHandler).toHaveBeenCalled();
     }));
 
-    it('should pass through the value of the input box', fakeAsync(() => {
+    it('should pass through the value of the input box', fakeTime(async () => {
       const input = fixture.debugElement.query(By.css('input'));
       input.nativeElement.value = 'some query (input)';
       component.doSearch();
-      tick(300);
+      await tickClock(300);
       expect(host.searchHandler).toHaveBeenCalledWith('some query (input)');
     }));
 
-    it('should only send events if the search value has changed', fakeAsync(() => {
+    it('should only send events if the search value has changed', fakeTime(async () => {
       const input = fixture.debugElement.query(By.css('input'));
 
       input.nativeElement.value = 'some query';
       component.doSearch();
-      tick(300);
+      await tickClock(300);
       expect(host.searchHandler).toHaveBeenCalledTimes(1);
 
       component.doSearch();
-      tick(300);
+      await tickClock(300);
       expect(host.searchHandler).toHaveBeenCalledTimes(1);
 
       input.nativeElement.value = 'some other query';
       component.doSearch();
-      tick(300);
+      await tickClock(300);
       expect(host.searchHandler).toHaveBeenCalledTimes(2);
     }));
   });

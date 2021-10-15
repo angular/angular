@@ -1,5 +1,5 @@
 import { Injector } from '@angular/core';
-import { fakeAsync, tick } from '@angular/core/testing';
+import { fakeTime, tickClock } from '@angular/core/testing';
 import { DOCUMENT } from '@angular/common';
 
 import { ScrollService } from 'app/shared/scroll.service';
@@ -311,7 +311,7 @@ describe('ScrollSpyService', () => {
     });
 
 
-    it('should be subscribed to when the first group of elements is spied on', fakeAsync(() => {
+    it('should be subscribed to when the first group of elements is spied on', fakeTime(async () => {
       window.dispatchEvent(new Event('resize'));
       expect(onResizeSpy).not.toHaveBeenCalled();
 
@@ -321,63 +321,63 @@ describe('ScrollSpyService', () => {
       window.dispatchEvent(new Event('resize'));
       expect(onResizeSpy).not.toHaveBeenCalled();
 
-      tick(RESIZE_EVENT_DELAY);
+      await tickClock(RESIZE_EVENT_DELAY);
       expect(onResizeSpy).toHaveBeenCalled();
     }));
 
-    it('should be unsubscribed from when the last group of elements is removed', fakeAsync(() => {
+    it('should be unsubscribed from when the last group of elements is removed', fakeTime(async () => {
       const info1 = scrollSpyService.spyOn([]);
       const info2 = scrollSpyService.spyOn([]);
       onResizeSpy.calls.reset();
 
       window.dispatchEvent(new Event('resize'));
-      tick(RESIZE_EVENT_DELAY);
+      await tickClock(RESIZE_EVENT_DELAY);
       expect(onResizeSpy).toHaveBeenCalled();
 
       info1.unspy();
       onResizeSpy.calls.reset();
 
       window.dispatchEvent(new Event('resize'));
-      tick(RESIZE_EVENT_DELAY);
+      await tickClock(RESIZE_EVENT_DELAY);
       expect(onResizeSpy).toHaveBeenCalled();
 
       info2.unspy();
       onResizeSpy.calls.reset();
 
       window.dispatchEvent(new Event('resize'));
-      tick(RESIZE_EVENT_DELAY);
+      await tickClock(RESIZE_EVENT_DELAY);
       expect(onResizeSpy).not.toHaveBeenCalled();
     }));
 
-    it(`should only fire every ${RESIZE_EVENT_DELAY}ms`, fakeAsync(() => {
+    it(`should only fire every ${RESIZE_EVENT_DELAY}ms`, fakeTime(async () => {
       scrollSpyService.spyOn([]);
       onResizeSpy.calls.reset();
 
       window.dispatchEvent(new Event('resize'));
-      tick(RESIZE_EVENT_DELAY - 2);
+      await tickClock(RESIZE_EVENT_DELAY - 2);
       expect(onResizeSpy).not.toHaveBeenCalled();
 
       window.dispatchEvent(new Event('resize'));
-      tick(1);
+      await tickClock(1);
       expect(onResizeSpy).not.toHaveBeenCalled();
 
       window.dispatchEvent(new Event('resize'));
-      tick(1);
+      await tickClock(1);
       expect(onResizeSpy).toHaveBeenCalledTimes(1);
 
       onResizeSpy.calls.reset();
-      tick(RESIZE_EVENT_DELAY / 2);
+      await tickClock(RESIZE_EVENT_DELAY / 2);
 
       window.dispatchEvent(new Event('resize'));
-      tick(RESIZE_EVENT_DELAY - 2);
+      await tickClock(RESIZE_EVENT_DELAY - 2);
       expect(onResizeSpy).not.toHaveBeenCalled();
 
       window.dispatchEvent(new Event('resize'));
-      tick(1);
+      await tickClock(1);
       expect(onResizeSpy).not.toHaveBeenCalled();
 
       window.dispatchEvent(new Event('resize'));
-      tick(1);
+      await tickClock(1);
       expect(onResizeSpy).toHaveBeenCalledTimes(1);
     }));
   });
@@ -391,7 +391,7 @@ describe('ScrollSpyService', () => {
     });
 
 
-    it('should be subscribed to when the first group of elements is spied on', fakeAsync(() => {
+    it('should be subscribed to when the first group of elements is spied on', fakeTime(async () => {
       window.dispatchEvent(new Event('scroll'));
       expect(onScrollSpy).not.toHaveBeenCalled();
 
@@ -400,61 +400,61 @@ describe('ScrollSpyService', () => {
       window.dispatchEvent(new Event('scroll'));
       expect(onScrollSpy).not.toHaveBeenCalled();
 
-      tick(SCROLL_EVENT_DELAY);
+      await tickClock(SCROLL_EVENT_DELAY);
       expect(onScrollSpy).toHaveBeenCalled();
     }));
 
-    it('should be unsubscribed from when the last group of elements is removed', fakeAsync(() => {
+    it('should be unsubscribed from when the last group of elements is removed', fakeTime(async () => {
       const info1 = scrollSpyService.spyOn([]);
       const info2 = scrollSpyService.spyOn([]);
 
       window.dispatchEvent(new Event('scroll'));
-      tick(SCROLL_EVENT_DELAY);
+      await tickClock(SCROLL_EVENT_DELAY);
       expect(onScrollSpy).toHaveBeenCalled();
 
       info1.unspy();
       onScrollSpy.calls.reset();
 
       window.dispatchEvent(new Event('scroll'));
-      tick(SCROLL_EVENT_DELAY);
+      await tickClock(SCROLL_EVENT_DELAY);
       expect(onScrollSpy).toHaveBeenCalled();
 
       info2.unspy();
       onScrollSpy.calls.reset();
 
       window.dispatchEvent(new Event('scroll'));
-      tick(SCROLL_EVENT_DELAY);
+      await tickClock(SCROLL_EVENT_DELAY);
       expect(onScrollSpy).not.toHaveBeenCalled();
     }));
 
-    it(`should only fire every ${SCROLL_EVENT_DELAY}ms`, fakeAsync(() => {
+    it(`should only fire every ${SCROLL_EVENT_DELAY}ms`, fakeTime(async () => {
       scrollSpyService.spyOn([]);
 
       window.dispatchEvent(new Event('scroll'));
-      tick(SCROLL_EVENT_DELAY - 2);
+      await tickClock(SCROLL_EVENT_DELAY - 2);
       expect(onScrollSpy).not.toHaveBeenCalled();
 
       window.dispatchEvent(new Event('scroll'));
-      tick(1);
+      await tickClock(1);
       expect(onScrollSpy).not.toHaveBeenCalled();
 
       window.dispatchEvent(new Event('scroll'));
-      tick(1);
+      await tickClock(1);
       expect(onScrollSpy).toHaveBeenCalledTimes(1);
 
       onScrollSpy.calls.reset();
-      tick(SCROLL_EVENT_DELAY / 2);
+      await tickClock(SCROLL_EVENT_DELAY / 2);
 
       window.dispatchEvent(new Event('scroll'));
-      tick(SCROLL_EVENT_DELAY - 2);
+      await tickClock(SCROLL_EVENT_DELAY - 2);
       expect(onScrollSpy).not.toHaveBeenCalled();
 
       window.dispatchEvent(new Event('scroll'));
-      tick(1);
+      await tickClock(1);
       expect(onScrollSpy).not.toHaveBeenCalled();
 
       window.dispatchEvent(new Event('scroll'));
-      tick(1);
+      await tickClock(1);
       expect(onScrollSpy).toHaveBeenCalledTimes(1);
     }));
   });
