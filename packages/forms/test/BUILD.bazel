@@ -42,7 +42,7 @@ karma_web_test_suite(
         # IE 11.0.0 (Windows 8.1.0.0) template-driven forms integration tests basic functionality should report properties which are written outside of template bindings FAILED
         #   InvalidStateError: InvalidStateError
         # ```
-        "fixme-saucelabs-ivy",
+        "fixme-saucelabs",
     ],
     deps = [
         ":test_lib",

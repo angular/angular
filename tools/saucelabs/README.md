@@ -47,19 +47,11 @@ Note, this option will also prevent bazel from using the test cache and will for
 
 `bazel query` is required gather up all karma saucelabs test labels so they can be run in one command as they are tagged `manual`.
 
-Running all ViewEngine karma tests in Saucelabs:
+Running all karma tests in Saucelabs:
 
 ``` bash
 yarn bazel run //tools/saucelabs:sauce_service_setup
-TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "ivy-only", ...) except attr("tags", "fixme-saucelabs-ve", ...)')
-yarn bazel test --config=saucelabs --config=view-engine ${TESTS}
-```
-
-Running all Ivy karma tests in Saucelabs:
-
-``` bash
-yarn bazel run //tools/saucelabs:sauce_service_setup
-TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "view-engine-only", ...) except attr("tags", "fixme-saucelabs-ivy", ...)')
+TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "view-engine-only", ...) except attr("tags", "fixme-saucelabs", ...)')
 yarn bazel test --config=saucelabs ${TESTS}
 ```
 
