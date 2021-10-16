@@ -8,9 +8,10 @@ For more information about the attacks and mitigations described below, see [OWA
 
 You can run the <live-example></live-example> in Stackblitz and download the code from there.
 
+{@a report-issues}
+
 <div class="callout is-important">
 
-{@a report-issues}
 <header>Reporting vulnerabilities</header>
 
 To report vulnerabilities in Angular itself, email us at [security@angular.io](mailto:security@angular.io).
@@ -20,9 +21,10 @@ philosophy](https://www.google.com/about/appsecurity/).
 
 </div>
 
+{@a best-practices}
+
 <div class="callout is-helpful">
 
-{@a best-practices}
 <header>Best practices</header>
 
 * **Keep current with the latest Angular library releases.**
