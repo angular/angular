@@ -18,14 +18,14 @@ import { ProductDetailsComponent } from './product-details/product-details.compo
 import { CartComponent } from './cart/cart.component';
 // #enddocregion declare-cart
 import { ShippingComponent } from './shipping/shipping.component';
-// #docregion declare-cart-service
+// #docregion provide-cart-service
 import {CartService} from './cart.service';
-// #enddocregion declare-cart-service
+// #enddocregion provide-cart-service
 
 // #docregion product-details-route, http-client-module, shipping-route, cart-route, declare-product-alerts, declare-cart
-// #docregion declare-cart-service
+// #docregion provide-cart-service
 @NgModule({
-  // #enddocregion declare-product-alerts, declare-cart, declare-cart-service
+  // #enddocregion declare-product-alerts, declare-cart, provide-cart-service
   imports: [
     BrowserModule,
     // #enddocregion product-details-route, cart-route
@@ -61,8 +61,8 @@ import {CartService} from './cart.service';
   ],
   // #enddocregion declare-product-alerts, product-details-route, declare-cart
   bootstrap: [AppComponent],
-  // #docregion declare-cart-service
+  // #docregion provide-cart-service
   providers: [CartService],
-  // #enddocregion declare-cart-service
+  // #enddocregion provide-cart-service
 })
 export class AppModule { }

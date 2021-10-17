@@ -44,10 +44,10 @@ This section walks you through adding a **Buy** button and setting up a cart ser
     * The `getItems()` method collects the items users add to the cart and returns each item with its associated quantity.
 
     * The `clearCart()` method returns an empty array of items, which empties the cart.
-    
+
 1. To make `CartService` available to the components in the application, add it to `AppModule`'s providers in `app.module.ts`.
 
-    <code-example path="getting-started/src/app/app.module.ts" header="src/app/app.module.ts" region="declare-cart-service"></code-example>
+    <code-example path="getting-started/src/app/app.module.ts" header="src/app/app.module.ts" region="provide-cart-service"></code-example>
 
 {@a product-details-use-cart-service}
 
