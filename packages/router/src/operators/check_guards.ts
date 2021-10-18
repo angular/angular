@@ -24,6 +24,7 @@ import {
   CanActivateChildFn,
   CanActivateFn,
   CanDeactivateFn,
+  GuardResult,
   CanLoadFn,
   CanMatchFn,
   Route,
@@ -91,12 +92,9 @@ function runCanDeactivateChecks(
     mergeMap((check) =>
       runCanDeactivate(check.component, check.route, currRSS, futureRSS, injector),
     ),
-    first(
-      (result) => {
-        return result !== true;
-      },
-      true as boolean | UrlTree,
-    ),
+    first((result) => {
+      return result !== true;
+    }, true),
   );
 }
 
@@ -115,12 +113,9 @@ function runCanActivateChecks(
         runCanActivate(futureSnapshot, check.route, injector),
       );
     }),
-    first(
-      (result) => {
-        return result !== true;
-      },
-      true as boolean | UrlTree,
-    ),
+    first((result) => {
+      return result !== true;
+    }, true),
   );
 }
 
@@ -164,7 +159,7 @@ function runCanActivate(
   futureRSS: RouterStateSnapshot,
   futureARS: ActivatedRouteSnapshot,
   injector: EnvironmentInjector,
-): Observable<boolean | UrlTree> {
+): Observable<GuardResult> {
   const canActivate = futureARS.routeConfig ? futureARS.routeConfig.canActivate : null;
   if (!canActivate || canActivate.length === 0) return of(true);
 
@@ -189,7 +184,7 @@ function runCanActivateChild(
   futureRSS: RouterStateSnapshot,
   path: ActivatedRouteSnapshot[],
   injector: EnvironmentInjector,
-): Observable<boolean | UrlTree> {
+): Observable<GuardResult> {
   const futureARS = path[path.length - 1];
 
   const canActivateChildGuards = path
@@ -227,7 +222,7 @@ function runCanDeactivate(
   currRSS: RouterStateSnapshot,
   futureRSS: RouterStateSnapshot,
   injector: EnvironmentInjector,
-): Observable<boolean | UrlTree> {
+): Observable<GuardResult> {
   const canDeactivate = currARS && currARS.routeConfig ? currARS.routeConfig.canDeactivate : null;
   if (!canDeactivate || canDeactivate.length === 0) return of(true);
   const canDeactivateObservables = canDeactivate.map((c: any) => {

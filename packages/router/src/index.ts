@@ -36,6 +36,8 @@ export {
 } from './events';
 export {
   CanActivateChildFn,
+  MaybeAsync,
+  GuardResult,
   CanActivateFn,
   CanDeactivateFn,
   CanLoadFn,

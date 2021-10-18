@@ -9,15 +9,13 @@
 import {combineLatest, Observable, OperatorFunction} from 'rxjs';
 import {filter, map, startWith, switchMap, take} from 'rxjs/operators';
 
+import {GuardResult} from '../models';
 import {UrlTree} from '../url_tree';
 
 const INITIAL_VALUE = /* @__PURE__ */ Symbol('INITIAL_VALUE');
 declare type INTERIM_VALUES = typeof INITIAL_VALUE | boolean | UrlTree;
 
-export function prioritizedGuardValue(): OperatorFunction<
-  Observable<boolean | UrlTree>[],
-  boolean | UrlTree
-> {
+export function prioritizedGuardValue(): OperatorFunction<Observable<GuardResult>[], GuardResult> {
   return switchMap((obs) => {
     return combineLatest(
       obs.map((o) => o.pipe(take(1), startWith(INITIAL_VALUE as INTERIM_VALUES))),
@@ -40,7 +38,7 @@ export function prioritizedGuardValue(): OperatorFunction<
         // Everything resolved to true. Return true.
         return true;
       }),
-      filter((item): item is boolean | UrlTree => item !== INITIAL_VALUE),
+      filter((item): item is GuardResult => item !== INITIAL_VALUE),
       take(1),
     );
   });
