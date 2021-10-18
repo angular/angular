@@ -29,7 +29,7 @@ Caching is enabled by default. To disable caching run the following command:
 ng config cli.cache.enabled false
 ```
 
-To enable, use the same command with a value of `true`.
+To re-enable caching, set `cli.cache.enabled` to `true`.
 
 ### Cache environments
 By default, disk cache is only enabled for local environments.
@@ -58,15 +58,15 @@ ng config cli.cache.path ".cache/ng"
 
 ### Clearing the cache
 
-To clear the cache, run the following command:
+To clear the cache, run one of the following commands.
 
-#### Unix based operating systems
+To clear the cache on Unix-based operating systems:
 
 ```bash
 rm -rf .angular/cache
 ```
 
-#### Windows
+To clear the cache on Windows:
 
 ```bash
 rmdir /s /q .angular/cache
