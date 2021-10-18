@@ -24,8 +24,6 @@ export interface LocationUpgradeTestingConfig {
  * @description
  *
  * Is used in DI to configure the router.
- *
- * @publicApi
  */
 export const LOC_UPGRADE_TEST_CONFIG =
     new InjectionToken<LocationUpgradeTestingConfig>('LOC_UPGRADE_TEST_CONFIG');

@@ -16,18 +16,6 @@ import {UpgradeModule} from '@angular/upgrade/static';
 
 import {LocationUpgradeTestModule} from './upgrade_location_test_module';
 
-export class MockUpgradeModule {
-  $injector = {
-    get(key: string) {
-      if (key === '$rootScope') {
-        return new $rootScopeMock();
-      } else {
-        throw new Error(`Unsupported mock service requested: ${key}`);
-      }
-    }
-  };
-}
-
 export function injectorFactory() {
   const rootScopeMock = new $rootScopeMock();
   const rootElementMock = {on: () => undefined};
@@ -45,9 +33,6 @@ export function injectorFactory() {
 export class $rootScopeMock {
   private watchers: any[] = [];
   private events: {[k: string]: any[]} = {};
-  runWatchers() {
-    this.watchers.forEach(fn => fn());
-  }
 
   $watch(fn: any) {
     this.watchers.push(fn);
@@ -78,7 +63,9 @@ export class $rootScopeMock {
     fn();
   }
 
-  $digest() {}
+  $digest() {
+    this.watchers.forEach(fn => fn());
+  }
 }
 
 describe('setUpLocationSync', () => {
