@@ -11,7 +11,7 @@ Before continuing with this topic, you should be familiar with the following:
 
 ## Creating reusable animations
 
-To create a reusable animation, use the <code>[animation](api/animations/animation)()</code> function to define an animation in a separate `.ts` file and declare this animation definition as a `const` export variable. You can then import and reuse this animation in any of your application components using the <code>[useAnimation](api/animations/useAnimation)</a>()</code> function.
+To create a reusable animation, use the <code>[animation](api/animations/animation)()</code> function to define an animation in a separate `.ts` file and declare this animation definition as a `const` export variable. You can then import and reuse this animation in any of your application components using the <code>[useAnimation](api/animations/useAnimation)()</code> function.
 
 <code-example path="animations/src/app/animations.1.ts" header="src/app/animations.ts" region="animation-const" language="typescript"></code-example>
 
