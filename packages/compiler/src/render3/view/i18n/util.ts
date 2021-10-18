@@ -24,12 +24,6 @@ export const TRANSLATION_VAR_PREFIX = 'i18n_';
 /** Name of the i18n attributes **/
 export const I18N_ATTR = 'i18n';
 export const I18N_ATTR_PREFIX = 'i18n-';
-/**
- * Matches the prefix used when binding to an attribute rather than a property.
- *
- * For example: `[attr.title]="expression"`.
- * */
-export const ATTR_BINDING_MATCHER = /^attr\./i;
 
 /** Prefix of var expressions used in ICUs */
 export const I18N_ICU_VAR_PREFIX = 'VAR_';
