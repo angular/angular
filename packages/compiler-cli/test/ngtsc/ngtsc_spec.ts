@@ -3557,6 +3557,23 @@ function allTests(os: string) {
       expect(trim(jsContents)).toContain(trim(hostBindingsFn));
     });
 
+    it('should handle $any used inside a listener', () => {
+      env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test-cmp',
+          template: '<div (click)="$any(123)"></div>',
+        })
+        export class TestCmp {}
+    `);
+
+      env.driveMain();
+      expect(env.getContents('test.js'))
+          .toContain(
+              `ɵɵlistener("click", function TestCmp_Template_div_click_0_listener() { return 123; });`);
+    });
+
     it('should accept dynamic host attribute bindings', () => {
       env.write('other.d.ts', `
       export declare const foo: any;
