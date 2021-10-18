@@ -7,7 +7,6 @@
  */
 
 // Unique place to configure the browsers which are used in the different CI jobs in Sauce Labs (SL)
-// and BrowserStack (BS).
 // If the target is set to null, then the browser is not run anywhere during CI.
 // If a category becomes empty (e.g. BS and required), then the corresponding job must be commented
 // out in the CI configuration.
@@ -120,14 +119,7 @@ var customLaunchers = {
     platform: 'Android',
     version: '10.0',
     device: 'Android GoogleAPI Emulator'
-  },
-  'BS_CHROME': {base: 'BrowserStack', browser: 'chrome', os: 'OS X', os_version: 'Yosemite'},
-  'BS_FIREFOX': {base: 'BrowserStack', browser: 'firefox', os: 'Windows', os_version: '10'},
-  'BS_SAFARI10': {base: 'BrowserStack', browser: 'safari', os: 'OS X', os_version: 'Sierra'},
-  'BS_EDGE': {base: 'BrowserStack', browser: 'edge', os: 'Windows', os_version: '10'},
-  'BS_WINDOWSPHONE':
-      {base: 'BrowserStack', device: 'Nokia Lumia 930', os: 'winphone', os_version: '8.1'},
-  'BS_ANDROID7': {base: 'BrowserStack', device: 'Google Pixel', os: 'android', os_version: '7.1'}
+  }
 };
 
 var sauceAliases = {
@@ -146,27 +138,9 @@ var sauceAliases = {
   'CI_OPTIONAL': buildConfiguration('unitTest', 'SL', false)
 };
 
-var browserstackAliases = {
-  'ALL': Object.keys(customLaunchers).filter(function(item) {
-    return customLaunchers[item].base == 'BrowserStack';
-  }),
-  'DESKTOP': [
-    'BS_CHROME',
-    'BS_FIREFOX',
-    'BS_EDGE',
-  ],
-  'MOBILE': ['BS_ANDROID7', 'BS_WINDOWSPHONE'],
-  'ANDROID': ['BS_ANDROID7'],
-  'IOS': [],
-  'SAFARI': [],
-  'CI_REQUIRED': buildConfiguration('unitTest', 'BS', true),
-  'CI_OPTIONAL': buildConfiguration('unitTest', 'BS', false)
-};
-
 module.exports = {
   customLaunchers: customLaunchers,
   sauceAliases: sauceAliases,
-  browserstackAliases: browserstackAliases
 };
 
 function buildConfiguration(type, target, required) {
