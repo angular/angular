@@ -9,11 +9,11 @@
 import {combineLatest, Observable, OperatorFunction} from 'rxjs';
 import {filter, map, startWith, switchMap, take} from 'rxjs/operators';
 
-import {GuardResult} from '../models';
-import {UrlTree} from '../url_tree';
+import {GuardResult, RedirectCommand} from '../models';
+import {isUrlTree, UrlTree} from '../url_tree';
 
 const INITIAL_VALUE = /* @__PURE__ */ Symbol('INITIAL_VALUE');
-declare type INTERIM_VALUES = typeof INITIAL_VALUE | boolean | UrlTree;
+declare type INTERIM_VALUES = typeof INITIAL_VALUE | GuardResult;
 
 export function prioritizedGuardValue(): OperatorFunction<Observable<GuardResult>[], GuardResult> {
   return switchMap((obs) => {
@@ -28,9 +28,9 @@ export function prioritizedGuardValue(): OperatorFunction<Observable<GuardResult
           } else if (result === INITIAL_VALUE) {
             // If guard has not finished, we need to stop processing.
             return INITIAL_VALUE;
-          } else if (result === false || result instanceof UrlTree) {
+          } else if (result === false || isRedirect(result)) {
             // Result finished and was not true. Return the result.
-            // Note that we only allow false/UrlTree. Other values are considered invalid and
+            // Note that we only allow false/UrlTree/RedirectCommand. Other values are considered invalid and
             // ignored.
             return result;
           }
@@ -42,4 +42,8 @@ export function prioritizedGuardValue(): OperatorFunction<Observable<GuardResult
       take(1),
     );
   });
+}
+
+function isRedirect(val: INTERIM_VALUES): val is UrlTree | RedirectCommand {
+  return isUrlTree(val) || val instanceof RedirectCommand;
 }

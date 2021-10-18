@@ -13,7 +13,7 @@ import {RouterModule} from '@angular/router';
 import {of} from 'rxjs';
 
 import {ChildActivationStart} from '../src/events';
-import {Routes} from '../src/models';
+import {GuardResult, Routes} from '../src/models';
 import {NavigationTransition} from '../src/navigation_transition';
 import {checkGuards as checkGuardsOperator} from '../src/operators/check_guards';
 import {resolveData as resolveDataOperator} from '../src/operators/resolve_data';
@@ -853,7 +853,7 @@ function checkGuards(
   future: RouterStateSnapshot,
   curr: RouterStateSnapshot,
   injector: EnvironmentInjector,
-  check: (result: boolean | UrlTree) => void,
+  check: (result: GuardResult) => void,
 ): void {
   // Since we only test the guards, we don't need to provide a full navigation
   // transition object with all properties set.

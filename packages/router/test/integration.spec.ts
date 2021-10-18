@@ -77,7 +77,16 @@ import {RouterTestingHarness} from '@angular/router/testing';
 import {concat, EMPTY, firstValueFrom, Observable, Observer, of, Subscription} from 'rxjs';
 import {delay, filter, first, last, map, mapTo, takeWhile, tap} from 'rxjs/operators';
 
-import {CanActivateChildFn, CanActivateFn, CanMatchFn, Data, ResolveFn} from '../src/models';
+import {
+  CanActivateChildFn,
+  CanActivateFn,
+  CanMatchFn,
+  Data,
+  ResolveFn,
+  RedirectCommand,
+  GuardResult,
+  MaybeAsync,
+} from '../src/models';
 import {provideRouter, withNavigationErrorHandler, withRouterConfig} from '../src/provide_router';
 import {wrapIntoObservable} from '../src/utils/collection';
 import {getLoadedRoutes} from '../src/utils/config';
@@ -3958,6 +3967,58 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
             tick();
             expect(resolvedPath).toBe('/redirected');
+          }));
+
+          it('can redirect to 404 without changing the URL', fakeAsync(() => {
+            TestBed.configureTestingModule({
+              providers: [provideRouter([], withRouterConfig({urlUpdateStrategy: 'eager'}))],
+            });
+            const router = TestBed.inject(Router);
+            const location = TestBed.inject(Location);
+            router.resetConfig([
+              {path: '', component: SimpleCmp},
+              {
+                path: 'one',
+                component: RouteCmp,
+                canActivate: [
+                  () => new RedirectCommand(router.parseUrl('/404'), {skipLocationChange: true}),
+                ],
+              },
+              {path: '404', component: SimpleCmp},
+            ]);
+            const fixture = createRoot(router, RootCmp);
+            router.navigateByUrl('/one');
+
+            advance(fixture);
+
+            expect(location.path()).toEqual('/one');
+            expect(router.url.toString()).toEqual('/404');
+          }));
+
+          it('can redirect while changing state object', fakeAsync(() => {
+            TestBed.configureTestingModule({
+              providers: [provideRouter([], withRouterConfig({urlUpdateStrategy: 'eager'}))],
+            });
+            const router = TestBed.inject(Router);
+            const location = TestBed.inject(Location);
+            router.resetConfig([
+              {path: '', component: SimpleCmp},
+              {
+                path: 'one',
+                component: RouteCmp,
+                canActivate: [
+                  () => new RedirectCommand(router.parseUrl('/redirected'), {state: {test: 1}}),
+                ],
+              },
+              {path: 'redirected', component: SimpleCmp},
+            ]);
+            const fixture = createRoot(router, RootCmp);
+            router.navigateByUrl('/one');
+
+            advance(fixture);
+
+            expect(location.path()).toEqual('/redirected');
+            expect(location.getState()).toEqual(jasmine.objectContaining({test: 1}));
           }));
         });
 

@@ -44,7 +44,7 @@ import {
   RouteConfigLoadStart,
   RoutesRecognized,
 } from './events';
-import {NavigationBehaviorOptions, QueryParamsHandling, Route, Routes} from './models';
+import {GuardResult, NavigationBehaviorOptions, QueryParamsHandling, Route, Routes} from './models';
 import {
   isNavigationCancelingError,
   isRedirectingNavigationCancelingError,
@@ -297,7 +297,7 @@ export interface NavigationTransition {
   currentRouterState: RouterState;
   targetRouterState: RouterState | null;
   guards: Checks;
-  guardsResult: boolean | UrlTree | null;
+  guardsResult: GuardResult | null;
 }
 
 /**
@@ -608,7 +608,7 @@ export class NavigationTransitions {
           checkGuards(this.environmentInjector, (evt: Event) => this.events.next(evt)),
           tap((t) => {
             overallTransitionState.guardsResult = t.guardsResult;
-            if (isUrlTree(t.guardsResult)) {
+            if (t.guardsResult && typeof t.guardsResult !== 'boolean') {
               throw redirectingNavigationError(this.urlSerializer, t.guardsResult);
             }
 
@@ -824,7 +824,7 @@ export class NavigationTransitions {
               if (!isRedirectingNavigationCancelingError(e)) {
                 overallTransitionState.resolve(false);
               } else {
-                this.events.next(new RedirectRequest(e.url));
+                this.events.next(new RedirectRequest(e.url, e.navigationBehaviorOptions));
               }
 
               /* All other errors should reset to the router's internal URL reference

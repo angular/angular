@@ -29,7 +29,7 @@ import {
   CanMatchFn,
   Route,
 } from '../models';
-import {redirectingNavigationError} from '../navigation_canceling_error';
+import {navigationCancelingError, redirectingNavigationError} from '../navigation_canceling_error';
 import {NavigationTransition} from '../navigation_transition';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../router_state';
 import {isUrlTree, UrlSegment, UrlSerializer, UrlTree} from '../url_tree';
@@ -260,12 +260,10 @@ export function runCanLoadGuards(
   return of(canLoadObservables).pipe(prioritizedGuardValue(), redirectIfUrlTree(urlSerializer));
 }
 
-function redirectIfUrlTree(
-  urlSerializer: UrlSerializer,
-): OperatorFunction<UrlTree | boolean, boolean> {
+function redirectIfUrlTree(urlSerializer: UrlSerializer): OperatorFunction<GuardResult, boolean> {
   return pipe(
-    tap((result: UrlTree | boolean) => {
-      if (!isUrlTree(result)) return;
+    tap((result: GuardResult) => {
+      if (typeof result === 'boolean') return;
 
       throw redirectingNavigationError(urlSerializer, result);
     }),
@@ -278,7 +276,7 @@ export function runCanMatchGuards(
   route: Route,
   segments: UrlSegment[],
   urlSerializer: UrlSerializer,
-): Observable<boolean> {
+): Observable<GuardResult> {
   const canMatch = route.canMatch;
   if (!canMatch || canMatch.length === 0) return of(true);
 

@@ -56,6 +56,7 @@ export {
   RunGuardsAndResolvers,
   UrlMatcher,
   UrlMatchResult,
+  RedirectCommand,
 } from './models';
 export {ViewTransitionInfo, ViewTransitionsFeatureOptions} from './utils/view_transition';
 
