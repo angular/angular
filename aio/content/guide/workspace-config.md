@@ -5,7 +5,7 @@ Path values given in the configuration are relative to the root workspace folder
 
 ## Overall JSON structure
 
-At the top-level of `angular.json`, a few properties configure the workspace, and a `projects` section contains the remaining per-project configuration options. CLI defaults set at the workspace level can be overridden by defaults set at the project level, and defaults set at the project level can be overridden on the command line.
+At the top-level of `angular.json`, a few properties configure the workspace and a `projects` section contains the remaining per-project configuration options. You can override CLI defaults set at the workspace level through defaults set at the project level. You can also override defaults set at the project level using the command line.
 
 The following properties, at the top-level of the file, configure the workspace.
 
