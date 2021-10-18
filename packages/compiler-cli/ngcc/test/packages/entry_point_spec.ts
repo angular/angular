@@ -747,6 +747,25 @@ runInEachFileSystem(() => {
         entryPoint.packageJson.main = './bundles/valid_entry_point';
         expect(getEntryPointFormat(fs, entryPoint, browserOrMain)).toBe('umd');
       });
+
+      it('should match alternate UMD format', () => {
+        // Note that in this format, instead of the whole wrapper being enclosed in parentheses,
+        // only the wrapper function is enclosed and the call is not inside the parentheses.
+        loadTestFiles([{
+          name: _(
+              '/project/node_modules/some_package/valid_entry_point/bundles/valid_entry_point/index.js'),
+          contents: `
+        (function (global, factory) {
+          typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
+          typeof define === 'function' && define.amd ? define('@angular/common', ['exports', '@angular/core'], factory) :
+          (global = global || self, factory((global.ng = global.ng || {}, global.ng.common = {}), global.ng.core));
+        })(this, function (exports, core) { 'use strict'; });
+      `
+        }]);
+
+        entryPoint.packageJson.main = './bundles/valid_entry_point';
+        expect(getEntryPointFormat(fs, entryPoint, browserOrMain)).toBe('umd');
+      });
     });
 
     it('should return `undefined` if the `browser` property is not a string', () => {

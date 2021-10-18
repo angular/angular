@@ -511,30 +511,40 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
 }
 
 export function parseStatementForUmdModule(statement: ts.Statement): UmdModule|null {
-  const wrapperCall = getUmdWrapperCall(statement);
-  if (!wrapperCall) return null;
+  const wrapper = getUmdWrapper(statement);
+  if (wrapper === null) return null;
 
-  const wrapperFn = wrapperCall.expression;
-  if (!ts.isFunctionExpression(wrapperFn)) return null;
-
-  const factoryFnParamIndex = wrapperFn.parameters.findIndex(
+  const factoryFnParamIndex = wrapper.fn.parameters.findIndex(
       parameter => ts.isIdentifier(parameter.name) && parameter.name.text === 'factory');
   if (factoryFnParamIndex === -1) return null;
 
-  const factoryFn = stripParentheses(wrapperCall.arguments[factoryFnParamIndex]);
+  const factoryFn = stripParentheses(wrapper.call.arguments[factoryFnParamIndex]);
   if (!factoryFn || !ts.isFunctionExpression(factoryFn)) return null;
 
-  return {wrapperFn, factoryFn};
+  return {wrapperFn: wrapper.fn, factoryFn};
 }
 
-function getUmdWrapperCall(statement: ts.Statement): ts.CallExpression&
-    {expression: ts.FunctionExpression}|null {
-  if (!ts.isExpressionStatement(statement) || !ts.isParenthesizedExpression(statement.expression) ||
-      !ts.isCallExpression(statement.expression.expression) ||
-      !ts.isFunctionExpression(statement.expression.expression.expression)) {
-    return null;
+function getUmdWrapper(statement: ts.Statement):
+    {call: ts.CallExpression, fn: ts.FunctionExpression}|null {
+  if (!ts.isExpressionStatement(statement)) return null;
+
+  if (ts.isParenthesizedExpression(statement.expression) &&
+      ts.isCallExpression(statement.expression.expression) &&
+      ts.isFunctionExpression(statement.expression.expression.expression)) {
+    // (function () { ... } (...) );
+    const call = statement.expression.expression;
+    const fn = statement.expression.expression.expression;
+    return {call, fn};
   }
-  return statement.expression.expression as ts.CallExpression & {expression: ts.FunctionExpression};
+  if (ts.isCallExpression(statement.expression) &&
+      ts.isParenthesizedExpression(statement.expression.expression) &&
+      ts.isFunctionExpression(statement.expression.expression.expression)) {
+    // (function () { ... }) (...);
+    const call = statement.expression;
+    const fn = statement.expression.expression.expression;
+    return {call, fn};
+  }
+  return null;
 }
 
 
