@@ -220,6 +220,7 @@ export class Router {
           } else if (e instanceof NavigationEnd) {
             this.navigated = true;
           } else if (e instanceof RedirectRequest) {
+            const opts = e.navigationBehaviorOptions;
             const mergedTree = this.urlHandlingStrategy.merge(
               e.url,
               currentTransition.currentRawUrl,
@@ -235,6 +236,8 @@ export class Router {
               replaceUrl:
                 this.urlUpdateStrategy === 'eager' ||
                 isBrowserTriggeredNavigation(currentTransition.source),
+              // allow developer to override default options with RedirectCommand
+              ...opts,
             };
 
             this.scheduleNavigation(mergedTree, IMPERATIVE_NAVIGATION, null, extras, {

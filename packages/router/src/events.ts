@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Route} from './models';
+import {NavigationBehaviorOptions, Route} from './models';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
 import {UrlTree} from './url_tree';
 
@@ -611,7 +611,10 @@ export class Scroll {
 
 export class BeforeActivateRoutes {}
 export class RedirectRequest {
-  constructor(readonly url: UrlTree) {}
+  constructor(
+    readonly url: UrlTree,
+    readonly navigationBehaviorOptions: NavigationBehaviorOptions | undefined,
+  ) {}
 }
 export type PrivateRouterEvents = BeforeActivateRoutes | RedirectRequest;
 

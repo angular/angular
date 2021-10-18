@@ -306,7 +306,7 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
 }
 
 // @public
-export type GuardResult = boolean | UrlTree;
+export type GuardResult = boolean | UrlTree | RedirectCommand;
 
 // @public
 export class GuardsCheckEnd extends RouterEvent {
@@ -594,6 +594,15 @@ export function provideRoutes(routes: Routes): Provider[];
 
 // @public
 export type QueryParamsHandling = 'merge' | 'preserve' | '';
+
+// @public
+export class RedirectCommand {
+    constructor(redirectTo: UrlTree, navigationBehaviorOptions?: NavigationBehaviorOptions | undefined);
+    // (undocumented)
+    readonly navigationBehaviorOptions?: NavigationBehaviorOptions | undefined;
+    // (undocumented)
+    readonly redirectTo: UrlTree;
+}
 
 // @public @deprecated
 export interface Resolve<T> {

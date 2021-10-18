@@ -70,7 +70,23 @@ export type DeprecatedGuard = ProviderToken<any> | any;
  * @see [Routing tutorial](guide/router-tutorial-toh#milestone-5-route-guards)
  * @publicApi
  */
-export type GuardResult = boolean | UrlTree;
+export type GuardResult = boolean | UrlTree | RedirectCommand;
+
+/**
+ * Can be returned by a `Router` guard to instruct the `Router` to redirect rather than continue
+ * processing the path of the in-flight navigation. The `redirectTo` indicates _where_ the new
+ * navigation should go to and the optional `navigationBehaviorOptions` can provide more information
+ * about _how_ to perform the navigation.
+ *
+ * @see [Routing tutorial](guide/router-tutorial-toh#milestone-5-route-guards)
+ * @publicApi
+ */
+export class RedirectCommand {
+  constructor(
+    readonly redirectTo: UrlTree,
+    readonly navigationBehaviorOptions?: NavigationBehaviorOptions,
+  ) {}
+}
 
 /**
  * Type used to represent a value which may be synchronous or async.

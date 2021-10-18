@@ -549,6 +549,9 @@
     "name": "Recognizer"
   },
   {
+    "name": "RedirectCommand"
+  },
+  {
     "name": "RedirectRequest"
   },
   {
