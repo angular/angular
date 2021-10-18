@@ -318,7 +318,6 @@ def karma_web_test_suite(name, **kwargs):
 
     # Add common deps
     deps = kwargs.pop("deps", []) + [
-        "@npm//karma-browserstack-launcher",
         "@npm//karma-sauce-launcher",
         "@npm//:node_modules/tslib/tslib.js",
         "//tools/rxjs:rxjs_umd_modules",
