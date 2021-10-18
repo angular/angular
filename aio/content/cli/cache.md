@@ -20,7 +20,7 @@ The object goes under `cli.cache` at the top level of the file, outside the `pro
 }
 ```
 
-To learn more about all the options, see [cache options](guide/workspace-config#cache-options).
+For more information, see [cache options](guide/workspace-config#cache-options).
 
 ### Enabling and disabling the cache
 Caching is enabled by default. To disable caching run the following command:
