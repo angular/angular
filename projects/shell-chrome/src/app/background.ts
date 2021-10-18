@@ -1,8 +1,15 @@
 import { AngularDetection } from './ng-validate';
 
+// Electron does not expose browserAction object,
+// Use empty calls as fallback if they are not defined.
+const browserAction = chrome.browserAction || {
+  setIcon: () => {},
+  setPopup: () => {}
+};
+
 // By default use the black and white icon.
 // Replace it only when we detect an Angular app.
-chrome.browserAction.setIcon({
+browserAction.setIcon({
   path: {
     16: `assets/icon-bw16.png`,
     48: `assets/icon-bw48.png`,
@@ -120,13 +127,13 @@ chrome.runtime.onMessage.addListener((req, sender) => {
     return;
   }
   if (sender && sender.tab) {
-    chrome.browserAction.setPopup({
+    browserAction.setPopup({
       tabId: sender.tab.id,
       popup: `popups/${getPopUpName(req)}`,
     });
   }
   if (sender && sender.tab && req.isAngular) {
-    chrome.browserAction.setIcon({
+    browserAction.setIcon({
       tabId: sender.tab.id,
       path: {
         16: `assets/icon16.png`,
