@@ -115,47 +115,47 @@ export abstract class BaseRouteReuseStrategy implements RouteReuseStrategy {
 // @public @deprecated
 export interface CanActivate {
     // (undocumented)
-    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<GuardResult>;
 }
 
 // @public @deprecated
 export interface CanActivateChild {
     // (undocumented)
-    canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+    canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<GuardResult>;
 }
 
 // @public
-export type CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot) => Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+export type CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot) => MaybeAsync<GuardResult>;
 
 // @public
-export type CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+export type CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => MaybeAsync<GuardResult>;
 
 // @public @deprecated
 export interface CanDeactivate<T> {
     // (undocumented)
-    canDeactivate(component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+    canDeactivate(component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState: RouterStateSnapshot): MaybeAsync<GuardResult>;
 }
 
 // @public
-export type CanDeactivateFn<T> = (component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState: RouterStateSnapshot) => Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+export type CanDeactivateFn<T> = (component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState: RouterStateSnapshot) => MaybeAsync<GuardResult>;
 
 // @public @deprecated
 export interface CanLoad {
     // (undocumented)
-    canLoad(route: Route, segments: UrlSegment[]): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+    canLoad(route: Route, segments: UrlSegment[]): MaybeAsync<GuardResult>;
 }
 
 // @public @deprecated
-export type CanLoadFn = (route: Route, segments: UrlSegment[]) => Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+export type CanLoadFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<GuardResult>;
 
 // @public @deprecated
 export interface CanMatch {
     // (undocumented)
-    canMatch(route: Route, segments: UrlSegment[]): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+    canMatch(route: Route, segments: UrlSegment[]): MaybeAsync<GuardResult>;
 }
 
 // @public
-export type CanMatchFn = (route: Route, segments: UrlSegment[]) => Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+export type CanMatchFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<GuardResult>;
 
 // @public
 export class ChildActivationEnd {
@@ -306,6 +306,9 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
 }
 
 // @public
+export type GuardResult = boolean | UrlTree;
+
+// @public
 export class GuardsCheckEnd extends RouterEvent {
     constructor(
     id: number,
@@ -395,6 +398,9 @@ export function mapToCanMatch(providers: Array<Type<{
 export function mapToResolve<T>(provider: Type<{
     resolve: ResolveFn<T>;
 }>): ResolveFn<T>;
+
+// @public
+export type MaybeAsync<T> = T | Observable<T> | Promise<T>;
 
 // @public
 export interface Navigation {
@@ -592,7 +598,7 @@ export type QueryParamsHandling = 'merge' | 'preserve' | '';
 // @public @deprecated
 export interface Resolve<T> {
     // (undocumented)
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<T> | Promise<T> | T;
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<T>;
 }
 
 // @public
@@ -618,7 +624,7 @@ export class ResolveEnd extends RouterEvent {
 }
 
 // @public
-export type ResolveFn<T> = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => Observable<T> | Promise<T> | T;
+export type ResolveFn<T> = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => MaybeAsync<T>;
 
 // @public
 export class ResolveStart extends RouterEvent {

@@ -65,6 +65,21 @@ export type OnSameUrlNavigation = 'reload' | 'ignore';
 export type DeprecatedGuard = ProviderToken<any> | any;
 
 /**
+ * The supported types that can be returned from a `Router` guard.
+ *
+ * @see [Routing tutorial](guide/router-tutorial-toh#milestone-5-route-guards)
+ * @publicApi
+ */
+export type GuardResult = boolean | UrlTree;
+
+/**
+ * Type used to represent a value which may be synchronous or async.
+ *
+ * @publicApi
+ */
+export type MaybeAsync<T> = T | Observable<T> | Promise<T>;
+
+/**
  * Represents a route configuration for the Router service.
  * An array of `Route` objects, used in `Router.config` and for nested route configurations
  * in `Route.children`.
@@ -693,7 +708,7 @@ export interface LoadedRouterConfig {
  *   canActivate(
  *     route: ActivatedRouteSnapshot,
  *     state: RouterStateSnapshot
- *   ): Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree {
+ *   ): MaybeAsync<GuardResult> {
  *     return this.permissions.canActivate(this.currentUser, route.params.id);
  *   }
  * }
@@ -725,10 +740,7 @@ export interface LoadedRouterConfig {
  * @see {@link CanActivateFn}
  */
 export interface CanActivate {
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot,
-  ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<GuardResult>;
 }
 
 /**
@@ -754,7 +766,7 @@ export interface CanActivate {
 export type CanActivateFn = (
   route: ActivatedRouteSnapshot,
   state: RouterStateSnapshot,
-) => Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+) => MaybeAsync<GuardResult>;
 
 /**
  * @description
@@ -782,7 +794,7 @@ export type CanActivateFn = (
  *   canActivateChild(
  *     route: ActivatedRouteSnapshot,
  *     state: RouterStateSnapshot
- *   ): Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree {
+ *   ): MaybeAsync<GuardResult> {
  *     return this.permissions.canActivate(this.currentUser, route.params.id);
  *   }
  * }
@@ -822,7 +834,7 @@ export interface CanActivateChild {
   canActivateChild(
     childRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot,
-  ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+  ): MaybeAsync<GuardResult>;
 }
 
 /**
@@ -843,7 +855,7 @@ export interface CanActivateChild {
 export type CanActivateChildFn = (
   childRoute: ActivatedRouteSnapshot,
   state: RouterStateSnapshot,
-) => Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+) => MaybeAsync<GuardResult>;
 
 /**
  * @description
@@ -879,7 +891,7 @@ export type CanActivateChildFn = (
  *     currentRoute: ActivatedRouteSnapshot,
  *     currentState: RouterStateSnapshot,
  *     nextState: RouterStateSnapshot
- *   ): Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree {
+ *   ): MaybeAsync<GuardResult> {
  *     return this.permissions.canDeactivate(this.currentUser, route.params.id);
  *   }
  * }
@@ -911,7 +923,7 @@ export interface CanDeactivate<T> {
     currentRoute: ActivatedRouteSnapshot,
     currentState: RouterStateSnapshot,
     nextState: RouterStateSnapshot,
-  ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+  ): MaybeAsync<GuardResult>;
 }
 
 /**
@@ -934,7 +946,7 @@ export type CanDeactivateFn<T> = (
   currentRoute: ActivatedRouteSnapshot,
   currentState: RouterStateSnapshot,
   nextState: RouterStateSnapshot,
-) => Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+) => MaybeAsync<GuardResult>;
 
 /**
  * @description
@@ -1002,10 +1014,7 @@ export type CanDeactivateFn<T> = (
  * @see {@link CanMatchFn}
  */
 export interface CanMatch {
-  canMatch(
-    route: Route,
-    segments: UrlSegment[],
-  ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+  canMatch(route: Route, segments: UrlSegment[]): MaybeAsync<GuardResult>;
 }
 
 /**
@@ -1023,10 +1032,7 @@ export interface CanMatch {
  * @publicApi
  * @see {@link Route}
  */
-export type CanMatchFn = (
-  route: Route,
-  segments: UrlSegment[],
-) => Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+export type CanMatchFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<GuardResult>;
 
 /**
  * @description
@@ -1126,10 +1132,7 @@ export type CanMatchFn = (
  * @see {@link ResolveFn}
  */
 export interface Resolve<T> {
-  resolve(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot,
-  ): Observable<T> | Promise<T> | T;
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<T>;
 }
 
 /**
@@ -1176,7 +1179,7 @@ export interface Resolve<T> {
 export type ResolveFn<T> = (
   route: ActivatedRouteSnapshot,
   state: RouterStateSnapshot,
-) => Observable<T> | Promise<T> | T;
+) => MaybeAsync<T>;
 
 /**
  * @description
@@ -1233,10 +1236,7 @@ export type ResolveFn<T> = (
  * @deprecated Use {@link CanMatchFn} instead
  */
 export interface CanLoad {
-  canLoad(
-    route: Route,
-    segments: UrlSegment[],
-  ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+  canLoad(route: Route, segments: UrlSegment[]): MaybeAsync<GuardResult>;
 }
 
 /**
@@ -1248,10 +1248,7 @@ export interface CanLoad {
  * @see {@link CanMatchFn}
  * @deprecated Use `Route.canMatch` and `CanMatchFn` instead
  */
-export type CanLoadFn = (
-  route: Route,
-  segments: UrlSegment[],
-) => Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+export type CanLoadFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<GuardResult>;
 
 /**
  * @description
