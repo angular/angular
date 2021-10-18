@@ -16,7 +16,7 @@ import {ParseTreeResult} from '../../../ml_parser/parser';
 import * as o from '../../../output/output_ast';
 import {isTrustedTypesSink} from '../../../schema/trusted_types_sinks';
 
-import {ATTR_BINDING_MATCHER, hasI18nAttrs, I18N_ATTR, I18N_ATTR_PREFIX, icuFromI18nMessage} from './util';
+import {hasI18nAttrs, I18N_ATTR, I18N_ATTR_PREFIX, icuFromI18nMessage} from './util';
 
 export type I18nMeta = {
   id?: string,
@@ -83,7 +83,7 @@ export class I18nMetaVisitor implements html.Visitor {
 
       for (const attr of element.attrs) {
         if (attr.name === I18N_ATTR) {
-          // 'i18n' attribute that marks the element contents as an i18n message
+          // root 'i18n' node attribute
           const i18n = element.i18n || attr.value;
           message = this._generateI18nMessage(element.children, i18n, setI18nRefs);
           if (message.nodes.length === 0) {
@@ -110,10 +110,7 @@ export class I18nMetaVisitor implements html.Visitor {
       // set i18n meta for attributes
       if (Object.keys(attrsMeta).length) {
         for (const attr of attrs) {
-          // First try to match the metadata to the attribute name as-is.
-          // If that cannot be found try removing any `attr.` prefix from the attribute name.
-          const meta =
-              attrsMeta[attr.name] ?? attrsMeta[attr.name.replace(ATTR_BINDING_MATCHER, '')];
+          const meta = attrsMeta[attr.name];
           // do not create translation for empty attributes
           if (meta !== undefined && attr.value) {
             attr.i18n = this._generateI18nMessage([attr], attr.i18n || meta);
