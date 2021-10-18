@@ -27,26 +27,8 @@ var CIconfiguration = {
   'FirefoxBeta': {unitTest: {target: null, required: true}, e2e: {target: null, required: false}},
   'FirefoxDev': {unitTest: {target: null, required: true}, e2e: {target: null, required: true}},
   'Edge': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
-  'Android7': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  'Android8': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  'Android9': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  // Disable Android 10 tests due to infrastructure failure.
-  // ex:
-  // Chrome Mobile 74.0.3729 (Android 0.0.0) ERROR:
-  //    Error: XHR error loading
-  //    http://angular-ci.local:9876/base/node_modules/rxjs/internal/operators/zip.js
-  //
-  // Error loading http://angular-ci.local:9876/base/node_modules/rxjs/internal/operators/zip.js as
-  // "../internal/operators/zip" from
-  // http://angular-ci.local:9876/base/node_modules/rxjs/operators/index.js
-  'Android10': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
-  // Disable all Safari and iOS tests because of incorrect results
-  // ex:
-  // Mobile Safari 13.0.0 (iOS 13.0.0) styling static template only should capture static values in
-  // TStylingKey FAILED Expected $.content = 'dynamic' to equal '"dynamic"'. Mobile Safari 12.0.0
-  // (iOS 12.0.0) styling should handle values wrapped into SafeValue FAILED Expected
-  // 'url("http://angular-ci.local:9876/1.png")' to contain 'url("/1.png")'.s Tracking in:
-  // https://github.com/angular/angular/issues/36975
+  'Android10': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
+  'Android11': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Safari12': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'Safari13': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'iOS12': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
@@ -92,34 +74,20 @@ var customLaunchers = {
     platform: 'Windows 10',
     version: '14.14393'
   },
-  'SL_ANDROID7': {
-    base: 'SauceLabs',
-    browserName: 'Chrome',
-    platform: 'Android',
-    version: '7.1',
-    device: 'Android GoogleAPI Emulator'
-  },
-  'SL_ANDROID8': {
-    base: 'SauceLabs',
-    browserName: 'Chrome',
-    platform: 'Android',
-    version: '8.0',
-    device: 'Android GoogleAPI Emulator'
-  },
-  'SL_ANDROID9': {
-    base: 'SauceLabs',
-    browserName: 'Chrome',
-    platform: 'Android',
-    version: '9.0',
-    device: 'Android GoogleAPI Emulator'
-  },
   'SL_ANDROID10': {
     base: 'SauceLabs',
     browserName: 'Chrome',
     platform: 'Android',
     version: '10.0',
     device: 'Android GoogleAPI Emulator'
-  }
+  },
+  'SL_ANDROID11': {
+    base: 'SauceLabs',
+    browserName: 'Chrome',
+    platform: 'Android',
+    version: '11.0',
+    device: 'Android GoogleAPI Emulator'
+  },
 };
 
 var sauceAliases = {
@@ -127,8 +95,8 @@ var sauceAliases = {
     return customLaunchers[item].base == 'SauceLabs';
   }),
   'DESKTOP': ['SL_CHROME', 'SL_FIREFOX', 'SL_EDGE', 'SL_SAFARI12', 'SL_SAFARI13', 'SL_FIREFOXESR'],
-  'MOBILE': ['SL_ANDROID7', 'SL_ANDROID8', 'SL_ANDROID9', 'SL_ANDROID10', 'SL_IOS12', 'SL_IOS13'],
-  'ANDROID': ['SL_ANDROID7', 'SL_ANDROID8', 'SL_ANDROID9', 'SL_ANDROID10'],
+  'MOBILE': ['SL_ANDROID10', 'SL_ANDROID11', 'SL_IOS12', 'SL_IOS13'],
+  'ANDROID': ['SL_ANDROID10', 'SL_ANDROID11'],
   'FIREFOX': ['SL_FIREFOXESR'],
   'IOS': ['SL_IOS12', 'SL_IOS13'],
   'SAFARI': ['SL_SAFARI12', 'SL_SAFARI13'],
