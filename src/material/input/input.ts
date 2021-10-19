@@ -80,6 +80,7 @@ const _MatInputBase = mixinErrorState(
     '[disabled]': 'disabled',
     '[required]': 'required',
     '[attr.readonly]': 'readonly && !_isNativeSelect || null',
+    '[class.mat-native-select-inline]': '_isInlineSelect()',
     // Only mark the input as invalid for assistive technology if it has a value since the
     // state usually overlaps with `aria-required` when the input is empty and can be redundant.
     '[attr.aria-invalid]': '(empty && required) ? null : errorState',
@@ -505,6 +506,12 @@ export class MatInput
     if (!this.focused) {
       this.focus();
     }
+  }
+
+  /** Whether the form control is a native select that is displayed inline. */
+  _isInlineSelect(): boolean {
+    const element = this._elementRef.nativeElement as HTMLSelectElement;
+    return this._isNativeSelect && (element.multiple || element.size > 1);
   }
 
   static ngAcceptInputType_disabled: BooleanInput;

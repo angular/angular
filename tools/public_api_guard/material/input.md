@@ -60,6 +60,7 @@ export class MatInput extends _MatInputBase implements MatFormFieldControl<any>,
     protected _id: string;
     protected _isBadInput(): boolean;
     readonly _isInFormField: boolean;
+    _isInlineSelect(): boolean;
     readonly _isNativeSelect: boolean;
     protected _isNeverEmpty(): boolean;
     readonly _isServer: boolean;

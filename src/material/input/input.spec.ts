@@ -732,6 +732,37 @@ describe('MatInput without forms', () => {
     expect(formFieldEl.classList).toContain('mat-form-field-should-float');
   }));
 
+  it('should mark a multi-select as being inline', fakeAsync(() => {
+    const fixture = createComponent(MatInputSelect);
+    fixture.detectChanges();
+
+    const select: HTMLSelectElement = fixture.nativeElement.querySelector('select');
+
+    expect(select.classList).not.toContain('mat-native-select-inline');
+
+    select.multiple = true;
+    fixture.detectChanges();
+
+    expect(select.classList).toContain('mat-native-select-inline');
+  }));
+
+  it('should mark a select with a size as being inline', fakeAsync(() => {
+    const fixture = createComponent(MatInputSelect);
+    fixture.detectChanges();
+
+    const select: HTMLSelectElement = fixture.nativeElement.querySelector('select');
+
+    expect(select.classList).not.toContain('mat-native-select-inline');
+
+    select.size = 3;
+    fixture.detectChanges();
+    expect(select.classList).toContain('mat-native-select-inline');
+
+    select.size = 1;
+    fixture.detectChanges();
+    expect(select.classList).not.toContain('mat-native-select-inline');
+  }));
+
   it('should not float the label if the selectedIndex is negative', fakeAsync(() => {
     const fixture = createComponent(MatInputSelect);
     fixture.detectChanges();

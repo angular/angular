@@ -37,12 +37,14 @@
     // Since we can't change background of the dropdown, we need to explicitly
     // reset the color of the options to something dark.
     @if (map.get($config, is-dark)) {
-      option {
-        color: palette.$dark-primary-text;
-      }
+      &:not(.mat-native-select-inline) {
+        option {
+          color: palette.$dark-primary-text;
+        }
 
-      option:disabled {
-        color: palette.$dark-disabled-text;
+        option:disabled {
+          color: palette.$dark-disabled-text;
+        }
       }
     }
   }
