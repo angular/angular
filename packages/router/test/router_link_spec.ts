@@ -101,4 +101,96 @@ describe('RouterLink', () => {
       expect(link.outerHTML).not.toContain('href');
     });
   });
+
+  describe('event preventDefault handling', () => {
+    describe('RouterLink', () => {
+      @Component({
+        template: `
+            <div [routerLink]="'/'">
+                <span id="navigate"></span>
+                <span id="prevent" (click)="$event.preventDefault()"></span>
+            </div>`
+      })
+      class TestComponent {
+      }
+
+      let fixture: ComponentFixture<TestComponent>;
+      let router: Router;
+      let div: HTMLDivElement;
+      let navigate: HTMLSpanElement;
+      let prevent: HTMLSpanElement;
+
+      beforeEach(() => {
+        TestBed.configureTestingModule(
+            {imports: [RouterTestingModule], declarations: [TestComponent]});
+        router = TestBed.inject(Router);
+        spyOn(router, 'navigateByUrl');
+        fixture = TestBed.createComponent(TestComponent);
+        fixture.detectChanges();
+        div = fixture.debugElement.query(By.css('div')).nativeElement;
+        navigate = fixture.debugElement.query(By.css('#navigate')).nativeElement;
+        prevent = fixture.debugElement.query(By.css('#prevent')).nativeElement;
+      });
+
+      it('should navigate on direct click', () => {
+        div.click();
+        expect(router.navigateByUrl).toHaveBeenCalled();
+      });
+
+      it('should navigate on propagating event with defaultPrevented not set', () => {
+        navigate.click();
+        expect(router.navigateByUrl).toHaveBeenCalled();
+      });
+
+      it('should not navigate on propagating event with defaultPrevented set to true', () => {
+        prevent.click();
+        expect(router.navigateByUrl).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('RouterLinkWithHref', () => {
+      @Component({
+        template: `
+            <a [routerLink]="'/'">
+                <span id="navigate"></span>
+                <span id="prevent" (click)="$event.preventDefault()"></span>
+            </a>`
+      })
+      class TestComponent {
+      }
+
+      let router: Router;
+      let fixture: ComponentFixture<TestComponent>;
+      let link: HTMLAnchorElement;
+      let navigate: HTMLSpanElement;
+      let prevent: HTMLSpanElement;
+
+      beforeEach(() => {
+        TestBed.configureTestingModule(
+            {imports: [RouterTestingModule], declarations: [TestComponent]});
+        router = TestBed.inject(Router);
+        spyOn(router, 'navigateByUrl');
+        fixture = TestBed.createComponent(TestComponent);
+        fixture.detectChanges();
+        link = fixture.debugElement.query(By.css('a')).nativeElement;
+        navigate = fixture.debugElement.query(By.css('#navigate')).nativeElement;
+        prevent = fixture.debugElement.query(By.css('#prevent')).nativeElement;
+      });
+
+      it('should navigate on direct click', () => {
+        link.click();
+        expect(router.navigateByUrl).toHaveBeenCalled();
+      });
+
+      it('should navigate on propagating event with defaultPrevented not set', () => {
+        navigate.click();
+        expect(router.navigateByUrl).toHaveBeenCalled();
+      });
+
+      it('should not navigate on propagating event with defaultPrevented set to true', () => {
+        prevent.click();
+        expect(router.navigateByUrl).not.toHaveBeenCalled();
+      });
+    });
+  });
 });

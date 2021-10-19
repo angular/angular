@@ -532,7 +532,7 @@ export class RouterLink implements OnChanges {
     // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
     // (undocumented)
-    onClick(): boolean;
+    onClick(defaultPrevented: boolean): boolean;
     preserveFragment: boolean;
     queryParams?: Params | null;
     queryParamsHandling?: QueryParamsHandling | null;
@@ -589,7 +589,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     // (undocumented)
     ngOnDestroy(): any;
     // (undocumented)
-    onClick(button: number, ctrlKey: boolean, shiftKey: boolean, altKey: boolean, metaKey: boolean): boolean;
+    onClick(button: number, ctrlKey: boolean, shiftKey: boolean, altKey: boolean, metaKey: boolean, defaultPrevented: boolean): boolean;
     preserveFragment: boolean;
     queryParams?: Params | null;
     queryParamsHandling?: QueryParamsHandling | null;

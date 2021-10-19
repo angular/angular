@@ -111,6 +111,21 @@ import {UrlTree} from '../url_tree';
  * });
  * ```
  *
+ * Navigation will be prevented when a propagating click event is detected, which had its
+ * [`preventDefault()`
+ * method](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault) called, but is
+ * still expected to propagate further up the DOM:
+ *
+ * ```
+ * <div (click)="recordPropagatingEvent($event)>
+ *   <a [routerLink]="['/user/bob']">
+ *     link to user component
+ *     <span (click)="$event.preventDefault()">
+ *       some utility that has already handled the click
+ *     </span>
+ *   </a>
+ * <div>
+ *
  * @ngModule RouterModule
  *
  * @publicApi
@@ -235,9 +250,9 @@ export class RouterLink implements OnChanges {
   }
 
   /** @nodoc */
-  @HostListener('click')
-  onClick(): boolean {
-    if (this.urlTree === null) {
+  @HostListener('click', ['$event.defaultPrevented'])
+  onClick(defaultPrevented: boolean): boolean {
+    if (defaultPrevented || this.urlTree === null) {
       return true;
     }
 
@@ -394,10 +409,14 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   /** @nodoc */
   @HostListener(
       'click',
-      ['$event.button', '$event.ctrlKey', '$event.shiftKey', '$event.altKey', '$event.metaKey'])
-  onClick(button: number, ctrlKey: boolean, shiftKey: boolean, altKey: boolean, metaKey: boolean):
-      boolean {
-    if (button !== 0 || ctrlKey || shiftKey || altKey || metaKey) {
+      [
+        '$event.button', '$event.ctrlKey', '$event.shiftKey', '$event.altKey', '$event.metaKey',
+        '$event.defaultPrevented'
+      ])
+  onClick(
+      button: number, ctrlKey: boolean, shiftKey: boolean, altKey: boolean, metaKey: boolean,
+      defaultPrevented: boolean): boolean {
+    if (button !== 0 || ctrlKey || shiftKey || altKey || metaKey || defaultPrevented) {
       return true;
     }
 
