@@ -2,7 +2,7 @@
 # Persistent disk cache
 Angular CLI saves a number of cachable operations on disk by default.
 
-When you re-run the same build, the build system restores the state of the previous build and re-uses previously performed operations, which decreases the time taken to build and test your applications and libraries
+When you re-run the same build, the build system restores the state of the previous build and re-uses previously performed operations, which decreases the time taken to build and test your applications and libraries.
 
 To amend the default cache settings, add the `cli.cache` object to your [Workspace Configuration](guide/workspace-config).
 The object goes under `cli.cache` at the top level of the file, outside the `projects` sections.
