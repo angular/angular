@@ -42,17 +42,12 @@ jasmine_node_test(
     name = "extract_i18n",
     bootstrap = ["//tools/testing:node_es5"],
     data = [
-        "@npm//@angular/core-12",
-    ],
-    tags = [
-        # Disabled as the tests pertain to the old extraction tool only, whereas the Ivy extraction
-        # tool will likely work differently.
-        "view-engine-only",
+        "//packages/core:npm_package",
     ],
     deps = [
         ":extract_i18n_lib",
+        "//packages/common:npm_package",
         "//packages/core",
-        "@npm//@angular/common-12",
         "@npm//yargs",
     ],
 )
