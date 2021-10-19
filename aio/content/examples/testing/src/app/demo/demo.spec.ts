@@ -8,7 +8,7 @@ import {
 
 ///////// Fakes /////////
 export class FakeValueService extends ValueService {
-  value = 'faked service value';
+  override value = 'faked service value';
 }
 ////////////////////////
 describe('demo (no TestBed):', () => {

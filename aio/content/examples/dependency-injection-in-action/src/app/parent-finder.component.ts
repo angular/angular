@@ -153,7 +153,7 @@ export class BethComponent implements Parent {
 export class AlexComponent extends Base
 // #enddocregion alex-class-signature
 {
-  name = 'Alex';
+  override name = 'Alex';
 }
 // #enddocregion alex-1
 

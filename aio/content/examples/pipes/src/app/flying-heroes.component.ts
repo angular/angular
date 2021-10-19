@@ -51,5 +51,5 @@ export class FlyingHeroesComponent {
   styles: ['#flyers, #all {font-style: italic}', 'button {display: block}', 'input {margin: .25rem .25rem .5rem 0;}'],
 })
 export class FlyingHeroesImpureComponent extends FlyingHeroesComponent {
-  title = 'Flying Heroes (impure pipe)';
+  override title = 'Flying Heroes (impure pipe)';
 }

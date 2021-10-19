@@ -28,7 +28,7 @@ export class MyCounterComponent implements OnChanges {
     }
 
     // A change to `counter` is the only change we care about
-    const chng = changes.counter;
+    const chng = changes['counter'];
     const cur = chng.currentValue;
     const prev = JSON.stringify(chng.previousValue); // first time is {}; after is integer
     this.changeLog.push(`counter: currentValue = ${cur}, previousValue = ${prev}`);

@@ -6,10 +6,8 @@
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    // TODO(gkalpak): Turn this rule on to align with default Angular CLI config.
-    "noImplicitOverride": false,
-    // TODO(gkalpak): Turn this rule on to align with default Angular CLI config.
-    "noPropertyAccessFromIndexSignature": false,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
