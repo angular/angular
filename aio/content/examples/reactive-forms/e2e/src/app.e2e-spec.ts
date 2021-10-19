@@ -127,8 +127,8 @@ describe('Reactive forms', () => {
       const formValue = await formValueElement.getText();
       const formJson = JSON.parse(formValue.toString().replace('Form Value:', ''));
 
-      expect(profile.firstName).toBe(formJson.firstName);
-      expect(profile.lastName).toBe(formJson.lastName);
+      expect(profile['firstName']).toBe(formJson.firstName);
+      expect(profile['lastName']).toBe(formJson.lastName);
       expect(formJson.aliases[0]).toBe(aliasText);
     });
   });

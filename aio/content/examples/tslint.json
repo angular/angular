@@ -58,6 +58,7 @@
     ],
     "no-non-null-assertion": false,
     "no-redundant-jsdoc": true,
+    "no-string-literal": false,
     "no-switch-case-fall-through": true,
     "no-var-requires": false,
     "object-literal-key-quotes": [

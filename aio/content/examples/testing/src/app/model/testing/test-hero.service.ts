@@ -30,19 +30,19 @@ export class TestHeroService extends HeroService {
   heroes = getTestHeroes();
   lastResult!: Observable<any>; // result from last method call
 
-  addHero(hero: Hero): Observable<Hero> {
+  override addHero(hero: Hero): Observable<Hero> {
     throw new Error('Method not implemented.');
   }
 
-  deleteHero(hero: number | Hero): Observable<Hero> {
+  override deleteHero(hero: number | Hero): Observable<Hero> {
     throw new Error('Method not implemented.');
   }
 
-  getHeroes(): Observable<Hero[]> {
+  override getHeroes(): Observable<Hero[]> {
     return this.lastResult = asyncData(this.heroes);
   }
 
-  getHero(id: number | string): Observable<Hero> {
+  override getHero(id: number | string): Observable<Hero> {
     if (typeof id === 'string') {
       id = parseInt(id, 10);
     }
@@ -51,7 +51,7 @@ export class TestHeroService extends HeroService {
     return this.lastResult;
   }
 
-  updateHero(hero: Hero): Observable<Hero> {
+  override updateHero(hero: Hero): Observable<Hero> {
     return this.lastResult = this.getHero(hero.id).pipe(
       map(h => {
         if (h) {

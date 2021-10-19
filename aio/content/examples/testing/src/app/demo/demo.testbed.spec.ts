@@ -372,14 +372,14 @@ describe('demo (with TestBed):', () => {
 
       expect(el.context).toBe(childComp, 'context is the child component');
 
-      expect(el.attributes.account).toBe(childComp.id, 'account attribute');
-      expect(el.attributes.bank).toBe(childComp.bank, 'bank attribute');
+      expect(el.attributes['account']).toBe(childComp.id, 'account attribute');
+      expect(el.attributes['bank']).toBe(childComp.bank, 'bank attribute');
 
-      expect(el.classes.closed).toBe(true, 'closed class');
-      expect(el.classes.open).toBeFalsy('open class');
+      expect(el.classes['closed']).toBe(true, 'closed class');
+      expect(el.classes['open']).toBeFalsy('open class');
 
-      expect(el.styles.color).toBe(comp.color, 'color style');
-      expect(el.styles.width).toBe(comp.width + 'px', 'width style');
+      expect(el.styles['color']).toBe(comp.color, 'color style');
+      expect(el.styles['width']).toBe(comp.width + 'px', 'width style');
 
       // Removed on 12/02/2016 when ceased public discussion of the `Renderer`. Revive in future?
       // expect(el.properties['customProperty']).toBe(true, 'customProperty');
@@ -510,11 +510,11 @@ describe('demo (with TestBed):', () => {
       expect(comp.children.toArray().length).toBe(4,
         'three different child components and an ElementRef with #content');
 
-      expect(el.references.nc).toBe(comp, '#nc reference to component');
+      expect(el.references['nc']).toBe(comp, '#nc reference to component');
 
       // #docregion custom-predicate
       // Filter for DebugElements with a #content reference
-      const contentRefs = el.queryAll( de => de.references.content);
+      const contentRefs = el.queryAll( de => de.references['content']);
       // #enddocregion custom-predicate
       expect(contentRefs.length).toBe(4, 'elements w/ a #content reference');
     });
@@ -698,5 +698,5 @@ class FakeGrandchildComponent { }
 
 @Injectable()
 class FakeValueService extends ValueService {
-  value = 'faked value';
+  override value = 'faked value';
 }

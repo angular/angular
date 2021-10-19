@@ -58,10 +58,10 @@ export class HeroDetailComponent {
 })
 export class BigHeroDetailComponent extends HeroDetailComponent {
 
-  @Input() hero!: Hero;
-  @Output() deleteRequest = new EventEmitter<Hero>();
+  @Input() override hero!: Hero;
+  @Output() override deleteRequest = new EventEmitter<Hero>();
 
-  delete() {
+  override delete() {
     this.deleteRequest.emit(this.hero);
   }
 }
