@@ -1,13 +1,15 @@
-import { Observable, of } from 'rxjs';
+/// <reference types="node" />
+
+import { of } from 'rxjs';
 import { docRegionTypeahead } from './typeahead';
 
 describe('typeahead', () => {
   let document: Document;
   let ajax: jasmine.Spy;
+  let tick: MockClock['tick'];
   let triggertInputChange: (e: { target: { value: string } }) => void;
 
   beforeEach(() => {
-    jasmine.clock().install();
     const input = {
       addEventListener: jasmine
         .createSpy('addEvent')
@@ -21,40 +23,37 @@ describe('typeahead', () => {
 
     document = { getElementById: (id: string) => input } as unknown as Document;
     ajax = jasmine.createSpy('ajax').and.callFake((url: string) => of('foo bar'));
-  });
-
-  afterEach(() => {
-    jasmine.clock().uninstall();
+    tick = MockClock.install();
   });
 
   it('should make an ajax call to the corrent endpoint', () => {
     docRegionTypeahead(document, ajax);
     triggertInputChange({ target: { value: 'foo' } });
-    jasmine.clock().tick(11);
+    tick(11);
     expect(ajax).toHaveBeenCalledWith('/api/endpoint?search=foo');
   });
 
   it('should not make an ajax call, when the input length < 3', () => {
     docRegionTypeahead(document, ajax);
     triggertInputChange({ target: { value: '' } });
-    jasmine.clock().tick(11);
+    tick(11);
     expect(ajax).not.toHaveBeenCalled();
     triggertInputChange({ target: { value: 'fo' } });
-    jasmine.clock().tick(11);
+    tick(11);
     expect(ajax).not.toHaveBeenCalled();
   });
 
   it('should not make an ajax call for intermediate values when debouncing', () => {
     docRegionTypeahead(document, ajax);
     triggertInputChange({ target: { value: 'foo' } });
-    jasmine.clock().tick(9);
+    tick(9);
     triggertInputChange({ target: { value: 'bar' } });
-    jasmine.clock().tick(9);
+    tick(9);
     triggertInputChange({ target: { value: 'baz' } });
-    jasmine.clock().tick(9);
+    tick(9);
     triggertInputChange({ target: { value: 'qux' } });
     expect(ajax).not.toHaveBeenCalled();
-    jasmine.clock().tick(10);
+    tick(10);
     expect(ajax).toHaveBeenCalledTimes(1);
     expect(ajax).toHaveBeenCalledWith('/api/endpoint?search=qux');
   });
@@ -62,11 +61,94 @@ describe('typeahead', () => {
   it('should not make an ajax call, when the input value has not changed', () => {
     docRegionTypeahead(document, ajax);
     triggertInputChange({ target: { value: 'foo' } });
-    jasmine.clock().tick(11);
+    tick(11);
     expect(ajax).toHaveBeenCalled();
     ajax.calls.reset();
     triggertInputChange({ target: { value: 'foo' } });
-    jasmine.clock().tick(11);
+    tick(11);
     expect(ajax).not.toHaveBeenCalled();
   });
+
+  // Helpers
+  interface MockTask {
+    id: NodeJS.Timeout;
+    fn: () => unknown;
+    delay: number;
+    recurring: boolean;
+    nextTriggerTime: number;
+  }
+
+  class MockClock {
+    private tasks: MockTask[] = [];
+
+    private constructor(private now: number) {}
+
+    static install(mockTime = 0): MockClock['tick'] {
+      const mocked = new this(mockTime);
+
+      spyOn(global, 'clearInterval').and.callFake(id => mocked.clearTask(id));
+      spyOn(global, 'clearTimeout').and.callFake(id => mocked.clearTask(id));
+      spyOn(global, 'setInterval').and.callFake(
+          (fn, delay, ...args) => mocked.createTask(fn, delay, true, ...args));
+      spyOn(global, 'setTimeout').and.callFake(
+          (fn, delay, ...args) => mocked.createTask(fn, delay, false, ...args));
+
+      spyOn(Date, 'now').and.callFake(() => mocked.now);
+
+      return mocked.tick.bind(mocked);
+    }
+
+    private clearTask(id: MockTask['id']): void {
+      this.tasks = this.tasks.filter(task => task.id !== id);
+    }
+
+    private createTask(
+        fn: MockTask['fn'], delay: MockTask['delay'], recurring: MockTask['recurring'],
+        ...args: any[]): MockTask['id'] {
+      // Avoid infinite loops.
+      if (recurring && (delay <= 0)) {
+        delay = 1;
+      }
+
+      const task: MockTask = {
+        id: {} as MockTask['id'],
+        fn: fn.bind<null, unknown, unknown>(null, ...args),
+        delay,
+        recurring,
+        nextTriggerTime: this.now + delay,
+      };
+      this.queueTask(task);
+
+      return task.id;
+    }
+
+    private queueTask(task: MockTask): void {
+      const firstLaterTaskIdx = this.tasks.findIndex(
+          otherTask => otherTask.nextTriggerTime > task.nextTriggerTime);
+      const newTaskIdx = (firstLaterTaskIdx === -1) ? this.tasks.length : firstLaterTaskIdx;
+
+      this.tasks.splice(newTaskIdx, 0, task);
+    }
+
+    private tick(millis: number): void {
+      const finalNow = this.now + millis;
+
+      while (this.tasks[0]?.nextTriggerTime <= finalNow) {
+        const task = this.tasks.shift()!;
+        this.now = task.nextTriggerTime;
+
+        if (task.recurring) {
+          this.queueTask({...task, nextTriggerTime: this.now + task.delay});
+        }
+
+        try {
+          task.fn();
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      this.now = finalNow;
+    }
+  }
 });
