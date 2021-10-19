@@ -415,8 +415,6 @@ jobs:
       name: test-browser-executor
       resource_class: xlarge
     parallelism: 5
-    environment:
-      RXJS_VERSION_7: '7.4.0'
     steps:
       - custom_attach_workspace
       - init_environment
@@ -426,18 +424,6 @@ jobs:
         # Since the parallelism is set to "5", there will be five parallel CircleCI containers.
         # with either "0", "1", etc as node index. This can be passed to the "--shard" argument.
       - run: yarn --cwd aio example-e2e --setup --local --cliSpecsConcurrency=5 --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL}
-        # Run tests with RxJS v7.
-      - run: yarn --cwd aio/tools/examples/shared add rxjs@$RXJS_VERSION_7 && yarn --cwd aio example-use-local && yarn --cwd aio boilerplate:add
-      - run:
-          name: Ensure we use RxJS v7
-          command: >-
-            node --eval "
-              const expected = process.env.RXJS_VERSION_7;
-              const actual = require('./aio/tools/examples/shared/node_modules/rxjs/package.json').version;
-              assert(actual === expected, 'Expected RxJS v' + expected + ', but found v' + actual + '.');
-            "
-        # Exclude some examples that are not yet compatible with v7.
-      - run: yarn --cwd aio example-e2e --cliSpecsConcurrency=5 --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL} --exclude=upgrade-module --exclude=upgrade-phonecat
 
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   aio_preview:
