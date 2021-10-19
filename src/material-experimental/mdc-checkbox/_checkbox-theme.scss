@@ -36,7 +36,7 @@
 @mixin _selected-ripple-colors($theme, $mdcColor) {
   .mdc-checkbox--selected ~ {
     .mat-mdc-checkbox-ripple {
-      @include ripple-theme.theme((
+      @include ripple-theme.color((
           foreground: (
               base: mdc-theme-color.prop-value($mdcColor)
           ),
@@ -73,7 +73,7 @@
     .mat-mdc-checkbox {
       @include private-checkbox-styles-with-color(primary);
       @include mdc-form-field.core-styles($query: mdc-helpers.$mat-theme-styles-query);
-      @include ripple-theme.theme((
+      @include ripple-theme.color((
         foreground: (
           base: mdc-theme-color.prop-value(on-surface)
         ),

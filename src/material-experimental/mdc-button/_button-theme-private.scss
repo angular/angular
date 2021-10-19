@@ -12,7 +12,7 @@ $fab-state-target: '.mdc-fab__ripple';
 // which is what the ripple mixin uses. This creates a new theme that sets the color to the
 // foreground base to appropriately color the ink.
 @mixin ripple-ink-color($mdc-color) {
-  @include ripple-theme.theme((
+  @include ripple-theme.color((
     foreground: (
       base: mdc-theme-color.prop-value($mdc-color)
     ),
