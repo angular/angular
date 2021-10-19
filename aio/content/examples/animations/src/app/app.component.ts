@@ -36,7 +36,7 @@ export class AppComponent {
 
 // #docregion prepare-router-outlet
   prepareRoute(outlet: RouterOutlet) {
-    return outlet?.activatedRouteData?.animation;
+    return outlet?.activatedRouteData?.['animation'];
   }
 
 // #enddocregion prepare-router-outlet

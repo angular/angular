@@ -44,7 +44,7 @@ export class PeekABooComponent extends PeekABooDirective implements
     const changesMsgs: string[] = [];
     for (const propName in changes) {
       if (propName === 'name') {
-        const name = changes.name.currentValue;
+        const name = changes['name'].currentValue;
         changesMsgs.push(`name ${this.verb} to "${name}"`);
       } else {
         changesMsgs.push(propName + ' ' + this.verb);
