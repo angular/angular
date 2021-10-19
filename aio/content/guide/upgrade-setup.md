@@ -297,13 +297,6 @@ The following are all in `src/`
 </table>
 
 
-## Appendix: Develop locally with IE
-
-If you develop Angular locally with `ng serve`, a `websocket` connection is set up automatically between browser and local development server, so when your code changes, the browser can automatically refresh.
-
-In Windows, by default, one application can only have 6 websocket connections, <a href="https://msdn.microsoft.com/library/ee330736%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396#websocket_maxconn" title="MSDN WebSocket settings">MSDN WebSocket Settings</a>.
-So when IE is refreshed (manually or automatically by `ng serve`), sometimes the websocket does not close properly. When websocket connections exceed the limitations, a `SecurityError` will be thrown. This error will not affect the Angular application, you can restart IE to clear this error, or modify the windows registry to update the limitations.
-
 ## Appendix: Test using `fakeAsync()/waitForAsync()`
 
 If you use the `fakeAsync()/waitForAsync()` helper functions to run unit tests (for details, read the [Testing guide](guide/testing-components-scenarios#fake-async)), you need to import `zone.js/testing` in your test setup file.

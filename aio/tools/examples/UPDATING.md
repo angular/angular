@@ -46,7 +46,7 @@ Any necessary changes to boilerplate files will be done automatically through mi
 
 - Run the following command to list all the boilerplate files that are overridden in specific examples.
   ```sh
-  node example-boilerplate.js list-overrides
+  node aio/tools/examples/example-boilerplate.js list-overrides
   ```
   Inspect each of these files to determine whether they need to be updated.
 
