@@ -21,6 +21,7 @@ import {DropListRefInternal as DropListRef} from './drop-list-ref';
 import {DragDropRegistry} from './drag-drop-registry';
 import {
   combineTransforms,
+  DragCSSStyleDeclaration,
   extendStyles,
   toggleNativeDragInteractions,
   toggleVisibility,
@@ -747,7 +748,8 @@ export class DragRef<T = any> {
     this._toggleNativeDragInteractions();
 
     if (this._handles) {
-      (this._rootElement.style as any).webkitTapHighlightColor = this._rootElementTapHighlight;
+      (this._rootElement.style as DragCSSStyleDeclaration).webkitTapHighlightColor =
+        this._rootElementTapHighlight;
     }
 
     if (!this._hasStartedDragging) {
@@ -878,7 +880,7 @@ export class DragRef<T = any> {
     // otherwise iOS will still add it, even though all the drag interactions on the handle
     // are disabled.
     if (this._handles.length) {
-      const rootStyles = rootElement.style as any;
+      const rootStyles = rootElement.style as DragCSSStyleDeclaration;
       this._rootElementTapHighlight = rootStyles.webkitTapHighlightColor || '';
       rootStyles.webkitTapHighlightColor = 'transparent';
     }
