@@ -22,7 +22,7 @@ import {MatMenuItem as BaseMatMenuItem} from '@angular/material/menu';
     // classlist, but these should not be added for this MDC equivalent menu item.
     '[class.mat-menu-item]': 'false',
     '[class.mat-focus-indicator]': 'false',
-    'class': 'mat-mdc-menu-item mat-mdc-focus-indicator',
+    'class': 'mat-mdc-menu-item mat-mdc-focus-indicator mdc-list-item',
     '[class.mat-mdc-menu-item-highlighted]': '_highlighted',
     '[class.mat-mdc-menu-item-submenu-trigger]': '_triggersSubmenu',
     '[attr.tabindex]': '_getTabIndex()',
