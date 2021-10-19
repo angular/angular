@@ -126,7 +126,9 @@
 
   > .mat-tab-header .mat-tab-header-pagination-disabled .mat-tab-header-pagination-chevron,
   > .mat-tab-header-pagination-disabled .mat-tab-header-pagination-chevron {
-    border-color: theming.get-color-from-palette($background-color, default-contrast, 0.4);
+    // Set the color opacity via `opacity`, rather than `rgba`, because it may be a CSS variable.
+    border-color: theming.get-color-from-palette($background-color, default-contrast, 1);
+    opacity: 0.4;
   }
 
   // Set ripples color to be the contrast color of the new background. Otherwise the ripple
@@ -134,7 +136,9 @@
   > .mat-tab-header .mat-ripple-element,
   > .mat-tab-link-container .mat-ripple-element,
   > .mat-tab-header-pagination .mat-ripple-element {
-    background-color: theming.get-color-from-palette($background-color, default-contrast, 0.12);
+    // Set the color opacity via `opacity`, rather than `rgba`, because it may be a CSS variable.
+    background-color: theming.get-color-from-palette($background-color, default-contrast, 1);
+    opacity: 0.12;
   }
 }
 
