@@ -143,3 +143,8 @@ $mat-card-default-padding: 16px !default;
 .mat-mdc-card-content > :last-child:not(.mat-mdc-card-footer) {
   margin-bottom: 0;
 }
+
+// Support for actions aligned to the end of the card.
+.mat-mdc-card-actions-align-end {
+  justify-content: flex-end;
+}
