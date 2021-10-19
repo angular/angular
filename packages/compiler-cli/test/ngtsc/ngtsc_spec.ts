@@ -6254,37 +6254,6 @@ function allTests(os: string) {
          });
     });
 
-    describe('ivy switch mode', () => {
-      it('should allow for symbols to be renamed when they use a SWITCH_IVY naming mechanism',
-         () => {
-           env.write('test.ts', `
-export const FooCmp__POST_R3__ = 1;
-export const FooCmp__PRE_R3__ = 2;
-export const FooCmp = FooCmp__PRE_R3__;`);
-           env.driveMain();
-
-           const source = env.getContents('test.js');
-           expect(source).toContain(`export var FooCmp = FooCmp__POST_R3__`);
-           expect(source).not.toContain(`export var FooCmp = FooCmp__PRE_R3__`);
-         });
-
-      it('should allow for SWITCH_IVY naming even even if it occurs outside of core', () => {
-        const content = `
-export const Foo__POST_R3__ = 1;
-export const Foo__PRE_R3__ = 2;
-export const Foo = Foo__PRE_R3__;
-`;
-        env.write('test_outside_angular_core.ts', content);
-        env.write(
-            'test_inside_angular_core.ts', content + '\nexport const ITS_JUST_ANGULAR = true;');
-        env.driveMain();
-
-        const sourceTestOutsideAngularCore = env.getContents('test_outside_angular_core.js');
-        const sourceTestInsideAngularCore = env.getContents('test_inside_angular_core.js');
-        expect(sourceTestInsideAngularCore).toContain(sourceTestOutsideAngularCore);
-      });
-    });
-
     describe('NgModule export aliasing', () => {
       it('should use an alias to import a directive from a deep dependency', () => {
         env.tsconfig({'_useHostForImportGeneration': true});
