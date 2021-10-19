@@ -24,7 +24,7 @@ import {switchTap} from './operators/switch_tap';
 import {DefaultRouteReuseStrategy, RouteReuseStrategy} from './route_reuse_strategy';
 import {RouterConfigLoader} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
-import {ActivatedRoute, createEmptyState, RouterState, RouterStateSnapshot} from './router_state';
+import {ActivatedRoute, ActivatedRouteSnapshot, createEmptyState, RouterState, RouterStateSnapshot} from './router_state';
 import {isNavigationCancelingError, navigationCancelingError, Params} from './shared';
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
 import {containsTree, createEmptyUrlTree, IsActiveMatchOptions, UrlSerializer, UrlTree} from './url_tree';
@@ -84,7 +84,7 @@ export interface UrlCreationOptions {
    * A value of `null` or `undefined` indicates that the navigation commands should be applied
    * relative to the root.
    */
-  relativeTo?: ActivatedRoute|null;
+  relativeTo?: ActivatedRoute|ActivatedRouteSnapshot|null;
 
   /**
    * Sets query parameters to the URL.

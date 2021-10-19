@@ -747,7 +747,7 @@ export interface UrlCreationOptions {
     preserveFragment?: boolean;
     queryParams?: Params | null;
     queryParamsHandling?: QueryParamsHandling | null;
-    relativeTo?: ActivatedRoute | null;
+    relativeTo?: ActivatedRoute | ActivatedRouteSnapshot | null;
 }
 
 // @public

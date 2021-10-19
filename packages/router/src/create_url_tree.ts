@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ActivatedRoute} from './router_state';
+import {ActivatedRoute, ActivatedRouteSnapshot} from './router_state';
 import {Params, PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 import {forEach, last, shallowEqual} from './utils/collection';
 
 export function createUrlTree(
-    route: ActivatedRoute, urlTree: UrlTree, commands: any[], queryParams: Params|null,
-    fragment: string|null): UrlTree {
+    route: ActivatedRoute|ActivatedRouteSnapshot, urlTree: UrlTree, commands: any[],
+    queryParams: Params|null, fragment: string|null): UrlTree {
   if (commands.length === 0) {
     return tree(urlTree.root, urlTree.root, urlTree, queryParams, fragment);
   }
@@ -150,13 +150,16 @@ class Position {
   }
 }
 
-function findStartingPosition(nav: Navigation, tree: UrlTree, route: ActivatedRoute): Position {
+function findStartingPosition(
+    nav: Navigation, tree: UrlTree, route: ActivatedRoute|ActivatedRouteSnapshot): Position {
   if (nav.isAbsolute) {
     return new Position(tree.root, true, 0);
   }
 
-  if (route.snapshot._lastPathIndex === -1) {
-    const segmentGroup = route.snapshot._urlSegment;
+  const routeSnapshot = route instanceof ActivatedRoute ? route.snapshot : route;
+
+  if (routeSnapshot._lastPathIndex === -1) {
+    const segmentGroup = routeSnapshot._urlSegment;
     // Pathless ActivatedRoute has _lastPathIndex === -1 but should not process children
     // see issue #26224, #13011, #35687
     // However, if the ActivatedRoute is the root we should process children like above.
@@ -165,9 +168,8 @@ function findStartingPosition(nav: Navigation, tree: UrlTree, route: ActivatedRo
   }
 
   const modifier = isMatrixParams(nav.commands[0]) ? 0 : 1;
-  const index = route.snapshot._lastPathIndex + modifier;
-  return createPositionApplyingDoubleDots(
-      route.snapshot._urlSegment, index, nav.numberOfDoubleDots);
+  const index = routeSnapshot._lastPathIndex + modifier;
+  return createPositionApplyingDoubleDots(routeSnapshot._urlSegment, index, nav.numberOfDoubleDots);
 }
 
 function createPositionApplyingDoubleDots(

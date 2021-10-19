@@ -296,6 +296,12 @@ describe('createUrlTree', () => {
       expect(serializer.serialize(t)).toEqual('/a/(c2//left:cp)(left:ap)');
     });
 
+    it('should work when given a snapshot', () => {
+      const p = serializer.parse('/a/(c//left:cp)(left:ap)');
+      const t = createWithSnapshot(p.root.children[PRIMARY_OUTLET], 0, p, ['c2']);
+      expect(serializer.serialize(t)).toEqual('/a/(c2//left:cp)(left:ap)');
+    });
+
     it('should work when the first command starts with a ./', () => {
       const p = serializer.parse('/a/(c//left:cp)(left:ap)');
       const t = create(p.root.children[PRIMARY_OUTLET], 0, p, ['./c2']);
@@ -433,4 +439,16 @@ function create(
       new BehaviorSubject(null!), new BehaviorSubject(null!), PRIMARY_OUTLET, 'someComponent', s);
   advanceActivatedRoute(a);
   return createUrlTree(a, tree, commands, queryParams ?? null, fragment ?? null);
+}
+
+function createWithSnapshot(
+    segment: UrlSegmentGroup, startIndex: number, tree: UrlTree, commands: any[],
+    queryParams?: Params, fragment?: string) {
+  if (!segment) {
+    expect(segment).toBeDefined();
+  }
+  const s = new (ActivatedRouteSnapshot as any)(
+      segment.segments, <any>{}, <any>{}, '', <any>{}, PRIMARY_OUTLET, 'someComponent', null,
+      <any>segment, startIndex, <any>null);
+  return createUrlTree(s, tree, commands, queryParams ?? null, fragment ?? null);
 }
