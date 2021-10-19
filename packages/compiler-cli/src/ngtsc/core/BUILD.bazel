@@ -31,7 +31,6 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/scope",
         "//packages/compiler-cli/src/ngtsc/shims",
         "//packages/compiler-cli/src/ngtsc/shims:api",
-        "//packages/compiler-cli/src/ngtsc/switch",
         "//packages/compiler-cli/src/ngtsc/transform",
         "//packages/compiler-cli/src/ngtsc/typecheck",
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
