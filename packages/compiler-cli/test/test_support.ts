@@ -57,7 +57,6 @@ function createTestSupportFor(basePath: string) {
     'newLine': ts.NewLineKind.LineFeed,
     'module': ts.ModuleKind.ES2015,
     'moduleResolution': ts.ModuleResolutionKind.NodeJs,
-    'enableIvy': false,
     'lib': Object.freeze([
       path.resolve(basePath, 'node_modules/typescript/lib/lib.es6.d.ts'),
     ]) as string[],
@@ -128,30 +127,14 @@ export function setupBazelTo(tmpDirPath: string) {
   fs.mkdirSync(nodeModulesPath);
   fs.mkdirSync(angularDirectory);
 
-  function linkNpmArtifact(artifact: string, target: string = artifact) {
-    try {
-      const source = resolveNpmTreeArtifact(`npm/node_modules/${artifact}`);
-      const dest = path.join(nodeModulesPath, target);
-      fs.symlinkSync(source, dest, 'junction');
-    } catch (e) {
-      // Allow a module to be missing as some Bazel targets do not need all artifacts.
-      if (e.code !== 'MODULE_NOT_FOUND') throw e;
-    }
-  }
-
-  // Link @angular packages. These reference the v12 packages from NPM as the ViewEngine tests
-  // can no longer depend on `npm_package` Bazel targets, given that the `ng_module` to produce
-  // them is no longer capable of producing ViewEngine packages. As a result, the `npm_package`
-  // outputs end up being compiled using Ivy partial compilation format which is not suitable to be
-  // used in ViewEngine ngc tests.
-  linkNpmArtifact('@angular/core-12', '@angular/core');
-  linkNpmArtifact('@angular/common-12', '@angular/common');
-  linkNpmArtifact('@angular/router-12', '@angular/router');
-  linkNpmArtifact('@angular/forms-12', '@angular/forms');
-  linkNpmArtifact('@angular/platform-browser-12', '@angular/platform-browser');
+  getAngularPackagesFromRunfiles().forEach(({pkgPath, name}) => {
+    fs.symlinkSync(pkgPath, path.join(angularDirectory, name), 'junction');
+  });
 
   // Link typescript
-  linkNpmArtifact('typescript');
+  const typeScriptSource = resolveNpmTreeArtifact('npm/node_modules/typescript');
+  const typescriptDest = path.join(nodeModulesPath, 'typescript');
+  fs.symlinkSync(typeScriptSource, typescriptDest, 'junction');
 
   // Link "rxjs" if it has been set up as a runfile. "rxjs" is linked optionally because
   // not all compiler-cli tests need "rxjs" set up.
