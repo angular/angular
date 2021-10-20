@@ -1,3 +1,26 @@
+<a name="13.0.0-rc.1"></a>
+# 13.0.0-rc.1 (2021-10-20)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [14b492df26](https://github.com/angular/angular/commit/14b492df26fcb3f2218f67878a382e8f7dff2c05) | fix | do not error if $any is used inside a listener ([#43866](https://github.com/angular/angular/pull/43866)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [426a3ecae7](https://github.com/angular/angular/commit/426a3ecae7288c2cb3e8928d7fe56b0b4552d821) | fix | updates `ngc` to pass the build when only warnings are emitted ([#43673](https://github.com/angular/angular/pull/43673)) |
+### ngcc
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c882b9fa8b](https://github.com/angular/angular/commit/c882b9fa8b36ca1ca274b9024510e18c559ce3f4) | fix | support alternate wrapper function layout for UMD ([#43879](https://github.com/angular/angular/pull/43879)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dc6909ad3e](https://github.com/angular/angular/commit/dc6909ad3e4880eaae57442d29c7bcdb133a62b1) | fix | Do not clear currentNavigation if already set to next one ([#43852](https://github.com/angular/angular/pull/43852)) |
+| [772e08d14e](https://github.com/angular/angular/commit/772e08d14e534f20e4376109e81604965e189abf) | fix | fix Router's public API for canceledNavigationResolution ([#43842](https://github.com/angular/angular/pull/43842)) |
+## Special Thanks
+Alan Agius, Andrew Kushnir, Andrew Scott, David Shevitz, Doug Parker, George Kalpakas, Joe Martin (Crowdstaffing), Joey Perrott, JoostK, Kristiyan Kostadinov, Natalia Venditto, Paul Gschwendtner, Pete Bacon Darwin, Younes Jaaidi and dario-piotrowicz
+
+
 <a name="12.2.11"></a>
 # 12.2.11 (2021-10-20)
 ### ngcc
