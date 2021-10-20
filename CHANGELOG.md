@@ -1,3 +1,30 @@
+<a name="12.2.11"></a>
+# 12.2.11 "wood-doll" (2021-10-20)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5402a8b23f](https://github.com/angular/components/commit/5402a8b23f8ca06053696549b4bc23e33196f148) | fix | **overlay:** OverlayRef.outsidePointerEvents() should only emit due to pointerdown outside overlay ([#23679](https://github.com/angular/components/pull/23679)) |
+| [59eee5dad1](https://github.com/angular/components/commit/59eee5dad121bf30857fa0fc642586c082e16607) | fix | **testing:** simulate focusin/focusout events ([#23768](https://github.com/angular/components/pull/23768)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [edad40fcd1](https://github.com/angular/components/commit/edad40fcd130d92f2384ae60d53ed5f0dfaa740b) | fix | **datepicker:** revert breaking change on IE ([#23786](https://github.com/angular/components/pull/23786)) |
+| [7086e448a8](https://github.com/angular/components/commit/7086e448a88d416cc57088bfd96782b516beb118) | fix | **input:** incorrect color for select using the size attribute ([#23734](https://github.com/angular/components/pull/23734)) |
+| [18fcc4519f](https://github.com/angular/components/commit/18fcc4519fb8feacd48e086dc542898eeaaa11ac) | fix | **tabs:** incorrect ripple color when CSS variables are used for theme ([#23686](https://github.com/angular/components/pull/23686)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d8b5d9f4f1](https://github.com/angular/components/commit/d8b5d9f4f185c3502e2bb6c9f6316261412a2000) | fix | **mdc-card:** action alignment not working ([#23742](https://github.com/angular/components/pull/23742)) |
+| [1ac871f5a0](https://github.com/angular/components/commit/1ac871f5a0e43df9ef23a9a5c4a98ac0a0f05690) | fix | **mdc-select:** add list class to option ([#23738](https://github.com/angular/components/pull/23738)) |
+### multiple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [51997be26e](https://github.com/angular/components/commit/51997be26e5b8b6c969d80d15b3e3c039deb35dc) | fix | use ripple theme color for color mixins ([#23739](https://github.com/angular/components/pull/23739)) |
+## Special Thanks
+Andrew Seguin, Kristiyan Kostadinov and Lukas Spirig
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="12.2.10"></a>
 # 12.2.10 "plastic-monkey" (2021-10-15)
 ### material
