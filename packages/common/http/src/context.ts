@@ -91,6 +91,17 @@ export class HttpContext {
   }
 
   /**
+   * Checks for existence of a given token.
+   *
+   * @param token The reference to an instance of `HttpContextToken`.
+   *
+   * @returns True if the token exists, false otherwise.
+   */
+  has(token: HttpContextToken<unknown>): boolean {
+    return this.map.has(token);
+  }
+
+  /**
    * @returns a list of tokens currently stored in the context.
    */
   keys(): IterableIterator<HttpContextToken<unknown>> {
