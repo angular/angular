@@ -1233,6 +1233,11 @@
   dependencies:
     "@bazel/worker" "4.4.0"
 
+"@bazel/runfiles@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@bazel/runfiles/-/runfiles-4.0.0.tgz#3d649d93710364515402b873add73947aaa702e8"
+  integrity sha512-1V0E1ooSw7DARfOBkr24O5GOpqODDd7RuJ2Xb+JljjdpUdJTIaVeqELBpSHAiYzqVJYWAn61sD5JP1CPCllixA==
+
 "@bazel/runfiles@4.3.0":
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/@bazel/runfiles/-/runfiles-4.3.0.tgz#068c4f2816cedff131801c6865c9e216c882931b"
@@ -13857,11 +13862,12 @@ ts-node@^10.0.0, ts-node@^10.2.1:
     make-error "^1.1.1"
     yn "3.1.1"
 
-tsec@0.1.9:
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/tsec/-/tsec-0.1.9.tgz#8741e28d5631a6695c4a5242f8fe160f92571e74"
-  integrity sha512-ZwbD/FHEPnNnlY9vp88Ft0R3G6ac6Fv4DQnV3DWvKnSAJGpCUC8kDHar5DhfuR6NIaP/KEz8KCTTYj1w/qXmvw==
+tsec@0.1.10:
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/tsec/-/tsec-0.1.10.tgz#53b43cb5384d542f69cf3273e82308f814b31b2e"
+  integrity sha512-VedCZnZxHLcTFueWwU6TYww6WXEKg19y4Td9ypbhUQKOMJ4l7tEo0bBqlIodnu1C7K162jH2bFwK8xJTk1NfYg==
   dependencies:
+    "@bazel/runfiles" "4.0.0"
     glob "^7.1.1"
     minimatch "^3.0.3"
 
