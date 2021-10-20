@@ -130,8 +130,7 @@ export class NgModuleDecoratorHandler implements
       private referencesRegistry: ReferencesRegistry, private isCore: boolean,
       private refEmitter: ReferenceEmitter, private factoryTracker: FactoryTracker|null,
       private annotateForClosureCompiler: boolean,
-      private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder,
-      private localeId?: string) {}
+      private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = NgModuleDecoratorHandler.name;
@@ -540,17 +539,6 @@ export class NgModuleDecoratorHandler implements
         type: injectorDef.type,
       },
     ];
-
-    if (this.localeId) {
-      // QUESTION: can this stuff be removed?
-      res.push({
-        name: 'ɵloc',
-        initializer: new LiteralExpr(this.localeId),
-        statements: [],
-        type: STRING_TYPE
-      });
-    }
-
     return res;
   }
 

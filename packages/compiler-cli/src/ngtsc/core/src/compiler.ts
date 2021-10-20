@@ -1048,7 +1048,7 @@ export class NgCompiler {
       new NgModuleDecoratorHandler(
           reflector, evaluator, metaReader, metaRegistry, scopeRegistry, referencesRegistry, isCore,
           refEmitter, this.adapter.factoryTracker, this.closureCompilerEnabled, injectableRegistry,
-          this.delegatingPerfRecorder, this.options.i18nInLocale),
+          this.delegatingPerfRecorder),
     ];
 
     const traitCompiler = new TraitCompiler(
