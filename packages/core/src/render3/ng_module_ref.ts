@@ -19,8 +19,7 @@ import {assertDefined} from '../util/assert';
 import {stringify} from '../util/stringify';
 
 import {ComponentFactoryResolver} from './component_ref';
-import {getNgLocaleIdDef, getNgModuleDef} from './definition';
-import {setLocaleId} from './i18n/i18n_locale_id';
+import {getNgModuleDef} from './definition';
 import {maybeUnwrapFn} from './util/misc_utils';
 
 
@@ -70,8 +69,6 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
             ngModuleDef,
             `NgModule '${stringify(ngModuleType)}' is not a subtype of 'NgModuleType'.`);
 
-    const ngLocaleIdDef = getNgLocaleIdDef(ngModuleType);
-    ngLocaleIdDef && setLocaleId(ngLocaleIdDef);
     this._bootstrapComponents = maybeUnwrapFn(ngModuleDef!.bootstrap);
     this._r3Injector = createInjectorWithoutInjectorInstances(
                            ngModuleType, _parent,
