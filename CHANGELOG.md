@@ -1,3 +1,28 @@
+<a name="13.0.0-rc.1"></a>
+# 13.0.0-rc.1 "acrylic-finger" (2021-10-20)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [25ba7583ea](https://github.com/angular/components/commit/25ba7583eacd38ab901ae5e3caf2d7f553c363b3) | fix | **overlay:** OverlayRef.outsidePointerEvents() should only emit due to pointerdown outside overlay ([#23679](https://github.com/angular/components/pull/23679)) |
+| [11e591b502](https://github.com/angular/components/commit/11e591b502e04f470c0c577aec7e6a54d05d29b8) | fix | **testing:** simulate focusin/focusout events ([#23768](https://github.com/angular/components/pull/23768)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a4302fd537](https://github.com/angular/components/commit/a4302fd537e10cb3147631b5421bb92b8a04b7e8) | fix | **tabs:** incorrect ripple color when CSS variables are used for theme ([#23686](https://github.com/angular/components/pull/23686)) |
+| [05006522f4](https://github.com/angular/components/commit/05006522f4c61bdecf758967d6076dbf7f17660e) | fix | **input:** incorrect color for select using the size attribute ([#23734](https://github.com/angular/components/pull/23734)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [38e26e971e](https://github.com/angular/components/commit/38e26e971ef85e47e74eecbe71ab6019e2cac390) | fix | **mdc-select:** add list class to option ([#23738](https://github.com/angular/components/pull/23738)) |
+| [2e747ac3cf](https://github.com/angular/components/commit/2e747ac3cf67212454252d4431807785d1267672) | fix | **mdc-card:** action alignment not working ([#23742](https://github.com/angular/components/pull/23742)) |
+### multiple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ba75867b2a](https://github.com/angular/components/commit/ba75867b2a12baa124f1bb210be2733586cbf21d) | fix | use ripple theme color for color mixins ([#23739](https://github.com/angular/components/pull/23739)) |
+## Special Thanks
+Andrew Seguin, Kristiyan Kostadinov, Lukas Spirig and Paul Gschwendtner
+
+
 <a name="12.2.11"></a>
 # 12.2.11 "wood-doll" (2021-10-20)
 ### cdk
