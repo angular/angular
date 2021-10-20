@@ -25,8 +25,11 @@ export abstract class NgModuleRef<T> {
   abstract get injector(): Injector;
 
   /**
-   * The resolver that can retrieve the component factories
-   * declared in the `entryComponents` property of the module.
+   * The resolver that can retrieve component factories in a context of this module.
+   *
+   * Note: since v13, dynamic component creation via
+   * [`ViewContainerRef.createComponent`](api/core/ViewContainerRef#createComponent)
+   * does **not** require resolving component factory: component class can be used directly.
    */
   abstract get componentFactoryResolver(): ComponentFactoryResolver;
 
