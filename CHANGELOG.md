@@ -1,3 +1,18 @@
+<a name="12.2.11"></a>
+# 12.2.11 (2021-10-20)
+### ngcc
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cab21cea7a](https://github.com/angular/angular/commit/cab21cea7ae0c99603333e563d6c29d6a7787cc8) | fix | support alternate wrapper function layout for UMD ([#43879](https://github.com/angular/angular/pull/43879)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [58c11865ac](https://github.com/angular/angular/commit/58c11865ac08d9112735f31d4222d794f0dd0054) | fix | Do not clear currentNavigation if already set to next one ([#43852](https://github.com/angular/angular/pull/43852)) |
+## Special Thanks
+Alan Agius, Andrew Kushnir, Andrew Scott, David Shevitz, George Kalpakas, Joe Martin (Crowdstaffing), Natalia Venditto, Pete Bacon Darwin, Younes Jaaidi and dario-piotrowicz
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.0.0-rc.0"></a>
 # 13.0.0-rc.0 (2021-10-13)
 ## Deprecations
