@@ -1,8 +1,6 @@
 # Dynamic component loader
 
-Component templates are not always fixed. An application might need to load new components at runtime.
-
-This cookbook shows you how to use `ComponentFactoryResolver` to add components dynamically.
+Component templates are not always fixed. An application might need to load new components at runtime. This cookbook shows you how to add components dynamically.
 
 See the <live-example name="dynamic-component-loader"></live-example>
 of the code in this cookbook.
@@ -112,10 +110,6 @@ value to select an `adItem` from the array.
 </div>
 
 
-
-After `loadComponent()` selects an ad, it uses `ComponentFactoryResolver`
-to resolve a `ComponentFactory` for each specific component.
-The `ComponentFactory` then creates an instance of each component.
 
 Next, you're targeting the `viewContainerRef` that
 exists on this specific instance of the component. How do you know it's
