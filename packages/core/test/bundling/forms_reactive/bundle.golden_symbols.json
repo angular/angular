@@ -1533,9 +1533,6 @@
     "name": "setIsInCheckNoChangesMode"
   },
   {
-    "name": "setLocaleId"
-  },
-  {
     "name": "setSelectedIndex"
   },
   {

@@ -1935,9 +1935,6 @@
     "name": "setIsInCheckNoChangesMode"
   },
   {
-    "name": "setLocaleId"
-  },
-  {
     "name": "setRouterState"
   },
   {
