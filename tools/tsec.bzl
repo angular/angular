@@ -2,10 +2,10 @@
 
 load("@bazel_skylib//lib:new_sets.bzl", "sets")
 load("@npm//@bazel/typescript/internal:ts_config.bzl", "TsConfigInfo")
-load("@build_bazel_rules_nodejs//:providers.bzl", "DeclarationInfo")
+load("@build_bazel_rules_nodejs//:providers.bzl", "DeclarationInfo", "NpmPackageInfo")
 load("@npm//tsec:index.bzl", _tsec_test = "tsec_test")
 
-TsecTargetInfo = provider(fields = ["srcs", "deps", "module_name", "paths"])
+TsecTargetInfo = provider(fields = ["srcs", "deps", "module_name", "paths", "node_modules_root"])
 
 def _capture_tsec_attrs_aspect_impl(target, ctx):
     """Capture certain attributes of `ts_library` into a TsecTargetInfo provider."""
@@ -13,19 +13,23 @@ def _capture_tsec_attrs_aspect_impl(target, ctx):
 
     paths = {}
     deps = []
+    node_modules_root = None
     if module_name:
-        paths[module_name] = [target.label.package]
+        paths[module_name] = target.label.package
     for d in ctx.rule.attr.deps:
         if TsecTargetInfo in d:
             paths.update(d[TsecTargetInfo].paths)
         if DeclarationInfo in d:
             deps.append(d[DeclarationInfo].transitive_declarations)
+        if node_modules_root == None and NpmPackageInfo in d:
+            node_modules_root = "/".join(["external", d[NpmPackageInfo].workspace, "node_modules"])
     return [
         TsecTargetInfo(
             srcs = ctx.rule.attr.srcs,
             deps = depset(transitive = deps),
             module_name = module_name,
             paths = paths,
+            node_modules_root = node_modules_root,
         ),
     ]
 
@@ -34,18 +38,39 @@ _capture_tsec_attrs_aspect = aspect(
     attr_aspects = ["deps"],
 )
 
-def _generate_tsconfig(target, base_tsconfig):
-    tsconfig = {}
-    base_url = "/".join([".."] * len(target.label.package.split("/")))
+def _generate_tsconfig(bin_dir_path, target, base_tsconfig, use_runfiles):
+    tsconfig = {"bazel": True}
+    pkg_base_dir = "/".join([".."] * len(target.label.package.split("/")))
+
+    # With runfiles, the location of the source code is the same as the generated .d.ts, i.e., the workspace root.
+    # Without runfiles, the source code remains in the Bazel package folder in the source tree, so `src_base_dir`
+    # has to go to the execroot first and further back to the source tree.
+    src_base_dir = pkg_base_dir if use_runfiles else "/".join([".."] * len(bin_dir_path.split("/")) + [pkg_base_dir])
 
     if base_tsconfig:
-        tsconfig["extends"] = base_url + "/" + base_tsconfig.path
+        base = src_base_dir if base_tsconfig.is_source else pkg_base_dir
+        tsconfig["extends"] = base + "/" + base_tsconfig.short_path
 
     compiler_options = {"noEmit": True}
-    compiler_options["baseUrl"] = base_url
+    compiler_options["baseUrl"] = src_base_dir
 
     tslib_info = target[TsecTargetInfo]
-    compiler_options["paths"] = tslib_info.paths
+    paths = {}
+    for name, path in tslib_info.paths.items():
+        paths[name] = [path]
+        if not use_runfiles:
+            paths[name].append(bin_dir_path + "/" + path)
+
+    node_modules_root = tslib_info.node_modules_root
+    if node_modules_root != None:
+        type_roots = [node_modules_root, node_modules_root + "/@types"]
+        paths["*"] = ["%s/*" % r for r in type_roots]
+        compiler_options["typeRoots"] = ["%s/%s/*" % (src_base_dir, r) for r in type_roots]
+
+    compiler_options["paths"] = paths
+
+    if not use_runfiles:
+        compiler_options["rootDirs"] = [src_base_dir, src_base_dir + "/" + bin_dir_path]
 
     tsconfig["compilerOptions"] = compiler_options
 
@@ -53,7 +78,8 @@ def _generate_tsconfig(target, base_tsconfig):
     for s in tslib_info.srcs:
         if hasattr(s, "files"):
             for f in s.files.to_list():
-                sets.insert(files, base_url + "/" + f.path)
+                base = src_base_dir if f.is_source else pkg_base_dir
+                sets.insert(files, base + "/" + f.short_path)
 
     for f in tslib_info.deps.to_list():
         # Do not include non-TS files
@@ -70,7 +96,8 @@ def _generate_tsconfig(target, base_tsconfig):
         if path.endswith(".ngfactory.d.ts") or path.endswith(".ngsummary.d.ts"):
             continue
 
-        sets.insert(files, base_url + "/" + path)
+        base = src_base_dir if f.is_source else pkg_base_dir
+        sets.insert(files, base + "/" + path)
 
     tsconfig["files"] = sets.to_list(files)
 
@@ -91,15 +118,18 @@ def _tsec_config_impl(ctx):
         deps.extend(base[TsConfigInfo].deps)
         base_tsconfig_src = ctx.attr.base.files.to_list()[0]
 
+    out = ctx.outputs.out
     ts_target = ctx.attr.target
-    generated_tsconfig_content = _generate_tsconfig(ts_target, base_tsconfig_src)
-
-    ctx.actions.write(
-        output = ctx.outputs.out,
-        content = generated_tsconfig_content,
+    generated_tsconfig_content = _generate_tsconfig(
+        ctx.bin_dir.path,
+        ts_target,
+        base_tsconfig_src,
+        ctx.attr.use_runfiles,
     )
 
-    deps.append(ctx.outputs.out)
+    ctx.actions.write(output = out, content = generated_tsconfig_content)
+
+    deps.append(out)
 
     return [DefaultInfo(files = depset(deps))]
 
@@ -115,6 +145,7 @@ _tsec_config = rule(
             allow_single_file = [".json"],
             doc = """Base tsconfig to extend from.""",
         ),
+        "use_runfiles": attr.bool(mandatory = True),
         "out": attr.output(mandatory = True),
     },
     doc = """Generate the tsconfig.json for a tsec_test. """,
@@ -160,6 +191,10 @@ def tsec_test(name, target, tsconfig):
         tags = ["tsec"],
         target = target,
         base = tsconfig,
+        use_runfiles = select({
+            "@platforms//os:windows": False,
+            "//conditions:default": True,
+        }),
         out = generated_tsconfig,
     )
 
@@ -175,5 +210,5 @@ def tsec_test(name, target, tsconfig):
         name = name,
         data = [tsec_tsconfig_name, all_transitive_deps_name, generated_tsconfig],
         tags = ["tsec"],
-        templated_args = ["-p", "$(rootpath %s)" % generated_tsconfig],
+        templated_args = ["-p", "$$(rlocation $(rootpath %s))" % generated_tsconfig],
     )
