@@ -54,7 +54,7 @@ The following configuration properties are a set of options that customize the A
 | `analyticsSharing`  | A set of analytics sharing options.                                                              | [Analytics sharing options](#analytics-sharing-options)  |
 | `cache`             | Control [persistent disk cache](cli/cache) used by [Angular CLI Builders](guide/cli-builder).    | [Cache options](#cache-options)                          |
 | `defaultCollection` | The default schematics collection to use.                                                        | `string`                                                 |
-| `packageManager`    | The prefered package manager tool to use.                                                        | `npm` \| `cnpm` \| `pnpm` \| `yarn`                      |
+| `packageManager`    | The preferred package manager tool to use.                                                        | `npm` \| `cnpm` \| `pnpm` \| `yarn`                      |
 | `warnings`          | Control CLI specific console warnings.                                                           | [Warnings options](#warnings-options)                    |
 
 ### Analytics sharing options
@@ -66,7 +66,7 @@ The following configuration properties are a set of options that customize the A
 
 ### Cache options
 
-| Property      | Description                                           | Value Type               | Dafault Value    |
+| Property      | Description                                           | Value Type               | Default Value    |
 | :------------ | :---------------------------------------------------- | :----------------------- | :--------------- |
 | `enabled`     | Configure whether disk caching is enabled.            | `boolean`                | `true`           |
 | `environment` | Configure in which environment disk cache is enabled. | `local` \| `ci` \| `all` | `local`          |
@@ -74,7 +74,7 @@ The following configuration properties are a set of options that customize the A
 
 ### Warnings options
 
-| Property          | Description                                                                     | Value Type | Dafault Value |
+| Property          | Description                                                                     | Value Type | Default Value |
 | :---------------- | :------------------------------------------------------------------------------ | :--------- | :------------ |
 | `versionMismatch` | Show a warning when the global Angular CLI version is newer than the local one. | `boolean`  | `true`        |
 
@@ -401,7 +401,7 @@ The `optimization` browser builder option can be either a Boolean or an Object f
 
 There are several options that can be used to fine-tune the optimization of an application.
 
-| Option    | Description                                                                     | Value Type                                                               | Dafault Value |
+| Option    | Description                                                                     | Value Type                                                               | Default Value |
 |:---       |:---                                                                             |:---                                                                      |:---           |
 | `scripts` | Enables optimization of the scripts output.                                     | `boolean`                                                                | `true`        |
 | `styles`  | Enables optimization of the styles output.                                      | `boolean` \| [Styles optimization options](#styles-optimization-options) | `true`        |
@@ -409,14 +409,14 @@ There are several options that can be used to fine-tune the optimization of an a
 
 #### Styles optimization options
 
-| Option           | Description                                                                                                              | Value Type | Dafault Value |
+| Option           | Description                                                                                                              | Value Type | Default Value |
 |:---              |:---                                                                                                                      |:---        |:---           |
 | `minify`         | Minify CSS definitions by removing extraneous whitespace and comments, merging identifiers and minimizing values.        | `boolean`  | `true`        |
 | `inlineCritical` | Extract and inline critical CSS definitions to improve [First Contentful Paint](https://web.dev/first-contentful-paint). | `boolean`  | `true`        |
 
 #### Fonts optimization options
 
-| Option   | Description                                                                                                                                                                                                                          | Value Type | Dafault Value |
+| Option   | Description                                                                                                                                                                                                                          | Value Type | Default Value |
 |:---      |:---                                                                                                                                                                                                                                  |:---        |:---           |
 | `inline` | Reduce [render blocking requests](https://web.dev/render-blocking-resources) by inlining external Google Fonts and Adobe Fonts CSS definitions in the application's HTML index file. <br /> **NOTE**: This requires internet access. | `boolean`  | `true`        |
 
@@ -445,7 +445,7 @@ For [Universal](guide/glossary#universal), you can reduce the code rendered in t
 
 The `sourceMap` browser builder option can be either a Boolean or an Object for more fine-tune configuration to control the source maps of an application.
 
-| Option    | Description                                        | Value Type | Dafault Value |
+| Option    | Description                                        | Value Type | Default Value |
 |:---       |:---                                                |:---        |:---           |
 | `scripts` | Output source maps for all scripts.                | `boolean`  | `true`        |
 | `styles`  | Output source maps for all styles.                 | `boolean`  | `true`        |
