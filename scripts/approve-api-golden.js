@@ -26,9 +26,8 @@ if (!packageNameGuess.result) {
 }
 
 const [packageName, ...entryPointTail] = packageNameGuess.result.split('/');
-const apiGoldenTargetName = `//tools/public_api_guard:${packageName}/${entryPointTail.join(
-  '-',
-)}.md_api.accept`;
+const suffix = entryPointTail.length ? entryPointTail.join('-') : packageName;
+const apiGoldenTargetName = `//tools/public_api_guard:${packageName}/${suffix}.md_api.accept`;
 
 // ShellJS should exit if any command fails.
 shelljs.set('-e');
