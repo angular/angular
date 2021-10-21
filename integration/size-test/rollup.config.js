@@ -1,7 +1,7 @@
 const {
   buildOptimizer,
 } = require('@angular-devkit/build-optimizer/src/build-optimizer/build-optimizer');
-const node = require('rollup-plugin-node-resolve');
+const {nodeResolve} = require('@rollup/plugin-node-resolve');
 
 const buildOptimizerPlugin = {
   name: 'build-optimizer',
@@ -28,7 +28,7 @@ const buildOptimizerPlugin = {
 module.exports = {
   plugins: [
     buildOptimizerPlugin,
-    node({
+    nodeResolve({
       mainFields: ['es2020', 'module'],
     }),
   ],

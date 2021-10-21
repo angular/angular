@@ -48,7 +48,7 @@ def size_test(name, file, deps):
         },
         deps = [
             ":%s_lib" % name,
-            "@npm//rollup-plugin-node-resolve",
+            "@npm//@rollup/plugin-node-resolve",
             "@npm//@angular-devkit/build-optimizer",
         ],
         # Link the workspace root so that files can be loaded from the workspace.

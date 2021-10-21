@@ -4,10 +4,11 @@
  * amount, the script will fail with a non-zero exit code.
  */
 
-import * as chalk from 'chalk';
 import {readFileSync, statSync, writeFileSync} from 'fs';
 import {parse, stringify} from 'yaml';
 import {runfiles} from '@bazel/runfiles';
+
+const chalk = require('chalk');
 
 /**
  * Absolute byte deviation from the expected value that is allowed. If the
