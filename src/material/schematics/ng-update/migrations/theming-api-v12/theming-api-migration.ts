@@ -44,7 +44,11 @@ export class ThemingApiMigration extends DevkitMigration<null> {
   }
 
   /** Logs out the number of migrated files at the end of the migration. */
-  static override globalPostMigration(_tree: unknown, context: SchematicContext): void {
+  static override globalPostMigration(
+    _tree: unknown,
+    _targetVersion: TargetVersion,
+    context: SchematicContext,
+  ): void {
     const count = ThemingApiMigration.migratedFileCount;
 
     if (count > 0) {

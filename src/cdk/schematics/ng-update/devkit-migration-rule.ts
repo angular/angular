@@ -115,7 +115,7 @@ export function createMigrationSchematicRule(
     migrations.forEach(m => {
       const actionResult =
         isDevkitMigration(m) && m.globalPostMigration !== undefined
-          ? m.globalPostMigration(tree, context)
+          ? m.globalPostMigration(tree, targetVersion, context)
           : null;
       if (actionResult) {
         runPackageManager = runPackageManager || actionResult.runPackageManager;

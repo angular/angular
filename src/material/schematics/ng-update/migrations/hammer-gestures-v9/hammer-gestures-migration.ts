@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {join, Path, relative, dirname} from '@angular-devkit/core';
+import {dirname, join, Path, relative} from '@angular-devkit/core';
 import {SchematicContext, Tree} from '@angular-devkit/schematics';
 import {
   addSymbolToNgModuleMetadata,
@@ -58,12 +58,12 @@ interface PackageJson {
 }
 
 export class HammerGesturesMigration extends DevkitMigration<null> {
-  // Only enable this rule if the migration targets v9 or v10 and is running for a non-test
-  // target. We cannot migrate test targets since they have a limited scope
-  // (in regards to source files) and therefore the HammerJS usage detection can be incorrect.
+  // The migration is enabled when v9 or v10 are targeted, but actual targets are only
+  // migrated if they are not test targets. We cannot migrate test targets since they have
+  // a limited scope, in regards to their source files, and therefore the HammerJS usage
+  // detection could be incorrect.
   enabled =
-    (this.targetVersion === TargetVersion.V9 || this.targetVersion === TargetVersion.V10) &&
-    !this.context.isTestTarget;
+    HammerGesturesMigration._isAllowedVersion(this.targetVersion) && !this.context.isTestTarget;
 
   private _printer = ts.createPrinter();
   private _importManager = new ImportManager(this.fileSystem, this._printer);
@@ -938,7 +938,16 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
    * on the analysis of the individual targets. For example: we only remove Hammer
    * from the "package.json" if it is not used in *any* project target.
    */
-  static override globalPostMigration(tree: Tree, context: SchematicContext): PostMigrationAction {
+  static override globalPostMigration(
+    tree: Tree,
+    target: TargetVersion,
+    context: SchematicContext,
+  ): PostMigrationAction {
+    // Skip printing any global messages when the target version is not allowed.
+    if (!this._isAllowedVersion(target)) {
+      return;
+    }
+
     // Always notify the developer that the Hammer v9 migration does not migrate tests.
     context.logger.info(
       '\n⚠  General notice: The HammerJS v9 migration for Angular Components is not able to ' +
@@ -978,6 +987,12 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
       return true;
     }
     return false;
+  }
+
+  /** Gets whether the migration is allowed to run for specified target version. */
+  private static _isAllowedVersion(target: TargetVersion) {
+    // This migration is only allowed to run for v9 or v10 target versions.
+    return target === TargetVersion.V9 || target === TargetVersion.V10;
   }
 }
 
