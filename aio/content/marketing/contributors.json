@@ -100,6 +100,13 @@
     "bio": "Natalia started working professionally as a web software developer in the early 2000s. She now works in the role of technical lead and software/solutions architect. She is a public speaker, content creator, GDE for Angular and Web Technologies, Microsoft MVP Award (Developer Technologies), and a mentor with the RoadtoGDE program.",
     "groups": ["GDE"]
   },
+  "armenvardanyan95": {
+    "name": "Armen Vardanyan",
+    "picture": "armen-vardanyan.jpg",
+    "groups": ["GDE"],
+    "twitter": "armandotrue",
+    "bio": "Armen is a senior Angular developer from Armenia, tech writer, speaker, mentor and a Google Developer Expert for Angular."
+  },
   "atscott": {
     "name": "Andrew Scott",
     "picture": "andrewscott.jpg",
