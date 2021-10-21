@@ -475,21 +475,20 @@ Important note: this deprecation doesn't affect JIT mode in Ivy (JIT remains ava
 
 This section contains a complete list all of the currently deprecated CLI flags.
 
+### @angular/cli
+
+| API/Option        | May be removed in | Notes                                     |
+| ----------------- | ----------------- | ----------------------------------------- |
+| `--prod`          | <!--v12--> v14    | Use `--configuration production` instead. |
+| `ng update --all` | <!--v11--> v14    | No longer has an effect.                  |
+
 ### @angular-devkit/build-angular
 
-| API/Option                | May be removed in | Notes                                                                                                          |
-| ------------------------- | ----------------- | -------------------------------------------------------------------------------------------------------------- |
-| `extractCss`              | <!--v11--> v13    | No longer required to disable CSS extraction during development.                                               |
-| `i18nFormat`              | <!--v9--> v12     | Format is now automatically detected.                                                                          |
-| `i18nLocale`              | <!--v9--> v12     | New [localization option][aioguidei18ncommonmergedefinelocalesinthebuildconfiguration] in version 9 and later. |
-| `hmrWarning`              | <!--v11--> v13    | No longer has an effect.                                                                                       |
-| `servePathDefaultWarning` | <!--v11--> v13    | No longer has an effect.                                                                                       |
-
-### @schematics/angular
-
-| API/Option | May be removed in | Notes                                     |
-| ---------- | ----------------- | ----------------------------------------- |
-| `lintFix`  | <!--v11--> v12    | Deprecated as part of TSLint deprecation. |
+| API/Option                 | May be removed in | Notes                                                                                                                                                          |
+| -------------------------- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `deployUrl`                | <!--v13--> v15    | Use `baseHref` option, `APP_BASE_HREF` DI token or a combination of both instead. For more information, see [the deploy url](guide/deployment#the-deploy-url). |
+| `showCircularDependencies` | <!--v12--> v14    | The recommended method to detect circular dependencies in project code is to use either a lint rule or other external tooling.                                 |
+| Protractor builder         | <!--v12--> v14    | Deprecate as part of the Protractor deprecation.                                                                                                               |
 
 {@a removed}
 
