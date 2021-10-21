@@ -55,7 +55,6 @@ v13 -> v16
 | `@angular/upgrade`                  | [`setAngularLib`](#upgrade-static)                                                                         | <!--v8--> v11         |
 | template syntax                     | [`<template>`](#template-tag)                                                                              | <!--v7--> v11         |
 | polyfills                           | [reflect-metadata](#reflect-metadata)                                                                      | <!--v8--> v11         |
-| npm package format                  | [`esm5` and `fesm5` entry-points in @angular/\* npm packages](guide/deprecations#esm5-fesm5)               | <!-- v9 --> v11       |
 | `@angular/compiler-cli`             | [Input setter coercion](#input-setter-coercion)                                                            | <!--v13--> v15        |
 | `@angular/compiler-cli`             | [`fullTemplateTypeCheck`](#full-template-type-check)                                                       | <!--v13--> v15        |
 | `@angular/core`                     | [`defineInjectable`](#core)                                                                                | <!--v8--> v11         |
@@ -501,33 +500,6 @@ The following APIs have been removed starting with version 11.0.0\*:
 | `@angular/router` | `preserveQueryParams` | [`queryParamsHandling`](api/router/UrlCreationOptions#queryParamsHandling) |       |
 
 \* To see APIs removed in version 10, check out this guide on the [version 10 docs site](https://v10.angular.io/guide/deprecations#removed).
-
-{@a esm5-fesm5}
-
-### `esm5` and `fesm5` code formats in @angular/* npm packages
-
-As of Angular v8, the CLI primarily consumes the `fesm2015` variant of the code distributed as part of `@angular/*` npm packages.
-This renders the `esm5` and `fesm5` distributions obsolete and unnecessary, adding bloat to the package size and slowing down npm installations.
-
-This removal has no impact on CLI users, unless they modified their build configuration to explicitly consume these code distributions.
-
-Any application still relying on the `esm5` and `fesm5` as the input to its build system will need to ensure that the build pipeline is capable of accepting JavaScript code conforming to ECMAScript 2015 (ES2015) language specification.
-
-Note that this change doesn't make existing libraries distributed in this format incompatible with the Angular CLI.
-The CLI will fall back and consume libraries in less desirable formats if others are not available.
-However, we do recommend that libraries ship their code in ES2015 format in order to make builds faster and build output smaller.
-
-In practical terms, the `package.json` of all `@angular` packages has changed in the following way:
-
-**Before**:
-
-<code-example path="deprecation-guide/angular.package.json" language="json" region="deprecatedPackageJson"></code-example>
-
-**After**:
-
-<code-example path="deprecation-guide/angular.package.json" language="json" region="packageJson"></code-example>
-
-For more information about the npm package format, see the [Angular Package Format spec](https://goo.gl/jB3GVv).
 
 {@a style-sanitization}
 
