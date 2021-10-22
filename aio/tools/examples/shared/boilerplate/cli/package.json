@@ -32,6 +32,7 @@
     "@angular/compiler-cli": "~13.0.0-next.0",
     "@types/jasmine": "~3.10.0",
     "@types/node": "^12.11.1",
+    "copyfiles": "^2.4.1",
     "jasmine-core": "~3.10.0",
     "jasmine-marbles": "~0.8.3",
     "jasmine-spec-reporter": "~7.0.0",
