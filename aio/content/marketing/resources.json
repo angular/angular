@@ -519,6 +519,16 @@
             "desc": "Taiga UI is fully-treeshakable Angular UI Kit consisting of multiple base libraries and several add-ons. We have 130+ components, 100+ directives, dozens of tokens, utils and tools. They are easily customizable and well engineered.",
             "title": "Taiga UI",
             "url": "https://taiga-ui.dev"
+          },
+          "mdct": {
+            "desc": "Angular Material Dashboard  is a Free and Open Source Material Bootstrap Admin with a fresh, new design inspired by Google's Material Design.",
+            "title": "Angular Material Dashboard",
+            "url": "https://demos.creative-tim.com/material-dashboard-angular2"
+          },
+          "blkct": {
+            "desc": "Free and Open Source Angular Design System for Bootstrap 4 and Angular featuring dark mode design.",
+            "title": "Angular BLK Design System",
+            "url": "https://demos.creative-tim.com/blk-design-system-angular/#/home"
           }
         }
       }
