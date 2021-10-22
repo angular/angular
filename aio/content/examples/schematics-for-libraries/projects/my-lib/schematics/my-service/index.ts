@@ -42,12 +42,12 @@ export function myService(options: MyServiceSchema): Rule {
 
 // #docregion project-info
 // #docregion project-fallback
-    if (!options.project) {
+    if (!options.project && typeof workspace.extensions.defaultProject === 'string') {
       options.project = workspace.extensions.defaultProject;
     }
 // #enddocregion project-fallback
 
-    const project = workspace.projects.get(options.project);
+    const project = (options.project != null) ? workspace.projects.get(options.project) : null;
     if (!project) {
       throw new SchematicsException(`Invalid project name: ${options.project}`);
     }
