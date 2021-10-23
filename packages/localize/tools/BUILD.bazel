@@ -48,6 +48,7 @@ esbuild(
     ],
     format = "esm",
     platform = "node",
+    splitting = True,
     target = "node12",
     deps = [
         ":tools",
