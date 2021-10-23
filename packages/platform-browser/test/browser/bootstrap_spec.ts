@@ -272,9 +272,10 @@ function bootstrap(
       });
     }
 
-    it('should create an injector promise', () => {
+    it('should create an injector promise', done => {
       const refPromise = bootstrap(HelloRootCmp, testProviders);
       expect(refPromise).toEqual(jasmine.any(Promise));
+      refPromise.then(done, done.fail);
     });
 
     it('should set platform name to browser', done => {
