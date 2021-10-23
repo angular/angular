@@ -61,13 +61,13 @@ export class UmdRenderingFormatter extends Esm5RenderingFormatter {
       return;
     }
 
-    const wrapperFunction = umdModule.wrapperFn;
+    const {wrapperFn, factoryFn} = umdModule;
 
     // We need to add new `require()` calls for each import in the CommonJS initializer
-    renderCommonJsDependencies(output, wrapperFunction, imports);
-    renderAmdDependencies(output, wrapperFunction, imports);
-    renderGlobalDependencies(output, wrapperFunction, imports);
-    renderFactoryParameters(output, wrapperFunction, imports);
+    renderCommonJsDependencies(output, wrapperFn, imports);
+    renderAmdDependencies(output, wrapperFn, imports);
+    renderGlobalDependencies(output, wrapperFn, imports);
+    renderFactoryParameters(output, factoryFn, imports);
   }
 
   /**
@@ -210,20 +210,7 @@ function renderGlobalDependencies(
  * Add dependency parameters to the UMD factory function.
  */
 function renderFactoryParameters(
-    output: MagicString, wrapperFunction: ts.FunctionExpression, imports: Import[]) {
-  const wrapperCall = wrapperFunction.parent as ts.CallExpression;
-  const secondArgument = wrapperCall.arguments[1];
-  if (!secondArgument) {
-    return;
-  }
-
-  // Be resilient to the factory being inside parentheses
-  const factoryFunction =
-      ts.isParenthesizedExpression(secondArgument) ? secondArgument.expression : secondArgument;
-  if (!ts.isFunctionExpression(factoryFunction)) {
-    return;
-  }
-
+    output: MagicString, factoryFunction: ts.FunctionExpression, imports: Import[]) {
   const parameters = factoryFunction.parameters;
   const parameterString = imports.map(i => i.qualifier.text).join(',');
   if (parameters.length > 0) {
