@@ -15,9 +15,7 @@ describe('ButtonHarnessExample', () => {
   let buttonHarness = MatButtonHarness;
 
   beforeAll(() => {
-    TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
-      teardown: {destroyAfterEach: true},
-    });
+    TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
   });
 
   beforeEach(async () => {

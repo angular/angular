@@ -16,9 +16,7 @@ describe('PaginatorHarnessExample', () => {
   let instance: PaginatorHarnessExample;
 
   beforeAll(() => {
-    TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
-      teardown: {destroyAfterEach: true},
-    });
+    TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
   });
 
   beforeEach(async () => {

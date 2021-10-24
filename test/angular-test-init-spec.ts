@@ -8,9 +8,7 @@ import {
  * Common setup / initialization for all unit tests in Angular Material and CDK.
  */
 
-TestBed.initTestEnvironment([BrowserDynamicTestingModule], platformBrowserDynamicTesting(), {
-  teardown: {destroyAfterEach: true},
-});
+TestBed.initTestEnvironment([BrowserDynamicTestingModule], platformBrowserDynamicTesting());
 
 (window as any).module = {};
 (window as any).isNode = false;
