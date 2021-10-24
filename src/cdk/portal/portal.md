@@ -70,7 +70,7 @@ Usage:
 ```
 
 ```ts
-@ViewChild('templatePortalContent') templatePortalContent: TemplateRef<unknow>;
+@ViewChild('templatePortalContent') templatePortalContent: TemplateRef<unknown>;
 
 ngAfterViewInit() {
   this.templatePortal = new TemplatePortal(
