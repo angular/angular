@@ -108,33 +108,13 @@ def ng_module(
         deps = [],
         srcs = [],
         tsconfig = None,
-        flat_module_out_file = None,
         testonly = False,
         **kwargs):
     if not tsconfig:
         tsconfig = _getDefaultTsConfig(testonly)
 
-    # We only generate a flat module if there is a "public-api.ts" file that
-    # will be picked up by NGC or ngtsc.
-    needs_flat_module = "public-api.ts" in srcs
-
     # Compute an AMD module name for the target.
     module_name = _compute_module_name(testonly)
-
-    # Targets which have a module name and are not used for tests, should
-    # have a default flat module out file named "index". This is necessary
-    # as imports to that target should go through the flat module bundle.
-    if needs_flat_module and module_name and not flat_module_out_file and not testonly:
-        flat_module_out_file = "index"
-
-    # Workaround to avoid a lot of changes to the Bazel build rules. Since
-    # for most targets the flat module out file is "index.js", we cannot
-    # include "index.ts" (if present) as source-file. This would resolve
-    # in a conflict in the metadata bundler. Once we switch to Ivy and
-    # no longer need metadata bundles, we can remove this logic.
-    if flat_module_out_file == "index":
-        if "index.ts" in srcs:
-            srcs.remove("index.ts")
 
     local_deps = [
         # Add tslib because we use import helpers for all public packages.
@@ -155,7 +135,6 @@ def ng_module(
         # NodeJS executions, by activating the Bazel NodeJS linker.
         # See: https://github.com/bazelbuild/rules_nodejs/pull/2799.
         package_name = module_name,
-        flat_module_out_file = flat_module_out_file,
         strict_templates = True,
         deps = local_deps,
         tsconfig = tsconfig,
