@@ -1,17 +1,12 @@
 {
-  "output": {
-    "ecma": "es2015",
-    "comments": false
-  },
+  "ecma": "es2020",
   "compress": {
-    "global_defs": {
-      "ngDevMode": false,
-      "ngI18nClosureMode": false,
-      "ngJitMode": false
-    },
-    "passes": 3,
+    "passes": 2,
     "pure_getters": true
   },
-  "toplevel": true,
-  "mangle": true
+  "format": {
+    "ascii_only": true,
+    "wrap_func_args": false
+  },
+  "mangle": false
 }

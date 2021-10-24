@@ -9,6 +9,7 @@
 import {createLinkerEsbuildPlugin} from './create_linker_esbuild_plugin.mjs';
 
 export default {
+  // Note: We support `.mjs` here as this is the extension used by Angular APF packages.
   resolveExtensions: ['.mjs', '.js'],
   format: 'esm',
   plugins: [

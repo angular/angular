@@ -1,13 +1,13 @@
 load("@npm//@angular/dev-infra-private/bazel:expand_template.bzl", "expand_template")
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary", "nodejs_test")
 load("@bazel_skylib//lib:paths.bzl", "paths")
-load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
+load("@npm//@bazel/esbuild:index.bzl", "esbuild")
 load("@npm//@bazel/terser:index.bzl", "terser_minified")
 load("//tools:defaults.bzl", "ng_module")
 
 """
   Performs size measurements for the specified file. The file will be built as part
-  of a `ng_module` and then will be optimized with build-optimizer, rollup and Terser.
+  of a `ng_module` and then will be optimized with esbuild, babel and terser.
 
   The resulting size will be validated against a golden file to ensure that we don't
   regress in payload size, or that we can improvements to payload size.
@@ -35,31 +35,30 @@ def size_test(name, file, deps):
         testonly = True,
         deps = [
             "@npm//@angular/core",
-            "@npm//@angular/platform-browser-dynamic",
+            "@npm//@angular/platform-browser",
         ] + deps,
     )
 
-    rollup_bundle(
+    esbuild(
         name = "%s_bundle" % name,
-        config_file = "//integration/size-test:rollup.config.js",
+        config = "//integration/size-test:esbuild_config",
         testonly = True,
-        entry_points = {
-            (index_file): "%s_bundled" % name,
-        },
+        minify = True,
+        entry_point = index_file,
         deps = [
             ":%s_lib" % name,
-            "@npm//@rollup/plugin-node-resolve",
-            "@npm//@angular-devkit/build-optimizer",
         ],
+        target = "es2020",
+        platform = "browser",
         # Link the workspace root so that files can be loaded from the workspace.
         link_workspace_root = True,
-        sourcemap = "false",
+        sourcemap = "external",
     )
 
     terser_minified(
         testonly = True,
         name = "%s_bundle_min" % name,
-        src = ":%s_bundle" % name,
+        src = "%s_bundle" % name,
         config_file = "//integration/size-test:terser-config.json",
         sourcemap = False,
     )

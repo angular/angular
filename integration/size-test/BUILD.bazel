@@ -1,3 +1,4 @@
+load("@npm//@bazel/esbuild:index.bzl", "esbuild_config")
 load("//tools:defaults.bzl", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
@@ -7,6 +8,16 @@ exports_files([
     "terser-config.json",
     "index-tmpl.ts",
 ])
+
+esbuild_config(
+    name = "esbuild_config",
+    config_file = "esbuild.config.mjs",
+    deps = [
+        "@npm//@angular-devkit/build-angular",
+        "@npm//@angular/compiler-cli",
+        "@npm//@babel/core",
+    ],
+)
 
 ts_library(
     name = "check-size",

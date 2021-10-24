@@ -1,5 +1,4 @@
 import {Component, NgModule} from '@angular/core';
-import {platformBrowser} from '@angular/platform-browser';
 import {MatChipsModule} from '@angular/material-experimental/mdc-chips';
 
 /**
@@ -21,5 +20,3 @@ export class TestComponent {}
   bootstrap: [TestComponent],
 })
 export class AppModule {}
-
-platformBrowser().bootstrapModule(AppModule);

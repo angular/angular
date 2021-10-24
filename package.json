@@ -67,7 +67,6 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "13.0.0-next.7",
-    "@angular-devkit/build-optimizer": "0.1300.0-next.7",
     "@angular-devkit/core": "13.0.0-next.7",
     "@angular-devkit/schematics": "13.0.0-next.7",
     "@angular/bazel": "13.0.0-next.15",
