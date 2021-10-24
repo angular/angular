@@ -14,12 +14,12 @@ describe('observables', () => {
   });
 
   it('should listen to input changes', () => {
-    let triggerInputChange!: (e: {keyCode: number}) => void;
+    let triggerInputChange!: (e: {code: string}) => void;
     const input = {
       value: 'Test',
       addEventListener: jasmine
         .createSpy('addEvent')
-        .and.callFake((eventName: string, cb: (e: {keyCode: number}) => void) => {
+        .and.callFake((eventName: string, cb: (e: {code: string}) => void) => {
           if (eventName === 'keydown') {
             triggerInputChange = cb;
           }
@@ -29,10 +29,10 @@ describe('observables', () => {
 
     const document = { getElementById: () => input } as unknown as Document;
     docRegionFromEvent(document);
-    triggerInputChange({keyCode: 65});
+    triggerInputChange({code: 'A'});
     expect(input.value).toBe('Test');
 
-    triggerInputChange({keyCode: 27});
+    triggerInputChange({code: 'Escape'});
     expect(input.value).toBe('');
   });
 
