@@ -1,7 +1,10 @@
+@use '../core/style/vendor-prefixes';
+
 // The width/height of the icon element.
 $size: 24px !default;
 
 .mat-icon {
+  @include vendor-prefixes.user-select(none);
   background-repeat: no-repeat;
   display: inline-block;
   fill: currentColor;
