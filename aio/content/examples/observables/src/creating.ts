@@ -55,11 +55,11 @@ function fromEvent<T extends keyof HTMLElementEventMap>(target: HTMLElement, eve
 export function docRegionFromEvent(document: Document) {
   // #docregion fromevent_use
 
-  const ESC_KEY = 27;
+  const ESC_CODE = 'Escape';
   const nameInput = document.getElementById('name') as HTMLInputElement;
 
   const subscription = fromEvent(nameInput, 'keydown').subscribe((e: KeyboardEvent) => {
-    if (e.keyCode === ESC_KEY) {
+    if (e.code === ESC_CODE) {
       nameInput.value = '';
     }
   });
