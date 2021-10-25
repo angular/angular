@@ -29,7 +29,7 @@
     bottom: 0;
   }
 
-  .mat-mdc-list-avatar ~ .mat-divider-inset {
+  .mat-mdc-list-item-avatar ~ .mat-divider-inset {
     margin-left: 72px;
 
     [dir='rtl'] & {
@@ -60,23 +60,23 @@
   pointer-events: none;
 }
 
-// If there are projected lines, we project any remaining content into the list-item's end
-// container and set the `--with-trailing-meta` class. If this container is empty due to no
-// projected content though, we want to hide the element because otherwise the empty container
-// would take up horizontal space. There is no good way to check for remaining projected content
-// in the template, so we just use CSS with the `:empty` selector. Note that we need increased
-// specificity here because MDC overrides the `display` with the `--trailing-meta` class too.
-.mat-mdc-list-item.mdc-list-item--with-trailing-meta > .mdc-list-item__end:empty {
-  display: none;
-}
+.mat-mdc-list-item.mdc-list-item--with-three-lines {
+  // List item lines or titles never wrap. MDC always enables wrapping for secondary text
+  // if the list item has acquired three lines. We unset these styles for line elements.
+  // https://github.com/material-components/material-components-web/blob/348665978ce73694ad4518626dd70cdf5b984113/packages/mdc-list/_evolution-mixins.scss#L205-L206.
+  // TODO: Consider removing once MDC supports the explicit tertiary line list variant.
+  .mat-mdc-list-item-line.mdc-list-item__secondary-text {
+    white-space: nowrap;
+    line-height: normal;
+  }
 
-// Unset MDC's styles for wrapping secondary text in three-line lists. MDC implements three-line
-// lists in a way where they assume that the second list line should wrap into the third line.
-// This is different to the three-line list variant we want to support. We support a dedicated
-// third line that can be controlled by consumers using a third `matLine` span.
-// https://github.com/material-components/material-components-web/blob/master/packages/mdc-list/_evolution-mixins.scss#L199.
-// TODO: Consider removing once MDC supports the various three-line list variants.
-.mat-mdc-list-item.mdc-list-item--with-three-lines .mdc-list-item__secondary-text {
-  white-space: nowrap;
-  line-height: normal;
+  // Unscoped content can wrap if the list item has acquired three lines. MDC implements
+  // this functionality for secondary text but there is no proper text ellipsis when
+  // text overflows the third line. These styles ensure the overflow is handled properly.
+  // TODO: Move this to the the MDC list once it drops IE11 support.
+  .mat-mdc-list-item-unscoped-content.mdc-list-item__secondary-text {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
 }

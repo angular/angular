@@ -4,7 +4,7 @@
   into a template since we use it in multiple places.
 -->
 <ng-template #icons>
-  <ng-content select="[mat-list-avatar],[matListAvatar],[mat-list-icon],[matListIcon]">
+  <ng-content select="[matListItemAvatar],[matListItemIcon]">
   </ng-content>
 </ng-template>
 
@@ -36,8 +36,13 @@
 </ng-template>
 
 <!-- Text -->
-<span class="mdc-list-item__content" #text>
-  <ng-content></ng-content>
+<span class="mdc-list-item__content">
+  <ng-content select="[matListItemTitle]"></ng-content>
+  <ng-content select="[matListItemLine]"></ng-content>
+  <span #unscopedContent class="mat-mdc-list-item-unscoped-content"
+        (cdkObserveContent)="_updateItemLines(true)">
+    <ng-content></ng-content>
+  </span>
 </span>
 
 <!-- Container for the checkbox at the end. -->

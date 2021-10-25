@@ -27,10 +27,10 @@ export class MdcListDemo {
 
   messages: {from: string; subject: string; message: string; image: string}[] = [
     {
-      from: 'Nancy',
+      from: 'John',
       subject: 'Brunch?',
       message: 'Did you want to go on Sunday? I was thinking that might work.',
-      image: 'https://angular.io/generated/images/bios/cindygreenekaplan.jpg',
+      image: 'https://angular.io/generated/images/bios/devversion.jpg',
     },
     {
       from: 'Mary',
@@ -49,6 +49,7 @@ export class MdcListDemo {
   links: {name: string}[] = [{name: 'Inbox'}, {name: 'Outbox'}, {name: 'Spam'}, {name: 'Trash'}];
 
   thirdLine = false;
+  showBoxes = false;
   infoClicked = false;
   selectionListDisabled = false;
   selectionListRippleDisabled = false;

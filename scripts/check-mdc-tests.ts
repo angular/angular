@@ -91,7 +91,7 @@ function getTestNames(files: string[]): string[] {
       if (
         ts.isCallExpression(node) &&
         ts.isIdentifier(node.expression) &&
-        node.expression.text === 'it'
+        (node.expression.text === 'it' || node.expression.text === 'xit')
       ) {
         // Note that this is a little naive since it'll take the literal text of the test
         // name expression which could include things like string concatenation. It's fine

@@ -100,13 +100,11 @@ export const config = {
       'should not change focus when pressing HOME with a modifier key',
       'should not change focus when pressing END with a modifier key',
 
-      // MDC does not support the common CTRL + A keyboard shortcut.
-      // Tracked with: https://github.com/material-components/material-components-web/issues/6366
-      'should select all items using ctrl + a',
-      'should not select disabled items when pressing ctrl + a',
-      'should select all items using ctrl + a if some items are selected',
-      'should deselect all with ctrl + a if all options are selected',
-      'should dispatch the selectionChange event when selecting via ctrl + a',
+      // The indirect descendant test scenario never worked (even in the non-MDC list) and
+      // therefore this test has been removed.
+      'should pick up indirect descendant lines',
+      // MDC-based list does not support more than three lines.
+      'should apply a particular class to lists with more than 3 lines',
     ],
     'mdc-progress-bar': [
       // These tests are verifying implementation details that are not relevant for MDC.

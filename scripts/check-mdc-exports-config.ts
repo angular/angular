@@ -5,6 +5,18 @@ export const config = {
   // Exclude them from this check since they aren't part of the public API.
   skippedSymbols: [/^_/],
   skippedExports: {
+    'mdc-core': [
+      // The line directive is not used by the MDC-based list and therefore does
+      // not need to be re-exposed.
+      'MatLine',
+      'MatLineModule',
+    ],
+    'mdc-list': [
+      // These classes are docs-private and have actual public classes in the
+      // MDC-based list, such as `MatListItemIcon` or `MatListItemAvatar`.
+      'MatListAvatarCssMatStyler',
+      'MatListIconCssMatStyler',
+    ],
     'mdc-chips': [
       // These components haven't been implemented for MDC due to a different accessibility pattern.
       'MatChipListChange',

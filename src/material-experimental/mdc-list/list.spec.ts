@@ -26,7 +26,6 @@ describe('MDC-based MatList', () => {
           NavListWithOneAnchorItem,
           ActionListWithoutType,
           ActionListWithType,
-          ListWithIndirectDescendantLines,
           ListWithDisabledItems,
         ],
       });
@@ -41,7 +40,6 @@ describe('MDC-based MatList', () => {
     fixture.detectChanges();
     expect(listItem.nativeElement.classList).toContain('mat-mdc-list-item');
     expect(listItem.nativeElement.classList).toContain('mdc-list-item');
-    expect(listItem.nativeElement.classList).toContain('mat-mdc-list-item-single-line');
     expect(listItem.nativeElement.classList).toContain('mdc-list-item--with-one-line');
   });
 
@@ -50,8 +48,7 @@ describe('MDC-based MatList', () => {
     fixture.detectChanges();
 
     const listItems = fixture.debugElement.children[0].queryAll(By.css('mat-list-item'));
-    expect(listItems[0].nativeElement.className).toContain('mat-mdc-2-line');
-    expect(listItems[1].nativeElement.className).toContain('mat-mdc-2-line');
+    expect(listItems[0].nativeElement.className).toContain('mdc-list-item--with-two-lines');
   });
 
   it('should apply a particular class to lists with three lines', () => {
@@ -59,17 +56,7 @@ describe('MDC-based MatList', () => {
     fixture.detectChanges();
 
     const listItems = fixture.debugElement.children[0].queryAll(By.css('mat-list-item'));
-    expect(listItems[0].nativeElement.className).toContain('mat-mdc-3-line');
-    expect(listItems[1].nativeElement.className).toContain('mat-mdc-3-line');
-  });
-
-  it('should apply a particular class to lists with more than 3 lines', () => {
-    const fixture = TestBed.createComponent(ListWithManyLines);
-    fixture.detectChanges();
-
-    const listItems = fixture.debugElement.children[0].queryAll(By.css('mat-list-item'));
-    expect(listItems[0].nativeElement.className).toContain('mat-mdc-multi-line');
-    expect(listItems[1].nativeElement.className).toContain('mat-mdc-multi-line');
+    expect(listItems[0].nativeElement.className).toContain('mdc-list-item--with-three-lines');
   });
 
   it('should apply a class to list items with avatars', () => {
@@ -110,13 +97,11 @@ describe('MDC-based MatList', () => {
 
     const listItem = fixture.debugElement.children[0].query(By.css('mat-list-item'))!;
     expect(listItem.nativeElement.classList).toContain('mdc-list-item--with-two-lines');
-    expect(listItem.nativeElement.classList).toContain('mat-mdc-2-line');
     expect(listItem.nativeElement.classList).toContain('mat-mdc-list-item');
     expect(listItem.nativeElement.classList).toContain('mdc-list-item');
 
     fixture.debugElement.componentInstance.showThirdLine = true;
     fixture.detectChanges();
-    expect(listItem.nativeElement.className).toContain('mat-mdc-3-line');
     expect(listItem.nativeElement.className).toContain('mdc-list-item--with-three-lines');
   });
 
@@ -309,15 +294,6 @@ describe('MDC-based MatList', () => {
       .toBe(0);
   }));
 
-  it('should pick up indirect descendant lines', () => {
-    const fixture = TestBed.createComponent(ListWithIndirectDescendantLines);
-    fixture.detectChanges();
-
-    const listItems = fixture.debugElement.children[0].queryAll(By.css('mat-list-item'));
-    expect(listItems[0].nativeElement.className).toContain('mat-mdc-2-line');
-    expect(listItems[1].nativeElement.className).toContain('mat-mdc-2-line');
-  });
-
   it('should be able to disable a single list item', () => {
     const fixture = TestBed.createComponent(ListWithDisabledItems);
     const listItems: HTMLElement[] = Array.from(
@@ -435,8 +411,8 @@ class ListWithOneItem extends BaseTestList {}
   <mat-list>
     <mat-list-item *ngFor="let item of items">
       <img src="">
-      <h3 mat-line>{{item.name}}</h3>
-      <p mat-line>{{item.description}}</p>
+      <h3 matListItemTitle>{{item.name}}</h3>
+      <p matListItemLine>{{item.description}}</p>
     </mat-list-item>
   </mat-list>`,
 })
@@ -446,9 +422,9 @@ class ListWithTwoLineItem extends BaseTestList {}
   template: `
   <mat-list>
     <mat-list-item *ngFor="let item of items">
-      <h3 mat-line>{{item.name}}</h3>
-      <p mat-line>{{item.description}}</p>
-      <p mat-line>Some other text</p>
+      <h3 matListItemTitle>{{item.name}}</h3>
+      <p matListItemLine>{{item.description}}</p>
+      <p matListItemLine>Some other text</p>
     </mat-list-item>
   </mat-list>`,
 })
@@ -458,10 +434,10 @@ class ListWithThreeLineItem extends BaseTestList {}
   template: `
   <mat-list>
     <mat-list-item *ngFor="let item of items">
-      <h3 mat-line>Line 1</h3>
-      <p mat-line>Line 2</p>
-      <p mat-line>Line 3</p>
-      <p mat-line>Line 4</p>
+      <h3 matListItemTitle>Line 1</h3>
+      <p matListItemLine>Line 2</p>
+      <p matListItemLine>Line 3</p>
+      <p matListItemLine>Line 4</p>
     </mat-list-item>
   </mat-list>`,
 })
@@ -471,7 +447,7 @@ class ListWithManyLines extends BaseTestList {}
   template: `
   <mat-list>
     <mat-list-item>
-      <img src="" mat-list-avatar>
+      <img src="" matListItemAvatar>
       Paprika
     </mat-list-item>
     <mat-list-item>
@@ -485,8 +461,8 @@ class ListWithAvatar extends BaseTestList {}
   template: `
   <mat-list>
     <mat-list-item class="test-class" *ngFor="let item of items">
-      <h3 mat-line>{{item.name}}</h3>
-      <p mat-line>{{item.description}}</p>
+      <h3 matListItemTitle>{{item.name}}</h3>
+      <p matListItemLine>{{item.description}}</p>
     </mat-list-item>
   </mat-list>`,
 })
@@ -496,9 +472,9 @@ class ListWithItemWithCssClass extends BaseTestList {}
   template: `
   <mat-list>
     <mat-list-item *ngFor="let item of items">
-      <h3 mat-line>{{item.name}}</h3>
-      <p mat-line>{{item.description}}</p>
-      <p mat-line *ngIf="showThirdLine">Some other text</p>
+      <h3 matListItemTitle>{{item.name}}</h3>
+      <p matListItemLine>{{item.description}}</p>
+      <p matListItemLine *ngIf="showThirdLine">Some other text</p>
     </mat-list-item>
   </mat-list>`,
 })
@@ -513,20 +489,6 @@ class ListWithDynamicNumberOfLines extends BaseTestList {}
   </mat-list>`,
 })
 class ListWithMultipleItems extends BaseTestList {}
-
-// Note the blank `ngSwitch` which we need in order to hit the bug that we're testing.
-@Component({
-  template: `
-  <mat-list>
-    <mat-list-item *ngFor="let item of items">
-      <ng-container [ngSwitch]="true">
-        <h3 mat-line>{{item.name}}</h3>
-        <p mat-line>{{item.description}}</p>
-      </ng-container>
-    </mat-list-item>
-  </mat-list>`,
-})
-class ListWithIndirectDescendantLines extends BaseTestList {}
 
 @Component({
   template: `

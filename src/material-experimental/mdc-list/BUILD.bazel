@@ -26,6 +26,7 @@ ng_module(
     deps = [
         "//src:dev_mode_types",
         "//src/cdk/collections",
+        "//src/cdk/observers",
         "//src/material-experimental/mdc-core",
         "//src/material/divider",
         "//src/material/list",

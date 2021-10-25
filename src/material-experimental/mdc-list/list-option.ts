@@ -29,7 +29,6 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {
-  MatLine,
   MAT_RIPPLE_GLOBAL_OPTIONS,
   RippleGlobalOptions,
   ThemePalette,
@@ -37,6 +36,7 @@ import {
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {MatListBase, MatListItemBase} from './list-base';
 import {LIST_OPTION, ListOption, MatListOptionCheckboxPosition} from './list-option-types';
+import {MatListItemLine, MatListItemTitle} from './list-item-sections';
 
 /**
  * Injection token that can be used to reference instances of an `SelectionList`. It serves
@@ -94,11 +94,10 @@ export interface SelectionList extends MatListBase {
   ],
 })
 export class MatListOption extends MatListItemBase implements ListOption, OnInit, OnDestroy {
-  /**
-   * This is set to true after the first OnChanges cycle so we don't
-   * clear the value of `selected` in the first cycle.
-   */
-  private _inputsInitialized = false;
+  @ContentChildren(MatListItemLine, {descendants: true}) _lines: QueryList<MatListItemLine>;
+  @ContentChildren(MatListItemTitle, {descendants: true}) _titles: QueryList<MatListItemTitle>;
+  @ViewChild('unscopedContent') _unscopedContent: ElementRef<HTMLSpanElement>;
+  @ViewChild('text') _itemText: ElementRef<HTMLElement>;
 
   /**
    * Emits when the selected state of the option has changed.
@@ -107,12 +106,6 @@ export class MatListOption extends MatListItemBase implements ListOption, OnInit
    */
   @Output()
   readonly selectedChange: EventEmitter<boolean> = new EventEmitter<boolean>();
-
-  @ViewChild('text') _itemText: ElementRef<HTMLElement>;
-
-  @ContentChildren(MatLine, {read: ElementRef, descendants: true}) lines: QueryList<
-    ElementRef<Element>
-  >;
 
   /** Whether the label should appear before or after the checkbox. Defaults to 'after' */
   @Input() checkboxPosition: MatListOptionCheckboxPosition = 'after';
@@ -158,6 +151,12 @@ export class MatListOption extends MatListItemBase implements ListOption, OnInit
     }
   }
   private _selected = false;
+
+  /**
+   * This is set to true after the first OnChanges cycle so we don't
+   * clear the value of `selected` in the first cycle.
+   */
+  private _inputsInitialized = false;
 
   constructor(
     element: ElementRef,

@@ -50,7 +50,6 @@ describe('MDC-based MatSelectionList without forms', () => {
             SelectionListWithOnlyOneOption,
             SelectionListWithIndirectChildOptions,
             SelectionListWithSelectedOptionAndValue,
-            SelectionListWithIndirectDescendantLines,
           ],
         });
 
@@ -361,6 +360,94 @@ describe('MDC-based MatSelectionList without forms', () => {
       expect(event.defaultPrevented).toBe(true);
     });
 
+    it('should select all items using ctrl + a', () => {
+      listOptions.forEach(option => (option.componentInstance.disabled = false));
+      fixture.detectChanges();
+
+      expect(listOptions.some(option => option.componentInstance.selected)).toBe(false);
+
+      listOptions[2].nativeElement.focus();
+      dispatchKeyboardEvent(listOptions[2].nativeElement, 'keydown', A, 'A', {control: true});
+      fixture.detectChanges();
+
+      expect(listOptions.every(option => option.componentInstance.selected)).toBe(true);
+    });
+
+    it('should not select disabled items when pressing ctrl + a', () => {
+      listOptions.slice(0, 2).forEach(option => (option.componentInstance.disabled = true));
+      fixture.detectChanges();
+
+      expect(listOptions.map(option => option.componentInstance.selected)).toEqual([
+        false,
+        false,
+        false,
+        false,
+        false,
+      ]);
+
+      listOptions[3].nativeElement.focus();
+      dispatchKeyboardEvent(listOptions[3].nativeElement, 'keydown', A, 'A', {control: true});
+      fixture.detectChanges();
+
+      expect(listOptions.map(option => option.componentInstance.selected)).toEqual([
+        false,
+        false,
+        true,
+        true,
+        true,
+      ]);
+    });
+
+    it('should select all items using ctrl + a if some items are selected', () => {
+      listOptions.slice(0, 2).forEach(option => (option.componentInstance.selected = true));
+      fixture.detectChanges();
+
+      expect(listOptions.some(option => option.componentInstance.selected)).toBe(true);
+
+      listOptions[2].nativeElement.focus();
+      dispatchKeyboardEvent(listOptions[2].nativeElement, 'keydown', A, 'A', {control: true});
+      fixture.detectChanges();
+
+      expect(listOptions.every(option => option.componentInstance.selected)).toBe(true);
+    });
+
+    it('should deselect all with ctrl + a if all options are selected', () => {
+      listOptions.forEach(option => (option.componentInstance.selected = true));
+      fixture.detectChanges();
+
+      expect(listOptions.every(option => option.componentInstance.selected)).toBe(true);
+
+      listOptions[2].nativeElement.focus();
+      dispatchKeyboardEvent(listOptions[2].nativeElement, 'keydown', A, 'A', {control: true});
+      fixture.detectChanges();
+
+      expect(listOptions.every(option => option.componentInstance.selected)).toBe(false);
+    });
+
+    // This is temporarily disabled as the MDC list does not emit a proper event when
+    // items are interactively toggled with e.g. `CTRL + A`.
+    // TODO(devversion): look more into this. MDC does not expose an `onChange` adapter
+    // function. Authors are required to emit a change event on checkbox/radio change, but
+    // that is not an viable option for us since we also allow for programmatic selection updates.
+    // https://github.com/material-components/material-components-web/blob/a986df922b6b4c1ef5c59925107281d1d40287a8/packages/mdc-list/component.ts#L300-L308.
+    // tslint:disable-next-line:ban
+    xit('should dispatch the selectionChange event when selecting via ctrl + a', () => {
+      const spy = spyOn(fixture.componentInstance, 'onSelectionChange');
+      listOptions.forEach(option => (option.componentInstance.disabled = false));
+      fixture.detectChanges();
+
+      listOptions[2].nativeElement.focus();
+      dispatchKeyboardEvent(listOptions[2].nativeElement, 'keydown', A, 'A', {control: true});
+      fixture.detectChanges();
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          options: listOptions.map(option => option.componentInstance),
+        }),
+      );
+    });
+
     it('should be able to jump focus down to an item by typing', fakeAsync(() => {
       const firstOption = listOptions[0].nativeElement;
 
@@ -564,14 +651,6 @@ describe('MDC-based MatSelectionList without forms', () => {
       const listItemEl = componentFixture.debugElement.query(By.directive(MatListOption))!;
       expect(listItemEl.componentInstance.selected).toBe(true);
       expect(listItemEl.componentInstance.value).toBe(componentFixture.componentInstance.itemValue);
-    });
-
-    it('should pick up indirect descendant lines', () => {
-      const componentFixture = TestBed.createComponent(SelectionListWithIndirectDescendantLines);
-      componentFixture.detectChanges();
-
-      const option = componentFixture.nativeElement.querySelector('mat-list-option');
-      expect(option.classList).toContain('mat-mdc-2-line');
     });
 
     it('should have a focus indicator', () => {
@@ -814,7 +893,7 @@ describe('MDC-based MatSelectionList without forms', () => {
      * ensures no avatar is shown at the specified position.
      */
     function expectIconAt(item: HTMLElement, position: 'before' | 'after') {
-      const icon = item.querySelector('.mat-mdc-list-icon')!;
+      const icon = item.querySelector('.mat-mdc-list-item-icon')!;
 
       expect(item.classList).not.toContain('mdc-list-item--with-leading-avatar');
       expect(item.classList).not.toContain('mat-mdc-list-option-with-trailing-avatar');
@@ -835,7 +914,7 @@ describe('MDC-based MatSelectionList without forms', () => {
      * ensures that no icon is shown at the specified position.
      */
     function expectAvatarAt(item: HTMLElement, position: 'before' | 'after') {
-      const avatar = item.querySelector('.mat-mdc-list-avatar')!;
+      const avatar = item.querySelector('.mat-mdc-list-item-avatar')!;
 
       expect(item.classList).not.toContain('mdc-list-item--with-leading-icon');
       expect(item.classList).not.toContain('mdc-list-item--with-trailing-icon');
@@ -1733,7 +1812,7 @@ class SelectionListWithCustomComparator {
   template: `
     <mat-selection-list>
       <mat-list-option [checkboxPosition]="checkboxPosition">
-        <div mat-list-avatar>I</div>
+        <div matListItemAvatar>I</div>
         Inbox
       </mat-list-option>
     </mat-selection-list>
@@ -1747,7 +1826,7 @@ class SelectionListWithAvatar {
   template: `
     <mat-selection-list>
       <mat-list-option [checkboxPosition]="checkboxPosition">
-        <div mat-list-icon>I</div>
+        <div matListItemIcon>I</div>
         Inbox
       </mat-list-option>
     </mat-selection-list>
@@ -1770,20 +1849,6 @@ class SelectionListWithIcon {
 class SelectionListWithIndirectChildOptions {
   @ViewChildren(MatListOption) optionInstances: QueryList<MatListOption>;
 }
-
-// Note the blank `ngSwitch` which we need in order to hit the bug that we're testing.
-@Component({
-  template: `
-  <mat-selection-list>
-    <mat-list-option>
-      <ng-container [ngSwitch]="true">
-        <h3 mat-line>Item</h3>
-        <p mat-line>Item description</p>
-      </ng-container>
-    </mat-list-option>
-  </mat-selection-list>`,
-})
-class SelectionListWithIndirectDescendantLines {}
 
 @Component({
   template: `

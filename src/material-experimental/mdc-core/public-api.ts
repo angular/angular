@@ -29,8 +29,6 @@ export {
   MatCommonModule,
   MatDateFormats,
   MATERIAL_SANITY_CHECKS,
-  MatLine,
-  MatLineModule,
   MatNativeDateModule,
   MatPseudoCheckbox,
   MatPseudoCheckboxModule,

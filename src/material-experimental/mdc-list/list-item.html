@@ -1,18 +1,15 @@
-<ng-content select="[mat-list-avatar],[matListAvatar],[mat-list-icon],[matListIcon]"></ng-content>
+<ng-content select="[matListItemAvatar],[matListItemIcon]"></ng-content>
 
-<!-- If lines were explicitly given, use those as the text. -->
-<ng-container *ngIf="lines.length">
-  <span class="mdc-list-item__content"><ng-content select="[mat-line],[matLine]"></ng-content></span>
-</ng-container>
-
-<!--
-  If lines were not explicitly given, assume the remaining content is the text, otherwise assume it
-  is an action that belongs in the "end" section.
--->
-<span [class.mdc-list-item__content]="!lines.length"
-      [class.mdc-list-item__end]="lines.length" #text>
-  <ng-content></ng-content>
+<span class="mdc-list-item__content">
+  <ng-content select="[matListItemTitle]"></ng-content>
+  <ng-content select="[matListItemLine]"></ng-content>
+  <span #unscopedContent class="mat-mdc-list-item-unscoped-content"
+        (cdkObserveContent)="_updateItemLines(true)">
+    <ng-content></ng-content>
+  </span>
 </span>
+
+<ng-content select="[matListItemMeta]"></ng-content>
 
 <ng-content select="mat-divider"></ng-content>
 

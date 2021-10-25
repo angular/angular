@@ -20,12 +20,12 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {
-  MatLine,
   MAT_RIPPLE_GLOBAL_OPTIONS,
   RippleGlobalOptions,
 } from '@angular/material-experimental/mdc-core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {MatListBase, MatListItemBase} from './list-base';
+import {MatListItemLine, MatListItemMeta, MatListItemTitle} from './list-item-sections';
 
 @Component({
   selector: 'mat-list',
@@ -48,11 +48,7 @@ export class MatList extends MatListBase {}
     'class': 'mat-mdc-list-item mdc-list-item',
     '[class.mdc-list-item--with-leading-avatar]': '_avatars.length !== 0',
     '[class.mdc-list-item--with-leading-icon]': '_icons.length !== 0',
-    // If there are projected lines, we project the remaining content into the `mdc-list-item__end`
-    // container. In order to make sure the container aligns properly (if there is content), we add
-    // the trailing meta class. Note that we also add this even if there is no projected `meta`
-    // content. This is because there is no good way to check for remaining projected content.
-    '[class.mdc-list-item--with-trailing-meta]': 'lines.length !== 0',
+    '[class.mdc-list-item--with-trailing-meta]': '_meta.length !== 0',
     '[class._mat-animation-noopable]': '_noopAnimations',
   },
   templateUrl: 'list-item.html',
@@ -60,9 +56,10 @@ export class MatList extends MatListBase {}
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatListItem extends MatListItemBase {
-  @ContentChildren(MatLine, {read: ElementRef, descendants: true}) lines: QueryList<
-    ElementRef<Element>
-  >;
+  @ContentChildren(MatListItemLine, {descendants: true}) _lines: QueryList<MatListItemLine>;
+  @ContentChildren(MatListItemTitle, {descendants: true}) _titles: QueryList<MatListItemTitle>;
+  @ContentChildren(MatListItemMeta, {descendants: true}) _meta: QueryList<MatListItemMeta>;
+  @ViewChild('unscopedContent') _unscopedContent: ElementRef<HTMLSpanElement>;
   @ViewChild('text') _itemText: ElementRef<HTMLElement>;
 
   constructor(

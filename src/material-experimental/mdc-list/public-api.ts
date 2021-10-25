@@ -12,7 +12,9 @@ export * from './module';
 export * from './nav-list';
 export * from './selection-list';
 export * from './list-option';
-export * from './list-styling';
+export * from './subheader';
+export * from './list-item-sections';
+
 export {MatListOptionCheckboxPosition} from './list-option-types';
 export {MatListOption} from './list-option';
 
