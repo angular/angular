@@ -14,7 +14,7 @@ import {Declaration, DeclarationKind, Import} from '../../../src/ngtsc/reflectio
 import {BundleProgram} from '../packages/bundle_program';
 import {FactoryMap, isDefined} from '../utils';
 
-import {DefinePropertyReexportStatement, ExportDeclaration, ExportsStatement, extractGetterFnExpression, findNamespaceOfIdentifier, findRequireCallReference, isDefinePropertyReexportStatement, isExportsAssignment, isExportsStatement, isExternalImport, isRequireCall, isWildcardReexportStatement, RequireCall, skipAliases, WildcardReexportStatement} from './commonjs_umd_utils';
+import {DefinePropertyReexportStatement, ExportDeclaration, ExportsStatement, extractGetterFnExpression, findNamespaceOfIdentifier, findRequireCallReference, getExportsDeclarationName, isDefinePropertyReexportStatement, isExportsAssignment, isExportsStatement, isExternalImport, isRequireCall, isWildcardReexportStatement, RequireCall, skipAliases, WildcardReexportStatement} from './commonjs_umd_utils';
 import {getInnerClassDeclaration, getOuterNodeFromInnerDeclaration} from './esm2015_host';
 import {Esm5ReflectionHost} from './esm5_host';
 import {NgccClassSymbol} from './ngcc_host';
@@ -127,7 +127,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
       known: null,
       viaModule: null,
     };
-    return {name: node.name.text, declaration};
+    return {name: getExportsDeclarationName(node), declaration};
   }
 
   private extractCommonJsWildcardReexports(

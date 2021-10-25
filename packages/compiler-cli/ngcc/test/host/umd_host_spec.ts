@@ -102,8 +102,10 @@ runInEachFileSystem(() => {
        * Select a predicate for matching an exported declaration based on whether the code contains
        * "exported vars" or "inline exports".
        */
-      const isDesiredDeclaration: typeof hasNameIdentifier =
-          mode === 'exported vars' ? isNamedVariableDeclaration : isExportsDeclaration;
+      const isDesiredDeclaration: typeof hasNameIdentifier = mode === 'exported vars' ?
+          isNamedVariableDeclaration :
+          (node => ts.isPropertyAccessExpression(node) && isExportsDeclaration(node)) as
+              typeof hasNameIdentifier;
 
       beforeEach(() => {
         _ = absoluteFrom;

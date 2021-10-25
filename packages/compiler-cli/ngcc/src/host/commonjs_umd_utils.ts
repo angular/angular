@@ -217,24 +217,40 @@ export function isExternalImport(path: string): boolean {
 }
 
 /**
- * A UMD/CommonJS style export declaration of the form `exports.<name>`.
+ * A UMD/CommonJS style export declaration of the form `exports.<name>` or `exports['<name>']`.
  */
-export interface ExportsDeclaration extends ts.PropertyAccessExpression {
+export interface ExportsDeclarationViaElementAccess extends ts.ElementAccessExpression {
+  argumentExpression: ts.StringLiteral;
+  expression: ts.Identifier;
+  parent: ExportsAssignment;
+}
+export interface ExportsDeclarationViaPropertyAccess extends ts.PropertyAccessExpression {
   name: ts.Identifier;
   expression: ts.Identifier;
   parent: ExportsAssignment;
 }
+export type ExportsDeclaration =
+    ExportsDeclarationViaElementAccess|ExportsDeclarationViaPropertyAccess;
 
 /**
- * Check whether the specified `node` is a property access expression of the form
- * `exports.<foo>`.
+ * Check whether the specified `node` is a property or element access expression of the form
+ * `exports.<foo>`/`exports['<foo>'].
  */
 export function isExportsDeclaration(expr: ts.Node): expr is ExportsDeclaration {
   return expr.parent && isExportsAssignment(expr.parent);
 }
 
 /**
- * A UMD/CommonJS style export assignment of the form `exports.<foo> = <bar>`.
+ * Return the name of an `ExportsDeclaration` (i.e. return `<foo>` from an expression of the form
+ * `exports.<foo>` or `exports['<foo>'].
+ */
+export function getExportsDeclarationName(expr: ExportsDeclaration): string {
+  return ts.isPropertyAccessExpression(expr) ? expr.name.text : expr.argumentExpression.text;
+}
+
+/**
+ * A UMD/CommonJS style export assignment of the form `exports.<foo> = <bar>` or
+ * `exports['<foo>'] = <bar>`.
  */
 export interface ExportsAssignment extends ts.BinaryExpression {
   left: ExportsDeclaration;
@@ -242,16 +258,28 @@ export interface ExportsAssignment extends ts.BinaryExpression {
 
 /**
  * Check whether the specified `node` is an assignment expression of the form
- * `exports.<foo> = <bar>`.
+ * `exports.<foo> = <bar>` or `exports['<foo>'] = <bar>`.
  */
 export function isExportsAssignment(expr: ts.Node): expr is ExportsAssignment {
-  return isAssignment(expr) && ts.isPropertyAccessExpression(expr.left) &&
-      ts.isIdentifier(expr.left.expression) && expr.left.expression.text === 'exports' &&
-      ts.isIdentifier(expr.left.name);
+  if (!isAssignment(expr)) {
+    return false;
+  }
+
+  if (ts.isPropertyAccessExpression(expr.left)) {
+    return ts.isIdentifier(expr.left.expression) && expr.left.expression.text === 'exports' &&
+        ts.isIdentifier(expr.left.name);
+  }
+
+  if (ts.isElementAccessExpression(expr.left)) {
+    return ts.isIdentifier(expr.left.expression) && expr.left.expression.text === 'exports' &&
+        ts.isStringLiteral(expr.left.argumentExpression);
+  }
+
+  return false;
 }
 
 /**
- * An expression statement of the form `exports.<foo> = <bar>;`.
+ * An expression statement of the form `exports.<foo> = <bar>;` or `exports['<foo>'] = <bar>;`.
  */
 export interface ExportsStatement extends ts.ExpressionStatement {
   expression: ExportsAssignment;
@@ -259,7 +287,7 @@ export interface ExportsStatement extends ts.ExpressionStatement {
 
 /**
  * Check whether the specified `stmt` is an expression statement of the form
- * `exports.<foo> = <bar>;`.
+ * `exports.<foo> = <bar>;` or `exports['<foo>'] = <bar>;`.
  */
 export function isExportsStatement(stmt: ts.Node): stmt is ExportsStatement {
   return ts.isExpressionStatement(stmt) && isExportsAssignment(stmt.expression);

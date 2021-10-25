@@ -12,9 +12,9 @@ import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
 import {Declaration, DeclarationKind, Import, isNamedFunctionDeclaration} from '../../../src/ngtsc/reflection';
 import {BundleProgram} from '../packages/bundle_program';
-import {FactoryMap, getTsHelperFnFromIdentifier, stripExtension} from '../utils';
+import {FactoryMap, getTsHelperFnFromIdentifier, hasNameIdentifier, stripExtension} from '../utils';
 
-import {DefinePropertyReexportStatement, ExportDeclaration, ExportsStatement, extractGetterFnExpression, findNamespaceOfIdentifier, findRequireCallReference, isDefinePropertyReexportStatement, isExportsAssignment, isExportsDeclaration, isExportsStatement, isExternalImport, isRequireCall, isWildcardReexportStatement, skipAliases, WildcardReexportStatement} from './commonjs_umd_utils';
+import {DefinePropertyReexportStatement, ExportDeclaration, ExportsStatement, extractGetterFnExpression, findNamespaceOfIdentifier, findRequireCallReference, getExportsDeclarationName, isDefinePropertyReexportStatement, isExportsAssignment, isExportsDeclaration, isExportsStatement, isExternalImport, isRequireCall, isWildcardReexportStatement, skipAliases, WildcardReexportStatement} from './commonjs_umd_utils';
 import {getInnerClassDeclaration, getOuterNodeFromInnerDeclaration, isAssignment} from './esm2015_host';
 import {Esm5ReflectionHost} from './esm5_host';
 import {NgccClassSymbol} from './ngcc_host';
@@ -136,7 +136,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     }
 
     const innerDeclaration = getInnerClassDeclaration(initializer);
-    if (innerDeclaration !== null) {
+    if (innerDeclaration !== null && hasNameIdentifier(declaration)) {
       return this.createClassSymbol(declaration.name, innerDeclaration);
     }
 
@@ -156,7 +156,8 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     }
 
     const outerNode = getOuterNodeFromInnerDeclaration(declaration);
-    if (outerNode === null || !isExportsAssignment(outerNode)) {
+    if (outerNode === null || !isExportsAssignment(outerNode) ||
+        !hasNameIdentifier(outerNode.left)) {
       return undefined;
     }
 
@@ -276,7 +277,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
   }
 
   private extractBasicUmdExportDeclaration(statement: ExportsStatement): ExportDeclaration {
-    const name = statement.expression.left.name.text;
+    const name = getExportsDeclarationName(statement.expression.left);
     const exportExpression = skipAliases(statement.expression.right);
     const declaration = this.getDeclarationOfExpression(exportExpression) ?? {
       kind: DeclarationKind.Inline,
