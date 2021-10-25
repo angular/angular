@@ -1,5 +1,105 @@
 {
   "schematics": {
+    "migration-v8-move-document": {
+      "version": "8.0.0-beta",
+      "description": "@DOCUMENT migration. Migrates DOCUMENT Injection token from platform-browser imports to common import.",
+      "factory": "./migrations/move-document/index"
+    },
+    "migration-v8-static-queries": {
+      "version": "8.0.0-beta",
+      "description": "ViewChild and ContentChild to explicit query timing migration. In Angular version 8, developers need to explicitly specify the timing of ViewChild and ContentChild queries. Read more about this here: https://v8.angular.io/guide/static-query-migration",
+      "factory": "./migrations/static-queries/index"
+    },
+    "migration-v8-template-local-variables": {
+      "version": "8.0.0-beta",
+      "description": "Template Variable Assignment migration. Warns developers if values are assigned to template variables.",
+      "factory": "./migrations/template-var-assignment/index"
+    },
+    "migration-v9-renderer-to-renderer2": {
+      "version": "9.0.0-beta",
+      "description": "Renderer to Renderer2 migration. As of Angular 9, the Renderer class is no longer available. Renderer2 should be used instead. Read more about this here: https://v9.angular.io/guide/migration-renderer",
+      "factory": "./migrations/renderer-to-renderer2/index"
+    },
+    "migration-v9-undecorated-classes-with-di": {
+      "version": "9.0.0-beta",
+      "description": "Undecorated classes with DI migration. As of Angular 9, it is no longer supported to use Angular DI on a class that does not have an Angular decorator. Read more about this here: https://v9.angular.io/guide/migration-undecorated-classes",
+      "factory": "./migrations/undecorated-classes-with-di/index"
+    },
+    "migration-v9-dynamic-queries": {
+      "version": "9-beta",
+      "description": "Static flag migration. Removes the `static` flag from dynamic queries. As of Angular 9, the \"static\" flag defaults to false and is no longer required for your view and content queries. Read more about this here: https://v9.angular.io/guide/migration-dynamic-flag",
+      "factory": "./migrations/dynamic-queries/index"
+    },
+    "migration-v10-missing-injectable": {
+      "version": "10.0.0-beta",
+      "description": "Missing @Injectable and incomplete provider definition migration. As of Angular 9, enforcement of @Injectable decorators for DI is a bit stricter and incomplete provider definitions behave differently. Read more about this here: https://v9.angular.io/guide/migration-injectable",
+      "factory": "./migrations/missing-injectable/index"
+    },
+    "migration-v10-module-with-providers": {
+      "version": "10.0.0-beta",
+      "description": "ModuleWithProviders migration. As of Angular 10, the ModuleWithProviders type requires a generic. This migration adds the generic where it is missing. Read more about this here: https://v10.angular.io/guide/migration-module-with-providers",
+      "factory": "./migrations/module-with-providers/index"
+    },
+    "migration-v10-undecorated-classes-with-decorated-fields": {
+      "version": "10.0.0-beta",
+      "description": "Undecorated classes with Angular features migration. In version 10, classes that use Angular features and do not have an Angular decorator are no longer supported. Read more about this here: https://v10.angular.io/guide/migration-undecorated-classes",
+      "factory": "./migrations/undecorated-classes-with-decorated-fields/index"
+    },
+    "migration-v11-navigation-extras-omissions": {
+      "version": "11.0.0-beta",
+      "description": "NavigationExtras omissions migration. In version 11, some unsupported properties were omitted from the `extras` parameter of the `Router.navigateByUrl` and `Router.createUrlTree` methods.",
+      "factory": "./migrations/navigation-extras-omissions/index"
+    },
+    "migration-v11-router-relative-link-resolution-default": {
+      "version": "11.0.0-beta",
+      "description": "The default value for `relativeLinkResolution` is changing from 'legacy' to 'corrected'.\nThis migration updates `RouterModule` configurations that use the default value to \nnow specifically use 'legacy' to prevent breakages when updating.",
+      "factory": "./migrations/relative-link-resolution/index"
+    },
+    "migration-v11-abstract-control-parent": {
+      "version": "11.0.0-beta",
+      "description": "In Angular version 11, the type of `AbstractControl.parent` can be `null` to reflect the runtime value more accurately. This migration automatically adds non-null assertions to existing accesses of the `parent` property on types like `FormControl`, `FormArray` and `FormGroup`.",
+      "factory": "./migrations/abstract-control-parent/index"
+    },
+    "migration-v11-native-view-encapsulation": {
+      "version": "11.0.0-beta",
+      "description": "ViewEncapsulation.Native has been removed as of Angular version 11. This migration replaces any usages with ViewEncapsulation.ShadowDom.",
+      "factory": "./migrations/native-view-encapsulation/index"
+    },
+    "migration-v11-wait-for-async": {
+      "version": "11.0.0-beta",
+      "description": "`async` to `waitForAsync` migration. The `async` testing function has been renamed to `waitForAsync` to avoid confusion with the native `async` keyword.",
+      "factory": "./migrations/wait-for-async/index"
+    },
+    "migration-v11-router-preserve-query-params": {
+      "version": "11.0.0-beta",
+      "description": "NavigationExtras.preserveQueryParams has been removed as of Angular version 11.  This migration replaces any usages with the appropriate assignment of the queryParamsHandling key.",
+      "factory": "./migrations/router-preserve-query-params/index"
+    },
+    "migration-v11-router-initial-navigation-options": {
+      "version": "11.0.0-beta",
+      "description": "Updates the `initialNavigation` property for `RouterModule.forRoot`.",
+      "factory": "./migrations/initial-navigation/index"
+    },
+    "migration-v11.1-can-activate-with-redirect-to": {
+      "version": "11.1.0-beta",
+      "description": "Removes `canActivate` from a `Route` config when `redirectTo` is also present",
+      "factory": "./migrations/can-activate-with-redirect-to/index"
+    },
+    "migration-v12-activated-route-snapshot-fragment": {
+      "version": "12.0.0-beta",
+      "description": "In Angular version 12, the type of ActivatedRouteSnapshot.fragment is nullable. This migration automatically adds non-null assertions to it.",
+      "factory": "./migrations/activated-route-snapshot-fragment/index"
+    },
+    "migration-v12-xhr-factory": {
+      "version": "12.0.0-next.6",
+      "description": "`XhrFactory` has been moved from `@angular/common/http` to `@angular/common`.",
+      "factory": "./migrations/xhr-factory/index"
+    },
+    "migration-v12-deep-shadow-piercing-selector": {
+      "version": "12.0.2",
+      "description": "Automatically migrates shadow-piercing selector from `/deep/` to the recommended alternative `::ng-deep`.",
+      "factory": "./migrations/deep-shadow-piercing-selector/index"
+    },
     "migration-v13-router-link-empty-expression": {
       "version": "13.0.0-beta",
       "description": "Migrates `[routerLink]=\"\"` in templates to `[routerLink]=\"[]\"` because these links are likely intended to route to the current page with updated fragment/query params.",
