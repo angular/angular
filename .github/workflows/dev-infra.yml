@@ -5,7 +5,7 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  commit_message_based_labels:
+  labels:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
