@@ -6,7 +6,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "my-first-app": {
+    "angular.io-example": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -110,5 +110,5 @@
       }
     }
   },
-  "defaultProject": "my-first-app"
+  "defaultProject": "angular.io-example"
 }
