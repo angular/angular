@@ -53,7 +53,7 @@ class ExampleBoilerPlate {
       // All example types other than `cli` and `systemjs` are based on `cli`. Copy over the `cli`
       // boilerplate files first.
       // (Some of these files might be later overwritten by type-specific files.)
-      if (boilerPlateType !== 'cli' && boilerPlateType !== 'systemjs' && boilerPlateType !== 'multi-project-workspace') {
+      if (boilerPlateType !== 'cli' && boilerPlateType !== 'systemjs') {
         this.copyDirectoryContents(BOILERPLATE_CLI_PATH, exampleFolder, isPathIgnored);
       }
 
