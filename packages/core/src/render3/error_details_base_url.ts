@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+// IMPORTANT: this file is patched when it's synced into g3.
+// Changing this file may cause conflicts, please update only when it's unavoidable.
+
 /**
  * Base URL for the error details page.
  *
