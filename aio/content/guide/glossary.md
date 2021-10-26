@@ -446,7 +446,7 @@ To learn more, see [Form Validation](guide/form-validation).
 
 ## immutability
 
-The ability to alter the state of a value after its creation. [Reactive forms](#reactive-forms) perform immutable changes in that
+The inability to alter the state of a value after its creation. [Reactive forms](#reactive-forms) perform immutable changes in that
 each change to the data model produces a new data model rather than modifying the existing one. [Template-driven forms](#template-driven-forms) perform mutable changes with `NgModel` and [two-way data binding](#data-binding) to modify the existing data model in place.
 
 {@a injectable}
