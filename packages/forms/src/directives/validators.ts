@@ -94,7 +94,7 @@ export interface Validator {
  * For internal use only, this class is not intended for use outside of the Forms package.
  */
 @Directive()
-abstract class AbstractValidatorDirective implements Validator {
+abstract class AbstractValidatorDirective implements Validator, OnChanges {
   private _validator: ValidatorFn = nullValidator;
   private _onChange!: () => void;
 
@@ -125,11 +125,8 @@ abstract class AbstractValidatorDirective implements Validator {
    */
   abstract normalizeInput(input: unknown): unknown;
 
-  /**
-   * Helper function invoked from child classes to process changes (from `ngOnChanges` hook).
-   * @nodoc
-   */
-  handleChanges(changes: SimpleChanges): void {
+  /** @nodoc */
+  ngOnChanges(changes: SimpleChanges): void {
     if (this.inputName in changes) {
       const input = this.normalizeInput(changes[this.inputName].currentValue);
       this._validator = this.enabled() ? this.createValidator(input) : nullValidator;
@@ -199,7 +196,7 @@ export const MAX_VALIDATOR: StaticProvider = {
   providers: [MAX_VALIDATOR],
   host: {'[attr.max]': 'enabled() ? max : null'}
 })
-export class MaxValidator extends AbstractValidatorDirective implements OnChanges {
+export class MaxValidator extends AbstractValidatorDirective {
   /**
    * @description
    * Tracks changes to the max bound to this directive.
@@ -211,15 +208,6 @@ export class MaxValidator extends AbstractValidatorDirective implements OnChange
   override normalizeInput = (input: string|number): number => toFloat(input);
   /** @internal */
   override createValidator = (max: number): ValidatorFn => maxValidator(max);
-  /**
-   * Declare `ngOnChanges` lifecycle hook at the main directive level (vs keeping it in base class)
-   * to avoid differences in handling inheritance of lifecycle hooks between Ivy and ViewEngine in
-   * AOT mode. This could be refactored once ViewEngine is removed.
-   * @nodoc
-   */
-  ngOnChanges(changes: SimpleChanges): void {
-    this.handleChanges(changes);
-  }
 }
 
 /**
@@ -259,7 +247,7 @@ export const MIN_VALIDATOR: StaticProvider = {
   providers: [MIN_VALIDATOR],
   host: {'[attr.min]': 'enabled() ? min : null'}
 })
-export class MinValidator extends AbstractValidatorDirective implements OnChanges {
+export class MinValidator extends AbstractValidatorDirective {
   /**
    * @description
    * Tracks changes to the min bound to this directive.
@@ -271,15 +259,6 @@ export class MinValidator extends AbstractValidatorDirective implements OnChange
   override normalizeInput = (input: string|number): number => toFloat(input);
   /** @internal */
   override createValidator = (min: number): ValidatorFn => minValidator(min);
-  /**
-   * Declare `ngOnChanges` lifecycle hook at the main directive level (vs keeping it in base class)
-   * to avoid differences in handling inheritance of lifecycle hooks between Ivy and ViewEngine in
-   * AOT mode. This could be refactored once ViewEngine is removed.
-   * @nodoc
-   */
-  ngOnChanges(changes: SimpleChanges): void {
-    this.handleChanges(changes);
-  }
 }
 
 /**
@@ -572,12 +551,13 @@ export const MIN_LENGTH_VALIDATOR: any = {
   providers: [MIN_LENGTH_VALIDATOR],
   host: {'[attr.minlength]': 'enabled() ? minlength : null'}
 })
-export class MinLengthValidator extends AbstractValidatorDirective implements OnChanges {
+export class MinLengthValidator extends AbstractValidatorDirective {
   /**
    * @description
    * Tracks changes to the minimum length bound to this directive.
    */
   @Input() minlength!: string|number|null;
+
   /** @internal */
   override inputName = 'minlength';
 
@@ -586,11 +566,6 @@ export class MinLengthValidator extends AbstractValidatorDirective implements On
 
   /** @internal */
   override createValidator = (minlength: number): ValidatorFn => minLengthValidator(minlength);
-
-  /** @nodoc */
-  ngOnChanges(changes: SimpleChanges): void {
-    this.handleChanges(changes);
-  }
 }
 
 /**
@@ -629,12 +604,13 @@ export const MAX_LENGTH_VALIDATOR: any = {
   providers: [MAX_LENGTH_VALIDATOR],
   host: {'[attr.maxlength]': 'enabled() ? maxlength : null'}
 })
-export class MaxLengthValidator extends AbstractValidatorDirective implements OnChanges {
+export class MaxLengthValidator extends AbstractValidatorDirective {
   /**
    * @description
    * Tracks changes to the minimum length bound to this directive.
    */
   @Input() maxlength!: string|number|null;
+
   /** @internal */
   override inputName = 'maxlength';
 
@@ -643,11 +619,6 @@ export class MaxLengthValidator extends AbstractValidatorDirective implements On
 
   /** @internal */
   override createValidator = (maxlength: number): ValidatorFn => maxLengthValidator(maxlength);
-
-  /** @nodoc */
-  ngOnChanges(changes: SimpleChanges): void {
-    this.handleChanges(changes);
-  }
 }
 
 /**
