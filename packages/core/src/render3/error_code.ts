@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ERROR_DETAILS_PAGE_BASE_URL} from './error_details_base_url';
+// Base URL for the error details page.
+// Keep this value in sync with a similar const in
+// `packages/compiler-cli/src/ngtsc/diagnostics/src/docs.ts`.
+const ERROR_DETAILS_PAGE_BASE_URL = 'https://angular.io/errors';
 
 export const enum RuntimeErrorCode {
   // Internal Errors
