@@ -9,9 +9,11 @@
 import {Replacement, RuleFailure, Rules} from 'tslint';
 import ts from 'typescript';
 
-import {findAsyncReferences} from '../../migrations/wait-for-async/util';
 import {getImportSpecifier, replaceImport} from '../../utils/typescript/imports';
 import {closestNode} from '../../utils/typescript/nodes';
+import {isReferenceToImport} from '../../utils/typescript/symbol';
+
+// This rule is also used inside of Google by Typescript linting.
 
 /** Name of the deprecated function that we're removing. */
 const deprecatedFunction = 'async';
@@ -34,8 +36,8 @@ export class Rule extends Rules.TypedRule {
       const typeChecker = program.getTypeChecker();
       const printer = ts.createPrinter();
       failures.push(this._getNamedImportsFailure(asyncImport, sourceFile, printer));
-      findAsyncReferences(sourceFile, typeChecker, asyncImportSpecifier)
-          .forEach(node => failures.push(this._getIdentifierNodeFailure(node, sourceFile)));
+      this.findAsyncReferences(sourceFile, typeChecker, asyncImportSpecifier)
+          .forEach((node) => failures.push(this._getIdentifierNodeFailure(node, sourceFile)));
     }
 
     return failures;
@@ -61,5 +63,23 @@ export class Rule extends Rules.TypedRule {
         `References to the deprecated ${deprecatedFunction} function are not allowed. Use ${
             newFunction} instead.`,
         this.ruleName, new Replacement(node.getStart(), node.getWidth(), newFunction));
+  }
+
+  /** Finds calls to the `async` function. */
+  private findAsyncReferences(
+      sourceFile: ts.SourceFile, typeChecker: ts.TypeChecker,
+      asyncImportSpecifier: ts.ImportSpecifier) {
+    const results = new Set<ts.Identifier>();
+    ts.forEachChild(sourceFile, function visitNode(node: ts.Node) {
+      if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) &&
+          node.expression.text === deprecatedFunction &&
+          isReferenceToImport(typeChecker, node.expression, asyncImportSpecifier)) {
+        results.add(node.expression);
+      }
+
+      ts.forEachChild(node, visitNode);
+    });
+
+    return results;
   }
 }
