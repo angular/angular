@@ -14,21 +14,95 @@ For information about the deprecation and removal practices of Angular, see [Ang
 
 </div>
 
-*   <!--todo: add content from ng team -->
+*   **Removal of ViewEngine**
+
+    Requires all applications and libraries to build using Ivy.
+
+*   **Removal of IE11 Support**
+
+    Removes all support for Microsoft Internet Explorer 11 \(IE11\).
+
+*   **Testbed module teardown**
+
+    Adds the option in `initTestEnvironment` to completely remove test environments from an application.
+
+*   **Factory-less `Component` and `NgModule` APIs**
+
+    Removes the need for the `ComponentFactoryResolver` API.
+
+*   **`$localize` tagged message strings**
+
+    Adds documentation for the Angular `$localize` API and tagged message strings.
+
+*   **Disk Cache**
+
+    Enables the persistent build cache by default for all applications.
 
 ### Breaking changes in Angular version 13
 
 {@a breaking-changes}
 
-*   <!--todo: add content from ng team -->
+| PR                                     | Details                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+|:---                                    |:---                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| [43740][GithubAngularAngularPull43740] |  NodeJS versions older than `v12.20.0` are no longer supported. The Angular packages now use the NodeJS package exports feature with subpath patterns and requires a NodeJS version above `14.15.0` or `16.10.0`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| [43642][GithubAngularAngularPull43642] | TypeScript versions older than `4.4.2` are no longer supported.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| [43668][GithubAngularAngularPull43668] | The return type of `SwUpdate#activateUpdate` and `SwUpdate#checkForUpdate` changed to `Promise<boolean>`.<br />Although unlikely, this change may cause TypeScript type-checking to fail in some cases. If necessary, update your types to account for the new return type.                                                                                                                                                                                                                                                                                                                                                                                                              |
+| [43507][GithubAngularAngularPull43507] | The `WrappedValue` class is no longer imported from `@angular/core`. This change may result in compile errors or failures at runtime, if outdated libraries are used that rely on `WrappedValue`. Dependancy on `WrappedValue` should be removed since no replacement is available.                                                                                                                                                                                                                                                                                                                                                                                                      |
+| [43591][GithubAngularAngularPull43591] | It is no longer possible to use `Route.loadChildren` with a string value. The following supporting classes were removed from `@angular/core`: <ul><li><code>NgModuleFactoryLoader</code></li><li><code>SystemJsNgModuleFactoryLoader</code></li></ul> The `@angular/router` package no longer exports the following symbols: <ul><li><code>SpyNgModuleFactoryLoader</code></li><li><code>DeprecatedLoadChildren</code></li></ul> The signature of the `setupTestingRouter` function from `@angular/core/testing` was changed to drop the `NgModuleFactoryLoader` parameter, since an value for that parameter can not be created.                                                        |
+| [43496][GithubAngularAngularPull43496] | The router no longer replaces the browser URL when a new navigation cancels an ongoing navigation. The replacement of the browser URL often caused URL flicker and was only in place to support some AngularJS hybrid applications. Hybrid applications which rely on the presence of `navigationId` on each initial navigation handled by the Angular router should instead subscribe to `NavigationCancel` events and manually perform the `location.replaceState` to add `navigationId` to the Router state.<br />In addition, tests that assert `urlChanges` on the `SpyLocation` should be adjusted to account for the lack of the `replaceState` trigger.                          |
+| [41730][GithubAngularAngularPull41730] | The behavior of the `SpyLocation` used by the `RouterTestingModule` has changed to match the behavior of browsers. It no longer emits a `popstate` event when `Location.go` is called. In addition, `simulateHashChange` now triggers *both* a `hashchange` event and a `popstate` event. Tests that use `location.go` and expect the changes to be picked up by the `Router` should migrate to `simulateHashChange`. Each test is different in what it attempts to assert, so there is no single change that works for all tests. Each test that uses the `SpyLocation` to simulate changes in the browser URL should be evaluated on a case-by-case basis.                             |
+| [43087][GithubAngularAngularPull43087] | Previously ,`null` and `undefined` inputs for `routerLink` were equivalent to empty string and there was no way to disable the navigation of the link. In addition, the `href` is changed from a property `HostBinding()` to an attribute binding \(`HostBinding('attr.href')`\). The effect of this change is that `DebugElement.properties['href']` now returns the `href` value returned by the native element which is the full URL rather than the internal value of the `RouterLink` `href` property.                                                                                                                                                                              |
+| [31187][GithubAngularAngularPull31187] | Previously, the default url serializer dropped everything after and including a question mark in query parameters. That is, for a navigation to `/path?q=hello?&other=123`, the query parameters parsed to just `{q: 'hello'}`. This is incorrect, because the URI spec allows for question mark characers in query data. This change now correctly parses the query parameters for `/path?q=hello?&other=123` as `{v: 'hello?', other: '123'}`.                                                                                                                                                                                                                                         |
+| [42952][GithubAngularAngularPull42952] | A new type called `FormControlStatus` has been introduced, which is a union of all possible status strings for form controls. `AbstractControl.status` has been narrowed from `string` to `FormControlStatus`, and `statusChanges` has been narrowed from `Observable<any>` to `Observable<FormControlStatus>`. Most applications should consume the new types seamlessly. Any breakage caused by this change is likely due to one of the following two problems: <ol><li>The app is comparing <code>AbstractControl.status</code> against a string which is not a valid status.</li><li>The app is using `statusChanges` events as if they were something other than strings.</li></ol> |
 
 ### New deprecations
 
 {@a deprecations}
 
-*   <!--todo: add content from ng team -->
+| Removed                                                                                                             | Replacement                                                                                             | Details                                                                                                                                                                         |
+|:---                                                                                                                 |:---                                                                                                     |:---                                                                                                                                                                             |
+| [`getModuleFactory`][AioApiCoreGetmodulefactory]                                                                    | [`getNgModuleById`][AioApiCoreGetngmodulebyid]                                                          |                                                                                                                                                                                 |
+| Factory-based signature of [`ApplicationRef.bootstrap`][AioApiCoreApplicationrefBootstrap]                          | Type-based signature of [`ApplicationRef.bootstrap`][AioApiCoreApplicationrefBootstrap]                 | Use the Type-based signature in place of the Factory-based signature.                                                                                                           |
+| [`PlatformRef.bootstrapModuleFactory`][AioApiCorePlatformrefBootstrapmodulefactory]                                 | [`PlatformRef.bootstrapModule`][AioApiCorePlatformrefBootstrapmodule]                                   |                                                                                                                                                                                 |
+| [`ModuleWithComponentFactories`][AioApiCoreModulewithcomponentfactories]                                            | none                                                                                                    |                                                                                                                                                                                 |
+| [`Compiler`][AioApiCoreCompiler]                                                                                    | none                                                                                                    |                                                                                                                                                                                 |
+| [`CompilerFactory`][AioApiCoreCompilerfactory]                                                                      | none                                                                                                    |                                                                                                                                                                                 |
+| [`NgModuleFactory`][AioApiCoreNgmodulefactory]                                                                      | Non-factory based framework APIs                                                                        | Use the non-factory based framework APIs, such as [`PlatformRef.bootstrapModule`][AioApiCorePlatformrefBootstrapmodule] and [`createNgModuleRef`][AioApiCoreCreatengmoduleref]. |
+| Factory-based signature of [`ViewContainerRef.createComponent`][AioApiCoreViewcontainerrefCreatecomponent]          | Type-based signature of [`ViewContainerRef.createComponent`][AioApiCoreViewcontainerrefCreatecomponent] | Use the Type-based signature in place of the Factory-based signature.                                                                                                           |
+| `aotSummaries` parameter of the [`TestBed.initTestEnvironment` method][AioApiCoreTestingTestbedInittestenvironment] | none                                                                                                    |                                                                                                                                                                                 |
+| `aotSummaries` parameter of the [`TestModuleMetadata` type][AioApiCoreTestingTestmodulemetadata]                    | none                                                                                                    |                                                                                                                                                                                 |
+| [`renderModuleFactory`][AioApiPlatformServerRendermodulefactory]                                                    | [`renderModule`][AioApiPlatformServerRendermodule]                                                      |                                                                                                                                                                                 |
+| [`SwUpdate#activated`][AioApiServiceWorkerSwupdateActivated]                                                        | [`SwUpdate#activateUpdate()`][AioApiServiceWorkerSwupdateActivateupdate]                                | Use the return value of [`SwUpdate#activateUpdate()`][AioApiServiceWorkerSwupdateActivateupdate].                                                                               |
+| [`SwUpdate#available`][AioApiServiceWorkerSwupdateAvailable]                                                        | [`SwUpdate#versionUpdates`][AioApiServiceWorkerSwupdateVersionupdates]                                  |                                                                                                                                                                                 |
+| `bind-input="value"`                                                                                                | `[input]="value"`                                                                                       |                                                                                                                                                                                 |
+| `bind-animate-trigger="value"`                                                                                      | `[@trigger]="value"`                                                                                    |                                                                                                                                                                                 |
+| `on-click="onClick()"`                                                                                              | `(click)="onClick()"`                                                                                   |                                                                                                                                                                                 |
+| `bindon-ngModel="value"`                                                                                            | `[(ngModel)]="value"`                                                                                   |                                                                                                                                                                                 |
+| `ref-templateRef`                                                                                                   | `#templateRef`                                                                                          |                                                                                                                                                                                 |
 
 <!-- links -->
+
+[AioApiCoreApplicationrefBootstrap]: api/core/ApplicationRef#bootstrap "bootstrap - ApplicationRef | Core - API | Angular"
+[AioApiCoreCompiler]: api/core/Compiler "Compiler | Core - API | Angular"
+[AioApiCoreCompilerfactory]: api/core/CompilerFactory "CompilerFactory | Core - API | Angular"
+[AioApiCoreCreatengmoduleref]: api/core/createNgModuleRef "createNgModuleRef | Core - API | Angular"
+[AioApiCoreGetmodulefactory]: api/core/getModuleFactory "getModuleFactory | Core - API | Angular"
+[AioApiCoreGetngmodulebyid]: api/core/getNgModuleById "getNgModuleById | Core - API | Angular"
+[AioApiCoreModulewithcomponentfactories]: api/core/ModuleWithComponentFactories "ModuleWithComponentFactories | Core - API | Angular"
+[AioApiCoreNgmodulefactory]: api/core/NgModuleFactory "NgModuleFactory | Core - API | Angular"
+[AioApiCorePlatformrefBootstrapmodulefactory]: api/core/PlatformRef#bootstrapModuleFactory "bootstrapModuleFactory - PlatformRef | Core - API | Angular"
+[AioApiCorePlatformrefBootstrapmodule]: api/core/PlatformRef#bootstrapModule "bootstrapModule - PlatformRef | Core - API | Angular"
+[AioApiCoreTestingTestbedInittestenvironment]: api/core/testing/TestBed#inittestenvironment "inittestenvironment - TestBed | Testing - Core - API | Angular"
+[AioApiCoreTestingTestmodulemetadata]: api/core/testing/TestModuleMetadata "TestModuleMetadata | Testing - Core - API | Angular"
+[AioApiCoreViewcontainerrefCreatecomponent]: api/core/ViewContainerRef#createComponent "createComponent - ViewContainerRef | Core - API | Angular"
+
+[AioApiPlatformServerRendermodulefactory]: api/platform-server/renderModuleFactory "renderModuleFactory | Platform server - API | Angular"
+[AioApiPlatformServerRendermodule]: api/platform-server/renderModule "renderModule | Platform server - API | Angular"
+
+[AioApiServiceWorkerSwupdateActivated]: api/service-worker/SwUpdate#activated "activated - SwUpdate | Service worker - API | Angular"
+[AioApiServiceWorkerSwupdateActivateupdate]: api/service-worker/SwUpdate#activateUpdate "activateUpdate - SwUpdate | Service worker - API | Angular"
+[AioApiServiceWorkerSwupdateAvailable]: api/service-worker/SwUpdate#available "available - SwUpdate | Service worker - API | Angular"
+[AioApiServiceWorkerSwupdateVersionupdates]: api/service-worker/SwUpdate#versionUpdates "versionUpdates - SwUpdate | Service worker - API | Angular"
 
 [AioGuideReleasesDeprecationPractices]: guide/releases#deprecation-practices "Deprecation practices - Angular versioning and releases | Angular"
 
@@ -36,6 +110,17 @@ For information about the deprecation and removal practices of Angular, see [Ang
 
 [AngularUpdateMain]: https://update.angular.io " Angular Update Guide | Angular"
 
+[GithubAngularAngularPull31187]: https://github.com/angular/angular/pull/31187 "fix(router): Allow question marks in query param values #31187 | angular/angular | GitHub"
+[GithubAngularAngularPull41730]: https://github.com/angular/angular/pull/41730 "fix(common): synchronise location mock behavior with the navigators #41730 | angular/angular | GitHub"
+[GithubAngularAngularPull42952]: https://github.com/angular/angular/pull/42952 "feat(forms): Give form statuses a more specific type #42952 | angular/angular | GitHub"
+[GithubAngularAngularPull43087]: https://github.com/angular/angular/pull/43087 "fix(router): null/undefined routerLink should disable navigation #43087 | angular/angular | GitHub"
+[GithubAngularAngularPull43496]: https://github.com/angular/angular/pull/43496 "fix(router): Prevent URL flicker when new navigations cancel ongoing ... #43496 | angular/angular | GitHub"
+[GithubAngularAngularPull43507]: https://github.com/angular/angular/pull/43507 "perf(core): remove support for the deprecated WrappedValue #43507 | angular/angular | GitHub"
+[GithubAngularAngularPull43591]: https://github.com/angular/angular/pull/43591 "refactor(router): remove support for loadChildren string syntax #43591 | angular/angular | GitHub"
+[GithubAngularAngularPull43642]: https://github.com/angular/angular/pull/43642 "feat(core): drop support for TypeScript 4.2 and 4.3 #43642 | angular/angular | GitHub"
+[GithubAngularAngularPull43668]: https://github.com/angular/angular/pull/43668 "feat(service-worker): improve ergonomics of the SwUpdate APIs #43668 | angular/angular | GitHub"
+[GithubAngularAngularPull43740]: https://github.com/angular/angular/pull/43740 "feat(bazel): expose esm2020 and es2020 conditions in APF package exports #43740 | angular/angular | GitHub"
+
 <!-- end links -->
 
-@reviewed 2021-10-27
+@reviewed 2021-10-28
