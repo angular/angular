@@ -3,26 +3,20 @@
 // WARNING: `CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN` should NOT be printed.
 //
 
-import {dirname} from 'path';
 import sh from 'shelljs';
 import {fileURLToPath} from 'url';
+import u from './utils.mjs';
 
 sh.set('-e');
 
 
 // Constants
-const REPO_SLUG = 'angular/angular';
-const NG_REMOTE_URL = `https://github.com/${REPO_SLUG}.git`;
-const GIT_REMOTE_REFS_CACHE = new Map();
+const DIRNAME = u.getDirname(import.meta.url);
 
 // Exports
 export {
   computeDeploymentsInfo,
   computeInputVars,
-  computeMajorVersion,
-  getDirname,
-  getLatestCommit,
-  getMostRecentMinorBranch,
   skipDeployment,
   validateDeploymentsInfo,
 };
@@ -69,26 +63,26 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
 
 // Helpers
 function build({deployedUrl, deployEnv}) {
-  logSectionHeader('Build the AIO app.');
-  yarn(`build --configuration=${deployEnv} --progress=false`);
+  u.logSectionHeader('Build the AIO app.');
+  u.yarn(`build --configuration=${deployEnv} --progress=false`);
 
-  logSectionHeader('Add any mode-specific files into the AIO distribution.');
+  u.logSectionHeader('Add any mode-specific files into the AIO distribution.');
   sh.cp('-rf', `src/extra-files/${deployEnv}/.`, 'dist/');
 
-  logSectionHeader('Update opensearch descriptor for AIO with `deployedUrl`.');
-  yarn(`set-opensearch-url ${deployedUrl.replace(/[^/]$/, '$&/')}`);  // The URL must end with `/`.
+  u.logSectionHeader('Update opensearch descriptor for AIO with `deployedUrl`.');
+  u.yarn(`set-opensearch-url ${deployedUrl.replace(/[^/]$/, '$&/')}`); // The URL must end with `/`.
 }
 
 function checkPayloadSize() {
-  logSectionHeader('Check payload size and upload the numbers to Firebase DB.');
-  yarn('payload-size');
+  u.logSectionHeader('Check payload size and upload the numbers to Firebase DB.');
+  u.yarn('payload-size');
 }
 
 function computeDeploymentsInfo(
     {currentBranch, currentCommit, isPullRequest, repoName, repoOwner, stableBranch}) {
   // Do not deploy if we are running in a fork.
-  if (`${repoOwner}/${repoName}` !== REPO_SLUG) {
-    return [skipDeployment(`Skipping deploy because this is not ${REPO_SLUG}.`)];
+  if (`${repoOwner}/${repoName}` !== u.REPO_SLUG) {
+    return [skipDeployment(`Skipping deploy because this is not ${u.REPO_SLUG}.`)];
   }
 
   // Do not deploy if this is a PR. PRs are deployed in the `aio_preview` CircleCI job.
@@ -97,7 +91,7 @@ function computeDeploymentsInfo(
   }
 
   // Do not deploy if the current commit is not the latest on its branch.
-  const latestCommit = getLatestCommit(currentBranch);
+  const latestCommit = u.getLatestCommit(currentBranch);
   if (currentCommit !== latestCommit) {
     return [
       skipDeployment(
@@ -106,7 +100,7 @@ function computeDeploymentsInfo(
   }
 
   // The deployment mode is computed based on the branch we are building.
-  const currentBranchMajorVersion = computeMajorVersion(currentBranch);
+  const currentBranchMajorVersion = u.computeMajorVersion(currentBranch);
   const deploymentInfoPerTarget = {
     // PRIMARY DEPLOY TARGETS
     //
@@ -183,7 +177,7 @@ function computeDeploymentsInfo(
 
   // Determine if there is an active RC version by checking whether the most recent minor branch is
   // the stable branch or not.
-  const mostRecentMinorBranch = getMostRecentMinorBranch();
+  const mostRecentMinorBranch = u.getMostRecentMinorBranch();
   const rcBranch = (mostRecentMinorBranch !== stableBranch) ? mostRecentMinorBranch : null;
 
   // If the current branch is the RC branch, deploy as `rc`.
@@ -214,7 +208,7 @@ function computeDeploymentsInfo(
   //   2. The current branch must have a major version that is lower than the stable major version.
 
   // Do not deploy if it is not the branch with the highest minor for the given major version.
-  const mostRecentMinorBranchForMajor = getMostRecentMinorBranch(currentBranchMajorVersion);
+  const mostRecentMinorBranchForMajor = u.getMostRecentMinorBranch(currentBranchMajorVersion);
   if (currentBranch !== mostRecentMinorBranchForMajor) {
     return [
       skipDeployment(
@@ -225,7 +219,7 @@ function computeDeploymentsInfo(
   }
 
   // Do not deploy if it does not have a lower major version than stable.
-  const stableBranchMajorVersion = computeMajorVersion(stableBranch);
+  const stableBranchMajorVersion = u.computeMajorVersion(stableBranch);
   if (currentBranchMajorVersion >= stableBranchMajorVersion) {
     return [
       skipDeployment(
@@ -262,10 +256,6 @@ function computeInputVars({
   };
 }
 
-function computeMajorVersion(branchName) {
-  return +branchName.split('.', 1)[0];
-}
-
 function deploy(data) {
   const {
     currentCommit,
@@ -276,73 +266,24 @@ function deploy(data) {
     siteId,
   } = data;
 
-  sh.cd(`${getDirname(import.meta.url)}/../..`);
+  sh.cd(`${DIRNAME}/../..`);
 
-  logSectionHeader('Run pre-deploy actions.');
+  u.logSectionHeader('Run pre-deploy actions.');
   preDeployActions.forEach(fn => fn(data));
 
-  logSectionHeader('Deploy AIO to Firebase hosting.');
-  const firebase = cmd => yarn(`firebase ${cmd} --token "${firebaseToken}"`);
+  u.logSectionHeader('Deploy AIO to Firebase hosting.');
+  const firebase = cmd => u.yarn(`firebase ${cmd} --token "${firebaseToken}"`);
   firebase(`use "${projectId}"`);
   firebase('target:clear hosting aio');
   firebase(`target:apply hosting aio "${siteId}"`);
   firebase(`deploy --only hosting:aio --message "Commit: ${currentCommit}" --non-interactive`);
 
-  logSectionHeader('Run post-deploy actions.');
+  u.logSectionHeader('Run post-deploy actions.');
   postDeployActions.forEach(fn => fn(data));
-}
-
-function getDirname(fileUrl) {
-  return dirname(fileURLToPath(fileUrl));
-}
-
-function getRemoteRefs(refOrPattern, {remote = NG_REMOTE_URL, retrieveFromCache = true} = {}) {
-  // If remote refs for the same `refOrPattern` and `remote` have been requested before, return the
-  // cached results. This improves the performance and ensures a more stable behavior.
-  //
-  // NOTE:
-  // This shouldn't make any difference during normal execution (since there are no duplicate
-  // requests atm), but makes the tests more stable (for example, avoiding errors caused by pushing
-  // a new commit on a branch while the tests execute, which would cause `getLatestCommit()` to
-  // return a different value).
-  const cmd = `git ls-remote ${remote} ${refOrPattern}`;
-  const result = (retrieveFromCache && GIT_REMOTE_REFS_CACHE.has(cmd)) ?
-    GIT_REMOTE_REFS_CACHE.get(cmd) :
-    sh.exec(cmd, {silent: true}).trim().split('\n');
-
-  // Cache the result for future use (regardless of the value of `retrieveFromCache`).
-  GIT_REMOTE_REFS_CACHE.set(cmd, result);
-
-  return result;
-}
-
-function getMostRecentMinorBranch(major = '*', options = undefined) {
-  // List the branches that start with the given major version (or any major if none given).
-  return getRemoteRefs(`refs/heads/${major}.*.x`, options)
-      // Extract the branch name.
-      .map(line => line.split('/')[2])
-      // Filter out branches that are not of the format `<number>.<number>.x`.
-      .filter(name => /^\d+\.\d+\.x$/.test(name))
-      // Sort by version.
-      .sort((a, b) => {
-        const [majorA, minorA] = a.split('.');
-        const [majorB, minorB] = b.split('.');
-        return (majorA - majorB) || (minorA - minorB);
-      })
-      // Get the branch corresponding to the highest version.
-      .pop();
-}
-
-function getLatestCommit(branchName, options = undefined) {
-  return getRemoteRefs(branchName, options)[0].slice(0, 40);
 }
 
 function listDeployTargetNames(deploymentsList) {
   return deploymentsList.map(({name = '<no name>'}) => name).join(', ') || '-';
-}
-
-function logSectionHeader(message) {
-  console.log(`\n\n\n==== ${message} ====\n`);
 }
 
 function redirectToAngularIo() {
@@ -369,7 +310,7 @@ function skipDeployment(reason) {
 }
 
 function testNoActiveRcDeployment({deployedUrl}) {
-  logSectionHeader(
+  u.logSectionHeader(
       'Verify deployed RC version redirects to stable (and disables old ServiceWorker).');
 
   const deployedOrigin = deployedUrl.replace(/\/$/, '');
@@ -410,8 +351,8 @@ function testNoActiveRcDeployment({deployedUrl}) {
 }
 
 function testPwaScore({deployedUrl, minPwaScore}) {
-  logSectionHeader('Run PWA-score tests.');
-  yarn(`test-pwa-score "${deployedUrl}" "${minPwaScore}"`);
+  u.logSectionHeader('Run PWA-score tests.');
+  u.yarn(`test-pwa-score "${deployedUrl}" "${minPwaScore}"`);
 }
 
 function validateDeploymentsInfo(deploymentsList) {
@@ -489,14 +430,4 @@ function validateDeploymentsInfo(deploymentsList) {
         `(${primaryTarget.deployEnv}), but ${nonMatchingSecondaryTargets.length} targets do not: ` +
         nonMatchingSecondaryTargets.map(t => `${t.name} (deployEnv: ${t.deployEnv})`).join(', '));
   }
-}
-
-function yarn(cmd) {
-  // Using `--silent` to ensure no secret env variables are printed.
-  //
-  // NOTE:
-  // This is not strictly necessary, since CircleCI will mask secret environment variables in the
-  // output (see https://circleci.com/docs/2.0/env-vars/#secrets-masking), but is an extra
-  // precaution.
-  return sh.exec(`yarn --silent ${cmd}`);
 }
