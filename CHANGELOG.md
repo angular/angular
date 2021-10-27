@@ -1,3 +1,21 @@
+<a name="13.0.0-rc.2"></a>
+# 13.0.0-rc.2 (2021-10-27)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8e13c351ac](https://github.com/angular/angular/commit/8e13c351acb8087f5a101d70bd7f9f9aebbdc1bc) | fix | avoid broken references in .d.ts files due to @internal markers ([#43527](https://github.com/angular/angular/pull/43527)) |
+### ngcc
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7c5d642106](https://github.com/angular/angular/commit/7c5d64210697bfb467eff2bcad866d829ae039c5) | fix | support alternate UMD layout when adding new imports ([#43931](https://github.com/angular/angular/pull/43931)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [adc68b100b](https://github.com/angular/angular/commit/adc68b100b98aef171ee298cc23bd5291b106526) | fix | reuse route strategy fix ([#43791](https://github.com/angular/angular/pull/43791)) |
+## Special Thanks
+Alan Agius, Andrew Kushnir, Doug Parker, George Kalpakas, Jessica Janiuk, Joey Perrott, JoostK, Mladen Jakovljević, Tomasz Domański, Virginia Dooley, Willy Schott, amayer42, dirk diebel, ericcheng2005, iRealNirmal and krzysztof-grzybek
+
+
 <a name="12.2.12"></a>
 # 12.2.12 (2021-10-27)
 ### compiler-cli
