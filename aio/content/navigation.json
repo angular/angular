@@ -765,18 +765,13 @@
           "tooltip": "Browser support and polyfills guide."
         },
         {
-          "title": "Updating to Version 12",
-          "tooltip": "Support for updating your application from version 11 to 12.",
+          "title": "Update to Version 13",
+          "tooltip": "Support to update your application to version 13",
           "children": [
             {
-              "url": "guide/updating-to-version-12",
+              "url": "guide/update-to-latest-version",
               "title": "Overview",
-              "tooltip": "Everything you need to know for updating your application from version 11 to 12."
-            },
-            {
-              "url": "guide/migration-legacy-message-id",
-              "title": "Migration: Legacy Localization IDs",
-              "tooltip": "Learn how to migrate legacy IDs for localization to new, more stable ones."
+              "tooltip": "Everything you need to know to update your application to version 13"
             }
           ]
         },
