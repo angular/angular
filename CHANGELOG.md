@@ -1,3 +1,18 @@
+<a name="12.2.12"></a>
+# 12.2.12 "silk-shoe" (2021-10-27)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6161ec622](https://github.com/angular/components/commit/6161ec62273a4455da88530633af79b93cdc387f) | fix | **portal:** write generic type for TemplateRef in the Template Portal code example ([#23818](https://github.com/angular/components/pull/23818)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d8c84d608](https://github.com/angular/components/commit/d8c84d60814adc094d48a65b6e853abab11a6239) | fix | **icon:** disable text selection ([#23730](https://github.com/angular/components/pull/23730)) |
+## Special Thanks
+Kristiyan Kostadinov, Paul Gschwendtner and Sergey Vakhramov
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.0.0-rc.1"></a>
 # 13.0.0-rc.1 "acrylic-finger" (2021-10-20)
 ### cdk
