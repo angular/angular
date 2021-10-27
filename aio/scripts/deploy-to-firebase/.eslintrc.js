@@ -8,6 +8,9 @@ module.exports = {
     jasmine: true,
     node: true,
   },
+  parserOptions: {
+    sourceType: 'module',
+  },
   plugins: [
     'jasmine',
   ],

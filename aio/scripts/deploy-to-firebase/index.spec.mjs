@@ -1,16 +1,14 @@
-#!/usr/bin/env node
-'use strict';
-
-const {execSync} = require('child_process');
-const {
+import {execSync} from 'child_process';
+import {
   computeDeploymentsInfo,
   computeInputVars,
   computeMajorVersion,
+  getDirname,
   getLatestCommit,
   getMostRecentMinorBranch,
   skipDeployment,
   validateDeploymentsInfo,
-} = require('./index');
+} from './index.mjs';
 
 
 describe('deploy-to-firebase:', () => {
@@ -424,7 +422,8 @@ describe('deploy-to-firebase:', () => {
     // and thus does not share the `getRemoteRefs()` cache. To improve stability, we retrieve the
     // latest commit from master ignoring any cached entries.
     const latestCommitOnMaster = getLatestCommit('master', {retrieveFromCache: false});
-    const cmd = `"${process.execPath}" "${__dirname}" --dry-run`;
+    const scriptPath = `${getDirname(import.meta.url)}/index.mjs`;
+    const cmd = `"${process.execPath}" "${scriptPath}" --dry-run`;
     const env = {
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
