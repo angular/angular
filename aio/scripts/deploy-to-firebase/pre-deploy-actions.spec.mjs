@@ -1,3 +1,4 @@
+import fs from 'fs';
 import sh from 'shelljs';
 import pre from './pre-deploy-actions.mjs';
 import u from './utils.mjs';
@@ -5,6 +6,16 @@ import u from './utils.mjs';
 
 describe('deploy-to-firebase/pre-deploy-actions:', () => {
   beforeEach(() => spyOn(u, 'logSectionHeader'));
+
+  it('should define an undo function for each exported function', () => {
+    const exportedFunctionNames = Object.keys(pre).filter(name => typeof pre[name] === 'function');
+
+    for (const name of exportedFunctionNames) {
+      expect(pre.undo[name]).
+          withContext(`Testing for 'undo.${name}()'`).
+          toEqual(jasmine.any(Function));
+    }
+  });
 
   describe('build()', () => {
     let cpSpy;
@@ -22,7 +33,7 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
 
     it('should add mode-specific files into the distribution', () => {
       pre.build({deployedUrl: 'http://example.com/foo/', deployEnv: 'bar'});
-      expect(cpSpy).toHaveBeenCalledWith('-rf', 'src/extra-files/bar/.', 'dist/');
+      expect(cpSpy).toHaveBeenCalledWith('-rf', 'src/extra-files/bar/.', 'dist');
     });
 
     it('should update the opensearch descriptor', () => {
@@ -46,7 +57,7 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
       pre.build({deployedUrl: 'http://example.com/foo/', deployEnv: 'bar'});
       expect(logs).toEqual([
         'yarn build --configuration=bar --progress=false',
-        'cp -rf src/extra-files/bar/. dist/',
+        'cp -rf src/extra-files/bar/. dist',
         'yarn set-opensearch-url http://example.com/foo/',
       ]);
     });
@@ -75,7 +86,126 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
   });
 
   describe('redirectToAngularIo()', () => {
-    // TODO(gkalpak): Add tests for this function.
-    it('should have tests');
+    let readFileSpy;
+    let writeFileSpy;
+
+    beforeEach(() => {
+      readFileSpy = spyOn(fs, 'readFileSync').and.returnValue('Test file content.');
+      writeFileSpy = spyOn(fs, 'writeFileSync');
+    });
+
+    it('should read from and write to the Firebase config file', () => {
+      pre.redirectToAngularIo();
+
+      expect(readFileSpy).toHaveBeenCalledOnceWith('firebase.json', 'utf8');
+      expect(writeFileSpy).toHaveBeenCalledOnceWith('firebase.json', 'Test file content.');
+    });
+
+    it('should add a redirect rule to `angular.io`', () => {
+      readFileSpy.and.returnValue(`
+        {
+          "foo": "bar",
+          "hosting": {
+            "baz": "qux",
+            "redirects": [
+              {"type": 301, "regex": "/source/1", "destination": "/destination/1"},
+              {"type": 301, "source": "/source/2", "destination": "/destination/2"},
+            ]
+          }
+        }
+      `);
+
+      pre.redirectToAngularIo();
+
+      expect(writeFileSpy.calls.first().args[1]).toBe(`
+        {
+          "foo": "bar",
+          "hosting": {
+            "baz": "qux",
+            "redirects": [
+              {"type": 302, "regex": "^(.*/[^./]*)$", "destination": "https://angular.io:1"},
+
+              {"type": 301, "regex": "/source/1", "destination": "/destination/1"},
+              {"type": 301, "source": "/source/2", "destination": "/destination/2"},
+            ]
+          }
+        }
+      `);
+    });
+  });
+
+  describe('undo.build()', () => {
+    let rmSpy;
+
+    beforeEach(() => rmSpy = spyOn(sh, 'rm'));
+
+    it('should undo `build()`', () => {
+      pre.undo.build();
+      expect(rmSpy).toHaveBeenCalledWith('-rf', 'dist');
+    });
+  });
+
+  describe('undo.checkPayloadSize()', () => {
+    // This is a no-op, so nothing to test.
+  });
+
+  describe('undo.disableServiceWorker()', () => {
+    let mvSpy;
+
+    beforeEach(() => mvSpy = spyOn(sh, 'mv'));
+
+    it('should undo `disableServiceWorker()`', () => {
+      pre.undo.disableServiceWorker();
+      expect(mvSpy).toHaveBeenCalledWith('dist/ngsw.json.bak', 'dist/ngsw.json');
+    });
+  });
+
+  describe('undo.redirectToAngularIo()', () => {
+    let readFileSpy;
+    let writeFileSpy;
+
+    beforeEach(() => {
+      readFileSpy = spyOn(fs, 'readFileSync').and.returnValue('Test file content.');
+      writeFileSpy = spyOn(fs, 'writeFileSync');
+    });
+
+    it('should read from and write to the Firebase config file', () => {
+      pre.undo.redirectToAngularIo();
+
+      expect(readFileSpy).toHaveBeenCalledOnceWith('firebase.json', 'utf8');
+      expect(writeFileSpy).toHaveBeenCalledOnceWith('firebase.json', 'Test file content.');
+    });
+
+    it('should remove a redirect rule to `angular.io`', () => {
+      readFileSpy.and.returnValue(`
+        {
+          "foo": "bar",
+          "hosting": {
+            "baz": "qux",
+            "redirects": [
+              {"type": 302, "regex": "^(.*/[^./]*)$", "destination": "https://angular.io:1"},
+
+              {"type": 301, "regex": "/source/1", "destination": "/destination/1"},
+              {"type": 301, "source": "/source/2", "destination": "/destination/2"},
+            ]
+          }
+        }
+      `);
+
+      pre.undo.redirectToAngularIo();
+
+      expect(writeFileSpy.calls.first().args[1]).toBe(`
+        {
+          "foo": "bar",
+          "hosting": {
+            "baz": "qux",
+            "redirects": [
+              {"type": 301, "regex": "/source/1", "destination": "/destination/1"},
+              {"type": 301, "source": "/source/2", "destination": "/destination/2"},
+            ]
+          }
+        }
+      `);
+    });
   });
 });
