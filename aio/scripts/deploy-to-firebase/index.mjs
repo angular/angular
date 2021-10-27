@@ -5,6 +5,7 @@
 
 import sh from 'shelljs';
 import {fileURLToPath} from 'url';
+import pre from './pre-deploy-actions.mjs';
 import u from './utils.mjs';
 
 sh.set('-e');
@@ -62,22 +63,6 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
 }
 
 // Helpers
-function build({deployedUrl, deployEnv}) {
-  u.logSectionHeader('Build the AIO app.');
-  u.yarn(`build --configuration=${deployEnv} --progress=false`);
-
-  u.logSectionHeader('Add any mode-specific files into the AIO distribution.');
-  sh.cp('-rf', `src/extra-files/${deployEnv}/.`, 'dist/');
-
-  u.logSectionHeader('Update opensearch descriptor for AIO with `deployedUrl`.');
-  u.yarn(`set-opensearch-url ${deployedUrl.replace(/[^/]$/, '$&/')}`); // The URL must end with `/`.
-}
-
-function checkPayloadSize() {
-  u.logSectionHeader('Check payload size and upload the numbers to Firebase DB.');
-  u.yarn('payload-size');
-}
-
 function computeDeploymentsInfo(
     {currentBranch, currentCommit, isPullRequest, repoName, repoOwner, stableBranch}) {
   // Do not deploy if we are running in a fork.
@@ -114,7 +99,7 @@ function computeDeploymentsInfo(
       projectId: 'angular-io',
       siteId: 'next-angular-io-site',
       deployedUrl: 'https://next.angular.io/',
-      preDeployActions: [build, checkPayloadSize],
+      preDeployActions: [pre.build, pre.checkPayloadSize],
       postDeployActions: [testPwaScore],
     },
     rc: {
@@ -124,7 +109,7 @@ function computeDeploymentsInfo(
       projectId: 'angular-io',
       siteId: 'rc-angular-io-site',
       deployedUrl: 'https://rc.angular.io/',
-      preDeployActions: [build, checkPayloadSize],
+      preDeployActions: [pre.build, pre.checkPayloadSize],
       postDeployActions: [testPwaScore],
     },
     stable: {
@@ -134,7 +119,7 @@ function computeDeploymentsInfo(
       projectId: 'angular-io',
       siteId: `v${currentBranchMajorVersion}-angular-io-site`,
       deployedUrl: 'https://angular.io/',
-      preDeployActions: [build, checkPayloadSize],
+      preDeployActions: [pre.build, pre.checkPayloadSize],
       postDeployActions: [testPwaScore],
     },
     archive: {
@@ -144,7 +129,7 @@ function computeDeploymentsInfo(
       projectId: 'angular-io',
       siteId: `v${currentBranchMajorVersion}-angular-io-site`,
       deployedUrl: `https://v${currentBranchMajorVersion}.angular.io/`,
-      preDeployActions: [build, checkPayloadSize],
+      preDeployActions: [pre.build, pre.checkPayloadSize],
       postDeployActions: [testPwaScore],
     },
 
@@ -165,7 +150,7 @@ function computeDeploymentsInfo(
       projectId: 'angular-io',
       siteId: 'rc-angular-io-site',
       deployedUrl: 'https://rc.angular.io/',
-      preDeployActions: [removeServiceWorker, redirectToAngularIo],
+      preDeployActions: [pre.disableServiceWorker, pre.redirectToAngularIo],
       postDeployActions: [testNoActiveRcDeployment],
     },
   };
@@ -284,21 +269,6 @@ function deploy(data) {
 
 function listDeployTargetNames(deploymentsList) {
   return deploymentsList.map(({name = '<no name>'}) => name).join(', ') || '-';
-}
-
-function redirectToAngularIo() {
-  // Update the Firebase hosting configuration redirect all non-file requests (i.e. requests that do
-  // not contain a dot in their last path segment) to `angular.io`.
-  // See https://firebase.google.com/docs/hosting/full-config#redirects.
-  const redirectRule =
-      '{"type": 302, "regex": "^(.*/[^./]*)$", "destination": "https://angular.io:1"}';
-  sh.sed('-i', /(\s*)"redirects": \[/, `$&\n$1  ${redirectRule},\n`, 'firebase.json');
-}
-
-function removeServiceWorker() {
-  // Rename the SW manifest (`ngsw.json`). This will cause the ServiceWorker to unregister itself.
-  // See https://angular.io/guide/service-worker-devops#fail-safe.
-  sh.mv('dist/ngsw.json', 'dist/ngsw.json.bak');
 }
 
 function serializeActions(actions) {
