@@ -1,3 +1,17 @@
+<a name="13.0.0-rc.2"></a>
+# 13.0.0-rc.2 "tweed-thimble" (2021-10-27)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c4cb63be2](https://github.com/angular/components/commit/c4cb63be230a5c5d58e8d2e6d084c42015dc8cf7) | fix | **portal:** write generic type for TemplateRef in the Template Portal code example ([#23818](https://github.com/angular/components/pull/23818)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [114041f43](https://github.com/angular/components/commit/114041f434573fca279de7c0e064f18bee6b2d95) | fix | **icon:** disable text selection ([#23730](https://github.com/angular/components/pull/23730)) |
+## Special Thanks
+Kristiyan Kostadinov, Paul Gschwendtner and Sergey Vakhramov
+
+
 <a name="12.2.12"></a>
 # 12.2.12 "silk-shoe" (2021-10-27)
 ### cdk
