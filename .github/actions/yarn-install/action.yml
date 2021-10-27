@@ -1,0 +1,18 @@
+name: "Installing Yarn dependencies"
+description: "Installs the dependencies using Yarn"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/cache@v2
+      with:
+        path: |
+          **/node_modules
+        # Cache key. Whenever the postinstall patches change, the cache needs to be invalidated.
+        # If just the `yarn.lock` file changes, the most recent cache can be restored though.
+        # See: https://docs.github.com/en/actions/guides/caching-dependencies-to-speed-up-workflows#example-using-the-cache-action.
+        key: v2-${{hashFiles('tools/postinstall/apply-patches.js')}}-${{hashFiles('yarn.lock')}}
+        restore-keys: v2-${{hashFiles('tools/postinstall/apply-patches.js')}}-
+
+    - run: yarn install --frozen-lockfile --non-interactive
+      shell: bash

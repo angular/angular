@@ -1,0 +1,50 @@
+# This workflow builds the dev-app for pull requests when a certain label is applied.
+# The actual deployment happens as part of a dedicated second workflow to avoid security
+# issues where the building would otherwise occur in an authorized context where secrets
+# could be leaked. More details can be found here:
+
+# https://securitylab.github.com/research/github-actions-preventing-pwn-requests/.
+
+name: Build dev-app for deployment
+
+on:
+  pull_request:
+    types: [synchronize, labeled]
+
+jobs:
+  dev-app-build:
+    runs-on: ubuntu-latest
+    # We only want to build and deploy the dev-app if the `dev-app preview` label has been
+    # added, or if the label is already applied and new changes have been made in the PR.
+    if: |
+      (github.event.action == 'labeled' && github.event.label.name == 'dev-app preview') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'dev-app preview'))
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/yarn-install
+
+      - run: ./scripts/bazel/setup-remote-execution.sh
+        env:
+          GCP_DECRYPT_TOKEN: angular
+
+      # Build the web package. Note that we also need to make the Github environment
+      # variables available so that the RBE is configured.
+      - name: Building dev-app
+        run: |
+          source ${GITHUB_ENV}
+          bazel build //src/dev-app:web_package --symlink_prefix=dist/
+
+      # Prepare the workflow artifact that is available for the deploy workflow. We store the pull
+      # request number and SHA in a file that can be read by the deploy workflow. This is necessary
+      # so that the deploy workflow can create a comment on the PR that triggered the deploy.
+      - run: |
+          mkdir -p dist/devapp
+          cp -R dist/bin/src/dev-app/web_package/* dist/devapp
+          echo ${{github.event.pull_request.number}} > dist/devapp/pr_number
+          echo ${{github.event.pull_request.head.sha}} > dist/devapp/pr_sha
+
+      # Upload the generated dev-app archive.
+      - uses: actions/upload-artifact@v2
+        with:
+          name: devapp
+          path: dist/devapp

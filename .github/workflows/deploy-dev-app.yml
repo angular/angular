@@ -1,0 +1,52 @@
+# This workflow runs whenever the dev-app build workflow has completed. Deployment happens
+# as part of a dedicated second workflow to avoid security issues where the building would
+# otherwise occur in an authorized context where secrets could be leaked.
+#
+# More details can be found here:
+# https://securitylab.github.com/research/github-actions-preventing-pwn-requests/.
+
+name: Deploying dev-app to Firebase previews
+
+on:
+  workflow_run:
+    workflows: [Build dev-app for deployment]
+    types: [completed]
+
+jobs:
+  deploy-dev-app:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/yarn-install
+
+      - name: 'Download artifact from build job'
+        run: |
+          ./scripts/github/fetch-workflow-artifact.mjs ${{secrets.GITHUB_TOKEN}} \
+            ${{github.event.workflow_run.id}} devapp > devapp.zip
+
+      - name: Extracting workflow artifact into Firebase public directory.
+        run: |
+          mkdir -p dist/dev-app-web-pkg
+          unzip devapp.zip -d dist/dev-app-web-pkg
+
+      - name: Extracting pull request from extracted workflow artifact.
+        id: pr_info
+        run: |
+          echo "::set-output name=number::$(cat ./dist/dev-app-web-pkg/pr_number)"
+          echo "::set-output name=sha::$(cat ./dist/dev-app-web-pkg/pr_sha)"
+
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        id: deploy
+        with:
+          repoToken: '${{secrets.GITHUB_TOKEN}}'
+          firebaseServiceAccount: '${{secrets.FIREBASE_PREVIEW_SERVICE_TOKEN}}'
+          expires: 20d
+          projectId: angular-components-test
+          channelId: pr-${{steps.pr_info.outputs.number}}-${{steps.pr_info.outputs.sha}}
+
+      - uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          message: |
+            Deployed dev-app to: ${{ steps.deploy.outputs.details_url }}
+          number: ${{ steps.pr_info.outputs.number }}

@@ -103,7 +103,7 @@ var_15: &ignore_presubmit_branch_filter
 var_16: &setup_bazel_remote_execution
   run:
     name: "Setup bazel RBE remote execution"
-    command: ./scripts/circleci/bazel/setup-remote-execution.sh
+    command: ./scripts/bazel/setup-remote-execution.sh
 
 # Sets up the bazel binary globally. We don't want to access bazel through Yarn and NodeJS
 # because it could mean that the Bazel child process only has access to limited memory.
