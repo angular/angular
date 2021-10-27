@@ -7,9 +7,28 @@ const exp = {
   testNoActiveRcDeployment,
   testPwaScore,
 };
+Object.keys(u.ORIGINS).forEach(originLabel => {
+  const testRedirectFn = generateFn_testRedirectTo(originLabel);
+  exp[testRedirectFn.name] = testRedirectFn;
+});
 export default exp;
 
 // Helpers
+function generateFn_testRedirectTo(originLabel) {
+  const destinationOrigin = u.ORIGINS[originLabel];
+  const functionName = `testRedirectTo${originLabel}`;
+
+  return u.nameFunction(functionName, function ({deployedUrl}) {
+    u.logSectionHeader(`Verify deployed version redirects to '${destinationOrigin}'.`);
+
+    // Ensure a request for `ngsw.json` is redirected to `<destinationOrigin>/ngsw.json`.
+    testUrlRedirect('ngsw.json', deployedUrl, destinationOrigin);
+
+    // Ensure a request for `foo/bar` is redirected to `<destinationOrigin>/foo/bar`.
+    testUrlRedirect('foo/bar?baz=qux', deployedUrl, destinationOrigin);
+  });
+}
+
 function testNoActiveRcDeployment({deployedUrl}) {
   const destinationOrigin = u.ORIGINS.Stable;
 
