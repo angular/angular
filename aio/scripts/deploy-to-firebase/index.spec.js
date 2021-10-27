@@ -38,7 +38,8 @@ describe('deploy-to-firebase:', () => {
       CI_REPO_NAME: 'notangular',
     })).toEqual([
       {
-        skipped: true,
+        name: 'skipped',
+        type: 'skipped',
         reason: 'Skipping deploy because this is not angular/angular.',
       },
     ]);
@@ -50,7 +51,8 @@ describe('deploy-to-firebase:', () => {
       CI_REPO_NAME: 'angular',
     })).toEqual([
       {
-        skipped: true,
+        name: 'skipped',
+        type: 'skipped',
         reason: 'Skipping deploy because this is not angular/angular.',
       },
     ]);
@@ -63,7 +65,8 @@ describe('deploy-to-firebase:', () => {
       CI_PULL_REQUEST: 'true',
     })).toEqual([
       {
-        skipped: true,
+        name: 'skipped',
+        type: 'skipped',
         reason: 'Skipping deploy because this is a PR build.',
       },
     ]);
@@ -78,6 +81,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: latestCommits.master,
     })).toEqual([
       {
+        name: 'next',
+        type: 'primary',
         deployEnv: 'next',
         projectId: 'angular-io',
         siteId: 'next-angular-io-site',
@@ -97,7 +102,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: 'DUMMY_TEST_COMMIT',
     })).toEqual([
       {
-        skipped: true,
+        name: 'skipped',
+        type: 'skipped',
         reason:
             'Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ' +
             `(${latestCommits.master}).`,
@@ -115,6 +121,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: latestCommits['4.3.x'],
     })).toEqual([
       {
+        name: 'stable',
+        type: 'primary',
         deployEnv: 'stable',
         projectId: 'angular-io',
         siteId: 'v4-angular-io-site',
@@ -135,6 +143,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: latestCommits[mostRecentMinorBranch],
     })).toEqual([
       {
+        name: 'stable',
+        type: 'primary',
         deployEnv: 'stable',
         projectId: 'angular-io',
         siteId: `v${computeMajorVersion(mostRecentMinorBranch)}-angular-io-site`,
@@ -143,6 +153,8 @@ describe('deploy-to-firebase:', () => {
         postDeployActions: ['function:testPwaScore'],
       },
       {
+        name: 'stableNoActiveRc',
+        type: 'secondary',
         deployEnv: 'stable',
         projectId: 'angular-io',
         siteId: 'rc-angular-io-site',
@@ -163,7 +175,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: 'DUMMY_TEST_COMMIT',
     })).toEqual([
       {
-        skipped: true,
+        name: 'skipped',
+        type: 'skipped',
         reason:
             'Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ' +
             `(${latestCommits['4.3.x']}).`,
@@ -181,6 +194,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: latestCommits['2.4.x'],
     })).toEqual([
       {
+        name: 'archive',
+        type: 'primary',
         deployEnv: 'archive',
         projectId: 'angular-io',
         siteId: 'v2-angular-io-site',
@@ -203,6 +218,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: latestCommits['9.1.x'],
     })).toEqual([
       {
+        name: 'archive',
+        type: 'primary',
         deployEnv: 'archive',
         projectId: 'angular-io',
         siteId: 'v9-angular-io-site',
@@ -223,7 +240,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: 'DUMMY_TEST_COMMIT',
     })).toEqual([
       {
-        skipped: true,
+        name: 'skipped',
+        type: 'skipped',
         reason:
             'Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ' +
             `(${latestCommits['2.4.x']}).`,
@@ -241,7 +259,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: latestCommits['2.1.x'],
     })).toEqual([
       {
-        skipped: true,
+        name: 'skipped',
+        type: 'skipped',
         reason:
             'Skipping deploy of branch "2.1.x" to Firebase.\n' +
             'There is a more recent branch with the same major version: "2.4.x"',
@@ -259,7 +278,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: latestCommits['2.1.x'],
     })).toEqual([
       {
-        skipped: true,
+        name: 'skipped',
+        type: 'skipped',
         reason:
             'Skipping deploy of branch "2.1.x" to Firebase.\n' +
             'There is a more recent branch with the same major version: "2.4.x"',
@@ -277,6 +297,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: latestCommits[mostRecentMinorBranch],
     })).toEqual([
       {
+        name: 'rc',
+        type: 'primary',
         deployEnv: 'rc',
         projectId: 'angular-io',
         siteId: 'rc-angular-io-site',
@@ -304,6 +326,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: latestCommits[mostRecentMinorBranch],
     })).toEqual([
       {
+        name: 'rc',
+        type: 'primary',
         deployEnv: 'rc',
         projectId: 'angular-io',
         siteId: 'rc-angular-io-site',
@@ -324,7 +348,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: 'DUMMY_TEST_COMMIT',
     })).toEqual([
       {
-        skipped: true,
+        name: 'skipped',
+        type: 'skipped',
         reason:
             'Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ' +
             `(${latestCommits[mostRecentMinorBranch]}).`,
@@ -342,7 +367,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: latestCommits['2.1.x'],
     })).toEqual([
       {
-        skipped: true,
+        name: 'skipped',
+        type: 'skipped',
         reason:
             'Skipping deploy of branch "2.1.x" to Firebase.\n' +
             'There is a more recent branch with the same major version: "2.4.x"',
@@ -360,7 +386,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: latestCommits['4.3.x'],
     })).toEqual([
       {
-        skipped: true,
+        name: 'skipped',
+        type: 'skipped',
         reason:
             'Skipping deploy of branch "4.3.x" to Firebase.\n' +
             'There is a more recent branch with the same major version: "4.4.x"',
@@ -378,7 +405,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: latestCommits['4.4.x'],
     })).toEqual([
       {
-        skipped: true,
+        name: 'skipped',
+        type: 'skipped',
         reason:
             'Skipping deploy of branch "4.4.x" to Firebase.\n' +
             'This branch has an equal or higher major version than the stable branch ("2.4.x") ' +
@@ -403,12 +431,12 @@ describe('deploy-to-firebase:', () => {
     };
     const result = execSync(cmd, {encoding: 'utf8', env}).trim();
     expect(result).toBe(
-        'Total deployments: 1\n' +
+        'Deployments (1): next\n' +
         '\n' +
         '\n' +
         '\n' +
-        'Deployment 1 of 1\n' +
-        '-----------------\n' +
+        'Deployment 1 of 1: next\n' +
+        '-----------------------\n' +
         'Git branch          : master\n' +
         `Git commit          : ${latestCommitOnMaster}\n` +
         'Build/deploy mode   : next\n' +
