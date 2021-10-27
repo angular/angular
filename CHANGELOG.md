@@ -1,3 +1,18 @@
+<a name="12.2.12"></a>
+# 12.2.12 (2021-10-27)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [112557497c](https://github.com/angular/angular/commit/112557497cf75b5e41e0f490df921a243ace1aeb) | fix | avoid broken references in .d.ts files due to @internal markers ([#43527](https://github.com/angular/angular/pull/43527)) |
+### ngcc
+| Commit | Type | Description |
+| -- | -- | -- |
+| [067ae54d46](https://github.com/angular/angular/commit/067ae54d46ce7480d2dccd4aa3fd4206737c02d1) | fix | support alternate UMD layout when adding new imports ([#43931](https://github.com/angular/angular/pull/43931)) |
+## Special Thanks
+Alan Agius, Andrew Kushnir, George Kalpakas, Jessica Janiuk, Joey Perrott, JoostK, Mladen Jakovljević, Virginia Dooley, amayer42, dirk diebel and ericcheng2005
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.0.0-rc.1"></a>
 # 13.0.0-rc.1 (2021-10-20)
 ### compiler
