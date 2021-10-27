@@ -14,14 +14,21 @@ const exp = {
   build,
   checkPayloadSize,
   disableServiceWorker,
-  redirectToAngularIo,
   undo: {
     build: undoBuild,
     checkPayloadSize: undoCheckPayloadSize,
     disableServiceWorker: undoDisableServiceWorker,
-    redirectToAngularIo: undoRedirectToAngularIo,
   },
 };
+Object.keys(u.ORIGINS).forEach(originLabel => {
+  [true, false].forEach(allRequests => {
+    const redirectFn = generateFn_redirectTo(originLabel, allRequests);
+    const undoRedirectFn = generateFn_undoRedirectTo(originLabel, allRequests);
+
+    exp[redirectFn.name] = redirectFn;
+    exp.undo[redirectFn.name] = undoRedirectFn;
+  });
+});
 export default exp;
 
 // Helpers
@@ -53,21 +60,49 @@ function escapeForRegex(str) {
   return str.replace(/[.?*+\\|^$()[\]{}]/g, '\\$&');
 }
 
-function getFirebaseRedirectRuleTo(origin) {
-  return `{"type": 302, "regex": "^(.*/[^./]*)$", "destination": "${origin}:1"}`;
+function generateFn_redirectTo(originLabel, allRequests) {
+  const destinationOrigin = u.ORIGINS[originLabel];
+  const functionName = `redirect${allRequests ? 'All' : 'NonFiles'}To${originLabel}`;
+
+  return u.nameFunction(functionName, function () {
+    u.logSectionHeader(
+        `Configure Firebase hosting to redirect ${allRequests ? 'all' : 'non-file'} requests ` +
+        `to '${destinationOrigin}'.`);
+
+    // Update the Firebase hosting configuration to redirect requests to the specific origin.
+    // If `excludeFileRequests` is `true`, only redirect non-file requests, i.e. requests that
+    // do not contain a dot in their last path segment.
+    // See also https://firebase.google.com/docs/hosting/full-config#redirects.
+    const redirectRule = getFirebaseRedirectRuleTo(destinationOrigin, allRequests);
+    const oldContent = fs.readFileSync(FIREBASE_JSON_PATH, 'utf8');
+    const newContent = oldContent.replace(/( *)"redirects": \[/, `$&\n$1  ${redirectRule},\n`);
+
+    fs.writeFileSync(FIREBASE_JSON_PATH, newContent);
+  });
 }
 
-function redirectToAngularIo() {
-  u.logSectionHeader('Configure Firebase hosting to redirect to https://angular.io/.');
+function generateFn_undoRedirectTo(originLabel, allRequests) {
+  const destinationOrigin = u.ORIGINS[originLabel];
+  const functionName = `undoRedirect${allRequests ? 'All' : 'NonFiles'}To${originLabel}`;
 
-  // Update the Firebase hosting configuration to redirect all non-file requests (i.e. requests that
-  // do not contain a dot in their last path segment) to `angular.io`.
-  // See https://firebase.google.com/docs/hosting/full-config#redirects.
-  const redirectRule = getFirebaseRedirectRuleTo('https://angular.io');
-  const oldContent = fs.readFileSync(FIREBASE_JSON_PATH, 'utf8');
-  const newContent = oldContent.replace(/( *)"redirects": \[/, `$&\n$1  ${redirectRule},\n`);
+  return u.nameFunction(functionName, function () {
+    u.logSectionHeader(
+        `Remove Firebase hosting redirect for ${allRequests ? 'all' : 'non-file'} requests to ` +
+        `'${destinationOrigin}'.`);
 
-  fs.writeFileSync(FIREBASE_JSON_PATH, newContent);
+    const redirectRule = getFirebaseRedirectRuleTo(destinationOrigin, allRequests);
+    const oldContent = fs.readFileSync(FIREBASE_JSON_PATH, 'utf8');
+    const newContent = oldContent.replace(
+        new RegExp(`(( *)"redirects": \\[)\\n\\2  ${escapeForRegex(redirectRule)},\\n`),
+        '$1');
+
+    fs.writeFileSync(FIREBASE_JSON_PATH, newContent);
+  });
+}
+
+function getFirebaseRedirectRuleTo(origin, allRequests) {
+  const re = allRequests ? '^(.*)$' : '^(.*/[^./]*)$';
+  return `{"type": 302, "regex": "${re}", "destination": "${origin}:1"}`;
 }
 
 function undoBuild() {
@@ -82,16 +117,4 @@ function undoCheckPayloadSize() {
 function undoDisableServiceWorker() {
   u.logSectionHeader('Re-enable the ServiceWorker.');
   sh.mv(NGSW_JSON_BAK_PATH, NGSW_JSON_PATH);
-}
-
-function undoRedirectToAngularIo() {
-  u.logSectionHeader('Remove Firebase hosting redirect to https://angular.io/.');
-
-  const redirectRule = getFirebaseRedirectRuleTo('https://angular.io');
-  const oldContent = fs.readFileSync(FIREBASE_JSON_PATH, 'utf8');
-  const newContent = oldContent.replace(
-      new RegExp(`(( *)"redirects": \\[)\\n\\2  ${escapeForRegex(redirectRule)},\\n`),
-      '$1');
-
-  fs.writeFileSync(FIREBASE_JSON_PATH, newContent);
 }
