@@ -1202,9 +1202,9 @@ Instead, declare `angular` as `angular.IAngularStatic` to indicate it is a globa
 
 <header>Manually create a UMD bundle for your Angular application</header>
 
-Starting with Angular version 13, the distribution format no longer includes UMD bundles.
+Starting with Angular version 13, the [distribution format][GithubAngularAngularIssues38366] no longer includes UMD bundles.
 
-If your use case requires the UMD format, use `rollup` to manually produce a bundle from the flat ES module files.
+If your use case requires the UMD format, use [`rollup`][RollupjsMain] to manually produce a bundle from the flat ES module files.
 
 1.  Use `npm` to globally install `rollup`
 
@@ -1249,7 +1249,7 @@ If your use case requires the UMD format, use `rollup` to manually produce a bun
     </code-example>
 
 The `bundle.js` file contains your UMD bundle.
-Find an example on GitHub.
+For an example on GitHub, see [UMD Angular bundle][GithubMgechevAngularUmdBundle].
 
 </div>
 
@@ -1737,6 +1737,7 @@ And for the phone list component, a few adjustments to the router make the `Rout
 [BrowserifyMain]: http://browserify.org "Browserify"
 
 [GithubAngularAngularIssues35989]: https://github.com/angular/angular/issues/35989 "Issue 35989: docs(upgrade): correctly document how to use AOT compilation for hybrid apps | angular/angular | GitHub"
+[GithubAngularAngularIssues38366]: https://github.com/angular/angular/issues/38366 " Issue 38366: RFC: Ivy Library Distribution| angular/angular | GitHub"
 
 [GithubAngularAngularPhonecat]: https://github.com/angular/angular-phonecat "angular/angular-phonecat | GitHub"
 
@@ -1748,6 +1749,8 @@ And for the phone list component, a few adjustments to the router make the `Rout
 [GithubJohnpapaAngularStyleguideBlobPrimaryA1ReadmeMdOrganizingTests]: https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#organizing-tests "Organizing Tests - Angular 1 Style Guide | johnpapa/angular-styleguide | GitHub"
 [GithubJohnpapaAngularStyleguideBlobPrimaryA1ReadmeMdSingleResponsibility]: https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#single-responsibility "Single Responsibility - Angular 1 Style Guide | johnpapa/angular-styleguide | GitHub"
 
+[GithubMgechevAngularUmdBundle]: https://github.com/mgechev/angular-umd-bundle "UMD Angular bundle | mgechev/angular-umd-bundle | GitHub"
+
 [GithubMicrosoftTypescriptWikiWhatsNewInTypescriptSupportForUmdModuleDefinitions]: https://github.com/Microsoft/TypeScript/wiki/What's-new-in-TypeScript#support-for-umd-module-definitions "Support for UMD module definitions - What's new in TypeScript | microsoft/TypeScript | GitHub"
 
 [GithubSystemjsSystemjs]: https://github.com/systemjs/systemjs "systemjs/systemjs | GitHub"
@@ -1755,6 +1758,8 @@ And for the phone list component, a few adjustments to the router make the `Rout
 [GithubWebpackMain]: https://webpack.github.io "webpack module bundler | GitHub"
 
 [NpmjsPackageTypesAngular]: https://www.npmjs.com/package/@types/angular "@types/angular | npm"
+
+[RollupjsMain]: https://rollupjs.org "rollup.js"
 
 <!-- end links -->
 
