@@ -257,6 +257,8 @@ export class CdkHeaderRowDef extends _CdkHeaderRowDefBase implements CanStick, O
 export class CdkNoDataRow {
     constructor(templateRef: TemplateRef<any>);
     // (undocumented)
+    _contentClassName: string;
+    // (undocumented)
     templateRef: TemplateRef<any>;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<CdkNoDataRow, "ng-template[cdkNoDataRow]", never, {}, {}, never>;

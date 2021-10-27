@@ -108,4 +108,6 @@ export class MatRow extends CdkRow {}
   selector: 'ng-template[matNoDataRow]',
   providers: [{provide: CdkNoDataRow, useExisting: MatNoDataRow}],
 })
-export class MatNoDataRow extends CdkNoDataRow {}
+export class MatNoDataRow extends CdkNoDataRow {
+  override _contentClassName = 'mat-mdc-no-data-row';
+}

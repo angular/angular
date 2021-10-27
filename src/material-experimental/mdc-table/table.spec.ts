@@ -123,17 +123,19 @@ describe('MDC-based MatTable', () => {
       const dataSource = fixture.componentInstance.dataSource!;
       const initialData = dataSource.data;
 
-      expect(tbody.textContent.trim()).not.toContain('No data');
+      expect(tbody.querySelector('.mat-mdc-no-data-row')).toBeFalsy();
 
       dataSource.data = [];
       fixture.detectChanges();
 
-      expect(tbody.textContent.trim()).toContain('No data');
+      const noDataRow: HTMLElement = tbody.querySelector('.mat-mdc-no-data-row');
+      expect(noDataRow).toBeTruthy();
+      expect(noDataRow.getAttribute('role')).toBe('row');
 
       dataSource.data = initialData;
       fixture.detectChanges();
 
-      expect(tbody.textContent.trim()).not.toContain('No data');
+      expect(tbody.querySelector('.mat-mdc-no-data-row')).toBeFalsy();
     });
 
     it('should be able to show a message when no data is being displayed', () => {
@@ -144,17 +146,19 @@ describe('MDC-based MatTable', () => {
       const tbody = fixture.nativeElement.querySelector('tbody')!;
       const initialData = fixture.componentInstance.dataSource!.data;
 
-      expect(tbody.textContent.trim()).not.toContain('No data');
+      expect(tbody.querySelector('.mat-mdc-no-data-row')).toBeFalsy();
 
       fixture.componentInstance.dataSource!.data = [];
       fixture.detectChanges();
 
-      expect(tbody.textContent.trim()).toContain('No data');
+      const noDataRow: HTMLElement = tbody.querySelector('.mat-mdc-no-data-row');
+      expect(noDataRow).toBeTruthy();
+      expect(noDataRow.getAttribute('role')).toBe('row');
 
       fixture.componentInstance.dataSource!.data = initialData;
       fixture.detectChanges();
 
-      expect(tbody.textContent.trim()).not.toContain('No data');
+      expect(tbody.querySelector('.mat-mdc-no-data-row')).toBeFalsy();
     });
 
     it('should show the no data row if there is no data on init', () => {
@@ -163,7 +167,7 @@ describe('MDC-based MatTable', () => {
       fixture.detectChanges();
 
       const tbody = fixture.nativeElement.querySelector('tbody')!;
-      expect(tbody.textContent.trim()).toContain('No data');
+      expect(tbody.querySelector('.mat-mdc-no-data-row')).toBeTruthy();
     });
 
     it('should set the content styling class on the tbody', () => {

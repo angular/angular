@@ -92,17 +92,19 @@ describe('MatTable', () => {
       const table = fixture.nativeElement.querySelector('.mat-table')!;
       const initialData = fixture.componentInstance.dataSource!.data;
 
-      expect(table.textContent.trim()).not.toContain('No data');
+      expect(table.querySelector('.mat-no-data-row')).toBeFalsy();
 
       fixture.componentInstance.dataSource!.data = [];
       fixture.detectChanges();
 
-      expect(table.textContent.trim()).toContain('No data');
+      const noDataRow: HTMLElement = table.querySelector('.mat-no-data-row');
+      expect(noDataRow).toBeTruthy();
+      expect(noDataRow.getAttribute('role')).toBe('row');
 
       fixture.componentInstance.dataSource!.data = initialData;
       fixture.detectChanges();
 
-      expect(table.textContent.trim()).not.toContain('No data');
+      expect(table.querySelector('.mat-no-data-row')).toBeFalsy();
     });
 
     it('should show the no data row if there is no data on init', () => {
@@ -111,7 +113,7 @@ describe('MatTable', () => {
       fixture.detectChanges();
 
       const table = fixture.nativeElement.querySelector('.mat-table')!;
-      expect(table.textContent.trim()).toContain('No data');
+      expect(table.querySelector('.mat-no-data-row')).toBeTruthy();
     });
   });
 
@@ -154,17 +156,19 @@ describe('MatTable', () => {
     const dataSource = fixture.componentInstance.dataSource!;
     const initialData = dataSource.data;
 
-    expect(tbody.textContent.trim()).not.toContain('No data');
+    expect(tbody.querySelector('.mat-no-data-row')).toBeFalsy();
 
     dataSource.data = [];
     fixture.detectChanges();
 
-    expect(tbody.textContent.trim()).toContain('No data');
+    const noDataRow: HTMLElement = tbody.querySelector('.mat-no-data-row');
+    expect(noDataRow).toBeTruthy();
+    expect(noDataRow.getAttribute('role')).toBe('row');
 
     dataSource.data = initialData;
     fixture.detectChanges();
 
-    expect(tbody.textContent.trim()).not.toContain('No data');
+    expect(tbody.querySelector('.mat-no-data-row')).toBeFalsy();
   });
 
   it('should render with MatTableDataSource and sort', () => {

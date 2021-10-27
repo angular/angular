@@ -298,13 +298,15 @@ describe('CdkTable', () => {
     });
 
     it('should be able to show a message when no data is being displayed', () => {
-      expect(tableElement.textContent!.trim()).not.toContain('No data');
+      expect(tableElement.querySelector('.cdk-no-data-row')).toBeFalsy();
 
       const originalData = dataSource.data;
       dataSource.data = [];
       fixture.detectChanges();
 
-      expect(tableElement.textContent!.trim()).toContain('No data');
+      const noDataRow = tableElement.querySelector('.cdk-no-data-row')!;
+      expect(noDataRow).toBeTruthy();
+      expect(noDataRow.getAttribute('role')).toBe('row');
 
       dataSource.data = originalData;
       fixture.detectChanges();
@@ -312,7 +314,7 @@ describe('CdkTable', () => {
       // Expect it to have emitted once on init, once when empty, and again with original data.
       expect(component.contentChangedCount).toBe(3);
 
-      expect(tableElement.textContent!.trim()).not.toContain('No data');
+      expect(tableElement.querySelector('.cdk-no-data-row')).toBeFalsy();
     });
 
     it('should show the no data row if there is no data on init', () => {
@@ -321,7 +323,7 @@ describe('CdkTable', () => {
       fixture.componentInstance.dataSource.data = [];
       fixture.detectChanges();
       tableElement = fixture.nativeElement.querySelector('.cdk-table');
-      expect(tableElement.textContent!.trim()).toContain('No data');
+      expect(tableElement.querySelector('.cdk-no-data-row')).toBeTruthy();
       expect(component.contentChangedCount).toBe(1);
     });
   });
@@ -558,17 +560,19 @@ describe('CdkTable', () => {
     const dataSource = thisFixture.componentInstance.dataSource!;
     const originalData = dataSource.data;
 
-    expect(tbody.textContent!.trim()).not.toContain('No data');
+    expect(tbody.querySelector('.cdk-no-data-row')).toBeFalsy();
 
     dataSource.data = [];
     thisFixture.detectChanges();
 
-    expect(tbody.textContent!.trim()).toContain('No data');
+    const noDataRow: HTMLElement = tbody.querySelector('.cdk-no-data-row');
+    expect(noDataRow).toBeTruthy();
+    expect(noDataRow.getAttribute('role')).toBe('row');
 
     dataSource.data = originalData;
     thisFixture.detectChanges();
 
-    expect(tbody.textContent!.trim()).not.toContain('No data');
+    expect(tbody.querySelector('.cdk-no-data-row')).toBeFalsy();
   });
 
   it('should apply correct roles for native table elements', () => {
@@ -743,7 +747,7 @@ describe('CdkTable', () => {
     fixture.componentInstance.dataSource.data = [];
     fixture.detectChanges();
 
-    expect(tableElement.textContent).toContain('No data');
+    expect(tableElement.querySelector('.cdk-no-data-row')).toBeTruthy();
   });
 
   describe('using when predicate', () => {
@@ -2766,7 +2770,7 @@ class RowContextCdkTableApp {
       </ng-container>
 
       <cdk-row *cdkRowDef="let row; columns: columns"></cdk-row>
-      <ng-template cdkNoDataRow>No data</ng-template>
+      <div *cdkNoDataRow>No data</div>
     </cdk-table>
   `,
 })

@@ -125,6 +125,8 @@ export class MatHeaderRowDef extends CdkHeaderRowDef {
 // @public
 export class MatNoDataRow extends CdkNoDataRow {
     // (undocumented)
+    _contentClassName: string;
+    // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatNoDataRow, "ng-template[matNoDataRow]", never, {}, {}, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatNoDataRow, never>;

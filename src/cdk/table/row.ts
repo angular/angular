@@ -313,5 +313,6 @@ export class CdkRow {}
   selector: 'ng-template[cdkNoDataRow]',
 })
 export class CdkNoDataRow {
+  _contentClassName = 'cdk-no-data-row';
   constructor(public templateRef: TemplateRef<any>) {}
 }

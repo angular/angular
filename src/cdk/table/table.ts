@@ -1286,15 +1286,33 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
   private _updateNoDataRow() {
     const noDataRow = this._customNoDataRow || this._noDataRow;
 
-    if (noDataRow) {
-      const shouldShow = this._rowOutlet.viewContainer.length === 0;
-
-      if (shouldShow !== this._isShowingNoDataRow) {
-        const container = this._noDataRowOutlet.viewContainer;
-        shouldShow ? container.createEmbeddedView(noDataRow.templateRef) : container.clear();
-        this._isShowingNoDataRow = shouldShow;
-      }
+    if (!noDataRow) {
+      return;
     }
+
+    const shouldShow = this._rowOutlet.viewContainer.length === 0;
+
+    if (shouldShow === this._isShowingNoDataRow) {
+      return;
+    }
+
+    const container = this._noDataRowOutlet.viewContainer;
+
+    if (shouldShow) {
+      const view = container.createEmbeddedView(noDataRow.templateRef);
+      const rootNode: HTMLElement | undefined = view.rootNodes[0];
+
+      // Only add the attributes if we have a single root node since it's hard
+      // to figure out which one to add it to when there are multiple.
+      if (view.rootNodes.length === 1 && rootNode?.nodeType === this._document.ELEMENT_NODE) {
+        rootNode.setAttribute('role', 'row');
+        rootNode.classList.add(noDataRow._contentClassName);
+      }
+    } else {
+      container.clear();
+    }
+
+    this._isShowingNoDataRow = shouldShow;
   }
 
   static ngAcceptInputType_multiTemplateDataRows: BooleanInput;
