@@ -926,70 +926,79 @@ describe('AppComponent', () => {
     });
 
     describe('initial rendering', () => {
-      beforeEach(jasmine.clock().install);
-      afterEach(jasmine.clock().uninstall);
+      const originialReducedMotion = AppComponent.reducedMotion;
+
+      beforeEach(() => {
+        jasmine.clock().install();
+        AppComponent.reducedMotion = false;
+      });
+
+      afterEach(() => {
+        jasmine.clock().uninstall();
+        AppComponent.reducedMotion = originialReducedMotion;
+      });
 
       it('should initially disable Angular animations until a document is rendered', () => {
         initializeTest(false);
         jasmine.clock().tick(1);  // triggers the HTTP response for the document
 
-        expect(component.isStarting).toBe(true);
+        expect(component.disableAnimations).toBe(true);
         expect(fixture.debugElement.properties['@.disabled']).toBe(true);
 
         triggerDocViewerEvent('docInserted');
         jasmine.clock().tick(startedDelay);
         fixture.detectChanges();
-        expect(component.isStarting).toBe(true);
+        expect(component.disableAnimations).toBe(true);
         expect(fixture.debugElement.properties['@.disabled']).toBe(true);
 
         triggerDocViewerEvent('docRendered');
         jasmine.clock().tick(startedDelay);
         fixture.detectChanges();
-        expect(component.isStarting).toBe(false);
+        expect(component.disableAnimations).toBe(false);
         expect(fixture.debugElement.properties['@.disabled']).toBe(false);
       });
 
-      it('should initially add the starting class until a document is rendered', () => {
+      it('should initially add the `no-animations` class until a document is rendered', () => {
         initializeTest(false);
         jasmine.clock().tick(1);  // triggers the HTTP response for the document
         const sidenavContainer = fixture.debugElement.query(By.css('mat-sidenav-container')).nativeElement;
 
-        expect(component.isStarting).toBe(true);
-        expect(hamburger.classList.contains('starting')).toBe(true);
-        expect(sidenavContainer.classList.contains('starting')).toBe(true);
+        expect(component.disableAnimations).toBe(true);
+        expect(hamburger.classList.contains('no-animations')).toBe(true);
+        expect(sidenavContainer.classList.contains('no-animations')).toBe(true);
 
         triggerDocViewerEvent('docInserted');
         jasmine.clock().tick(startedDelay);
         fixture.detectChanges();
-        expect(component.isStarting).toBe(true);
-        expect(hamburger.classList.contains('starting')).toBe(true);
-        expect(sidenavContainer.classList.contains('starting')).toBe(true);
+        expect(component.disableAnimations).toBe(true);
+        expect(hamburger.classList.contains('no-animations')).toBe(true);
+        expect(sidenavContainer.classList.contains('no-animations')).toBe(true);
 
         triggerDocViewerEvent('docRendered');
         jasmine.clock().tick(startedDelay);
         fixture.detectChanges();
-        expect(component.isStarting).toBe(false);
-        expect(hamburger.classList.contains('starting')).toBe(false);
-        expect(sidenavContainer.classList.contains('starting')).toBe(false);
+        expect(component.disableAnimations).toBe(false);
+        expect(hamburger.classList.contains('no-animations')).toBe(false);
+        expect(sidenavContainer.classList.contains('no-animations')).toBe(false);
       });
 
       it('should initially disable animations on the DocViewer for the first rendering', () => {
         initializeTest(false);
         jasmine.clock().tick(1);  // triggers the HTTP response for the document
 
-        expect(component.isStarting).toBe(true);
+        expect(component.disableAnimations).toBe(true);
         expect(docViewer.classList.contains('no-animations')).toBe(true);
 
         triggerDocViewerEvent('docInserted');
         jasmine.clock().tick(startedDelay);
         fixture.detectChanges();
-        expect(component.isStarting).toBe(true);
+        expect(component.disableAnimations).toBe(true);
         expect(docViewer.classList.contains('no-animations')).toBe(true);
 
         triggerDocViewerEvent('docRendered');
         jasmine.clock().tick(startedDelay);
         fixture.detectChanges();
-        expect(component.isStarting).toBe(false);
+        expect(component.disableAnimations).toBe(false);
         expect(docViewer.classList.contains('no-animations')).toBe(false);
       });
     });
@@ -1047,6 +1056,44 @@ describe('AppComponent', () => {
         triggerDocViewerEvent('docInserted');
         jasmine.clock().tick(0);
         expect(updateSideNavSpy).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe('disableAnimations', () => {
+      const originialReducedMotion = AppComponent.reducedMotion;
+
+      beforeEach(() => {
+        jasmine.clock().install();
+        AppComponent.reducedMotion = false;
+      });
+
+      afterEach(() => {
+        jasmine.clock().uninstall();
+        AppComponent.reducedMotion = originialReducedMotion;
+      });
+
+      it('should initially be true', () => {
+        initializeTest(false);
+        expect(component.disableAnimations).toBe(true);
+      });
+
+      it('should become false after initial render', () => {
+        initializeTest(false);
+
+        triggerDocViewerEvent('docRendered');
+        jasmine.clock().tick(startedDelay);
+
+        expect(component.disableAnimations).toBe(false);
+      });
+
+      it('should remain true (even after initial render) if user prefers reduced motion', () => {
+        AppComponent.reducedMotion = true;
+        initializeTest(false);
+
+        triggerDocViewerEvent('docRendered');
+        jasmine.clock().tick(startedDelay);
+
+        expect(component.disableAnimations).toBe(true);
       });
     });
 

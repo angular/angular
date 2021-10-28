@@ -58,7 +58,7 @@ mat-toolbar.app-toolbar {
       min-width: 15%;
     }
 
-    &:not(.starting) {
+    &:not(.no-animations) {
       transition-duration: 0.4s;
       transition-property: color, margin;
       transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);

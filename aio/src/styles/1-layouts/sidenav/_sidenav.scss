@@ -2,7 +2,7 @@
 @use '../../mixins';
 
 // Disable sidenav animations for the initial render.
-.starting.mat-drawer-transition .mat-drawer-content {
+.no-animations.mat-drawer-transition .mat-drawer-content {
   transition: none;
 }
 

@@ -34,6 +34,12 @@ export const showFloatingTocWidth = 800;
 })
 export class AppComponent implements OnInit {
 
+  static reducedMotion = window.matchMedia('(prefers-reduced-motion)').matches;
+
+  // Disable all Angular animations if the user prefers reduced motion or for the initial render.
+  @HostBinding('@.disabled')
+  get disableAnimations(): boolean { return AppComponent.reducedMotion || this.isStarting; }
+
   currentDocument: DocumentContents;
   currentDocVersion: NavigationNode;
   currentNodes: CurrentNodes = {};
@@ -65,9 +71,7 @@ export class AppComponent implements OnInit {
   @HostBinding('class')
   hostClasses = '';
 
-  // Disable all Angular animations for the initial render.
-  @HostBinding('@.disabled')
-  isStarting = true;
+  private isStarting = true;
   isTransitioning = true;
   isFetching = false;
   showTopMenu = false;
