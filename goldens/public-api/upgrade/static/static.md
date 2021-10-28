@@ -34,7 +34,7 @@ export function downgradeComponent(info: {
 export function downgradeInjectable(token: any, downgradedModule?: string): Function;
 
 // @public
-export function downgradeModule<T>(moduleFactoryOrBootstrapFn: NgModuleFactory<T> | ((extraProviders: StaticProvider[]) => Promise<NgModuleRef<T>>)): string;
+export function downgradeModule<T>(moduleOrBootstrapFn: Type<T> | NgModuleFactory<T> | ((extraProviders: StaticProvider[]) => Promise<NgModuleRef<T>>)): string;
 
 // @public
 export function getAngularJSGlobal(): any;
