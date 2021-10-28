@@ -20,9 +20,6 @@ ng_module(
 ng_package(
     name = "npm_package",
     srcs = ["package.json"],
-    nested_packages = [
-        "//packages/elements/schematics:npm_package",
-    ],
     tags = [
         "release-with-framework",
     ],
