@@ -137,7 +137,7 @@ describe('removeEslintComments', () => {
       expect(rmv(source)).toEqual(source);
     });
 
-    it('should remove html eslint comments present in an @Component decorator\'s template', () => {
+    it('should remove html eslint comments', () => {
       const source = `
         import { Component, OnInit, Input } from '@angular/core';
 
@@ -270,6 +270,6 @@ describe('removeEslintComments', () => {
  * @returns output regex
  */
 function createRegexForMatching(str) {
-  const partiallyEscapedString = str.replace(/(?:[.?*+\\|^$()[\]])|({(?!\d+\}))|(?<!\d)}/g, '\\$&');
+  const partiallyEscapedString = str.replace(/(?:[.?*+\\|^$()[\]])|{(?!\d+})|(?<!{\d+)}/g, '\\$&');
   return new RegExp(`^${partiallyEscapedString}$`);
 }
