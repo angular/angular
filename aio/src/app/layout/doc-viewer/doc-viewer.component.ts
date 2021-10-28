@@ -26,9 +26,6 @@ const initialDocViewerContent = initialDocViewerElement ? fromInnerHTML(initialD
   // encapsulation: ViewEncapsulation.ShadowDom
 })
 export class DocViewerComponent implements OnDestroy {
-  // Enable/Disable view transition animations.
-  static animationsEnabled = true;
-
   private hostElement: HTMLElement;
 
   private void$ = of<void>(undefined);
@@ -220,8 +217,7 @@ export class DocViewerComponent implements OnDestroy {
     >;
     const animateProp =
         (elem: HTMLElement, prop: StringValueCSSStyleDeclaration, from: string, to: string, duration = 200) => {
-          const animationsDisabled = !DocViewerComponent.animationsEnabled
-                                     || this.hostElement.classList.contains(NO_ANIMATIONS);
+          const animationsDisabled = this.hostElement.classList.contains(NO_ANIMATIONS);
           elem.style.transition = '';
           return animationsDisabled
               ? this.void$.pipe(tap(() => elem.style[prop] = to))
