@@ -12,11 +12,11 @@ const jsRegexes = [
   /\/\/ *eslint-disable(?:-next-line)?(?: .*)?(?:\n *|$)/,
   /\n? *\/\/ *eslint-(?:disable-line|enable)(?: .*)?(?=\n|$)/,
   /\/\*\s*eslint-disable(?:-next-line)? [\s\S]*?\*\/ *(?:\n *)?/,
-  /\n? *\/\*\s*eslint-(?:disable-line|enable) [\s\S]*?\*\//,
+  /\n? *\/\*\s*eslint-(?:disable-line|enable)(?: [\s\S]*?)?\*\//,
 ];
 
 const htmlRegexes = [
-  /<!--\n? *eslint-disable(?:-next-line)?(?: [\s\S]*?)?--> *(?:\n *)?/,
+  /<!--\s*eslint-disable(?:-next-line)?(?: [\s\S]*?)?--> *(?:\n *)?/,
   /\n? *<!--\s*eslint-(?:disable-line|enable)(?: [\s\S]*?)?-->/,
 ];
 
