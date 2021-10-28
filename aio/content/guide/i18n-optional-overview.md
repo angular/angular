@@ -44,12 +44,10 @@ To prepare your project for translations, you should have a basic understanding 
 [AioGuideI18nOptionalImportGlobalVariants]: guide/i18n-optional-import-global-variants "Import global variants of the locale data | Angular"
 [AioGuideI18nOptionalManualRuntimeLocale]: guide/i18n-optional-runtime-source-locale "Set the runtime locale manually | Angular"
 
-[AioApiCoreLocaleId]: api/core/LOCALE_ID "LOCALE_ID | Core - API | Angular"
-
 <!-- external links -->
 
 [W3Xml]: https://www.w3.org/XML "Extensible Markup Language (XML) | W3C"
 
 <!-- end links -->
 
-@reviewed 2021-10-13
+@reviewed 2021-10-28
