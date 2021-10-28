@@ -1,0 +1,125 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "SchematicsMaterialMDCMigration",
+  "title": "Material MDC Migration Schema",
+  "type": "object",
+  "properties": {
+    "path": {
+      "type": "string",
+      "format": "path",
+      "description": "The path to migrate. (Defaults to the current working directory)",
+      "alias": "p",
+      "default": ""
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "all",
+          "autocomplete",
+          "button",
+          "card",
+          "checkbox",
+          "chips",
+          "dialog",
+          "form-field",
+          "input",
+          "list",
+          "menu",
+          "paginator",
+          "progress-bar",
+          "progress-spinner",
+          "radio",
+          "select",
+          "slide-toggle",
+          "slider",
+          "snack-bar",
+          "table",
+          "tabs",
+          "tooltip"
+        ]
+      },
+      "description": "The components to migrate.",
+      "alias": "c",
+      "x-prompt": {
+        "message": "What components do you want to migrate?",
+        "type": "list",
+        "items": [
+          {
+            "value": "button",
+            "label": "Button"
+          },
+          {
+            "value": "card",
+            "label": "Card"
+          },
+          {
+            "value": "checkbox",
+            "label": "Checkbox"
+          },
+          {
+            "value": "chips",
+            "label": "Chips"
+          },
+          {
+            "value": "dialog",
+            "label": "Dialog"
+          },
+          {
+            "value": "form-field",
+            "label": "Form Field, Input, Select, Autocomplete"
+          },
+          {
+            "value": "list",
+            "label": "List"
+          },
+          {
+            "value": "menu",
+            "label": "Menu"
+          },
+          {
+            "value": "paginator",
+            "label": "Paginator"
+          },
+          {
+            "value": "progress-bar",
+            "label": "Progress Bar"
+          },
+          {
+            "value": "progress-spinner",
+            "label": "Progress Spinner"
+          },
+          {
+            "value": "radio",
+            "label": "Radio"
+          },
+          {
+            "value": "slide-toggle",
+            "label": "Slide Toggle"
+          },
+          {
+            "value": "slider",
+            "label": "Slider"
+          },
+          {
+            "value": "snack-bar",
+            "label": "Snack Bar"
+          },
+          {
+            "value": "table",
+            "label": "Table"
+          },
+          {
+            "value": "tabs",
+            "label": "Tabs"
+          },
+          {
+            "value": "tooltip",
+            "label": "Tooltip"
+          }
+        ]
+      }
+    }
+  }
+}

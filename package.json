@@ -45,6 +45,7 @@
     "integration-tests:size-test": "bazel test //integration/size-test/...",
     "test-linker-aot": "bazel test --partial_compilation --test_tag_filters=partial-compilation-integration,-firefox --build_tests_only -- //integration/... //src/...",
     "test-linker-jit": "bazel test --partial_compilation --test_tag_filters=partial-compilation-integration,-firefox --build_tests_only --//tools:force_partial_jit_compilation=True  -- //integration/... //src/...",
+    "integration-tests:mdc-migration": "bazel test --test_output=streamed //integration/mdc-migration/...",
     "check-mdc-tests": "ts-node --project scripts/tsconfig.json scripts/check-mdc-tests.ts",
     "check-mdc-exports": "ts-node --project scripts/tsconfig.json scripts/check-mdc-exports.ts",
     "check-tooling-setup": "yarn tsc --project tools/tsconfig.json && yarn tsc --project scripts/tsconfig.json && yarn tsc --project .ng-dev/tsconfig.json",
