@@ -37,7 +37,7 @@ To force the currency to use American English (`en-US`), use the following forma
 
 <div class="alert is-helpful">
 
-**NOTE**: The language and locale you set for `LOCALE_ID` token is ignored for the `CurrencyPipe`.
+**NOTE**: The locale specified for the `CurrencyPipe` overrides the global `LOCALE_ID` token of your application.
 
 </div>
 
@@ -61,4 +61,4 @@ To force the currency to use American English (`en-US`), use the following forma
 
 <!-- end links -->
 
-@reviewed 2021-10-13
+@reviewed 2021-10-28
