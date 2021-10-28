@@ -11,7 +11,7 @@ import ts from 'typescript';
 import {findInitTestEnvironmentCalls, findTestModuleMetadataNodes, getInitTestEnvironmentLiteralReplacement, InitTestEnvironmentAnalysis, migrateTestModuleMetadataLiteral} from '../testbed-teardown/util';
 
 /** TSLint rule that adds the `teardown` flag to `TestBed` calls. */
-export class Rule extends Rules.TypedRule {
+export class TestbedTeardownRule extends Rules.TypedRule {
   private _analysis = new Map<ts.Program, InitTestEnvironmentAnalysis>();
 
   override applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
