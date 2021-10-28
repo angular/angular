@@ -287,6 +287,7 @@ export {
   publishDefaultGlobalUtils as ɵpublishDefaultGlobalUtils
 ,
   publishGlobalUtil as ɵpublishGlobalUtil} from './render3/util/global_utils';
+export {ViewRef as ɵViewRef} from './render3/view_ref';
 export {
   bypassSanitizationTrustHtml as ɵbypassSanitizationTrustHtml,
   bypassSanitizationTrustResourceUrl as ɵbypassSanitizationTrustResourceUrl,
