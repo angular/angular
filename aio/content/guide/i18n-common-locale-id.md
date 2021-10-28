@@ -65,8 +65,6 @@ To change the source locale of your project for the build, complete the followin
 
 <!-- links -->
 
-[AioApiCoreLocaleId]: api/core/LOCALE_ID "LOCALE_ID | Core - API | Angular"
-
 [AioGuideI18nCommonFormatDataLocale]: guide/i18n-common-format-data-locale "Format data based on locale | Angular"
 [AioGuideI18nCommonMerge]: guide/i18n-common-merge "Merge translations into the application | Angular"
 
@@ -85,4 +83,4 @@ To change the source locale of your project for the build, complete the followin
 
 <!-- end links -->
 
-@reviewed 2021-10-13
+@reviewed 2021-10-28
