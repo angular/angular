@@ -76,15 +76,16 @@ describe('AppComponent', () => {
 
 
   describe('with proper DocViewer', () => {
+    const originalReducedMotion = AppComponent.reducedMotion;
 
     beforeEach(async () => {
-      DocViewerComponent.animationsEnabled = false;
+      AppComponent.reducedMotion = true;
 
       createTestingModule('a/b');
       await initializeTest();
     });
 
-    afterEach(() => DocViewerComponent.animationsEnabled = true);
+    afterEach(() => AppComponent.reducedMotion = originalReducedMotion);
 
     it('should create', () => {
       expect(component).toBeDefined();
