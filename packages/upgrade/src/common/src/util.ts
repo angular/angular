@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, Type} from '@angular/core';
+import {Injector, Type, ɵNG_MOD_DEF} from '@angular/core';
 
 import {element as angularElement, IAugmentedJQuery, IInjectorService, INgModelController, IRootScopeService} from './angular1';
 import {$ROOT_ELEMENT, $ROOT_SCOPE, DOWNGRADED_MODULE_COUNT_KEY, UPGRADE_APP_TYPE_KEY} from './constants';
@@ -87,6 +87,11 @@ export function getUpgradeAppType($injector: IInjectorService): UpgradeAppType {
 
 export function isFunction(value: any): value is Function {
   return typeof value === 'function';
+}
+
+export function isNgModuleType(value: any): value is Type<unknown> {
+  // NgModule class should have the `ɵmod` static property attached by AOT or JIT compiler.
+  return isFunction(value) && !!value[ɵNG_MOD_DEF];
 }
 
 function isParentNode(node: Node|ParentNode): node is ParentNode {

@@ -19,6 +19,7 @@ ts_library(
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/testing",
+        "//packages/private/testing",
         "//packages/upgrade/src/common",
         "//packages/upgrade/src/common/test/helpers",
         "//packages/upgrade/static",

@@ -11,6 +11,7 @@ import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
+import {onlyInIvy} from '@angular/private/testing';
 import {downgradeComponent, downgradeModule, UpgradeComponent} from '@angular/upgrade/static';
 
 import * as angular from '../../../src/common/src/angular1';
@@ -79,6 +80,56 @@ withEachNg1Version(() => {
            // Wait for the module to be bootstrapped.
            setTimeout(() => expect(element.textContent).toBe('a | b'));
          }));
+
+      onlyInIvy('Factory-less API of the `downgradeModule` is supported only in Ivy')
+          .it('should support downgrading modules by providing NgModule class to `downgradeModule` call',
+              waitForAsync(() => {
+                @Component({selector: 'ng2A', template: 'a'})
+                class Ng2ComponentA {
+                }
+
+                @Component({selector: 'ng2B', template: 'b'})
+                class Ng2ComponentB {
+                }
+
+                @NgModule({
+                  declarations: [Ng2ComponentA],
+                  entryComponents: [Ng2ComponentA],
+                  imports: [BrowserModule],
+                })
+                class Ng2ModuleA {
+                  ngDoBootstrap() {}
+                }
+
+                @NgModule({
+                  declarations: [Ng2ComponentB],
+                  entryComponents: [Ng2ComponentB],
+                  imports: [BrowserModule],
+                })
+                class Ng2ModuleB {
+                  ngDoBootstrap() {}
+                }
+
+                const downModA = downgradeModule(Ng2ModuleA);
+                const downModB = downgradeModule(Ng2ModuleB);
+                const ng1Module = angular.module_('ng1', [downModA, downModB])
+                                      .directive('ng2A', downgradeComponent({
+                                                   component: Ng2ComponentA,
+                                                   downgradedModule: downModA,
+                                                   propagateDigest,
+                                                 }))
+                                      .directive('ng2B', downgradeComponent({
+                                                   component: Ng2ComponentB,
+                                                   downgradedModule: downModB,
+                                                   propagateDigest,
+                                                 }));
+
+                const element = html('<ng2-a></ng2-a> | <ng2-b></ng2-b>');
+                angular.bootstrap(element, [ng1Module.name]);
+
+                // Wait for the module to be bootstrapped.
+                setTimeout(() => expect(element.textContent).toBe('a | b'));
+              }));
 
       it('should support nesting components from different downgraded modules', waitForAsync(() => {
            @Directive({selector: 'ng1A'})

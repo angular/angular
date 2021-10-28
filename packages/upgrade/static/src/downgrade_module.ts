@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, NgModuleFactory, NgModuleRef, PlatformRef, StaticProvider} from '@angular/core';
+import {Injector, NgModuleFactory, NgModuleRef, PlatformRef, StaticProvider, Type} from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';
 
 import {IInjectorService, IProvideService, module_ as angularModule} from '../../src/common/src/angular1';
 import {$INJECTOR, $PROVIDE, DOWNGRADED_MODULE_COUNT_KEY, INJECTOR_KEY, LAZY_MODULE_REF, UPGRADE_APP_TYPE_KEY, UPGRADE_MODULE_NAME} from '../../src/common/src/constants';
-import {destroyApp, getDowngradedModuleCount, isFunction, LazyModuleRef, UpgradeAppType} from '../../src/common/src/util';
+import {destroyApp, getDowngradedModuleCount, isFunction, isNgModuleType, LazyModuleRef, UpgradeAppType} from '../../src/common/src/util';
 
 import {angular1Providers, setTempInjectorRef} from './angular1_providers';
 import {NgAdapterInjector} from './util';
@@ -37,9 +37,11 @@ let moduleUid = 0;
  * The Angular module will be bootstrapped once (when requested for the first time) and the same
  * reference will be used from that point onwards.
  *
- * `downgradeModule()` requires either an `NgModuleFactory` or a function:
+ * `downgradeModule()` requires either an `NgModuleFactory`, `NgModule` class or a function:
  * - `NgModuleFactory`: If you pass an `NgModuleFactory`, it will be used to instantiate a module
  *   using `platformBrowser`'s {@link PlatformRef#bootstrapModuleFactory bootstrapModuleFactory()}.
+ * - `NgModule` class: If you pass an NgModule class, it will be used to instantiate a module
+ *   using `platformBrowser`'s {@link PlatformRef#bootstrapModule bootstrapModule()}.
  * - `Function`: If you pass a function, it is expected to return a promise resolving to an
  *   `NgModuleRef`. The function is called with an array of extra {@link StaticProvider Providers}
  *   that are expected to be available from the returned `NgModuleRef`'s `Injector`.
@@ -128,16 +130,25 @@ let moduleUid = 0;
  *
  * @publicApi
  */
-export function downgradeModule<T>(moduleFactoryOrBootstrapFn: NgModuleFactory<T>|(
+export function downgradeModule<T>(moduleOrBootstrapFn: Type<T>|NgModuleFactory<T>|(
     (extraProviders: StaticProvider[]) => Promise<NgModuleRef<T>>)): string {
   const lazyModuleName = `${UPGRADE_MODULE_NAME}.lazy${++moduleUid}`;
   const lazyModuleRefKey = `${LAZY_MODULE_REF}${lazyModuleName}`;
   const lazyInjectorKey = `${INJECTOR_KEY}${lazyModuleName}`;
 
-  const bootstrapFn = isFunction(moduleFactoryOrBootstrapFn) ?
-      moduleFactoryOrBootstrapFn :
-      (extraProviders: StaticProvider[]) =>
-          platformBrowser(extraProviders).bootstrapModuleFactory(moduleFactoryOrBootstrapFn);
+  let bootstrapFn: (extraProviders: StaticProvider[]) => Promise<NgModuleRef<T>>;
+  if (isNgModuleType(moduleOrBootstrapFn)) {
+    // NgModule class
+    bootstrapFn = (extraProviders: StaticProvider[]) =>
+        platformBrowser(extraProviders).bootstrapModule(moduleOrBootstrapFn);
+  } else if (!isFunction(moduleOrBootstrapFn)) {
+    // NgModule factory
+    bootstrapFn = (extraProviders: StaticProvider[]) =>
+        platformBrowser(extraProviders).bootstrapModuleFactory(moduleOrBootstrapFn);
+  } else {
+    // bootstrap function
+    bootstrapFn = moduleOrBootstrapFn;
+  }
 
   let injector: Injector;
 
