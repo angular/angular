@@ -594,146 +594,139 @@ describe('DocViewerComponent', () => {
     });
 
     [true, false].forEach(animationsEnabled => {
-      describe(`(animationsEnabled: ${animationsEnabled})`, () => {
-        beforeEach(() => DocViewerComponent.animationsEnabled = animationsEnabled);
-        afterEach(() => DocViewerComponent.animationsEnabled = true);
+      describe(`(animations enabled: ${animationsEnabled})`, () => {
+        beforeEach(() => docViewerEl.classList[animationsEnabled ? 'remove' : 'add'](NO_ANIMATIONS));
 
-        [true, false].forEach(noAnimations => {
-          describe(`(.${NO_ANIMATIONS}: ${noAnimations})`, () => {
-            beforeEach(() => docViewerEl.classList[noAnimations ? 'add' : 'remove'](NO_ANIMATIONS));
-
-            it('should return an observable', done => {
-              docViewer.swapViews().subscribe(done, done.fail);
-            });
-
-            it('should swap the views', async () => {
-              await doSwapViews();
-
-              expect(docViewerEl.contains(oldCurrViewContainer)).toBe(false);
-              expect(docViewerEl.contains(oldNextViewContainer)).toBe(true);
-              expect(docViewer.currViewContainer).toBe(oldNextViewContainer);
-              expect(docViewer.nextViewContainer).toBe(oldCurrViewContainer);
-
-              await doSwapViews();
-
-              expect(docViewerEl.contains(oldCurrViewContainer)).toBe(true);
-              expect(docViewerEl.contains(oldNextViewContainer)).toBe(false);
-              expect(docViewer.currViewContainer).toBe(oldCurrViewContainer);
-              expect(docViewer.nextViewContainer).toBe(oldNextViewContainer);
-            });
-
-            it('should emit `docRemoved` after removing the leaving view', async () => {
-              const onDocRemovedSpy = jasmine.createSpy('onDocRemoved').and.callFake(() => {
-                expect(docViewerEl.contains(oldCurrViewContainer)).toBe(false);
-                expect(docViewerEl.contains(oldNextViewContainer)).toBe(false);
-              });
-
-              docViewer.docRemoved.subscribe(onDocRemovedSpy);
-
-              expect(docViewerEl.contains(oldCurrViewContainer)).toBe(true);
-              expect(docViewerEl.contains(oldNextViewContainer)).toBe(false);
-
-              await doSwapViews();
-
-              expect(onDocRemovedSpy).toHaveBeenCalledTimes(1);
-              expect(docViewerEl.contains(oldCurrViewContainer)).toBe(false);
-              expect(docViewerEl.contains(oldNextViewContainer)).toBe(true);
-            });
-
-            it('should not emit `docRemoved` if the leaving view is already removed', async () => {
-              const onDocRemovedSpy = jasmine.createSpy('onDocRemoved');
-
-              docViewer.docRemoved.subscribe(onDocRemovedSpy);
-              docViewerEl.removeChild(oldCurrViewContainer);
-
-              await doSwapViews();
-
-              expect(onDocRemovedSpy).not.toHaveBeenCalled();
-            });
-
-            it('should emit `docInserted` after inserting the entering view', async () => {
-              const onDocInsertedSpy = jasmine.createSpy('onDocInserted').and.callFake(() => {
-                expect(docViewerEl.contains(oldCurrViewContainer)).toBe(false);
-                expect(docViewerEl.contains(oldNextViewContainer)).toBe(true);
-              });
-
-              docViewer.docInserted.subscribe(onDocInsertedSpy);
-
-              expect(docViewerEl.contains(oldCurrViewContainer)).toBe(true);
-              expect(docViewerEl.contains(oldNextViewContainer)).toBe(false);
-
-              await doSwapViews();
-
-              expect(onDocInsertedSpy).toHaveBeenCalledTimes(1);
-              expect(docViewerEl.contains(oldCurrViewContainer)).toBe(false);
-              expect(docViewerEl.contains(oldNextViewContainer)).toBe(true);
-            });
-
-            it('should call the callback after inserting the entering view', async () => {
-              const onInsertedCb = jasmine.createSpy('onInsertedCb').and.callFake(() => {
-                expect(docViewerEl.contains(oldCurrViewContainer)).toBe(false);
-                expect(docViewerEl.contains(oldNextViewContainer)).toBe(true);
-              });
-              const onDocInsertedSpy = jasmine.createSpy('onDocInserted');
-
-              docViewer.docInserted.subscribe(onDocInsertedSpy);
-
-              expect(docViewerEl.contains(oldCurrViewContainer)).toBe(true);
-              expect(docViewerEl.contains(oldNextViewContainer)).toBe(false);
-
-              await doSwapViews(onInsertedCb);
-
-              expect(onInsertedCb).toHaveBeenCalledTimes(1);
-              expect(onInsertedCb).toHaveBeenCalledBefore(onDocInsertedSpy);
-              expect(docViewerEl.contains(oldCurrViewContainer)).toBe(false);
-              expect(docViewerEl.contains(oldNextViewContainer)).toBe(true);
-            });
-
-            it('should empty the previous view', async () => {
-              await doSwapViews();
-
-              expect(docViewer.currViewContainer.innerHTML).toBe('Next view');
-              expect(docViewer.nextViewContainer.innerHTML).toBe('');
-
-              docViewer.nextViewContainer.innerHTML = 'Next view 2';
-              await doSwapViews();
-
-              expect(docViewer.currViewContainer.innerHTML).toBe('Next view 2');
-              expect(docViewer.nextViewContainer.innerHTML).toBe('');
-            });
-
-            if (animationsEnabled && !noAnimations) {
-              // Only test this when there are animations. Without animations, the views are swapped
-              // synchronously, so there is no need (or way) to abort.
-              it('should abort swapping if the returned observable is unsubscribed from', async () => {
-                docViewer.swapViews().subscribe().unsubscribe();
-                await doSwapViews();
-
-                // Since the first call was cancelled, only one swapping should have taken place.
-                expect(docViewerEl.contains(oldCurrViewContainer)).toBe(false);
-                expect(docViewerEl.contains(oldNextViewContainer)).toBe(true);
-                expect(docViewer.currViewContainer).toBe(oldNextViewContainer);
-                expect(docViewer.nextViewContainer).toBe(oldCurrViewContainer);
-                expect(docViewer.currViewContainer.innerHTML).toBe('Next view');
-                expect(docViewer.nextViewContainer.innerHTML).toBe('');
-              });
-            } else {
-              it('should swap views synchronously when animations are disabled', () => {
-                const cbSpy = jasmine.createSpy('cb');
-
-                docViewer.swapViews(cbSpy).subscribe();
-
-                expect(cbSpy).toHaveBeenCalledTimes(1);
-                expect(docViewerEl.contains(oldCurrViewContainer)).toBe(false);
-                expect(docViewerEl.contains(oldNextViewContainer)).toBe(true);
-                expect(docViewer.currViewContainer).toBe(oldNextViewContainer);
-                expect(docViewer.nextViewContainer).toBe(oldCurrViewContainer);
-                expect(docViewer.currViewContainer.innerHTML).toBe('Next view');
-                expect(docViewer.nextViewContainer.innerHTML).toBe('');
-              });
-            }
-          });
+        it('should return an observable', done => {
+          docViewer.swapViews().subscribe(done, done.fail);
         });
+
+        it('should swap the views', async () => {
+          await doSwapViews();
+
+          expect(docViewerEl.contains(oldCurrViewContainer)).toBe(false);
+          expect(docViewerEl.contains(oldNextViewContainer)).toBe(true);
+          expect(docViewer.currViewContainer).toBe(oldNextViewContainer);
+          expect(docViewer.nextViewContainer).toBe(oldCurrViewContainer);
+
+          await doSwapViews();
+
+          expect(docViewerEl.contains(oldCurrViewContainer)).toBe(true);
+          expect(docViewerEl.contains(oldNextViewContainer)).toBe(false);
+          expect(docViewer.currViewContainer).toBe(oldCurrViewContainer);
+          expect(docViewer.nextViewContainer).toBe(oldNextViewContainer);
+        });
+
+        it('should emit `docRemoved` after removing the leaving view', async () => {
+          const onDocRemovedSpy = jasmine.createSpy('onDocRemoved').and.callFake(() => {
+            expect(docViewerEl.contains(oldCurrViewContainer)).toBe(false);
+            expect(docViewerEl.contains(oldNextViewContainer)).toBe(false);
+          });
+
+          docViewer.docRemoved.subscribe(onDocRemovedSpy);
+
+          expect(docViewerEl.contains(oldCurrViewContainer)).toBe(true);
+          expect(docViewerEl.contains(oldNextViewContainer)).toBe(false);
+
+          await doSwapViews();
+
+          expect(onDocRemovedSpy).toHaveBeenCalledTimes(1);
+          expect(docViewerEl.contains(oldCurrViewContainer)).toBe(false);
+          expect(docViewerEl.contains(oldNextViewContainer)).toBe(true);
+        });
+
+        it('should not emit `docRemoved` if the leaving view is already removed', async () => {
+          const onDocRemovedSpy = jasmine.createSpy('onDocRemoved');
+
+          docViewer.docRemoved.subscribe(onDocRemovedSpy);
+          docViewerEl.removeChild(oldCurrViewContainer);
+
+          await doSwapViews();
+
+          expect(onDocRemovedSpy).not.toHaveBeenCalled();
+        });
+
+        it('should emit `docInserted` after inserting the entering view', async () => {
+          const onDocInsertedSpy = jasmine.createSpy('onDocInserted').and.callFake(() => {
+            expect(docViewerEl.contains(oldCurrViewContainer)).toBe(false);
+            expect(docViewerEl.contains(oldNextViewContainer)).toBe(true);
+          });
+
+          docViewer.docInserted.subscribe(onDocInsertedSpy);
+
+          expect(docViewerEl.contains(oldCurrViewContainer)).toBe(true);
+          expect(docViewerEl.contains(oldNextViewContainer)).toBe(false);
+
+          await doSwapViews();
+
+          expect(onDocInsertedSpy).toHaveBeenCalledTimes(1);
+          expect(docViewerEl.contains(oldCurrViewContainer)).toBe(false);
+          expect(docViewerEl.contains(oldNextViewContainer)).toBe(true);
+        });
+
+        it('should call the callback after inserting the entering view', async () => {
+          const onInsertedCb = jasmine.createSpy('onInsertedCb').and.callFake(() => {
+            expect(docViewerEl.contains(oldCurrViewContainer)).toBe(false);
+            expect(docViewerEl.contains(oldNextViewContainer)).toBe(true);
+          });
+          const onDocInsertedSpy = jasmine.createSpy('onDocInserted');
+
+          docViewer.docInserted.subscribe(onDocInsertedSpy);
+
+          expect(docViewerEl.contains(oldCurrViewContainer)).toBe(true);
+          expect(docViewerEl.contains(oldNextViewContainer)).toBe(false);
+
+          await doSwapViews(onInsertedCb);
+
+          expect(onInsertedCb).toHaveBeenCalledTimes(1);
+          expect(onInsertedCb).toHaveBeenCalledBefore(onDocInsertedSpy);
+          expect(docViewerEl.contains(oldCurrViewContainer)).toBe(false);
+          expect(docViewerEl.contains(oldNextViewContainer)).toBe(true);
+        });
+
+        it('should empty the previous view', async () => {
+          await doSwapViews();
+
+          expect(docViewer.currViewContainer.innerHTML).toBe('Next view');
+          expect(docViewer.nextViewContainer.innerHTML).toBe('');
+
+          docViewer.nextViewContainer.innerHTML = 'Next view 2';
+          await doSwapViews();
+
+          expect(docViewer.currViewContainer.innerHTML).toBe('Next view 2');
+          expect(docViewer.nextViewContainer.innerHTML).toBe('');
+        });
+
+        if (animationsEnabled) {
+          // Only test this when there are animations. Without animations, the views are swapped
+          // synchronously, so there is no need (or way) to abort.
+          it('should abort swapping if the returned observable is unsubscribed from', async () => {
+            docViewer.swapViews().subscribe().unsubscribe();
+            await doSwapViews();
+
+            // Since the first call was cancelled, only one swapping should have taken place.
+            expect(docViewerEl.contains(oldCurrViewContainer)).toBe(false);
+            expect(docViewerEl.contains(oldNextViewContainer)).toBe(true);
+            expect(docViewer.currViewContainer).toBe(oldNextViewContainer);
+            expect(docViewer.nextViewContainer).toBe(oldCurrViewContainer);
+            expect(docViewer.currViewContainer.innerHTML).toBe('Next view');
+            expect(docViewer.nextViewContainer.innerHTML).toBe('');
+          });
+        } else {
+          it('should swap views synchronously when animations are disabled', () => {
+            const cbSpy = jasmine.createSpy('cb');
+
+            docViewer.swapViews(cbSpy).subscribe();
+
+            expect(cbSpy).toHaveBeenCalledTimes(1);
+            expect(docViewerEl.contains(oldCurrViewContainer)).toBe(false);
+            expect(docViewerEl.contains(oldNextViewContainer)).toBe(true);
+            expect(docViewer.currViewContainer).toBe(oldNextViewContainer);
+            expect(docViewer.nextViewContainer).toBe(oldCurrViewContainer);
+            expect(docViewer.currViewContainer.innerHTML).toBe('Next view');
+            expect(docViewer.nextViewContainer.innerHTML).toBe('');
+          });
+        }
       });
     });
   });
