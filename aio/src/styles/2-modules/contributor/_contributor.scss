@@ -22,7 +22,10 @@ aio-contributor {
   margin: 8px;
   border-radius: 4px;
   box-shadow: 0 2px 2px rgba(10, 16, 20, 0.24), 0 0 2px rgba(10, 16, 20, 0.12);
-  transition: all .3s;
+
+  @media not all and (prefers-reduced-motion) {
+    transition: all .3s;
+  }
 
   @media (hover) {
     &:focus-within,
@@ -102,7 +105,10 @@ aio-contributor {
     max-width: 310px;
     max-height: 340px;
     transform-style:preserve-3d;
-    transition:transform ease 500ms;
+
+    @media not all and (prefers-reduced-motion) {
+      transition:transform ease 500ms;
+    }
 
     h3 {
       margin: 0.8rem 0;
@@ -162,7 +168,6 @@ aio-contributor {
     background-size: cover;
     background-position: center;
     margin: 0.8rem auto;
-    transition: all .2s ease-in-out;
   }
 
   p {
