@@ -237,6 +237,36 @@ describe('deploy-to-firebase/utils:', () => {
     });
   });
 
+  describe('nameFunction()', () => {
+    it('should overwrite a function\'s name', () => {
+      function foo() {}
+      const bar = () => {};
+      const baz = ({baz() {}}).baz;
+
+      expect(foo.name).toBe('foo');
+      expect(bar.name).toBe('bar');
+      expect(baz.name).toBe('baz');
+
+      u.nameFunction('foo2', foo);
+      u.nameFunction('bar2', bar);
+      u.nameFunction('baz2', baz);
+
+      expect(foo.name).toBe('foo2');
+      expect(bar.name).toBe('bar2');
+      expect(baz.name).toBe('baz2');
+    });
+
+    it('should return the function', () => {
+      function foo() {}
+      const bar = () => {};
+      const baz = ({baz() {}}).baz;
+
+      expect(u.nameFunction('foo2', foo)).toBe(foo);
+      expect(u.nameFunction('bar2', bar)).toBe(bar);
+      expect(u.nameFunction('baz2', baz)).toBe(baz);
+    });
+  });
+
   describe('yarn()', () => {
     let execSpy;
 
