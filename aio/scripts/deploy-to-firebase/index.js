@@ -244,7 +244,7 @@ function deploy(data) {
     siteId,
   } = data;
 
-  cd(`${__dirname}/..`);
+  cd(`${__dirname}/../..`);
 
   console.log('\n\n\n==== Run pre-deploy actions. ====\n');
   preDeployActions.forEach(fn => fn(data));
