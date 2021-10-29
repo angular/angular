@@ -132,15 +132,27 @@ describe('deploy-to-firebase:', () => {
         type: 'primary',
         deployEnv: 'stable',
         projectId: 'angular-io',
-        siteId: 'v4-angular-io-site',
+        siteId: 'stable-angular-io-site',
         deployedUrl: 'https://angular.io/',
         preDeployActions: ['function:build', 'function:checkPayloadSize'],
         postDeployActions: ['function:testPwaScore'],
+      },
+      {
+        name: 'redirectVersionDomainToStable',
+        type: 'secondary',
+        deployEnv: 'stable',
+        projectId: 'angular-io',
+        siteId: 'v4-angular-io-site',
+        deployedUrl: 'https://v4.angular.io/',
+        preDeployActions: ['function:redirectAllToStable'],
+        postDeployActions: ['function:undoRedirectAllToStable', 'function:testRedirectToStable'],
       },
     ]);
   });
 
   it('stable - deploy success - no active RC', () => {
+    const majorVersion = u.computeMajorVersion(mostRecentMinorBranch);
+
     expect(getDeploymentsInfoFor({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
@@ -154,20 +166,34 @@ describe('deploy-to-firebase:', () => {
         type: 'primary',
         deployEnv: 'stable',
         projectId: 'angular-io',
-        siteId: `v${u.computeMajorVersion(mostRecentMinorBranch)}-angular-io-site`,
+        siteId: 'stable-angular-io-site',
         deployedUrl: 'https://angular.io/',
         preDeployActions: ['function:build', 'function:checkPayloadSize'],
         postDeployActions: ['function:testPwaScore'],
       },
       {
-        name: 'stableNoActiveRc',
+        name: 'redirectVersionDomainToStable',
+        type: 'secondary',
+        deployEnv: 'stable',
+        projectId: 'angular-io',
+        siteId: `v${majorVersion}-angular-io-site`,
+        deployedUrl: `https://v${majorVersion}.angular.io/`,
+        preDeployActions: ['function:redirectAllToStable'],
+        postDeployActions: ['function:undoRedirectAllToStable', 'function:testRedirectToStable'],
+      },
+      {
+        name: 'redirectRcToStable',
         type: 'secondary',
         deployEnv: 'stable',
         projectId: 'angular-io',
         siteId: 'rc-angular-io-site',
         deployedUrl: 'https://rc.angular.io/',
         preDeployActions: ['function:disableServiceWorker', 'function:redirectNonFilesToStable'],
-        postDeployActions: ['function:testNoActiveRcDeployment'],
+        postDeployActions: [
+          'function:undoRedirectNonFilesToStable',
+          'function:undoDisableServiceWorker',
+          'function:testNoActiveRcDeployment',
+        ],
       },
     ]);
   });
