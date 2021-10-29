@@ -2,26 +2,23 @@ import {execSync} from 'child_process';
 import {
   computeDeploymentsInfo,
   computeInputVars,
-  computeMajorVersion,
-  getDirname,
-  getLatestCommit,
-  getMostRecentMinorBranch,
   skipDeployment,
   validateDeploymentsInfo,
 } from './index.mjs';
+import u from './utils.mjs';
 
 
 describe('deploy-to-firebase:', () => {
   // Pre-computed values to avoid unnecessary re-computations.
-  const mostRecentMinorBranch = getMostRecentMinorBranch();
+  const mostRecentMinorBranch = u.getMostRecentMinorBranch();
   const latestCommits = {
-    master: getLatestCommit('master'),
-    '2.1.x': getLatestCommit('2.1.x'),
-    '2.4.x': getLatestCommit('2.4.x'),
-    '4.3.x': getLatestCommit('4.3.x'),
-    '4.4.x': getLatestCommit('4.4.x'),
-    '9.1.x': getLatestCommit('9.1.x'),
-    [mostRecentMinorBranch]: getLatestCommit(mostRecentMinorBranch),
+    master: u.getLatestCommit('master'),
+    '2.1.x': u.getLatestCommit('2.1.x'),
+    '2.4.x': u.getLatestCommit('2.4.x'),
+    '4.3.x': u.getLatestCommit('4.3.x'),
+    '4.4.x': u.getLatestCommit('4.4.x'),
+    '9.1.x': u.getLatestCommit('9.1.x'),
+    [mostRecentMinorBranch]: u.getLatestCommit(mostRecentMinorBranch),
   };
 
   // Helpers
@@ -148,7 +145,7 @@ describe('deploy-to-firebase:', () => {
         type: 'primary',
         deployEnv: 'stable',
         projectId: 'angular-io',
-        siteId: `v${computeMajorVersion(mostRecentMinorBranch)}-angular-io-site`,
+        siteId: `v${u.computeMajorVersion(mostRecentMinorBranch)}-angular-io-site`,
         deployedUrl: 'https://angular.io/',
         preDeployActions: ['function:build', 'function:checkPayloadSize'],
         postDeployActions: ['function:testPwaScore'],
@@ -421,8 +418,8 @@ describe('deploy-to-firebase:', () => {
     // This test executes a new instance of the `deploy-to-firebase` script on a separate process
     // and thus does not share the `getRemoteRefs()` cache. To improve stability, we retrieve the
     // latest commit from master ignoring any cached entries.
-    const latestCommitOnMaster = getLatestCommit('master', {retrieveFromCache: false});
-    const scriptPath = `${getDirname(import.meta.url)}/index.mjs`;
+    const latestCommitOnMaster = u.getLatestCommit('master', {retrieveFromCache: false});
+    const scriptPath = `${u.getDirname(import.meta.url)}/index.mjs`;
     const cmd = `"${process.execPath}" "${scriptPath}" --dry-run`;
     const env = {
       CI_REPO_OWNER: 'angular',
