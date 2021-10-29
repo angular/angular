@@ -188,6 +188,9 @@
       // Use discoverable link for Angular DevTools and redirect to the guide page
       {"type": 301, "source": "/devtools", "destination": "/guide/devtools"},
 
+      // Use discoverable link for Angular Package Format and redirect to the guide page
+      {"type": 301, "source": "/apf", "destination": "/guide/angular-package-format"},
+
       // Temporarily serve the guide at `/devtools` as well as `/guide/devtools` until users have
       // their SW updated to a version that knows about the `/devtools` redirect.
       {"type": 302, "source": "/generated/docs/devtools.json", "destination": "/generated/docs/guide/devtools.json"}
