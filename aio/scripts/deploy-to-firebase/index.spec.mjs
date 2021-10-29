@@ -79,13 +79,121 @@ describe('deploy-to-firebase:', () => {
     ]);
   });
 
-  it('master - deploy success', () => {
+  it('master - deploy success - no active RC, major higher than stable', () => {
+    const mostRecentMajorVersion = u.computeMajorVersion(mostRecentMinorBranch);
+    const fakeMasterMajorVersion = mostRecentMajorVersion + 1;
+
+    // Fake the `package.json` version.
+    spyOn(u, 'loadJson').and.returnValue({version: `${fakeMasterMajorVersion}.0.0-next.42`});
+
     expect(getDeploymentsInfoFor({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: 'master',
       CI_STABLE_BRANCH: mostRecentMinorBranch,
+      CI_COMMIT: latestCommits.master,
+    })).toEqual([
+      {
+        name: 'next',
+        type: 'primary',
+        deployEnv: 'next',
+        projectId: 'angular-io',
+        siteId: 'next-angular-io-site',
+        deployedUrl: 'https://next.angular.io/',
+        preDeployActions: ['function:build', 'function:checkPayloadSize'],
+        postDeployActions: ['function:testPwaScore'],
+      },
+      {
+        name: 'redirectVersionDomainToNext',
+        type: 'secondary',
+        deployEnv: 'next',
+        projectId: 'angular-io',
+        siteId: `v${fakeMasterMajorVersion}-angular-io-site`,
+        deployedUrl: `https://v${fakeMasterMajorVersion}.angular.io/`,
+        preDeployActions: ['function:redirectAllToNext'],
+        postDeployActions: ['function:undoRedirectAllToNext', 'function:testRedirectToNext'],
+      },
+    ]);
+  });
+
+  it('master - deploy success - no active RC, major same as stable', () => {
+    const mostRecentMajorVersion = u.computeMajorVersion(mostRecentMinorBranch);
+
+    // Fake the `package.json` version.
+    spyOn(u, 'loadJson').and.returnValue({version: `${mostRecentMajorVersion}.42.0`});
+
+    expect(getDeploymentsInfoFor({
+      CI_REPO_OWNER: 'angular',
+      CI_REPO_NAME: 'angular',
+      CI_PULL_REQUEST: 'false',
+      CI_BRANCH: 'master',
+      CI_STABLE_BRANCH: mostRecentMinorBranch,
+      CI_COMMIT: latestCommits.master,
+    })).toEqual([
+      {
+        name: 'next',
+        type: 'primary',
+        deployEnv: 'next',
+        projectId: 'angular-io',
+        siteId: 'next-angular-io-site',
+        deployedUrl: 'https://next.angular.io/',
+        preDeployActions: ['function:build', 'function:checkPayloadSize'],
+        postDeployActions: ['function:testPwaScore'],
+      },
+    ]);
+  });
+
+  it('master - deploy success - active RC, major higher than RC and stable', () => {
+    const mostRecentMajorVersion = u.computeMajorVersion(mostRecentMinorBranch);
+    const fakeMasterMajorVersion = mostRecentMajorVersion + 1;
+
+    // Fake the `package.json` version.
+    spyOn(u, 'loadJson').and.returnValue({version: `${fakeMasterMajorVersion}.0.0-next.42`});
+
+    expect(getDeploymentsInfoFor({
+      CI_REPO_OWNER: 'angular',
+      CI_REPO_NAME: 'angular',
+      CI_PULL_REQUEST: 'false',
+      CI_BRANCH: 'master',
+      CI_STABLE_BRANCH: '4.4.x',
+      CI_COMMIT: latestCommits.master,
+    })).toEqual([
+      {
+        name: 'next',
+        type: 'primary',
+        deployEnv: 'next',
+        projectId: 'angular-io',
+        siteId: 'next-angular-io-site',
+        deployedUrl: 'https://next.angular.io/',
+        preDeployActions: ['function:build', 'function:checkPayloadSize'],
+        postDeployActions: ['function:testPwaScore'],
+      },
+      {
+        name: 'redirectVersionDomainToNext',
+        type: 'secondary',
+        deployEnv: 'next',
+        projectId: 'angular-io',
+        siteId: `v${fakeMasterMajorVersion}-angular-io-site`,
+        deployedUrl: `https://v${fakeMasterMajorVersion}.angular.io/`,
+        preDeployActions: ['function:redirectAllToNext'],
+        postDeployActions: ['function:undoRedirectAllToNext', 'function:testRedirectToNext'],
+      },
+    ]);
+  });
+
+  it('master - deploy success - active RC, major same as RC and higher than stable', () => {
+    const mostRecentMajorVersion = u.computeMajorVersion(mostRecentMinorBranch);
+
+    // Fake the `package.json` version.
+    spyOn(u, 'loadJson').and.returnValue({version: `${mostRecentMajorVersion}.0.0-next.42`});
+
+    expect(getDeploymentsInfoFor({
+      CI_REPO_OWNER: 'angular',
+      CI_REPO_NAME: 'angular',
+      CI_PULL_REQUEST: 'false',
+      CI_BRANCH: 'master',
+      CI_STABLE_BRANCH: '4.4.x',
       CI_COMMIT: latestCommits.master,
     })).toEqual([
       {

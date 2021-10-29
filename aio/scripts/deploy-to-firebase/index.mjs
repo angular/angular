@@ -28,14 +28,16 @@
  * | from?     |        |                                 | redirectVersionDomainToRc(*)    |
  * |           |--------|---------------------------------|---------------------------------|
  * |           | MASTER | next                            | next                            |
- * |           |        |                                 |                                 |
+ * |           |        | redirectVersionDomainToNext(**) | redirectVersionDomainToNext(**) |
  * |-----------|--------|---------------------------------|---------------------------------|
  *
  * (*):  Only if `v<RC>` > `v<STABLE>`.
+ * (**): Only if (no active RC and `v<NEXT>` > `v<STABLE>`) or (active RC and `v<NEXT>` > `v<RC>`).
  *
  * NOTES:
  *   - The `v<X>-angular-io-site` Firebase site should be created (and connected to the
- *     `v<X>.angular.io` subdomain) before a new RC branch is created.
+ *     `v<X>.angular.io` subdomain) before the version in the `master` branch's `package.json` is
+ *     updated to a new major.
  *   - When a new major version is released, the deploy CI jobs for the new stable branch (prev. RC
  *     or next) and the old stable branch must be run AFTER the new stable version has been
  *     published to NPM, because the NPM info is used to determine what the stable version is.
@@ -57,6 +59,7 @@ sh.set('-e');
 
 // Constants
 const DIRNAME = u.getDirname(import.meta.url);
+const ROOT_PKG_PATH = `${DIRNAME}/../../../package.json`;
 
 // Exports
 export {
@@ -129,7 +132,10 @@ function computeDeploymentsInfo(
   }
 
   // The deployment mode is computed based on the branch we are building.
-  const currentBranchMajorVersion = u.computeMajorVersion(currentBranch);
+  const currentVersionPattern =  /^\d+\.\d+\.x$/.test(currentBranch) ?
+    currentBranch :  // The current branch name is a version pattern.
+    u.loadJson(ROOT_PKG_PATH).version;  // We need to retrieve the version from `package.json`.
+  const currentBranchMajorVersion = u.computeMajorVersion(currentVersionPattern);
   const stableBranchMajorVersion = u.computeMajorVersion(stableBranch);
   const deploymentInfoPerTarget = {
     // PRIMARY DEPLOY TARGETS
@@ -189,6 +195,16 @@ function computeDeploymentsInfo(
     // Since there can be multiple secondary deployments (each tweaking the primary one in different
     // ways), it is a good idea to ensure that any pre-deploy actions are undone in the post-deploy
     // phase.
+    redirectVersionDomainToNext: {
+      name: 'redirectVersionDomainToNext',
+      type: 'secondary',
+      deployEnv: 'next',
+      projectId: 'angular-io',
+      siteId: `v${currentBranchMajorVersion}-angular-io-site`,
+      deployedUrl: `https://v${currentBranchMajorVersion}.angular.io/`,
+      preDeployActions: [pre.redirectAllToNext],
+      postDeployActions: [pre.undo.redirectAllToNext, post.testRedirectToNext],
+    },
     redirectVersionDomainToRc: {
       name: 'redirectVersionDomainToRc',
       type: 'secondary',
@@ -228,15 +244,33 @@ function computeDeploymentsInfo(
     },
   };
 
-  // If the current branch is `master`, deploy as `next`.
-  if (currentBranch === 'master') {
-    return [deploymentInfoPerTarget.next];
-  }
-
   // Determine if there is an active RC version by checking whether the most recent minor branch is
   // the stable branch or not.
   const mostRecentMinorBranch = u.getMostRecentMinorBranch();
   const rcBranch = (mostRecentMinorBranch !== stableBranch) ? mostRecentMinorBranch : null;
+  const isRcActive = rcBranch !== null;
+
+  // If the current branch is `master`, deploy as `next`.
+  if (currentBranch === 'master') {
+    // In order to determine whether to also deploy to `v<NEXT>-angular-io-site` we need to compare
+    // `v<NEXT>` with either `v<RC>` (if there is an active RC) or `v<STABLE>`.
+    const otherVersion = isRcActive ? u.computeMajorVersion(rcBranch) : stableBranchMajorVersion;
+
+    return (currentBranchMajorVersion > otherVersion) ?
+      // The next major version is greater than the RC or stable major version.
+      // Deploy to both `next-angular-io-site` and `v<NEXT>-angular-io-site`.
+      [
+        deploymentInfoPerTarget.next,
+        deploymentInfoPerTarget.redirectVersionDomainToNext,
+      ] :
+      // The next major version is not greater than the RC or stable major version.
+      // Only deploy to `next-angular-io-site` (since `v<NEXT>-angular-io-site` is probably
+      // `v<RC>-angular-io-site` or `v<STABLE>-angular-io-site` and we don't want to overwrite the
+      // RC or stable deployment).
+      [
+        deploymentInfoPerTarget.next,
+      ];
+  }
 
   // If the current branch is the RC branch, deploy as `rc`.
   if (currentBranch === rcBranch) {
@@ -257,7 +291,7 @@ function computeDeploymentsInfo(
 
   // If the current branch is the stable branch, deploy as `stable`.
   if (currentBranch === stableBranch) {
-    return (rcBranch !== null) ?
+    return isRcActive ?
       // There is an active RC version. Only deploy to the `stable` projects/sites.
       [
         deploymentInfoPerTarget.stable,
