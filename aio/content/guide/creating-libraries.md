@@ -10,7 +10,7 @@ A simple example might be a button that sends users to your company website, tha
 Use the Angular CLI to generate a new library skeleton in a new workspace with the following commands.
 
 <code-example language="bash">
- ng new my-workspace --create-application=false
+ ng new my-workspace --no-create-application
  cd my-workspace
  ng generate library my-lib
 </code-example>
@@ -71,9 +71,9 @@ Use an NgModule to expose services and components.
 
 Your library should supply documentation (typically a README file) for installation and maintenance.
 
-## Refactoring parts of an app into a library
+## Refactoring parts of an application into a library
 
-To make your solution reusable, you need to adjust it so that it does not depend on app-specific code.
+To make your solution reusable, you need to adjust it so that it does not depend on application-specific code.
 Here are some things to consider in migrating application functionality to a library.
 
 * Declarations such as components and pipes should be designed as stateless, meaning they don’t rely on or alter external variables. If you do rely on state, you need to evaluate every case and decide whether it is application state or state that the library would manage.
@@ -122,7 +122,7 @@ If that form needs additional customization by the developer who is using your l
 However, if the form will always be the same and not need much customization by developers, then you could create a dynamic component that takes the configuration and generates the form.
 In general, the more complex the customization, the more useful the schematic approach.
 
-To learn more, see [Schematics Overview](guide/schematics) and [Schematics for Libraries](guide/schematics-for-libraries).
+For more information, see [Schematics Overview](guide/schematics) and [Schematics for Libraries](guide/schematics-for-libraries).
 
 ## Publishing your library
 
@@ -149,56 +149,19 @@ npm publish
 
 ## Managing assets in a library
 
-Starting with version 9.x of the [ng-packagr](https://github.com/ng-packagr/ng-packagr/blob/master/README.md) tool, you can configure the tool to automatically copy assets into your library package as part of the build process.
-Use this feature when your library needs to publish optional theming files, Sass mixins, or documentation (like a changelog).
+In your Angular library, the distributable can include additional assets like theming files, Sass mixins, or documentation (like a changelog).
+For more information [copy assets into your library as part of the build](https://github.com/ng-packagr/ng-packagr/blob/master/docs/copy-assets.md) and [embed assets in component styles](https://github.com/ng-packagr/ng-packagr/blob/master/docs/embed-assets-css.md).
 
-* Learn how to [copy assets into your library as part of the build](https://github.com/ng-packagr/ng-packagr/blob/master/docs/copy-assets.md).
-
-* Learn more about how to use the tool to [embed assets in CSS](https://github.com/ng-packagr/ng-packagr/blob/master/docs/embed-assets-css.md).
-
-## Linked libraries
-
-While working on a published library, use [npm link](https://docs.npmjs.com/cli/link) to avoid reinstalling the library on every build.
-
-The library must be rebuilt on every change.
-When linking a library, make sure that the build step runs in watch mode, and that the library's `package.json` configuration points at the correct entry points.
-For example, `main` should point at a JavaScript file, not a TypeScript file.
-
-### Use TypeScript path mapping for peer dependencies
-
+## Peer dependencies
 Angular libraries should list any `@angular/*` dependencies the library depends on as peer dependencies.
 This ensures that when modules ask for Angular, they all get the exact same module.
 If a library lists `@angular/core` in `dependencies` instead of `peerDependencies`, it might get a different Angular module instead, which would cause your application to break.
 
-While developing a library, you must install all peer dependencies through `devDependencies` to ensure that the library compiles properly.
-A linked library then has its own set of Angular libraries that it uses for building, located in its `node_modules` folder.
-However, this can cause problems while building or running your application.
+## Using your own library in applications
 
-To get around this problem use TypeScript path mapping to tell TypeScript that it should load some modules from a specific location.
-List all the peer dependencies that your library uses in the workspace TypeScript configuration file `./tsconfig.json`, and point them at the local copy in the application's `node_modules` folder.
+You don't have to publish your library to the npm package manager to use it the same workspace, but you do have to build it first.
 
-```
-{
-  "compilerOptions": {
-    // ...
-    // paths are relative to `baseUrl` path.
-    "paths": {
-      "@angular/*": [
-        "./node_modules/@angular/*"
-      ]
-    }
-  }
-}
-```
-
-This mapping ensures that your library always loads the local copies of the modules it needs.
-
-
-## Using your own library in apps
-
-You don't have to publish your library to the npm package manager to use it in your own applications, but you do have to build it first.
-
-To use your own library in an app:
+To use your own library in an application:
 
 * Build the library. You cannot use a library before it is built.
  <code-example language="bash">
@@ -217,15 +180,17 @@ For instance, if you clone your git repository and run `npm install`, your edito
 
 <div class="alert is-helpful">
 
-When you import something from a library in an Angular app, Angular looks for a mapping between the library name and a location on disk.
+When you import something from a library in an Angular application, Angular looks for a mapping between the library name and a location on disk.
 When you install a library package, the mapping is in the `node_modules` folder. When you build your own library, it has to find the mapping in your `tsconfig` paths.
 
 Generating a library with the Angular CLI automatically adds its path to the `tsconfig` file.
 The Angular CLI uses the `tsconfig` paths to tell the build system where to find the library.
 
+For more information, see [Path mapping overview](https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping).
+
 </div>
 
-If you find that changes to your library are not reflected in your application, your app is probably using an old build of the library.
+If you find that changes to your library are not reflected in your application, your application is probably using an old build of the library.
 
 You can rebuild your library whenever you make changes to it, but this extra step takes time.
 *Incremental builds* functionality improves the library-development experience.
@@ -254,82 +219,31 @@ TypeScript path mappings should *not* point to the library source `.ts` files.
 
 {@a ivy-libraries}
 
-## Building libraries with Ivy
+## Publishing libraries
 
-There are three distribution formats to use when publishing a library:
+There are two distribution formats to use when publishing a library:
 
-* View Engine _(deprecated)_&mdash;legacy format, slated for removal in Angular version 13.
-  Only use this format if you must support View Engine applications.
 * partial-Ivy **(recommended)**&mdash;contains portable code that can be consumed by Ivy applications built with any version of Angular from v12 onwards.
 * full-Ivy&mdash;contains private Angular Ivy instructions, which are not guaranteed to work across different versions of Angular. This format requires that the library and application are built with the _exact_ same version of Angular. This format is useful for environments where all library and application code is built directly from source.
-
-New libraries created with Angular CLI default to partial-Ivy format.
-If you are creating a new library with `ng generate library`, Angular uses Ivy by default with no further action on your part.
-
-### Transitioning libraries to partial-Ivy format
-
-Existing libraries, which are configured to generate the View Engine format, do not change when upgrading to later versions of Angular that use Ivy.
-
-If you intend to publish your library to npm, compile with partial-Ivy code by setting `"compilationMode": "partial"` in `tsconfig.prod.json`.
-
-A library that uses View Engine, rather than Ivy, has a `tsconfig.prod.json` file that contains the following:
-
-<code-example>
-
-"angularCompilerOptions": {
-  "enableIvy": false
-}
-
-</code-example>
-
-To convert such libraries to use the partial-Ivy format, change the `tsconfig.prod.json` file by removing the `enableIvy` option and adding the `compilationMode` option.
-
-Enable partial-Ivy compilation by replacing `"enableIvy": false` with `"compilationMode": "partial"` as follows:
-
-<code-example>
-
-"angularCompilerOptions": {
-  "compilationMode": "partial"
-}
-
-</code-example>
 
 For publishing to npm use the partial-Ivy format as it is stable between patch versions of Angular.
 
 Avoid compiling libraries with full-Ivy code if you are publishing to npm because the generated Ivy instructions are not part of Angular's public API, and so might change between patch versions.
 
-Partial-Ivy code is not backward compatible with View Engine.
-If you use the library in a View Engine application, you must compile the library into the View Engine format by setting `"enableIvy": false` in the `tsconfig.json` file.
-
-Ivy applications can still consume the View Engine format because the Angular compatibility compiler, or `ngcc`, can convert it to Ivy.
-
 ## Ensuring library version compatibility
 
 The Angular version used to build an application should always be the same or greater than the Angular versions used to build any of its dependent libraries.
-For example, if you had a library using Angular version 12, the application that depends on that library should use Angular version 12 or later.
+For example, if you had a library using Angular version 13, the application that depends on that library should use Angular version 13 or later.
 Angular does not support using an earlier version for the application.
 
-<div class="alert is-helpful">
-
-The Angular CLI uses Ivy to build applications and no longer uses View Engine.
-A library or an application built with View Engine cannot consume a partial-Ivy library.
-
-</div>
-
-Because this process happens during the application build, it uses the same version of the Angular compiler, ensuring that the application and all of its libraries use a single version of Angular.
 
 If you intend to publish your library to npm, compile with partial-Ivy code by setting `"compilationMode": "partial"` in `tsconfig.prod.json`.
-This partial format is stable between different versions of Angular, so is safe to publish to npm.
+This partial format is stable between different versions of Angular, so is safe to publish to npm. Code with this format is processed during the application build using the same version of the Angular compiler, ensuring that the application and all of its libraries use a single version of Angular.
+
 
 Avoid compiling libraries with full-Ivy code if you are publishing to npm because the generated Ivy instructions are not part of Angular's public API, and so might change between patch versions.
 
-Partial-Ivy code is not backward compatible with View Engine.
-If you use the library in a View Engine application, you must compile the library into the View Engine format by setting `"enableIvy": false` in the `tsconfig.json` file.
-
-Ivy applications can still consume the View Engine format because the Angular compatibility compiler, or `ngcc`, can convert it to Ivy in the Angular CLI.
-
 If you've never published a package in npm before, you must create a user account. Read more in [Publishing npm Packages](https://docs.npmjs.com/getting-started/publishing-npm-packages).
-
 
 ## Consuming partial-Ivy code outside the Angular CLI
 
@@ -351,3 +265,5 @@ The Angular linker Babel plugin supports build caching, meaning that libraries o
 The Angular CLI integrates the linker plugin automatically, so if consumers of your library are using the CLI, they can install Ivy-native libraries from npm without any additional configuration.
 
 </div>
+
+@reviewed 2021-10-29
