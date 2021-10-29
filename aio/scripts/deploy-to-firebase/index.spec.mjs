@@ -85,6 +85,7 @@ describe('deploy-to-firebase:', () => {
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: 'master',
+      CI_STABLE_BRANCH: mostRecentMinorBranch,
       CI_COMMIT: latestCommits.master,
     })).toEqual([
       {
@@ -151,7 +152,7 @@ describe('deploy-to-firebase:', () => {
   });
 
   it('stable - deploy success - no active RC', () => {
-    const majorVersion = u.computeMajorVersion(mostRecentMinorBranch);
+    const stableMajorVersion = u.computeMajorVersion(mostRecentMinorBranch);
 
     expect(getDeploymentsInfoFor({
       CI_REPO_OWNER: 'angular',
@@ -176,8 +177,8 @@ describe('deploy-to-firebase:', () => {
         type: 'secondary',
         deployEnv: 'stable',
         projectId: 'angular-io',
-        siteId: `v${majorVersion}-angular-io-site`,
-        deployedUrl: `https://v${majorVersion}.angular.io/`,
+        siteId: `v${stableMajorVersion}-angular-io-site`,
+        deployedUrl: `https://v${stableMajorVersion}.angular.io/`,
         preDeployActions: ['function:redirectAllToStable'],
         postDeployActions: ['function:undoRedirectAllToStable', 'function:testRedirectToStable'],
       },
@@ -321,6 +322,8 @@ describe('deploy-to-firebase:', () => {
   });
 
   it('rc - deploy success - major higher than stable', () => {
+    const rcMajorVersion = u.computeMajorVersion(mostRecentMinorBranch);
+
     expect(getDeploymentsInfoFor({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
@@ -338,6 +341,16 @@ describe('deploy-to-firebase:', () => {
         deployedUrl: 'https://rc.angular.io/',
         preDeployActions: ['function:build', 'function:checkPayloadSize'],
         postDeployActions: ['function:testPwaScore'],
+      },
+      {
+        name: 'redirectVersionDomainToRc',
+        type: 'secondary',
+        deployEnv: 'rc',
+        projectId: 'angular-io',
+        siteId: `v${rcMajorVersion}-angular-io-site`,
+        deployedUrl: `https://v${rcMajorVersion}.angular.io/`,
+        preDeployActions: ['function:redirectAllToRc'],
+        postDeployActions: ['function:undoRedirectAllToRc', 'function:testRedirectToRc'],
       },
     ]);
   });
@@ -451,35 +464,36 @@ describe('deploy-to-firebase:', () => {
   it('integration - should run the main script without error', () => {
     // NOTE:
     // This test executes a new instance of the `deploy-to-firebase` script on a separate process
-    // and thus does not share the `getRemoteRefs()` cache. To improve stability, we retrieve the
-    // latest commit from master ignoring any cached entries.
-    const latestCommitOnMaster = u.getLatestCommit('master', {retrieveFromCache: false});
+    // and thus does not share the `getRemoteRefs()` cache. To improve stability, we use an older
+    // branch (`4.4.x`) that is unlikely to receive any new commits (so the one retrieved at the
+    // beginning of the tests will still be the latest one for that branch).
     const scriptPath = `${u.getDirname(import.meta.url)}/index.mjs`;
     const cmd = `"${process.execPath}" "${scriptPath}" --dry-run`;
     const env = {
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
-      CI_BRANCH: 'master',
-      CI_COMMIT: latestCommitOnMaster,
+      CI_BRANCH: '4.4.x',
+      CI_STABLE_BRANCH: mostRecentMinorBranch,
+      CI_COMMIT: latestCommits['4.4.x'],
     };
     const result = execSync(cmd, {encoding: 'utf8', env}).trim();
     expect(result).toBe(
-        'Deployments (1): next\n' +
+        'Deployments (1): archive\n' +
         '\n' +
         '\n' +
         '\n' +
-        'Deployment 1 of 1: next\n' +
-        '-----------------------\n' +
-        'Git branch          : master\n' +
-        `Git commit          : ${latestCommitOnMaster}\n` +
-        'Build/deploy mode   : next\n' +
+        'Deployment 1 of 1: archive\n' +
+        '--------------------------\n' +
+        'Git branch          : 4.4.x\n' +
+        `Git commit          : ${latestCommits['4.4.x']}\n` +
+        'Build/deploy mode   : archive\n' +
         'Firebase project    : angular-io\n' +
-        'Firebase site       : next-angular-io-site\n' +
+        'Firebase site       : v4-angular-io-site\n' +
         'Pre-deploy actions  : build, checkPayloadSize\n' +
         'Post-deploy actions : testPwaScore\n' +
-        'Deployment URLs     : https://next.angular.io/\n' +
-        '                      https://next-angular-io-site.web.app/');
+        'Deployment URLs     : https://v4.angular.io/\n' +
+        '                      https://v4-angular-io-site.web.app/');
   });
 });
 
