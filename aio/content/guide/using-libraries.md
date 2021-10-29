@@ -16,7 +16,7 @@ For an example, see the [Angular Material][AngularMaterialMain] documentation.
 
 ### Library typings
 
-Library packages often include typings in `.d.ts` files; see examples in `node_modules/@angular/material`.
+Typicaly, library packages include typings in `.d.ts` files; see examples in `node_modules/@angular/material`.
 If the package of your library does not include typings and your IDE complains, you might need to install the `@types/<lib_name>` package with the library.
 
 For example, suppose you have a library named `d3`:
@@ -187,4 +187,4 @@ If you do not add the interface for the script-defined extension, your IDE shows
 
 <!-- end links -->
 
-@reviewed 2021-10-27
+@reviewed 2021-10-9
