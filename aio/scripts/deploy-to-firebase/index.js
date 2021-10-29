@@ -30,14 +30,13 @@ if (require.main === module) {
   const deploymentsInfo = computeDeploymentsInfo(inputVars);
   const totalDeployments = deploymentsInfo.length;
 
-  console.log(`Total deployments: ${totalDeployments}`);
+  console.log(`Deployments (${totalDeployments}): ${listDeployTargetNames(deploymentsInfo)}`);
 
   deploymentsInfo.forEach((deploymentInfo, idx) => {
-    console.log(
-        `\n\n\nDeployment ${idx + 1} of ${totalDeployments}\n` +
-        '-----------------');
+    const logLine1 = `Deployment ${idx + 1} of ${totalDeployments}: ${deploymentInfo.name}`;
+    console.log(`\n\n\n${logLine1}\n${'-'.repeat(logLine1.length)}`);
 
-    if (deploymentInfo.skipped) {
+    if (deploymentInfo.type === 'skipped') {
       console.log(deploymentInfo.reason);
     } else {
       console.log(
@@ -99,7 +98,14 @@ function computeDeploymentsInfo(
   // The deployment mode is computed based on the branch we are building.
   const currentBranchMajorVersion = computeMajorVersion(currentBranch);
   const deploymentInfoPerTarget = {
+    // PRIMARY DEPLOY TARGETS
+    //
+    // These targets are responsible for building the app (and setting the theme/mode).
+    // Unless deployment is skipped, exactly one primary target should be used at a time and it
+    // should be the first item of the returned deploy target list.
     next: {
+      name: 'next',
+      type: 'primary',
       deployEnv: 'next',
       projectId: 'angular-io',
       siteId: 'next-angular-io-site',
@@ -108,6 +114,8 @@ function computeDeploymentsInfo(
       postDeployActions: [testPwaScore],
     },
     rc: {
+      name: 'rc',
+      type: 'primary',
       deployEnv: 'rc',
       projectId: 'angular-io',
       siteId: 'rc-angular-io-site',
@@ -116,6 +124,8 @@ function computeDeploymentsInfo(
       postDeployActions: [testPwaScore],
     },
     stable: {
+      name: 'stable',
+      type: 'primary',
       deployEnv: 'stable',
       projectId: 'angular-io',
       siteId: `v${currentBranchMajorVersion}-angular-io-site`,
@@ -123,24 +133,36 @@ function computeDeploymentsInfo(
       preDeployActions: [build, checkPayloadSize],
       postDeployActions: [testPwaScore],
     },
-    // Config for deploying the stable build to the RC Firebase site when there is no active RC.
-    // See https://github.com/angular/angular/issues/39760 for more info on the purpose of this
-    // special deployment.
-    noActiveRc: {
-      deployEnv: 'stable',
-      projectId: 'angular-io',
-      siteId: 'rc-angular-io-site',
-      deployedUrl: 'https://rc.angular.io/',
-      preDeployActions: [removeServiceWorker, redirectToAngularIo],
-      postDeployActions: [testNoActiveRcDeployment],
-    },
     archive: {
+      name: 'archive',
+      type: 'primary',
       deployEnv: 'archive',
       projectId: 'angular-io',
       siteId: `v${currentBranchMajorVersion}-angular-io-site`,
       deployedUrl: `https://v${currentBranchMajorVersion}.angular.io/`,
       preDeployActions: [build, checkPayloadSize],
       postDeployActions: [testPwaScore],
+    },
+
+    // SECONDARY DEPLOY TARGETS
+    //
+    // These targets can be used to re-deploy the build artifacts from a primary target (potentially
+    // with small tweaks) to a different project/site.
+    // Unless deployment is skipped, zero or more secondary targets can be used at a time, but they
+    // should all match the primary target's `deployEnv`.
+
+    // Config for deploying the stable build to the RC Firebase site when there is no active RC.
+    // See https://github.com/angular/angular/issues/39760 for more info on the purpose of this
+    // special deployment.
+    noActiveRc: {
+      name: 'stableNoActiveRc',
+      type: 'secondary',
+      deployEnv: 'stable',
+      projectId: 'angular-io',
+      siteId: 'rc-angular-io-site',
+      deployedUrl: 'https://rc.angular.io/',
+      preDeployActions: [removeServiceWorker, redirectToAngularIo],
+      postDeployActions: [testNoActiveRcDeployment],
     },
   };
 
@@ -301,6 +323,10 @@ function getLatestCommit(branchName, options = undefined) {
   return getRemoteRefs(branchName, options)[0].slice(0, 40);
 }
 
+function listDeployTargetNames(deploymentsList) {
+  return deploymentsList.map(({name = '<no name>'}) => name).join(', ') || '-';
+}
+
 function redirectToAngularIo() {
   // Update the Firebase hosting configuration redirect all non-file requests (i.e. requests that do
   // not contain a dot in their last path segment) to `angular.io`.
@@ -321,7 +347,7 @@ function serializeActions(actions) {
 }
 
 function skipDeployment(reason) {
-  return {reason, skipped: true};
+  return {name: 'skipped', type: 'skipped', reason};
 }
 
 function testNoActiveRcDeployment({deployedUrl}) {
