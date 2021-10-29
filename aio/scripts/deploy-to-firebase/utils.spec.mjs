@@ -1,3 +1,4 @@
+import fs from 'fs';
 import sh from 'shelljs';
 import u from './utils.mjs';
 
@@ -223,6 +224,17 @@ describe('deploy-to-firebase/utils:', () => {
       expect(u.getRemoteRefs('some-pattern', {other: 'option'})).toBe(results);
       expect(u.getRemoteRefs('some-pattern', {retrieveFromCache: true})).toBe(results);
       expect(execSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('loadJson()', () => {
+    let readFileSyncSpy;
+
+    beforeEach(() => readFileSyncSpy = spyOn(fs, 'readFileSync'));
+
+    it('should load and parse a JSON file', () => {
+      readFileSyncSpy.withArgs('/foo/bar.json', 'utf8').and.returnValue('{"foo": "bar"}');
+      expect(u.loadJson('/foo/bar.json')).toEqual({foo: 'bar'});
     });
   });
 
