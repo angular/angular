@@ -1,7 +1,7 @@
 @use 'sass:color';
 @use 'sass:map';
 @use '../../constants';
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 
 @mixin theme($theme) {
   $foreground: map.get($theme, foreground);

@@ -58,5 +58,3 @@ import 'zone.js';  // Included with Angular CLI.
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
-// Custom Elements polyfill. Required for browsers that do not natively support Custom Elements.
-import '@webcomponents/custom-elements';

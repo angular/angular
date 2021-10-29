@@ -1,6 +1,6 @@
 @use 'sass:map';
 @use '../../constants' as c;
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 
 @mixin theme($theme) {
   $is-dark-theme: map.get($theme, is-dark);
