@@ -21,6 +21,8 @@ module.exports = {
   computeMajorVersion,
   getLatestCommit,
   getMostRecentMinorBranch,
+  skipDeployment,
+  validateDeploymentsInfo,
 };
 
 // Run
@@ -29,6 +31,8 @@ if (require.main === module) {
   const inputVars = computeInputVars(process.env);
   const deploymentsInfo = computeDeploymentsInfo(inputVars);
   const totalDeployments = deploymentsInfo.length;
+
+  validateDeploymentsInfo(deploymentsInfo);
 
   console.log(`Deployments (${totalDeployments}): ${listDeployTargetNames(deploymentsInfo)}`);
 
@@ -390,6 +394,83 @@ function testNoActiveRcDeployment({deployedUrl}) {
 function testPwaScore({deployedUrl, minPwaScore}) {
   console.log('\n\n\n==== Run PWA-score tests. ====\n');
   yarn(`test-pwa-score "${deployedUrl}" "${minPwaScore}"`);
+}
+
+function validateDeploymentsInfo(deploymentsList) {
+  const knownTargetTypes = ['primary', 'secondary', 'skipped'];
+  const requiredPropertiesForSkipped = ['name', 'type', 'reason'];
+  const requiredPropertiesForNonSkipped = [
+    'name', 'type', 'deployEnv', 'projectId', 'siteId', 'deployedUrl', 'preDeployActions',
+    'postDeployActions',
+  ];
+
+  const primaryTargets = deploymentsList.filter(({type}) => type === 'primary');
+  const secondaryTargets = deploymentsList.filter(({type}) => type === 'secondary');
+  const skippedTargets = deploymentsList.filter(({type}) => type === 'skipped');
+  const otherTargets = deploymentsList.filter(({type}) => !knownTargetTypes.includes(type));
+
+  // Check that all targets have a known `type`.
+  if (otherTargets.length > 0) {
+    throw new Error(
+        `Expected all deploy targets to have a type of ${knownTargetTypes.join(' or ')}, but ` +
+        `found ${otherTargets.length} targets with an unknown type: ` +
+        otherTargets.map(({name = '<no name>', type}) => `${name} (type: ${type})`).join(', '));
+  }
+
+  // Check that all targets have the required properties.
+  for (const target of deploymentsList) {
+    const requiredProperties = (target.type === 'skipped') ?
+      requiredPropertiesForSkipped : requiredPropertiesForNonSkipped;
+    const missingProperties = requiredProperties.filter(prop => target[prop] === undefined);
+
+    if (missingProperties.length > 0) {
+      throw new Error(
+          `Expected deploy target '${target.name || '<no name>'}' to have all required ` +
+          `properties, but it is missing '${missingProperties.join('\', \'')}'.`);
+    }
+  }
+
+  // If there are skipped targets...
+  if (skippedTargets.length > 0) {
+    // ...check that exactly one target has been specified.
+    if (deploymentsList.length > 1) {
+      throw new Error(
+          `Expected a single skipped deploy target, but found ${deploymentsList.length} targets ` +
+          `in total: ${listDeployTargetNames(deploymentsList)}`);
+    }
+
+    // There is only one skipped deploy target and it is valid (i.e. has all required properties).
+    return;
+  }
+
+  // Check that exactly one primary target has been specified.
+  if (primaryTargets.length !== 1) {
+    throw new Error(
+        `Expected exactly one primary deploy target, but found ${primaryTargets.length}: ` +
+        listDeployTargetNames(primaryTargets));
+  }
+
+  const primaryTarget = primaryTargets[0];
+  const primaryIndex = deploymentsList.indexOf(primaryTarget);
+
+  // Check that the primary target is the first item in the list.
+  if (primaryIndex !== 0) {
+    throw new Error(
+        `Expected the primary target (${primaryTarget.name}) to be the first item in the deploy ` +
+        `target list, but it was found at index ${primaryIndex} (0-based): ` +
+        listDeployTargetNames(deploymentsList));
+  }
+
+  const nonMatchingSecondaryTargets =
+      secondaryTargets.filter(({deployEnv}) => deployEnv !== primaryTarget.deployEnv);
+
+  // Check that all secondary targets (if any) match the primary target's `deployEnv`.
+  if (nonMatchingSecondaryTargets.length > 0) {
+    throw new Error(
+        'Expected all secondary deploy targets to match the primary target\'s `deployEnv` ' +
+        `(${primaryTarget.deployEnv}), but ${nonMatchingSecondaryTargets.length} targets do not: ` +
+        nonMatchingSecondaryTargets.map(t => `${t.name} (deployEnv: ${t.deployEnv})`).join(', '));
+  }
 }
 
 function yarn(cmd) {

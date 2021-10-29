@@ -8,6 +8,8 @@ const {
   computeMajorVersion,
   getLatestCommit,
   getMostRecentMinorBranch,
+  skipDeployment,
+  validateDeploymentsInfo,
 } = require('./index');
 
 
@@ -29,6 +31,7 @@ describe('deploy-to-firebase:', () => {
     (typeof val === 'function') ? `function:${val.name}` : val;
   const getDeploymentsInfoFor = env => {
     const deploymentsInfo = computeDeploymentsInfo(computeInputVars(env));
+    validateDeploymentsInfo(deploymentsInfo);
     return JSON.parse(JSON.stringify(deploymentsInfo, jsonFunctionReplacer));
   };
 
@@ -446,5 +449,176 @@ describe('deploy-to-firebase:', () => {
         'Post-deploy actions : testPwaScore\n' +
         'Deployment URLs     : https://next.angular.io/\n' +
         '                      https://next-angular-io-site.web.app/');
+  });
+});
+
+describe('validateDeploymentsInfo()', () => {
+  const createTarget = (name, type) => ({
+    name,
+    type,
+    deployEnv: 'deployEnv',
+    projectId: 'projectId',
+    siteId: 'siteId',
+    deployedUrl: 'deployedUrl',
+    preDeployActions: [],
+    postDeployActions: [],
+  });
+
+  it('should error if there are deploy targets with unknown types', () => {
+    const targets = [
+      createTarget('target-1', 'primary'),
+      createTarget('target-2', 'tertiary'),
+      createTarget('target-3', 'secondary'),
+      createTarget(undefined, 'other'),
+    ];
+
+    expect(() => validateDeploymentsInfo(targets)).toThrowError(
+        'Expected all deploy targets to have a type of primary or secondary or skipped, but ' +
+        'found 2 targets with an unknown type: target-2 (type: tertiary), <no name> (type: other)');
+  });
+
+  it('should error if there are non-skipped targets missing required properties', () => {
+    // With target missing `name`.
+    const targets1 = [
+      createTarget('target-1', 'primary'),
+      createTarget(undefined, 'secondary'),
+    ];
+
+    expect(() => validateDeploymentsInfo(targets1)).toThrowError(
+        'Expected deploy target \'<no name>\' to have all required properties, but it is missing ' +
+        '\'name\'.');
+
+    // With target missing multiple properties.
+    const targets2 = [
+      createTarget('target-1', 'primary'),
+      {
+        ...createTarget('target-2', 'secondary'),
+        deployEnv: undefined,
+        postDeployActions: undefined,
+      },
+    ];
+
+    expect(() => validateDeploymentsInfo(targets2)).toThrowError(
+        'Expected deploy target \'target-2\' to have all required properties, but it is missing ' +
+        '\'deployEnv\', \'postDeployActions\'.');
+  });
+
+  it('should error if there are skipped targets missing required properties', () => {
+    // With target missing `name`.
+    const targets1 = [
+      createTarget('target-1', 'primary'),
+      {...skipDeployment('just because'), name: undefined},
+    ];
+
+    expect(() => validateDeploymentsInfo(targets1)).toThrowError(
+        'Expected deploy target \'<no name>\' to have all required properties, but it is missing ' +
+        '\'name\'.');
+
+    // With target missing `reason`.
+    const targets2 = [
+      createTarget('target-1', 'primary'),
+      skipDeployment(undefined),
+    ];
+
+    expect(() => validateDeploymentsInfo(targets2)).toThrowError(
+        'Expected deploy target \'skipped\' to have all required properties, but it is missing ' +
+        '\'reason\'.');
+  });
+
+  it('should error if there are both skipped and non-skipped targets', () => {
+    const targets = [
+      skipDeployment('just because'),
+      createTarget('target-2', 'secondary'),
+    ];
+
+    expect(() => validateDeploymentsInfo(targets)).toThrowError(
+        'Expected a single skipped deploy target, but found 2 targets in total: skipped, target-2');
+  });
+
+  it('should error if there are multiple skipped targets', () => {
+    const targets = [
+      skipDeployment('just because'),
+      skipDeployment('because why not'),
+    ];
+
+    expect(() => validateDeploymentsInfo(targets)).toThrowError(
+        'Expected a single skipped deploy target, but found 2 targets in total: skipped, skipped');
+  });
+
+  it('should error if there is no primary target', () => {
+    const targets = [
+      createTarget('target-1', 'secondary'),
+      createTarget('target-2', 'secondary'),
+    ];
+
+    expect(() => validateDeploymentsInfo(targets)).toThrowError(
+        'Expected exactly one primary deploy target, but found 0: -');
+  });
+
+  it('should error if there is more than one primary target', () => {
+    const targets = [
+      createTarget('target-1', 'primary'),
+      createTarget('target-2', 'secondary'),
+      createTarget('target-3', 'primary'),
+    ];
+
+    expect(() => validateDeploymentsInfo(targets)).toThrowError(
+        'Expected exactly one primary deploy target, but found 2: target-1, target-3');
+  });
+
+  it('should error if the primary target is not the first item in the list', () => {
+    const targets = [
+      createTarget('target-1', 'secondary'),
+      createTarget('target-2', 'primary'),
+      createTarget('target-3', 'secondary'),
+    ];
+
+    expect(() => validateDeploymentsInfo(targets)).toThrowError(
+        'Expected the primary target (target-2) to be the first item in the deploy target list, ' +
+        'but it was found at index 1 (0-based): target-1, target-2, target-3');
+  });
+
+  it('should error if there are secondary targets with a different `deployEnv` than primary',
+      () => {
+        const targets = [
+          {...createTarget('target-1', 'primary'), deployEnv: 'deploy-env-1'},
+          {...createTarget('target-2', 'secondary'), deployEnv: 'deploy-env-1'},
+          {...createTarget('target-3', 'secondary'), deployEnv: 'deploy-env-2'},
+          {...createTarget('target-4', 'secondary'), deployEnv: 'deploy-env-1'},
+          {...createTarget('target-5', 'secondary'), deployEnv: 'deploy-env-2'},
+          {...createTarget('target-6', 'secondary'), deployEnv: 'deploy-env-3'},
+        ];
+
+        expect(() => validateDeploymentsInfo(targets)).toThrowError(
+            'Expected all secondary deploy targets to match the primary target\'s `deployEnv` ' +
+            '(deploy-env-1), but 3 targets do not: target-3 (deployEnv: deploy-env-2), target-5 ' +
+            '(deployEnv: deploy-env-2), target-6 (deployEnv: deploy-env-3)');
+      });
+
+  it('should succeed with a valid skipped target', () => {
+    const targets = [
+      skipDeployment('due to valid reasons'),
+    ];
+
+    expect(() => validateDeploymentsInfo(targets)).not.toThrow();
+  });
+
+  it('should succeed with a valid non-skipped target', () => {
+    const targets = [
+      createTarget('target-1', 'primary'),
+    ];
+
+    expect(() => validateDeploymentsInfo(targets)).not.toThrow();
+  });
+
+  it('should succeed with multiple valid non-skipped targets', () => {
+    const targets = [
+      createTarget('target-1', 'primary'),
+      createTarget('target-2', 'secondary'),
+      createTarget('target-3', 'secondary'),
+      createTarget('target-4', 'secondary'),
+    ];
+
+    expect(() => validateDeploymentsInfo(targets)).not.toThrow();
   });
 });
