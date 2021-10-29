@@ -166,7 +166,7 @@ describe('deploy-to-firebase:', () => {
         projectId: 'angular-io',
         siteId: 'rc-angular-io-site',
         deployedUrl: 'https://rc.angular.io/',
-        preDeployActions: ['function:disableServiceWorker', 'function:redirectToAngularIo'],
+        preDeployActions: ['function:disableServiceWorker', 'function:redirectNonFilesToStable'],
         postDeployActions: ['function:testNoActiveRcDeployment'],
       },
     ]);
