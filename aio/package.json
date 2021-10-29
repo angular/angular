@@ -56,7 +56,7 @@
     "docs-test": "node tools/transforms/test.js",
     "redirects-test": "node tests/deployment/unit/test",
     "firebase-utils-test": "node tools/firebase-test-utils/test",
-    "tools-lint": "eslint tools/firebase-test-utils && eslint tools/ng-packages-installer",
+    "tools-lint": "eslint scripts/deploy-to-firebase && eslint tools/firebase-test-utils && eslint tools/ng-packages-installer",
     "tools-test": "yarn docs-test && yarn boilerplate:test && jasmine tools/ng-packages-installer/index.spec.js && jasmine scripts/deploy-to-firebase/**/*.spec.js && yarn firebase-utils-test",
     "preserve-and-sync": "yarn docs",
     "serve-and-sync": "run-p \"docs-watch --watch-only\" \"start {@}\" --",
