@@ -353,9 +353,11 @@ function testNoActiveRcDeployment({deployedUrl}) {
         `Expected '${fooBarUrl}' to return a status code of '${fooBarExpectedStatusCode}', but ` +
         `it returned '${fooBarActualStatusCode}'.`);
   } else if (fooBarActualRedirectUrl !== fooBarExpectedRedirectUrl) {
+    const actualBehavior = (fooBarActualRedirectUrl === 'undefined') ?
+      'not redirected' : `redirected to '${fooBarActualRedirectUrl}'`;
     throw new Error(
         `Expected '${fooBarUrl}' to be redirected to '${fooBarExpectedRedirectUrl}', but it was ` +
-        `but it was redirected to '${fooBarActualRedirectUrl}'.`);
+        `${actualBehavior}.`);
   }
 }
 
