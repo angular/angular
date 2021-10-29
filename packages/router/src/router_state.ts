@@ -115,7 +115,7 @@ export class ActivatedRoute {
   /** @internal */
   _futureSnapshot: ActivatedRouteSnapshot;
   /** @internal */
-  _routerState!: RouterState;
+  _routerState?: RouterState;
   /** @internal */
   _paramMap!: Observable<ParamMap>;
   /** @internal */
@@ -147,27 +147,27 @@ export class ActivatedRoute {
 
   /** The root of the router state. */
   get root(): ActivatedRoute {
-    return this._routerState.root;
+    return this._routerState?.root ?? this;
   }
 
   /** The parent of this route in the router state tree. */
   get parent(): ActivatedRoute|null {
-    return this._routerState.parent(this);
+    return this._routerState?.parent(this) ?? null;
   }
 
   /** The first child of this route in the router state tree. */
   get firstChild(): ActivatedRoute|null {
-    return this._routerState.firstChild(this);
+    return this._routerState?.firstChild(this) ?? null;
   }
 
   /** The children of this route in the router state tree. */
   get children(): ActivatedRoute[] {
-    return this._routerState.children(this);
+    return this._routerState?.children(this) ?? [];
   }
 
   /** The path from the root of the router state tree to this route. */
   get pathFromRoot(): ActivatedRoute[] {
-    return this._routerState.pathFromRoot(this);
+    return this._routerState?.pathFromRoot(this) ?? [];
   }
 
   /**
@@ -296,8 +296,7 @@ export class ActivatedRouteSnapshot {
   // TODO(issue/24571): remove '!'.
   _resolvedData!: Data;
   /** @internal */
-  // TODO(issue/24571): remove '!'.
-  _routerState!: RouterStateSnapshot;
+  _routerState?: RouterStateSnapshot;
   /** @internal */
   // TODO(issue/24571): remove '!'.
   _paramMap!: ParamMap;
@@ -349,27 +348,27 @@ export class ActivatedRouteSnapshot {
 
   /** The root of the router state */
   get root(): ActivatedRouteSnapshot {
-    return this._routerState.root;
+    return this._routerState?.root ?? this;
   }
 
   /** The parent of this route in the router state tree */
   get parent(): ActivatedRouteSnapshot|null {
-    return this._routerState.parent(this);
+    return this._routerState?.parent(this) ?? null;
   }
 
   /** The first child of this route in the router state tree */
   get firstChild(): ActivatedRouteSnapshot|null {
-    return this._routerState.firstChild(this);
+    return this._routerState?.firstChild(this) ?? null;
   }
 
   /** The children of this route in the router state tree */
   get children(): ActivatedRouteSnapshot[] {
-    return this._routerState.children(this);
+    return this._routerState?.children(this) ?? [];
   }
 
   /** The path from the root of the router state tree to this route */
   get pathFromRoot(): ActivatedRouteSnapshot[] {
-    return this._routerState.pathFromRoot(this);
+    return this._routerState?.pathFromRoot(this) ?? [this];
   }
 
   get paramMap(): ParamMap {
@@ -434,7 +433,7 @@ export class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
   }
 }
 
-function setRouterState<U, T extends {_routerState: U}>(state: U, node: TreeNode<T>): void {
+function setRouterState<U, T extends {_routerState?: U}>(state: U, node: TreeNode<T>): void {
   node.value._routerState = state;
   node.children.forEach(c => setRouterState(state, c));
 }
