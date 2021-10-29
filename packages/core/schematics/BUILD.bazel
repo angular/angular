@@ -14,6 +14,7 @@ pkg_npm(
     visibility = ["//packages/core:__pkg__"],
     deps = [
         "//packages/core/schematics/migrations/entry-components",
+        "//packages/core/schematics/migrations/path-match-type",
         "//packages/core/schematics/migrations/typed-forms",
     ],
 )
