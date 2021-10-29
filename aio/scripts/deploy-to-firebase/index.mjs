@@ -151,7 +151,7 @@ function computeDeploymentsInfo(
       projectId: 'angular-io',
       siteId: 'rc-angular-io-site',
       deployedUrl: 'https://rc.angular.io/',
-      preDeployActions: [pre.disableServiceWorker, pre.redirectToAngularIo],
+      preDeployActions: [pre.disableServiceWorker, pre.redirectNonFilesToStable],
       postDeployActions: [post.testNoActiveRcDeployment],
     },
   };
