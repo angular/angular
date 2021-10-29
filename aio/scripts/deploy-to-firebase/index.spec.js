@@ -555,7 +555,7 @@ describe('validateDeploymentsInfo()', () => {
         'Expected exactly one primary deploy target, but found 0: -');
   });
 
-  it('should error if there are more than one primary targets', () => {
+  it('should error if there is more than one primary target', () => {
     const targets = [
       createTarget('target-1', 'primary'),
       createTarget('target-2', 'secondary'),
