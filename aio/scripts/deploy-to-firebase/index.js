@@ -270,9 +270,9 @@ function getRemoteRefs(refOrPattern, {remote = NG_REMOTE_URL, retrieveFromCache 
   // a new commit on a branch while the tests execute, which would cause `getLatestCommit()` to
   // return a different value).
   const cmd = `git ls-remote ${remote} ${refOrPattern}`;
-  const result = (retrieveFromCache && GIT_REMOTE_REFS_CACHE.has(cmd))
-      ? GIT_REMOTE_REFS_CACHE.get(cmd)
-      : exec(cmd, {silent: true}).trim().split('\n');
+  const result = (retrieveFromCache && GIT_REMOTE_REFS_CACHE.has(cmd)) ?
+    GIT_REMOTE_REFS_CACHE.get(cmd) :
+    exec(cmd, {silent: true}).trim().split('\n');
 
   // Cache the result for future use (regardless of the value of `retrieveFromCache`).
   GIT_REMOTE_REFS_CACHE.set(cmd, result);
