@@ -6,6 +6,9 @@
 /src/generated
 /tmp
 
+# Cache folder for the Angular CLI.
+.angular/cache
+
 # dependencies
 /node_modules
 
