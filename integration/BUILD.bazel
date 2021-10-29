@@ -69,7 +69,6 @@ INTEGRATION_TESTS = {
     "ivy-i18n": {},
     "trusted-types": {},
     "ng_elements": {},
-    "ng_elements_schematics": {},
     "ng_update": {},
     "ng_update_migrations": {
         # TODO(devversion): re-enable this test once the migrations are updated to support the ESM compiler-cli.
