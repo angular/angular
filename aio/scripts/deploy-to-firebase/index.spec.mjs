@@ -138,7 +138,7 @@ describe('deploy-to-firebase:', () => {
         postDeployActions: ['function:testPwaScore'],
       },
       {
-        name: 'stableVersionSubdomain',
+        name: 'redirectVersionDomainToStable',
         type: 'secondary',
         deployEnv: 'stable',
         projectId: 'angular-io',
@@ -172,7 +172,7 @@ describe('deploy-to-firebase:', () => {
         postDeployActions: ['function:testPwaScore'],
       },
       {
-        name: 'stableVersionSubdomain',
+        name: 'redirectVersionDomainToStable',
         type: 'secondary',
         deployEnv: 'stable',
         projectId: 'angular-io',
@@ -182,7 +182,7 @@ describe('deploy-to-firebase:', () => {
         postDeployActions: ['function:undoRedirectAllToStable', 'function:testRedirectToStable'],
       },
       {
-        name: 'stableNoActiveRc',
+        name: 'redirectRcToStable',
         type: 'secondary',
         deployEnv: 'stable',
         projectId: 'angular-io',

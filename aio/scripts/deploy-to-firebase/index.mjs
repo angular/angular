@@ -13,28 +13,28 @@
  *   - [Angular Branching and Versioning: A Practical Guide](../../../docs/BRANCHES.md)
  *   - [Angular Development Phases](https://docs.google.com/document/d/197kVillDwx-RZtSVOBtPb4BBIAw0E9RT3q3v6DZkykU)
  *
- * |--------------------|-----------------------------------------------------|
- * | TABLE:             |               Is there an active RC?                |
- * | Where should we    |-------------------------|---------------------------|
- * | deploy to/as?      |            NO            |           YES            |
- * |-----------|--------|--------------------------|--------------------------|
- * |           | LTS    | archive                  | archive                  |
- * |           |--------|--------------------------|--------------------------|
- * |           | PATCH  | stable                   | stable                   |
- * | What      |        | stableVersionSubdomain   | stableVersionSubdomain   |
- * | branch    |        | stableNoActiveRc         |                          |
- * | are we    |--------|--------------------------|--------------------------|
- * | deploying | RC     | -                        | rc                       |
- * | from?     |        |                          |                          |
- * |           |--------|--------------------------|--------------------------|
- * |           | MASTER | next                     | next                     |
- * |           |        |                          |                          |
- * |-----------|--------|--------------------------|--------------------------|
+ * |--------------------|-------------------------------------------------------------------|
+ * | TABLE:             |                      Is there an active RC?                       |
+ * | Where should we    |---------------------------------|---------------------------------|
+ * | deploy to/as?      |               NO                |               YES               |
+ * |-----------|--------|---------------------------------|---------------------------------|
+ * |           | LTS    | archive                         | archive                         |
+ * |           |--------|---------------------------------|---------------------------------|
+ * |           | PATCH  | stable                          | stable                          |
+ * | What      |        | redirectVersionDomainToStable   | redirectVersionDomainToStable   |
+ * | branch    |        | redirectRcToStable              |                                 |
+ * | are we    |--------|---------------------------------|---------------------------------|
+ * | deploying | RC     | -                               | rc                              |
+ * | from?     |        |                                 |                                 |
+ * |           |--------|---------------------------------|---------------------------------|
+ * |           | MASTER | next                            | next                            |
+ * |           |        |                                 |                                 |
+ * |-----------|--------|---------------------------------|---------------------------------|
  *
  * NOTES:
- *   - On the stable branch changes, the deploy jobs for the new stable branch (prev. RC or next)
- *     and the old stable branch must be run AFTER the new stable version has been published to NPM.
- *     This is because the NPM info is used to determine what the stable version is.
+ *   - When a new major version is released, the deploy CI jobs for the new stable branch (prev. RC
+ *     or next) and the old stable branch must be run AFTER the new stable version has been
+ *     published to NPM, because the NPM info is used to determine what the stable version is.
  *     In the future, we could make the branch version info retrieval more robust, DRY and
  *     future-proof (and independent of NPM releases) by re-using the `ng-dev release info`
  *     [implementation](https://github.com/angular/dev-infra/blob/92778223953e029d1723febf282bb265b4e2a56f/ng-dev/release/info/cli.ts).
@@ -184,8 +184,8 @@ function computeDeploymentsInfo(
     // Since there can be multiple secondary deployments (each tweaking the primary one in different
     // ways), it is a good idea to ensure that any pre-deploy actions are undone in the post-deploy
     // phase.
-    stableVersionSubdomain: {
-      name: 'stableVersionSubdomain',
+    redirectVersionDomainToStable: {
+      name: 'redirectVersionDomainToStable',
       type: 'secondary',
       deployEnv: 'stable',
       projectId: 'angular-io',
@@ -197,8 +197,8 @@ function computeDeploymentsInfo(
     // Config for deploying the stable build to the RC Firebase site when there is no active RC.
     // See https://github.com/angular/angular/issues/39760 for more info on the purpose of this
     // special deployment.
-    stableNoActiveRc: {
-      name: 'stableNoActiveRc',
+    redirectRcToStable: {
+      name: 'redirectRcToStable',
       type: 'secondary',
       deployEnv: 'stable',
       projectId: 'angular-io',
@@ -234,7 +234,7 @@ function computeDeploymentsInfo(
       // There is an active RC version. Only deploy to the `stable` projects/sites.
       [
         deploymentInfoPerTarget.stable,
-        deploymentInfoPerTarget.stableVersionSubdomain,
+        deploymentInfoPerTarget.redirectVersionDomainToStable,
       ] :
       // There is no active RC version. In addition to deploying to the `stable` projects/sites,
       // deploy to `rc` to ensure it redirects to `stable`.
@@ -242,8 +242,8 @@ function computeDeploymentsInfo(
       // special deployment.
       [
         deploymentInfoPerTarget.stable,
-        deploymentInfoPerTarget.stableVersionSubdomain,
-        deploymentInfoPerTarget.stableNoActiveRc,
+        deploymentInfoPerTarget.redirectVersionDomainToStable,
+        deploymentInfoPerTarget.redirectRcToStable,
       ];
   }
 
