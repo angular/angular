@@ -4,7 +4,7 @@
       "uncompressed": {
         "runtime": 4436,
         "main": 460307,
-        "polyfills": 55646,
+        "polyfills": 37123,
         "styles": 70719,
         "light-theme": 77717,
         "dark-theme": 77897
@@ -16,7 +16,7 @@
       "uncompressed": {
         "runtime": 4436,
         "main": 460340,
-        "polyfills": 55795,
+        "polyfills": 37271,
         "styles": 70719,
         "light-theme": 77717,
         "dark-theme": 77897
