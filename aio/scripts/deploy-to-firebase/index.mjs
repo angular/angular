@@ -28,7 +28,7 @@
  * | from?     |        |                                 | redirectVersionDomainToRc(*)    |
  * |           |--------|---------------------------------|---------------------------------|
  * |           | MASTER | next                            | next                            |
- * |           |        | nextVersionSubdomain(**)        | nextVersionSubdomain(**)        |
+ * |           |        | redirectVersionDomainToNext(**) | redirectVersionDomainToNext(**) |
  * |-----------|--------|---------------------------------|---------------------------------|
  *
  * (*):  Only if `v<RC>` > `v<STABLE>`.
@@ -195,8 +195,8 @@ function computeDeploymentsInfo(
     // Since there can be multiple secondary deployments (each tweaking the primary one in different
     // ways), it is a good idea to ensure that any pre-deploy actions are undone in the post-deploy
     // phase.
-    nextVersionSubdomain: {
-      name: 'nextVersionSubdomain',
+    redirectVersionDomainToNext: {
+      name: 'redirectVersionDomainToNext',
       type: 'secondary',
       deployEnv: 'next',
       projectId: 'angular-io',
@@ -261,7 +261,7 @@ function computeDeploymentsInfo(
       // Deploy to both `next-angular-io-site` and `v<NEXT>-angular-io-site`.
       [
         deploymentInfoPerTarget.next,
-        deploymentInfoPerTarget.nextVersionSubdomain,
+        deploymentInfoPerTarget.redirectVersionDomainToNext,
       ] :
       // The next major version is not greater than the RC or stable major version.
       // Only deploy to `next-angular-io-site` (since `v<NEXT>-angular-io-site` is probably

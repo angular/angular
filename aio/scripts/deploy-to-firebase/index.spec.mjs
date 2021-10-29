@@ -105,7 +105,7 @@ describe('deploy-to-firebase:', () => {
         postDeployActions: ['function:testPwaScore'],
       },
       {
-        name: 'nextVersionSubdomain',
+        name: 'redirectVersionDomainToNext',
         type: 'secondary',
         deployEnv: 'next',
         projectId: 'angular-io',
@@ -170,7 +170,7 @@ describe('deploy-to-firebase:', () => {
         postDeployActions: ['function:testPwaScore'],
       },
       {
-        name: 'nextVersionSubdomain',
+        name: 'redirectVersionDomainToNext',
         type: 'secondary',
         deployEnv: 'next',
         projectId: 'angular-io',
