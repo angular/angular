@@ -765,15 +765,9 @@
           "tooltip": "Browser support and polyfills guide."
         },
         {
+          "url": "guide/update-to-latest-version",
           "title": "Update to Version 13",
-          "tooltip": "Support to update your application to version 13",
-          "children": [
-            {
-              "url": "guide/update-to-latest-version",
-              "title": "Overview",
-              "tooltip": "Everything you need to know to update your application to version 13"
-            }
-          ]
+          "tooltip": "Support to update your application to version 13"
         },
         {
           "url": "guide/deprecations",
