@@ -10,16 +10,25 @@ import u from './utils.mjs';
 
 describe('deploy-to-firebase:', () => {
   // Pre-computed values to avoid unnecessary re-computations.
-  const mostRecentMinorBranch = u.getMostRecentMinorBranch();
-  const latestCommits = {
-    master: u.getLatestCommit('master'),
-    '2.1.x': u.getLatestCommit('2.1.x'),
-    '2.4.x': u.getLatestCommit('2.4.x'),
-    '4.3.x': u.getLatestCommit('4.3.x'),
-    '4.4.x': u.getLatestCommit('4.4.x'),
-    '9.1.x': u.getLatestCommit('9.1.x'),
-    [mostRecentMinorBranch]: u.getLatestCommit(mostRecentMinorBranch),
-  };
+  let mostRecentMinorBranch;
+  let latestCommits;
+
+  beforeAll(() => {
+    // Computing the values involves network requests and may add a noticeable delay (during which
+    // nothing is printed to stdout). Print a message to let the user know what is happening.
+    console.log('\nPre-computing values for \'deploy-to-firebase\' tests...');
+
+    mostRecentMinorBranch = u.getMostRecentMinorBranch();
+    latestCommits = {
+      master: u.getLatestCommit('master'),
+      '2.1.x': u.getLatestCommit('2.1.x'),
+      '2.4.x': u.getLatestCommit('2.4.x'),
+      '4.3.x': u.getLatestCommit('4.3.x'),
+      '4.4.x': u.getLatestCommit('4.4.x'),
+      '9.1.x': u.getLatestCommit('9.1.x'),
+      [mostRecentMinorBranch]: u.getLatestCommit(mostRecentMinorBranch),
+    };
+  });
 
   // Helpers
   const jsonFunctionReplacer = (_key, val) =>
