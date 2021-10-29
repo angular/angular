@@ -11,47 +11,66 @@ export default exp;
 
 // Helpers
 function testNoActiveRcDeployment({deployedUrl}) {
-  u.logSectionHeader(
-      'Verify deployed RC version redirects to stable (and disables old ServiceWorker).');
+  const destinationOrigin = u.ORIGINS.Stable;
 
-  const deployedOrigin = deployedUrl.replace(/\/$/, '');
+  u.logSectionHeader(
+      `Verify deployed RC version redirects to '${destinationOrigin}' (and disables old ` +
+      'ServiceWorker).');
 
   // Ensure a request for `ngsw.json` returns 404.
-  const ngswJsonUrl = `${deployedOrigin}/ngsw.json`;
-  const ngswJsonScript = `https.get('${ngswJsonUrl}', res => console.log(res.statusCode))`;
-  const ngswJsonActualStatusCode =
-      sh.exec(`node --eval "${ngswJsonScript}"`, {silent: true}).trim();
-  const ngswJsonExpectedStatusCode = '404';
-
-  if (ngswJsonActualStatusCode !== ngswJsonExpectedStatusCode) {
-    throw new Error(
-        `Expected '${ngswJsonUrl}' to return a status code of '${ngswJsonExpectedStatusCode}', ` +
-        `but it returned '${ngswJsonActualStatusCode}'.`);
-  }
+  testUrlNotFound('ngsw.json', deployedUrl);
 
   // Ensure a request for `foo/bar` is redirected to `https://angular.io/foo/bar`.
-  const fooBarUrl = `${deployedOrigin}/foo/bar?baz=qux`;
-  const fooBarScript =
-      `https.get('${fooBarUrl}', res => console.log(res.statusCode, res.headers.location))`;
-  const [fooBarActualStatusCode, fooBarActualRedirectUrl] =
-      sh.exec(`node --eval "${fooBarScript}"`, {silent: true}).trim().split(' ');
-  const fooBarExpectedStatusCode = '302';
-  const fooBarExpectedRedirectUrl = 'https://angular.io/foo/bar?baz=qux';
-
-  if (fooBarActualStatusCode !== fooBarExpectedStatusCode) {
-    throw new Error(
-        `Expected '${fooBarUrl}' to return a status code of '${fooBarExpectedStatusCode}', but ` +
-        `it returned '${fooBarActualStatusCode}'.`);
-  } else if (fooBarActualRedirectUrl !== fooBarExpectedRedirectUrl) {
-    const actualBehavior = (fooBarActualRedirectUrl === 'undefined') ?
-      'not redirected' : `redirected to '${fooBarActualRedirectUrl}'`;
-    throw new Error(
-        `Expected '${fooBarUrl}' to be redirected to '${fooBarExpectedRedirectUrl}', but it was ` +
-        `${actualBehavior}.`);
-  }
+  testUrlRedirect('foo/bar?baz=qux', deployedUrl, destinationOrigin);
 }
 
 function testPwaScore({deployedUrl, minPwaScore}) {
   u.logSectionHeader('Run PWA-score tests.');
   u.yarn(`test-pwa-score "${deployedUrl}" "${minPwaScore}"`);
+}
+
+function testUrlNotFound(relativeUrl, sourceOrigin) {
+  // Strip leading/trailing slashes.
+  relativeUrl = relativeUrl.replace(/^\//, '');
+  sourceOrigin = sourceOrigin.replace(/\/$/, '');
+
+  const sourceUrl = `${sourceOrigin}/${relativeUrl}`;
+  const expectedStatusCode = '404';
+
+  const testScript = `https.get('${sourceUrl}', res => console.log(res.statusCode))`;
+  const actualStatusCode = sh.exec(`node --eval "${testScript}"`, {silent: true}).trim();
+
+  if (actualStatusCode !== expectedStatusCode) {
+    throw new Error(
+        `Expected '${sourceUrl}' to return a status code of '${expectedStatusCode}', but it ` +
+        `returned '${actualStatusCode}'.`);
+  }
+}
+
+function testUrlRedirect(relativeUrl, sourceOrigin, destinationOrigin) {
+  // Strip leading/trailing slashes.
+  relativeUrl = relativeUrl.replace(/^\//, '');
+  sourceOrigin = sourceOrigin.replace(/\/$/, '');
+  destinationOrigin = destinationOrigin.replace(/\/$/, '');
+
+  const sourceUrl = `${sourceOrigin}/${relativeUrl}`;
+  const expectedStatusCode = '302';
+  const expectedDestinationUrl = `${destinationOrigin}/${relativeUrl}`;
+
+  const testScript =
+      `https.get('${sourceUrl}', res => console.log(res.statusCode, res.headers.location))`;
+  const [actualStatusCode, actualDestinationUrl] =
+      sh.exec(`node --eval "${testScript}"`, {silent: true}).trim().split(' ');
+
+  if (actualStatusCode !== expectedStatusCode) {
+    throw new Error(
+        `Expected '${sourceUrl}' to return a status code of '${expectedStatusCode}', but it ` +
+        `returned '${actualStatusCode}'.`);
+  } else if (actualDestinationUrl !== expectedDestinationUrl) {
+    const actualBehavior = (actualDestinationUrl === 'undefined') ?
+      'not redirected' : `redirected to '${actualDestinationUrl}'`;
+    throw new Error(
+        `Expected '${sourceUrl}' to be redirected to '${expectedDestinationUrl}', but it was ` +
+        `${actualBehavior}.`);
+  }
 }
