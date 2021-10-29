@@ -73,7 +73,7 @@ Your library should supply documentation (typically a README file) for installat
 
 ## Refactoring parts of an application into a library
 
-To make your solution reusable, you need to adjust it so that it does not depend on app-specific code.
+To make your solution reusable, you need to adjust it so that it does not depend on application-specific code.
 Here are some things to consider in migrating application functionality to a library.
 
 * Declarations such as components and pipes should be designed as stateless, meaning they don’t rely on or alter external variables. If you do rely on state, you need to evaluate every case and decide whether it is application state or state that the library would manage.
@@ -122,7 +122,7 @@ If that form needs additional customization by the developer who is using your l
 However, if the form will always be the same and not need much customization by developers, then you could create a dynamic component that takes the configuration and generates the form.
 In general, the more complex the customization, the more useful the schematic approach.
 
-To learn more, see [Schematics Overview](guide/schematics) and [Schematics for Libraries](guide/schematics-for-libraries).
+For more information, see [Schematics Overview](guide/schematics) and [Schematics for Libraries](guide/schematics-for-libraries).
 
 ## Publishing your library
 
@@ -149,7 +149,7 @@ npm publish
 
 ## Managing assets in a library
 
-In your Angular library distributable can include additional assets like theming files, Sass mixins, or documentation (like a changelog).
+In your Angular library, the distributable can include additional assets like theming files, Sass mixins, or documentation (like a changelog).
 For more information [copy assets into your library as part of the build](https://github.com/ng-packagr/ng-packagr/blob/master/docs/copy-assets.md) and [embed assets in component styles](https://github.com/ng-packagr/ng-packagr/blob/master/docs/embed-assets-css.md).
 
 ## Peer dependencies
@@ -185,6 +185,8 @@ When you install a library package, the mapping is in the `node_modules` folder.
 
 Generating a library with the Angular CLI automatically adds its path to the `tsconfig` file.
 The Angular CLI uses the `tsconfig` paths to tell the build system where to find the library.
+
+For more information, see [Path mapping overview](https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping).
 
 </div>
 
@@ -231,13 +233,13 @@ Avoid compiling libraries with full-Ivy code if you are publishing to npm becaus
 ## Ensuring library version compatibility
 
 The Angular version used to build an application should always be the same or greater than the Angular versions used to build any of its dependent libraries.
-For example, if you had a library using Angular version 12, the application that depends on that library should use Angular version 12 or later.
+For example, if you had a library using Angular version 13, the application that depends on that library should use Angular version 13 or later.
 Angular does not support using an earlier version for the application.
 
-Because this process happens during the application build, it uses the same version of the Angular compiler, ensuring that the application and all of its libraries use a single version of Angular.
 
 If you intend to publish your library to npm, compile with partial-Ivy code by setting `"compilationMode": "partial"` in `tsconfig.prod.json`.
-This partial format is stable between different versions of Angular, so is safe to publish to npm.
+This partial format is stable between different versions of Angular, so is safe to publish to npm. Code with this format is processed during the application build using the same version of the Angular compiler, ensuring that the application and all of its libraries use a single version of Angular.
+
 
 Avoid compiling libraries with full-Ivy code if you are publishing to npm because the generated Ivy instructions are not part of Angular's public API, and so might change between patch versions.
 
