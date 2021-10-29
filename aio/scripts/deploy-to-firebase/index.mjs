@@ -25,13 +25,17 @@
  * | branch    |        | redirectRcToStable              |                                 |
  * | are we    |--------|---------------------------------|---------------------------------|
  * | deploying | RC     | -                               | rc                              |
- * | from?     |        |                                 |                                 |
+ * | from?     |        |                                 | redirectVersionDomainToRc(*)    |
  * |           |--------|---------------------------------|---------------------------------|
  * |           | MASTER | next                            | next                            |
  * |           |        |                                 |                                 |
  * |-----------|--------|---------------------------------|---------------------------------|
  *
+ * (*):  Only if `v<RC>` > `v<STABLE>`.
+ *
  * NOTES:
+ *   - The `v<X>-angular-io-site` Firebase site should be created (and connected to the
+ *     `v<X>.angular.io` subdomain) before a new RC branch is created.
  *   - When a new major version is released, the deploy CI jobs for the new stable branch (prev. RC
  *     or next) and the old stable branch must be run AFTER the new stable version has been
  *     published to NPM, because the NPM info is used to determine what the stable version is.
@@ -126,6 +130,7 @@ function computeDeploymentsInfo(
 
   // The deployment mode is computed based on the branch we are building.
   const currentBranchMajorVersion = u.computeMajorVersion(currentBranch);
+  const stableBranchMajorVersion = u.computeMajorVersion(stableBranch);
   const deploymentInfoPerTarget = {
     // PRIMARY DEPLOY TARGETS
     //
@@ -184,6 +189,16 @@ function computeDeploymentsInfo(
     // Since there can be multiple secondary deployments (each tweaking the primary one in different
     // ways), it is a good idea to ensure that any pre-deploy actions are undone in the post-deploy
     // phase.
+    redirectVersionDomainToRc: {
+      name: 'redirectVersionDomainToRc',
+      type: 'secondary',
+      deployEnv: 'rc',
+      projectId: 'angular-io',
+      siteId: `v${currentBranchMajorVersion}-angular-io-site`,
+      deployedUrl: `https://v${currentBranchMajorVersion}.angular.io/`,
+      preDeployActions: [pre.redirectAllToRc],
+      postDeployActions: [pre.undo.redirectAllToRc, post.testRedirectToRc],
+    },
     redirectVersionDomainToStable: {
       name: 'redirectVersionDomainToStable',
       type: 'secondary',
@@ -225,7 +240,19 @@ function computeDeploymentsInfo(
 
   // If the current branch is the RC branch, deploy as `rc`.
   if (currentBranch === rcBranch) {
-    return [deploymentInfoPerTarget.rc];
+    return (currentBranchMajorVersion > stableBranchMajorVersion) ?
+      // The RC major version is greater than the stable major version.
+      // Deploy to both `rc-angular-io-site` and `v<RC>-angular-io-site`.
+      [
+        deploymentInfoPerTarget.rc,
+        deploymentInfoPerTarget.redirectVersionDomainToRc,
+      ] :
+      // The RC major version is not greater than the stable major version.
+      // Only deploy to `rc-angular-io-site` (since `v<RC>-angular-io-site` is probably
+      // `v<STABLE>-angular-io-site` and we don't want to overwrite the stable deployment).
+      [
+        deploymentInfoPerTarget.rc,
+      ];
   }
 
   // If the current branch is the stable branch, deploy as `stable`.
@@ -266,7 +293,6 @@ function computeDeploymentsInfo(
   }
 
   // Do not deploy if it does not have a lower major version than stable.
-  const stableBranchMajorVersion = u.computeMajorVersion(stableBranch);
   if (currentBranchMajorVersion >= stableBranchMajorVersion) {
     return [
       skipDeployment(
