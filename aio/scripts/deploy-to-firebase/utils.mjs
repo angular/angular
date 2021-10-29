@@ -1,3 +1,4 @@
+import fs from 'fs';
 import {dirname} from 'path';
 import sh from 'shelljs';
 import {fileURLToPath} from 'url';
@@ -25,6 +26,7 @@ const exp = {
   getLatestCommit,
   getMostRecentMinorBranch,
   getRemoteRefs,
+  loadJson,
   logSectionHeader,
   nameFunction,
   yarn,
@@ -32,8 +34,8 @@ const exp = {
 export default exp;
 
 // Helpers
-function computeMajorVersion(branchName) {
-  return +branchName.split('.', 1)[0];
+function computeMajorVersion(versionPattern) {
+  return +versionPattern.split('.', 1)[0];
 }
 
 function getDirname(fileUrl) {
@@ -80,6 +82,10 @@ function getMostRecentMinorBranch(major = '*', options = undefined) {
 
 function getLatestCommit(branchName, options = undefined) {
   return exp.getRemoteRefs(branchName, options)[0].slice(0, 40);
+}
+
+function loadJson(filePath) {
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
 
 function logSectionHeader(message) {
