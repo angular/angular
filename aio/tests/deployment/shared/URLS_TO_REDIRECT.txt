@@ -1,3 +1,4 @@
+/apf --> /guide/angular-package-format
 /api/animate/AnimationBuilder --> /api/animations/AnimationBuilder
 /api/animate/CssAnimationBuilder --> /api/animations/CssAnimationBuilder
 /api/api/core/ElementRef --> /api/core/ElementRef

@@ -740,6 +740,11 @@
               "url": "guide/creating-libraries",
               "title": "Creating Libraries",
               "tooltip": "Extend Angular by creating, publishing, and using your own libraries."
+            },
+            {
+              "url": "guide/angular-package-format",
+              "title": "Angular Package Format",
+              "tooltip": "Information about the Angular Package Format."
             }
           ]
         }

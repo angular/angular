@@ -1091,7 +1091,8 @@ groups:
         contains_any_globs(files, [
           'aio/content/guide/creating-libraries.md',
           'aio/content/guide/libraries.md',
-          'aio/content/guide/using-libraries.md'
+          'aio/content/guide/using-libraries.md',
+          'aio/content/guide/angular-package-format.md'
           ])
     reviewers:
       users:
@@ -1223,6 +1224,7 @@ groups:
         contains_any_globs(files.exclude("goldens/public-api/manage.js"), [
           'goldens/public-api/**',
           'docs/NAMING.md',
+          'aio/content/guide/angular-package-format.md',
           'aio/content/errors/*.md',
           'aio/content/guide/glossary.md',
           'aio/content/guide/styleguide.md',
