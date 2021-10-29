@@ -9,6 +9,7 @@ ts_library(
     ],
     deps = [
         "//packages/core/schematics/migrations/entry-components",
+        "//packages/core/schematics/migrations/path-match-type",
         "//packages/core/schematics/migrations/typed-forms",
         "//packages/core/schematics/utils",
         "@npm//@angular-devkit/core",
