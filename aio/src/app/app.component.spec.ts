@@ -79,6 +79,7 @@ describe('AppComponent', () => {
     const originalReducedMotion = AppComponent.reducedMotion;
 
     beforeEach(async () => {
+      // Set `reducedMotion` to `true` to disable animations (such as view transitions) for the tests.
       AppComponent.reducedMotion = true;
 
       createTestingModule('a/b');
