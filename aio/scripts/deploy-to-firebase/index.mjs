@@ -2,11 +2,12 @@
 //
 // WARNING: `CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN` should NOT be printed.
 //
-'use strict';
 
-const {cd, cp, exec, mv, sed, set} = require('shelljs');
+import {dirname} from 'path';
+import sh from 'shelljs';
+import {fileURLToPath} from 'url';
 
-set('-e');
+sh.set('-e');
 
 
 // Constants
@@ -15,10 +16,11 @@ const NG_REMOTE_URL = `https://github.com/${REPO_SLUG}.git`;
 const GIT_REMOTE_REFS_CACHE = new Map();
 
 // Exports
-module.exports = {
+export {
   computeDeploymentsInfo,
   computeInputVars,
   computeMajorVersion,
+  getDirname,
   getLatestCommit,
   getMostRecentMinorBranch,
   skipDeployment,
@@ -26,7 +28,11 @@ module.exports = {
 };
 
 // Run
-if (require.main === module) {
+// ESM alternative for CommonJS' `require.main === module`. For simplicity, we assume command
+// references the full file path (including the file extension).
+// See https://stackoverflow.com/questions/45136831/node-js-require-main-module#answer-60309682 for
+// more details.
+if (fileURLToPath(import.meta.url) === process.argv[1]) {
   const isDryRun = process.argv[2] === '--dry-run';
   const inputVars = computeInputVars(process.env);
   const deploymentsInfo = computeDeploymentsInfo(inputVars);
@@ -67,7 +73,7 @@ function build({deployedUrl, deployEnv}) {
   yarn(`build --configuration=${deployEnv} --progress=false`);
 
   console.log('\n\n\n==== Add any mode-specific files into the AIO distribution. ====\n');
-  cp('-rf', `src/extra-files/${deployEnv}/.`, 'dist/');
+  sh.cp('-rf', `src/extra-files/${deployEnv}/.`, 'dist/');
 
   console.log('\n\n\n==== Update opensearch descriptor for AIO with `deployedUrl`. ====\n');
   yarn(`set-opensearch-url ${deployedUrl.replace(/[^/]$/, '$&/')}`);  // The URL must end with `/`.
@@ -270,7 +276,7 @@ function deploy(data) {
     siteId,
   } = data;
 
-  cd(`${__dirname}/../..`);
+  sh.cd(`${getDirname(import.meta.url)}/../..`);
 
   console.log('\n\n\n==== Run pre-deploy actions. ====\n');
   preDeployActions.forEach(fn => fn(data));
@@ -286,6 +292,10 @@ function deploy(data) {
   postDeployActions.forEach(fn => fn(data));
 }
 
+function getDirname(fileUrl) {
+  return dirname(fileURLToPath(fileUrl));
+}
+
 function getRemoteRefs(refOrPattern, {remote = NG_REMOTE_URL, retrieveFromCache = true} = {}) {
   // If remote refs for the same `refOrPattern` and `remote` have been requested before, return the
   // cached results. This improves the performance and ensures a more stable behavior.
@@ -298,7 +308,7 @@ function getRemoteRefs(refOrPattern, {remote = NG_REMOTE_URL, retrieveFromCache 
   const cmd = `git ls-remote ${remote} ${refOrPattern}`;
   const result = (retrieveFromCache && GIT_REMOTE_REFS_CACHE.has(cmd)) ?
     GIT_REMOTE_REFS_CACHE.get(cmd) :
-    exec(cmd, {silent: true}).trim().split('\n');
+    sh.exec(cmd, {silent: true}).trim().split('\n');
 
   // Cache the result for future use (regardless of the value of `retrieveFromCache`).
   GIT_REMOTE_REFS_CACHE.set(cmd, result);
@@ -337,13 +347,13 @@ function redirectToAngularIo() {
   // See https://firebase.google.com/docs/hosting/full-config#redirects.
   const redirectRule =
       '{"type": 302, "regex": "^(.*/[^./]*)$", "destination": "https://angular.io:1"}';
-  sed('-i', /(\s*)"redirects": \[/, `$&\n$1  ${redirectRule},\n`, 'firebase.json');
+  sh.sed('-i', /(\s*)"redirects": \[/, `$&\n$1  ${redirectRule},\n`, 'firebase.json');
 }
 
 function removeServiceWorker() {
   // Rename the SW manifest (`ngsw.json`). This will cause the ServiceWorker to unregister itself.
   // See https://angular.io/guide/service-worker-devops#fail-safe.
-  mv('dist/ngsw.json', 'dist/ngsw.json.bak');
+  sh.mv('dist/ngsw.json', 'dist/ngsw.json.bak');
 }
 
 function serializeActions(actions) {
@@ -360,7 +370,8 @@ function testNoActiveRcDeployment({deployedUrl}) {
   // Ensure a request for `ngsw.json` returns 404.
   const ngswJsonUrl = `${deployedOrigin}/ngsw.json`;
   const ngswJsonScript = `https.get('${ngswJsonUrl}', res => console.log(res.statusCode))`;
-  const ngswJsonActualStatusCode = exec(`node --eval "${ngswJsonScript}"`, {silent: true}).trim();
+  const ngswJsonActualStatusCode =
+      sh.exec(`node --eval "${ngswJsonScript}"`, {silent: true}).trim();
   const ngswJsonExpectedStatusCode = '404';
 
   if (ngswJsonActualStatusCode !== ngswJsonExpectedStatusCode) {
@@ -374,7 +385,7 @@ function testNoActiveRcDeployment({deployedUrl}) {
   const fooBarScript =
       `https.get('${fooBarUrl}', res => console.log(res.statusCode, res.headers.location))`;
   const [fooBarActualStatusCode, fooBarActualRedirectUrl] =
-      exec(`node --eval "${fooBarScript}"`, {silent: true}).trim().split(' ');
+      sh.exec(`node --eval "${fooBarScript}"`, {silent: true}).trim().split(' ');
   const fooBarExpectedStatusCode = '302';
   const fooBarExpectedRedirectUrl = 'https://angular.io/foo/bar?baz=qux';
 
@@ -480,5 +491,5 @@ function yarn(cmd) {
   // This is not strictly necessary, since CircleCI will mask secret environment variables in the
   // output (see https://circleci.com/docs/2.0/env-vars/#secrets-masking), but is an extra
   // precaution.
-  return exec(`yarn --silent ${cmd}`);
+  return sh.exec(`yarn --silent ${cmd}`);
 }
