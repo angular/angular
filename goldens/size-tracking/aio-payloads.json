@@ -2,24 +2,24 @@
   "aio": {
     "master": {
       "uncompressed": {
-        "runtime": 4454,
-        "main": 463521,
-        "polyfills": 55658,
-        "styles": 70486,
-        "light-theme": 77646,
-        "dark-theme": 77764
+        "runtime": 4436,
+        "main": 460322,
+        "polyfills": 37123,
+        "styles": 70719,
+        "light-theme": 77717,
+        "dark-theme": 77897
       }
     }
   },
   "aio-local": {
     "master": {
       "uncompressed": {
-        "runtime": 4454,
-        "main": 462958,
-        "polyfills": 55807,
-        "styles": 70486,
-        "light-theme": 77646,
-        "dark-theme": 77764
+        "runtime": 4436,
+        "main": 460360,
+        "polyfills": 37271,
+        "styles": 70719,
+        "light-theme": 77717,
+        "dark-theme": 77897
       }
     }
   }
