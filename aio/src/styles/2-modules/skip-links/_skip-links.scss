@@ -1,6 +1,6 @@
 @use 'sass:map';
-@use '~@angular/cdk' as cdk;
-@use '~@angular/material' as mat;
+@use '@angular/cdk' as cdk;
+@use '@angular/material' as mat;
 @use '../../constants' as c;
 
 .skip-to-content-link {
