@@ -69,18 +69,18 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
 
 // Helpers
 function build({deployedUrl, deployEnv}) {
-  console.log('\n\n\n==== Build the AIO app. ====\n');
+  logSectionHeader('Build the AIO app.');
   yarn(`build --configuration=${deployEnv} --progress=false`);
 
-  console.log('\n\n\n==== Add any mode-specific files into the AIO distribution. ====\n');
+  logSectionHeader('Add any mode-specific files into the AIO distribution.');
   sh.cp('-rf', `src/extra-files/${deployEnv}/.`, 'dist/');
 
-  console.log('\n\n\n==== Update opensearch descriptor for AIO with `deployedUrl`. ====\n');
+  logSectionHeader('Update opensearch descriptor for AIO with `deployedUrl`.');
   yarn(`set-opensearch-url ${deployedUrl.replace(/[^/]$/, '$&/')}`);  // The URL must end with `/`.
 }
 
 function checkPayloadSize() {
-  console.log('\n\n\n==== Check payload size and upload the numbers to Firebase DB. ====\n');
+  logSectionHeader('Check payload size and upload the numbers to Firebase DB.');
   yarn('payload-size');
 }
 
@@ -278,17 +278,17 @@ function deploy(data) {
 
   sh.cd(`${getDirname(import.meta.url)}/../..`);
 
-  console.log('\n\n\n==== Run pre-deploy actions. ====\n');
+  logSectionHeader('Run pre-deploy actions.');
   preDeployActions.forEach(fn => fn(data));
 
-  console.log('\n\n\n==== Deploy AIO to Firebase hosting. ====\n');
+  logSectionHeader('Deploy AIO to Firebase hosting.');
   const firebase = cmd => yarn(`firebase ${cmd} --token "${firebaseToken}"`);
   firebase(`use "${projectId}"`);
   firebase('target:clear hosting aio');
   firebase(`target:apply hosting aio "${siteId}"`);
   firebase(`deploy --only hosting:aio --message "Commit: ${currentCommit}" --non-interactive`);
 
-  console.log('\n\n\n==== Run post-deploy actions. ====\n');
+  logSectionHeader('Run post-deploy actions.');
   postDeployActions.forEach(fn => fn(data));
 }
 
@@ -341,6 +341,10 @@ function listDeployTargetNames(deploymentsList) {
   return deploymentsList.map(({name = '<no name>'}) => name).join(', ') || '-';
 }
 
+function logSectionHeader(message) {
+  console.log(`\n\n\n==== ${message} ====\n`);
+}
+
 function redirectToAngularIo() {
   // Update the Firebase hosting configuration redirect all non-file requests (i.e. requests that do
   // not contain a dot in their last path segment) to `angular.io`.
@@ -365,6 +369,9 @@ function skipDeployment(reason) {
 }
 
 function testNoActiveRcDeployment({deployedUrl}) {
+  logSectionHeader(
+      'Verify deployed RC version redirects to stable (and disables old ServiceWorker).');
+
   const deployedOrigin = deployedUrl.replace(/\/$/, '');
 
   // Ensure a request for `ngsw.json` returns 404.
@@ -403,7 +410,7 @@ function testNoActiveRcDeployment({deployedUrl}) {
 }
 
 function testPwaScore({deployedUrl, minPwaScore}) {
-  console.log('\n\n\n==== Run PWA-score tests. ====\n');
+  logSectionHeader('Run PWA-score tests.');
   yarn(`test-pwa-score "${deployedUrl}" "${minPwaScore}"`);
 }
 
