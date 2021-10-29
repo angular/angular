@@ -6,12 +6,18 @@ import {fileURLToPath} from 'url';
 // Constants
 const REPO_SLUG = 'angular/angular';
 const NG_REMOTE_URL = `https://github.com/${REPO_SLUG}.git`;
+const ORIGINS = {
+  Next: 'https://next.angular.io',
+  Rc: 'https://rc.angular.io',
+  Stable: 'https://angular.io',
+};
 const _GIT_REMOTE_REFS_CACHE = new Map();
 
 // Exports
 const exp = {
   _GIT_REMOTE_REFS_CACHE,
   NG_REMOTE_URL,
+  ORIGINS,
   REPO_SLUG,
 
   computeMajorVersion,
@@ -20,6 +26,7 @@ const exp = {
   getMostRecentMinorBranch,
   getRemoteRefs,
   logSectionHeader,
+  nameFunction,
   yarn,
 };
 export default exp;
@@ -77,6 +84,12 @@ function getLatestCommit(branchName, options = undefined) {
 
 function logSectionHeader(message) {
   console.log(`\n\n\n==== ${message} ====\n`);
+}
+
+function nameFunction(name, fn) {
+  // Overwrite the function's `name` property to make debugging easier (and allow tests that relied
+  // on `Function#name` to continue to work for dynamically generated functions).
+  return Object.defineProperty(fn, 'name', {value: name});
 }
 
 function yarn(cmd) {
