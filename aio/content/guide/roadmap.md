@@ -8,21 +8,16 @@ The following projects are not associated with a particular Angular version. We'
 
 ## In progress
 
-### Improve test times and debugging with automatic test environment tear down
+### Better developer ergonomics with strict typing for `@angular/forms`
 
-To improve test time and create better isolation across tests, we want to change <code>[TestBed](api/core/testing/TestBed)</code> to automatically clean up and tear down the test environment after each test run.
+We will work on finding a way to implement stricter type checking for reactive forms with minimal backward incompatible implications. This way, we let developers catch more issues during development time, enable better text editor and IDE support, and improve the type checking for reactive forms.
+### Simplified Angular mental model with optional NgModules
 
-### Deprecate and remove IE11 support
+To simplify the Angular mental model and learning journey, we’ll be working on making NgModules optional. This work lets developers develop standalone components and implement an alternative API for declaring the component’s compilation scope. We kicked this project off with high-level design discussions that we captured in an [RFC](https://github.com/angular/angular/discussions/43784).
 
-IE11 has been preventing Angular from taking advantage of some of the modern features of the Web platform. As part of this project we are going to deprecate and remove IE11 support to open the path for modern features that evergreen browsers provide. We ran an [RFC](https://github.com/angular/angular/issues/41840) to collected feedback from the community and decide on next steps to move forward.
+### Investigate micro frontend architecture for scalable development processes
 
-### Leverage ES2017+ as the default output language
-
-Supporting modern browsers lets us take advantage of the more compact, expressive, and performant new syntax of JavaScript. As part of this project we’ll investigate what are the blockers to move forward with this effort and take the steps forward to enable it.
-
-### Revamp performance dashboards to detect regressions
-
-We have a set of benchmarks that we run against every code change to ensure Angular aligns with our performance standards. To ensure the framework’s runtime does not regress after a code change, we need to refine some of the existing infrastructure the dashboards step on.
+Look into independent deployability and development of large-scale applications to improve efficiency and productivity. The Angular community has an established story for micro frontend support. As part of this effort, we’d investigate what would be the correct abstractions to provide better support.
 
 ### Enhanced Angular Material components by integrating [MDC Web](https://material.io/develop/web/)
 
@@ -36,35 +31,19 @@ We're evaluating components in Angular Material against accessibility standards 
 
 After the transition of all our internal tooling to Ivy is completed, we will remove the legacy View Engine for reduced Angular conceptual overhead, smaller package size, lower maintenance cost, and lower codebase complexity.
 
-### Publish guides on advanced concepts
+### Launch advanced compiler diagnostics
 
-Develop and publish an in-depth guide on change detection. Develop content for performance profiling of Angular applications. Cover how change detection interacts with Zone.js and explain when it gets triggered, how to profile its duration, as well as common practices for performance optimization.
+Extend the diagnostics of the Angular compiler outside type checking. Introduce other correctness and conformance checks to further guarantee correctness and best practices.
 
-### Update our e2e testing strategy
+### Improve Angular DevTools' integration with framework
 
-To ensure we provide a future-proof e2e testing strategy, we want to evaluate the state of Protractor, community innovations, e2e best practices, and explore novel opportunities. As first steps of the effort, we shared an [RFC](https://github.com/angular/protractor/issues/5502) and worked with partners to ensure smooth integration between the Angular CLI and state of the art tooling for e2e testing. As the next step, we need to finalize the recommendations and compile a list of resources for the transition.
-
-### Angular libraries use Ivy
-
-Earlier in 2020, we shared an [RFC](https://github.com/angular/angular/issues/38366) for Ivy library distribution. After invaluable feedback from the community, we developed a design of the project. We are now investing in the development of Ivy library distribution, including an update of the library package format to use Ivy compilation, unblock the deprecation of the View Engine library format, and [ngcc](guide/glossary#ngcc).
-
-### Ensure smooth adoption for future RxJS changes (v7 and beyond)
-
-We want to ensure Angular developers are taking advantage of the latest capabilities of RxJS and have a smooth transition to the next major releases of the framework. For this purpose, we will explore and document the scope of the changes in v7 and beyond RxJS and plan an update strategy.
-
-### Simplified Angular mental model with optional NgModules
-
-To simplify the Angular mental model and learning journey, we’ll be working on making NgModules optional. This work lets developers develop standalone components and implement an alternative API for declaring the component’s compilation scope.
+To improve the integration of Angular DevTools with the framework, we are working on moving the codebase to the [angular/angular](https://github.com/angular/angular) monorepository. This includes transitioning Angular DevTools to Bazel and integrating it into the existing processes and CI pipeline.
 
 ## Future
 
-### Investigate micro frontend architecture for scalable development processes
+### Revamp performance dashboards to detect regressions
 
-Look into independent deployability and development of large-scale applications to improve efficiency and productivity. The Angular community has an established story for micro frontend support. As part of this effort, we’d investigate what would be the correct abstractions to provide better support.
-
-### Better developer ergonomics with strict typing for `@angular/forms`
-
-We will work on implementing stricter type checking for reactive forms. This way, we let developers catch more issues during development time, enable better text editor and IDE support, and improve the type checking for reactive forms.
+We have a set of benchmarks that we run against every code change to ensure Angular aligns with our performance standards. To ensure the framework’s runtime does not regress after a code change, we need to refine some of the existing infrastructure the dashboards step on.
 
 ### Leverage full framework capabilities with Zone.js opt-out
 
@@ -82,6 +61,14 @@ A long-standing feature request is to add the ability to add directives to host 
 
 A common problem with web applications is their slow initial load time. A way to improve it is to apply more granular code-splitting on a component level. To encourage this practice, we’ll be working on more ergonomic code-splitting APIs.
 
+### Publish guides on advanced concepts
+
+Develop and publish an in-depth guide on change detection. Develop content for performance profiling of Angular applications. Cover how change detection interacts with Zone.js and explain when it gets triggered, how to profile its duration, as well as common practices for performance optimization.
+
+### Ensure smooth adoption for future RxJS changes (version 8 and beyond)
+
+We want to ensure Angular developers are taking advantage of the latest capabilities of RxJS and have a smooth transition to the next major releases of the framework. For this purpose, we will explore and document the scope of the changes in v7 and beyond RxJS, and plan an update strategy.
+
 <details class="completed-details" open="true">
 <summary>
   <h2>Completed</h2>
@@ -92,6 +79,36 @@ A common problem with web applications is their slow initial load time. A way to
   </span>
 </summary>
 <div class="details-content">
+
+### Update our e2e testing strategy
+
+_Completed Q3 2021_
+
+To ensure we provide a future-proof e2e testing strategy, we want to evaluate the state of Protractor, community innovations, e2e best practices, and explore novel opportunities. As first steps of the effort, we shared an [RFC](https://github.com/angular/protractor/issues/5502) and worked with partners to ensure smooth integration between the Angular CLI and state of the art tooling for e2e testing. As the next step, we need to finalize the recommendations and compile a list of resources for the transition.
+
+### Angular libraries use Ivy
+
+_Completed Q3 2021_
+
+Earlier in 2020, we shared an [RFC](https://github.com/angular/angular/issues/38366) for Ivy library distribution. After invaluable feedback from the community, we developed a design of the project. We are now investing in the development of Ivy library distribution, including an update of the library package format to use Ivy compilation, unblock the deprecation of the View Engine library format, and [ngcc](guide/glossary#ngcc).
+
+### Improve test times and debugging with automatic test environment tear down
+
+_Completed Q3 2021_
+
+To improve test time and create better isolation across tests, we want to change <code>[TestBed](api/core/testing/TestBed)</code> to automatically clean up and tear down the test environment after each test run.
+
+### Deprecate and remove IE11 support
+
+_Completed Q3 2021_
+
+Internet Explorer 11 (IE11) has been preventing Angular from taking advantage of some of the modern features of the Web platform. As part of this project we are going to deprecate and remove IE11 support to open the path for modern features that evergreen browsers provide. We ran an [RFC](https://github.com/angular/angular/issues/41840) to collect feedback from the community and decide on next steps to move forward.
+
+### Leverage ES2017+ as the default output language
+
+_Completed Q3 2021_
+
+Supporting modern browsers lets us take advantage of the more compact, expressive, and performant new syntax of JavaScript. As part of this project we’ll investigate what the blockers are to moving forward with this effort, and take the steps to enable it.
 
 ### Accelerated debugging and performance profiling with Angular DevTools
 
