@@ -8,7 +8,7 @@ const {
   computeMajorVersion,
   getLatestCommit,
   getMostRecentMinorBranch,
-} = require('./deploy-to-firebase');
+} = require('./index');
 
 
 describe('deploy-to-firebase:', () => {
@@ -389,11 +389,11 @@ describe('deploy-to-firebase:', () => {
 
   it('integration - should run the main script without error', () => {
     // NOTE:
-    // This test executes a new instance of the `deploy-to-firebase.js` script on a separate process
+    // This test executes a new instance of the `deploy-to-firebase` script on a separate process
     // and thus does not share the `getRemoteRefs()` cache. To improve stability, we retrieve the
     // latest commit from master ignoring any cached entries.
     const latestCommitOnMaster = getLatestCommit('master', {retrieveFromCache: false});
-    const cmd = `"${process.execPath}" "${__dirname}/deploy-to-firebase" --dry-run`;
+    const cmd = `"${process.execPath}" "${__dirname}" --dry-run`;
     const env = {
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
