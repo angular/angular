@@ -25,7 +25,7 @@
  * | branch    |        | redirectRcToStable              |                                 |
  * | are we    |--------|---------------------------------|---------------------------------|
  * | deploying | RC     | -                               | rc                              |
- * | from?     |        |                                 | rcVersionSubdomain(*)           |
+ * | from?     |        |                                 | redirectVersionDomainToRc(*)    |
  * |           |--------|---------------------------------|---------------------------------|
  * |           | MASTER | next                            | next                            |
  * |           |        |                                 |                                 |
@@ -189,8 +189,8 @@ function computeDeploymentsInfo(
     // Since there can be multiple secondary deployments (each tweaking the primary one in different
     // ways), it is a good idea to ensure that any pre-deploy actions are undone in the post-deploy
     // phase.
-    rcVersionSubdomain: {
-      name: 'rcVersionSubdomain',
+    redirectVersionDomainToRc: {
+      name: 'redirectVersionDomainToRc',
       type: 'secondary',
       deployEnv: 'rc',
       projectId: 'angular-io',
@@ -245,7 +245,7 @@ function computeDeploymentsInfo(
       // Deploy to both `rc-angular-io-site` and `v<RC>-angular-io-site`.
       [
         deploymentInfoPerTarget.rc,
-        deploymentInfoPerTarget.rcVersionSubdomain,
+        deploymentInfoPerTarget.redirectVersionDomainToRc,
       ] :
       // The RC major version is not greater than the stable major version.
       // Only deploy to `rc-angular-io-site` (since `v<RC>-angular-io-site` is probably

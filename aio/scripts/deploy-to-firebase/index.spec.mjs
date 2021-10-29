@@ -343,7 +343,7 @@ describe('deploy-to-firebase:', () => {
         postDeployActions: ['function:testPwaScore'],
       },
       {
-        name: 'rcVersionSubdomain',
+        name: 'redirectVersionDomainToRc',
         type: 'secondary',
         deployEnv: 'rc',
         projectId: 'angular-io',
