@@ -222,8 +222,12 @@ function computeDeploymentsInfo(
       projectId: 'angular-io',
       siteId: `v${currentBranchMajorVersion}-angular-io-site`,
       deployedUrl: `https://v${currentBranchMajorVersion}.angular.io/`,
-      preDeployActions: [pre.redirectAllToStable],
-      postDeployActions: [pre.undo.redirectAllToStable, post.testRedirectToStable],
+      // Temporarily disable rdirecting `v12.angular.io` to `angular.io`, while we remove the
+      // redirects from Firebase console/DNS.
+      // preDeployActions: [pre.redirectAllToStable],
+      // postDeployActions: [pre.undo.redirectAllToStable, post.testRedirectToStable],
+      preDeployActions: [],
+      postDeployActions: [],
     },
     // Config for deploying the stable build to the RC Firebase site when there is no active RC.
     // See https://github.com/angular/angular/issues/39760 for more info on the purpose of this

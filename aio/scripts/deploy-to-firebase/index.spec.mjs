@@ -253,8 +253,8 @@ describe('deploy-to-firebase:', () => {
         projectId: 'angular-io',
         siteId: 'v4-angular-io-site',
         deployedUrl: 'https://v4.angular.io/',
-        preDeployActions: ['function:redirectAllToStable'],
-        postDeployActions: ['function:undoRedirectAllToStable', 'function:testRedirectToStable'],
+        preDeployActions: [],
+        postDeployActions: [],
       },
     ]);
   });
@@ -287,8 +287,8 @@ describe('deploy-to-firebase:', () => {
         projectId: 'angular-io',
         siteId: `v${stableMajorVersion}-angular-io-site`,
         deployedUrl: `https://v${stableMajorVersion}.angular.io/`,
-        preDeployActions: ['function:redirectAllToStable'],
-        postDeployActions: ['function:undoRedirectAllToStable', 'function:testRedirectToStable'],
+        preDeployActions: [],
+        postDeployActions: [],
       },
       {
         name: 'redirectRcToStable',
