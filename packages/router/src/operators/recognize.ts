@@ -17,11 +17,11 @@ import {UrlTree} from '../url_tree';
 
 export function recognize(
     rootComponentType: Type<any>|null, config: Route[], serializer: (url: UrlTree) => string,
-    paramsInheritanceStrategy: 'emptyOnly'|'always',
-    relativeLinkResolution: 'legacy'|'corrected'): MonoTypeOperatorFunction<NavigationTransition> {
+    paramsInheritanceStrategy: 'emptyOnly'|
+    'always'): MonoTypeOperatorFunction<NavigationTransition> {
   return mergeMap(
       t => recognizeFn(
                rootComponentType, config, t.urlAfterRedirects!, serializer(t.urlAfterRedirects!),
-               paramsInheritanceStrategy, relativeLinkResolution)
+               paramsInheritanceStrategy)
                .pipe(map(targetSnapshot => ({...t, targetSnapshot}))));
 }

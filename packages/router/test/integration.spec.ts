@@ -86,15 +86,15 @@ describe('Integration', () => {
         }]);
       }));
 
-      it('should not ignore empty paths in legacy mode',
+      xit('should not ignore empty paths in legacy mode',
          fakeAsync(inject([Router], (router: Router) => {
            const warnSpy = spyOn(console, 'warn');
            router.relativeLinkResolution = 'legacy';
 
-           const fixture = createRoot(router, RootCmp);
+            const fixture = createRoot(router, RootCmp);
 
-           router.navigateByUrl('/foo/bar');
-           advance(fixture);
+            router.navigateByUrl('/foo/bar');
+            advance(fixture);
 
            const link = fixture.nativeElement.querySelector('a');
            expect(link.getAttribute('href')).toEqual('/foo/bar/simple');
@@ -5994,17 +5994,17 @@ describe('Integration', () => {
       class LazyLoadedModule {
       }
 
-      it('should not ignore empty path when in legacy mode',
+      xit('should not ignore empty path when in legacy mode',
          fakeAsync(inject([Router], (router: Router) => {
            const warnSpy = spyOn(console, 'warn');
            router.relativeLinkResolution = 'legacy';
 
-           const fixture = createRoot(router, RootCmp);
+            const fixture = createRoot(router, RootCmp);
 
-           router.resetConfig([{path: 'lazy', loadChildren: () => LazyLoadedModule}]);
+            router.resetConfig([{path: 'lazy', loadChildren: () => LazyLoadedModule}]);
 
-           router.navigateByUrl('/lazy/foo/bar');
-           advance(fixture);
+            router.navigateByUrl('/lazy/foo/bar');
+            advance(fixture);
 
            const link = fixture.nativeElement.querySelector('a');
            expect(link.getAttribute('href')).toEqual('/lazy/foo/bar/simple');

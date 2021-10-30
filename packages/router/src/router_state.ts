@@ -86,7 +86,7 @@ export function createEmptyStateSnapshot(
   const fragment = '';
   const activated = new ActivatedRouteSnapshot(
       [], emptyParams, emptyQueryParams, fragment, emptyData, PRIMARY_OUTLET, rootComponent, null,
-      urlTree.root, -1, {});
+      {});
   return new RouterStateSnapshot('', new TreeNode<ActivatedRouteSnapshot>(activated, []));
 }
 
@@ -167,7 +167,7 @@ export class ActivatedRoute {
 
   /** The path from the root of the router state tree to this route. */
   get pathFromRoot(): ActivatedRoute[] {
-    return this._routerState?.pathFromRoot(this) ?? [];
+    return this._routerState?.pathFromRoot(this) ?? [this];
   }
 
   /**
@@ -279,17 +279,6 @@ function flattenInherited(pathFromRoot: ActivatedRouteSnapshot[]): Inherited {
 export class ActivatedRouteSnapshot {
   /** The configuration used to match this route **/
   public readonly routeConfig: Route|null;
-  /** @internal **/
-  _urlSegment: UrlSegmentGroup;
-  /** @internal */
-  _lastPathIndex: number;
-  /**
-   * @internal
-   *
-   * Used only in dev mode to detect if application relies on `relativeLinkResolution: 'legacy'`
-   * Should be removed in v16.
-   */
-  _correctedLastPathIndex: number;
   /** @internal */
   _resolve: ResolveData;
   /** @internal */
@@ -337,12 +326,8 @@ export class ActivatedRouteSnapshot {
       /** The outlet name of the route */
       public outlet: string,
       /** The component of the route */
-      public component: Type<any>|null, routeConfig: Route|null, urlSegment: UrlSegmentGroup,
-      lastPathIndex: number, resolve: ResolveData, correctedLastPathIndex?: number) {
+      public component: Type<any>|null, routeConfig: Route|null, resolve: ResolveData) {
     this.routeConfig = routeConfig;
-    this._urlSegment = urlSegment;
-    this._lastPathIndex = lastPathIndex;
-    this._correctedLastPathIndex = correctedLastPathIndex ?? lastPathIndex;
     this._resolve = resolve;
   }
 

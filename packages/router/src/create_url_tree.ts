@@ -6,52 +6,60 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ActivatedRoute} from './router_state';
+import {createUrlTree as createUrlTreeRedirects, squashSegmentGroup} from './apply_redirects';
 import {Params, PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 import {forEach, last, shallowEqual} from './utils/collection';
 
 export function createUrlTree(
-    route: ActivatedRoute, urlTree: UrlTree, commands: any[], queryParams: Params|null,
+    relativeTo: UrlSegmentGroup, commands: any[], queryParams: Params|null,
     fragment: string|null): UrlTree {
+  let root = relativeTo;
+  while (root.parent) {
+    root = root.parent;
+  }
+  const targetGroup = relativeTo;
   if (commands.length === 0) {
-    return tree(urlTree.root, urlTree.root, urlTree.root, queryParams, fragment);
+    return tree(root, queryParams, fragment);
   }
 
   const nav = computeNavigation(commands);
 
   if (nav.toRoot()) {
-    return tree(urlTree.root, urlTree.root, new UrlSegmentGroup([], {}), queryParams, fragment);
+    return tree(new UrlSegmentGroup([], {}), queryParams, fragment);
   }
 
-  function createTreeUsingPathIndex(lastPathIndex: number) {
-    const startingPosition =
-        findStartingPosition(nav, urlTree, route.snapshot?._urlSegment, lastPathIndex);
+  const position = findNewStartingPosition(nav, root, targetGroup)
+  const newSegmentGroup = position.processChildren ?
+      updateSegmentGroupChildren(position.segmentGroup, position.index, nav.commands) :
+      updateSegmentGroup(position.segmentGroup, position.index, nav.commands);
+  position.segmentGroup.children = newSegmentGroup.children;
+  position.segmentGroup.segments = newSegmentGroup.segments
 
-    const segmentGroup = startingPosition.processChildren ?
-        updateSegmentGroupChildren(
-            startingPosition.segmentGroup, startingPosition.index, nav.commands) :
-        updateSegmentGroup(startingPosition.segmentGroup, startingPosition.index, nav.commands);
-    return tree(urlTree.root, startingPosition.segmentGroup, segmentGroup, queryParams, fragment);
-  }
-  // Note: The types should disallow `snapshot` from being `undefined` but due to test mocks, this
-  // may be the case. Since we try to access it at an earlier point before the refactor to add the
-  // warning for `relativeLinkResolution: 'legacy'`, this may cause failures in tests where it
-  // didn't before.
-  const result = createTreeUsingPathIndex(route.snapshot?._lastPathIndex);
+  return tree(root, queryParams, fragment);
+}
 
-  // Check if application is relying on `relativeLinkResolution: 'legacy'`
-  if (typeof ngDevMode === 'undefined' || !!ngDevMode) {
-    const correctedResult = createTreeUsingPathIndex(route.snapshot?._correctedLastPathIndex);
-    if (correctedResult.toString() !== result.toString()) {
-      console.warn(
-          `relativeLinkResolution: 'legacy' is deprecated and will be removed in a future version of Angular. The link to ${
-              result.toString()} will change to ${
-              correctedResult.toString()} if the code is not updated before then.`);
-    }
+function findNewStartingPosition(
+    nav: Navigation, root: UrlSegmentGroup, target: UrlSegmentGroup): Position {
+  if (nav.isAbsolute) {
+    return new Position(root, true, 0);
   }
 
-  return result;
+  if (!target) {
+    return new Position(root, false, NaN);
+  }
+  if (target.parent === null) {
+    return new Position(target, true, 0);
+  }
+  // if (indexOfLastConsumedSegmentInOutlet === -1) {
+  //   // Pathless ActivatedRoute can be _lastPathIndex === -1 but should not process children
+  //   // see issue #26224, #13011, #35687
+  //   return new Position(segmentGroup, false, 0);
+  // }
+
+  const modifier = isMatrixParams(nav.commands[0]) ? 0 : 1;
+  const index = target.segments.length - 1 + modifier;
+  return createPositionApplyingDoubleDots(target, index, nav.numberOfDoubleDots);
 }
 
 function isMatrixParams(command: any): boolean {
@@ -67,8 +75,7 @@ function isCommandWithOutlets(command: any): command is {outlets: {[key: string]
 }
 
 function tree(
-    oldRoot: UrlSegmentGroup, oldSegmentGroup: UrlSegmentGroup, newSegmentGroup: UrlSegmentGroup,
-    queryParams: Params|null, fragment: string|null): UrlTree {
+    segmentGroup: UrlSegmentGroup, queryParams: Params|null, fragment: string|null): UrlTree {
   let qp: any = {};
   if (queryParams) {
     forEach(queryParams, (value: any, name: any) => {
@@ -76,26 +83,8 @@ function tree(
     });
   }
 
-  if (oldRoot === oldSegmentGroup) {
-    return new UrlTree(newSegmentGroup, qp, fragment);
-  }
-
-  const newRoot = replaceSegment(oldRoot, oldSegmentGroup, newSegmentGroup);
-  return new UrlTree(newRoot, qp, fragment);
-}
-
-function replaceSegment(
-    current: UrlSegmentGroup, oldSegment: UrlSegmentGroup,
-    newSegment: UrlSegmentGroup): UrlSegmentGroup {
-  const children: {[key: string]: UrlSegmentGroup} = {};
-  forEach(current.children, (c: UrlSegmentGroup, outletName: string) => {
-    if (c === oldSegment) {
-      children[outletName] = newSegment;
-    } else {
-      children[outletName] = replaceSegment(c, oldSegment, newSegment);
-    }
-  });
-  return new UrlSegmentGroup(current.segments, children);
+  return createUrlTreeRedirects(
+      new UrlTree(squashSegmentGroup(segmentGroup), qp, fragment).root, qp, fragment);
 }
 
 class Navigation {
@@ -172,25 +161,6 @@ class Position {
   }
 }
 
-function findStartingPosition(
-    nav: Navigation, tree: UrlTree, segmentGroup: UrlSegmentGroup,
-    lastPathIndex: number): Position {
-  if (nav.isAbsolute) {
-    return new Position(tree.root, true, 0);
-  }
-
-  if (lastPathIndex === -1) {
-    // Pathless ActivatedRoute has _lastPathIndex === -1 but should not process children
-    // see issue #26224, #13011, #35687
-    // However, if the ActivatedRoute is the root we should process children like above.
-    const processChildren = segmentGroup === tree.root;
-    return new Position(segmentGroup, processChildren, 0);
-  }
-
-  const modifier = isMatrixParams(nav.commands[0]) ? 0 : 1;
-  const index = lastPathIndex + modifier;
-  return createPositionApplyingDoubleDots(segmentGroup, index, nav.numberOfDoubleDots);
-}
 
 function createPositionApplyingDoubleDots(
     group: UrlSegmentGroup, index: number, numberOfDoubleDots: number): Position {

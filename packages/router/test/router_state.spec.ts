@@ -105,8 +105,7 @@ describe('RouterState & Snapshot', () => {
   describe('equalParamsAndUrlSegments', () => {
     function createSnapshot(params: Params, url: UrlSegment[]): ActivatedRouteSnapshot {
       const snapshot = new (ActivatedRouteSnapshot as any)(
-          url, params, <any>null, <any>null, <any>null, <any>null, <any>null, <any>null, <any>null,
-          -1, null!);
+          url, params, <any>null, <any>null, <any>null, <any>null, <any>null, <any>null, null!);
       snapshot._routerState = new (RouterStateSnapshot as any)('', new TreeNode(snapshot, []));
       return snapshot;
     }
@@ -181,8 +180,7 @@ describe('RouterState & Snapshot', () => {
       const fragment = '';
       const data = {};
       const snapshot = new (ActivatedRouteSnapshot as any)(
-          url, params, queryParams, fragment, data, <any>null, <any>null, <any>null, <any>null, -1,
-          null!);
+          url, params, queryParams, fragment, data, <any>null, <any>null, <any>null, null!);
       const state = new (RouterStateSnapshot as any)('', new TreeNode(snapshot, []));
       snapshot._routerState = state;
       return snapshot;
@@ -206,8 +204,7 @@ describe('RouterState & Snapshot', () => {
 
 function createActivatedRouteSnapshot(cmp: string) {
   return new (ActivatedRouteSnapshot as any)(
-      <any>[], <any>null, <any>null, <any>null, <any>null, <any>null, <any>cmp, <any>null,
-      <any>null, -1, null!);
+      <any>[], <any>null, <any>null, <any>null, <any>null, <any>null, <any>cmp, <any>null, null!);
 }
 
 function createActivatedRoute(cmp: string) {

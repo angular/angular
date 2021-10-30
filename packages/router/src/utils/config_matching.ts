@@ -69,7 +69,7 @@ export function match(
 
 export function split(
     segmentGroup: UrlSegmentGroup, consumedSegments: UrlSegment[], slicedSegments: UrlSegment[],
-    config: Route[], relativeLinkResolution: 'legacy'|'corrected' = 'corrected') {
+    config: Route[]) {
   if (slicedSegments.length > 0 &&
       containsEmptyPathMatchesWithNamedOutlets(segmentGroup, slicedSegments, config)) {
     const s = new UrlSegmentGroup(
@@ -77,8 +77,6 @@ export function split(
         createChildrenForEmptyPaths(
             segmentGroup, consumedSegments, config,
             new UrlSegmentGroup(slicedSegments, segmentGroup.children)));
-    s._sourceSegment = segmentGroup;
-    s._segmentIndexShift = consumedSegments.length;
     return {segmentGroup: s, slicedSegments: []};
   }
 
@@ -87,36 +85,22 @@ export function split(
     const s = new UrlSegmentGroup(
         segmentGroup.segments,
         addEmptyPathsToChildrenIfNeeded(
-            segmentGroup, consumedSegments, slicedSegments, config, segmentGroup.children,
-            relativeLinkResolution));
-    s._sourceSegment = segmentGroup;
-    s._segmentIndexShift = consumedSegments.length;
+            segmentGroup, consumedSegments, slicedSegments, config, segmentGroup.children));
     return {segmentGroup: s, slicedSegments};
   }
 
   const s = new UrlSegmentGroup(segmentGroup.segments, segmentGroup.children);
-  s._sourceSegment = segmentGroup;
-  s._segmentIndexShift = consumedSegments.length;
   return {segmentGroup: s, slicedSegments};
 }
 
 function addEmptyPathsToChildrenIfNeeded(
     segmentGroup: UrlSegmentGroup, consumedSegments: UrlSegment[], slicedSegments: UrlSegment[],
-    routes: Route[], children: {[name: string]: UrlSegmentGroup},
-    relativeLinkResolution: 'legacy'|'corrected'): {[name: string]: UrlSegmentGroup} {
+    routes: Route[],
+    children: {[name: string]: UrlSegmentGroup}): {[name: string]: UrlSegmentGroup} {
   const res: {[name: string]: UrlSegmentGroup} = {};
   for (const r of routes) {
     if (emptyPathMatch(segmentGroup, slicedSegments, r) && !children[getOutlet(r)]) {
       const s = new UrlSegmentGroup([], {});
-      s._sourceSegment = segmentGroup;
-      if (relativeLinkResolution === 'legacy') {
-        s._segmentIndexShift = segmentGroup.segments.length;
-        if (typeof ngDevMode === 'undefined' || !!ngDevMode) {
-          s._segmentIndexShiftCorrected = consumedSegments.length;
-        }
-      } else {
-        s._segmentIndexShift = consumedSegments.length;
-      }
       res[getOutlet(r)] = s;
     }
   }
@@ -128,14 +112,10 @@ function createChildrenForEmptyPaths(
     primarySegment: UrlSegmentGroup): {[name: string]: UrlSegmentGroup} {
   const res: {[name: string]: UrlSegmentGroup} = {};
   res[PRIMARY_OUTLET] = primarySegment;
-  primarySegment._sourceSegment = segmentGroup;
-  primarySegment._segmentIndexShift = consumedSegments.length;
 
   for (const r of routes) {
     if (r.path === '' && getOutlet(r) !== PRIMARY_OUTLET) {
       const s = new UrlSegmentGroup([], {});
-      s._sourceSegment = segmentGroup;
-      s._segmentIndexShift = consumedSegments.length;
       res[getOutlet(r)] = s;
     }
   }

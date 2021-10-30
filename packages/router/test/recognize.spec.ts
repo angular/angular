@@ -48,17 +48,13 @@ describe('recognize', () => {
         ],
         'a(left:b//right:c)');
     expect(s.root.url.toString()).toEqual(url.root.toString());
-    expect((s.root as any)._lastPathIndex).toBe(-1);
 
     const c = s.root.children;
     expect(c[0].url.toString()).toEqual(url.root.children[PRIMARY_OUTLET].toString());
-    expect((c[0] as any)._lastPathIndex).toBe(0);
 
     expect(c[1].url.toString()).toEqual(url.root.children['left'].toString());
-    expect((c[1] as any)._lastPathIndex).toBe(0);
 
     expect(c[2].url.toString()).toEqual(url.root.children['right'].toString());
-    expect((c[2] as any)._lastPathIndex).toBe(0);
   });
 
   it('should set url segment and index properly (nested case)', () => {
@@ -67,15 +63,12 @@ describe('recognize', () => {
           {path: 'a/b', component: ComponentA, children: [{path: 'c', component: ComponentC}]},
         ],
         'a/b/c');
-    expect((s.root as any)._lastPathIndex).toBe(-1);
 
     const compA = s.root.firstChild!;
     expect(serializePaths(new UrlSegmentGroup(compA.url, {}))).toEqual('a/b');
-    expect((compA as any)._lastPathIndex).toBe(1);
 
     const compC = compA.firstChild!;
     expect(serializePaths(new UrlSegmentGroup(compC.url, {}))).toEqual('c');
-    expect((compC as any)._lastPathIndex).toBe(2);
   });
 
   it('should set url segment and index properly (wildcard)', () => {
@@ -84,15 +77,12 @@ describe('recognize', () => {
           {path: 'a', component: ComponentA, children: [{path: '**', component: ComponentB}]},
         ],
         'a/b/c');
-    expect((s.root as any)._lastPathIndex).toBe(-1);
 
     const compA = s.root.firstChild!;
     expect(serializePaths(new UrlSegmentGroup(compA.url, {}))).toEqual('a');
-    expect((compA as any)._lastPathIndex).toBe(0);
 
     const compC = compA.firstChild!;
     expect(serializePaths(new UrlSegmentGroup(compC.url, {}))).toEqual('b/c');
-    expect((compC as any)._lastPathIndex).toBe(2);
   });
 
   it('should match routes in the depth first order', () => {
@@ -241,15 +231,12 @@ describe('recognize', () => {
       it('should set url segment and index properly', () => {
         const s = recognize(
             [{path: '', component: ComponentA, children: [{path: '', component: ComponentB}]}], '');
-        expect((s.root as any)._lastPathIndex).toBe(-1);
 
         const c = s.root.firstChild!;
         expect(serializePaths(new UrlSegmentGroup(c.url, {}))).toEqual('');
-        expect((c as any)._lastPathIndex).toBe(-1);
 
         const c2 = s.root.firstChild!.firstChild!;
         expect(serializePaths(new UrlSegmentGroup(c2.url, {}))).toEqual('');
-        expect((c2 as any)._lastPathIndex).toBe(-1);
       });
 
       it('should inherit params', () => {
@@ -345,23 +332,19 @@ describe('recognize', () => {
               ]
             }],
             'a/b');
-        expect((s.root as any)._lastPathIndex).toBe(-1);
 
         const a = s.root.firstChild!;
 
         expect(serializePaths(new UrlSegmentGroup(a.url, {}))).toEqual('a');
-        expect((a as any)._lastPathIndex).toBe(0);
 
         const b = a.firstChild!;
         expect(serializePaths(new UrlSegmentGroup(b.url, {}))).toEqual('b');
-        expect((b as any)._lastPathIndex).toBe(1);
 
         const c = a.children[1];
         expect(serializePaths(new UrlSegmentGroup(c.url, {}))).toEqual('');
-        expect((c as any)._lastPathIndex).toBe(0);
       });
 
-      it('should set url segment and index properly when nested empty-path segments', () => {
+      it('should set url segment properly when nested empty-path segments', () => {
         const s = recognize(
             [{
               path: 'a',
@@ -369,77 +352,15 @@ describe('recognize', () => {
                   [{path: '', component: ComponentB, children: [{path: '', component: ComponentC}]}]
             }],
             'a');
-        expect((s.root as any)._lastPathIndex).toBe(-1);
 
         const a = s.root.firstChild!;
         expect(serializePaths(new UrlSegmentGroup(a.url, {}))).toEqual('a');
-        expect((a as any)._lastPathIndex).toBe(0);
 
         const b = a.firstChild!;
         expect(serializePaths(new UrlSegmentGroup(b.url, {}))).toEqual('');
-        expect((b as any)._lastPathIndex).toBe(0);
 
         const c = b.firstChild!;
         expect(serializePaths(new UrlSegmentGroup(c.url, {}))).toEqual('');
-        expect((c as any)._lastPathIndex).toBe(0);
-      });
-
-      it('should set url segment and index properly with the "corrected" option for nested empty-path segments',
-         () => {
-           const s = recognize(
-               [{
-                 path: 'a',
-                 children: [{
-                   path: 'b',
-                   component: ComponentB,
-                   children: [{
-                     path: '',
-                     component: ComponentC,
-                     children: [{path: '', component: ComponentD}]
-                   }]
-                 }]
-               }],
-               'a/b', 'emptyOnly', 'corrected');
-           expect((s.root as any)._lastPathIndex).toBe(-1);
-
-           const a = s.root.firstChild!;
-           expect(serializePaths(new UrlSegmentGroup(a.url, {}))).toEqual('a');
-           expect((a as any)._lastPathIndex).toBe(0);
-
-           const b = a.firstChild!;
-           expect(serializePaths(new UrlSegmentGroup(b.url, {}))).toEqual('b');
-           expect((b as any)._lastPathIndex).toBe(1);
-
-           const c = b.firstChild!;
-           expect(serializePaths(new UrlSegmentGroup(c.url, {}))).toEqual('');
-           expect((c as any)._lastPathIndex).toBe(1);
-
-           const d = c.firstChild!;
-           expect(serializePaths(new UrlSegmentGroup(d.url, {}))).toEqual('');
-           expect((d as any)._lastPathIndex).toBe(1);
-         });
-
-      it('should set url segment and index properly when nested empty-path segments (2)', () => {
-        const s = recognize(
-            [{
-              path: '',
-              children:
-                  [{path: '', component: ComponentB, children: [{path: '', component: ComponentC}]}]
-            }],
-            '');
-        expect((s.root as any)._lastPathIndex).toBe(-1);
-
-        const a = s.root.firstChild!;
-        expect(serializePaths(new UrlSegmentGroup(a.url, {}))).toEqual('');
-        expect((a as any)._lastPathIndex).toBe(-1);
-
-        const b = a.firstChild!;
-        expect(serializePaths(new UrlSegmentGroup(b.url, {}))).toEqual('');
-        expect((b as any)._lastPathIndex).toBe(-1);
-
-        const c = b.firstChild!;
-        expect(serializePaths(new UrlSegmentGroup(c.url, {}))).toEqual('');
-        expect((c as any)._lastPathIndex).toBe(-1);
       });
     });
 
@@ -492,7 +413,6 @@ describe('recognize', () => {
             }],
             'a/(aux:c)');
         checkActivatedRoute(s.root.firstChild!, 'a', {}, ComponentA);
-
         const c = s.root.firstChild!.children;
         checkActivatedRoute(c[0], '', {}, ComponentB);
         checkActivatedRoute(c[1], 'c', {}, ComponentC, 'aux');
@@ -622,7 +542,7 @@ describe('recognize', () => {
                           children: [{path: 'b', component: ComponentB}],
                         },
                       ],
-                      tree('/b'), '/b', 'emptyOnly', 'corrected')
+                      tree('/b'), '/b', 'emptyOnly')
                       .recognize();
         expect(s).toBeNull();
       });
@@ -793,12 +713,10 @@ describe('recognize', () => {
 });
 
 function recognize(
-    config: Routes, url: string, paramsInheritanceStrategy: 'emptyOnly'|'always' = 'emptyOnly',
-    relativeLinkResolution: 'legacy'|'corrected' = 'legacy'): RouterStateSnapshot {
+    config: Routes, url: string,
+    paramsInheritanceStrategy: 'emptyOnly'|'always' = 'emptyOnly'): RouterStateSnapshot {
   const result =
-      new Recognizer(
-          RootComponent, config, tree(url), url, paramsInheritanceStrategy, relativeLinkResolution)
-          .recognize();
+      new Recognizer(RootComponent, config, tree(url), url, paramsInheritanceStrategy).recognize();
   expect(result).not.toBeNull();
   return result!;
 }

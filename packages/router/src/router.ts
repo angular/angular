@@ -28,7 +28,7 @@ import {ChildrenOutletContexts} from './router_outlet_context';
 import {ActivatedRoute, ActivatedRouteSnapshot, createEmptyState, RouterState, RouterStateSnapshot} from './router_state';
 import {isNavigationCancelingError, navigationCancelingError, Params} from './shared';
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
-import {containsTree, createEmptyUrlTree, IsActiveMatchOptions, UrlSerializer, UrlTree} from './url_tree';
+import {containsTree, createEmptyUrlTree, IsActiveMatchOptions, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {standardizeConfig, validateConfig} from './utils/config';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {isUrlTree} from './utils/type_guards';
@@ -718,8 +718,7 @@ export class Router {
                              // Recognize
                              recognize(
                                  this.rootComponentType, this.config,
-                                 (url) => this.serializeUrl(url), this.paramsInheritanceStrategy,
-                                 this.relativeLinkResolution),
+                                 (url) => this.serializeUrl(url), this.paramsInheritanceStrategy),
 
                              // Update URL if in `eager` update mode
                              tap(t => {
@@ -1220,7 +1219,13 @@ export class Router {
     if (q !== null) {
       q = this.removeEmptyProps(q);
     }
-    return createUrlTree(a, this.currentUrlTree, commands, q, f ?? null);
+
+    let targetGroup: UrlSegmentGroup|undefined;
+    try {
+      targetGroup = createSegmentGroupFromRoute(a.root.snapshot, a.snapshot).targetGroup;
+    } catch (e: unknown) {
+    }
+    return createUrlTree(targetGroup ?? this.currentUrlTree.root, commands, q, f ?? null);
   }
 
   /**
@@ -1544,4 +1549,22 @@ function validateCommands(commands: string[]): void {
 
 function isBrowserTriggeredNavigation(source: 'imperative'|'popstate'|'hashchange') {
   return source !== 'imperative';
+}
+
+function createSegmentGroupFromRoute(
+    route: ActivatedRouteSnapshot, targetRoute: ActivatedRouteSnapshot):
+    {targetGroup: UrlSegmentGroup|undefined, root: UrlSegmentGroup} {
+  const childOutlets: {[outlet: string]: UrlSegmentGroup} = {};
+  let targetGroup: UrlSegmentGroup|undefined;
+  for (const childSnapshot of route.children) {
+    const {root, targetGroup: targetGroupInChild} =
+        createSegmentGroupFromRoute(childSnapshot, targetRoute);
+    targetGroup = targetGroup ?? targetGroupInChild;
+    childOutlets[childSnapshot.outlet] = root;
+  }
+  const root = new UrlSegmentGroup(route.url, childOutlets);
+  if (route === targetRoute) {
+    targetGroup = root;
+  }
+  return {root, targetGroup};
 }
