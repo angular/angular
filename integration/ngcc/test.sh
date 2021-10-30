@@ -70,14 +70,6 @@ assertSucceeded "Expected 'ngcc' to log '- @angular/core [fesm2015/esm2015] (htt
   cat node_modules/@angular/common/package.json | awk 'ORS=" "' | grep '"__processed_by_ivy_ngcc__":[^}]*"module": "'
   assertSucceeded "Expected 'ngcc' to add build marker for 'module' in '@angular/common'."
 
-# Did it replace the PRE_R3 markers correctly?
-  grep "= SWITCH_COMPILE_COMPONENT__POST_R3__" node_modules/@angular/core/fesm2015/core.js
-  assertSucceeded "Expected 'ngcc' to replace 'SWITCH_COMPILE_COMPONENT__PRE_R3__' in '@angular/core' (fesm2015)."
-
-  grep "= SWITCH_COMPILE_COMPONENT__POST_R3__" node_modules/@angular/core/bundles/core.umd.js
-  assertSucceeded "Expected 'ngcc' to replace 'SWITCH_COMPILE_COMPONENT__PRE_R3__' in '@angular/core' (main)."
-
-
 # Did it compile @angular/core/ApplicationModule correctly?
   grep "ApplicationModule.ɵmod = /\*@__PURE__\*/ ɵɵdefineNgModule" node_modules/@angular/core/fesm2015/core.js
   assertSucceeded "Expected 'ngcc' to correctly compile 'ApplicationModule' in '@angular/core' (fesm2015)."

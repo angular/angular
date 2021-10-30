@@ -47,26 +47,6 @@ export function getNameText(name: ts.PropertyName|ts.BindingName): string {
 }
 
 /**
- * Parse down the AST and capture all the nodes that satisfy the test.
- * @param node The start node.
- * @param test The function that tests whether a node should be included.
- * @returns a collection of nodes that satisfy the test.
- */
-export function findAll<T>(node: ts.Node, test: (node: ts.Node) => node is ts.Node & T): T[] {
-  const nodes: T[] = [];
-  findAllVisitor(node);
-  return nodes;
-
-  function findAllVisitor(n: ts.Node) {
-    if (test(n)) {
-      nodes.push(n);
-    } else {
-      n.forEachChild(child => findAllVisitor(child));
-    }
-  }
-}
-
-/**
  * Does the given declaration have a name which is an identifier?
  * @param declaration The declaration to test.
  * @returns true if the declaration has an identifier for a name.
