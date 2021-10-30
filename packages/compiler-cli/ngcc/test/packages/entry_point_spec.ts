@@ -47,6 +47,7 @@ runInEachFileSystem(() => {
            path: _('/project/node_modules/some_package/valid_entry_point'),
            packageName: 'some_package',
            packagePath: SOME_PACKAGE,
+           repositoryUrl: '',
            packageJson: loadPackageJson(fs, '/project/node_modules/some_package/valid_entry_point'),
            typings:
                _(`/project/node_modules/some_package/valid_entry_point/valid_entry_point.d.ts`),
@@ -54,6 +55,83 @@ runInEachFileSystem(() => {
            ignoreMissingDependencies: false,
            generateDeepReexports: false,
          });
+       });
+
+    it('should return an object containing repositoryUrl extracted from the package level package.json (defined as an object)',
+       () => {
+         const packagePath = '/project/node_modules/some_package';
+         loadTestFiles([
+           {
+             name: _(`${packagePath}/package.json`),
+             contents:
+                 '{ "name": "some_package", "repository": { "url": "https://github.com/some_org/some_package" } }',
+           },
+           {
+             name: _(`${packagePath}/valid_entry_point/package.json`),
+             contents: createPackageJson('valid_entry_point')
+           },
+           {
+             name: _(`${packagePath}/valid_entry_point/valid_entry_point.metadata.json`),
+             contents: 'some meta data'
+           },
+         ]);
+         const config = new NgccConfiguration(fs, _('/project'));
+         const entryPoint = getEntryPointInfo(
+             fs, config, new MockLogger(), SOME_PACKAGE, _(`${packagePath}/valid_entry_point`));
+         expect(entryPoint).toEqual(jasmine.objectContaining({
+           repositoryUrl: 'https://github.com/some_org/some_package',
+         }));
+       });
+
+    it('should return an object containing repositoryUrl extracted from the package level package.json (defined as a string)',
+       () => {
+         const packagePath = '/project/node_modules/some_package';
+         loadTestFiles([
+           {
+             name: _(`${packagePath}/package.json`),
+             contents:
+                 '{ "name": "some_package", "repository": "https://github.com/some_org/some_package" }',
+           },
+           {
+             name: _(`${packagePath}/valid_entry_point/package.json`),
+             contents: createPackageJson('valid_entry_point')
+           },
+           {
+             name: _(`${packagePath}/valid_entry_point/valid_entry_point.metadata.json`),
+             contents: 'some meta data'
+           },
+         ]);
+         const config = new NgccConfiguration(fs, _('/project'));
+         const entryPoint = getEntryPointInfo(
+             fs, config, new MockLogger(), SOME_PACKAGE, _(`${packagePath}/valid_entry_point`));
+         expect(entryPoint).toEqual(jasmine.objectContaining({
+           repositoryUrl: 'https://github.com/some_org/some_package',
+         }));
+       });
+
+    it('should return an object containing an empty repositoryUrl if the package level package.json does not define it',
+       () => {
+         const packagePath = '/project/node_modules/some_package';
+         loadTestFiles([
+           {
+             name: _(`${packagePath}/package.json`),
+             contents: '{ "name": "some_package" } }',
+           },
+           {
+             name: _(`${packagePath}/valid_entry_point/package.json`),
+             contents: createPackageJson('valid_entry_point')
+           },
+           {
+             name: _(`${packagePath}/valid_entry_point/valid_entry_point.metadata.json`),
+             contents: 'some meta data'
+           },
+         ]);
+         const config = new NgccConfiguration(fs, _('/project'));
+         const entryPoint = getEntryPointInfo(
+             fs, config, new MockLogger(), SOME_PACKAGE, _(`${packagePath}/valid_entry_point`));
+         expect(entryPoint).toEqual(jasmine.objectContaining({
+           repositoryUrl: '',
+         }));
        });
 
     it('should return `IGNORED_ENTRY_POINT` if configured to ignore the specified entry-point', () => {
@@ -198,6 +276,7 @@ runInEachFileSystem(() => {
         path: _('/project/node_modules/some_package/valid_entry_point'),
         packageName: 'some_package',
         packagePath: SOME_PACKAGE,
+        repositoryUrl: '',
         packageJson: overriddenPackageJson,
         typings: _('/project/node_modules/some_package/valid_entry_point/some_other.d.ts'),
         compiledByAngular: true,
@@ -247,6 +326,7 @@ runInEachFileSystem(() => {
            path: _('/project/node_modules/some_package/missing_package_json'),
            packageName: 'some_package',
            packagePath: SOME_PACKAGE,
+           repositoryUrl: '',
            packageJson: {name: 'some_package/missing_package_json', ...override},
            typings: _(
                '/project/node_modules/some_package/missing_package_json/missing_package_json.d.ts'),
@@ -477,6 +557,7 @@ runInEachFileSystem(() => {
              path: _('/project/node_modules/some_package/missing_typings'),
              packageName: 'some_package',
              packagePath: SOME_PACKAGE,
+             repositoryUrl: '',
              packageJson: loadPackageJson(fs, '/project/node_modules/some_package/missing_typings'),
              typings: _(`/project/node_modules/some_package/missing_typings/${typingsPath}.d.ts`),
              compiledByAngular: true,
@@ -503,6 +584,7 @@ runInEachFileSystem(() => {
            path: _('/project/node_modules/some_package/missing_metadata'),
            packageName: 'some_package',
            packagePath: SOME_PACKAGE,
+           repositoryUrl: '',
            packageJson: loadPackageJson(fs, '/project/node_modules/some_package/missing_metadata'),
            typings: _(`/project/node_modules/some_package/missing_metadata/missing_metadata.d.ts`),
            compiledByAngular: false,
@@ -533,6 +615,7 @@ runInEachFileSystem(() => {
            path: _('/project/node_modules/some_package/missing_metadata'),
            packageName: 'some_package',
            packagePath: SOME_PACKAGE,
+           repositoryUrl: '',
            packageJson: loadPackageJson(fs, '/project/node_modules/some_package/missing_metadata'),
            typings: _('/project/node_modules/some_package/missing_metadata/missing_metadata.d.ts'),
            compiledByAngular: true,
@@ -562,6 +645,7 @@ runInEachFileSystem(() => {
         path: _('/project/node_modules/some_package/types_rather_than_typings'),
         packageName: 'some_package',
         packagePath: SOME_PACKAGE,
+        repositoryUrl: '',
         packageJson:
             loadPackageJson(fs, '/project/node_modules/some_package/types_rather_than_typings'),
         typings: _(
@@ -598,6 +682,7 @@ runInEachFileSystem(() => {
         path: _('/project/node_modules/some_package/material_style'),
         packageName: 'some_package',
         packagePath: SOME_PACKAGE,
+        repositoryUrl: '',
         packageJson: loadPackageJson(fs, '/project/node_modules/some_package/material_style'),
         typings: _(`/project/node_modules/some_package/material_style/material_style.d.ts`),
         compiledByAngular: true,

@@ -26,6 +26,7 @@ export function makeTestEntryPoint(
     path: absoluteFrom(`/node_modules/${entryPointName}`),
     packageName,
     packagePath: absoluteFrom(`/node_modules/${packageName}`),
+    repositoryUrl: `https://github.com/${packageName}`,
     packageJson: {name: entryPointName},
     typings: absoluteFrom(`/node_modules/${entryPointName}/index.d.ts`),
     compiledByAngular: true,

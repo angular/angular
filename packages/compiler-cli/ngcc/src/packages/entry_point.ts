@@ -35,6 +35,8 @@ export interface EntryPoint extends JsonObject {
   packageName: string;
   /** The path to the package that contains this entry-point. */
   packagePath: AbsoluteFsPath;
+  /** The URL of the repository. */
+  repositoryUrl: string;
   /** The parsed package.json file for this entry-point. */
   packageJson: EntryPointPackageJson;
   /** The path to a typings (.d.ts) file for this entry-point. */
@@ -76,6 +78,7 @@ export interface EntryPointPackageJson extends JsonObject, PackageJsonFormatProp
   name: string;
   version?: string;
   scripts?: Record<string, string>;
+  repository?: string|{url: string};
   __processed_by_ivy_ngcc__?: Record<string, string>;
 }
 
@@ -138,6 +141,7 @@ export function getEntryPointInfo(
       loadPackageJson(fs, entryPointPackageJsonPath);
   const {packageName, packageVersion} = getPackageNameAndVersion(
       fs, packagePath, loadedPackagePackageJson, loadedEntryPointPackageJson);
+  const repositoryUrl = getRepositoryUrl(loadedPackagePackageJson);
 
   const packageConfig = config.getPackageConfig(packageName, packagePath, packageVersion);
   const entryPointConfig = packageConfig.entryPoints.get(entryPointPath);
@@ -183,6 +187,7 @@ export function getEntryPointInfo(
     path: entryPointPath,
     packageName,
     packagePath,
+    repositoryUrl,
     packageJson: entryPointPackageJson,
     typings: fs.resolve(entryPointPath, typings),
     compiledByAngular,
@@ -355,4 +360,17 @@ function getPackageNameAndVersion(
     packageName,
     packageVersion: packagePackageJson?.version ?? null,
   };
+}
+
+/**
+ * Extract the URL of the repository associated with an entry-point
+ */
+function getRepositoryUrl(packageJson: EntryPointPackageJson|null): string {
+  if (packageJson?.repository === undefined) {
+    return '';
+  }
+  if (typeof packageJson.repository === 'string') {
+    return packageJson.repository;
+  }
+  return packageJson.repository.url;
 }
