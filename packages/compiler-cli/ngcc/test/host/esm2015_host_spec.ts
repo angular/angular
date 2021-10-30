@@ -40,7 +40,6 @@ runInEachFileSystem(() => {
     let IMPORTS_FILES: TestFile[];
     let EXPORTS_FILES: TestFile[];
     let FUNCTION_BODY_FILE: TestFile;
-    let MARKER_FILE: TestFile;
     let DECORATED_FILES: TestFile[];
     let ARITY_CLASSES: TestFile[];
     let TYPINGS_SRC_FILES: TestFile[];
@@ -514,24 +513,6 @@ runInEachFileSystem(() => {
     function juu() {
       if (x === void 0) { x = 42; }
       return x;
-    }
-  `
-      };
-
-      MARKER_FILE = {
-        name: _('/marker.js'),
-        contents: `
-    let compileNgModuleFactory = compileNgModuleFactory__PRE_R3__;
-
-    function compileNgModuleFactory__PRE_R3__(injector, options, moduleType) {
-      const compilerFactory = injector.get(CompilerFactory);
-      const compiler = compilerFactory.createCompiler([options]);
-      return compiler.compileModuleAsync(moduleType);
-    }
-
-    function compileNgModuleFactory__POST_R3__(injector, options, moduleType) {
-      ngDevMode && assertNgModuleType(moduleType);
-      return Promise.resolve(new R3NgModuleFactory(moduleType));
     }
   `
       };
@@ -2350,21 +2331,6 @@ runInEachFileSystem(() => {
             bundle.program, _('/src/class.js'), 'TwoTypeParams', isNamedClassDeclaration);
         expect(host.getGenericArityOfClass(twoTypeParamsClass)).toBe(2);
       });
-    });
-
-    describe('getSwitchableDeclarations()', () => {
-      it('should return a collection of all the switchable variable declarations in the given module',
-         () => {
-           loadTestFiles([MARKER_FILE]);
-           const bundle = makeTestBundleProgram(MARKER_FILE.name);
-           const host =
-               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
-           const file = getSourceFileOrError(bundle.program, MARKER_FILE.name);
-           const declarations = host.getSwitchableDeclarations(file);
-           expect(declarations.map(d => [d.name.getText(), d.initializer!.getText()])).toEqual([
-             ['compileNgModuleFactory', 'compileNgModuleFactory__PRE_R3__']
-           ]);
-         });
     });
 
     describe('findClassSymbols()', () => {

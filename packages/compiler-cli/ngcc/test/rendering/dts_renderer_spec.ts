@@ -48,9 +48,6 @@ class TestRenderingFormatter implements RenderingFormatter {
   removeDecorators(output: MagicString, decoratorsToRemove: RedundantDecoratorMap) {
     output.prepend('\n// REMOVE DECORATORS\n');
   }
-  rewriteSwitchableDeclarations(output: MagicString, sourceFile: ts.SourceFile): void {
-    output.prepend('\n// REWRITTEN DECLARATIONS\n');
-  }
   addModuleWithProvidersParams(
       output: MagicString, moduleWithProviders: ModuleWithProvidersInfo[],
       importManager: ImportManager): void {
@@ -92,7 +89,6 @@ function createTestRenderer(
   spyOn(testFormatter, 'addAdjacentStatements').and.callThrough();
   spyOn(testFormatter, 'addConstants').and.callThrough();
   spyOn(testFormatter, 'removeDecorators').and.callThrough();
-  spyOn(testFormatter, 'rewriteSwitchableDeclarations').and.callThrough();
   spyOn(testFormatter, 'addModuleWithProvidersParams').and.callThrough();
   spyOn(testFormatter, 'printStatement').and.callThrough();
 

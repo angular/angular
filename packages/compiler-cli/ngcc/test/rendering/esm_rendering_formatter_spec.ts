@@ -18,7 +18,6 @@ import {ImportManager} from '../../../src/ngtsc/translator';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {ModuleWithProvidersAnalyzer} from '../../src/analysis/module_with_providers_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
-import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {IMPORT_PREFIX} from '../../src/constants';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {EsmRenderingFormatter} from '../../src/rendering/esm_rendering_formatter';
@@ -38,8 +37,6 @@ function setup(files: TestFile[], dtsFiles?: TestFile[]) {
   const referencesRegistry = new NgccReferencesRegistry(host);
   const decorationAnalyses =
       new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();
-  const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host, bundle.entryPoint.packagePath)
-                                   .analyzeProgram(bundle.src.program);
   const renderer = new EsmRenderingFormatter(fs, host, false);
   const importManager = new ImportManager(new NoopImportRewriter(), IMPORT_PREFIX);
   return {
@@ -49,7 +46,6 @@ function setup(files: TestFile[], dtsFiles?: TestFile[]) {
     sourceFile: bundle.src.file,
     renderer,
     decorationAnalyses,
-    switchMarkerAnalyses,
     importManager,
   };
 }
@@ -75,19 +71,7 @@ C.decorators = [
   { type: Directive, args: [{ selector: '[c]' }] },
 ];
 export C;
-let compileNgModuleFactory = compileNgModuleFactory__PRE_R3__;
-let badlyFormattedVariable = __PRE_R3__badlyFormattedVariable;
 
-function compileNgModuleFactory__PRE_R3__(injector, options, moduleType) {
-  const compilerFactory = injector.get(CompilerFactory);
-  const compiler = compilerFactory.createCompiler([options]);
-  return compiler.compileModuleAsync(moduleType);
-}
-
-function compileNgModuleFactory__POST_R3__(injector, options, moduleType) {
-  ngDevMode && assertNgModuleType(moduleType);
-  return Promise.resolve(new R3NgModuleFactory(moduleType));
-}
 // Some other content`,
 
 
@@ -120,17 +104,6 @@ C.decorators = [
 return C;
 })();
 export A, B, C;
-let compileNgModuleFactory = compileNgModuleFactory__PRE_R3__;
-let badlyFormattedVariable = __PRE_R3__badlyFormattedVariable;
-function compileNgModuleFactory__PRE_R3__(injector, options, moduleType) {
-  const compilerFactory = injector.get(CompilerFactory);
-  const compiler = compilerFactory.createCompiler([options]);
-  return compiler.compileModuleAsync(moduleType);
-}
-function compileNgModuleFactory__POST_R3__(injector, options, moduleType) {
-  ngDevMode && assertNgModuleType(moduleType);
-  return Promise.resolve(new R3NgModuleFactory(moduleType));
-}
 // Some other content`
 };
 
@@ -239,28 +212,6 @@ import * as i0 from '@angular/core';
 
 const x = 3;
 `);
-        });
-      });
-
-      describe('rewriteSwitchableDeclarations', () => {
-        it('should switch marked declaration initializers', () => {
-          const {renderer, program, switchMarkerAnalyses, sourceFile} = setup([PROGRAM]);
-          const file = getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
-          const output = new MagicString(PROGRAM.contents);
-          renderer.rewriteSwitchableDeclarations(
-              output, file, switchMarkerAnalyses.get(sourceFile)!.declarations);
-          expect(output.toString())
-              .not.toContain(`let compileNgModuleFactory = compileNgModuleFactory__PRE_R3__;`);
-          expect(output.toString())
-              .toContain(`let badlyFormattedVariable = __PRE_R3__badlyFormattedVariable;`);
-          expect(output.toString())
-              .toContain(`let compileNgModuleFactory = compileNgModuleFactory__POST_R3__;`);
-          expect(output.toString())
-              .toContain(
-                  `function compileNgModuleFactory__PRE_R3__(injector, options, moduleType) {`);
-          expect(output.toString())
-              .toContain(
-                  `function compileNgModuleFactory__POST_R3__(injector, options, moduleType) {`);
         });
       });
 
