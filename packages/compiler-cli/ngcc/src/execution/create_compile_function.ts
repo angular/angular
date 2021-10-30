@@ -12,7 +12,7 @@ import {replaceTsWithNgInErrors} from '../../../src/ngtsc/diagnostics';
 import {FileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
 import {ParsedConfiguration} from '../../../src/perform_compile';
-import {getEntryPointFormat} from '../packages/entry_point';
+import {EntryPointPackageJson, getEntryPointFormat} from '../packages/entry_point';
 import {makeEntryPointBundle} from '../packages/entry_point_bundle';
 import {createModuleResolutionCache, SharedFileCache} from '../packages/source_file_cache';
 import {Transformer} from '../packages/transformer';
@@ -55,7 +55,8 @@ export function getCreateCompileFn(
         return;
       }
 
-      logger.info(`Compiling ${entryPoint.name} : ${formatProperty} as ${format}`);
+      logger.info(`- ${entryPoint.name} (${entryPoint.repositoryUrl})`);
+      logger.debug(`    property: ${formatProperty}, format: ${format}`);
 
       const bundle = makeEntryPointBundle(
           fileSystem, entryPoint, sharedFileCache, moduleResolutionCache, formatPath, isCore,
