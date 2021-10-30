@@ -14,9 +14,9 @@ import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declarati
 import {isSymbolWithValueDeclaration, SymbolWithValueDeclaration} from '../../../src/ngtsc/util/src/typescript';
 import {isWithinPackage} from '../analysis/util';
 import {BundleProgram} from '../packages/bundle_program';
-import {findAll, getNameText, hasNameIdentifier, isDefined, stripDollarSuffix} from '../utils';
+import {getNameText, hasNameIdentifier, isDefined, stripDollarSuffix} from '../utils';
 
-import {ClassSymbol, isSwitchableVariableDeclaration, NgccClassSymbol, NgccReflectionHost, PRE_R3_MARKER, SwitchableVariableDeclaration} from './ngcc_host';
+import {ClassSymbol, NgccClassSymbol, NgccReflectionHost} from './ngcc_host';
 import {stripParentheses} from './utils';
 
 export const DECORATORS = 'decorators' as ts.__String;
@@ -340,19 +340,6 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
     // Return a clone of the array to prevent consumers from mutating the cache.
     return Array.from(classDecorators);
-  }
-
-  /**
-   * Search the given module for variable declarations in which the initializer
-   * is an identifier marked with the `PRE_R3_MARKER`.
-   * @param module the module in which to search for switchable declarations.
-   * @returns an array of variable declarations that match.
-   */
-  getSwitchableDeclarations(module: ts.Node): SwitchableVariableDeclaration[] {
-    // Don't bother to walk the AST if the marker is not found in the text
-    return module.getText().indexOf(PRE_R3_MARKER) >= 0 ?
-        findAll(module, isSwitchableVariableDeclaration) :
-        [];
   }
 
   override getVariableValue(declaration: ts.VariableDeclaration): ts.Expression|null {

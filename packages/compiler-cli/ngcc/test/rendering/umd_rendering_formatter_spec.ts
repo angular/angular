@@ -17,7 +17,6 @@ import {getDeclaration, loadTestFiles} from '../../../src/ngtsc/testing';
 import {ImportManager} from '../../../src/ngtsc/translator';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
-import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {UmdReflectionHost} from '../../src/host/umd_host';
 import {UmdRenderingFormatter} from '../../src/rendering/umd_rendering_formatter';
 import {makeTestEntryPointBundle} from '../helpers/utils';
@@ -36,8 +35,6 @@ function setup(file: TestFile) {
   const referencesRegistry = new NgccReferencesRegistry(host);
   const decorationAnalyses =
       new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();
-  const switchMarkerAnalyses =
-      new SwitchMarkerAnalyzer(host, bundle.entryPoint.packagePath).analyzeProgram(src.program);
   const renderer = new UmdRenderingFormatter(fs, host, false);
   const importManager = new ImportManager(new NoopImportRewriter(), 'i');
   return {
@@ -47,7 +44,6 @@ function setup(file: TestFile) {
     program: src.program,
     renderer,
     sourceFile: src.file,
-    switchMarkerAnalyses
   };
 }
 
@@ -141,18 +137,6 @@ var BadIife = (function() {
   ];
 }());
 
-var compileNgModuleFactory = compileNgModuleFactory__PRE_R3__;
-var badlyFormattedVariable = __PRE_R3__badlyFormattedVariable;
-function compileNgModuleFactory__PRE_R3__(injector, options, moduleType) {
-  var compilerFactory = injector.get(CompilerFactory);
-  var compiler = compilerFactory.createCompiler([options]);
-  return compiler.compileModuleAsync(moduleType);
-}
-
-function compileNgModuleFactory__POST_R3__(injector, options, moduleType) {
-  ngDevMode && assertNgModuleType(moduleType);
-  return Promise.resolve(new R3NgModuleFactory(moduleType));
-}
 // Some other content
 exports.A = A;
 exports.B = B;
@@ -494,29 +478,6 @@ var A = (function() {`);
                  // This test (from ESM5) is not needed as constants go in the body
                  // of the UMD IIFE, so cannot come before imports.
              });
-        });
-
-        describe('rewriteSwitchableDeclarations', () => {
-          it('should switch marked declaration initializers', () => {
-            const {renderer, program, sourceFile, switchMarkerAnalyses} = setup(PROGRAM);
-            const file =
-                getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
-            const output = new MagicString(PROGRAM.contents);
-            renderer.rewriteSwitchableDeclarations(
-                output, file, switchMarkerAnalyses.get(sourceFile)!.declarations);
-            expect(output.toString())
-                .not.toContain(`var compileNgModuleFactory = compileNgModuleFactory__PRE_R3__;`);
-            expect(output.toString())
-                .toContain(`var badlyFormattedVariable = __PRE_R3__badlyFormattedVariable;`);
-            expect(output.toString())
-                .toContain(`var compileNgModuleFactory = compileNgModuleFactory__POST_R3__;`);
-            expect(output.toString())
-                .toContain(
-                    `function compileNgModuleFactory__PRE_R3__(injector, options, moduleType) {`);
-            expect(output.toString())
-                .toContain(
-                    `function compileNgModuleFactory__POST_R3__(injector, options, moduleType) {`);
-          });
         });
 
         describe('addDefinitions', () => {

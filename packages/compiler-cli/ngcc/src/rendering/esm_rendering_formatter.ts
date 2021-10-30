@@ -17,7 +17,7 @@ import {ModuleWithProvidersInfo} from '../analysis/module_with_providers_analyze
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
 import {CompiledClass} from '../analysis/types';
 import {getContainingStatement, isAssignment} from '../host/esm2015_host';
-import {NgccReflectionHost, POST_R3_MARKER, PRE_R3_MARKER, SwitchableVariableDeclaration} from '../host/ngcc_host';
+import {NgccReflectionHost} from '../host/ngcc_host';
 
 import {RedundantDecoratorMap, RenderingFormatter} from './rendering_formatter';
 import {stripExtension} from './utils';
@@ -171,21 +171,6 @@ export class EsmRenderingFormatter implements RenderingFormatter {
       }
     });
   }
-
-  /**
-   * Rewrite the IVY switch markers to indicate we are in IVY mode.
-   */
-  rewriteSwitchableDeclarations(
-      outputText: MagicString, sourceFile: ts.SourceFile,
-      declarations: SwitchableVariableDeclaration[]): void {
-    declarations.forEach(declaration => {
-      const start = declaration.initializer.getStart();
-      const end = declaration.initializer.getEnd();
-      const replacement = declaration.initializer.text.replace(PRE_R3_MARKER, POST_R3_MARKER);
-      outputText.overwrite(start, end, replacement);
-    });
-  }
-
 
   /**
    * Add the type parameters to the appropriate functions that return `ModuleWithProviders`

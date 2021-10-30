@@ -10,16 +10,6 @@ import ts from 'typescript';
 import {ClassDeclaration, Declaration, Decorator, ReflectionHost} from '../../../src/ngtsc/reflection';
 import {SymbolWithValueDeclaration} from '../../../src/ngtsc/util/src/typescript';
 
-export const PRE_R3_MARKER = '__PRE_R3__';
-export const POST_R3_MARKER = '__POST_R3__';
-
-export type SwitchableVariableDeclaration = ts.VariableDeclaration&{initializer: ts.Identifier};
-export function isSwitchableVariableDeclaration(node: ts.Node):
-    node is SwitchableVariableDeclaration {
-  return ts.isVariableDeclaration(node) && !!node.initializer &&
-      ts.isIdentifier(node.initializer) && node.initializer.text.endsWith(PRE_R3_MARKER);
-}
-
 /**
  * The symbol corresponding to a "class" declaration. I.e. a `ts.Symbol` whose `valueDeclaration` is
  * a `ClassDeclaration`.
@@ -68,14 +58,6 @@ export interface NgccReflectionHost extends ReflectionHost {
    * a "class" or has no symbol.
    */
   getClassSymbol(declaration: ts.Node): NgccClassSymbol|undefined;
-
-  /**
-   * Search the given module for variable declarations in which the initializer
-   * is an identifier marked with the `PRE_R3_MARKER`.
-   * @param module The module in which to search for switchable declarations.
-   * @returns An array of variable declarations that match.
-   */
-  getSwitchableDeclarations(module: ts.Node): SwitchableVariableDeclaration[];
 
   /**
    * Retrieves all decorators of a given class symbol.

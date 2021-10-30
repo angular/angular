@@ -14,7 +14,6 @@ import {Logger} from '../../../src/ngtsc/logging';
 import {ImportManager} from '../../../src/ngtsc/translator';
 import {ParsedConfiguration} from '../../../src/perform_compile';
 import {PrivateDeclarationsAnalyses} from '../analysis/private_declarations_analyzer';
-import {SwitchMarkerAnalyses, SwitchMarkerAnalysis} from '../analysis/switch_marker_analyzer';
 import {CompiledClass, CompiledFile, DecorationAnalyses} from '../analysis/types';
 import {IMPORT_PREFIX} from '../constants';
 import {NgccReflectionHost} from '../host/ngcc_host';
@@ -37,18 +36,16 @@ export class Renderer {
       private tsConfig: ParsedConfiguration|null = null) {}
 
   renderProgram(
-      decorationAnalyses: DecorationAnalyses, switchMarkerAnalyses: SwitchMarkerAnalyses,
+      decorationAnalyses: DecorationAnalyses,
       privateDeclarationsAnalyses: PrivateDeclarationsAnalyses): FileToWrite[] {
     const renderedFiles: FileToWrite[] = [];
 
     // Transform the source files.
     this.bundle.src.program.getSourceFiles().forEach(sourceFile => {
-      if (decorationAnalyses.has(sourceFile) || switchMarkerAnalyses.has(sourceFile) ||
-          sourceFile === this.bundle.src.file) {
+      if (decorationAnalyses.has(sourceFile) || sourceFile === this.bundle.src.file) {
         const compiledFile = decorationAnalyses.get(sourceFile);
-        const switchMarkerAnalysis = switchMarkerAnalyses.get(sourceFile);
-        renderedFiles.push(...this.renderFile(
-            sourceFile, compiledFile, switchMarkerAnalysis, privateDeclarationsAnalyses));
+        renderedFiles.push(
+            ...this.renderFile(sourceFile, compiledFile, privateDeclarationsAnalyses));
       }
     });
 
@@ -62,15 +59,9 @@ export class Renderer {
    */
   renderFile(
       sourceFile: ts.SourceFile, compiledFile: CompiledFile|undefined,
-      switchMarkerAnalysis: SwitchMarkerAnalysis|undefined,
       privateDeclarationsAnalyses: PrivateDeclarationsAnalyses): FileToWrite[] {
     const isEntryPoint = sourceFile === this.bundle.src.file;
     const outputText = new MagicString(sourceFile.text);
-
-    if (switchMarkerAnalysis) {
-      this.srcFormatter.rewriteSwitchableDeclarations(
-          outputText, switchMarkerAnalysis.sourceFile, switchMarkerAnalysis.declarations);
-    }
 
     const importManager = new ImportManager(
         getImportRewriter(
@@ -118,7 +109,7 @@ export class Renderer {
           outputText, importManager.getAllImports(sourceFile.fileName), sourceFile);
     }
 
-    if (compiledFile || switchMarkerAnalysis || isEntryPoint) {
+    if (compiledFile || isEntryPoint) {
       return renderSourceAndMap(this.logger, this.fs, sourceFile, outputText);
     } else {
       return [];
