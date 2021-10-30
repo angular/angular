@@ -55,6 +55,8 @@ export class ClusterMaster {
       return Promise.resolve();
     }
 
+    this.logger.info('Processing legacy "View Engine" libraries:');
+
     // Set up listeners for worker events (emitted on `cluster`).
     cluster.on(
         'message', this.wrapEventHandler((worker, msg) => this.onWorkerMessage(worker.id, msg)));
@@ -80,6 +82,7 @@ export class ClusterMaster {
     if (this.taskQueue.allTasksCompleted) {
       const duration = Math.round((Date.now() - this.processingStartTime) / 100) / 10;
       this.logger.debug(`Processed tasks in ${duration}s.`);
+      this.logger.info('Encourage the library authors to publish an Ivy distribution.');
 
       return this.finishedDeferred.resolve();
     }

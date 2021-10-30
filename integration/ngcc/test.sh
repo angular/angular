@@ -46,10 +46,10 @@ assertSucceeded "Expected 'ngcc --help' to succeed."
 ngcc --unknown-option 2>&1 | grep 'Unknown arguments: unknown-option, unknownOption'
 assertSucceeded "Expected ngcc to report bad option."
 
-# node --inspect-brk $(npm bin)/ngcc -f esm2015
+# node --inspect-brk $(npm bin)/ngcc -p esm2015
 # Run ngcc and check it logged compilation output as expected
-ngcc | grep 'Compiling'
-assertSucceeded "Expected 'ngcc' to log 'Compiling'."
+ngcc | grep -e '- @angular/core \[fesm2015/esm2015\] (https://github\.com/angular/angular\.git)'
+assertSucceeded "Expected 'ngcc' to log '- @angular/core [fesm2015/esm2015] (https://github.com/angular/angular.git)'."
 
 
 # Did it add the appropriate build markers?

@@ -151,6 +151,7 @@ runInEachFileSystem(() => {
             path: _Abs('/project/node_modules/some_package/valid_entry_point'),
             packageName: 'some_package',
             packagePath: _Abs('/project/node_modules/some_package'),
+            repositoryUrl: '',
             packageJson: jasmine.any(Object),
             typings:
                 _Abs('/project/node_modules/some_package/valid_entry_point/valid_entry_point.d.ts'),

@@ -1867,7 +1867,8 @@ runInEachFileSystem(() => {
         const consoleInfoSpy = spyOn(console, 'info');
         mainNgcc({basePath: '/node_modules', propertiesToConsider: ['esm2015']});
         expect(consoleInfoSpy)
-            .toHaveBeenCalledWith('Compiling @angular/common/http : esm2015 as esm2015');
+            .toHaveBeenCalledWith(
+                '- @angular/common/http [esm2015/esm2015] (https://github.com/angular/angular.git)');
       });
 
       it('should use a custom logger if provided', () => {
@@ -1877,7 +1878,9 @@ runInEachFileSystem(() => {
           propertiesToConsider: ['esm2015'],
           logger,
         });
-        expect(logger.logs.info).toContain(['Compiling @angular/common/http : esm2015 as esm2015']);
+        expect(logger.logs.info).toContain([
+          '- @angular/common/http [esm2015/esm2015] (https://github.com/angular/angular.git)'
+        ]);
       });
     });
 
