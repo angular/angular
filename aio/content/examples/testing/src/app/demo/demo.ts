@@ -434,6 +434,14 @@ import { FormsModule } from '@angular/forms';
 })
 export class DemoModule { }
 
+// #docregion TestingOnlyUnitFunctionality
+export const realParams = {prop: 'A'};
+
+export const dependencyWithHandler = { handler: (param) => param };
+
+export const testedMethod = (params, dependencyWithHandler) => dependencyWithHandler.handler(params);
+// #enddocregion TestingOnlyUnitFunctionality
+
 // #docregion DataSimplificationExample
 type AnotherComplicatedType = {
   method: () => void;
