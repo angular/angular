@@ -9,7 +9,7 @@
 /**
  * When running tests with code coverage using Istanbul, the code is instrumented with coverage
  * reporting statements. These statements are also inserted into synthesized constructors,
- * preventing Angular from properly recognizing them as synthesized constructor.
+ * preventing Angular from properly recognizing them as synthesized constructors.
  *
  * In ES2015, the statements look as follows:
  *
