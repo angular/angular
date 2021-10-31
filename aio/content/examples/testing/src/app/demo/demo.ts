@@ -5,8 +5,9 @@ import { Component, ContentChildren, Directive, EventEmitter,
          OnInit, OnChanges, OnDestroy,
          Pipe, PipeTransform,
          SimpleChanges } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
-import { of } from 'rxjs';
+import { of, Observable } from 'rxjs';
 import { delay } from 'rxjs/operators';
 
 ////////// The App: Services and Components for the tests. //////////////
@@ -432,4 +433,83 @@ import { FormsModule } from '@angular/forms';
   bootstrap:       [DemoComponent]
 })
 export class DemoModule { }
+
+// #docregion DataSimplificationExample
+type AnotherComplicatedType = {
+  method: () => void;
+};
+
+type AnotherComplicatedTypes = Array<AnotherComplicatedType>;
+
+type ComplicatedDataType = {
+  nestedComplicatedDataTypes: AnotherComplicatedType[];
+  primitiveField: boolean;
+}
+
+type Params = ComplicatedDataType | AnotherComplicatedTypes
+
+type Handler = (params: Params) => number;
+
+type Dependency = {
+  handler: Handler;
+}
+
+export const productionMethod1 = (params: ComplicatedDataType, dependency: Dependency) => dependency.handler(params);
+export const productionMethod2 = ({ nestedComplicatedDataTypes }: ComplicatedDataType, {handler}: Dependency) => handler(nestedComplicatedDataTypes);
+// #enddocregion DataSimplificationExample
+
+// #docregion NativeJSEntriesAndAngularEntries
+export class JavaScriptService {
+  serviceMethod() {}
+}
+
+export class JavaScriptComponent {
+  constructor(private service: any) {}
+
+  method() {}
+}
+
+export const nativeJSService = new JavaScriptService();
+export const nativeJSComponent = new JavaScriptComponent(nativeJSService);
+
+export const angularService = new Injectable(/*list of annotations*/)(JavaScriptService);
+export const angularComponent = new Component(/*list of annotations*/)(JavaScriptComponent);
+// #enddocregion NativeJSEntriesAndAngularEntries
+
+// #docregion NamingForTestEntries
+@Injectable()
+export class CustomNameService {
+  constructor(private http: HttpClient) {}
+
+  method(url: string): Observable<void> {
+    return this.http.get(url);
+  }
+}
+
+@Component()
+export class CustomNameComponent {
+  constructor(private customNameService: CustomNameService) {}
+}
+// #enddocregion NamingForTestEntries
+
+// #docregion ReadonlyProperties
+type State = {
+  value: string;
+}
+type Selector<S, R> = (state: S) => R;
+
+type Store<S> = {
+  select: <R>(selector: Selector<S, R>) => Observable<R>;
+}
+export const templateLabels = { label: 'Title' };
+export const selector = ({ value }: State) => value;
+
+@Component()
+export class RepresentativeComponent {
+  readonly templateLabels =templateLabels;
+  readonly templateValue$ = this.store.select(selector);
+
+  constructor(private store: Store<State>) {}
+}
+// #docregion StaticProperties
 
