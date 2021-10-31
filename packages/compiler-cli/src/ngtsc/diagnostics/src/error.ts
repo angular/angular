@@ -65,6 +65,22 @@ export function makeRelatedInformation(
   };
 }
 
+export function addDiagnosticChain(
+    messageText: string|ts.DiagnosticMessageChain,
+    add: ts.DiagnosticMessageChain[]): ts.DiagnosticMessageChain {
+  if (typeof messageText === 'string') {
+    return makeDiagnosticChain(messageText, add);
+  }
+
+  if (messageText.next === undefined) {
+    messageText.next = add;
+  } else {
+    messageText.next.push(...add);
+  }
+
+  return messageText;
+}
+
 export function isFatalDiagnosticError(err: any): err is FatalDiagnosticError {
   return err._isFatalDiagnosticError === true;
 }
