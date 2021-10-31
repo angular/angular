@@ -11,6 +11,7 @@ import ts from 'typescript';
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem, TestFile} from '../../file_system/testing';
 import {OptimizeFor, TypeCheckingConfig} from '../api';
+import {resetParseTemplateAsSourceFileForTest, setParseTemplateAsSourceFileForTest} from '../diagnostics';
 import {ngForDeclaration, ngForDts, ngIfDeclaration, ngIfDts, setup, TestDeclaration} from '../testing';
 
 runInEachFileSystem(() => {
@@ -488,7 +489,8 @@ runInEachFileSystem(() => {
           }`);
 
         expect(messages).toEqual([
-          `TestComponent.html(1, 19): Argument of type 'string | undefined' is not assignable to parameter of type 'string'.`
+          `TestComponent.html(1, 19): Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.`
         ]);
       });
 
@@ -517,7 +519,8 @@ runInEachFileSystem(() => {
           }`);
 
         expect(messages).toEqual([
-          `TestComponent.html(1, 19): Argument of type 'string | undefined' is not assignable to parameter of type 'string'.`
+          `TestComponent.html(1, 19): Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.`
         ]);
       });
     });
@@ -852,6 +855,64 @@ class TestComponent {
       ]);
     });
   });
+
+  // https://github.com/angular/angular/issues/43970
+  describe('template parse failures', () => {
+    afterEach(resetParseTemplateAsSourceFileForTest);
+
+    it('baseline test without parse failure', () => {
+      const messages = diagnose(`<div (click)="test(name)"></div>`, `
+      export class TestComponent {
+        name: string | undefined;
+        test(n: string): void {}
+      }`);
+
+      expect(messages).toEqual([
+        `TestComponent.html(1, 20): Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.`
+      ]);
+    });
+
+    it('should handle TypeScript parse failures gracefully', () => {
+      setParseTemplateAsSourceFileForTest(() => {
+        throw new Error('Simulated parse failure');
+      });
+
+      const messages = diagnose(`<div (click)="test(name)"></div>`, `
+      export class TestComponent {
+        name: string | undefined;
+        test(n: string): void {}
+      }`);
+
+      expect(messages.length).toBe(1);
+      expect(messages[0])
+          .toContain(
+              `main.ts(2, 20): Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+  Failed to report an error in 'TestComponent.html' at 1:20
+    Error: Simulated parse failure`);
+    });
+
+    it('should handle non-Error failures gracefully', () => {
+      setParseTemplateAsSourceFileForTest(() => {
+        throw 'Simulated parse failure';
+      });
+
+      const messages = diagnose(`<div (click)="test(name)"></div>`, `
+      export class TestComponent {
+        name: string | undefined;
+        test(n: string): void {}
+      }`);
+
+      expect(messages.length).toBe(1);
+      expect(messages[0])
+          .toContain(
+              `main.ts(2, 20): Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+  Failed to report an error in 'TestComponent.html' at 1:20
+    Simulated parse failure`);
+    });
+  });
 });
 
 function diagnose(
@@ -879,8 +940,7 @@ function diagnose(
   const sf = getSourceFileOrError(program, sfPath);
   const diagnostics = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
   return diagnostics.map(diag => {
-    const text =
-        typeof diag.messageText === 'string' ? diag.messageText : diag.messageText.messageText;
+    const text = ts.flattenDiagnosticMessageText(diag.messageText, '\n');
     const fileName = diag.file!.fileName;
     const {line, character} = ts.getLineAndCharacterOfPosition(diag.file!, diag.start!);
     return `${fileName}(${line + 1}, ${character + 1}): ${text}`;
