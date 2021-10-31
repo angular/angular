@@ -109,4 +109,4 @@ In tests, we need to follow the same principle to simplify them and other practi
 
 <code-example path="testing/src/hero/hero-list.component.ts" region="ReadonlyProperties"></code-example>
 
-<code-example path="testing/src/hero/hero-list.component.spec.js" region="ReadonlyProperties" header="hero-list.component.spec.js"></code-example>
+<code-example path="testing/src/hero/hero-list.component.pure-test.spec.js" region="ReadonlyProperties" header="hero-list.component.pure-test.spec.js"></code-example>
